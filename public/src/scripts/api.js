@@ -4,7 +4,7 @@
 
 api = {
 
-	path    : 'php/index.php',
+	path    : 'api/',
 	onError : null
 
 }
@@ -14,6 +14,10 @@ api.post = function(fn, params, callback) {
 	loadingBar.show()
 
 	params = $.extend({ function: fn }, params)
+
+	api_url = api.path.concat(fn)
+
+	// alert(api_url)
 
 	const success = (data) => {
 
@@ -37,7 +41,8 @@ api.post = function(fn, params, callback) {
 
 	$.ajax({
 		type: 'POST',
-		url: api.path,
+		// url: api.path,
+		url: api_url,
 		data: params,
 		dataType: 'json',
 		success,

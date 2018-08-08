@@ -217,6 +217,8 @@ sidebar.createStructure.photo = function(data) {
 
 sidebar.createStructure.album = function(data) {
 
+    // console.log(data)
+
 	if (data==null || data==='') return false
 
 	let editable     = false
