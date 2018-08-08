@@ -1,25 +1,3 @@
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
-    RewriteEngine On
-
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-
-    # Redirect Trailing Slashes If Not A Folder...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_URI} (.+)/$
-    RewriteRule ^ %1 [L,R=301]
-
-    # Handle Front Controller...
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
-</IfModule>
-
 Options -Indexes
 
 # ---
@@ -32,13 +10,13 @@ Options -Indexes
 #	php_value upload_max_filesize 20M
 #	php_value max_file_uploads 100
 #</IfModule>
-<IfModule mod_php7.c>
-	php_value max_execution_time 200
-	php_value post_max_size 200M
-	php_value upload_max_size 200M
-	php_value upload_max_filesize 20M
-	php_value max_file_uploads 100
-</IfModule>
+#<IfModule mod_php7.c>
+#	php_value max_execution_time 200
+#	php_value post_max_size 200M
+#	php_value upload_max_size 200M
+#	php_value upload_max_filesize 20M
+#	php_value max_file_uploads 100
+#</IfModule>
 
 # ---
 # Uncomment these lines when you want to allow access to the Lychee API from different origins

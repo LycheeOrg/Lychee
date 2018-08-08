@@ -1,0 +1,244 @@
+.content {
+
+	display: flex;
+	flex-wrap: wrap;
+	padding: 50px 0 33px;
+	width: 100%;
+	min-height: calc(100% - 83px);
+	-webkit-overflow-scrolling: touch;
+
+	&::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		width: 100%;
+		height: 1px;
+		background: white(.02);
+	}
+
+	&--sidebar {
+		width: calc(100% - 300px);
+	}
+
+	// Animations -------------------------------------------------------------- //
+	&.contentZoomIn .album,
+	&.contentZoomIn .photo {
+		animation-name: zoomIn;
+	}
+
+	&.contentZoomIn .divider {
+		animation-name: fadeIn;
+	}
+
+	&.contentZoomOut .album,
+	&.contentZoomOut .photo {
+		animation-name: zoomOut;
+	}
+
+	&.contentZoomOut .divider {
+		animation-name: fadeOut;
+	}
+
+	// Albums and Photos ------------------------------------------------------ //
+	.album,
+	.photo {
+		position: relative;
+		width: 202px;
+		height: 202px;
+		margin: 30px 0 0 30px;
+		cursor: default;
+
+		animation-duration: .2s;
+		animation-fill-mode: forwards;
+		animation-timing-function: $timing;
+
+		img {
+			position: absolute;
+			width: 200px;
+			height: 200px;
+			background: #222;
+			color: #222;
+			box-shadow: 0 2px 5px black(.5);
+			border: 1px solid white(.5);
+			transition: opacity .3s ease-out, transform .3s ease-out, border-color .3s ease-out;
+		}
+
+		&:hover img,
+		&.active img {
+			border-color: $colorBlue;
+		}
+
+		&:active img {
+			transition: none;
+			border-color: darken($colorBlue, 15%);
+		}
+	}
+
+	// Album -------------------------------------------------------------- //
+	.album  {
+		img:first-child,
+		img:nth-child(2) {
+			transform: rotate(0) translateY(0) translateX(0);
+			opacity: 0;
+		}
+
+		&:hover img:nth-child(1),
+		&:hover img:nth-child(2) {
+			opacity: 1;
+			// Keep the composited layer created by the browser during the animation.
+			// Makes the border of the transformed thumb look better.
+			// See https://github.com/electerious/Lychee/pull/626 for more.
+			will-change: transform;
+		}
+
+		&:hover img:nth-child(1) {
+			transform: rotate(-2deg) translateY(10px) translateX(-12px);
+		}
+
+		&:hover img:nth-child(2) {
+			transform: rotate(5deg) translateY(-8px) translateX(12px);
+		}
+	}
+
+	// Overlay -------------------------------------------------------------- //
+	.album .overlay,
+	.photo .overlay {
+		position: absolute;
+		margin: 0 1px;
+		width: 200px;
+		background: linear-gradient(to bottom, black(0), black(.6));
+		bottom: 1px;
+	}
+
+	// No overlay for empty albums
+	.album img[data-overlay='false'] + .overlay {
+		background: none;
+	}
+
+	.photo .overlay { opacity: 0; }
+
+	.photo:hover .overlay,
+	.photo.active .overlay {
+		opacity: 1;
+	}
+
+	.album .overlay h1,
+	.photo .overlay h1 {
+		min-height: 19px;
+		width: 180px;
+		margin: 12px 0 5px 15px;
+		color: #fff;
+		text-shadow: 0 1px 3px black(.4);
+		font-size: 16px;
+		font-weight: bold;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+
+	.album .overlay a,
+	.photo .overlay a {
+		display: block;
+		margin: 0 0 12px 15px;
+		font-size: 11px;
+		color: #ccc;
+		text-shadow: 0 1px 3px black(.4);
+	}
+
+	.photo .overlay a .iconic {
+		fill: #ccc;
+		margin: 0 5px 0 0;
+		width: 8px;
+		height: 8px;
+	}
+
+	.album img[data-overlay='false'] + .overlay h1,
+	.album img[data-overlay='false'] + .overlay a {
+		text-shadow: none;
+	}
+
+	// Badge -------------------------------------------------------------- //
+	.album .badges,
+	.photo .badges {
+		position: relative;
+		margin: -1px 0 0 6px;
+	}
+
+	.album .badge,
+	.photo .badge {
+		display: none;
+		margin: 0 0 0 6px;
+		padding: 12px 8px 6px;
+		width: 18px;
+		background: $colorRed;
+		box-shadow: 0 0 2px black(.6);
+		border-radius: 0 0 5px 5px;
+		border: 1px solid #fff;
+		border-top: none;
+		color: #fff;
+		text-align: center;
+		text-shadow: 0 1px 0 black(.4);
+		opacity: .9;
+
+		&--visible {
+			display: inline-block;
+		}
+
+		.iconic {
+			fill: #fff;
+			width: 16px;
+			height: 16px;
+		}
+	}
+
+	// Divider -------------------------------------------------------------- //
+	.divider {
+		margin: 50px 0 0;
+		padding: 10px 0 0;
+		width: 100%;
+		opacity: 0;
+		border-top: 1px solid white(.02);
+		box-shadow: $shadow;
+
+		animation-duration: .2s;
+		animation-fill-mode: forwards;
+		animation-timing-function: $timing;
+
+		&:first-child {
+			margin-top: 10px;
+			border-top: 0;
+			box-shadow: none;
+		}
+
+		h1 {
+			margin: 0 0 0 30px;
+			color: white(.6);
+			font-size: 14px;
+			font-weight: bold;
+		}
+	}
+
+}
+
+// No content -------------------------------------------------------------- //
+.no_content {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	padding-top: 20px;
+	color: white(.35);
+	text-align: center;
+	transform: translateX(-50%) translateY(-50%);
+
+	.iconic {
+		fill: white(.3);
+		margin: 0 0 10px;
+		width: 50px;
+		height: 50px;
+	}
+
+	p {
+		font-size: 16px;
+		font-weight: bold;
+	}
+}

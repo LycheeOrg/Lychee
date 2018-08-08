@@ -1,0 +1,115 @@
+#imageview {
+
+	position: fixed;
+	display: none;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(10, 10, 10, .98);
+	transition: background-color .3s;
+
+	// Modes -------------------------------------------------------------- //
+	&.view {
+		background-color: inherit;
+	}
+
+	&.full {
+		background-color: black(1);
+		cursor: none;
+	}
+
+	// ImageView -------------------------------------------------------------- //
+	#image {
+		position: absolute;
+		top: 60px;
+		right: 30px;
+		bottom: 30px;
+		left: 30px;
+		margin: auto;
+		max-width: calc(100% - 60px);
+		max-height: calc(100% - 90px);
+		width: auto;
+		height: auto;
+		transition: top .3s, right .3s, bottom .3s, left .3s, max-width .3s, max-height .3s;
+
+		animation-name: zoomIn;
+		animation-duration: .3s;
+		animation-timing-function: $timingBounce;
+
+		@media (max-width: 640px) {
+			top: 60px;
+			right: 20px;
+			bottom: 20px;
+			left: 20px;
+			max-width: calc(100% - 40px);
+			max-height: calc(100% - 80px);
+		}
+	}
+
+	&.full #image {
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		max-width: 100%;
+		max-height: 100%;
+	}
+
+	// Previous/Next Buttons -------------------------------------------------------------- //
+	.arrow_wrapper {
+		position: fixed;
+		width: 15%;
+		height: calc(100% - 60px);
+		top: 60px;
+
+		&--previous { left: 0; }
+
+		&--next { right: 0; }
+
+		@media (max-width: 640px) {
+			display: none;
+		}
+
+		a {
+			position: fixed;
+			top: 50%;
+			margin: -19px 0 0;
+			padding: 8px 12px;
+			width: 16px;
+			height: 22px;
+			// The background-image will be styled dynamically via JS
+			// background-image: linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url('');
+			background-size: 100% 100%;
+			border: 1px solid white(.8);
+			opacity: .6;
+			z-index: 2;
+			transition: transform .2s ease-out, opacity .2s ease-out;
+			will-change: transform;
+
+			&#previous {
+				left: -1px;
+				transform: translateX(-100%);
+			}
+
+			&#next {
+				right: -1px;
+				transform: translateX(100%);
+			}
+		}
+
+		&:hover a#previous,
+		&:hover a#next {
+			transform: translateX(0);
+		}
+
+		a:hover {
+			opacity: 1;
+		}
+
+		.iconic {
+			fill: white(.8);
+		}
+	}
+
+}
