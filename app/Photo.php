@@ -35,10 +35,24 @@ class Photo extends Model
         $photo['tags']   = $this->tags;
         $photo['star']   = $this->star == 1 ? '1' : '0';
         $photo['album']  = $this->album_id;
+        $photo['width']  = $this->width;
+        $photo['height'] = $this->height;
+        $photo['type']         = $this->type;
+        $photo['size']         = $this->size;
+        $photo['iso']         = $this->iso;
+        $photo['aperture']    = $this->aperture;
+        $photo['make']        = $this->make;
+        $photo['model']       = $this->model;
+        $photo['shutter']     = $this->shutter;
+        $photo['focal']       = $this->focal;
+//        $photo['takestamp']   = 0;
+//        $photo['lens']        = $this->lens;
+        $photo['sysdate']    = $this->created_at->format('d F Y');
+        $photo['tags']        = $this->tags;
         $photo['description']  = $this->description == null ? '' : $this->description;
 
         // Parse medium
-        if ($this->medium === '1') $photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM') . $this->url;
+        if ($this->medium == '1') $photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM') . $this->url;
         else                       $photo['medium'] = '';
 
         // Parse paths
@@ -50,13 +64,13 @@ class Photo extends Model
 
             // Use takestamp
             $photo['cameraDate'] = '1';
-            $photo['sysdate']    = strftime('%d %B %Y', $this->takestamp);
+            $photo['takedate']    = strftime('%d %B %Y', $this->takestamp);
 
         } else {
 
             // Use sysstamp from the id
             $photo['cameraDate'] = '0';
-            $photo['sysdate']    = $this->created_at->format('d F Y');
+            $photo['takedate']    = $this->created_at->format('d F Y');
 
         }
 
@@ -100,7 +114,6 @@ class Photo extends Model
 
         $iptcArray = array();
         $info      = getimagesize($url, $iptcArray);
-
         // General information
         $return['type']        = $info['mime'];
         $return['width']       = $info[0];
@@ -443,6 +456,7 @@ class Photo extends Model
         $filename = $this->url;
         $width = $this->width;
         $height = $this->height;
+
         $url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
 
         // Quality of medium-photo
@@ -471,7 +485,7 @@ class Photo extends Model
         if (($error===false)&&
             ($width>$newWidth||$height>$newHeight)&&
             (Configs::hasImagick())) {
-
+            Logs::notice(__METHOD__, __LINE__, 'Picture is big enough for resize!');
             $newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $filename;
 
             // Read image
@@ -498,6 +512,7 @@ class Photo extends Model
             // Photo too small or
             // Medium is deactivated or
             // Imagick not installed
+            Logs::notice(__METHOD__, __LINE__, 'No resize!');
             $error = true;
 
         }

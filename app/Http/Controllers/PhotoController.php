@@ -114,6 +114,7 @@ class PhotoController extends Controller
 
         // Generate id
         $photo = new Photo();
+        $photo->id = Helpers::generateID();
 
         // Set paths
         $tmp_name   = $file->getPathName();

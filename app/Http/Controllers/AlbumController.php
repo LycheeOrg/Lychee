@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Helpers;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ class AlbumController extends Controller
         $request->validate(['title' => 'string|required|max:100']);
 
         $album = new Album();
+        $album->id = Helpers::generateID();
         $album->title = $request['title'];
         $album->description = '';
         $album->save();

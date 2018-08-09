@@ -41,22 +41,24 @@ class Helpers
     }
 
 
-//    /**
-//     * @return string Generated ID.
-//     */
-//    static public function generateID() {
-//
-//        // Generate id based on the current microtime
-//        $id = str_replace('.', '', microtime(true));
-//
-//        // Ensure that the id has a length of 14 chars
-//        while(strlen($id)<14) $id .= 0;
-//
-//        // Return id as a string. Don't convert the id to an integer
-//        // as 14 digits are too big for 32bit PHP versions.
-//        return $id;
-//
-//    }
+    /**
+     * @return string Generated ID.
+     */
+    static public function generateID() {
+
+        // Generate id based on the current microtime
+        $id = str_replace('.', '', microtime(true));
+        $id = substr($id,1,10);
+
+        // Ensure that the id has a length of 14 chars
+        while(strlen($id)<10) $id .= 0;
+
+        $id[0] = strval(intval($id[0]) % 4);
+        // Return id as a string. Don't convert the id to an integer
+        // as 14 digits are too big for 32bit PHP versions.
+        return $id;
+
+    }
 
 
 

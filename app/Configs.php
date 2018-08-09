@@ -110,7 +110,11 @@ class Configs extends Model
      * @return boolean Returns the Imagick setting.
      */
     public static function hasImagick() {
-        return (bool)(extension_loaded('imagick') && self::get()['imagick'] === '1');
+        if((bool)(extension_loaded('imagick') && self::get()['imagick'] == '1')) {
+            return true;
+        }
+        Logs::notice(__METHOD__,__LINE__,"hasImagick : false");
+        return false;
     }
 
 }
