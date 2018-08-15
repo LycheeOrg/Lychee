@@ -23,7 +23,7 @@ class MoveAlbums extends Migration
             $album = new Album();
             $album->id = $id;
             $album->title = $result->title;
-            $album->description = $results->description;
+            $album->description = $result->description;
             $album->public = $result->public;
             $album->visible_hidden = $result->visible;
             $album->save();
