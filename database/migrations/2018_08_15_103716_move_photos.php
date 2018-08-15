@@ -1,5 +1,6 @@
 <?php
 
+use App\Photo;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -23,30 +24,31 @@ class MovePhotos extends Migration
             $album = $result->album;
             $album = substr($album,1,10);
             $album[0] = strval(intval($album[0]) % 4);
-            DB::table('photos')->insert([
-                ['id' => $id,
-                'title' => $result->title,
-                'description' => $result->description,
-                'url' => $result->url,
-                'tags' => $result->tags,
-                'public' => $result->public,
-                'type' => $result->type,
-                'width' => $result->width,
-                'height' => $result->height,
-                'size' => $result->size,
-                'iso' => $result->iso,
-                'aperture' => $result->aperture,
-                'make' => $result->make,
-                'model' => $result->model,
-                'shutter' => $result->shutter,
-                'focal' => $result->focal,
-                'takestamp' => $result->takestamp,
-                'star' => $result->star,
-                'thumbUrl' => $result->thumbUrl,
-                'album_id' => $album,
-                'checksum' => $result->checksum,
-                'medium' => $result->medium]
-            ]);
+
+            $photo = new Photo();
+            $photo->id = $id;
+            $photo->title = $result->title;
+            $photo->description = $result->description;
+            $photo->url = $result->url;
+            $photo->tags = $result->tags;
+            $photo->public = $result->public;
+            $photo->type = $result->type;
+            $photo->width = $result->width;
+            $photo->height = $result->height;
+            $photo->size = $result->size;
+            $photo->iso = $result->iso;
+            $photo->aperture = $result->aperture;
+            $photo->make = $result->make;
+            $photo->model = $result->model;
+            $photo->shutter = $result->shutter;
+            $photo->focal = $result->focal;
+            $photo->takestamp = $result->takestamp;
+            $photo->star = $result->star;
+            $photo->thumbUrl = $result->thumbUrl;
+            $photo->album_id = $album;
+            $photo->checksum = $result->checksum;
+            $photo->medium = $result->medium;
+            $photo->save();
         }
     }
 
