@@ -1,5 +1,6 @@
 src/node_modules/
 src/bower_components/
+src/package-lock.json
 
 data/config.php
 
@@ -15,5 +16,3 @@ uploads/thumb/*
 
 plugins/*
 
-!plugins/Diagnostics/
-!plugins/Log/
