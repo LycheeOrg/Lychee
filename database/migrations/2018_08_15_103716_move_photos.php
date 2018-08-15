@@ -20,7 +20,7 @@ class MovePhotos extends Migration
             $id = substr($id,1,10);
             $id[0] = strval(intval($id[0]) % 4);
 
-            $album = $result->id;
+            $album = $result->album;
             $album = substr($album,1,10);
             $album[0] = strval(intval($album[0]) % 4);
             DB::table('photos')->insert([
