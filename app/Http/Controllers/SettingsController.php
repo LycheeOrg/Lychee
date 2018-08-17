@@ -41,6 +41,6 @@ class SettingsController extends Controller
         Configs::set('sortingAlbums_col',$request['typeAlbums']);
         Configs::set('sortingAlbums_order',$request['orderAlbums']);
 
-        return true;
+        return 'true';
     }
 }
