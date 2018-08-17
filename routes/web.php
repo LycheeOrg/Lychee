@@ -20,7 +20,8 @@ if (env('APP_ENV') === 'dev') {
 
 Route::get('/', function () { return view('welcome'); })->name('home');
 Route::get('/phpinfo', function () { return (string)phpinfo(); });
-Route::get('/Logs',                         'LogController@list')->middleware('admin');
+//Route::get('/Logs',                         'LogController@list')->middleware('admin');
+Route::get('/Logs',                         'LogController@list');
 Route::get('/Logs:clear',                   'LogController@clear')->middleware('admin');
 Route::get('/Diagnostics',                  'DiagnosticsController@show')->middleware('admin');
 

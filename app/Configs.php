@@ -55,8 +55,8 @@ class Configs extends Model
 
 //        // Convert plugins to array
 //        $return['plugins'] = explode(';', $return['plugins']);
-        $return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos'].' '.$return['sortingPhotos_order'];
-        $return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums'].' '.$return['sortingAlbums_order'];
+        $return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
+        $return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
 
         if($public) {
 //            Logs::notice(__METHOD__, __LINE__, 'cache populated with public parameters');
@@ -77,7 +77,7 @@ class Configs extends Model
         {
             if (!isset(self::$public_cache[$key]))
             {
-                Logs::error(__METHOD__,__LINE__,$key . 'does not exist in config (local) !');
+                Logs::error(__METHOD__,__LINE__,$key . ' does not exist in config (local) !');
                 return false;
             }
             return self::$public_cache[$key];
@@ -85,7 +85,7 @@ class Configs extends Model
         // if public cache does not exist it is possible to access forbidden values here!
         if(Configs::select('value')->where('key','=',$key)->count() == 0)
         {
-            Logs::error(__METHOD__,__LINE__,$key . 'does not exist in config !');
+            Logs::error(__METHOD__,__LINE__,$key . ' does not exist in config !');
             return false;
         }
         return Configs::select('value')->where('key','=',$key)->first()->value;

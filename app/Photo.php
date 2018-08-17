@@ -64,7 +64,7 @@ class Photo extends Model
 
             // Use takestamp
             $photo['cameraDate'] = '1';
-            $photo['takedate']    = strftime('%d %B %Y', $this->takestamp);
+            $photo['takedate']    = strftime('%d %B %Y at %H:%M', $this->takestamp);
 
         } else {
 
@@ -566,7 +566,8 @@ class Photo extends Model
      *  Defines a bunch of helpers
      */
     static public function set_order($query){
-        return $query->orderBy(Configs::get_value('sortingPhotos'),Configs::get_value('sortingPhotos_order'));
+        return $query->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))
+            ->orderBy('photos.id','ASC');
     }
 
     static public function select_stars($query) {

@@ -30,12 +30,12 @@ class AlbumsController extends Controller
         // Albums query
         if (Session::get('login'))
         {
-            $albums_sql = Album::orderBy(Configs::get_value('sortingAlbums'),Configs::get_value('sortingAlbums_order'));
+            $albums_sql = Album::orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'));
         }
         else
         {
             $albums_sql = Album::where('public','=','1')->where('visible_hidden','=','1')
-                ->orderBy(Configs::get_value('sortingAlbums'),Configs::get_value('sortingAlbums_order'));
+                ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'));
         }
 
         $albums = $albums_sql->get();
@@ -54,7 +54,7 @@ class AlbumsController extends Controller
                 $thumbs = Photo::select('thumbUrl')
                     ->where('album_id','=',$album_model->id)
                     ->orderBy('star','DESC')
-                    ->orderBy(Configs::get_value('sortingPhotos'),Configs::get_value('sortingPhotos_order'))
+                    ->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))
                     ->limit(3)->get();
 
                 if ($thumbs === false) return 'false';

@@ -36,9 +36,9 @@ class SettingsController extends Controller
             'orderPhotos'  => 'required|string'
             ]);
 
-        Configs::set('sortingPhotos',$request['typePhotos']);
+        Configs::set('sortingPhotos_col',$request['typePhotos']);
         Configs::set('sortingPhotos_order',$request['orderPhotos']);
-        Configs::set('sortingAlbums',$request['typeAlbums']);
+        Configs::set('sortingAlbums_col',$request['typeAlbums']);
         Configs::set('sortingAlbums_order',$request['orderAlbums']);
 
         return true;
