@@ -13,7 +13,7 @@ class medium extends Command
      *
      * @var string
      */
-    protected $signature = 'medium {nb=5 : generate medium pictures if missing}';
+    protected $signature = 'medium {nb=5 : generate medium pictures if missing} {tm=600 : timeout time requirement}';
 
     /**
      * The console command description.
@@ -39,9 +39,10 @@ class medium extends Command
      */
     public function handle()
     {
-        set_time_limit(600);
-
         $argument = $this->argument('nb');
+        $timeout = $this->argument('tm');
+        set_time_limit($timeout);
+
         $photos = Photo::where('medium','=',0)->limit($argument)->get();
         if(count($photos) == 0)
         {
