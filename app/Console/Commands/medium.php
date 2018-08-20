@@ -55,11 +55,11 @@ class medium extends Command
             {
                 $photo->medium = 1;
                 $photo->save();
-                $this->line('medium for '.$photo->title.'.');
+                $this->line('medium for '.$photo->title.' created.');
             }
             else
             {
-                $this->line('Could not create medium for '.$photo->title.' created');
+                $this->line('Could not create medium for '.$photo->title.'.');
             }
         }
     }
