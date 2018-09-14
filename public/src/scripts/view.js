@@ -143,10 +143,10 @@ view.album = {
 
 			let photosData = ''
 
-			if (album.json.content && album.json.content!==false) {
+			if (album.json.photos && album.json.photos!==false) {
 
 				// Build photos
-				$.each(album.json.content, function() {
+				$.each(album.json.photos, function() {
 					photosData += build.photo(this)
 				})
 

@@ -115,7 +115,7 @@ build.photo = function(data) {
 build.imageview = function(data, visibleControls) {
 
 	let html      = ''
-	let hasMedium = data.medium!==''
+	let hasMedium = data.medium !== ''
 
 	if (hasMedium===false) {
 

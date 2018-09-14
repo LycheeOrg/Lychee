@@ -47,35 +47,45 @@ class AlbumController extends Controller
         }
 
         $previousPhotoID = '';
+        $return['photos'] = array();
+        $return['content'] = array();
+        $photo_counter = 0;
         $photos = $photos_sql->get();
         foreach ($photos as $photo_model) {
 
             // Turn data from the database into a front-end friendly format
             $photo = $photo_model->prepareData();
 
+            $pointer = array();
+
             // Set previous and next photoID for navigation purposes
-            $photo['previousPhoto'] = $previousPhotoID;
-            $photo['nextPhoto']     = '';
+            $pointer['previousPhoto'] = $previousPhotoID;
+            $pointer['nextPhoto']     = '';
+            $pointer['medium'] = $photo['medium'];
+            $pointer['url'] = $photo['url'];
 
             // Set current photoID as nextPhoto of previous photo
             if ($previousPhotoID!=='') $return['content'][$previousPhotoID]['nextPhoto'] = $photo['id'];
             $previousPhotoID = $photo['id'];
 
             // Add to return
-            $return['content'][$photo['id']] = $photo;
+            $return['content'][$photo['id']] = $pointer;
+            $return['photos'][$photo_counter] = $photo;
 
+            $photo_counter ++;
         }
 
         if ($photos_sql->count() === 0) {
 
             // Album empty
             $return['content'] = false;
+            $return['photos'] = false;
 
         } else {
 
             // Enable next and previous for the first and last photo
-            $lastElement    = end($return['content']); $lastElementId  = $lastElement['id'];
-            $firstElement   = reset($return['content']); $firstElementId = $firstElement['id'];
+            $lastElement    = end($return['photos']); $lastElementId  = $lastElement['id'];
+            $firstElement   = reset($return['photos']); $firstElementId = $firstElement['id'];
 
             if ($lastElementId!==$firstElementId) {
                 $return['content'][$lastElementId]['nextPhoto']      = $firstElementId;
