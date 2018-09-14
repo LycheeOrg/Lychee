@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Helpers;
+use App\Logs;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
@@ -41,7 +42,13 @@ class AlbumController extends Controller
             case '0': $return['public'] = '0'; $photos_sql = Photo::Unsorted(); break;
             default:
                 $album = Album::find($request['albumID']);
+                if ($album===null) {
+                    Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+                    return 'false';
+                }
+                $album->save();
                 $return = $album->prepareData();
+
                 $photos_sql = Photo::set_order(Photo::where('album_id','=',$request['albumID']));
                 break;
         }
@@ -113,7 +120,10 @@ class AlbumController extends Controller
             case '0': return 'false';
             default:
                 $album = Album::find($request['albumID']);
-                if($album == null) return 'false';
+                if ($album===null) {
+                    Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+                    return 'false';
+                }
                 if($album->public != 1) return 'false';
                 if($album->checkPassword($request['password']))
                 {
@@ -144,13 +154,13 @@ class AlbumController extends Controller
 
         $albums = Album::whereIn('id',explode(',',$request['albumIDs']))->get();
 
-        $error = false;
+        $no_error = false;
         foreach ($albums as $album)
         {
             $album->title = $request['title'];
-            $error |= $album->save();
+            $no_error |= $album->save();
         }
-        return (!$error) ? 'true' : 'false';
+        return $no_error ? 'true' : 'false';
     }
 
     function setPublic(Request $request) {
@@ -262,6 +272,13 @@ class AlbumController extends Controller
         // Get first albumID
         $albumID = array_shift($albumIDs);
 
+        $album = Album::find($albumID);
+
+        if ($album===null) {
+            Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+            return 'false';
+        }
+
         $photos = Photo::whereIn('album_id',$albumIDs)->get();
         $no_error = true;
         foreach ($photos as $photo)
@@ -269,11 +286,15 @@ class AlbumController extends Controller
             $photo->album_id = $albumID;
             $no_error &= $photo->save();
         }
+
         $albums = Album::whereIn('id',$albumIDs)->get();
-        foreach ($albums as $album)
+        foreach ($albums as $album_t)
         {
-            $no_error &= $album->delete();
+            $album->min_takestamp = min($album->min_takestamp, $album_t->min_takestamp);
+            $album->max_takestamp = max($album->max_takestamp, $album_t->max_takestamp);
+            $no_error &= $album_t->delete();
         }
+        $no_error &= $album->save();
 
         return $no_error ? 'true' : 'false';
 

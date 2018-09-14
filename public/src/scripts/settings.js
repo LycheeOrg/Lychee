@@ -310,6 +310,8 @@ settings.setSorting = function() {
 	                      <option value='title'>Title</option>
 	                      <option value='description'>Description</option>
 	                      <option value='public'>Public</option>
+	                      <option value='max_takestamp'>Latest Take Date</option>
+	                      <option value='min_takestamp'>Oldest Take Date</option>
 	                  </select>
 	              </span>
 	              in an

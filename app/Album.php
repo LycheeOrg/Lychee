@@ -61,4 +61,21 @@ class Album extends Model
 //        return false;
 
     }
+
+    public function update_min_max_takestamp() {
+        $min = Photo::where('album_id','=',$this->id)->min('takestamp');
+        $max = Photo::where('album_id','=',$this->id)->max('takestamp');
+        $this->min_takestamp = min($this->min_takestamp, $min);
+        $this->max_takestamp = max($this->max_takestamp, $max);
+    }
+
+    static public function reset_takestamp() {
+        $albums = Album::all();
+        foreach($albums as $album)
+        {
+            $album->update_min_max_takestamp();
+            $album->save();
+        }
+    }
+
 }

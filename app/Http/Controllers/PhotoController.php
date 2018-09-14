@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Album;
 use App\Configs;
 use App\Helpers;
 use App\Logs;
@@ -230,6 +231,19 @@ class PhotoController extends Controller
             return Response::error('Could not save photo in database!');
         }
 
+        if($albumID != null)
+        {
+            $album = Album::find($albumID);
+            if ($album===null) {
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+                return 'false';
+            }
+            $album->update_min_max_takestamp();
+            if (!$album->save()) {
+                return Response::error('Could not update album takestamp in database!');
+            }
+        }
+
         return $photo->id;
 
     }
@@ -333,12 +347,15 @@ class PhotoController extends Controller
 
         $photos = Photo::whereIn('id',explode(',',$request['photoIDs']))->get();
 
+        $albumID = $request['albumID'];
+
         $no_error = true;
         foreach($photos as $photo)
         {
-            $photo->album_id = ($request['albumID'] == '0') ? null : $request['albumID'];
+            $photo->album_id = ($albumID == '0') ? null : $albumID;
             $no_error &= $photo->save();
         }
+        Album::reset_takestamp();
         return $no_error ? 'true' : 'false';
     }
 
@@ -355,6 +372,7 @@ class PhotoController extends Controller
             $no_error &= $photo->predelete();
             $no_error &= $photo->delete();
         }
+        Album::reset_takestamp();
         return $no_error ? 'true' : 'false';
     }
 
