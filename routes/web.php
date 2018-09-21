@@ -18,13 +18,14 @@ if (env('APP_ENV') === 'dev') {
     URL::forceScheme('https');
 }
 
-Route::get('/', function () { return view('welcome'); })->name('home');
+Route::get('/', function () { return view('index'); })->name('home');
 Route::get('/phpinfo', function () { return (string)phpinfo(); });
 //Route::get('/Logs',                         'LogController@list')->middleware('admin');
 Route::get('/Logs',                         'LogController@list');
 Route::get('/Logs:clear',                   'LogController@clear')->middleware('admin');
 Route::get('/Diagnostics',                  'DiagnosticsController@show')->middleware('admin');
 
+Route::post('/php/index.php',               'SessionController@init'); // entry point if options are not initialized
 Route::post('/api/Session::init',           'SessionController@init');
 Route::post('/api/Session::login',          'SessionController@login');
 Route::post('/api/Session::logout',         'SessionController@logout');

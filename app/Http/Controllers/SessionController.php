@@ -39,6 +39,8 @@ class SessionController extends Controller
 
         // Path to Lychee for the server-import dialog
 //        $return['config']['location'] = Config::get('defines.path.LYCHEE');
+        $return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
+        $return['api_V2'] = true;
 
         // Check if login credentials exist and login if they don't
         if (self::noLogin() === true || $public === false) {
