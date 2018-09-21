@@ -39,12 +39,20 @@ class npm extends Command
     {
         $argument = $this->argument('cmd');
         $ret = [];
+        if(!file_exists('public/Lychee-front/package-lock.json')) {
+            $cmd = 'cd public/Lychee-front; npm install';
+            $this->info('execute: '.$cmd);
+            exec($cmd,$ret);
+            foreach ($ret as $retline){
+                $this->line($retline);
+            }
+        }
         if( $argument == 'start'){
-            $cmd = 'cd public/src; npm start';
+            $cmd = 'cd public/Lychee-front; npm start';
         }
         else
         {
-            $cmd ='cd public/src; npm run compile';
+            $cmd ='cd public/Lychee-front; npm run compile';
         }
         $this->info('execute: '.$cmd);
         exec($cmd,$ret);
