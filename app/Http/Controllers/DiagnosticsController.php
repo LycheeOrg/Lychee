@@ -81,7 +81,7 @@ class DiagnosticsController extends Controller
             (Session::has('identifier') && Session::get('identifier') === $settings['identifier'])) {
 
             // Load json
-            $json = file_get_contents(Config::get('defines.path.LYCHEE') . 'public/src/package.json');
+            $json = file_get_contents(Config::get('defines.path.LYCHEE') . 'public/Lychee-front/package.json');
             $json = json_decode($json, true);
 
             // About imagick
