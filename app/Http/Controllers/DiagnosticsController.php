@@ -92,22 +92,22 @@ class DiagnosticsController extends Controller
             else                                                                                 $imagickVersion = $imagickVersion['versionNumber'];
 
             // Output system information
-            $infos += ['Lychee Version:  ' . $json['version']];
-            $infos += ['DB Version:      ' . $settings['version']];
-            $infos += ['System:          ' . PHP_OS];
-            $infos += ['PHP Version:     ' . floatval(phpversion())];
-//            $infos += ['MySQL Version:   ' . $database->server_version];
-            $infos += ['Imagick:         ' . $imagick];
-            $infos += ['Imagick Active:  ' . $settings['imagick']];
-            $infos += ['Imagick Version: ' . $imagickVersion];
-            $infos += ['GD Version:      ' . $gdVersion['GD Version']];
+            $infos[] = 'Lychee Version:  ' . $json['version'];
+            $infos[] = 'DB Version:      ' . $settings['version'];
+            $infos[] = 'System:          ' . PHP_OS;
+            $infos[] = 'PHP Version:     ' . floatval(phpversion());
+//            $infos = ['MySQL Version:   ' . $database->server_version];
+            $infos[] = 'Imagick:         ' . $imagick;
+            $infos[] = 'Imagick Active:  ' . $settings['imagick'];
+            $infos[] = 'Imagick Version: ' . $imagickVersion;
+            $infos[] = 'GD Version:      ' . $gdVersion['GD Version'];
 //            $infos += ['Plugins:         ' . implode($settings['plugins'], ', ') . PHP_EOL);
 
         }
         else
         {
             // Don't go further if the user is not logged in
-            $infos += ['You have to be logged in to see more information.'];
+            $infos[] = ['You have to be logged in to see more information.'];
         }
 
         // Show separator

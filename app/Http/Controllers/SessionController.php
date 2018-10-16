@@ -6,6 +6,7 @@ use App\Album;
 use App\Configs;
 use App\Logs;
 use App\Response;
+use App\Locale\Lang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
@@ -55,6 +56,8 @@ class SessionController extends Controller
             $return['config'] = Configs::get();
             $return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
         }
+
+        $return['locale'] = Lang::get_lang(Configs::get_value('lang'));
 
         return Response::json($return);
 
