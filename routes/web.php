@@ -54,5 +54,6 @@ Route::post('/api/Photo::duplicate',        'PhotoController@duplicate')->middle
 
 Route::post('/api/Settings::setLogin',      'SettingsController@setLogin')->middleware('admin');
 Route::post('/api/Settings::setSorting',    'SettingsController@setSorting')->middleware('admin');
+Route::post('/api/Settings::setLang',       'SettingsController@setLang')->middleware('admin');
 
 Route::post('/api/search', function () { return 'false'; });

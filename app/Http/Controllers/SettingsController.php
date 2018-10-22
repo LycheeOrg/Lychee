@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Configs;
+use App\Locale\Lang;
+use App\Logs;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -48,5 +50,24 @@ class SettingsController extends Controller
         }
 
         return 'true';
+    }
+
+    public static function setLang(Request $request) {
+
+        $request->validate([
+            'lang'  => 'required|string'
+        ]);
+
+        $lang_available = Lang::get_lang_available();
+        for ($i = 0; $i < count($lang_available); $i++)
+        {
+            if($request['lang'] == $lang_available[$i])
+            {
+                return (Configs::set('lang', $request['lang'])) ? 'true' : 'false';
+            }
+        }
+
+        Logs::error( __METHOD__, __LINE__, 'Could not update settings. Unknown lang.');
+        return 'false';
     }
 }

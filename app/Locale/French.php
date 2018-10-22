@@ -216,7 +216,7 @@ final class French
             'SORT_ALBUM_SELECT_3'		=> 'Description',
             'SORT_ALBUM_SELECT_4'		=> 'Public',
             'SORT_ALBUM_SELECT_5'		=> 'Date de création la plus récente',
-            'SORT_ALBUM_SELECT_5'		=> 'Date de création la plus ancienne',
+            'SORT_ALBUM_SELECT_6'		=> 'Date de création la plus ancienne',
 
 
             'SORT_PHOTO_BY_1'			=> 'Trier les photos',
