@@ -20,12 +20,11 @@ class SettingsController extends Controller
 
         $oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
 
-        if ($oldPassword === Configs::get(false)['password'] || Hash::check($oldPassword, Configs::get(false)['password'])) {
+        if (Configs::get(false)['password'] === '' || Hash::check($oldPassword, Configs::get(false)['password'])) {
             Configs::set('username',bcrypt($request['username']));
             Configs::set('password',bcrypt($request['password']));
             return 'true';
         }
-
 
         return Response::error('Current password entered incorrectly!');
     }

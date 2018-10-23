@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Session;
 
-class AdminCheck
+class LoginCheck
 {
     /**
      * Handle an incoming request.
@@ -16,7 +16,7 @@ class AdminCheck
      */
     public function handle($request, Closure $next)
     {
-        if (Session::get('UserID') != 'root')
+        if (!Session::get('login'))
             return redirect(route('home'));
         return $next($request);
     }

@@ -51,15 +51,16 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $routeMiddleware = [
-        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+//        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
+//        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
-        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+//        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'admin' => \App\Http\Middleware\AdminCheck::class,
+        'login' => \App\Http\Middleware\LoginCheck::class,
         'AlbumPWCheck' => \App\Http\Middleware\AlbumPWCheck::class,
+        'admin' => \App\Http\Middleware\AdminCheck::class,
     ];
 }

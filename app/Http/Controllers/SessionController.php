@@ -7,6 +7,7 @@ use App\Configs;
 use App\Logs;
 use App\Response;
 use App\Locale\Lang;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
@@ -74,6 +75,7 @@ class SessionController extends Controller
         if (Hash::check($request['user'], $configs['username']) && Hash::check($request['password'], $configs['password'])) {
             Session::put('login',true);
             Session::put('identifier',$configs['identifier']);
+            Session::put('UserID','root');
             Logs::notice( __METHOD__, __LINE__, 'User (' . $request['user'] . ') has logged in from ' . $request->ip());
             return 'true';
         }
@@ -82,6 +84,16 @@ class SessionController extends Controller
         if (self::noLogin()===true)
         {
             Logs::warning( __METHOD__, __LINE__, 'DEFAULT LOGIN!');
+            return 'true';
+        }
+
+        $user = User::where('username','=',$request['user'])->get();
+        if (Hash::check($request['password'],$user->password))
+        {
+            Session::put('login',true);
+            Session::put('identifier',$configs['identifier']);
+            Session::put('UserID',$user->id);
+            Logs::notice( __METHOD__, __LINE__, 'User (' . $request['user'] . ') has logged in from ' . $request->ip());
             return 'true';
         }
 
@@ -99,9 +111,10 @@ class SessionController extends Controller
 
         $configs = Configs::get(false);
         // Check if login credentials exist and login if they don't
-        if (isset($configs['username']) && $configs['username'] ==='' &&
-            isset($configs['password']) && $configs['password']==='') {
+        if (isset($configs['username']) && $configs['username'] === '' &&
+            isset($configs['password']) && $configs['password'] === '') {
             Session::put('login',true);
+            Session::put('UserID','root');
             Session::put('identifier', $configs['identifier']);
             return true;
         }
