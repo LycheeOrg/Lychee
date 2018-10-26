@@ -8,6 +8,7 @@ No critical problems found. Lychee should work without problems!
 {{ $error }}
 @endforeach
 @endif
+
 System Information
 ------------------
 @foreach($infos as $info)

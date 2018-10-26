@@ -71,7 +71,18 @@ class SessionController extends Controller
             'password' => 'required'
         ]);
 
+        // No login
+        if (self::noLogin()===true)
+        {
+            Logs::warning( __METHOD__, __LINE__, 'DEFAULT LOGIN!');
+            return 'true';
+        }
+
         $configs = Configs::get(false);
+
+        // this is probably sensitive to timing attacks...
+        $user = User::where('username','=',$request['user'])->first();
+
         if (Hash::check($request['user'], $configs['username']) && Hash::check($request['password'], $configs['password'])) {
             Session::put('login',true);
             Session::put('identifier',$configs['identifier']);
@@ -80,15 +91,7 @@ class SessionController extends Controller
             return 'true';
         }
 
-        // No login
-        if (self::noLogin()===true)
-        {
-            Logs::warning( __METHOD__, __LINE__, 'DEFAULT LOGIN!');
-            return 'true';
-        }
-
-        $user = User::where('username','=',$request['user'])->get();
-        if (Hash::check($request['password'],$user->password))
+        if ($user != null && Hash::check($request['password'], $user->password))
         {
             Session::put('login',true);
             Session::put('identifier',$configs['identifier']);
@@ -96,6 +99,7 @@ class SessionController extends Controller
             Logs::notice( __METHOD__, __LINE__, 'User (' . $request['user'] . ') has logged in from ' . $request->ip());
             return 'true';
         }
+
 
         Logs::error(__METHOD__, __LINE__, 'User (' . $request['user'] . ') has tried to log in from ' . $request->ip());
 

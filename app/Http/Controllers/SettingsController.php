@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Hash;
 
 class SettingsController extends Controller
 {
-    function setLogin(Request $request)
+    public function setLogin(Request $request)
     {
         $request->validate([
             'username' => 'required',
@@ -29,7 +29,7 @@ class SettingsController extends Controller
         return Response::error('Current password entered incorrectly!');
     }
 
-    function setSorting(Request $request)
+    public function setSorting(Request $request)
     {
         $request->validate([
             'typeAlbums' => 'required|string',
@@ -51,7 +51,7 @@ class SettingsController extends Controller
         return 'true';
     }
 
-    public static function setLang(Request $request) {
+    public function setLang(Request $request) {
 
         $request->validate([
             'lang'  => 'required|string'

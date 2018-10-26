@@ -118,6 +118,9 @@
 
 </header>
 
+<!-- leftMenu -->
+<div class="leftMenu"></div>
+
 <!-- Content -->
 <div class="content"></div>
 

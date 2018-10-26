@@ -20,8 +20,7 @@ if (env('APP_ENV') === 'dev') {
 
 Route::get('/', function () { return view('index'); })->name('home');
 Route::get('/phpinfo', function () { return (string)phpinfo(); });
-//Route::get('/Logs',                         'LogController@list');
-Route::get('/Logs',                         'LogController@list')->middleware('admin');
+Route::get('/Logs',                         'LogController@display')->middleware('admin');
 Route::get('/Logs:clear',                   'LogController@clear')->middleware('admin');
 Route::get('/Diagnostics',                  'DiagnosticsController@show')->middleware('admin');
 
@@ -56,4 +55,8 @@ Route::post('/api/Settings::setLogin',      'SettingsController@setLogin');
 Route::post('/api/Settings::setSorting',    'SettingsController@setSorting')->middleware('admin');
 Route::post('/api/Settings::setLang',       'SettingsController@setLang')->middleware('admin');
 
+Route::post('/api/Diagnostics::get',        'DiagnosticsController@get')->middleware('admin');
+Route::post('/api/Logs::get',               'LogController@list')->middleware('admin');
+
+Route::get('/admin/',                       'Admin\HomeController@index')->middleware('admin');
 Route::post('/api/search', function () { return 'false'; });

@@ -14,7 +14,6 @@ class UserController extends Controller
         $this->middleware([]);
     }
 
-
     public function list() {
         $users = User::all();
         return $users;

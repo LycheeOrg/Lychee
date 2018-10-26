@@ -10,8 +10,8 @@ use Imagick;
 
 class DiagnosticsController extends Controller
 {
-    function show()
-    {
+
+    public static function get_errors() {
 
         // Declare
         $errors = array();
@@ -74,8 +74,18 @@ class DiagnosticsController extends Controller
         if (!extension_loaded('imagick')) $errors += ['Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.'];
         else if (!$settings['imagick']) $errors += ['Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.'];
 
+        return $errors;
+    }
 
-        $infos = [];
+    public static function get_info()
+    {
+        // Declare
+        $infos = array();
+
+        // Load settings
+        $settings = Configs::get(false);
+        $gdVersion = gd_info();
+
         // Ensure that user is logged in
         if ((Session::has('login') && Session::get('login') === true) &&
             (Session::has('identifier') && Session::get('identifier') === $settings['identifier'])) {
@@ -109,6 +119,22 @@ class DiagnosticsController extends Controller
             // Don't go further if the user is not logged in
             $infos[] = ['You have to be logged in to see more information.'];
         }
+
+        return $infos;
+
+    }
+
+
+    public function get()
+    {
+        return ['errors' => self::get_errors(), 'infos' => self::get_info()];
+    }
+
+    public function show()
+    {
+
+        $errors = self::get_errors();
+        $infos = self::get_info();
 
         // Show separator
         return view('diagnostics', ['errors' => $errors, 'infos' => $infos]);

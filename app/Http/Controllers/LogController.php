@@ -9,31 +9,25 @@ use Illuminate\Support\Facades\Session;
 class LogController extends Controller
 {
 
+    static public function list($order = 'DESC')
+    {
+        $logs = Logs::orderBy('id', $order)->get();
+        return $logs;
+    }
 
-    function list($safety = false)
+    public function display()
     {
 
-
-        // Ensure that user is logged in
-        if (!$safety || (Session::has('login') && Session::get('login')===true &&
-            Session::has('identifier') && Session::get('identifier') === Settings::get()['identifier'])) {
-
-
-            // Output
-            if (Logs::count() == 0) {
-                return 'Everything looks fine, Lychee has not reported any problems!';
-            } else {
-               $logs = Logs::all();
-               return view('logs.list', ['logs' => $logs]);
-            }
-
+        // Output
+        if (Logs::count() == 0) {
+            return 'Everything looks fine, Lychee has not reported any problems!';
         } else {
-            // Don't go further if the user is not logged in
-            return 'You have to be logged in to see the log.';
+            $logs = self::list();
+            return view('logs.list', ['logs' => $logs]);
         }
     }
 
-    function clear()
+    static public function clear()
     {
         Logs::where('id','>=',0)->delete();
         return 'Log cleared';
