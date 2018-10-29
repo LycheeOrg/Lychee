@@ -59,4 +59,8 @@ Route::post('/api/Diagnostics::get',        'DiagnosticsController@get')->middle
 Route::post('/api/Logs::get',               'LogController@list')->middleware('admin');
 
 Route::get('/admin/',                       'Admin\HomeController@index')->middleware('admin');
+Route::post('/api/User::List',              'UserController@list')->middleware('admin');
+Route::post('/api/User::Save',              'UserController@save')->middleware('admin');
+Route::post('/api/User::Delete',            'UserController@delete')->middleware('admin');
+Route::post('/api/User::Create',            'UserController@create')->middleware('admin');
 Route::post('/api/search', function () { return 'false'; });

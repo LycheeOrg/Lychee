@@ -15,8 +15,8 @@ class SettingsController extends Controller
     public function setLogin(Request $request)
     {
         $request->validate([
-            'username' => 'required',
-            'password' => 'required']);
+            'username' => 'required|string',
+            'password' => 'required|string']);
 
         $oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
 
