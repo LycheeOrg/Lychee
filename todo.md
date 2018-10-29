@@ -7,13 +7,14 @@
 
 ## Multi users
 
-- [ ] User table
+- [x] User table
 - [ ] Access Right management
   - [ ] Upload pictures
   - [ ] Create Albums
   - [ ] Manage Rights
-  - [ ] Create Users
-  - [ ] Delete Users
+  - [x] Create Users
+  - [x] Modify Users
+  - [x] Delete Users
   - [ ] Sharing
 - [ ] Album ownership
 - [ ] Album sharing
@@ -27,8 +28,8 @@
 
 ## Admin
 
-- [ ] Dashboard
-    - [ ] User managements
+- [x] Dashboard
+    - [x] User managements
     - [ ] Right managements
     - [ ] Sort managment Albums
     - [ ] Sort managment Photos
