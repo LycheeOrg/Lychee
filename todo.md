@@ -9,9 +9,9 @@
 
 - [x] User table
 - [ ] Access Right management
-  - [ ] Upload pictures
-  - [ ] Create Albums
-  - [ ] Manage Rights
+  - [x] Upload pictures
+  - [x] Create Albums
+  - [x] Manage Rights
   - [x] Create Users
   - [x] Modify Users
   - [x] Delete Users
@@ -30,9 +30,9 @@
 
 - [x] Dashboard
     - [x] User managements
-    - [ ] Right managements
-    - [ ] Sort managment Albums
-    - [ ] Sort managment Photos
+    - [x] Right managements
+    - [x] Sort managment Albums
+    - [x] Sort managment Photos
     - [ ] Change language Setting
     - [ ] Show Logs
     - [ ] Show Diagnostics
