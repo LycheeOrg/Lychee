@@ -5,20 +5,32 @@
 - [ ] parent - child relationship
 - [ ] associated Front-end
 
-## Multi users
+## Multi users (server side)
 
 - [x] User table
 - [ ] Access Right management
-  - [x] Upload pictures
   - [x] Create Albums
-  - [x] Manage Rights
   - [x] Create Users
   - [x] Modify Users
   - [x] Delete Users
   - [ ] Sharing
 - [ ] Album ownership
-- [ ] Album sharing
-      
+- [ ] Album sharing **(SECURITY)**
+- [ ] Upload pictures **(SECURITY)**
+
+## Multi users (client side)
+
+- [x] User table
+- [ ] Access Right management
+  - [x] Create Albums
+  - [x] Create Users
+  - [x] Modify Users
+  - [x] Delete Users
+  - [ ] Sharing
+- [ ] Album ownership
+- [x] Album sharing
+- [x] Upload pictures
+
 ## Search
 
 - [ ] Solve big number of pictures bug.

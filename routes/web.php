@@ -58,7 +58,6 @@ Route::post('/api/Settings::setLang',       'SettingsController@setLang')->middl
 Route::post('/api/Diagnostics::get',        'DiagnosticsController@get')->middleware('admin');
 Route::post('/api/Logs::get',               'LogController@list')->middleware('admin');
 
-Route::get('/admin/',                       'Admin\HomeController@index')->middleware('admin');
 Route::post('/api/User::List',              'UserController@list')->middleware('admin');
 Route::post('/api/User::Save',              'UserController@save')->middleware('admin');
 Route::post('/api/User::Delete',            'UserController@delete')->middleware('admin');
