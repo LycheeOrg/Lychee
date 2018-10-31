@@ -24,7 +24,8 @@ class UserController extends Controller
 
         $request->validate([
             'id'       => 'required',
-            'username' => 'required|string'
+            'username' => 'required|string',
+            'upload'   => 'required'
         ]);
 
         $user = User::find($request['id']);
@@ -34,11 +35,11 @@ class UserController extends Controller
         }
 
         $user->username = $request['username'];
+        $user->upload = ($request['upload'] == '1');
         if($request->has('password') && $request->has('password') != '')
         {
             $user->password = bcrypt($request['password']);
         }
-        ;
 
         return $user->save() ? 'true' : 'false';
     }
@@ -62,10 +63,12 @@ class UserController extends Controller
 
         $request->validate([
             'username' => 'required|string',
-            'password' => 'required|string'
+            'password' => 'required|string',
+            'upload'   => 'required'
         ]);
 
         $user = new User();
+        $user->upload = ($request['upload'] == '1');
         $user->username = $request['username'];
         $user->password = bcrypt($request['password']);
 

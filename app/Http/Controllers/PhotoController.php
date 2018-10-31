@@ -46,7 +46,7 @@ class PhotoController extends Controller
         $return = $photo->prepareData();
         if ((!Session::get('login') && $return['public'] == '0')||
             (Session::get('login')) ||
-            SessionController::checkAccess($request,true,false)) {
+            SessionController::checkAccess($request) === 1) {
             $return['original_album'] = $return['album'];
             $return['album']          = $request['albumID'];
             return $return;

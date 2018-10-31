@@ -34,7 +34,6 @@ class SessionController extends Controller
             $public = true;
         }
 
-//        Logs::notice(__METHOD__,__LINE__,'init Session');
 
         // Return settings
         $return = array();
@@ -51,6 +50,23 @@ class SessionController extends Controller
             $return['config'] = Configs::get(false);
             $return['config']['login'] = !$public;
             $return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
+            $user_id = Session::get('UserID');
+            $user = User::find($user_id);
+            if($user_id == 0)
+            {
+                $return['admin'] = true;
+                $return['upload'] = true; // not necessary
+            }
+            else if($user == null)
+            {
+                $return['config'] = Configs::get();
+                $return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
+
+            }
+            else
+            {
+                $return['upload'] = ($user->upload == '1');
+            }
 
         } else {
             // Logged out
@@ -86,7 +102,7 @@ class SessionController extends Controller
         if (Hash::check($request['user'], $configs['username']) && Hash::check($request['password'], $configs['password'])) {
             Session::put('login',true);
             Session::put('identifier',$configs['identifier']);
-            Session::put('UserID','root');
+            Session::put('UserID',0);
             Logs::notice( __METHOD__, __LINE__, 'User (' . $request['user'] . ') has logged in from ' . $request->ip());
             return 'true';
         }
@@ -118,7 +134,7 @@ class SessionController extends Controller
         if (isset($configs['username']) && $configs['username'] === '' &&
             isset($configs['password']) && $configs['password'] === '') {
             Session::put('login',true);
-            Session::put('UserID','root');
+            Session::put('UserID',0);
             Session::put('identifier', $configs['identifier']);
             return true;
         }
@@ -146,15 +162,17 @@ class SessionController extends Controller
         dd(Session::all());
     }
 
-    static public function checkAccess($request, $return, $refuse){
+    static public function checkAccess($request){
         if (Session::get('login'))
-        return $return;
+        return 1;
 
         $album = Album::find($request['albumID']);
-        if($album == null) return $refuse;
-        if($album->public != 1) return $refuse;
-        if($album->password == '') return $return;
-        if(!Session::has('visible_albums')) return $refuse;
+        if($album == null) return 0; // Does not exist
+        if($album->public != 1) return 2; // Warning: Album private!
+        if($album->password == '') return 1;
+
+        if(!Session::has('visible_albums')) return 3; // Please enter password first. // Warning: Wrong password!
+
         $visible_albums = Session::get('visible_albums');
         $visible_albums = explode('|',$visible_albums);
         $found = false;
@@ -162,8 +180,8 @@ class SessionController extends Controller
         {
         $found |= ($visible_album == $request['albumID']);
         }
-        if($found) return $return;
+        if($found) return 1;
 
-        return $refuse;
+        return 3;  // Please enter password first. // Warning: Wrong password!
     }
 }

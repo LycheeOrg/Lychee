@@ -26,4 +26,19 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * Albums owned
+     */
+    public function albums() {
+        $this->hasMany('app\Album','owner_id','id');
+    }
+
+    /**
+     * Albums visible (shared)
+     */
+    public function groups () {
+        return $this->belongsToMany('App\Album','user_album','album_id','album_id','id','user_id');
+    }
+
 }

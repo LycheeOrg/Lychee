@@ -44,7 +44,6 @@ class AlbumsController extends Controller
         foreach ($albums as $album_model){
 
             // Turn data from the database into a front-end friendly format
-//            $album = Album::prepareData($album);
             $album = $album_model->prepareData();
 
             // Thumbs

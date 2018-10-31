@@ -31,6 +31,8 @@ class Album extends Model
         $album['title']  = $this->title;
         $album['public'] = strval($this->public);
 
+//        $album['owned'] =
+
         // Additional attributes
         // Only part of $album when available
         $album['description'] = strval($this->description);
@@ -76,6 +78,10 @@ class Album extends Model
             $album->update_min_max_takestamp();
             $album->save();
         }
+    }
+
+    public function owner() {
+        $this->belongsTo('App\User','owner_id','id');
     }
 
 }

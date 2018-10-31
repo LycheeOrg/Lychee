@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Http\Controllers\SessionController;
 use Closure;
-use Symfony\Component\HttpFoundation\Response;
 
 class AlbumPWCheck
 {
@@ -17,6 +16,10 @@ class AlbumPWCheck
      */
     public function handle($request, Closure $next)
     {
-        return SessionController::checkAccess($request, $next($request),Response::HTTP_FORBIDDEN);
+        $sess = SessionController::checkAccess($request);
+        if ($sess == 0) return response('false');
+        if ($sess == 1) return $next($request);
+        if ($sess == 2) return response('"Warning: Album private!"');
+        if ($sess == 3) return response('"Warning: Wrong password!"');
     }
 }

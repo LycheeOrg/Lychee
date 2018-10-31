@@ -20,6 +20,7 @@ class AlbumController extends Controller
         $album->id = Helpers::generateID();
         $album->title = $request['title'];
         $album->description = '';
+        $album->owner_id = Session::get('UserID');
         $album->save();
 
         return	Response::json($album->id, JSON_NUMERIC_CHECK);
@@ -46,7 +47,7 @@ class AlbumController extends Controller
                     Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
                     return 'false';
                 }
-                $album->save();
+//                $album->save();
                 $return = $album->prepareData();
 
                 $photos_sql = Photo::set_order(Photo::where('album_id','=',$request['albumID']));
@@ -70,6 +71,7 @@ class AlbumController extends Controller
             $pointer['nextPhoto']     = '';
             $pointer['medium'] = $photo['medium'];
             $pointer['url'] = $photo['url'];
+            $pointer['thumbUrl'] = $photo['thumbUrl'];
 
             // Set current photoID as nextPhoto of previous photo
             if ($previousPhotoID!=='') $return['content'][$previousPhotoID]['nextPhoto'] = $photo['id'];
@@ -124,23 +126,25 @@ class AlbumController extends Controller
                     Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
                     return 'false';
                 }
-                if($album->public != 1) return 'false';
-                if($album->checkPassword($request['password']))
+                if($album->public == 1)
                 {
-                    if(Session::has('visible_albums'))
+                    if($album->checkPassword($request['password']))
                     {
-                        $visible_albums = Session::get('visible_albums');
+                        if(Session::has('visible_albums'))
+                        {
+                            $visible_albums = Session::get('visible_albums');
+                        }
+                        else
+                        {
+                            $visible_albums = '';
+                        }
+                        $visible_albums = explode('|',$visible_albums);
+                        $visible_albums[] = $album->id;
+                        $visible_albums = implode('|',$visible_albums);
+                        Session::put('visible_albums',$visible_albums);
+                        return 'true';
                     }
-                    else
-                    {
-                        $visible_albums = '';
-                    }
-                    $visible_albums = explode('|',$visible_albums);
-                    $visible_albums[] = $album->id;
-                    $visible_albums = implode('|',$visible_albums);
-                    Session::put('visible_albums',$visible_albums);
-                    return 'true';
-                }
+                };
                 return 'false';
         }
     }

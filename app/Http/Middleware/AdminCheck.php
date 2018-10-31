@@ -16,8 +16,11 @@ class AdminCheck
      */
     public function handle($request, Closure $next)
     {
-        if (Session::get('UserID') != 'root')
-            return redirect(route('home'));
+        if (!Session::get('login') || Session::get('UserID') != 0)
+            return response('false');
+//            return redirect(route('home'));
         return $next($request);
     }
+
+
 }

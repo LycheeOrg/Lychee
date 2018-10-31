@@ -17,7 +17,8 @@ class LoginCheck
     public function handle($request, Closure $next)
     {
         if (!Session::get('login'))
-            return redirect(route('home'));
+            return response('false');
+//            return redirect(route('home'));
         return $next($request);
     }
 }
