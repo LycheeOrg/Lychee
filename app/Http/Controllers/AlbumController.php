@@ -47,7 +47,6 @@ class AlbumController extends Controller
                     Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
                     return 'false';
                 }
-//                $album->save();
                 $return = $album->prepareData();
 
                 $photos_sql = Photo::set_order(Photo::where('album_id','=',$request['albumID']));

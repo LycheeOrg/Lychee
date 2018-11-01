@@ -14,21 +14,23 @@ class Configs extends Model
     protected static $except = [
         'username',
         'password',
-        'identifier',
 		'dropboxKey',
-//		'imagick',
-//		'plugins'
+		'imagick',
+		'plugins'
     ];
 
 
-
-
-    static protected function inExceptArray($key)
+    static protected function inExceptArray($key, $public)
     {
-        foreach (self::$except as $exception) {
-            if ($exception == $key) {
-                return true;
+
+        if ($public)
+        {
+            foreach (self::$except as $exception) {
+                if ($exception == $key) {
+                    return true;
+                }
             }
+            return false;
         }
 
         return false;
@@ -49,7 +51,7 @@ class Configs extends Model
 
         // Add each to return
         foreach ($configs as $config)
-            if(!$public || !Configs::inExceptArray($config->key))
+            if(!Configs::inExceptArray($config->key, $public))
             {
                 $return[$config->key] = $config->value;
             }

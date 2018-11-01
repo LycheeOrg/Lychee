@@ -18,7 +18,7 @@ class SessionController extends Controller
 
     public function init(Request $request)
     {
-        if (Session::get('login') === true && Session::get('identifier')=== Configs::get(false)['identifier'])
+        if (Session::get('login') === true)
         {
             /**
              * Admin Access
@@ -39,7 +39,6 @@ class SessionController extends Controller
         $return = array();
 
         // Path to Lychee for the server-import dialog
-//        $return['config']['location'] = Config::get('defines.path.LYCHEE');
         $return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
         $return['api_V2'] = true;
 
@@ -49,6 +48,8 @@ class SessionController extends Controller
             // Logged in
             $return['config'] = Configs::get(false);
             $return['config']['login'] = !$public;
+            unset($return['config']['username']);
+            unset($return['config']['password']);
             $return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
             $user_id = Session::get('UserID');
             $user = User::find($user_id);
@@ -56,6 +57,9 @@ class SessionController extends Controller
             {
                 $return['admin'] = true;
                 $return['upload'] = true; // not necessary
+
+                // now we can do that
+                $return['config']['location'] = Config::get('defines.path.LYCHEE');
             }
             else if($user == null)
             {
@@ -101,7 +105,7 @@ class SessionController extends Controller
 
         if (Hash::check($request['user'], $configs['username']) && Hash::check($request['password'], $configs['password'])) {
             Session::put('login',true);
-            Session::put('identifier',$configs['identifier']);
+//            Session::put('identifier',$configs['identifier']);
             Session::put('UserID',0);
             Logs::notice( __METHOD__, __LINE__, 'User (' . $request['user'] . ') has logged in from ' . $request->ip());
             return 'true';
@@ -110,7 +114,7 @@ class SessionController extends Controller
         if ($user != null && Hash::check($request['password'], $user->password))
         {
             Session::put('login',true);
-            Session::put('identifier',$configs['identifier']);
+//            Session::put('identifier',$configs['identifier']);
             Session::put('UserID',$user->id);
             Logs::notice( __METHOD__, __LINE__, 'User (' . $request['user'] . ') has logged in from ' . $request->ip());
             return 'true';
@@ -135,7 +139,7 @@ class SessionController extends Controller
             isset($configs['password']) && $configs['password'] === '') {
             Session::put('login',true);
             Session::put('UserID',0);
-            Session::put('identifier', $configs['identifier']);
+//            Session::put('identifier', $configs['identifier']);
             return true;
         }
         unset($configs);

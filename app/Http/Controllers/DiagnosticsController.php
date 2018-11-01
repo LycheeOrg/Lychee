@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Configs;
 use App\Helpers;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\DB;
 use Imagick;
 
 class DiagnosticsController extends Controller
@@ -86,39 +86,29 @@ class DiagnosticsController extends Controller
         $settings = Configs::get(false);
         $gdVersion = gd_info();
 
-        // Ensure that user is logged in
-        if ((Session::has('login') && Session::get('login') === true) &&
-            (Session::has('identifier') && Session::get('identifier') === $settings['identifier'])) {
+        // Load json
+        $json = file_get_contents(Config::get('defines.path.LYCHEE') . 'public/Lychee-front/package.json');
+        $json = json_decode($json, true);
 
-            // Load json
-            $json = file_get_contents(Config::get('defines.path.LYCHEE') . 'public/Lychee-front/package.json');
-            $json = json_decode($json, true);
+        // About imagick
+        $imagick = extension_loaded('imagick');
+        if ($imagick===true) $imagickVersion = @Imagick::getVersion();
+        else                 $imagick = '-';
+        if (!isset($imagickVersion, $imagickVersion['versionNumber'])||$imagickVersion==='') $imagickVersion = '-';
+        else                                                                                 $imagickVersion = $imagickVersion['versionNumber'];
 
-            // About imagick
-            $imagick = extension_loaded('imagick');
-            if ($imagick===true) $imagickVersion = @Imagick::getVersion();
-            else                 $imagick = '-';
-            if (!isset($imagickVersion, $imagickVersion['versionNumber'])||$imagickVersion==='') $imagickVersion = '-';
-            else                                                                                 $imagickVersion = $imagickVersion['versionNumber'];
-
-            // Output system information
-            $infos[] = 'Lychee Version:  ' . $json['version'];
-            $infos[] = 'DB Version:      ' . $settings['version'];
-            $infos[] = 'System:          ' . PHP_OS;
-            $infos[] = 'PHP Version:     ' . floatval(phpversion());
-//            $infos = ['MySQL Version:   ' . $database->server_version];
-            $infos[] = 'Imagick:         ' . $imagick;
-            $infos[] = 'Imagick Active:  ' . $settings['imagick'];
-            $infos[] = 'Imagick Version: ' . $imagickVersion;
-            $infos[] = 'GD Version:      ' . $gdVersion['GD Version'];
+        // Output system information
+        $infos[] = 'Lychee Version:  ' . $json['version'];
+        $infos[] = 'DB Version:      ' . $settings['version'];
+        $infos[] = 'System:          ' . PHP_OS;
+        $infos[] = 'PHP Version:     ' . floatval(phpversion());
+        $results = DB::select( DB::raw("select version()") );
+        $infos[] = 'MySQL Version:   ' . $results[0]->{'version()'};
+        $infos[] = 'Imagick:         ' . $imagick;
+        $infos[] = 'Imagick Active:  ' . $settings['imagick'];
+        $infos[] = 'Imagick Version: ' . $imagickVersion;
+        $infos[] = 'GD Version:      ' . $gdVersion['GD Version'];
 //            $infos += ['Plugins:         ' . implode($settings['plugins'], ', ') . PHP_EOL);
-
-        }
-        else
-        {
-            // Don't go further if the user is not logged in
-            $infos[] = ['You have to be logged in to see more information.'];
-        }
 
         return $infos;
 
