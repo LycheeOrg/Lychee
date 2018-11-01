@@ -55,7 +55,7 @@ class SettingsController extends Controller
 
             if ($user->username == $oldUsername && Hash::check($oldPassword, $user->password))
             {
-                Logs::notice( __METHOD__, __LINE__, $user->username . ' changed his identity for '.$request['username'].' from ' . $request->ip());
+                Logs::notice( __METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for ('.$request['username'].') from ' . $request->ip());
                 $user->username = $request['username'];
                 $user->password = bcrypt($request['password']);
                 $user->save();
@@ -63,7 +63,7 @@ class SettingsController extends Controller
             }
             else
             {
-                Logs::notice( __METHOD__, __LINE__, $user->username . ' tried to change his identity from ' . $request->ip());
+                Logs::notice( __METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity from ' . $request->ip());
                 return Response::error('Old username or password entered incorrectly!');
             }
 
