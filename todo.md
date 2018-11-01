@@ -45,7 +45,7 @@
     - [x] Right managements
     - [x] Sort managment Albums
     - [x] Sort managment Photos
-    - [ ] Change language Setting
+    - [x] Change language Setting
     - [x] Show Logs
     - [X] Show Diagnostics
   
