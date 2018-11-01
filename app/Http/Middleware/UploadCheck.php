@@ -2,10 +2,12 @@
 
 namespace App\Http\Middleware;
 
+
+use App\User;
 use Closure;
 use Illuminate\Support\Facades\Session;
 
-class AdminCheck
+class UploadCheck
 {
     /**
      * Handle an incoming request.
@@ -16,10 +18,17 @@ class AdminCheck
      */
     public function handle($request, Closure $next)
     {
-        if (!Session::get('login') || Session::get('UserID') != 0)
+        // not logged!
+        if (!Session::get('login'))
             return response('false');
-        return $next($request);
-    }
 
+        $id = Session::get('UserID');
+        $user = User::find($id);
+
+        // is admin or has upload rights
+        if ($id == 0 || $user->upload)
+            return $next($request);
+        return response('false');
+    }
 
 }

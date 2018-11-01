@@ -59,8 +59,10 @@ class Kernel extends HttpKernel
 //        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+
         'login' => \App\Http\Middleware\LoginCheck::class,
         'AlbumPWCheck' => \App\Http\Middleware\AlbumPWCheck::class,
         'admin' => \App\Http\Middleware\AdminCheck::class,
+        'upload' => \App\Http\Middleware\UploadCheck::class,
     ];
 }

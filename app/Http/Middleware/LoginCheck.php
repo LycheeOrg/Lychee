@@ -18,7 +18,6 @@ class LoginCheck
     {
         if (!Session::get('login'))
             return response('false');
-//            return redirect(route('home'));
         return $next($request);
     }
 }
