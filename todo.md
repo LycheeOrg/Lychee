@@ -15,8 +15,8 @@
   - [x] Delete Users
   - [ ] Sharing
 - [ ] Album ownership
-- [ ] Album sharing **(SECURITY)**
-- [ ] Upload pictures **(SECURITY)**
+- [x] Album sharing **(SECURITY)**
+- [x] Upload pictures **(SECURITY)**
 
 ## Multi users (client side)
 
@@ -46,8 +46,8 @@
     - [x] Sort managment Albums
     - [x] Sort managment Photos
     - [ ] Change language Setting
-    - [ ] Show Logs
-    - [ ] Show Diagnostics
+    - [x] Show Logs
+    - [X] Show Diagnostics
   
 ## Album view
 
