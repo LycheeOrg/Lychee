@@ -30,6 +30,7 @@ class Album extends Model
         $album['id']     = $this->id;
         $album['title']  = $this->title;
         $album['public'] = strval($this->public);
+        $album['hidden'] = strval($this->visible_hidden);
 
 //        $album['owned'] =
 

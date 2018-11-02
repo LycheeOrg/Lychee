@@ -94,17 +94,7 @@ class PhotoController extends Controller
             // r for recent
             case '0': $public  = 0; $star    = 0; $albumID = null; break;
 
-            default: $star   = 0; $public = 0;
-                $albumID = $request['albumID'];
-
-                // check Album Ownership
-                $album = Album::find($albumID);
-                if($album == null || ($id != 0 && $id != $album->owner_id)) // check if user is allowed to upload in that album
-                {
-                    Logs::error(__METHOD__, __LINE__, 'Could not find specified album.');
-                    return Response::error('Could not find specified album!');
-                }
-                break;
+            default: $star   = 0;   $public  = 0; $albumID = $request['albumID']; break;
         }
 
         // Only process the first photo in the array
@@ -420,6 +410,7 @@ class PhotoController extends Controller
             $duplicate->album_id     = $photo->album_id;
             $duplicate->checksum     = $photo->checksum;
             $duplicate->medium       = $photo->medium;
+            $duplicate->owner_id     = $photo->owner_id;
             $no_error &= $duplicate->save();
         }
         return $no_error ? 'true' : 'false';
