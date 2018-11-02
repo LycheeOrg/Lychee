@@ -1,5 +1,9 @@
 # TODO LIST
 
+## Security
+
+- [x] Cross-Scripting Request Forgery protection
+
 ## Sub-albums
 
 - [ ] parent - child relationship
@@ -14,7 +18,7 @@
   - [x] Modify Users
   - [x] Delete Users
   - [ ] Sharing
-- [ ] Album ownership
+- [x] Album ownership
 - [x] Album sharing **(SECURITY)**
 - [x] Upload pictures **(SECURITY)**
 

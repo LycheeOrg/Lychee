@@ -11,7 +11,8 @@
         "laravel/tinker": "^1.0",
         "ext-imagick": "*",
         "ext-exif": "*",
-        "ext-gd": "*"
+        "ext-gd": "*",
+        "ext-json": "*"
     },
     "require-dev": {
         "filp/whoops": "^2.0",
