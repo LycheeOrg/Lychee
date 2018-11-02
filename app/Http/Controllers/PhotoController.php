@@ -204,7 +204,7 @@ class PhotoController extends Controller
         $photo->focal = $info['focal'];
         $photo->takestamp = $info['takestamp'];
         $photo->public = $public;
-        $photo->ownder_id = Session::get('UserID');
+        $photo->owner_id = Session::get('UserID');
         $photo->star = $star;
         $photo->checksum = $checksum;
         $photo->album_id = $albumID;

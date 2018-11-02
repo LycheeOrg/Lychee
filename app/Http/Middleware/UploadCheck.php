@@ -38,10 +38,19 @@ class UploadCheck
             return response('false');
 
         // if albumsID(s) ?
-        $this->album_check($request,$next,$id);
+        $ret = $this->album_check($request,$id);
+
+        if ($ret === true)
+            return $next($request);
+        if ($ret === false)
+            return response('false');
 
         // if photoID(s) ?
-        $this->photo_check($request,$next,$id);
+        $ret = $this->photo_check($request,$id);
+        if ($ret === true)
+            return $next($request);
+        if ($ret === false)
+            return response('false');
 
         return response('Error: There is a problem with the request');
 
@@ -51,23 +60,22 @@ class UploadCheck
      * Take of checking if a user can actually modify that Album
      *
      * @param $request
-     * @param Closure $next
      * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|mixed
      */
-    public function album_check(Request $request, Closure $next, int $id)
+    public function album_check(Request $request, int $id)
     {
         if ($request->has('albumID')) {
             $albumID = $request['albumID'];
             if ($albumID == 'f' || $albumID == 's' || $albumID == 'r' || $albumID == 0)
-                return $next($request);
+                return true;
 
             $num = Album::where('id','=',$albumID)->where('owner_id','=',$id)->count();
             if ($num == 0) {
                 Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-                return response('false');
+                return false;
             }
-            return $next($request);
+            return true;
         }
 
         if ($request->has('albumIDs'))
@@ -78,18 +86,20 @@ class UploadCheck
             if ($albums == null)
             {
                 Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-                return response('false');
+                return false;
             }
             $no_error = true;
             foreach ($albums as $album_t) {
                 $no_error &= ($album_t->owner_id == $id);
             }
             if($no_error)
-                return $next($request);
+                return true;
 
             Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
-            return response('false');
+            return false;
         }
+
+        return null;
     }
 
 
@@ -97,11 +107,10 @@ class UploadCheck
      * Check if the user is authorized to do anything to that picture
      *
      * @param Request $request
-     * @param Closure $next
      * @param int $id
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|mixed
      */
-    public function photo_check(Request $request, Closure $next, int $id)
+    public function photo_check(Request $request, int $id)
     {
         if ($request->has('photoID')) {
             $photoID = $request['photoID'];
@@ -110,7 +119,7 @@ class UploadCheck
                 Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
                 return response('false');
             }
-            return $next($request);
+            return true;
         }
 
         if ($request->has('photoIDs'))
@@ -121,7 +130,7 @@ class UploadCheck
             if ($photos == null)
             {
                 Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-                return response('false');
+                return false;
             }
             $no_error = true;
             foreach ($photos as $photo_t) {
@@ -129,10 +138,10 @@ class UploadCheck
                 $no_error &= (($photo_t->owner_id == $id) || ($photo_t->album != null && $photo_t->album->owner_id == $id));
             }
             if($no_error)
-                return $next($request);
+                return true;
 
             Logs::error(__METHOD__, __LINE__, 'Photos ownership mismatch!');
-            return response('false');
+            return false;
         }
     }
 }
