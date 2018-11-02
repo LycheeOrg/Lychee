@@ -37,10 +37,10 @@ class AlbumController extends Controller
         // Get album information
         switch ($request['albumID']) {
 
-            case 'f': $return['public'] = '0'; $photos_sql = Photo::Stars(); break;
-            case 's': $return['public'] = '0'; $photos_sql = Photo::Public(); break;
-            case 'r': $return['public'] = '0'; $photos_sql = Photo::Recent(); break;
-            case '0': $return['public'] = '0'; $photos_sql = Photo::Unsorted(); break;
+            case 'f': $return['public'] = '0'; $photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID'))); break;
+            case 's': $return['public'] = '0'; $photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID'))); break;
+            case 'r': $return['public'] = '0'; $photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))); break;
+            case '0': $return['public'] = '0'; $photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))); break;
             default:
                 $album = Album::find($request['albumID']);
                 if ($album===null) {
@@ -48,7 +48,6 @@ class AlbumController extends Controller
                     return 'false';
                 }
                 $return = $album->prepareData();
-
                 $photos_sql = Photo::set_order(Photo::where('album_id','=',$request['albumID']));
                 break;
         }

@@ -81,7 +81,7 @@ class Album extends Model
     }
 
     public function owner() {
-        $this->belongsTo('App\User','owner_id','id');
+        return $this->belongsTo('App\User','owner_id','id');
     }
 
 }

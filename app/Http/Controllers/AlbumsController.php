@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Configs;
+use App\Logs;
 use App\Photo;
+use App\Response;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
@@ -24,58 +27,73 @@ class AlbumsController extends Controller
             'num'         => 0
         );
 
-        // Get SmartAlbums
-        if (Session::get('login')) $return['smartalbums'] = self::getSmartAlbums();
-
-        // Albums query
         if (Session::get('login'))
         {
-            $albums_sql = Album::orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'));
+            $id = Session::get('UserID');
+
+            $user = User::find($id);
+            if($id == 0 || $user->upload) $return['smartalbums'] = self::getSmartAlbums();
+
+            if($id == 0)
+            {
+                $albums_sql = Album::orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'));
+                $albums = $albums_sql->get();
+            }
+            else if($user == null)
+            {
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified user ('.Session::get('UserID').')');
+                return Response::error('I could not find you.');
+            }
+            else
+            {
+                $albums = $user->albums;
+            }
         }
         else
         {
             $albums_sql = Album::where('public','=','1')->where('visible_hidden','=','1')
                 ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'));
+            $albums = $albums_sql->get();
         }
 
-        $albums = $albums_sql->get();
+        if($albums != null)
+        {
+            // For each album
+            foreach ($albums as $album_model){
 
-        // For each album
-        foreach ($albums as $album_model){
+                // Turn data from the database into a front-end friendly format
+                $album = $album_model->prepareData();
 
-            // Turn data from the database into a front-end friendly format
-            $album = $album_model->prepareData();
+                // Thumbs
+                if ((!Session::get('login') && $album_model->password === null)||
+                    (Session::get('login'))) {
 
-            // Thumbs
-            if ((!Session::get('login') && $album_model->password === null)||
-                (Session::get('login'))) {
+                    $thumbs = Photo::select('thumbUrl')
+                        ->where('album_id','=',$album_model->id)
+                        ->orderBy('star','DESC')
+                        ->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))
+                        ->limit(3)->get();
 
-                $thumbs = Photo::select('thumbUrl')
-                    ->where('album_id','=',$album_model->id)
-                    ->orderBy('star','DESC')
-                    ->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))
-                    ->limit(3)->get();
+                    if ($thumbs === false) return 'false';
 
-                if ($thumbs === false) return 'false';
+                    // For each thumb
+                    $k = 0;
+                    $album['sysstamp'] = $album_model['created_at'];
+                    $album['thumbs'] = array();
+                    foreach ($thumbs as $thumb) {
+                        $album['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb->thumbUrl;
+                        $k++;
+                    }
 
-                // For each thumb
-                $k = 0;
-                $album['sysstamp'] = $album_model['created_at'];
-                $album['thumbs'] = array();
-                foreach ($thumbs as $thumb) {
-                    $album['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb->thumbUrl;
-                    $k++;
                 }
 
+                // Add to return
+                $return['albums'][] = $album;
+
             }
-
-            // Add to return
-            $return['albums'][] = $album;
-
         }
-
         // Num of albums
-        $return['num'] = $albums_sql->count();
+        $return['num'] = $albums == null ? 0 : count($albums);
 
         return $return;
 
@@ -118,25 +136,25 @@ class AlbumsController extends Controller
         /**
          * Unsorted
          */
-        $photos_sql = Photo::select_unsorted(Photo::select('thumbUrl'))->limit(3);
+        $photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl'))->limit(3);
         $return = self::gen_return($return, $photos_sql, 'unsorted');
 
         /**
          * Starred
          */
-        $photos_sql = Photo::select_stars(Photo::select('thumbUrl'))->limit(3);
+        $photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl'))->limit(3);
         $return = self::gen_return($return, $photos_sql, 'starred');
 
         /**
          * Public
          */
-        $photos_sql = Photo::select_public(Photo::select('thumbUrl'))->limit(3);
+        $photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl'))->limit(3);
         $return = self::gen_return($return, $photos_sql, 'public');
 
         /**
          * Recent
          */
-        $photos_sql = Photo::select_recent(Photo::select('thumbUrl'))->limit(3);
+        $photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl'))->limit(3);
         $return = self::gen_return($return, $photos_sql, 'recent');
 
         // Return SmartAlbums

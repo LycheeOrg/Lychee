@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Imagick;
+use ImagickException;
 use ImagickPixel;
 
 class Photo extends Model
@@ -14,7 +15,6 @@ class Photo extends Model
     {
         return $this->belongsTo('App\Album','album_id','id');
     }
-
 
 
     /**
@@ -227,6 +227,7 @@ class Photo extends Model
     /**
      * Rotates and flips a photo based on its EXIF orientation.
      * @return array|false Returns an array with the new orientation, width, height or false on failure.
+     * @throws ImagickException
      */
     static public function adjustFile($path, array $info) {
 
@@ -348,6 +349,7 @@ class Photo extends Model
 
     /**
      * @return boolean Returns true when successful.
+     * @throws \ImagickException
      */
     function createThumb() {
 
@@ -444,6 +446,7 @@ class Photo extends Model
      * Creates a smaller version of a photo when its size is bigger than a preset size.
      * Photo must be big enough and Imagick must be installed and activated.
      * @return boolean Returns true when successful.
+     * @throws \ImagickException
      */
     function createMedium() {
 
@@ -607,4 +610,8 @@ class Photo extends Model
         return self::select_unsorted($query);
     }
 
+    public function scopeOwnedBy($query,$id)
+    {
+        return $id == 0 ? $query : $query->where('owner_id','=',$id);
+    }
 }

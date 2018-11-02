@@ -67,6 +67,8 @@ class PhotoController extends Controller
 //                |max:2048'
         ]);
 
+        $id = Session::get('UserID');
+
         if(!$request->hasfile('0'))
             return Response::error('missing files');
 
@@ -92,7 +94,17 @@ class PhotoController extends Controller
             // r for recent
             case '0': $public  = 0; $star    = 0; $albumID = null; break;
 
-            default: $star   = 0; $public = 0; $albumID = $request['albumID']; break;
+            default: $star   = 0; $public = 0;
+                $albumID = $request['albumID'];
+
+                // check Album Ownership
+                $album = Album::find($albumID);
+                if($album == null || ($id != 0 && $id != $album->owner_id)) // check if user is allowed to upload in that album
+                {
+                    Logs::error(__METHOD__, __LINE__, 'Could not find specified album.');
+                    return Response::error('Could not find specified album!');
+                }
+                break;
         }
 
         // Only process the first photo in the array
@@ -192,6 +204,7 @@ class PhotoController extends Controller
         $photo->focal = $info['focal'];
         $photo->takestamp = $info['takestamp'];
         $photo->public = $public;
+        $photo->ownder_id = Session::get('UserID');
         $photo->star = $star;
         $photo->checksum = $checksum;
         $photo->album_id = $albumID;

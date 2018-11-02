@@ -31,14 +31,13 @@ class User extends Authenticatable
      * Albums owned
      */
     public function albums() {
-        $this->hasMany('app\Album','owner_id','id');
+        return $this->hasMany('App\Album','owner_id','id');
     }
 
     /**
      * Albums visible (shared)
      */
-    public function groups () {
+    public function shared () {
         return $this->belongsToMany('App\Album','user_album','album_id','album_id','id','user_id');
     }
-
 }
