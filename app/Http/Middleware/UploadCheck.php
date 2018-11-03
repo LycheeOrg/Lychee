@@ -52,7 +52,9 @@ class UploadCheck
         if ($ret === false)
             return response('false');
 
-        return response('Error: There is a problem with the request');
+        // there is nothing about albumID, albumIDs, photoID, photoIDs
+        // we have the upload right so it is probably all right.
+        return $next($request);
 
     }
 
@@ -82,7 +84,7 @@ class UploadCheck
         {
             $albumIDs = $request['albumIDs'];
 
-            $albums = Album::whereIn('id',$albumIDs)->get();
+            $albums = Album::whereIn('id',explode(',', $albumIDs))->get();
             if ($albums == null)
             {
                 Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
@@ -126,7 +128,7 @@ class UploadCheck
         {
             $photoIDs = $request['photoIDs'];
 
-            $photos = Photo::whereIn('id',$photoIDs )->get();
+            $photos = Photo::whereIn('id',explode(',', $photoIDs))->get();
             if ($photos == null)
             {
                 Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
