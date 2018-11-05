@@ -22,10 +22,13 @@ class AlbumsController extends Controller
 
         // Initialize return var
         $return = array(
-            'smartalbums' => null,
-            'albums'      => null,
-            'num'         => 0
+            'smartalbums'   => null,
+            'albums'        => null,
+            'shared_albums' => null,
+            'num'           => 0
         );
+
+        $shared_albums = null;
 
         if (Session::get('login'))
         {
@@ -36,8 +39,9 @@ class AlbumsController extends Controller
 
             if($id == 0)
             {
-                $albums_sql = Album::orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'));
-                $albums = $albums_sql->get();
+                $albums = Album::where('owner_id','=', 0)
+                    ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
+                $shared_albums = Album::get_albums_user(0);
             }
             else if($user == null)
             {
@@ -46,20 +50,36 @@ class AlbumsController extends Controller
             }
             else
             {
-                $albums = $user->albums;
+                $albums = Album::where('owner_id','=', $user->id)
+                    ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
+                $shared_albums = Album::get_albums_user($user->id);
             }
         }
         else
         {
-            $albums_sql = Album::where('public','=','1')->where('visible_hidden','=','1')
-                ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'));
-            $albums = $albums_sql->get();
+            $albums = Album::where('public','=','1')->where('visible_hidden','=','1')
+                ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
         }
+
+
+        $return['albums'] = AlbumsController::prepare_albums($albums);
+        $return['shared_albums'] = AlbumsController::prepare_albums($shared_albums);
+
+        // Num of albums
+        $return['num'] = $albums == null ? 0 : count($albums);
+
+        return $return;
+
+    }
+
+    static private function prepare_albums($albums) {
+
+        $return = array();
 
         if($albums != null)
         {
             // For each album
-            foreach ($albums as $album_model){
+            foreach ($albums as $album_model) {
 
                 // Turn data from the database into a front-end friendly format
                 $album = $album_model->prepareData();
@@ -88,15 +108,11 @@ class AlbumsController extends Controller
                 }
 
                 // Add to return
-                $return['albums'][] = $album;
-
+                $return[] = $album;
             }
         }
-        // Num of albums
-        $return['num'] = $albums == null ? 0 : count($albums);
 
         return $return;
-
     }
 
 

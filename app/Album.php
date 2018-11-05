@@ -87,7 +87,47 @@ class Album extends Model
     }
 
 
-    public static function merge($albums1, $albums2) {
+    public static function get_albums_user($id) {
+        return Album::where('owner_id', '<>', $id)
+            ->Where(
+                function ($query) use ($id) {
+                    $query->whereIn('id', function ($query) use ($id)
+                    {
+                        $query->select('album_id')
+                            ->from('user_album')
+                            ->where('user_id','=',$id);
+                    })
+                    ->orWhere(
+                        function ($query) {
+                            $query->where('public','=',true)->where('visible_hidden','=',true);
+                        });
+                })
+            ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))
+            ->get();
+    }
 
+
+    public static function merge(array $albums1, array $albums2) {
+        $return = $albums1;
+
+        foreach ($albums2 as $album2_t)
+        {
+            $found = false;
+            foreach ($albums1 as $album1_t)
+            {
+                if ($album1_t->id == $album2_t->id)
+                {
+                    $found = true;
+                    break;
+                }
+            }
+
+            if(!$found)
+            {
+                $return[] = $album2_t;
+            }
+        }
+
+        return $return;
     }
 }
