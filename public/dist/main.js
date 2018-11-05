@@ -5601,22 +5601,27 @@ view.sharing = {
 
 			var html = '';
 
-			html += "\n            <div class=\"row\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"undo_redo\" class=\"form-control\" size=\"13\" multiple=\"multiple\">";
-
-			$.each(sharing.json.users, function () {
-				html += "<option value=\"" + this.id + "\">" + this.username + "</option>";
-			});
-
-			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_undo\" class=\"btn btn-primary btn-block\">undo</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_rightAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_rightSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_leftSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_leftAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_redo\" class=\"btn btn-warning btn-block\">redo</button>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"undo_redo_to\" class=\"form-control\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
-
-			html += "\n            <div class=\"row\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"undo_redo\" class=\"form-control\" size=\"13\" multiple=\"multiple\">";
+			html += "\n            <div class=\"sharing_view_line\"><p>Share</p></div>\n            <div class=\"sharing_view_line\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"albums_list\" class=\"form-control select\" size=\"13\" multiple=\"multiple\">";
 
 			$.each(sharing.json.albums, function () {
 				html += "<option value=\"" + this.id + "\">" + this.title + "</option>";
 			});
 
-			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_undo\" class=\"btn btn-primary btn-block\">undo</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_rightAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_rightSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_leftSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_leftAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"undo_redo_redo\" class=\"btn btn-warning btn-block\">redo</button>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"undo_redo_to\" class=\"form-control\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"albums_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+
+			html += "\n            <div class=\"sharing_view_line\"><p>with</p></div>\n            <div class=\"sharing_view_line\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"user_list\" class=\"form-control select\" size=\"13\" multiple=\"multiple\">";
+
+			$.each(sharing.json.users, function () {
+				html += "<option value=\"" + this.id + "\">" + this.username + "</option>";
+			});
+
+			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"user_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+			html += "<div class=\"sharing_view_line\"><a id=\"Share_button\"  class=\"basicModal__button basicModal__button_SHARE\">Create</a></div>";
+
 			$(".sharing_view").append(html);
+
+			$('#albums_list').multiselect();
+			$('#user_list').multiselect();
 
 			//     let html = '';
 			//
