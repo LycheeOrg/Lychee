@@ -87,9 +87,11 @@ class Photo extends Model
 
 
     /**
+     * @param string $checksum
+     * @param $photoID
      * @return array|false Returns a subset of a photo when same photo exists or returns false on failure.
      */
-    static public function exists($checksum, $photoID = null) {
+    static public function exists(string $checksum, $photoID = null) {
 
         $sql = Photo::where('checksum','=',$checksum);
         if (isset($photoID))
@@ -101,6 +103,7 @@ class Photo extends Model
 
     /**
      * Reads and parses information and metadata out of a photo.
+     * @param string $url
      * @return array Returns an array of photo information and metadata.
      */
     static public function getInformations(string $url) {
@@ -567,6 +570,10 @@ class Photo extends Model
 
     /*
      *  Defines a bunch of helpers
+     */
+    /**
+     * @param $query
+     * @return mixed
      */
     static public function set_order($query){
         return $query->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))

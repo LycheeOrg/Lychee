@@ -53,9 +53,10 @@ class Album extends Model
     }
 
     /**
+     * @param string $password
      * @return boolean Returns when album is public.
      */
-    public function checkPassword($password) {
+    public function checkPassword(string $password) {
 
         // Check if password is correct
         return ($this->password == '' || Hash::check($password, $this->password));
@@ -85,4 +86,8 @@ class Album extends Model
         return $this->belongsTo('App\User','owner_id','id');
     }
 
+
+    public static function merge($albums1, $albums2) {
+
+    }
 }

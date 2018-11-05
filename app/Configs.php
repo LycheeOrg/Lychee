@@ -4,6 +4,8 @@ namespace App;
 
 use App\Locale\Lang;
 use Illuminate\Database\Eloquent\Model;
+use phpDocumentor\Reflection\Types\Boolean;
+use phpDocumentor\Reflection\Types\String_;
 
 class Configs extends Model
 {
@@ -20,7 +22,12 @@ class Configs extends Model
     ];
 
 
-    static protected function inExceptArray($key, $public)
+    /**
+     * @param string $key
+     * @param bool $public
+     * @return bool
+     */
+    static protected function inExceptArray(string $key, bool $public)
     {
 
         if ($public)
@@ -37,9 +44,10 @@ class Configs extends Model
     }
 
     /**
+     * @param bool $public
      * @return array Returns the public settings of Lychee.
      */
-    public static function get($public = true) {
+    public static function get(bool $public = true) {
         if ($public && self::$public_cache) return self::$public_cache;
         if (!$public && self::$cache)       return self::$cache;
 
@@ -77,7 +85,11 @@ class Configs extends Model
     }
 
 
-    public static function get_value($key)
+    /**
+     * @param string $key
+     * @return mixed
+     */
+    public static function get_value(string $key)
     {
         if (self::$public_cache)
         {
@@ -98,9 +110,11 @@ class Configs extends Model
     }
 
     /**
-     * @return boolean Returns true when successful.
+     * @param string $key
+     * @param $value
+     * @return bool Returns true when successful.
      */
-    public static function set($key, $value) {
+    public static function set(string $key, $value) {
 
             $config = Configs::where('key', '=', $key)->first();
             $config->value = $value;
@@ -113,7 +127,7 @@ class Configs extends Model
     }
 
     /**
-     * @return boolean Returns the Imagick setting.
+     * @return bool Returns the Imagick setting.
      */
     public static function hasImagick() {
         if((bool)(extension_loaded('imagick') && self::get()['imagick'] == '1')) {
