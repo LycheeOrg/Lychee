@@ -48,6 +48,8 @@ Route::post('/api/Photo::add',              'PhotoController@add')->middleware('
 Route::post('/api/Photo::delete',           'PhotoController@delete')->middleware('upload');
 Route::post('/api/Photo::duplicate',        'PhotoController@duplicate')->middleware('upload');
 
+Route::post('/api/Sharing::List',           'SharingController@list_sharing')->middleware('upload');
+
 Route::post('/api/Settings::setLogin',      'SettingsController@setLogin');
 Route::post('/api/Settings::setSorting',    'SettingsController@setSorting')->middleware('admin');
 Route::post('/api/Settings::setLang',       'SettingsController@setLang')->middleware('admin');
