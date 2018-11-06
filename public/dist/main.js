@@ -1146,7 +1146,7 @@ build.tags = function (tags) {
 };
 
 build.user = function (user) {
-	return '<div class="users_view_line">' + '<p id="UserData' + user.id + '">' + '<input name="id" type="hidden" value="' + user.id + '" />' + '<input class="text" name="username" type="text" value="' + user.username + '" placeholder="username" />' + '<input class="text" name="password" type="text" placeholder="new password" />' + '<span class="choice">' + '<label>' + '<input type="checkbox" name="upload" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span>' + '</p>' + '<a id="UserUpdate' + user.id + '"  class="basicModal__button basicModal__button_OK">Save</a>' + '<a id="UserDelete' + user.id + '"  class="basicModal__button basicModal__button_DEL">Delete</a>' + '</div>';
+	return '<div class="users_view_line">' + '<p id="UserData' + user.id + '">' + '<input name="id" type="hidden" value="' + user.id + '" />' + '<input class="text" name="username" type="text" value="' + user.username + '" placeholder="username" />' + '<input class="text" name="password" type="text" placeholder="new password" />' + '<span class="choice">' + '<label>' + '<input type="checkbox" name="upload" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span>' + '<span class="choice">' + '<label>' + '<input type="checkbox" name="lock" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span>' + '</p>' + '<a id="UserUpdate' + user.id + '"  class="basicModal__button basicModal__button_OK">Save</a>' + '<a id="UserDelete' + user.id + '"  class="basicModal__button basicModal__button_DEL">Delete</a>' + '</div>';
 };
 
 /**
@@ -1855,7 +1855,7 @@ leftMenu.dom = function (selector) {
 leftMenu.build = function () {
 	var html = '';
 	html += '<a id="button_settings_close" class="closebtn" >&times;</a>';
-	html += '<a class="linkMenu" id="button_settings">' + '<svg class="iconic"><use xlink:href="#cog"></use></svg>' + lychee.locale['SETTINGS'] + '</a>';
+	html += '<a class="linkMenu" id="button_settings_open">' + '<svg class="iconic"><use xlink:href="#cog"></use></svg>' + lychee.locale['SETTINGS'] + '</a>';
 	if (lychee.api_V2) {
 		html += '<a class="linkMenu" id="button_users">' + build.iconic('person') + 'Users</a>';
 		html += '<a class="linkMenu" id="button_sharing">' + build.iconic('cloud') + 'Sharing</a>';
@@ -1892,7 +1892,7 @@ leftMenu.bind = function () {
 	var eventName = lychee.getEventName();
 
 	leftMenu.dom('#button_settings_close').on(eventName, leftMenu.close);
-	leftMenu.dom('#button_settings').on(eventName, settings.open);
+	leftMenu.dom('#button_settings_open').on(eventName, settings.open);
 	leftMenu.dom('#button_signout').on(eventName, lychee.logout);
 	leftMenu.dom('#button_logs').on(eventName, leftMenu.Logs);
 	leftMenu.dom('#button_diagnostics').on(eventName, leftMenu.Diagnostics);
@@ -2055,6 +2055,7 @@ lychee = {
 	api_V2: false, // enable api_V2
 	admin: false, // enable admin mode (multi-user)
 	upload: false, // enable possibility to upload (multi-user)
+	lock: false, // locked user (multi-user)
 
 	checkForUpdates: '1',
 	sortingPhotos: '',
@@ -2399,6 +2400,7 @@ lychee.init = function () {
 			if (lychee.api_V2) {
 				lychee.upload = data.admin || data.upload;
 				lychee.admin = data.admin;
+				lychee.lock = data.lock;
 				lychee.setMode('logged_in');
 			}
 
@@ -2504,22 +2506,7 @@ lychee.load = function () {
 	if (hash[0] != null) albumID = hash[0];
 	if (hash[1] != null) photoID = hash[1];
 
-	if (hash[0] != null && hash[0] === 'Diagnostics') {
-		leftMenu.open();
-		leftMenu.Diagnostics();
-	} else if (hash[0] != null && hash[0] === 'Logs') {
-		leftMenu.open();
-		leftMenu.Logs();
-	} else if (hash[0] != null && hash[0] === 'Settings') {
-		leftMenu.open();
-		settings.open();
-	} else if (hash[0] != null && hash[0] === 'Users') {
-		leftMenu.open();
-		leftMenu.Users();
-	} else if (hash[0] != null && hash[0] === 'Sharing') {
-		leftMenu.open();
-		leftMenu.Sharing();
-	} else if (albumID && photoID) {
+	if (albumID && photoID) {
 
 		// Trash data
 		photo.json = null;
@@ -2538,7 +2525,7 @@ lychee.load = function () {
 		// Show Album
 		if (visible.photo()) view.photo.hide();
 		if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) sidebar.toggle();
-		if (album.json && albumID == album.json.id) view.album.title();else album.load(albumID);
+		if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
 	} else {
 
 		// Trash albums.json when filled with search results
@@ -2583,9 +2570,12 @@ lychee.setTitle = function (title, editable) {
 
 lychee.setMode = function (mode) {
 
+	if (lychee.lock) {
+		$('#button_settings_open').remove();
+	}
 	if (!lychee.upload) {
 		$('#button_trash_album, .button_add').remove();
-		$('#button_trash, #button_move, #button_star').remove();
+		$('#button_trash, #button_move, #button_star, #button_sharing').remove();
 
 		$('#button_share, #button_share_album').removeClass('button--eye').addClass('button--share').find('use').attr('xlink:href', '#share');
 
@@ -4934,6 +4924,11 @@ users.update = function (params) {
 	} else {
 		params.upload = '0';
 	}
+	if ($('#UserData' + params.id + ' .choice input[name="lock"]:checked').length === 1) {
+		params.lock = '1';
+	} else {
+		params.lock = '0';
+	}
 
 	api.post('User::Save', params, function (data) {
 		if (data !== true) {
@@ -4952,6 +4947,11 @@ users.create = function (params) {
 		params.upload = '1';
 	} else {
 		params.upload = '0';
+	}
+	if ($('#UserCreate .choice input[name="lock"]:checked').length === 1) {
+		params.lock = '1';
+	} else {
+		params.lock = '0';
 	}
 
 	api.post('User::Create', params, function (data) {
@@ -5441,8 +5441,8 @@ view.settings = {
 	},
 
 	clearContent: function clearContent() {
-		$('.content').unbind('mousedown');
-		$(".content").html('<div class="settings_view"></div>');
+		lychee.content.unbind('mousedown');
+		lychee.content.html('<div class="settings_view"></div>');
 	},
 
 	content: {
@@ -5534,8 +5534,8 @@ view.users = {
 	},
 
 	clearContent: function clearContent() {
-		$('.content').unbind('mousedown');
-		$(".content").html('<div class="users_view"></div>');
+		lychee.content.unbind('mousedown');
+		lychee.content.html('<div class="users_view"></div>');
 	},
 
 	content: {
@@ -5550,7 +5550,7 @@ view.users = {
 
 			var html = '';
 
-			html += '<div class="users_view_line">' + '<p>' + '<span class="text">username</span>' + '<span class="text">new password</span>' + '<span class="text">' + build.iconic('data-transfer-upload') + '</span>' + '</p>' + '</div>';
+			html += '<div class="users_view_line">' + '<p>' + '<span class="text">username</span>' + '<span class="text">new password</span>' + '<span class="text_icon">' + build.iconic('data-transfer-upload') + '</span>' + '<span class="text_icon">' + build.iconic('lock-locked') + '</span>' + '</p>' + '</div>';
 
 			$(".users_view").append(html);
 
@@ -5559,29 +5559,20 @@ view.users = {
 				// photosData += build.photo(this)
 				settings.bind('#UserUpdate' + this.id, '#UserData' + this.id, users.update);
 				settings.bind('#UserDelete' + this.id, '#UserData' + this.id, users.delete);
+				if (this.upload === 1) {
+					$('#UserData' + this.id + ' .choice input[name="upload"]').click();
+				}
+				if (this.lock === 1) {
+					$('#UserData' + this.id + ' .choice input[name="lock"]').click();
+				}
 			});
 
-			// let i = 0;
-			// while(i < users.json.length)
-			// {
-			// 	user = users.json[i];
-			//
-			//
-			//     if(user.upload === 1)
-			// 	{
-			//         $('#UserData' + user.id + ' .choice input[name="upload"]').click();
-			// 	}
-			//
-			//
-			//     i += 1;
-			//
-			// }
 			html = '<div class="users_view_line"';
 
 			if (users.json.length === 0) {
 				html += ' style="padding-top: 0px;"';
 			}
-			html += '>' + '<p id="UserCreate">' + '<input class="text" name="username" type="text" value="" placeholder="new username" />' + '<input class="text" name="password" type="text" placeholder="new password" />' + '<span class="choice">' + '<label>' + '<input type="checkbox" name="upload" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span>' + '</p>' + '<a id="UserCreate_button"  class="basicModal__button basicModal__button_CREATE">Create</a>' + '</div>';
+			html += '>' + '<p id="UserCreate">' + '<input class="text" name="username" type="text" value="" placeholder="new username" />' + '<input class="text" name="password" type="text" placeholder="new password" />' + '<span class="choice">' + '<label>' + '<input type="checkbox" name="upload" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span>' + '<span class="choice">' + '<label>' + '<input type="checkbox" name="lock" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span>' + '</p>' + '<a id="UserCreate_button"  class="basicModal__button basicModal__button_CREATE">Create</a>' + '</div>';
 			$(".users_view").append(html);
 			settings.bind('#UserCreate_button', '#UserCreate', users.create);
 		}
@@ -5601,8 +5592,8 @@ view.sharing = {
 	},
 
 	clearContent: function clearContent() {
-		$('.content').unbind('mousedown');
-		$(".content").html('<div class="sharing_view"></div>');
+		lychee.content.unbind('mousedown');
+		lychee.content.html('<div class="sharing_view"></div>');
 	},
 
 	content: {
@@ -5672,8 +5663,8 @@ view.logs_diagnostics = {
 	},
 
 	clearContent: function clearContent() {
-		$('.content').unbind('mousedown');
-		$(".content").html('<pre class="logs_diagnostics_view"></pre>');
+		lychee.content.unbind('mousedown');
+		lychee.content.html('<pre class="logs_diagnostics_view"></pre>');
 	},
 
 	content: {

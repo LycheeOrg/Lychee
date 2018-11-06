@@ -69,6 +69,7 @@ class SessionController extends Controller
             }
             else
             {
+                $return['lock'] = ($user->lock == '1');
                 $return['upload'] = ($user->upload == '1');
             }
 

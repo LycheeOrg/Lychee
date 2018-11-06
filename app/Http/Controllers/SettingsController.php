@@ -53,6 +53,12 @@ class SettingsController extends Controller
                 return Response::error('Could not find User.');
             }
 
+            if ($user->lock)
+            {
+                Logs::notice( __METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change his identity from ' . $request->ip());
+                return Response::error('Locked account!');
+            }
+
             if ($user->username == $oldUsername && Hash::check($oldPassword, $user->password))
             {
                 Logs::notice( __METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for ('.$request['username'].') from ' . $request->ip());
