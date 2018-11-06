@@ -52,6 +52,12 @@ class UploadCheck
         if ($ret === false)
             return response('false');
 
+        $ret = $this->share_check($request,$id);
+        if ($ret === true)
+            return $next($request);
+        if ($ret === false)
+            return response('false');
+
         // there is nothing about albumID, albumIDs, photoID, photoIDs
         // we have the upload right so it is probably all right.
         return $next($request);
@@ -144,6 +150,37 @@ class UploadCheck
 
             Logs::error(__METHOD__, __LINE__, 'Photos ownership mismatch!');
             return false;
+        }
+    }
+
+    public function share_check(Request $request, int $id)
+    {
+        if($request->has('ShareIDs'))
+        {
+            $shareIDs = $request['ShareIDs'];
+
+            $albums = Album::whereIn('id', function ($query) use ($shareIDs)
+                                                {
+                                                    $query->select('album_id')
+                                                        ->from('user_album')
+                                                        ->whereIn('id',explode(',', $shareIDs));
+                                                })->select('owner_id')->get();
+
+            if ($albums == null)
+            {
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
+                return false;
+            }
+            $no_error = true;
+            foreach ($albums as $album_t) {
+                $no_error &= ($album_t->owner_id == $id);
+            }
+            if($no_error)
+                return true;
+
+            Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
+            return false;
+
         }
     }
 }

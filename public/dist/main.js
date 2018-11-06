@@ -2504,7 +2504,22 @@ lychee.load = function () {
 	if (hash[0] != null) albumID = hash[0];
 	if (hash[1] != null) photoID = hash[1];
 
-	if (albumID && photoID) {
+	if (hash[0] != null && hash[0] === 'Diagnostics') {
+		leftMenu.open();
+		leftMenu.Diagnostics();
+	} else if (hash[0] != null && hash[0] === 'Logs') {
+		leftMenu.open();
+		leftMenu.Logs();
+	} else if (hash[0] != null && hash[0] === 'Settings') {
+		leftMenu.open();
+		settings.open();
+	} else if (hash[0] != null && hash[0] === 'Users') {
+		leftMenu.open();
+		leftMenu.Users();
+	} else if (hash[0] != null && hash[0] === 'Sharing') {
+		leftMenu.open();
+		leftMenu.Sharing();
+	} else if (albumID && photoID) {
 
 		// Trash data
 		photo.json = null;
@@ -4017,47 +4032,48 @@ sharing = {
 	json: null
 };
 
-sharing.update = function (params) {
+sharing.add = function () {
 
-	if ($('#UserData' + params.id + ' .choice input[name="upload"]:checked').length === 1) {
-		params.upload = '1';
-	} else {
-		params.upload = '0';
-	}
+	var params = {
+		albumIDs: '',
+		UserIDs: ''
+	};
 
-	api.post('User::Save', params, function (data) {
+	$('#albums_list_to option').each(function () {
+		if (params.albumIDs !== '') params.albumIDs += ',';
+		params.albumIDs += this.value;
+	});
+
+	$('#user_list_to option').each(function () {
+		if (params.UserIDs !== '') params.UserIDs += ',';
+		params.UserIDs += this.value;
+	});
+
+	console.log(params);
+
+	api.post('Sharing::Add', params, function (data) {
 		if (data !== true) {
 			loadingBar.show('error', data.description);
 			lychee.error(null, params, data);
 		} else {
-			loadingBar.show('success', 'User updated!');
-			users.list(); // reload user list
+			loadingBar.show('success', 'Sharing updated!');
+			sharing.list(); // reload user list
 		}
 	});
 };
 
-sharing.add = function (params) {
+sharing.delete = function () {
 
-	if ($('#UserCreate .choice input[name="upload"]:checked').length === 1) {
-		params.upload = '1';
-	} else {
-		params.upload = '0';
-	}
+	var params = {
+		ShareIDs: ''
+	};
 
-	api.post('User::Create', params, function (data) {
-		if (data !== true) {
-			loadingBar.show('error', data.description);
-			lychee.error(null, params, data);
-		} else {
-			loadingBar.show('success', 'User created!');
-			users.list(); // reload user list
-		}
+	$('input[name="remove_id"]').each(function () {
+		if (params.ShareIDs !== '') params.ShareIDs += ',';
+		params.ShareIDs += this.value;
 	});
-};
 
-sharing.delete = function (params) {
-
-	api.post('User::Delete', params, function (data) {
+	api.post('Sharing::Delete', params, function (data) {
 		if (data !== true) {
 			loadingBar.show('error', data.description);
 			lychee.error(null, params, data);
@@ -5493,7 +5509,7 @@ view.settings = {
 			var i = 0;
 			while (i < lychee.lang_available.length) {
 				var lang_av = lychee.lang_available[i];
-				msg += "<option " + (lychee.lang == lang_av ? 'selected' : '') + ">" + lang_av + "</option>";
+				msg += "<option " + (lychee.lang === lang_av ? 'selected' : '') + ">" + lang_av + "</option>";
 				i += 1;
 			}
 			msg += "\n\t\t\t\t  </select>\n\t\t\t  </span>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_lang\" class=\"basicModal__button\">" + lychee.locale['LANG_TITLE'] + "</a>\n\t\t\t</div>\n\t\t\t</div>";
@@ -5607,72 +5623,38 @@ view.sharing = {
 				html += "<option value=\"" + this.id + "\">" + this.title + "</option>";
 			});
 
-			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"albums_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"albums_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
 
-			html += "\n            <div class=\"sharing_view_line\"><p>with</p></div>\n            <div class=\"sharing_view_line\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"user_list\" class=\"form-control select\" size=\"13\" multiple=\"multiple\">";
+			html += "\n            <div class=\"sharing_view_line\"><p class=\"with\">with</p></div>\n            <div class=\"sharing_view_line\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"user_list\" class=\"form-control select\" size=\"13\" multiple=\"multiple\">";
 
 			$.each(sharing.json.users, function () {
 				html += "<option value=\"" + this.id + "\">" + this.username + "</option>";
 			});
 
-			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftSelected\" class=\"btn btn-default btn-block\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftAll\" class=\"btn btn-default btn-block\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"user_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
-			html += "<div class=\"sharing_view_line\"><a id=\"Share_button\"  class=\"basicModal__button basicModal__button_SHARE\">Create</a></div>";
+			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"user_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+			html += "<div class=\"sharing_view_line\"><a id=\"Share_button\"  class=\"basicModal__button\">Share</a></div>";
+			html += '<div class="sharing_view_line">';
+
+			$.each(sharing.json.shared, function () {
+				html += "<p><span class=\"text\">" + this.title + "</span><span class=\"text\">" + this.username + '</span><span class="choice">' + '<label>' + '<input type="checkbox" name="remove_id" value="' + this.id + '"/>' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span></p>' + "";
+			});
+
+			html += '</div>';
+			if (sharing.json.shared.length !== 0) {
+				html += "<div class=\"sharing_view_line\"><a id=\"Remove_button\"  class=\"basicModal__button\">Remove</a></div>";
+			}
 
 			$(".sharing_view").append(html);
 
 			$('#albums_list').multiselect();
 			$('#user_list').multiselect();
+			$("#Share_button").on('click', sharing.add).on('mouseenter', function () {
+				$('#albums_list_to, #user_list_to').addClass('borderBlue');
+			}).on('mouseleave', function () {
+				$('#albums_list_to, #user_list_to').removeClass('borderBlue');
+			});
 
-			//     let html = '';
-			//
-			//     html += '<div class="users_view_line">' +
-			//         '<p>' +
-			//         '<span class="text">username</span>' +
-			//         '<span class="text">new password</span>' +
-			//         '<span class="text">' + build.iconic('data-transfer-upload')+ '</span>' +
-			//         '</p>' +
-			//         '</div>';
-			//
-			//     $(".users_view").append(html);
-			//
-			//     let i = 0;
-			//     while(i < users.json.length)
-			//     {
-			//         user = users.json[i];
-			//
-			//         $(".users_view").append(build.user(user));
-			//
-			//         if(user.upload === 1)
-			//         {
-			//             $('#UserData' + user.id + ' .choice input[name="upload"]').click();
-			//         }
-			//
-			//         settings.bind('#UserUpdate' + user.id, '#UserData' + user.id, users.update);
-			//         settings.bind('#UserDelete' + user.id, '#UserData' + user.id, users.delete);
-			//
-			//         i += 1;
-			//
-			//     }
-			//     html = '<div class="users_view_line"';
-			//
-			//     if (users.json.length === 0) {
-			//         html += ' style="padding-top: 0px;"';
-			//     }
-			//     html += '>' +
-			//         '<p id="UserCreate">' +
-			//         '<input class="text" name="username" type="text" value="" placeholder="new username" />' +
-			//         '<input class="text" name="password" type="text" placeholder="new password" />' +
-			//         '<span class="choice">' +
-			//         '<label>' +
-			//         '<input type="checkbox" name="upload" />' +
-			//         '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' +
-			//         '</label>' +
-			//         '</span>' +
-			//         '</p>' +
-			//         '<a id="UserCreate_button"  class="basicModal__button basicModal__button_CREATE">Create</a>' +
-			//         '</div>';
-			//     $(".users_view").append(html);
-			//     settings.bind('#UserCreate_button', '#UserCreate', users.create);
+			$('#Remove_button').on('click', sharing.delete);
 		}
 	}
 };

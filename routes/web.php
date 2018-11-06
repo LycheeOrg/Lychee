@@ -49,6 +49,8 @@ Route::post('/api/Photo::delete',           'PhotoController@delete')->middlewar
 Route::post('/api/Photo::duplicate',        'PhotoController@duplicate')->middleware('upload');
 
 Route::post('/api/Sharing::List',           'SharingController@list_sharing')->middleware('upload');
+Route::post('/api/Sharing::Add',            'SharingController@add')->middleware('upload');
+Route::post('/api/Sharing::Delete',         'SharingController@delete')->middleware('upload');
 
 Route::post('/api/Settings::setLogin',      'SettingsController@setLogin');
 Route::post('/api/Settings::setSorting',    'SettingsController@setSorting')->middleware('admin');

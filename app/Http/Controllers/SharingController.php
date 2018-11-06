@@ -43,4 +43,36 @@ class SharingController extends Controller
         }
         return ['shared' => $shared, 'albums' => $albums, 'users' => $users];
     }
+
+
+    /**
+     * @param Request $request
+     * @return string
+     */
+    public function add(Request $request) {
+
+        $request->validate([
+            'UserIDs' => 'string|required',
+            'albumIDs' => 'string|required'
+        ]);
+
+        $users = User::whereIn('id',explode(',', $request['UserIDs']))->get();
+
+        foreach ($users as $user)
+        {
+            $user->shared()->sync(explode(',', $request['albumIDs']), false);
+        }
+
+        return 'true';
+    }
+
+    public function delete(Request $request){
+        $request->validate([
+            'ShareIDs' => 'string|required'
+        ]);
+
+        DB::table('user_album')->whereIn('id',explode(',', $request['ShareIDs']))->delete();
+
+        return 'true';
+    }
 }

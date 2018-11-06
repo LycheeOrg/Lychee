@@ -38,6 +38,6 @@ class User extends Authenticatable
      * Albums visible (shared)
      */
     public function shared () {
-        return $this->belongsToMany('App\Album','user_album','album_id','album_id','id','user_id');
+        return $this->belongsToMany('App\Album','user_album','user_id','album_id');
     }
 }
