@@ -69,6 +69,7 @@ class SessionController extends Controller
             }
             else
             {
+                unset($return['config']['dropboxKey']); // normal user don't need to know that.
                 $return['lock'] = ($user->lock == '1');
                 $return['upload'] = ($user->upload == '1');
             }
