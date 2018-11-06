@@ -3,6 +3,7 @@
 ## Security
 
 - [x] Cross-Scripting Request Forgery protection
+- [ ] Sanitize JS html
 
 ## Sub-albums
 
@@ -12,12 +13,12 @@
 ## Multi users (server side)
 
 - [x] User table
-- [ ] Access Right management
+- [x] Access Right management
   - [x] Create Albums
   - [x] Create Users
   - [x] Modify Users
   - [x] Delete Users
-  - [ ] Sharing
+  - [x] Sharing
 - [x] Album ownership
 - [x] Album sharing **(SECURITY)**
 - [x] Upload pictures **(SECURITY)**
@@ -25,13 +26,13 @@
 ## Multi users (client side)
 
 - [x] User table
-- [ ] Access Right management
+- [x] Access Right management
   - [x] Create Albums
   - [x] Create Users
   - [x] Modify Users
   - [x] Delete Users
-  - [ ] Sharing
-- [ ] Album ownership
+  - [x] Sharing
+- [x] Album ownership
 - [x] Album sharing
 - [x] Upload pictures
 
