@@ -37,29 +37,18 @@ class UploadCheck
         if (!$user->upload)
             return response('false');
 
-        // if albumsID(s) ?
         $ret = $this->album_check($request,$id);
-
-        if ($ret === true)
-            return $next($request);
         if ($ret === false)
             return response('false');
 
-        // if photoID(s) ?
         $ret = $this->photo_check($request,$id);
-        if ($ret === true)
-            return $next($request);
         if ($ret === false)
             return response('false');
 
         $ret = $this->share_check($request,$id);
-        if ($ret === true)
-            return $next($request);
         if ($ret === false)
             return response('false');
 
-        // there is nothing about albumID, albumIDs, photoID, photoIDs
-        // we have the upload right so it is probably all right.
         return $next($request);
 
     }
@@ -93,7 +82,7 @@ class UploadCheck
             $albums = Album::whereIn('id',explode(',', $albumIDs))->get();
             if ($albums == null)
             {
-                Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
                 return false;
             }
             $no_error = true;
@@ -125,7 +114,7 @@ class UploadCheck
             $num = Photo::where('id','=',$photoID)->where('owner_id','=',$id)->count();
             if ($num == 0) {
                 Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-                return response('false');
+                return false;
             }
             return true;
         }
@@ -137,7 +126,7 @@ class UploadCheck
             $photos = Photo::whereIn('id',explode(',', $photoIDs))->get();
             if ($photos == null)
             {
-                Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified photos');
                 return false;
             }
             $no_error = true;
