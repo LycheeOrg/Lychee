@@ -1161,6 +1161,10 @@ contextMenu.add = function (e) {
 			return $('#upload_files').click();
 		} }, {}, { title: build.iconic('link-intact') + lychee.locale['IMPORT_LINK'], fn: upload.start.url }, { title: build.iconic('dropbox', 'ionicons') + lychee.locale['IMPORT_DROPBOX'], fn: upload.start.dropbox }, { title: build.iconic('terminal') + lychee.locale['IMPORT_SERVER'], fn: upload.start.server }, {}, { title: build.iconic('folder') + lychee.locale['NEW_ALBUM'], fn: album.add }];
 
+	if (lychee.api_V2 && !lychee.admin) {
+		items.splice(3, 2);
+	}
+
 	basicContext.show(items, e.originalEvent);
 
 	upload.notify();
