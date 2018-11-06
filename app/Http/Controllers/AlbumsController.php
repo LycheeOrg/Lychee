@@ -41,7 +41,7 @@ class AlbumsController extends Controller
             {
                 $albums = Album::where('owner_id','=', 0)
                     ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
-                $shared_albums = Album::get_albums_user(0);
+                $shared_albums = Album::where('owner_id','<>',0)->get();
             }
             else if($user == null)
             {
