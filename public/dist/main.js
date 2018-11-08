@@ -225,10 +225,9 @@ album.getByID = function (photoID) {
 		return undefined;
 	}
 
-	// console.log(album.json.photos);
 	var i = 0;
 	while (i < album.json.photos.length) {
-		if (album.json.photos[i].id === photoID) {
+		if (parseInt(album.json.photos[i].id) === parseInt(photoID)) {
 			return album.json.photos[i];
 		}
 		i++;
@@ -249,7 +248,7 @@ album.deleteByID = function (photoID) {
 
 	$.each(album.json.photos, function (i) {
 
-		if (album.json.photos[i].id === photoID) {
+		if (parseInt(album.json.photos[i].id) === parseInt(photoID)) {
 			album.json.photos.splice(i, 1);
 			deleted = true;
 			return false;
@@ -1051,6 +1050,9 @@ build.multiselect = function (top, left) {
 
 build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
 	var isVideo = type && type.indexOf('video') > -1;
+	if (thumb == 'uploads/thumb/' && isVideo) {
+		return "<span class=\"thumbimg\"><img src='play-icon.png' width='200' height='200' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	}
 	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' srcset='" + retinaThumbUrl + " 1.5x' width='200' height='200' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
@@ -2580,7 +2582,7 @@ lychee.load = function () {
 			lychee.content.hide();
 			album.load(albumID, true);
 		}
-		photo.load(parseInt(photoID), albumID);
+		photo.load(photoID, albumID);
 	} else if (albumID) {
 
 		// Trash data
@@ -3993,7 +3995,6 @@ settings.getValues = function (form_name) {
 		// Store name and value of input
 		values[name] = $(this).val();
 	});
-	console.log(values);
 	return Object.keys(values).length === 0 ? null : values;
 };
 
@@ -4106,8 +4107,6 @@ sharing.add = function () {
 		if (params.UserIDs !== '') params.UserIDs += ',';
 		params.UserIDs += this.value;
 	});
-
-	console.log(params);
 
 	api.post('Sharing::Add', params, function (data) {
 		if (data !== true) {

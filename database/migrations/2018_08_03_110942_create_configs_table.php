@@ -42,7 +42,7 @@ class CreateConfigsTable extends Migration
             ['key' =>  'sortingAlbums_order', 'value' => 'DESC'],
             ['key' =>  'imagick', 'value' => '1'],
             ['key' =>  'dropboxKey', 'value' => ''],
-            ['key' =>  'identifier', 'value' => 'a74587f1cb706a9f4ea1691a4771027e'], // this is to be decided by you.
+            ['key' =>  'identifier', 'value' => 'a74587f1cb706a9f4ea1691a4771027e'], // this is to be decided by you. Anyway, this will be deleted by a migration later so don't bother.
             ['key' =>  'skipDuplicates', 'value' => '0'],
             ['key' =>  'plugins', 'value' => ''],
         ]);
