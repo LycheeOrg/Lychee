@@ -49,7 +49,8 @@ class Album extends Model
         $album['password'] = ($this->password == '' ? '0' : '1');
 
         // Parse thumbs or set default value
-        $album['thumbs'] = explode(',', $this->thumbs);
+//        $album['thumbs'] = explode(',', $this->thumbs);
+//        $album['types'] = (isset($this->types) ? explode(',', $this->types) : array());
 
         return $album;
     }

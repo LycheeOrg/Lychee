@@ -88,20 +88,22 @@ class AlbumsController extends Controller
                 if ((!Session::get('login') && $album_model->password === null)||
                     (Session::get('login'))) {
 
-                    $thumbs = Photo::select('thumbUrl')
+                    $thumbs_types = Photo::select('thumbUrl', 'type')
                         ->where('album_id','=',$album_model->id)
                         ->orderBy('star','DESC')
                         ->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))
                         ->limit(3)->get();
 
-                    if ($thumbs === false) return 'false';
+                    if ($thumbs_types === false) return 'false';
 
                     // For each thumb
                     $k = 0;
                     $album['sysstamp'] = $album_model['created_at'];
                     $album['thumbs'] = array();
-                    foreach ($thumbs as $thumb) {
-                        $album['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb->thumbUrl;
+                    $album['types'] = array();
+                    foreach ($thumbs_types as $thumb_types) {
+                        $album['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->thumbUrl;
+                        $album['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->type;
                         $k++;
                     }
 
@@ -123,12 +125,14 @@ class AlbumsController extends Controller
 
         $return[$kind] = array(
             'thumbs' => array(),
+            'types'  => array(),
             'num'    => $photos_sql->count()
         );
 
         foreach ($photos as $photo) {
             if ($i<3) {
                 $return[$kind]['thumbs'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $photo->thumbUrl;
+                $return[$kind]['types'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $photo->type;
                 $i++;
             } else break;
         }
