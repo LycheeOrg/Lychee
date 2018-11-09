@@ -70,12 +70,7 @@ class PhotoController extends Controller
     function add(Request $request)
     {
 
-        if (file_exists(__DIR__ . '/../vendor/autoload.php' ))
-        {
-            include(__DIR__ . '/../vendor/autoload.php');
-            define('VIDEO_THUMB');
-        }
-
+        
         $request->validate([
             'albumID' => 'string|required',
             '0' => 'required',
