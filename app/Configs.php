@@ -17,7 +17,6 @@ class Configs extends Model
         'username',
         'password',
 		'dropboxKey',
-		'imagick',
 		'plugins'
     ];
 
