@@ -2,12 +2,14 @@
 
 namespace App;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Imagick;
 use ImagickException;
 use ImagickPixel;
+use FFMpeg;
 
 class Photo extends Model
 {
@@ -445,6 +447,31 @@ class Photo extends Model
 
     }
 
+
+    public function createVideoThumb(string $path, $id)
+    {
+        try{
+            $ffprobe = FFMpeg\FFProbe::create();
+            $ffmpeg = FFMpeg\FFMpeg::create();
+            $duration = $ffprobe
+                ->format($path) // extracts file informations
+                ->get('duration');
+            $dimension = new FFMpeg\Coordinate\Dimension(200, 200);
+            $video = $ffmpeg->open($path);
+            $video->filters()->resize($dimension)->synchronize();
+            $frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($duration/2));
+            $frame->save(sys_get_temp_dir() . '/'. md5($id) . '.jpeg');
+            $info = $this->getInfo(sys_get_temp_dir() . '/'. md5($id) . '.jpeg');
+            if (!$this->createThumb(sys_get_temp_dir() . '/'. md5($id) . '.jpeg', md5($id) . '.jpeg', $info['type'], $info['width'], $info['height'])){
+                Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for video');
+            }
+            return true;
+        }
+        catch (Exception $exception) {
+            return false;
+        }
+    }
+
     /**
      * Creates a smaller version of a photo when its size is bigger than a preset size.
      * Photo must be big enough and Imagick must be installed and activated.
@@ -534,9 +561,6 @@ class Photo extends Model
             // it is a duplicate, we do not delete!
             return true;
 
-        // Get retina thumb url
-        $thumbUrl2x = explode(".", $this->thumbUrl);
-        $thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 
         $error = false;
         // Delete big
@@ -551,17 +575,24 @@ class Photo extends Model
             $error = true;
         }
 
-        // Delete thumb
-        if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $this->thumbUrl)&&!unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $this->thumbUrl)) {
-            Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
-            $error = true;
+        if($this->thumbUrl!='')
+        {
+            // Get retina thumb url
+            $thumbUrl2x = explode(".", $this->thumbUrl);
+            $thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+            // Delete thumb
+            if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $this->thumbUrl)&&!unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $this->thumbUrl)) {
+                Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
+                $error = true;
+            }
+
+            // Delete thumb@2x
+            if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $thumbUrl2x)&&!unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $thumbUrl2x)) {
+                Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
+                $error = true;
+            }
         }
 
-        // Delete thumb@2x
-        if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $thumbUrl2x)&&!unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $thumbUrl2x)) {
-            Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
-            $error = true;
-        }
 
         return !$error;
 
@@ -621,4 +652,5 @@ class Photo extends Model
     {
         return $id == 0 ? $query : $query->where('owner_id','=',$id);
     }
+
 }

@@ -137,7 +137,7 @@
 
 <!-- Upload -->
 <div id="upload">
-    <input id="upload_files" type="file" name="fileElem[]" multiple accept="image/*">
+    <input id="upload_files" type="file" name="fileElem[]" multiple accept="image/*,video/*,.mov">
 </div>
 
 <!-- JS -->

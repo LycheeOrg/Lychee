@@ -4281,7 +4281,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.image = {
 		title: lychee.locale['PHOTO_IMAGE'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_SIZE'], value: data.size }, { title: lychee.locale['PHOTO_FORMAT'], value: data.type }, { title: lychee.locale['PHOTO_FORMAT'], value: data.width + ' x ' + data.height }]
+		rows: [{ title: lychee.locale['PHOTO_SIZE'], value: data.size }, { title: lychee.locale['PHOTO_FORMAT'], value: data.type }, { title: lychee.locale['PHOTO_RESOLUTION'], value: data.width + ' x ' + data.height }]
 	};
 
 	// Only create tags section when user logged in

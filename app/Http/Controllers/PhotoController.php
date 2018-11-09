@@ -20,13 +20,22 @@ class PhotoController extends Controller
         IMAGETYPE_PNG
     );
 
+    public static $validVideoTypes = array(
+        "video/mp4",
+        "video/ogg",
+        "video/webm",
+        "video/quicktime"
+    );
     public static $validExtensions = array(
         '.jpg',
         '.jpeg',
         '.png',
-        '.gif'
+        '.gif',
+        '.ogv',
+        '.mp4',
+        '.webm',
+        '.mov'
     );
-
 
 
     function get(Request $request){
@@ -58,43 +67,71 @@ class PhotoController extends Controller
 
 
 
-    function add(Request $request){
+    function add(Request $request)
+    {
+
+        if (file_exists(__DIR__ . '/../vendor/autoload.php' ))
+        {
+            include(__DIR__ . '/../vendor/autoload.php');
+            define('VIDEO_THUMB');
+        }
 
         $request->validate([
             'albumID' => 'string|required',
             '0' => 'required',
-            '0.*' => 'image|mimes:jpeg,png,jpg,gif',
+//            '0.*' => 'image|mimes:jpeg,png,jpg,gif',
+            '0.*' => 'image|mimes:jpeg,png,jpg,gif,mov,webm,mp4,ogv',
 //                |max:2048'
         ]);
 
         $id = Session::get('UserID');
 
-        if(!$request->hasfile('0'))
+        if (!$request->hasfile('0'))
             return Response::error('missing files');
 
         // Check permissions
-        if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS'))===false||
-            Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG'))===false||
-            Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM'))===false||
-            Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB'))===false) {
+        if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS')) === false ||
+            Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')) === false ||
+            Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')) === false ||
+            Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) === false) {
             Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
             return Response::error('An upload-folder is missing or not readable and writable!');
         }
 
-        switch($request['albumID']) {
+        switch ($request['albumID']) {
             // s for public (share)
-            case 's': $public  = 1; $star    = 0; $albumID = null; break;
+            case 's':
+                $public = 1;
+                $star = 0;
+                $albumID = null;
+                break;
 
             // f for starred (fav)
-            case 'f': $star    = 1; $public  = 0; $albumID = null; break;
+            case 'f':
+                $star = 1;
+                $public = 0;
+                $albumID = null;
+                break;
 
             // r for recent
-            case 'r': $public  = 0; $star    = 0; $albumID = null; break;
+            case 'r':
+                $public = 0;
+                $star = 0;
+                $albumID = null;
+                break;
 
             // r for recent
-            case '0': $public  = 0; $star    = 0; $albumID = null; break;
+            case '0':
+                $public = 0;
+                $star = 0;
+                $albumID = null;
+                break;
 
-            default: $star   = 0;   $public  = 0; $albumID = $request['albumID']; break;
+            default:
+                $star = 0;
+                $public = 0;
+                $albumID = $request['albumID'];
+                break;
         }
 
         // Only process the first photo in the array
@@ -108,11 +145,15 @@ class PhotoController extends Controller
         }
 
         // should not be needed
-        // Verify image
-        $type = @exif_imagetype($file->getPathName());
-        if (!in_array($type, self::$validTypes, true)) {
-            Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
-            return Response::error('Photo type not supported!');
+        // Verify video
+        $mimeType = $file->getMimeType();
+        if (!in_array($mimeType, self::$validVideoTypes, true)) {
+            // Verify image
+            $type = @exif_imagetype($file->getPathName());
+            if (!in_array($type, self::$validTypes, true)) {
+                Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
+                return Response::error('Photo type not supported!');
+            }
         }
 
         // Generate id
@@ -121,11 +162,8 @@ class PhotoController extends Controller
 
         // Set paths
         $tmp_name   = $file->getPathName();
-//        Logs::notice(__METHOD__, __LINE__, 'tmp_name: '.$tmp_name);
         $photo_name = md5(microtime()) . $extension;
-//        Logs::notice(__METHOD__, __LINE__, 'photo_name: '.$photo_name);
         $path       = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo_name;
-//        Logs::notice(__METHOD__, __LINE__, 'path: '.$path);
 
         // Calculate checksum
         $checksum = sha1_file($tmp_name);
@@ -182,9 +220,9 @@ class PhotoController extends Controller
         $photo->url = $photo_name;
         $photo->description = $info['description'];
         $photo->tags = $info['tags'];
-        $photo->width = $info['width'];
-        $photo->height = $info['height'];
-        $photo->type = $info['type'];
+        $photo->width = $info['width'] ? $info['width'] : 0;
+        $photo->height = $info['height'] ? $info['height'] : 0;
+        $photo->type = ($info['type'] ? $info['type'] : $mimeType );
         $photo->size = $info['size'];
         $photo->iso = $info['iso'];
         $photo->aperture = $info['aperture'];
@@ -203,7 +241,7 @@ class PhotoController extends Controller
         if ($exists===false) {
 
             // Set orientation based on EXIF data
-            if ($info['type']==='image/jpeg' && isset($info['orientation'])&&$info['orientation']!=='') {
+            if ($photo->type === 'image/jpeg' && isset($info['orientation'])&&$info['orientation']!=='') {
                 $adjustFile = Photo::adjustFile($path, $info);
                 if ($adjustFile!==false) $info = $adjustFile;
                 else Logs::notice(__METHOD__, __LINE__, 'Skipped adjustment of photo (' . $info['title'] . ')');
@@ -216,12 +254,33 @@ class PhotoController extends Controller
             if ($info['takestamp']!==''&& $info['takestamp']!==0) @touch($path, $info['takestamp']);
 
             // Create Thumb
-            if (!$photo->createThumb()) {
-                Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
-                return Response::error('Could not create thumbnail for photo!');
-            }
+            if(!in_array($photo->type , self::$validVideoTypes, true)) {
 
-            $path_thumb = basename($photo_name, $extension).".jpeg";
+                if (!$photo->createThumb()) {
+                    Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
+                    return Response::error('Could not create thumbnail for photo!');
+                }
+
+                $path_thumb = basename($photo_name, $extension) . ".jpeg";
+            }
+			elseif(!defined('VIDEO_THUMB'))
+            {
+                Logs::notice(__METHOD__, __LINE__, 'Could not create thumbnail for video because FFMPEG is not available.');
+                // Set thumb url
+                $path_thumb = '';
+            }
+            else
+            {
+                if (!$photo->createVideoThumb($path, $id)){
+                    Logs::error( __METHOD__, __LINE__, 'Could not create thumbnail for video');
+                    $path_thumb = '';
+                }
+                else
+                {
+                    // Set thumb url
+                    $path_thumb = md5($id) . '.jpeg';
+                }
+            }
 
             // Create Medium
             if ($photo->createMedium()) $medium = 1;

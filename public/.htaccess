@@ -22,21 +22,10 @@
 
 Options -Indexes
 
-# ---
-# Uncomment these lines to change PHP parameters if you are using the PHP Apache module
-# ---
-#<IfModule mod_php5.c>
-#	php_value max_execution_time 200
-#	php_value post_max_size 200M
-#	php_value upload_max_size 200M
-#	php_value upload_max_filesize 20M
-#	php_value max_file_uploads 100
-#</IfModule>
 <IfModule mod_php7.c>
 	php_value max_execution_time 200
-	php_value post_max_size 200M
-	php_value upload_max_size 200M
-	php_value upload_max_filesize 50M
+	php_value post_max_size 500M
+	php_value upload_max_filesize 500M
 	php_value max_file_uploads 100
 </IfModule>
 
