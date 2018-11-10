@@ -331,7 +331,7 @@ album.add = function () {
 		var title = data.title;
 
 		var isNumber = function isNumber(n) {
-			return !isNaN(parseFloat(n)) && isFinite(n);
+			return !isNaN(parseInt(n, 10)) && isFinite(n);
 		};
 
 		basicModal.close();
@@ -344,6 +344,49 @@ album.add = function () {
 
 			if (data !== false && isNumber(data)) {
 				albums.refresh();
+				lychee.goto(data);
+			} else {
+				lychee.error(null, params, data);
+			}
+		});
+	};
+
+	basicModal.show({
+		body: "<p>" + lychee.locale['TITLE_NEW_ALBUM'] + " <input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='Untitled'></p>",
+		buttons: {
+			action: {
+				title: lychee.locale['CREATE_ALBUM'],
+				fn: action
+			},
+			cancel: {
+				title: lychee.locale['CANCEL'],
+				fn: basicModal.close
+			}
+		}
+	});
+};
+
+album.addandmove = function (photoIDs) {
+
+	var action = function action(data) {
+
+		var title = data.title;
+
+		var isNumber = function isNumber(n) {
+			return !isNaN(parseInt(n, 10)) && isFinite(n);
+		};
+
+		basicModal.close();
+
+		var params = {
+			title: title
+		};
+
+		api.post('Album::add', params, function (data) {
+
+			if (data !== false && isNumber(data)) {
+				albums.refresh();
+				photo.setAlbum(photoIDs, data);
 				lychee.goto(data);
 			} else {
 				lychee.error(null, params, data);
@@ -1453,11 +1496,7 @@ contextMenu.move = function (photoIDs, e) {
 
 	api.post('Albums::get', {}, function (data) {
 
-		if (data.num === 0) {
-
-			// Show only 'Add album' when no album available
-			items = [{ title: lychee.locale['NEW_ALBUM'], fn: album.add }];
-		} else {
+		if (data.num > 0) {
 
 			// Generate list of albums
 			$.each(data.albums, function () {
@@ -1485,6 +1524,10 @@ contextMenu.move = function (photoIDs, e) {
 					} });
 			}
 		}
+		items.unshift({});
+		items.unshift({ title: lychee.locale['NEW_ALBUM'], fn: function fn() {
+				return album.addandmove(photoIDs);
+			} });
 
 		basicContext.show(items, e.originalEvent, contextMenu.close);
 	});
