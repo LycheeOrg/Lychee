@@ -10,6 +10,7 @@
         "ext-gd": "*",
         "ext-imagick": "*",
         "ext-json": "*",
+        "bepsvpt/secure-headers": "^5.3",
         "doctrine/dbal": "^2.8",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.7.*",
