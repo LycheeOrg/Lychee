@@ -7,7 +7,7 @@
 
 ## Sub-albums
 
-- [ ] parent - child relationship
+- [x] parent - child relationship
 - [ ] associated Front-end
 
 ## Multi users (server side)
@@ -58,7 +58,7 @@
 
 - [ ] Display photos _&agrave; la flickr_ (not as square anymore, fixed height)
 - [ ] Copy to...
-- [ ] New album from selection
+- [x] New album from selection
 - [ ] Multi select without click-drag
 - [ ] Slideshow with random
 - [ ] Slideshow without random
