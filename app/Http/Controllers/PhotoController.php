@@ -70,7 +70,7 @@ class PhotoController extends Controller
     function add(Request $request)
     {
 
-        
+
         $request->validate([
             'albumID' => 'string|required',
             '0' => 'required',

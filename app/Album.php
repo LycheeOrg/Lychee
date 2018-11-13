@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 
 class Album extends Model
@@ -55,6 +56,46 @@ class Album extends Model
         return $album;
     }
 
+
+
+    public function gen_thumbs($return)
+    {
+
+        $return['thumbs'] = array();
+        $return['types'] = array();
+
+        $thumbs_types = Photo::select('thumbUrl', 'type')
+            ->where('album_id','=',$this->id)
+            ->orderBy('star','DESC')
+            ->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))
+            ->limit(3)->get();
+
+        // For each thumb
+        $k = 0;
+        foreach ($thumbs_types as $thumb_types) {
+            $return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->thumbUrl;
+            $return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->type;
+            $k++;
+        }
+
+        return $return;
+    }
+
+
+    public function get_albums()
+    {
+        $return = array();
+        $i = 0;
+        foreach($this->children as $album)
+        {
+            $album_t = $album->prepareData();
+            $album_t = $album->gen_thumbs($album_t);
+            $return[$i] = $album_t;
+            $i++;
+        }
+        return $return;
+    }
+
     /**
      * @param string $password
      * @return boolean Returns when album is public.
@@ -92,6 +133,7 @@ class Album extends Model
 
     public static function get_albums_user($id) {
         return Album::where('owner_id', '<>', $id)
+            ->where('parent_id','=',null)
             ->Where(
                 function ($query) use ($id) {
                     $query->whereIn('id', function ($query) use ($id)
@@ -132,5 +174,13 @@ class Album extends Model
         }
 
         return $return;
+    }
+
+    public function children() {
+        return $this->hasMany('App\Album','parent_id','id');
+    }
+
+    public function parent() {
+        return $this->belongsTo('App\Album','id','parent_id');
     }
 }

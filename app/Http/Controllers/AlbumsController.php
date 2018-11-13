@@ -39,9 +39,9 @@ class AlbumsController extends Controller
 
             if($id == 0)
             {
-                $albums = Album::where('owner_id','=', 0)
+                $albums = Album::where('owner_id','=', 0)->where('parent_id','=',null)
                     ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
-                $shared_albums = Album::where('owner_id','<>',0)->get();
+                $shared_albums = Album::where('owner_id','<>',0)->where('parent_id','=',null)->get();
             }
             else if($user == null)
             {
@@ -50,14 +50,14 @@ class AlbumsController extends Controller
             }
             else
             {
-                $albums = Album::where('owner_id','=', $user->id)
+                $albums = Album::where('owner_id','=', $user->id)->where('parent_id','=',null)
                     ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
                 $shared_albums = Album::get_albums_user($user->id);
             }
         }
         else
         {
-            $albums = Album::where('public','=','1')->where('visible_hidden','=','1')
+            $albums = Album::where('public','=','1')->where('visible_hidden','=','1')->where('parent_id','=',null)
                 ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
         }
 
@@ -71,6 +71,7 @@ class AlbumsController extends Controller
         return $return;
 
     }
+
 
     static private function prepare_albums($albums) {
 
@@ -88,25 +89,8 @@ class AlbumsController extends Controller
                 if ((!Session::get('login') && $album_model->password === null)||
                     (Session::get('login'))) {
 
-                    $thumbs_types = Photo::select('thumbUrl', 'type')
-                        ->where('album_id','=',$album_model->id)
-                        ->orderBy('star','DESC')
-                        ->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))
-                        ->limit(3)->get();
-
-                    if ($thumbs_types === false) return 'false';
-
-                    // For each thumb
-                    $k = 0;
                     $album['sysstamp'] = $album_model['created_at'];
-                    $album['thumbs'] = array();
-                    $album['types'] = array();
-                    foreach ($thumbs_types as $thumb_types) {
-                        $album['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->thumbUrl;
-                        $album['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->type;
-                        $k++;
-                    }
-
+                    $album = $album_model->gen_thumbs($album);
                 }
 
                 // Add to return

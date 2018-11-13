@@ -12,6 +12,12 @@ use Illuminate\Support\Facades\Session;
 
 class AlbumController extends Controller
 {
+    /**
+     * Add a new Album
+     *
+     * @param Request $request
+     * @return false|string
+     */
     function add(Request $request)
     {
         $request->validate(['title' => 'string|required|max:100']);
@@ -27,12 +33,18 @@ class AlbumController extends Controller
 
     }
 
+    /**
+     * Provided an albumID, returns the album.
+     *
+     * @param Request $request
+     * @return array|string
+     */
     function get(Request $request)
     {
         $request->validate(['albumID' => 'string|required']);
 
         $return = array();
-
+        $return['albums'] = array();
         // Get photos
         // Get album information
         switch ($request['albumID']) {
@@ -48,15 +60,13 @@ class AlbumController extends Controller
                     return 'false';
                 }
                 $return = $album->prepareData();
+                $return['albums'] = $album->get_albums();
                 $photos_sql = Photo::set_order(Photo::where('album_id','=',$request['albumID']));
                 break;
         }
 
         $previousPhotoID = '';
         $return['photos'] = array();
-        // we do not return content array anymore.
-        // this will break a lot of stuff.
-//        $return['content'] = array();
         $photo_counter = 0;
         $photos = $photos_sql->get();
         foreach ($photos as $photo_model) {
@@ -64,21 +74,15 @@ class AlbumController extends Controller
             // Turn data from the database into a front-end friendly format
             $photo = $photo_model->prepareData();
 
-//            $pointer = array();
-
             // Set previous and next photoID for navigation purposes
             $photo['previousPhoto'] = $previousPhotoID;
             $photo['nextPhoto']     = '';
-//            $pointer['medium'] = $photo['medium'];
-//            $pointer['url'] = $photo['url'];
-//            $pointer['thumbUrl'] = $photo['thumbUrl'];
 
             // Set current photoID as nextPhoto of previous photo
             if ($previousPhotoID!=='') $return['photos'][$photo_counter - 1]['nextPhoto'] = $photo['id'];
             $previousPhotoID = $photo['id'];
 
             // Add to return
-//            $return['content'][$photo['id']] = $pointer;
             $return['photos'][$photo_counter] = $photo;
 
             $photo_counter ++;
@@ -87,7 +91,6 @@ class AlbumController extends Controller
         if ($photos_sql->count() === 0) {
 
             // Album empty
-//            $return['content'] = false;
             $return['photos'] = false;
 
         } else {
@@ -110,6 +113,12 @@ class AlbumController extends Controller
     }
 
 
+    /**
+     * Provided the albumID and passwords, return whether the album can be accessed or not.
+     *
+     * @param Request $request
+     * @return string
+     */
     function getPublic(Request $request)
     {
         $request->validate(['albumID' => 'string|required','password' => 'string|nullable']);
@@ -149,7 +158,12 @@ class AlbumController extends Controller
         }
     }
 
-
+    /**
+     * Provided a title and an albumID, change the title of the album
+     *
+     * @param Request $request
+     * @return string
+     */
     function setTitle(Request $request) {
         $request->validate([
             'albumIDs' => 'integer|required',
@@ -167,6 +181,12 @@ class AlbumController extends Controller
         return $no_error ? 'true' : 'false';
     }
 
+    /**
+     * Change the sharing properties of the album
+     *
+     * @param Request $request
+     * @return bool|string
+     */
     function setPublic(Request $request) {
         $request->validate([
             'albumID' => 'integer|required',
@@ -215,6 +235,12 @@ class AlbumController extends Controller
         return 'true';
     }
 
+    /**
+     * Change the description of the album
+     *
+     * @param Request $request
+     * @return bool|string
+     */
     function setDescription(Request $request) {
         $request->validate([
             'albumID' => 'integer|required',
@@ -233,6 +259,12 @@ class AlbumController extends Controller
         return ($album->save()) ? 'true' : 'false';
     }
 
+    /**
+     * Delete the album and all pictures in the album.
+     *
+     * @param Request $request
+     * @return string
+     */
     function delete(Request $request) {
         $request->validate([
             'albumIDs' => 'string|required',
@@ -266,6 +298,12 @@ class AlbumController extends Controller
 
     }
 
+    /**
+     * Merge albums. The first of the list is the destination of the merge
+     *
+     * @param Request $request
+     * @return string
+     */
     function merge(Request $request) {
         $request->validate([
             'albumIDs' => 'string|required',
