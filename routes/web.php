@@ -36,6 +36,7 @@ Route::post('/api/Album::setDescription',   'AlbumController@setDescription')->m
 Route::post('/api/Album::setPublic',        'AlbumController@setPublic')->middleware('upload');
 Route::post('/api/Album::delete',           'AlbumController@delete')->middleware('upload');
 Route::post('/api/Album::merge',            'AlbumController@merge')->middleware('upload');
+Route::post('/api/Album::move',             'AlbumController@move')->middleware('upload');
 
 Route::post('/api/Photo::get',              'PhotoController@get')->middleware('AlbumPWCheck');
 Route::post('/api/Photo::setTitle',         'PhotoController@setTitle')->middleware('upload');

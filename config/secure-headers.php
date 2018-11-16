@@ -371,7 +371,7 @@ return [
                 // 'https:',
             ],
             'self' => true,
-            'unsafe-inline' => false,
+            'unsafe-inline' => true,
             'report-sample' => true,
             'add-generated-nonce' => false,
         ],

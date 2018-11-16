@@ -3,12 +3,12 @@
 ## Security
 
 - [x] Cross-Scripting Request Forgery protection
-- [ ] Sanitize JS html
+- [x] Sanitize JS html (hopefully)
 
 ## Sub-albums
 
 - [x] parent - child relationship
-- [ ] associated Front-end
+- [x] associated Front-end
 
 ## Multi users (server side)
 
@@ -59,7 +59,7 @@
 - [ ] Display photos _&agrave; la flickr_ (not as square anymore, fixed height)
 - [ ] Copy to...
 - [x] New album from selection
-- [ ] Multi select without click-drag
+- [x] Multi select without click-drag
 - [ ] Slideshow with random
 - [ ] Slideshow without random
 

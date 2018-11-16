@@ -32,8 +32,7 @@ class Album extends Model
         $album['title']  = $this->title;
         $album['public'] = strval($this->public);
         $album['hidden'] = strval($this->visible_hidden);
-
-//        $album['owned'] =
+        $album['parent_id'] = $this->parent_id;
 
         // Additional attributes
         // Only part of $album when available
@@ -182,5 +181,24 @@ class Album extends Model
 
     public function parent() {
         return $this->belongsTo('App\Album','id','parent_id');
+    }
+
+    public function predelete(){
+	    $no_error = true;
+	    $albums = $this->children;
+
+	    foreach ($albums as $album)
+	    {
+		    $no_error &= $album->predelete();
+		    $no_error &= $album->delete();
+	    }
+
+	    $photos = $this->photos;
+	    foreach ($photos as $photo)
+	    {
+		    $no_error &= $photo->predelete();
+		    $no_error &= $photos->delete();
+	    }
+	    return $no_error;
     }
 }

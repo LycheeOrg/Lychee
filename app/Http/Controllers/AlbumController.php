@@ -20,13 +20,17 @@ class AlbumController extends Controller
      */
     function add(Request $request)
     {
-        $request->validate(['title' => 'string|required|max:100']);
+        $request->validate(['title' => 'string|required|max:100', 'parent_id' => 'int|nullable']);
+
+        $num = Album::where('id','=',$request['parent_id'])->count();
+		// id cannot be 0, so by definition if $parent_id is 0 then...
 
         $album = new Album();
         $album->id = Helpers::generateID();
         $album->title = $request['title'];
         $album->description = '';
         $album->owner_id = Session::get('UserID');
+        $album->parent_id = $num == 0 ? null : $request['parent_id'];
         $album->save();
 
         return	Response::json($album->id, JSON_NUMERIC_CHECK);
@@ -285,13 +289,8 @@ class AlbumController extends Controller
 
         foreach ($albums as $album)
         {
-            $photos = $album->photos();
-            foreach ($photos as $photo)
-            {
-                $no_error &= $photo->predelete();
-                $no_error &= $photos->delete();
-            }
-            $no_error &= $album->delete();
+	        $no_error &= $album->predelete();
+	        $no_error &= $album->delete();
         }
 
         return $no_error ? 'true' : 'false';
@@ -329,6 +328,14 @@ class AlbumController extends Controller
             $no_error &= $photo->save();
         }
 
+	    $albums = Album::whereIn('parent_id',$albumIDs)->get();
+	    $no_error = true;
+	    foreach ($albums as $album)
+	    {
+		    $album->parent_id = $albumID;
+		    $no_error &= $album->save();
+	    }
+
         $albums = Album::whereIn('id',$albumIDs)->get();
         foreach ($albums as $album_t)
         {
@@ -341,5 +348,34 @@ class AlbumController extends Controller
         return $no_error ? 'true' : 'false';
 
     }
+
+	function move(Request $request)
+	{
+		$request->validate(['albumIDs' => 'string|required']);
+
+		// Convert to array
+		$albumIDs = explode(',', $request['albumIDs']);
+		// Get first albumID
+		$albumID = array_shift($albumIDs);
+
+		if($albumID != 0)
+		{
+			$album = Album::find($albumID);
+			if ($album===null) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+				return 'false';
+			}
+		}
+
+		$albums = Album::whereIn('id',$albumIDs)->get();
+		$no_error = true;
+		foreach ($albums as $album)
+		{
+			$album->parent_id = ($albumID == 0 ? null : $albumID) ;
+			$no_error &= $album->save();
+		}
+
+		return $no_error ? 'true' : 'false';
+	}
 
 }

@@ -25,7 +25,6 @@ class AlbumsController extends Controller
             'smartalbums'   => null,
             'albums'        => null,
             'shared_albums' => null,
-            'num'           => 0
         );
 
         $shared_albums = null;
@@ -39,7 +38,7 @@ class AlbumsController extends Controller
 
             if($id == 0)
             {
-                $albums = Album::where('owner_id','=', 0)->where('parent_id','=',null)
+                $albums = Album::where('owner_id','=', 0)
                     ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
                 $shared_albums = Album::where('owner_id','<>',0)->where('parent_id','=',null)->get();
             }
@@ -50,7 +49,7 @@ class AlbumsController extends Controller
             }
             else
             {
-                $albums = Album::where('owner_id','=', $user->id)->where('parent_id','=',null)
+                $albums = Album::where('owner_id','=', $user->id)
                     ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
                 $shared_albums = Album::get_albums_user($user->id);
             }
@@ -66,7 +65,7 @@ class AlbumsController extends Controller
         $return['shared_albums'] = AlbumsController::prepare_albums($shared_albums);
 
         // Num of albums
-        $return['num'] = $albums == null ? 0 : count($albums);
+//        $return['num'] = $albums == null ? 0 : count($albums);
 
         return $return;
 
