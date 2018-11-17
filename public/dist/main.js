@@ -1393,15 +1393,6 @@ build.user = function (user) {
  * @description This module is used for the context menu.
  */
 
-var getAlbumFrom = function getAlbumFrom(albums, id) {
-
-	for (a in albums) {
-		if (albums[a].id === id) return albums[a];
-	}
-
-	return null;
-};
-
 contextMenu = {};
 
 contextMenu.add = function (e) {
@@ -1569,20 +1560,6 @@ contextMenu.mergeAlbum = function (albumID, e) {
 				}));
 				items.unshift({});
 			}
-
-			// $.each(data.albums, function() {
-			//
-			// 	if (!this.thumbs[0]) this.thumbs[0] = 'Lychee-front/images/no_cover.svg';
-			// 	if (this.title==='') this.title = lychee.locale['UNTITLED'];
-			//
-			// 	let html = lychee.html`<img class='cover' width='16' height='16' src='${ this.thumbs[0] }'><div class='title'>${ this.title }</div>`;
-			//
-			// 	if (this.id!==albumID) items.push({
-			// 		title: html,
-			// 		fn: () => album.merge([ albumID, this.id ])
-			// 	})
-			//
-			// })
 		}
 
 		if (items.length === 0) return false;
@@ -1620,10 +1597,13 @@ contextMenu.countSubAlbums = function (photoIDs) {
 
 	var count = 0;
 
+	var i = void 0,
+	    j = void 0;
+
 	if (album.albums) {
 
-		for (i in photoIDs) {
-			for (j in album.albums) {
+		for (i = 0; i < photoIDs.length; i++) {
+			for (j = 0; j < album.albums.length; j++) {
 				if (album.albums[j].id === photoIDs[i]) {
 					count++;
 					break;
@@ -1688,20 +1668,6 @@ contextMenu.photoTitle = function (albumID, photoID, e) {
 		items = items.concat(contextMenu.buildList(data.photos, [photoID], function (a) {
 			return lychee.goto(albumID + '/' + a.id);
 		}));
-
-		// // Generate list of albums
-		// $.each(data.photos, function(index) {
-		//
-		// 	if (this.title==='') this.title = lychee.locale['UNTITLED'];
-		//
-		// 	let html = lychee.html`<img class='cover' width='16' height='16' src='${ this.thumbUrl }'><div class='title'>${ this.title }</div>`;
-		//
-		// 	if (this.id!==photoID) items.push({
-		// 		title: html,
-		// 		fn: () => lychee.goto(albumID + '/' + this.id)
-		// 	})
-		//
-		// })
 	}
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
@@ -1726,12 +1692,14 @@ contextMenu.photoMore = function (photoID, e) {
 contextMenu.getSubIDs = function (albums, albumID) {
 
 	var ids = [parseInt(albumID, 10)];
+	var a = void 0,
+	    id = void 0;
 
-	for (a in albums) {
+	for (a = 0; a < albums.length; a++) {
 		if (parseInt(albums[a].parent_id, 10) === parseInt(albumID, 10)) {
 
 			var sub = contextMenu.getSubIDs(albums, albums[a].id);
-			for (id in sub) {
+			for (id = 0; id < sub.length; id++) {
 				ids.push(sub[id]);
 			}
 		}
@@ -1756,10 +1724,12 @@ contextMenu.moveAlbum = function (albumIDs, e) {
 			}
 			// Disable all childs
 			// It's not possible to move us into them
+			var i = void 0,
+			    s = void 0;
 			var exclude = [];
-			for (i in albumIDs) {
+			for (i = 0; i < albumIDs.length; i++) {
 				var sub = contextMenu.getSubIDs(data.albums, albumIDs[i]);
-				for (s in sub) {
+				for (s = 0; s < sub.length; s++) {
 					exclude.push(sub[s]);
 				}
 			}
@@ -2456,8 +2426,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.0',
-	versionCode: '030200',
+	version: '3.2.1',
+	versionCode: '030201',
 
 	updatePath: '//LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee',
@@ -3056,10 +3026,10 @@ lychee.animate = function (obj, animation) {
 
 	if (!obj.jQuery) obj = $(obj);
 
-	for (var _i = 0; _i < animations.length; _i++) {
-		for (var x = 0; x < animations[_i].length; x++) {
-			if (animations[_i][x] == animation) {
-				obj.removeClass(animations[_i][0] + ' ' + animations[_i][1]).addClass(animation);
+	for (var i = 0; i < animations.length; i++) {
+		for (var x = 0; x < animations[i].length; x++) {
+			if (animations[i][x] == animation) {
+				obj.removeClass(animations[i][0] + ' ' + animations[i][1]).addClass(animation);
 				return true;
 			}
 		}
@@ -3094,7 +3064,7 @@ lychee.loadDropbox = function (callback) {
 		loadingBar.show();
 
 		var g = document.createElement('script');
-		var _s = document.getElementsByTagName('script')[0];
+		var s = document.getElementsByTagName('script')[0];
 
 		g.src = 'https://www.dropbox.com/static/api/1/dropins.js';
 		g.id = 'dropboxjs';
@@ -3108,7 +3078,7 @@ lychee.loadDropbox = function (callback) {
 			loadingBar.hide();
 			callback();
 		};
-		_s.parentNode.insertBefore(g, _s);
+		s.parentNode.insertBefore(g, s);
 	} else if (lychee.dropbox === true && lychee.dropboxKey != null && lychee.dropboxKey !== '') {
 
 		callback();
@@ -3239,27 +3209,9 @@ multiselect.toggleItem = function (object, id) {
 	var selected = multiselect.isSelected(id).selected;
 
 	if (selected === false) multiselect.addItem(object, id);else multiselect.removeItem(object, id);
-
-	// let pos = $.inArray(id, multiselect.ids);
-	//
-	// if (pos!==-1) {
-	// 	multiselect.ids.splice(pos, 1);
-	// 	multiselect.deselect(object)
-	// } else {
-	// 	multiselect.ids.push(id);
-	// 	multiselect.select(object)
-	// }
 };
 
 multiselect.addItem = function (object, id) {
-
-	// let pos = $.inArray(id, multiselect.ids);
-	// if (multiselect.isSelected(id).selected===true) return;
-	//
-	// if (pos===-1) {
-	// 	multiselect.ids.push(id);
-	// 	multiselect.select(object)
-	// }
 
 	if (album.isSmartID(id)) return;
 	if (multiselect.isSelected(id).selected === true) return;
@@ -3317,15 +3269,11 @@ multiselect.photoClick = function (e, photoObj) {
 	var id = photoObj.attr('data-id');
 
 	if (isSelectKeyPressed(e) && lychee.upload) {
+		if (photoObj.hasClass('disabled') && !lychee.admin) return;
 		multiselect.toggleItem(photoObj, id);
 	} else {
 		lychee.goto(album.getID() + '/' + id);
 	}
-
-	// let id = photoObj.attr('data-id');
-	//
-	// if (e.shiftKey) multiselect.toggleItem(photoObj, id);
-	// else            lychee.goto(album.getID() + '/' + id)
 };
 
 multiselect.albumContextMenu = function (e, albumObj) {
@@ -3355,44 +3303,16 @@ multiselect.photoContextMenu = function (e, photoObj) {
 		contextMenu.photoMulti(multiselect.ids, e);
 		multiselect.clearSelection(false);
 	} else if (visible.album()) {
-		console.log(id);
+		multiselect.clearSelection();
 		contextMenu.photo(id, e);
 	} else if (visible.photo()) {
+		// should not happen... but you never know...
 		multiselect.clearSelection();
 		contextMenu.photo(photo.getID(), e);
 	} else {
 		lychee.error('Could not find what you wnat.');
 	}
 };
-
-// multiselect.albumContextMenu = function(e, albumObj) {
-//
-// 	let id = albumObj.attr('data-id');
-//
-// 	if ($.inArray(id, multiselect.ids)!==-1) {
-// 		contextMenu.albumMulti(multiselect.ids, e);
-// 		multiselect.ids = []
-// 	} else {
-// 		if (albumObj.hasClass('disabled') && !lychee.admin) return;
-// 		multiselect.clearSelection();
-// 		contextMenu.album(album.getID(), e)
-// 	}
-//
-// };
-//
-// multiselect.photoContextMenu = function(e, photoObj) {
-//
-// 	let id = photoObj.attr('data-id');
-//
-// 	if ($.inArray(id, multiselect.ids)!==-1) {
-// 		contextMenu.photoMulti(multiselect.ids, e);
-// 		multiselect.ids = []
-// 	} else {
-// 		multiselect.clearSelection();
-// 		contextMenu.photo(photo.getID(), e)
-// 	}
-//
-// };
 
 multiselect.clearSelection = function () {
 
@@ -3530,51 +3450,14 @@ multiselect.getSelection = function (e) {
 
 		if (offset.top >= size.top - tolerance && offset.left >= size.left - tolerance && offset.top + 206 <= size.top + size.height + tolerance && offset.left + 206 <= size.left + size.width + tolerance) {
 
-			var _id = $(this).attr('data-id');
+			var id = $(this).attr('data-id');
 
-			multiselect.addItem($(this), _id);
+			multiselect.addItem($(this), id);
 		}
 	});
 
 	multiselect.hide();
 };
-
-// multiselect.getSelection = function(e) {
-//
-// 	let tolerance = 150;
-// 	let ids       = [];
-// 	let size      = multiselect.getSize();
-//
-// 	if (visible.contextMenu())  return false;
-// 	if (!visible.multiselect()) return false;
-//
-// 	$('.photo, .album').each(function() {
-//
-// 		let offset = $(this).offset();
-//
-// 		if (offset.top>=(size.top - tolerance) &&
-// 			offset.left>=(size.left - tolerance) &&
-// 			(offset.top + 206)<=(size.top + size.height + tolerance) &&
-// 			(offset.left + 206)<=(size.left + size.width + tolerance)) {
-//
-// 			let id = $(this).data('id');
-//
-// 			if (id!=='0' && id!==0 && id!=='f' && id!=='s' && id!=='r' && id!=null) {
-//
-// 				ids.push(id);
-// 				$(this).addClass('active')
-//
-// 			}
-//
-// 		}
-//
-// 	});
-//
-// 	if (ids.length!==0 && visible.album())       contextMenu.photoMulti(ids, e);
-// 	else if (ids.length!==0 && visible.albums()) contextMenu.albumMulti(ids, e);
-// 	else                                         multiselect.close()
-//
-// };
 
 multiselect.select = function (id) {
 
@@ -5296,9 +5179,9 @@ upload.start = {
 				}
 
 				// Check if there are file which are not finished
-				for (var _i2 = 0; _i2 < files.length; _i2++) {
+				for (var i = 0; i < files.length; i++) {
 
-					if (files[_i2].ready === false) {
+					if (files[i].ready === false) {
 						wait = true;
 						break;
 					}
@@ -5346,12 +5229,12 @@ upload.start = {
 		if (files.length <= 0) return false;
 		if (albumID === false || visible.albums() === true) albumID = 0;
 
-		for (var _i3 = 0; _i3 < files.length; _i3++) {
+		for (var i = 0; i < files.length; i++) {
 
-			files[_i3].num = _i3;
-			files[_i3].ready = false;
+			files[i].num = i;
+			files[i].ready = false;
 
-			if (_i3 < files.length - 1) files[_i3].next = files[_i3 + 1];else files[_i3].next = null;
+			if (i < files.length - 1) files[i].next = files[i + 1];else files[i].next = null;
 		}
 
 		window.onbeforeunload = function () {
@@ -5536,12 +5419,12 @@ upload.start = {
 
 			var links = '';
 
-			for (var _i4 = 0; _i4 < files.length; _i4++) {
+			for (var i = 0; i < files.length; i++) {
 
-				links += files[_i4].link + ',';
+				links += files[i].link + ',';
 
-				files[_i4] = {
-					name: files[_i4].link
+				files[i] = {
+					name: files[i].link
 				};
 			}
 
@@ -5716,7 +5599,7 @@ view.albums = {
 			if (albums.json.albums && albums.json.albums.length !== 0) {
 
 				$.each(albums.json.albums, function () {
-					if (this.parent_id === null || this.parent_id === 0) {
+					if (!this.parent_id || this.parent_id === 0) {
 						albums.parse(this);
 						albumsData += build.album(this);
 					}
@@ -5731,8 +5614,10 @@ view.albums = {
 				if (albums.json.shared_albums && albums.json.shared_albums.length !== 0) {
 
 					$.each(albums.json.shared_albums, function () {
-						albums.parse(this);
-						sharedData += build.album(this, true);
+						if (!this.parent_id || this.parent_id === 0) {
+							albums.parse(this);
+							sharedData += build.album(this, true);
+						}
 					});
 
 					// Add divider
