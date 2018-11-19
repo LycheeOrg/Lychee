@@ -20,6 +20,17 @@ class Configs extends Model
 		'plugins'
     ];
 
+    protected static $clear_field = [
+    	'lang_available',
+	    'imagick',
+	    'skipDuplicates',
+	    'sortingAlbums',
+	    'sortingAlbums_col',
+	    'sortingAlbums_order',
+	    'sortingPhotos',
+	    'sortingPhotos_col',
+	    'sortingPhotos_order',
+    ];
 
     /**
      * @param string $key
@@ -44,7 +55,7 @@ class Configs extends Model
 
     /**
      * @param bool $public
-     * @return array Returns the public settings of Lychee.
+     * @return array Returns the upload settings of Lychee.
      */
     public static function get(bool $public = true) {
         if ($public && self::$public_cache) return self::$public_cache;
@@ -135,5 +146,37 @@ class Configs extends Model
         Logs::notice(__METHOD__,__LINE__,"hasImagick : false");
         return false;
     }
+
+	/**
+	 * @return array Returns the public settings of Lychee.
+	 */
+	public static function min_info() {
+
+		// Execute query
+		$configs    = Configs::all();
+
+		$return = array();
+
+		// Add each to return
+		foreach ($configs as $config)
+		{
+			$found = false;
+			foreach (self::$except as $exception) {
+				if ($exception == $config->key) {
+					$found = true;
+				}
+			}
+			foreach (self::$clear_field as $exception) {
+				if ($exception == $config->key) {
+					$found = true;
+				}
+			}
+			if (!$found)
+			{
+				$return[$config->key] = $config->value;
+			}
+		}
+		return $return;
+	}
 
 }

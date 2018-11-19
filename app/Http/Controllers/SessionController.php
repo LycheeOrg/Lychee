@@ -77,7 +77,7 @@ class SessionController extends Controller
 
         } else {
             // Logged out
-            $return['config'] = Configs::get();
+            $return['config'] = Configs::min_info();
             $return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
         }
 
