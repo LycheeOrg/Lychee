@@ -56,7 +56,7 @@
   
 ## Album view
 
-- [ ] Display photos _&agrave; la flickr_ (not as square anymore, fixed height)
+- [x] Display photos _&agrave; la flickr_ (not as square anymore, fixed height)
 - [ ] Copy to...
 - [x] New album from selection
 - [x] Multi select without click-drag
