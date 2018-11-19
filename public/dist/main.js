@@ -1027,6 +1027,26 @@ albums._createSmartAlbums = function (data) {
 	};
 };
 
+albums.isShared = function (albumID) {
+
+	if (albumID == null) return false;
+	if (!albums.json) return false;
+	if (!albums.json.albums) return false;
+
+	var found = false;
+
+	var func = function func() {
+		if (parseInt(this.id, 10) === parseInt(albumID, 10)) {
+			found = true;
+			return false; // stop the loop
+		}
+	};
+
+	if (albums.json.shared_albums !== null) $.each(albums.json.shared_albums, func);
+
+	return found;
+};
+
 albums.getByID = function (albumID) {
 
 	// Function returns the JSON of an album
@@ -1044,7 +1064,7 @@ albums.getByID = function (albumID) {
 		}
 	};
 
-	if (albums.json.shared_albums !== null) $.each(albums.json.albums, func);
+	$.each(albums.json.albums, func);
 
 	if (json === undefined && albums.json.shared_albums !== null) $.each(albums.json.shared_albums, func);
 
@@ -2100,6 +2120,10 @@ $(document).ready(function () {
 		if (!visible.photo()) {
 			$('#upload_files').click();return false;
 		}
+	}).bind(['n'], function () {
+		if (!visible.photo()) {
+			album.add();return false;
+		}
 	}).bind(['s', 'f'], function () {
 		if (visible.photo()) {
 			header.dom('#button_star').click();return false;
@@ -2426,7 +2450,7 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.1',
+	version: '3.2.2',
 	versionCode: '030201',
 
 	updatePath: '//LycheeOrg.github.io/update.json',
@@ -2972,7 +2996,7 @@ lychee.setMode = function (mode) {
 
 		$(document).off('click', '.header__title--editable').off('touchend', '.header__title--editable').off('contextmenu', '.photo').off('contextmenu', '.album').off('drop');
 
-		Mousetrap.unbind(['u']).unbind(['s']).unbind(['f']).unbind(['r']).unbind(['d']).unbind(['t']).unbind(['command+backspace', 'ctrl+backspace']).unbind(['command+a', 'ctrl+a']);
+		Mousetrap.unbind(['u']).unbind(['s']).unbind(['n']).unbind(['f']).unbind(['r']).unbind(['d']).unbind(['t']).unbind(['command+backspace', 'ctrl+backspace']).unbind(['command+a', 'ctrl+a']);
 	}
 	if (!lychee.admin) {
 		$('#button_users, #button_logs, #button_diagnostics').remove();
@@ -2981,29 +3005,6 @@ lychee.setMode = function (mode) {
 	if (mode === 'logged_in') return;
 
 	$('#button_settings, .header__divider, .leftMenu').remove();
-
-	// $('#button_share, #button_share_album')
-	// 	.removeClass('button--eye')
-	// 	.addClass('button--share')
-	// 	.find('use')
-	// 	.attr('xlink:href', '#share');
-	//
-	// $(document)
-	// 	.off('click',       '.header__title--editable')
-	// 	.off('touchend',    '.header__title--editable')
-	// 	.off('contextmenu', '.photo')
-	// 	.off('contextmenu', '.album')
-	// 	.off('drop');
-	//
-	// Mousetrap
-	// 	.unbind([ 'u' ])
-	// 	.unbind([ 's' ])
-	// 	.unbind([ 'f' ])
-	// 	.unbind([ 'r' ])
-	// 	.unbind([ 'd' ])
-	// 	.unbind([ 't' ])
-	// 	.unbind([ 'command+backspace', 'ctrl+backspace' ])
-	// 	.unbind([ 'command+a', 'ctrl+a' ]);
 
 	if (mode === 'public') {
 
@@ -3214,6 +3215,7 @@ multiselect.toggleItem = function (object, id) {
 multiselect.addItem = function (object, id) {
 
 	if (album.isSmartID(id)) return;
+	if (albums.isShared(id)) return;
 	if (multiselect.isSelected(id).selected === true) return;
 
 	var isAlbum = object.hasClass('album');
@@ -5712,14 +5714,17 @@ view.album = {
 					albums.parse(this);
 					photosData += build.album(this);
 				});
-
-				// Add divider
-				if (album.json.albums.length > 0) {
-					photosData = build.divider(lychee.locale['ALBUMS']) + photosData;
-					photosData += build.divider(lychee.locale['PHOTOS']);
-				}
 			}
 			if (album.json.photos && album.json.photos !== false) {
+
+				// Add divider
+				if (album.json.albums && album.json.albums !== false && album.json.albums.length > 0) {
+					photosData = build.divider(lychee.locale['ALBUMS']) + photosData;
+				}
+
+				if (photosData !== '' && album.json.photos.length > 0) {
+					photosData += build.divider(lychee.locale['PHOTOS']);
+				}
 
 				// Build photos
 				$.each(album.json.photos, function () {
