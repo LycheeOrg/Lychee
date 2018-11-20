@@ -48,6 +48,7 @@ class SessionController extends Controller
 
             // Logged in
             $return['config'] = Configs::get(false);
+	        $return['config']['imagick'] = (extension_loaded('imagick') && $return['config']['imagick'] == '1') ? '1' : '0';
             $return['config']['login'] = !$public;
             unset($return['config']['username']);
             unset($return['config']['password']);

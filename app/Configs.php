@@ -78,8 +78,7 @@ class Configs extends Model
 //        $return['plugins'] = explode(';', $return['plugins']);
         $return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
         $return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
-
-        $return['lang_available'] = Lang::get_lang_available();
+	    $return['lang_available'] = Lang::get_lang_available();
 
 
         if($public) {

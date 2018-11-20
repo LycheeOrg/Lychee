@@ -197,7 +197,7 @@ class Album extends Model
 	    foreach ($photos as $photo)
 	    {
 		    $no_error &= $photo->predelete();
-		    $no_error &= $photos->delete();
+		    $no_error &= $photo->delete();
 	    }
 	    return $no_error;
     }
