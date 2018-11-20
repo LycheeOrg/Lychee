@@ -55,10 +55,10 @@ var _templateObject = _taggedTemplateLiteral(["<p>"], ["<p>"]),
     _templateObject11 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
     _templateObject12 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject13 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject14 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='photo' data-album-id='", "' data-id='", "'>\n\t\t\t\t\t", "\n\t\t\t\t\t<div class='overlay'>\n\t\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t"], ["\n\t\t\t\t<div class='photo' data-album-id='", "' data-id='", "'>\n\t\t\t\t\t", "\n\t\t\t\t\t<div class='overlay'>\n\t\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t"]),
+    _templateObject14 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject15 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject16 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
-    _templateObject17 = _taggedTemplateLiteral(["\n\t\t\t\t\t<div class='badges'>\n\t\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t\t"], ["\n\t\t\t\t\t<div class='badges'>\n\t\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t\t"]),
+    _templateObject17 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject18 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"]),
     _templateObject19 = _taggedTemplateLiteral(["<img id='image' class='", "' src='", "' draggable='false'>"], ["<img id='image' class='", "' src='", "' draggable='false'>"]),
     _templateObject20 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
@@ -70,7 +70,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>"], ["<p>"]),
     _templateObject26 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject27 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
     _templateObject28 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='"], ["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='"]),
+    _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='on' type='text' placeholder='"], ["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='on' type='text' placeholder='"]),
     _templateObject30 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='", "'>"], ["<input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='", "'>"]),
     _templateObject31 = _taggedTemplateLiteral(["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='", "'>"], ["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='", "'>"]),
     _templateObject32 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
@@ -1315,47 +1315,6 @@ build.photo = function (data) {
 	var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
 	    retinaThumbUrl = _lychee$retinize2.path;
 
-	// if (lychee.justified)
-	// {
-	// 	html += lychee.html`
-	// 		<div class='photo' data-album-id='${ data.album }' data-id='${ data.id }'>`;
-	// 	let isVideo = data.type && data.type.indexOf('video') > -1;
-	// 	if (data.thumbUrl === 'uploads/thumb/' && isVideo)
-	// 	{
-	// 		html += lychee.html`<span class="thumbimg"><img src='play-icon.png' width='200' height='200' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`
-	// 	}
-	// 	else
-	// 	{
-	// 		html += lychee.html`<span class="thumbimg${isVideo ? ' video': ''}"><img src='${data.medium}' srcset='${ retinaThumbUrl } 1.5x' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`
-	// 	}
-	// 	html += lychee.html`
-	// 			<div class='overlay'>
-	// 				<h1 title='$${ data.title }'>$${ data.title }</h1>
-	// 		`;
-	//
-	// 	if (data.cameraDate==='1') html += lychee.html`<a><span title='Camera Date'>${ build.iconic('camera-slr') }</span>${ data.sysdate }</a>`;
-	// 	else                       html += lychee.html`<a>${ data.sysdate }</a>`;
-	//
-	// 	html += `</div>`;
-	//
-	// 	if (lychee.publicMode===false) {
-	//
-	// 		html += lychee.html`
-	// 				<div class='badges'>
-	// 					<a class='badge ${ (data.star==='1'                                ? 'badge--star' : '') } icn-star'>${ build.iconic('star') }</a>
-	// 					<a class='badge ${ ((data.public==='1' && album.json.public!=='1') ? 'badge--visible' : '') } icn-share'>${ build.iconic('eye') }</a>
-	// 				</div>
-	// 				`
-	//
-	// 	}
-	//
-	// 	html += `</div>`;
-	//
-	// 	return html
-	// }
-	// else
-	// {
-
 	html += lychee.html(_templateObject14, data.album, data.id, build.getThumbnailHtml(data.thumbUrl, retinaThumbUrl, data.type, data.medium), data.title, data.title);
 
 	if (data.cameraDate === '1') html += lychee.html(_templateObject15, build.iconic('camera-slr'), data.sysdate);else html += lychee.html(_templateObject16, data.sysdate);
@@ -1370,9 +1329,6 @@ build.photo = function (data) {
 	html += "</div>";
 
 	return html;
-
-	// }
-
 };
 
 build.imageview = function (data, visibleControls) {
@@ -2722,6 +2678,7 @@ lychee = {
 		'SETTINGS_SUCCESS_SORT': 'Sorting order updated.',
 		'SETTINGS_SUCCESS_DROPBOX': 'Dropbox Key updated.',
 		'SETTINGS_SUCCESS_LANG': 'Language updated',
+		'SETTINGS_SUCCESS_LAYOUT': 'Layout updated',
 
 		'DB_INFO_TITLE': 'Enter your database connection details below:',
 		'DB_INFO_HOST': 'Database Host (optional)',
@@ -2779,6 +2736,8 @@ lychee = {
 
 		'LANG_TEXT': 'Change Lychee language for:',
 		'LANG_TITLE': 'Change Language',
+
+		'LAYOUT_TEXT': 'Use justified layout:',
 
 		'VIEW_NO_RESULT': 'No results',
 		'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',
@@ -2933,7 +2892,7 @@ lychee.login = function (data) {
 
 lychee.loginDialog = function () {
 
-	var msg = lychee.html(_templateObject29) + lychee.locale['USERNAME'] + "' type='text' placeholder='username' autocapitalize='off' autocorrect='off'>\n\t\t\t\t  <input class='text' name='password' autocomplete='current-password' type='password' placeholder='" + lychee.locale['PASSWORD'] + ("'>\n\t\t\t  </p>\n\t\t\t  <p class='version'>Lychee " + lychee.version + "<span> &#8211; <a target='_blank' href='" + lychee.updateURL + "'>") + lychee.locale['UPDATE_AVAILABLE'] + "</a><span></p>\n\t\t\t  ";
+	var msg = lychee.html(_templateObject29) + lychee.locale['USERNAME'] + "' autocapitalize='off' autocorrect='off'>\n\t\t\t\t  <input class='text' name='password' autocomplete='current-password' type='password' placeholder='" + lychee.locale['PASSWORD'] + ("'>\n\t\t\t  </p>\n\t\t\t  <p class='version'>Lychee " + lychee.version + "<span> &#8211; <a target='_blank' href='" + lychee.updateURL + "'>") + lychee.locale['UPDATE_AVAILABLE'] + "</a><span></p>\n\t\t\t  ";
 
 	basicModal.show({
 		body: msg,
@@ -4646,7 +4605,25 @@ settings.changeLang = function (params) {
 
 		if (data === true) {
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LANG']);
-			lychee.init(); // to reload languages.
+			lychee.init();
+		} else lychee.error(null, params, data);
+	});
+};
+
+settings.changeLayout = function () {
+	var params = {};
+	if ($('#JustifiedLayout:checked').length === 1) {
+		params.justified_layout = '1';
+	} else {
+		params.justified_layout = '0';
+	}
+
+	alert('stop');
+
+	api.post('Settings::setLayout', params, function (data) {
+		if (data === true) {
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LAYOUT']);
+			lychee.justified = params.justified_layout === '1';
 		} else lychee.error(null, params, data);
 	});
 };
@@ -6136,6 +6113,7 @@ view.settings = {
 				view.settings.content.setSorting();
 				view.settings.content.setDropboxKey();
 				view.settings.content.setLang();
+				view.settings.content.setLayout();
 			}
 		},
 
@@ -6198,6 +6176,17 @@ view.settings = {
 
 			$(".settings_view").append(msg);
 			settings.bind('#basicModal__action_set_lang', '.setLang', settings.changeLang);
+		},
+
+		setLayout: function setLayout() {
+			var msg = "\n\t\t\t<div class=\"setLayout\">\n\t\t\t<p>" + lychee.locale['LAYOUT_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"JustifiedLayout\" type=\"checkbox\" name=\"justified-layout\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>";
+
+			$(".settings_view").append(msg);
+			if (lychee.justified) {
+				// $('.setLayout input[name="justified-layout"]').click();
+				$('#JustifiedLayout').click();
+			}
+			settings.bind('#JustifiedLayout', '.setLayout', settings.changeLayout);
 		}
 	}
 

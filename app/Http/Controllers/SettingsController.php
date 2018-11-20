@@ -109,11 +109,25 @@ class SettingsController extends Controller
         {
             if($request['lang'] == $lang_available[$i])
             {
-                return (Configs::set('lang', $request['lang'])) ? 'true' : 'false';
+                return (Configs::set('lang', $lang_available[$i])) ? 'true' : 'false';
             }
         }
 
         Logs::error( __METHOD__, __LINE__, 'Could not update settings. Unknown lang.');
         return 'false';
     }
+
+	public function setLayout(Request $request) {
+
+		$request->validate([
+			'justified_layout'  => 'required|string'
+		]);
+
+		if($request['justified_layout'] == '1')
+		{
+			return (Configs::set('justified_layout', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('justified_layout', '0')) ? 'true' : 'false';
+	}
 }

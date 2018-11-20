@@ -67,10 +67,14 @@
 
 - [ ] F-stop, Iso, Shutter Speed _&agrave; la Lightroom_ (over the picture in white
 or under the picture)
-- [ ] Add possibilities to add Star ratings.
-- [ ] Count number of views ?
-- [ ] Zoom on pictures (how would that work with big iamges)
+- [ ] Add possibilities to add Star ratings?
+- [ ] Count number of views?
+- [ ] Zoom on pictures (how would that work with big images)
 
 ## Slideshow
 
 - [ ] Randomly display public pictures
+
+## Front view
+
+- [ ] Optional front page instead of directly landing on Albums?
