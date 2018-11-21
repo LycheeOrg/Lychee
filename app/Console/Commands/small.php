@@ -51,7 +51,7 @@ class small extends Command
 		}
 
 		foreach ($photos as $photo){
-			if( $photo->createMedium(960,540,'SMALL') )
+			if( $photo->createMedium(640,360,'SMALL') )
 			{
 				$photo->small = 1;
 				$photo->save();
