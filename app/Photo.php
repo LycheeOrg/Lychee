@@ -533,7 +533,7 @@ class Photo extends Model
             $medium->readImage($url);
 
             // Adjust image
-            $medium->scaleImage($newWidth, $newHeight, true);
+            $medium->scaleImage($newWidth, $newHeight, ($newWidth != 0));
             $medium->stripImage();
             $medium->setImageCompressionQuality($quality);
 
@@ -555,7 +555,15 @@ class Photo extends Model
 			// failed with imagick, try with GD
 
 	        // Create image
-	        $newHeight = $newWidth/($width/$height);
+	        if($newWidth == 0)
+	        {
+		        $newWidth = $newHeight*($width/$height);
+	        }
+	        else
+	        {
+		        $newHeight = $newWidth/($width/$height);
+	        }
+
 	        $medium   = imagecreatetruecolor($newWidth, $newHeight);
 	        // Create new image
 	        switch($this->type) {

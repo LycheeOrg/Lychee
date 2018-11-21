@@ -289,7 +289,7 @@ class PhotoController extends Controller
             else $medium = 0;
 
 	        // Create Small
-	        if ($photo->createMedium(640,360,'SMALL')) $small = 1;
+	        if ($photo->createMedium(0,360,'SMALL')) $small = 1;
 	        else $small = 0;
         }
 

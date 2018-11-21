@@ -163,7 +163,7 @@ return [
         'camera' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -190,7 +190,7 @@ return [
         'geolocation' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -199,7 +199,7 @@ return [
         'microphone' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -208,7 +208,7 @@ return [
         'midi' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -217,7 +217,7 @@ return [
         'payment' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -235,7 +235,7 @@ return [
         'accelerometer' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -244,7 +244,7 @@ return [
         'ambient-light-sensor' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -253,7 +253,7 @@ return [
         'gyroscope' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -262,7 +262,7 @@ return [
         'magnetometer' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -289,7 +289,7 @@ return [
         'usb' => [
             'none' => false,
             '*' => false,
-            'self' => true,
+            'self' => false,
             'allow' => [
                 // 'url',
             ],
@@ -406,7 +406,7 @@ return [
             //
         ],
         'media-src' => [
-            //
+            'self' => true
         ],
         'object-src' => [
             //
