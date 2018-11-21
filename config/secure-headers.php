@@ -385,7 +385,10 @@ return [
             //
         ],
         'connect-src' => [
-            'self' => true,
+	        'allow' => [
+		        'http://lycheeorg.github.io/update.json',
+	        ],
+            'self' => true
         ],
         'font-src' => [
             //

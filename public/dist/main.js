@@ -2801,10 +2801,22 @@ lychee.init = function () {
 	api.post('Session::init', {}, function (data) {
 
 		lychee.api_V2 = data.api_V2 || false;
-		lychee.sub_albums = data.sub_albums || false;
 
-		// will be usefull later
-		lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
+		if (data.status === 0) {
+
+			// No configuration
+
+			lychee.setMode('public');
+
+			header.dom().hide();
+			lychee.content.hide();
+			$('body').append(build.no_content('cog'));
+			settings.createConfig();
+
+			return true;
+		}
+
+		lychee.sub_albums = data.sub_albums || false;
 
 		// we copy the locale that exists only.
 		// This ensure forward and backward compatibility.
@@ -2830,6 +2842,7 @@ lychee.init = function () {
 			lychee.lang = data.config.lang || '';
 			lychee.lang_available = data.config.lang_available || {};
 			lychee.imagick = data.config.imagick && data.config.imagick === '1' || false;
+			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
 
 			lychee.upload = !lychee.api_V2;
 			lychee.admin = !lychee.api_V2;
@@ -2852,20 +2865,11 @@ lychee.init = function () {
 			// Logged out
 
 			lychee.checkForUpdates = data.config.checkForUpdates || '1';
+			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
 
 			lychee.setMode('public');
-		} else if (data.status === 0) {
-
-			// No configuration
-
-			lychee.setMode('public');
-
-			header.dom().hide();
-			lychee.content.hide();
-			$('body').append(build.no_content('cog'));
-			settings.createConfig();
-
-			return true;
+		} else {
+			// should not happen.
 		}
 
 		$(window).bind('popstate', lychee.load);
