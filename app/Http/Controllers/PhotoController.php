@@ -143,6 +143,12 @@ class PhotoController extends Controller
         // Verify video
         $mimeType = $file->getMimeType();
         if (!in_array($mimeType, self::$validVideoTypes, true)) {
+
+	        if (!function_exists("exif_imagetype")) {
+		        Logs::error(__METHOD__, __LINE__, 'EXIF library not loaded. Make sure exif is enabled in php.ini');
+		        return Response::error('EXIF library not loaded on the server!');
+	        }
+
             // Verify image
             $type = @exif_imagetype($file->getPathName());
             if (!in_array($type, self::$validTypes, true)) {
