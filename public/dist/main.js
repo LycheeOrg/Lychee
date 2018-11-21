@@ -1262,14 +1262,21 @@ build.multiselect = function (top, left) {
 
 build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
 	var medium = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
+	var small = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
 
 	var isVideo = type && type.indexOf('video') > -1;
 	if (thumb === 'uploads/thumb/' && isVideo) {
 		return "<span class=\"thumbimg\"><img src='play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
+	// we use small if available
+	if (lychee.justified && small !== '') {
+		return "<span class=\"thumbimg\"><img src='" + small + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	}
+	// we use medium if small is not available
 	if (lychee.justified && medium !== '') {
 		return "<span class=\"thumbimg\"><img src='" + medium + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
+	// we use crappy thumb image otherwise :]
 	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' srcset='" + retinaThumbUrl + " 1.5x' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
@@ -1320,7 +1327,7 @@ build.photo = function (data) {
 	var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
 	    retinaThumbUrl = _lychee$retinize2.path;
 
-	html += lychee.html(_templateObject15, data.album, data.id, build.getThumbnailHtml(data.thumbUrl, retinaThumbUrl, data.type, data.medium), data.title, data.title);
+	html += lychee.html(_templateObject15, data.album, data.id, build.getThumbnailHtml(data.thumbUrl, retinaThumbUrl, data.type, data.medium, data.small), data.title, data.title);
 
 	if (data.cameraDate === '1') html += lychee.html(_templateObject16, build.iconic('camera-slr'), data.sysdate);else html += lychee.html(_templateObject17, data.sysdate);
 
@@ -1328,7 +1335,7 @@ build.photo = function (data) {
 
 	if (lychee.publicMode === false) {
 
-		html += lychee.html(_templateObject18, data.star === '1' ? 'badge--visible' : '', build.iconic('star'), data.public === '1' && album.json.public !== '1' ? 'badge--visible' : '', build.iconic('eye'));
+		html += lychee.html(_templateObject18, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' && album.json.public !== '1' ? 'badge--visible' : '', build.iconic('eye'));
 	}
 
 	html += "</div>";

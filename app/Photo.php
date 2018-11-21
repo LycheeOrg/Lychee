@@ -57,6 +57,9 @@ class Photo extends Model
         if ($this->medium == '1') $photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM') . $this->url;
         else                       $photo['medium'] = '';
 
+	    if ($this->small == '1') $photo['small'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL') . $this->url;
+	    else                       $photo['small'] = '';
+
         // Parse paths
         $photo['thumbUrl'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $this->thumbUrl;
         $photo['url']      = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG') . $this->url;
@@ -472,13 +475,16 @@ class Photo extends Model
         }
     }
 
-    /**
-     * Creates a smaller version of a photo when its size is bigger than a preset size.
-     * Photo must be big enough and Imagick must be installed and activated.
-     * @return boolean Returns true when successful.
-     * @throws \ImagickException
-     */
-    function createMedium() {
+	/**
+	 * Creates a smaller version of a photo when its size is bigger than a preset size.
+	 * Photo must be big enough and Imagick must be installed and activated.
+	 * @param int $newWidth
+	 * @param int $newHeight
+	 * @param string $kind
+	 * @return boolean Returns true when successful.
+	 * @throws ImagickException
+	 */
+    function createMedium($newWidth = 1920, $newHeight = 1080, $kind = 'MEDIUM') {
 
         // Excepts the following:
         // (string) $url = Path to the photo-file
@@ -494,15 +500,13 @@ class Photo extends Model
 
         // Quality of medium-photo
         $quality = 90;
-        
+
         // Size of the medium-photo
         // When changing these values,
         // also change the size detection in the front-end
-        $newWidth  = 1920;
-        $newHeight = 1080;
 
         // Check permissions
-        if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM'))===false) {
+        if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind))===false) {
 
             // Permissions are missing
             Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because uploads/medium/ is missing or not readable and writable.');
@@ -518,7 +522,7 @@ class Photo extends Model
 		    return false;
 	    }
 
-	    $newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $filename;
+	    $newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind) . $filename;
 
 	    $error = false;
         if (Configs::hasImagick()) {
@@ -536,7 +540,7 @@ class Photo extends Model
             // Save image
             try { $medium->writeImage($newUrl); }
             catch (ImagickException $err) {
-                Logs::notice(__METHOD__, __LINE__, 'Could not save medium-photo (' . $err->getMessage() . ')');
+                Logs::notice(__METHOD__, __LINE__, 'Could not save '.$kind.'-photo (' . $err->getMessage() . ')');
                 $error = true;
             }
 
@@ -595,7 +599,13 @@ class Photo extends Model
             $error = true;
         }
 
-        if($this->thumbUrl!='')
+	    // Delete medium
+	    if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $this->url)&&!unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $this->url)) {
+		    Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
+		    $error = true;
+	    }
+
+	    if($this->thumbUrl!='')
         {
             // Get retina thumb url
             $thumbUrl2x = explode(".", $this->thumbUrl);

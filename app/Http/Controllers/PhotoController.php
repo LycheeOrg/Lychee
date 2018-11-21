@@ -238,6 +238,7 @@ class PhotoController extends Controller
         $photo->checksum = $checksum;
         $photo->album_id = $albumID;
         $photo->medium = 0;
+	    $photo->small = 0;
 
         if ($exists===false) {
 
@@ -286,10 +287,15 @@ class PhotoController extends Controller
             // Create Medium
             if ($photo->createMedium()) $medium = 1;
             else $medium = 0;
+
+	        // Create Small
+	        if ($photo->createMedium(960,540,'SMALL')) $small = 1;
+	        else $small = 0;
         }
 
         $photo->thumbUrl = $path_thumb;
         $photo->medium = $medium;
+	    $photo->small = $small;
         if (!$photo->save()) {
             return Response::error('Could not save photo in database!');
         }
@@ -470,6 +476,7 @@ class PhotoController extends Controller
             $duplicate->album_id     = $photo->album_id;
             $duplicate->checksum     = $photo->checksum;
             $duplicate->medium       = $photo->medium;
+	        $duplicate->small        = $photo->small;
             $duplicate->owner_id     = $photo->owner_id;
             $no_error &= $duplicate->save();
         }

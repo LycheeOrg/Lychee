@@ -7,11 +7,13 @@ data/config.php
 uploads/big/*
 uploads/import/*
 uploads/medium/*
+uploads/small/*
 uploads/thumb/*
 
 !uploads/big/index.html
 !uploads/import/index.html
 !uploads/medium/index.html
+!uploads/small/index.html
 !uploads/thumb/index.html
 
 plugins/*

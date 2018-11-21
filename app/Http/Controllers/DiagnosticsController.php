@@ -18,7 +18,7 @@ class DiagnosticsController extends Controller
 
 
         // PHP Version
-        if (floatval(phpversion())<5.5)    $errors += ['Error: Upgrade to PHP 5.5 or higher'];
+        if (floatval(phpversion())<7)    $errors += ['Error: Upgrade to PHP 7 or higher'];
 
         // Extensions
         if (!extension_loaded('session'))  $errors += ['Error: PHP session extension not activated'];
@@ -32,6 +32,7 @@ class DiagnosticsController extends Controller
         // Permissions
         if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG'))===false)    $errors += ['Error: \'uploads/big\' is missing or has insufficient read/write privileges'];
         if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM'))===false) $errors += ['Error: \'uploads/medium\' is missing or has insufficient read/write privileges'];
+	    if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL'))===false)  $errors += ['Error: \'uploads/small\' is missing or has insufficient read/write privileges'];
         if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB'))===false)  $errors += ['Error: \'uploads/thumb\' is missing or has insufficient read/write privileges'];
         if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT'))===false) $errors += ['Error: \'uploads/import\' is missing or has insufficient read/write privileges'];
         if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS'))===false)        $errors += ['Error: \'uploads/\' is missing or has insufficient read/write privileges'];

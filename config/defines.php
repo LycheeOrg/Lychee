@@ -5,34 +5,28 @@ return [
         'LYCHEE' => substr(__DIR__,0,-6),
     ],
 
-// Define status
+	// Define status
     'status' => [
-    'LYCHEE_STATUS_NOCONFIG' => 0,
-    'LYCHEE_STATUS_LOGGEDOUT' => 1,
-    'LYCHEE_STATUS_LOGGEDIN' => 2,
+	    'LYCHEE_STATUS_NOCONFIG' => 0,
+	    'LYCHEE_STATUS_LOGGEDOUT' => 1,
+	    'LYCHEE_STATUS_LOGGEDIN' => 2,
     ],
 
-// Define dirs
+	// Define dirs
     'dirs' => [
-//    'LYCHEE_DATA' => 'data/',
-//    'LYCHEE_SRC' => 'src/',
-    'LYCHEE_UPLOADS' => public_path('uploads'),
-    'LYCHEE_UPLOADS_BIG' => public_path('uploads/big/'),
-    'LYCHEE_UPLOADS_MEDIUM' => public_path('uploads/medium/'),
-    'LYCHEE_UPLOADS_THUMB' => public_path('uploads/thumb/'),
-    'LYCHEE_UPLOADS_IMPORT' => public_path('uploads/import/'),
-//    'LYCHEE_PLUGINS' => 'plugins/'
+	    'LYCHEE_UPLOADS' => public_path('uploads'),
+	    'LYCHEE_UPLOADS_BIG' => public_path('uploads/big/'),
+	    'LYCHEE_UPLOADS_MEDIUM' => public_path('uploads/medium/'),
+	    'LYCHEE_UPLOADS_SMALL' => public_path('uploads/small/'),
+	    'LYCHEE_UPLOADS_THUMB' => public_path('uploads/thumb/'),
+	    'LYCHEE_UPLOADS_IMPORT' => public_path('uploads/import/'),
     ],
 
-// Define files
-//    'files' => [
-//    'LYCHEE_CONFIG_FILE' => 'data/config.php'
-//    ],
-
-// Define urls
+	// Define urls
     'urls' => [
-    'LYCHEE_URL_UPLOADS_BIG' => 'uploads/big/',
-    'LYCHEE_URL_UPLOADS_MEDIUM' => 'uploads/medium/',
-    'LYCHEE_URL_UPLOADS_THUMB' => 'uploads/thumb/'
+	    'LYCHEE_URL_UPLOADS_BIG' => 'uploads/big/',
+	    'LYCHEE_URL_UPLOADS_MEDIUM' => 'uploads/medium/',
+	    'LYCHEE_URL_UPLOADS_SMALL' => 'uploads/small/',
+	    'LYCHEE_URL_UPLOADS_THUMB' => 'uploads/thumb/'
     ]
 ];
