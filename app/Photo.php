@@ -494,10 +494,7 @@ class Photo extends Model
 
         // Quality of medium-photo
         $quality = 90;
-
-        // Set to true when creation of medium-photo failed
-        $error = false;
-
+        
         // Size of the medium-photo
         // When changing these values,
         // also change the size detection in the front-end
@@ -509,17 +506,23 @@ class Photo extends Model
 
             // Permissions are missing
             Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because uploads/medium/ is missing or not readable and writable.');
-            $error = true;
+            return false;
 
         }
 
         // Is photo big enough?
         // Is Imagick installed and activated?
-        if (($error===false)&&
-            ($width>$newWidth||$height>$newHeight)&&
-            (Configs::hasImagick())) {
+	    if ($width <= $newWidth && $height <= $newHeight)
+	    {
+            Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small)!');
+		    return false;
+	    }
+
+	    $newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $filename;
+
+	    $error = false;
+        if (Configs::hasImagick()) {
             Logs::notice(__METHOD__, __LINE__, 'Picture is big enough for resize!');
-            $newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $filename;
 
             // Read image
             $medium = new Imagick();
@@ -540,18 +543,35 @@ class Photo extends Model
             $medium->clear();
             $medium->destroy();
 
-        } else {
-
-            // Photo too small or
-            // Medium is deactivated or
-            // Imagick not installed
-            Logs::notice(__METHOD__, __LINE__, 'No resize!');
-            $error = true;
-
         }
 
-        if ($error===true) return false;
-        return true;
+        if($error)
+        {
+	        Logs::notice(__METHOD__, __LINE__, 'Picture is big enough for resize, try with GD!');
+			// failed with imagick, try with GD
+
+	        // Create image
+	        $newHeight = $newWidth/($width/$height);
+	        $medium   = imagecreatetruecolor($newWidth, $newHeight);
+	        // Create new image
+	        switch($this->type) {
+		        case 'image/jpeg': $sourceImg = imagecreatefromjpeg($url); break;
+		        case 'image/png':  $sourceImg = imagecreatefrompng($url); break;
+		        case 'image/gif':  $sourceImg = imagecreatefromgif($url); break;
+		        default:           Logs::error(__METHOD__, __LINE__, 'Type of photo is not supported');
+			        return false;
+			        break;
+	        }
+	        // Create retina thumb
+	        imagecopyresampled($medium, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+	        imagejpeg($medium, $newUrl, $quality);
+	        imagedestroy($medium);
+	        // Free memory
+	        imagedestroy($sourceImg);
+
+	        $error = false;
+        }
+		return !$error;
 
     }
 
