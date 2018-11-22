@@ -65,7 +65,7 @@
 
 ## Photo view
 
-- [ ] F-stop, Iso, Shutter Speed _&agrave; la Lightroom_ (over the picture in white
+- [x] F-stop, Iso, Shutter Speed _&agrave; la Lightroom_ (over the picture in white
 or under the picture)
 - [ ] Add possibilities to add Star ratings?
 - [ ] Count number of views?

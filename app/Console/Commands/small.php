@@ -46,7 +46,7 @@ class small extends Command
 		$photos = Photo::where('small','=',0)->limit($argument)->get();
 		if(count($photos) == 0)
 		{
-			$this->line('No pictures requires medium.');
+			$this->line('No pictures requires small.');
 			return false;
 		}
 

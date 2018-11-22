@@ -44,10 +44,10 @@ var merge=require("merge");var Row=module.exports=function(params){this.top=para
 
 var _templateObject = _taggedTemplateLiteral(["<p>", " '$", "' ", "</p>"], ["<p>", " '$", "' ", "</p>"]),
     _templateObject2 = _taggedTemplateLiteral(["<p>", " $", " ", "</p>"], ["<p>", " $", " ", "</p>"]),
-    _templateObject3 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='$", "'>"]),
+    _templateObject3 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='50' placeholder='$", "' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='50' placeholder='$", "' value='$", "'>"]),
     _templateObject4 = _taggedTemplateLiteral(["<p>", " ", "</p>"], ["<p>", " ", "</p>"]),
     _templateObject5 = _taggedTemplateLiteral(["<p>", " $", " ", " ", "</p>"], ["<p>", " $", " ", " ", "</p>"]),
-    _templateObject6 = _taggedTemplateLiteral(["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='Description' value='$", "'></p>"], ["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='Description' value='$", "'></p>"]),
+    _templateObject6 = _taggedTemplateLiteral(["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"], ["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"]),
     _templateObject7 = _taggedTemplateLiteral(["<p>", " '$", "' ", " '$", "'?</p>"], ["<p>", " '$", "' ", " '$", "'?</p>"]),
     _templateObject8 = _taggedTemplateLiteral(["<p>", " '$", "'?</p>"], ["<p>", " '$", "'?</p>"]),
     _templateObject9 = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"], ["<svg class='iconic ", "'><use xlink:href='#", "' /></svg>"]),
@@ -60,28 +60,33 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " '$", "' ", "</p>"], ["<p>
     _templateObject16 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject17 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
     _templateObject18 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject19 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"]),
-    _templateObject20 = _taggedTemplateLiteral(["<img id='image' class='", "' src='", "' draggable='false'>"], ["<img id='image' class='", "' src='", "' draggable='false'>"]),
-    _templateObject21 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
-    _templateObject22 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
-    _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
-    _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject25 = _taggedTemplateLiteral(["<a class='tag'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='tag'>$", "<span data-index='", "'>", "</span></a>"]),
-    _templateObject26 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject27 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject28 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
-    _templateObject29 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject30 = _taggedTemplateLiteral(["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='on' type='text' placeholder='"], ["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='on' type='text' placeholder='"]),
-    _templateObject31 = _taggedTemplateLiteral(["<p>", " '", "' ", "</p>"], ["<p>", " '", "' ", "</p>"]),
-    _templateObject32 = _taggedTemplateLiteral(["<p>", " ", " ", "</p>"], ["<p>", " ", " ", "</p>"]),
-    _templateObject33 = _taggedTemplateLiteral(["<p>", " ", " ", " ", "</p>"], ["<p>", " ", " ", " ", "</p>"]),
-    _templateObject34 = _taggedTemplateLiteral(["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"], ["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"]),
-    _templateObject35 = _taggedTemplateLiteral(["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"], ["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"]),
-    _templateObject36 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject37 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
-    _templateObject38 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
-    _templateObject39 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
-    _templateObject40 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]);
+    _templateObject19 = _taggedTemplateLiteral(["\n\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t<p>", " at ", ", ", " ", "<br>\n\t\t", " ", "</p>\n\t\t</div>\n\t"], ["\n\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t<p>", " at ", ", ", " ", "<br>\n\t\t", " ", "</p>\n\t\t</div>\n\t"]),
+    _templateObject20 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"]),
+    _templateObject21 = _taggedTemplateLiteral(["<img id='image' class='", "' src='", "' draggable='false'>"], ["<img id='image' class='", "' src='", "' draggable='false'>"]),
+    _templateObject22 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
+    _templateObject23 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
+    _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
+    _templateObject25 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject26 = _taggedTemplateLiteral(["<a class='tag'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='tag'>$", "<span data-index='", "'>", "</span></a>"]),
+    _templateObject27 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
+    _templateObject28 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
+    _templateObject30 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
+    _templateObject31 = _taggedTemplateLiteral(["\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" >&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" >&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
+    _templateObject32 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\">", " ", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\">", " ", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\">", " ", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\">", " ", "</a>"]),
+    _templateObject33 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_logs\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\">", " ", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_logs\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\">", " ", "</a>"]),
+    _templateObject34 = _taggedTemplateLiteral(["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off'>\n\t\t\t\t  <input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "'>\n\t\t\t  </p>\n\t\t\t  <p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "'>", "</a><span></p>\n\t\t\t  "], ["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off'>\n\t\t\t\t  <input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "'>\n\t\t\t  </p>\n\t\t\t  <p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "'>", "</a><span></p>\n\t\t\t  "]),
+    _templateObject35 = _taggedTemplateLiteral(["<p>", " '", "' ", "</p>"], ["<p>", " '", "' ", "</p>"]),
+    _templateObject36 = _taggedTemplateLiteral(["<p>", " ", " ", "</p>"], ["<p>", " ", " ", "</p>"]),
+    _templateObject37 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='$", "'>"]),
+    _templateObject38 = _taggedTemplateLiteral(["<p>", " ", " ", " ", "</p>"], ["<p>", " ", " ", " ", "</p>"]),
+    _templateObject39 = _taggedTemplateLiteral(["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"], ["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"]),
+    _templateObject40 = _taggedTemplateLiteral(["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"], ["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"]),
+    _templateObject41 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject42 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
+    _templateObject43 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
+    _templateObject44 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
+    _templateObject45 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -449,7 +454,7 @@ album.addandmove = function (photoIDs) {
 	};
 
 	basicModal.show({
-		body: "<p>" + lychee.locale['TITLE_NEW_ALBUM'] + " <input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='Untitled'></p>",
+		body: "<p>" + lychee.locale['TITLE_NEW_ALBUM'] + " <input class='text' name='title' type='text' maxlength='50' placeholder='$" + lychee.locale['ALBUM_TITLE'] + "' value='$" + lychee.locale['UNTITLED'] + "'></p>",
 		buttons: {
 			action: {
 				title: lychee.locale['CREATE_ALBUM'],
@@ -591,7 +596,7 @@ album.setTitle = function (albumIDs) {
 		});
 	};
 
-	var input = lychee.html(_templateObject3, oldTitle);
+	var input = lychee.html(_templateObject3, lychee.locale['ALBUM_TITLE'], oldTitle);
 
 	if (albumIDs.length === 1) msg = lychee.html(_templateObject4, lychee.locale['ALBUM_NEW_TITLE'], input);else msg = lychee.html(_templateObject5, lychee.locale['ALBUMS_NEW_TITLE_1'], albumIDs.length, lychee.locale['ALBUMS_NEW_TITLE_2'], input);
 
@@ -637,7 +642,7 @@ album.setDescription = function (albumID) {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject6, lychee.locale['ALBUM_NEW_DESCRIPTION'], oldDescription),
+		body: lychee.html(_templateObject6, lychee.locale['ALBUM_NEW_DESCRIPTION'], lychee.locale['ALBUM_DESCRIPTION'], oldDescription),
 		buttons: {
 			action: {
 				title: lychee.locale['ALBUM_SET_DESCRIPTION'],
@@ -1343,17 +1348,28 @@ build.photo = function (data) {
 	return html;
 };
 
+build.overlay_image = function (data) {
+
+	var exifHash = data.takestamp + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
+
+	var html = "";
+
+	if (exifHash !== '0') {
+		html += lychee.html(_templateObject19, data.title, data.shutter.replace('s', 'sec'), data.aperture.replace('f/', '&fnof; / '), lychee.locale['PHOTO_ISO'], data.iso, data.focal, data.lens && data.lens !== '' ? '(' + data.lens + ')' : '');
+	}
+
+	return html;
+};
+
 build.imageview = function (data, visibleControls) {
 
 	var html = '';
-	var hasMedium = data.medium !== '';
 
 	if (data.type.indexOf('video') > -1) {
-		html += lychee.html(_templateObject19, visibleControls === true ? '' : 'full', data.url);
-	} else if (hasMedium === false) {
 		html += lychee.html(_templateObject20, visibleControls === true ? '' : 'full', data.url);
 	} else {
-		html += lychee.html(_templateObject20, visibleControls === true ? '' : 'full', data.medium);
+		html += lychee.html(_templateObject21, visibleControls === true ? '' : 'full', data.medium !== '' ? data.medium : data.url);
+		if (lychee.image_overlay) html += build.overlay_image(data);
 	}
 
 	html += "\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic('caret-left') + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic('caret-right') + "</a></div>\n\t\t\t";
@@ -1365,20 +1381,20 @@ build.no_content = function (typ) {
 
 	var html = '';
 
-	html += lychee.html(_templateObject21, build.iconic(typ));
+	html += lychee.html(_templateObject22, build.iconic(typ));
 
 	switch (typ) {
 		case 'magnifying-glass':
-			html += lychee.html(_templateObject22, lychee.locale['VIEW_NO_RESULT']);
+			html += lychee.html(_templateObject23, lychee.locale['VIEW_NO_RESULT']);
 			break;
 		case 'eye':
-			html += lychee.html(_templateObject22, lychee.locale['VIEW_NO_PUBLIC_ALBUMS']);
+			html += lychee.html(_templateObject23, lychee.locale['VIEW_NO_PUBLIC_ALBUMS']);
 			break;
 		case 'cog':
-			html += lychee.html(_templateObject22, lychee.locale['VIEW_NO_CONFIGURATION']);
+			html += lychee.html(_templateObject23, lychee.locale['VIEW_NO_CONFIGURATION']);
 			break;
 		case 'question-mark':
-			html += lychee.html(_templateObject22, lychee.locale['VIEW_PHOTO_NOT_FOUND']);
+			html += lychee.html(_templateObject23, lychee.locale['VIEW_PHOTO_NOT_FOUND']);
 			break;
 	}
 
@@ -1391,7 +1407,7 @@ build.uploadModal = function (title, files) {
 
 	var html = '';
 
-	html += lychee.html(_templateObject23, title);
+	html += lychee.html(_templateObject24, title);
 
 	var i = 0;
 
@@ -1401,7 +1417,7 @@ build.uploadModal = function (title, files) {
 
 		if (file.name.length > 40) file.name = file.name.substr(0, 17) + '...' + file.name.substr(file.name.length - 20, 20);
 
-		html += lychee.html(_templateObject24, file.name);
+		html += lychee.html(_templateObject25, file.name);
 
 		i++;
 	}
@@ -1420,18 +1436,18 @@ build.tags = function (tags) {
 		tags = tags.split(',');
 
 		tags.forEach(function (tag, index, array) {
-			html += lychee.html(_templateObject25, tag, index, build.iconic('x'));
+			html += lychee.html(_templateObject26, tag, index, build.iconic('x'));
 		});
 	} else {
 
-		html = lychee.html(_templateObject26, lychee.locale['NO_TAGS']);
+		html = lychee.html(_templateObject27, lychee.locale['NO_TAGS']);
 	}
 
 	return html;
 };
 
 build.user = function (user) {
-	var html = lychee.html(_templateObject27, user.id, user.id, user.username, user.id, user.id);
+	var html = lychee.html(_templateObject28, user.id, user.id, user.username, user.id, user.id);
 
 	return html;
 };
@@ -1540,7 +1556,7 @@ contextMenu.buildList = function (lists, exclude, action) {
 
 				var prefix = layer > 0 ? '&nbsp;&nbsp;'.repeat(layer - 1) + '└ ' : '';
 
-				var html = lychee.html(_templateObject28, prefix, thumb, item.title);
+				var html = lychee.html(_templateObject29, prefix, thumb, item.title);
 
 				items.push({
 					title: html,
@@ -2031,7 +2047,7 @@ header.setTitle = function () {
 
 
 	var $title = header.dom('.header__title');
-	var html = lychee.html(_templateObject29, title, build.iconic('caret-bottom'));
+	var html = lychee.html(_templateObject30, title, build.iconic('caret-bottom'));
 
 	$title.html(html);
 
@@ -2132,7 +2148,7 @@ $(document).ready(function () {
 	header.bind();
 
 	// Image View
-	lychee.imageview.on(eventName, '.arrow_wrapper--previous', photo.previous).on(eventName, '.arrow_wrapper--next', photo.next);
+	lychee.imageview.on(eventName, '.arrow_wrapper--previous', photo.previous).on(eventName, '.arrow_wrapper--next', photo.next).on('click', 'img', photo.update_display_overlay);
 
 	// Keyboard
 	Mousetrap.bind(['left'], function () {
@@ -2285,17 +2301,11 @@ leftMenu.dom = function (selector) {
 };
 
 leftMenu.build = function () {
-	var html = '';
-	html += '<a id="button_settings_close" class="closebtn" >&times;</a>';
-	html += '<a class="linkMenu" id="button_settings_open">' + '<svg class="iconic"><use xlink:href="#cog"></use></svg>' + lychee.locale['SETTINGS'] + '</a>';
+	var html = lychee.html(_templateObject31, lychee.locale['SETTINGS']);
 	if (lychee.api_V2) {
-		html += '<a class="linkMenu" id="button_users">' + build.iconic('person') + 'Users</a>';
-		html += '<a class="linkMenu" id="button_sharing">' + build.iconic('cloud') + 'Sharing</a>';
+		html += lychee.html(_templateObject32, build.iconic('person'), lychee.locale['USERS'], build.iconic('cloud'), lychee.locale['SHARING']);
 	}
-	html += '<a class="linkMenu" id="button_logs">' + build.iconic('align-left') + lychee.locale['LOGS'] + '</a>';
-	html += '<a class="linkMenu" id="button_diagnostics">' + build.iconic('wrench') + lychee.locale['DIAGNOSTICS'] + '</a>';
-	html += '<a class="linkMenu" id="button_about">' + build.iconic('info') + lychee.locale['ABOUT_LYCHEE'] + '</a>';
-	html += '<a class="linkMenu" id="button_signout">' + build.iconic('account-logout') + lychee.locale['SIGN_OUT'] + '</a>';
+	html += lychee.html(_templateObject33, build.iconic('align-left'), lychee.locale['LOGS'], build.iconic('wrench'), lychee.locale['DIAGNOSTICS'], build.iconic('info'), lychee.locale['ABOUT_LYCHEE'], build.iconic('account-logout'), lychee.locale['SIGN_OUT']);
 	leftMenu._dom.html(html);
 };
 
@@ -2475,8 +2485,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.2',
-	versionCode: '030202',
+	version: '3.2.4',
+	versionCode: '030204',
 
 	updatePath: '//LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee',
@@ -2490,6 +2500,7 @@ lychee = {
 	upload: false, // enable possibility to upload (multi-user)
 	lock: false, // locked user (multi-user)
 	justified: true, // use Flickr Justified Layout Like
+	image_overlay: false, // display Overlay like in Lightroom
 
 	checkForUpdates: '1',
 	sortingPhotos: '',
@@ -2515,6 +2526,8 @@ lychee = {
 		'CLOSE': 'Close',
 
 		'SETTINGS': 'Settings',
+		'USERS': 'Users',
+		'SHARING': 'Sharing',
 		'CHANGE_LOGIN': 'Change Login',
 		'CHANGE_SORTING': 'Change Sorting',
 		'SET_DROPBOX': 'Set Dropbox',
@@ -2655,6 +2668,7 @@ lychee = {
 		'PHOTO_CAPTURED': 'Captured',
 		'PHOTO_MAKE': 'Make',
 		'PHOTO_TYPE': 'Type/Model',
+		'PHOTO_LENS': 'Lens',
 		'PHOTO_SHUTTER': 'Shutter Speed',
 		'PHOTO_APERTURE': 'Aperture',
 		'PHOTO_FOCAL': 'Focal Length',
@@ -2691,6 +2705,7 @@ lychee = {
 		'SETTINGS_SUCCESS_DROPBOX': 'Dropbox Key updated.',
 		'SETTINGS_SUCCESS_LANG': 'Language updated',
 		'SETTINGS_SUCCESS_LAYOUT': 'Layout updated',
+		'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
 
 		'DB_INFO_TITLE': 'Enter your database connection details below:',
 		'DB_INFO_HOST': 'Database Host (optional)',
@@ -2750,6 +2765,7 @@ lychee = {
 		'LANG_TITLE': 'Change Language',
 
 		'LAYOUT_TEXT': 'Use justified layout:',
+		'IMAGE_OVERLAY_TEXT': 'Display EXIF data overlay:',
 
 		'VIEW_NO_RESULT': 'No results',
 		'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',
@@ -2850,6 +2866,7 @@ lychee.init = function () {
 			lychee.lang_available = data.config.lang_available || {};
 			lychee.imagick = data.config.imagick && data.config.imagick === '1' || false;
 			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
+			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;
 
 			lychee.upload = !lychee.api_V2;
 			lychee.admin = !lychee.api_V2;
@@ -2873,6 +2890,7 @@ lychee.init = function () {
 
 			lychee.checkForUpdates = data.config.checkForUpdates || '1';
 			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
+			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;
 
 			lychee.setMode('public');
 		} else {
@@ -2909,7 +2927,7 @@ lychee.login = function (data) {
 
 lychee.loginDialog = function () {
 
-	var msg = lychee.html(_templateObject30) + lychee.locale['USERNAME'] + "' autocapitalize='off' autocorrect='off'>\n\t\t\t\t  <input class='text' name='password' autocomplete='current-password' type='password' placeholder='" + lychee.locale['PASSWORD'] + ("'>\n\t\t\t  </p>\n\t\t\t  <p class='version'>Lychee " + lychee.version + "<span> &#8211; <a target='_blank' href='" + lychee.updateURL + "'>") + lychee.locale['UPDATE_AVAILABLE'] + "</a><span></p>\n\t\t\t  ";
+	var msg = lychee.html(_templateObject34, lychee.locale['USERNAME'], lychee.locale['PASSWORD'], lychee.version, lychee.updateURL, lychee.locale['UPDATE_AVAILABLE']);
 
 	basicModal.show({
 		body: msg,
@@ -3728,6 +3746,15 @@ photo.load = function (photoID, albumID) {
 	});
 };
 
+photo.update_display_overlay = function () {
+	lychee.image_overlay = !lychee.image_overlay;
+	if (!lychee.image_overlay) {
+		$('#image_overlay').remove();
+	} else {
+		lychee.imageview.append(build.overlay_image(photo.json));
+	}
+};
+
 // Preload the next photo for better response time
 photo.preloadNext = function (photoID) {
 	if (album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).nextPhoto !== '') {
@@ -3878,13 +3905,13 @@ photo.delete = function (photoIDs) {
 		action.title = lychee.locale['PHOTO_DELETE'];
 		cancel.title = lychee.locale['PHOTO_KEEP'];
 
-		msg = lychee.html(_templateObject31, lychee.locale['PHOTO_DELETE_1'], photoTitle, lychee.locale['PHOTO_DELETE_2']);
+		msg = lychee.html(_templateObject35, lychee.locale['PHOTO_DELETE_1'], photoTitle, lychee.locale['PHOTO_DELETE_2']);
 	} else {
 
 		action.title = lychee.locale['PHOTO_DELETE'];
 		cancel.title = lychee.locale['PHOTO_KEEP'];
 
-		msg = lychee.html(_templateObject32, lychee.locale['PHOTO_DELETE_ALL_1'], photoIDs.length, lychee.locale['PHOTO_DELETE_ALL_2']);
+		msg = lychee.html(_templateObject36, lychee.locale['PHOTO_DELETE_ALL_1'], photoIDs.length, lychee.locale['PHOTO_DELETE_ALL_2']);
 	}
 
 	basicModal.show({
@@ -3944,9 +3971,9 @@ photo.setTitle = function (photoIDs) {
 		});
 	};
 
-	var input = lychee.html(_templateObject3, oldTitle);
+	var input = lychee.html(_templateObject37, oldTitle);
 
-	if (photoIDs.length === 1) msg = lychee.html(_templateObject4, lychee.locale['PHOTO_NEW_TITLE'], input);else msg = lychee.html(_templateObject33, lychee.locale['PHOTOS_NEW_TITLE_1'], photoIDs.length, lychee.locale['PHOTOS_NEW_TITLE_2'], input);
+	if (photoIDs.length === 1) msg = lychee.html(_templateObject4, lychee.locale['PHOTO_NEW_TITLE'], input);else msg = lychee.html(_templateObject38, lychee.locale['PHOTOS_NEW_TITLE_1'], photoIDs.length, lychee.locale['PHOTOS_NEW_TITLE_2'], input);
 
 	basicModal.show({
 		body: msg,
@@ -4103,7 +4130,7 @@ photo.setDescription = function (photoID) {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject34, lychee.locale['PHOTO_NEW_DESCRIPTION'], lychee.locale['PHOTO_DESCRIPTION'], oldDescription),
+		body: lychee.html(_templateObject39, lychee.locale['PHOTO_NEW_DESCRIPTION'], lychee.locale['PHOTO_DESCRIPTION'], oldDescription),
 		buttons: {
 			action: {
 				title: lychee.locale['PHOTO_SET_DESCRIPTION'],
@@ -4143,9 +4170,9 @@ photo.editTags = function (photoIDs) {
 		photo.setTags(photoIDs, data.tags);
 	};
 
-	var input = lychee.html(_templateObject35, oldTags);
+	var input = lychee.html(_templateObject40, oldTags);
 
-	if (photoIDs.length === 1) msg = lychee.html(_templateObject4, lychee.locale['PHOTO_NEW_TAGS'], input);else msg = lychee.html(_templateObject33, lychee.locale['PHOTO_NEW_TAGS_1'], photoIDs.length, lychee.locale['PHOTO_NEW_TAGS_2'], input);
+	if (photoIDs.length === 1) msg = lychee.html(_templateObject4, lychee.locale['PHOTO_NEW_TAGS'], input);else msg = lychee.html(_templateObject38, lychee.locale['PHOTO_NEW_TAGS_1'], photoIDs.length, lychee.locale['PHOTO_NEW_TAGS_2'], input);
 
 	basicModal.show({
 		body: msg,
@@ -4638,10 +4665,25 @@ settings.changeLayout = function () {
 	} else {
 		params.justified_layout = '0';
 	}
-	api.post('Settings::setLayout', params, function (data) {
+	api.post('Settings::setLayoutOverlay', params, function (data) {
 		if (data === true) {
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LAYOUT']);
 			lychee.justified = params.justified_layout === '1';
+		} else lychee.error(null, params, data);
+	});
+};
+
+settings.changeImageOverlay = function () {
+	var params = {};
+	if ($('#ImageOverlay:checked').length === 1) {
+		params.image_overlay = '1';
+	} else {
+		params.image_overlay = '0';
+	}
+	api.post('Settings::setImageOverlay', params, function (data) {
+		if (data === true) {
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_IMAGE_OVERLAY']);
+			lychee.image_overlay = params.image_overlay === '1';
 		} else lychee.error(null, params, data);
 	});
 };
@@ -4833,13 +4875,13 @@ sidebar.createStructure.photo = function (data) {
 	structure.basics = {
 		title: lychee.locale['PHOTO_BASICS'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_TITLE'], value: data.title, editable: editable }, { title: lychee.locale['PHOTO_UPLOADED'], value: data.sysdate }, { title: lychee.locale['PHOTO_DESCRIPTION'], value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale['PHOTO_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['PHOTO_UPLOADED'], kind: 'uploaded', value: data.sysdate }, { title: lychee.locale['PHOTO_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
 	};
 
 	structure.image = {
 		title: lychee.locale['PHOTO_IMAGE'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_SIZE'], value: data.size }, { title: lychee.locale['PHOTO_FORMAT'], value: data.type }, { title: lychee.locale['PHOTO_RESOLUTION'], value: data.width + ' x ' + data.height }]
+		rows: [{ title: lychee.locale['PHOTO_SIZE'], kind: 'size', value: data.size }, { title: lychee.locale['PHOTO_FORMAT'], kind: 'type', value: data.type }, { title: lychee.locale['PHOTO_RESOLUTION'], kind: 'resolution', value: data.width + ' x ' + data.height }]
 	};
 
 	// Only create tags section when user logged in
@@ -4862,7 +4904,7 @@ sidebar.createStructure.photo = function (data) {
 		structure.exif = {
 			title: lychee.locale['PHOTO_CAMERA'],
 			type: sidebar.types.DEFAULT,
-			rows: [{ title: lychee.locale['PHOTO_CAPTURED'], value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], value: data.make }, { title: lychee.locale['PHOTO_TYPE'], value: data.model }, { title: lychee.locale['PHOTO_SHUTTER'], value: data.shutter }, { title: lychee.locale['PHOTO_APERTURE'], value: data.aperture }, { title: lychee.locale['PHOTO_FOCAL'], value: data.focal }, { title: lychee.locale['PHOTO_ISO'], value: data.iso }]
+			rows: [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }, { title: lychee.locale['PHOTO_LENS'], kind: 'lens', value: data.lens }, { title: lychee.locale['PHOTO_SHUTTER'], kind: 'shutter', value: data.shutter }, { title: lychee.locale['PHOTO_APERTURE'], kind: 'aperture', value: data.aperture }, { title: lychee.locale['PHOTO_FOCAL'], kind: 'focal', value: data.focal }, { title: lychee.locale['PHOTO_ISO'], kind: 'iso', value: data.iso }]
 		};
 	} else {
 
@@ -4872,7 +4914,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.sharing = {
 		title: lychee.locale['PHOTO_SHARING'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_SHR_PLUBLIC'], value: _public }]
+		rows: [{ title: lychee.locale['PHOTO_SHR_PLUBLIC'], kind: 'public', value: _public }]
 	};
 
 	// Construct all parts of the structure
@@ -4958,19 +5000,19 @@ sidebar.createStructure.album = function (data) {
 	structure.basics = {
 		title: lychee.locale['ALBUM_BASICS'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_TITLE'], value: data.title, editable: editable }, { title: lychee.locale['ALBUM_DESCRIPTION'], value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale['ALBUM_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['ALBUM_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
 	};
 
 	structure.album = {
 		title: lychee.locale['ALBUM_ALBUM'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_CREATED'], value: data.sysdate }, { title: lychee.locale['ALBUM_IMAGES'], value: data.photos.length }]
+		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }, { title: lychee.locale['ALBUM_IMAGES'], kind: 'images', value: data.photos.length }]
 	};
 
 	structure.share = {
 		title: lychee.locale['ALBUM_SHARING'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], value: downloadable }, { title: lychee.locale['ALBUM_PASSWORD'], value: password }]
+		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
 	};
 
 	// Construct all parts of the structure
@@ -4999,12 +5041,12 @@ sidebar.render = function (structure) {
 			if (value === '' || value == null) value = '-';
 
 			// Wrap span-element around value for easier selecting on change
-			value = lychee.html(_templateObject36, row.title.toLowerCase(), value);
+			value = lychee.html(_templateObject41, row.kind, value);
 
 			// Add edit-icon to the value when editable
-			if (row.editable === true) value += ' ' + build.editIcon('edit_' + row.title.toLowerCase());
+			if (row.editable === true) value += ' ' + build.editIcon('edit_' + row.kind);
 
-			_html += lychee.html(_templateObject37, row.title, value);
+			_html += lychee.html(_templateObject42, row.title, value);
 		});
 
 		_html += "\n\t\t\t\t </table>\n\t\t\t\t ";
@@ -5020,7 +5062,7 @@ sidebar.render = function (structure) {
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon('edit_tags');
 
-		_html += lychee.html(_templateObject38, section.title, section.title.toLowerCase(), section.value, editable);
+		_html += lychee.html(_templateObject43, section.title, section.title.toLowerCase(), section.value, editable);
 
 		return _html;
 	};
@@ -5367,7 +5409,7 @@ upload.start = {
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject39) + lychee.locale['UPLOAD_IMPORT_INSTR'] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + _url + "'></p>"),
+			body: lychee.html(_templateObject44) + lychee.locale['UPLOAD_IMPORT_INSTR'] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + _url + "'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale['UPLOAD_IMPORT'],
@@ -5454,7 +5496,7 @@ upload.start = {
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject39) + lychee.locale['UPLOAD_IMPORT_SERVER_INSTR'] + " <input class='text' name='path' type='text' maxlength='100' placeholder='" + lychee.locale['UPLOAD_ABSOLUTE_PATH'] + ("' value='" + lychee.location + "uploads/import/'></p>"),
+			body: lychee.html(_templateObject44) + lychee.locale['UPLOAD_IMPORT_SERVER_INSTR'] + " <input class='text' name='path' type='text' maxlength='100' placeholder='" + lychee.locale['UPLOAD_ABSOLUTE_PATH'] + ("' value='" + lychee.location + "uploads/import/'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale['UPLOAD_IMPORT'],
@@ -6074,7 +6116,7 @@ view.photo = {
 			var nextPhotoID = album.getByID(photoID).nextPhoto;
 			var nextPhoto = album.getByID(nextPhotoID);
 
-			$nextArrow.css('background-image', lychee.html(_templateObject40, nextPhoto.thumbUrl));
+			$nextArrow.css('background-image', lychee.html(_templateObject45, nextPhoto.thumbUrl));
 		}
 
 		if (hasPrevious === false || lychee.viewMode === true) {
@@ -6085,7 +6127,7 @@ view.photo = {
 			var previousPhotoID = album.getByID(photoID).previousPhoto;
 			var previousPhoto = album.getByID(previousPhotoID);
 
-			$previousArrow.css('background-image', lychee.html(_templateObject40, previousPhoto.thumbUrl));
+			$previousArrow.css('background-image', lychee.html(_templateObject45, previousPhoto.thumbUrl));
 		}
 	}),
 
@@ -6139,11 +6181,7 @@ view.settings = {
 				view.settings.content.setSorting();
 				view.settings.content.setDropboxKey();
 				view.settings.content.setLang();
-
-				// only enabled if you have mediums
-				if (lychee.imagick) {
-					view.settings.content.setLayout();
-				}
+				view.settings.content.setLayoutOverlay();
 			}
 		},
 
@@ -6208,14 +6246,15 @@ view.settings = {
 			settings.bind('#basicModal__action_set_lang', '.setLang', settings.changeLang);
 		},
 
-		setLayout: function setLayout() {
-			var msg = "\n\t\t\t<div class=\"setLayout\">\n\t\t\t<p>" + lychee.locale['LAYOUT_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"JustifiedLayout\" type=\"checkbox\" name=\"justified-layout\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>";
+		setLayoutOverlay: function setLayoutOverlay() {
+			var msg = "\n\t\t\t<div class=\"setLayoutOverlay\">\n\t\t\t<p>" + lychee.locale['LAYOUT_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"JustifiedLayout\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t<p>" + lychee.locale['IMAGE_OVERLAY_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"ImageOverlay\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>";
 
 			$(".settings_view").append(msg);
-			if (lychee.justified) {
-				$('#JustifiedLayout').click();
-			}
-			settings.bind('#JustifiedLayout', '.setLayout', settings.changeLayout);
+			if (lychee.justified) $('#JustifiedLayout').click();
+			if (lychee.image_overlay) $('#ImageOverlay').click();
+
+			settings.bind('#JustifiedLayout', '.setLayoutOverlay', settings.changeLayout);
+			settings.bind('#ImageOverlay', '.setLayoutOverlay', settings.changeImageOverlay);
 		}
 	}
 

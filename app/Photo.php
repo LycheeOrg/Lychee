@@ -32,26 +32,25 @@ class Photo extends Model
         $photo = array();
 
         // Set unchanged attributes
-        $photo['id']     = $this->id;
-        $photo['title']  = $this->title;
-        $photo['tags']   = $this->tags;
-        $photo['star']   = $this->star == 1 ? '1' : '0';
-        $photo['album']  = $this->album_id;
-        $photo['width']  = $this->width;
-        $photo['height'] = $this->height;
-        $photo['type']         = $this->type;
-        $photo['size']         = $this->size;
-        $photo['iso']         = $this->iso;
-        $photo['aperture']    = $this->aperture;
-        $photo['make']        = $this->make;
-        $photo['model']       = $this->model;
-        $photo['shutter']     = $this->shutter;
-        $photo['focal']       = $this->focal;
-//        $photo['takestamp']   = 0;
-//        $photo['lens']        = $this->lens;
-        $photo['sysdate']    = $this->created_at->format('d F Y');
-        $photo['tags']        = $this->tags;
-        $photo['description']  = $this->description == null ? '' : $this->description;
+        $photo['id']            = $this->id;
+        $photo['title']         = $this->title;
+        $photo['tags']          = $this->tags;
+        $photo['star']          = $this->star == 1 ? '1' : '0';
+        $photo['album']         = $this->album_id;
+        $photo['width']         = $this->width;
+        $photo['height']        = $this->height;
+        $photo['type']          = $this->type;
+        $photo['size']          = $this->size;
+        $photo['iso']           = $this->iso;
+        $photo['aperture']      = $this->aperture;
+        $photo['make']          = $this->make;
+        $photo['model']         = $this->model;
+        $photo['shutter']       = $this->shutter;
+        $photo['focal']         = $this->focal;
+        $photo['lens']          = $this->lens;
+        $photo['sysdate']       = $this->created_at->format('d F Y');
+        $photo['tags']          = $this->tags;
+        $photo['description']   = $this->description == null ? '' : $this->description;
 
         // Parse medium
         if ($this->medium == '1') $photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM') . $this->url;
@@ -219,8 +218,9 @@ class Photo extends Model
             // Takestamp
             if (!empty($exif['DateTimeOriginal'])) $return['takestamp'] = strtotime($exif['DateTimeOriginal']);
 
+            if (!empty($exif['LensInfo'])) $return['lens'] = trim($exif['LensInfo']);
             // Lens field from Lightroom
-            if (!empty($exif['UndefinedTag:0xA434'])) $return['lens'] = trim($exif['UndefinedTag:0xA434']);
+            if ($return['lens'] == '' && !empty($exif['UndefinedTag:0xA434'])) $return['lens'] = trim($exif['UndefinedTag:0xA434']);
 
             // Deal with GPS coordinates
             if (!empty($exif['GPSLatitude']) && !empty($exif['GPSLatitudeRef'])) $return['latitude'] = Helpers::getGPSCoordinate($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
@@ -509,7 +509,7 @@ class Photo extends Model
         if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind))===false) {
 
             // Permissions are missing
-            Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because uploads/medium/ is missing or not readable and writable.');
+            Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because '.Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind).' is missing or not readable and writable.');
             return false;
 
         }

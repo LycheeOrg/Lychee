@@ -182,6 +182,7 @@ class PhotoController extends Controller
             $path       = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $exists->url;
             $path_thumb = $exists->thumbUrl;
             $medium     = $exists->medium;
+	        $small      = $exists->small;
             $exists     = true;
         }
 
@@ -229,6 +230,7 @@ class PhotoController extends Controller
         $photo->aperture = $info['aperture'];
         $photo->make = $info['make'];
         $photo->model = $info['model'];
+        $photo->lens = $info['lens'];
         $photo->shutter = $info['shutter'];
         $photo->focal = $info['focal'];
         $photo->takestamp = $info['takestamp'];
@@ -468,6 +470,7 @@ class PhotoController extends Controller
             $duplicate->aperture     = $photo->aperture;
             $duplicate->make         = $photo->make;
             $duplicate->model        = $photo->model;
+	        $duplicate->lens         = $photo->lens;
             $duplicate->shutter      = $photo->shutter;
             $duplicate->focal        = $photo->focal;
             $duplicate->takestamp    = $photo->takestamp;

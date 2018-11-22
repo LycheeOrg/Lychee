@@ -130,4 +130,19 @@ class SettingsController extends Controller
 
 		return (Configs::set('justified_layout', '0')) ? 'true' : 'false';
 	}
+
+	public function setImageOverlay(Request $request) {
+
+		$request->validate([
+			'image_overlay'  => 'required|string'
+		]);
+
+		if($request['image_overlay'] == '1')
+		{
+			return (Configs::set('image_overlay', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('image_overlay', '0')) ? 'true' : 'false';
+	}
+
 }
