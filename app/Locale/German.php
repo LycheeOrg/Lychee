@@ -1,0 +1,302 @@
+<?php
+
+namespace App\Locale;
+
+final class German
+{
+	static public function code()
+	{
+		return 'de';
+	}
+
+	static public function get_locale()
+	{
+		$locale	= array(
+			'USERNAME'		=> 'Benutzername',
+			'PASSWORD'		=> 'Kennwort',
+			'ENTER'			=> 'Eingabe',
+			'CANCEL'		=> 'Abbrechen',
+			'SIGN_IN'		=> 'Anmelden',
+			'CLOSE'			=> 'Schliessen',
+
+			'CHANGE_LOGIN'		=> 'Anmeldung ändern',
+			'CHANGE_SORTING'	=> 'Sortierung ändern',
+			'SET_DROPBOX'		=> 'Dropbox einrichten',
+			'ABOUT_LYCHEE'		=> 'Über Lychee',
+			'DIAGNOSTICS'		=> 'Diagnose',
+			'LOGS'				=> 'Logs anzeigen',
+			'SIGN_OUT'			=> 'Abmelden',
+			'UPDATE_AVAILABLE'	=> 'Update verfügbar!',
+
+
+			'SMART_ALBUMS'		=> 'Intelligente Alben',
+			'SHARED_ALBUMS'	    => 'Freigegebene Alben',
+			'ALBUMS'			=> 'Alben',
+			'PHOTOS'			=> 'Bilder',
+
+
+			'RENAME'			=> 'Umbenennen',
+			'RENAME_ALL'		=> 'Alle umbenennen',
+			'MERGE'				=> 'Zusammenführen',
+			'MERGE_ALL'			=> 'Alle zusammenführen',
+			'MAKE_PUBLIC' 		=> 'Veröffentlichen',
+			'SHARE_ALBUM' 		=> 'Album freigeben',
+			'SHARE_PHOTO' 		=> 'Foto freigeben',
+			'DOWNLOAD_ALBUM'	=> 'Album herunterladen',
+			'ABOUT_ALBUM'		=> 'Über dieses Album',
+			'DELETE_ALBUM'		=> 'Album löschen',
+
+			'DELETE_ALBUM_QUESTION' 		=> 'Album und Fotos löschen',
+			'KEEP_ALBUM'					=> 'Album behalten',
+			'DELETE_ALBUM_CONFIRMATION_1' 	=> 'Sind Sie sicher dass sie das Album',
+			'DELETE_ALBUM_CONFIRMATION_2'	=> 'und alle enthaltenen Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
+
+			'DELETE_ALBUMS_QUESTION' 		=> 'Alben und Fotos löschen',
+			'KEEP_ALBUMS'					=> 'Alben behalten',
+			'DELETE_ALBUMS_CONFIRMATION_1'	=> 'Sind Sie sicher dass Sie alle',
+			'DELETE_ALBUMS_CONFIRMATION_2'	=> 'ausgewählten Alben und die enthaltenen Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
+
+			'DELETE_UNSORTED_CONFIRM' 		=> 'Sind Sie sicher dass Sie alle Fotos aus \'Unsortiert\' löschen wollen?<br>Diese Aktion kann nicht rückgängig gemacht werden!',
+			'CLEAR_UNSORTED'				=> 'Unsortierte löschen',
+			'KEEP_UNSORTED'					=> 'Unsortierte behalten',
+
+			'EDIT_SHARING'					=> 'Freigabe bearbeiten',
+			'MAKE_PRIVATE'					=> 'Privat',
+
+			'CLOSE_ALBUM'					=> 'Album schliessen',
+			'CLOSE_PHOTO'					=> 'Foto schliessen',
+
+			'ADD'							=> 'Hinzufügen',
+			'MOVE'							=> 'Verschieben',
+			'MOVE_ALL'						=> 'Alle verschieben',
+			'DUPLICATE'						=> 'Duplizieren',
+			'DUPLICATE_ALL'					=> 'Alle duplizieren',
+			'DELETE'						=> 'Löschen',
+			'DELETE_ALL'					=> 'Alle löschen',
+			'DOWNLOAD'						=> 'Herunterladen',
+			'UPLOAD_PHOTO'					=> 'Foto hochladen',
+			'IMPORT_LINK'					=> 'Aus Link importieren',
+			'IMPORT_DROPBOX'				=> 'Aus Dropbox importieren',
+			'IMPORT_SERVER'					=> 'Von Server importieren',
+			'NEW_ALBUM'						=> 'Neues Album',
+
+			'TITLE_NEW_ALBUM'			=> 'Geben Sie einen Titel für das neue Album ein:',
+			'UNTITLED'					=> 'Unbenannt',
+			'UNSORTED'					=> 'Unsortiert',
+			'STARED'					=> 'Favoriten',
+			'RECENT'					=> 'Zuletzt benutzt',
+			'PUBLIC'					=> 'Öffentlich',
+			'NUM_PHOTOS'				=> 'Fotos',
+
+			'CREATE_ALBUM'				=> 'Album erstellen',
+
+			'STAR_PHOTO'				=> 'Foto als Favorit markieren',
+			'STAR'						=> 'Als Favorit markieren',
+			'STAR_ALL'					=> 'Alle als Favoriten markieren',
+			'TAGS'						=> 'Tags',
+			'TAGS_ALL'					=> 'Tags für alle',
+			'UNSTAR_PHOTO'				=> 'Foto von Favoriten entfernen',
+
+			'FULL_PHOTO'				=> 'Ganzes Foto',
+			'ABOUT_PHOTO'				=> 'Über dieses Photo',
+			'DIRECT_LINK'				=> 'Direkter Link',
+
+			'ALBUM_ABOUT'				=> 'Über',
+			'ALBUM_BASICS'				=> 'Grundlegende Informationen',
+			'ALBUM_TITLE'				=> 'Titel',
+			'ALBUM_NEW_TITLE'			=> 'Geben Sie einen neuen Titel für dieses Album ein:',
+			'ALBUMS_NEW_TITLE_1'		=> 'Geben Sie einen Titel für alle',
+			'ALBUMS_NEW_TITLE_2'		=> 'ausgewählten Alben ein:',
+			'ALBUM_SET_TITLE'			=> 'Titel speichern',
+			'ALBUM_DESCRIPTION'			=> 'Beschreibung',
+			'ALBUM_NEW_DESCRIPTION'		=> 'Geben Sie eine neue Beschreibung für dieses Album ein:',
+			'ALBUM_SET_DESCRIPTION'		=> 'Beschreibung speichern',
+			'ALBUM_ALBUM'				=> 'Album',
+			'ALBUM_CREATED'				=> 'Erstellt',
+			'ALBUM_IMAGES'				=> 'Bilder',
+			'ALBUM_SHARING'				=> 'Teilen',
+			'ALBUM_SHR_YES'				=> 'Ja',
+			'ALBUM_SHR_NO'				=> 'Nein',
+			'ALBUM_PUBLIC'				=> 'Öffentlich',
+			'ALBUM_HIDDEN'				=> 'Versteckt',
+			'ALBUM_HIDDEN_EXPL'			=> 'Nur Personen mit dem direkten Link können dieses Album ansehen.',
+			'ALBUM_DOWNLOADABLE'		=> 'Zum Herunterladen',
+			'ALBUM_DOWNLOADABLE_EXPL'	=> 'Besucher können dieses Album herunterladen.',
+			'ALBUM_PASSWORD'			=> 'Kennwort',
+			'ALBUM_PASSWORD_PROT'		=> 'Kennwortgeschützt',
+			'ALBUM_PASSWORD_PROT_EXPL'	=> 'Album nur einsehbar mit gültigem Kennwort.',
+			'ALBUM_PASSWORD_REQUIRED' 	=> 'Dieses Album ist mit einem Kennwort geschützt. Geben Sie darunter das Kennwort ein um das Album anzusehen:',
+			'ALBUM_MERGE_1'				=> 'Sind Sie sicher dass Sie das Album',
+			'ALBUM_MERGE_2'				=> 'mit dem Album zusammenführen wollen',
+			'ALBUMS_MERGE'				=> 'Are you sure you want to merge all selected albums into the album',
+			'MERGE_ALBUM'				=> 'Alben zusammenführen',
+			'DONT_MERGE'				=> "Nicht zusammenführen",
+			'ALBUM_MOVE_1'				=> 'Sind Sie sicher dass sie das Album',
+			'ALBUM_MOVE_2'				=> 'in folgendes Album verschieben möchten',
+			'ALBUMS_MOVE'				=> 'Sind Sie sicher dass sie die ausgewählten Alben in folgendes Album verschieben wollen',
+			'MOVE_ALBUMS'               => "Alben verschieben",
+			'NOT_MOVE_ALBUMS'           => "Nicht verschieben",
+			'ROOT' 						=> "Root",
+
+
+			'PHOTO_ABOUT'				=> 'Über',
+			'PHOTO_BASICS'				=> 'Grundlegende Informationen',
+			'PHOTO_TITLE'				=> 'Titel',
+			'PHOTO_NEW_TITLE'			=> 'Geben Sie einen neuen Titel für dieses Foto ein:',
+			'PHOTO_SET_TITLE'			=> 'Titel speichern',
+			'PHOTO_UPLOADED'			=> 'Hochgeladen',
+			'PHOTO_DESCRIPTION'			=> 'Beschreibung',
+			'PHOTO_NEW_DESCRIPTION'		=> 'Geben Sie eine neue Beschreibung für dieses Foto ein:',
+			'PHOTO_SET_DESCRIPTION'		=> 'Beschreibung speichern',
+			'PHOTO_IMAGE'				=> 'Bild',
+			'PHOTO_SIZE'				=> 'Grösse',
+			'PHOTO_FORMAT'				=> 'Format',
+			'PHOTO_RESOLUTION'			=> 'Auflösung',
+			'PHOTO_TAGS'				=> 'Tags',
+			'PHOTO_NOTAGS'				=> 'Keine Tags',
+			'PHOTO_NEW_TAGS'			=> 'Geben Sie die Tags für dieses Foto ein. Sie können mehrere Tags hinzufügen indem sie sie mit einem Komma trennen:',
+			'PHOTO_NEW_TAGS_1'			=> 'Geben sie die Tags für alle',
+			'PHOTO_NEW_TAGS_2'			=> 'ausgewählten Fotos ein. Bestehende Tags werden überschrieben. Sie können mehrere Tags hinzufügen indem sie sie mit einem Komma trennen:',
+			'PHOTO_SET_TAGS'			=> 'Tags speichern',
+			'PHOTO_CAMERA'				=> 'Kamera',
+			'PHOTO_CAPTURED'			=> 'Aufgenommen',
+			'PHOTO_MAKE'				=> 'Marke',
+			'PHOTO_TYPE'				=> 'Type/Modell',
+			'PHOTO_SHUTTER'				=> 'Verschlusszeit',
+			'PHOTO_APERTURE'			=> 'Blende',
+			'PHOTO_FOCAL'				=> 'Brennweite',
+			'PHOTO_ISO'					=> 'ISO',
+			'PHOTO_SHARING'				=> 'Teilen',
+			'PHOTO_SHR_PLUBLIC'			=> 'Öffentlich',
+			'PHOTO_SHR_ALB'				=> 'Ja (Album)',
+			'PHOTO_SHR_PHT'				=> 'Ja (Foto)',
+			'PHOTO_SHR_NO'				=> 'Nein',
+			'PHOTO_DELETE'				=> 'Foto löschen',
+			'PHOTO_KEEP'				=> 'Foto behalten',
+			'PHOTO_DELETE_1'			=> 'Sind Sie sicher dass Sie das Foto löschen wollen',
+			'PHOTO_DELETE_2'			=> '? Diese Aktion kann nicht rückgängig gemacht werden!',
+			'PHOTO_DELETE_ALL_1'		=> 'Sind Sie sicher dass Sie alle',
+			'PHOTO_DELETE_ALL_2'		=> 'ausgewählten Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
+			'PHOTO_NEW_TITLE' 			=> 'Geben Sie einen neuen Titel für dieses Foto ein:',
+			'PHOTOS_NEW_TITLE_1' 		=> 'Geben Sie einen Titel für alle',
+			'PHOTOS_NEW_TITLE_2' 		=> 'ausgewählten Fotos ein:',
+			'PHOTO_MAKE_PRIVATE_ALBUM'	=> 'Dieses Foto befindet sich in einem öffentlichen Album. Um dieses Foto als privat oder öffentlich zu markieren bearbeiten Sie die Sichtbarkeit des übergeordneten Albums.',
+			'PHOTO_SHOW_ALBUM'			=> 'Album anzeigen',
+
+			'LOADING'					=> 'Laden',
+			'ERROR'						=> 'Fehler',
+			'ERROR_TEXT'				=> 'Uijeh da ist etwas schiefgegangen. Bitte laden Sie die Seite erneut und probieren Sie es nocheinmal!',
+			'ERROR_DB_1'				=> 'Kann keine Verbindung zur Datenbank herstellen weil der Zugriff verweigert wurde. Überprüfen Sie Host, Benutzername und Kennwort und stellen Sie sicher dass der Zugriff von ihrem momentanen Standort erlaubt ist.',
+			'ERROR_DB_2'				=> 'Kann die Datenbank nicht erstellen. Überprüfen Sie Host, Benutzername und Kennwort und stellen Sie sicher dass der angegebene Benutzer Inhalte zur Datenbank hinzufügen darf.',
+			'ERROR_CONFIG_FILE'			=> "Kann diese Konfiguration nicht speichern. Zugriff verweigert auf <b>'data/'</b>. Bitte setzen Sie die Schreibrechte auf <b>'data/'</b> and <b>'uploads/'</b>. Lesen Sie die README Datei für mehr Informationen.",
+			'ERROR_UNKNOWN'				=> 'Etwas Unerwartetes ist passiert. Bitte probieren Sie es erneut und überprüfen Sie die Installation und ihren Server. Lesen Sie die README Datei für mehr Informationen.',
+			'ERROR_LOGIN'				=> 'Unable to save login. Please try again with another username and password!',
+			'SUCCESS'					=> 'OK',
+			'RETRY'						=> 'Nochmal versuchen',
+
+			'SETTINGS_SUCCESS_LOGIN'	=> 'Benutzerdaten aktualisiert.',
+			'SETTINGS_SUCCESS_SORT'		=> 'Sortierreihenfolge aktualisiert.',
+			'SETTINGS_SUCCESS_DROPBOX'	=> 'Dropbox Schlüssel aktualisiert.',
+			'SETTINGS_SUCCESS_LANG'		=> 'Sprache aktualisiert',
+			'SETTINGS_SUCCESS_LAYOUT' 	=> 'Layout aktualisiert',
+
+
+
+			'DB_INFO_TITLE'				=> 'Geben Sie die Informationen zu Ihrer Datenbankverbindung an:',
+			'DB_INFO_HOST'				=> 'Name des Datenbankservers (optional)',
+			'DB_INFO_USER'				=> 'Benutzername für die Datenbank',
+			'DB_INFO_PASSWORD'			=> 'Kennwort für die Datenbank',
+			'DB_INFO_TEXT'				=> 'Lychee wird seine eigene Datenbank erstellen. Falls erforderlich können Sie stattdessen den Namen einer bestehenden Datenbank angeben:',
+			'DB_NAME'					=> 'Name der Datenbank (optional)',
+			'DB_PREFIX'					=> 'Präfix für den Tabellennamen (optional)',
+			'DB_CONNECT'				=> 'Verbinden',
+
+			'LOGIN_TITLE'				=> 'Geben Sie Benutzername und Kennwort für Ihre Installation an:',
+			'LOGIN_USERNAME' 			=> 'Neuer Benutzername',
+			'LOGIN_PASSWORD' 			=> 'Neues Kennwort',
+			'LOGIN_CREATE'				=> 'Benutzer anlegen',
+
+			'PASSWORD_TITLE'			=> 'Geben Sie ihr bestehendes Kennwort ein:',
+			'USERNAME_CURRENT'			=> 'Bestehender Benutzername',
+			'PASSWORD_CURRENT'			=> 'Bestehendes Kennwort',
+			'PASSWORD_TEXT'				=> 'Ihr Benutzername und Passwort werden wie folgt geändert:',
+			'PASSWORD_CHANGE'			=> 'Benutzer Ändern',
+
+
+			'EDIT_SHARING_TITLE'		=> 'Freigabe bearbeiten',
+			'EDIT_SHARING_TEXT'			=> 'Die Freigabeeinstellungen für dieses Album werden wie folgt geändert:',
+			'SHARE_ALBUM_TEXT'			=> 'Dieses Album wird mit folgenden Einstellugen freigegeben:',
+
+			'SORT_ALBUM_BY_1'			=> 'Alben sortieren nach',
+			'SORT_ALBUM_BY_2'			=> 'in einer',
+			'SORT_ALBUM_BY_3'			=> 'Reihenfolge.',
+
+			'SORT_ALBUM_SELECT_1'		=> 'Erstellungszeitpunkt',
+			'SORT_ALBUM_SELECT_2'		=> 'Titel',
+			'SORT_ALBUM_SELECT_3'		=> 'Beschreibung',
+			'SORT_ALBUM_SELECT_4'		=> 'Öffentlich',
+			'SORT_ALBUM_SELECT_5'		=> 'Neuestes Aufnahmedatum',
+			'SORT_ALBUM_SELECT_6'		=> 'Ältestes Aufnahmedatum',
+
+
+			'SORT_PHOTO_BY_1'			=> 'Fotos sortieren nach',
+			'SORT_PHOTO_BY_2'			=> 'in einer',
+			'SORT_PHOTO_BY_3'			=> 'Reihenfolge.',
+
+			'SORT_PHOTO_SELECT_1'		=> 'Zeitpunkt des Hochladens',
+			'SORT_PHOTO_SELECT_2'		=> 'Aufnahmedatum',
+			'SORT_PHOTO_SELECT_3'		=> 'Titel',
+			'SORT_PHOTO_SELECT_4'		=> 'Beschreibung',
+			'SORT_PHOTO_SELECT_5'		=> 'Öffentlich',
+			'SORT_PHOTO_SELECT_6'		=> 'Favorit',
+			'SORT_PHOTO_SELECT_7'		=> 'Fotoformat',
+
+			'SORT_ASCENDING'			=> 'aufsteigenden',
+			'SORT_DESCENDING'			=> 'absteigenden',
+			'SORT_CHANGE'				=> 'Sortierung ändern',
+
+			'DROPBOX_TITLE'				=> 'Dropbox Schlüssel festlegen',
+			'DROPBOX_TEXT'				=> "Um Ihre Fotos von Dropbox zu importieren, brauchen Sie einen gültigen App-Key von <a href='https://www.dropbox.com/developers/apps/create'>der Dropbox Webseite</a>. Erstellen Sie einen persönlichen Schlüssel und geben Sie ihn darunter ein:",
+
+			'LANG_TEXT'					=> 'Sprache für Lychee =>',
+			'LANG_TITLE'				=> 'Sprache festlegen',
+
+			'LAYOUT_TEXT' 				=> 'Ausgerichtetes Layout benutzen=>',
+
+			'VIEW_NO_RESULT'			=> 'Keine Ergebnisse',
+			'VIEW_NO_PUBLIC_ALBUMS'		=> 'Keine öffentlichen Alben',
+			'VIEW_NO_CONFIGURATION'		=> 'Keine Konfiguration',
+			'VIEW_PHOTO_NOT_FOUND'		=> 'Foto nicht gefunden',
+
+			'NO_TAGS'					=> 'Keine Tags',
+
+			'UPLOAD_MANAGE_NEW_PHOTOS'	=> 'Sie können jetzt Ihre neuen Foto(s) verwalten.',
+			'UPLOAD_COMPLETE'			=> 'Hochladen abgeschlossen',
+			'UPLOAD_COMPLETE_FAILED'	=> 'Fehler beim Hochladen eines oder mehrerer Fotos.',
+			'UPLOAD_IMPORTING'			=> 'Importieren',
+			'UPLOAD_IMPORTING_URL'		=> 'URL importieren',
+			'UPLOAD_UPLOADING'			=> 'Hochladen',
+			'UPLOAD_FINISHED'			=> 'Beendet',
+			'UPLOAD_PROCESSING'			=> 'Verarbeiten',
+			'UPLOAD_FAILED'				=> 'Fehlgeschlagen',
+			'UPLOAD_FAILED_ERROR'		=> 'Hochladen fehlgeschlagen. Der Server hat einen Fehler gemeldet!',
+			'UPLOAD_FAILED_WARNING'		=> 'Hochladen fehlgeschlagen. Der Server hat eine Warnung ausgegeben!',
+			'UPLOAD_SKIPPED'			=> 'Übersprungen',
+			'UPLOAD_ERROR_CONSOLE'		=> 'Bitte schauen Sie in die Konsole ihres Browsers um weiter Details zu erfahren.',
+			'UPLOAD_UNKNOWN'			=> 'Der Server hat eine unbekannte Antwort gegeben. Bitte schauen Sie in die Konsole ihres Browsers um weiter Details zu erfahren.',
+			'UPLOAD_ERROR_UNKNOWN'		=> 'Hochladen fehlgeschlagen. Der Server hat einen unbekannten Fehler gemeldet!',
+			'UPLOAD_IN_PROGRESS'		=> 'Lychee ist gerade beim Hochladen!',
+			'UPLOAD_IMPORT_WARN_ERR'	=> 'Der Import ist fertig, hat aber Warnungen oder Fehler zurückgegeben. Schauen Sie bitte ins Protokoll (Einstellungen/Protokoll ansehen).',
+			'UPLOAD_IMPORT_COMPLETE'	=> 'Import abgeschlossen',
+			'UPLOAD_IMPORT_INSTR'		=> 'Geben Sie bitte den direkten Link ein um ihn zu importieren:',
+			'UPLOAD_IMPORT'				=> 'Import',
+			'UPLOAD_IMPORT_SERVER'		=> 'Importieren von Server',
+			'UPLOAD_IMPORT_SERVER_FOLD'	=> 'Der Ordner ist leer oder enthält keine lesbaren Dateien zum Verarbeiten.Schauen Sie bitte ins Protokoll (Einstellungen/Protokoll ansehen).',
+			'UPLOAD_IMPORT_SERVER_INSTR'=> 'Diese Aktion wird alle Fotos, Ordner und Unterordner importieren die sich in folgendem Verzeichnis befinden. The <b>Originaldateien werden nach dem Import gelöscht </b> falls möglich.',
+			'UPLOAD_ABSOLUTE_PATH'		=> 'Absoluter Pfad zum Verzeichnis',
+			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Konnte Import nicht starten weil der Ordner leer ist.'
+		);
+
+		return $locale;
+	}
+}

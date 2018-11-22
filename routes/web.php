@@ -56,7 +56,7 @@ Route::post('/api/Sharing::Delete',         'SharingController@delete')->middlew
 Route::post('/api/Settings::setLogin',      'SettingsController@setLogin');
 Route::post('/api/Settings::setSorting',    'SettingsController@setSorting')->middleware('admin');
 Route::post('/api/Settings::setLang',       'SettingsController@setLang')->middleware('admin');
-Route::post('/api/Settings::setLayoutOverlay',      'SettingsController@setLayoutOverlay')->middleware('admin');
+Route::post('/api/Settings::setLayout',     'SettingsController@setLayout')->middleware('admin');
 Route::post('/api/Settings::setImageOverlay',       'SettingsController@setImageOverlay')->middleware('admin');
 
 

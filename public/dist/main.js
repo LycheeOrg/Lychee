@@ -4665,7 +4665,7 @@ settings.changeLayout = function () {
 	} else {
 		params.justified_layout = '0';
 	}
-	api.post('Settings::setLayoutOverlay', params, function (data) {
+	api.post('Settings::setLayout', params, function (data) {
 		if (data === true) {
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LAYOUT']);
 			lychee.justified = params.justified_layout === '1';
