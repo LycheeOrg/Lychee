@@ -166,11 +166,11 @@ build.photo = function (data) {
 
 build.overlay_image = function (data) {
 
-	var exifHash = data.takestamp + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
+	var exifHash = data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
 
 	var html = "";
 
-	if (exifHash !== '0') {
+	if (exifHash !== '') {
 		html += lychee.html(_templateObject11, data.title, data.shutter.replace('s', 'sec'), data.aperture.replace('f/', '&fnof; / '), lychee.locale['PHOTO_ISO'], data.iso, data.focal, data.lens && data.lens !== '' ? '(' + data.lens + ')' : '');
 	}
 
