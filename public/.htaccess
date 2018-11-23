@@ -6,7 +6,7 @@
     RewriteEngine On
 
     # Handle view.php Controller...
-    RewriteRule ^view\.php$ /view/$1 [PT]
+#    RewriteRule ^view\.php$ /view/$1 [PT]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

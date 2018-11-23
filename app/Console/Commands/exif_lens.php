@@ -59,17 +59,14 @@ class exif_lens extends Command
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
 			if(file_exists($url)) {
 				$info = Photo::getInformations($url);
-				$photo->width = $info['width'] ? $info['width'] : 0;
-				$photo->height = $info['height'] ? $info['height'] : 0;
-				$photo->size = $info['size'];
-				$photo->iso = $info['iso'];
-				$photo->aperture = $info['aperture'];
-				$photo->make = $info['make'];
-				$photo->model = $info['model'];
-				$photo->lens = $info['lens'];
-				$photo->shutter = $info['shutter'];
-				$photo->focal = $info['focal'];
-				$photo->takestamp = $info['takestamp'];
+				if($photo->size != '') $photo->size = $info['size'];
+				if($photo->iso != '') $photo->iso = $info['iso'];
+				if($photo->aperture != '') $photo->aperture = $info['aperture'];
+				if($photo->make != '') $photo->make = $info['make'];
+				if($photo->model != '') $photo->model = $info['model'];
+				if($photo->lens != '') $photo->lens = $info['lens'];
+				if($photo->shutter != '') $photo->shutter = $info['shutter'];
+				if($photo->focal != '') $photo->focal = $info['focal'];
 				if ($photo->save()) {
 					$this->line($i . ': EXIF updated for ' . $photo->title);
 				} else {
