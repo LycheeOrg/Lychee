@@ -18,21 +18,22 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
-    <?php
 
-    if (isset($_GET['p'])&&$_GET['p']>0) {
+    <!-- General Meta Data -->
+    <meta name="title" content="{{ $photo->title }}">
+    <meta name="description" content="{{ $photo->description }} - via Lychee">
+    <link rel="image_src" type="image/jpeg" href="{{ $picture }}">
 
-        # Load required files
-        require(__DIR__ . '/php/define.php');
-        require(__DIR__ . '/php/autoload.php');
-        require(__DIR__ . '/php/helpers/getGraphHeader.php');
+    <!-- Twitter Meta Data -->
+    <meta name="twitter:card" content="photo">
+    <meta name="twitter:title" content="{{ $photo->title }}">
+    <meta name="twitter:image:src" content="{{ $picture }}">
 
-        echo getGraphHeader($_GET['p']);
-
-    }
-
-    ?>
-
+    <!-- Facebook Meta Data -->
+    <meta property="og:title" content="{{ $photo->title }}">
+    <meta property="og:description" content="{{ $photo->description }} - via Lychee">
+    <meta property="og:image" content="{{ $picture }}">
+    <meta property="og:url" content="{{ $url }}">
 </head>
 <body class="view">
 
@@ -73,5 +74,8 @@
 <!-- JS -->
 <script type="text/javascript" src="dist/view.js"></script>
 
+<script type="text/javascript">
+lychee.api_V2 = true;
+</script>
 </body>
 </html>

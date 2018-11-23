@@ -335,9 +335,9 @@ return [
                 // 'url',
             ],
             'hashes' => [
-                // 'sha256' => [
-                //     'hash-value',
-                // ],
+	            'sha256' => [
+	            	'8bLztrDF3NUpheSuvAzpebgX1DpPJEfhmUHKTwGF4qA=',
+		            ]
             ],
             'nonces' => [
                 // 'base64-encoded',

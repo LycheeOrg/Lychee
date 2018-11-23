@@ -21,6 +21,8 @@ if (env('APP_ENV') === 'dev') {
 Route::get('/', function () { return view('index'); })->name('home');
 Route::get('/phpinfo', function () { return (string)phpinfo(); })->name('admin');
 
+Route::get('/view',                         'ViewController@view'); // we catch view.php with the .htacess and redirect it here.
+
 Route::post('/php/index.php',               'SessionController@init'); // entry point if options are not initialized
 Route::post('/api/Session::init',           'SessionController@init');
 Route::post('/api/Session::login',          'SessionController@login');
@@ -38,7 +40,8 @@ Route::post('/api/Album::delete',           'AlbumController@delete')->middlewar
 Route::post('/api/Album::merge',            'AlbumController@merge')->middleware('upload');
 Route::post('/api/Album::move',             'AlbumController@move')->middleware('upload');
 
-Route::post('/api/Photo::get',              'PhotoController@get')->middleware('AlbumPWCheck');
+//Route::post('/api/Photo::get',              'PhotoController@get')->middleware('AlbumPWCheck');
+Route::post('/api/Photo::get',              'PhotoController@get');
 Route::post('/api/Photo::setTitle',         'PhotoController@setTitle')->middleware('upload');
 Route::post('/api/Photo::setDescription',   'PhotoController@setDescription')->middleware('upload');
 Route::post('/api/Photo::setStar',          'PhotoController@setStar')->middleware('upload');

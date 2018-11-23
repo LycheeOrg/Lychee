@@ -484,7 +484,7 @@ class Photo extends Model
 	 * @return boolean Returns true when successful.
 	 * @throws ImagickException
 	 */
-    function createMedium($newWidth = 1920, $newHeight = 1080, $kind = 'MEDIUM') {
+    public function createMedium($newWidth = 1920, $newHeight = 1080, $kind = 'MEDIUM') {
 
         // Excepts the following:
         // (string) $url = Path to the photo-file

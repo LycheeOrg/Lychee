@@ -168,13 +168,21 @@ class SessionController extends Controller
      */
     public function show() {
         dd(Session::all());
+        return false;
     }
 
-    static public function checkAccess($request){
+    static public function checkAccess($request, $albumID = ''){
         if (Session::get('login'))
         return 1;
 
-        $album = Album::find($request['albumID']);
+        if($albumID != '')
+        {
+	        $album = Album::find($albumID);
+        }
+        else
+        {
+	        $album = Album::find($request['albumID']);
+        }
         if($album == null) return 0; // Does not exist
         if($album->public != 1) return 2; // Warning: Album private!
         if($album->password == '') return 1;

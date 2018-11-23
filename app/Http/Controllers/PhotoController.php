@@ -40,7 +40,7 @@ class PhotoController extends Controller
 
     function get(Request $request){
         $request->validate([
-            'albumID' => 'string|required',
+            'albumID' => 'string|required', // we actually don't care about that one...
             'photoID' => 'string|required'
         ]);
 
@@ -53,9 +53,9 @@ class PhotoController extends Controller
         }
 
         $return = $photo->prepareData();
-        if ((!Session::get('login') && $return['public'] == '0')||
+        if ((!Session::get('login') && $return['public'] == '1')||
             (Session::get('login')) ||
-            SessionController::checkAccess($request) === 1) {
+            SessionController::checkAccess($request, $photo->album_id) === 1) {
             $return['original_album'] = $return['album'];
             $return['album']          = $request['albumID'];
             return $return;
