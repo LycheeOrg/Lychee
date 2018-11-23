@@ -4279,6 +4279,9 @@ photo.getDirectLink = function () {
 photo.getViewLink = function (photoID) {
 
 	var url = 'view.php?p=' + photoID;
+	if (lychee.api_V2) {
+		url = 'view?p=' + photoID;
+	}
 
 	if (location.href.indexOf('index.html') > 0) return location.href.replace('index.html' + location.hash, url);else return location.href.replace(location.hash, url);
 };

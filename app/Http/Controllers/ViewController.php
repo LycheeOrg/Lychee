@@ -23,11 +23,12 @@ class ViewController extends Controller
 	}
 
 	public function view(Request $request) {
+
 		$request->validate([
 			'p'       => 'required'
 		]);
 
-		$photo = Photo::find($request['p']);
+		$photo = Photo::find($request->get('p'));
 
 		if ($photo == null) {
 			Logs::error( __METHOD__, __LINE__, 'Could not find photo in database');
@@ -46,13 +47,15 @@ class ViewController extends Controller
 		if (!$public) return abort(403);
 
 
-		if ($photo->medium==='1')   $dir = 'medium';
+		if ($photo->medium=='1')   $dir = 'medium';
 		else                        $dir = 'big';
 
-		$parseUrl = parse_url('http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-		$url      = '//' . $parseUrl['host'] . ViewController::sport($parseUrl['port']) . $parseUrl['path'] . '?' . $parseUrl['query'];
-//		$picture  = '//' . $parseUrl['host'] . $parseUrl['port'] . $parseUrl['path'] . '/../uploads/' . $dir . '/' . $photo->url;
-		$picture  = '//' . $parseUrl['host'] . ViewController::sport($parseUrl['port']) . '/uploads/' . $dir . '/' . $photo->url;
+		$parseUrl = parse_url(env('APP_URL') . $request->server->get('REQUEST_URI'));
+//		dd($parseUrl);
+		$url      = env('APP_URL') . $request->server->get('REQUEST_URI');
+//		$picture  = '//' . $request->server->get('HTTP_HOST') . $parseUrl['path'] . '/../uploads/' . $dir . '/' . $photo->url;
+		$picture  = env('APP_URL') . '/uploads/' . $dir . '/' . $photo->url;
+//		$picture  = $parseUrl['host'] . '/uploads/' . $dir . '/' . $photo->url;
 
 
 		return view('view', ['url' => $url, 'photo' => $photo, 'picture'=> $picture]);

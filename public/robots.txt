@@ -1,3 +1,8 @@
+User-agent: Twitterbot
+Disallow:
+Allow: /uploads/medium/
+Allow: /uploads/big/
+
 User-agent: *
 Disallow: /data/
 Disallow: /dist/

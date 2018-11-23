@@ -11,8 +11,8 @@
     <link type="text/css" rel="stylesheet" href="dist/main.css">
 
     <link rel="shortcut icon" href="favicon.ico">
-    <link rel="apple-touch-icon" href="src/images/apple-touch-icon-iphone.png" sizes="120x120">
-    <link rel="apple-touch-icon" href="src/images/apple-touch-icon-ipad.png" sizes="152x152">
+    <link rel="apple-touch-icon" href="Lychee-front/images/apple-touch-icon-iphone.png" sizes="120x120">
+    <link rel="apple-touch-icon" href="Lychee-front/images/apple-touch-icon-ipad.png" sizes="152x152">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -25,9 +25,10 @@
     <link rel="image_src" type="image/jpeg" href="{{ $picture }}">
 
     <!-- Twitter Meta Data -->
-    <meta name="twitter:card" content="photo">
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $photo->title }}">
-    <meta name="twitter:image:src" content="{{ $picture }}">
+    <meta name="twitter:description" content="{{ $photo->description }}">
+    <meta name="twitter:image" content="{{ $picture }}">
 
     <!-- Facebook Meta Data -->
     <meta property="og:title" content="{{ $photo->title }}">
