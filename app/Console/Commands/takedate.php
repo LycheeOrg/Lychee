@@ -7,7 +7,7 @@ use App\Photo;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
 
-class exif_lens extends Command
+class takedate extends Command
 {
 
 	/**
@@ -15,14 +15,14 @@ class exif_lens extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'exif_lens {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'takedate {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Get EXIF data from pictures if missing';
+	protected $description = 'Makesure takedate is correct';
 
 	/**
 	 * Create a new command instance.
@@ -47,10 +47,10 @@ class exif_lens extends Command
 		set_time_limit($timeout);
 
 		// we use lens because this is the one which is most likely to be empty.
-		$photos = Photo::where('lens', '=', '')->whereNotIn('lens', PhotoController::$validVideoTypes)->offset($from)->limit($argument)->get();
+		$photos = Photo::where('make', '=', '')->whereNotIn('lens', PhotoController::$validVideoTypes)->offset($from)->limit($argument)->get();
 		if(count($photos) == 0)
 		{
-			$this->line('No pictures requires EXIF updates.');
+			$this->line('No pictures requires takedate updates.');
 			return false;
 		}
 
@@ -59,18 +59,11 @@ class exif_lens extends Command
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
 			if(file_exists($url)) {
 				$info = Photo::getInformations($url);
-				if($photo->size == '') $photo->size = $info['size'];
-				if($photo->iso == '') $photo->iso = $info['iso'];
-				if($photo->aperture == '') $photo->aperture = $info['aperture'];
-				if($photo->make == '') $photo->make = $info['make'];
-				if($photo->model == '') $photo->model = $info['model'];
-				if($photo->lens == '') $photo->lens = $info['lens'];
-				if($photo->shutter == '') $photo->shutter = $info['shutter'];
-				if($photo->focal == '') $photo->focal = $info['focal'];
+				if($photo->takestamp == '') $photo->shutter = $info['takestamp'];
 				if ($photo->save()) {
-					$this->line($i . ': EXIF updated for ' . $photo->title);
+					$this->line($i . ': Takestamp updated for ' . $photo->title);
 				} else {
-					$this->line($i . ': Could not get EXIF data/nothing to update for ' . $photo->title . '.');
+					$this->line($i . ': Could not get Takestamp data/nothing to update for ' . $photo->title . '.');
 				}
 			} else {
 				$this->line($i . ': File does not exists for ' . $photo->title . '.');
