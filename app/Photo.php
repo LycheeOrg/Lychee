@@ -64,17 +64,19 @@ class Photo extends Model
         $photo['url']      = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG') . $this->url;
 
         // Use takestamp as sysdate when possible
-        if (isset($this->takestamp) && $this->takestamp !=='0') {
+        if (isset($this->takestamp) && $this->takestamp > 0) {
 
             // Use takestamp
             $photo['cameraDate'] = '1';
+	        $photo['sysdate']    = $this->created_at->format('d F Y');
             $photo['takedate']    = strftime('%d %B %Y at %H:%M', $this->takestamp);
 
         } else {
 
             // Use sysstamp from the id
             $photo['cameraDate'] = '0';
-            $photo['takedate']    = $this->created_at->format('d F Y');
+            $photo['sysdate']    = $this->created_at->format('d F Y');
+	        $photo['takedate']   = '';
 
         }
 

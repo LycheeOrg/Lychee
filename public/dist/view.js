@@ -150,7 +150,7 @@ build.photo = function (data) {
 
 	html += lychee.html(_templateObject7, data.album, data.id, build.getThumbnailHtml(data.thumbUrl, retinaThumbUrl, data.type, data.medium, data.small), data.title, data.title);
 
-	if (data.cameraDate === '1') html += lychee.html(_templateObject8, build.iconic('camera-slr'), data.sysdate);else html += lychee.html(_templateObject9, data.sysdate);
+	if (data.cameraDate === '1') html += lychee.html(_templateObject8, build.iconic('camera-slr'), data.takedate);else html += lychee.html(_templateObject9, data.sysdate);
 
 	html += "</div>";
 
@@ -705,7 +705,7 @@ sidebar.createStructure.photo = function (data) {
 	if (data == null || data === '') return false;
 
 	var editable = false;
-	var exifHash = data.takestamp + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
+	var exifHash = data.takedate + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
 	var structure = {};
 	var _public = '';
 
@@ -757,7 +757,7 @@ sidebar.createStructure.photo = function (data) {
 	}
 
 	// Only create EXIF section when EXIF data available
-	if (exifHash !== '0') {
+	if (exifHash !== '') {
 
 		structure.exif = {
 			title: lychee.locale['PHOTO_CAMERA'],
