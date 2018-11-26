@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 
 use App\Logs;
 use App\Photo;
-use App\User;
 use Illuminate\Http\Request;
 
 class ViewController extends Controller

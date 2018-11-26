@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Logs;
-//use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 
 class LogController extends Controller
 {

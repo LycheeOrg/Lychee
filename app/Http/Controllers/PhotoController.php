@@ -391,7 +391,11 @@ class PhotoController extends Controller
         return $photo->save() ? 'true' : 'false';
     }
 
-    function setTags(Request $request){
+	/**
+	 * @param Request $request
+	 * @return string
+	 */
+	function setTags(Request $request){
 
         $request->validate([
             'photoIDs' => 'required|string',

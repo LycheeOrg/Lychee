@@ -38,7 +38,7 @@
 
 ## Search
 
-- [ ] add basic search
+- [x] add basic search
 - [ ] Solve big number of pictures bug.
 - [ ] by date
 - [ ] by tag

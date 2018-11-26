@@ -82,11 +82,12 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject38 = _taggedTemplateLiteral(["<p>", " ", " ", " ", "</p>"], ["<p>", " ", " ", " ", "</p>"]),
     _templateObject39 = _taggedTemplateLiteral(["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"], ["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"]),
     _templateObject40 = _taggedTemplateLiteral(["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"], ["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"]),
-    _templateObject41 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject42 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
-    _templateObject43 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
-    _templateObject44 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
-    _templateObject45 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]);
+    _templateObject41 = _taggedTemplateLiteral(["\n\t\t\t<p>", "\n\t\t\t<select class=\"select\" name=\"license\">\n\t\t\t\t<option value=\"\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t\t<br />\n\t\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a></p>"], ["\n\t\t\t<p>", "\n\t\t\t<select class=\"select\" name=\"license\">\n\t\t\t\t<option value=\"\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t\t<br />\n\t\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a></p>"]),
+    _templateObject42 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject43 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
+    _templateObject44 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
+    _templateObject45 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
+    _templateObject46 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -838,81 +839,6 @@ album.merge = function (albumIDs, albumID) {
 		action();
 	}
 };
-
-// album.move = function(albumIDs, titles = []) {
-//
-// 	let title  = '';
-// 	let sTitle = '';
-// 	let msg    = '';
-//
-// 	if (!albumIDs) return false;
-// 	if (albumIDs instanceof Array===false) albumIDs = [ albumIDs ];
-//
-// 	// Get title of first album
-// 	if (albums.json && albums.getByID(albumIDs[0]))
-// 	{
-// 		title = albums.getByID(albumIDs[0]).title;
-// 	}
-// 	else
-// 	{
-// 		title = lychee.locale['ROOT'];
-// 	}
-//
-// 	// Fallback for first album without a title
-// 	if (title==='') title = lychee.locale['UNTITLED'];
-//
-// 	if (albumIDs.length===2) {
-//
-// 		// Get title of second album
-// 		if (albums.json) sTitle = albums.getByID(albumIDs[1]).title;
-//
-// 		// Fallback for second album without a title
-// 		if (sTitle==='') sTitle = lychee.locale['UNTITLED'];
-//
-// 		msg = lychee.html`<p>${ lychee.locale['ALBUM_MOVE_1'] } '$${ sTitle }' ${ lychee.locale['ALBUM_MOVE_2'] } '$${ title }'?</p>`
-//
-// 	} else {
-//
-// 		msg = lychee.html`<p>${ lychee.locale['ALBUMS_MOVE'] } '$${ title }'?</p>`
-//
-// 	}
-//
-// 	const action = function() {
-//
-// 		basicModal.close();
-//
-// 		let params = {
-// 			albumIDs: albumIDs.join()
-// 		};
-//
-// 		api.post('Album::move', params, function(data) {
-//
-// 			if (data!==true) lychee.error(null, params, data);
-// 			else
-// 			{
-// 				album.reload()
-// 			}
-//
-// 		})
-//
-// 	};
-//
-// 	basicModal.show({
-// 		body: msg, //getMessage(albumIDs, titles, 'move'),
-// 		buttons: {
-// 			action: {
-// 				title: lychee.locale['MOVE_ALBUMS'],
-// 				fn: action,
-// 				class: 'red'
-// 			},
-// 			cancel: {
-// 				title: lychee.locale['NOT_MOVE_ALBUMS'],
-// 				fn: basicModal.close
-// 			}
-// 		}
-// 	})
-//
-// };
 
 album.setAlbum = function (albumIDs, albumID) {
 	var confirm = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
@@ -2460,8 +2386,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.4',
-	versionCode: '030204',
+	version: '3.2.5',
+	versionCode: '030205',
 
 	updatePath: '//LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee',
@@ -3044,6 +2970,11 @@ lychee.locale = {
 	'PHOTO_DESCRIPTION': 'Description',
 	'PHOTO_NEW_DESCRIPTION': 'Enter a new description for this photo:',
 	'PHOTO_SET_DESCRIPTION': 'Set Description',
+	'PHOTO_NEW_LICENSE': 'Add a License',
+	'PHOTO_SET_LICENSE': 'Set License',
+	'PHOTO_LICENSE': 'Reuse',
+	'PHOTO_LICENSE_HELP': 'Need help choosing?',
+	'PHOTO_LICENSE_NONE': 'None',
 	'PHOTO_IMAGE': 'Image',
 	'PHOTO_SIZE': 'Size',
 	'PHOTO_FORMAT': 'Format',
@@ -4123,7 +4054,6 @@ photo.setDescription = function (photoID) {
 		};
 
 		api.post('Photo::setDescription', params, function (data) {
-
 			if (data !== true) lychee.error(null, params, data);
 		});
 	};
@@ -4251,6 +4181,46 @@ photo.share = function (photoID, service) {
 			});
 			break;
 	}
+};
+
+photo.setLicense = function (photoID) {
+
+	var oldLicense = photo.json.license;
+
+	var action = function action(data) {
+
+		basicModal.close();
+		var license = data.license;
+
+		if (visible.photo()) {
+			photo.json.license = license;
+			view.photo.license();
+		}
+
+		var params = {
+			photoID: photoID,
+			license: license
+		};
+
+		api.post('Photo::setLicense', params, function (data) {
+
+			if (data !== true) lychee.error(null, params, data);
+		});
+	};
+
+	basicModal.show({
+		body: lychee.html(_templateObject41, lychee.locale['PHOTO_NEW_LICENSE'], lychee.locale['PHOTO_LICENSE_NONE'], lychee.locale['PHOTO_LICENSE_HELP']),
+		buttons: {
+			action: {
+				title: lychee.locale['PHOTO_SET_LICENSE'],
+				fn: action
+			},
+			cancel: {
+				title: lychee.locale['CANCEL'],
+				fn: basicModal.close
+			}
+		}
+	});
 };
 
 photo.getArchive = function (photoID) {
@@ -4797,6 +4767,10 @@ sidebar.bind = function () {
 		photo.deleteTag(photo.getID(), $(this).data('index'));
 	});
 
+	sidebar.dom('#edit_license').off(eventName).on(eventName, function () {
+		photo.setLicense(photo.getID());
+	});
+
 	return true;
 };
 
@@ -4919,8 +4893,14 @@ sidebar.createStructure.photo = function (data) {
 		rows: [{ title: lychee.locale['PHOTO_SHR_PLUBLIC'], kind: 'public', value: _public }]
 	};
 
+	structure.license = {
+		title: lychee.locale['PHOTO_LICENSE'],
+		type: sidebar.types.DEFAULT,
+		rows: [{ title: lychee.locale['PHOTO_SET_LICENSE'], kind: 'license', value: photo.json.license, editable: editable }]
+	};
+
 	// Construct all parts of the structure
-	structure = [structure.basics, structure.image, structure.tags, structure.exif, structure.sharing];
+	structure = [structure.basics, structure.image, structure.tags, structure.exif, structure.sharing, structure.license];
 
 	return structure;
 };
@@ -5043,12 +5023,12 @@ sidebar.render = function (structure) {
 			if (value === '' || value == null) value = '-';
 
 			// Wrap span-element around value for easier selecting on change
-			value = lychee.html(_templateObject41, row.kind, value);
+			value = lychee.html(_templateObject42, row.kind, value);
 
 			// Add edit-icon to the value when editable
 			if (row.editable === true) value += ' ' + build.editIcon('edit_' + row.kind);
 
-			_html += lychee.html(_templateObject42, row.title, value);
+			_html += lychee.html(_templateObject43, row.title, value);
 		});
 
 		_html += "\n\t\t\t\t </table>\n\t\t\t\t ";
@@ -5064,7 +5044,7 @@ sidebar.render = function (structure) {
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon('edit_tags');
 
-		_html += lychee.html(_templateObject43, section.title, section.title.toLowerCase(), section.value, editable);
+		_html += lychee.html(_templateObject44, section.title, section.title.toLowerCase(), section.value, editable);
 
 		return _html;
 	};
@@ -5411,7 +5391,7 @@ upload.start = {
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject44) + lychee.locale['UPLOAD_IMPORT_INSTR'] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + _url + "'></p>"),
+			body: lychee.html(_templateObject45) + lychee.locale['UPLOAD_IMPORT_INSTR'] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + _url + "'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale['UPLOAD_IMPORT'],
@@ -5498,7 +5478,7 @@ upload.start = {
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject44) + lychee.locale['UPLOAD_IMPORT_SERVER_INSTR'] + " <input class='text' name='path' type='text' maxlength='100' placeholder='" + lychee.locale['UPLOAD_ABSOLUTE_PATH'] + ("' value='" + lychee.location + "uploads/import/'></p>"),
+			body: lychee.html(_templateObject45) + lychee.locale['UPLOAD_IMPORT_SERVER_INSTR'] + " <input class='text' name='path' type='text' maxlength='100' placeholder='" + lychee.locale['UPLOAD_ABSOLUTE_PATH'] + ("' value='" + lychee.location + "uploads/import/'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale['UPLOAD_IMPORT'],
@@ -5995,6 +5975,7 @@ view.photo = {
 		view.photo.star();
 		view.photo.public();
 		view.photo.photo();
+		view.photo.license();
 
 		photo.json.init = 1;
 	},
@@ -6052,6 +6033,10 @@ view.photo = {
 	description: function description() {
 
 		if (photo.json.init) sidebar.changeAttr('description', photo.json.description);
+	},
+
+	license: function license() {
+		if (photo.json.init) sidebar.changeAttr('license', photo.json.license);
 	},
 
 	star: function star() {
@@ -6118,7 +6103,7 @@ view.photo = {
 			var nextPhotoID = album.getByID(photoID).nextPhoto;
 			var nextPhoto = album.getByID(nextPhotoID);
 
-			$nextArrow.css('background-image', lychee.html(_templateObject45, nextPhoto.thumbUrl));
+			$nextArrow.css('background-image', lychee.html(_templateObject46, nextPhoto.thumbUrl));
 		}
 
 		if (hasPrevious === false || lychee.viewMode === true) {
@@ -6129,7 +6114,7 @@ view.photo = {
 			var previousPhotoID = album.getByID(photoID).previousPhoto;
 			var previousPhoto = album.getByID(previousPhotoID);
 
-			$previousArrow.css('background-image', lychee.html(_templateObject45, previousPhoto.thumbUrl));
+			$previousArrow.css('background-image', lychee.html(_templateObject46, previousPhoto.thumbUrl));
 		}
 	}),
 
@@ -6359,7 +6344,7 @@ view.sharing = {
 				html += "<option value=\"" + this.id + "\">" + this.title + "</option>";
 			});
 
-			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"albums_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+			html += "</select>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"albums_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
 
 			html += "\n\t\t\t<div class=\"sharing_view_line\"><p class=\"with\">with</p></div>\n\t\t\t<div class=\"sharing_view_line\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"user_list\" class=\"form-control select\" size=\"13\" multiple=\"multiple\">";
 
@@ -6367,7 +6352,7 @@ view.sharing = {
 				html += "<option value=\"" + this.id + "\">" + this.username + "</option>";
 			});
 
-			html += "</select>\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\t\t\t\t\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"user_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+			html += "</select>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"user_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
 			html += "<div class=\"sharing_view_line\"><a id=\"Share_button\"  class=\"basicModal__button\">Share</a></div>";
 			html += '<div class="sharing_view_line">';
 
