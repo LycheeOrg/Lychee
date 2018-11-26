@@ -38,6 +38,7 @@
 
 ## Search
 
+- [ ] add basic search
 - [ ] Solve big number of pictures bug.
 - [ ] by date
 - [ ] by tag
@@ -57,7 +58,7 @@
 ## Album view
 
 - [x] Display photos _&agrave; la flickr_ (not as square anymore, fixed height)
-- [ ] Copy to...
+- [x] Copy to...
 - [x] New album from selection
 - [x] Multi select without click-drag
 - [ ] Slideshow with random
