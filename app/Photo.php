@@ -51,6 +51,7 @@ class Photo extends Model
         $photo['sysdate']       = $this->created_at->format('d F Y');
         $photo['tags']          = $this->tags;
         $photo['description']   = $this->description == null ? '' : $this->description;
+	    $photo['license']       = $this->license;
 
         // Parse medium
         if ($this->medium == '1') $photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM') . $this->url;

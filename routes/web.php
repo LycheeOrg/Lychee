@@ -51,6 +51,7 @@ Route::post('/api/Photo::setTags',          'PhotoController@setTags')->middlewa
 Route::post('/api/Photo::add',              'PhotoController@add')->middleware('upload');
 Route::post('/api/Photo::delete',           'PhotoController@delete')->middleware('upload');
 Route::post('/api/Photo::duplicate',        'PhotoController@duplicate')->middleware('upload');
+Route::post('/api/Photo::setLicense',       'PhotoController@setLicense')->middleware('upload');
 
 Route::post('/api/Sharing::List',           'SharingController@list_sharing')->middleware('upload');
 Route::post('/api/Sharing::Add',            'SharingController@add')->middleware('upload');

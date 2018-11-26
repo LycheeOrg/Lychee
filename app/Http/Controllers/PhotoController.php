@@ -430,6 +430,38 @@ class PhotoController extends Controller
         return $no_error ? 'true' : 'false';
     }
 
+	function setLicense(Request $request){
+
+		$request->validate([
+			'photoID' => 'required|string',
+			'license' => 'required|string'
+		]);
+
+		$photo = Photo::find($request['photoID']);
+
+		// Photo not found?
+		if ($photo == null) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+			return 'false';
+		}
+
+		$licenses = [ '', 'CC0', 'CC-BY', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-ND', 'CC-BY-NC-ND', 'CC-BY-SA'];
+		$found = false;
+		$i = 0;
+		while(!$found && $i < count($licenses))
+		{
+			if ($licenses[$i] == $request['license']) $found = true;
+			$i++;
+		}
+		if(!$found)
+		{
+			Logs::error(__METHOD__,__LINE__, 'wrong kind of license: '.$request['license']);
+			return Response::error('wrong kind of license!');
+		}
+		$photo->license = $request['license'];
+		return $photo->save() ? 'true' : 'false';
+	}
+
     function delete(Request $request){
 
         $request->validate([
