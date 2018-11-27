@@ -72,8 +72,10 @@ class SearchController extends Controller
 
 		if ($photos != null)
 		{
+			$i = 0;
 			foreach($photos as $photo) {
-				$return['photos'][$photo['id']] = $photo->prepareData();
+				$return['photos'][$i] = $photo->prepareData();
+				++$i;
 			}
 		}
 
@@ -93,11 +95,13 @@ class SearchController extends Controller
 		$albums = $query->get();
 		if ($albums != null)
 		{
+			$i = 0;
 			foreach ($albums as $album_model) {
 				$album = $album_model->prepareData();
 				$album['sysstamp'] = $album_model['created_at'];
 				$album = $album_model->gen_thumbs($album);
-				$return['albums'][$album_model->id] = $album;
+				$return['albums'][$i] = $album;
+				++$i;
 			}
 		}
 
