@@ -4273,6 +4273,8 @@ search = {
 
 search.find = function (term) {
 
+	if (term.trim() === '') return false;
+
 	clearTimeout($(window).data('timeout'));
 
 	$(window).data('timeout', setTimeout(function () {
