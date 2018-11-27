@@ -449,7 +449,7 @@ class PhotoController extends Controller
 			return 'false';
 		}
 
-		$licenses = [ '', 'CC0', 'CC-BY', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-ND', 'CC-BY-NC-ND', 'CC-BY-SA'];
+		$licenses = [ 'none', 'CC0', 'CC-BY', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-ND', 'CC-BY-NC-ND', 'CC-BY-SA'];
 		$found = false;
 		$i = 0;
 		while(!$found && $i < count($licenses))
@@ -462,7 +462,8 @@ class PhotoController extends Controller
 			Logs::error(__METHOD__,__LINE__, 'wrong kind of license: '.$request['license']);
 			return Response::error('wrong kind of license!');
 		}
-		$photo->license = $request['license'];
+
+		$photo->license = $request['license'] == 'none' ? '' : $request['license'];
 		return $photo->save() ? 'true' : 'false';
 	}
 
