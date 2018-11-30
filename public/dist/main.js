@@ -82,7 +82,7 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject38 = _taggedTemplateLiteral(["<p>", " ", " ", " ", "</p>"], ["<p>", " ", " ", " ", "</p>"]),
     _templateObject39 = _taggedTemplateLiteral(["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"], ["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"]),
     _templateObject40 = _taggedTemplateLiteral(["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"], ["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"]),
-    _templateObject41 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"], ["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"]),
+    _templateObject41 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"], ["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"]),
     _templateObject42 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
     _templateObject43 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
     _templateObject44 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
@@ -974,7 +974,7 @@ albums._createSmartAlbums = function (data) {
 
 	data.starred = {
 		id: 'f',
-		title: lychee.locale['STARED'],
+		title: lychee.locale['STARRED'],
 		sysdate: data.starred.num + ' ' + lychee.locale['NUM_PHOTOS'],
 		star: '1',
 		thumbs: data.starred.thumbs,
@@ -2484,6 +2484,7 @@ lychee.init = function () {
 			lychee.imagick = data.config.imagick && data.config.imagick === '1' || false;
 			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
 			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;
+			lychee.default_license = data.config.default_license || 'none';
 
 			lychee.upload = !lychee.api_V2;
 			lychee.admin = !lychee.api_V2;
@@ -2850,6 +2851,8 @@ lychee.locale = {
 	'LOGS': 'Show Logs',
 	'SIGN_OUT': 'Sign Out',
 	'UPDATE_AVAILABLE': 'Update available!',
+	'DEFAULT_LICENSE': 'Default License for new uploads:',
+	'SET_LICENSE': 'Set License',
 
 	'SMART_ALBUMS': 'Smart albums',
 	'SHARED_ALBUMS': 'Shared albums',
@@ -2906,7 +2909,7 @@ lychee.locale = {
 	'TITLE_NEW_ALBUM': 'Enter a title for the new album:',
 	'UNTITLED': 'Untilted',
 	'UNSORTED': 'Unsorted',
-	'STARED': 'Stared',
+	'STARRED': 'Starred',
 	'RECENT': 'Recent',
 	'PUBLIC': 'Public',
 	'NUM_PHOTOS': 'Photos',
@@ -2976,6 +2979,7 @@ lychee.locale = {
 	'PHOTO_LICENSE': 'License',
 	'PHOTO_LICENSE_HELP': 'Need help choosing?',
 	'PHOTO_LICENSE_NONE': 'None',
+	'PHOTO_RESERVED': 'All Rights Reserved',
 	'PHOTO_IMAGE': 'Image',
 	'PHOTO_SIZE': 'Size',
 	'PHOTO_FORMAT': 'Format',
@@ -3028,6 +3032,7 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_LANG': 'Language updated',
 	'SETTINGS_SUCCESS_LAYOUT': 'Layout updated',
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
+	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
 
 	'DB_INFO_TITLE': 'Enter your database connection details below:',
 	'DB_INFO_HOST': 'Database Host (optional)',
@@ -4184,8 +4189,6 @@ photo.share = function (photoID, service) {
 
 photo.setLicense = function (photoID) {
 
-	var oldLicense = photo.json.license;
-
 	var callback = function callback() {
 		$('select#license').val(photo.json.license === '' ? 'none' : photo.json.license);
 		return false;
@@ -4196,11 +4199,6 @@ photo.setLicense = function (photoID) {
 		basicModal.close();
 		var license = data.license;
 
-		if (visible.photo()) {
-			photo.json.license = license === 'none' ? '' : license;
-			view.photo.license();
-		}
-
 		var params = {
 			photoID: photoID,
 			license: license
@@ -4209,10 +4207,14 @@ photo.setLicense = function (photoID) {
 		api.post('Photo::setLicense', params, function (data) {
 
 			if (data !== true) lychee.error(null, params, data);
+
+			// update the photo JSON and reload the license in the sidebar
+			photo.json.license = params.license;
+			view.photo.license();
 		});
 	};
 
-	var msg = lychee.html(_templateObject41, lychee.locale['PHOTO_NEW_LICENSE'], lychee.locale['PHOTO_LICENSE_NONE'], lychee.locale['PHOTO_LICENSE_HELP']);
+	var msg = lychee.html(_templateObject41, lychee.locale['PHOTO_LICENSE'], lychee.locale['PHOTO_LICENSE_NONE'], lychee.locale['PHOTO_RESERVED'], lychee.locale['PHOTO_LICENSE_HELP']);
 
 	basicModal.show({
 		body: msg,
@@ -4645,6 +4647,17 @@ settings.changeLang = function (params) {
 	});
 };
 
+settings.setDefaultLicense = function (params) {
+
+	api.post('Settings::setDefaultLicense', params, function (data) {
+		if (data === true) {
+			lychee.default_license = params.license;
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LICENSE']);
+			lychee.image_overlay = params.image_overlay === '1';
+		} else lychee.error(ull, params, data);
+	});
+};
+
 settings.changeLayout = function () {
 	var params = {};
 	if ($('#JustifiedLayout:checked').length === 1) {
@@ -4674,6 +4687,7 @@ settings.changeImageOverlay = function () {
 		} else lychee.error(null, params, data);
 	});
 };
+
 sharing = {
 	json: null
 };
@@ -4911,7 +4925,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.license = {
 		title: lychee.locale['PHOTO_REUSE'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_LICENSE'], kind: 'license', value: photo.json.license, editable: editable }]
+		rows: [{ title: lychee.locale['PHOTO_LICENSE'], kind: 'license', value: photo.json.license === 'none' ? '' : photo.json.license, editable: editable }]
 	};
 
 	// Construct all parts of the structure
@@ -6050,7 +6064,19 @@ view.photo = {
 	},
 
 	license: function license() {
-		if (photo.json.init) sidebar.changeAttr('license', photo.json.license);
+		var license = void 0;
+
+		// Process key to display correct string
+		if (photo.json.license === 'none') {
+			license = ''; // no license is displayed as '-' (uniformity of the display)
+		} else if (photo.json.license === 'reserved') {
+			license = lychee.locale['PHOTO_RESERVED'];
+		} else {
+			license = photo.json.license;
+		}
+
+		// Update the sidebar if the photo is visible
+		if (photo.json.init) sidebar.changeAttr('license', license);
 	},
 
 	star: function star() {
@@ -6182,6 +6208,7 @@ view.settings = {
 				view.settings.content.setSorting();
 				view.settings.content.setDropboxKey();
 				view.settings.content.setLang();
+				view.settings.content.setDefaultLicense();
 				view.settings.content.setLayoutOverlay();
 			}
 		},
@@ -6245,6 +6272,13 @@ view.settings = {
 
 			$(".settings_view").append(msg);
 			settings.bind('#basicModal__action_set_lang', '.setLang', settings.changeLang);
+		},
+
+		setDefaultLicense: function setDefaultLicense() {
+			var msg = "\n\t\t\t<div class=\"setDefaultLicense\">\n\t\t\t<p>" + lychee.locale['DEFAULT_LICENSE'] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t\t<option value=\"none\">" + lychee.locale['PHOTO_LICENSE_NONE'] + "</option>\n\t\t\t\t\t<option value=\"reserved\">" + lychee.locale['PHOTO_RESERVED'] + "</option>\n\t\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<br />\n\t\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">" + lychee.locale['PHOTO_LICENSE_HELP'] + "</a>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_license\" class=\"basicModal__button\">" + lychee.locale['SET_LICENSE'] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			$(".settings_view").append(msg);
+			$('select#license').val(lychee.default_license === '' ? 'none' : lychee.default_license);
+			settings.bind('#basicModal__action_set_license', '.setDefaultLicense', settings.setDefaultLicense);
 		},
 
 		setLayoutOverlay: function setLayoutOverlay() {
