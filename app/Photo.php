@@ -550,6 +550,8 @@ class Photo extends Model
             $medium->clear();
             $medium->destroy();
 
+        } else {
+            $error = true;
         }
 
         if($error)
