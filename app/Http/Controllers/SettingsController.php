@@ -145,4 +145,23 @@ class SettingsController extends Controller
 		return (Configs::set('image_overlay', '0')) ? 'true' : 'false';
 	}
 
+	public function setDefaultLicense(Request $request) {
+		$request->validate([
+			'license' => 'required|string'
+		]);
+
+		$licenses = ['none', 'reserved', 'CC0', 'CC-BY', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-NC', 'CC-BY-NC-ND', 'CC-BY-NC-SA' ];
+		$i = 0;
+		while($i < count($licenses)) {
+			if ($licenses[$i] === $request['license'])
+			{
+				return (Configs::set('default_license', $request['license'])) ? 'true' : 'false';
+			}
+			$i++;
+		}
+
+		Logs::error(__METHOD__, __LINE__, 'Could not find the submitted license');
+		return 'false';
+	}
+
 }

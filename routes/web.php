@@ -62,6 +62,7 @@ Route::post('/api/Settings::setSorting',        'SettingsController@setSorting')
 Route::post('/api/Settings::setLang',           'SettingsController@setLang')->middleware('admin');
 Route::post('/api/Settings::setLayout',         'SettingsController@setLayout')->middleware('admin');
 Route::post('/api/Settings::setImageOverlay',   'SettingsController@setImageOverlay')->middleware('admin');
+Route::post('/api/Settings::setDefaultLicense', 'SettingsController@setDefaultLicense')->middleware('admin');
 
 
 Route::post('/api/User::List',                  'UserController@list')->middleware('admin');
