@@ -380,34 +380,45 @@ class Photo extends Model
         $newUrl    = Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB'). $photoName[0] . '.jpeg';
         $newUrl2x  = Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB'). $photoName[0] . '@2x.jpeg';
 
+	    $error = false;
         // Create thumbnails with Imagick
         if(Configs::hasImagick()) {
 
-            // Read image
-            $thumb = new Imagick();
-            $thumb->readImage($url);
-            $thumb->setImageCompressionQuality($quality);
-            $thumb->setImageFormat('jpeg');
+        	try {
+		        // Read image
+		        $thumb = new Imagick();
+		        $thumb->readImage($url);
+		        $thumb->setImageCompressionQuality($quality);
+		        $thumb->setImageFormat('jpeg');
 
-            // Remove metadata to save some bytes
-            $thumb->stripImage();
+		        // Remove metadata to save some bytes
+		        $thumb->stripImage();
 
-            // Copy image for 2nd thumb version
-            $thumb2x = clone $thumb;
+		        // Copy image for 2nd thumb version
+		        $thumb2x = clone $thumb;
 
-            // Create 1st version
-            $thumb->cropThumbnailImage($newWidth, $newHeight);
-            $thumb->writeImage($newUrl);
-            $thumb->clear();
-            $thumb->destroy();
+		        // Create 1st version
+		        $thumb->cropThumbnailImage($newWidth, $newHeight);
+		        $thumb->writeImage($newUrl);
+		        $thumb->clear();
+		        $thumb->destroy();
 
-            // Create 2nd version
-            $thumb2x->cropThumbnailImage($newWidth*2, $newHeight*2);
-            $thumb2x->writeImage($newUrl2x);
-            $thumb2x->clear();
-            $thumb2x->destroy();
+		        // Create 2nd version
+		        $thumb2x->cropThumbnailImage($newWidth * 2, $newHeight * 2);
+		        $thumb2x->writeImage($newUrl2x);
+		        $thumb2x->clear();
+		        $thumb2x->destroy();
+	        }
+	        catch (ImagickException $exception) {
+				Logs::error(__METHOD__,__LINE__,$exception->getMessage());
+				$error = true;
+	        }
 
         } else {
+        	$error = true;
+        }
+
+        if ($error) {
 
             // Create image
             $thumb   = imagecreatetruecolor($newWidth, $newHeight);
@@ -531,24 +542,31 @@ class Photo extends Model
         if (Configs::hasImagick()) {
             Logs::notice(__METHOD__, __LINE__, 'Picture is big enough for resize!');
 
-            // Read image
-            $medium = new Imagick();
-            $medium->readImage($url);
+			try {
+				// Read image
+				$medium = new Imagick();
+				$medium->readImage($url);
 
-            // Adjust image
-            $medium->scaleImage($newWidth, $newHeight, ($newWidth != 0));
-            $medium->stripImage();
-            $medium->setImageCompressionQuality($quality);
+				// Adjust image
+				$medium->scaleImage($newWidth, $newHeight, ($newWidth != 0));
+				$medium->stripImage();
+				$medium->setImageCompressionQuality($quality);
 
-            // Save image
-            try { $medium->writeImage($newUrl); }
-            catch (ImagickException $err) {
-                Logs::notice(__METHOD__, __LINE__, 'Could not save '.$kind.'-photo (' . $err->getMessage() . ')');
-                $error = true;
-            }
+				// Save image
+				try {
+					$medium->writeImage($newUrl);
+				} catch (ImagickException $err) {
+					Logs::notice(__METHOD__, __LINE__, 'Could not save ' . $kind . '-photo (' . $err->getMessage() . ')');
+					$error = true;
+				}
 
-            $medium->clear();
-            $medium->destroy();
+				$medium->clear();
+				$medium->destroy();
+			}
+			catch (ImagickException $exception) {
+				Logs::error(__METHOD__,__LINE__,$exception->getMessage());
+				$error = true;
+			}
 
         } else {
             $error = true;
