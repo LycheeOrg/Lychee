@@ -234,6 +234,9 @@ class PhotoController extends Controller
         $photo->shutter = $info['shutter'];
         $photo->focal = $info['focal'];
         $photo->takestamp = $info['takestamp'];
+        $photo->latitude = $info['latitude'];
+        $photo->longitude = $info['longitude'];
+        $photo->altitude = $info['altitude'];
         $photo->public = $public;
         $photo->owner_id = Session::get('UserID');
         $photo->star = $star;
@@ -510,6 +513,9 @@ class PhotoController extends Controller
 	        $duplicate->lens         = $photo->lens;
             $duplicate->shutter      = $photo->shutter;
             $duplicate->focal        = $photo->focal;
+            $duplicate->latitude     = $photo->latitude;
+            $duplicate->longitude    = $photo->longitude;
+            $duplicate->altitude     = $photo->altitude;
             $duplicate->takestamp    = $photo->takestamp;
             $duplicate->star         = $photo->star;
             $duplicate->thumbUrl     = $photo->thumbUrl;

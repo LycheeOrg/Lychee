@@ -141,9 +141,9 @@ class Photo extends Model
         $return['lens']        = '';
         $return['tags']        = '';
         $return['position']    = '';
-        $return['latitude']    = '';
-        $return['longitude']   = '';
-        $return['altitude']    = '';
+        $return['latitude']    = null;
+        $return['longitude']   = null;
+        $return['altitude']    = null;
 
         // Size
         $size = filesize($url)/1024;
@@ -228,6 +228,7 @@ class Photo extends Model
             // Deal with GPS coordinates
             if (!empty($exif['GPSLatitude']) && !empty($exif['GPSLatitudeRef'])) $return['latitude'] = Helpers::getGPSCoordinate($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
             if (!empty($exif['GPSLongitude']) && !empty($exif['GPSLongitudeRef'])) $return['longitude'] = Helpers::getGPSCoordinate($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
+            if (!empty($exif['GPSAltitude']) && !empty($exif['GPSAltitudeRef'])) $return['altitude'] = Helpers::getGPSAltitude($exif['GPSAltitude'], $exif['GPSAltitudeRef']);
 
         }
 
