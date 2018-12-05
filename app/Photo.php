@@ -48,6 +48,9 @@ class Photo extends Model
         $photo['shutter']       = $this->shutter;
         $photo['focal']         = $this->focal;
         $photo['lens']          = $this->lens;
+        $photo['latitude']      = $this->latitude;
+        $photo['longitude']     = $this->longitude;
+        $photo['altitude']      = $this->altitude;
         $photo['sysdate']       = $this->created_at->format('d F Y');
         $photo['tags']          = $this->tags;
         $photo['description']   = $this->description == null ? '' : $this->description;
