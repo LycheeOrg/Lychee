@@ -112,6 +112,12 @@ class Helpers
 
     }
 
+    static public function getGPSAltitude($altitude, $ref) {
+
+        $flip = ($ref == '1') ? -1 : 1;
+        return $flip * Helpers::formattedToFloatGPS($altitude);
+    }
+
     static public function hasPermissions($path) {
         // Check if the given path is readable and writable
         // Both functions are also verifying that the path exists
