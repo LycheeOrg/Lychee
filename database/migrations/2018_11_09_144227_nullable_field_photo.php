@@ -18,7 +18,7 @@ class NullableFieldPhoto extends Migration
         Schema::table('photos', function (Blueprint $table) {
             $table->integer('width')->nullable()->change();
             $table->integer('height')->nullable()->change();
-            $table->char('type_temp',15);
+            $table->char('type_temp',15)->nullable();
         });
 
         $photos = Photo::all();
@@ -32,7 +32,7 @@ class NullableFieldPhoto extends Migration
         });
 
         Schema::table('photos', function (Blueprint $table) {
-            $table->char('type',15)->after('owner_id');
+            $table->char('type',15)->nullable()->after('owner_id');
         });
 
         $photos = Photo::all();
@@ -58,7 +58,7 @@ class NullableFieldPhoto extends Migration
         Schema::table('photos', function (Blueprint $table) {
             $table->integer('width')->change();
             $table->integer('height')->change();
-            $table->char('type_temp',15);
+            $table->char('type_temp',15)->nullable();
         });
 
         $photos = Photo::all();
@@ -72,7 +72,7 @@ class NullableFieldPhoto extends Migration
         });
 
         Schema::table('photos', function (Blueprint $table) {
-            $table->char('type',10)->after('owner_id');
+            $table->char('type',10)->nullable()->after('owner_id');
         });
 
         $photos = Photo::all();
