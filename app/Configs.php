@@ -30,6 +30,7 @@ class Configs extends Model
 	    'sortingPhotos',
 	    'sortingPhotos_col',
 	    'sortingPhotos_order',
+	    'default_license',
     ];
 
     /**

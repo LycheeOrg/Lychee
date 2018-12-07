@@ -54,7 +54,26 @@ class Photo extends Model
         $photo['sysdate']       = $this->created_at->format('d F Y');
         $photo['tags']          = $this->tags;
         $photo['description']   = $this->description == null ? '' : $this->description;
-	    $photo['license']       = $this->license;
+	    $photo['license']       = Configs::get_value('default_license'); // default
+
+		// check if license is none
+        if ($this->license == 'none') {
+
+        	// check if it has an album
+        	if($this->album_id != 0)
+	        {
+	        	// this does not include sub albums setting. Do we want this ?
+		        // this will need to be changed if we want to add license backtracking
+		        $l = $this->album->license;
+		        if($l != 'none')
+		        {
+		        	$photo['license'] = $l;
+		        }
+	        }
+        }
+        else {
+	        $photo['license'] = $this->license;
+        }
 
         // Parse medium
         if ($this->medium == '1') $photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM') . $this->url;

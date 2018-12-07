@@ -48,6 +48,8 @@ class Album extends Model
         // Parse password
         $album['password'] = ($this->password == '' ? '0' : '1');
 
+//        dd($this);
+        $album['license'] = $this->license == 'none' ? Configs::get_value('default_license') : $this->license;
         // Parse thumbs or set default value
 //        $album['thumbs'] = explode(',', $this->thumbs);
 //        $album['types'] = (isset($this->types) ? explode(',', $this->types) : array());

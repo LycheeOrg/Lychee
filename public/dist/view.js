@@ -654,7 +654,7 @@ sidebar.bind = function () {
 	});
 
 	sidebar.dom('#edit_license').off(eventName).on(eventName, function () {
-		photo.setLicense(photo.getID());
+		if (visible.photo()) photo.setLicense(photo.getID());else if (visible.album()) album.setLicense(album.getID());
 	});
 
 	return true;
@@ -715,6 +715,22 @@ sidebar.createStructure.photo = function (data) {
 
 	// Enable editable when user logged in
 	if (lychee.publicMode === false && lychee.upload) editable = true;
+
+	// Set the license string for a photo
+	switch (data.license) {
+		// if the photo doesn't have a license, apply the album's
+		case 'none':
+			license = album.json.license === 'none' ? lychee.locale['ALBUM_LICENSE_NONE'] : album.json.license;
+			break;
+		// Localize All Rights Reserved
+		case 'reserved':
+			license = lychee.locale['PHOTO_RESERVED'];
+			break;
+		// Display anything else that's set
+		default:
+			license = data.license;
+			break;
+	}
 
 	// Set value for public
 	switch (data.public) {
@@ -782,7 +798,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.license = {
 		title: lychee.locale['PHOTO_REUSE'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_LICENSE'], kind: 'license', value: photo.json.license === 'none' ? '' : photo.json.license, editable: editable }]
+		rows: [{ title: lychee.locale['PHOTO_LICENSE'], kind: 'license', value: license, editable: editable }]
 	};
 
 	// Construct all parts of the structure
@@ -801,6 +817,7 @@ sidebar.createStructure.album = function (data) {
 	var hidden = '';
 	var downloadable = '';
 	var password = '';
+	var license = '';
 
 	// Enable editable when user logged in
 	if (lychee.publicMode === false && lychee.upload) editable = true;
@@ -865,6 +882,19 @@ sidebar.createStructure.album = function (data) {
 
 	}
 
+	// Set license string
+	switch (data.license) {
+		case 'none':
+			license = ''; // consistency
+			break;
+		case 'reserved':
+			license = lychee.locale['ALBUM_RESERVED'];
+			break;
+		default:
+			license = data.license;
+			break;
+	}
+
 	structure.basics = {
 		title: lychee.locale['ALBUM_BASICS'],
 		type: sidebar.types.DEFAULT,
@@ -883,8 +913,13 @@ sidebar.createStructure.album = function (data) {
 		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
 	};
 
-	// Construct all parts of the structure
-	structure = [structure.basics, structure.album, structure.share];
+	structure.license = {
+		title: lychee.locale['ALBUM_REUSE'],
+		type: sidebar.types.DEFAULT,
+		rows: [{ title: lychee.locale['ALBUM_LICENSE'], kind: 'license', value: license, editable: editable }]
+
+		// Construct all parts of the structure
+	};structure = [structure.basics, structure.album, structure.share, structure.license];
 
 	return structure;
 };
@@ -1335,6 +1370,12 @@ lychee.locale = {
 	'MOVE_ALBUMS': "Move Albums",
 	'NOT_MOVE_ALBUMS': "Don't Move",
 	'ROOT': "Root",
+	'ALBUM_REUSE': "Reuse",
+	'ALBUM_LICENSE': 'License',
+	'ALBUM_SET_LICENSE': 'Set License',
+	'ALBUM_LICENSE_HELP': 'Need help choosing?',
+	'ALBUM_LICENSE_NONE': 'None',
+	'ALBUM_RESERVED': 'All Rights Reserved',
 
 	'PHOTO_ABOUT': 'About',
 	'PHOTO_BASICS': 'Basics',

@@ -263,6 +263,39 @@ class AlbumController extends Controller
         return ($album->save()) ? 'true' : 'false';
     }
 
+	function setLicense(Request $request){
+
+		$request->validate([
+			'albumID' => 'required|string',
+			'license' => 'required|string'
+		]);
+
+		$album = Album::find($request['albumID']);
+
+		// Photo not found?
+		if ($album == null) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+			return 'false';
+		}
+
+		$licenses = [ 'none', 'reserved', 'CC0', 'CC-BY', 'CC-BY-ND', 'CC-BY-SA', 'CC-BY-ND', 'CC-BY-NC-ND', 'CC-BY-SA'];
+		$found = false;
+		$i = 0;
+		while(!$found && $i < count($licenses))
+		{
+			if ($licenses[$i] == $request['license']) $found = true;
+			$i++;
+		}
+		if(!$found)
+		{
+			Logs::error(__METHOD__,__LINE__, 'wrong kind of license: '.$request['license']);
+			return Response::error('wrong kind of license!');
+		}
+
+		$album->license = $request['license'];
+		return $album->save() ? 'true' : 'false';
+	}
+
     /**
      * Delete the album and all pictures in the album.
      *
