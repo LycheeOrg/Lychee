@@ -718,9 +718,9 @@ sidebar.createStructure.photo = function (data) {
 
 	// Set the license string for a photo
 	switch (data.license) {
-		// if the photo doesn't have a license, apply the album's
+		// if the photo doesn't have a license
 		case 'none':
-			license = album.json.license === 'none' ? lychee.locale['ALBUM_LICENSE_NONE'] : album.json.license;
+			license = '';
 			break;
 		// Localize All Rights Reserved
 		case 'reserved':
@@ -981,7 +981,7 @@ sidebar.render = function (structure) {
 csrf = {};
 
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
-	if (settings.url !== "https:" + lychee.updatePath) {
+	if (settings.url !== lychee.updatePath) {
 		jqxhr.setRequestHeader('X-XSRF-TOKEN', csrf.getCookie('XSRF-TOKEN'));
 	}
 };
@@ -1538,5 +1538,8 @@ lychee.locale = {
 	'UPLOAD_IMPORT_SERVER_FOLD': 'Folder empty or no readable files to process. Please take a look at the log (Settings -> Show Log) for further details.',
 	'UPLOAD_IMPORT_SERVER_INSTR': 'This action will import all photos, folders and sub-folders which are located in the following directory. The <b>original files will be deleted</b> after the import when possible.',
 	'UPLOAD_ABSOLUTE_PATH': 'Absolute path to directory',
-	'UPLOAD_IMPORT_SERVER_EMPT': 'Could not start import because the folder was empty!'
+	'UPLOAD_IMPORT_SERVER_EMPT': 'Could not start import because the folder was empty!',
+
+	'ABOUT_SUBTITLE': 'Self-hosted photo-management done right',
+	'ABOUT_DESCRIPTION': 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.'
 };
