@@ -1301,8 +1301,8 @@ lychee.locale = {
 	'MOVE': 'Move',
 	'MOVE_ALL': 'Move All',
 	'DUPLICATE': 'Duplicate',
-	'COPY_TO': 'Copy to...',
 	'DUPLICATE_ALL': 'Duplicate All',
+	'COPY_TO': 'Copy to...',
 	'COPY_ALL_TO': 'Copy All to...',
 	'DELETE': 'Delete',
 	'DELETE_ALL': 'Delete All',
@@ -1505,7 +1505,7 @@ lychee.locale = {
 	'LANG_TITLE': 'Change Language',
 
 	'LAYOUT_TEXT': 'Use justified layout:',
-	'IMAGE_OVERLAY_TEXT': 'Display EXIF data overlay:',
+	'IMAGE_OVERLAY_TEXT': 'Display EXIF data overlay by default:',
 
 	'VIEW_NO_RESULT': 'No results',
 	'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',

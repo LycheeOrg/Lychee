@@ -77,7 +77,7 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject33 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\">", " ", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\">", " ", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\">", " ", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\">", " ", "</a>"]),
     _templateObject34 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_logs\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\">", " ", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_logs\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\">", " ", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\">", " ", "</a>"]),
     _templateObject35 = _taggedTemplateLiteral(["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p><a target='_blank' href='", "'>Lychee</a> ", "</p>\n\t\t\t  "], ["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p><a target='_blank' href='", "'>Lychee</a> ", "</p>\n\t\t\t  "]),
-    _templateObject36 = _taggedTemplateLiteral(["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off'>\n\t\t\t\t  <input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "'>\n\t\t\t  </p>\n\t\t\t  <p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "'>", "</a><span></p>\n\t\t\t  "], ["\n\t\t\t  <p class='signIn'>\n\t\t\t\t  <input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off'>\n\t\t\t\t  <input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "'>\n\t\t\t  </p>\n\t\t\t  <p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "'>", "</a><span></p>\n\t\t\t  "]),
+    _templateObject36 = _taggedTemplateLiteral(["\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "'>", "</a><span></p>\n\t\t\t"], ["\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "'>", "</a><span></p>\n\t\t\t"]),
     _templateObject37 = _taggedTemplateLiteral(["<p>", " '", "' ", "</p>"], ["<p>", " '", "' ", "</p>"]),
     _templateObject38 = _taggedTemplateLiteral(["<p>", " ", " ", "</p>"], ["<p>", " ", " ", "</p>"]),
     _templateObject39 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='$", "'>"]),
@@ -2449,6 +2449,7 @@ lychee = {
 	lock: false, // locked user (multi-user)
 	justified: true, // use Flickr Justified Layout Like
 	image_overlay: false, // display Overlay like in Lightroom
+	image_overlay_default: false, // display Overlay like in Lightroom by default
 
 	checkForUpdates: '1',
 	sortingPhotos: '',
@@ -2547,7 +2548,8 @@ lychee.init = function () {
 			lychee.lang_available = data.config.lang_available || {};
 			lychee.imagick = data.config.imagick && data.config.imagick === '1' || false;
 			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
-			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;
+			lychee.image_overlay_default = data.config.image_overlay && data.config.image_overlay === '1' || false;
+			lychee.image_overlay = lychee.image_overlay_default;
 			lychee.default_license = data.config.default_license || 'none';
 
 			lychee.upload = !lychee.api_V2;
@@ -2958,8 +2960,8 @@ lychee.locale = {
 	'MOVE': 'Move',
 	'MOVE_ALL': 'Move All',
 	'DUPLICATE': 'Duplicate',
-	'COPY_TO': 'Copy to...',
 	'DUPLICATE_ALL': 'Duplicate All',
+	'COPY_TO': 'Copy to...',
 	'COPY_ALL_TO': 'Copy All to...',
 	'DELETE': 'Delete',
 	'DELETE_ALL': 'Delete All',
@@ -3162,7 +3164,7 @@ lychee.locale = {
 	'LANG_TITLE': 'Change Language',
 
 	'LAYOUT_TEXT': 'Use justified layout:',
-	'IMAGE_OVERLAY_TEXT': 'Display EXIF data overlay:',
+	'IMAGE_OVERLAY_TEXT': 'Display EXIF data overlay by default:',
 
 	'VIEW_NO_RESULT': 'No results',
 	'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',
@@ -4728,7 +4730,6 @@ settings.setDefaultLicense = function (params) {
 		if (data === true) {
 			lychee.default_license = params.license;
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LICENSE']);
-			lychee.image_overlay = params.image_overlay === '1';
 		} else lychee.error(ull, params, data);
 	});
 };
@@ -4758,7 +4759,8 @@ settings.changeImageOverlay = function () {
 	api.post('Settings::setImageOverlay', params, function (data) {
 		if (data === true) {
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_IMAGE_OVERLAY']);
-			lychee.image_overlay = params.image_overlay === '1';
+			lychee.image_overlay_default = params.image_overlay === '1';
+			lychee.image_overlay = lychee.image_overlay_default;
 		} else lychee.error(null, params, data);
 	});
 };
@@ -6428,7 +6430,7 @@ view.settings = {
 
 			$(".settings_view").append(msg);
 			if (lychee.justified) $('#JustifiedLayout').click();
-			if (lychee.image_overlay) $('#ImageOverlay').click();
+			if (lychee.image_overlay_default) $('#ImageOverlay').click();
 
 			settings.bind('#JustifiedLayout', '.setLayoutOverlay', settings.changeLayout);
 			settings.bind('#ImageOverlay', '.setLayoutOverlay', settings.changeImageOverlay);
