@@ -88,7 +88,11 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject44 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
     _templateObject45 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
     _templateObject46 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
-    _templateObject47 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]);
+    _templateObject47 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
+    _templateObject48 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
+    _templateObject49 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject50 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
+    _templateObject51 = _taggedTemplateLiteral(["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"], ["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -406,7 +410,7 @@ album.add = function () {
 		api.post('Album::add', params, function (data) {
 
 			if (data !== false && isNumber(data)) {
-				if (IDs != null) {
+				if (IDs != null && callback != null) {
 					callback(IDs, data, false); // we do not confirm
 				} else {
 					albums.refresh();
@@ -1195,6 +1199,38 @@ api.post = function (fn, params, callback) {
 	});
 };
 
+api.get = function (url, callback) {
+
+	loadingBar.show();
+
+	var success = function success(data) {
+
+		setTimeout(loadingBar.hide, 100);
+
+		// Catch errors
+		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+			api.onError(data.substring(7, data.length), params, data);
+			return false;
+		}
+
+		callback(data);
+	};
+
+	var error = function error(jqXHR, textStatus, errorThrown) {
+
+		api.onError('Server error or API not found.', {}, errorThrown);
+	};
+
+	$.ajax({
+		type: 'GET',
+		url: url,
+		data: {},
+		dataType: 'text',
+		success: success,
+		error: error
+	});
+};
+
 api.post_raw = function (fn, params, callback) {
 	loadingBar.show();
 
@@ -1229,7 +1265,6 @@ api.post_raw = function (fn, params, callback) {
 		error: error
 	});
 };
-
 /**
  * @description This module is used to generate HTML-Code.
  */
@@ -2433,8 +2468,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.7',
-	versionCode: '030207',
+	version: '3.2.8',
+	versionCode: '030208',
 
 	updatePath: 'https://LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee/releases',
@@ -2551,6 +2586,7 @@ lychee.init = function () {
 			lychee.image_overlay_default = data.config.image_overlay && data.config.image_overlay === '1' || false;
 			lychee.image_overlay = lychee.image_overlay_default;
 			lychee.default_license = data.config.default_license || 'none';
+			lychee.css = data.config.css || '';
 
 			lychee.upload = !lychee.api_V2;
 			lychee.admin = !lychee.api_V2;
@@ -2919,6 +2955,8 @@ lychee.locale = {
 	'UPDATE_AVAILABLE': 'Update available!',
 	'DEFAULT_LICENSE': 'Default License for new uploads:',
 	'SET_LICENSE': 'Set License',
+	'SAVE_RISK': 'Save my modifications, I accept the Risk!',
+	'MORE': 'More',
 
 	'SMART_ALBUMS': 'Smart albums',
 	'SHARED_ALBUMS': 'Shared albums',
@@ -3098,6 +3136,7 @@ lychee.locale = {
 	'SUCCESS': 'OK',
 	'RETRY': 'Retry',
 
+	'SETTINGS_WARNING': 'Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.',
 	'SETTINGS_SUCCESS_LOGIN': 'Login Info updated.',
 	'SETTINGS_SUCCESS_SORT': 'Sorting order updated.',
 	'SETTINGS_SUCCESS_DROPBOX': 'Dropbox Key updated.',
@@ -3105,6 +3144,8 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_LAYOUT': 'Layout updated',
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
 	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
+	'SETTINGS_SUCCESS_CSS': 'CSS updated',
+	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
 
 	'DB_INFO_TITLE': 'Enter your database connection details below:',
 	'DB_INFO_HOST': 'Database Host (optional)',
@@ -3162,6 +3203,9 @@ lychee.locale = {
 
 	'LANG_TEXT': 'Change Lychee language for:',
 	'LANG_TITLE': 'Change Language',
+
+	'CSS_TEXT': 'Personalize your CSS:',
+	'CSS_TITLE': 'Change CSS',
 
 	'LAYOUT_TEXT': 'Use justified layout:',
 	'IMAGE_OVERLAY_TEXT': 'Display EXIF data overlay by default:',
@@ -4735,6 +4779,7 @@ settings.setDefaultLicense = function (params) {
 };
 
 settings.changeLayout = function () {
+
 	var params = {};
 	if ($('#JustifiedLayout:checked').length === 1) {
 		params.justified_layout = '1';
@@ -4765,6 +4810,31 @@ settings.changeImageOverlay = function () {
 	});
 };
 
+settings.changeCSS = function () {
+
+	var params = {};
+	params.css = $('#css').val();
+
+	api.post('Settings::setCSS', params, function (data) {
+
+		if (data === true) {
+			lychee.css = params.css;
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_CSS']);
+		} else lychee.error(null, params, data);
+	});
+};
+
+settings.save = function (params) {
+
+	api.post('Settings::saveAll', params, function (data) {
+
+		if (data === true) {
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_UPDATE']);
+			view.full_settings.init();
+			// lychee.init();
+		} else lychee.error(null, params, data);
+	});
+};
 sharing = {
 	json: null
 };
@@ -6354,6 +6424,8 @@ view.settings = {
 				view.settings.content.setLang();
 				view.settings.content.setDefaultLicense();
 				view.settings.content.setLayoutOverlay();
+				view.settings.content.setCSS();
+				view.settings.content.moreButton();
 			}
 		},
 
@@ -6434,7 +6506,73 @@ view.settings = {
 
 			settings.bind('#JustifiedLayout', '.setLayoutOverlay', settings.changeLayout);
 			settings.bind('#ImageOverlay', '.setLayoutOverlay', settings.changeImageOverlay);
+		},
+
+		setCSS: function setCSS() {
+			var msg = "\n\t\t\t<div class=\"setCSS\">\n\t\t\t<p>" + lychee.locale['CSS_TEXT'] + "</p>\n\t\t\t<textarea id=\"css\"></textarea>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_css\" class=\"basicModal__button\">" + lychee.locale['CSS_TITLE'] + "</a>\n\t\t\t</div>\n\t\t\t</div>";
+
+			$(".settings_view").append(msg);
+
+			api.get('dist/user.css', function (data) {
+				$("#css").html(data);
+			});
+
+			settings.bind('#basicModal__action_set_css', '.setCSS', settings.changeCSS);
+		},
+
+		moreButton: function moreButton() {
+			var msg = lychee.html(_templateObject48, lychee.locale['MORE']);
+
+			$(".settings_view").append(msg);
+
+			$("#basicModal__action_more").on('click', view.full_settings.init);
 		}
+
+	}
+
+};
+
+view.full_settings = {
+
+	init: function init() {
+
+		multiselect.clearSelection();
+
+		view.full_settings.title();
+		view.full_settings.content.init();
+	},
+
+	title: function title() {
+
+		lychee.setTitle('Full Settings', false);
+	},
+
+	clearContent: function clearContent() {
+		lychee.content.unbind('mousedown');
+		lychee.content.html('<div class="settings_view"></div>');
+	},
+
+	content: {
+
+		init: function init() {
+			view.full_settings.clearContent();
+
+			api.post('Settings::getAll', {}, function (data) {
+
+				var msg = lychee.html(_templateObject49, lychee.locale['SETTINGS_WARNING']);
+
+				$.each(data, function () {
+
+					msg += lychee.html(_templateObject50, this.key, this.key, this.value);
+				});
+
+				msg += lychee.html(_templateObject51, lychee.locale['SAVE_RISK']);
+				$(".settings_view").append(msg);
+
+				settings.bind('#FullSettingsSave_button', '#fullSettings', settings.save);
+			});
+		}
+
 	}
 
 };

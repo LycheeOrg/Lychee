@@ -64,6 +64,9 @@ Route::post('/api/Settings::setLang',           'SettingsController@setLang')->m
 Route::post('/api/Settings::setLayout',         'SettingsController@setLayout')->middleware('admin');
 Route::post('/api/Settings::setImageOverlay',   'SettingsController@setImageOverlay')->middleware('admin');
 Route::post('/api/Settings::setDefaultLicense', 'SettingsController@setDefaultLicense')->middleware('admin');
+Route::post('/api/Settings::setCSS',            'SettingsController@setCSS')->middleware('admin');
+Route::post('/api/Settings::getAll',            'SettingsController@getAll')->middleware('admin');
+Route::post('/api/Settings::saveAll',           'SettingsController@saveAll')->middleware('admin');
 
 
 Route::post('/api/User::List',                  'UserController@list')->middleware('admin');

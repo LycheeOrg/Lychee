@@ -9,8 +9,10 @@ use App\Logs;
 use App\Response;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
@@ -164,4 +166,49 @@ class SettingsController extends Controller
 		return 'false';
 	}
 
+	public function setCSS(Request $request) {
+		$request->validate(['css' => 'nullable|string']);
+		$css = $request->get('css');
+		$css = $css == null ? '' : $css;
+
+		if(!Storage::put('dist/user.css', $css, 'public'))
+		{
+			return 'false';
+		}
+
+		// this is a very bad way to do it. Any improvement are welcomed.
+		if(file_exists('../storage/app/dist/user.css')) {
+			if (!@rename('../storage/app/dist/user.css', 'dist/user.css')) {
+				Logs::error(__METHOD__, __LINE__, 'Could not move css file');
+				return Response::error('Could not move css file.');
+			}
+		}
+		else
+		{
+			Logs::error(__METHOD__, __LINE__, 'Could not find css file.');
+			return Response::error('Could not find css file.');
+		}
+
+		return 'true';
+	}
+
+	public function getAll(Request $request) {
+
+    	return Configs::all();
+	}
+
+	public function saveAll(Request $request) {
+
+    	$no_error = true;
+		foreach ($request->except('_token') as $key => $value) {
+			if ($key != 'function')
+			{
+				// just because we do not want null values
+				$value = ($value == null) ? '' : $value;
+
+				$no_error &= Configs::set($key,$value);
+			}
+	    }
+		return $no_error ? 'true' : 'false';
+	}
 }

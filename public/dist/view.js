@@ -329,6 +329,38 @@ api.post = function (fn, params, callback) {
 	});
 };
 
+api.get = function (url, callback) {
+
+	loadingBar.show();
+
+	var success = function success(data) {
+
+		setTimeout(loadingBar.hide, 100);
+
+		// Catch errors
+		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+			api.onError(data.substring(7, data.length), params, data);
+			return false;
+		}
+
+		callback(data);
+	};
+
+	var error = function error(jqXHR, textStatus, errorThrown) {
+
+		api.onError('Server error or API not found.', {}, errorThrown);
+	};
+
+	$.ajax({
+		type: 'GET',
+		url: url,
+		data: {},
+		dataType: 'text',
+		success: success,
+		error: error
+	});
+};
+
 api.post_raw = function (fn, params, callback) {
 	loadingBar.show();
 
@@ -363,7 +395,6 @@ api.post_raw = function (fn, params, callback) {
 		error: error
 	});
 };
-
 /**
  * @description This module takes care of the header.
  */
@@ -1260,6 +1291,8 @@ lychee.locale = {
 	'UPDATE_AVAILABLE': 'Update available!',
 	'DEFAULT_LICENSE': 'Default License for new uploads:',
 	'SET_LICENSE': 'Set License',
+	'SAVE_RISK': 'Save my modifications, I accept the Risk!',
+	'MORE': 'More',
 
 	'SMART_ALBUMS': 'Smart albums',
 	'SHARED_ALBUMS': 'Shared albums',
@@ -1439,6 +1472,7 @@ lychee.locale = {
 	'SUCCESS': 'OK',
 	'RETRY': 'Retry',
 
+	'SETTINGS_WARNING': 'Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.',
 	'SETTINGS_SUCCESS_LOGIN': 'Login Info updated.',
 	'SETTINGS_SUCCESS_SORT': 'Sorting order updated.',
 	'SETTINGS_SUCCESS_DROPBOX': 'Dropbox Key updated.',
@@ -1446,6 +1480,8 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_LAYOUT': 'Layout updated',
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
 	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
+	'SETTINGS_SUCCESS_CSS': 'CSS updated',
+	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
 
 	'DB_INFO_TITLE': 'Enter your database connection details below:',
 	'DB_INFO_HOST': 'Database Host (optional)',
@@ -1503,6 +1539,9 @@ lychee.locale = {
 
 	'LANG_TEXT': 'Change Lychee language for:',
 	'LANG_TITLE': 'Change Language',
+
+	'CSS_TEXT': 'Personalize your CSS:',
+	'CSS_TITLE': 'Change CSS',
 
 	'LAYOUT_TEXT': 'Use justified layout:',
 	'IMAGE_OVERLAY_TEXT': 'Display EXIF data overlay by default:',

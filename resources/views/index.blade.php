@@ -8,6 +8,8 @@
     <meta name="author" content="Tobias Reich">
 
     <link type="text/css" rel="stylesheet" href="dist/main.css">
+    <link type="text/css" rel="stylesheet" href="dist/user.css">
+
 
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="Lychee-front/images/apple-touch-icon-ipad.png" sizes="120x120">
