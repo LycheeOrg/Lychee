@@ -290,11 +290,11 @@ class PhotoController extends Controller
             }
 
             // Create Medium
-            if ($photo->createMedium()) $medium = 1;
+            if ($photo->createMedium(intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')))) $medium = 1;
             else $medium = 0;
 
 	        // Create Small
-	        if ($photo->createMedium(0,360,'SMALL')) $small = 1;
+	        if ($photo->createMedium(intval(Configs::get_value('small_max_width')),intval(Configs::get_value('small_max_height')),'SMALL')) $small = 1;
 	        else $small = 0;
         }
 
