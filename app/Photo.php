@@ -60,7 +60,7 @@ class Photo extends Model
 
 	    	// this should fix it... hopefully.
 		    preg_match('/(\d?)\/(\d?) s/', $photo['shutter'], $matches);
-		    $photo['shutter'] = intval($matches[0]) / intval($matches[1]) . ' s';
+		    $photo['shutter'] = intval($matches[1]) / intval($matches[2]) . ' s';
 
 	    }
 
