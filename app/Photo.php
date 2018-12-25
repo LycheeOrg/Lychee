@@ -56,6 +56,15 @@ class Photo extends Model
         $photo['description']   = $this->description == null ? '' : $this->description;
 	    $photo['license']       = Configs::get_value('default_license'); // default
 
+	    if($photo['shutter'] != '' && substr($photo['shutter'], 0,2) != '1/'){
+
+	    	// this should fix it... hopefully.
+		    preg_match('/(\d?)\/(\d?) s/', $photo['shutter'], $matches);
+		    $photo['shutter'] = intval($matches[0]) / intval($matches[1]) . ' s';
+
+	    }
+
+
 		// check if license is none
         if ($this->license == 'none') {
 
