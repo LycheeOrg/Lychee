@@ -87,7 +87,7 @@ build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
 
 	var isVideo = type && type.indexOf('video') > -1;
 	if (thumb === 'uploads/thumb/' && isVideo) {
-		return "<span class=\"thumbimg\"><img src='play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		return "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 	// we use small if available
 	if (lychee.justified && small !== '') {
