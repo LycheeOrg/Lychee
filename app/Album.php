@@ -65,8 +65,11 @@ class Album extends Model
         $return['thumbs'] = array();
         $return['types'] = array();
 
+        $alb = $this->get_all_subalbums();
+        $alb[] = $this->id;
+
         $thumbs_types = Photo::select('thumbUrl', 'type')
-            ->where('album_id','=',$this->id)
+            ->whereIn('album_id',$alb)
             ->orderBy('star','DESC')
             ->orderBy(Configs::get_value('sortingPhotos_col'),Configs::get_value('sortingPhotos_order'))
             ->limit(3)->get();
@@ -95,6 +98,17 @@ class Album extends Model
             $i++;
         }
         return $return;
+    }
+
+
+    public function get_all_subalbums($return = array())
+    {
+	    foreach($this->children as $album)
+	    {
+		    $return[] = $album->id;
+		    $album->get_all_subalbums($return);
+	    }
+	    return $return;
     }
 
     /**
