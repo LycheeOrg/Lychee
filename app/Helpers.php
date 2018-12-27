@@ -125,4 +125,9 @@ class Helpers
         return false;
     }
 
+    static public function gcd($a,$b) {
+	    return ($a % $b) ? Helpers::gcd($b,$a % $b) : $b;
+    }
+
+
 }
