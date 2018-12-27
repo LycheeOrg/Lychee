@@ -14,7 +14,8 @@
         "doctrine/dbal": "^2.8",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.7.*",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "maennchen/zipstream-php": "^0.5.2"
     },
     "require-dev": {
         "filp/whoops": "^2.0",

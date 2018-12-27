@@ -41,6 +41,8 @@ Route::post('/api/Album::merge',                'AlbumController@merge')->middle
 Route::post('/api/Album::move',                 'AlbumController@move')->middleware('upload');
 Route::post('/api/Album::setLicense',           'AlbumController@setLicense')->middleware('upload');
 
+Route::get('/api/Album::getArchive',            'AlbumController@getArchive')->middleware('AlbumPWCheck');
+
 //Route::post('/api/Photo::get',              'PhotoController@get')->middleware('AlbumPWCheck');
 Route::post('/api/Photo::get',                  'PhotoController@get');
 Route::post('/api/Photo::setTitle',             'PhotoController@setTitle')->middleware('upload');

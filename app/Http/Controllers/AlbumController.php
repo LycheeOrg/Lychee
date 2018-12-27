@@ -9,6 +9,9 @@ use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Config;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use ZipStream\ZipStream;
 
 class AlbumController extends Controller
 {
@@ -272,9 +275,8 @@ class AlbumController extends Controller
 
 		$album = Album::find($request['albumID']);
 
-		// Photo not found?
 		if ($album == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
 			return 'false';
 		}
 
@@ -349,7 +351,7 @@ class AlbumController extends Controller
         $album = Album::find($albumID);
 
         if ($album===null) {
-            Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+            Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
             return 'false';
         }
 
@@ -395,7 +397,7 @@ class AlbumController extends Controller
 		{
 			$album = Album::find($albumID);
 			if ($album===null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
 				return 'false';
 			}
 		}
@@ -409,6 +411,109 @@ class AlbumController extends Controller
 		}
 
 		return $no_error ? 'true' : 'false';
+	}
+
+	function getArchive(Request $request)
+	{
+
+		// Illicit chars
+		$badChars =	array_merge(
+			array_map('chr', range(0,31)),
+			array("<", ">", ":", '"', "/", "\\", "|", "?", "*")
+		);
+
+		$request->validate([
+			'albumID' => 'required|string',
+		]);
+
+		switch ($request['albumID']) {
+
+			case 'f': $zipTitle = 'Starred';    $photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID'))); break;
+			case 's': $zipTitle = 'Public';     $photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID'))); break;
+			case 'r': $zipTitle = 'Recent';     $photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))); break;
+			case '0': $zipTitle = 'Unsorted';   $photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))); break;
+			default:
+				$album = Album::find($request['albumID']);
+				if ($album===null) {
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+					return 'false';
+				}
+				$zipTitle = $album->title;
+
+				$photos_sql  = Photo::set_order(Photo::where('album_id','=',$request['albumID']));
+
+				// we do not provide pictures from sub albums but it would be a nice thing to do later...
+
+//				->orWhereIn('album_id',function ($query) { function ($query) use ($id)
+//				{
+//					$query->select('album_id')
+//						->from('user_album')
+//						->where('parent_id','=',$id);
+//				}}));
+				break;
+		}
+
+		$zipTitle = str_replace($badChars, '', $zipTitle). '.zip';
+
+		$response = new StreamedResponse(function() use ($zipTitle, $photos_sql, $badChars)
+		{
+
+			$opt = array(
+
+				'comment' => 'test zip file.',
+				'send_headers'=>true,
+			);
+
+			$zip = new ZipStream($zipTitle);
+
+
+			// Check if album empty
+			if ($photos_sql->count()==0) {
+				Logs::error(__METHOD__, __LINE__, 'Could not create ZipStream without images');
+				return false;
+			}
+
+
+			$photos = $photos_sql->get();
+			foreach ($photos as $photo)
+			{
+				$title = str_replace($badChars, '', $photo->title);
+				$url = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG') . $photo->url;
+
+				if (!isset($title)||$title==='') $title = 'Untitled';
+				// Check if readable
+				if (!@is_readable($url)) {
+					Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
+					continue;
+				}
+
+				// Get extension of image
+				$extension = Helpers::getExtension($url, false);
+				// Set title for photo
+				$zipFileName = $zipTitle . '/' . $title . $extension;
+				// Check for duplicates
+				if (!empty($files)) {
+					$i = 1;
+					while (in_array($zipFileName, $files)) {
+						// Set new title for photo
+						$zipFileName = $zipTitle . '/' . $title . '-' . $i . $extension;
+						$i++;
+					}
+				}
+				// Add to array
+				$files[] = $zipFileName;
+
+			}
+
+			# add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
+			$zip->addFileFromPath($zipFileName, $url);
+
+			# finish the zip stream
+			$zip->finish();
+
+		});
+
+		return $response;
 	}
 
 }
