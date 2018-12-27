@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
+
 class AlbumController extends Controller
 {
     /**
@@ -459,12 +460,13 @@ class AlbumController extends Controller
 		{
 
 			$opt = array(
-
-				'comment' => 'test zip file.',
+//				'comment' => 'test zip file.',
+				'largeFileSize' => 100 * 1024 * 1024,
+				'enableZip64'   => true,
 				'send_headers'=>true,
 			);
 
-			$zip = new ZipStream($zipTitle);
+			$zip = new ZipStream($zipTitle, $opt);
 
 
 			// Check if album empty
