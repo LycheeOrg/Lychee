@@ -503,10 +503,10 @@ class AlbumController extends Controller
 				// Add to array
 				$files[] = $zipFileName;
 
-			}
+				# add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
+				$zip->addFileFromPath($zipFileName, $url);
 
-			# add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
-			$zip->addFileFromPath($zipFileName, $url);
+			}
 
 			# finish the zip stream
 			$zip->finish();
