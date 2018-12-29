@@ -14,8 +14,8 @@ class MovePhotos extends Migration
      */
     public function up()
     {
-        if(Schema::hasTable('lychee_photos')) {
-            $results = DB::table('lychee_photos')->select('*')->get();
+        if(Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX','').'lychee_photos')) {
+            $results = DB::table(env('DB_OLD_LYCHEE_PREFIX','').'lychee_photos')->select('*')->get();
             foreach ($results as $result) {
                 $id = $result->id;
                 $id = substr($id, 1, 10);

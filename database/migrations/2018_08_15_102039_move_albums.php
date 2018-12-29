@@ -14,8 +14,8 @@ class MoveAlbums extends Migration
      */
     public function up()
     {
-        if(Schema::hasTable('lychee_albums')){
-            $results = DB::table('lychee_albums')->select('*')->get();
+        if(Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX','').'lychee_albums')){
+            $results = DB::table(env('DB_OLD_LYCHEE_PREFIX','').'lychee_albums')->select('*')->get();
             foreach ($results as $result)
             {
                 $id = $result->id;
