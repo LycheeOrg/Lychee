@@ -84,7 +84,7 @@ class SessionController extends Controller
 
         $return['locale'] = Lang::get_lang(Configs::get_value('lang'));
 
-        return Response::json($return);
+	    return $return;
 
     }
 

@@ -22,6 +22,7 @@ Route::get('/', function () { return view('index'); })->name('home');
 Route::get('/phpinfo', function () { return (string)phpinfo(); })->name('admin');
 
 Route::get('/view',                             'ViewController@view');
+Route::get('/demo',                             'DemoController@js');
 
 Route::post('/php/index.php',                   'SessionController@init'); // entry point if options are not initialized
 Route::post('/api/Session::init',               'SessionController@init');

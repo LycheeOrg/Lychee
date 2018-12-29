@@ -50,7 +50,7 @@ class AlbumController extends Controller
     function get(Request $request)
     {
         $request->validate(['albumID' => 'string|required']);
-
+		dd('hoho');
         $return = array();
         $return['albums'] = array();
         // Get photos

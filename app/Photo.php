@@ -130,7 +130,7 @@ class Photo extends Model
 
         }
 
-        $photo['public'] = $this->public == 1? '1' : '0';
+        $photo['public'] = $this->public == 1 ? '1' : '0';
 
         if($this->album_id != null)
         {
