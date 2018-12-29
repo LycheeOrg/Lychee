@@ -50,7 +50,6 @@ class AlbumController extends Controller
     function get(Request $request)
     {
         $request->validate(['albumID' => 'string|required']);
-		dd('hoho');
         $return = array();
         $return['albums'] = array();
         // Get photos
@@ -411,6 +410,7 @@ class AlbumController extends Controller
 			$no_error &= $album->save();
 		}
 
+		Album::reset_takestamp();
 		return $no_error ? 'true' : 'false';
 	}
 
