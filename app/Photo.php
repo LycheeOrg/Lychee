@@ -77,6 +77,11 @@ class Photo extends Model
 
 	    }
 
+	    if ($photo['shutter'] == '1/1 s')
+	    {
+		    $photo['shutter'] = '1 s';
+	    }
+
 
 		// check if license is none
         if ($this->license == 'none') {
