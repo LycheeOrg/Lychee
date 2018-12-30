@@ -13,6 +13,9 @@ use FFMpeg;
 
 class Photo extends Model
 {
+
+	protected $dates = ['created_at', 'updated_at', 'takestamp'];
+
     public function album()
     {
         return $this->belongsTo('App\Album','album_id','id');
@@ -114,12 +117,12 @@ class Photo extends Model
         $photo['url']      = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG') . $this->url;
 
         // Use takestamp as sysdate when possible
-        if (isset($this->takestamp) && $this->takestamp > 0) {
+        if (isset($this->takestamp) && $this->takestamp != null) {
 
             // Use takestamp
             $photo['cameraDate'] = '1';
 	        $photo['sysdate']    = $this->created_at->format('d F Y');
-            $photo['takedate']    = strftime('%d %B %Y at %H:%M', $this->takestamp);
+            $photo['takedate']   = $this->takestamp->format('d F Y \a\t H:i');
 
         } else {
 
@@ -186,7 +189,7 @@ class Photo extends Model
         $return['model']       = '';
         $return['shutter']     = '';
         $return['focal']       = '';
-        $return['takestamp']   = 0;
+        $return['takestamp']   = null;
         $return['lens']        = '';
         $return['tags']        = '';
         $return['position']    = '';
@@ -268,7 +271,21 @@ class Photo extends Model
             }
 
             // Takestamp
-            if (!empty($exif['DateTimeOriginal'])) $return['takestamp'] = strtotime($exif['DateTimeOriginal']);
+            if (!empty($exif['DateTimeOriginal']))
+            {
+	            if ($exif['DateTimeOriginal'] == '0000:00:00 00:00:00')
+	            {
+		            $return['takestamp'] = null;
+	            }
+	            else if(strtotime($exif['DateTimeOriginal']) == 0)
+	            {
+	            	$return['takestamp'] = null;
+	            }
+	            else
+	            {
+		            $return['takestamp'] = date("Y-m-d H:i:s", strtotime($exif['DateTimeOriginal']));
+	            }
+            }
 
             if (!empty($exif['LensInfo'])) $return['lens'] = trim($exif['LensInfo']);
             // Lens field from Lightroom

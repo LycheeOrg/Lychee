@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Hash;
 
 class Album extends Model
 {
+
+	protected $dates = ['created_at', 'updated_at', 'min_takestamp', 'max_takestamp'];
+
+
     public function photos()
     {
         return $this->hasMany('App\Photo','album_id','id');
@@ -42,8 +46,10 @@ class Album extends Model
 
         // Parse date
         $album['sysdate'] = $this->created_at->format('F Y');
-        $album['min_takestamp'] = $this->min_takestamp == 0 ? '' : strftime('%B %Y', $this->min_takestamp);
-        $album['max_takestamp'] = $this->max_takestamp == 0 ? '' : strftime('%B %Y', $this->max_takestamp);
+        $album['min_takestamp'] = $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
+//        strftime('%B %Y', $this->min_takestamp);
+        $album['max_takestamp'] = $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
+	        //strftime('%B %Y', $this->max_takestamp);
 
         // Parse password
         $album['password'] = ($this->password == '' ? '0' : '1');
