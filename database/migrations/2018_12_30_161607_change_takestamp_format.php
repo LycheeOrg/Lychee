@@ -14,15 +14,47 @@ class ChangeTakestampFormat extends Migration
      */
     public function up()
     {
-		// create temporary field.
+	    // rename
 	    Schema::table('photos', function (Blueprint $table) {
-		    $table->timestamp('takestamp_temp')->nullable()->after('takestamp');
+		    $table->renameColumn('takestamp', 'takestamp_temp');
+	    });
+
+		// create field.
+	    Schema::table('photos', function (Blueprint $table) {
+		    $table->timestamp('takestamp')->nullable()->after('takestamp_temp');
 	    });
 
 	    // copy
 	    $photos = Photo::all();
 	    foreach ($photos as $photo) {
-		    $photo->takestamp_temp = ($photo->takestamp == 0 || $photo->takestamp == null) ? null : date("Y-m-d H:i:s", $photo->takestamp);
+		    $photo->takestamp = ($photo->takestamp_temp == 0 || $photo->takestamp_temp == null) ? null : date("Y-m-d H:i:s", $photo->takestamp_temp);
+		    $photo->save();
+	    }
+
+	    // delete
+	    Schema::table('photos', function (Blueprint $table) {
+		    $table->dropColumn('takestamp_temp');
+	    });
+
+
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+		// create
+	    Schema::table('photos', function (Blueprint $table) {
+		    $table->integer('takestamp_temp')->default(0)->nullable()->after('takestamp');
+	    });
+
+	    // copy
+	    $photos = Photo::all();
+	    foreach ($photos as $photo) {
+		    $photo->takestamp_temp = ($photo->takestamp == null) ? 0 : strtotime($photo->takestamp->timestamp);
 		    $photo->save();
 	    }
 
@@ -36,35 +68,5 @@ class ChangeTakestampFormat extends Migration
 		    $table->renameColumn('takestamp_temp', 'takestamp');
 	    });
 
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-    	// rename
-	    Schema::table('photos', function (Blueprint $table) {
-		    $table->renameColumn('takestamp', 'takestamp_temp');
-	    });
-
-		// create
-	    Schema::table('photos', function (Blueprint $table) {
-		    $table->integer('takestamp')->nullable()->after('takestamp_temp');
-	    });
-
-	    // copy
-	    $photos = Photo::all();
-	    foreach ($photos as $photo) {
-		    $photo->takestamp = ($photo->takestamp_temp == null) ? 0 : strtotime($photo->takestamp_temp);
-		    $photo->save();
-	    }
-
-	    // delete
-	    Schema::table('photos', function (Blueprint $table) {
-		    $table->dropColumn('takestamp_temp');
-	    });
     }
 }
