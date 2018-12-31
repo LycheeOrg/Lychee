@@ -43,33 +43,46 @@ class CreatePhotosTable extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('photos');
-        Schema::create('photos', function (Blueprint $table) {
-            $table->Increments('id');
-            $table->char('title',100);
-            $table->text('description')->nullable();
-            $table->char('url',100);
-            $table->text('tags');
-            $table->boolean('public');
-            $table->char('type',10);
-            $table->integer('width');
-            $table->integer('height');
-            $table->char('size',20);
-            $table->char('iso',15);
-            $table->char('aperture',20);
-            $table->char('make',50);
-            $table->char('model',50);
-            $table->char('shutter',30);
-            $table->char('focal',20);
-            $table->integer('takestamp')->nullable();
-            $table->boolean('star')->default(false);
-            $table->char('thumbUrl',37);
-            $table->integer('album_id')->unsigned()->nullable()->default(null);
-            $table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
-            $table->char('checksum',40);
-            $table->boolean('medium')->default(false);
-            $table->timestamps();
-        });
+	    if(!Schema::hasTable('photos')) {
+//        Schema::dropIfExists('photos');
+		    Schema::create('photos', function (Blueprint $table) {
+			    $table->Increments('id');
+			    $table->char('title', 100);
+			    $table->text('description')->nullable();
+			    $table->char('url', 100);
+			    $table->text('tags');
+			    $table->boolean('public');
+			    $table->integer('owner_id')->default(0);
+			    $table->char('type', 15)->default('');
+			    $table->integer('width')->nullable();
+			    $table->integer('height')->nullable();
+			    $table->char('size', 20)->default('');
+			    $table->char('iso', 15)->default('');
+			    $table->char('aperture', 20)->default('');
+			    $table->char('make', 50)->default('');
+			    $table->char('model', 50)->default('');
+			    $table->char('lens', 100)->default('');
+			    $table->char('shutter', 30)->default('');
+			    $table->char('focal', 20)->default('');
+			    $table->decimal('latitude', 10, 8)->nullable();
+			    $table->decimal('longitude', 11, 8)->nullable();
+			    $table->decimal('altitude', 10, 4)->nullable();
+			    $table->timestamp('takestamp')->nullable();
+			    $table->boolean('star')->default(false);
+			    $table->char('thumbUrl', 37)->default('');
+			    $table->integer('album_id')->unsigned()->nullable()->default(null);
+			    $table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
+			    $table->char('checksum', 40)->default('');
+			    $table->boolean('medium')->default(false);
+			    $table->boolean('small')->default(false);
+			    $table->char('license', 20)->default('none');
+			    $table->timestamps();
+		    });
+	    }
+	    else {
+		    echo "Table photos already exists\n";
+	    }
+
     }
 
     /**
@@ -79,6 +92,8 @@ class CreatePhotosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('photos');
+	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
+		    Schema::dropIfExists('photos');
+	    }
     }
 }

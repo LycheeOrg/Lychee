@@ -26,16 +26,21 @@ class CreateLogsTable extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('logs');
-        Schema::create('logs', function (Blueprint $table) {
-            $table->increments('id');
-//            $table->integer('time');
-            $table->char('type',11);
-            $table->char('function',100);
-            $table->integer('line');
-            $table->text('text');
-            $table->timestamps();
-        });
+	    if(!Schema::hasTable('logs')) {
+//        Schema::dropIfExists('logs');
+		    Schema::create('logs', function (Blueprint $table) {
+			    $table->increments('id');
+			    $table->char('type', 11);
+			    $table->char('function', 100);
+			    $table->integer('line');
+			    $table->text('text');
+			    $table->timestamps();
+		    });
+	    }
+	    else {
+		    echo "Table logs already exists\n";
+	    }
+
     }
 
     /**
@@ -45,6 +50,8 @@ class CreateLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('logs');
+	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
+		    Schema::dropIfExists('logs');
+	    }
     }
 }

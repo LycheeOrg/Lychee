@@ -24,28 +24,41 @@ class CreateConfigsTable extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('configs');
-        Schema::create('configs', function (Blueprint $table) {
-            $table->increments('id');
-            $table->char('key',50);
-            $table->char('value',200)->nullable();
-        });
+	    if(!Schema::hasTable('configs')) {
+//        Schema::dropIfExists('configs');
+		    Schema::create('configs', function (Blueprint $table) {
+			    $table->increments('id');
+			    $table->char('key', 50);
+			    $table->char('value', 200)->nullable();
+		    });
 
-        DB::table('configs')->insert([
-            ['key' => 'version', 'value' => '030102'],
-            ['key' => 'username', 'value' => ''],
-            ['key' =>  'password', 'value' => ''],
-            ['key' =>  'checkForUpdates', 'value' => '1'],
-            ['key' =>  'sortingPhotos_col', 'value' => 'takestamp'],
-            ['key' =>  'sortingPhotos_order', 'value' => 'ASC'],
-            ['key' =>  'sortingAlbums_col', 'value' => 'description'],
-            ['key' =>  'sortingAlbums_order', 'value' => 'DESC'],
-            ['key' =>  'imagick', 'value' => '1'],
-            ['key' =>  'dropboxKey', 'value' => ''],
-            ['key' =>  'identifier', 'value' => 'a74587f1cb706a9f4ea1691a4771027e'], // this is to be decided by you. Anyway, this will be deleted by a migration later so don't bother.
-            ['key' =>  'skipDuplicates', 'value' => '0'],
-            ['key' =>  'plugins', 'value' => ''],
-        ]);
+		    DB::table('configs')->insert([
+			    ['key' => 'version', 'value' => '040000'],
+			    ['key' => 'username', 'value' => ''],
+			    ['key' => 'password', 'value' => ''],
+			    ['key' => 'checkForUpdates', 'value' => '1'],
+			    ['key' => 'sortingPhotos_col', 'value' => 'takestamp'],
+			    ['key' => 'sortingPhotos_order', 'value' => 'ASC'],
+			    ['key' => 'sortingAlbums_col', 'value' => 'description'],
+			    ['key' => 'sortingAlbums_order', 'value' => 'DESC'],
+			    ['key' => 'imagick', 'value' => '1'],
+			    ['key' => 'dropboxKey', 'value' => ''],
+			    ['key' => 'skipDuplicates', 'value' => '0'],
+			    ['key' => 'plugins', 'value' => ''],
+			    ['key' => 'small_max_width', 'value' => '0'],
+			    ['key' => 'small_max_height', 'value' => '360'],
+			    ['key' => 'medium_max_width', 'value' => '1920'],
+			    ['key' => 'medium_max_height', 'value' => '1080'],
+			    ['key' => 'lang', 'value' => 'en'],
+			    ['key' => 'justified_layout', 'value' => '1'],
+			    ['key' => 'image_overlay', 'value' => '1'],
+			    ['key' => 'default_license', 'value' => 'none'],
+		    ]);
+	    }
+	    else {
+		    echo "Table configs already exists\n";
+	    }
+
     }
 
     /**
@@ -55,6 +68,8 @@ class CreateConfigsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('configs');
+	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
+		    Schema::dropIfExists('configs');
+	    }
     }
 }

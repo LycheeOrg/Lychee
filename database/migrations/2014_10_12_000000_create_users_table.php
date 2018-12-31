@@ -13,13 +13,20 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('username')->unique();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+	    if(!Schema::hasTable('users')) {
+		    Schema::create('users', function (Blueprint $table) {
+			    $table->increments('id');
+			    $table->string('username')->unique();
+			    $table->string('password');
+			    $table->boolean('upload')->default(false);
+			    $table->boolean('lock')->default(false);
+			    $table->rememberToken();
+			    $table->timestamps();
+		    });
+	    }
+	    else {
+		    echo "Table users already exists\n";
+	    }
     }
 
     /**
@@ -29,6 +36,9 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+    	if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false))
+	    {
+		    Schema::dropIfExists('users');
+	    }
     }
 }

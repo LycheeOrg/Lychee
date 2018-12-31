@@ -28,18 +28,29 @@ class CreateAlbumsTable extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('albums');
-        Schema::create('albums', function (Blueprint $table) {
-            $table->increments('id');
-            $table->char('title',100)->default('');
-            $table->text('description');
-//            $table->integer('sysstamp')->default(0);
-            $table->boolean('public')->default(false);
-            $table->boolean('visible_hidden')->default(true);
-            $table->boolean('downloadable')->default(false);
-            $table->char('password',100)->nullable()->default(null);
-            $table->timestamps();
-        });
+	    if(!Schema::hasTable('albums')) {
+//        Schema::dropIfExists('albums');
+		    Schema::create('albums', function (Blueprint $table) {
+			    $table->increments('id');
+			    $table->char('title', 100)->default('');
+			    $table->integer('owner_id')->default(0);
+			    $table->integer('parent_id')->unsigned();
+			    $table->foreign('parent_id')->references('id')->on('albums');
+			    $table->text('description');
+			    $table->timestamp('min_takestamp')->nullable();
+			    $table->timestamp('max_takestamp')->nullable();
+			    $table->boolean('public')->default(false);
+			    $table->boolean('visible_hidden')->default(true);
+			    $table->boolean('downloadable')->default(false);
+			    $table->char('password', 100)->nullable()->default(null);
+			    $table->char('license', 20)->default('none');
+			    $table->timestamps();
+		    });
+	    }
+	    else {
+		    echo "Table albums already exists\n";
+	    }
+
     }
 
     /**
@@ -49,6 +60,8 @@ class CreateAlbumsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('albums');
+	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
+		    Schema::dropIfExists('albums');
+	    }
     }
 }
