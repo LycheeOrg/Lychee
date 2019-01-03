@@ -34,7 +34,7 @@ class CreateAlbumsTable extends Migration
 			    $table->increments('id');
 			    $table->char('title', 100)->default('');
 			    $table->integer('owner_id')->default(0);
-			    $table->integer('parent_id')->unsigned();
+			    $table->integer('parent_id')->unsigned()->nullable();
 			    $table->foreign('parent_id')->references('id')->on('albums');
 			    $table->text('description');
 			    $table->timestamp('min_takestamp')->nullable();
