@@ -53,7 +53,11 @@
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover"
+            "@php artisan package:discover",
+            "@make_user_css"
+        ],
+        "make_user_css": [
+            "touch public/dist/user.css"
         ]
     },
     "config": {
