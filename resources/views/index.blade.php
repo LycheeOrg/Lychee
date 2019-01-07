@@ -3,7 +3,7 @@
 <head>
 
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-    <title>Lychee</title>
+    <title>{{ config('app.name') }}</title>
 
     <meta name="author" content="Tobias Reich">
 
