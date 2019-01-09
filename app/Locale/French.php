@@ -12,13 +12,16 @@ final class French
 
 	static public function get_locale()
 	{
-		$locale	= array(
+		$locale = array(
 			'USERNAME'		=> 'Nom d\'utilisateur',
 			'PASSWORD'		=> 'Mot de passe',
 			'ENTER'			=> 'Enter',
 			'CANCEL'		=> 'Annuler',
 			'SIGN_IN'		=> 'Connexion',
 			'CLOSE'			=> 'Fermer',
+			'SETTINGS'      => 'Settings',
+			'SEARCH'        => 'Search ...',
+			'MORE'          => 'More',
 
 			'CHANGE_LOGIN'		=> 'Changer le nom d\'utilisateur',
 			'CHANGE_SORTING'	=> 'Changer le tri',
@@ -36,24 +39,24 @@ final class French
 			'RENAME_ALL'		=> 'Tout renommer',
 			'MERGE'				=> 'Fusionner',
 			'MERGE_ALL'			=> 'Tout fusionner',
-			'MAKE_PUBLIC' 		=> 'Rendre public',
-			'SHARE_ALBUM' 		=> 'Partager l\'album',
-			'SHARE_PHOTO' 		=> 'Partager la photo',
+			'MAKE_PUBLIC'		=> 'Rendre public',
+			'SHARE_ALBUM'		=> 'Partager l\'album',
+			'SHARE_PHOTO'		=> 'Partager la photo',
 			'DOWNLOAD_ALBUM'	=> 'Télécharger l\'album',
 			'ABOUT_ALBUM'		=> 'À propos de l\'album',
 			'DELETE_ALBUM'		=> 'Supprimer l\'album',
 
-			'DELETE_ALBUM_QUESTION' 		=> 'Supprimer l\'album et ses photos',
+			'DELETE_ALBUM_QUESTION'			=> 'Supprimer l\'album et ses photos',
 			'KEEP_ALBUM'					=> 'Garder l\'album',
-			'DELETE_ALBUM_CONFIRMATION_1' 	=> 'Voulez-vous vraiment supprimer l\'album ',
+			'DELETE_ALBUM_CONFIRMATION_1'	=> 'Voulez-vous vraiment supprimer l\'album ',
 			'DELETE_ALBUM_CONFIRMATION_2'	=> 'et toutes les photos qu\'il contient ? Cette action est irréversible !',
 
-			'DELETE_ALBUMS_QUESTION' 		=> 'Supprimer les albums et leurs photos',
+			'DELETE_ALBUMS_QUESTION'		=> 'Supprimer les albums et leurs photos',
 			'KEEP_ALBUMS'					=> 'Garder les albums',
 			'DELETE_ALBUMS_CONFIRMATION_1'	=> 'Voulez-vous vraiment supprimer les ',
 			'DELETE_ALBUMS_CONFIRMATION_2'	=> 'albums selectionnés et toutes leurs photos ? Cette action est irréversible !',
 
-			'DELETE_UNSORTED_CONFIRM' 		=> 'Voulez-vous vraiment supprimer toutes les photos de \'Non-triés\' ?<br>Cette action est irréversible !',
+			'DELETE_UNSORTED_CONFIRM'		=> 'Voulez-vous vraiment supprimer toutes les photos de \'Non-triés\' ?<br>Cette action est irréversible !',
 			'CLEAR_UNSORTED'				=> 'Vider Non-triés',
 			'KEEP_UNSORTED'					=> 'Garder Non-triés',
 
@@ -80,7 +83,7 @@ final class French
 			'TITLE_NEW_ALBUM'			=> 'Entrez le titre du nouvel album :',
 			'UNTITLED'					=> 'Sans-titre',
 			'UNSORTED'					=> 'Non-triés',
-			'STARED'					=> 'Favoris',
+			'STARRED'					=> 'Favoris',
 			'RECENT'					=> 'Récent',
 			'PUBLIC'					=> 'Public',
 			'NUM_PHOTOS'				=> 'Photos',
@@ -122,7 +125,7 @@ final class French
 			'ALBUM_PASSWORD'			=> 'Mot de passe',
 			'ALBUM_PASSWORD_PROT'		=> 'Protéger par un mot de passe.',
 			'ALBUM_PASSWORD_PROT_EXPL'	=> 'Cet album est accessible avec un mot de passe.',
-			'ALBUM_PASSWORD_REQUIRED' 	=> 'Cet album est protégé par mot de passe. Entrez le mot de passe pour afficher les photos de cet album :',
+			'ALBUM_PASSWORD_REQUIRED'	=> 'Cet album est protégé par mot de passe. Entrez le mot de passe pour afficher les photos de cet album :',
 			'ALBUM_MERGE_1'				=> 'Voulez-vous vraiment fusionner l\'album',
 			'ALBUM_MERGE_2'				=> 'dans l\'album', # `dans` est important car il indique la direction du merge
 			'ALBUMS_MERGE'				=> 'Voulez-vous vraiment fusionner les albums selectionnés avec l\'album',
@@ -167,8 +170,9 @@ final class French
 			'PHOTO_DELETE_2'			=> 'Cette action est irréversible!',
 			'PHOTO_DELETE_ALL_1'		=> 'Voulez-vous vraiment supprimer toutes les',
 			'PHOTO_DELETE_ALL_2'		=> 'photos sélectionnées ? Cette action est irréversible !',
-			'PHOTOS_NEW_TITLE_1' 		=> 'Entrer un titre pour toutes les',
-			'PHOTOS_NEW_TITLE_2' 		=> 'photos sélectionnées :',
+			'PHOTO_NEW_TITLE'			=> 'Entrer un nouveau titre pour cette photo :',
+			'PHOTOS_NEW_TITLE_1'		=> 'Entrer un titre pour toutes les',
+			'PHOTOS_NEW_TITLE_2'		=> 'photos sélectionnées :',
 			'PHOTO_MAKE_PRIVATE_ALBUM'	=> 'Cette photo est située dans un album public. Pour rendre cette photo privée ou publique, modifiez la visibilité de l\'album associé.',
 			'PHOTO_SHOW_ALBUM'			=> 'Afficher l\'album',
 
@@ -192,8 +196,8 @@ final class French
 			'DB_CONNECT'				=> 'Connexion',
 
 			'LOGIN_TITLE'				=> 'Entrez un nom d\'utilisateur et un mot de passe pour votre installation :',
-			'LOGIN_USERNAME' 			=> 'Nouvel utilisateur',
-			'LOGIN_PASSWORD' 			=> 'Nouveau Mot de passe',
+			'LOGIN_USERNAME'			=> 'Nouvel utilisateur',
+			'LOGIN_PASSWORD'			=> 'Nouveau Mot de passe',
 			'LOGIN_CREATE'				=> 'Créer les informations de connexion',
 
 			'PASSWORD_TITLE'			=> 'Entrez votre mot de passe existant :',

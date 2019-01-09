@@ -84,6 +84,20 @@ class SessionController extends Controller
 
         $return['locale'] = Lang::get_lang(Configs::get_value('lang'));
 
+	    $return['update_json'] = 0;
+	    $return['update_available'] = false;
+	    if($return['config']['checkForUpdates'] == '1')
+	    {
+		    try {
+			    $json = file_get_contents('https://lycheeorg.github.io/update.json');
+			    $obj = json_decode($json);
+			    $return['update_json'] = $obj->lychee->version;
+			    $return['update_available'] = ((intval($return['config']['version'])) < $return['update_json']);
+		    } catch (\Exception $e) {
+			    Logs::notice( __METHOD__, __LINE__, 'Could not access: https://lycheeorg.github.io/update.json');
+		    }
+	    }
+
 	    return $return;
 
     }

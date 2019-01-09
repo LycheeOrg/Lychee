@@ -10,9 +10,10 @@ final class Swedish
 		return 'sv';
 	}
 
+
 	static public function get_locale()
 	{
-		$locale	= array(
+		$locale = array(
 
 			'USERNAME'		=> 'användarnamn',
 			'PASSWORD'		=> 'lösenord',
@@ -21,6 +22,9 @@ final class Swedish
 			'SIGN_IN'		=> 'Logga in',
 			'CLOSE'			=> 'Stäng',
 
+			'SETTINGS'      => 'Settings',
+			'SEARCH'        => 'Search ...',
+			'MORE'          => 'More',
 			'CHANGE_LOGIN'		=> 'Ändra inloggning',
 			'CHANGE_SORTING'	=> 'Ändra sortering',
 			'SET_DROPBOX'		=> 'Ställ in Dropbox',
@@ -38,24 +42,24 @@ final class Swedish
 			'RENAME_ALL'		=> 'Ändra namnet på alla',
 			'MERGE'				=> 'Slå ihop',
 			'MERGE_ALL'			=> 'Slå ihop alla',
-			'MAKE_PUBLIC' 		=> 'Gör publika',
-			'SHARE_ALBUM' 		=> 'Dela album',
-			'SHARE_PHOTO' 		=> 'Dela fotografi',
+			'MAKE_PUBLIC'		=> 'Gör publika',
+			'SHARE_ALBUM'		=> 'Dela album',
+			'SHARE_PHOTO'		=> 'Dela fotografi',
 			'DOWNLOAD_ALBUM'	=> 'Ladda ner album',
 			'ABOUT_ALBUM'		=> 'Om albumet',
 			'DELETE_ALBUM'		=> 'Radera albumet',
 
-			'DELETE_ALBUM_QUESTION' 		=> 'Radera album och fotografier',
+			'DELETE_ALBUM_QUESTION'			=> 'Radera album och fotografier',
 			'KEEP_ALBUM'					=> 'Behåll albumet',
-			'DELETE_ALBUM_CONFIRMATION_1' 	=> 'Är du säker på att du vill radera albumet',
+			'DELETE_ALBUM_CONFIRMATION_1'	=> 'Är du säker på att du vill radera albumet',
 			'DELETE_ALBUM_CONFIRMATION_2'	=> 'och alla fotografier det innehåller? Raderingen går inte att ångra!',
 
-			'DELETE_ALBUMS_QUESTION' 		=> 'Radera album och fotografier',
+			'DELETE_ALBUMS_QUESTION'		=> 'Radera album och fotografier',
 			'KEEP_ALBUMS'					=> 'Behåll album',
 			'DELETE_ALBUMS_CONFIRMATION_1'	=> 'Är du säker på att du vill radera alla',
 			'DELETE_ALBUMS_CONFIRMATION_2'	=> 'valda album och alla fotografier de innehåller? Raderingen går inte att ångra!',
 
-			'DELETE_UNSORTED_CONFIRM' 		=> 'Är du säker på att du vill radera alla fotografier från \'Osorterat\'?<br>Det här går inte att ångra!',
+			'DELETE_UNSORTED_CONFIRM'		=> 'Är du säker på att du vill radera alla fotografier från \'Osorterat\'?<br>Det här går inte att ångra!',
 			'CLEAR_UNSORTED'				=> 'Rensa osorterade',
 			'KEEP_UNSORTED'					=> 'Behåll osorterade',
 
@@ -82,7 +86,7 @@ final class Swedish
 			'TITLE_NEW_ALBUM'			=> 'Skriv en titel för det nya albumet:',
 			'UNTITLED'					=> 'Saknar titel',
 			'UNSORTED'					=> 'Osorterat',
-			'STARED'					=> 'Stjärnmärkta',
+			'STARRED'					=> 'Stjärnmärkta',
 			'RECENT'					=> 'Nyligen',
 			'PUBLIC'					=> 'Publika',
 			'NUM_PHOTOS'				=> 'Fotografier',
@@ -124,7 +128,7 @@ final class Swedish
 			'ALBUM_PASSWORD'			=> 'Lösenord',
 			'ALBUM_PASSWORD_PROT'		=> 'Lösenordsskyddad',
 			'ALBUM_PASSWORD_PROT_EXPL'	=> 'Albumet kan bara ses med giltigt lösenord.',
-			'ALBUM_PASSWORD_REQUIRED' 	=> 'Albumet är skyddat med ett lösenord. Ange lösenordet nedan för att se fotografierna i albumet:',
+			'ALBUM_PASSWORD_REQUIRED'	=> 'Albumet är skyddat med ett lösenord. Ange lösenordet nedan för att se fotografierna i albumet:',
 			'ALBUM_MERGE_1'				=> 'Är du säker på att du vill sammanfoga albumet',
 			'ALBUM_MERGE_2'				=> 'med albumet',
 			'ALBUMS_MERGE'				=> 'Är du säker på att du vill sammanfoga samtliga valda album till albumet',
@@ -134,7 +138,7 @@ final class Swedish
 			'PHOTO_ABOUT'				=> 'Om',
 			'PHOTO_BASICS'				=> 'Grundläggande',
 			'PHOTO_TITLE'				=> 'Titel',
-			'PHOTO_NEW_TITLE' 			=> 'Ange en ny titel för det här fotografiet:',
+			'PHOTO_NEW_TITLE'			=> 'Skriv in en ny tital för det hör fotografiet:',
 			'PHOTO_SET_TITLE'			=> 'Spara titeln',
 			'PHOTO_UPLOADED'			=> 'Uppladdat',
 			'PHOTO_DESCRIPTION'			=> 'Beskrivning',
@@ -169,8 +173,9 @@ final class Swedish
 			'PHOTO_DELETE_2'			=> 'Raderingen går inte att ångra!',
 			'PHOTO_DELETE_ALL_1'		=> 'Är du säker på att du vill radera alla',
 			'PHOTO_DELETE_ALL_2'		=> 'valda fotografier? Raderingen går inte att ångra!',
-			'PHOTOS_NEW_TITLE_1' 		=> 'Ange en tital för alla',
-			'PHOTOS_NEW_TITLE_2' 		=> 'valda fotografier:',
+			'PHOTO_NEW_TITLE'			=> 'Ange en ny titel för det här fotografiet:',
+			'PHOTOS_NEW_TITLE_1'		=> 'Ange en tital för alla',
+			'PHOTOS_NEW_TITLE_2'		=> 'valda fotografier:',
 			'PHOTO_MAKE_PRIVATE_ALBUM'	=> 'Det här fotografier finns i ett publikt album. Du kan ändra fotografiets synlighet genom att redigera egenskapen för albumet.',
 			'PHOTO_SHOW_ALBUM'			=> 'Visa album',
 
@@ -194,8 +199,8 @@ final class Swedish
 			'DB_CONNECT'				=> 'Anslut',
 
 			'LOGIN_TITLE'				=> 'Ange ett användarnamn och lösenord för din installation:',
-			'LOGIN_USERNAME' 			=> 'Nytt användarnamn',
-			'LOGIN_PASSWORD' 			=> 'Nytt lösenord',
+			'LOGIN_USERNAME'			=> 'Nytt användarnamn',
+			'LOGIN_PASSWORD'			=> 'Nytt lösenord',
 			'LOGIN_CREATE'				=> 'Skapa inloggning',
 
 			'PASSWORD_TITLE'			=> 'Ange dina befintliga inloggningsuppgifter:',
@@ -240,8 +245,8 @@ final class Swedish
 			'DROPBOX_TITLE'				=> 'Spara nyckeln för Dropbox',
 			'DROPBOX_TEXT'				=> "För att kunna importera fotografier från ditt Dropboxkonto behöver du en godkänd applikationsnyckel från <a href='https://www.dropbox.com/developers/apps/create'>Dropbox</a>.\n Skapa en personlig nyckel och ange den sedan här nedan:",
 
-			'LANG_TEXT'		       		=> 'Ändra språket i Lychee till:',
-			'LANG_TITLE'	       		=> 'Spara ändringen av språket',
+			'LANG_TEXT'					=> 'Ändra språket i Lychee till:',
+			'LANG_TITLE'				=> 'Spara ändringen av språket',
 
 			'VIEW_NO_RESULT'			=> 'Inget resultat',
 			'VIEW_NO_PUBLIC_ALBUMS'		=> 'Inga publika album',

@@ -2474,8 +2474,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.8',
-	versionCode: '030208',
+	version: '3.2.9',
+	versionCode: '030209', // not really needed anymore
 
 	updatePath: 'https://LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee/releases',
@@ -2493,6 +2493,8 @@ lychee = {
 	image_overlay_default: false, // display Overlay like in Lightroom by default
 
 	checkForUpdates: '1',
+	update_json: 0,
+	update_available: false,
 	sortingPhotos: '',
 	sortingAlbums: '',
 	location: '',
@@ -2547,6 +2549,9 @@ lychee.init = function () {
 	api.post('Session::init', {}, function (data) {
 
 		lychee.api_V2 = data.api_V2 || false;
+		lychee.update_json = data.update_json;
+		lychee.update_available = data.update_available;
+		lychee.versionCode = data.config.version.slice(7, data.config.version);
 
 		if (data.status === 0) {
 
@@ -2746,14 +2751,23 @@ lychee.load = function () {
 
 lychee.getUpdate = function () {
 
-	var success = function success(data) {
-		if (data.lychee.version > parseInt(lychee.versionCode)) $('.version span').show();
-	};
+	console.log(lychee.update_available);
+	console.log(lychee.update_json);
 
-	$.ajax({
-		url: lychee.updatePath,
-		success: success
-	});
+	if (lychee.update_json != 0) {
+		if (lychee.update_available) {
+			$('.version span').show();
+		}
+	} else {
+		var success = function success(data) {
+			if (data.lychee.version > parseInt(lychee.versionCode)) $('.version span').show();
+		};
+
+		$.ajax({
+			url: lychee.updatePath,
+			success: success
+		});
+	}
 };
 
 lychee.setTitle = function (title, editable) {

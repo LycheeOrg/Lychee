@@ -18,7 +18,7 @@ if (env('APP_ENV') === 'dev') {
     URL::forceScheme('https');
 }
 
-Route::get('/', function () { return view('index'); })->name('home');
+Route::get('/',                                 'IndexController@show')->name('home');
 Route::get('/phpinfo', function () { return (string)phpinfo(); })->name('admin');
 
 Route::get('/view',                             'ViewController@view');

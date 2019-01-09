@@ -19,6 +19,9 @@ final class ChineseSimplified
 			'CANCEL'		=> '取消',
 			'SIGN_IN'		=> '登录',
 			'CLOSE'			=> '关闭',
+			'SETTINGS'      => 'Settings',
+			'SEARCH'        => 'Search ...',
+			'MORE'          => 'More',
 
 			'CHANGE_LOGIN'		=> '修改登录信息',
 			'CHANGE_SORTING'	=> '修改排序',
