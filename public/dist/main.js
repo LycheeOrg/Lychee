@@ -2549,9 +2549,6 @@ lychee.init = function () {
 	api.post('Session::init', {}, function (data) {
 
 		lychee.api_V2 = data.api_V2 || false;
-		lychee.update_json = data.update_json;
-		lychee.update_available = data.update_available;
-		lychee.versionCode = data.config.version.slice(7, data.config.version);
 
 		if (data.status === 0) {
 
@@ -2568,6 +2565,9 @@ lychee.init = function () {
 		}
 
 		lychee.sub_albums = data.sub_albums || false;
+		lychee.update_json = data.update_json;
+		lychee.update_available = data.update_available;
+		lychee.versionCode = data.config.version.slice(7, data.config.version);
 
 		// we copy the locale that exists only.
 		// This ensure forward and backward compatibility.
