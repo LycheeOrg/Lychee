@@ -18,8 +18,12 @@ class Photo extends Model
 
     public function album()
     {
-        return $this->belongsTo('App\Album','album_id','id');
+        return $this->belongsTo('App\Album','album_id','id')->withDefault(['public' => '1']);
     }
+
+	public function owner() {
+		return $this->belongsTo('App\User','owner_id','id')->withDefault(['id' => 0, 'username' => 'Admin']);
+	}
 
 
     /**
@@ -532,6 +536,11 @@ class Photo extends Model
     }
 
 
+	/**
+	 * @param string $path
+	 * @param $id
+	 * @return boolean Returns true when successful.
+	 */
     public function createVideoThumb(string $path, $id)
     {
         try{
@@ -563,7 +572,6 @@ class Photo extends Model
 	 * @param int $newHeight
 	 * @param string $kind
 	 * @return boolean Returns true when successful.
-	 * @throws ImagickException
 	 */
     public function createMedium($newWidth = 1920, $newHeight = 1080, $kind = 'MEDIUM') {
 
@@ -635,14 +643,11 @@ class Photo extends Model
 				$error = true;
 			}
 
-        } else {
-            $error = true;
         }
 
-        if($error)
+        if($error || !Configs::hasImagick())
         {
 	        Logs::notice(__METHOD__, __LINE__, 'Picture is big enough for resize, try with GD!');
-			// failed with imagick, try with GD
 
 	        // Create image
 	        if($newWidth == 0)
@@ -778,7 +783,7 @@ class Photo extends Model
 
     public function scopeOwnedBy($query,$id)
     {
-        return $id == 0 ? $query : $query->where('owner_id','=',$id);
+        return $id == 0 ? $query : $query->where('id','=',$id);
     }
 
 }

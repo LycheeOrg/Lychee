@@ -44,7 +44,7 @@ class PhotoController extends Controller
             'photoID' => 'string|required'
         ]);
 
-        $photo = Photo::find($request['photoID']);
+        $photo = Photo::with('album')->find($request['photoID']);
 
         // Photo not found?
         if ($photo == null) {

@@ -61,7 +61,7 @@ class AlbumController extends Controller
             case 'r': $return['public'] = '0'; $photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))); break;
             case '0': $return['public'] = '0'; $photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))); break;
             default:
-                $album = Album::find($request['albumID']);
+                $album = Album::with(['owner','children'])->find($request['albumID']);
                 if ($album===null) {
                     Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
                     return 'false';
@@ -95,7 +95,11 @@ class AlbumController extends Controller
             $photo_counter ++;
         }
 
-        if ($photos_sql->count() === 0) {
+	    $return['id']  = $request['albumID'];
+	    $return['num'] = count($return['photos']);
+
+	    // finalize the loop
+	    if ($return['num'] === 0) {
 
             // Album empty
             $return['photos'] = false;
@@ -112,9 +116,6 @@ class AlbumController extends Controller
             }
 
         }
-
-        $return['id']  = $request['albumID'];
-        $return['num'] = $photos_sql->count();
 
         return $return;
     }

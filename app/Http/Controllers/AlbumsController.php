@@ -20,7 +20,8 @@ class AlbumsController extends Controller
      */
     public function get(Request $request) {
 
-	    $configs = Configs::get();
+    	// caching to avoid further request
+	    Configs::get();
 
         // Initialize return var
         $return = array(
@@ -42,7 +43,7 @@ class AlbumsController extends Controller
             {
                 $albums = Album::where('owner_id','=', 0)
                     ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))->get();
-                $shared_albums = Album::with('owner')
+                $shared_albums = Album::with(['owner','children'])
 	                ->where('owner_id','<>',0)
 	                ->where('parent_id','=',null)
 	                ->orderBy('owner_id','ASC')
@@ -70,9 +71,6 @@ class AlbumsController extends Controller
 
         $return['albums'] = AlbumsController::prepare_albums($albums);
         $return['shared_albums'] = AlbumsController::prepare_albums($shared_albums);
-
-        // Num of albums
-//        $return['num'] = $albums == null ? 0 : count($albums);
 
         return $return;
 

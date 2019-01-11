@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Session;
 
 class SharingController extends Controller
 {
-    public function list_sharing(Request $request) {
+    public function listSharing(Request $request) {
 
         if (Session::get('UserID') == 0)
         {
@@ -42,6 +42,67 @@ class SharingController extends Controller
             $users = User::select('id' , 'username')->orderBy('username','ASC')->get();
         }
         return ['shared' => $shared, 'albums' => $albums, 'users' => $users];
+    }
+
+
+
+    public function getUserList(Request $request) {
+
+	    $request->validate([
+		    'albumIDs' => 'string|required'
+	    ]);
+	    $array_albumIDs = explode(',',$request['albumIDs']);
+	    sort($array_albumIDs);
+
+	    $users = User::select('id','username')->all();
+	    $shared = DB::table('user_album')
+		    ->select('user_id', 'album_id')
+		    ->whereIn('album_id', $array_albumIDs)
+		    ->orderBy('user_id', 'ASC')
+		    ->orderBy('album_id','ASC')
+		    ->get();
+
+	    $user_share = array();
+	    foreach ($shared as $share)
+	    {
+	    	if(!isset($user_share[$share['user_id']]))
+			    $user_share[$share['user_id']] = array();
+			$user_share[$share['user_id']][] = $share['album_id'];
+	    }
+
+	    $return_array = array();
+	    foreach ($users as $user)
+	    {
+	    	if(!isset($user_share[$user->id]))
+		    {
+			    $return_array[] = $user;
+		    }
+	    	else
+		    {
+			    $no = false;
+
+			    // quick test to avoid the loop
+		    	if(count($user_share[$user->id]) != count($array_albumIDs))
+		    		$no = true;
+
+		        $i = 0;
+		        while(!$no && $i < count($user_share[$user->id]))
+			    {
+			        if($user_share[$user->id][$i] != $array_albumIDs[$i])
+				    {
+						$no = true;
+				    }
+			        $i++;
+			    }
+
+			    if($no)
+			    {
+				    $return_array[] = $user;
+			    }
+		    }
+	    }
+
+	    return $return_array;
     }
 
 
