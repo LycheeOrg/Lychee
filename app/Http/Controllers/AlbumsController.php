@@ -83,6 +83,7 @@ class AlbumsController extends Controller
 
                 // Turn data from the database into a front-end friendly format
                 $album = $album_model->prepareData();
+	            $album['albums'] = $album_model->get_albums();
 
                 // Thumbs
                 if ((!Session::get('login') && $album_model->password === null)||

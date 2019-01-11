@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Configs;
 use App\Photo;
 use Illuminate\Console\Command;
 
@@ -51,7 +52,7 @@ class medium extends Command
         }
 
         foreach ($photos as $photo){
-            if( $photo->createMedium() )
+            if( $photo->createMedium(intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height'))) )
             {
                 $photo->medium = 1;
                 $photo->save();
