@@ -3071,6 +3071,7 @@ lychee.locale = {
 	'ALBUM_CREATED': 'Created',
 	'ALBUM_IMAGES': 'Images',
 	'ALBUM_SHARING': 'Share',
+	'ALBUM_OWNER': 'Owner',
 	'ALBUM_SHR_YES': 'YES',
 	'ALBUM_SHR_NO': 'No',
 	'ALBUM_PUBLIC': 'Public',
@@ -5229,13 +5230,18 @@ sidebar.createStructure.album = function (data) {
 		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
 	};
 
+	if (data.owner != null) {
+		structure.share.rows.push({ title: lychee.locale['ALBUM_OWNER'], kind: 'owner', value: data.owner });
+	}
+
 	structure.license = {
 		title: lychee.locale['ALBUM_REUSE'],
 		type: sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['ALBUM_LICENSE'], kind: 'license', value: license, editable: editable }]
+	};
 
-		// Construct all parts of the structure
-	};structure = [structure.basics, structure.album, structure.share, structure.license];
+	// Construct all parts of the structure
+	structure = [structure.basics, structure.album, structure.share, structure.license];
 
 	return structure;
 };
@@ -5931,18 +5937,31 @@ view.albums = {
 			}
 
 			if (lychee.api_V2) {
+				var current_owner = '';
+				var i = 0;
 				// Shared
 				if (albums.json.shared_albums && albums.json.shared_albums.length !== 0) {
 
-					$.each(albums.json.shared_albums, function () {
-						if (!this.parent_id || this.parent_id === 0) {
-							albums.parse(this);
-							sharedData += build.album(this, true);
+					for (i = 0; i < albums.json.shared_albums.length; ++i) {
+						var alb = albums.json.shared_albums[i];
+						if (!alb.parent_id || alb.parent_id === 0) {
+							albums.parse(alb);
+							if (current_owner !== alb.owner && lychee.publicMode === false) {
+								sharedData += build.divider(alb.owner);
+								current_owner = alb.owner;
+							}
+							sharedData += build.album(alb, true);
 						}
-					});
-
-					// Add divider
-					if (lychee.publicMode === false) sharedData = build.divider(lychee.locale['SHARED_ALBUMS']) + sharedData;
+					}
+					// $.each(albums.json.shared_albums, function() {
+					// 	if(!this.parent_id || this.parent_id === 0) {
+					// 		albums.parse(this);
+					// 		sharedData += build.album(this, true)
+					// 	}
+					// });
+					//
+					// // Add divider
+					// if (lychee.publicMode===false) sharedData = build.divider(lychee.locale['SHARED_ALBUMS']) + sharedData
 				}
 			}
 

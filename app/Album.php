@@ -60,6 +60,8 @@ class Album extends Model
 //        $album['thumbs'] = explode(',', $this->thumbs);
 //        $album['types'] = (isset($this->types) ? explode(',', $this->types) : array());
 
+        $album['owner'] = $this->owner->username;
+
         return $album;
     }
 
@@ -106,7 +108,6 @@ class Album extends Model
         return $return;
     }
 
-
     public function get_all_subalbums($return = array())
     {
 	    foreach($this->children as $album)
@@ -149,27 +150,31 @@ class Album extends Model
     }
 
     public function owner() {
-        return $this->belongsTo('App\User','owner_id','id');
+        return $this->belongsTo('App\User','owner_id','id')->withDefault(['id' => 0, 'username' => 'Admin']);
     }
 
 
     public static function get_albums_user($id) {
-        return Album::where('owner_id', '<>', $id)
+        return Album::with(['owner','children'])
+	        ->where('owner_id', '<>', $id)
             ->where('parent_id','=',null)
             ->Where(
                 function ($query) use ($id) {
+                	// album is shared with user
                     $query->whereIn('id', function ($query) use ($id)
                     {
                         $query->select('album_id')
                             ->from('user_album')
                             ->where('user_id','=',$id);
                     })
-                    ->orWhere(
+	                // or album is visible to user
+ 	                ->orWhere(
                         function ($query) {
                             $query->where('public','=',true)->where('visible_hidden','=',true);
                         });
                 })
-            ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))
+	        ->orderBy('owner_id','ASC')
+	        ->orderBy(Configs::get_value('sortingAlbums_col'),Configs::get_value('sortingAlbums_order'))
             ->get();
     }
 
