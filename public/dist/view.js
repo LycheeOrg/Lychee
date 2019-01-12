@@ -138,7 +138,6 @@ build.album = function (data) {
 	}
 
 	if (data.albums && data.albums.length > 0) {
-		console.log('sub');
 		html += lychee.html(_templateObject7, build.iconic('layers'));
 	}
 

@@ -1368,7 +1368,6 @@ build.album = function (data) {
 	}
 
 	if (data.albums && data.albums.length > 0) {
-		console.log('sub');
 		html += lychee.html(_templateObject17, build.iconic('layers'));
 	}
 
@@ -1779,7 +1778,7 @@ contextMenu.photoMore = function (photoID, e) {
 	// b) Downloadable is 1 and public mode is on
 	var showDownload = lychee.publicMode === false || album.json && album.json.downloadable && album.json.downloadable === '1' && lychee.publicMode === true;
 
-	var items = [{ title: build.iconic('fullscreen-enter') + lychee.locale['FULL_PHOTO'], fn: function fn() {
+	var items = [{ title: build.iconic('fullscreen-enter') + lychee.locale['FULL_PHOTO'], visible: lychee.full_photo, fn: function fn() {
 			return window.open(photo.getDirectLink());
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], visible: showDownload, fn: function fn() {
 			return photo.getArchive(photoID);
@@ -2489,6 +2488,7 @@ lychee = {
 
 	publicMode: false,
 	viewMode: false,
+	full_photo: true,
 	api_V2: false, // enable api_V2
 	sub_albums: false, // enable sub_albums features
 	admin: false, // enable admin mode (multi-user)
@@ -2625,10 +2625,12 @@ lychee.init = function () {
 
 			// Logged out
 
+			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === '1';
 			lychee.checkForUpdates = data.config.checkForUpdates || '1';
 			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
 			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;
 
+			console.log(lychee.full_photo);
 			lychee.setMode('public');
 		} else {
 			// should not happen.
