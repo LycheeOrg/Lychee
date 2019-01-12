@@ -1542,7 +1542,9 @@ contextMenu.album = function (albumID, e) {
 			basicContext.close();contextMenu.move([albumID], e, album.merge, 'ROOT', false);
 		} }, { title: build.iconic('folder') + lychee.locale['MOVE'], visible: lychee.sub_albums, fn: function fn() {
 			basicContext.close();contextMenu.move([albumID], e, album.setAlbum, 'ROOT');
-		} }, { title: build.iconic('trash') + lychee.locale['DELETE'], fn: function fn() {
+		} },
+	// { title: build.iconic('cloud') + lychee.locale['SHARE_WITH'],    visible: lychee.api_V2 && lychee.upload,   fn: () => alert('ho')},
+	{ title: build.iconic('trash') + lychee.locale['DELETE'], fn: function fn() {
 			return album.delete([albumID]);
 		} }];
 
@@ -1568,9 +1570,7 @@ contextMenu.albumMulti = function (albumIDs, e) {
 			var albumID = albumIDs.shift();album.merge(albumIDs, albumID);
 		} }, { title: build.iconic('collapse-left') + lychee.locale['MERGE'], visible: showMerge && !autoMerge, fn: function fn() {
 			basicContext.close();contextMenu.move(albumIDs, e, album.merge, 'ROOT', false);
-		} },
-	// contextMenu.mergeAlbum(albumIDs[0], e) } },
-	{ title: build.iconic('folder') + lychee.locale['MOVE_ALL'], visible: lychee.sub_albums, fn: function fn() {
+		} }, { title: build.iconic('folder') + lychee.locale['MOVE_ALL'], visible: lychee.sub_albums, fn: function fn() {
 			basicContext.close();contextMenu.move(albumIDs, e, album.setAlbum, 'ROOT');
 		} }, { title: build.iconic('trash') + lychee.locale['DELETE_ALL'], fn: function fn() {
 			return album.delete(albumIDs);
@@ -2996,6 +2996,7 @@ lychee.locale = {
 	'MAKE_PUBLIC': 'Make Public',
 	'SHARE_ALBUM': 'Share Album',
 	'SHARE_PHOTO': 'Share Photo',
+	'SHARE_WITH': 'Share with...',
 	'DOWNLOAD_ALBUM': 'Download Album',
 	'ABOUT_ALBUM': 'About Album',
 	'DELETE_ALBUM': 'Delete Album',
