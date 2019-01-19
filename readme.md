@@ -15,15 +15,17 @@ Lychee is a free photo-management tool, which runs on your server or web-space. 
 To run Lychee, everything you need is a web-server with PHP 7.1 or later and a MySQL-Database. Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
 
 1. Clone this repo to your server and set the web root to `lychee-laravel/public`
-2. Run `composer install` to install dependencies
-3. Run `php artisan migrate` to create a new database or migrate an existing Lychee installation to the new framework.
+2. Run `composer install --no-dev` to install dependencies
+3. Copy `,env.example` as `.env` and edit it to match your parameters
+4. Generate your secret key with `php artisan key:generate`
+5. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the new framework.
 
 See detailed instructions on the [Installation](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Install) wiki page.
-
+<!--
 ## How to use
 
 You can use Lychee right after the installation. Here are some advanced features to get the most out of it.
-
+-->
 <!-- ### Settings
 
 Sign in and click the gear in the top left corner to change your settings. If you want to edit them manually: MySQL details are stored in `data/config.php`. Other options and hidden settings are stored directly in the database. [Settings &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings) -->
@@ -51,34 +53,14 @@ Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Gr
 ### Imagick
 
 Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in [the settings](https://github.com/LycheeOrg/Lychee/wiki/Settings).
-
+<!--
 ### Docker
 
 Browse the [Docker Hub Registry](https://hub.docker.com/r/) for various automated Lychee-Docker builds.
 Various docker builds include :
 - [LinuxServer.io build](https://hub.docker.com/r/linuxserver/lychee/)
 - [ARMHF based Linuxserver.io build](https://hub.docker.com/r/lsioarmhf/lychee/)
-
-### Plugins and Extensions
-
-The plugin-system of Lychee allows you to execute scripts when a certain action fires. Plugins are hooks, which are injected directly into Lychee. [Plugin documentation &#187;](https://github.com/LycheeOrg/Lychee/wiki/Plugins)
-
-It's also possible to build extensions upon Lychee. The way to do so isn't documented and can change every time. We recommend using the plugin-system, when possible.
-
-Here's a list of all available Plugins and Extensions:
-
-| Name | Description | |
-|:-----------|:------------|:------------|
-| lycheesync | Sync Lychee with any directory containing photos | [More &#187;](https://github.com/GustavePate/lycheesync) |
-| lycheeupload | Upload photos to Lychee via SSH | [More &#187;](https://github.com/r0x0r/lycheeupload) |
-| Jekyll | Liquid tag for Jekyll sites that allows embedding Lychee albums | [More &#187;](https://gist.github.com/tobru/9171700) |
-| lychee-redirect | Redirect from an album-name to a Lychee-album | [More &#187;](https://github.com/electerious/lychee-redirect) |
-| lychee-watermark | Adds a second watermarked photo when uploading images | [More &#187;](https://github.com/electerious/lychee-watermark) |
-| lychee-rss | Creates a RSS-Feed out of your photos | [More &#187;](https://github.com/cternes/Lychee-RSS) |
-| lychee-FlashAir | Import from a Toshiba FlashAir WiFi SD card | [More &#187;](https://github.com/mhp/Lychee-FlashAir) |
-| lychee-webroot | Controls photos accessibility and keeps Lychee files hidden | [More &#187;](https://github.com/Bramas/lychee-webroot) |
-| lychee-create-medium | Generate missing medium size photos | [More &#187;](https://github.com/Bramas/lychee-create-medium) |
-
+-->
 ## Troubleshooting
 
 Take a look at the [FAQ](https://github.com/LycheeOrg/Lychee-Laravel/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue here on GitHub!
