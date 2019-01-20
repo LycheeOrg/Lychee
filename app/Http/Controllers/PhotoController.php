@@ -194,7 +194,8 @@ class PhotoController extends Controller
                 if (!@copy($tmp_name, $path)) {
                     Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
                     return Response::error('Could not copy photo to uploads!');
-                } else @unlink($tmp_name);
+                } elseif (Configs::get_value('deleteImported')==='1')
+	            @unlink($tmp_name);
             } else {
                 if (!@move_uploaded_file($tmp_name, $path)) {
                     Logs::error(__METHOD__, __LINE__, 'Could not move photo to uploads');
