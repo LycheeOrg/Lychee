@@ -26,11 +26,11 @@ class UploadCheck
         if (!Session::get('login'))
             return response('false');
 
-        $id = Session::get('UserID');
-        $user = User::find($id);
+	    $id = Session::get('UserID');
+	    $user = User::find($id);
 
-        // is admin
-        if ($id == 0)
+	    // is admin
+	    if ($id == 0)
             return $next($request);
 
         // is not admin and does not have upload rights

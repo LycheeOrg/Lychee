@@ -46,9 +46,8 @@ class DemoController extends Controller
 		$return_album_list['kind'] = 'albumID';
 		$return_album_list['array'] = array();
 
-		$albums = Album::where('public','=','1')->where('visible_hidden','=','1')->get();
-		foreach ($albums as $album)
-		{
+		$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->get();
+		foreach ($albums as $album) {
 
 			/**
 			 * Copy paste from Album::get()
@@ -60,7 +59,7 @@ class DemoController extends Controller
 			// Get album information
 			$return_album_json = $album->prepareData();
 			$return_album_json['albums'] = $album->get_albums();
-			$photos_sql = Photo::set_order(Photo::where('album_id','=',$album->id));
+			$photos_sql = Photo::set_order(Photo::where('album_id', '=', $album->id));
 
 			$previousPhotoID = '';
 			$return_album_json['photos'] = array();
@@ -73,16 +72,18 @@ class DemoController extends Controller
 
 				// Set previous and next photoID for navigation purposes
 				$photo['previousPhoto'] = $previousPhotoID;
-				$photo['nextPhoto']     = '';
+				$photo['nextPhoto'] = '';
 
 				// Set current photoID as nextPhoto of previous photo
-				if ($previousPhotoID!=='') $return_album_json['photos'][$photo_counter - 1]['nextPhoto'] = $photo['id'];
+				if ($previousPhotoID !== '') {
+					$return_album_json['photos'][$photo_counter - 1]['nextPhoto'] = $photo['id'];
+				}
 				$previousPhotoID = $photo['id'];
 
 				// Add to $return_album_json
 				$return_album_json['photos'][$photo_counter] = $photo;
 
-				$photo_counter ++;
+				$photo_counter++;
 			}
 
 			if ($photos_sql->count() === 0) {
@@ -90,19 +91,22 @@ class DemoController extends Controller
 				// Album empty
 				$return_album_json['photos'] = false;
 
-			} else {
+			}
+			else {
 
 				// Enable next and previous for the first and last photo
-				$lastElement    = end($return_album_json['photos']); $lastElementId  = $lastElement['id'];
-				$firstElement   = reset($return_album_json['photos']); $firstElementId = $firstElement['id'];
+				$lastElement = end($return_album_json['photos']);
+				$lastElementId = $lastElement['id'];
+				$firstElement = reset($return_album_json['photos']);
+				$firstElementId = $firstElement['id'];
 
-				if ($lastElementId!==$firstElementId) {
-					$return_album_json['photos'][$photo_counter - 1]['nextPhoto']      = $firstElementId;
+				if ($lastElementId !== $firstElementId) {
+					$return_album_json['photos'][$photo_counter - 1]['nextPhoto'] = $firstElementId;
 					$return_album_json['photos'][0]['previousPhoto'] = $lastElementId;
 				}
 
 			}
-			$return_album_json['id']  = $album->id;
+			$return_album_json['id'] = $album->id;
 			$return_album_json['num'] = $photos_sql->count();
 
 			$return_album = array();
@@ -124,7 +128,7 @@ class DemoController extends Controller
 		$return_photo_list['kind'] = 'photoID';
 		$return_photo_list['array'] = array();
 
-		$albums = Album::where('public','=','1')->where('visible_hidden','=','1')->get();
+		$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->get();
 		foreach ($albums as $album) {
 			foreach ($album->photos as $photo) {
 				$return_photo = array();

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Configs;
+use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
 
@@ -23,6 +24,8 @@ class small extends Command
 	 */
 	protected $description = 'Create small pictures if missing';
 
+
+
 	/**
 	 * Create a new command instance.
 	 *
@@ -32,6 +35,8 @@ class small extends Command
 	{
 		parent::__construct();
 	}
+
+
 
 	/**
 	 * Execute the console command.
@@ -44,22 +49,19 @@ class small extends Command
 		$timeout = $this->argument('tm');
 		set_time_limit($timeout);
 
-		$photos = Photo::where('small','=',0)->limit($argument)->get();
-		if(count($photos) == 0)
-		{
+		$photos = Photo::where('small', '=', 0)->limit($argument)->get();
+		if (count($photos) == 0) {
 			$this->line('No pictures requires small.');
 			return false;
 		}
 
-		foreach ($photos as $photo){
-			if( $photo->createMedium(intval(Configs::get_value('small_max_width')),intval(Configs::get_value('small_max_height')),'SMALL') )
-			{
+		foreach ($photos as $photo) {
+			if (PhotoFunctions::createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), 'SMALL')) {
 				$photo->small = 1;
 				$photo->save();
 				$this->line('small for '.$photo->title.' created.');
 			}
-			else
-			{
+			else {
 				$this->line('Could not create small for '.$photo->title.'.');
 			}
 		}

@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\PhotoController;
+use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Config;
@@ -24,6 +25,8 @@ class takedate extends Command
 	 */
 	protected $description = 'Makesure takedate is correct';
 
+
+
 	/**
 	 * Create a new command instance.
 	 *
@@ -33,6 +36,8 @@ class takedate extends Command
 	{
 		parent::__construct();
 	}
+
+
 
 	/**
 	 * Execute the console command.
@@ -48,25 +53,28 @@ class takedate extends Command
 
 		// we use lens because this is the one which is most likely to be empty.
 		$photos = Photo::where('make', '=', '')->whereNotIn('lens', PhotoController::$validVideoTypes)->offset($from)->limit($argument)->get();
-		if(count($photos) == 0)
-		{
+		if (count($photos) == 0) {
 			$this->line('No pictures requires takedate updates.');
 			return false;
 		}
 
 		$i = $from;
-		foreach ($photos as $photo){
+		foreach ($photos as $photo) {
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
-			if(file_exists($url)) {
-				$info = Photo::getInformations($url);
-				if($photo->takestamp == '') $photo->shutter = $info['takestamp'];
-				if ($photo->save()) {
-					$this->line($i . ': Takestamp updated for ' . $photo->title);
-				} else {
-					$this->line($i . ': Could not get Takestamp data/nothing to update for ' . $photo->title . '.');
+			if (file_exists($url)) {
+				$info = PhotoFunctions::getInformations($url);
+				if ($photo->takestamp == '') {
+					$photo->shutter = $info['takestamp'];
 				}
-			} else {
-				$this->line($i . ': File does not exists for ' . $photo->title . '.');
+				if ($photo->save()) {
+					$this->line($i.': Takestamp updated for '.$photo->title);
+				}
+				else {
+					$this->line($i.': Could not get Takestamp data/nothing to update for '.$photo->title.'.');
+				}
+			}
+			else {
+				$this->line($i.': File does not exists for '.$photo->title.'.');
 			}
 			$i++;
 		}

@@ -22,11 +22,21 @@ class SearchController extends Controller
 	private static function escape_like(string $value, string $char = '\\'): string
 	{
 		return str_replace(
-			[$char, '%', '_'],
-			[$char.$char, $char.'%', $char.'_'],
+			[
+				$char,
+				'%',
+				'_'
+			],
+			[
+				$char.$char,
+				$char.'%',
+				$char.'_'
+			],
 			$value
 		);
 	}
+
+
 
 	public function search(Request $request)
 	{
@@ -42,12 +52,11 @@ class SearchController extends Controller
 			'hash'   => ''
 		);
 
-		$terms= explode(' ', $request['term']);
+		$terms = explode(' ', $request['term']);
 
 		$escaped_terms = array();
 
-		foreach ($terms as $term)
-		{
+		foreach ($terms as $term) {
 			$escaped_terms[] = SearchController::escape_like($term);
 		}
 
@@ -57,23 +66,21 @@ class SearchController extends Controller
 		 * Photos
 		 */
 		// for now we only look in OUR pictures
-		$query = Photo::where('owner_id','=',$id);
-		for ($i = 0; $i < count($escaped_terms); ++$i)
-		{
+		$query = Photo::where('owner_id', '=', $id);
+		for ($i = 0; $i < count($escaped_terms); ++$i) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
 				function ($query) use ($id, $escaped_term) {
-					$query->where('title','like','%'.$escaped_term.'%')
-						->orWhere('description','like','%'.$escaped_term.'%')
-						->orWhere('tags','like','%'.$escaped_term.'%');
+					$query->where('title', 'like', '%'.$escaped_term.'%')
+						->orWhere('description', 'like', '%'.$escaped_term.'%')
+						->orWhere('tags', 'like', '%'.$escaped_term.'%');
 				});
 		}
 		$photos = $query->get();
 
-		if ($photos != null)
-		{
+		if ($photos != null) {
 			$i = 0;
-			foreach($photos as $photo) {
+			foreach ($photos as $photo) {
 				$return['photos'][$i] = $photo->prepareData();
 				++$i;
 			}
@@ -82,19 +89,17 @@ class SearchController extends Controller
 		/**
 		 * Albums
 		 */
-		$query = Album::where('owner_id','=',$id);
-		for ($i = 0; $i < count($escaped_terms); ++$i)
-		{
+		$query = Album::where('owner_id', '=', $id);
+		for ($i = 0; $i < count($escaped_terms); ++$i) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
 				function ($query) use ($id, $escaped_term) {
-					$query->where('title','like','%'.$escaped_term.'%')
-						->orWhere('description','like','%'.$escaped_term.'%');
+					$query->where('title', 'like', '%'.$escaped_term.'%')
+						->orWhere('description', 'like', '%'.$escaped_term.'%');
 				});
 		}
 		$albums = $query->get();
-		if ($albums != null)
-		{
+		if ($albums != null) {
 			$i = 0;
 			foreach ($albums as $album_model) {
 				$album = $album_model->prepareData();
