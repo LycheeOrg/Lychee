@@ -463,7 +463,11 @@ header.bind = function () {
 		photo.setStar([photo.getID()]);
 	});
 	header.dom('#button_back_home').on(eventName, function () {
-		lychee.goto();
+		if (!album.json.parent_id) {
+			lychee.goto();
+		} else {
+			lychee.goto(album.getParent());
+		}
 	});
 	header.dom('#button_back').on(eventName, function () {
 		lychee.goto(album.getID());
@@ -1297,6 +1301,7 @@ lychee.locale = {
 	'ABOUT_LYCHEE': 'About Lychee',
 	'DIAGNOSTICS': 'Diagnostics',
 	'LOGS': 'Show Logs',
+	'CLEAN_LOGS': 'Clean Noise',
 	'SIGN_OUT': 'Sign Out',
 	'UPDATE_AVAILABLE': 'Update available!',
 	'DEFAULT_LICENSE': 'Default License for new uploads:',
