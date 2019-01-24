@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Logs;
+use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\Helpers;
 use App\Photo;
 use App\Response;
@@ -29,16 +30,7 @@ class AlbumController extends Controller
 			'parent_id' => 'int|nullable'
 		]);
 
-		$num = Album::where('id', '=', $request['parent_id'])->count();
-		// id cannot be 0, so by definition if $parent_id is 0 then...
-
-		$album = new Album();
-		$album->id = Helpers::generateID();
-		$album->title = $request['title'];
-		$album->description = '';
-		$album->owner_id = Session::get('UserID');
-		$album->parent_id = $num == 0 ? null : $request['parent_id'];
-		$album->save();
+		$album = AlbumFunctions::create($request['title'],$request['parent_id']);
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 

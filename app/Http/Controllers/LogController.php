@@ -44,13 +44,18 @@ class LogController extends Controller
 		Logs::where('function', '=', 'App\Photo::createMedium')->delete();
 		Logs::where('function', '=', 'App\Photo::createThumb')->delete();
 		Logs::where('function', '=', 'App\Configs::get_value')->delete();
-		Logs::where('function', '=', 'App\Http\Controllers\PhotoController::add')->delete();
+		Logs::where('function', '=', 'App\Configs::hasImagick')->delete();
 		Logs::where('function', '=', 'App\Http\Controllers\AlbumController::get')->delete();
 		Logs::where('function', '=', 'App\Http\Controllers\AlbumController::move')->delete();
 		Logs::where('function', '=', 'App\Http\Controllers\AlbumController::merge')->delete();
-		Logs::where('function', '=', 'App\Http\Controllers\ViewController::view')->delete();
+		Logs::where('function', '=', 'App\Http\Controllers\ImportController::server_exec')->delete();
+		Logs::where('function', '=', 'App\Http\Controllers\PhotoController::add')->delete();
 		Logs::where('function', '=', 'App\Http\Controllers\SettingsController::setCSS')->delete();
-		Logs::where('function', '=', 'App\Configs::hasImagick')->delete();
+		Logs::where('function', '=', 'App\Http\Controllers\ViewController::view')->delete();
+		Logs::where('function', '=', 'App\ModelFunctions\PhotoFunctions::add')->delete();
+		Logs::where('function', '=', 'App\ModelFunctions\PhotoFunctions::createMedium')->delete();
+
+
 		return 'Log Noise cleared';
 	}
 

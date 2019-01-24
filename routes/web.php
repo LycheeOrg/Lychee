@@ -73,6 +73,7 @@ Route::post('/api/Settings::getAll',            'SettingsController@getAll')->mi
 Route::post('/api/Settings::saveAll',           'SettingsController@saveAll')->middleware('admin');
 
 Route::post('/api/Import::url',                 'ImportController@url')->middleware('upload');
+Route::post('/api/Import::server',              'ImportController@server')->middleware('admin');
 
 Route::post('/api/User::List',                  'UserController@list')->middleware('upload');
 Route::post('/api/User::Save',                  'UserController@save')->middleware('admin');

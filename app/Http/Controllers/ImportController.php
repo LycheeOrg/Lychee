@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Logs;
+use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\PhotoFunctions;
-use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -25,8 +25,6 @@ class ImportController extends Controller
 		// No need to validate photo type and extension in this function.
 		// $photo->add will take care of it.
 		$info = getimagesize($path);
-//		$size = filesize($path);
-//		$photo = new Photo(null);
 
 		$nameFile = array();
 		$nameFile['name'] = $path;
@@ -41,6 +39,11 @@ class ImportController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return false|string
+	 * @throws \ImagickException
+	 */
 	static public function url(Request $request)
 	{
 		$request->validate([
@@ -99,4 +102,117 @@ class ImportController extends Controller
 		return 'false';
 	}
 
+
+
+	/**
+	 * @param Request $request
+	 * @return bool|string
+	 * @throws \ImagickException
+	 */
+	public function server(Request $request)
+	{
+
+		$request->validate([
+			'path'    => 'string|required',
+			'albumID' => 'string|required'
+		]);
+
+		return $this->server_exec($request['path'], $request['albumID']);
+
+	}
+
+
+
+	/**
+	 * @param $path
+	 * @param $albumID
+	 * @return boolean|string Returns true when successful.
+	 *                        Warning: Folder empty or no readable files to process!
+	 *                        Notice: Import only contained albums!
+	 * @throws \ImagickException
+	 */
+	public function server_exec($path, $albumID)
+	{
+
+		// Parse path
+		if (!isset($path)) {
+			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT');
+		}
+		if (substr($path, -1) === '/') {
+			$path = substr($path, 0, -1);
+		}
+		if (is_dir($path) === false) {
+			Logs::error(__METHOD__, __LINE__, 'Given path is not a directory ('.$path.')');
+			return 'false';
+		}
+
+		// Skip folders of Lychee
+		if ($path === Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') ||
+			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') ||
+			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') ||
+			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) {
+			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee ('.$path.')');
+			return 'false';
+		}
+
+		$error = false;
+		$contains['photos'] = false;
+		$contains['albums'] = false;
+
+		// Get all files
+		$files = glob($path.'/*');
+		foreach ($files as $file) {
+			// It is possible to move a file because of directory permissions but
+			// the file may still be unreadable by the user
+			if (!is_readable($file)) {
+				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory ('.$file.')');
+				continue;
+			}
+			if (@exif_imagetype($file) !== false) {
+				// Photo
+				$contains['photos'] = true;
+				if ($this->photo($file, $albumID) === false) {
+					$error = true;
+					Logs::error(__METHOD__, __LINE__, 'Could not import file ('.$file.')');
+					continue;
+				}
+			}
+			else {
+				if (is_dir($file)) {
+
+					// Album creation
+
+					// Folder
+					$album = AlbumFunctions::create(basename($file), $albumID);
+					// this actually should not fail.
+					if ($album === false) {
+						$error = true;
+						Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee ('.basename($file).')');
+						continue;
+					}
+					$newAlbumID = $album->id;
+					$contains['albums'] = true;
+					$import = $this->server_exec($file.'/', $newAlbumID);
+					if ($import !== 'true' && $import !== 'Notice: Import only contains albums!') {
+						$error = true;
+						Logs::error(__METHOD__, __LINE__, 'Could not import folder. Function returned warning.');
+						continue;
+					}
+				}
+			}
+		}
+
+		// The following returns will be caught in the front-end
+		if ($contains['photos'] === false && $contains['albums'] === false) {
+			return 'Warning: Folder empty or no readable files to process!';
+		}
+		if ($contains['photos'] === false && $contains['albums'] === true) {
+			return 'Notice: Import only contained albums!';
+		}
+		if ($error === true) {
+			return 'false';
+		}
+		return 'true';
+	}
 }

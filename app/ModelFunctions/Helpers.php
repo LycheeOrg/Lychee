@@ -53,11 +53,11 @@ class Helpers
 
 		// Generate id based on the current microtime
 		$id = str_replace('.', '', microtime(true));
-		$id = substr($id, 1, 10);
+		$id = substr($id, -10);
 
-		// Ensure that the id has a length of 14 chars
+		// Ensure that the id has a length of 10 chars
 		while (strlen($id) < 10) {
-			$id .= 0;
+			$id = '0' . $id;
 		}
 
 		$id[0] = strval(intval($id[0]) % 4);
