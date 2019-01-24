@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Logs;
+use Illuminate\Support\Facades\DB;
 
 class LogController extends Controller
 {
@@ -27,8 +28,23 @@ class LogController extends Controller
 
     static public function clear()
     {
-        Logs::where('id','>=',0)->delete();
+	    DB::table('logs')->truncate();
         return 'Log cleared';
+    }
+
+    static public function clearNoise()
+    {
+    	Logs::where('function','=','App\Photo::createMedium')->delete();
+    	Logs::where('function','=','App\Photo::createThumb')->delete();
+    	Logs::where('function','=','App\Configs::get_value')->delete();
+	    Logs::where('function','=','App\Http\Controllers\PhotoController::add')->delete();
+	    Logs::where('function','=','App\Http\Controllers\AlbumController::get')->delete();
+	    Logs::where('function','=','App\Http\Controllers\AlbumController::move')->delete();
+	    Logs::where('function','=','App\Http\Controllers\AlbumController::merge')->delete();
+	    Logs::where('function','=','App\Http\Controllers\ViewController::view')->delete();
+	    Logs::where('function','=','App\Http\Controllers\SettingsController::setCSS')->delete();
+    	Logs::where('function','=','App\Configs::hasImagick')->delete();
+		return 'Log Noise cleared';
     }
 
 }
