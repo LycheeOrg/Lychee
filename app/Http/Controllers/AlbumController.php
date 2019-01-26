@@ -511,7 +511,7 @@ class AlbumController extends Controller
 
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
 
-				Logs::notice(__METHOD__, __LINE__, $album->name.' has been downloaded.');
+				Logs::notice(__METHOD__, __LINE__, $album->title.' has been downloaded.');
 
 				// we do not provide pictures from sub albums but it would be a nice thing to do later...
 
