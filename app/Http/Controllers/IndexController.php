@@ -13,7 +13,7 @@ class IndexController extends Controller
 
 		$lang = Lang::get_lang(Configs::where('key', '=', 'lang')->first());
 
-		return view('landing', ['locale' => $lang, 'title' => config('app.key')]);
+		return view('landing', ['locale' => $lang, 'title' => config('app.name')]);
 //		return $this->gallery();
 	}
 
