@@ -109,6 +109,7 @@ class Album extends Model
 		$i = 0;
 		foreach ($this->children as $album) {
 			$album_t = $album->prepareData();
+			$album_t['albums'] = $album->get_albums();
 			$album_t = $album->gen_thumbs($album_t);
 			$return[$i] = $album_t;
 			$i++;
