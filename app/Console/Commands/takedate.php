@@ -68,7 +68,7 @@ class takedate extends Command
 			if (file_exists($url)) {
 				$info = $this->photoFunctions->getInformations($url);
 				if ($photo->takestamp == '') {
-					$photo->shutter = $info['takestamp'];
+					$photo->takestamp = $info['takestamp'];
 				}
 				if ($photo->save()) {
 					$this->line($i.': Takestamp updated for '.$photo->title);
