@@ -18,20 +18,29 @@ use ImagickPixel;
 
 class PhotoFunctions
 {
-
-	public static $validTypes = array(
+	/**
+	 * @var array
+	 */
+	public $validTypes = array(
 		IMAGETYPE_JPEG,
 		IMAGETYPE_GIF,
 		IMAGETYPE_PNG
 	);
 
-	public static $validVideoTypes = array(
+	/**
+	 * @var array
+	 */
+	public $validVideoTypes = array(
 		"video/mp4",
 		"video/ogg",
 		"video/webm",
 		"video/quicktime"
 	);
-	public static $validExtensions = array(
+
+	/**
+	 * @var array
+	 */
+	public $validExtensions = array(
 		'.jpg',
 		'.jpeg',
 		'.png',
@@ -42,13 +51,12 @@ class PhotoFunctions
 		'.mov'
 	);
 
-
 	/**
 	 * @param string $checksum
 	 * @param $photoID
 	 * @return array|false Returns a subset of a photo when same photo exists or returns false on failure.
 	 */
-	static public function exists(string $checksum, $photoID = null)
+	public function exists(string $checksum, $photoID = null)
 	{
 
 		$sql = Photo::where('checksum', '=', $checksum);
@@ -66,7 +74,7 @@ class PhotoFunctions
 	 * @param string $url
 	 * @return array Returns an array of photo information and metadata.
 	 */
-	static public function getInformations(string $url)
+	public function getInformations(string $url)
 	{
 //        Logs::notice(__METHOD__, __LINE__, 'Get Info: '.$url);
 
@@ -266,7 +274,7 @@ class PhotoFunctions
 	 * @return array|false Returns an array with the new orientation, width, height or false on failure.
 	 * @throws ImagickException
 	 */
-	static public function adjustFile($path, array $info)
+	public function adjustFile($path, array $info)
 	{
 
 		// Excepts the following:
@@ -427,7 +435,7 @@ class PhotoFunctions
 	 * @param $id
 	 * @return boolean Returns true when successful.
 	 */
-	static public function createVideoThumb(Photo $photo, string $path, $id)
+	public function createVideoThumb(Photo $photo, string $path, $id)
 	{
 		try {
 			$ffprobe = FFMpeg\FFProbe::create();
@@ -457,7 +465,7 @@ class PhotoFunctions
 	 * @param Photo $photo
 	 * @return boolean Returns true when successful.
 	 */
-	static public function createThumb(Photo $photo)
+	public function createThumb(Photo $photo)
 	{
 
 		$filename = $photo->url;
@@ -580,7 +588,7 @@ class PhotoFunctions
 	 * @param string $kind
 	 * @return boolean Returns true when successful.
 	 */
-	static public function createMedium(Photo $photo, $newWidth = 1920, $newHeight = 1080, $kind = 'MEDIUM')
+	public function createMedium(Photo $photo, $newWidth = 1920, $newHeight = 1080, $kind = 'MEDIUM')
 	{
 
 		// Excepts the following:
@@ -705,7 +713,7 @@ class PhotoFunctions
 	 * @return string|false ID of the added photo.
 	 * @throws ImagickException
 	 */
-	static public function add(array $file, $albumID_in = 0)
+	public function add(array $file, $albumID_in = 0)
 	{
 		$id = Session::get('UserID');
 
@@ -756,7 +764,7 @@ class PhotoFunctions
 
 		// Verify extension
 		$extension = Helpers::getExtension($file['name'], false);
-		if (!in_array(strtolower($extension), self::$validExtensions, true)) {
+		if (!in_array(strtolower($extension), $this->validExtensions, true)) {
 			Logs::error(__METHOD__, __LINE__, 'Photo format not supported');
 			return Response::error('Photo format not supported!');
 		}
@@ -764,7 +772,7 @@ class PhotoFunctions
 		// should not be needed
 		// Verify video
 		$mimeType = $file['type'];
-		if (!in_array($mimeType, self::$validVideoTypes, true)) {
+		if (!in_array($mimeType, $this->validVideoTypes, true)) {
 
 			if (!function_exists("exif_imagetype")) {
 				Logs::error(__METHOD__, __LINE__, 'EXIF library not loaded. Make sure exif is enabled in php.ini');
@@ -773,7 +781,7 @@ class PhotoFunctions
 
 			// Verify image
 			$type = @exif_imagetype($file['tmp_name']);
-			if (!in_array($type, self::$validTypes, true)) {
+			if (!in_array($type, $this->validTypes, true)) {
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
 				return Response::error('Photo type not supported!');
 			}
@@ -796,7 +804,7 @@ class PhotoFunctions
 		}
 
 
-		$exists = PhotoFunctions::exists($checksum);
+		$exists = $this->exists($checksum);
 
 		// double check that
 		if ($exists !== false) {
@@ -841,7 +849,7 @@ class PhotoFunctions
 		}
 
 		// Read infos
-		$info = PhotoFunctions::getInformations($path);
+		$info = $this->getInformations($path);
 		// Use title of file if IPTC title missing
 		if ($info['title'] === '') {
 			$info['title'] = substr(basename($file['name'], $extension), 0, 30);
@@ -878,7 +886,7 @@ class PhotoFunctions
 
 			// Set orientation based on EXIF data
 			if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
-				$adjustFile = PhotoFunctions::adjustFile($path, $info);
+				$adjustFile = $this->adjustFile($path, $info);
 				if ($adjustFile !== false) {
 					$info = $adjustFile;
 				}
@@ -896,9 +904,9 @@ class PhotoFunctions
 			}
 
 			// Create Thumb
-			if (!in_array($photo->type, self::$validVideoTypes, true)) {
+			if (!in_array($photo->type, $this->validVideoTypes, true)) {
 
-				if (!PhotoFunctions::createThumb($photo)) {
+				if (!$this->createThumb($photo)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
 					return Response::error('Could not create thumbnail for photo!');
 				}
@@ -911,7 +919,7 @@ class PhotoFunctions
 				$path_thumb = '';
 			}
 			else {
-				if (!PhotoFunctions::createVideoThumb($photo, $path, $id)) {
+				if (!$this->createVideoThumb($photo, $path, $id)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for video');
 					$path_thumb = '';
 				}
@@ -922,7 +930,7 @@ class PhotoFunctions
 			}
 
 			// Create Medium
-			if (PhotoFunctions::createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')))) {
+			if ($this->createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')))) {
 				$medium = 1;
 			}
 			else {
@@ -930,7 +938,7 @@ class PhotoFunctions
 			}
 
 			// Create Small
-			if (PhotoFunctions::createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), 'SMALL')) {
+			if ($this->createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), 'SMALL')) {
 				$small = 1;
 			}
 			else {
@@ -960,4 +968,66 @@ class PhotoFunctions
 		return $photo->id;
 	}
 
+	/**
+	 * Validates whether $type is a valid image type.
+	 * 
+	 * @param  int     $type
+	 * @return boolean
+	 */
+	public function isValidImageType(int $type) : bool
+	{
+		return in_array($type, $this->validTypes, true);
+	}
+
+	/**
+	 * Returns a list of valid image types
+	 *
+	 * @return array
+	 */
+	public function getValidImageTypes() : array
+	{
+		return $this->validTypes;
+	}
+
+	/**
+	 * Validates whether $type is a valid video type
+	 * 
+	 * @param  string  $type
+	 * @return boolean
+	 */
+	public function isValidVideoType(string $type) : bool
+	{
+		return in_array($type, $this->validVideoTypes, true);
+	}
+
+	/**
+	 * Returns a list of valid video types
+	 *
+	 * @return array
+	 */
+	public function getValidVideoTypes() : array
+	{
+		return $this->validVideoTypes;
+	}
+
+	/**
+	 * Validates whether $extension is a valid image or video extension
+	 * 
+	 * @param  string  $extension
+	 * @return boolean
+	 */
+	public function isValidExtension(string $extension) : bool
+	{
+		return in_array(strtolower($extension), $this->validExtensions, true);
+	}
+
+	/**
+	 * Returns a list of valid image/video extensions
+	 *
+	 * @return array
+	 */
+	public function getValidExtensions() : array
+	{
+		return $this->validExtensions;
+	}
 }

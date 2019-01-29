@@ -15,6 +15,18 @@ use Illuminate\Support\Facades\Session;
 
 class PhotoController extends Controller
 {
+	/**
+	 * @var PhotoFunctions
+	 */
+	private $photoFunctions;
+
+	/**
+	 * @param PhotoFunctions $photoFunctions
+	 */
+	public function __construct(PhotoFunctions $photoFunctions)
+	{
+		$this->photoFunctions = $photoFunctions;
+	}
 
 	function get(Request $request)
 	{
@@ -49,8 +61,6 @@ class PhotoController extends Controller
 
 	function add(Request $request)
 	{
-
-
 		$request->validate([
 			'albumID' => 'string|required',
 			'0'       => 'required',
@@ -65,9 +75,7 @@ class PhotoController extends Controller
 			return Response::error('missing files');
 		}
 
-
-
-//		 Only process the first photo in the array
+		// Only process the first photo in the array
 		$file = $request->file('0');
 
 		$nameFile = array();
@@ -75,214 +83,7 @@ class PhotoController extends Controller
 		$nameFile['type'] = $file->getMimeType();
 		$nameFile['tmp_name'] = $file->getPathName();
 
-		return PhotoFunctions::add($nameFile, $request['albumID']);
-
-
-//		// Verify extension
-//		$extension = Helpers::getExtension($file->getClientOriginalName(), false);
-//		if (!in_array(strtolower($extension), self::$validExtensions, true)) {
-//			Logs::error(__METHOD__, __LINE__, 'Photo format not supported');
-//			return Response::error('Photo format not supported!');
-//		}
-//
-//		// should not be needed
-//		// Verify video
-//		$mimeType = $file->getMimeType();
-//		if (!in_array($mimeType, self::$validVideoTypes, true)) {
-//
-//			if (!function_exists("exif_imagetype")) {
-//				Logs::error(__METHOD__, __LINE__, 'EXIF library not loaded. Make sure exif is enabled in php.ini');
-//				return Response::error('EXIF library not loaded on the server!');
-//			}
-//
-//			// Verify image
-//			$type = @exif_imagetype($file->getPathName());
-//			if (!in_array($type, self::$validTypes, true)) {
-//				Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
-//				return Response::error('Photo type not supported!');
-//			}
-//		}
-//
-//		// Generate id
-//		$photo = new Photo();
-//		$photo->id = Helpers::generateID();
-//
-//		// Set paths
-//		$tmp_name = $file->getPathName();
-//		$photo_name = md5(microtime()).$extension;
-//		$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo_name;
-//
-//		// Calculate checksum
-//		$checksum = sha1_file($tmp_name);
-//		if ($checksum === false) {
-//			Logs::error(__METHOD__, __LINE__, 'Could not calculate checksum for photo');
-//			return Response::error('Could not calculate checksum for photo!');
-//		}
-//
-//
-//		$exists = PhotoFunctions::exists($checksum);
-//
-//		// double check that
-//		if ($exists !== false) {
-//			$photo_name = $exists->url;
-//			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$exists->url;
-//			$path_thumb = $exists->thumbUrl;
-//			$medium = $exists->medium;
-//			$small = $exists->small;
-//			$exists = true;
-//		}
-//
-//
-//		if ($exists === false) {
-//
-//			// Import if not uploaded via web
-//			if (!is_uploaded_file($tmp_name)) {
-//				if (!@copy($tmp_name, $path)) {
-//					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
-//					return Response::error('Could not copy photo to uploads!');
-//				}
-//				elseif (Configs::get_value('deleteImported') === '1') {
-//					@unlink($tmp_name);
-//				}
-//			}
-//			else {
-//				if (!@move_uploaded_file($tmp_name, $path)) {
-//					Logs::error(__METHOD__, __LINE__, 'Could not move photo to uploads');
-//					return Response::error('Could not move photo to uploads!');
-//				}
-//			}
-//
-//		}
-//		else {
-//
-//			// Photo already exists
-//			// Check if the user wants to skip duplicates
-//			if (Configs::get()['skipDuplicates'] === '1') {
-//				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
-//				return Response::warning('This photo has been skipped because it\'s already in your library.');
-//			}
-//
-//		}
-//
-//		// Read infos
-//		$info = PhotoFunctions::getInformations($path);
-//		// Use title of file if IPTC title missing
-//		if ($info['title'] === '') {
-//			$info['title'] = substr(basename($file->getClientOriginalName(), $extension), 0, 30);
-//		}
-//
-//		$photo->title = $info['title'];
-//		$photo->url = $photo_name;
-//		$photo->description = $info['description'];
-//		$photo->tags = $info['tags'];
-//		$photo->width = $info['width'] ? $info['width'] : 0;
-//		$photo->height = $info['height'] ? $info['height'] : 0;
-//		$photo->type = ($info['type'] ? $info['type'] : $mimeType);
-//		$photo->size = $info['size'];
-//		$photo->iso = $info['iso'];
-//		$photo->aperture = $info['aperture'];
-//		$photo->make = $info['make'];
-//		$photo->model = $info['model'];
-//		$photo->lens = $info['lens'];
-//		$photo->shutter = $info['shutter'];
-//		$photo->focal = $info['focal'];
-//		$photo->takestamp = $info['takestamp'];
-//		$photo->latitude = $info['latitude'];
-//		$photo->longitude = $info['longitude'];
-//		$photo->altitude = $info['altitude'];
-//		$photo->public = $public;
-//		$photo->owner_id = Session::get('UserID');
-//		$photo->star = $star;
-//		$photo->checksum = $checksum;
-//		$photo->album_id = $albumID;
-//		$photo->medium = 0;
-//		$photo->small = 0;
-//
-//		if ($exists === false) {
-//
-//			// Set orientation based on EXIF data
-//			if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
-//				$adjustFile = PhotoFunctions::adjustFile($path, $info);
-//				if ($adjustFile !== false) {
-//					$info = $adjustFile;
-//				}
-//				else {
-//					Logs::notice(__METHOD__, __LINE__, 'Skipped adjustment of photo ('.$info['title'].')');
-//				}
-//			}
-//
-//			$photo->width = $info['width'];
-//			$photo->height = $info['height'];
-//
-//			// Set original date
-//			if ($info['takestamp'] !== '' && $info['takestamp'] !== 0) {
-//				@touch($path, $info['takestamp']);
-//			}
-//
-//			// Create Thumb
-//			if (!in_array($photo->type, self::$validVideoTypes, true)) {
-//
-//				if (!PhotoFunctions::createThumb($photo)) {
-//					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
-//					return Response::error('Could not create thumbnail for photo!');
-//				}
-//
-//				$path_thumb = basename($photo_name, $extension).".jpeg";
-//			}
-//			elseif (!defined('VIDEO_THUMB')) {
-//				Logs::notice(__METHOD__, __LINE__, 'Could not create thumbnail for video because FFMPEG is not available.');
-//				// Set thumb url
-//				$path_thumb = '';
-//			}
-//			else {
-//				if (!PhotoFunctions::createVideoThumb($photo, $path, $id)) {
-//					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for video');
-//					$path_thumb = '';
-//				}
-//				else {
-//					// Set thumb url
-//					$path_thumb = md5($id).'.jpeg';
-//				}
-//			}
-//
-//			// Create Medium
-//			if (PhotoFunctions::createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')))) {
-//				$medium = 1;
-//			}
-//			else {
-//				$medium = 0;
-//			}
-//
-//			// Create Small
-//			if (PhotoFunctions::createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), 'SMALL')) {
-//				$small = 1;
-//			}
-//			else {
-//				$small = 0;
-//			}
-//		}
-//
-//		$photo->thumbUrl = $path_thumb;
-//		$photo->medium = $medium;
-//		$photo->small = $small;
-//		if (!$photo->save()) {
-//			return Response::error('Could not save photo in database!');
-//		}
-//
-//		if ($albumID != null) {
-//			$album = Album::find($albumID);
-//			if ($album === null) {
-//				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-//				return 'false';
-//			}
-//			$album->update_min_max_takestamp();
-//			if (!$album->save()) {
-//				return Response::error('Could not update album takestamp in database!');
-//			}
-//		}
-
-		return $photo->id;
-
+		return $this->photoFunctions->add($nameFile, $request['albumID']);
 	}
 
 
