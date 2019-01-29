@@ -24,19 +24,23 @@ class small extends Command
 	 */
 	protected $description = 'Create small pictures if missing';
 
-
+	/**
+	 * @var PhotoFunctions
+	 */
+	private $photoFunctions;
 
 	/**
 	 * Create a new command instance.
 	 *
+	 * @param PhotoFunctions $photoFunctions
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(PhotoFunctions $photoFunctions)
 	{
 		parent::__construct();
+
+		$this->photoFunctions = $photoFunctions;
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -56,7 +60,11 @@ class small extends Command
 		}
 
 		foreach ($photos as $photo) {
-			if (PhotoFunctions::createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), 'SMALL')) {
+			if ($this->photoFunctions->createMedium(
+				$photo,
+				intval(Configs::get_value('small_max_width')),
+				intval(Configs::get_value('small_max_height')), 'SMALL')
+			) {
 				$photo->small = 1;
 				$photo->save();
 				$this->line('small for '.$photo->title.' created.');

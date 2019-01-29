@@ -24,19 +24,23 @@ class medium extends Command
 	 */
 	protected $description = 'Create medium pictures if missing';
 
-
+	/**
+	 * @var PhotoFunctions
+	 */
+	private $photoFunctions;
 
 	/**
 	 * Create a new command instance.
 	 *
+	 * @param PhotoFunctions $photoFunctions
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(PhotoFunctions $photoFunctions)
 	{
 		parent::__construct();
+
+		$this->photoFunctions = $photoFunctions;
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -56,12 +60,15 @@ class medium extends Command
 		}
 
 		foreach ($photos as $photo) {
-			if (PhotoFunctions::createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')))) {
+			if ($this->photoFunctions->createMedium(
+				$photo,
+				intval(Configs::get_value('medium_max_width')),
+				intval(Configs::get_value('medium_max_height')))
+			) {
 				$photo->medium = 1;
 				$photo->save();
 				$this->line('medium for '.$photo->title.' created.');
-			}
-			else {
+			} else {
 				$this->line('Could not create medium for '.$photo->title.'.');
 			}
 		}

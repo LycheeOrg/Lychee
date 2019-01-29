@@ -25,16 +25,22 @@ class exif_lens extends Command
 	 */
 	protected $description = 'Get EXIF data from pictures if missing';
 
-
+	/**
+	 * @var PhotoFunctions
+	 */
+	private $photoFunctions;
 
 	/**
 	 * Create a new command instance.
 	 *
+	 * @param PhotoFunctions $photoFunctions
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(PhotoFunctions $photoFunctions)
 	{
 		parent::__construct();
+
+		$this->photoFunctions = $photoFunctions;
 	}
 
 
@@ -52,7 +58,7 @@ class exif_lens extends Command
 		set_time_limit($timeout);
 
 		// we use lens because this is the one which is most likely to be empty.
-		$photos = Photo::where('lens', '=', '')->whereNotIn('lens', PhotoController::$validVideoTypes)->offset($from)->limit($argument)->get();
+		$photos = Photo::where('lens', '=', '')->whereNotIn('lens', $this->photoFunctions->getValidVideoTypes())->offset($from)->limit($argument)->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires EXIF updates.');
 			return false;
@@ -62,7 +68,7 @@ class exif_lens extends Command
 		foreach ($photos as $photo) {
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
 			if (file_exists($url)) {
-				$info = PhotoFunctions::getInformations($url);
+				$info = $this->photoFunctions->getInformations($url);
 				if ($photo->size == '') {
 					$photo->size = $info['size'];
 				}

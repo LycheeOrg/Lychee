@@ -12,6 +12,21 @@ use Illuminate\Support\Facades\Config;
 
 class ImportController extends Controller
 {
+	/**
+	 * @var PhotoFunctions
+	 */
+	private $photoFunctions;
+
+	/**
+	 * Create a new command instance.
+	 *
+	 * @param PhotoFunctions $photoFunctions
+	 * @return void
+	 */
+	public function __construct(PhotoFunctions $photoFunctions)
+	{
+		$this->photoFunctions = $photoFunctions;
+	}
 
 	/**
 	 * Creates an array similar to a file upload array and adds the photo to Lychee.
@@ -20,7 +35,7 @@ class ImportController extends Controller
 	 * @return boolean Returns true when photo import was successful.
 	 * @throws \ImagickException
 	 */
-	static private function photo($path, $albumID = 0)
+	private function photo($path, $albumID = 0)
 	{
 		// No need to validate photo type and extension in this function.
 		// $photo->add will take care of it.
@@ -31,7 +46,7 @@ class ImportController extends Controller
 		$nameFile['type'] = $info['mime'];
 		$nameFile['tmp_name'] = $path;
 
-		if (PhotoFunctions::add($nameFile, $albumID) === false) {
+		if ($this->photoFunctions->add($nameFile, $albumID) === false) {
 			return false;
 		}
 		return true;
@@ -44,7 +59,7 @@ class ImportController extends Controller
 	 * @return false|string
 	 * @throws \ImagickException
 	 */
-	static public function url(Request $request)
+	public function url(Request $request)
 	{
 		$request->validate([
 			'url'     => 'string|required',
@@ -69,14 +84,14 @@ class ImportController extends Controller
 			// This prevents us from downloading invalid photos.
 			// Verify extension
 			$extension = Helpers::getExtension($url, true);
-			if (!in_array(strtolower($extension), PhotoFunctions::$validExtensions, true)) {
+			if (!$this->photoFunctions->isValidExtension($extension)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo format not supported ('.$url.')');
 				continue;
 			}
 			// Verify image
 			$type = @exif_imagetype($url);
-			if (!in_array($type, PhotoFunctions::$validTypes, true)) {
+			if (!$this->photoFunctions->isValidImageType($type)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported ('.$url.')');
 				continue;
@@ -89,7 +104,7 @@ class ImportController extends Controller
 				continue;
 			}
 			// Import photo
-			if (!ImportController::photo($tmp_name, $request['albumID'])) {
+			if (!$this->photo($tmp_name, $request['albumID'])) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not import file ('.$tmp_name.')');
 				continue;
