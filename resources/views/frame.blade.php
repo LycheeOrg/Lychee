@@ -1,8 +1,6 @@
 @extends('layouts.simple')
 
 @section('head-js')
-    {{--<meta http-equiv="refresh" content="30">--}}
-    <script src="{{ URL::to('dist/stackblur.min.js') }}"></script>
     <script src="{{ URL::to('dist/frame.js') }}"></script>
 @endsection
 
@@ -68,10 +66,10 @@
 
 
 @section('content')
-<img id="background" src="{{ $thumb }}" />
+<img id="background" src="" />
 <canvas id="background_canvas"></canvas>
 <div id="noise"></div>
 <div class="image_container">
-    <img id="picture" src="{{ $url }}" />
+    <img id="picture" src="" />
 </div>
 @endsection

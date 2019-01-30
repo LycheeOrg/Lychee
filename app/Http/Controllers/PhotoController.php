@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Album;
-use App\Configs;
 use App\Logs;
-use App\ModelFunctions\Helpers;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use App\Response;
@@ -20,6 +18,8 @@ class PhotoController extends Controller
 	 */
 	private $photoFunctions;
 
+
+
 	/**
 	 * @param PhotoFunctions $photoFunctions
 	 */
@@ -28,6 +28,12 @@ class PhotoController extends Controller
 		$this->photoFunctions = $photoFunctions;
 	}
 
+
+
+	/**
+	 * @param Request $request
+	 * @return array|string
+	 */
 	function get(Request $request)
 	{
 		$request->validate([
@@ -59,6 +65,41 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return array
+	 */
+	function getRandom(Request $request)
+	{
+
+
+		// here we need to refine.
+
+		$photo = Photo::where('star', '=', 1)->inRandomOrder()->first();
+
+		if ($photo == null) {
+			return Response::error('no pictures found!');
+		}
+
+		$return = array();
+		$return['thumb'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->thumbUrl;
+		if ($photo->medium == '1') {
+			$return['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photo->url;
+		}
+		else {
+			$return['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG').$photo->url;
+		}
+
+		return $return;
+	}
+
+
+
+	/**
+	 * @param Request $request
+	 * @return false|string
+	 * @throws \ImagickException
+	 */
 	function add(Request $request)
 	{
 		$request->validate([
@@ -88,6 +129,10 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return string
+	 */
 	function setTitle(Request $request)
 	{
 
@@ -108,6 +153,10 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return string
+	 */
 	function setStar(Request $request)
 	{
 
@@ -127,11 +176,15 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return string
+	 */
 	function setDescription(Request $request)
 	{
 
 		$request->validate([
-			'photoID' => 'required|string',
+			'photoID'     => 'required|string',
 			'description' => 'string|nullable'
 		]);
 
@@ -149,6 +202,10 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return string
+	 */
 	function setPublic(Request $request)
 	{
 
@@ -194,6 +251,10 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return string
+	 */
 	function setAlbum(Request $request)
 	{
 
@@ -217,6 +278,10 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return false|string
+	 */
 	function setLicense(Request $request)
 	{
 
@@ -263,6 +328,10 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return string
+	 */
 	function delete(Request $request)
 	{
 
@@ -283,6 +352,10 @@ class PhotoController extends Controller
 
 
 
+	/**
+	 * @param Request $request
+	 * @return string
+	 */
 	function duplicate(Request $request)
 	{
 		$request->validate([

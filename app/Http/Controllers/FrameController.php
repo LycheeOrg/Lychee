@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+
 use App\Configs;
-use App\Photo;
-use Illuminate\Support\Facades\Config;
+use App\Response;
+use Illuminate\Http\Request;
 
 
 class FrameController extends Controller
@@ -14,28 +15,28 @@ class FrameController extends Controller
 	 */
 	function init()
 	{
+		Configs::get();
+
 		if (Configs::get_value('Mod_Frame') != '1') {
 			return redirect()->route('home');
 		}
 
-		$photo = Photo::where('star', '=', 1)->inRandomOrder()->first();
+		return view('frame');
 
-		if ($photo == null) {
-			return redirect()->route('home');
+	}
+
+	function getSettings(Request $request)
+	{
+		Configs::get();
+
+		if(Configs::get_value('Mod_Frame') != '1') {
+			return Response::error('Frame is not enabled');
 		}
 
-		$thumb = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->thumbUrl;
-		if ($photo->medium == '1') {
-			$url = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photo->url;
-		}
-		else {
-			$url = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG').$photo->url;
-		}
+		$return = array();
+		$return['refresh'] = Configs::get_value('Mod_Frame_refresh');
 
-		return view('frame', [
-			'url'   => $url,
-			'thumb' => $thumb
-		]);
+		return $return;
 
 	}
 
