@@ -14,9 +14,20 @@ use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
-
 class AlbumController extends Controller
 {
+	/**
+	 * @var AlbumFunctions
+	 */
+	private $albumFunctions;
+
+	/**
+	 * @param AlbumFunctions $albumFunctions
+	 */
+	public function __construct(AlbumFunctions $albumFunctions)
+	{
+		$this->albumFunctions = $albumFunctions;
+	}
 	/**
 	 * Add a new Album
 	 *
@@ -30,13 +41,10 @@ class AlbumController extends Controller
 			'parent_id' => 'int|nullable'
 		]);
 
-		$album = AlbumFunctions::create($request['title'],$request['parent_id']);
+		$album = $this->albumFunctions->create($request['title'], $request['parent_id']);
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
-
 	}
-
-
 
 	/**
 	 * Provided an albumID, returns the album.
