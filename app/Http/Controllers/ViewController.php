@@ -72,9 +72,11 @@ class ViewController extends Controller
 //		$picture  = $parseUrl['host'] . '/uploads/' . $dir . '/' . $photo->url;
 
 
-		return view('view', ['url'     => $url,
-		                     'photo'   => $photo,
-		                     'picture' => $picture
+		return view('view', [
+			'url'     => $url,
+			'photo'   => $photo,
+			'picture' => $picture,
+
 		]);
 	}
 

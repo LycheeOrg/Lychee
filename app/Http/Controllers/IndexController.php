@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Configs;
 use App\Locale\Lang;
-use App\Logs;
 
 class IndexController extends Controller
 {

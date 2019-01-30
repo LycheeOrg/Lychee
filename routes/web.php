@@ -23,8 +23,10 @@ Route::get('/phpinfo', function () { return (string)phpinfo(); })->name('admin')
 
 Route::get('/view',                             'ViewController@view');
 Route::get('/demo',                             'DemoController@js');
+Route::get('/frame',                            'FrameController@init')->name('frame');
 
 Route::post('/php/index.php',                   'SessionController@init'); // entry point if options are not initialized
+
 Route::post('/api/Session::init',               'SessionController@init');
 Route::post('/api/Session::login',              'SessionController@login');
 Route::post('/api/Session::logout',             'SessionController@logout');
@@ -41,11 +43,13 @@ Route::post('/api/Album::delete',               'AlbumController@delete')->middl
 Route::post('/api/Album::merge',                'AlbumController@merge')->middleware('upload');
 Route::post('/api/Album::move',                 'AlbumController@move')->middleware('upload');
 Route::post('/api/Album::setLicense',           'AlbumController@setLicense')->middleware('upload');
-
 Route::get('/api/Album::getArchive',            'AlbumController@getArchive')->middleware('AlbumPWCheck');
+
+Route::post('/api/Frame::getSettings',          'FrameController@getSettings');
 
 //Route::post('/api/Photo::get',              'PhotoController@get')->middleware('AlbumPWCheck');
 Route::post('/api/Photo::get',                  'PhotoController@get');
+Route::post('/api/Photo::getRandom',            'PhotoController@getRandom');
 Route::post('/api/Photo::setTitle',             'PhotoController@setTitle')->middleware('upload');
 Route::post('/api/Photo::setDescription',       'PhotoController@setDescription')->middleware('upload');
 Route::post('/api/Photo::setStar',              'PhotoController@setStar')->middleware('upload');

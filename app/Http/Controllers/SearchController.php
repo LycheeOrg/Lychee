@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Photo;
-use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
