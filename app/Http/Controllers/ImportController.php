@@ -18,14 +18,20 @@ class ImportController extends Controller
 	private $photoFunctions;
 
 	/**
+	 * @var AlbumFunctions
+	 */
+	private $albumFunctions;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
 	 * @return void
 	 */
-	public function __construct(PhotoFunctions $photoFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions)
 	{
 		$this->photoFunctions = $photoFunctions;
+		$this->albumFunctions = $albumFunctions;
 	}
 
 	/**
@@ -129,7 +135,7 @@ class ImportController extends Controller
 
 		$request->validate([
 			'path'    => 'string|required',
-			'albumID' => 'string|required'
+			'albumID' => 'int|required'
 		]);
 
 		return $this->server_exec($request['path'], $request['albumID']);
@@ -139,14 +145,14 @@ class ImportController extends Controller
 
 
 	/**
-	 * @param $path
-	 * @param $albumID
+	 * @param string  $path
+	 * @param integer $albumID
 	 * @return boolean|string Returns true when successful.
 	 *                        Warning: Folder empty or no readable files to process!
 	 *                        Notice: Import only contained albums!
 	 * @throws \ImagickException
 	 */
-	public function server_exec($path, $albumID)
+	public function server_exec(string $path, integer $albumID)
 	{
 
 		// Parse path
@@ -199,7 +205,7 @@ class ImportController extends Controller
 					// Album creation
 
 					// Folder
-					$album = AlbumFunctions::create(basename($file), $albumID);
+					$album = $this->albumFunctions->create(basename($file), $albumID);
 					// this actually should not fail.
 					if ($album === false) {
 						$error = true;
