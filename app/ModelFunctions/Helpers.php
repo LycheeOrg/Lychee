@@ -97,56 +97,6 @@ class Helpers
 
 	}
 
-
-
-	/**
-	 * Returns the normalized coordinate from EXIF array.
-	 * @param $coordinate
-	 * @param $ref
-	 * @return string Normalized coordinate as float number (degrees).
-	 */
-	static public function getGPSCoordinate($coordinate, $ref)
-	{
-
-		$degrees = count($coordinate) > 0 ? Helpers::formattedToFloatGPS($coordinate[0]) : 0;
-		$minutes = count($coordinate) > 1 ? Helpers::formattedToFloatGPS($coordinate[1]) : 0;
-		$seconds = count($coordinate) > 2 ? Helpers::formattedToFloatGPS($coordinate[2]) : 0;
-
-		$flip = ($ref == 'W' || $ref == 'S') ? -1 : 1;
-
-		return $flip * ($degrees + (float) $minutes / 60 + (float) $seconds / 3600);
-
-	}
-
-
-
-	static public function formattedToFloatGPS($coordinate)
-	{
-
-		$parts = explode('/', $coordinate, 2);
-
-		if (count($parts) <= 0) {
-			return 0;
-		}
-		if (count($parts) == 1) {
-			return $parts[0];
-		}
-
-		return (float) $parts[0] / $parts[1];
-
-	}
-
-
-
-	static public function getGPSAltitude($altitude, $ref)
-	{
-
-		$flip = ($ref == '1') ? -1 : 1;
-		return $flip * Helpers::formattedToFloatGPS($altitude);
-	}
-
-
-
 	static public function hasPermissions($path)
 	{
 		// Check if the given path is readable and writable
