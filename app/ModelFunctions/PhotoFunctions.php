@@ -2,12 +2,12 @@
 
 namespace App\ModelFunctions;
 
-
 use App\Album;
 use App\Configs;
 use App\Logs;
 use App\Photo;
 use App\Response;
+use App\Metadata\Extractor;
 use Exception;
 use FFMpeg;
 use Illuminate\Support\Facades\Config;
@@ -18,6 +18,16 @@ use ImagickPixel;
 
 class PhotoFunctions
 {
+	/**
+	 * @var Extractor
+	 */
+	private $metadataExtractor;
+
+	public function __construct(Extractor $metadataExtractor)
+	{
+		$this->metadataExtractor = $metadataExtractor;
+	}
+
 	/**
 	 * @var array
 	 */
@@ -66,206 +76,6 @@ class PhotoFunctions
 
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
-
-
-
-	/**
-	 * Reads and parses information and metadata out of a photo.
-	 * @param string $url
-	 * @return array Returns an array of photo information and metadata.
-	 */
-	public function getInformations(string $url)
-	{
-//        Logs::notice(__METHOD__, __LINE__, 'Get Info: '.$url);
-
-		// Functions returns information and metadata of a photo
-		// Excepts the following:
-		// (string) $url = Path to photo-file
-		// Returns the following:
-		// (array) $return
-
-		$iptcArray = array();
-		$info = getimagesize($url, $iptcArray);
-		// General information
-		$return['type'] = $info['mime'];
-		$return['width'] = $info[0];
-		$return['height'] = $info[1];
-		$return['title'] = '';
-		$return['description'] = '';
-		$return['orientation'] = '';
-		$return['iso'] = '';
-		$return['aperture'] = '';
-		$return['make'] = '';
-		$return['model'] = '';
-		$return['shutter'] = '';
-		$return['focal'] = '';
-		$return['takestamp'] = null;
-		$return['lens'] = '';
-		$return['tags'] = '';
-		$return['position'] = '';
-		$return['latitude'] = null;
-		$return['longitude'] = null;
-		$return['altitude'] = null;
-
-		// Size
-		$size = filesize($url) / 1024;
-		if ($size >= 1024) {
-			$return['size'] = round($size / 1024, 1).' MB';
-		}
-		else {
-			$return['size'] = round($size, 1).' KB';
-		}
-
-		// IPTC Metadata
-		// See https://www.iptc.org/std/IIM/4.2/specification/IIMV4.2.pdf for mapping
-		if (isset($iptcArray['APP13'])) {
-
-			$iptcInfo = iptcparse($iptcArray['APP13']);
-			if (is_array($iptcInfo)) {
-
-				// Title
-				if (!empty($iptcInfo['2#105'][0])) {
-					$return['title'] = $iptcInfo['2#105'][0];
-				}
-				else {
-					if (!empty($iptcInfo['2#005'][0])) {
-						$return['title'] = $iptcInfo['2#005'][0];
-					}
-				}
-
-				// Description
-				if (!empty($iptcInfo['2#120'][0])) {
-					$return['description'] = $iptcInfo['2#120'][0];
-				}
-
-				// Tags
-				if (!empty($iptcInfo['2#025'])) {
-					$return['tags'] = implode(',', $iptcInfo['2#025']);
-				}
-
-				// Position
-				$fields = array();
-				if (!empty($iptcInfo['2#090'])) {
-					$fields[] = trim($iptcInfo['2#090'][0]);
-				}
-				if (!empty($iptcInfo['2#092'])) {
-					$fields[] = trim($iptcInfo['2#092'][0]);
-				}
-				if (!empty($iptcInfo['2#095'])) {
-					$fields[] = trim($iptcInfo['2#095'][0]);
-				}
-				if (!empty($iptcInfo['2#101'])) {
-					$fields[] = trim($iptcInfo['2#101'][0]);
-				}
-
-				if (!empty($fields)) {
-					$return['position'] = implode(', ', $fields);
-				}
-
-			}
-
-		}
-
-		// Read EXIF
-		if ($info['mime'] == 'image/jpeg') {
-			$exif = @exif_read_data($url, 'EXIF', false, false);
-		}
-		else {
-			$exif = false;
-		}
-
-		// EXIF Metadata
-		if ($exif !== false) {
-
-			// Orientation
-			if (isset($exif['Orientation'])) {
-				$return['orientation'] = $exif['Orientation'];
-			}
-			else {
-				if (isset($exif['IFD0']['Orientation'])) {
-					$return['orientation'] = $exif['IFD0']['Orientation'];
-				}
-			}
-
-			// ISO
-			if (!empty($exif['ISOSpeedRatings'])) {
-				$return['iso'] = $exif['ISOSpeedRatings'];
-			}
-
-			// Aperture
-			if (!empty($exif['COMPUTED']['ApertureFNumber'])) {
-				$return['aperture'] = $exif['COMPUTED']['ApertureFNumber'];
-			}
-
-			// Make
-			if (!empty($exif['Make'])) {
-				$return['make'] = trim($exif['Make']);
-			}
-
-			// Model
-			if (!empty($exif['Model'])) {
-				$return['model'] = trim($exif['Model']);
-			}
-
-			// Exposure
-			if (!empty($exif['ExposureTime'])) {
-				$return['shutter'] = $exif['ExposureTime'].' s';
-			}
-
-			// Focal Length
-			if (!empty($exif['FocalLength'])) {
-				if (strpos($exif['FocalLength'], '/') !== false) {
-					$temp = explode('/', $exif['FocalLength'], 2);
-					$temp = $temp[0] / $temp[1];
-					$temp = round($temp, 1);
-					$return['focal'] = $temp.' mm';
-				}
-				else {
-					$return['focal'] = $exif['FocalLength'].' mm';
-				}
-			}
-
-			// Takestamp
-			if (!empty($exif['DateTimeOriginal'])) {
-				if ($exif['DateTimeOriginal'] == '0000:00:00 00:00:00') {
-					$return['takestamp'] = null;
-				}
-				else {
-					if (strtotime($exif['DateTimeOriginal']) == 0) {
-						$return['takestamp'] = null;
-					}
-					else {
-						$return['takestamp'] = date("Y-m-d H:i:s", strtotime($exif['DateTimeOriginal']));
-					}
-				}
-			}
-
-			if (!empty($exif['LensInfo'])) {
-				$return['lens'] = trim($exif['LensInfo']);
-			}
-			// Lens field from Lightroom
-			if ($return['lens'] == '' && !empty($exif['UndefinedTag:0xA434'])) {
-				$return['lens'] = trim($exif['UndefinedTag:0xA434']);
-			}
-
-			// Deal with GPS coordinates
-			if (!empty($exif['GPSLatitude']) && !empty($exif['GPSLatitudeRef'])) {
-				$return['latitude'] = Helpers::getGPSCoordinate($exif['GPSLatitude'], $exif['GPSLatitudeRef']);
-			}
-			if (!empty($exif['GPSLongitude']) && !empty($exif['GPSLongitudeRef'])) {
-				$return['longitude'] = Helpers::getGPSCoordinate($exif['GPSLongitude'], $exif['GPSLongitudeRef']);
-			}
-			if (!empty($exif['GPSAltitude']) && !empty($exif['GPSAltitudeRef'])) {
-				$return['altitude'] = Helpers::getGPSAltitude($exif['GPSAltitude'], $exif['GPSAltitudeRef']);
-			}
-
-		}
-
-		return $return;
-
-	}
-
-
 
 	/**
 	 * Rotates and flips a photo based on its EXIF orientation.
@@ -848,8 +658,8 @@ class PhotoFunctions
 
 		}
 
-		// Read infos
-		$info = $this->getInformations($path);
+		$info = $this->metadataExtractor->extract($path);
+
 		// Use title of file if IPTC title missing
 		if ($info['title'] === '') {
 			$info['title'] = substr(basename($file['name'], $extension), 0, 30);

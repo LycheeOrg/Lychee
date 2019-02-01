@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\PhotoController;
+use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
@@ -31,16 +32,22 @@ class exif_lens extends Command
 	private $photoFunctions;
 
 	/**
+	 * @var Extractor
+	 */
+	private $metadataExtractor;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
 	 * @return void
 	 */
-	public function __construct(PhotoFunctions $photoFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
 	{
 		parent::__construct();
 
 		$this->photoFunctions = $photoFunctions;
+		$this->metadataExtractor = $metadataExtractor;
 	}
 
 
@@ -68,7 +75,7 @@ class exif_lens extends Command
 		foreach ($photos as $photo) {
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
 			if (file_exists($url)) {
-				$info = $this->photoFunctions->getInformations($url);
+				$info = $this->metadataExtractor->extract($url);
 				if ($photo->size == '') {
 					$photo->size = $info['size'];
 				}
