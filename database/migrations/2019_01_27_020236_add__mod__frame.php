@@ -1,10 +1,9 @@
 <?php
 
 use App\Configs;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 class AddModFrame extends Migration
 {
@@ -34,8 +33,9 @@ class AddModFrame extends Migration
      */
     public function down()
     {
-	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
-		    Configs::where('key','=','Mod_Frame')->delete();
-		    Configs::where('key','=','Mod_Frame_refresh')->delete();
-	    }    }
+	    if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
+		    Configs::where('key', '=', 'Mod_Frame')->delete();
+		    Configs::where('key', '=', 'Mod_Frame_refresh')->delete();
+	    }
+    }
 }

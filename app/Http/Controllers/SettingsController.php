@@ -149,6 +149,28 @@ class SettingsController extends Controller
 	}
 
 
+	public function setImageOverlayType(Request $request)
+	{
+		$overlays = [ 'exif', 'desc', 'takedate' ];
+
+		$request->validate([
+			'image_overlay_type' => 'required|string'
+		]);
+
+		$found = false;
+		$i = 0;
+		while(!$found && $i < count($overlays)) {
+			if ($overlays[$i] === $request['image_overlay_type']) $found = true;
+			$i++;
+		}
+		if(!$found) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find the submitted overlay type');
+			return Response::error('Could not find the submitted overlay type');
+		}
+
+		return (Configs::set('image_overlay_type', $request['image_overlay_type'])) ? 'true' : 'false';
+	}
+
 
 	public function setDefaultLicense(Request $request)
 	{
