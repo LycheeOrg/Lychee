@@ -22,6 +22,8 @@ class ImportController extends Controller
 	 */
 	private $albumFunctions;
 
+
+
 	/**
 	 * Create a new command instance.
 	 *
@@ -33,6 +35,8 @@ class ImportController extends Controller
 		$this->photoFunctions = $photoFunctions;
 		$this->albumFunctions = $albumFunctions;
 	}
+
+
 
 	/**
 	 * Creates an array similar to a file upload array and adds the photo to Lychee.
@@ -145,7 +149,7 @@ class ImportController extends Controller
 
 
 	/**
-	 * @param string  $path
+	 * @param string $path
 	 * @param integer $albumID
 	 * @return boolean|string Returns true when successful.
 	 *                        Warning: Folder empty or no readable files to process!

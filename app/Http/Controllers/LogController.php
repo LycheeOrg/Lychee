@@ -55,6 +55,7 @@ class LogController extends Controller
 		Logs::where('function', '=', 'App\ModelFunctions\PhotoFunctions::add')->delete();
 		Logs::where('function', '=', 'App\ModelFunctions\PhotoFunctions::createMedium')->delete();
 		Logs::where('function', '=', 'App\ModelFunctions\PhotoFunctions::createThumb')->delete();
+		Logs::where('function', '=', 'App\Photo::predelete')->delete();
 
 		return 'Log Noise cleared';
 	}

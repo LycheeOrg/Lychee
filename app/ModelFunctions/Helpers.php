@@ -44,6 +44,7 @@ class Helpers
 	}
 
 
+
 	/**
 	 * @return string Generated ID.
 	 */
@@ -56,7 +57,7 @@ class Helpers
 
 		// Ensure that the id has a length of 10 chars
 		while (strlen($id) < 10) {
-			$id = '0' . $id;
+			$id = '0'.$id;
 		}
 
 		$id[0] = strval(intval($id[0]) % 4);
@@ -95,6 +96,8 @@ class Helpers
 		return $extension;
 
 	}
+
+
 
 	static public function hasPermissions($path)
 	{

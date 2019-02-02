@@ -5,9 +5,9 @@ namespace App\ModelFunctions;
 use App\Album;
 use App\Configs;
 use App\Logs;
+use App\Metadata\Extractor;
 use App\Photo;
 use App\Response;
-use App\Metadata\Extractor;
 use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
@@ -25,10 +25,29 @@ class PhotoFunctions
 	private $metadataExtractor;
 
 
+	/**
+	 * @var PhotoFunctions
+	 */
+	static private $instance = null;
+
+
 
 	public function __construct(Extractor $metadataExtractor)
 	{
 		$this->metadataExtractor = $metadataExtractor;
+
+		// singleton
+		PhotoFunctions::$instance = $this;
+	}
+
+
+
+	static public function get()
+	{
+		if (PhotoFunctions::$instance == null) {
+			PhotoFunctions::$instance = new PhotoFunctions(Extractor::get());
+		}
+		return PhotoFunctions::$instance;
 	}
 
 
@@ -776,6 +795,7 @@ class PhotoFunctions
 	}
 
 
+
 	/**
 	 * We create this recursive function to try to fix the duplicate entry key problem
 	 *
@@ -795,20 +815,18 @@ class PhotoFunctions
 				return Response::error('Could not save photo in database!');
 			}
 		}
-		catch (QueryException $e){
+		catch (QueryException $e) {
 			// We have a QueryException, something went VERY WRONG.
 
 			$errorCode = $e->errorInfo[1];
-			if($errorCode == 1062){
+			if ($errorCode == 1062) {
 				// houston, we have a duplicate entry problem
 				// we change the ID and recurse the function
 
 
-
 				return $this->save($photo, $albumID);
 			}
-			else
-			{
+			else {
 				Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode);
 				return 'false';
 			}
@@ -832,65 +850,77 @@ class PhotoFunctions
 
 	}
 
+
+
 	/**
 	 * Validates whether $type is a valid image type.
-	 * 
-	 * @param  int     $type
+	 *
+	 * @param  int $type
 	 * @return boolean
 	 */
-	public function isValidImageType(int $type) : bool
+	public function isValidImageType(int $type): bool
 	{
 		return in_array($type, $this->validTypes, true);
 	}
+
+
 
 	/**
 	 * Returns a list of valid image types
 	 *
 	 * @return array
 	 */
-	public function getValidImageTypes() : array
+	public function getValidImageTypes(): array
 	{
 		return $this->validTypes;
 	}
 
+
+
 	/**
 	 * Validates whether $type is a valid video type
-	 * 
-	 * @param  string  $type
+	 *
+	 * @param  string $type
 	 * @return boolean
 	 */
-	public function isValidVideoType(string $type) : bool
+	public function isValidVideoType(string $type): bool
 	{
 		return in_array($type, $this->validVideoTypes, true);
 	}
+
+
 
 	/**
 	 * Returns a list of valid video types
 	 *
 	 * @return array
 	 */
-	public function getValidVideoTypes() : array
+	public function getValidVideoTypes(): array
 	{
 		return $this->validVideoTypes;
 	}
 
+
+
 	/**
 	 * Validates whether $extension is a valid image or video extension
-	 * 
-	 * @param  string  $extension
+	 *
+	 * @param  string $extension
 	 * @return boolean
 	 */
-	public function isValidExtension(string $extension) : bool
+	public function isValidExtension(string $extension): bool
 	{
 		return in_array(strtolower($extension), $this->validExtensions, true);
 	}
+
+
 
 	/**
 	 * Returns a list of valid image/video extensions
 	 *
 	 * @return array
 	 */
-	public function getValidExtensions() : array
+	public function getValidExtensions(): array
 	{
 		return $this->validExtensions;
 	}
