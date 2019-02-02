@@ -26,33 +26,6 @@ class PhotoFunctions
 
 
 	/**
-	 * @var PhotoFunctions
-	 */
-	static private $instance = null;
-
-
-
-	public function __construct(Extractor $metadataExtractor)
-	{
-		$this->metadataExtractor = $metadataExtractor;
-
-		// singleton
-		PhotoFunctions::$instance = $this;
-	}
-
-
-
-	static public function get()
-	{
-		if (PhotoFunctions::$instance == null) {
-			PhotoFunctions::$instance = new PhotoFunctions(Extractor::get());
-		}
-		return PhotoFunctions::$instance;
-	}
-
-
-
-	/**
 	 * @var array
 	 */
 	public $validTypes = array(
@@ -87,21 +60,10 @@ class PhotoFunctions
 
 
 
-	/**
-	 * @param string $checksum
-	 * @param $photoID
-	 * @return array|false Returns a subset of a photo when same photo exists or returns false on failure.
-	 */
-	public function exists(string $checksum, $photoID = null)
-	{
-
-		$sql = Photo::where('checksum', '=', $checksum);
-		if (isset($photoID)) {
-			$sql = $sql->where('id', '<>', $photoID);
-		}
-
-		return ($sql->count() == 0) ? false : $sql->first();
-	}
+    public function __construct(Extractor $metadataExtractor)
+    {
+        $this->metadataExtractor = $metadataExtractor;
+    }
 
 
 
@@ -642,7 +604,7 @@ class PhotoFunctions
 		}
 
 
-		$exists = $this->exists($checksum);
+		$exists = $photo->isDuplicate($checksum);
 
 		// double check that
 		if ($exists !== false) {

@@ -5,26 +5,6 @@ namespace App\Metadata;
 class Extractor
 {
 	/**
-	 *  Singleton design pattern
-	 */
-	static private $instance = null;
-
-
-
-	/**
-	 *  Singleton design pattern: get
-	 */
-	static function get()
-	{
-		if (Extractor::$instance == null) {
-			Extractor::$instance = new Extractor();
-		}
-		return Extractor::$instance;
-	}
-
-
-
-	/**
 	 * Extracts metadata from an image file
 	 *
 	 * @param  string $filename
