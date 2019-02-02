@@ -10,6 +10,7 @@ use App\Response;
 use App\Metadata\Extractor;
 use Exception;
 use FFMpeg;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 use Imagick;
@@ -23,10 +24,14 @@ class PhotoFunctions
 	 */
 	private $metadataExtractor;
 
+
+
 	public function __construct(Extractor $metadataExtractor)
 	{
 		$this->metadataExtractor = $metadataExtractor;
 	}
+
+
 
 	/**
 	 * @var array
@@ -61,6 +66,8 @@ class PhotoFunctions
 		'.mov'
 	);
 
+
+
 	/**
 	 * @param string $checksum
 	 * @param $photoID
@@ -76,6 +83,8 @@ class PhotoFunctions
 
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
+
+
 
 	/**
 	 * Rotates and flips a photo based on its EXIF orientation.
@@ -759,10 +768,53 @@ class PhotoFunctions
 		$photo->thumbUrl = $path_thumb;
 		$photo->medium = $medium;
 		$photo->small = $small;
-		if (!$photo->save()) {
-			return Response::error('Could not save photo in database!');
+//		if (!$photo->save()) {
+//			return Response::error('Could not save photo in database!');
+//		}
+
+		return $this->save($photo, $albumID);
+	}
+
+
+	/**
+	 * We create this recursive function to try to fix the duplicate entry key problem
+	 *
+	 * @param Photo $photo
+	 * @param $albumID
+	 * @return false|mixed|string
+	 */
+	public function save(Photo $photo, $albumID)
+	{
+		// quick check to see if there is a duplicate and regenerate the ID if needed..
+		while (Photo::where('id', '=', $photo->id)->exists()) {
+			$photo->id = Helpers::generateID();
+		};
+
+		try {
+			if (!$photo->save()) {
+				return Response::error('Could not save photo in database!');
+			}
+		}
+		catch (QueryException $e){
+			// We have a QueryException, something went VERY WRONG.
+
+			$errorCode = $e->errorInfo[1];
+			if($errorCode == 1062){
+				// houston, we have a duplicate entry problem
+				// we change the ID and recurse the function
+
+
+
+				return $this->save($photo, $albumID);
+			}
+			else
+			{
+				Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode);
+				return 'false';
+			}
 		}
 
+		// Just update the album while we are at it.
 		if ($albumID != null) {
 			$album = Album::find($albumID);
 			if ($album === null) {
@@ -775,7 +827,9 @@ class PhotoFunctions
 			}
 		}
 
+		// return the ID.
 		return $photo->id;
+
 	}
 
 	/**

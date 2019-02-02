@@ -152,7 +152,7 @@ class ImportController extends Controller
 	 *                        Notice: Import only contained albums!
 	 * @throws \ImagickException
 	 */
-	public function server_exec(string $path, integer $albumID)
+	public function server_exec(string $path, $albumID)
 	{
 
 		// Parse path

@@ -44,7 +44,6 @@ class Helpers
 	}
 
 
-
 	/**
 	 * @return string Generated ID.
 	 */
