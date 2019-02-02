@@ -35,6 +35,21 @@ class Photo extends Model
 	}
 
 
+    /**
+     * @param string $checksum
+     * @param $photoID
+     * @return array|false Returns a subset of a photo when same photo exists or returns false on failure.
+     */
+    public function isDuplicate(string $checksum, $photoID = null)
+    {
+        $sql = $this->where('checksum', '=', $checksum);
+        if (isset($photoID)) {
+            $sql = $sql->where('id', '<>', $photoID);
+        }
+
+        return ($sql->count() == 0) ? false : $sql->first();
+    }
+
 
 	/**
 	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
@@ -167,7 +182,7 @@ class Photo extends Model
 	public function predelete()
 	{
 
-		if (PhotoFunctions::get()->exists($this->checksum, $this->id)) {
+		if ($this->isDuplicate($this->checksum, $this->id)) {
 			Logs::notice(__METHOD__, __LINE__, $this->id.' is a duplicate!');
 			// it is a duplicate, we do not delete!
 			return true;
