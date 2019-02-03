@@ -70,7 +70,7 @@ class CreatePhotosTable extends Migration
 			    $table->timestamp('takestamp')->nullable();
 			    $table->boolean('star')->default(false);
 			    $table->char('thumbUrl', 37)->default('');
-			    $table->bigInteger('album_id')->unsigned()->nullable()->default(null);
+			    $table->bigInteger('album_id')->unsigned()->nullable()->default(null)->index();
 			    $table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
 			    $table->char('checksum', 40)->default('');
 			    $table->boolean('medium')->default(false);

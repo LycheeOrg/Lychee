@@ -90,6 +90,10 @@ class ChangeIdType extends Migration
 		    $table->dropColumn(['parent_id_save']);
 	    });
 
+	    Schema::table('photos', function (Blueprint $table) {
+		    $table->bigIncrements('id')->change();
+	    });
+
     }
 
 

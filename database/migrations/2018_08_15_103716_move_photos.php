@@ -22,14 +22,6 @@ class MovePhotos extends Migration
 			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->get();
 				foreach ($results as $result) {
-//					$id = $result->id;
-//					$id = substr($id, 1, 10);
-//					$id[0] = strval(intval($id[0]) % 4);
-//
-//					$album = $result->album;
-//					$album = substr($album, 1, 10);
-//					$album[0] = strval(intval($album[0]) % 4);
-
 					$photo = new Photo();
 					$photo->id = $result->id;
 					$photo->title = $result->title;
