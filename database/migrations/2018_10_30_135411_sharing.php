@@ -18,7 +18,7 @@ class Sharing extends Migration
             $table->bigIncrements('id');
             $table->bigInteger('album_id')->unsigned()->index();
             $table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
-            $table->bigInteger('user_id')->unsigned()->index();
+            $table->integer('user_id')->unsigned()->index();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
