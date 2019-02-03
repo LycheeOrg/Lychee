@@ -31,10 +31,10 @@ class CreateAlbumsTable extends Migration
 	    if(!Schema::hasTable('albums')) {
 //        Schema::dropIfExists('albums');
 		    Schema::create('albums', function (Blueprint $table) {
-			    $table->increments('id');
+			    $table->bigIncrements('id');
 			    $table->char('title', 100)->default('');
 			    $table->integer('owner_id')->default(0);
-			    $table->integer('parent_id')->unsigned()->nullable();
+			    $table->bigInteger('parent_id')->unsigned()->nullable();
 			    $table->foreign('parent_id')->references('id')->on('albums');
 			    $table->text('description');
 			    $table->timestamp('min_takestamp')->nullable();

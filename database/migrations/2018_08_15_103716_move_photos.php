@@ -22,16 +22,16 @@ class MovePhotos extends Migration
 			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->get();
 				foreach ($results as $result) {
-					$id = $result->id;
-					$id = substr($id, 1, 10);
-					$id[0] = strval(intval($id[0]) % 4);
-
-					$album = $result->album;
-					$album = substr($album, 1, 10);
-					$album[0] = strval(intval($album[0]) % 4);
+//					$id = $result->id;
+//					$id = substr($id, 1, 10);
+//					$id[0] = strval(intval($id[0]) % 4);
+//
+//					$album = $result->album;
+//					$album = substr($album, 1, 10);
+//					$album[0] = strval(intval($album[0]) % 4);
 
 					$photo = new Photo();
-					$photo->id = $id;
+					$photo->id = $result->id;
 					$photo->title = $result->title;
 					$photo->description = $result->description;
 					$photo->url = $result->url;
@@ -51,7 +51,7 @@ class MovePhotos extends Migration
 					$photo->takestamp = ($result->takestamp == 0 || $result->takestamp == null) ? null : date("Y-m-d H:i:s", $result->takestamp);
 					$photo->star = $result->star;
 					$photo->thumbUrl = $result->thumbUrl;
-					$photo->album_id = $album;
+					$photo->album_id = $result->album;
 					$photo->checksum = $result->checksum;
 					$photo->medium = $result->medium;
 					$photo->small = $result->small;

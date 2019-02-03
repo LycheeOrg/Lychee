@@ -19,11 +19,11 @@ class MoveAlbums extends Migration
 		    if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')) {
 			    $results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')->select('*')->get();
 			    foreach ($results as $result) {
-				    $id = $result->id;
-				    $id = substr($id, 1, 10);
-				    $id[0] = strval(intval($id[0]) % 4);
+//				    $id = $result->id;
+//				    $id = substr($id, 1, 10);
+//				    $id[0] = strval(intval($id[0]) % 4);
 				    $album = new Album();
-				    $album->id = $id;
+				    $album->id = $result->id;
 				    $album->title = $result->title;
 				    $album->description = $result->description;
 				    $album->public = $result->public;
