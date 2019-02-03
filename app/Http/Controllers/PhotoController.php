@@ -37,8 +37,9 @@ class PhotoController extends Controller
 	function get(Request $request)
 	{
 		$request->validate([
-			'albumID' => 'string|required',
 			// we actually don't care about that one...
+			'albumID' => 'string|required',
+
 			'photoID' => 'string|required'
 		]);
 

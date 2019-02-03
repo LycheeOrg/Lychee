@@ -788,9 +788,13 @@ class PhotoFunctions
 
 				return $this->save($photo, $albumID);
 			}
+			else if ($errorCode == 1264) {
+				Logs::error(__METHOD__, __LINE__, 'Id is a bit too big... '.$photo->id);
+				return Response::error('Id is a bit too big... '.$photo->id);
+			}
 			else {
 				Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode);
-				return 'false';
+				return Response::error('Something went wrong, error'.$errorCode);
 			}
 		}
 
@@ -799,7 +803,7 @@ class PhotoFunctions
 			$album = Album::find($albumID);
 			if ($album === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-				return 'false';
+				return Response::error('Could not find specified album');
 			}
 			$album->update_min_max_takestamp();
 			if (!$album->save()) {

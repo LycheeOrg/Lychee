@@ -52,15 +52,14 @@ class Helpers
 	{
 
 		// Generate id based on the current microtime
-		$id = str_replace('.', '', microtime(true));
-		$id = substr($id, -10);
+		$id = str_replace(' ', '', microtime(true));
+		$id = str_replace('.', '', $id);
 
 		// Ensure that the id has a length of 10 chars
-		while (strlen($id) < 10) {
+		while (strlen($id) < 14) {
 			$id = '0'.$id;
 		}
 
-		$id[0] = strval(intval($id[0]) % 4);
 		// Return id as a string. Don't convert the id to an integer
 		// as 14 digits are too big for 32bit PHP versions.
 		return $id;

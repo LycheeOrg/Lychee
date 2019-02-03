@@ -46,7 +46,7 @@ class CreatePhotosTable extends Migration
 	    if(!Schema::hasTable('photos')) {
 //        Schema::dropIfExists('photos');
 		    Schema::create('photos', function (Blueprint $table) {
-			    $table->Increments('id');
+			    $table->bigIncrements('id');
 			    $table->char('title', 100);
 			    $table->text('description')->nullable();
 			    $table->char('url', 100);
@@ -70,7 +70,7 @@ class CreatePhotosTable extends Migration
 			    $table->timestamp('takestamp')->nullable();
 			    $table->boolean('star')->default(false);
 			    $table->char('thumbUrl', 37)->default('');
-			    $table->integer('album_id')->unsigned()->nullable()->default(null);
+			    $table->bigInteger('album_id')->unsigned()->nullable()->default(null)->index();
 			    $table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
 			    $table->char('checksum', 40)->default('');
 			    $table->boolean('medium')->default(false);
