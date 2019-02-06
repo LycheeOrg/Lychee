@@ -8,6 +8,19 @@ use App\Logs;
 class ImagickHandler implements ImageHandlerInterface
 {
 	/**
+	 * @var int
+	 */
+	private $compressionQuality;
+
+	/**
+	 * @{inheritdoc}
+	 */
+	public function __construct(int $compressionQuality)
+	{
+		$this->compressionQuality = $compressionQuality;
+	}
+
+	/**
 	 * @{inheritdoc}
 	 */
 	public function scale(
@@ -20,7 +33,7 @@ class ImagickHandler implements ImageHandlerInterface
 			// Read image
 			$image = new \Imagick();
 			$image->readImage($source);
-			$image->setImageCompressionQuality(self::COMPRESSION_QUALITY);
+			$image->setImageCompressionQuality($this->compressionQuality);
 			$image->setImageFormat('jpeg');
 
 			// Remove metadata to save some bytes
@@ -51,7 +64,7 @@ class ImagickHandler implements ImageHandlerInterface
 		try {
 			$image = new \Imagick();
 			$image->readImage($source);
-			$image->setImageCompressionQuality(self::COMPRESSION_QUALITY);
+			$image->setImageCompressionQuality($this->compressionQuality);
 			$image->setImageFormat('jpeg');
 
 			// Remove metadata to save some bytes

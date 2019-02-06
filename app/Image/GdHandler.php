@@ -8,6 +8,19 @@ use App\Logs;
 class GdHandler implements ImageHandlerInterface
 {
 	/**
+	 * @var int
+	 */
+	private $compressionQuality;
+
+	/**
+	 * @{inheritdoc}
+	 */
+	public function __construct(int $compressionQuality)
+	{
+		$this->compressionQuality = $compressionQuality;
+	}
+
+	/**
 	 * @{inheritdoc}
 	 */
 	public function scale(
@@ -32,7 +45,7 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-		imagejpeg($image, $destination, self::COMPRESSION_QUALITY);
+		imagejpeg($image, $destination, $this->compressionQuality);
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
@@ -69,7 +82,7 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		$this->fastImageCopyResampled($image, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
-		imagejpeg($image, $destination, self::COMPRESSION_QUALITY);
+		imagejpeg($image, $destination, $this->compressionQuality);
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
@@ -116,7 +129,7 @@ class GdHandler implements ImageHandlerInterface
 				break;
 		}
 
-		imagejpeg($image, $path, self::COMPRESSION_QUALITY);
+		imagejpeg($image, $path, 100);
 
 		imagedestroy($image);
 

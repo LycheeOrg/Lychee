@@ -44,11 +44,12 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
+            $compressionQuality = Configs::get_value('compression_quality');
             if (Configs::hasImagick()) {
-                return new Image\ImagickHandler;
+                return new Image\ImagickHandler($compressionQuality);
             }
 
-            return new Image\GdHandler;
+            return new Image\GdHandler($compressionQuality);
         });
     }
 }

@@ -5,9 +5,9 @@ namespace App\Image;
 interface ImageHandlerInterface
 {
 	/**
-	 * @var int
+	 * @param int $compressionQuality
 	 */
-	const COMPRESSION_QUALITY = 90;
+	public function __construct(int $compressionQuality);
 
 	/**
 	 * @param  string $source
