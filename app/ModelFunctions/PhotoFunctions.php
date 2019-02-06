@@ -4,6 +4,7 @@ namespace App\ModelFunctions;
 
 use App\Album;
 use App\Configs;
+use App\Image\ImageHandlerInterface;
 use App\Logs;
 use App\Metadata\Extractor;
 use App\Photo;
@@ -13,9 +14,6 @@ use FFMpeg;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
-use Imagick;
-use ImagickException;
-use ImagickPixel;
 
 class PhotoFunctions
 {
@@ -24,6 +22,10 @@ class PhotoFunctions
 	 */
 	private $metadataExtractor;
 
+	/**
+	 * @var ImageHandlerInterface
+	 */
+	private $imageHandler;
 
 	/**
 	 * @var array
@@ -60,171 +62,10 @@ class PhotoFunctions
 
 
 
-    public function __construct(Extractor $metadataExtractor)
-    {
-        $this->metadataExtractor = $metadataExtractor;
-    }
-
-
-
-	/**
-	 * Rotates and flips a photo based on its EXIF orientation.
-	 * @param $path
-	 * @param array $info
-	 * @return array|false Returns an array with the new orientation, width, height or false on failure.
-	 * @throws ImagickException
-	 */
-	public function adjustFile($path, array $info)
+	public function __construct(Extractor $metadataExtractor, ImageHandlerInterface $imageHandler)
 	{
-
-		// Excepts the following:
-		// (string) $path = Path to the photo-file
-		// (array) $info = ['orientation', 'width', 'height']
-
-		$swapSize = false;
-
-		if (extension_loaded('imagick') && Configs::get()['imagick'] === '1') {
-
-			$image = new Imagick();
-			$image->readImage($path);
-
-			$orientation = $image->getImageOrientation();
-
-			switch ($orientation) {
-
-				case Imagick::ORIENTATION_TOPLEFT:
-					return false;
-					break;
-				case Imagick::ORIENTATION_TOPRIGHT:
-					$image->flopImage();
-					break;
-				case Imagick::ORIENTATION_BOTTOMRIGHT:
-					$image->rotateImage(new ImagickPixel(), 180);
-					break;
-				case Imagick::ORIENTATION_BOTTOMLEFT:
-					$image->flopImage();
-					$image->rotateImage(new ImagickPixel(), 180);
-					break;
-				case Imagick::ORIENTATION_LEFTTOP:
-					$image->flopImage();
-					$image->rotateImage(new ImagickPixel(), -90);
-					$swapSize = true;
-					break;
-				case Imagick::ORIENTATION_RIGHTTOP:
-					$image->rotateImage(new ImagickPixel(), 90);
-					$swapSize = true;
-					break;
-				case Imagick::ORIENTATION_RIGHTBOTTOM:
-					$image->flopImage();
-					$image->rotateImage(new ImagickPixel(), 90);
-					$swapSize = true;
-					break;
-				case Imagick::ORIENTATION_LEFTBOTTOM:
-					$image->rotateImage(new ImagickPixel(), -90);
-					$swapSize = true;
-					break;
-				default:
-					return false;
-					break;
-
-			}
-
-			// Adjust photo
-			$image->setImageOrientation(Imagick::ORIENTATION_TOPLEFT);
-			$image->writeImage($path);
-
-			// Free memory
-			$image->clear();
-			$image->destroy();
-
-		}
-		else {
-
-			$newWidth = $info['width'];
-			$newHeight = $info['height'];
-			$sourceImg = imagecreatefromjpeg($path);
-
-			switch ($info['orientation']) {
-
-				// do nothing
-				case 1:
-					return false;
-					break;
-
-				// mirror
-				case 2:
-					imageflip($sourceImg, IMG_FLIP_HORIZONTAL);
-					break;
-
-				case 3:
-					$sourceImg = imagerotate($sourceImg, -180, 0);
-					break;
-
-				// rotate 180 and mirror
-				case 4:
-					imageflip($sourceImg, IMG_FLIP_VERTICAL);
-					break;
-
-				// rotate 90 and mirror
-				case 5:
-					$sourceImg = imagerotate($sourceImg, -90, 0);
-					$newWidth = $info['height'];
-					$newHeight = $info['width'];
-					$swapSize = true;
-					imageflip($sourceImg, IMG_FLIP_HORIZONTAL);
-					break;
-
-				case 6:
-					$sourceImg = imagerotate($sourceImg, -90, 0);
-					$newWidth = $info['height'];
-					$newHeight = $info['width'];
-					$swapSize = true;
-					break;
-
-				// rotate -90 and mirror
-				case 7:
-					$sourceImg = imagerotate($sourceImg, 90, 0);
-					$newWidth = $info['height'];
-					$newHeight = $info['width'];
-					$swapSize = true;
-					imageflip($sourceImg, IMG_FLIP_HORIZONTAL);
-					break;
-
-				case 8:
-					$sourceImg = imagerotate($sourceImg, 90, 0);
-					$newWidth = $info['height'];
-					$newHeight = $info['width'];
-					$swapSize = true;
-					break;
-
-				default:
-					return false;
-					break;
-
-			}
-
-			// Recreate photo
-			// In this step the photos also loses its metadata :(
-			$newSourceImg = imagecreatetruecolor($newWidth, $newHeight);
-			imagecopyresampled($newSourceImg, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $newWidth, $newHeight);
-			imagejpeg($newSourceImg, $path, 100);
-
-			// Free memory
-			imagedestroy($sourceImg);
-			imagedestroy($newSourceImg);
-
-		}
-
-		// SwapSize should be true when the image has been rotated
-		// Return new dimensions in this case
-		if ($swapSize === true) {
-			$swapSize = $info['width'];
-			$info['width'] = $info['height'];
-			$info['height'] = $swapSize;
-		}
-
-		return $info;
-
+		$this->metadataExtractor = $metadataExtractor;
+		$this->imageHandler = $imageHandler;
 	}
 
 
@@ -232,31 +73,35 @@ class PhotoFunctions
 	/**
 	 * @param Photo $photo
 	 * @param string $path
-	 * @param $id
-	 * @return boolean Returns true when successful.
+	 * @return string Path of the thumbnail
 	 */
-	public function createVideoThumb(Photo $photo, string $path, $id)
-	{
-		try {
-			$ffprobe = FFMpeg\FFProbe::create();
-			$ffmpeg = FFMpeg\FFMpeg::create();
-			$duration = $ffprobe
-				->format($path)// extracts file informations
-				->get('duration');
-			$dimension = new FFMpeg\Coordinate\Dimension(200, 200);
-			$video = $ffmpeg->open($path);
-			$video->filters()->resize($dimension)->synchronize();
-			$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($duration / 2));
-			$frame->save(sys_get_temp_dir().'/'.md5($id).'.jpeg');
-			$info = $photo->getInfo(sys_get_temp_dir().'/'.md5($id).'.jpeg');
-			if (!$photo->createThumb(sys_get_temp_dir().'/'.md5($id).'.jpeg', md5($id).'.jpeg', $info['type'], $info['width'], $info['height'])) {
-				Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for video');
-			}
-			return true;
-		}
-		catch (Exception $exception) {
-			return false;
-		}
+	public function createVideoThumb(Photo $photo, string $path) : string
+{
+		$ffprobe = FFMpeg\FFProbe::create();
+		$ffmpeg = FFMpeg\FFMpeg::create();
+		$duration = $ffprobe
+			->format($path)// extracts file informations
+			->get('duration');
+		$dimension = new FFMpeg\Coordinate\Dimension(400, 400);
+		$video = $ffmpeg->open($path);
+		$video->filters()->resize($dimension)->synchronize();
+		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($duration / 2));
+
+		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
+		Logs::notice(__METHOD__, __LINE__, 'Saving frame to '.$tmp);
+		$frame->save($tmp);
+
+		$thumbUrl = md5($photo->url).'jpeg';
+		$this->imageHandler->crop(
+			$tmp,
+			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl,
+			200,
+			200
+		);
+
+		Logs::notice(__METHOD__, __LINE__, 'Video thumb saved to '.Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl);
+
+		return $thumbUrl;
 	}
 
 
@@ -267,121 +112,32 @@ class PhotoFunctions
 	 */
 	public function createThumb(Photo $photo)
 	{
+		Logs::notice(__METHOD__, __LINE__, 'Photo URL is '.$photo->url);
 
-		$filename = $photo->url;
-		$type = $photo->type;
-		$width = $photo->width;
-		$height = $photo->height;
-		$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
-		// Quality of thumbnails
-		$quality = 90;
+		$photoName = explode('.', $photo->url);
+		$this->imageHandler->crop(
+			Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url,
+			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'.jpeg',
+			200,
+			200
+		);
 
-		// Size of the thumbnail
-		$newWidth = 200;
-		$newHeight = 200;
-
-		$photoName = explode('.', $filename);
-		$newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'.jpeg';
-		$newUrl2x = Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'@2x.jpeg';
-
-		$error = false;
-		// Create thumbnails with Imagick
-		if (Configs::hasImagick()) {
-
-			try {
-				// Read image
-				$thumb = new Imagick();
-				$thumb->readImage($url);
-				$thumb->setImageCompressionQuality($quality);
-				$thumb->setImageFormat('jpeg');
-
-				// Remove metadata to save some bytes
-				$thumb->stripImage();
-
-				// Copy image for 2nd thumb version
-				$thumb2x = clone $thumb;
-
-				// Create 1st version
-				$thumb->cropThumbnailImage($newWidth, $newHeight);
-				$thumb->writeImage($newUrl);
-				$thumb->clear();
-				$thumb->destroy();
-
-				// Create 2nd version
-				$thumb2x->cropThumbnailImage($newWidth * 2, $newHeight * 2);
-				$thumb2x->writeImage($newUrl2x);
-				$thumb2x->clear();
-				$thumb2x->destroy();
-			}
-			catch (ImagickException $exception) {
-				Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-				$error = true;
-			}
-
-		}
-		else {
-			$error = true;
-		}
-
-		if ($error) {
-
-			// Create image
-			$thumb = imagecreatetruecolor($newWidth, $newHeight);
-			$thumb2x = imagecreatetruecolor($newWidth * 2, $newHeight * 2);
-
-			// Set position
-			if ($width < $height) {
-				$newSize = $width;
-				$startWidth = 0;
-				$startHeight = $height / 2 - $width / 2;
-			}
-			else {
-				$newSize = $height;
-				$startWidth = $width / 2 - $height / 2;
-				$startHeight = 0;
-			}
-
-			// Create new image
-			switch ($type) {
-				case 'image/jpeg':
-					$sourceImg = imagecreatefromjpeg($url);
-					break;
-				case 'image/png':
-					$sourceImg = imagecreatefrompng($url);
-					break;
-				case 'image/gif':
-					$sourceImg = imagecreatefromgif($url);
-					break;
-				default:
-					Logs::error(__METHOD__, __LINE__, 'Type of photo is not supported');
-					return false;
-					break;
-			}
-
-			// Create thumb
-			Helpers::fastImageCopyResampled($thumb, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
-			imagejpeg($thumb, $newUrl, $quality);
-			imagedestroy($thumb);
-
-			// Create retina thumb
-			Helpers::fastImageCopyResampled($thumb2x, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth * 2, $newHeight * 2, $newSize, $newSize);
-			imagejpeg($thumb2x, $newUrl2x, $quality);
-			imagedestroy($thumb2x);
-
-			// Free memory
-			imagedestroy($sourceImg);
-
-		}
+		// Retina thumbs
+		$this->imageHandler->crop(
+			Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url,
+			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'@2x.jpeg',
+			400,
+			400
+		);
 
 		return true;
-
 	}
 
 
 
 	/**
 	 * Creates a smaller version of a photo when its size is bigger than a preset size.
-	 * Photo must be big enough and Imagick must be installed and activated.
+	 * Photo must be big enough.
 	 * @param Photo $photo
 	 * @param int $newWidth
 	 * @param int $newHeight
@@ -390,25 +146,11 @@ class PhotoFunctions
 	 */
 	public function createMedium(Photo $photo, $newWidth = 1920, $newHeight = 1080, $kind = 'MEDIUM')
 	{
-
-		// Excepts the following:
-		// (string) $url = Path to the photo-file
-		// (string) $filename = Name of the photo-file
-		// (int) $width = Width of the photo
-		// (int) $height = Height of the photo
-
 		$filename = $photo->url;
 		$width = $photo->width;
 		$height = $photo->height;
 
 		$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
-
-		// Quality of medium-photo
-		$quality = 90;
-
-		// Size of the medium-photo
-		// When changing these values,
-		// also change the size detection in the front-end
 
 		// Check permissions
 		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind)) === false) {
@@ -420,7 +162,6 @@ class PhotoFunctions
 		}
 
 		// Is photo big enough?
-		// Is Imagick installed and activated?
 		if ($width <= $newWidth && $height <= $newHeight) {
 			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small)!');
 			return false;
@@ -428,77 +169,7 @@ class PhotoFunctions
 
 		$newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind).$filename;
 
-		$error = false;
-		if (Configs::hasImagick()) {
-			Logs::notice(__METHOD__, __LINE__, 'Picture is big enough for resize!');
-
-			try {
-				// Read image
-				$medium = new Imagick();
-				$medium->readImage($url);
-
-				// Adjust image
-				$medium->scaleImage($newWidth, $newHeight, ($newWidth != 0));
-				$medium->stripImage();
-				$medium->setImageCompressionQuality($quality);
-
-				// Save image
-				try {
-					$medium->writeImage($newUrl);
-				}
-				catch (ImagickException $err) {
-					Logs::notice(__METHOD__, __LINE__, 'Could not save '.$kind.'-photo ('.$err->getMessage().')');
-					$error = true;
-				}
-
-				$medium->clear();
-				$medium->destroy();
-			}
-			catch (ImagickException $exception) {
-				Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-				$error = true;
-			}
-
-		}
-
-		if ($error || !Configs::hasImagick()) {
-			Logs::notice(__METHOD__, __LINE__, 'Picture is big enough for resize, try with GD!');
-
-			// Create image
-			if ($newWidth == 0) {
-				$newWidth = $newHeight * ($width / $height);
-			}
-			else {
-				$newHeight = $newWidth / ($width / $height);
-			}
-
-			$medium = imagecreatetruecolor($newWidth, $newHeight);
-			// Create new image
-			switch ($photo->type) {
-				case 'image/jpeg':
-					$sourceImg = imagecreatefromjpeg($url);
-					break;
-				case 'image/png':
-					$sourceImg = imagecreatefrompng($url);
-					break;
-				case 'image/gif':
-					$sourceImg = imagecreatefromgif($url);
-					break;
-				default:
-					Logs::error(__METHOD__, __LINE__, 'Type of photo is not supported');
-					return false;
-					break;
-			}
-			// Create retina thumb
-			imagecopyresampled($medium, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-			imagejpeg($medium, $newUrl, $quality);
-			imagedestroy($medium);
-			// Free memory
-			imagedestroy($sourceImg);
-
-			$error = false;
-		}
-		return !$error;
+		return $this->imageHandler->scale($url, $newUrl, $newWidth, $newHeight);
 
 	}
 
@@ -507,11 +178,10 @@ class PhotoFunctions
 	/**
 	 * Creats new photo(s).
 	 * Exits on error.
-	 * Use $returnOnError if you want to handle errors by your own.
+	 *
 	 * @param array $file
 	 * @param int $albumID_in
 	 * @return string|false ID of the added photo.
-	 * @throws ImagickException
 	 */
 	public function add(array $file, $albumID_in = 0)
 	{
@@ -686,17 +356,11 @@ class PhotoFunctions
 
 			// Set orientation based on EXIF data
 			if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
-				$adjustFile = $this->adjustFile($path, $info);
-				if ($adjustFile !== false) {
-					$info = $adjustFile;
-				}
-				else {
-					Logs::notice(__METHOD__, __LINE__, 'Skipped adjustment of photo ('.$info['title'].')');
-				}
-			}
+				$rotation = $this->imageHandler->autoRotate($path, $info);
 
-			$photo->width = $info['width'];
-			$photo->height = $info['height'];
+				$photo->width = $rotation['width'];
+				$photo->height = $rotation['height'];
+			}
 
 			// Set original date
 			if ($info['takestamp'] !== '' && $info['takestamp'] !== 0) {
@@ -713,21 +377,16 @@ class PhotoFunctions
 
 				$path_thumb = basename($photo_name, $extension).".jpeg";
 			}
-			elseif (!defined('VIDEO_THUMB')) {
-				Logs::notice(__METHOD__, __LINE__, 'Could not create thumbnail for video because FFMPEG is not available.');
-				// Set thumb url
-				$path_thumb = '';
-			}
 			else {
-				if (!$this->createVideoThumb($photo, $path, $id)) {
-					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for video');
+				try {
+					$path_thumb = $this->createVideoThumb($photo, $path);
+				} catch (\Exception $exception) {
+					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 					$path_thumb = '';
 				}
-				else {
-					// Set thumb url
-					$path_thumb = md5($id).'.jpeg';
-				}
 			}
+
+			Logs::notice(__METHOD__, __LINE__, $path_thumb);
 
 			// Create Medium
 			if ($this->createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')))) {
@@ -749,9 +408,6 @@ class PhotoFunctions
 		$photo->thumbUrl = $path_thumb;
 		$photo->medium = $medium;
 		$photo->small = $small;
-//		if (!$photo->save()) {
-//			return Response::error('Could not save photo in database!');
-//		}
 
 		return $this->save($photo, $albumID);
 	}
