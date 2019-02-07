@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Configs;
+use App\Image;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use Illuminate\Support\Facades\DB;
@@ -41,6 +43,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
+            $compressionQuality = Configs::get_value('compression_quality');
+            if (Configs::hasImagick()) {
+                return new Image\ImagickHandler($compressionQuality);
+            }
+
+            return new Image\GdHandler($compressionQuality);
+        });
     }
 }

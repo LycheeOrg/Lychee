@@ -16,7 +16,8 @@
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.7.*",
         "laravel/tinker": "^1.0",
-        "maennchen/zipstream-php": "^0.5.2"
+        "maennchen/zipstream-php": "^0.5.2",
+        "php-ffmpeg/php-ffmpeg": "^0.13.0"
     },
     "require-dev": {
         "filp/whoops": "^2.0",
