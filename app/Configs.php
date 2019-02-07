@@ -14,8 +14,7 @@ class Configs extends Model
 	protected static $except = [
 		'username',
 		'password',
-		'dropboxKey',
-		'plugins'
+		'dropboxKey'
 	];
 
 	protected static $clear_field = [

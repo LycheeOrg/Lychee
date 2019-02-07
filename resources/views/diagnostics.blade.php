@@ -14,4 +14,10 @@
 @foreach($infos as $info)
     {{ $info }}
 @endforeach
+
+    Config Information
+    ------------------
+@foreach($configs as $config)
+        {{ $config }}
+@endforeach
 </pre>

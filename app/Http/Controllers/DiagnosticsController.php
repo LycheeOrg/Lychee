@@ -11,7 +11,7 @@ use Imagick;
 class DiagnosticsController extends Controller
 {
 
-	public static function get_errors()
+	public function get_errors()
 	{
 
 		// Declare
@@ -143,7 +143,7 @@ class DiagnosticsController extends Controller
 
 
 
-	public static function get_info()
+	public function get_info()
 	{
 		// Declare
 		$infos = array();
@@ -182,12 +182,25 @@ class DiagnosticsController extends Controller
 		$infos[] = 'Imagick Active:  '.$settings['imagick'];
 		$infos[] = 'Imagick Version: '.$imagickVersion;
 		$infos[] = 'GD Version:      '.$gdVersion['GD Version'];
-//            $infos += ['Plugins:         ' . implode($settings['plugins'], ', ') . PHP_EOL);
 
 		return $infos;
 
 	}
 
+	public function get_config()
+	{
+		// Declare
+		$configs = array();
+
+		// Load settings
+		$settings = Configs::get(false);
+		foreach ($settings as $key => $value)
+		{
+			$configs[] = $key.':    '.$value;
+		}
+		return $configs;
+
+	}
 
 
 	public function get()
@@ -203,13 +216,15 @@ class DiagnosticsController extends Controller
 	public function show()
 	{
 
-		$errors = self::get_errors();
-		$infos = self::get_info();
+		$errors = $this->get_errors();
+		$infos = $this->get_info();
+		$configs = $this->get_config();
 
 		// Show separator
 		return view('diagnostics', [
 			'errors' => $errors,
-			'infos'  => $infos
+			'infos'  => $infos,
+			'configs' => $configs
 		]);
 	}
 }
