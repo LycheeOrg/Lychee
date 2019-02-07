@@ -196,7 +196,8 @@ class DiagnosticsController extends Controller
 		$settings = Configs::get(false);
 		foreach ($settings as $key => $value)
 		{
-			$configs[] = $key.':    '.$value;
+			if(!is_array($value))
+				$configs[] = str_pad($key.':', 24).' '.$value;
 		}
 		return $configs;
 

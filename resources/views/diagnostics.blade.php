@@ -18,6 +18,6 @@
     Config Information
     ------------------
 @foreach($configs as $config)
-        {{ $config }}
+    {{ $config }}
 @endforeach
 </pre>
