@@ -193,7 +193,7 @@ class DiagnosticsController extends Controller
 		$configs = array();
 
 		// Load settings
-		$settings = Configs::get(false);
+		$settings = Configs::get(true);
 		foreach ($settings as $key => $value)
 		{
 			if(!is_array($value))
