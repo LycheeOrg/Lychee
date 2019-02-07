@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Configs;
-use App\Helpers;
+use App\ModelFunctions\Helpers;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Imagick;
