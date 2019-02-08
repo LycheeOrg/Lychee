@@ -1,25 +1,24 @@
 os:
   - linux
 
+dist: xenial
+
 language: php
 
 php:
-  - '7.3'
+  - '7.2'
 
 addons:
   mariadb: '10.3'
 
 before_script:
-  - sudo pecl install imagick
-  - sudo pecl install json
-  - sudo pecl install zip
-  # - sudo apt install php-imagick
-  # - sudo apt install php-mbstring
-  # - sudo apt install php-json
-  # - sudo apt install php-gd
-  # - sudo apt install php-xml
-  # - sudo apt install php-zip
-  # - sudo apt install mariadb-server
+  - sudo apt install php-imagick
+  - sudo apt install php-mbstring
+  - sudo apt install php-json
+  - sudo apt install php-gd
+  - sudo apt install php-xml
+  - sudo apt install php-zip
+  - sudo apt install mariadb-server
   # - sudo apt install composer
   - cp .env.travis .env
   - mysql -e 'create database homestead_test;'
