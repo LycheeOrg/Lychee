@@ -12,6 +12,7 @@ addons:
   mariadb: '10.3'
   apt:
     packages:
+      - php7.3
       - php-pecl-http
       - php-imagick
       - php-mbstring
@@ -19,7 +20,6 @@ addons:
       - php-gd
 
 before_script:
-  - sudo apt install pecl
   - printf "\n" | pecl install imagick
   # - sudo apt install php-imagick
   # - sudo apt install php-mbstring
