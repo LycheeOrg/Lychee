@@ -152,7 +152,7 @@ class Configs extends Model
 	 */
 	public static function hasImagick()
 	{
-		if ((bool) (extension_loaded('imagick') && self::get()['imagick'] == '1')) {
+		if (((bool) extension_loaded('imagick')) && env('USE_IMAGICK', true)) {
 			return true;
 		}
 		Logs::notice(__METHOD__, __LINE__, "hasImagick : false");
