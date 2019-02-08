@@ -1,0 +1,30 @@
+os:
+  - linux
+
+dist: xenial
+
+language: php
+
+php:
+  - '7.2'
+
+addons:
+  mariadb: '10.3'
+  apt:
+    packages:
+      - php-pecl-http
+      - php-imagick
+      - php-mbstring
+      - php-json
+      - php-gd
+
+before_script:
+  - printf "\n" | pecl install imagick
+  - cp .env.travis .env
+  - mysql -e 'create database homestead_test;'
+  - composer self-update
+  - composer install --no-interaction
+
+script:
+  - php artisan key:generate
+  - php artisan migrate
