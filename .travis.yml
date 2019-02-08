@@ -13,12 +13,12 @@ addons:
 before_script:
   # - sudo apt install php7.3-mysql
   - php -i "phpinfo()"
-  # - sudo apt install php7.3-imagick
-  # - sudo apt install php7.3-mbstring
-  # - sudo apt install php7.3-json
-  # - sudo apt install php7.3-gd
-  # - sudo apt install php7.3-xml
-  # - sudo apt install php7.3-zip
+  - sudo apt install php7.3-imagick
+  - sudo apt install php7.3-mbstring
+  - sudo apt install php7.3-json
+  - sudo apt install php7.3-gd
+  - sudo apt install php7.3-xml
+  - sudo apt install php7.3-zip
   # - sudo apt install mariadb-server
   # - sudo apt install composer
   - cp .env.travis .env
