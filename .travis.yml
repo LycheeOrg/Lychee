@@ -19,6 +19,7 @@ before_script:
   - sudo apt install php-xml
   - sudo apt install php-zip
   - sudo apt install mariadb-server
+  - echo "extension = imagick.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   # - sudo apt install composer
   - cp .env.travis .env
   - mysql -e 'create database homestead_test;'
