@@ -10,14 +10,15 @@ addons:
   mariadb: '10.3'
 
 before_script:
-  # - sudo apt install php7.3-mysql
-  - php -i "phpinfo()"
-  - sudo apt install php-imagick
-  - sudo apt install php-mbstring
-  - sudo apt install php-json
-  - sudo apt install php-gd
-  - sudo apt install php-xml
-  - sudo apt install php-zip
+  - sudo pecl install imagick
+  - sudo pecl install json
+  - sudo pecl install zip
+  # - sudo apt install php-imagick
+  # - sudo apt install php-mbstring
+  # - sudo apt install php-json
+  # - sudo apt install php-gd
+  # - sudo apt install php-xml
+  # - sudo apt install php-zip
   # - sudo apt install mariadb-server
   # - sudo apt install composer
   - cp .env.travis .env
