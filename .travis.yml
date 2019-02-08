@@ -6,13 +6,12 @@ dist: xenial
 language: php
 
 php:
-  - '7.3'
+  - '7.2'
 
 addons:
   mariadb: '10.3'
   apt:
     packages:
-      - php7.3
       - php-pecl-http
       - php-imagick
       - php-mbstring
