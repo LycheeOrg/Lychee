@@ -6,10 +6,17 @@ dist: xenial
 language: php
 
 php:
-  - '7.2'
+  - '7.3'
 
 addons:
   mariadb: '10.3'
+  apt:
+    packages:
+      - php-pecl-http
+      - php-imagick
+      - php-mbstring
+      - php-json
+      - php-gd
 
 before_script:
   - sudo apt install pecl
