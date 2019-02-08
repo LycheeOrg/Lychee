@@ -2,7 +2,7 @@
 
 namespace App\Image;
 
-use App\Image;
+use App\Configs;
 use App\Logs;
 
 class ImagickHandler implements ImageHandlerInterface
@@ -10,15 +10,28 @@ class ImagickHandler implements ImageHandlerInterface
 	/**
 	 * @var int
 	 */
-	private $compressionQuality;
+	private $compressionQuality = null;
+
+
 
 	/**
 	 * @{inheritdoc}
 	 */
-	public function __construct(int $compressionQuality)
+	public function __construct()
 	{
-		$this->compressionQuality = $compressionQuality;
 	}
+
+
+
+	private function get_quality()
+	{
+		if ($this->compressionQuality == null) {
+			$this->compressionQuality = Configs::get_value('compression_quality');
+		}
+		return $this->compressionQuality;
+	}
+
+
 
 	/**
 	 * @{inheritdoc}
@@ -28,12 +41,13 @@ class ImagickHandler implements ImageHandlerInterface
 		string $destination,
 		int $newWidth,
 		int $newHeight
-	) : bool {
+	): bool
+	{
 		try {
 			// Read image
 			$image = new \Imagick();
 			$image->readImage($source);
-			$image->setImageCompressionQuality($this->compressionQuality);
+			$image->setImageCompressionQuality($this->get_quality());
 			$image->setImageFormat('jpeg');
 
 			// Remove metadata to save some bytes
@@ -44,13 +58,16 @@ class ImagickHandler implements ImageHandlerInterface
 			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to '.$destination);
 			$image->clear();
 			$image->destroy();
-		} catch (ImagickException $exception) {
+		}
+		catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 			return false;
 		}
 
 		return true;
 	}
+
+
 
 	/**
 	 * @{inheritdoc}
@@ -60,11 +77,12 @@ class ImagickHandler implements ImageHandlerInterface
 		string $destination,
 		int $newWidth,
 		int $newHeight
-	) : bool {
+	): bool
+	{
 		try {
 			$image = new \Imagick();
 			$image->readImage($source);
-			$image->setImageCompressionQuality($this->compressionQuality);
+			$image->setImageCompressionQuality($this->get_quality());
 			$image->setImageFormat('jpeg');
 
 			// Remove metadata to save some bytes
@@ -75,7 +93,8 @@ class ImagickHandler implements ImageHandlerInterface
 			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to '.$destination);
 			$image->clear();
 			$image->destroy();
-		} catch (ImagickException $exception) {
+		}
+		catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 			return false;
 		}
@@ -83,10 +102,12 @@ class ImagickHandler implements ImageHandlerInterface
 		return true;
 	}
 
+
+
 	/**
 	 * @{inheritdoc}
 	 */
-	public function autoRotate(string $path, array $info) : array
+	public function autoRotate(string $path, array $info): array
 	{
 		$image = new \Imagick();
 		$image->readImage($path);
@@ -124,7 +145,7 @@ class ImagickHandler implements ImageHandlerInterface
 		$image->writeImage($path);
 
 		$dimensions = [
-			'width' => $image->getImageWidth(),
+			'width'  => $image->getImageWidth(),
 			'height' => $image->getImageHeight()
 		];
 

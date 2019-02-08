@@ -10,15 +10,24 @@ class GdHandler implements ImageHandlerInterface
 	/**
 	 * @var int
 	 */
-	private $compressionQuality;
+	private $compressionQuality = null;
 
 	/**
 	 * @{inheritdoc}
 	 */
-	public function __construct(int $compressionQuality)
+	public function __construct()
 	{
-		$this->compressionQuality = $compressionQuality;
 	}
+
+
+	private function get_quality()
+	{
+		if ($this->compressionQuality == null) {
+			$this->compressionQuality = Configs::get_value('compression_quality');
+		}
+		return $this->compressionQuality;
+	}
+
 
 	/**
 	 * @{inheritdoc}
@@ -45,7 +54,7 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-		imagejpeg($image, $destination, $this->compressionQuality);
+		imagejpeg($image, $destination, $this->get_quality());
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
@@ -82,7 +91,7 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		$this->fastImageCopyResampled($image, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
-		imagejpeg($image, $destination, $this->compressionQuality);
+		imagejpeg($image, $destination, $this->get_quality());
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
