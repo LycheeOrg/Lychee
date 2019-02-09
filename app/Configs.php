@@ -4,6 +4,7 @@ namespace App;
 
 use App\Locale\Lang;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 
 class Configs extends Model
 {
@@ -107,9 +108,10 @@ class Configs extends Model
 
 	/**
 	 * @param string $key
+	 * @param mixed  $default
 	 * @return mixed
 	 */
-	public static function get_value(string $key)
+	public static function get_value(string $key, $default = null)
 	{
 		if (self::$public_cache) {
 			if (!isset(self::$public_cache[$key])) {
@@ -118,12 +120,16 @@ class Configs extends Model
 			}
 			return self::$public_cache[$key];
 		};
-		// if public cache does not exist it is possible to access forbidden values here!
-		if (Configs::select('value')->where('key', '=', $key)->count() == 0) {
-			Logs::error(__METHOD__, __LINE__, $key.' does not exist in config !');
-			return false;
+		try {
+			// if public cache does not exist it is possible to access forbidden values here!
+			if (Configs::select('value')->where('key', '=', $key)->count() == 0) {
+				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config !');
+				return false;
+			}
+			return Configs::select('value')->where('key', '=', $key)->first()->value;
+		} catch(QueryException $exception) {
+			return $default;
 		}
-		return Configs::select('value')->where('key', '=', $key)->first()->value;
 	}
 
 
@@ -152,7 +158,7 @@ class Configs extends Model
 	 */
 	public static function hasImagick()
 	{
-		if (((bool) extension_loaded('imagick')) && env('USE_IMAGICK', true)) {
+		if ((bool) (extension_loaded('imagick') && self::get_value('imagick', '1') == '1')) {
 			return true;
 		}
 		Logs::notice(__METHOD__, __LINE__, "hasImagick : false");

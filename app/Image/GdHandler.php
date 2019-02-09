@@ -10,22 +10,14 @@ class GdHandler implements ImageHandlerInterface
 	/**
 	 * @var int
 	 */
-	private $compressionQuality = null;
+	private $compressionQuality;
 
 	/**
 	 * @{inheritdoc}
 	 */
-	public function __construct()
+	public function __construct(int $compressionQuality)
 	{
-	}
-
-
-	private function get_quality()
-	{
-		if ($this->compressionQuality == null) {
-			$this->compressionQuality = Configs::get_value('compression_quality');
-		}
-		return $this->compressionQuality;
+		$this->compressionQuality = $compressionQuality;
 	}
 
 
