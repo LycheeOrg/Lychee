@@ -6,7 +6,7 @@ interface ImageHandlerInterface
 {
 	/**
 	 */
-	public function __construct();
+	public function __construct(int $compressionQuality);
 
 	/**
 	 * @param  string $source
