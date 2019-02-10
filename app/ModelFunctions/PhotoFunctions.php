@@ -91,7 +91,7 @@ class PhotoFunctions
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to '.$tmp);
 		$frame->save($tmp);
 
-		$thumbUrl = md5($photo->url).'jpeg';
+		$thumbUrl = md5($photo->url).'.jpeg';
 		$this->imageHandler->crop(
 			$tmp,
 			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl,
