@@ -46,7 +46,7 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-		imagejpeg($image, $destination, $this->get_quality());
+		imagejpeg($image, $destination, $this->compressionQuality);
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
@@ -83,7 +83,7 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		$this->fastImageCopyResampled($image, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
-		imagejpeg($image, $destination, $this->get_quality());
+		imagejpeg($image, $destination, $this->compressionQuality);
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
