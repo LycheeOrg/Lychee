@@ -23,11 +23,13 @@ class HtmlTest extends TestCase
 
 	    // cache config
 	    $configs = Configs::get(false);
+	    Configs::set('username', '');
+	    Configs::set('password', '');
 
 	    // only check if that is unset
 	    if($configs['password'] == '' && $configs['username'] == '')
 	    {
-		    $response = $this->post('/api/Settings::setLogin', ['function'=> 'setLogin', 'username' => 'lychee', 'password' => 'password']);
+		    $response = $this->post('/api/Settings::setLogin', ['username' => 'lychee', 'password' => 'password']);
 		    $response->assertSee("true");
 
 		    $response = $this->post('/api/Session::logout');
