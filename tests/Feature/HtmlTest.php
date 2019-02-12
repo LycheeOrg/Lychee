@@ -43,6 +43,9 @@ class HtmlTest extends TestCase
 
 		    $response = $this->post('/api/Session::login', ['function'=> 'login', 'user' => 'lychee', 'password' => 'password']);
 		    $response->assertSee("true");
+
+		    Configs::set('username', '');
+		    Configs::set('password', '');
 	    }
     }
 }
