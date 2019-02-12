@@ -151,7 +151,7 @@ class SessionController extends Controller
 	 * Sets the session values when no there is no username and password in the database.
 	 * @return boolean Returns true when no login was found.
 	 */
-	static private function noLogin()
+	static function noLogin()
 	{
 
 		$configs = Configs::get(false);

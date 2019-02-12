@@ -9,7 +9,6 @@ use Illuminate\Database\QueryException;
 class Configs extends Model
 {
 	public $timestamps = false;
-	private static $cache = null;
 	private static $public_cache = null;
 
 	protected static $except = [
@@ -68,10 +67,6 @@ class Configs extends Model
 		if ($public && self::$public_cache) {
 			return self::$public_cache;
 		}
-		if (!$public && self::$cache) {
-			return self::$cache;
-		}
-
 
 		// Execute query
 		$configs = Configs::all();
@@ -86,25 +81,17 @@ class Configs extends Model
 		}
 
 //        // Convert plugins to array
-//        $return['plugins'] = explode(';', $return['plugins']);
 		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
 		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
 		$return['lang_available'] = Lang::get_lang_available();
 
 
 		if ($public) {
-//            Logs::notice(__METHOD__, __LINE__, 'cache populated with public parameters');
 			self::$public_cache = $return;
-		}
-		else {
-//            Logs::warning(__METHOD__, __LINE__, 'cache populated with dangerous parameters');
-			self::$cache = $return;
 		}
 
 		return $return;
 	}
-
-
 
 	/**
 	 * @param string $key
