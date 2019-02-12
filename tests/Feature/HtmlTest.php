@@ -22,9 +22,10 @@ class HtmlTest extends TestCase
 	    $response->assertOk();
 
 	    // cache config
-	    $configs = Configs::get(false);
 	    Configs::set('username', '');
 	    Configs::set('password', '');
+
+	    $configs = Configs::get(false);
 
 	    // only check if that is unset
 	    if($configs['password'] == '' && $configs['username'] == '')
