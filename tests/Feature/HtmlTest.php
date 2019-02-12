@@ -32,16 +32,16 @@ class HtmlTest extends TestCase
 		    $response = $this->post('/api/Session::logout');
 		    $response->assertSee("true");
 
-		    $response = $this->post('/api/Session::login', ['function'=> 'login', 'user' => 'foo', 'password' => 'bar']);
+		    $response = $this->post('/api/Session::login', ['user' => 'foo', 'password' => 'bar']);
 		    $response->assertSee("false");
 
-		    $response = $this->post('/api/Session::login', ['function'=> 'login', 'user' => 'lychee', 'password' => 'bar']);
+		    $response = $this->post('/api/Session::login', ['user' => 'lychee', 'password' => 'bar']);
 		    $response->assertSee("false");
 
-		    $response = $this->post('/api/Session::login', ['function'=> 'login', 'user' => 'foo', 'password' => 'password']);
+		    $response = $this->post('/api/Session::login', ['user' => 'foo', 'password' => 'password']);
 		    $response->assertSee("false");
 
-		    $response = $this->post('/api/Session::login', ['function'=> 'login', 'user' => 'lychee', 'password' => 'password']);
+		    $response = $this->post('/api/Session::login', ['user' => 'lychee', 'password' => 'password']);
 		    $response->assertSee("true");
 
 		    Configs::set('username', '');
