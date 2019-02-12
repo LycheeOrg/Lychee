@@ -28,4 +28,4 @@ before_script:
 script:
   - php artisan key:generate
   - php artisan migrate
-  - phpunit
+  - vendor/bin/phpunit
