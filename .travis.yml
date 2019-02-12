@@ -17,6 +17,7 @@ addons:
       - php-mbstring
       - php-json
       - php-gd
+      - phpunit
 
 before_script:
   - printf "\n" | pecl install imagick
@@ -28,3 +29,4 @@ before_script:
 script:
   - php artisan key:generate
   - php artisan migrate
+  - phpunit
