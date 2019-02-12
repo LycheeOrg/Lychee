@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Configs;
+use App\Http\Controllers\SessionController;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,6 +32,8 @@ class HtmlTest extends TestCase
 
 		    $response = $this->post('/api/Session::logout');
 		    $response->assertSee("true");
+
+			$this->assertFalse(SessionController::noLogin());
 
 		    $response = $this->post('/api/Session::login', ['user' => 'foo', 'password' => 'bar']);
 		    $response->assertSee("false");
