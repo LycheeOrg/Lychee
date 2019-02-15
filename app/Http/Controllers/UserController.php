@@ -44,7 +44,7 @@ class UserController extends Controller
 		$user->username = $request['username'];
 		$user->upload = ($request['upload'] == '1');
 		$user->lock = ($request['lock'] == '1');
-		if ($request->has('password') && $request->has('password') != '') {
+		if ($request->has('password') && $request['password'] != '') {
 			$user->password = bcrypt($request['password']);
 		}
 
