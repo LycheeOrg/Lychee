@@ -1331,7 +1331,7 @@ build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
 		return "<span class=\"thumbimg\"><img src='" + medium + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 	// we use crappy thumb image otherwise :]
-	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' srcset='" + retinaThumbUrl + " 1.5x' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' srcset='" + retinaThumbUrl + " 2x' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
 build.album = function (data) {
@@ -1342,8 +1342,13 @@ build.album = function (data) {
 	var sortingAlbums = [];
 
 	var _lychee$retinize = lychee.retinize(data.thumbs[0]),
-	    retinaThumbUrl = _lychee$retinize.path,
-	    isPhoto = _lychee$retinize.isPhoto;
+	    retinaThumbUrl0 = _lychee$retinize.path;
+
+	var _lychee$retinize2 = lychee.retinize(data.thumbs[1]),
+	    retinaThumbUrl1 = _lychee$retinize2.path;
+
+	var _lychee$retinize3 = lychee.retinize(data.thumbs[2]),
+	    retinaThumbUrl2 = _lychee$retinize3.path;
 
 	// In the special case of take date sorting use the take stamps as title
 
@@ -1362,7 +1367,7 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject15, disabled ? "disabled" : "", data.id, build.getThumbnailHtml(data.thumbs[2], data.thumbs[2], data.types[2]), build.getThumbnailHtml(data.thumbs[1], data.thumbs[1], data.types[1]), build.getThumbnailHtml(data.thumbs[0], data.thumbs[0], data.types[0]), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject15, disabled ? "disabled" : "", data.id, build.getThumbnailHtml(data.thumbs[2], retinaThumbUrl2, data.types[2]), build.getThumbnailHtml(data.thumbs[1], retinaThumbUrl1, data.types[1]), build.getThumbnailHtml(data.thumbs[0], retinaThumbUrl0, data.types[0]), data.title, data.title, date_stamp);
 
 	if (lychee.publicMode === false) {
 
@@ -1382,8 +1387,8 @@ build.photo = function (data) {
 
 	var html = '';
 
-	var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
-	    retinaThumbUrl = _lychee$retinize2.path;
+	var _lychee$retinize4 = lychee.retinize(data.thumbUrl),
+	    retinaThumbUrl = _lychee$retinize4.path;
 
 	html += lychee.html(_templateObject18, data.album, data.id, build.getThumbnailHtml(data.thumbUrl, retinaThumbUrl, data.type, data.medium, data.small), data.title, data.title);
 
@@ -2497,8 +2502,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.11',
-	versionCode: '030211', // not really needed anymore
+	version: '3.2.12',
+	versionCode: '030212', // not really needed anymore
 
 	updatePath: 'https://LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee/releases',
