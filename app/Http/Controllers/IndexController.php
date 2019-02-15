@@ -16,4 +16,11 @@ class IndexController extends Controller
 		return view('index', ['locale' => $lang]);
 	}
 
+
+
+	public function phpinfo()
+	{
+		return (string) phpinfo();
+	}
+
 }
