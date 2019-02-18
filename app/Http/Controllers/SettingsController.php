@@ -122,14 +122,21 @@ class SettingsController extends Controller
 	{
 
 		$request->validate([
-			'justified_layout' => 'required|string'
+			'layout' => 'required|string'
 		]);
 
-		if ($request['justified_layout'] == '1') {
+		if ($request['layout'] === 'squares') {
+			return (Configs::set('justified_layout', '0')) ? 'true' : 'false';
+		}
+		if ($request['layout'] === 'justified') {
 			return (Configs::set('justified_layout', '1')) ? 'true' : 'false';
 		}
+		if ($request['layout'] === 'unjustified') {
+			return (Configs::set('justified_layout', '2')) ? 'true' : 'false';
+		}
 
-		return (Configs::set('justified_layout', '0')) ? 'true' : 'false';
+		Logs::error(__METHOD__, __LINE__, 'Could not find the submitted layout');
+		return 'false';
 	}
 
 
