@@ -17,7 +17,7 @@ class ChangeIdType extends Migration
     {
 	    // rename
 	    Configs::where('key','justified_layout')->update([
-			    "key" => "layout"),
+			    "key" => "layout"
 	    ]);
 
     }
@@ -31,7 +31,7 @@ class ChangeIdType extends Migration
     {
 	    // rename
 	    Configs::where('key','layout')->update([
-			    "key" => "justified_layout"),
+			    "key" => "justified_layout"
 	    ]);
     }
 }
