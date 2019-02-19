@@ -30,7 +30,7 @@ class UserController extends Controller
 
 		$request->validate([
 			'id'       => 'required',
-			'username' => 'required|string',
+			'username' => 'required|string|max:100',
 			'upload'   => 'required',
 			'lock'     => 'required'
 		]);
@@ -75,8 +75,8 @@ class UserController extends Controller
 	{
 
 		$request->validate([
-			'username' => 'required|string',
-			'password' => 'required|string',
+			'username' => 'required|string|max:100',
+			'password' => 'required|string|max:50',
 			'upload'   => 'required',
 			'lock'     => 'required'
 		]);
