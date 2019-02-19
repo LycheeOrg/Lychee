@@ -14,6 +14,7 @@ return [
 
 	// Define dirs
     'dirs' => [
+	    'LYCHEE_DIST' => public_path('dist'),
 	    'LYCHEE_UPLOADS' => public_path('uploads'),
 	    'LYCHEE_UPLOADS_BIG' => public_path('uploads/big/'),
 	    'LYCHEE_UPLOADS_MEDIUM' => public_path('uploads/medium/'),

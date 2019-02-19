@@ -65,7 +65,13 @@ class DiagnosticsController extends Controller
 		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS')) === false) {
 			$errors += ['Error: \'uploads/\' is missing or has insufficient read/write privileges'];
 		}
-//        if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DATA'))===false)           $errors += ['Error: \'data/\' is missing or has insufficient read/write privileges'];
+		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST').'/user.css')===false) {
+			$errors .= ('Warning: \'dist/user.css\' does not exist or has insufficient read/write privileges.' . PHP_EOL);
+			if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST'))===false)			$errors .= ('Warning: \'dist/\' has insufficient read/write privileges.' . PHP_EOL);
+		}
+
+		//        if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DATA'))===false)           $errors += ['Error: \'data/\' is missing or has insufficient read/write privileges'];
+
 
 		// About GD
 		$gdVersion = array('GD Version' => '-');
