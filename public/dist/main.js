@@ -1323,11 +1323,11 @@ build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
 		return "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 	// we use small if available
-	if ((lychee.justified || lychee.unjustified) && small !== '') {
+	if ((lychee.layout === '1' || lychee.layout === '2') && small !== '') {
 		return "<span class=\"thumbimg\"><img src='" + small + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 	// we use medium if small is not available
-	if ((lychee.justified || lychee.unjustified) && medium !== '') {
+	if ((lychee.layout === '1' || lychee.layout === '2') && medium !== '') {
 		return "<span class=\"thumbimg\"><img src='" + medium + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 	// we use crappy thumb image otherwise :]
@@ -2502,8 +2502,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.12',
-	versionCode: '030212', // not really needed anymore
+	version: '3.2.13',
+	versionCode: '030213', // not really needed anymore
 
 	updatePath: 'https://LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee/releases',
@@ -2517,8 +2517,7 @@ lychee = {
 	admin: false, // enable admin mode (multi-user)
 	upload: false, // enable possibility to upload (multi-user)
 	lock: false, // locked user (multi-user)
-	justified: true, // use Flickr Justified Layout Like
-	unjustified: false, // use Google Photos Unjustified Layout Like
+	layout: '1', // 0: Use default, "square" layout. 1: Use Flickr-like "justified" layout. 2: Use Google-like "unjustified" layout
 	image_overlay: false, // display Overlay like in Lightroom
 	image_overlay_default: false, // display Overlay like in Lightroom by default
 	image_overlay_type: 'exif', // current Overlay display type
@@ -2625,8 +2624,7 @@ lychee.init = function () {
 			lychee.lang = data.config.lang || '';
 			lychee.lang_available = data.config.lang_available || {};
 			lychee.imagick = data.config.imagick && data.config.imagick === '1' || false;
-			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
-			lychee.unjustified = data.config.justified_layout && data.config.justified_layout === '2' || false;
+			lychee.layout = data.config.layout || '1';
 			lychee.image_overlay_default = data.config.image_overlay && data.config.image_overlay === '1' || false;
 			lychee.image_overlay = lychee.image_overlay_default;
 			lychee.image_overlay_type = !data.config.image_overlay_type ? 'exif' : data.config.image_overlay_type;
@@ -2656,8 +2654,7 @@ lychee.init = function () {
 
 			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === '1';
 			lychee.checkForUpdates = data.config.checkForUpdates || '1';
-			lychee.justified = data.config.justified_layout && data.config.justified_layout === '1' || false;
-			lychee.unjustified = data.config.justified_layout && data.config.justified_layout === '2' || false;
+			lychee.layout = data.config.layout || '1';
 			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;
 			lychee.image_overlay_type = !data.config.image_overlay_type ? 'exif' : data.config.image_overlay_type;
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
@@ -4895,8 +4892,7 @@ settings.setLayout = function (params) {
 
 	api.post('Settings::setLayout', params, function (data) {
 		if (data === true) {
-			lychee.justified = params.layout === "justified";
-			lychee.unjustified = params.layout === "unjustified";
+			lychee.layout = params.layout;
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LAYOUT']);
 		} else lychee.error(null, params, data);
 	});
@@ -6177,9 +6173,9 @@ view.album = {
 			}
 
 			if (photosData !== '') {
-				if (lychee.justified) {
+				if (lychee.layout === '1') {
 					photosData = '<div class="justified-layout">' + photosData + '</div>';
-				} else if (lychee.unjustified) {
+				} else if (lychee.layout === '2') {
 					photosData = '<div class="unjustified-layout">' + photosData + '</div>';
 				}
 			}
@@ -6202,7 +6198,7 @@ view.album = {
 			// Add photos to view
 			lychee.content.html(html);
 			view.album.content.justify();
-			if (lychee.unjustified) {
+			if (lychee.layout === '2') {
 				$('.unjustified-layout > div').each(function (i) {
 					$(this).css('width', (album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1) * parseInt($(this).css('height'), 10) + 'px');
 				});
@@ -6248,7 +6244,7 @@ view.album = {
 		},
 
 		justify: function justify() {
-			if (!lychee.justified) return;
+			if (lychee.layout !== '1') return;
 			if (!album.json.photos || album.json.photos === false) return;
 			var ratio = [];
 			$.each(album.json.photos, function (i) {
@@ -6665,9 +6661,9 @@ view.settings = {
 		},
 
 		setLayout: function setLayout() {
-			var msg = "\n\t\t\t<div class=\"setLayout\">\n\t\t\t<p>" + lychee.locale['LAYOUT_TYPE'] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"layout\" id=\"layout\">\n\t\t\t\t\t<option value=\"squares\">" + lychee.locale['LAYOUT_SQUARES'] + "</option>\n\t\t\t\t\t<option value=\"justified\">" + lychee.locale['LAYOUT_JUSTIFIED'] + "</option>\n\t\t\t\t\t<option value=\"unjustified\">" + lychee.locale['LAYOUT_UNJUSTIFIED'] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_layout\" class=\"basicModal__button\">" + lychee.locale['SET_LAYOUT'] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setLayout\">\n\t\t\t<p>" + lychee.locale['LAYOUT_TYPE'] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"layout\" id=\"layout\">\n\t\t\t\t\t<option value=\"0\">" + lychee.locale['LAYOUT_SQUARES'] + "</option>\n\t\t\t\t\t<option value=\"1\">" + lychee.locale['LAYOUT_JUSTIFIED'] + "</option>\n\t\t\t\t\t<option value=\"2\">" + lychee.locale['LAYOUT_UNJUSTIFIED'] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_layout\" class=\"basicModal__button\">" + lychee.locale['SET_LAYOUT'] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
 			$(".settings_view").append(msg);
-			$('select#layout').val(lychee.justified ? 'justified' : lychee.unjustified ? 'unjustified' : 'squares');
+			$('select#layout').val(lychee.layout);
 			settings.bind('#basicModal__action_set_layout', '.setLayout', settings.setLayout);
 		},
 
