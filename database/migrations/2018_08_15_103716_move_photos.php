@@ -43,7 +43,7 @@ class MovePhotos extends Migration
 					$photo->takestamp = ($result->takestamp == 0 || $result->takestamp == null) ? null : date("Y-m-d H:i:s", $result->takestamp);
 					$photo->star = $result->star;
 					$photo->thumbUrl = $result->thumbUrl;
-					$photo->album_id = $result->album;
+					$photo->album_id = ($result->album == 0) ? null : $result->album;
 					$photo->checksum = $result->checksum;
 					$photo->medium = $result->medium;
 					$photo->small = $result->small;
