@@ -1323,11 +1323,11 @@ build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
 		return "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 	// we use small if available
-	if ((lychee.layout == '1' || lychee.layout == '2') && small !== '') {
+	if ((lychee.layout === '1' || lychee.layout === '2') && small !== '') {
 		return "<span class=\"thumbimg\"><img src='" + small + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 	// we use medium if small is not available
-	if ((lychee.layout == '1' || lychee.layout == '2') && medium !== '') {
+	if ((lychee.layout === '1' || lychee.layout === '2') && medium !== '') {
 		return "<span class=\"thumbimg\"><img src='" + medium + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 	// we use crappy thumb image otherwise :]
@@ -6173,9 +6173,9 @@ view.album = {
 			}
 
 			if (photosData !== '') {
-				if (lychee.layout == '1') {
+				if (lychee.layout === '1') {
 					photosData = '<div class="justified-layout">' + photosData + '</div>';
-				} else if (lychee.layout == '2') {
+				} else if (lychee.layout === '2') {
 					photosData = '<div class="unjustified-layout">' + photosData + '</div>';
 				}
 			}
@@ -6198,7 +6198,7 @@ view.album = {
 			// Add photos to view
 			lychee.content.html(html);
 			view.album.content.justify();
-			if (lychee.layout == '2') {
+			if (lychee.layout === '2') {
 				$('.unjustified-layout > div').each(function (i) {
 					$(this).css('width', (album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1) * parseInt($(this).css('height'), 10) + 'px');
 				});
@@ -6244,7 +6244,7 @@ view.album = {
 		},
 
 		justify: function justify() {
-			if (lychee.layout != '1') return;
+			if (lychee.layout !== '1') return;
 			if (!album.json.photos || album.json.photos === false) return;
 			var ratio = [];
 			$.each(album.json.photos, function (i) {
