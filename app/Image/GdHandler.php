@@ -35,7 +35,13 @@ class GdHandler implements ImageHandlerInterface
 		if ($newWidth == 0) {
 			$newWidth = $newHeight * ($width / $height);
 		} else {
-			$newHeight = $newWidth / ($width / $height);
+			$tmpHeight = $newWidth / ($width / $height);
+			if ($newHeight != 0 && $tmpHeight > $newHeight) {
+				$newWidth = $newHeight * ($width / $height);
+			}
+			else {
+				$newHeight = $tmpHeight;
+			}
 		}
 
 		$image = imagecreatetruecolor($newWidth, $newHeight);
