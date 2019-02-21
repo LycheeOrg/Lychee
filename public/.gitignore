@@ -1,8 +1,6 @@
-src/node_modules/
-src/bower_components/
-src/package-lock.json
-
-data/config.php
+Lychee-front/node_modules/
+Lychee-front/bower_components/
+Lychee-front/package-lock.json
 
 uploads/big/*
 uploads/import/*
