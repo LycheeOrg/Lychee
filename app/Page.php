@@ -21,5 +21,4 @@ class Page extends Model
 	{
 		return $query->where('enabled',true)->orderBy('order','ASC');
 	}
-
 }
