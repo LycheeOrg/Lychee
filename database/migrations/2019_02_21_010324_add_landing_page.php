@@ -23,10 +23,10 @@ class AddLandingPage extends Migration
 			    ['key' => 'landing_title', 'value' => 'John Smith'],
 			    ['key' => 'landing_subtitle', 'value' => 'Cat, Dogs & Humans Photography'],
 			    ['key' => 'landing_facebook', 'value' => 'https://www.facebook.com/JohnSmith'],
-			    ['key' => 'landing_flickr', 'value' => 'https://www.flickr.com//JohnSmith'],
-			    ['key' => 'landing_twitter', 'value' => 'https://www.twitter.com//JohnSmith'],
+			    ['key' => 'landing_flickr', 'value' => 'https://www.flickr.com/JohnSmith'],
+			    ['key' => 'landing_twitter', 'value' => 'https://www.twitter.com/JohnSmith'],
 			    ['key' => 'landing_instagram', 'value' => 'https://instagram.com/JohnSmith'],
-			    ['key' => 'landing_youtube', 'value' => 'https://www.youtube.com//JohnSmith'],
+			    ['key' => 'landing_youtube', 'value' => 'https://www.youtube.com/JohnSmith'],
 			    ['key' => 'landing_background', 'value' => 'dist/cat.jpg'],
 		    ]);
 	    }

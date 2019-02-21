@@ -16,8 +16,7 @@ class IndexController extends Controller
 		{
 			$lang = Lang::get_lang(Configs::where('key', '=', 'lang')->first());
 
-			$menus = Page::menu()->get();
-
+			$infos = array();
 			$infos['owner'] = Configs::get_value('landing_owner');
 			$infos['title'] = Configs::get_value('landing_title');
 			$infos['subtitle'] = Configs::get_value('landing_subtitle');
@@ -28,6 +27,7 @@ class IndexController extends Controller
 			$infos['youtube'] = Configs::get_value('landing_youtube');
 			$infos['background'] = Configs::get_value('landing_background');
 
+			$menus = Page::menu()->get();
 
 			return view('landing', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos, 'menus' => $menus]);
 		}
