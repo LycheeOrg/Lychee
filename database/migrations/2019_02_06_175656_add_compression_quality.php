@@ -15,15 +15,15 @@ class AddCompressionQuality extends Migration
      */
     public function up()
     {
-	    if(Schema::hasTable('configs')) {
-
-		    DB::table('configs')->insert([
-			    ['key' => 'compression_quality', 'value' => '90'],
-		    ]);
-	    }
-	    else {
-		    echo "Table configs does not exists\n";
-	    }
+//	    if(Schema::hasTable('configs')) {
+//
+//		    DB::table('configs')->insert([
+//			    ['key' => 'compression_quality', 'value' => '90'],
+//		    ]);
+//	    }
+//	    else {
+//		    echo "Table configs does not exists\n";
+//	    }
     }
 
     /**
@@ -33,8 +33,8 @@ class AddCompressionQuality extends Migration
      */
     public function down()
     {
-	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
-	    	Configs::where('key','=','compression_quality')->delete();
-	    }
+//	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
+//	    	Configs::where('key','=','compression_quality')->delete();
+//	    }
     }
 }

@@ -15,15 +15,15 @@ class AddDisableFullPhoto extends Migration
      */
     public function up()
     {
-	    if(Schema::hasTable('configs')) {
-
-		    DB::table('configs')->insert([
-			    ['key' => 'full_photo', 'value' => '1'],
-		    ]);
-	    }
-	    else {
-		    echo "Table configs does not exists\n";
-	    }
+//	    if(Schema::hasTable('configs')) {
+//
+//		    DB::table('configs')->insert([
+//			    ['key' => 'full_photo', 'value' => '1'],
+//		    ]);
+//	    }
+//	    else {
+//		    echo "Table configs does not exists\n";
+//	    }
     }
 
     /**
@@ -33,8 +33,8 @@ class AddDisableFullPhoto extends Migration
      */
     public function down()
     {
-	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
-	    	Configs::where('key','=','full_photo')->delete();
-	    }
+//	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
+//	    	Configs::where('key','=','full_photo')->delete();
+//	    }
     }
 }

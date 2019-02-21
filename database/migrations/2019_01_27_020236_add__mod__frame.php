@@ -14,16 +14,16 @@ class AddModFrame extends Migration
      */
     public function up()
     {
-	    if(Schema::hasTable('configs')) {
-
-		    DB::table('configs')->insert([
-			    ['key' => 'Mod_Frame', 'value' => '0'],
-			    ['key' => 'Mod_Frame_refresh', 'value' => '30000'],
-		    ]);
-	    }
-	    else {
-		    echo "Table configs does not exists\n";
-	    }
+//	    if(Schema::hasTable('configs')) {
+//
+//		    DB::table('configs')->insert([
+//			    ['key' => 'Mod_Frame', 'value' => '0'],
+//			    ['key' => 'Mod_Frame_refresh', 'value' => '30000'],
+//		    ]);
+//	    }
+//	    else {
+//		    echo "Table configs does not exists\n";
+//	    }
     }
 
     /**
@@ -33,9 +33,9 @@ class AddModFrame extends Migration
      */
     public function down()
     {
-	    if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-		    Configs::where('key', '=', 'Mod_Frame')->delete();
-		    Configs::where('key', '=', 'Mod_Frame_refresh')->delete();
-	    }
+//	    if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
+//		    Configs::where('key', '=', 'Mod_Frame')->delete();
+//		    Configs::where('key', '=', 'Mod_Frame_refresh')->delete();
+//	    }
     }
 }

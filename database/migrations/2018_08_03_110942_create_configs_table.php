@@ -44,15 +44,22 @@ class CreateConfigsTable extends Migration
 			    ['key' => 'imagick', 'value' => '1'],
 			    ['key' => 'dropboxKey', 'value' => ''],
 			    ['key' => 'skipDuplicates', 'value' => '0'],
-			    ['key' => 'plugins', 'value' => ''],
 			    ['key' => 'small_max_width', 'value' => '0'],
 			    ['key' => 'small_max_height', 'value' => '360'],
 			    ['key' => 'medium_max_width', 'value' => '1920'],
 			    ['key' => 'medium_max_height', 'value' => '1080'],
 			    ['key' => 'lang', 'value' => 'en'],
-			    ['key' => 'justified_layout', 'value' => '1'],
+			    ['key' => 'layout', 'value' => '1'],
 			    ['key' => 'image_overlay', 'value' => '1'],
+			    ['key' => 'image_overlay_type', 'value' => 'exif'],
 			    ['key' => 'default_license', 'value' => 'none'],
+			    ['key' => 'compression_quality', 'value' => '90'],
+			    ['key' => 'full_photo', 'value' => '1'],
+			    ['key' => 'deleteImported', 'value' => '1'],
+
+			    ['key' => 'Mod_Frame', 'value' => '0'],
+			    ['key' => 'Mod_Frame_refresh', 'value' => '30000'],
+
 		    ]);
 	    }
 	    else {
