@@ -20,6 +20,7 @@ if (env('APP_ENV') === 'dev') {
 
 Route::get('/',                                 'IndexController@show')->name('home');
 Route::get('/phpinfo',                          'IndexController@phpinfo')->name('admin');
+Route::get('/gallery',                          'IndexController@gallery')->name('home');
 
 Route::get('/view',                             'ViewController@view');
 Route::get('/demo',                             'DemoController@js');

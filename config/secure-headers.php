@@ -357,7 +357,7 @@ return [
 
         'style-src' => [
             'allow' => [
-                //
+	            'https://fonts.googleapis.com'
             ],
             'hashes' => [
                 // 'sha256' => [
@@ -391,6 +391,10 @@ return [
             'self' => true
         ],
         'font-src' => [
+        	'allow' => [
+		        'https://fonts.gstatic.com'
+	        ],
+            'self' => true
             //
         ],
         'form-action' => [

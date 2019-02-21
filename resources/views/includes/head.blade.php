@@ -1,7 +1,5 @@
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-<title>{{ config('app.name') }}</title>
-
-<meta name="author" content="Tobias Reich">
+<title>{{ $title }}</title>
 
 @yield('head-js')
 @yield('head-css')
