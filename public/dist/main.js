@@ -94,10 +94,11 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject50 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
     _templateObject51 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
     _templateObject52 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
-    _templateObject53 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject54 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
-    _templateObject55 = _taggedTemplateLiteral(["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"], ["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"]),
-    _templateObject56 = _taggedTemplateLiteral(["<div class=\"clear_logs\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"]);
+    _templateObject53 = _taggedTemplateLiteral(["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject54 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"]),
+    _templateObject55 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
+    _templateObject56 = _taggedTemplateLiteral(["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"], ["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"]),
+    _templateObject57 = _taggedTemplateLiteral(["<div class=\"clear_logs\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -6198,11 +6199,6 @@ view.album = {
 			// Add photos to view
 			lychee.content.html(html);
 			view.album.content.justify();
-			if (lychee.layout === '2') {
-				$('.unjustified-layout > div').each(function (i) {
-					$(this).css('width', (album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1) * parseInt($(this).css('height'), 10) + 'px');
-				});
-			}
 		},
 
 		title: function title(photoID) {
@@ -6244,26 +6240,43 @@ view.album = {
 		},
 
 		justify: function justify() {
-			if (lychee.layout !== '1') return;
 			if (!album.json.photos || album.json.photos === false) return;
-			var ratio = [];
-			$.each(album.json.photos, function (i) {
-				var l_width = this.width > 0 ? this.width : 200;
-				var l_height = this.height > 0 ? this.height : 200;
-				ratio[i] = l_width / l_height;
-			});
-			var layoutGeometry = require('justified-layout')(ratio, {
-				containerWidth: $('.justified-layout').width(),
-				containerPadding: 0
-			});
-			if (lychee.admin) console.log(layoutGeometry);
-			$('.justified-layout').css('height', layoutGeometry.containerHeight + 'px').css('height', layoutGeometry.containerHeight + 'px');
-			$('.justified-layout > div').each(function (i) {
-				$(this).css('top', layoutGeometry.boxes[i].top);
-				$(this).css('width', layoutGeometry.boxes[i].width);
-				$(this).css('height', layoutGeometry.boxes[i].height);
-				$(this).css('left', layoutGeometry.boxes[i].left);
-			});
+			if (lychee.layout === '1') {
+				var ratio = [];
+				$.each(album.json.photos, function (i) {
+					var l_width = this.width > 0 ? this.width : 200;
+					var l_height = this.height > 0 ? this.height : 200;
+					ratio[i] = l_width / l_height;
+				});
+				var layoutGeometry = require('justified-layout')(ratio, {
+					containerWidth: $('.justified-layout').width(),
+					containerPadding: 0
+				});
+				if (lychee.admin) console.log(layoutGeometry);
+				$('.justified-layout').css('height', layoutGeometry.containerHeight + 'px').css('height', layoutGeometry.containerHeight + 'px');
+				$('.justified-layout > div').each(function (i) {
+					$(this).css('top', layoutGeometry.boxes[i].top);
+					$(this).css('width', layoutGeometry.boxes[i].width);
+					$(this).css('height', layoutGeometry.boxes[i].height);
+					$(this).css('left', layoutGeometry.boxes[i].left);
+				});
+			} else if (lychee.layout === '2') {
+				var containerWidth = parseFloat($('.unjustified-layout').width(), 10);
+				$('.unjustified-layout > div').each(function (i) {
+					var ratio = album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1;
+					var height = parseFloat($(this).css('max-height'), 10);
+					var width = height * ratio;
+					var margin = parseFloat($(this).css('margin-right'), 10);
+
+					if (width > containerWidth - margin) {
+						width = containerWidth - margin;
+						height = width / ratio;
+					}
+
+					$(this).css('width', width + 'px');
+					$(this).css('height', height + 'px');
+				});
+			}
 		}
 
 	},
@@ -6741,12 +6754,18 @@ view.full_settings = {
 
 				var msg = lychee.html(_templateObject53, lychee.locale['SETTINGS_WARNING']);
 
+				var prev = '';
 				$.each(data, function () {
 
-					msg += lychee.html(_templateObject54, this.key, this.key, this.value);
+					if (this.cat && prev !== this.cat) {
+						msg += lychee.html(_templateObject54, this.cat);
+						prev = this.cat;
+					}
+
+					msg += lychee.html(_templateObject55, this.key, this.key, this.value);
 				});
 
-				msg += lychee.html(_templateObject55, lychee.locale['SAVE_RISK']);
+				msg += lychee.html(_templateObject56, lychee.locale['SAVE_RISK']);
 				$(".settings_view").append(msg);
 
 				settings.bind('#FullSettingsSave_button', '#fullSettings', settings.save);
@@ -6909,7 +6928,7 @@ view.logs_diagnostics = {
 		var html = '';
 
 		if (lychee.api_V2 && get === 'Logs') {
-			html += lychee.html(_templateObject56, lychee.locale['CLEAN_LOGS']);
+			html += lychee.html(_templateObject57, lychee.locale['CLEAN_LOGS']);
 		}
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);

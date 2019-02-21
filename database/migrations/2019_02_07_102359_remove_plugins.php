@@ -13,7 +13,7 @@ class RemovePlugins extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('key', '=', 'plugins')->delete();
+//		Configs::where('key', '=', 'plugins')->delete();
 	}
 
 
@@ -25,15 +25,15 @@ class RemovePlugins extends Migration
 	 */
 	public function down()
 	{
-		if (Schema::hasTable('configs')) {
-			DB::table('configs')->insert([
-				['key'   => 'plugins',
-				 'value' => ''
-				],
-			]);
-		}
-		else {
-			echo "Table configs does not exists\n";
-		}
+//		if (Schema::hasTable('configs')) {
+//			DB::table('configs')->insert([
+//				['key'   => 'plugins',
+//				 'value' => ''
+//				],
+//			]);
+//		}
+//		else {
+//			echo "Table configs does not exists\n";
+//		}
 	}
 }

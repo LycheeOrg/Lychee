@@ -36,7 +36,7 @@ class FrameController extends Controller
 		$infos['background'] = Configs::get_value('landing_background');
 
 		return view('frame', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos]);
-		
+
 	}
 
 	function getSettings(Request $request)

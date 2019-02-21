@@ -234,7 +234,7 @@ class SettingsController extends Controller
 	public function getAll(Request $request)
 	{
 
-		return Configs::all();
+		return Configs::orderBy('cat','ASC')->get();
 	}
 
 

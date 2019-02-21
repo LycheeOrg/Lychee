@@ -40,7 +40,8 @@ table {
 
 html, body {
   font-family: 'Roboto', sans-serif;
-  background: #000000; }
+  background: #000000;
+  overflow: hidden; }
 
 ol, ul {
   list-style: none; }
@@ -2825,11 +2826,18 @@ a {
 #facebook:before {
   content: "\ea91"; }
 
-#slides img {
+#slides {
   position: absolute;
   left: 0;
   top: 0;
-  -o-object-fit: cover;
-     object-fit: cover;
   width: 100vw;
   height: 98vh; }
+  #slides .slides-container, #slides li, #slides img {
+    height: 100%;
+    width: 100%; }
+  #slides img {
+    top: 0;
+    left: 0;
+    position: absolute;
+    -o-object-fit: cover;
+       object-fit: cover; }
