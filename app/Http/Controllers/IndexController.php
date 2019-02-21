@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Configs;
 use App\Locale\Lang;
+use App\Page;
 
 class IndexController extends Controller
 {
@@ -14,6 +15,8 @@ class IndexController extends Controller
 		if (Configs::get_value('landing_page_enable', '0') == '1')
 		{
 			$lang = Lang::get_lang(Configs::where('key', '=', 'lang')->first());
+
+			$menus = Page::menu()->get();
 
 			$infos['owner'] = Configs::get_value('landing_owner');
 			$infos['title'] = Configs::get_value('landing_title');
@@ -26,7 +29,7 @@ class IndexController extends Controller
 			$infos['background'] = Configs::get_value('landing_background');
 
 
-			return view('landing', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos]);
+			return view('landing', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos, 'menus' => $menus]);
 		}
 
 		return $this->gallery();

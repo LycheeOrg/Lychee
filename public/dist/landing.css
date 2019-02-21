@@ -2691,91 +2691,6 @@ a {
   -moz-transition: all 1s ease-in-out;
   -o-transition: all 1s ease-in-out; }
 
-#intro {
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  z-index: 1000;
-  background: #000000; }
-  #intro h1 {
-    text-align: center;
-    font-size: 1.5em;
-    color: #ffffff;
-    text-transform: uppercase;
-    font-weight: 200; }
-  #intro h2 {
-    text-align: center;
-    font-size: 1em;
-    color: #ececec;
-    text-transform: uppercase;
-    font-weight: 200; }
-
-#header {
-  position: fixed;
-  left: 0;
-  top: 0;
-  right: 0;
-  z-index: 98; }
-
-#logo {
-  float: left;
-  padding: 15px; }
-  #logo h1 {
-    color: #ffffff;
-    font-size: 1em;
-    text-transform: uppercase;
-    font-weight: 700;
-    text-align: center; }
-    #logo h1 span {
-      font-family: 'Roboto', sans-serif;
-      font-size: 0.6em;
-      display: block;
-      font-weight: 300;
-      letter-spacing: 1px;
-      padding: 0 0 0 0; }
-
-#menu {
-  width: 100%; }
-  #menu li {
-    position: relative;
-    display: block;
-    float: right;
-    padding: 22px 1.5% 20px 1.5%; }
-  #menu a {
-    display: block;
-    font-size: 0.8em;
-    color: #ffffff;
-    text-transform: uppercase;
-    font-weight: 400;
-    transition: all 0.3s;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s; }
-
-#menu_wrap {
-  position: fixed;
-  right: 0;
-  top: 0;
-  z-index: 98;
-  width: 80%; }
-
-#footer {
-  position: absolute;
-  z-index: 3;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 0 0 10px 0;
-  text-align: center; }
-
-#home_copyright {
-  text-transform: uppercase;
-  color: #ffffff;
-  font-size: 0.5em;
-  font-weight: 400; }
-
 #home_socials {
   position: fixed;
   bottom: 30px;
@@ -2787,6 +2702,13 @@ a {
     display: inline-block;
     font-size: 1.4em;
     margin: 15px 20px 15px 20px; }
+
+#socials {
+  position: fixed;
+  left: 0;
+  top: 37%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 2; }
 
 .socialicons {
   display: block;
@@ -2826,6 +2748,80 @@ a {
 #facebook:before {
   content: "\ea91"; }
 
+#menu {
+  width: 100%; }
+  #menu li {
+    position: relative;
+    display: block;
+    float: right;
+    padding: 22px 1.5% 20px 1.5%; }
+  #menu a {
+    display: block;
+    font-size: 0.8em;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: all 0.3s;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    -o-transition: all 0.3s; }
+    #menu a:hover {
+      color: #b5b5b5 !important; }
+  #menu .current-menu-item a {
+    color: #b5b5b5 !important; }
+
+#menu_wrap {
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 98;
+  width: 80%; }
+
+#header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  z-index: 98; }
+
+#logo {
+  float: left;
+  padding: 15px; }
+  #logo h1 {
+    color: #ffffff;
+    font-size: 1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    text-align: center; }
+    #logo h1 span {
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.6em;
+      display: block;
+      font-weight: 300;
+      letter-spacing: 1px;
+      padding: 0 0 0 0; }
+
+#intro {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 1000;
+  background: #000000; }
+  #intro h1 {
+    text-align: center;
+    font-size: 1.5em;
+    color: #ffffff;
+    text-transform: uppercase;
+    font-weight: 200; }
+  #intro h2 {
+    text-align: center;
+    font-size: 1em;
+    color: #ececec;
+    text-transform: uppercase;
+    font-weight: 200; }
+
 #slides {
   position: absolute;
   left: 0;
@@ -2841,3 +2837,18 @@ a {
     position: absolute;
     -o-object-fit: cover;
        object-fit: cover; }
+
+#footer {
+  position: absolute;
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 0 10px 0;
+  text-align: center; }
+
+#home_copyright {
+  text-transform: uppercase;
+  color: #FFFFFF;
+  font-size: 0.5em;
+  font-weight: 400; }
