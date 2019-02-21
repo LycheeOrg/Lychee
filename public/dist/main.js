@@ -111,6 +111,155 @@ function gup(b) {
 
 	if (c === null) return '';else return c[1];
 }
+/**
+ * @description This module communicates with Lychee's API
+ */
+
+api = {
+
+	path: 'php/index.php',
+	onError: null
+
+};
+
+api.get_url = function (fn) {
+
+	var api_url = '';
+
+	if (lychee.api_V2) {
+		// because the api is defined directly by the function called in the route.php
+		api_url = 'api/' + fn;
+	} else {
+		api_url = api.path;
+	}
+
+	return api_url;
+};
+
+api.post = function (fn, params, callback) {
+
+	loadingBar.show();
+
+	params = $.extend({ function: fn }, params);
+
+	var api_url = api.get_url(fn);
+
+	var success = function success(data) {
+
+		setTimeout(loadingBar.hide, 100);
+
+		// Catch errors
+		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+			api.onError(data.substring(7, data.length), params, data);
+			return false;
+		}
+
+		callback(data);
+	};
+
+	var error = function error(jqXHR, textStatus, errorThrown) {
+
+		api.onError('Server error or API not found.', params, errorThrown);
+	};
+
+	$.ajax({
+		type: 'POST',
+		url: api_url,
+		data: params,
+		dataType: 'json',
+		success: success,
+		error: error
+	});
+};
+
+api.get = function (url, callback) {
+
+	loadingBar.show();
+
+	var success = function success(data) {
+
+		setTimeout(loadingBar.hide, 100);
+
+		// Catch errors
+		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+			api.onError(data.substring(7, data.length), params, data);
+			return false;
+		}
+
+		callback(data);
+	};
+
+	var error = function error(jqXHR, textStatus, errorThrown) {
+
+		api.onError('Server error or API not found.', {}, errorThrown);
+	};
+
+	$.ajax({
+		type: 'GET',
+		url: url,
+		data: {},
+		dataType: 'text',
+		success: success,
+		error: error
+	});
+};
+
+api.post_raw = function (fn, params, callback) {
+	loadingBar.show();
+
+	params = $.extend({ function: fn }, params);
+
+	var api_url = api.get_url(fn);
+
+	var success = function success(data) {
+
+		setTimeout(loadingBar.hide, 100);
+
+		// Catch errors
+		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+			api.onError(data.substring(7, data.length), params, data);
+			return false;
+		}
+
+		callback(data);
+	};
+
+	var error = function error(jqXHR, textStatus, errorThrown) {
+
+		api.onError('Server error or API not found.', params, errorThrown);
+	};
+
+	$.ajax({
+		type: 'POST',
+		url: api_url,
+		data: params,
+		dataType: 'text',
+		success: success,
+		error: error
+	});
+};
+csrf = {};
+
+csrf.addLaravelCSRF = function (event, jqxhr, settings) {
+	if (settings.url !== lychee.updatePath) {
+		jqxhr.setRequestHeader('X-XSRF-TOKEN', csrf.getCookie('XSRF-TOKEN'));
+	}
+};
+
+csrf.escape = function (s) {
+	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1');
+};
+
+csrf.getCookie = function (name) {
+	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
+	var match = document.cookie.match(RegExp('(?:^|;\\s*)' + csrf.escape(name) + '=([^;^%]*)'));
+	return match ? match[1] : null;
+};
+
+csrf.bind = function () {
+	$(document).on('ajaxSend', csrf.addLaravelCSRF);
+};
+
 (function ($) {
 	var Swipe = function Swipe(el) {
 		var self = this;
@@ -1148,133 +1297,6 @@ albums.refresh = function () {
 };
 
 /**
- * @description This module communicates with Lychee's API
- */
-
-api = {
-
-	path: 'php/index.php',
-	onError: null
-
-};
-
-api.get_url = function (fn) {
-
-	var api_url = '';
-
-	if (lychee.api_V2) {
-		// because the api is defined directly by the function called in the route.php
-		api_url = 'api/' + fn;
-	} else {
-		api_url = api.path;
-	}
-
-	return api_url;
-};
-
-api.post = function (fn, params, callback) {
-
-	loadingBar.show();
-
-	params = $.extend({ function: fn }, params);
-
-	var api_url = api.get_url(fn);
-
-	var success = function success(data) {
-
-		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
-		callback(data);
-	};
-
-	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError('Server error or API not found.', params, errorThrown);
-	};
-
-	$.ajax({
-		type: 'POST',
-		url: api_url,
-		data: params,
-		dataType: 'json',
-		success: success,
-		error: error
-	});
-};
-
-api.get = function (url, callback) {
-
-	loadingBar.show();
-
-	var success = function success(data) {
-
-		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
-		callback(data);
-	};
-
-	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError('Server error or API not found.', {}, errorThrown);
-	};
-
-	$.ajax({
-		type: 'GET',
-		url: url,
-		data: {},
-		dataType: 'text',
-		success: success,
-		error: error
-	});
-};
-
-api.post_raw = function (fn, params, callback) {
-	loadingBar.show();
-
-	params = $.extend({ function: fn }, params);
-
-	var api_url = api.get_url(fn);
-
-	var success = function success(data) {
-
-		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
-		callback(data);
-	};
-
-	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError('Server error or API not found.', params, errorThrown);
-	};
-
-	$.ajax({
-		type: 'POST',
-		url: api_url,
-		data: params,
-		dataType: 'text',
-		success: success,
-		error: error
-	});
-};
-/**
  * @description This module is used to generate HTML-Code.
  */
 
@@ -1928,28 +1950,6 @@ contextMenu.close = function () {
 
 	multiselect.deselect('.photo.active, .album.active');
 	if (visible.multiselect()) multiselect.close();
-};
-
-csrf = {};
-
-csrf.addLaravelCSRF = function (event, jqxhr, settings) {
-	if (settings.url !== lychee.updatePath) {
-		jqxhr.setRequestHeader('X-XSRF-TOKEN', csrf.getCookie('XSRF-TOKEN'));
-	}
-};
-
-csrf.escape = function (s) {
-	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1');
-};
-
-csrf.getCookie = function (name) {
-	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
-	var match = document.cookie.match(RegExp('(?:^|;\\s*)' + csrf.escape(name) + '=([^;^%]*)'));
-	return match ? match[1] : null;
-};
-
-csrf.bind = function () {
-	$(document).on('ajaxSend', csrf.addLaravelCSRF);
 };
 
 /**

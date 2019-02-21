@@ -45,6 +45,393 @@ function gup(b) {
 	if (c === null) return '';else return c[1];
 }
 /**
+ * @description This module communicates with Lychee's API
+ */
+
+api = {
+
+	path: 'php/index.php',
+	onError: null
+
+};
+
+api.get_url = function (fn) {
+
+	var api_url = '';
+
+	if (lychee.api_V2) {
+		// because the api is defined directly by the function called in the route.php
+		api_url = 'api/' + fn;
+	} else {
+		api_url = api.path;
+	}
+
+	return api_url;
+};
+
+api.post = function (fn, params, callback) {
+
+	loadingBar.show();
+
+	params = $.extend({ function: fn }, params);
+
+	var api_url = api.get_url(fn);
+
+	var success = function success(data) {
+
+		setTimeout(loadingBar.hide, 100);
+
+		// Catch errors
+		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+			api.onError(data.substring(7, data.length), params, data);
+			return false;
+		}
+
+		callback(data);
+	};
+
+	var error = function error(jqXHR, textStatus, errorThrown) {
+
+		api.onError('Server error or API not found.', params, errorThrown);
+	};
+
+	$.ajax({
+		type: 'POST',
+		url: api_url,
+		data: params,
+		dataType: 'json',
+		success: success,
+		error: error
+	});
+};
+
+api.get = function (url, callback) {
+
+	loadingBar.show();
+
+	var success = function success(data) {
+
+		setTimeout(loadingBar.hide, 100);
+
+		// Catch errors
+		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+			api.onError(data.substring(7, data.length), params, data);
+			return false;
+		}
+
+		callback(data);
+	};
+
+	var error = function error(jqXHR, textStatus, errorThrown) {
+
+		api.onError('Server error or API not found.', {}, errorThrown);
+	};
+
+	$.ajax({
+		type: 'GET',
+		url: url,
+		data: {},
+		dataType: 'text',
+		success: success,
+		error: error
+	});
+};
+
+api.post_raw = function (fn, params, callback) {
+	loadingBar.show();
+
+	params = $.extend({ function: fn }, params);
+
+	var api_url = api.get_url(fn);
+
+	var success = function success(data) {
+
+		setTimeout(loadingBar.hide, 100);
+
+		// Catch errors
+		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+			api.onError(data.substring(7, data.length), params, data);
+			return false;
+		}
+
+		callback(data);
+	};
+
+	var error = function error(jqXHR, textStatus, errorThrown) {
+
+		api.onError('Server error or API not found.', params, errorThrown);
+	};
+
+	$.ajax({
+		type: 'POST',
+		url: api_url,
+		data: params,
+		dataType: 'text',
+		success: success,
+		error: error
+	});
+};
+csrf = {};
+
+csrf.addLaravelCSRF = function (event, jqxhr, settings) {
+	if (settings.url !== lychee.updatePath) {
+		jqxhr.setRequestHeader('X-XSRF-TOKEN', csrf.getCookie('XSRF-TOKEN'));
+	}
+};
+
+csrf.escape = function (s) {
+	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1');
+};
+
+csrf.getCookie = function (name) {
+	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
+	var match = document.cookie.match(RegExp('(?:^|;\\s*)' + csrf.escape(name) + '=([^;^%]*)'));
+	return match ? match[1] : null;
+};
+
+csrf.bind = function () {
+	$(document).on('ajaxSend', csrf.addLaravelCSRF);
+};
+
+/**
+ * @description Used to view single photos with view.php
+ */
+
+// Sub-implementation of lychee -------------------------------------------------------------- //
+
+var lychee = {};
+
+lychee.content = $('.content');
+
+lychee.escapeHTML = function () {
+	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+
+
+	// Ensure that html is a string
+	html += '';
+
+	// Escape all critical characters
+	html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/`/g, '&#96;');
+
+	return html;
+};
+
+lychee.html = function (literalSections) {
+
+	// Use raw literal sections: we don’t want
+	// backslashes (\n etc.) to be interpreted
+	var raw = literalSections.raw;
+	var result = '';
+
+	for (var _len = arguments.length, substs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+		substs[_key - 1] = arguments[_key];
+	}
+
+	substs.forEach(function (subst, i) {
+
+		// Retrieve the literal section preceding
+		// the current substitution
+		var lit = raw[i];
+
+		// If the substitution is preceded by a dollar sign,
+		// we escape special characters in it
+		if (lit.slice(-1) === '$') {
+			subst = lychee.escapeHTML(subst);
+			lit = lit.slice(0, -1);
+		}
+
+		result += lit;
+		result += subst;
+	});
+
+	// Take care of last literal section
+	// (Never fails, because an empty template string
+	// produces one literal section, an empty string)
+	result += raw[raw.length - 1];
+
+	return result;
+};
+
+lychee.getEventName = function () {
+
+	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && 'ontouchend' in document.documentElement;
+	return touchendSupport === true ? 'touchend' : 'click';
+};
+
+// Sub-implementation of photo -------------------------------------------------------------- //
+
+var photo = {
+	json: null
+};
+
+photo.share = function (photoID, service) {
+
+	var url = location.toString();
+
+	switch (service) {
+		case 'twitter':
+			window.open("https://twitter.com/share?url=" + encodeURI(url));
+			break;
+		case 'facebook':
+			window.open("http://www.facebook.com/sharer.php?u=" + encodeURI(url));
+			break;
+		case 'mail':
+			location.href = "mailto:?subject=&body=" + encodeURI(url);
+			break;
+	}
+};
+
+photo.getDirectLink = function () {
+
+	return $('#imageview img').attr('src').replace(/"/g, '').replace(/url\(|\)$/ig, '');
+};
+
+photo.update_display_overlay = function () {
+	lychee.image_overlay = !lychee.image_overlay;
+	if (!lychee.image_overlay) {
+		$('#image_overlay').remove();
+	} else {
+		$('#imageview').append(build.overlay_image(photo.json));
+	}
+};
+
+photo.show = function () {
+
+	$('#imageview').removeClass('full');
+	header.dom().removeClass('header--hidden');
+
+	return true;
+};
+
+photo.hide = function () {
+
+	if (visible.photo() && !visible.sidebar() && !visible.contextMenu()) {
+
+		$('#imageview').addClass('full');
+		header.dom().addClass('header--hidden');
+
+		return true;
+	}
+
+	return false;
+};
+
+// Sub-implementation of contextMenu -------------------------------------------------------------- //
+
+var contextMenu = {};
+
+contextMenu.sharePhoto = function (photoID, e) {
+
+	var iconClass = 'ionicons';
+
+	var items = [{ title: build.iconic('twitter', iconClass) + 'Twitter', fn: function fn() {
+			return photo.share(photoID, 'twitter');
+		} }, { title: build.iconic('facebook', iconClass) + 'Facebook', fn: function fn() {
+			return photo.share(photoID, 'facebook');
+		} }, { title: build.iconic('envelope-closed') + 'Mail', fn: function fn() {
+			return photo.share(photoID, 'mail');
+		} }, { title: build.iconic('link-intact') + 'Direct Link', fn: function fn() {
+			return window.open(photo.getDirectLink(), '_newtab');
+		} }];
+
+	basicContext.show(items, e.originalEvent);
+};
+
+// Main -------------------------------------------------------------- //
+
+var loadingBar = {
+	show: function show() {},
+	hide: function hide() {}
+};
+
+var imageview = $('#imageview');
+
+$(document).ready(function () {
+
+	// set CSRF protection (Laravel)
+	csrf.bind();
+
+	// Image View
+	imageview.on('click', 'img', photo.update_display_overlay);
+
+	// Save ID of photo
+	var photoID = gup('p');
+
+	// Set API error handler
+	api.onError = error;
+
+	// Share
+	header.dom('#button_share').on('click', function (e) {
+		contextMenu.sharePhoto(photoID, e);
+	});
+
+	// Infobox
+	header.dom('#button_info').on('click', sidebar.toggle);
+
+	// Load photo
+	loadPhotoInfo(photoID);
+});
+
+var loadPhotoInfo = function loadPhotoInfo(photoID) {
+
+	var params = {
+		photoID: photoID,
+		albumID: '0',
+		password: ''
+	};
+
+	api.post('Photo::get', params, function (data) {
+
+		if (data === 'Warning: Photo private!' || data === 'Warning: Wrong password!') {
+
+			$('body').append(build.no_content('question-mark')).removeClass('view');
+			header.dom().remove();
+			return false;
+		}
+
+		photo.json = data;
+
+		// Set title
+		if (!data.title) data.title = 'Untitled';
+		document.title = 'Lychee - ' + data.title;
+		header.dom('.header__title').html(lychee.escapeHTML(data.title));
+
+		// Render HTML
+		imageview.html(build.imageview(data, true));
+		imageview.find('.arrow_wrapper').remove();
+		imageview.addClass('fadeIn').show();
+
+		// Render Sidebar
+		var structure = sidebar.createStructure.photo(data);
+		var html = sidebar.render(structure);
+
+		// Fullscreen
+		var timeout = null;
+
+		$(document).bind('mousemove', function () {
+			clearTimeout(timeout);
+			photo.show();
+			timeout = setTimeout(photo.hide, 2500);
+		});
+		timeout = setTimeout(photo.hide, 2500);
+
+		sidebar.dom('.sidebar__wrapper').html(html);
+		sidebar.bind();
+	});
+};
+
+var error = function error(errorThrown, params, data) {
+
+	console.error({
+		description: errorThrown,
+		params: params,
+		response: data
+	});
+
+	loadingBar.show('error', errorThrown);
+};
+
+/**
  * @description This module is used to generate HTML-Code.
  */
 
@@ -288,133 +675,6 @@ build.user = function (user) {
 	return html;
 };
 
-/**
- * @description This module communicates with Lychee's API
- */
-
-api = {
-
-	path: 'php/index.php',
-	onError: null
-
-};
-
-api.get_url = function (fn) {
-
-	var api_url = '';
-
-	if (lychee.api_V2) {
-		// because the api is defined directly by the function called in the route.php
-		api_url = 'api/' + fn;
-	} else {
-		api_url = api.path;
-	}
-
-	return api_url;
-};
-
-api.post = function (fn, params, callback) {
-
-	loadingBar.show();
-
-	params = $.extend({ function: fn }, params);
-
-	var api_url = api.get_url(fn);
-
-	var success = function success(data) {
-
-		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
-		callback(data);
-	};
-
-	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError('Server error or API not found.', params, errorThrown);
-	};
-
-	$.ajax({
-		type: 'POST',
-		url: api_url,
-		data: params,
-		dataType: 'json',
-		success: success,
-		error: error
-	});
-};
-
-api.get = function (url, callback) {
-
-	loadingBar.show();
-
-	var success = function success(data) {
-
-		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
-		callback(data);
-	};
-
-	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError('Server error or API not found.', {}, errorThrown);
-	};
-
-	$.ajax({
-		type: 'GET',
-		url: url,
-		data: {},
-		dataType: 'text',
-		success: success,
-		error: error
-	});
-};
-
-api.post_raw = function (fn, params, callback) {
-	loadingBar.show();
-
-	params = $.extend({ function: fn }, params);
-
-	var api_url = api.get_url(fn);
-
-	var success = function success(data) {
-
-		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
-		callback(data);
-	};
-
-	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError('Server error or API not found.', params, errorThrown);
-	};
-
-	$.ajax({
-		type: 'POST',
-		url: api_url,
-		data: params,
-		dataType: 'text',
-		success: success,
-		error: error
-	});
-};
 /**
  * @description This module takes care of the header.
  */
@@ -1036,266 +1296,6 @@ sidebar.render = function (structure) {
 	});
 
 	return html;
-};
-
-csrf = {};
-
-csrf.addLaravelCSRF = function (event, jqxhr, settings) {
-	if (settings.url !== lychee.updatePath) {
-		jqxhr.setRequestHeader('X-XSRF-TOKEN', csrf.getCookie('XSRF-TOKEN'));
-	}
-};
-
-csrf.escape = function (s) {
-	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1');
-};
-
-csrf.getCookie = function (name) {
-	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
-	var match = document.cookie.match(RegExp('(?:^|;\\s*)' + csrf.escape(name) + '=([^;^%]*)'));
-	return match ? match[1] : null;
-};
-
-csrf.bind = function () {
-	$(document).on('ajaxSend', csrf.addLaravelCSRF);
-};
-
-/**
- * @description Used to view single photos with view.php
- */
-
-// Sub-implementation of lychee -------------------------------------------------------------- //
-
-var lychee = {};
-
-lychee.content = $('.content');
-
-lychee.escapeHTML = function () {
-	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
-
-	// Ensure that html is a string
-	html += '';
-
-	// Escape all critical characters
-	html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/`/g, '&#96;');
-
-	return html;
-};
-
-lychee.html = function (literalSections) {
-
-	// Use raw literal sections: we don’t want
-	// backslashes (\n etc.) to be interpreted
-	var raw = literalSections.raw;
-	var result = '';
-
-	for (var _len = arguments.length, substs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-		substs[_key - 1] = arguments[_key];
-	}
-
-	substs.forEach(function (subst, i) {
-
-		// Retrieve the literal section preceding
-		// the current substitution
-		var lit = raw[i];
-
-		// If the substitution is preceded by a dollar sign,
-		// we escape special characters in it
-		if (lit.slice(-1) === '$') {
-			subst = lychee.escapeHTML(subst);
-			lit = lit.slice(0, -1);
-		}
-
-		result += lit;
-		result += subst;
-	});
-
-	// Take care of last literal section
-	// (Never fails, because an empty template string
-	// produces one literal section, an empty string)
-	result += raw[raw.length - 1];
-
-	return result;
-};
-
-lychee.getEventName = function () {
-
-	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && 'ontouchend' in document.documentElement;
-	return touchendSupport === true ? 'touchend' : 'click';
-};
-
-// Sub-implementation of photo -------------------------------------------------------------- //
-
-var photo = {
-	json: null
-};
-
-photo.share = function (photoID, service) {
-
-	var url = location.toString();
-
-	switch (service) {
-		case 'twitter':
-			window.open("https://twitter.com/share?url=" + encodeURI(url));
-			break;
-		case 'facebook':
-			window.open("http://www.facebook.com/sharer.php?u=" + encodeURI(url));
-			break;
-		case 'mail':
-			location.href = "mailto:?subject=&body=" + encodeURI(url);
-			break;
-	}
-};
-
-photo.getDirectLink = function () {
-
-	return $('#imageview img').attr('src').replace(/"/g, '').replace(/url\(|\)$/ig, '');
-};
-
-photo.update_display_overlay = function () {
-	lychee.image_overlay = !lychee.image_overlay;
-	if (!lychee.image_overlay) {
-		$('#image_overlay').remove();
-	} else {
-		$('#imageview').append(build.overlay_image(photo.json));
-	}
-};
-
-photo.show = function () {
-
-	$('#imageview').removeClass('full');
-	header.dom().removeClass('header--hidden');
-
-	return true;
-};
-
-photo.hide = function () {
-
-	if (visible.photo() && !visible.sidebar() && !visible.contextMenu()) {
-
-		$('#imageview').addClass('full');
-		header.dom().addClass('header--hidden');
-
-		return true;
-	}
-
-	return false;
-};
-
-// Sub-implementation of contextMenu -------------------------------------------------------------- //
-
-var contextMenu = {};
-
-contextMenu.sharePhoto = function (photoID, e) {
-
-	var iconClass = 'ionicons';
-
-	var items = [{ title: build.iconic('twitter', iconClass) + 'Twitter', fn: function fn() {
-			return photo.share(photoID, 'twitter');
-		} }, { title: build.iconic('facebook', iconClass) + 'Facebook', fn: function fn() {
-			return photo.share(photoID, 'facebook');
-		} }, { title: build.iconic('envelope-closed') + 'Mail', fn: function fn() {
-			return photo.share(photoID, 'mail');
-		} }, { title: build.iconic('link-intact') + 'Direct Link', fn: function fn() {
-			return window.open(photo.getDirectLink(), '_newtab');
-		} }];
-
-	basicContext.show(items, e.originalEvent);
-};
-
-// Main -------------------------------------------------------------- //
-
-var loadingBar = {
-	show: function show() {},
-	hide: function hide() {}
-};
-
-var imageview = $('#imageview');
-
-$(document).ready(function () {
-
-	// set CSRF protection (Laravel)
-	csrf.bind();
-
-	// Image View
-	imageview.on('click', 'img', photo.update_display_overlay);
-
-	// Save ID of photo
-	var photoID = gup('p');
-
-	// Set API error handler
-	api.onError = error;
-
-	// Share
-	header.dom('#button_share').on('click', function (e) {
-		contextMenu.sharePhoto(photoID, e);
-	});
-
-	// Infobox
-	header.dom('#button_info').on('click', sidebar.toggle);
-
-	// Load photo
-	loadPhotoInfo(photoID);
-});
-
-var loadPhotoInfo = function loadPhotoInfo(photoID) {
-
-	var params = {
-		photoID: photoID,
-		albumID: '0',
-		password: ''
-	};
-
-	api.post('Photo::get', params, function (data) {
-
-		if (data === 'Warning: Photo private!' || data === 'Warning: Wrong password!') {
-
-			$('body').append(build.no_content('question-mark')).removeClass('view');
-			header.dom().remove();
-			return false;
-		}
-
-		photo.json = data;
-
-		// Set title
-		if (!data.title) data.title = 'Untitled';
-		document.title = 'Lychee - ' + data.title;
-		header.dom('.header__title').html(lychee.escapeHTML(data.title));
-
-		// Render HTML
-		imageview.html(build.imageview(data, true));
-		imageview.find('.arrow_wrapper').remove();
-		imageview.addClass('fadeIn').show();
-
-		// Render Sidebar
-		var structure = sidebar.createStructure.photo(data);
-		var html = sidebar.render(structure);
-
-		// Fullscreen
-		var timeout = null;
-
-		$(document).bind('mousemove', function () {
-			clearTimeout(timeout);
-			photo.show();
-			timeout = setTimeout(photo.hide, 2500);
-		});
-		timeout = setTimeout(photo.hide, 2500);
-
-		sidebar.dom('.sidebar__wrapper').html(html);
-		sidebar.bind();
-	});
-};
-
-var error = function error(errorThrown, params, data) {
-
-	console.error({
-		description: errorThrown,
-		params: params,
-		response: data
-	});
-
-	loadingBar.show('error', errorThrown);
 };
 
 lychee.locale = {
