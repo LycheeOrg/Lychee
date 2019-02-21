@@ -12,7 +12,7 @@
 
 <div id="header" class="animate animate-down">
     <div id="logo" >
-        <a href="https://thomasheaton.co.uk"><h1>{{ $infos['title'] }}<span>{{ $infos['subtitle'] }}</span></h1></a>
+        <a href="{{ URL::to('/') }}"><h1>{{ $infos['title'] }}<span>{{ $infos['subtitle'] }}</span></h1></a>
     </div><!-- logo -->
 </div><!-- header -->
 
