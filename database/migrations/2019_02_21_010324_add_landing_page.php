@@ -18,7 +18,7 @@ class AddLandingPage extends Migration
 	    if(Schema::hasTable('configs')) {
 
 		    DB::table('configs')->insert([
-			    ['key' => 'landing_page_enable', 'value' => '1'],
+			    ['key' => 'landing_page_enable', 'value' => '0'],
 			    ['key' => 'landing_owner', 'value' => 'John Smith'],
 			    ['key' => 'landing_title', 'value' => 'John Smith'],
 			    ['key' => 'landing_subtitle', 'value' => 'Cat, Dogs & Humans Photography'],
