@@ -84,7 +84,7 @@ class PhotoController extends Controller
 
 		$return = array();
 		$return['thumb'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->thumbUrl;
-		if ($photo->medium == '1') {
+		if ($photo->medium != '') {
 			$return['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photo->url;
 		}
 		else {
@@ -390,10 +390,13 @@ class PhotoController extends Controller
 			$duplicate->takestamp = $photo->takestamp;
 			$duplicate->star = $photo->star;
 			$duplicate->thumbUrl = $photo->thumbUrl;
+			$duplicate->thumb2x = $photo->thumb2x;
 			$duplicate->album_id = $photo->album_id;
 			$duplicate->checksum = $photo->checksum;
 			$duplicate->medium = $photo->medium;
+			$duplicate->medium2x = $photo->medium2x;
 			$duplicate->small = $photo->small;
+			$duplicate->small2x = $photo->small2x;
 			$duplicate->owner_id = $photo->owner_id;
 			$no_error &= $duplicate->save();
 		}

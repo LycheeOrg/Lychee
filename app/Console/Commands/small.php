@@ -53,7 +53,7 @@ class small extends Command
 		$timeout = $this->argument('tm');
 		set_time_limit($timeout);
 
-		$photos = Photo::where('small', '=', 0)->limit($argument)->get();
+		$photos = Photo::where('small', '=', '')->limit($argument)->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires small.');
 			return false;
@@ -63,9 +63,10 @@ class small extends Command
 			if ($this->photoFunctions->createMedium(
 				$photo,
 				intval(Configs::get_value('small_max_width')),
-				intval(Configs::get_value('small_max_height')), 'SMALL')
+				intval(Configs::get_value('small_max_height')),
+				$resWidth, $resHeight, 'SMALL')
 			) {
-				$photo->small = 1;
+				$photo->small = $resWidth . 'x' . $resHeight;
 				$photo->save();
 				$this->line('small for '.$photo->title.' created.');
 			}

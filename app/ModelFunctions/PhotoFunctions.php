@@ -98,6 +98,7 @@ class PhotoFunctions
 			200,
 			200
 		);
+		$photo->thumb2x = 0;
 
 		Logs::notice(__METHOD__, __LINE__, 'Video thumb saved to '.Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl);
 
@@ -122,13 +123,20 @@ class PhotoFunctions
 			200
 		);
 
-		// Retina thumbs
-		$this->imageHandler->crop(
-			Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url,
-			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'@2x.jpeg',
-			400,
-			400
-		);
+		if (Configs::get_value('thumb_2x') === '1' &&
+		$photo->width >= 400 && $photo->height >= 400) {
+			// Retina thumbs
+			$this->imageHandler->crop(
+				Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url,
+				Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'@2x.jpeg',
+				400,
+				400
+			);
+			$photo->thumb2x = 1;
+		}
+		else {
+			$photo->thumb2x = 0;
+		}
 
 		return true;
 	}
@@ -144,7 +152,7 @@ class PhotoFunctions
 	 * @param string $kind
 	 * @return boolean Returns true when successful.
 	 */
-	public function createMedium(Photo $photo, $newWidth = 1920, $newHeight = 1080, $kind = 'MEDIUM')
+	public function createMedium(Photo $photo, $newWidth, $newHeight, &$resWidth, &$resHeight, $x2 = false, $kind = 'MEDIUM')
 	{
 		$filename = $photo->url;
 		$width = $photo->width;
@@ -161,15 +169,23 @@ class PhotoFunctions
 
 		}
 
+		if ($x2) {
+			$newWidth *= 2;
+			$newHeight *= 2;
+
+			$photoName = explode('.', $filename);
+			$filename = $photoName[0].'@2x.'.$photoName[1];
+		}
+
 		// Is photo big enough?
-		if ($width <= $newWidth && $height <= $newHeight) {
+		if (($width <= $newWidth || $newWidth == 0) && $height <= $newHeight) {
 			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small)!');
 			return false;
 		}
 
 		$newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind).$filename;
 
-		return $this->imageHandler->scale($url, $newUrl, $newWidth, $newHeight);
+		return $this->imageHandler->scale($url, $newUrl, $newWidth, $newHeight, $resWidth, $resHeight);
 
 	}
 
@@ -280,9 +296,12 @@ class PhotoFunctions
 		if ($exists !== false) {
 			$photo_name = $exists->url;
 			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$exists->url;
-			$path_thumb = $exists->thumbUrl;
-			$medium = $exists->medium;
-			$small = $exists->small;
+			$photo->thumbUrl = $exists->thumbUrl;
+			$photo->thumb2x = $exists->thumb2x;
+			$photo->medium = $exists->medium;
+			$photo->medium2x = $exists->medium2x;
+			$photo->small = $exists->small;
+			$photo->small2x = $exists->small2x;
 			$exists = true;
 		}
 
@@ -349,8 +368,6 @@ class PhotoFunctions
 		$photo->star = $star;
 		$photo->checksum = $checksum;
 		$photo->album_id = $albumID;
-		$photo->medium = 0;
-		$photo->small = 0;
 
 		if ($exists === false) {
 
@@ -387,27 +404,45 @@ class PhotoFunctions
 			}
 
 			Logs::notice(__METHOD__, __LINE__, $path_thumb);
+			$photo->thumbUrl = $path_thumb;
+
+			$resWidth = 0;
+			$resHeight = 0;
 
 			// Create Medium
-			if ($this->createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')))) {
-				$medium = 1;
+			if ($this->createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')), $resWidth, $resHeight)) {
+				$photo->medium = $resWidth . 'x' . $resHeight;
+
+				if (Configs::get_value('medium_2x') === '1' &&
+				$this->createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')), $resWidth, $resHeight, true)) {
+					$photo->medium2x = $resWidth . 'x' . $resHeight;
+				}
+				else {
+					$photo->medium2x = '';
+				}
 			}
 			else {
-				$medium = 0;
+				$photo->medium = '';
+				$photo->medium2x = '';
 			}
 
 			// Create Small
-			if ($this->createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), 'SMALL')) {
-				$small = 1;
+			if ($this->createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), $resWidth, $resHeight, false, 'SMALL')) {
+				$photo->small = $resWidth . 'x' . $resHeight;
+
+				if (Configs::get_value('small_2x') === '1' &&
+				$this->createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), $resWidth, $resHeight, true, 'SMALL')) {
+					$photo->small2x = $resWidth . 'x' . $resHeight;
+				}
+				else {
+					$photo->small2x = '';
+				}
 			}
 			else {
-				$small = 0;
+				$photo->small = '';
+				$photo->small2x = '';
 			}
 		}
-
-		$photo->thumbUrl = $path_thumb;
-		$photo->medium = $medium;
-		$photo->small = $small;
 
 		return $this->save($photo, $albumID);
 	}

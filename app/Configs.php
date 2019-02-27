@@ -28,10 +28,13 @@ class Configs extends Model
 		'sortingPhotos_col',
 		'sortingPhotos_order',
 		'default_license',
+		'thumb_2x',
 		'small_max_width',
 		'small_max_height',
+		'small_2x',
 		'medium_max_width',
 		'medium_max_height',
+		'medium_2x',
 	];
 
 

@@ -119,6 +119,7 @@ class AlbumsController extends Controller
 
 		$return[$kind] = array(
 			'thumbs' => array(),
+			'thumbs2x' => array(),
 			'types'  => array(),
 			'num'    => $photos_sql->count()
 		);
@@ -126,6 +127,14 @@ class AlbumsController extends Controller
 		foreach ($photos as $photo) {
 			if ($i < 3) {
 				$return[$kind]['thumbs'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->thumbUrl;
+				if ($photo->thumb2x == '1') {
+					$thumbUrl2x = explode(".", $photo->thumbUrl);
+					$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
+					$return[$kind]['thumbs2x'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
+				}
+				else {
+					$return[$kind]['thumbs2x'][$i] = '';
+				}
 				$return[$kind]['types'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->type;
 				$i++;
 			}
@@ -156,25 +165,25 @@ class AlbumsController extends Controller
 		/**
 		 * Unsorted
 		 */
-		$photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'type'))->limit(3);
+		$photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = self::gen_return($return, $photos_sql, 'unsorted');
 
 		/**
 		 * Starred
 		 */
-		$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'type'))->limit(3);
+		$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = self::gen_return($return, $photos_sql, 'starred');
 
 		/**
 		 * Public
 		 */
-		$photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'type'))->limit(3);
+		$photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = self::gen_return($return, $photos_sql, 'public');
 
 		/**
 		 * Recent
 		 */
-		$photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl'))->limit(3);
+		$photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = self::gen_return($return, $photos_sql, 'recent');
 
 		// Return SmartAlbums
