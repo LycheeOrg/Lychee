@@ -117,7 +117,7 @@ class Album extends Model
 			$album['albums'] = $subAlbum->get_albums($userId);
 			$album = $subAlbum->gen_thumbs($album);
 
-			if ($subAlbum['visible'] === '1' || ($userId === $subAlbum->owner->id)) {
+			if ($subAlbum['visible'] === '1' || $userId === 0 || ($userId === $subAlbum->owner->id)) {
 				$subAlbums[] = $album;
 			}
 		}
