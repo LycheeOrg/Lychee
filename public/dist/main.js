@@ -1816,10 +1816,17 @@ contextMenu.photoMore = function (photoID, e) {
 	// b) Downloadable is 1 and public mode is on
 	var showDownload = lychee.publicMode === false || album.json && album.json.downloadable && album.json.downloadable === '1' && lychee.publicMode === true;
 
+	var showMedium = photo.json.medium && photo.json.medium !== '' && showDownload;
+	var showSmall = photo.json.small && photo.json.small !== '' && showDownload;
+
 	var items = [{ title: build.iconic('fullscreen-enter') + lychee.locale['FULL_PHOTO'], visible: lychee.full_photo, fn: function fn() {
 			return window.open(photo.getDirectLink());
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], visible: showDownload, fn: function fn() {
-			return photo.getArchive(photoID);
+			return photo.getArchive(photoID, 'FULL');
+		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_MEDIUM'], visible: showMedium, fn: function fn() {
+			return photo.getArchive(photoID, 'MEDIUM');
+		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_SMALL'], visible: showSmall, fn: function fn() {
+			return photo.getArchive(photoID, 'SMALL');
 		} }];
 
 	basicContext.show(items, e.originalEvent);
@@ -1998,7 +2005,7 @@ header.bind = function () {
 		contextMenu.photoMore(photo.getID(), e);
 	});
 	header.dom('#button_move').on(eventName, function (e) {
-		contextMenu.move([photo.getID()], e);
+		contextMenu.move([photo.getID()], e, photo.setAlbum);
 	});
 	header.dom('.header__hostedwith').on(eventName, function () {
 		window.open(lychee.website);
@@ -2101,7 +2108,7 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
 
 			// Hide download button when album empty
-			if (album.json.photos === false) $('#button_archive').hide();else $('#button_archive').show();
+			if (!album.json || album.json.photos === false) $('#button_archive').hide();else $('#button_archive').show();
 
 			// Hide download button when not logged in and album not downloadable
 			if (lychee.publicMode === true && album.json.downloadable === '0') $('#button_archive').hide();
@@ -3064,7 +3071,9 @@ lychee.locale = {
 	'COPY_ALL_TO': 'Copy All to...',
 	'DELETE': 'Delete',
 	'DELETE_ALL': 'Delete All',
-	'DOWNLOAD': 'Download',
+	'DOWNLOAD': 'Download original size',
+	'DOWNLOAD_MEDIUM': 'Download medium size',
+	'DOWNLOAD_SMALL': 'Download small size',
 	'UPLOAD_PHOTO': 'Upload Photo',
 	'IMPORT_LINK': 'Import from Link',
 	'IMPORT_DROPBOX': 'Import from Dropbox',
@@ -4159,7 +4168,7 @@ photo.setAlbum = function (photoIDs, albumID) {
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
-	photoIDs.forEach(function (id, index, array) {
+	photoIDs.forEach(function (id) {
 
 		// Change reference for the next and previous photo
 		if (album.getByID(id).nextPhoto !== '' || album.getByID(id).previousPhoto !== '') {
@@ -4191,7 +4200,7 @@ photo.setAlbum = function (photoIDs, albumID) {
 		if (data !== true) {
 			lychee.error(null, params, data);
 		} else {
-			album.reload();
+			if (visible.album()) album.reload();
 		}
 	});
 };
@@ -4464,10 +4473,10 @@ photo.setLicense = function (photoID) {
 	});
 };
 
-photo.getArchive = function (photoID) {
+photo.getArchive = function (photoID, kind) {
 
 	var link = void 0;
-	var url = api.path + "?function=Photo::getArchive&photoID=" + photoID;
+	var url = api.path + "?function=Photo::getArchive&photoID=" + photoID + "&kind=" + kind;
 
 	if (location.href.indexOf('index.html') > 0) link = location.href.replace(location.hash, '').replace('index.html', url);else link = location.href.replace(location.hash, '') + url;
 

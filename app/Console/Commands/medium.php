@@ -64,7 +64,7 @@ class medium extends Command
 				$photo,
 				intval(Configs::get_value('medium_max_width')),
 				intval(Configs::get_value('medium_max_height')),
-				$resWidth, $resHeight)
+				$resWidth, $resHeight, false, 'MEDIUM')
 			) {
 				$photo->medium = $resWidth . 'x' . $resHeight;
 				$photo->save();

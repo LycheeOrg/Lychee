@@ -64,7 +64,7 @@ class small extends Command
 				$photo,
 				intval(Configs::get_value('small_max_width')),
 				intval(Configs::get_value('small_max_height')),
-				$resWidth, $resHeight, 'SMALL')
+				$resWidth, $resHeight, false, 'SMALL')
 			) {
 				$photo->small = $resWidth . 'x' . $resHeight;
 				$photo->save();

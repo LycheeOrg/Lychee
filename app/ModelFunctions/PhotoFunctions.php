@@ -149,6 +149,9 @@ class PhotoFunctions
 	 * @param Photo $photo
 	 * @param int $newWidth
 	 * @param int $newHeight
+	 * @param $resWidth
+	 * @param $resHeight
+	 * @param bool $x2
 	 * @param string $kind
 	 * @return boolean Returns true when successful.
 	 */
