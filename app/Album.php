@@ -79,13 +79,12 @@ class Album extends Model
 	{
 
 		$return['thumbs'] = array();
-		$return['thumbs2x'] = array();
 		$return['types'] = array();
 
 		$alb = $this->get_all_subalbums();
 		$alb[] = $this->id;
 
-		$thumbs_types = Photo::select('thumbUrl', 'thumb2x', 'type')
+		$thumbs_types = Photo::select('thumbUrl', 'type')
 			->whereIn('album_id', $alb)
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
@@ -95,14 +94,6 @@ class Album extends Model
 		$k = 0;
 		foreach ($thumbs_types as $thumb_types) {
 			$return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->thumbUrl;
-			if ($thumb_types->thumb2x == '1') {
-				$thumbUrl2x = explode(".", $thumb_types->thumbUrl);
-				$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-				$return['thumbs2x'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
-			}
-			else {
-				$return['thumbs2x'][$k] = '';
-			}
 			$return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->type;
 			$k++;
 		}
@@ -126,7 +117,7 @@ class Album extends Model
 			$album['albums'] = $subAlbum->get_albums($userId);
 			$album = $subAlbum->gen_thumbs($album);
 
-			if ($subAlbum['visible'] === '1' || $userId === 0 || ($userId === $subAlbum->owner->id)) {
+			if ($subAlbum['visible_hidden'] === '1' || $userId === 0 || ($userId === $subAlbum->owner->id)) {
 				$subAlbums[] = $album;
 			}
 		}
