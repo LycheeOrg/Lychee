@@ -113,11 +113,13 @@ class Album extends Model
 	{
 		$subAlbums = [];
 		foreach ($this->children as $subAlbum) {
-			$album = $subAlbum->prepareData();
-			$album['albums'] = $subAlbum->get_albums($userId);
-			$album = $subAlbum->gen_thumbs($album);
 
-			if ($subAlbum['visible_hidden'] === '1' || $userId === 0 || ($userId === $subAlbum->owner->id)) {
+			if (($subAlbum->public == '1' && $subAlbum->visible_hidden == '1') || $userId === 0 || ($userId === $subAlbum->owner->id)) {
+
+				$album = $subAlbum->prepareData();
+				$album['albums'] = $subAlbum->get_albums($userId);
+				$album = $subAlbum->gen_thumbs($album);
+
 				$subAlbums[] = $album;
 			}
 		}
