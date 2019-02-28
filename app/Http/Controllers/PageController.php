@@ -29,11 +29,11 @@ class PageController extends Controller
 		$infos['youtube'] = Configs::get_value('landing_youtube');
 		$infos['background'] = Configs::get_value('landing_background');
 
+		$title = Configs::get_value('site_title');
 		$menus = Page::menu()->get();
 
 		$contents = $page->content;
-//		dd($contents);
 
-		return view('page', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos, 'menus' => $menus, 'contents' => $contents]);
+		return view('page', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'contents' => $contents]);
 	}
 }

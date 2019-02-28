@@ -29,7 +29,10 @@ class IndexController extends Controller
 
 			$menus = Page::menu()->get();
 
-			return view('landing', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos, 'menus' => $menus]);
+			$title = Configs::get_value('site_title');
+
+
+			return view('landing', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus]);
 		}
 
 		return $this->gallery();
@@ -44,7 +47,8 @@ class IndexController extends Controller
 	public function gallery()
 	{
 		$lang = Lang::get_lang(Configs::get_value('lang'));
+		$title = Configs::get_value('site_title');
 
-		return view('gallery', ['locale' => $lang, 'title' => config('app.name')]);
+		return view('gallery', ['locale' => $lang, 'title' => $title]);
 	}
 }

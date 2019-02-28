@@ -35,7 +35,9 @@ class FrameController extends Controller
 		$infos['youtube'] = Configs::get_value('landing_youtube');
 		$infos['background'] = Configs::get_value('landing_background');
 
-		return view('frame', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos]);
+		$title = Configs::get_value('site_title');
+
+		return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos]);
 
 	}
 
