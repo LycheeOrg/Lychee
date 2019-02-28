@@ -29,7 +29,9 @@ class ImagickHandler implements ImageHandlerInterface
 		string $source,
 		string $destination,
 		int $newWidth,
-		int $newHeight
+		int $newHeight,
+		int &$resWidth,
+		int &$resHeight
 	): bool
 	{
 		try {
@@ -45,6 +47,8 @@ class ImagickHandler implements ImageHandlerInterface
 			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0));
 			$image->writeImage($destination);
 			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to '.$destination);
+			$resWidth = $image->getImageWidth();
+			$resHeight = $image->getImageHeight();
 			$image->clear();
 			$image->destroy();
 		}

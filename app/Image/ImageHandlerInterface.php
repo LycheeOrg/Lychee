@@ -19,7 +19,9 @@ interface ImageHandlerInterface
 		string $source,
 		string $destination,
 		int $newWidth,
-		int $newHeight
+		int $newHeight,
+		int &$resWidth,
+		int &$resHeight
 	) : bool ;
 
 		/**

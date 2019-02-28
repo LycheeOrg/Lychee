@@ -720,7 +720,7 @@ header.bind = function () {
 		contextMenu.photoMore(photo.getID(), e);
 	});
 	header.dom('#button_move').on(eventName, function (e) {
-		contextMenu.move([photo.getID()], e);
+		contextMenu.move([photo.getID()], e, photo.setAlbum);
 	});
 	header.dom('.header__hostedwith').on(eventName, function () {
 		window.open(lychee.website);
@@ -823,7 +823,7 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
 
 			// Hide download button when album empty
-			if (album.json.photos === false) $('#button_archive').hide();else $('#button_archive').show();
+			if (!album.json || album.json.photos === false) $('#button_archive').hide();else $('#button_archive').show();
 
 			// Hide download button when not logged in and album not downloadable
 			if (lychee.publicMode === true && album.json.downloadable === '0') $('#button_archive').hide();
@@ -1371,7 +1371,9 @@ lychee.locale = {
 	'COPY_ALL_TO': 'Copy All to...',
 	'DELETE': 'Delete',
 	'DELETE_ALL': 'Delete All',
-	'DOWNLOAD': 'Download',
+	'DOWNLOAD': 'Download original size',
+	'DOWNLOAD_MEDIUM': 'Download medium size',
+	'DOWNLOAD_SMALL': 'Download small size',
 	'UPLOAD_PHOTO': 'Upload Photo',
 	'IMPORT_LINK': 'Import from Link',
 	'IMPORT_DROPBOX': 'Import from Dropbox',

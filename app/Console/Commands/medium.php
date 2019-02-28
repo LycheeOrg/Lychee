@@ -53,7 +53,7 @@ class medium extends Command
 		$timeout = $this->argument('tm');
 		set_time_limit($timeout);
 
-		$photos = Photo::where('medium', '=', 0)->limit($argument)->get();
+		$photos = Photo::where('medium', '=', '')->limit($argument)->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires medium.');
 			return false;
@@ -63,9 +63,10 @@ class medium extends Command
 			if ($this->photoFunctions->createMedium(
 				$photo,
 				intval(Configs::get_value('medium_max_width')),
-				intval(Configs::get_value('medium_max_height')))
+				intval(Configs::get_value('medium_max_height')),
+				$resWidth, $resHeight, false, 'MEDIUM')
 			) {
-				$photo->medium = 1;
+				$photo->medium = $resWidth . 'x' . $resHeight;
 				$photo->save();
 				$this->line('medium for '.$photo->title.' created.');
 			} else {

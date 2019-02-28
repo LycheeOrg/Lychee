@@ -28,7 +28,9 @@ class GdHandler implements ImageHandlerInterface
 		string $source,
 		string $destination,
 		int $newWidth,
-		int $newHeight
+		int $newHeight,
+		int &$resWidth,
+		int &$resHeight
 	) : bool {
 		list($width, $height, $mime) = getimagesize($source);
 
@@ -56,6 +58,9 @@ class GdHandler implements ImageHandlerInterface
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
+
+		$resWidth = $newWidth;
+		$resHeight = $newHeight;
 
 		return true;
 	}

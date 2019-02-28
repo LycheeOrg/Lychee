@@ -131,22 +131,58 @@ class Photo extends Model
 		}
 
 		// Parse medium
-		if ($this->medium == '1') {
+		if ($this->medium != '') {
 			$photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$this->url;
+			$photo['medium_dim'] = $this->medium;
 		}
 		else {
 			$photo['medium'] = '';
+			$photo['medium_dim'] = '';
 		}
 
-		if ($this->small == '1') {
+		if ($this->medium2x != '') {
+			$url2x = explode('.', $this->url);
+			$url2x = $url2x[0].'@2x.'.$url2x[1];
+			$photo['medium2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$url2x;
+			$photo['medium2x_dim'] = $this->medium2x;
+		}
+		else {
+			$photo['medium2x'] = '';
+			$photo['medium2x_dim'] = '';
+		}
+
+		if ($this->small != '') {
 			$photo['small'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$this->url;
+			$photo['small_dim'] = $this->small;
 		}
 		else {
 			$photo['small'] = '';
+			$photo['small_dim'] = '';
+		}
+
+		if ($this->small2x != '') {
+			$url2x = explode('.', $this->url);
+			$url2x = $url2x[0].'@2x.'.$url2x[1];
+			$photo['small2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$url2x;
+			$photo['small2x_dim'] = $this->small2x;
+		}
+		else {
+			$photo['small2x'] = '';
+			$photo['small2x_dim'] = '';
 		}
 
 		// Parse paths
 		$photo['thumbUrl'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$this->thumbUrl;
+
+		if ($this->thumb2x == '1') {
+			$thumbUrl2x = explode(".", $this->thumbUrl);
+			$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
+			$photo['thumb2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
+		}
+		else {
+			$photo['thumb2x'] = '';
+		}
+
 		$photo['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG').$this->url;
 
 		// Use takestamp as sysdate when possible
@@ -207,9 +243,22 @@ class Photo extends Model
 			$error = true;
 		}
 
-		// Delete medium
+		$url2x = explode(".", $this->url);
+		$url2x = $url2x[0].'@2x.'.$url2x[1];
+
+		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$url2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$url2x)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
+			$error = true;
+		}
+
+		// Delete small
 		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$this->url) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$this->url)) {
 			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
+			$error = true;
+		}
+
+		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$url2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$url2x)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
 			$error = true;
 		}
 
