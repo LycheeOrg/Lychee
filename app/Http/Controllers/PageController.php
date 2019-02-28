@@ -31,8 +31,9 @@ class PageController extends Controller
 
 		$menus = Page::menu()->get();
 
-		$content = $page->content();
+		$contents = $page->content;
+//		dd($contents);
 
-		return view('page', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos, 'menus' => $menus, 'content' => $content]);
+		return view('page', ['locale' => $lang, 'title' => $infos['title'], 'infos' => $infos, 'menus' => $menus, 'contents' => $contents]);
 	}
 }

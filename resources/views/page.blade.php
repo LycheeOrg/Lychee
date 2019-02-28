@@ -18,6 +18,13 @@
 
     @include('includes.menu')
 
+    <div id="content">
+        @foreach($contents as $content)
+            {!! $content->get_content() !!}
+        @endforeach
+    </div>
+
+
     <div id="socials">
         @if($infos['facebook'] != '')
             <a href="{{ $infos['facebook'] }}" class="socialicons" id="facebook" target="_blank"></a>
