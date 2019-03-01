@@ -19,7 +19,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject13 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject14 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject15 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"]),
-    _templateObject16 = _taggedTemplateLiteral(["<img id='image' class='", "' src='", "' draggable='false'>"], ["<img id='image' class='", "' src='", "' draggable='false'>"]),
+    _templateObject16 = _taggedTemplateLiteral(["", ""], ["", ""]),
     _templateObject17 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
     _templateObject18 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
     _templateObject19 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
@@ -471,24 +471,24 @@ build.multiselect = function (top, left) {
 	return lychee.html(_templateObject4, top, left);
 };
 
-build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
-	var medium = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
-	var small = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
+build.getAlbumThumb = function (data, i) {
+	var isVideo = data.types[i] && data.types[i].indexOf('video') > -1;
+	var thumb = data.thumbs[i];
 
-	var isVideo = type && type.indexOf('video') > -1;
 	if (thumb === 'uploads/thumb/' && isVideo) {
 		return "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
-	// we use small if available
-	if ((lychee.layout === '1' || lychee.layout === '2') && small !== '') {
-		return "<span class=\"thumbimg\"><img src='" + small + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+
+	thumb2x = '';
+	if (data.thumbs2x) {
+		thumb2x = data.thumbs2x[i];
+	} else {
+		// Fallback code for Lychee v3
+		var _lychee$retinize = lychee.retinize(data.thumbs[i]),
+		    thumb2x = _lychee$retinize.path;
 	}
-	// we use medium if small is not available
-	if ((lychee.layout === '1' || lychee.layout === '2') && medium !== '') {
-		return "<span class=\"thumbimg\"><img src='" + medium + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
-	}
-	// we use crappy thumb image otherwise :]
-	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' srcset='" + retinaThumbUrl + " 2x' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+
+	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' " + (thumb2x !== '' ? 'srcset=\'' + thumb2x + ' 2x\'' : '') + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
 build.album = function (data) {
@@ -498,18 +498,7 @@ build.album = function (data) {
 	var date_stamp = data.sysdate;
 	var sortingAlbums = [];
 
-	var _lychee$retinize = lychee.retinize(data.thumbs[0]),
-	    retinaThumbUrl0 = _lychee$retinize.path;
-
-	var _lychee$retinize2 = lychee.retinize(data.thumbs[1]),
-	    retinaThumbUrl1 = _lychee$retinize2.path;
-
-	var _lychee$retinize3 = lychee.retinize(data.thumbs[2]),
-	    retinaThumbUrl2 = _lychee$retinize3.path;
-
 	// In the special case of take date sorting use the take stamps as title
-
-
 	if (lychee.sortingAlbums !== '' && data.min_takestamp && data.max_takestamp) {
 
 		sortingAlbums = lychee.sortingAlbums.replace('ORDER BY ', '').split(' ');
@@ -524,7 +513,7 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.id, build.getThumbnailHtml(data.thumbs[2], retinaThumbUrl2, data.types[2]), build.getThumbnailHtml(data.thumbs[1], retinaThumbUrl1, data.types[1]), build.getThumbnailHtml(data.thumbs[0], retinaThumbUrl0, data.types[0]), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.id, build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
 
 	if (lychee.publicMode === false) {
 
@@ -543,11 +532,70 @@ build.album = function (data) {
 build.photo = function (data) {
 
 	var html = '';
+	var thumbnail = '';
+	var thumb2x = '';
 
-	var _lychee$retinize4 = lychee.retinize(data.thumbUrl),
-	    retinaThumbUrl = _lychee$retinize4.path;
+	var isVideo = data.type && data.type.indexOf('video') > -1;
+	if (data.thumb === 'uploads/thumb/' && isVideo) {
+		thumbnail = "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	} else if (lychee.layout === '0') {
 
-	html += lychee.html(_templateObject8, data.album, data.id, build.getThumbnailHtml(data.thumbUrl, retinaThumbUrl, data.type, data.medium, data.small), data.title, data.title);
+		if (data.thumb2x) {
+			// Lychee v4
+			thumb2x = data.thumb2x;
+		} else {
+			// Lychee v3
+			var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
+			    _thumb2x = _lychee$retinize2.path;
+		}
+
+		if (thumb2x !== '') {
+			thumb2x = "srcset='" + thumb2x + " 2x'";
+		}
+
+		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+		thumbnail += "<img src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+		thumbnail += "</span>";
+	} else {
+
+		if (data.small !== '') {
+			if (data.small2x && data.small2x !== '') {
+				thumb2x = "srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
+			}
+			thumbnail = "<span class=\"thumbimg\"><img src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		} else if (data.medium !== '') {
+			if (data.medium2x && data.medium2x !== '') {
+				thumb2x = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+			}
+			thumbnail = "<span class=\"thumbimg\"><img src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		} else {
+			// safe case if nor medium or small exists
+			if (data.thumb2x) {
+				thumb2x = data.thumb2x;
+			} else {
+				var _lychee$retinize3 = lychee.retinize(data.thumbUrl),
+				    _thumb2x2 = _lychee$retinize3.path;
+			}
+			if (data.thumb2x) {
+				// Lychee v4
+				thumb2x = data.thumb2x;
+			} else {
+				// Lychee v3
+				var _lychee$retinize4 = lychee.retinize(data.thumbUrl),
+				    _thumb2x3 = _lychee$retinize4.path;
+			}
+
+			if (thumb2x !== '') {
+				thumb2x = "srcset='" + data.thumbUrl + " 200w, " + thumb2x + " 400w'";
+			}
+
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail += "<img src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "</span>";
+		}
+	}
+
+	html += lychee.html(_templateObject8, data.album, data.id, thumbnail, data.title, data.title);
 
 	if (data.cameraDate === '1') html += lychee.html(_templateObject9, build.iconic('camera-slr'), data.takedate);else html += lychee.html(_templateObject10, data.sysdate);
 
@@ -591,7 +639,20 @@ build.imageview = function (data, visibleControls) {
 	if (data.type.indexOf('video') > -1) {
 		html += lychee.html(_templateObject15, visibleControls === true ? '' : 'full', data.url);
 	} else {
-		html += lychee.html(_templateObject16, visibleControls === true ? '' : 'full', data.medium !== '' ? data.medium : data.url);
+		var img = '';
+
+		if (data.medium !== '') {
+			var medium = '';
+
+			if (data.medium2x && data.medium2x !== '') {
+				medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+			}
+			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
+		} else {
+			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
+		}
+		html += lychee.html(_templateObject16, img);
+
 		if (lychee.image_overlay) html += build.overlay_image(data);
 	}
 
@@ -658,7 +719,7 @@ build.tags = function (tags) {
 
 		tags = tags.split(',');
 
-		tags.forEach(function (tag, index, array) {
+		tags.forEach(function (tag, index) {
 			html += lychee.html(_templateObject21, tag, index, build.iconic('x'));
 		});
 	} else {

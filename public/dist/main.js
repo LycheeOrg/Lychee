@@ -67,7 +67,7 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject25 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"]),
-    _templateObject26 = _taggedTemplateLiteral(["<img id='image' class='", "' src='", "' draggable='false'>"], ["<img id='image' class='", "' src='", "' draggable='false'>"]),
+    _templateObject26 = _taggedTemplateLiteral(["", ""], ["", ""]),
     _templateObject27 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
     _templateObject28 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
     _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
@@ -1183,6 +1183,7 @@ albums._createSmartAlbums = function (data) {
 		sysdate: data.unsorted.num + ' ' + lychee.locale['NUM_PHOTOS'],
 		unsorted: '1',
 		thumbs: data.unsorted.thumbs,
+		thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
 		types: data.unsorted.types
 	};
 
@@ -1192,6 +1193,7 @@ albums._createSmartAlbums = function (data) {
 		sysdate: data.starred.num + ' ' + lychee.locale['NUM_PHOTOS'],
 		star: '1',
 		thumbs: data.starred.thumbs,
+		thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
 		types: data.starred.types
 	};
 
@@ -1201,6 +1203,7 @@ albums._createSmartAlbums = function (data) {
 		sysdate: data.public.num + ' ' + lychee.locale['NUM_PHOTOS'],
 		public: '1',
 		thumbs: data.public.thumbs,
+		thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
 		hidden: '1',
 		types: data.public.types
 	};
@@ -1211,6 +1214,7 @@ albums._createSmartAlbums = function (data) {
 		sysdate: data.recent.num + ' ' + lychee.locale['NUM_PHOTOS'],
 		recent: '1',
 		thumbs: data.recent.thumbs,
+		thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
 		types: data.recent.types
 	};
 };
@@ -1337,24 +1341,24 @@ build.multiselect = function (top, left) {
 	return lychee.html(_templateObject14, top, left);
 };
 
-build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
-	var medium = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
-	var small = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
+build.getAlbumThumb = function (data, i) {
+	var isVideo = data.types[i] && data.types[i].indexOf('video') > -1;
+	var thumb = data.thumbs[i];
 
-	var isVideo = type && type.indexOf('video') > -1;
 	if (thumb === 'uploads/thumb/' && isVideo) {
 		return "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
-	// we use small if available
-	if ((lychee.layout === '1' || lychee.layout === '2') && small !== '') {
-		return "<span class=\"thumbimg\"><img src='" + small + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+
+	thumb2x = '';
+	if (data.thumbs2x) {
+		thumb2x = data.thumbs2x[i];
+	} else {
+		// Fallback code for Lychee v3
+		var _lychee$retinize = lychee.retinize(data.thumbs[i]),
+		    thumb2x = _lychee$retinize.path;
 	}
-	// we use medium if small is not available
-	if ((lychee.layout === '1' || lychee.layout === '2') && medium !== '') {
-		return "<span class=\"thumbimg\"><img src='" + medium + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
-	}
-	// we use crappy thumb image otherwise :]
-	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' srcset='" + retinaThumbUrl + " 2x' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+
+	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' " + (thumb2x !== '' ? 'srcset=\'' + thumb2x + ' 2x\'' : '') + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
 build.album = function (data) {
@@ -1364,18 +1368,7 @@ build.album = function (data) {
 	var date_stamp = data.sysdate;
 	var sortingAlbums = [];
 
-	var _lychee$retinize = lychee.retinize(data.thumbs[0]),
-	    retinaThumbUrl0 = _lychee$retinize.path;
-
-	var _lychee$retinize2 = lychee.retinize(data.thumbs[1]),
-	    retinaThumbUrl1 = _lychee$retinize2.path;
-
-	var _lychee$retinize3 = lychee.retinize(data.thumbs[2]),
-	    retinaThumbUrl2 = _lychee$retinize3.path;
-
 	// In the special case of take date sorting use the take stamps as title
-
-
 	if (lychee.sortingAlbums !== '' && data.min_takestamp && data.max_takestamp) {
 
 		sortingAlbums = lychee.sortingAlbums.replace('ORDER BY ', '').split(' ');
@@ -1390,7 +1383,7 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject15, disabled ? "disabled" : "", data.id, build.getThumbnailHtml(data.thumbs[2], retinaThumbUrl2, data.types[2]), build.getThumbnailHtml(data.thumbs[1], retinaThumbUrl1, data.types[1]), build.getThumbnailHtml(data.thumbs[0], retinaThumbUrl0, data.types[0]), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject15, disabled ? "disabled" : "", data.id, build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
 
 	if (lychee.publicMode === false) {
 
@@ -1409,11 +1402,70 @@ build.album = function (data) {
 build.photo = function (data) {
 
 	var html = '';
+	var thumbnail = '';
+	var thumb2x = '';
 
-	var _lychee$retinize4 = lychee.retinize(data.thumbUrl),
-	    retinaThumbUrl = _lychee$retinize4.path;
+	var isVideo = data.type && data.type.indexOf('video') > -1;
+	if (data.thumb === 'uploads/thumb/' && isVideo) {
+		thumbnail = "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	} else if (lychee.layout === '0') {
 
-	html += lychee.html(_templateObject18, data.album, data.id, build.getThumbnailHtml(data.thumbUrl, retinaThumbUrl, data.type, data.medium, data.small), data.title, data.title);
+		if (data.thumb2x) {
+			// Lychee v4
+			thumb2x = data.thumb2x;
+		} else {
+			// Lychee v3
+			var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
+			    _thumb2x = _lychee$retinize2.path;
+		}
+
+		if (thumb2x !== '') {
+			thumb2x = "srcset='" + thumb2x + " 2x'";
+		}
+
+		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+		thumbnail += "<img src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+		thumbnail += "</span>";
+	} else {
+
+		if (data.small !== '') {
+			if (data.small2x && data.small2x !== '') {
+				thumb2x = "srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
+			}
+			thumbnail = "<span class=\"thumbimg\"><img src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		} else if (data.medium !== '') {
+			if (data.medium2x && data.medium2x !== '') {
+				thumb2x = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+			}
+			thumbnail = "<span class=\"thumbimg\"><img src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		} else {
+			// safe case if nor medium or small exists
+			if (data.thumb2x) {
+				thumb2x = data.thumb2x;
+			} else {
+				var _lychee$retinize3 = lychee.retinize(data.thumbUrl),
+				    _thumb2x2 = _lychee$retinize3.path;
+			}
+			if (data.thumb2x) {
+				// Lychee v4
+				thumb2x = data.thumb2x;
+			} else {
+				// Lychee v3
+				var _lychee$retinize4 = lychee.retinize(data.thumbUrl),
+				    _thumb2x3 = _lychee$retinize4.path;
+			}
+
+			if (thumb2x !== '') {
+				thumb2x = "srcset='" + data.thumbUrl + " 200w, " + thumb2x + " 400w'";
+			}
+
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail += "<img src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "</span>";
+		}
+	}
+
+	html += lychee.html(_templateObject18, data.album, data.id, thumbnail, data.title, data.title);
 
 	if (data.cameraDate === '1') html += lychee.html(_templateObject19, build.iconic('camera-slr'), data.takedate);else html += lychee.html(_templateObject20, data.sysdate);
 
@@ -1457,7 +1509,20 @@ build.imageview = function (data, visibleControls) {
 	if (data.type.indexOf('video') > -1) {
 		html += lychee.html(_templateObject25, visibleControls === true ? '' : 'full', data.url);
 	} else {
-		html += lychee.html(_templateObject26, visibleControls === true ? '' : 'full', data.medium !== '' ? data.medium : data.url);
+		var img = '';
+
+		if (data.medium !== '') {
+			var medium = '';
+
+			if (data.medium2x && data.medium2x !== '') {
+				medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+			}
+			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
+		} else {
+			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
+		}
+		html += lychee.html(_templateObject26, img);
+
 		if (lychee.image_overlay) html += build.overlay_image(data);
 	}
 
@@ -1524,7 +1589,7 @@ build.tags = function (tags) {
 
 		tags = tags.split(',');
 
-		tags.forEach(function (tag, index, array) {
+		tags.forEach(function (tag, index) {
 			html += lychee.html(_templateObject31, tag, index, build.iconic('x'));
 		});
 	} else {
@@ -2305,6 +2370,7 @@ $(document).ready(function () {
 	// resize
 	.on('resize', function () {
 		if (visible.album()) view.album.content.justify();
+		if (visible.photo()) view.photo.onresize();
 	});
 
 	// Init
@@ -3916,7 +3982,20 @@ photo.preloadNext = function (photoID) {
 		var nextPhoto = album.getByID(photoID).nextPhoto;
 		var url = album.getByID(nextPhoto).url;
 		var medium = album.getByID(nextPhoto).medium;
-		var href = medium != null && medium !== '' ? medium : url;
+		var href = url;
+		if (medium != null && medium !== '') {
+			href = medium;
+
+			var medium2x = album.getByID(nextPhoto).medium2x;
+			if (medium2x && medium2x !== '') {
+				// If the currently displayed image uses the 2x variant,
+				// chances are that so will the next one.
+				var imgs = $('img#image');
+				if (imgs.length > 0 && imgs[0].currentSrc != null && imgs[0].currentSrc.includes('@2x.')) {
+					href = medium2x;
+				}
+			}
+		}
 
 		$('head [data-prefetch]').remove();
 		$('head').append("<link data-prefetch rel=\"prefetch\" href=\"" + href + "\">");
@@ -4030,7 +4109,7 @@ photo.delete = function (photoIDs) {
 
 		basicModal.close();
 
-		photoIDs.forEach(function (id, index, array) {
+		photoIDs.forEach(function (id) {
 
 			// Change reference for the next and previous photo
 			if (album.getByID(id).nextPhoto !== '' || album.getByID(id).previousPhoto !== '') {
@@ -4117,7 +4196,7 @@ photo.setTitle = function (photoIDs) {
 			view.photo.title();
 		}
 
-		photoIDs.forEach(function (id, index, array) {
+		photoIDs.forEach(function (id) {
 			album.getByID(id).title = newTitle;
 			view.album.content.title(id);
 		});
@@ -4214,7 +4293,7 @@ photo.setStar = function (photoIDs) {
 		view.photo.star();
 	}
 
-	photoIDs.forEach(function (id, index, array) {
+	photoIDs.forEach(function (id) {
 		album.getByID(id).star = album.getByID(id).star === '0' ? '1' : '0';
 		view.album.content.star(id);
 	});
@@ -4327,7 +4406,7 @@ photo.editTags = function (photoIDs) {
 	// Get tags
 	if (visible.photo()) oldTags = photo.json.tags;else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.album() && photoIDs.length > 1) {
 		var same = true;
-		photoIDs.forEach(function (id, index, array) {
+		photoIDs.forEach(function (id) {
 			same = album.getByID(id).tags === album.getByID(photoIDs[0]).tags && same === true;
 		});
 		if (same === true) oldTags = album.getByID(photoIDs[0]).tags;
@@ -6268,6 +6347,11 @@ view.album = {
 					$(this).css('width', layoutGeometry.boxes[i].width);
 					$(this).css('height', layoutGeometry.boxes[i].height);
 					$(this).css('left', layoutGeometry.boxes[i].left);
+
+					var imgs = $(this).find(".thumbimg > img");
+					if (imgs.length > 0 && imgs[0].getAttribute('srcset')) {
+						imgs[0].setAttribute('sizes', layoutGeometry.boxes[i].width + 'px');
+					}
 				});
 			} else if (lychee.layout === '2') {
 				var containerWidth = parseFloat($('.unjustified-layout').width(), 10);
@@ -6276,6 +6360,7 @@ view.album = {
 					var height = parseFloat($(this).css('max-height'), 10);
 					var width = height * ratio;
 					var margin = parseFloat($(this).css('margin-right'), 10);
+					var imgs = $(this).find(".thumbimg > img");
 
 					if (width > containerWidth - margin) {
 						width = containerWidth - margin;
@@ -6284,6 +6369,9 @@ view.album = {
 
 					$(this).css('width', width + 'px');
 					$(this).css('height', height + 'px');
+					if (imgs.length > 0 && imgs[0].getAttribute('srcset')) {
+						imgs[0].setAttribute('sizes', width + 'px');
+					}
 				});
 			}
 		}
@@ -6525,6 +6613,7 @@ view.photo = {
 	}(function () {
 
 		lychee.imageview.html(build.imageview(photo.json, visible.header()));
+		view.photo.onresize();
 
 		var $nextArrow = lychee.imageview.find('a#next');
 		var $previousArrow = lychee.imageview.find('a#previous');
@@ -6572,7 +6661,28 @@ view.photo = {
 
 		sidebar.dom('.sidebar__wrapper').html(html);
 		sidebar.bind();
-	})
+	}),
+
+	onresize: function onresize() {
+		if (photo.json.medium === '' || !photo.json.medium2x || photo.json.medium2x === '') return;
+
+		// Calculate the width of the image in the current window and
+		// set 'sizes' to it.
+		var imgWidth = parseInt(photo.json.medium_dim);
+		var imgHeight = photo.json.medium_dim.substr(photo.json.medium_dim.lastIndexOf('x') + 1);
+		var containerWidth = parseFloat($('#imageview').width(), 10);
+		var containerHeight = parseFloat($('#imageview').height(), 10);
+
+		// Image can be no larger than its natural size, but it can be
+		// smaller depending on the size of the window.
+		var width = imgWidth < containerWidth ? imgWidth : containerWidth;
+		var height = width * imgHeight / imgWidth;
+		if (height > containerHeight) {
+			width = containerHeight * imgWidth / imgHeight;
+		}
+
+		$('img#image').attr('sizes', width + 'px');
+	}
 
 };
 
