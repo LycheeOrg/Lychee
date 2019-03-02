@@ -15,7 +15,7 @@ class small extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'small {nb=5 : generate medium pictures if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'small {nb=5 : generate small pictures if missing} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
@@ -55,11 +55,13 @@ class small extends Command
 
 		$photos = Photo::where('small', '=', '')->limit($argument)->get();
 		if (count($photos) == 0) {
-			$this->line('No pictures requires small.');
+			$this->line('No picture requires small.');
 			return false;
 		}
 
 		foreach ($photos as $photo) {
+			$resWidth = 0;
+			$resHeight = 0;
 			if ($this->photoFunctions->createMedium(
 				$photo,
 				intval(Configs::get_value('small_max_width')),
