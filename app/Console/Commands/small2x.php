@@ -7,7 +7,7 @@ use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
 
-class medium extends Command
+class small2x extends Command
 {
 
 	/**
@@ -15,14 +15,14 @@ class medium extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'medium {nb=5 : generate medium pictures if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'small2x {nb=5 : generate small@2x pictures if missing} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Create medium pictures if missing';
+	protected $description = 'Create small@2x pictures if missing';
 
 	/**
 	 * @var PhotoFunctions
@@ -53,9 +53,9 @@ class medium extends Command
 		$timeout = $this->argument('tm');
 		set_time_limit($timeout);
 
-		$photos = Photo::where('medium', '=', '')->limit($argument)->get();
+		$photos = Photo::where('small2x', '=', '')->limit($argument)->get();
 		if (count($photos) == 0) {
-			$this->line('No picture requires medium.');
+			$this->line('No picture requires small@2x.');
 			return false;
 		}
 
@@ -64,15 +64,16 @@ class medium extends Command
 			$resHeight = 0;
 			if ($this->photoFunctions->createMedium(
 				$photo,
-				intval(Configs::get_value('medium_max_width')),
-				intval(Configs::get_value('medium_max_height')),
-				$resWidth, $resHeight, false, 'MEDIUM')
+				intval(Configs::get_value('small_max_width')),
+				intval(Configs::get_value('small_max_height')),
+				$resWidth, $resHeight, true, 'SMALL')
 			) {
-				$photo->medium = $resWidth . 'x' . $resHeight;
+				$photo->small2x = $resWidth . 'x' . $resHeight;
 				$photo->save();
-				$this->line('medium for '.$photo->title.' created.');
-			} else {
-				$this->line('Could not create medium for '.$photo->title.'.');
+				$this->line('small@2x for '.$photo->title.' created.');
+			}
+			else {
+				$this->line('Could not create small@2x for '.$photo->title.'.');
 			}
 		}
 	}
