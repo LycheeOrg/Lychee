@@ -181,7 +181,7 @@ class PhotoFunctions
 		}
 
 		// Is photo big enough?
-		if (($width <= $newWidth || $newWidth == 0) && $height <= $newHeight) {
+		if (($width <= $newWidth || $newWidth == 0) && ($height <= $newHeight || $newHeight == 0)) {
 			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small)!');
 			return false;
 		}
