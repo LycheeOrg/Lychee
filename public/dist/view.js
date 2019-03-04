@@ -481,7 +481,9 @@ build.getAlbumThumb = function (data, i) {
 
 	thumb2x = '';
 	if (data.thumbs2x) {
-		thumb2x = data.thumbs2x[i];
+		if (data.thumbs2x[i]) {
+			thumb2x = data.thumbs2x[i];
+		}
 	} else {
 		// Fallback code for Lychee v3
 		var _lychee$retinize = lychee.retinize(data.thumbs[i]),

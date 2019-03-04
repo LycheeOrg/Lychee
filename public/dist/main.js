@@ -1351,7 +1351,9 @@ build.getAlbumThumb = function (data, i) {
 
 	thumb2x = '';
 	if (data.thumbs2x) {
-		thumb2x = data.thumbs2x[i];
+		if (data.thumbs2x[i]) {
+			thumb2x = data.thumbs2x[i];
+		}
 	} else {
 		// Fallback code for Lychee v3
 		var _lychee$retinize = lychee.retinize(data.thumbs[i]),
@@ -6330,6 +6332,11 @@ view.album = {
 		justify: function justify() {
 			if (!album.json.photos || album.json.photos === false) return;
 			if (lychee.layout === '1') {
+				var containerWidth = parseFloat($('.justified-layout').width(), 10);
+				if (containerWidth == 0) {
+					// Triggered on Reload in photo view.
+					containerWidth = $(window).width() - parseFloat($('.justified-layout').css('margin-left'), 10) - parseFloat($('.justified-layout').css('margin-right'), 10);
+				}
 				var ratio = [];
 				$.each(album.json.photos, function (i) {
 					var l_width = this.width > 0 ? this.width : 200;
@@ -6337,7 +6344,7 @@ view.album = {
 					ratio[i] = l_width / l_height;
 				});
 				var layoutGeometry = require('justified-layout')(ratio, {
-					containerWidth: $('.justified-layout').width(),
+					containerWidth: containerWidth,
 					containerPadding: 0
 				});
 				if (lychee.admin) console.log(layoutGeometry);
@@ -6354,7 +6361,11 @@ view.album = {
 					}
 				});
 			} else if (lychee.layout === '2') {
-				var containerWidth = parseFloat($('.unjustified-layout').width(), 10);
+				var _containerWidth = parseFloat($('.unjustified-layout').width(), 10);
+				if (_containerWidth == 0) {
+					// Triggered on Reload in photo view.
+					_containerWidth = $(window).width() - parseFloat($('.unjustified-layout').css('margin-left'), 10) - parseFloat($('.unjustified-layout').css('margin-right'), 10);
+				}
 				$('.unjustified-layout > div').each(function (i) {
 					var ratio = album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1;
 					var height = parseFloat($(this).css('max-height'), 10);
@@ -6362,8 +6373,8 @@ view.album = {
 					var margin = parseFloat($(this).css('margin-right'), 10);
 					var imgs = $(this).find(".thumbimg > img");
 
-					if (width > containerWidth - margin) {
-						width = containerWidth - margin;
+					if (width > _containerWidth - margin) {
+						width = _containerWidth - margin;
 						height = width / ratio;
 					}
 
