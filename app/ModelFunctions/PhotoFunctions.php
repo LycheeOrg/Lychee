@@ -141,59 +141,6 @@ class PhotoFunctions
 		return true;
 	}
 
-
-
-	/**
-	 * Creates a smaller version of a photo when its size is bigger than a preset size.
-	 * Photo must be big enough.
-	 * @param Photo $photo
-	 * @param int $newWidth
-	 * @param int $newHeight
-	 * @param $resWidth
-	 * @param $resHeight
-	 * @param bool $x2
-	 * @param string $kind
-	 * @return boolean Returns true when successful.
-	 */
-	public function createMedium(Photo $photo, $newWidth, $newHeight, &$resWidth, &$resHeight, $x2 = false, $kind = 'MEDIUM')
-	{
-		$filename = $photo->url;
-		$width = $photo->width;
-		$height = $photo->height;
-
-		$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
-
-		// Check permissions
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind)) === false) {
-
-			// Permissions are missing
-			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because '.Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind).' is missing or not readable and writable.');
-			return false;
-
-		}
-
-		if ($x2) {
-			$newWidth *= 2;
-			$newHeight *= 2;
-
-			$photoName = explode('.', $filename);
-			$filename = $photoName[0].'@2x.'.$photoName[1];
-		}
-
-		// Is photo big enough?
-		if (($width <= $newWidth || $newWidth == 0) && ($height <= $newHeight || $newHeight == 0)) {
-			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small)!');
-			return false;
-		}
-
-		$newUrl = Config::get('defines.dirs.LYCHEE_UPLOADS_'.$kind).$filename;
-
-		return $this->imageHandler->scale($url, $newUrl, $newWidth, $newHeight, $resWidth, $resHeight);
-
-	}
-
-
-
 	/**
 	 * Creats new photo(s).
 	 * Exits on error.
@@ -409,48 +356,86 @@ class PhotoFunctions
 			Logs::notice(__METHOD__, __LINE__, $path_thumb);
 			$photo->thumbUrl = $path_thumb;
 
-			$resWidth = 0;
-			$resHeight = 0;
-
-			// Create Medium
-			if ($this->createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')), $resWidth, $resHeight)) {
-				$photo->medium = $resWidth . 'x' . $resHeight;
-
-				if (Configs::get_value('medium_2x') === '1' &&
-				$this->createMedium($photo, intval(Configs::get_value('medium_max_width')), intval(Configs::get_value('medium_max_height')), $resWidth, $resHeight, true)) {
-					$photo->medium2x = $resWidth . 'x' . $resHeight;
-				}
-				else {
-					$photo->medium2x = '';
-				}
-			}
-			else {
-				$photo->medium = '';
-				$photo->medium2x = '';
-			}
-
-			// Create Small
-			if ($this->createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), $resWidth, $resHeight, false, 'SMALL')) {
-				$photo->small = $resWidth . 'x' . $resHeight;
-
-				if (Configs::get_value('small_2x') === '1' &&
-				$this->createMedium($photo, intval(Configs::get_value('small_max_width')), intval(Configs::get_value('small_max_height')), $resWidth, $resHeight, true, 'SMALL')) {
-					$photo->small2x = $resWidth . 'x' . $resHeight;
-				}
-				else {
-					$photo->small2x = '';
-				}
-			}
-			else {
-				$photo->small = '';
-				$photo->small2x = '';
-			}
+			$this->createSmallerImages($photo);
 		}
 
 		return $this->save($photo, $albumID);
 	}
 
+	/**
+	 * @param  Photo  $photo
+	 * @return void
+	 */
+	private function createSmallerImages(Photo $photo)
+	{
+		$mediumMaxWidth = intval(Configs::get_value('medium_max_width'));
+		$mediumMaxHeight = intval(Configs::get_value('medium_max_height'));
+		$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight);
 
+		if (Configs::get_value('medium_2x') === '1') {
+			$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
+		}
+
+		$smallMaxWidth = intval(Configs::get_value('small_max_width'));
+		$smallMaxHeight = intval(Configs::get_value('small_max_height'));
+		$this->resizePhoto($photo, 'small', $smallMaxWidth, $smallMaxHeight);
+
+		if (Configs::get_value('small_2x') === '1') {
+			$this->resizePhoto($photo, 'small2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
+		}
+	}
+
+	/**
+	 * Creates smaller copies of Photo
+	 *
+	 * @param  Photo  $photo
+	 * @param  string $type
+	 * @param  int    $maxWidth
+	 * @param  int    $maxHeight
+	 * @return bool
+	 */
+	public function resizePhoto(Photo $photo, string $type, int $maxWidth, int $maxHeight) : bool
+	{
+		$filename = $photo->url;
+		$width = $photo->width;
+		$height = $photo->height;
+
+		$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
+
+		// Both image sizes of the same type are stored in the same folder
+		// ie: medium and medium2x both belong in LYCHEE_UPLOADS_MEDIUM
+		$pathType = strtoupper($type);
+		if (($split = strpos($pathType, '2')) !== false) {
+			$pathType = substr($pathType, 0, $split);
+		}
+
+		$uploadFolder = Config::get('defines.dirs.LYCHEE_UPLOADS_'.$pathType);
+		if (Helpers::hasPermissions($uploadFolder) === false) {
+			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because '.$uploadFolder.' is missing or not readable and writable.');
+			return false;
+		}
+
+		// Add the @2x postfix if we're dealing with an HiDPI type
+		if (strpos($type, '2x') > 0) {
+			preg_replace('/(.*)\.([a-z]+)$/', '\1@2x\2', $filename);
+		}
+
+		// Is photo big enough?
+		if (($width <= $maxWidth || $maxWidth == 0) && ($height <= $maxHeight || $maxHeight == 0)) {
+			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small)!');
+			return false;
+		}
+
+		$resWidth = $resHeight = 0;
+		if (!$this->imageHandler->scale($url, $uploadFolder.$filename, $maxWidth, $maxHeight, $resWidth, $resHeight)) {
+			Logs::error(__METHOD__, __LINE__, 'Failed to '.$type.' resize image');
+			return false;
+		}
+
+		$photo->{$type} = $resWidth . 'x' . $resHeight;
+
+		return true;
+	}
 
 	/**
 	 * We create this recursive function to try to fix the duplicate entry key problem

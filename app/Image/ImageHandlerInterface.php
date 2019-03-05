@@ -13,6 +13,8 @@ interface ImageHandlerInterface
 	 * @param  string $destination
 	 * @param  int    $newWidth
 	 * @param  int    $newHeight
+	 * @param  int    &$resWidth
+	 * @param  int    &$resHeight
 	 * @return bool
 	 */
 	public function scale(
