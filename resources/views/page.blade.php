@@ -41,11 +41,6 @@
         @if($infos['youtube'] != '')
             <a href="{{ $infos['youtube'] }}" class="socialicons" id="youtube" target="_blank"></a>
         @endif
-        {{--<a href="https://www.facebook.com/ThomasHeatonPhotography?ref=hl" class="socialicons" id="facebook" target="_blank"></a>--}}
-        {{--<a href="https://www.flickr.com/photos/thomasheaton/" class="socialicons" id="flickr" target="_blank"></a>--}}
-        {{--<a href="https://twitter.com/theatonphoto" class="socialicons" id="twitter" target="_blank"></a>--}}
-        {{--<a href="https://www.instagram.com/heatonthomas/" class="socialicons" id="instagram" target="_blank"></a>--}}
-        {{--<a href="https://www.youtube.com/channel/UCfhW84xfA6gEc4hDK90rR1Q" class="socialicons" id="youtube" target="_blank"></a>--}}
         <div style="clear: both;"></div>
     </div><!-- socials -->
 

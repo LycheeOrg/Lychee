@@ -38,7 +38,6 @@ class Configs extends Model
 		'landing_title',
 		'landing_background',
 		'landing_facebook',
-		'landing_facebook',
 		'landing_flickr',
 		'landing_twitter',
 		'landing_youtube',
