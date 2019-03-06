@@ -17,40 +17,6 @@ class Configs extends Model
 		'dropboxKey'
 	];
 
-	protected static $clear_field = [
-		'lang_available',
-		'imagick',
-		'skipDuplicates',
-		'sortingAlbums',
-		'sortingAlbums_col',
-		'sortingAlbums_order',
-		'sortingPhotos',
-		'sortingPhotos_col',
-		'sortingPhotos_order',
-		'default_license',
-		'thumb_2x',
-		'small_max_width',
-		'small_max_height',
-		'small_2x',
-		'medium_max_width',
-		'medium_max_height',
-		'medium_2x',
-		'landing_title',
-		'landing_background',
-		'landing_facebook',
-		'landing_flickr',
-		'landing_twitter',
-		'landing_youtube',
-		'landing_instagram',
-		'landing_owner',
-		'landing_subtitle',
-		'site_copyright_enable',
-		'site_copyright_begin',
-		'site_copyright_end'
-	];
-
-
-
 	/**
 	 * @param string $key
 	 * @param bool $public
@@ -108,6 +74,7 @@ class Configs extends Model
 		return $return;
 	}
 
+
 	/**
 	 * @param string $key
 	 * @param mixed  $default
@@ -154,50 +121,16 @@ class Configs extends Model
 	}
 
 
-
 	/**
 	 * @return bool Returns the Imagick setting.
 	 */
-	public static function hasImagick()
+	static public function hasImagick()
 	{
-		if ((bool) (extension_loaded('imagick') && self::get_value('imagick', '1') == '1')) {
+		if ((bool) (extension_loaded('imagick') && Configs::get_value('imagick', '1') == '1')) {
 			return true;
 		}
 		Logs::notice(__METHOD__, __LINE__, "hasImagick : false");
 		return false;
-	}
-
-
-
-	/**
-	 * @return array Returns the public settings of Lychee.
-	 */
-	public static function min_info()
-	{
-
-		// Execute query
-		$configs = Configs::all();
-
-		$return = array();
-
-		// Add each to return
-		foreach ($configs as $config) {
-			$found = false;
-			foreach (self::$except as $exception) {
-				if ($exception == $config->key) {
-					$found = true;
-				}
-			}
-			foreach (self::$clear_field as $exception) {
-				if ($exception == $config->key) {
-					$found = true;
-				}
-			}
-			if (!$found) {
-				$return[$config->key] = $config->value;
-			}
-		}
-		return $return;
 	}
 
 }

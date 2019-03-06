@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Album;
 use App\Configs;
 use App\Logs;
+use App\ModelFunctions\ConfigFunctions;
 use App\Response;
 use App\Locale\Lang;
 use App\User;
@@ -15,6 +16,22 @@ use Illuminate\Support\Facades\Session;
 
 class SessionController extends Controller
 {
+
+	/**
+	 * @var ConfigFunctions
+	 */
+	private $configFunctions;
+
+
+
+	/**
+	 * @param ConfigFunctions $configFunctions
+	 */
+	public function __construct(ConfigFunctions $configFunctions)
+	{
+		$this->configFunctions = $configFunctions;
+	}
+
 
 	public function init(Request $request)
 	{
@@ -78,7 +95,7 @@ class SessionController extends Controller
 		}
 		else {
 			// Logged out
-			$return['config'] = Configs::min_info();
+			$return['config'] = $this->configFunctions->min_info();
 			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
 		}
 
