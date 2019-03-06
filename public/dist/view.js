@@ -19,7 +19,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject13 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject14 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject15 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"]),
-    _templateObject16 = _taggedTemplateLiteral(["<img id='image' class='", "' src='", "' draggable='false'>"], ["<img id='image' class='", "' src='", "' draggable='false'>"]),
+    _templateObject16 = _taggedTemplateLiteral(["", ""], ["", ""]),
     _templateObject17 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
     _templateObject18 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
     _templateObject19 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
@@ -471,24 +471,31 @@ build.multiselect = function (top, left) {
 	return lychee.html(_templateObject4, top, left);
 };
 
-build.getThumbnailHtml = function (thumb, retinaThumbUrl, type) {
-	var medium = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : '';
-	var small = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : '';
+build.getAlbumThumb = function (data, i) {
+	var isVideo = data.types[i] && data.types[i].indexOf('video') > -1;
+	var thumb = data.thumbs[i];
 
-	var isVideo = type && type.indexOf('video') > -1;
 	if (thumb === 'uploads/thumb/' && isVideo) {
 		return "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
-	// we use small if available
-	if ((lychee.layout === '1' || lychee.layout === '2') && small !== '') {
-		return "<span class=\"thumbimg\"><img src='" + small + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+
+	thumb2x = '';
+	if (data.thumbs2x) {
+		if (data.thumbs2x[i]) {
+			thumb2x = data.thumbs2x[i];
+		}
+	} else {
+		// Fallback code for Lychee v3
+		var _lychee$retinize = lychee.retinize(data.thumbs[i]),
+		    thumb2x = _lychee$retinize.path,
+		    isPhoto = _lychee$retinize.isPhoto;
+
+		if (!isPhoto) {
+			thumb2x = '';
+		}
 	}
-	// we use medium if small is not available
-	if ((lychee.layout === '1' || lychee.layout === '2') && medium !== '') {
-		return "<span class=\"thumbimg\"><img src='" + medium + "' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
-	}
-	// we use crappy thumb image otherwise :]
-	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' srcset='" + retinaThumbUrl + " 2x' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+
+	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img src='" + thumb + "' " + (thumb2x !== '' ? 'srcset=\'' + thumb2x + ' 2x\'' : '') + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
 build.album = function (data) {
@@ -498,18 +505,7 @@ build.album = function (data) {
 	var date_stamp = data.sysdate;
 	var sortingAlbums = [];
 
-	var _lychee$retinize = lychee.retinize(data.thumbs[0]),
-	    retinaThumbUrl0 = _lychee$retinize.path;
-
-	var _lychee$retinize2 = lychee.retinize(data.thumbs[1]),
-	    retinaThumbUrl1 = _lychee$retinize2.path;
-
-	var _lychee$retinize3 = lychee.retinize(data.thumbs[2]),
-	    retinaThumbUrl2 = _lychee$retinize3.path;
-
 	// In the special case of take date sorting use the take stamps as title
-
-
 	if (lychee.sortingAlbums !== '' && data.min_takestamp && data.max_takestamp) {
 
 		sortingAlbums = lychee.sortingAlbums.replace('ORDER BY ', '').split(' ');
@@ -524,7 +520,7 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.id, build.getThumbnailHtml(data.thumbs[2], retinaThumbUrl2, data.types[2]), build.getThumbnailHtml(data.thumbs[1], retinaThumbUrl1, data.types[1]), build.getThumbnailHtml(data.thumbs[0], retinaThumbUrl0, data.types[0]), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.id, build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
 
 	if (lychee.publicMode === false) {
 
@@ -543,11 +539,76 @@ build.album = function (data) {
 build.photo = function (data) {
 
 	var html = '';
+	var thumbnail = '';
+	var thumb2x = '';
 
-	var _lychee$retinize4 = lychee.retinize(data.thumbUrl),
-	    retinaThumbUrl = _lychee$retinize4.path;
+	var isVideo = data.type && data.type.indexOf('video') > -1;
+	if (data.thumb === 'uploads/thumb/' && isVideo) {
+		thumbnail = "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	} else if (lychee.layout === '0') {
 
-	html += lychee.html(_templateObject8, data.album, data.id, build.getThumbnailHtml(data.thumbUrl, retinaThumbUrl, data.type, data.medium, data.small), data.title, data.title);
+		if (data.thumb2x) {
+			// Lychee v4
+			thumb2x = data.thumb2x;
+		} else {
+			// Lychee v3
+			var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
+			    _thumb2x = _lychee$retinize2.path;
+		}
+
+		if (thumb2x !== '') {
+			thumb2x = "srcset='" + thumb2x + " 2x'";
+		}
+
+		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+		thumbnail += "<img src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+		thumbnail += "</span>";
+	} else {
+
+		if (data.small !== '') {
+			if (data.small2x && data.small2x !== '') {
+				thumb2x = "srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
+			}
+
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail += "<img src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "</span>";
+		} else if (data.medium !== '') {
+			if (data.medium2x && data.medium2x !== '') {
+				thumb2x = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+			}
+
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail += "<img src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "</span>";
+		} else {
+			// safe case if nor medium or small exists
+			if (data.thumb2x) {
+				thumb2x = data.thumb2x;
+			} else {
+				var _lychee$retinize3 = lychee.retinize(data.thumbUrl),
+				    _thumb2x2 = _lychee$retinize3.path;
+			}
+			if (data.thumb2x) {
+				// Lychee v4
+				thumb2x = data.thumb2x;
+			} else {
+				// Lychee v3
+				var _lychee$retinize4 = lychee.retinize(data.thumbUrl),
+				    _thumb2x3 = _lychee$retinize4.path;
+			}
+
+			if (thumb2x !== '') {
+				thumb2x = "srcset='" + data.thumbUrl + " 200w, " + thumb2x + " 400w'";
+			}
+
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail += "<img src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "</span>";
+		}
+	}
+
+	html += lychee.html(_templateObject8, data.album, data.id, thumbnail, data.title, data.title);
 
 	if (data.cameraDate === '1') html += lychee.html(_templateObject9, build.iconic('camera-slr'), data.takedate);else html += lychee.html(_templateObject10, data.sysdate);
 
@@ -591,7 +652,20 @@ build.imageview = function (data, visibleControls) {
 	if (data.type.indexOf('video') > -1) {
 		html += lychee.html(_templateObject15, visibleControls === true ? '' : 'full', data.url);
 	} else {
-		html += lychee.html(_templateObject16, visibleControls === true ? '' : 'full', data.medium !== '' ? data.medium : data.url);
+		var img = '';
+
+		if (data.medium !== '') {
+			var medium = '';
+
+			if (data.medium2x && data.medium2x !== '') {
+				medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+			}
+			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
+		} else {
+			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
+		}
+		html += lychee.html(_templateObject16, img);
+
 		if (lychee.image_overlay) html += build.overlay_image(data);
 	}
 
@@ -658,7 +732,7 @@ build.tags = function (tags) {
 
 		tags = tags.split(',');
 
-		tags.forEach(function (tag, index, array) {
+		tags.forEach(function (tag, index) {
 			html += lychee.html(_templateObject21, tag, index, build.iconic('x'));
 		});
 	} else {
@@ -1019,6 +1093,15 @@ sidebar.changeAttr = function (attr) {
 	return true;
 };
 
+sidebar.secondsToHMS = function (d) {
+	d = Number(d);
+	var h = Math.floor(d / 3600);
+	var m = Math.floor(d % 3600 / 60);
+	var s = Math.floor(d % 60);
+
+	return (h > 0 ? h.toString() + 'h' : '') + (m > 0 ? m.toString() + 'm' : '') + (s > 0 || h == 0 && m == 0 ? s.toString() + 's' : '');
+};
+
 sidebar.createStructure.photo = function (data) {
 
 	if (data == null || data === '') return false;
@@ -1027,6 +1110,7 @@ sidebar.createStructure.photo = function (data) {
 	var exifHash = data.takedate + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
 	var structure = {};
 	var _public = '';
+	var isVideo = data.type && data.type.indexOf('video') > -1;
 
 	// Enable editable when user logged in
 	if (lychee.publicMode === false && lychee.upload) editable = true;
@@ -1072,10 +1156,24 @@ sidebar.createStructure.photo = function (data) {
 	};
 
 	structure.image = {
-		title: lychee.locale['PHOTO_IMAGE'],
+		title: lychee.locale[isVideo ? 'PHOTO_VIDEO' : 'PHOTO_IMAGE'],
 		type: sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['PHOTO_SIZE'], kind: 'size', value: data.size }, { title: lychee.locale['PHOTO_FORMAT'], kind: 'type', value: data.type }, { title: lychee.locale['PHOTO_RESOLUTION'], kind: 'resolution', value: data.width + ' x ' + data.height }]
 	};
+
+	if (isVideo) {
+		// We overload the database, storing duration (in full seconds) in
+		// "aperture" and frame rate (floating point with three digits after
+		// the decimal point) in "focal".
+		if (data.aperture != '') {
+			structure.image.rows.push({ title: lychee.locale['PHOTO_DURATION'],
+				kind: 'duration', value: sidebar.secondsToHMS(data.aperture) });
+		}
+		if (data.focal != '') {
+			structure.image.rows.push({ title: lychee.locale['PHOTO_FPS'],
+				kind: 'fps', value: data.focal + ' fps' });
+		}
+	}
 
 	// Only create tags section when user logged in
 	if (lychee.publicMode === false && lychee.upload) {
@@ -1097,7 +1195,7 @@ sidebar.createStructure.photo = function (data) {
 		structure.exif = {
 			title: lychee.locale['PHOTO_CAMERA'],
 			type: sidebar.types.DEFAULT,
-			rows: [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }, { title: lychee.locale['PHOTO_LENS'], kind: 'lens', value: data.lens }, { title: lychee.locale['PHOTO_SHUTTER'], kind: 'shutter', value: data.shutter }, { title: lychee.locale['PHOTO_APERTURE'], kind: 'aperture', value: data.aperture }, { title: lychee.locale['PHOTO_FOCAL'], kind: 'focal', value: data.focal }, { title: lychee.locale['PHOTO_ISO'], kind: 'iso', value: data.iso }]
+			rows: isVideo ? [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }] : [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }, { title: lychee.locale['PHOTO_LENS'], kind: 'lens', value: data.lens }, { title: lychee.locale['PHOTO_SHUTTER'], kind: 'shutter', value: data.shutter }, { title: lychee.locale['PHOTO_APERTURE'], kind: 'aperture', value: data.aperture }, { title: lychee.locale['PHOTO_FOCAL'], kind: 'focal', value: data.focal }, { title: lychee.locale['PHOTO_ISO'], kind: 'iso', value: data.iso }]
 		};
 	} else {
 
@@ -1216,11 +1314,21 @@ sidebar.createStructure.album = function (data) {
 		rows: [{ title: lychee.locale['ALBUM_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['ALBUM_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
 	};
 
+	videoCount = 0;
+	$.each(data.photos, function () {
+		if (this.type && this.type.indexOf('video') > -1) {
+			videoCount++;
+		}
+	});
 	structure.album = {
 		title: lychee.locale['ALBUM_ALBUM'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }, { title: lychee.locale['ALBUM_IMAGES'], kind: 'images', value: data.photos.length }]
+		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }, { title: lychee.locale['ALBUM_IMAGES'], kind: 'images', value: (data.photos ? data.photos.length : 0) - videoCount }]
 	};
+	if (videoCount > 0) {
+		structure.album.rows.push({ title: lychee.locale['ALBUM_VIDEOS'],
+			kind: 'videos', value: videoCount });
+	}
 
 	structure.share = {
 		title: lychee.locale['ALBUM_SHARING'],
@@ -1414,6 +1522,7 @@ lychee.locale = {
 	'ALBUM_ALBUM': 'Album',
 	'ALBUM_CREATED': 'Created',
 	'ALBUM_IMAGES': 'Images',
+	'ALBUM_VIDEOS': 'Videos',
 	'ALBUM_SHARING': 'Share',
 	'ALBUM_OWNER': 'Owner',
 	'ALBUM_SHR_YES': 'YES',
@@ -1462,9 +1571,12 @@ lychee.locale = {
 	'PHOTO_LICENSE_NONE': 'None',
 	'PHOTO_RESERVED': 'All Rights Reserved',
 	'PHOTO_IMAGE': 'Image',
+	'PHOTO_VIDEO': 'Video',
 	'PHOTO_SIZE': 'Size',
 	'PHOTO_FORMAT': 'Format',
 	'PHOTO_RESOLUTION': 'Resolution',
+	'PHOTO_DURATION': 'Duration',
+	'PHOTO_FPS': 'Frame rate',
 	'PHOTO_TAGS': 'Tags',
 	'PHOTO_NOTAGS': 'No Tags',
 	'PHOTO_NEW_TAGS': 'Enter your tags for this photo. You can add multiple tags by separating them with a comma:',

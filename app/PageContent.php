@@ -12,7 +12,7 @@ class PageContent extends Model
 
 		$return = '';
 		if ($this->type == 'img') {
-			$return = '<img class="'.$this->class.'" src="'.$this->content.'"/>';
+			$return = '<div class="'.$this->class.'"><img src="'.$this->content.'"/></div>';
 		}
 		elseif ($this->type == 'div') {
 			$return = '<div class="'.$this->class.'">';

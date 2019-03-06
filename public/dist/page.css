@@ -2810,7 +2810,6 @@ a {
   #content h1 {
     display: block;
     font-size: 2em;
-    margin-top: 0.67em;
     margin-bottom: 0.67em;
     margin-left: 0;
     margin-right: 0;
@@ -2818,7 +2817,6 @@ a {
   #content h2 {
     display: block;
     font-size: 1.5em;
-    margin-top: 0.83em;
     margin-bottom: 0.83em;
     margin-left: 0;
     margin-right: 0;
@@ -2826,7 +2824,6 @@ a {
   #content h3 {
     display: block;
     font-size: 1.17em;
-    margin-top: 1em;
     margin-bottom: 1em;
     margin-left: 0;
     margin-right: 0;
@@ -2834,7 +2831,6 @@ a {
   #content h4 {
     display: block;
     font-size: 1em;
-    margin-top: 1.33em;
     margin-bottom: 1.33em;
     margin-left: 0;
     margin-right: 0;
@@ -2842,7 +2838,6 @@ a {
   #content h5 {
     display: block;
     font-size: .83em;
-    margin-top: 1.67em;
     margin-bottom: 1.67em;
     margin-left: 0;
     margin-right: 0;
@@ -2850,13 +2845,33 @@ a {
   #content h6 {
     display: block;
     font-size: .67em;
-    margin-top: 2.33em;
     margin-bottom: 2.33em;
     margin-left: 0;
     margin-right: 0;
     font-weight: bold; }
   #content p {
-    color: #707070; }
+    color: #707070;
+    margin-bottom: 1em; }
+  #content div.left_30 {
+    width: 30%;
+    float: left; }
+  #content div.left_50 {
+    width: 50%;
+    float: left; }
+  #content div.right_70 {
+    width: 70%;
+    float: right; }
+  #content div.right_50 {
+    width: 50%;
+    float: right; }
+  #content div.left_50 img {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto; }
+  #content .clearfix::after {
+    content: "";
+    clear: both;
+    display: table; }
 
 #footer {
   position: absolute;
