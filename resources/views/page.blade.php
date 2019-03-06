@@ -5,7 +5,7 @@
 @endsection
 
 @section('head-css')
-    <link type="text/css" rel="stylesheet" href="dist/landing.css">
+    <link type="text/css" rel="stylesheet" href="dist/page.css">
 @endsection
 
 @section('content')
@@ -16,26 +16,16 @@
         </div><!-- logo -->
     </div><!-- header -->
 
-
     @include('includes.menu')
 
-    <div id="intro">
-        <div id="intro_content">
-            <h1 class="animate_slower pop-in">{{ $infos['title'] }}</h1>
-            <h2><span class="animate_slower pop-in">{{ $infos['subtitle'] }}</span></h2>
-        </div><!-- content -->
-    </div><!-- intro -->
-
-
-    <div id="slides" class="animate_slower pop-in-last">
-        <div class="slides-container">
-            <li>
-                <div class="overlay"></div>
-                <img src="{{ $infos['background'] }}" alt=""></li>
-        </div>
+    <div id="content">
+        @foreach($contents as $content)
+            {!! $content->get_content() !!}
+        @endforeach
     </div>
 
-    <div id="home_socials" class="animate animate-up">
+
+    <div id="socials">
         @if($infos['facebook'] != '')
             <a href="{{ $infos['facebook'] }}" class="socialicons" id="facebook" target="_blank"></a>
         @endif
@@ -53,7 +43,6 @@
         @endif
         <div style="clear: both;"></div>
     </div><!-- socials -->
-
 
     @include('includes.footer')
 @endsection

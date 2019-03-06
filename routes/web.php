@@ -20,7 +20,7 @@ if (env('APP_ENV') === 'dev') {
 
 Route::get('/',                                 'IndexController@show')->name('home');
 Route::get('/phpinfo',                          'IndexController@phpinfo')->name('admin');
-Route::get('/gallery',                          'IndexController@gallery')->name('home');
+Route::get('/gallery',                          'IndexController@gallery')->name('gallery');
 
 Route::get('/view',                             'ViewController@view');
 Route::get('/demo',                             'DemoController@js');
@@ -95,3 +95,5 @@ Route::post('/api/Diagnostics',                 'DiagnosticsController@show')->m
 Route::post('/api/Logs::clear',                 'LogController@clear')->middleware('admin');
 
 Route::post('/api/search',                      'SearchController@search')->middleware('upload');
+
+Route::get('/{page}',                           'PageController@page');

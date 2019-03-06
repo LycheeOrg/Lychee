@@ -109,7 +109,11 @@ class GdHandler implements ImageHandlerInterface
 	{
 		$image = imagecreatefromjpeg($path);
 
+		$rotate = true;
 		switch ($info['orientation']) {
+			case 1:
+				$rotate = false;
+				break;
 			case 2:
 				imageflip($image, IMG_FLIP_HORIZONTAL);
 				break;
@@ -141,7 +145,10 @@ class GdHandler implements ImageHandlerInterface
 				break;
 		}
 
-		imagejpeg($image, $path, 100);
+		if ($rotate) // we only rotate if there is a need. Fixes #111
+		{
+			imagejpeg($image, $path, 100);
+		}
 
 		imagedestroy($image);
 
