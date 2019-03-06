@@ -44,7 +44,7 @@ class ImagickHandler implements ImageHandlerInterface
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
-			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0));
+			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
 			$image->writeImage($destination);
 			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to '.$destination);
 			$resWidth = $image->getImageWidth();

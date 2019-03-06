@@ -7,7 +7,7 @@ use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
 
-class small extends Command
+class small2x extends Command
 {
 
 	/**
@@ -15,14 +15,14 @@ class small extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'small {nb=5 : generate small pictures if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'small2x {nb=5 : generate small@2x pictures if missing} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Create small pictures if missing';
+	protected $description = 'Create small@2x pictures if missing';
 
 	/**
 	 * @var PhotoFunctions
@@ -53,10 +53,10 @@ class small extends Command
 		$timeout = $this->argument('tm');
 		set_time_limit($timeout);
 
-		$this->line('Will attempt to generate up to '.$argument.' small ('.Configs::get_value('small_max_width').'x'.Configs::get_value('small_max_height').') images with a timeout of '.$timeout.' seconds...');
-		$photos = Photo::where('small', '=', '')->where('type', 'like', 'image/%')->get();
+		$this->line('Will attempt to generate up to '.$argument.' small@2x ('.(Configs::get_value('small_max_width')*2).'x'.(Configs::get_value('small_max_height')*2).') images with a timeout of '.$timeout.' seconds...');
+		$photos = Photo::where('small2x', '=', '')->where('type', 'like', 'image/%')->get();
 		if (count($photos) == 0) {
-			$this->line('No picture requires small.');
+			$this->line('No picture requires small@2x.');
 			return false;
 		}
 
@@ -68,11 +68,11 @@ class small extends Command
 				$photo,
 				intval(Configs::get_value('small_max_width')),
 				intval(Configs::get_value('small_max_height')),
-				$resWidth, $resHeight, false, 'SMALL')
+				$resWidth, $resHeight, true, 'SMALL')
 			) {
-				$photo->small = $resWidth . 'x' . $resHeight;
+				$photo->small2x = $resWidth . 'x' . $resHeight;
 				$photo->save();
-				$this->line('small ('.$photo->small.') for '.$photo->title.' created.');
+				$this->line('small@2x ('.$photo->small2x.') for '.$photo->title.' created.');
 				$count++;
 				if ($count == $argument) {
 					$this->line('Rerun this command to check for more images.');
@@ -80,7 +80,7 @@ class small extends Command
 				}
 			}
 			else {
-				$this->line('Could not create small for '.$photo->title.' ('.$photo->width.'x'.$photo->height.').');
+				$this->line('Could not create small@2x for '.$photo->title.' ('.$photo->width.'x'.$photo->height.').');
 			}
 		}
 	}

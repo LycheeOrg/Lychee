@@ -20,7 +20,7 @@ final class German
 			'CLOSE'			=> 'Schließen',
 
 			'SETTINGS'			=> 'Einstellungen',
-			'SEARCH'        => 'Search ...',
+			'SEARCH'        	=> 'Suchen ...',
 
 			'USERS'				=> 'Benutzer',
 			'SHARING'			=> 'Freigabe',
@@ -107,7 +107,7 @@ final class German
 			'UNSTAR_PHOTO'				=> 'Foto von Favoriten entfernen',
 
 			'FULL_PHOTO'				=> 'Ganzes Foto',
-			'ABOUT_PHOTO'				=> 'Über dieses Photo',
+			'ABOUT_PHOTO'				=> 'Über dieses Foto',
 			'DIRECT_LINK'				=> 'Direkter Link',
 
 			'ALBUM_ABOUT'				=> 'Über',
@@ -248,7 +248,7 @@ final class German
 
 			'EDIT_SHARING_TITLE'		=> 'Freigabe bearbeiten',
 			'EDIT_SHARING_TEXT'			=> 'Die Freigabeeinstellungen für dieses Album werden wie folgt geändert:',
-			'SHARE_ALBUM_TEXT'			=> 'Dieses Album wird mit folgenden Einstellugen freigegeben:',
+			'SHARE_ALBUM_TEXT'			=> 'Dieses Album wird mit folgenden Einstellungen freigegeben:',
 
 			'SORT_ALBUM_BY_1'			=> 'Alben sortieren nach',
 			'SORT_ALBUM_BY_2'			=> 'in einer',
