@@ -195,7 +195,7 @@ class PhotoFunctions
 
 
 	/**
-	 * Creats new photo(s).
+	 * Creates new photo(s).
 	 * Exits on error.
 	 *
 	 * @param array $file
@@ -204,8 +204,6 @@ class PhotoFunctions
 	 */
 	public function add(array $file, $albumID_in = 0)
 	{
-		$id = Session::get('UserID');
-
 		// Check permissions
 		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS')) === false ||
 			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')) === false ||

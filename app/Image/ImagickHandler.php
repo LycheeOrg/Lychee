@@ -4,6 +4,7 @@ namespace App\Image;
 
 use App\Configs;
 use App\Logs;
+use ImagickException;
 
 class ImagickHandler implements ImageHandlerInterface
 {
@@ -107,7 +108,11 @@ class ImagickHandler implements ImageHandlerInterface
 
 		$orientation = $image->getImageOrientation();
 
+		$rotate = true;
 		switch ($orientation) {
+			case \Imagick::ORIENTATION_TOPLEFT:
+				$rotate = false;
+				break;
 			case \Imagick::ORIENTATION_TOPRIGHT:
 				$image->flopImage();
 				break;
@@ -134,8 +139,11 @@ class ImagickHandler implements ImageHandlerInterface
 				break;
 		}
 
-		$image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
-		$image->writeImage($path);
+		if($rotate) // we only write if there is a need. Fixes #111
+		{
+			$image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+			$image->writeImage($path);
+		}
 
 		$dimensions = [
 			'width'  => $image->getImageWidth(),
