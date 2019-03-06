@@ -28,6 +28,12 @@ class PageController extends Controller
 		$infos['instagram'] = Configs::get_value('landing_instagram');
 		$infos['youtube'] = Configs::get_value('landing_youtube');
 		$infos['background'] = Configs::get_value('landing_background');
+		$infos['copyright_enable'] = Configs::get_value('site_copyright_enable');
+		$infos['copyright_year'] = Configs::get_value('site_copyright_begin');
+		if (Configs::get_value('site_copyright_begin') != Configs::get_value('site_copyright_end'))
+		{
+			$infos['copyright_year'] = Configs::get_value('site_copyright_begin').'-'.Configs::get_value('site_copyright_end');
+		}
 
 		$title = Configs::get_value('site_title');
 		$menus = Page::menu()->get();

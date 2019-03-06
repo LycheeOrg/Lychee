@@ -44,6 +44,9 @@ class Configs extends Model
 		'landing_instagram',
 		'landing_owner',
 		'landing_subtitle',
+		'site_copyright_enable',
+		'site_copyright_begin',
+		'site_copyright_end'
 	];
 
 
