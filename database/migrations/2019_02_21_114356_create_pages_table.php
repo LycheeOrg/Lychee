@@ -26,22 +26,22 @@ class CreatePagesTable extends Migration
 		});
 
 		DB::table('pages')->insert([
-			[
-				'title'      => 'contact',
-				'menu_title' => 'contact',
-				'in_menu'    => true,
-				'link'       => '/contact',
-				'enabled'    => true,
-				'order'      => 0
-			],
-			[
-				'title'      => 'about',
-				'menu_title' => 'about',
-				'in_menu'    => true,
-				'link'       => '/about',
-				'enabled'    => true,
-				'order'      => 1
-			],
+//			[
+//				'title'      => 'contact',
+//				'menu_title' => 'contact',
+//				'in_menu'    => true,
+//				'link'       => '/contact',
+//				'enabled'    => true,
+//				'order'      => 0
+//			],
+//			[
+//				'title'      => 'about',
+//				'menu_title' => 'about',
+//				'in_menu'    => true,
+//				'link'       => '/about',
+//				'enabled'    => true,
+//				'order'      => 1
+//			],
 			[
 				'title'      => 'gallery',
 				'menu_title' => 'gallery',
@@ -50,14 +50,14 @@ class CreatePagesTable extends Migration
 				'enabled'    => true,
 				'order'      => 2
 			],
-			[
-				'title'      => 'portfolio',
-				'menu_title' => 'portfolio',
-				'in_menu'    => true,
-				'link'       => '/portfolio',
-				'enabled'    => true,
-				'order'      => 3
-			],
+//			[
+//				'title'      => 'portfolio',
+//				'menu_title' => 'portfolio',
+//				'in_menu'    => true,
+//				'link'       => '/portfolio',
+//				'enabled'    => true,
+//				'order'      => 3
+//			],
 		]);
 	}
 

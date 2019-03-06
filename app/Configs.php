@@ -35,6 +35,16 @@ class Configs extends Model
 		'medium_max_width',
 		'medium_max_height',
 		'medium_2x',
+		'landing_title',
+		'landing_background',
+		'landing_facebook',
+		'landing_facebook',
+		'landing_flickr',
+		'landing_twitter',
+		'landing_youtube',
+		'landing_instagram',
+		'landing_owner',
+		'landing_subtitle',
 	];
 
 

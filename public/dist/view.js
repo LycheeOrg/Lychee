@@ -830,7 +830,23 @@ header.bind = function () {
 		search.reset();
 	});
 
+	header.bind_back();
+
 	return true;
+};
+
+header.bind_back = function () {
+
+	// Event Name
+	var eventName = lychee.getEventName();
+
+	header.dom('.header__title').on(eventName, function () {
+		if (lychee.landing_page_enable && visible.albums()) {
+			window.location.href = '/';
+		} else {
+			return false;
+		}
+	});
 };
 
 header.show = function () {
