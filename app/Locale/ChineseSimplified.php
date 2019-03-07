@@ -272,7 +272,8 @@ final class ChineseSimplified
 			'UPLOAD_IMPORT_SERVER_FOLD'	=> '文件夹中没有可读的文件。请查看日志（设置->显示日志）以获取详细信息。',
 			'UPLOAD_IMPORT_SERVER_INSTR'=> '此操作将导入位于以下目录中的所有照片、文件夹和子文件夹。导入完成后，在可能的情况下 <b>源文件将被删除</b>。',
 			'UPLOAD_ABSOLUTE_PATH'		=> '绝对路径',
-			'UPLOAD_IMPORT_SERVER_EMPT'	=> '无法导入空文件夹！'
+			'UPLOAD_IMPORT_SERVER_EMPT'	=> '无法导入空文件夹！',
+			'FOOTER_COPYRIGHT'			=> '本网站上的所有图像均受版权所有'
 		);
 
 		return $locale;

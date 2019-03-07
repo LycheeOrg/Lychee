@@ -271,7 +271,8 @@ final class French
 			'UPLOAD_IMPORT_SERVER_FOLD'	=> 'Dossier vide ou aucun fichier lisible à traiter. Veuillez consulter le journal (Paramètres -> Afficher le journal) pour obtenir plus de détails.',
 			'UPLOAD_IMPORT_SERVER_INSTR'=> 'Cette action importera toutes les photos ainsi que tous les dossiers et sous-dossiers situés dans le répertoire suivant. Les <b>fichiers originaux seront supprimés</b> après l\'importation lorsque cela est possible.',
 			'UPLOAD_ABSOLUTE_PATH'		=> 'Chemin absolu du répertoire',
-			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Impossible de démarrer l\'importation car le dossier était vide !'
+			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Impossible de démarrer l\'importation car le dossier était vide !',
+			'FOOTER_COPYRIGHT'			=> 'Toutes les images de ce site Web sont protégées par le droit d\'auteur par'
 		);
 
 		return $locale;

@@ -279,7 +279,8 @@ final class Swedish
 			'UPLOAD_IMPORT_SERVER_FOLD'	=> 'Mappen du angav var tom eller saknade läsbara filer. Kontrollera logfilen (Inställningar -> Visa logfilen) för ytterligare detaljer',
 			'UPLOAD_IMPORT_SERVER_INSTR'=> 'Den här processen kommer att importera alla fotografier, inklusive alla mappar och undermappar från platse du angav. <b>Originalfotografierna kommer att raderas.</b> efter att importering genomförts.',
 			'UPLOAD_ABSOLUTE_PATH'		=> 'Exakt sökväg till mappen',
-			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Kunde inte påbörja importeringen då mappen saknade innehåll!'
+			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Kunde inte påbörja importeringen då mappen saknade innehåll!',
+			'FOOTER_COPYRIGHT'			=> 'Alla bilder på denna webbplats är föremål för upphovsrätt från'
 		);
 
 		return $locale;

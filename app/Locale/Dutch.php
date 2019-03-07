@@ -242,7 +242,8 @@ final class Dutch
 			'UPLOAD_IMPORT_SERVER_FOLD'	=> 'Folder empty or no readable files to process. Please take a look at the log (Settings -> Laat logs zien) voor meer informatie.',
 			'UPLOAD_IMPORT_SERVER_INSTR'=> 'Deze actie importeert alle foto\'s, folders en sub-folders vanuit de volgende folder. De <b>orginele bestanden worden verwijderd</b> na de import indien mogelijk.',
 			'UPLOAD_ABSOLUTE_PATH'		=> 'Absoluut pad naar de folder',
-			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Kan de import niet starten, folder is leeg!'
+			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Kan de import niet starten, folder is leeg!',
+			'FOOTER_COPYRIGHT'			=> 'Alle afbeeldingen op deze website zijn onderworpen aan het auteursrecht van'
 		);
 		return $locale;
 	}
