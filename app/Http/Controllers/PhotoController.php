@@ -82,14 +82,7 @@ class PhotoController extends Controller
 			return Response::error('no pictures found!');
 		}
 
-		$return = array();
-		$return['thumb'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->thumbUrl;
-		if ($photo->medium != '') {
-			$return['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photo->url;
-		}
-		else {
-			$return['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG').$photo->url;
-		}
+		$return = $photo->prepareData();
 
 		return $return;
 	}
