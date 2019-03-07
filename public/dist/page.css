@@ -27,6 +27,12 @@ table {
   border-collapse: collapse;
   border-spacing: 0; }
 
+em, i {
+  font-style: italic; }
+
+strong, b {
+  font-weight: bold; }
+
 * {
   -webkit-user-select: none;
   -moz-user-select: none;
