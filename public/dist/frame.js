@@ -266,14 +266,29 @@ frame.next = function () {
 frame.refreshPicture = function () {
 	api.post('Photo::getRandom', {}, function (data) {
 		if (!data.url) console.log('URL not found');
-		if (!data.thumb) console.log('Thumb not found');
+		if (!data.thumbUrl) console.log('Thumb not found');
 
-		$('#background').attr("src", data.thumb).on("load", function () {
+		$('#background').attr("src", data.thumbUrl).on("load", function () {
 			frame.start_blur();
 		});
 
-		$('#picture').attr("src", data.url).css('display', 'inline');
+		srcset = '';
+		this.frame.photo = null;
+		if (data.medium != '') {
+			src = data.medium;
+
+			if (data.medium2x && data.medium2 != '') {
+				srcset = data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w";
+				// We use it in the resize callback.
+				this.frame.photo = data;
+			}
+		} else {
+			src = data.url;
+		}
+
+		$('#picture').attr("src", src).attr("srcset", srcset).css('display', 'inline');
 		$('body').addClass('loaded');
+		frame.resize();
 
 		setTimeout(function () {
 			frame.next();
@@ -286,6 +301,21 @@ frame.set = function (data) {
 	frame.refresh = data.refresh ? parseInt(data.refresh, 10) + 1000 : 31000; // 30 sec + 1 sec of blackout
 	console.log(frame.refresh);
 	frame.refreshPicture();
+};
+
+frame.resize = function () {
+	if (this.photo) {
+		var ratio = this.photo.height > 0 ? this.photo.width / this.photo.height : 1;
+		var winWidth = $(window).width();
+		var winHeight = $(window).height();
+
+		// Our math assumes that the image occupies the whole frame.  That's
+		// not quite the case (the default css sets it to 95%) but it's close
+		// enough.
+		var width = winWidth / ratio > winHeight ? winHeight * ratio : winWidth;
+
+		$('#picture').attr("sizes", width + 'px');
+	}
 };
 
 // Main -------------------------------------------------------------- //
@@ -308,4 +338,8 @@ $(document).ready(function () {
 
 	// Set API error handler
 	api.onError = lychee.error;
+
+	$(window).on('resize', function () {
+		frame.resize();
+	});
 });
