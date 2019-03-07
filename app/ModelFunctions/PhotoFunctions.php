@@ -381,7 +381,7 @@ class PhotoFunctions
 		$this->resizePhoto($photo, 'small', $smallMaxWidth, $smallMaxHeight);
 
 		if (Configs::get_value('small_2x') === '1') {
-			$this->resizePhoto($photo, 'small2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
+			$this->resizePhoto($photo, 'small2x', $smallMaxWidth * 2, $smallMaxHeight * 2);
 		}
 	}
 
@@ -459,21 +459,16 @@ class PhotoFunctions
 		catch (QueryException $e) {
 			// We have a QueryException, something went VERY WRONG.
 
-			$errorCode = $e->errorInfo[1];
+			$errorCode = $e->getCode();
 			if ($errorCode == 1062) {
 				// houston, we have a duplicate entry problem
 				// we change the ID and recurse the function
 
-
 				return $this->save($photo, $albumID);
 			}
-			else if ($errorCode == 1264) {
-				Logs::error(__METHOD__, __LINE__, 'Id is a bit too big... '.$photo->id);
-				return Response::error('Id is a bit too big... '.$photo->id);
-			}
 			else {
-				Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode);
-				return Response::error('Something went wrong, error'.$errorCode);
+				Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
+				return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
 			}
 		}
 

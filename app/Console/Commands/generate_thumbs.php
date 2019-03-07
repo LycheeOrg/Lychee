@@ -104,7 +104,7 @@ class generate_thumbs extends Command
 				$photo->save();
 				$this->line($type. ' ('.$photo->{$type}.') for '.$photo->title.' created.');
 			} else {
-				$this->line('Could not create medium for '.$photo->title.' ('.$photo->width.'x'.$photo->height.').');
+				$this->line('Could not create '.$type.' for '.$photo->title.' ('.$photo->width.'x'.$photo->height.').');
 			}
 		}
 	}
