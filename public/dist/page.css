@@ -2851,7 +2851,9 @@ a {
     font-weight: bold; }
   #content p {
     color: #707070;
-    margin-bottom: 1em; }
+    margin-bottom: 1.5em;
+    line-height: 1.2em;
+    text-align: justify; }
   #content div.left_30 {
     width: 30%;
     float: left; }
@@ -2874,13 +2876,14 @@ a {
     display: table; }
 
 #footer {
-  position: absolute;
+  position: fixed;
   z-index: 3;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 0 0 10px 0;
-  text-align: center; }
+  padding: 20px 0 20px 0;
+  text-align: center;
+  background: #FFFFFF; }
 
 #home_copyright {
   text-transform: uppercase;
