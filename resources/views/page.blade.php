@@ -6,6 +6,7 @@
 
 @section('head-css')
     <link type="text/css" rel="stylesheet" href="dist/page.css">
+	<link type="text/css" rel="stylesheet" href="dist/user.css">
 @endsection
 
 @section('content')
