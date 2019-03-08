@@ -3,11 +3,12 @@
 namespace Tests\Feature;
 
 use App\Configs;
-use App\Http\Controllers\SessionController;
+use App\ModelFunctions\SessionFunctions;
 use Tests\TestCase;
 
 class HtmlTest extends TestCase
 {
+
 	/**
 	 * A basic test example.
 	 *
@@ -15,6 +16,10 @@ class HtmlTest extends TestCase
 	 */
 	public function testHtml()
 	{
+
+		// because there is no dependency injection in test cases
+		$sessionFunctions = new SessionFunctions();
+
 		// check if we can actually get a nice answer
 		$response = $this->get('/');
 		$response->assertOk();
@@ -34,7 +39,7 @@ class HtmlTest extends TestCase
 			$response->assertSee("true");
 		}
 
-		$this->assertFalse(SessionController::noLogin());
+		$this->assertFalse($sessionFunctions->noLogin());
 
 
 		$response = $this->post('/api/Session::login', ['user'     => 'foo',
