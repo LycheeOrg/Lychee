@@ -37,6 +37,8 @@ class HtmlTest extends TestCase
 
 			$response = $this->post('/api/Session::logout');
 			$response->assertSee("true");
+
+			Configs::flush();
 		}
 
 		$this->assertFalse($sessionFunctions->noLogin());

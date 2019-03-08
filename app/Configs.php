@@ -16,6 +16,8 @@ class Configs extends Model
 
 	private static $cache = null;
 
+
+
 	public static function arrayify($query)
 	{
 		$configs = $query->get();
@@ -100,6 +102,10 @@ class Configs extends Model
 			Logs::error(__METHOD__, __LINE__, $config->getErrors());
 			return false;
 		}
+
+		// invalidate cache.
+		self::$cache = null;
+
 		return true;
 	}
 
