@@ -28,16 +28,17 @@ class IndexController extends Controller
 
 	public function show()
 	{
+		Configs::get();
 
 		if (Configs::get_value('landing_page_enable', '0') == '1')
 		{
-			$lang = Lang::get_lang(Configs::where('key', '=', 'lang')->first());
+			$lang = Lang::get_lang(Configs::get_value('lang', 'en'));
 
 			$infos = $this->configFunctions->get_pages_infos();
 
 			$menus = Page::menu()->get();
 
-			$title = Configs::get_value('site_title');
+			$title = Configs::get_value('site_title', 'Lychee v4');
 
 
 			return view('landing', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus]);
@@ -54,8 +55,10 @@ class IndexController extends Controller
 
 	public function gallery()
 	{
-		$lang = Lang::get_lang(Configs::get_value('lang'));
-		$title = Configs::get_value('site_title');
+		Configs::get();
+
+		$lang = Lang::get_lang(Configs::get_value('lang', 'en'));
+		$title = Configs::get_value('site_title', 'Lychee v4');
 
 		return view('gallery', ['locale' => $lang, 'title' => $title]);
 	}

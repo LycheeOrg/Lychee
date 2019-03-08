@@ -35,10 +35,10 @@ class PageController extends Controller
 		if($page == null)
 			abort(404);
 
-		$lang = Lang::get_lang(Configs::get_value('lang','en')->first());
+		$lang = Lang::get_lang(Configs::get_value('lang','en'));
 
 		$infos = $this->configFunctions->get_pages_infos();
-		$title = Configs::get_value('site_title');
+		$title = Configs::get_value('site_title', 'Lychee v4');
 		$menus = Page::menu()->get();
 
 		$contents = $page->content;
