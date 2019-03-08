@@ -28,12 +28,14 @@ class PageController extends Controller
 
 	function page(Request $request, $page)
 	{
+		Configs::get();
+
 		$page = Page::enabled()->where('link','/'.$page)->first();
 
 		if($page == null)
 			abort(404);
 
-		$lang = Lang::get_lang(Configs::where('key', '=', 'lang')->first());
+		$lang = Lang::get_lang(Configs::get_value('lang','en')->first());
 
 		$infos = $this->configFunctions->get_pages_infos();
 		$title = Configs::get_value('site_title');
