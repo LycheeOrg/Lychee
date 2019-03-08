@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Configs;
+use App\Locale\Lang;
 use App\Logs;
 use App\ModelFunctions\ConfigFunctions;
-use App\Response;
-use App\Locale\Lang;
+use App\ModelFunctions\SessionFunctions;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
@@ -22,98 +22,93 @@ class SessionController extends Controller
 	 */
 	private $configFunctions;
 
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
 
 
 	/**
 	 * @param ConfigFunctions $configFunctions
+	 * @param SessionFunctions $sessionFunctions
 	 */
-	public function __construct(ConfigFunctions $configFunctions)
+	public function __construct(ConfigFunctions $configFunctions, SessionFunctions $sessionFunctions)
 	{
 		$this->configFunctions = $configFunctions;
+		$this->sessionFunctions = $sessionFunctions;
 	}
 
 
+
+	/**
+	 * First function being called via AJAX
+	 *
+	 * @param Request $request  (is not used)
+	 * @return array|bool       (array containing config information or killing the session)
+	 */
 	public function init(Request $request)
 	{
-		if (Session::get('login') === true) {
-			/**
-			 * Admin Access
-			 * Full access to Lychee. Only with correct password/session.
-			 */
-			$public = false;
 
-		}
-		else {
-			/**
-			 * Guest Access
-			 * Access to view all public folders and photos in Lychee.
-			 */
-			$public = true;
-		}
-
+		$logged_in = $this->sessionFunctions->is_logged_in();
 
 		// Return settings
 		$return = array();
 
-		// Path to Lychee for the server-import dialog
-		$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
-		$return['api_V2'] = true;
-		$return['sub_albums'] = true;
+		$return['api_V2'] = true;               // we are using api_V2
+		$return['sub_albums'] = true;           // Lychee-laravel does have sub albums
+
 
 		// Check if login credentials exist and login if they don't
-		if (self::noLogin() === true || $public === false) {
+		if ($this->sessionFunctions->noLogin() === true || $logged_in === true) {
 
-			// Logged in
-			$return['config'] = Configs::get(false);
-			$return['config']['imagick'] = (extension_loaded('imagick') && $return['config']['imagick'] == '1') ? '1' : '0';
-			$return['config']['login'] = !$public;
-			unset($return['config']['username']);
-			unset($return['config']['password']);
-			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
+			// we the the UserID (it is set to 0 if there is no login/password = admin)
 			$user_id = Session::get('UserID');
-			$user = User::find($user_id);
+
 			if ($user_id == 0) {
+
+				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
 				$return['upload'] = true; // not necessary
 
-				// now we can do that
+				$return['config'] = $this->configFunctions->admin();
 				$return['config']['location'] = Config::get('defines.path.LYCHEE');
 			}
 			else {
+
+				$user = User::find($user_id);
+
 				if ($user == null) {
-					$return['config'] = Configs::get();
-					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
+					Logs::notice(__METHOD__, __LINE__, 'UserID '.$user_id.' not found!');
+					return $this->logout();
 
 				}
 				else {
-					unset($return['config']['dropboxKey']); // normal user don't need to know that.
-					$return['lock'] = ($user->lock == '1');
-					$return['upload'] = ($user->upload == '1');
+					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
+
+					$return['config'] = $this->configFunctions->min_info();
+					$return['lock'] = ($user->lock == '1');         // can user change his password
+					$return['upload'] = ($user->upload == '1');     // can user upload ?
 				}
 			}
+
+			// here we say whether we looged in because there is no login/password or if we actually entered a login/password
+			$return['config']['login'] = $logged_in;
 
 		}
 		else {
 			// Logged out
-			$return['config'] = $this->configFunctions->min_info();
+			$return['config'] = $this->configFunctions->public();
 			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
 		}
 
+		// we also return the local
 		$return['locale'] = Lang::get_lang(Configs::get_value('lang'));
 
 		$return['update_json'] = 0;
 		$return['update_available'] = false;
-		if ($return['config']['checkForUpdates'] == '1') {
-			try {
-				$json = file_get_contents('https://lycheeorg.github.io/update.json');
-				$obj = json_decode($json);
-				$return['update_json'] = $obj->lychee->version;
-				$return['update_available'] = ((intval($return['config']['version'])) < $return['update_json']);
-			}
-			catch (\Exception $e) {
-				Logs::notice(__METHOD__, __LINE__, 'Could not access: https://lycheeorg.github.io/update.json');
-			}
-		}
+
+		$this->sessionFunctions->checkUpdates($return);
 
 		return $return;
 
@@ -121,6 +116,12 @@ class SessionController extends Controller
 
 
 
+	/**
+	 * Login tentative
+	 *
+	 * @param Request $request
+	 * @return string
+	 */
 	public function login(Request $request)
 	{
 		$request->validate([
@@ -129,19 +130,18 @@ class SessionController extends Controller
 		]);
 
 		// No login
-		if (self::noLogin() === true) {
+		if ($this->sessionFunctions->noLogin() === true) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 			return 'true';
 		}
 
-		$configs = Configs::get(false);
+		$configs = Configs::get();
 
 		// this is probably sensitive to timing attacks...
 		$user = User::where('username', '=', $request['user'])->first();
 
 		if (Hash::check($request['user'], $configs['username']) && Hash::check($request['password'], $configs['password'])) {
 			Session::put('login', true);
-//            Session::put('identifier',$configs['identifier']);
 			Session::put('UserID', 0);
 			Logs::notice(__METHOD__, __LINE__, 'User ('.$request['user'].') has logged in from '.$request->ip());
 			return 'true';
@@ -149,39 +149,15 @@ class SessionController extends Controller
 
 		if ($user != null && Hash::check($request['password'], $user->password)) {
 			Session::put('login', true);
-//            Session::put('identifier',$configs['identifier']);
 			Session::put('UserID', $user->id);
 			Logs::notice(__METHOD__, __LINE__, 'User ('.$request['user'].') has logged in from '.$request->ip());
 			return 'true';
 		}
 
-
 		Logs::error(__METHOD__, __LINE__, 'User ('.$request['user'].') has tried to log in from '.$request->ip());
 
 		return 'false';
 
-	}
-
-
-
-	/**
-	 * Sets the session values when no there is no username and password in the database.
-	 * @return boolean Returns true when no login was found.
-	 */
-	static function noLogin()
-	{
-
-		$configs = Configs::get(false);
-		// Check if login credentials exist and login if they don't
-		if (isset($configs['username']) && $configs['username'] === '' &&
-			isset($configs['password']) && $configs['password'] === '') {
-			Session::put('login', true);
-			Session::put('UserID', 0);
-//            Session::put('identifier', $configs['identifier']);
-			return true;
-		}
-		unset($configs);
-		return false;
 	}
 
 
@@ -202,17 +178,20 @@ class SessionController extends Controller
 
 
 	/**
-	 * Unsets the session values.
-	 * @return boolean Returns true when logout was successful.
+	 * Show the session values
 	 */
 	public function show()
 	{
 		dd(Session::all());
-		return false;
 	}
 
 
 
+	/**
+	 * @param $request
+	 * @param string $albumID
+	 * @return int
+	 */
 	static public function checkAccess($request, $albumID = '')
 	{
 		if (Session::get('login')) {

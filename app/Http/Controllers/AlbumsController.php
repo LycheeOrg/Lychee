@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Album;
 use App\Configs;
 use App\Logs;
+use App\ModelFunctions\AlbumFunctions;
 use App\Photo;
 use App\Response;
 use App\User;
@@ -16,6 +17,23 @@ class AlbumsController extends Controller
 {
 
 	/**
+	 * @var AlbumFunctions
+	 */
+	private $albumFunctions;
+
+
+	/**
+	 * @param AlbumFunctions $albumFunctions
+	 */
+	public function __construct(AlbumFunctions $albumFunctions)
+	{
+		$this->albumFunctions = $albumFunctions;
+	}
+
+
+
+	/**
+	 * @param Request $request          (unused)
 	 * @return array|string Returns an array of albums or false on failure.
 	 */
 	public function get(Request $request)
@@ -38,7 +56,7 @@ class AlbumsController extends Controller
 
 			$user = User::find($id);
 			if ($id == 0 || $user->upload) {
-				$return['smartalbums'] = self::getSmartAlbums();
+				$return['smartalbums'] = $this->albumFunctions->getSmartAlbums();
 			}
 
 			if ($id == 0) {
@@ -72,123 +90,12 @@ class AlbumsController extends Controller
 		}
 
 
-		$return['albums'] = AlbumsController::prepare_albums($albums);
-		$return['shared_albums'] = AlbumsController::prepare_albums($shared_albums);
+		$return['albums'] = $this->albumFunctions->prepare_albums($albums);
+		$return['shared_albums'] = $this->albumFunctions->prepare_albums($shared_albums);
 
 		return $return;
 
 	}
 
-
-
-	static private function prepare_albums($albums)
-	{
-
-		$return = array();
-
-		if ($albums != null) {
-			// For each album
-			foreach ($albums as $album_model) {
-
-				// Turn data from the database into a front-end friendly format
-				$album = $album_model->prepareData();
-				$album['albums'] = $album_model->get_albums();
-
-				// Thumbs
-				if ((!Session::get('login') && $album_model->password === null) ||
-					(Session::get('login'))) {
-
-					$album['sysstamp'] = $album_model['created_at'];
-					$album = $album_model->gen_thumbs($album);
-				}
-
-				// Add to return
-				$return[] = $album;
-			}
-		}
-
-		return $return;
-	}
-
-
-
-	static private function gen_return($return, $photos_sql, $kind)
-	{
-		$photos = $photos_sql->get();
-		$i = 0;
-
-		$return[$kind] = array(
-			'thumbs' => array(),
-			'thumbs2x' => array(),
-			'types'  => array(),
-			'num'    => $photos_sql->count()
-		);
-
-		foreach ($photos as $photo) {
-			if ($i < 3) {
-				$return[$kind]['thumbs'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->thumbUrl;
-				if ($photo->thumb2x == '1') {
-					$thumbUrl2x = explode(".", $photo->thumbUrl);
-					$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-					$return[$kind]['thumbs2x'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
-				}
-				else {
-					$return[$kind]['thumbs2x'][$i] = '';
-				}
-				$return[$kind]['types'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->type;
-				$i++;
-			}
-			else {
-				break;
-			}
-		}
-
-		return $return;
-	}
-
-
-
-	/**
-	 * @return array|false Returns an array of smart albums or false on failure.
-	 */
-	private function getSmartAlbums()
-	{
-
-		// Initialize return var
-		$return = array(
-			'unsorted' => null,
-			'public'   => null,
-			'starred'  => null,
-			'recent'   => null
-		);
-
-		/**
-		 * Unsorted
-		 */
-		$photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
-		$return = self::gen_return($return, $photos_sql, 'unsorted');
-
-		/**
-		 * Starred
-		 */
-		$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
-		$return = self::gen_return($return, $photos_sql, 'starred');
-
-		/**
-		 * Public
-		 */
-		$photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
-		$return = self::gen_return($return, $photos_sql, 'public');
-
-		/**
-		 * Recent
-		 */
-		$photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
-		$return = self::gen_return($return, $photos_sql, 'recent');
-
-		// Return SmartAlbums
-		return $return;
-
-	}
 
 }

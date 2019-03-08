@@ -20,7 +20,7 @@ class HtmlTest extends TestCase
 		$response->assertOk();
 
 		$clear = false;
-		$configs = Configs::get(false);
+		$configs = Configs::get();
 
 		if ($configs['password'] == '' && $configs['username'] == '') {
 			$clear = true;

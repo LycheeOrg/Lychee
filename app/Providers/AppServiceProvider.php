@@ -7,6 +7,7 @@ use App\Image;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\ConfigFunctions;
+use App\ModelFunctions\SessionFunctions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -17,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
         AlbumFunctions::class => AlbumFunctions::class,
         PhotoFunctions::class => PhotoFunctions::class,
         ConfigFunctions::class => ConfigFunctions::class,
+        SessionFunctions::class => SessionFunctions::class,
     ];
 
     /**

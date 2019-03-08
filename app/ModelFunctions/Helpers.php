@@ -5,6 +5,8 @@ namespace App\ModelFunctions;
 class Helpers
 {
 	/**
+	 * Generate an id from current microtime
+	 *
 	 * @return string Generated ID.
 	 */
 	static public function generateID()
@@ -14,7 +16,7 @@ class Helpers
 		$id = str_replace(' ', '', microtime(true));
 		$id = str_replace('.', '', $id);
 
-		// Ensure that the id has a length of 10 chars
+		// Ensure that the id has a length of 14 chars
 		while (strlen($id) < 14) {
 			$id = '0'.$id;
 		}
@@ -29,6 +31,7 @@ class Helpers
 
 	/**
 	 * Returns the extension of the filename (path or URI) or an empty string.
+	 *
 	 * @param $filename
 	 * @param bool $isURI
 	 * @return string Extension of the filename starting with a dot.
@@ -57,6 +60,12 @@ class Helpers
 
 
 
+	/**
+	 * Check if $path has readable and writable permissions.
+	 *
+	 * @param $path
+	 * @return bool
+	 */
 	static public function hasPermissions($path)
 	{
 		// Check if the given path is readable and writable
@@ -69,10 +78,16 @@ class Helpers
 
 
 
+	/**
+	 * Compute the GCD of a and b
+	 * This function is used to simplify the shutter speed when given in the form of e.g. 50/100
+	 *
+	 * @param $a
+	 * @param $b
+	 * @return mixed
+	 */
 	static public function gcd($a, $b)
 	{
 		return ($a % $b) ? Helpers::gcd($b, $a % $b) : $b;
 	}
-
-
 }

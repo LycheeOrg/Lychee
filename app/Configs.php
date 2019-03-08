@@ -8,87 +8,69 @@ use Illuminate\Database\QueryException;
 
 class Configs extends Model
 {
+	/**
+	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
+	 */
 	public $timestamps = false;
-	private static $public_cache = null;
 
-	protected static $except = [
-		'username',
-		'password',
-		'dropboxKey'
-	];
 
-	/**
-	 * @param string $key
-	 * @param bool $public
-	 * @return bool
-	 */
-	static protected function inExceptArray(string $key, bool $public)
+	private static $cache = null;
+
+	public static function arrayify($query)
 	{
-
-		if ($public) {
-			foreach (self::$except as $exception) {
-				if ($exception == $key) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		return false;
-	}
-
-
-
-	/**
-	 * @param bool $public
-	 * @return array Returns the upload settings of Lychee.
-	 */
-	public static function get(bool $public = true)
-	{
-		if ($public && self::$public_cache) {
-			return self::$public_cache;
-		}
-
-		// Execute query
-		$configs = Configs::all();
+		$configs = $query->get();
 
 		$return = array();
 
 		// Add each to return
 		foreach ($configs as $config) {
-			if (!Configs::inExceptArray($config->key, $public)) {
-				$return[$config->key] = $config->value;
-			}
-		}
-
-//        // Convert plugins to array
-		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
-		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
-		$return['lang_available'] = Lang::get_lang_available();
-
-
-		if ($public) {
-			self::$public_cache = $return;
+			$return[$config->key] = $config->value;
 		}
 
 		return $return;
 	}
 
 
+
+	/**
+	 * @return array Returns the upload settings of Lychee.
+	 */
+	public static function get()
+	{
+		if (self::$cache) {
+			return self::$cache;
+		}
+
+		$query = Configs::select('key', 'value');
+		$return = Configs::arrayify($query);
+
+		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
+		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
+
+		$return['lang_available'] = Lang::get_lang_available();
+
+		self::$cache = $return;
+
+		return $return;
+	}
+
+
+
 	/**
 	 * @param string $key
-	 * @param mixed  $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function get_value(string $key, $default = null)
 	{
-		if (self::$public_cache) {
-			if (!isset(self::$public_cache[$key])) {
+		if (self::$cache) {
+			if (!isset(self::$cache[$key])) {
 				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
 				return false;
 			}
-			return self::$public_cache[$key];
+			return self::$cache[$key];
 		};
+
 		try {
 			// if public cache does not exist it is possible to access forbidden values here!
 			if (Configs::select('value')->where('key', '=', $key)->count() == 0) {
@@ -96,7 +78,8 @@ class Configs extends Model
 				return false;
 			}
 			return Configs::select('value')->where('key', '=', $key)->first()->value;
-		} catch(QueryException $exception) {
+		}
+		catch (QueryException $exception) {
 			return $default;
 		}
 	}
@@ -121,6 +104,7 @@ class Configs extends Model
 	}
 
 
+
 	/**
 	 * @return bool Returns the Imagick setting.
 	 */
@@ -133,4 +117,24 @@ class Configs extends Model
 		return false;
 	}
 
+
+
+	public function scopePublic($query)
+	{
+		return $query->where('confidentiality', '=', 0);
+	}
+
+
+
+	public function scopeMin_info($query)
+	{
+		return $query->where('confidentiality', '<=', 1);
+	}
+
+
+
+	public function scopeAdmin($query)
+	{
+		return $query->where('confidentiality', '<=', 2);
+	}
 }
