@@ -126,15 +126,15 @@ class Configs extends Model
 
 
 
-	public function scopeMin_info($query)
+	public function scopeInfo($query)
 	{
-		return $query->where('confidentiality', '<=', 1);
+		return $query->where('confidentiality', '<=', 2);
 	}
 
 
 
 	public function scopeAdmin($query)
 	{
-		return $query->where('confidentiality', '<=', 2);
+		return $query->where('confidentiality', '<=', 3);
 	}
 }

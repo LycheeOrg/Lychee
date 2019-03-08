@@ -46,7 +46,7 @@ class ConfigFunctions
 	{
 
 		// Execute query
-		$sql = Configs::min_info();
+		$sql = Configs::info();
 		return Configs::arrayify($sql);
 
 	}
