@@ -18,19 +18,19 @@ class Configs extends Model
 
 
 
-	public static function arrayify($query)
-	{
-		$configs = $query->get();
-
-		$return = array();
-
-		// Add each to return
-		foreach ($configs as $config) {
-			$return[$config->key] = $config->value;
-		}
-
-		return $return;
-	}
+//	public static function arrayify($query)
+//	{
+//		$configs = $query->get();
+//
+//		$return = array();
+//
+//		// Add each to return
+//		foreach ($configs as $config) {
+//			$return[$config->key] = $config->value;
+//		}
+//
+//		return $return;
+//	}
 
 
 
@@ -44,7 +44,7 @@ class Configs extends Model
 		}
 
 		$query = Configs::select('key', 'value');
-		$return = Configs::arrayify($query);
+		$return = $query->pluck('value','key')->all();
 
 		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
 		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
@@ -65,25 +65,15 @@ class Configs extends Model
 	 */
 	public static function get_value(string $key, $default = null)
 	{
-		if (self::$cache) {
-			if (!isset(self::$cache[$key])) {
-				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
-				return false;
-			}
-			return self::$cache[$key];
-		};
-
-		try {
-			// if public cache does not exist it is possible to access forbidden values here!
-			if (Configs::select('value')->where('key', '=', $key)->count() == 0) {
-				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config !');
-				return false;
-			}
-			return Configs::select('value')->where('key', '=', $key)->first()->value;
+		if (!self::$cache) {
+			self::get();
 		}
-		catch (QueryException $exception) {
+
+		if (!isset(self::$cache[$key])) {
+			Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
 			return $default;
 		}
+		return self::$cache[$key];
 	}
 
 

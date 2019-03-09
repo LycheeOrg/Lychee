@@ -7,6 +7,7 @@ use App\Locale\Lang;
 use App\ModelFunctions\ConfigFunctions;
 use App\Page;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class PageController extends Controller
 {
@@ -28,17 +29,15 @@ class PageController extends Controller
 
 	function page(Request $request, $page)
 	{
-		Configs::get();
-
 		$page = Page::enabled()->where('link','/'.$page)->first();
 
 		if($page == null)
 			abort(404);
 
-		$lang = Lang::get_lang(Configs::get_value('lang','en'));
+		$lang = Lang::get_lang(Configs::get_value('lang'));
 
 		$infos = $this->configFunctions->get_pages_infos();
-		$title = Configs::get_value('site_title', 'Lychee v4');
+		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 		$menus = Page::menu()->get();
 
 		$contents = $page->content;

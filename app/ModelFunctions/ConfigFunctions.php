@@ -46,8 +46,7 @@ class ConfigFunctions
 	{
 
 		// Execute query
-		$sql = Configs::info();
-		return Configs::arrayify($sql);
+		return Configs::info()->pluck('value','key')->all();
 
 	}
 
@@ -60,8 +59,7 @@ class ConfigFunctions
 	{
 
 		// Execute query
-		$sql = Configs::public();
-		return Configs::arrayify($sql);
+		return Configs::public()->pluck('value','key')->all();
 
 	}
 
@@ -75,8 +73,7 @@ class ConfigFunctions
 	{
 
 		// Execute query
-		$sql = Configs::admin();
-		return Configs::arrayify($sql);
+		return Configs::admin()->pluck('value','key')->all();
 
 	}
 }

@@ -18,7 +18,7 @@ class PrivateConfigFields extends Migration
 				$table->tinyInteger('confidentiality')->after('cat')->default(0);
 			});
 
-			// set confidentiality to 3 for those (never returned)
+			// set confidentiality to 4 for those (never returned)
 			Configs::where('key', 'username')
 				->orWhere('key', 'password')
 				->update([

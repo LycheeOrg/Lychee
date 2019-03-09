@@ -6,6 +6,7 @@ use App\Configs;
 use App\Locale\Lang;
 use App\ModelFunctions\ConfigFunctions;
 use App\Page;
+use Illuminate\Support\Facades\Config;
 
 class IndexController extends Controller
 {
@@ -28,17 +29,16 @@ class IndexController extends Controller
 
 	public function show()
 	{
-		Configs::get();
 
 		if (Configs::get_value('landing_page_enable', '0') == '1')
 		{
-			$lang = Lang::get_lang(Configs::get_value('lang', 'en'));
+			$lang = Lang::get_lang(Configs::get_value('lang'));
 
 			$infos = $this->configFunctions->get_pages_infos();
 
 			$menus = Page::menu()->get();
 
-			$title = Configs::get_value('site_title', 'Lychee v4');
+			$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 
 
 			return view('landing', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus]);
@@ -55,10 +55,9 @@ class IndexController extends Controller
 
 	public function gallery()
 	{
-		Configs::get();
 
-		$lang = Lang::get_lang(Configs::get_value('lang', 'en'));
-		$title = Configs::get_value('site_title', 'Lychee v4');
+		$lang = Lang::get_lang(Configs::get_value('lang'));
+		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 
 		return view('gallery', ['locale' => $lang, 'title' => $title]);
 	}
