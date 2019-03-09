@@ -37,6 +37,8 @@ class Configs extends Model
 			self::$cache = $return;
 		} catch (\Exception $e)
 		{
+			self::$cache = null;
+
 			return null;
 		}
 
@@ -53,10 +55,17 @@ class Configs extends Model
 	public static function get_value(string $key, $default = null)
 	{
 		if (!self::$cache) {
+			/**
+			 * try is here because when composer does the package discovery it
+			 * looks at AppServiceProvider which register a singleton with:
+			 * $compressionQuality = Configs::get_value('compression_quality', 90);
+			 *
+			 * this will fail for sure as the config table does not exist yet
+			 */
 			try{
 				self::get();
 			}
-			catch (\Exception $e)
+			catch (QueryException $e)
 			{
 				return $default;
 			}
@@ -64,9 +73,19 @@ class Configs extends Model
 		}
 
 		if (!isset(self::$cache[$key])) {
-			Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
+			/**
+			 * For some reason the $default is not returned above...
+			 */
+			try {
+				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
+			}
+			catch (\Exception $e)
+			{
+				// yeah we do nothing because we cannot do anything in that case ...  :p
+			}
 			return $default;
 		}
+
 		return self::$cache[$key];
 	}
 
