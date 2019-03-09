@@ -16,24 +16,6 @@ class Configs extends Model
 
 	private static $cache = null;
 
-
-
-//	public static function arrayify($query)
-//	{
-//		$configs = $query->get();
-//
-//		$return = array();
-//
-//		// Add each to return
-//		foreach ($configs as $config) {
-//			$return[$config->key] = $config->value;
-//		}
-//
-//		return $return;
-//	}
-
-
-
 	/**
 	 * @return array Returns the upload settings of Lychee.
 	 */
@@ -43,15 +25,20 @@ class Configs extends Model
 			return self::$cache;
 		}
 
-		$query = Configs::select('key', 'value');
-		$return = $query->pluck('value','key')->all();
+		try {
+			$query = Configs::select('key', 'value');
+			$return = $query->pluck('value','key')->all();
 
-		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
-		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
+			$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
+			$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
 
-		$return['lang_available'] = Lang::get_lang_available();
+			$return['lang_available'] = Lang::get_lang_available();
 
-		self::$cache = $return;
+			self::$cache = $return;
+		} catch (\Exception $e)
+		{
+			return null;
+		}
 
 		return $return;
 	}
@@ -66,7 +53,14 @@ class Configs extends Model
 	public static function get_value(string $key, $default = null)
 	{
 		if (!self::$cache) {
-			self::get();
+			try{
+				self::get();
+			}
+			catch (\Exception $e)
+			{
+				return $default;
+			}
+
 		}
 
 		if (!isset(self::$cache[$key])) {
