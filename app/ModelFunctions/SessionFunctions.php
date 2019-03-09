@@ -41,9 +41,9 @@ class SessionFunctions
 		// Check if login credentials exist and login if they don't
 		if (isset($configs['username']) && $configs['username'] === '' &&
 			isset($configs['password']) && $configs['password'] === '') {
-			Session::put('login', true);
-			Session::put('UserID', 0);
-			return true;
+				Session::put('login', true);
+				Session::put('UserID', 0);
+				return true;
 		}
 
 		return false;
