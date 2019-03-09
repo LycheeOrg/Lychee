@@ -90,7 +90,7 @@ class DiagnosticsController extends Controller
 
 
 		// Load settings
-		$settings = Configs::get(false);
+		$settings = Configs::get();
 
 		// Settings
 		if (!isset($settings['username']) || $settings['username'] == '') {
@@ -155,7 +155,7 @@ class DiagnosticsController extends Controller
 		$infos = array();
 
 		// Load settings
-		$settings = Configs::get(false);
+		$settings = Configs::get();
 		$gdVersion = gd_info();
 
 		// Load json
@@ -199,7 +199,7 @@ class DiagnosticsController extends Controller
 		$configs = array();
 
 		// Load settings
-		$settings = Configs::get(true);
+		$settings = Configs::arrayify(Configs::info());
 		foreach ($settings as $key => $value)
 		{
 			if(!is_array($value))

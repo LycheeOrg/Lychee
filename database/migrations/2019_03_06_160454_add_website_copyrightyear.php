@@ -25,7 +25,7 @@ class AddWebsiteCopyrightyear extends Migration
 	    }
 	    else {
 		    echo "Table configs does not exists\n";
-	    }        //
+	    }
     }
 
     /**

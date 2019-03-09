@@ -4,46 +4,9 @@ namespace App\ModelFunctions;
 
 
 use App\Configs;
-use App\Logs;
 
 class ConfigFunctions
 {
-
-	protected $clear_field = [
-		'username',
-		'password',
-		'dropboxKey',
-
-		'lang_available',
-		'imagick',
-		'skipDuplicates',
-		'sortingAlbums',
-		'sortingAlbums_col',
-		'sortingAlbums_order',
-		'sortingPhotos',
-		'sortingPhotos_col',
-		'sortingPhotos_order',
-		'default_license',
-		'thumb_2x',
-		'small_max_width',
-		'small_max_height',
-		'small_2x',
-		'medium_max_width',
-		'medium_max_height',
-		'medium_2x',
-		'landing_title',
-		'landing_background',
-		'landing_facebook',
-		'landing_flickr',
-		'landing_twitter',
-		'landing_youtube',
-		'landing_instagram',
-		'landing_owner',
-		'landing_subtitle',
-		'site_copyright_enable',
-		'site_copyright_begin',
-		'site_copyright_end'
-	];
 
 
 	/**
@@ -83,23 +46,34 @@ class ConfigFunctions
 	{
 
 		// Execute query
-		$configs = Configs::all();
+		return Configs::info()->pluck('value','key')->all();
 
-		$return = array();
-
-		// Add each to return
-		foreach ($configs as $config) {
-			$found = false;
-			foreach ($this->clear_field as $exception) {
-				if ($exception == $config->key) {
-					$found = true;
-				}
-			}
-			if (!$found) {
-				$return[$config->key] = $config->value;
-			}
-		}
-		return $return;
 	}
 
+	/**
+	 * Returns the public settings of Lychee.
+	 *
+	 * @return array
+	 */
+	public function public()
+	{
+
+		// Execute query
+		return Configs::public()->pluck('value','key')->all();
+
+	}
+
+
+	/**
+	 * Returns the admin settings of Lychee.
+	 *
+	 * @return array
+	 */
+	public function admin()
+	{
+
+		// Execute query
+		return Configs::admin()->pluck('value','key')->all();
+
+	}
 }

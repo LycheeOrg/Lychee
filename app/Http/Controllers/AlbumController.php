@@ -9,8 +9,8 @@ use App\ModelFunctions\Helpers;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
@@ -21,6 +21,8 @@ class AlbumController extends Controller
 	 */
 	private $albumFunctions;
 
+
+
 	/**
 	 * @param AlbumFunctions $albumFunctions
 	 */
@@ -28,6 +30,9 @@ class AlbumController extends Controller
 	{
 		$this->albumFunctions = $albumFunctions;
 	}
+
+
+
 	/**
 	 * Add a new Album
 	 *
@@ -45,6 +50,8 @@ class AlbumController extends Controller
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}
+
+
 
 	/**
 	 * Provided an albumID, returns the album.
@@ -92,30 +99,7 @@ class AlbumController extends Controller
 				break;
 		}
 
-		$previousPhotoID = '';
-		$return['photos'] = array();
-		$photo_counter = 0;
-		$photos = $photos_sql->get();
-		foreach ($photos as $photo_model) {
-
-			// Turn data from the database into a front-end friendly format
-			$photo = $photo_model->prepareData();
-
-			// Set previous and next photoID for navigation purposes
-			$photo['previousPhoto'] = $previousPhotoID;
-			$photo['nextPhoto'] = '';
-
-			// Set current photoID as nextPhoto of previous photo
-			if ($previousPhotoID !== '') {
-				$return['photos'][$photo_counter - 1]['nextPhoto'] = $photo['id'];
-			}
-			$previousPhotoID = $photo['id'];
-
-			// Add to return
-			$return['photos'][$photo_counter] = $photo;
-
-			$photo_counter++;
-		}
+		$return['photos'] = $this->albumFunctions->photos($photos_sql);
 
 		$return['id'] = $request['albumID'];
 		$return['num'] = count($return['photos']);
@@ -123,22 +107,7 @@ class AlbumController extends Controller
 		// finalize the loop
 		if ($return['num'] === 0) {
 
-			// Album empty
 			$return['photos'] = false;
-
-		}
-		else {
-
-			// Enable next and previous for the first and last photo
-			$lastElement = end($return['photos']);
-			$lastElementId = $lastElement['id'];
-			$firstElement = reset($return['photos']);
-			$firstElementId = $firstElement['id'];
-
-			if ($lastElementId !== $firstElementId) {
-				$return['photos'][$photo_counter - 1]['nextPhoto'] = $firstElementId;
-				$return['photos'][0]['previousPhoto'] = $lastElementId;
-			}
 
 		}
 

@@ -8,97 +8,85 @@ use Illuminate\Database\QueryException;
 
 class Configs extends Model
 {
-	public $timestamps = false;
-	private static $public_cache = null;
-
-	protected static $except = [
-		'username',
-		'password',
-		'dropboxKey'
-	];
-
 	/**
-	 * @param string $key
-	 * @param bool $public
-	 * @return bool
+	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
 	 */
-	static protected function inExceptArray(string $key, bool $public)
-	{
-
-		if ($public) {
-			foreach (self::$except as $exception) {
-				if ($exception == $key) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		return false;
-	}
+	public $timestamps = false;
 
 
+	private static $cache = null;
 
 	/**
-	 * @param bool $public
 	 * @return array Returns the upload settings of Lychee.
 	 */
-	public static function get(bool $public = true)
+	public static function get()
 	{
-		if ($public && self::$public_cache) {
-			return self::$public_cache;
+		if (self::$cache) {
+			return self::$cache;
 		}
 
-		// Execute query
-		$configs = Configs::all();
+		try {
+			$query = Configs::select('key', 'value');
+			$return = $query->pluck('value','key')->all();
 
-		$return = array();
+			$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
+			$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
 
-		// Add each to return
-		foreach ($configs as $config) {
-			if (!Configs::inExceptArray($config->key, $public)) {
-				$return[$config->key] = $config->value;
-			}
-		}
+			$return['lang_available'] = Lang::get_lang_available();
 
-//        // Convert plugins to array
-		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
-		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
-		$return['lang_available'] = Lang::get_lang_available();
+			self::$cache = $return;
+		} catch (\Exception $e)
+		{
+			self::$cache = null;
 
-
-		if ($public) {
-			self::$public_cache = $return;
+			return null;
 		}
 
 		return $return;
 	}
 
 
+
 	/**
 	 * @param string $key
-	 * @param mixed  $default
+	 * @param mixed $default
 	 * @return mixed
 	 */
 	public static function get_value(string $key, $default = null)
 	{
-		if (self::$public_cache) {
-			if (!isset(self::$public_cache[$key])) {
+		if (!self::$cache) {
+			/**
+			 * try is here because when composer does the package discovery it
+			 * looks at AppServiceProvider which register a singleton with:
+			 * $compressionQuality = Configs::get_value('compression_quality', 90);
+			 *
+			 * this will fail for sure as the config table does not exist yet
+			 */
+			try{
+				self::get();
+			}
+			catch (QueryException $e)
+			{
+				return $default;
+			}
+
+		}
+
+		if (!isset(self::$cache[$key])) {
+			/**
+			 * For some reason the $default is not returned above...
+			 */
+			try {
 				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
-				return false;
 			}
-			return self::$public_cache[$key];
-		};
-		try {
-			// if public cache does not exist it is possible to access forbidden values here!
-			if (Configs::select('value')->where('key', '=', $key)->count() == 0) {
-				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config !');
-				return false;
+			catch (\Exception $e)
+			{
+				// yeah we do nothing because we cannot do anything in that case ...  :p
 			}
-			return Configs::select('value')->where('key', '=', $key)->first()->value;
-		} catch(QueryException $exception) {
 			return $default;
 		}
+
+		return self::$cache[$key];
 	}
 
 
@@ -117,8 +105,13 @@ class Configs extends Model
 			Logs::error(__METHOD__, __LINE__, $config->getErrors());
 			return false;
 		}
+
+		// invalidate cache.
+		self::$cache = null;
+
 		return true;
 	}
+
 
 
 	/**
@@ -133,4 +126,24 @@ class Configs extends Model
 		return false;
 	}
 
+
+
+	public function scopePublic($query)
+	{
+		return $query->where('confidentiality', '=', 0);
+	}
+
+
+
+	public function scopeInfo($query)
+	{
+		return $query->where('confidentiality', '<=', 2);
+	}
+
+
+
+	public function scopeAdmin($query)
+	{
+		return $query->where('confidentiality', '<=', 3);
+	}
 }

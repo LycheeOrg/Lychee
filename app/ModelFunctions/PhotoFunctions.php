@@ -9,7 +9,6 @@ use App\Logs;
 use App\Metadata\Extractor;
 use App\Photo;
 use App\Response;
-use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
@@ -75,8 +74,8 @@ class PhotoFunctions
 	 * @param string $path
 	 * @return string Path of the thumbnail
 	 */
-	public function createVideoThumb(Photo $photo, string $path) : string
-{
+	public function createVideoThumb(Photo $photo, string $path): string
+	{
 		$ffprobe = FFMpeg\FFProbe::create();
 		$ffmpeg = FFMpeg\FFMpeg::create();
 		$duration = $ffprobe
@@ -124,7 +123,7 @@ class PhotoFunctions
 		);
 
 		if (Configs::get_value('thumb_2x') === '1' &&
-		$photo->width >= 400 && $photo->height >= 400) {
+			$photo->width >= 400 && $photo->height >= 400) {
 			// Retina thumbs
 			$this->imageHandler->crop(
 				Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url,
@@ -140,6 +139,8 @@ class PhotoFunctions
 
 		return true;
 	}
+
+
 
 	/**
 	 * Creates new photo(s).
@@ -345,7 +346,8 @@ class PhotoFunctions
 			else {
 				try {
 					$path_thumb = $this->createVideoThumb($photo, $path);
-				} catch (\Exception $exception) {
+				}
+				catch (\Exception $exception) {
 					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 					$path_thumb = '';
 				}
@@ -360,8 +362,10 @@ class PhotoFunctions
 		return $this->save($photo, $albumID);
 	}
 
+
+
 	/**
-	 * @param  Photo  $photo
+	 * @param  Photo $photo
 	 * @return void
 	 */
 	private function createSmallerImages(Photo $photo)
@@ -383,16 +387,18 @@ class PhotoFunctions
 		}
 	}
 
+
+
 	/**
 	 * Creates smaller copies of Photo
 	 *
-	 * @param  Photo  $photo
+	 * @param  Photo $photo
 	 * @param  string $type
-	 * @param  int    $maxWidth
-	 * @param  int    $maxHeight
+	 * @param  int $maxWidth
+	 * @param  int $maxHeight
 	 * @return bool
 	 */
-	public function resizePhoto(Photo $photo, string $type, int $maxWidth, int $maxHeight) : bool
+	public function resizePhoto(Photo $photo, string $type, int $maxWidth, int $maxHeight): bool
 	{
 		$filename = $photo->url;
 		$width = $photo->width;
@@ -430,10 +436,12 @@ class PhotoFunctions
 			return false;
 		}
 
-		$photo->{$type} = $resWidth . 'x' . $resHeight;
+		$photo->{$type} = $resWidth.'x'.$resHeight;
 
 		return true;
 	}
+
+
 
 	/**
 	 * We create this recursive function to try to fix the duplicate entry key problem
