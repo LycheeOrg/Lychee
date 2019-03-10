@@ -97,26 +97,26 @@ class video_data extends Command
 			if (file_exists($url)) {
 				$info = $this->metadataExtractor->extract($url, $photo->type);
 
-				if ($info['width']) {
+				if ($info['width'] !== 0) {
 					$this->line('Extracted metadata');
 					$photo->width = $info['width'];
 				}
-				if ($info['height']) {
+				if ($info['height'] !== 0) {
 					$photo->height = $info['height'];
 				}
-				if ($info['focal']) {
+				if ($info['focal'] !== '') {
 					$photo->focal = $info['focal'];
 				}
-				if ($info['aperture']) {
+				if ($info['aperture'] !== '') {
 					$photo->aperture = $info['aperture'];
 				}
-				if ($info['takestamp']) {
+				if ($info['takestamp'] !== null) {
 					$photo->takestamp = $info['takestamp'];
 				}
-				if ($info['latitude']) {
+				if ($info['latitude'] !== null) {
 					$photo->latitude = $info['latitude'];
 				}
-				if ($info['longitude']) {
+				if ($info['longitude'] !== null) {
 					$photo->longitude = $info['longitude'];
 				}
 
