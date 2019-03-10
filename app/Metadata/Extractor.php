@@ -11,6 +11,7 @@ class Extractor
 	 * Extracts metadata from an image file
 	 *
 	 * @param  string $filename
+	 * @param  string mime type
 	 * @return array
 	 */
 	public function extract(string $filename, string $type): array
