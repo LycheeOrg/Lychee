@@ -55,18 +55,12 @@ class Album extends Model
 		// Parse date
 		$album['sysdate'] = $this->created_at->format('F Y');
 		$album['min_takestamp'] = $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
-//        strftime('%B %Y', $this->min_takestamp);
 		$album['max_takestamp'] = $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
-		//strftime('%B %Y', $this->max_takestamp);
 
 		// Parse password
 		$album['password'] = ($this->password == '' ? '0' : '1');
 
-//        dd($this);
 		$album['license'] = $this->license == 'none' ? Configs::get_value('default_license') : $this->license;
-		// Parse thumbs or set default value
-//        $album['thumbs'] = explode(',', $this->thumbs);
-//        $album['types'] = (isset($this->types) ? explode(',', $this->types) : array());
 
 		$album['owner'] = $this->owner->username;
 

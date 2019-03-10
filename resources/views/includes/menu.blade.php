@@ -3,7 +3,7 @@
             <ul class="menu">
                 @foreach($menus as $menu)
                     <li class="menu-item">
-                        <a href="{{ $menu->link }}">{{ $menu->menu_title }}</a>
+                        <a href="{{ url($menu->link) }}">{{ $menu->menu_title }}</a>
                     </li>
                 @endforeach
             </ul>

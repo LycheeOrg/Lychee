@@ -23,10 +23,11 @@ class SettingsController extends Controller
 			'password' => 'required|string'
 		]);
 
+		$configs = Configs::get();
 		$oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
 		$oldUsername = $request->has('oldUsername') ? $request['oldUsername'] : '';
 
-		if (Configs::get(false)['password'] === '' && Configs::get(false)['username'] === '') {
+		if ($configs['password'] === '' && $configs['username'] === '') {
 			Configs::set('username', bcrypt($request['username']));
 			Configs::set('password', bcrypt($request['password']));
 			return 'true';
@@ -36,7 +37,7 @@ class SettingsController extends Controller
 		if (Session::has('UserID')) {
 			$id = Session::get('UserID');
 			if ($id == 0) {
-				if (Configs::get(false)['password'] === '' || Hash::check($oldPassword, Configs::get(false)['password'])) {
+				if ($configs['password'] === '' || Hash::check($oldPassword, $configs['password'])) {
 					Configs::set('username', bcrypt($request['username']));
 					Configs::set('password', bcrypt($request['password']));
 					return 'true';
@@ -233,7 +234,6 @@ class SettingsController extends Controller
 
 	public function getAll(Request $request)
 	{
-
 		return Configs::orderBy('cat','ASC')->get();
 	}
 

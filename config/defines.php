@@ -29,5 +29,9 @@ return [
 	    'LYCHEE_URL_UPLOADS_MEDIUM' => 'uploads/medium/',
 	    'LYCHEE_URL_UPLOADS_SMALL' => 'uploads/small/',
 	    'LYCHEE_URL_UPLOADS_THUMB' => 'uploads/thumb/'
+    ],
+
+    'defaults' => [
+    	'SITE_TITLE' => 'Lychee v4'
     ]
 ];

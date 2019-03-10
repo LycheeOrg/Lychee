@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Configs;
+use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,22 @@ use Imagick;
 
 class DiagnosticsController extends Controller
 {
+
+	/**
+	 * @var ConfigFunctions
+	 */
+	private $configFunctions;
+
+
+
+	/**
+	 * @param ConfigFunctions $configFunctions
+	 */
+	public function __construct(ConfigFunctions $configFunctions)
+	{
+		$this->configFunctions = $configFunctions;
+	}
+
 
 	public function get_errors()
 	{
@@ -90,7 +107,7 @@ class DiagnosticsController extends Controller
 
 
 		// Load settings
-		$settings = Configs::get(false);
+		$settings = Configs::get();
 
 		// Settings
 		if (!isset($settings['username']) || $settings['username'] == '') {
@@ -155,7 +172,7 @@ class DiagnosticsController extends Controller
 		$infos = array();
 
 		// Load settings
-		$settings = Configs::get(false);
+		$settings = Configs::get();
 		$gdVersion = gd_info();
 
 		// Load json
@@ -199,7 +216,7 @@ class DiagnosticsController extends Controller
 		$configs = array();
 
 		// Load settings
-		$settings = Configs::get(true);
+		$settings = $this->configFunctions->min_info();
 		foreach ($settings as $key => $value)
 		{
 			if(!is_array($value))
