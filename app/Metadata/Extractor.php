@@ -2,6 +2,9 @@
 
 namespace App\Metadata;
 
+use App\Logs;
+use FFMpeg;
+
 class Extractor
 {
 	/**
@@ -10,15 +13,12 @@ class Extractor
 	 * @param  string $filename
 	 * @return array
 	 */
-	public function extract(string $filename): array
+	public function extract(string $filename, string $type): array
 	{
-		$imageInfo = [];
-		$info = getimagesize($filename, $imageInfo);
-
 		$metadata = [
-			'type'        => $info['mime'],
-			'width'       => $info[0],
-			'height'      => $info[1],
+			'type'        => '',
+			'width'       => 0,
+			'height'      => 0,
 			'title'       => '',
 			'description' => '',
 			'orientation' => '',
@@ -36,6 +36,21 @@ class Extractor
 			'longitude'   => null,
 			'altitude'    => null
 		];
+		$imageInfo = [];
+		if (strpos($type, 'video') !== 0) {
+			$info = getimagesize($filename, $imageInfo);
+			$metadata['type'] = $info['mime'];
+			$metadata['width'] = $info[0];
+			$metadata['height'] = $info[1];
+		}
+		else {
+			try {
+				$this->extractVideo($filename, $metadata);
+			} catch (\Exception $exception) {
+				Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+			}
+			$metadata['type'] = $type;
+		}
 
 		// Size
 		$size = filesize($filename) / 1024;
@@ -93,7 +108,7 @@ class Extractor
 		}
 
 		// Read EXIF
-		if ($info['mime'] == 'image/jpeg') {
+		if ($metadata['type'] === 'image/jpeg') {
 			$exif = @exif_read_data($filename, 'EXIF', false, false);
 		}
 		else {
@@ -246,5 +261,59 @@ class Extractor
 	{
 		$flip = ($ref == '1') ? -1 : 1;
 		return $flip * $this->formattedToFloatGPS($altitude);
+	}
+
+
+
+	private function extractVideo(string $filename, array &$metadata)
+	{
+		$ffprobe = FFMpeg\FFProbe::create();
+
+		$stream = $ffprobe->streams($filename)->videos()->first()->all();
+		$format = $ffprobe->format($filename)->all();
+
+		if (isset($stream['width'])) {
+			$metadata['width'] = $stream['width'];
+		}
+
+		if (isset($stream['height'])) {
+			$metadata['height'] = $stream['height'];
+		}
+
+		if (isset($stream['avg_frame_rate'])) {
+			$framerate = explode('/', $stream['avg_frame_rate']);
+			if (count($framerate) == 1) {
+				$framerate = $framerate[0];
+			} elseif (count($framerate) == 2 && $framerate[1] != 0) {
+				$framerate = number_format($framerate[0] / $framerate[1], 3);
+			}
+			else {
+				$framerate = '';
+			}
+			if ($framerate !== '') {
+				$metadata['focal'] = $framerate;
+			}
+		}
+
+		if (isset($format['duration'])) {
+			$metadata['aperture'] = number_format($format['duration'], 3);
+		}
+
+		if (isset($format['tags'])) {
+			if (isset($format['tags']['creation_time']) && strtotime($format['tags']['creation_time']) !== 0) {
+				$metadata['takestamp'] = date("Y-m-d H:i:s", strtotime($format['tags']['creation_time']));
+			}
+
+			if (isset($format['tags']['location'])) {
+				$matches = [];
+				preg_match('/^([+-][0-9\.]+)([+-][0-9\.]+)\/$/', $format['tags']['location'], $matches);
+				if (count($matches) == 3 &&
+					!preg_match('/^\+0+\.0+$/', $matches[1]) &&
+					!preg_match('/^\+0+\.0+$/', $matches[2])) {
+					$metadata['latitude'] = $matches[1];
+					$metadata['longitude'] = $matches[2];
+				}
+			}
+		}
 	}
 }

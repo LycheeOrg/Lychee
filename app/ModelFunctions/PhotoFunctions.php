@@ -71,52 +71,38 @@ class PhotoFunctions
 
 	/**
 	 * @param Photo $photo
-	 * @param string $path
-	 * @return string Path of the thumbnail
+	 * @return string Path of the video frame
 	 */
-	public function createVideoThumb(Photo $photo, string $path): string
+	public function extractVideoFrame(Photo $photo) : string
 	{
-		$ffprobe = FFMpeg\FFProbe::create();
+		if ($photo->aperture === '') return '';
+
 		$ffmpeg = FFMpeg\FFMpeg::create();
-		$duration = $ffprobe
-			->format($path)// extracts file informations
-			->get('duration');
-		$dimension = new FFMpeg\Coordinate\Dimension(400, 400);
-		$video = $ffmpeg->open($path);
-		$video->filters()->resize($dimension)->synchronize();
-		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($duration / 2));
+		$video = $ffmpeg->open(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url);
+		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
 
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to '.$tmp);
 		$frame->save($tmp);
 
-		$thumbUrl = md5($photo->url).'.jpeg';
-		$this->imageHandler->crop(
-			$tmp,
-			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl,
-			200,
-			200
-		);
-		$photo->thumb2x = 0;
-
-		Logs::notice(__METHOD__, __LINE__, 'Video thumb saved to '.Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl);
-
-		return $thumbUrl;
+		return $tmp;
 	}
 
 
 
 	/**
 	 * @param Photo $photo
+	 * @param string Path of the video frame
 	 * @return boolean Returns true when successful.
 	 */
-	public function createThumb(Photo $photo)
+	public function createThumb(Photo $photo, string $frame_tmp = '')
 	{
 		Logs::notice(__METHOD__, __LINE__, 'Photo URL is '.$photo->url);
 
+		$src = ($frame_tmp === '') ? Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url : $frame_tmp;
 		$photoName = explode('.', $photo->url);
 		$this->imageHandler->crop(
-			Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url,
+			$src,
 			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'.jpeg',
 			200,
 			200
@@ -126,7 +112,7 @@ class PhotoFunctions
 			$photo->width >= 400 && $photo->height >= 400) {
 			// Retina thumbs
 			$this->imageHandler->crop(
-				Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url,
+				$src,
 				Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'@2x.jpeg',
 				400,
 				400
@@ -286,7 +272,7 @@ class PhotoFunctions
 
 		}
 
-		$info = $this->metadataExtractor->extract($path);
+		$info = $this->metadataExtractor->extract($path, $mimeType);
 
 		// Use title of file if IPTC title missing
 		if ($info['title'] === '') {
@@ -330,33 +316,38 @@ class PhotoFunctions
 
 			// Set original date
 			if ($info['takestamp'] !== '' && $info['takestamp'] !== 0) {
-				@touch($path, $info['takestamp']);
+				@touch($path, strtotime($info['takestamp']));
+			}
+
+			// For videos extract a frame from the middle
+			$frame_tmp = '';
+			if (in_array($photo->type, $this->validVideoTypes, true)) {
+				try {
+					$frame_tmp = $this->extractVideoFrame($photo);
+				} catch (\Exception $exception) {
+					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+					$path_thumb = '';
+				}
 			}
 
 			// Create Thumb
-			if (!in_array($photo->type, $this->validVideoTypes, true)) {
-
-				if (!$this->createThumb($photo)) {
+			if (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
+				if (!$this->createThumb($photo, $frame_tmp)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
 					return Response::error('Could not create thumbnail for photo!');
 				}
 
 				$path_thumb = basename($photo_name, $extension).".jpeg";
 			}
-			else {
-				try {
-					$path_thumb = $this->createVideoThumb($photo, $path);
-				}
-				catch (\Exception $exception) {
-					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-					$path_thumb = '';
-				}
-			}
 
 			Logs::notice(__METHOD__, __LINE__, $path_thumb);
 			$photo->thumbUrl = $path_thumb;
 
-			$this->createSmallerImages($photo);
+			$this->createSmallerImages($photo, $frame_tmp);
+
+			if ($frame_tmp !== '') {
+				unlink($frame_tmp);
+			}
 		}
 
 		return $this->save($photo, $albumID);
@@ -366,24 +357,27 @@ class PhotoFunctions
 
 	/**
 	 * @param  Photo $photo
+	 * @param  string Path of the video frame
 	 * @return void
 	 */
-	private function createSmallerImages(Photo $photo)
+	private function createSmallerImages(Photo $photo, string $frame_tmp = '')
 	{
-		$mediumMaxWidth = intval(Configs::get_value('medium_max_width'));
-		$mediumMaxHeight = intval(Configs::get_value('medium_max_height'));
-		$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight);
+		if ($frame_tmp === '') {
+			$mediumMaxWidth = intval(Configs::get_value('medium_max_width'));
+			$mediumMaxHeight = intval(Configs::get_value('medium_max_height'));
+			$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight);
 
-		if (Configs::get_value('medium_2x') === '1') {
-			$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
+			if (Configs::get_value('medium_2x') === '1') {
+				$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
+			}
 		}
 
 		$smallMaxWidth = intval(Configs::get_value('small_max_width'));
 		$smallMaxHeight = intval(Configs::get_value('small_max_height'));
-		$this->resizePhoto($photo, 'small', $smallMaxWidth, $smallMaxHeight);
+		$this->resizePhoto($photo, 'small', $smallMaxWidth, $smallMaxHeight, $frame_tmp);
 
 		if (Configs::get_value('small_2x') === '1') {
-			$this->resizePhoto($photo, 'small2x', $smallMaxWidth * 2, $smallMaxHeight * 2);
+			$this->resizePhoto($photo, 'small2x', $smallMaxWidth * 2, $smallMaxHeight * 2, $frame_tmp);
 		}
 	}
 
@@ -396,15 +390,21 @@ class PhotoFunctions
 	 * @param  string $type
 	 * @param  int $maxWidth
 	 * @param  int $maxHeight
+	 * @param  string Path of the video frame
 	 * @return bool
 	 */
-	public function resizePhoto(Photo $photo, string $type, int $maxWidth, int $maxHeight): bool
+	public function resizePhoto(Photo $photo, string $type, int $maxWidth, int $maxHeight, string $frame_tmp = ''): bool
 	{
-		$filename = $photo->url;
 		$width = $photo->width;
 		$height = $photo->height;
 
-		$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
+		if ($frame_tmp === '') {
+			$filename = $photo->url;
+			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
+		} else {
+			$filename = $photo->thumbUrl;
+			$url = $frame_tmp;
+		}
 
 		// Both image sizes of the same type are stored in the same folder
 		// ie: medium and medium2x both belong in LYCHEE_UPLOADS_MEDIUM
@@ -421,7 +421,7 @@ class PhotoFunctions
 
 		// Add the @2x postfix if we're dealing with an HiDPI type
 		if (strpos($type, '2x') > 0) {
-			preg_replace('/(.*)\.([a-z]+)$/', '\1@2x\2', $filename);
+			$filename = preg_replace('/^(.*)\.(.*)$/', '\1@2x.\2', $filename);
 		}
 
 		// Is photo big enough?
