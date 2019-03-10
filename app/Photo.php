@@ -136,6 +136,8 @@ class Photo extends Model
 		else {
 			$photoName = $this->url;
 		}
+		$photoName2x = explode('.', $photoName);
+		$photoName2x = $photoName2x[0].'@2x.'.$photoName2x[1];
 
 		// Parse medium
 		if ($this->medium != '') {
@@ -148,8 +150,6 @@ class Photo extends Model
 		}
 
 		if ($this->medium2x != '') {
-			$photoName2x = explode('.', $photoName);
-			$photoName2x = $photoName2x[0].'@2x.'.$photoName2x[1];
 			$photo['medium2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoName2x;
 			$photo['medium2x_dim'] = $this->medium2x;
 		}
@@ -168,8 +168,6 @@ class Photo extends Model
 		}
 
 		if ($this->small2x != '') {
-			$photoName2x = explode('.', $photoName);
-			$photoName2x = $photoName2x[0].'@2x.'.$photoName2x[1];
 			$photo['small2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoName2x;
 			$photo['small2x_dim'] = $this->small2x;
 		}
