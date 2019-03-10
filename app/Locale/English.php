@@ -325,7 +325,7 @@ final class English
 
 			'ABOUT_SUBTITLE'			=> 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION'			=> 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
-			'FOOTER_COPYRIGHT'			=> 'All images on this website are subject to Copyright by TEST TEST TEST'
+			'FOOTER_COPYRIGHT'			=> 'All images on this website are subject to Copyright by '
 		);
 
 		return $locale;
