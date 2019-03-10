@@ -4,6 +4,7 @@ namespace App\ModelFunctions;
 
 
 use App\Configs;
+use App\Locale\Lang;
 
 class ConfigFunctions
 {
@@ -73,7 +74,13 @@ class ConfigFunctions
 	{
 
 		// Execute query
-		return Configs::admin()->pluck('value','key')->all();
+		$return = Configs::admin()->pluck('value','key')->all();
+		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
+		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
+
+		$return['lang_available'] = Lang::get_lang_available();
+
+		return $return;
 
 	}
 }

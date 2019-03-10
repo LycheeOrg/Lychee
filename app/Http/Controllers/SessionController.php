@@ -72,6 +72,7 @@ class SessionController extends Controller
 				$return['upload'] = true; // not necessary
 
 				$return['config'] = $this->configFunctions->admin();
+
 				$return['config']['location'] = Config::get('defines.path.LYCHEE');
 			}
 			else {
