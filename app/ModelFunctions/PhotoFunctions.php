@@ -360,7 +360,7 @@ class PhotoFunctions
 	 * @param  string Path of the video frame
 	 * @return void
 	 */
-	private function createSmallerImages(Photo $photo, string $frame_tmp = '')
+	public function createSmallerImages(Photo $photo, string $frame_tmp = '')
 	{
 		if ($frame_tmp === '') {
 			$mediumMaxWidth = intval(Configs::get_value('medium_max_width'));

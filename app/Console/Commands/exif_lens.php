@@ -75,7 +75,7 @@ class exif_lens extends Command
 		foreach ($photos as $photo) {
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
 			if (file_exists($url)) {
-				$info = $this->metadataExtractor->extract($url);
+				$info = $this->metadataExtractor->extract($url, $photo->type);
 				if ($photo->size == '') {
 					$photo->size = $info['size'];
 				}

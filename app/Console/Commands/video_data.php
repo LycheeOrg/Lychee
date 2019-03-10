@@ -31,16 +31,22 @@ class video_data extends Command
 	private $photoFunctions;
 
 	/**
+	 * @var Extractor
+	 */
+	private $metadataExtractor;
+
+	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
 	 * @return void
 	 */
-	public function __construct(PhotoFunctions $photoFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
 	{
 		parent::__construct();
 
 		$this->photoFunctions = $photoFunctions;
+		$this->metadataExtractor = $metadataExtractor;
 	}
 
 	/**
@@ -72,6 +78,7 @@ class video_data extends Command
 		}
 
 		foreach ($photos as $photo) {
+			$this->line('Processing '.$photo->title.'...');
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
 
 			if ($photo->thumbUrl != '') {
@@ -82,15 +89,16 @@ class video_data extends Command
 					if ($urlBase !== $thumbBase) {
 						$photo->thumbUrl = $urlBase[0].'.'.$thumbBase[1];
 						rename($thumb, Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photo->thumbUrl);
-						$this->line('Renamed '.$photo->thumb.' to match the video file');
+						$this->line('Renamed thumb to match the video file');
 					}
 				}
 			}
 
 			if (file_exists($url)) {
-				$info = $this->metadataExtractor->extract($url);
+				$info = $this->metadataExtractor->extract($url, $photo->type);
 
 				if ($info['width']) {
+					$this->line('Extracted metadata');
 					$photo->width = $info['width'];
 				}
 				if ($info['height']) {
@@ -120,6 +128,7 @@ class video_data extends Command
 						Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 					}
 					if ($frame_tmp !== '') {
+						$this->line('Extracted video frame for thumbnails');
 						if ($photo->thumbUrl === '' || $photo->thumb2x === 0) {
 							if (!$this->photoFunctions->createThumb($photo, $frame_tmp)) {
 			                    Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for video');
@@ -128,10 +137,11 @@ class video_data extends Command
 						if ($photo->small === '' || $photo->small2x === '') {
 							$this->photoFunctions->createSmallerImages($photo, $frame_tmp);
 						}
+						unlink($frame_tmp);
 					}
 				}
 			} else {
-				$this->line('File does not exists for '.$photo->title.'.');
+				$this->line('File does not exist');
 			}
 
 			$photo->save();
