@@ -55,6 +55,8 @@ class LogController extends Controller
 		orWhere('function', '=', 'App\ModelFunctions\PhotoFunctions::add')->
 		orWhere('function', '=', 'App\ModelFunctions\PhotoFunctions::createMedium')->
 		orWhere('function', '=', 'App\ModelFunctions\PhotoFunctions::createThumb')->
+		orWhere('function', '=', 'App\ModelFunctions\PhotoFunctions::createVideoThumb')->
+		orWhere('function', '=', 'App\ModelFunctions\PhotoFunctions::extractVideoFrame')->
 		orWhere('function', '=', 'App\ModelFunctions\PhotoFunctions::resizePhoto')->
 		orWhere('function', '=', 'App\Photo::predelete')->
 		orWhere('function', '=', 'App\Image\ImagickHandler::scale')->
