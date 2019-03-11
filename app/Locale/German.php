@@ -323,7 +323,8 @@ final class German
 			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Konnte Import nicht starten, weil der Ordner leer ist.',
 
 			'ABOUT_SUBTITLE'			=> 'Selbst gehostetes Foto-Management, aber richtig!',
-			'ABOUT_DESCRIPTION'			=> 'ist ein freies Foto-Management-Werkzeug, dass auf Ihrem Server oder Webspace läuft. Die Installation ist eine Sache von Sekunden. Hochladen, Organisieren und Teilen von Fotos funktioniert wie in einer nativen Anwendung. Lychee hält alles bereit, was Sie benötigen, und alle Bilder werden sicher abgespeichert.'
+			'ABOUT_DESCRIPTION'			=> 'ist ein freies Foto-Management-Werkzeug, dass auf Ihrem Server oder Webspace läuft. Die Installation ist eine Sache von Sekunden. Hochladen, Organisieren und Teilen von Fotos funktioniert wie in einer nativen Anwendung. Lychee hält alles bereit, was Sie benötigen, und alle Bilder werden sicher abgespeichert.',
+			'FOOTER_COPYRIGHT'			=> 'Alle Bilder auf dieser Website unterliegen dem Copyright von '
 		);
 
 		return $locale;
