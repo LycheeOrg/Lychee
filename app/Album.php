@@ -64,6 +64,10 @@ class Album extends Model
 
 		$album['owner'] = $this->owner->username;
 
+		$album['thumbs'] = array();
+		$album['thumbs2x'] = array();
+		$album['types'] = array();
+
 		return $album;
 	}
 
@@ -71,10 +75,6 @@ class Album extends Model
 
 	public function gen_thumbs($return)
 	{
-
-		$return['thumbs'] = array();
-		$return['thumbs2x'] = array();
-		$return['types'] = array();
 
 		$alb = $this->get_all_subalbums();
 		$alb[] = $this->id;
