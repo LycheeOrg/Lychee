@@ -33,7 +33,7 @@ class AlbumTest extends TestCase
 	    Session::put('UserID', 0);
 
 	    /**
-	     * We are not logged in so this should fail.
+	     * We are logged as ADMIN (we don't test the other users yet) so this should not fail and it should return an id.
 	     */
 	    $response = $this->post('/api/Album::add', [
 		    'title' => 'test_album',
