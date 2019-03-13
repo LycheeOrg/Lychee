@@ -198,7 +198,6 @@ class SessionController extends Controller
 		if (Session::get('login')) {
 			return 1;
 		}
-
 		if ($albumID != '') {
 			$album = Album::find($albumID);
 		}
