@@ -111,7 +111,6 @@ class AlbumController extends Controller
 
 		}
 
-		Logs::notice(__METHOD__,__LINE__,$return['id']);
 		return $return;
 	}
 
