@@ -125,9 +125,6 @@ class DiagnosticsController extends Controller
 		if (!isset($settings['imagick']) || $settings['imagick'] == '') {
 			$errors += ['Error: No or wrong property for imagick in database'];
 		}
-		if (!isset($settings['identifier']) || $settings['identifier'] == '') {
-			$errors += ['Error: No or wrong property for identifier in database'];
-		}
 		if (!isset($settings['skipDuplicates']) || $settings['skipDuplicates'] == '') {
 			$errors += ['Error: No or wrong property for skipDuplicates in database'];
 		}
