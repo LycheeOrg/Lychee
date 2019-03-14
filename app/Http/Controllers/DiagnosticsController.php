@@ -122,9 +122,6 @@ class DiagnosticsController extends Controller
 		if (!isset($settings['sortingAlbums']) || $settings['sortingAlbums'] == '') {
 			$errors += ['Error: Wrong property for sortingAlbums in database'];
 		}
-		if (!isset($settings['plugins'])) {
-			$errors += ['Error: No property for plugins in database'];
-		}
 		if (!isset($settings['imagick']) || $settings['imagick'] == '') {
 			$errors += ['Error: No or wrong property for imagick in database'];
 		}
