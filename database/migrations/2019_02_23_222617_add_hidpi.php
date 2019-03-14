@@ -2,10 +2,11 @@
 
 use App\Configs;
 use App\Photo;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 class AddHidpi extends Migration
 {
@@ -19,9 +20,18 @@ class AddHidpi extends Migration
 		if (Schema::hasTable('configs')) {
 
 			DB::table('configs')->insert([
-				['key' => 'thumb_2x', 'value' => '1'],
-				['key' => 'small_2x', 'value' => '0'],
-				['key' => 'medium_2x', 'value' => '0'],
+				[
+					'key'   => 'thumb_2x',
+					'value' => '1'
+				],
+				[
+					'key'   => 'small_2x',
+					'value' => '0'
+				],
+				[
+					'key'   => 'medium_2x',
+					'value' => '0'
+				],
 			]);
 		}
 		else {
@@ -49,21 +59,27 @@ class AddHidpi extends Migration
 				// Verify that the 2x thumbnail actually exists. We assume
 				// it does but we support the case where it does not.
 				$thumbUrl2x = explode(".", $photo->thumbUrl);
-				$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-				if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl2x)) {
+				if (count($thumbUrl2x) < 2) {
 					$photo->thumb2x = 0;
 					$save = true;
+				}
+				else {
+					$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
+					if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl2x)) {
+						$photo->thumb2x = 0;
+						$save = true;
+					}
 				}
 
 				// Extract the sizes of medium and small
 				if ($photo->medium_old == '1') {
 					list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url);
-					$photo->medium = $width . 'x' . $height;
+					$photo->medium = $width.'x'.$height;
 					$save = true;
 				}
 				if ($photo->small_old == '1') {
 					list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url);
-					$photo->small = $width . 'x' . $height;
+					$photo->small = $width.'x'.$height;
 					$save = true;
 				}
 
@@ -82,6 +98,8 @@ class AddHidpi extends Migration
 		}
 	}
 
+
+
 	/**
 	 * Reverse the migrations.
 	 *
@@ -90,9 +108,9 @@ class AddHidpi extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key','=','thumb_2x')->delete();
-			Configs::where('key','=','small_2x')->delete();
-			Configs::where('key','=','medium_2x')->delete();
+			Configs::where('key', '=', 'thumb_2x')->delete();
+			Configs::where('key', '=', 'small_2x')->delete();
+			Configs::where('key', '=', 'medium_2x')->delete();
 
 			Schema::table('photos', function (Blueprint $table) {
 				$table->renameColumn('medium', 'medium_new');
