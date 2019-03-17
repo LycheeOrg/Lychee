@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class Album extends Model
 {
@@ -121,7 +122,9 @@ class Album extends Model
 
 				$album = $subAlbum->prepareData();
 				$album['albums'] = $subAlbum->get_albums($userId);
-				$album = $subAlbum->gen_thumbs($album);
+				if ($subAlbum->password === null || Session::get('login')) {
+					$album = $subAlbum->gen_thumbs($album);
+				}
 
 				$subAlbums[] = $album;
 			}
