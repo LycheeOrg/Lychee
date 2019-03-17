@@ -45,6 +45,8 @@ final class French
 			'DOWNLOAD_ALBUM'	=> 'Télécharger l\'album',
 			'ABOUT_ALBUM'		=> 'À propos de l\'album',
 			'DELETE_ALBUM'		=> 'Supprimer l\'album',
+			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
+			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 
 			'DELETE_ALBUM_QUESTION'			=> 'Supprimer l\'album et ses photos',
 			'KEEP_ALBUM'					=> 'Garder l\'album',
