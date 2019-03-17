@@ -67,6 +67,12 @@
         <a class="button" id="button_trash_album" title="{{ $locale['DELETE_ALBUM'] }}">
             <svg class="iconic"><use xlink:href="#trash"></use></svg>
         </a>
+        <a class="button" id="button_fs_album_enter" title="{{ $locale['FULLSCREEN_ENTER'] }}">
+            <svg class="iconic"><use xlink:href="#fullscreen-enter"></use></svg>
+        </a>
+        <a class="button" id="button_fs_album_exit" title="{{ $locale['FULLSCREEN_EXIT'] }}">
+            <svg class="iconic"><use xlink:href="#fullscreen-exit"></use></svg>
+        </a>
         <a class="header__divider"></a>
         <a class="button button_add" title="{{ $locale['ADD'] }}">
             <svg class="iconic"><use xlink:href="#plus"></use></svg>
@@ -96,6 +102,12 @@
         </a>
         <a class="button" id="button_trash" title="{{ $locale['DELETE'] }}">
             <svg class="iconic"><use xlink:href="#trash"></use></svg>
+        </a>
+        <a class="button" id="button_fs_enter" title="{{ $locale['FULLSCREEN_ENTER'] }}">
+            <svg class="iconic"><use xlink:href="#fullscreen-enter"></use></svg>
+        </a>
+        <a class="button" id="button_fs_exit" title="{{ $locale['FULLSCREEN_EXIT'] }}">
+            <svg class="iconic"><use xlink:href="#fullscreen-exit"></use></svg>
         </a>
         <a class="header__divider"></a>
         <a class="button" id="button_more" title="{{ $locale['MORE'] }}">
