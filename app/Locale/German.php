@@ -52,6 +52,8 @@ final class German
 			'DOWNLOAD_ALBUM'	=> 'Album herunterladen',
 			'ABOUT_ALBUM'		=> 'Über dieses Album',
 			'DELETE_ALBUM'		=> 'Album löschen',
+			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
+			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 
 			'DELETE_ALBUM_QUESTION'			=> 'Album und Fotos löschen',
 			'KEEP_ALBUM'					=> 'Album behalten',

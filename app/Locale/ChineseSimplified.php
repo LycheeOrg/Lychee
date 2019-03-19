@@ -53,6 +53,8 @@ final class ChineseSimplified
 			'DOWNLOAD_ALBUM'	=> '下载相册',
 			'ABOUT_ALBUM'		=> '关于相册',
 			'DELETE_ALBUM'		=> '删除相册',
+			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
+			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 
 			'DELETE_ALBUM_QUESTION' 		=> '删除相册和照片',
 			'KEEP_ALBUM'					=> '保留相册',

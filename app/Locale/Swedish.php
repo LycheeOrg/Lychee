@@ -48,6 +48,8 @@ final class Swedish
 			'DOWNLOAD_ALBUM'	=> 'Ladda ner album',
 			'ABOUT_ALBUM'		=> 'Om albumet',
 			'DELETE_ALBUM'		=> 'Radera albumet',
+			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
+			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 
 			'DELETE_ALBUM_QUESTION'			=> 'Radera album och fotografier',
 			'KEEP_ALBUM'					=> 'Behåll albumet',

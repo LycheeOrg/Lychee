@@ -43,6 +43,9 @@ final class Dutch
 			'DOWNLOAD_ALBUM'	=> 'Download Album',
 			'ABOUT_ALBUM'		=> 'Over Album',
 			'DELETE_ALBUM'		=> 'Verwijder Album',
+			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
+			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
+
 			'DELETE_ALBUM_QUESTION'			=> 'Verwijder Album en Foto\'s',
 			'KEEP_ALBUM'					=> 'Behoud Album',
 			'DELETE_ALBUM_CONFIRMATION_1'	=> 'Weet je zeker dat je dit album en alle foto\'s die het',
