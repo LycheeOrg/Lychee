@@ -2743,7 +2743,6 @@ lychee.init = function () {
 			lychee.checkForUpdates = data.config.checkForUpdates || '1';
 			lychee.lang = data.config.lang || '';
 			lychee.lang_available = data.config.lang_available || {};
-			lychee.imagick = data.config.imagick && data.config.imagick === '1' || false;
 			lychee.layout = data.config.layout || '1';
 			lychee.image_overlay_default = data.config.image_overlay && data.config.image_overlay === '1' || false;
 			lychee.image_overlay = lychee.image_overlay_default;

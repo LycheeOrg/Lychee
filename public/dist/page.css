@@ -2863,9 +2863,11 @@ a {
   #content div.left_30 {
     width: 30%;
     padding-bottom: 50px;
+    margin-top: 3px;
     float: left; }
   #content div.left_50 {
     width: 50%;
+    margin-top: 3px;
     padding-bottom: 50px;
     float: left; }
   #content div.right_70 {
@@ -2879,11 +2881,23 @@ a {
   #content div.left_50 img {
     width: 80%;
     margin-left: auto;
-    margin-right: auto; }
+    margin-right: auto;
+    border: 2px solid #707070;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box; }
   #content .clearfix::after {
     content: "";
     clear: both;
     display: table; }
+
+@media screen and (max-width: 700px) {
+  div.left_30, div.left_50, div.right_50, div.right_70 {
+    width: 100% !important;
+    float: none !important;
+    margin: 0 0 30px 0; }
+  div.left_50 img {
+    width: 100% !important; } }
 
 #footer {
   position: fixed;
