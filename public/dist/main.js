@@ -2110,6 +2110,8 @@ header.bind = function () {
 	header.dom('#button_back').on(eventName, function () {
 		lychee.goto(album.getID());
 	});
+	header.dom('#button_fs_album_enter,#button_fs_enter').on(eventName, lychee.fullscreenEnter);
+	header.dom('#button_fs_album_exit,#button_fs_exit').on(eventName, lychee.fullscreenExit).hide();
 
 	header.dom('.header__search').on('keyup click', function () {
 		search.find($(this).val());
@@ -2324,7 +2326,11 @@ $(document).ready(function () {
 		}
 	}).bind(['o'], function () {
 		if (visible.photo()) {
-			photo.update_overlay_type();
+			photo.update_overlay_type();return false;
+		}
+	}).bind(['F'], function () {
+		if (visible.album() || visible.photo()) {
+			lychee.fullscreenToggle();return false;
 		}
 	});
 
@@ -2393,7 +2399,10 @@ $(document).ready(function () {
 		if (e.originalEvent.dataTransfer.files.length > 0) upload.start.local(e.originalEvent.dataTransfer.files);else if (e.originalEvent.dataTransfer.getData('Text').length > 3) upload.start.url(e.originalEvent.dataTransfer.getData('Text'));
 
 		return false;
-	});
+	})
+
+	// Fullscreen
+	.on('fullscreenchange mozfullscreenchange webkitfullscreenchange msfullscreenchange', lychee.fullscreenUpdate);
 
 	$(window)
 	// resize
@@ -2763,6 +2772,8 @@ lychee.init = function () {
 
 			// Logged out
 
+			lychee.sortingPhotos = data.config.sortingPhotos || '';
+			lychee.sortingAlbums = data.config.sortingAlbums || '';
 			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === '1';
 			lychee.checkForUpdates = data.config.checkForUpdates || '1';
 			lychee.layout = data.config.layout || '1';
@@ -3104,6 +3115,60 @@ lychee.error = function (errorThrown) {
 	loadingBar.show('error', errorThrown);
 };
 
+lychee.fullscreenEnter = function () {
+	var elem = document.documentElement;
+	if (elem.requestFullscreen) {
+		elem.requestFullscreen();
+	} else if (elem.mozRequestFullScreen) {
+		/* Firefox */
+		elem.mozRequestFullScreen();
+	} else if (elem.webkitRequestFullscreen) {
+		/* Chrome, Safari and Opera */
+		elem.webkitRequestFullscreen();
+	} else if (elem.msRequestFullscreen) {
+		/* IE/Edge */
+		elem.msRequestFullscreen();
+	}
+};
+
+lychee.fullscreenExit = function () {
+	if (document.exitFullscreen) {
+		document.exitFullscreen();
+	} else if (document.mozCancelFullScreen) {
+		/* Firefox */
+		document.mozCancelFullScreen();
+	} else if (document.webkitExitFullscreen) {
+		/* Chrome, Safari and Opera */
+		document.webkitExitFullscreen();
+	} else if (document.msExitFullscreen) {
+		/* IE/Edge */
+		document.msExitFullscreen();
+	}
+};
+
+lychee.fullscreenToggle = function () {
+	if (lychee.fullscreenStatus()) {
+		lychee.fullscreenExit();
+	} else {
+		lychee.fullscreenEnter();
+	}
+};
+
+lychee.fullscreenStatus = function () {
+	var elem = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+	return elem ? true : false;
+};
+
+lychee.fullscreenUpdate = function () {
+	if (lychee.fullscreenStatus()) {
+		$('#button_fs_album_enter,#button_fs_enter').hide();
+		$('#button_fs_album_exit,#button_fs_exit').show();
+	} else {
+		$('#button_fs_album_enter,#button_fs_enter').show();
+		$('#button_fs_album_exit,#button_fs_exit').hide();
+	}
+};
+
 lychee.locale = {
 
 	'USERNAME': 'username',
@@ -3147,6 +3212,8 @@ lychee.locale = {
 	'DOWNLOAD_ALBUM': 'Download Album',
 	'ABOUT_ALBUM': 'About Album',
 	'DELETE_ALBUM': 'Delete Album',
+	'FULLSCREEN_ENTER': 'Enter Fullscreen',
+	'FULLSCREEN_EXIT': 'Exit Fullscreen',
 
 	'DELETE_ALBUM_QUESTION': 'Delete Album and Photos',
 	'KEEP_ALBUM': 'Keep Album',
@@ -3843,7 +3910,7 @@ password = {
 
 password.get = function (albumID, callback) {
 
-	if (lychee.publicMode === false) callback();else if (album.json && album.json.password === '0') callback();else if (albums.json && albums.getByID(albumID).password === '0') callback();else if (!albums.json && !album.json) {
+	if (lychee.publicMode === false) callback();else if (album.json && album.json.password === '0') callback();else if (albums.json && (albums.getByID(albumID).password === '0' || albums.getByID(albumID).passwordProvided)) callback();else if (!albums.json && !album.json) {
 
 		// Continue without password
 
@@ -3873,6 +3940,9 @@ password.getDialog = function (albumID, callback) {
 			if (data === true) {
 				basicModal.close();
 				password.value = passwd;
+				if (lychee.api_V2 && albums.json) {
+					albums.getByID(albumID).passwordProvided = true;
+				}
 				callback();
 			} else {
 				basicModal.error('password');
