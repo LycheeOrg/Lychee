@@ -240,6 +240,7 @@ final class ChineseSimplified
 			'LOGIN_TITLE'				=> '输入管理员用户名和密码：',
 			'LOGIN_USERNAME' 			=> '新用户名',
 			'LOGIN_PASSWORD' 			=> '新密码',
+			'LOGIN_PASSWORD_CONFIRM' 	=> 'Confirm Password',
 			'LOGIN_CREATE'				=> '创建',
 
 			'PASSWORD_TITLE'			=> '输入当前密码',

@@ -203,6 +203,7 @@ final class Swedish
 			'LOGIN_TITLE'				=> 'Ange ett användarnamn och lösenord för din installation:',
 			'LOGIN_USERNAME'			=> 'Nytt användarnamn',
 			'LOGIN_PASSWORD'			=> 'Nytt lösenord',
+			'LOGIN_PASSWORD_CONFIRM'	=> 'Confirm Password',
 			'LOGIN_CREATE'				=> 'Skapa inloggning',
 
 			'PASSWORD_TITLE'			=> 'Ange dina befintliga inloggningsuppgifter:',

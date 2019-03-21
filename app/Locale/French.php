@@ -200,6 +200,7 @@ final class French
 			'LOGIN_TITLE'				=> 'Entrez un nom d\'utilisateur et un mot de passe pour votre installation :',
 			'LOGIN_USERNAME'			=> 'Nouvel utilisateur',
 			'LOGIN_PASSWORD'			=> 'Nouveau Mot de passe',
+			'LOGIN_PASSWORD_CONFIRM'	=> 'Confirm Password',
 			'LOGIN_CREATE'				=> 'Créer les informations de connexion',
 
 			'PASSWORD_TITLE'			=> 'Entrez votre mot de passe existant :',

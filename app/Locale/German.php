@@ -239,6 +239,7 @@ final class German
 			'LOGIN_TITLE'				=> 'Geben Sie Benutzername und Kennwort für Ihre Installation an:',
 			'LOGIN_USERNAME'			=> 'Neuer Benutzername',
 			'LOGIN_PASSWORD'			=> 'Neues Kennwort',
+			'LOGIN_PASSWORD_CONFIRM'	=> 'Confirm Password',
 			'LOGIN_CREATE'				=> 'Benutzer anlegen',
 
 			'PASSWORD_TITLE'			=> 'Geben Sie Ihr bestehendes Kennwort ein:',
