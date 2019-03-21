@@ -184,6 +184,7 @@ final class Dutch
 			'LOGIN_TITLE'				=> 'Voer een gebruikersnaam en wachtwoord in voor je installatie:',
 			'LOGIN_USERNAME'			=> 'Nieuw Gebruikersnaam',
 			'LOGIN_PASSWORD'			=> 'Nieuw Wachtwoord',
+			'LOGIN_PASSWORD_CONFIRM'	=> 'Confirm Password',
 			'LOGIN_CREATE'				=> 'Maak Login',
 			'PASSWORD_TITLE'			=> 'Voer je huidige wachtwoord in:',
 			'PASSWORD_CURRENT'			=> 'Huidig Wachtwoord',
