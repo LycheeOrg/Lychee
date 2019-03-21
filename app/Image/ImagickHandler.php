@@ -55,7 +55,9 @@ class ImagickHandler implements ImageHandlerInterface
 		}
 		catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-			return false;
+			Logs::notice(__METHOD__, __LINE__, 'Trying with GD');
+			$gd = new GdHandler($this->compressionQuality);
+			return $gd->scale($source,$destination,$newWidth,$newHeight,$resWidth,$resHeight);
 		}
 
 		return true;
@@ -90,7 +92,9 @@ class ImagickHandler implements ImageHandlerInterface
 		}
 		catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-			return false;
+			Logs::notice(__METHOD__, __LINE__, 'Trying with GD');
+			$gd = new GdHandler($this->compressionQuality);
+			return $gd->crop($source,$destination,$newWidth,$newHeight);
 		}
 
 		return true;
