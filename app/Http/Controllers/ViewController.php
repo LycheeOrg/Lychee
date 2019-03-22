@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 
+use App\Configs;
 use App\Logs;
 use App\Photo;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 class ViewController extends Controller
 {
@@ -64,6 +66,8 @@ class ViewController extends Controller
 			$dir = 'big';
 		}
 
+		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+
 		$parseUrl = parse_url(env('APP_URL').$request->server->get('REQUEST_URI'));
 //		dd($parseUrl);
 		$url = env('APP_URL').$request->server->get('REQUEST_URI');
@@ -76,6 +80,7 @@ class ViewController extends Controller
 			'url'     => $url,
 			'photo'   => $photo,
 			'picture' => $picture,
+			'title'   => $title
 
 		]);
 	}
