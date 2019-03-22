@@ -13,13 +13,12 @@ class Helpers
 	{
 
 		// Generate id based on the current microtime
-		$id = str_replace(' ', '', microtime(true));
+		// Ensure 4 digits after the decimal point, 15 characters
+		// total (including the decimal point), 0-padded on the
+		// left if needed (shouldn't be needed unless we move back in
+		// time :-) )
+		$id = sprintf("%015.4f", microtime(true));
 		$id = str_replace('.', '', $id);
-
-		// Ensure that the id has a length of 14 chars
-		while (strlen($id) < 14) {
-			$id = '0'.$id;
-		}
 
 		// Return id as a string. Don't convert the id to an integer
 		// as 14 digits are too big for 32bit PHP versions.
