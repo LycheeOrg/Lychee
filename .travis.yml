@@ -7,6 +7,8 @@ language: php
 
 php:
   - '7.2'
+  - '7.3'
+#  - nightly
 env:
   - TRAVIS_COMPOSER_DEV=yes
   - TRAVIS_COMPOSER_DEV=no
