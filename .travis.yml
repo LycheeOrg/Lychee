@@ -25,9 +25,9 @@ before_script:
   - printf "\n" | pecl install imagick
   - cp .env.travis .env
   - mysql -e 'create database homestead_test;'
-  - ./composer.travis.sh
+  - ./travis.composer.sh
 
 script:
   - php artisan key:generate
   - php artisan migrate
-  - ./travis.test.sh
+  - ./travis.tests.sh
