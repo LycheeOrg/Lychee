@@ -7,6 +7,9 @@ language: php
 
 php:
   - '7.2'
+env:
+  - TRAVIS_COMPOSER_DEV=yes
+  - TRAVIS_COMPOSER_DEV=no
 
 addons:
   mariadb: '10.3'
@@ -22,10 +25,9 @@ before_script:
   - printf "\n" | pecl install imagick
   - cp .env.travis .env
   - mysql -e 'create database homestead_test;'
-  - composer self-update
-  - composer install --no-interaction
+  - ./travis.composer.sh
 
 script:
   - php artisan key:generate
   - php artisan migrate
-  - vendor/bin/phpunit --verbose
+  - ./travis.tests.sh
