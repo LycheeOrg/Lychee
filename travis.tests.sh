@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ev
 
-if [[ $TRAVIS_COMPOSER_DEV = "yes" ]]
+if [ $TRAVIS_COMPOSER_DEV = "yes" ]
 then
   vendor/bin/phpunit --verbose
 else
