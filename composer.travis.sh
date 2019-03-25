@@ -1,6 +1,5 @@
 #!/bin/sh
-
-echo $(TRAVIS_COMPOSER_DEV);
+set -ev
 
 if [ $TRAVIS_COMPOSER_DEV = "yes" ]
 then
@@ -10,3 +9,4 @@ else
   composer self-update
   composer install --no-interaction --no-dev
 fi
+
