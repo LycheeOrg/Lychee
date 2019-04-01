@@ -42,6 +42,9 @@ class AddHidpi extends Migration
 			if (Schema::hasTable('photos')) {
 				Schema::table('photos', function (Blueprint $table) {
 					$table->renameColumn('medium', 'medium_old');
+				});
+
+				Schema::table('photos', function (Blueprint $table) {
 					$table->renameColumn('small', 'small_old');
 				});
 
@@ -105,8 +108,7 @@ class AddHidpi extends Migration
 			}
 
 			Schema::table('photos', function (Blueprint $table) {
-				$table->dropColumn('medium_old');
-				$table->dropColumn('small_old');
+				$table->dropColumn('medium_old', 'small_old');
 			});
 		}
 		else {
@@ -148,8 +150,12 @@ class AddHidpi extends Migration
 
 			Schema::table('photos', function (Blueprint $table) {
 				$table->renameColumn('medium', 'medium_new');
+			});
+
+			Schema::table('photos', function (Blueprint $table) {
 				$table->renameColumn('small', 'small_new');
 			});
+
 			Schema::table('photos', function (Blueprint $table) {
 				$table->boolean('medium')->default(true);
 				$table->boolean('small')->default(true);
@@ -174,11 +180,7 @@ class AddHidpi extends Migration
 			}
 
 			Schema::table('photos', function (Blueprint $table) {
-				$table->dropColumn('medium_new');
-				$table->dropColumn('medium2x');
-				$table->dropColumn('small_new');
-				$table->dropColumn('small2x');
-				$table->dropColumn('thumb2x');
+				$table->dropColumn('medium_new', 'medium2x', 'small_new', 'small2x', 'thumb2x');
 			});
 		}
 	}
