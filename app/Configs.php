@@ -122,7 +122,8 @@ class Configs extends Model
 		if ((bool) (extension_loaded('imagick') && self::get_value('imagick', '1') == '1')) {
 			return true;
 		}
-		Logs::notice(__METHOD__, __LINE__, "hasImagick : false");
+		//this call will cause composer install failure (artisan package:discover will fail, because no DB config now)
+		//Logs::notice(__METHOD__, __LINE__, "hasImagick : false");
 		return false;
 	}
 
