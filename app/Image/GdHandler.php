@@ -221,13 +221,14 @@ class GdHandler implements ImageHandlerInterface
 	private function createImage(string $source, int $mime)
 	{
 		switch ($mime) {
-			case IMG_JPEG:
+			case IMAGETYPE_JPEG:
+			case IMAGETYPE_JPEG2000:
 				return imagecreatefromjpeg($source);
 				break;
-			case IMG_PNG:
+			case IMAGETYPE_PNG:
 				return imagecreatefrompng($source);
 				break;
-			case IMG_GIF:
+			case IMAGETYPE_GIF:
 				return imagecreatefromgif($source);
 				break;
 			default:
