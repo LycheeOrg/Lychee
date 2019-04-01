@@ -40,15 +40,21 @@ class ChangeIdType extends Migration
 		]);
 
 	    Schema::table('user_album', function (Blueprint $table) {
-		    $table->dropForeign(['album_id']);
+			if (DB::getDriverName() !== 'sqlite') {
+				$table->dropForeign(['album_id']);
+			}
 		    $table->dropColumn('album_id');
 	    });
 	    Schema::table('photos', function (Blueprint $table) {
-		    $table->dropForeign(['album_id']);
+			if (DB::getDriverName() !== 'sqlite') {
+				$table->dropForeign(['album_id']);
+			}
 		    $table->dropColumn('album_id');
 	    });
 	    Schema::table('albums', function (Blueprint $table) {
-		    $table->dropForeign(['parent_id']);
+			if (DB::getDriverName() !== 'sqlite') {
+				$table->dropForeign(['parent_id']);
+			}
 		    $table->dropColumn('parent_id');
 	    });
 
