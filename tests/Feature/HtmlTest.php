@@ -76,7 +76,7 @@ class HtmlTest extends TestCase
 
 		}
 		else {
-			$this->markTestSkipped('Some language are still missing some keys...');
+			$this->markTestSkipped('Username and Password are set. We do not bother testing further.');
 		}
 
 
