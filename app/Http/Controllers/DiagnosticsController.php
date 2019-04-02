@@ -171,7 +171,6 @@ class DiagnosticsController extends Controller
 
 		// Load settings
 		$settings = Configs::get();
-		$gdVersion = gd_info();
 
 		// Load json
 		$json = file_get_contents(Config::get('defines.path.LYCHEE').'public/Lychee-front/package.json');
@@ -217,6 +216,11 @@ class DiagnosticsController extends Controller
 		$infos[] = 'Imagick:         '.$imagick;
 		$infos[] = 'Imagick Active:  '.$settings['imagick'];
 		$infos[] = 'Imagick Version: '.$imagickVersion;
+		if (function_exists('gd_info')) {
+			$gdVersion = gd_info();
+		} else {
+			$gdVersion = ['GD Version' => '-'];
+		}
 		$infos[] = 'GD Version:      '.$gdVersion['GD Version'];
 
 		return $infos;
