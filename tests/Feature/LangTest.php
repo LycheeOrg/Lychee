@@ -19,7 +19,7 @@ class LangTest extends TestCase
     {
 	    $lang_availables = Lang::get_lang_available();
 
-	    $this->markTestSkipped('Some language are still missing some keys...');
+//	    $this->markTestSkipped('Some language are still missing some keys...');
 
 		$keys = array_keys(Lang::get_lang());
 		foreach ($lang_availables as $lang)

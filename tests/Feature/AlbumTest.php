@@ -14,18 +14,21 @@ class AlbumTest extends TestCase
      *
      * @return void
      */
-    public function testExample()
+    public function test_add_not_logged()
     {
 
 	    /**
 	     * We are not logged in so this should fail.
 	     */
 	    $response = $this->post('/api/Album::add', [
-		    'title' => 'test_album',
+		    'title'     => 'test_album',
 		    'parent_id' => '0'
 	    ]);
 	    $response->assertSee('false');
+    }
 
+    public function test_add_read_logged()
+    {
 	    /**
 	     * Because we don't know login and password we are just going to assumed we are logged in.
 	     */
@@ -36,15 +39,15 @@ class AlbumTest extends TestCase
 	     * We are logged as ADMIN (we don't test the other users yet) so this should not fail and it should return an id.
 	     */
 	    $response = $this->post('/api/Album::add', [
-		    'title' => 'test_album',
+		    'title'     => 'test_album',
 		    'parent_id' => '0'
 	    ]);
-		$response->assertDontSee('false');
+	    $response->assertDontSee('false');
 
 	    /**
 	     * We also get the id of the album we just created.
 	     */
-		$albumID = $response->getContent();
+	    $albumID = $response->getContent();
 
 		/**
 		 * Let's get all current albums

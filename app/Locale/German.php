@@ -2,6 +2,7 @@
 
 namespace App\Locale;
 
+
 final class German
 {
 	static public function code()
@@ -12,15 +13,15 @@ final class German
 	static public function get_locale()
 	{
 		$locale	= array(
-			'USERNAME'		=> 'Benutzername',
-			'PASSWORD'		=> 'Kennwort',
-			'ENTER'			=> 'Eingabe',
-			'CANCEL'		=> 'Abbrechen',
-			'SIGN_IN'		=> 'Anmelden',
-			'CLOSE'			=> 'Schließen',
-
+			'USERNAME'		    => 'Benutzername',
+			'PASSWORD'		    => 'Kennwort',
+			'ENTER'			    => 'Eingabe',
+			'CANCEL'		    => 'Abbrechen',
+			'SIGN_IN'		    => 'Anmelden',
+			'CLOSE'			    => 'Schließen',
 			'SETTINGS'			=> 'Einstellungen',
 			'SEARCH'        	=> 'Suchen ...',
+			'MORE'				=> 'Mehr',
 
 			'USERS'				=> 'Benutzer',
 			'SHARING'			=> 'Freigabe',
@@ -34,8 +35,8 @@ final class German
 			'UPDATE_AVAILABLE'	=> 'Update verfügbar!',
 			'DEFAULT_LICENSE'	=> 'Standard-Lizenz für neue Uploads:',
 			'SET_LICENSE'		=> 'Lizenz anwenden',
+			'SET_OVERLAY_TYPE'	=> 'Set Overlay',
 			'SAVE_RISK'			=> 'Änderungen speichern, ich kenne das Risiko!',
-			'MORE'				=> 'Mehr',
 
 			'SMART_ALBUMS'		=> 'Intelligente Alben',
 			'SHARED_ALBUMS'		=> 'Freigegebene Alben',
@@ -125,6 +126,7 @@ final class German
 			'ALBUM_ALBUM'				=> 'Album',
 			'ALBUM_CREATED'				=> 'Erstellt',
 			'ALBUM_IMAGES'				=> 'Bilder',
+			'ALBUM_VIDEOS'				=> 'Videos',
 			'ALBUM_SHARING'				=> 'Teilen',
 			'ALBUM_SHR_YES'				=> 'Ja',
 			'ALBUM_SHR_NO'				=> 'Nein',
@@ -171,9 +173,12 @@ final class German
 			'PHOTO_LICENSE_NONE'		=> 'Keine',
 			'PHOTO_RESERVED'			=> 'Alle Rechte vorbehalten',
 			'PHOTO_IMAGE'				=> 'Bild',
+			'PHOTO_VIDEO'				=> 'Video',
 			'PHOTO_SIZE'				=> 'Größe',
 			'PHOTO_FORMAT'				=> 'Format',
 			'PHOTO_RESOLUTION'			=> 'Auflösung',
+			'PHOTO_DURATION'			=> 'Duration',
+			'PHOTO_FPS'				    => 'Frame rate',
 			'PHOTO_TAGS'				=> 'Tags',
 			'PHOTO_NOTAGS'				=> 'Keine Tags',
 			'PHOTO_NEW_TAGS'			=> 'Geben Sie die Tags für dieses Foto ein. Sie können mehrere Tags hinzufügen, indem Sie sie mit einem Komma trennen:',
@@ -200,7 +205,7 @@ final class German
 			'PHOTO_DELETE_2'			=> 'löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
 			'PHOTO_DELETE_ALL_1'		=> 'Sind Sie sicher, dass Sie alle',
 			'PHOTO_DELETE_ALL_2'		=> 'ausgewählten Fotos löschen wollen? Diese Aktion kann nicht rückgängig gemacht werden!',
-			'PHOTO_NEW_TITLE'			=> 'Geben Sie einen neuen Titel für dieses Foto ein:',
+			'PHOTOS_NEW_TITLE_1'		=> '',
 			'PHOTOS_NEW_TITLE_2'		=> 'ausgewählten Fotos ein:',
 			'PHOTO_MAKE_PRIVATE_ALBUM'	=> 'Dieses Foto befindet sich in einem öffentlichen Album. Um dieses Foto als privat oder öffentlich zu markieren, bearbeiten Sie die Sichtbarkeit des übergeordneten Albums.',
 			'PHOTO_SHOW_ALBUM'			=> 'Album anzeigen',
@@ -248,7 +253,6 @@ final class German
 			'PASSWORD_TEXT'				=> 'Ihr Benutzername und Passwort werden wie folgt geändert:',
 			'PASSWORD_CHANGE'			=> 'Benutzer ändern',
 
-
 			'EDIT_SHARING_TITLE'		=> 'Freigabe bearbeiten',
 			'EDIT_SHARING_TEXT'			=> 'Die Freigabeeinstellungen für dieses Album werden wie folgt geändert:',
 			'SHARE_ALBUM_TEXT'			=> 'Dieses Album wird mit folgenden Einstellungen freigegeben:',
@@ -288,9 +292,16 @@ final class German
 
 			'CSS_TEXT'					=> 'CSS personalisieren:',
 			'CSS_TITLE'					=> 'CSS ändern',
-
-			'LAYOUT_TEXT'				=> 'Ausgerichtetes Layout benutzen:',
 			'IMAGE_OVERLAY_TEXT'		=> 'EXIF-Daten-Overlay standardmäßig anzeigen:',
+			'OVERLAY_TYPE'				=> 'Data to use in image overlay:',
+			'OVERLAY_EXIF'				=> 'Photo EXIF data',
+			'OVERLAY_DESCRIPTION'		=> 'Photo description',
+			'OVERLAY_DATE'				=> 'Photo date taken',
+			'LAYOUT_TYPE'				=> 'Layout of photos:',
+			'LAYOUT_SQUARES'			=> 'Square thumbnails',
+			'LAYOUT_JUSTIFIED'			=> 'With aspect, justified',
+			'LAYOUT_UNJUSTIFIED'		=> 'With aspect, unjustified',
+			'SET_LAYOUT'				=> 'Ausgerichtetes Layout benutzen:',
 
 			'VIEW_NO_RESULT'			=> 'Keine Ergebnisse',
 			'VIEW_NO_PUBLIC_ALBUMS'		=> 'Keine öffentlichen Alben',
