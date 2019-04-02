@@ -16,6 +16,8 @@ class Configs extends Model
 
 	private static $cache = null;
 
+
+
 	/**
 	 * @return array Returns the upload settings of Lychee.
 	 */
@@ -27,7 +29,7 @@ class Configs extends Model
 
 		try {
 			$query = Configs::select('key', 'value');
-			$return = $query->pluck('value','key')->all();
+			$return = $query->pluck('value', 'key')->all();
 
 			$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
 			$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
@@ -35,8 +37,8 @@ class Configs extends Model
 			$return['lang_available'] = Lang::get_lang_available();
 
 			self::$cache = $return;
-		} catch (\Exception $e)
-		{
+		}
+		catch (\Exception $e) {
 			self::$cache = null;
 
 			return null;
@@ -62,11 +64,10 @@ class Configs extends Model
 			 *
 			 * this will fail for sure as the config table does not exist yet
 			 */
-			try{
+			try {
 				self::get();
 			}
-			catch (QueryException $e)
-			{
+			catch (QueryException $e) {
 				return $default;
 			}
 
@@ -79,8 +80,7 @@ class Configs extends Model
 			try {
 				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
 			}
-			catch (\Exception $e)
-			{
+			catch (\Exception $e) {
 				// yeah we do nothing because we cannot do anything in that case ...  :p
 			}
 			return $default;
