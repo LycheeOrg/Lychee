@@ -29,7 +29,13 @@ class Logs extends Model
 			'line'     => $line,
 			'text'     => $text
 		]);
-		$log->save();
+		try{
+			$log->save();
+		}
+		catch (\Exception $e)
+		{
+			return false;
+		}
 		return true;
 	}
 
