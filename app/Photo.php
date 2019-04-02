@@ -3,7 +3,6 @@
 namespace App;
 
 use App\ModelFunctions\Helpers;
-use App\ModelFunctions\PhotoFunctions;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -29,26 +28,28 @@ class Photo extends Model
 	public function owner()
 	{
 		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
-			'id' => 0,
+			'id'       => 0,
 			'username' => 'Admin'
 		]);
 	}
 
 
-    /**
-     * @param string $checksum
-     * @param $photoID
-     * @return array|false Returns a subset of a photo when same photo exists or returns false on failure.
-     */
-    public function isDuplicate(string $checksum, $photoID = null)
-    {
-        $sql = $this->where('checksum', '=', $checksum);
-        if (isset($photoID)) {
-            $sql = $sql->where('id', '<>', $photoID);
-        }
 
-        return ($sql->count() == 0) ? false : $sql->first();
-    }
+	/**
+	 * @param string $checksum
+	 * @param $photoID
+	 * @return array|false Returns a subset of a photo when same photo exists or returns false on failure.
+	 */
+	public function isDuplicate(string $checksum, $photoID = null)
+	{
+		$sql = $this->where('checksum', '=', $checksum);
+		if (isset($photoID)) {
+			$sql = $sql->where('id', '<>', $photoID);
+		}
+
+		return ($sql->count() == 0) ? false : $sql->first();
+	}
+
 
 
 	/**
@@ -91,21 +92,20 @@ class Photo extends Model
 
 		if ($photo['shutter'] != '' && substr($photo['shutter'], 0, 2) != '1/') {
 
-
-			// this should fix it... hopefully.
 			preg_match('/(\d+)\/(\d+) s/', $photo['shutter'], $matches);
-			$a = intval($matches[1]);
-			$b = intval($matches[2]);
-			$gcd = Helpers::gcd($a, $b);
-			$a = $a / $gcd;
-			$b = $b / $gcd;
-			if ($a == 1) {
-				$photo['shutter'] = '1/'.$b.' s';
+			if ($matches) {
+				$a = intval($matches[1]);
+				$b = intval($matches[2]);
+				$gcd = Helpers::gcd($a, $b);
+				$a = $a / $gcd;
+				$b = $b / $gcd;
+				if ($a == 1) {
+					$photo['shutter'] = '1/'.$b.' s';
+				}
+				else {
+					$photo['shutter'] = ($a / $b).' s';
+				}
 			}
-			else {
-				$photo['shutter'] = ($a / $b).' s';
-			}
-
 		}
 
 		if ($photo['shutter'] == '1/1 s') {
