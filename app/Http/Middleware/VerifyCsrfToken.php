@@ -2,32 +2,50 @@
 
 namespace App\Http\Middleware;
 
+use App\Configs;
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
-use Illuminate\Http\Request;
-use App\Configs;
 
 class VerifyCsrfToken extends Middleware
 {
-    /**
-     * The URIs that should be excluded from CSRF verification.
-     *
-     * @var array
-     */
-    protected $except = [
-        // entry point...
-        '/php/index.php'
-    ];
+	/**
+	 * The URIs that should be excluded from CSRF verification.
+	 *
+	 * @var array
+	 */
+	protected $except = [
+		// entry point...
+		'/php/index.php'
+	];
 
-    public function handle(Request $request, Closure $next)
-    {
-        if ($request->is('api/*')) {
-            $apiKey = Configs::get_value('api_key');
-            if ($apiKey && $request->header('Authorization') === $apiKey) {
-                return $next($request);
-            }
-        }
 
-        return parent::handle($request, $next);
-    }
+
+	public function handle($request, Closure $next)
+	{
+		if ($request->is('/api/*')) {
+
+			/**
+			 * default value is ''
+			 * we force it in case of the migration has not been done.
+			 */
+			$apiKey = Configs::get_value('api_key', '');
+
+			/**
+			 * if apiKey is the empty string we directly return the parent handle.
+			 */
+			if ($apiKey && $apiKey == '') {
+				return parent::handle($request, $next);
+			}
+
+			/**
+			 * We are currently checking for Authorization.
+			 * Do we also want to check if there is a POST value with the apiKey ?
+			 */
+			if ($apiKey && $request->header('Authorization') === $apiKey) {
+				return $next($request);
+			}
+		}
+
+		return parent::handle($request, $next);
+	}
 }
