@@ -248,7 +248,6 @@ final class English
 			'PASSWORD_TEXT'				=> 'Your username and password will be changed to the following:',
 			'PASSWORD_CHANGE'			=> 'Change Login',
 
-
 			'EDIT_SHARING_TITLE'		=> 'Edit Sharing',
 			'EDIT_SHARING_TEXT'			=> 'The sharing-properties of this album will be changed to the following:',
 			'SHARE_ALBUM_TEXT'			=> 'This album will be shared with the following properties:',
@@ -293,7 +292,7 @@ final class English
 			'LAYOUT_TYPE'				=> 'Layout of photos:',
 			'LAYOUT_SQUARES'			=> 'Square thumbnails',
 			'LAYOUT_JUSTIFIED'			=> 'With aspect, justified',
-			'LAYOUT_UNJUSTIFIED'			=> 'With aspect, unjustified',
+			'LAYOUT_UNJUSTIFIED'		=> 'With aspect, unjustified',
 			'SET_LAYOUT'				=> 'Change layout',
 
 			'VIEW_NO_RESULT'			=> 'No results',

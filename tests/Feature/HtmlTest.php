@@ -14,19 +14,25 @@ class HtmlTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testLogin()
+	public function test_home()
 	{
-
-		/**
-		 * because there is no dependency injection in test cases
-		 */
-		$sessionFunctions = new SessionFunctions();
 
 		/**
 		 * check if we can actually get a nice answer
 		 */
 		$response = $this->get('/');
 		$response->assertOk();
+	}
+
+
+
+	public function test_set_Login()
+	{
+
+		/**
+		 * because there is no dependency injection in test cases
+		 */
+		$sessionFunctions = new SessionFunctions();
 
 		$clear = false;
 		$configs = Configs::get();
@@ -56,7 +62,10 @@ class HtmlTest extends TestCase
 			/**
 			 * We try to log in with the username and password
 			 */
-			$response = $this->post('/api/Session::login', ['user'     => 'lychee', 'password' => 'password' ]);
+			$response = $this->post('/api/Session::login', [
+				'user'     => 'lychee',
+				'password' => 'password'
+			]);
 			$response->assertSee("true");
 
 			/**
@@ -66,6 +75,10 @@ class HtmlTest extends TestCase
 			$response->assertSee("true");
 
 		}
+		else {
+			$this->markTestSkipped('Some language are still missing some keys...');
+		}
+
 
 		/**
 		 * We check that there are username and password set in the database
@@ -76,8 +89,9 @@ class HtmlTest extends TestCase
 		/**
 		 * Try to login with wrong login and wrong password
 		 */
-		$response = $this->post('/api/Session::login', ['user'     => 'foo',
-		                                                'password' => 'bar'
+		$response = $this->post('/api/Session::login', [
+			'user'     => 'foo',
+			'password' => 'bar'
 		]);
 		$response->assertSee("false");
 

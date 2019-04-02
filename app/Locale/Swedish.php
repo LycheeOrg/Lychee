@@ -10,21 +10,21 @@ final class Swedish
 		return 'sv';
 	}
 
-
 	static public function get_locale()
 	{
 		$locale = array(
-
 			'USERNAME'		=> 'användarnamn',
 			'PASSWORD'		=> 'lösenord',
 			'ENTER'			=> 'Stig in',
 			'CANCEL'		=> 'Avbryt',
 			'SIGN_IN'		=> 'Logga in',
 			'CLOSE'			=> 'Stäng',
-
 			'SETTINGS'      => 'Settings',
 			'SEARCH'        => 'Search ...',
 			'MORE'          => 'More',
+
+			'USERS'				=> 'Users',
+			'SHARING'			=> 'Sharing',
 			'CHANGE_LOGIN'		=> 'Ändra inloggning',
 			'CHANGE_SORTING'	=> 'Ändra sortering',
 			'SET_DROPBOX'		=> 'Ställ in Dropbox',
@@ -33,10 +33,14 @@ final class Swedish
 			'LOGS'				=> 'Visa logfilen',
 			'SIGN_OUT'			=> 'Logga ut',
 			'UPDATE_AVAILABLE'	=> 'En uppdatering finns!',
-
+			'DEFAULT_LICENSE'	=> 'Default license for new uploads:',
+			'SET_LICENSE'		=> 'Set License',
+			'SET_OVERLAY_TYPE'	=> 'Set Overlay',
 
 			'SMART_ALBUMS'		=> 'Smarta album',
+			'SHARED_ALBUMS'		=> 'Shared albums',
 			'ALBUMS'			=> 'Album',
+			'PHOTOS'			=> 'Pictures',
 
 			'RENAME'			=> 'Ändra namnet',
 			'RENAME_ALL'		=> 'Ändra namnet på alla',
@@ -76,6 +80,8 @@ final class Swedish
 			'MOVE_ALL'						=> 'Flytta alla',
 			'DUPLICATE'						=> 'Kopiera',
 			'DUPLICATE_ALL'					=> 'Kopiera alla',
+			'COPY_TO'						=> 'Copy to...',
+			'COPY_ALL_TO'					=> 'Copy All to...',
 			'DELETE'						=> 'Radera',
 			'DELETE_ALL'					=> 'Radera alla',
 			'DOWNLOAD'						=> 'Ladda ner',
@@ -119,6 +125,7 @@ final class Swedish
 			'ALBUM_ALBUM'				=> 'Album',
 			'ALBUM_CREATED'				=> 'Skapad',
 			'ALBUM_IMAGES'				=> 'Fotografier',
+			'ALBUM_VIDEOS'				=> 'Videos',
 			'ALBUM_SHARING'				=> 'Dela',
 			'ALBUM_SHR_YES'				=> 'Ja',
 			'ALBUM_SHR_NO'				=> 'Nej',
@@ -136,6 +143,18 @@ final class Swedish
 			'ALBUMS_MERGE'				=> 'Är du säker på att du vill sammanfoga samtliga valda album till albumet',
 			'MERGE_ALBUM'				=> 'Sammanfoga album',
 			'DONT_MERGE'				=> "Sammanfoga inte",
+			'ALBUM_MOVE_1'				=> 'Are you sure you want to move the album',
+			'ALBUM_MOVE_2'				=> 'into the album',
+			'ALBUMS_MOVE'				=> 'Are you sure you want to move all selected albums into the album',
+			'MOVE_ALBUMS'				=> "Move Albums",
+			'NOT_MOVE_ALBUMS'			=> "Don't Move",
+			'ROOT'						=> "Root",
+			'ALBUM_REUSE'				=> "Reuse",
+			'ALBUM_LICENSE'				=> 'License',
+			'ALBUM_SET_LICENSE'			=> 'Set License',
+			'ALBUM_LICENSE_HELP'		=> 'Need help choosing?',
+			'ALBUM_LICENSE_NONE'		=> 'None',
+			'ALBUM_RESERVED'			=> 'All Rights Reserved',
 
 			'PHOTO_ABOUT'				=> 'Om',
 			'PHOTO_BASICS'				=> 'Grundläggande',
@@ -146,9 +165,18 @@ final class Swedish
 			'PHOTO_DESCRIPTION'			=> 'Beskrivning',
 			'PHOTO_NEW_DESCRIPTION'		=> 'Skriv en ny beskrivning för detta fotografi:',
 			'PHOTO_SET_DESCRIPTION'		=> 'Spara beskrivningen',
+			'PHOTO_NEW_LICENSE'			=> 'Add a License',
+			'PHOTO_SET_LICENSE'			=> 'Set License',
+			'PHOTO_LICENSE'				=> 'License',
+			'PHOTO_REUSE'				=> 'Reuse',
+			'PHOTO_LICENSE_NONE'		=> 'None',
+			'PHOTO_RESERVED'			=> 'All Rights Reserved',
 			'PHOTO_IMAGE'				=> 'Fotografi',
+			'PHOTO_VIDEO'				=> 'Video',
 			'PHOTO_SIZE'				=> 'Storlek',
 			'PHOTO_FORMAT'				=> 'Filformat',
+			'PHOTO_DURATION'			=> 'Duration',
+			'PHOTO_FPS'				    => 'Frame rate',
 			'PHOTO_RESOLUTION'			=> 'Mått',
 			'PHOTO_TAGS'				=> 'Kategori',
 			'PHOTO_NOTAGS'				=> 'Inga kategorier',
@@ -175,7 +203,6 @@ final class Swedish
 			'PHOTO_DELETE_2'			=> 'Raderingen går inte att ångra!',
 			'PHOTO_DELETE_ALL_1'		=> 'Är du säker på att du vill radera alla',
 			'PHOTO_DELETE_ALL_2'		=> 'valda fotografier? Raderingen går inte att ångra!',
-			'PHOTO_NEW_TITLE'			=> 'Ange en ny titel för det här fotografiet:',
 			'PHOTOS_NEW_TITLE_1'		=> 'Ange en tital för alla',
 			'PHOTOS_NEW_TITLE_2'		=> 'valda fotografier:',
 			'PHOTO_MAKE_PRIVATE_ALBUM'	=> 'Det här fotografier finns i ett publikt album. Du kan ändra fotografiets synlighet genom att redigera egenskapen för albumet.',
@@ -189,7 +216,16 @@ final class Swedish
 			'ERROR_CONFIG_FILE'			=> "Kunde inte spara konfigureringen. Åtkomst nekades i <b>'data/'</b>. Kontrollera rättigheterna för läsning, skrivning och exekvering för andra i <b>'data/'</b> och <b>'uploads/'</b>. För mera information läs dokumentet <b>'readme'</b>.",
 			'ERROR_UNKNOWN'				=> 'Något oväntat inträffade. Vänligen försök igen och kontrollera installationen av Lychee och din server. För mera information läs dokumentet <b>readme</b>.',
 			'ERROR_LOGIN'				=> 'Kunde inte spara inloggningsuppgifterna. Vänligen prova med ett annat användarnamn och lösenord!',
+			'SUCCESS'					=> 'OK',
 			'RETRY'						=> 'Försök igen',
+
+			'SETTINGS_SUCCESS_LOGIN'		=> 'Login Info updated.',
+			'SETTINGS_SUCCESS_SORT'			=> 'Sorting order updated.',
+			'SETTINGS_SUCCESS_DROPBOX'		=> 'Dropbox Key updated.',
+			'SETTINGS_SUCCESS_LANG'			=> 'Language updated',
+			'SETTINGS_SUCCESS_LAYOUT'		=> 'Layout updated',
+			'SETTINGS_SUCCESS_IMAGE_OVERLAY'=> 'EXIF Overlay setting updated',
+			'SETTINGS_SUCCESS_LICENSE'		=> 'Default license updated',
 
 			'DB_INFO_TITLE'				=> 'Ange dina uppgifter för databasanslutninge nedan:',
 			'DB_INFO_HOST'				=> 'Databasens adress (valfritt)',
@@ -212,7 +248,6 @@ final class Swedish
 			'PASSWORD_TEXT'				=> 'Ditt inloggningsuppgifter kommer att ändras till:',
 			'PASSWORD_CHANGE'			=> 'Spara ändringar av inloggningsuppgifter',
 
-
 			'EDIT_SHARING_TITLE'		=> 'Redigera delning',
 			'EDIT_SHARING_TEXT'			=> 'Albumets egenskaper för delning kommer att ändras till:',
 			'SHARE_ALBUM_TEXT'			=> 'Det här albumet kommer att delas ut med dessa egenskaper::',
@@ -227,7 +262,6 @@ final class Swedish
 			'SORT_ALBUM_SELECT_4'		=> 'publikt',
 			'SORT_ALBUM_SELECT_5'		=> 'senaste datum',
 			'SORT_ALBUM_SELECT_6'		=> 'äldsta datum',
-
 
 			'SORT_PHOTO_BY_1'			=> 'Sortera fotografier efter',
 			'SORT_PHOTO_BY_2'			=> 'i en',
@@ -250,6 +284,16 @@ final class Swedish
 
 			'LANG_TEXT'					=> 'Ändra språket i Lychee till:',
 			'LANG_TITLE'				=> 'Spara ändringen av språket',
+			'IMAGE_OVERLAY_TEXT'		=> 'Display data overlay by default:',
+			'OVERLAY_TYPE'				=> 'Data to use in image overlay:',
+			'OVERLAY_EXIF'				=> 'Photo EXIF data',
+			'OVERLAY_DESCRIPTION'		=> 'Photo description',
+			'OVERLAY_DATE'				=> 'Photo date taken',
+			'LAYOUT_TYPE'				=> 'Layout of photos:',
+			'LAYOUT_SQUARES'			=> 'Square thumbnails',
+			'LAYOUT_JUSTIFIED'			=> 'With aspect, justified',
+			'LAYOUT_UNJUSTIFIED'		=> 'With aspect, unjustified',
+			'SET_LAYOUT'				=> 'Change layout',
 
 			'VIEW_NO_RESULT'			=> 'Inget resultat',
 			'VIEW_NO_PUBLIC_ALBUMS'		=> 'Inga publika album',
@@ -283,6 +327,9 @@ final class Swedish
 			'UPLOAD_IMPORT_SERVER_INSTR'=> 'Den här processen kommer att importera alla fotografier, inklusive alla mappar och undermappar från platse du angav. <b>Originalfotografierna kommer att raderas.</b> efter att importering genomförts.',
 			'UPLOAD_ABSOLUTE_PATH'		=> 'Exakt sökväg till mappen',
 			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'Kunde inte påbörja importeringen då mappen saknade innehåll!',
+
+			'ABOUT_SUBTITLE'			=> 'Self-hosted photo-management done right',
+			'ABOUT_DESCRIPTION'			=> 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
 			'FOOTER_COPYRIGHT'			=> 'Alla bilder på denna webbplats är föremål för upphovsrätt från'
 		);
 
