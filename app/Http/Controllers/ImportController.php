@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Configs;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\Helpers;
@@ -28,7 +29,7 @@ class ImportController extends Controller
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
-	 * @return void
+	 * @param AlbumFunctions $albumFunctions
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions)
 	{
@@ -142,6 +143,12 @@ class ImportController extends Controller
 			'albumID' => 'int|required'
 		]);
 
+		$php_script_limit = Configs::get_value('php_script_limit', '0');
+		if ($php_script_limit == '1') {
+			set_time_limit(0);
+			Logs::notice(__METHOD__, __LINE__, 'Importing using unlimited execution time');
+		}
+
 		return $this->server_exec($request['path'], $request['albumID']);
 
 	}
@@ -156,7 +163,8 @@ class ImportController extends Controller
 	 *                        Notice: Import only contained albums!
 	 * @throws \ImagickException
 	 */
-	public function server_exec(string $path, $albumID)
+	// I switched this to private, as it should not be needed to be public. if it breaks something we will double check.
+	private function server_exec(string $path, $albumID)
 	{
 
 		// Parse path
