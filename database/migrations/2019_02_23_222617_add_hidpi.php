@@ -17,40 +17,50 @@ class AddHidpi extends Migration
 	 */
 	public function up()
 	{
-		if (Schema::hasTable('configs')) {
+		if (!Schema::hasColumn('photos', 'thumb2x')) {
+			if (Schema::hasTable('configs')) {
 
-			DB::table('configs')->insert([
-				[
-					'key'   => 'thumb_2x',
-					'value' => '1'
-				],
-				[
-					'key'   => 'small_2x',
-					'value' => '0'
-				],
-				[
-					'key'   => 'medium_2x',
-					'value' => '0'
-				],
-			]);
-		}
-		else {
-			echo "Table configs does not exists\n";
-		}
+				DB::table('configs')->insert([
+					[
+						'key'   => 'thumb_2x',
+						'value' => '1'
+					],
+					[
+						'key'   => 'small_2x',
+						'value' => '0'
+					],
+					[
+						'key'   => 'medium_2x',
+						'value' => '0'
+					],
+				]);
+			}
+			else {
+				echo "Table configs does not exists\n";
+			}
 
+			if (Schema::hasTable('photos')) {
+				Schema::table('photos', function (Blueprint $table) {
+					$table->renameColumn('medium', 'medium_old');
+				});
+				Schema::table('photos', function (Blueprint $table) {
+					$table->renameColumn('small', 'small_old');
+				});
+
+				Schema::table('photos', function (Blueprint $table) {
+					$table->string('medium', 20)->default('');
+					$table->string('medium2x', 20)->default('');
+					$table->string('small', 20)->default('');
+					$table->string('small2x', 20)->default('');
+					$table->boolean('thumb2x')->default(true);
+				});
+			}
+			else {
+				echo "Table photos does not exists\n";
+			}
+
+		}
 		if (Schema::hasTable('photos')) {
-			Schema::table('photos', function (Blueprint $table) {
-				$table->renameColumn('medium', 'medium_old');
-				$table->renameColumn('small', 'small_old');
-			});
-
-			Schema::table('photos', function (Blueprint $table) {
-				$table->string('medium', 20)->default('');
-				$table->string('medium2x', 20)->default('');
-				$table->string('small', 20)->default('');
-				$table->string('small2x', 20)->default('');
-				$table->boolean('thumb2x')->default(true);
-			});
 
 			$photos = Photo::all();
 			foreach ($photos as $photo) {
@@ -73,14 +83,26 @@ class AddHidpi extends Migration
 
 				// Extract the sizes of medium and small
 				if ($photo->medium_old == '1') {
-					list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url);
-					$photo->medium = $width.'x'.$height;
-					$save = true;
+					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url)) {
+						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url);
+						$photo->medium = $width.'x'.$height;
+						$save = true;
+					}
+					else {
+						echo "Missing file ".Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url."\n";
+						$this->failMessage();
+					}
 				}
 				if ($photo->small_old == '1') {
-					list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url);
-					$photo->small = $width.'x'.$height;
-					$save = true;
+					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url)) {
+						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url);
+						$photo->small = $width.'x'.$height;
+						$save = true;
+					}
+					else {
+						echo "Missing file ".Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url."\n";
+						$this->failMessage();
+					}
 				}
 
 				if ($save) {
@@ -100,6 +122,24 @@ class AddHidpi extends Migration
 
 
 	/**
+	 * Provide diagnostics to the caller
+	 *
+	 * @return void
+	 */
+	private function failMessage()
+	{
+		$ignoreFile = Config::get('defines.dirs.LYCHEE_UPLOADS').'/ignore-missing-files.txt';
+		if (!file_exists($ignoreFile)) {
+			echo "Please ensure that photos are moved to the new installation and run this command again!\n\n";
+			echo "To ignore, run this command again after creating a file at ".$ignoreFile."\n";
+			echo "You can then create intermediate sizes later using 'php artisan generate_thumbs'\n";
+			exit(1);
+		}
+	}
+
+
+
+	/**
 	 * Reverse the migrations.
 	 *
 	 * @return void
@@ -113,6 +153,9 @@ class AddHidpi extends Migration
 
 			Schema::table('photos', function (Blueprint $table) {
 				$table->renameColumn('medium', 'medium_new');
+			});
+
+			Schema::table('photos', function (Blueprint $table) {
 				$table->renameColumn('small', 'small_new');
 			});
 			Schema::table('photos', function (Blueprint $table) {
