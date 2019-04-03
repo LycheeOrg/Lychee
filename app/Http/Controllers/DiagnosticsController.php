@@ -205,7 +205,7 @@ class DiagnosticsController extends Controller
 			$dbver = $results[0]->{'sqlite_version()'};
 			$infos[] = 'SQLite Version:  '. $dbver;
 		} else if (DB::getDriverName() == 'pgsql') {
-			$results = DB::select(DB::raw("select sqlite_version()"));
+			$results = DB::select(DB::raw('select version()'));
 			$dbver = $results[0]->{'version'};
 			$infos[] = 'PostgreSQL Version:  '. $dbver;
 		} else {
