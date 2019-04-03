@@ -17,55 +17,48 @@ class AddHidpi extends Migration
 	 */
 	public function up()
 	{
-		if (!Schema::hasColumn('photos', 'thumb2x')) {
-			if (Schema::hasTable('configs')) {
+		if (Schema::hasTable('configs')) {
 
-				DB::table('configs')->insert([
-					[
-						'key'   => 'thumb_2x',
-						'value' => '1'
-					],
-					[
-						'key'   => 'small_2x',
-						'value' => '0'
-					],
-					[
-						'key'   => 'medium_2x',
-						'value' => '0'
-					],
-				]);
-			}
-			else {
-				echo "Table configs does not exists\n";
-			}
-
-			if (Schema::hasTable('photos')) {
-				Schema::table('photos', function (Blueprint $table) {
-					$table->renameColumn('medium', 'medium_old');
-				});
-
-				Schema::table('photos', function (Blueprint $table) {
-					$table->renameColumn('small', 'small_old');
-				});
-
-				Schema::table('photos', function (Blueprint $table) {
-					$table->char('medium', 20)->default('');
-					$table->char('medium2x', 20)->default('');
-					$table->char('small', 20)->default('');
-					$table->char('small2x', 20)->default('');
-					$table->boolean('thumb2x')->default(true);
-				});
-			}
+			DB::table('configs')->insert([
+				[
+					'key'   => 'thumb_2x',
+					'value' => '1'
+				],
+				[
+					'key'   => 'small_2x',
+					'value' => '0'
+				],
+				[
+					'key'   => 'medium_2x',
+					'value' => '0'
+				],
+			]);
+		}
+		else {
+			echo "Table configs does not exists\n";
 		}
 
 		if (Schema::hasTable('photos')) {
+			Schema::table('photos', function (Blueprint $table) {
+				$table->renameColumn('medium', 'medium_old');
+				$table->renameColumn('small', 'small_old');
+			});
+
+			Schema::table('photos', function (Blueprint $table) {
+				$table->string('medium', 20)->default('');
+				$table->string('medium2x', 20)->default('');
+				$table->string('small', 20)->default('');
+				$table->string('small2x', 20)->default('');
+				$table->boolean('thumb2x')->default(true);
+			});
+
 			$photos = Photo::all();
 			foreach ($photos as $photo) {
 				$save = false;
 
 				// Verify that the 2x thumbnail actually exists. We assume
 				// it does but we support the case where it does not.
-				$thumbUrl2x = explode(".", $photo->thumbUrl);
+				$thumbUrl2x = explode('.', $photo->thumbUrl);
 				if (count($thumbUrl2x) < 2) {
 					$photo->thumb2x = 0;
 					$save = true;
@@ -80,26 +73,14 @@ class AddHidpi extends Migration
 
 				// Extract the sizes of medium and small
 				if ($photo->medium_old == '1') {
-					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url)) {
-						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url);
-						$photo->medium = $width.'x'.$height;
-						$save = true;
-					}
-					else {
-						echo "Missing file ".Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url."\n";
-						$this->failMessage();
-					}
+					list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url);
+					$photo->medium = $width.'x'.$height;
+					$save = true;
 				}
 				if ($photo->small_old == '1') {
-					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url)) {
-						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url);
-						$photo->small = $width.'x'.$height;
-						$save = true;
-					}
-					else {
-						echo "Missing file ".Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url."\n";
-						$this->failMessage();
-					}
+					list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url);
+					$photo->small = $width.'x'.$height;
+					$save = true;
 				}
 
 				if ($save) {
@@ -108,29 +89,12 @@ class AddHidpi extends Migration
 			}
 
 			Schema::table('photos', function (Blueprint $table) {
-				$table->dropColumn('medium_old', 'small_old');
+				$table->dropColumn('medium_old');
+				$table->dropColumn('small_old');
 			});
 		}
 		else {
 			echo "Table photos does not exist\n";
-		}
-	}
-
-
-
-	/**
-     * Provide diagnostics to the caller
-     *
-     * @return void
-     */
-	private function failMessage()
-	{
-		$ignoreFile = Config::get('defines.dirs.LYCHEE_UPLOADS').'/ignore-missing-files.txt';
-		if (!file_exists($ignoreFile)) {
-			echo "Please ensure that photos are moved to the new installation and run this command again!\n\n";
-			echo "To ignore, run this command again after creating a file at ".$ignoreFile."\n";
-			echo "You can then create intermediate sizes later using 'php artisan generate_thumbs'\n";
-			exit(1);
 		}
 	}
 
@@ -150,12 +114,8 @@ class AddHidpi extends Migration
 
 			Schema::table('photos', function (Blueprint $table) {
 				$table->renameColumn('medium', 'medium_new');
-			});
-
-			Schema::table('photos', function (Blueprint $table) {
 				$table->renameColumn('small', 'small_new');
 			});
-
 			Schema::table('photos', function (Blueprint $table) {
 				$table->boolean('medium')->default(true);
 				$table->boolean('small')->default(true);
@@ -180,7 +140,11 @@ class AddHidpi extends Migration
 			}
 
 			Schema::table('photos', function (Blueprint $table) {
-				$table->dropColumn('medium_new', 'medium2x', 'small_new', 'small2x', 'thumb2x');
+				$table->dropColumn('medium_new');
+				$table->dropColumn('medium2x');
+				$table->dropColumn('small_new');
+				$table->dropColumn('small2x');
+				$table->dropColumn('thumb2x');
 			});
 		}
 	}

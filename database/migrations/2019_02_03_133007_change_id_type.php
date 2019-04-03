@@ -30,31 +30,25 @@ class ChangeIdType extends Migration
 
 	    // copy
 	    Photo::where('album_id_save',null)->update([
-			    "album_id_save" => DB::raw("`album_id`"),
+			    'album_id_save' => DB::raw('album_id'),
 	    ]);
 	    Album::where('parent_id_save',null)->update([
-		    "parent_id_save" => DB::raw("`parent_id`"),
+		    'parent_id_save' => DB::raw('parent_id'),
 	    ]);
 		DB::table('user_album')->where('album_id_save',null)->update([
-			"album_id_save" => DB::raw("`album_id`"),
+			'album_id_save' => DB::raw('album_id'),
 		]);
 
 	    Schema::table('user_album', function (Blueprint $table) {
-			if (DB::getDriverName() !== 'sqlite') {
-				$table->dropForeign(['album_id']);
-			}
+		    $table->dropForeign(['album_id']);
 		    $table->dropColumn('album_id');
 	    });
 	    Schema::table('photos', function (Blueprint $table) {
-			if (DB::getDriverName() !== 'sqlite') {
-				$table->dropForeign(['album_id']);
-			}
+		    $table->dropForeign(['album_id']);
 		    $table->dropColumn('album_id');
 	    });
 	    Schema::table('albums', function (Blueprint $table) {
-			if (DB::getDriverName() !== 'sqlite') {
-				$table->dropForeign(['parent_id']);
-			}
+		    $table->dropForeign(['parent_id']);
 		    $table->dropColumn('parent_id');
 	    });
 
@@ -77,13 +71,13 @@ class ChangeIdType extends Migration
 
 	    // copy
 	    Photo::where('album_id',null)->update([
-		    "album_id" => DB::raw("`album_id_save`"),
+		    'album_id' => DB::raw('album_id_save'),
 	    ]);
 	    Album::where('parent_id',null)->update([
-		    "parent_id" => DB::raw("`parent_id_save`"),
+		    'parent_id' => DB::raw('parent_id_save'),
 	    ]);
 	    DB::table('user_album')->where('album_id',null)->update([
-		    "album_id" => DB::raw("`album_id_save`"),
+		    'album_id' => DB::raw('album_id_save'),
 	    ]);
 
 	    Schema::table('photos', function (Blueprint $table) {

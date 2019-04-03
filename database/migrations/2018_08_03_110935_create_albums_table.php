@@ -32,7 +32,7 @@ class CreateAlbumsTable extends Migration
 //        Schema::dropIfExists('albums');
 		    Schema::create('albums', function (Blueprint $table) {
 			    $table->bigIncrements('id');
-			    $table->char('title', 100)->default('');
+			    $table->string('title', 100)->default('');
 			    $table->integer('owner_id')->default(0);
 			    $table->bigInteger('parent_id')->unsigned()->nullable()->default(null)->index();
 			    $table->foreign('parent_id')->references('id')->on('albums');
@@ -42,8 +42,8 @@ class CreateAlbumsTable extends Migration
 			    $table->boolean('public')->default(false);
 			    $table->boolean('visible_hidden')->default(true);
 			    $table->boolean('downloadable')->default(false);
-			    $table->char('password', 100)->nullable()->default(null);
-			    $table->char('license', 20)->default('none');
+			    $table->string('password', 100)->nullable()->default(null);
+			    $table->string('license', 20)->default('none');
 			    $table->timestamps();
 		    });
 	    }
