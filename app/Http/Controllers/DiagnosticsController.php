@@ -95,7 +95,6 @@ class DiagnosticsController extends Controller
 
 
 		// About GD
-		$gdVersion = array('GD Version' => '-');
 		if (function_exists('gd_info')) {
 			$gdVersion = gd_info();
 			if (!$gdVersion['JPEG Support']) {
@@ -196,6 +195,7 @@ class DiagnosticsController extends Controller
 		$infos[] = 'DB Version:      '.$settings['version'];
 		$infos[] = 'System:          '.PHP_OS;
 		$infos[] = 'PHP Version:     '.floatval(phpversion());
+
 		if (DB::getDriverName() == 'mysql') {
 			$results = DB::select(DB::raw("select version()"));
 			$dbver = $results[0]->{'version()'};
@@ -204,6 +204,10 @@ class DiagnosticsController extends Controller
 			$results = DB::select(DB::raw("select sqlite_version()"));
 			$dbver = $results[0]->{'sqlite_version()'};
 			$infos[] = 'SQLite Version:  '. $dbver;
+		} else if (DB::getDriverName() == 'pgsql') {
+			$results = DB::select(DB::raw("select sqlite_version()"));
+			$dbver = $results[0]->{'version'};
+			$infos[] = 'PostgreSQL Version:  '. $dbver;
 		} else {
 			try {
 				$results = DB::select(DB::raw("select version()"));
@@ -213,6 +217,7 @@ class DiagnosticsController extends Controller
 			}
 			$infos[] = DB::getDriverName() . ' Version:   '. $dbver;
 		}
+
 		$infos[] = 'Imagick:         '.$imagick;
 		$infos[] = 'Imagick Active:  '.$settings['imagick'];
 		$infos[] = 'Imagick Version: '.$imagickVersion;
