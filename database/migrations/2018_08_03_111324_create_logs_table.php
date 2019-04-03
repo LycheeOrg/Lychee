@@ -30,8 +30,8 @@ class CreateLogsTable extends Migration
 //        Schema::dropIfExists('logs');
 		    Schema::create('logs', function (Blueprint $table) {
 			    $table->bigIncrements('id');
-			    $table->char('type', 11);
-			    $table->char('function', 100);
+			    $table->string('type', 11);
+			    $table->string('function', 100);
 			    $table->integer('line');
 			    $table->text('text');
 			    $table->timestamps();

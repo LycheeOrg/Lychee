@@ -18,10 +18,10 @@ class AddConfigCategory extends Migration
 				$table->string('cat', 50)->after('value')->default('Config');
 			});
 			Configs::where('key','like','Mod_Frame%')->update([
-				"cat" => "Mod Frame"
+				'cat' => 'Mod Frame'
 			]);
 			Configs::where('key','like','landing_%')->update([
-				"cat" => "Landing Page"
+				'cat' => 'Landing Page'
 			]);
 
 		}

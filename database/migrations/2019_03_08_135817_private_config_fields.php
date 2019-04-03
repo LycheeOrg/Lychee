@@ -22,13 +22,13 @@ class PrivateConfigFields extends Migration
 			Configs::where('key', 'username')
 				->orWhere('key', 'password')
 				->update([
-					"confidentiality" => 4
+					'confidentiality' => 4
 				]);
 
 			// require admin
 			Configs::where('key', 'dropboxKey')
 				->update([
-					"confidentiality" => 3
+					'confidentiality' => 3
 				]);
 
 			// normal users
@@ -64,7 +64,7 @@ class PrivateConfigFields extends Migration
 				->orWhere('key', 'site_copyright_end')
 				->orWhere('key', 'deleteImported')
 				->update([
-					"confidentiality" => 2
+					'confidentiality' => 2
 				]);
 
 		}

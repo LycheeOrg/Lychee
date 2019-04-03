@@ -40,7 +40,7 @@ class MovePhotos extends Migration
 					$photo->model = $result->model;
 					$photo->shutter = $result->shutter;
 					$photo->focal = $result->focal;
-					$photo->takestamp = ($result->takestamp == 0 || $result->takestamp == null) ? null : date("Y-m-d H:i:s", $result->takestamp);
+					$photo->takestamp = ($result->takestamp == 0 || $result->takestamp == null) ? null : date('Y-m-d H:i:s', $result->takestamp);
 					$photo->star = $result->star;
 					$photo->thumbUrl = $result->thumbUrl;
 					$photo->album_id = ($result->album == 0) ? null : $result->album;

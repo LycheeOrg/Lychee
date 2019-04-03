@@ -43,29 +43,32 @@ class AddHidpi extends Migration
 				Schema::table('photos', function (Blueprint $table) {
 					$table->renameColumn('medium', 'medium_old');
 				});
-
 				Schema::table('photos', function (Blueprint $table) {
 					$table->renameColumn('small', 'small_old');
 				});
 
 				Schema::table('photos', function (Blueprint $table) {
-					$table->char('medium', 20)->default('');
-					$table->char('medium2x', 20)->default('');
-					$table->char('small', 20)->default('');
-					$table->char('small2x', 20)->default('');
+					$table->string('medium', 20)->default('');
+					$table->string('medium2x', 20)->default('');
+					$table->string('small', 20)->default('');
+					$table->string('small2x', 20)->default('');
 					$table->boolean('thumb2x')->default(true);
 				});
 			}
-		}
+			else {
+				echo "Table photos does not exists\n";
+			}
 
+		}
 		if (Schema::hasTable('photos')) {
+
 			$photos = Photo::all();
 			foreach ($photos as $photo) {
 				$save = false;
 
 				// Verify that the 2x thumbnail actually exists. We assume
 				// it does but we support the case where it does not.
-				$thumbUrl2x = explode(".", $photo->thumbUrl);
+				$thumbUrl2x = explode('.', $photo->thumbUrl);
 				if (count($thumbUrl2x) < 2) {
 					$photo->thumb2x = 0;
 					$save = true;
@@ -119,10 +122,10 @@ class AddHidpi extends Migration
 
 
 	/**
-     * Provide diagnostics to the caller
-     *
-     * @return void
-     */
+	 * Provide diagnostics to the caller
+	 *
+	 * @return void
+	 */
 	private function failMessage()
 	{
 		$ignoreFile = Config::get('defines.dirs.LYCHEE_UPLOADS').'/ignore-missing-files.txt';
@@ -155,7 +158,6 @@ class AddHidpi extends Migration
 			Schema::table('photos', function (Blueprint $table) {
 				$table->renameColumn('small', 'small_new');
 			});
-
 			Schema::table('photos', function (Blueprint $table) {
 				$table->boolean('medium')->default(true);
 				$table->boolean('small')->default(true);

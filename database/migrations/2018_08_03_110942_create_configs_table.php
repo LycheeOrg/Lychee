@@ -28,8 +28,8 @@ class CreateConfigsTable extends Migration
 //        Schema::dropIfExists('configs');
 		    Schema::create('configs', function (Blueprint $table) {
 			    $table->increments('id');
-			    $table->char('key', 50);
-			    $table->char('value', 200)->nullable();
+			    $table->string('key', 50);
+			    $table->string('value', 200)->nullable();
 		    });
 
 		    DB::table('configs')->insert([
