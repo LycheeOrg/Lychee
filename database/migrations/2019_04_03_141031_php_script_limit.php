@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class AddApiKey extends Migration
+class PhpScriptLimit extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -17,8 +17,10 @@ class AddApiKey extends Migration
 		if (Schema::hasTable('configs')) {
 
 			DB::table('configs')->insert([
-				['key'   => 'api_key',
-				 'value' => ''
+				[
+					'key'             => 'php_script_limit',
+					'value'           => '0',
+					'confidentiality' => 3
 				],
 			]);
 		}
@@ -37,7 +39,7 @@ class AddApiKey extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'api_key')->delete();
+			Configs::where('key', '=', 'php_script_limit')->delete();
 		}
 	}
 }
