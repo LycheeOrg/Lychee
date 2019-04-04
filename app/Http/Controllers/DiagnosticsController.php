@@ -39,10 +39,6 @@ class DiagnosticsController extends Controller
 		if (floatval(phpversion()) < 7) {
 			$errors += ['Error: Upgrade to PHP 7 or higher'];
 		}
-		// 32 or 64 bits ?
-		if (PHP_INT_MAX == 2147483647) {
-			$errors += ['Error: Using 32 bit Php, currently unsupported (maybe in the future)'];
-		}
 
 		// Extensions
 		if (!extension_loaded('session')) {
