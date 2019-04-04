@@ -19,7 +19,7 @@ if (env('APP_ENV') === 'dev') {
 }
 
 Route::get('/',                                 'IndexController@show')->name('home');
-Route::get('/phpinfo',                          'IndexController@phpinfo')->name('admin');
+Route::get('/phpinfo',                          'IndexController@phpinfo')->middleware('admin');
 Route::get('/gallery',                          'IndexController@gallery')->name('gallery');
 
 Route::get('/view',                             'ViewController@view');
@@ -90,6 +90,7 @@ Route::post('/api/Logs',                        'LogController@display')->middle
 Route::post('/api/Logs::clearNoise',            'LogController@clearNoise')->middleware('admin');
 Route::get('/api/Logs::clear',                  'LogController@clear')->middleware('admin');
 Route::post('/api/Diagnostics',                 'DiagnosticsController@show')->middleware('admin');
+Route::get('/api/Diagnostics',                  'DiagnosticsController@show')->middleware('admin');
 
 // unused
 Route::post('/api/Logs::clear',                 'LogController@clear')->middleware('admin');
