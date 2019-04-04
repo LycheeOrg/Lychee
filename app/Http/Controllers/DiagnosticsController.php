@@ -57,7 +57,10 @@ class DiagnosticsController extends Controller
 		if (!extension_loaded('gd')) {
 			$errors += ['Error: PHP gd extension not activated'];
 		}
-		if (!extension_loaded('mysqli')) {
+		if (!extension_loaded('PDO')) {
+			$errors += ['Error: PHP PDO extension not activated'];
+		}
+		if (!extension_loaded('mysqli') && !DB::getDriverName() == 'pgsql') {
 			$errors += ['Error: PHP mysqli extension not activated'];
 		}
 		if (!extension_loaded('json')) {
