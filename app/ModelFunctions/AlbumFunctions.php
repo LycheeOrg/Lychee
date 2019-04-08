@@ -27,7 +27,34 @@ class AlbumFunctions
 		$album->description = '';
 		$album->owner_id = Session::get('UserID');
 		$album->parent_id = ($num == 0 ? null : $parent_id);
-		$album->save();
+
+		do {
+			$retry = false;
+
+			try {
+				if (!$album->save()) {
+					return Response::error('Could not save album in database!');
+				}
+			}
+			catch (QueryException $e) {
+				$errorCode = $e->errorInfo[1];
+				if ($errorCode == 1062) {
+					// Duplicate entry
+					$newId = '';
+					do {
+						usleep(rand(0, 1000000));
+						$newId = Helpers::generateID();
+					} while ($newId === $album->id);
+
+					$album->id = $newId;
+					$retry = true;
+				}
+				else {
+					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
+					return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
+				}
+			}
+		} while ($retry);
 
 		return $album;
 	}

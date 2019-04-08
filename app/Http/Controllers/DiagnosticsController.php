@@ -41,7 +41,7 @@ class DiagnosticsController extends Controller
 		}
 		// 32 or 64 bits ?
 		if (PHP_INT_MAX == 2147483647) {
-			$errors += ['Error: Using 32 bit Php, currently unsupported (maybe in the future)'];
+			$errors += ['Warning: Using 32 bit Php, recommended upgrade to 64 bit'];
 		}
 
 		// Extensions

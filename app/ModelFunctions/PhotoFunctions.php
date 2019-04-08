@@ -452,31 +452,35 @@ class PhotoFunctions
 	 */
 	public function save(Photo $photo, $albumID)
 	{
-		// quick check to see if there is a duplicate and regenerate the ID if needed..
-		while (Photo::where('id', '=', $photo->id)->exists()) {
-			$photo->id = Helpers::generateID();
-		};
+		do {
+			$retry = false;
 
-		try {
-			if (!$photo->save()) {
-				return Response::error('Could not save photo in database!');
+			try {
+				if (!$photo->save()) {
+					return Response::error('Could not save photo in database!');
+				}
 			}
-		}
-		catch (QueryException $e) {
-			// We have a QueryException, something went VERY WRONG.
+			catch (QueryException $e) {
+				$errorCode = $e->errorInfo[1];
+				if ($errorCode == 1062) {
+					// houston, we have a duplicate entry problem
+					$newId = '';
+					do {
+						// Our ids are based on current system time, so
+						// wait randomly up to 1s before retrying.
+						usleep(rand(0, 1000000));
+						$newId = Helpers::generateID();
+					} while ($newId === $photo->id);
 
-			$errorCode = $e->getCode();
-			if ($errorCode == 1062) {
-				// houston, we have a duplicate entry problem
-				// we change the ID and recurse the function
-
-				return $this->save($photo, $albumID);
+					$photo->id = $newId;
+					$retry = true;
+				}
+				else {
+					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
+					return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
+				}
 			}
-			else {
-				Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
-				return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
-			}
-		}
+		} while ($retry);
 
 		// Just update the album while we are at it.
 		if ($albumID != null) {
