@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpComposerExtensionStubsInspection */
 
 namespace App\Http\Controllers;
 
@@ -28,6 +29,7 @@ class DiagnosticsController extends Controller
 	}
 
 
+
 	public function get_errors()
 	{
 
@@ -36,12 +38,12 @@ class DiagnosticsController extends Controller
 
 
 		// PHP Version
-		if (floatval(phpversion()) < 7) {
-			$errors += ['Error: Upgrade to PHP 7 or higher'];
+		if (floatval(phpversion()) < 7.2) {
+			$errors += ['Error: Upgrade to PHP 7.2 or higher'];
 		}
 		// 32 or 64 bits ?
 		if (PHP_INT_MAX == 2147483647) {
-			$errors += ['Warning: Using 32 bit Php, recommended upgrade to 64 bit'];
+			$errors += ['Warning: Using 32 bit PHP, recommended upgrade to 64 bit'];
 		}
 
 		// Extensions
@@ -89,14 +91,13 @@ class DiagnosticsController extends Controller
 		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS')) === false) {
 			$errors += ['Error: \'uploads/\' is missing or has insufficient read/write privileges'];
 		}
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST').'/user.css')===false) {
+		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST').'/user.css') === false) {
 			$errors += ['Warning: \'dist/user.css\' does not exist or has insufficient read/write privileges.'];
-			if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST'))===false)			$errors += ['Warning: \'dist/\' has insufficient read/write privileges.'];
+			if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST')) === false) {
+				$errors += ['Warning: \'dist/\' has insufficient read/write privileges.'];
+			}
 		}
-
-		//        if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DATA'))===false)           $errors += ['Error: \'data/\' is missing or has insufficient read/write privileges'];
-
-
+		
 		// About GD
 		if (function_exists('gd_info')) {
 			$gdVersion = gd_info();
@@ -166,6 +167,9 @@ class DiagnosticsController extends Controller
 
 
 
+	/**
+	 * @return array
+	 */
 	public function get_info()
 	{
 		// Declare
@@ -174,11 +178,30 @@ class DiagnosticsController extends Controller
 		// Load settings
 		$settings = Configs::get();
 
-		// Load json
-		$json = file_get_contents(Config::get('defines.path.LYCHEE').'public/Lychee-front/package.json');
-		$json = json_decode($json, true);
+		// Load json (we need to add a try case here
+		$json = @file_get_contents(Config::get('defines.path.LYCHEE').'public/Lychee-front/package.json');
+		if ($json == false)
+		{
+			$json = ['version' => '-'];
+		}
+		else{
+			$json = json_decode($json, true);
+		}
 
-		// About imagick
+		// Load Git info
+		$git_head = @file_get_contents('../.git/HEAD');
+		if ($git_head !== false) {
+			$branch = explode("/", $git_head, 3)[2]; //separate out by the "/" in the string
+			$git_head = @file_get_contents(sprintf('../.git/refs/heads/%s', trim($branch)));
+		}
+		if ($git_head == false) {
+			$git_head = 'No git data found. Probably installed from release.';
+		}
+		else {
+			$git_head = substr($git_head, 0, 7).' ('.trim($branch).')';
+		}
+
+		// About Imagick version
 		$imagick = extension_loaded('imagick');
 		if ($imagick === true) {
 			$imagickVersion = @Imagick::getVersion();
@@ -193,47 +216,63 @@ class DiagnosticsController extends Controller
 			$imagickVersion = $imagickVersion['versionNumber'];
 		}
 
-		// Output system information
-		$infos[] = 'Lychee Version:  '.$json['version'];
-		$infos[] = 'DB Version:      '.$settings['version'];
-		$infos[] = 'System:          '.PHP_OS;
-		$infos[] = 'PHP Version:     '.floatval(phpversion());
+		// About GD version
+		if (function_exists('gd_info')) {
+			$gdVersion = gd_info();
+		}
+		else {
+			$gdVersion = ['GD Version' => '-'];
+		}
 
+
+		// About SQL version
 		if (DB::getDriverName() == 'mysql') {
 			$results = DB::select(DB::raw("select version()"));
 			$dbver = $results[0]->{'version()'};
-			$infos[] = 'MySQL Version:   '. $dbver;
-		} else if (DB::getDriverName() == 'sqlite') {
-			$results = DB::select(DB::raw("select sqlite_version()"));
-			$dbver = $results[0]->{'sqlite_version()'};
-			$infos[] = 'SQLite Version:  '. $dbver;
-		} else if (DB::getDriverName() == 'pgsql') {
-			$results = DB::select(DB::raw('select version()'));
-			$dbver = $results[0]->{'version'};
-			$infos[] = 'PostgreSQL Version:  '. $dbver;
-		} else {
-			try {
-				$results = DB::select(DB::raw("select version()"));
-				$dbver = $results[0]->{'version()'};
-			} catch (\Exception $e) {
-				$dbver = 'unknown';
+			$dbtype = 'MySQL';
+		}
+		else {
+			if (DB::getDriverName() == 'sqlite') {
+				$results = DB::select(DB::raw("select sqlite_version()"));
+				$dbver = $results[0]->{'sqlite_version()'};
+				$dbtype = 'SQLite';
 			}
-			$infos[] = DB::getDriverName() . ' Version:   '. $dbver;
+			else {
+				if (DB::getDriverName() == 'pgsql') {
+					$results = DB::select(DB::raw('select version()'));
+					$dbver = $results[0]->{'version'};
+					$dbtype = 'PostgreSQL';
+				}
+				else {
+					try {
+						$results = DB::select(DB::raw("select version()"));
+						$dbver = $results[0]->{'version()'};
+					}
+					catch (\Exception $e) {
+						$dbver = 'unknown';
+					}
+					$dbtype = DB::getDriverName();
+				}
+			}
 		}
 
-		$infos[] = 'Imagick:         '.$imagick;
-		$infos[] = 'Imagick Active:  '.$settings['imagick'];
-		$infos[] = 'Imagick Version: '.$imagickVersion;
-		if (function_exists('gd_info')) {
-			$gdVersion = gd_info();
-		} else {
-			$gdVersion = ['GD Version' => '-'];
-		}
-		$infos[] = 'GD Version:      '.$gdVersion['GD Version'];
+		// Output system information
+		$infos[] = str_pad('Lychee-front Version:', 25).$json['version'];
+		$infos[] = str_pad('Lychee Version (git):', 25).$git_head;
+		$infos[] = str_pad('DB Version:', 25).$settings['version'];
+		$infos[] = str_pad('System:', 25).PHP_OS;
+		$infos[] = str_pad('PHP Version:', 25).floatval(phpversion());
+		$infos[] = str_pad($dbtype.' Version:', 25).$dbver;
+		$infos[] = str_pad('Imagick:', 25).$imagick;
+		$infos[] = str_pad('Imagick Active:', 25).$settings['imagick'];
+		$infos[] = str_pad('Imagick Version:', 25).$imagickVersion;
+		$infos[] = str_pad('GD Version:', 25).$gdVersion['GD Version'];
 
 		return $infos;
 
 	}
+
+
 
 	public function get_config()
 	{
@@ -242,14 +281,15 @@ class DiagnosticsController extends Controller
 
 		// Load settings
 		$settings = $this->configFunctions->min_info();
-		foreach ($settings as $key => $value)
-		{
-			if(!is_array($value))
+		foreach ($settings as $key => $value) {
+			if (!is_array($value)) {
 				$configs[] = str_pad($key.':', 24).' '.$value;
+			}
 		}
 		return $configs;
 
 	}
+
 
 
 	public function get()
@@ -271,8 +311,8 @@ class DiagnosticsController extends Controller
 
 		// Show separator
 		return view('diagnostics', [
-			'errors' => $errors,
-			'infos'  => $infos,
+			'errors'  => $errors,
+			'infos'   => $infos,
 			'configs' => $configs
 		]);
 	}
