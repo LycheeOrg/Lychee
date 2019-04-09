@@ -65,4 +65,4 @@ Various docker builds include :
 -->
 ## Troubleshooting
 
-Take a look at the [FAQ](https://github.com/LycheeOrg/Lychee-Laravel/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue here on GitHub!
+Take a look at the [WIKI](https://github.com/LycheeOrg/Lychee-Laravel/wiki/) and the old Lychee [FAQ](https://github.com/LycheeOrg/Lychee/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue here on GitHub!
