@@ -20,13 +20,15 @@
         "php-ffmpeg/php-ffmpeg": "^0.13.0"
     },
     "require-dev": {
-        "filp/whoops": "^2.0",
         "ext-imagick": "*",
+        "filp/whoops": "^2.0",
         "fzaninotto/faker": "^1.4",
+        "itsgoingd/clockwork": "^3.1",
         "laravel/homestead": "^8.2",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.0"
+        "phpunit/phpunit": "^8.0",
+        "wnx/laravel-stats": "^1.9"
     },
     "autoload": {
         "classmap": [
