@@ -143,8 +143,8 @@ class ImportController extends Controller
 			'albumID' => 'int|required'
 		]);
 
-		$php_script_limit = Configs::get_value('php_script_limit', '0');
-		if ($php_script_limit == '1') {
+		$php_script_no_limit = Configs::get_value('php_script_no_limit', '0');
+		if ($php_script_no_limit == '1') {
 			set_time_limit(0);
 			Logs::notice(__METHOD__, __LINE__, 'Importing using unlimited execution time');
 		}
