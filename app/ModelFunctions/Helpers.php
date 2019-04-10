@@ -2,6 +2,8 @@
 
 namespace App\ModelFunctions;
 
+use App\Logs;
+
 class Helpers
 {
 	/**

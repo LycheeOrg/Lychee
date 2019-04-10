@@ -243,13 +243,9 @@ class SettingsController extends Controller
 	{
 
 		$no_error = true;
-		foreach ($request->except('_token') as $key => $value) {
-			if ($key != 'function') {
-				// just because we do not want null values
+		foreach ($request->except(['_token','function']) as $key => $value) {
 				$value = ($value == null) ? '' : $value;
-
 				$no_error &= Configs::set($key, $value);
-			}
 		}
 		return $no_error ? 'true' : 'false';
 	}

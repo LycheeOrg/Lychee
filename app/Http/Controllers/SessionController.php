@@ -6,6 +6,7 @@ use App\Album;
 use App\Configs;
 use App\Locale\Lang;
 use App\Logs;
+use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\User;
@@ -26,6 +27,10 @@ class SessionController extends Controller
 	 * @var SessionFunctions
 	 */
 	private $sessionFunctions;
+	/**
+	 * @var GitHubFunctions
+	 */
+	private $gitHubFunctions;
 
 
 
@@ -33,10 +38,11 @@ class SessionController extends Controller
 	 * @param ConfigFunctions $configFunctions
 	 * @param SessionFunctions $sessionFunctions
 	 */
-	public function __construct(ConfigFunctions $configFunctions, SessionFunctions $sessionFunctions)
+	public function __construct(ConfigFunctions $configFunctions, SessionFunctions $sessionFunctions, GitHubFunctions $gitHubFunctions)
 	{
 		$this->configFunctions = $configFunctions;
 		$this->sessionFunctions = $sessionFunctions;
+		$this->gitHubFunctions = $gitHubFunctions;
 	}
 
 
@@ -109,7 +115,7 @@ class SessionController extends Controller
 		$return['update_json'] = 0;
 		$return['update_available'] = false;
 
-		$this->sessionFunctions->checkUpdates($return);
+		$this->gitHubFunctions->checkUpdates($return);
 
 		return $return;
 

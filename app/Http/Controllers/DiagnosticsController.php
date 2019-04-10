@@ -4,10 +4,12 @@
 namespace App\Http\Controllers;
 
 use App\Configs;
+use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Imagick;
 
 class DiagnosticsController extends Controller
@@ -17,15 +19,18 @@ class DiagnosticsController extends Controller
 	 * @var ConfigFunctions
 	 */
 	private $configFunctions;
+	private $gitHubFunctions;
 
 
 
 	/**
 	 * @param ConfigFunctions $configFunctions
+	 * @param GitHubFunctions $gitHubFunctions
 	 */
-	public function __construct(ConfigFunctions $configFunctions)
+	public function __construct(ConfigFunctions $configFunctions, GitHubFunctions $gitHubFunctions)
 	{
 		$this->configFunctions = $configFunctions;
+		$this->gitHubFunctions = $gitHubFunctions;
 	}
 
 
@@ -39,8 +44,18 @@ class DiagnosticsController extends Controller
 
 		// PHP Version
 		if (floatval(phpversion()) < 7.2) {
-			$errors += ['Error: Upgrade to PHP 7.2 or higher'];
+			$errors += ['Warning: Upgrade to PHP 7.2 or higher'];
+			// on Dec 1 2019 enable this to an error.
+//			$errors += ['Error: Upgrade to PHP 7.2 or higher'];
 		}
+		if (floatval(phpversion()) < 7.3) {
+			$errors += ['Info: Latest version of PHP is 7.3'];
+			// on November 30 2019 enable this as warning.
+//			$errors += ['Warning: Upgrade to PHP 7.3 or higher'];
+			// on November 30 2020 enable this as warning.
+//			$errors += ['Error: Upgrade to PHP 7.3 or higher'];
+		}
+
 		// 32 or 64 bits ?
 		if (PHP_INT_MAX == 2147483647) {
 			$errors += ['Warning: Using 32 bit PHP, recommended upgrade to 64 bit'];
@@ -189,17 +204,7 @@ class DiagnosticsController extends Controller
 		}
 
 		// Load Git info
-		$git_head = @file_get_contents('../.git/HEAD');
-		if ($git_head !== false) {
-			$branch = explode("/", $git_head, 3)[2]; //separate out by the "/" in the string
-			$git_head = @file_get_contents(sprintf('../.git/refs/heads/%s', trim($branch)));
-		}
-		if ($git_head == false) {
-			$git_head = 'No git data found. Probably installed from release.';
-		}
-		else {
-			$git_head = substr($git_head, 0, 7).' ('.trim($branch).')';
-		}
+		$git_info = $this->gitHubFunctions->get_info();
 
 		// About Imagick version
 		$imagick = extension_loaded('imagick');
@@ -258,7 +263,7 @@ class DiagnosticsController extends Controller
 
 		// Output system information
 		$infos[] = str_pad('Lychee-front Version:', 25).$json['version'];
-		$infos[] = str_pad('Lychee Version (git):', 25).$git_head;
+		$infos[] = str_pad('Lychee Version (git):', 25).$git_info;
 		$infos[] = str_pad('DB Version:', 25).$settings['version'];
 		$infos[] = str_pad('System:', 25).PHP_OS;
 		$infos[] = str_pad('PHP Version:', 25).floatval(phpversion());
@@ -306,8 +311,12 @@ class DiagnosticsController extends Controller
 	{
 
 		$errors = $this->get_errors();
-		$infos = $this->get_info();
-		$configs = $this->get_config();
+		$infos = ['You must be logged to see this.'];
+		$configs = ['You must be logged to see this.'];
+		if (Session::get('login') == true && Session::get('UserID') == 0) {
+			$infos = $this->get_info();
+			$configs = $this->get_config();
+		}
 
 		// Show separator
 		return view('diagnostics', [
