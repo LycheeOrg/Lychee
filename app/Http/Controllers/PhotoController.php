@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Logs;
+use App\ModelFunctions\Helpers;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use ZipStream\ZipStream;
 
 class PhotoController extends Controller
 {
@@ -394,6 +397,106 @@ class PhotoController extends Controller
 			$no_error &= $duplicate->save();
 		}
 		return $no_error ? 'true' : 'false';
+
+	}
+
+
+
+	/**
+	 * @param Request $request
+	 * @return StreamedResponse|void
+	 */
+	function getArchive(Request $request)
+	{
+
+		// Illicit chars
+		$badChars = array_merge(
+			array_map('chr', range(0, 31)),
+			array(
+				"<",
+				">",
+				":",
+				'"',
+				"/",
+				"\\",
+				"|",
+				"?",
+				"*"
+			)
+		);
+
+		$request->validate([
+			'photoID' => 'required|string',
+			'KIND'    => 'nullable|string'
+		]);
+
+		$photo = Photo::with('album')->find($request['photoID']);
+
+		if ($photo == null) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+			return abort(404);
+		}
+
+		$public = $photo->public == 1 ? '1' : '0';
+		if ($photo->album_id != null) {
+			$public = $photo->album->public == '1' ? '2' : $public;
+		}
+
+		if ((!Session::get('login') && $public == '1') ||
+			(Session::get('login')) ||
+			SessionController::checkAccess($request, $photo->album_id) === 1) {
+
+
+			$title = ($photo->title == '') ? 'Untitled' : str_replace($badChars, '', $photo->title);
+
+			// determine the file based on given size
+			switch ($request['kind']) {
+				case 'MEDIUM':
+					$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url;
+					$kind = '-MQ-'.$photo->medium;
+					break;
+				case 'SMALL':
+					$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url;
+					$kind = '-LQ-'.$photo->small;
+					break;
+				default:
+					$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
+					$kind = '-HQ-'.$photo->width.'x'.$photo->height;
+			}
+
+			// Check the file actually exists
+			if (!file_exists($filepath)) {
+				Logs::error(__METHOD__, __LINE__, 'File is missing: '.$filepath.' ('.$title.')');
+				return abort(404);
+			}
+
+			$response = new StreamedResponse(function () use ($title, $kind, $filepath) {
+
+				$opt = array(
+					'largeFileSize' => 100 * 1024 * 1024,
+					'enableZip64'   => true,
+					'send_headers'  => true,
+				);
+
+				$zip = new ZipStream($title.'.zip', $opt);
+
+				// Get extension of image
+				$extension = Helpers::getExtension($filepath, false);
+
+				// Set title for photo
+				$zip->addFileFromPath($title.$kind.$extension, $filepath);
+
+				# finish the zip stream
+				$zip->finish();
+
+			});
+
+			return $response;
+
+		}
+
+		Logs::error(__METHOD__, __LINE__, 'Accessing non public photo: '.$photo->id);
+		return abort(403);
 
 	}
 }

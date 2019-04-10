@@ -45,7 +45,7 @@ class GitHubFunctions
 		if ($json != false) {
 			return json_decode($json);
 		}
-		Logs::notice(__FUNCTION__, __LINE__, "Could not access: ".$url);
+		Logs::notice(__METHOD__, __LINE__, "Could not access: ".$url);
 		return false;
 	}
 
