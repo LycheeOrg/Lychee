@@ -6,6 +6,7 @@ public/Lychee-front/package-lock.json
 /public/hot
 /public/storage
 /storage/*.key
+/storage/clockwork/
 /vendor
 /.idea
 /.vscode
