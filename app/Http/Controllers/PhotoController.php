@@ -79,7 +79,11 @@ class PhotoController extends Controller
 
 		// here we need to refine.
 
-		$photo = Photo::where('star', '=', 1)->inRandomOrder()->first();
+		$photo = Photo::where('photos.star', '=', 1)
+			->join('albums', 'album_id', '=', 'albums.id')
+			->where('albums.public','=','1')
+			->inRandomOrder()
+			->first();
 
 		if ($photo == null) {
 			return Response::error('no pictures found!');
