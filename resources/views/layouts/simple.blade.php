@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html>
+<html lang="{{ $locale['language'] }}">
 <head>
 @include('includes.head')
 </head>

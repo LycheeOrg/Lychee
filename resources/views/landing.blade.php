@@ -6,7 +6,7 @@
 
 @section('head-css')
     <link type="text/css" rel="stylesheet" href="dist/landing.css">
-	<link type="text/css" rel="stylesheet" href="dist/user.css">
+    <link type="text/css" rel="stylesheet" href="dist/user.css">
 @endsection
 
 @section('content')
@@ -30,9 +30,12 @@
 
     <div id="slides" class="animate_slower pop-in-last">
         <div class="slides-container">
-            <li>
-                <div class="overlay"></div>
-                <img src="{{ $infos['background'] }}" alt=""></li>
+            <ul>
+                <li>
+                    <div class="overlay"></div>
+                    <img src="{{ $infos['background'] }}" alt="">
+                </li>
+            </ul>
         </div>
     </div>
 

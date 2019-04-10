@@ -23,6 +23,7 @@ class FrameController extends Controller
 		}
 
 		$lang = Lang::get_lang(Configs::where('key', '=', 'lang')->first());
+		$lang['language'] = Configs::get_value('lang');
 
 		$infos = array();
 		$infos['owner'] = Configs::get_value('landing_owner');
