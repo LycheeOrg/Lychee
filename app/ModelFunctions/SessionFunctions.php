@@ -48,28 +48,4 @@ class SessionFunctions
 
 		return false;
 	}
-
-
-
-	/**
-	 * Check for updates
-	 *
-	 * @param $return
-	 */
-	public function checkUpdates(&$return)
-	{
-		$configs = Configs::get();
-
-		if ($configs['checkForUpdates'] == '1') {
-			try {
-				$json = file_get_contents('https://lycheeorg.github.io/update.json');
-				$obj = json_decode($json);
-				$return['update_json'] = $obj->lychee->version;
-				$return['update_available'] = ((intval($configs['version'])) < $return['update_json']);
-			}
-			catch (\Exception $e) {
-				Logs::notice(__METHOD__, __LINE__, 'Could not access: https://lycheeorg.github.io/update.json');
-			}
-		}
-	}
 }

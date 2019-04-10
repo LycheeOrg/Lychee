@@ -89,8 +89,8 @@ Route::post('/api/User::Create',                'UserController@create')->middle
 Route::post('/api/Logs',                        'LogController@display')->middleware('admin');
 Route::post('/api/Logs::clearNoise',            'LogController@clearNoise')->middleware('admin');
 Route::get('/api/Logs::clear',                  'LogController@clear')->middleware('admin');
-Route::post('/api/Diagnostics',                 'DiagnosticsController@show')->middleware('admin');
-Route::get('/api/Diagnostics',                  'DiagnosticsController@show')->middleware('admin');
+Route::post('/api/Diagnostics',                 'DiagnosticsController@show');
+Route::get('/Diagnostics',                      'DiagnosticsController@show');
 
 // unused
 Route::post('/api/Logs::clear',                 'LogController@clear')->middleware('admin');
