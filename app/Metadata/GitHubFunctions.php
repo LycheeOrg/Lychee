@@ -159,7 +159,7 @@ class GitHubFunctions
 	public function get_github_head()
 	{
 		$commits = $this->get_commits();
-		return ($commits != false) ? ' ('.$this->trim($commits[0]).')' : '';
+		return ($commits != false) ? ' ('.$this->trim($commits[0]->sha).')' : '';
 	}
 
 
@@ -180,6 +180,10 @@ class GitHubFunctions
 		}
 
 		$count = $this->count_behind();
+		if ($count === 0)
+		{
+			return ' - Up to date.';
+		}
 		if ($count != false) {
 			return ' - '.$count.' commits behind master'.$this->get_github_head();
 		}
