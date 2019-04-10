@@ -18,7 +18,7 @@ class PhpScriptLimit extends Migration
 
 			DB::table('configs')->insert([
 				[
-					'key'             => 'php_script_no_limit',
+					'key'             => 'php_script_limit',
 					'value'           => '0',
 					'confidentiality' => 3
 				],
@@ -39,7 +39,7 @@ class PhpScriptLimit extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'php_script_no_limit')->delete();
+			Configs::where('key', '=', 'php_script_limit')->delete();
 		}
 	}
 }
