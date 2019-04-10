@@ -100,6 +100,10 @@ class Configs extends Model
 	{
 
 		$config = Configs::where('key', '=', $key)->first();
+		//first() may return null, fixup 'Creating default object from empty value' error
+		if ($config == null) {
+			return true;
+		}
 		$config->value = $value;
 		if (!$config->save()) {
 			Logs::error(__METHOD__, __LINE__, $config->getErrors());
