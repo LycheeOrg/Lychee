@@ -35,6 +35,7 @@ class PageController extends Controller
 			abort(404);
 
 		$lang = Lang::get_lang(Configs::get_value('lang'));
+		$lang['language'] = Configs::get_value('lang');
 
 		$infos = $this->configFunctions->get_pages_infos();
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
