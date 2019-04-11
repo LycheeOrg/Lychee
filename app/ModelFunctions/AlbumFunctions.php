@@ -1,4 +1,5 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\ModelFunctions;
 
@@ -6,7 +7,8 @@ use App\Album;
 use App\Logs;
 use App\Photo;
 use App\Response;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
@@ -119,10 +121,10 @@ class AlbumFunctions
 	/**
 	 * Given a list of albums, generate an array to be returned
 	 *
-	 * @param $albums
+	 * @param Collection $albums
 	 * @return array
 	 */
-	function prepare_albums(array $albums)
+	function prepare_albums(Collection $albums)
 	{
 
 		$return = array();
