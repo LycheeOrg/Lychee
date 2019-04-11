@@ -1,11 +1,36 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
 
 use App\Locale\Lang;
+use Eloquent;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
+/**
+ * App\Configs
+ *
+ * @property int $id
+ * @property string $key
+ * @property string|null $value
+ * @property string $cat
+ * @property int $confidentiality
+ * @method static Builder|Configs admin()
+ * @method static Builder|Configs info()
+ * @method static Builder|Configs newModelQuery()
+ * @method static Builder|Configs newQuery()
+ * @method static Builder|Configs public ()
+ * @method static Builder|Configs query()
+ * @method static Builder|Configs whereCat($value)
+ * @method static Builder|Configs whereConfidentiality($value)
+ * @method static Builder|Configs whereId($value)
+ * @method static Builder|Configs whereKey($value)
+ * @method static Builder|Configs whereValue($value)
+ * @mixin Eloquent
+ */
 class Configs extends Model
 {
 	/**
@@ -14,12 +39,15 @@ class Configs extends Model
 	public $timestamps = false;
 
 
+	/** We define this as a singleton */
 	private static $cache = null;
 
 
 
 	/**
-	 * @return array Returns the upload settings of Lychee.
+	 * Cache and return the current settings of this Lychee installation
+	 *
+	 * @return array
 	 */
 	public static function get()
 	{
@@ -28,7 +56,12 @@ class Configs extends Model
 		}
 
 		try {
-			$query = Configs::select('key', 'value');
+			/** @noinspection PhpUndefinedMethodInspection (select) */
+			$query = Configs::select([
+				'key',
+				'value'
+			]);
+			/** @noinspection PhpUndefinedMethodInspection (pluck) */
 			$return = $query->pluck('value', 'key')->all();
 
 			$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
@@ -38,7 +71,7 @@ class Configs extends Model
 
 			self::$cache = $return;
 		}
-		catch (\Exception $e) {
+		catch (Exception $e) {
 			self::$cache = null;
 
 			return null;
@@ -50,9 +83,11 @@ class Configs extends Model
 
 
 	/**
+	 * The best way to request a value from the config...
+	 *
 	 * @param string $key
 	 * @param mixed $default
-	 * @return mixed
+	 * @return int|bool|string
 	 */
 	public static function get_value(string $key, $default = null)
 	{
@@ -80,7 +115,8 @@ class Configs extends Model
 			try {
 				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
 			}
-			catch (\Exception $e) {
+				/** @noinspection PhpFullyQualifiedNameUsageInspection */
+			catch (Exception $e) {
 				// yeah we do nothing because we cannot do anything in that case ...  :p
 			}
 			return $default;
@@ -92,6 +128,9 @@ class Configs extends Model
 
 
 	/**
+	 * Update Lychee configuration
+	 * Note that we must invalidate the cache now.
+	 *
 	 * @param string $key
 	 * @param $value
 	 * @return bool Returns true when successful.
@@ -99,15 +138,23 @@ class Configs extends Model
 	public static function set(string $key, $value)
 	{
 
+		/** @noinspection PhpUndefinedMethodInspection (where, first) */
 		$config = Configs::where('key', '=', $key)->first();
-		//first() may return null, fixup 'Creating default object from empty value' error
+
+		// first() may return null, fixup 'Creating default object from empty value' error
+		// we also log a warning
 		if ($config == null) {
-			Logs::warning(__FUNCTION__,__LINE__, 'key '.$key.' not found!');
+			Logs::warning(__FUNCTION__, __LINE__, 'key '.$key.' not found!');
 			return true;
 		}
+
 		$config->value = $value;
-		if (!$config->save()) {
-			Logs::error(__METHOD__, __LINE__, $config->getErrors());
+		try {
+			/** @noinspection PhpUndefinedMethodInspection (save) */
+			$config->save();
+		}
+		catch (Exception $e) {
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			return false;
 		}
 
@@ -133,22 +180,45 @@ class Configs extends Model
 
 
 
+	/**
+	 * Define scopes
+	 */
+
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	public function scopePublic($query)
 	{
+		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return $query->where('confidentiality', '=', 0);
 	}
 
 
 
+	/**
+	 * Logged user can see
+	 *
+	 * @param $query
+	 * @return mixed
+	 */
 	public function scopeInfo($query)
 	{
+		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return $query->where('confidentiality', '<=', 2);
 	}
 
 
 
+	/**
+	 * Only admin can see
+	 *
+	 * @param $query
+	 * @return mixed
+	 */
 	public function scopeAdmin($query)
 	{
+		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return $query->where('confidentiality', '<=', 3);
 	}
 }

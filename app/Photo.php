@@ -1,15 +1,107 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
 
 use App\ModelFunctions\Helpers;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 
+/**
+ * App\Photo
+ *
+ * @property int $id
+ * @property string $title
+ * @property string|null $description
+ * @property string $url
+ * @property string $tags
+ * @property int $public
+ * @property int $owner_id
+ * @property string $type
+ * @property int|null $width
+ * @property int|null $height
+ * @property string $size
+ * @property string $iso
+ * @property string $aperture
+ * @property string $make
+ * @property string $model
+ * @property string $lens
+ * @property string $shutter
+ * @property string $focal
+ * @property float|null $latitude
+ * @property float|null $longitude
+ * @property float|null $altitude
+ * @property Carbon|null $takestamp
+ * @property int $star
+ * @property string $thumbUrl
+ * @property int|null $album_id
+ * @property string $checksum
+ * @property string $license
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property string $medium
+ * @property string $medium2x
+ * @property string $small
+ * @property string $small2x
+ * @property int $thumb2x
+ * @property-read Album|null $album
+ * @property-read User $owner
+ * @method static Builder|Photo newModelQuery()
+ * @method static Builder|Photo newQuery()
+ * @method static Builder|Photo ownedBy($id)
+ * @method static Builder|Photo public ()
+ * @method static Builder|Photo query()
+ * @method static Builder|Photo recent()
+ * @method static Builder|Photo stars()
+ * @method static Builder|Photo unsorted()
+ * @method static Builder|Photo whereAlbumId($value)
+ * @method static Builder|Photo whereAltitude($value)
+ * @method static Builder|Photo whereAperture($value)
+ * @method static Builder|Photo whereChecksum($value)
+ * @method static Builder|Photo whereCreatedAt($value)
+ * @method static Builder|Photo whereDescription($value)
+ * @method static Builder|Photo whereFocal($value)
+ * @method static Builder|Photo whereHeight($value)
+ * @method static Builder|Photo whereId($value)
+ * @method static Builder|Photo whereIso($value)
+ * @method static Builder|Photo whereLatitude($value)
+ * @method static Builder|Photo whereLens($value)
+ * @method static Builder|Photo whereLicense($value)
+ * @method static Builder|Photo whereLongitude($value)
+ * @method static Builder|Photo whereMake($value)
+ * @method static Builder|Photo whereMedium($value)
+ * @method static Builder|Photo whereMedium2x($value)
+ * @method static Builder|Photo whereModel($value)
+ * @method static Builder|Photo whereOwnerId($value)
+ * @method static Builder|Photo wherePublic($value)
+ * @method static Builder|Photo whereShutter($value)
+ * @method static Builder|Photo whereSize($value)
+ * @method static Builder|Photo whereSmall($value)
+ * @method static Builder|Photo whereSmall2x($value)
+ * @method static Builder|Photo whereStar($value)
+ * @method static Builder|Photo whereTags($value)
+ * @method static Builder|Photo whereTakestamp($value)
+ * @method static Builder|Photo whereThumb2x($value)
+ * @method static Builder|Photo whereThumbUrl($value)
+ * @method static Builder|Photo whereTitle($value)
+ * @method static Builder|Photo whereType($value)
+ * @method static Builder|Photo whereUpdatedAt($value)
+ * @method static Builder|Photo whereUrl($value)
+ * @method static Builder|Photo whereWidth($value)
+ * @mixin Eloquent
+ */
 class Photo extends Model
 {
 
+	/**
+	 * This extends the date types from Model to allow coercion with Carbon object.
+	 *
+	 * @var array dates
+	 */
 	protected $dates = [
 		'created_at',
 		'updated_at',
@@ -18,6 +110,11 @@ class Photo extends Model
 
 
 
+	/**
+	 * Return the relationship between a Photo and its Album
+	 *
+	 * @return BelongsTo
+	 */
 	public function album()
 	{
 		return $this->belongsTo('App\Album', 'album_id', 'id')->withDefault(['public' => '1']);
@@ -25,6 +122,11 @@ class Photo extends Model
 
 
 
+	/**
+	 * Return the relationship between a Photo and its Owner
+	 *
+	 * @return BelongsTo
+	 */
 	public function owner()
 	{
 		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
@@ -36,17 +138,22 @@ class Photo extends Model
 
 
 	/**
+	 * Check if a photo already exists in the database via its checksum
+	 *
 	 * @param string $checksum
 	 * @param $photoID
-	 * @return array|false Returns a subset of a photo when same photo exists or returns false on failure.
+	 * @return Photo|bool|Builder|Model|object
 	 */
 	public function isDuplicate(string $checksum, $photoID = null)
 	{
+		/** @noinspection PhpUndefinedMethodInspection */
 		$sql = $this->where('checksum', '=', $checksum);
 		if (isset($photoID)) {
+			/** @noinspection PhpUndefinedMethodInspection */
 			$sql = $sql->where('id', '<>', $photoID);
 		}
 
+		/** @noinspection PhpUndefinedMethodInspection */
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
 
@@ -54,13 +161,11 @@ class Photo extends Model
 
 	/**
 	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
+	 *
 	 * @return array Returns photo-attributes in a normalized structure.
 	 */
 	public function prepareData()
 	{
-
-		// Excepts the following:
-		// (array) $data = ['id', 'title', 'tags', 'public', 'star', 'album', 'thumbUrl', 'takestamp', 'url', 'medium']
 
 		// Init
 		$photo = array();
@@ -90,6 +195,7 @@ class Photo extends Model
 		$photo['description'] = $this->description == null ? '' : $this->description;
 		$photo['license'] = Configs::get_value('default_license'); // default
 
+		// shutter speed needs to be processed. It is stored as a string `a/b s`
 		if ($photo['shutter'] != '' && substr($photo['shutter'], 0, 2) != '1/') {
 
 			preg_match('/(\d+)\/(\d+) s/', $photo['shutter'], $matches);
@@ -130,18 +236,19 @@ class Photo extends Model
 			$photo['license'] = $this->license;
 		}
 
+		// if this is a video
 		if (strpos($this->type, 'video') === 0) {
-			$photoName = $this->thumbUrl;
+			$photoUrl = $this->thumbUrl;
 		}
 		else {
-			$photoName = $this->url;
+			$photoUrl = $this->url;
 		}
-		$photoName2x = explode('.', $photoName);
-		$photoName2x = $photoName2x[0].'@2x.'.$photoName2x[1];
+		$photoUrl2x = explode('.', $photoUrl);
+		$photoUrl2x = $photoUrl2x[0].'@2x.'.$photoUrl2x[1];
 
 		// Parse medium
 		if ($this->medium != '') {
-			$photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoName;
+			$photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoUrl;
 			$photo['medium_dim'] = $this->medium;
 		}
 		else {
@@ -150,7 +257,7 @@ class Photo extends Model
 		}
 
 		if ($this->medium2x != '') {
-			$photo['medium2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoName2x;
+			$photo['medium2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoUrl2x;
 			$photo['medium2x_dim'] = $this->medium2x;
 		}
 		else {
@@ -159,7 +266,7 @@ class Photo extends Model
 		}
 
 		if ($this->small != '') {
-			$photo['small'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoName;
+			$photo['small'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoUrl;
 			$photo['small_dim'] = $this->small;
 		}
 		else {
@@ -168,7 +275,7 @@ class Photo extends Model
 		}
 
 		if ($this->small2x != '') {
-			$photo['small2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoName2x;
+			$photo['small2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoUrl2x;
 			$photo['small2x_dim'] = $this->small2x;
 		}
 		else {
@@ -220,6 +327,11 @@ class Photo extends Model
 
 
 
+	/**
+	 * Before calling the delete() method which will remove the entry from the database, we need to remove the files.
+	 *
+	 * @return bool
+	 */
 	public function predelete()
 	{
 
@@ -296,50 +408,81 @@ class Photo extends Model
 	}
 
 
-	/*
+	/**
 	 *  Defines a bunch of helpers
 	 */
+
 	/**
 	 * @param $query
 	 * @return mixed
 	 */
 	static public function set_order($query)
 	{
+		/** @noinspection PhpUndefinedMethodInspection  (orderBy) */
 		return $query->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
 			->orderBy('photos.id', 'ASC');
 	}
 
 
 
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	static public function select_stars($query)
 	{
+		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return self::set_order($query->where('star', '=', 1));
 	}
 
 
 
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	static public function select_public($query)
 	{
+		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return self::set_order($query->where('public', '=', 1));
 	}
 
 
 
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	static public function select_recent($query)
 	{
+		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return self::set_order($query->where('created_at', '>=', Carbon::now()->subDays(1)->toDateTimeString()));
 	}
 
 
 
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	static public function select_unsorted($query)
 	{
+		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return self::set_order($query->where('album_id', '=', null));
 	}
 
 
 
-	// defines scopes
+
+	/**
+	 * Define scopes which we can directly use e.g. Photo::stars()->all()
+	 *
+	 */
+
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	public function scopeStars($query)
 	{
 		return self::select_stars($query);
@@ -347,6 +490,10 @@ class Photo extends Model
 
 
 
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	public function scopePublic($query)
 	{
 		return self::select_public($query);
@@ -354,6 +501,10 @@ class Photo extends Model
 
 
 
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	public function scopeRecent($query)
 	{
 		return self::select_recent($query);
@@ -361,6 +512,10 @@ class Photo extends Model
 
 
 
+	/**
+	 * @param $query
+	 * @return mixed
+	 */
 	public function scopeUnsorted($query)
 	{
 		return self::select_unsorted($query);
@@ -368,8 +523,14 @@ class Photo extends Model
 
 
 
+	/**
+	 * @param $query
+	 * @param $id
+	 * @return mixed
+	 */
 	public function scopeOwnedBy($query, $id)
 	{
+		/** @noinspection PhpUndefinedMethodInspection */
 		return $id == 0 ? $query : $query->where('id', '=', $id);
 	}
 

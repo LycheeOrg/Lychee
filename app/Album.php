@@ -1,12 +1,59 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
 
+use Eloquent;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * App\Album
+ *
+ * @property int $id
+ * @property string $title
+ * @property int $owner_id
+ * @property int|null $parent_id
+ * @property string $description
+ * @property Carbon|null $min_takestamp
+ * @property Carbon|null $max_takestamp
+ * @property int $public
+ * @property int $visible_hidden
+ * @property int $downloadable
+ * @property string|null $password
+ * @property string $license
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Album[] $children
+ * @property-read User $owner
+ * @property-read Album $parent
+ * @property-read Photo[] $photos
+ * @method static Builder|Album newModelQuery()
+ * @method static Builder|Album newQuery()
+ * @method static Builder|Album query()
+ * @method static Builder|Album whereCreatedAt($value)
+ * @method static Builder|Album whereDescription($value)
+ * @method static Builder|Album whereDownloadable($value)
+ * @method static Builder|Album whereId($value)
+ * @method static Builder|Album whereLicense($value)
+ * @method static Builder|Album whereMaxTakestamp($value)
+ * @method static Builder|Album whereMinTakestamp($value)
+ * @method static Builder|Album whereOwnerId($value)
+ * @method static Builder|Album whereParentId($value)
+ * @method static Builder|Album wherePassword($value)
+ * @method static Builder|Album wherePublic($value)
+ * @method static Builder|Album whereTitle($value)
+ * @method static Builder|Album whereUpdatedAt($value)
+ * @method static Builder|Album whereVisibleHidden($value)
+ * @mixin Eloquent
+ */
 class Album extends Model
 {
 
@@ -19,6 +66,11 @@ class Album extends Model
 
 
 
+	/**
+	 * Return the relationship between Photos and their Album
+	 *
+	 * @return HasMany
+	 */
 	public function photos()
 	{
 		return $this->hasMany('App\Photo', 'album_id', 'id');
@@ -27,15 +79,51 @@ class Album extends Model
 
 
 	/**
-	 * Rurns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
-	 * @return array Returns album-attributes in a normalized structure.
+	 * Return the relationship between an album and its owner
+	 *
+	 * @return BelongsTo
+	 */
+	public function owner()
+	{
+		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
+			'id'       => 0,
+			'username' => 'Admin'
+		]);
+	}
+
+
+
+	/**
+	 * Return the relationship between an album and its sub albums
+	 *
+	 * @return HasMany
+	 */
+	public function children()
+	{
+		return $this->hasMany('App\Album', 'parent_id', 'id');
+	}
+
+
+
+	/**
+	 * Return the relationship between a sub album and its parent
+	 *
+	 * @return BelongsTo
+	 */
+	public function parent()
+	{
+		return $this->belongsTo('App\Album', 'id', 'parent_id');
+	}
+
+
+
+	/**
+	 * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
+	 *
+	 * @return array
 	 */
 	public function prepareData()
 	{
-
-		// This function requires the following album-attributes and turns them
-		// into a front-end friendly format: id, title, public, sysstamp, password
-		// Note that some attributes remain unchanged
 
 		// Init
 		$album = array();
@@ -74,12 +162,21 @@ class Album extends Model
 
 
 
+	/**
+	 * get the thumbs of an album.
+	 * TODO: Check if this may leak private pictures
+	 *
+	 * @param array $return
+	 * @return array
+	 */
 	public function gen_thumbs($return)
 	{
 
-		$alb = $this->get_all_subalbums();
+		// First we get the list of all sub albums
+		$alb = $this->get_all_sub_albums();
 		$alb[] = $this->id;
 
+		/** @noinspection PhpUndefinedMethodInspection (select) */
 		$thumbs_types = Photo::select('thumbUrl', 'thumb2x', 'type')
 			->whereIn('album_id', $alb)
 			->orderBy('star', 'DESC')
@@ -106,14 +203,16 @@ class Album extends Model
 	}
 
 
+
 	/**
 	 * Recursively returns the tree structure of albums. Private user albums are returned
 	 * only if `$userId` is set.
+	 * TODO: Remove $userId dependency.
 	 *
-	 * @param  int   $userId
+	 * @param int $userId
 	 * @return array
 	 */
-	public function get_albums(int $userId = null) : array
+	public function get_albums(int $userId = null): array
 	{
 		$subAlbums = [];
 		foreach ($this->children as $subAlbum) {
@@ -135,11 +234,18 @@ class Album extends Model
 
 
 
-	public function get_all_subalbums($return = array())
+	/**
+	 * Recursively go through each sub album and build a list of them.
+	 * TODO: prevent private user albums to be returned if $userId is not set.
+	 *
+	 * @param array $return
+	 * @return array
+	 */
+	public function get_all_sub_albums($return = array())
 	{
 		foreach ($this->children as $album) {
 			$return[] = $album->id;
-			$album->get_all_subalbums($return);
+			$album->get_all_sub_albums($return);
 		}
 		return $return;
 	}
@@ -147,26 +253,30 @@ class Album extends Model
 
 
 	/**
+	 * Given a password, check if it matches albums password
+	 *
 	 * @param string $password
 	 * @return boolean Returns when album is public.
 	 */
 	public function checkPassword(string $password)
 	{
 
-		// Check if password is correct
+		// album password is empty or input is correct.
 		return ($this->password == '' || Hash::check($password, $this->password));
-//        if ($this->password == '') return true;
-//        if ($this->password === crypt($password, $this->password)) return true;
-//        return false;
-
 	}
 
 
 
+	/**
+	 * Go through each sub album and update the minimum and maximum takestamp of the pictures.
+	 */
 	public function update_min_max_takestamp()
 	{
-		$album_list = $this->get_all_subalbums([$this->id]);
+		$album_list = $this->get_all_sub_albums([$this->id]);
+
+		/** @noinspection PhpUndefinedMethodInspection (WhereIn) */
 		$min = Photo::whereIn('album_id', $album_list)->min('takestamp');
+		/** @noinspection PhpUndefinedMethodInspection (WhereIn) */
 		$max = Photo::whereIn('album_id', $album_list)->max('takestamp');
 		$this->min_takestamp = $min;
 		$this->max_takestamp = $max;
@@ -174,6 +284,9 @@ class Album extends Model
 
 
 
+	/**
+	 * Apply the previous method on each album in the database
+	 */
 	static public function reset_takestamp()
 	{
 		$albums = Album::all();
@@ -185,16 +298,13 @@ class Album extends Model
 
 
 
-	public function owner()
-	{
-		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
-			'id' => 0,
-			'username' => 'Admin'
-		]);
-	}
-
-
-
+	/**
+	 * Given a user, retrieve all the shared albums it can see.
+	 * TODO: Move this function to another file
+	 *
+	 * @param $id
+	 * @return Album[]
+	 */
 	public static function get_albums_user($id)
 	{
 		return Album::with([
@@ -206,7 +316,9 @@ class Album extends Model
 			->Where(
 				function ($query) use ($id) {
 					// album is shared with user
+					/** @noinspection PhpUndefinedMethodInspection (whereIn) */
 					$query->whereIn('id', function ($query) use ($id) {
+						/** @noinspection PhpUndefinedMethodInspection (select) */
 						$query->select('album_id')
 							->from('user_album')
 							->where('user_id', '=', $id);
@@ -214,6 +326,7 @@ class Album extends Model
 						// or album is visible to user
 						->orWhere(
 							function ($query) {
+								/** @noinspection PhpUndefinedMethodInspection (where) */
 								$query->where('public', '=', true)->where('visible_hidden', '=', true);
 							});
 				})
@@ -224,6 +337,15 @@ class Album extends Model
 
 
 
+	/**
+	 * Given two list of albums, merge them without duplicates.
+	 * Current complexity is in O(n^2)
+	 * TODO: Move this function to another file
+	 *
+	 * @param Album[] $albums1
+	 * @param Album[] $albums2
+	 * @return array
+	 */
 	public static function merge(array $albums1, array $albums2)
 	{
 		$return = $albums1;
@@ -247,20 +369,15 @@ class Album extends Model
 
 
 
-	public function children()
-	{
-		return $this->hasMany('App\Album', 'parent_id', 'id');
-	}
 
-
-
-	public function parent()
-	{
-		return $this->belongsTo('App\Album', 'id', 'parent_id');
-	}
-
-
-
+	/**
+	 * Before calling delete() to remove the album from the database
+	 * we need to go through each sub album and delete it.
+	 * Idem we also delete each pictures inside an album (recursively).
+	 *
+	 * @return bool|null
+	 * @throws Exception
+	 */
 	public function predelete()
 	{
 		$no_error = true;

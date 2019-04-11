@@ -1,4 +1,7 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
+/** @noinspection PhpUndefinedNamespaceInspection */
+/** @noinspection PhpUndefinedFieldInspection */
 
 namespace App\ModelFunctions;
 
@@ -78,11 +81,14 @@ class PhotoFunctions
 		if ($photo->aperture === '') return '';
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
+		/** @noinspection PhpUndefinedMethodInspection */
 		$video = $ffmpeg->open(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url);
+		/** @noinspection PhpUndefinedMethodInspection */
 		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
 
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to '.$tmp);
+		/** @noinspection PhpUndefinedMethodInspection */
 		$frame->save($tmp);
 
 		return $tmp;
@@ -129,7 +135,7 @@ class PhotoFunctions
 
 
 	/**
-	 * Creates new photo(s).
+	 * Add new photo(s) to the database.
 	 * Exits on error.
 	 *
 	 * @param array $file
@@ -321,10 +327,11 @@ class PhotoFunctions
 
 			// For videos extract a frame from the middle
 			$frame_tmp = '';
+			$path_thumb = '';
 			if (in_array($photo->type, $this->validVideoTypes, true)) {
 				try {
 					$frame_tmp = $this->extractVideoFrame($photo);
-				} catch (\Exception $exception) {
+				} catch (Exception $exception) {
 					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 					$path_thumb = '';
 				}
@@ -444,7 +451,7 @@ class PhotoFunctions
 
 
 	/**
-	 * We create this recursive function to try to fix the duplicate entry key problem
+	 * We create this function to try to fix the duplicate entry key problem
 	 *
 	 * @param Photo $photo
 	 * @param $albumID
@@ -461,10 +468,9 @@ class PhotoFunctions
 				}
 			}
 			catch (QueryException $e) {
-				$errorCode = $e->errorInfo[1];
+				$errorCode = $e->getCode();
 				if ($errorCode == 1062) {
 					// houston, we have a duplicate entry problem
-					$newId = '';
 					do {
 						// Our ids are based on current system time, so
 						// wait randomly up to 1s before retrying.
@@ -484,6 +490,8 @@ class PhotoFunctions
 
 		// Just update the album while we are at it.
 		if ($albumID != null) {
+			/** @noinspection PhpUndefinedMethodInspection */
+			/** @var Album $album */
 			$album = Album::find($albumID);
 			if ($album === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');

@@ -8,8 +8,13 @@ use Illuminate\Support\Facades\DB;
 class LogController extends Controller
 {
 
-	static public function list($order = 'DESC')
+	/**
+	 * @param string $order
+	 * @return mixed
+	 */
+	public function list($order = 'DESC')
 	{
+		/** @noinspection PhpUndefinedMethodInspection (orderBy) */
 		$logs = Logs::orderBy('id', $order)->get();
 		return $logs;
 	}
@@ -19,12 +24,12 @@ class LogController extends Controller
 	public function display()
 	{
 
-		// Output
+		/** @noinspection PhpUndefinedMethodInspection (count) */
 		if (Logs::count() == 0) {
 			return 'Everything looks fine, Lychee has not reported any problems!';
 		}
 		else {
-			$logs = self::list();
+			$logs = $this->list();
 			return view('logs.list', ['logs' => $logs]);
 		}
 	}
@@ -41,6 +46,7 @@ class LogController extends Controller
 
 	static public function clearNoise()
 	{
+		/** @noinspection PhpUndefinedMethodInspection (where) */
 		Logs::where('function', '=', 'App\Photo::createMedium')->
 		orWhere('function', '=', 'App\Photo::createThumb')->
 		orWhere('function', '=', 'App\Configs::get_value')->
