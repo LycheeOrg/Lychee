@@ -3,7 +3,7 @@
 namespace App\Locale;
 
 
-final class German
+final class German implements LangInterface
 {
 	static public function code()
 	{

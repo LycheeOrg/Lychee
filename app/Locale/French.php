@@ -3,7 +3,7 @@
 namespace App\Locale;
 
 
-final class French
+final class French implements LangInterface
 {
 	static public function code()
 	{

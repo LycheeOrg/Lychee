@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 use App\Configs;
 use App\Locale\Lang;
 use App\Response;
-use Illuminate\Http\Request;
 
 
 class FrameController extends Controller
@@ -42,7 +41,7 @@ class FrameController extends Controller
 
 	}
 
-	function getSettings(Request $request)
+	function getSettings()
 	{
 		Configs::get();
 

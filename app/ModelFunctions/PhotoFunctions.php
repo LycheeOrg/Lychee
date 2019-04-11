@@ -1,7 +1,5 @@
 <?php
 /** @noinspection PhpUndefinedClassInspection */
-/** @noinspection PhpUndefinedNamespaceInspection */
-/** @noinspection PhpUndefinedFieldInspection */
 
 namespace App\ModelFunctions;
 
@@ -81,14 +79,11 @@ class PhotoFunctions
 		if ($photo->aperture === '') return '';
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
-		/** @noinspection PhpUndefinedMethodInspection */
 		$video = $ffmpeg->open(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url);
-		/** @noinspection PhpUndefinedMethodInspection */
 		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
 
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to '.$tmp);
-		/** @noinspection PhpUndefinedMethodInspection */
 		$frame->save($tmp);
 
 		return $tmp;
@@ -490,8 +485,6 @@ class PhotoFunctions
 
 		// Just update the album while we are at it.
 		if ($albumID != null) {
-			/** @noinspection PhpUndefinedMethodInspection */
-			/** @var Album $album */
 			$album = Album::find($albumID);
 			if ($album === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');

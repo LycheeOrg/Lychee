@@ -1,4 +1,6 @@
 <?php
+/** @noinspection PhpComposerExtensionStubsInspection */
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
 
@@ -10,6 +12,7 @@ use App\ModelFunctions\PhotoFunctions;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use ImagickException;
 
 class ImportController extends Controller
 {
@@ -44,7 +47,6 @@ class ImportController extends Controller
 	 * @param $path
 	 * @param int $albumID
 	 * @return boolean Returns true when photo import was successful.
-	 * @throws \ImagickException
 	 */
 	private function photo($path, $albumID = 0)
 	{
@@ -68,7 +70,6 @@ class ImportController extends Controller
 	/**
 	 * @param Request $request
 	 * @return false|string
-	 * @throws \ImagickException
 	 */
 	public function url(Request $request)
 	{
@@ -133,7 +134,7 @@ class ImportController extends Controller
 	/**
 	 * @param Request $request
 	 * @return bool|string
-	 * @throws \ImagickException
+	 * @throws ImagickException
 	 */
 	public function server(Request $request)
 	{
@@ -161,7 +162,7 @@ class ImportController extends Controller
 	 * @return boolean|string Returns true when successful.
 	 *                        Warning: Folder empty or no readable files to process!
 	 *                        Notice: Import only contained albums!
-	 * @throws \ImagickException
+	 * @throws ImagickException
 	 */
 	// I switched this to private, as it should not be needed to be public. if it breaks something we will double check.
 	private function server_exec(string $path, $albumID)

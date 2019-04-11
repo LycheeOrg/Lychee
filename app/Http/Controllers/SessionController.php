@@ -37,6 +37,7 @@ class SessionController extends Controller
 	/**
 	 * @param ConfigFunctions $configFunctions
 	 * @param SessionFunctions $sessionFunctions
+	 * @param GitHubFunctions $gitHubFunctions
 	 */
 	public function __construct(ConfigFunctions $configFunctions, SessionFunctions $sessionFunctions, GitHubFunctions $gitHubFunctions)
 	{
@@ -50,10 +51,9 @@ class SessionController extends Controller
 	/**
 	 * First function being called via AJAX
 	 *
-	 * @param Request $request  (is not used)
 	 * @return array|bool       (array containing config information or killing the session)
 	 */
-	public function init(Request $request)
+	public function init()
 	{
 
 		$logged_in = $this->sessionFunctions->is_logged_in();

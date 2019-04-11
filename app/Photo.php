@@ -146,14 +146,11 @@ class Photo extends Model
 	 */
 	public function isDuplicate(string $checksum, $photoID = null)
 	{
-		/** @noinspection PhpUndefinedMethodInspection */
 		$sql = $this->where('checksum', '=', $checksum);
 		if (isset($photoID)) {
-			/** @noinspection PhpUndefinedMethodInspection */
 			$sql = $sql->where('id', '<>', $photoID);
 		}
 
-		/** @noinspection PhpUndefinedMethodInspection */
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
 
@@ -416,9 +413,8 @@ class Photo extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	static public function set_order($query)
+	static public function set_order(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection  (orderBy) */
 		return $query->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
 			->orderBy('photos.id', 'ASC');
 	}
@@ -429,9 +425,8 @@ class Photo extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	static public function select_stars($query)
+	static public function select_stars(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return self::set_order($query->where('star', '=', 1));
 	}
 
@@ -441,9 +436,8 @@ class Photo extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	static public function select_public($query)
+	static public function select_public(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return self::set_order($query->where('public', '=', 1));
 	}
 
@@ -453,9 +447,8 @@ class Photo extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	static public function select_recent($query)
+	static public function select_recent(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return self::set_order($query->where('created_at', '>=', Carbon::now()->subDays(1)->toDateTimeString()));
 	}
 
@@ -465,9 +458,8 @@ class Photo extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	static public function select_unsorted($query)
+	static public function select_unsorted(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return self::set_order($query->where('album_id', '=', null));
 	}
 
@@ -528,9 +520,8 @@ class Photo extends Model
 	 * @param $id
 	 * @return mixed
 	 */
-	public function scopeOwnedBy($query, $id)
+	public function scopeOwnedBy(Builder $query, $id)
 	{
-		/** @noinspection PhpUndefinedMethodInspection */
 		return $id == 0 ? $query : $query->where('id', '=', $id);
 	}
 

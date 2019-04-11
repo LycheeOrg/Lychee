@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Middleware;
 
@@ -8,7 +9,10 @@ use App\Logs;
 use App\Photo;
 use App\User;
 use Closure;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Session;
 
 class UploadCheck
@@ -16,8 +20,8 @@ class UploadCheck
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param Request $request
+     * @param  Closure  $next
      * @return mixed
      */
     public function handle(Request $request, Closure $next)
@@ -58,7 +62,7 @@ class UploadCheck
      *
      * @param $request
      * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|mixed
+     * @return ResponseFactory|Response|mixed
      */
     public function album_check(Request $request, int $id)
     {
@@ -105,7 +109,7 @@ class UploadCheck
      *
      * @param Request $request
      * @param int $id
-     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response|mixed
+     * @return ResponseFactory|Response|mixed
      */
     public function photo_check(Request $request, int $id)
     {
@@ -142,13 +146,20 @@ class UploadCheck
         }
     }
 
+
+
+	/**
+	 * @param Request $request
+	 * @param int $id
+	 * @return bool
+	 */
     public function share_check(Request $request, int $id)
     {
         if($request->has('ShareIDs'))
         {
             $shareIDs = $request['ShareIDs'];
 
-            $albums = Album::whereIn('id', function ($query) use ($shareIDs)
+            $albums = Album::whereIn('id', function (Builder $query) use ($shareIDs)
                                                 {
                                                     $query->select('album_id')
                                                         ->from('user_album')

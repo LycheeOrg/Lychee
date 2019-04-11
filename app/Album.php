@@ -176,8 +176,7 @@ class Album extends Model
 		$alb = $this->get_all_sub_albums();
 		$alb[] = $this->id;
 
-		/** @noinspection PhpUndefinedMethodInspection (select) */
-		$thumbs_types = Photo::select('thumbUrl', 'thumb2x', 'type')
+		$thumbs_types = Photo::select(['thumbUrl', 'thumb2x', 'type'])
 			->whereIn('album_id', $alb)
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
@@ -274,9 +273,7 @@ class Album extends Model
 	{
 		$album_list = $this->get_all_sub_albums([$this->id]);
 
-		/** @noinspection PhpUndefinedMethodInspection (WhereIn) */
 		$min = Photo::whereIn('album_id', $album_list)->min('takestamp');
-		/** @noinspection PhpUndefinedMethodInspection (WhereIn) */
 		$max = Photo::whereIn('album_id', $album_list)->max('takestamp');
 		$this->min_takestamp = $min;
 		$this->max_takestamp = $max;
@@ -314,19 +311,16 @@ class Album extends Model
 			->where('owner_id', '<>', $id)
 			->where('parent_id', '=', null)
 			->Where(
-				function ($query) use ($id) {
+				function (Builder $query) use ($id) {
 					// album is shared with user
-					/** @noinspection PhpUndefinedMethodInspection (whereIn) */
-					$query->whereIn('id', function ($query) use ($id) {
-						/** @noinspection PhpUndefinedMethodInspection (select) */
+					$query->whereIn('id', function (Builder $query) use ($id) {
 						$query->select('album_id')
 							->from('user_album')
 							->where('user_id', '=', $id);
 					})
 						// or album is visible to user
 						->orWhere(
-							function ($query) {
-								/** @noinspection PhpUndefinedMethodInspection (where) */
+							function (Builder $query) {
 								$query->where('public', '=', true)->where('visible_hidden', '=', true);
 							});
 				})

@@ -1,9 +1,13 @@
-<?php
+<?php /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\ModelFunctions;
 
 use App\Album;
+use App\Logs;
 use App\Photo;
+use App\Response;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
@@ -14,9 +18,9 @@ class AlbumFunctions
 	 *
 	 * @param  string $title
 	 * @param  int $parent_id
-	 * @return Album
+	 * @return Album|string
 	 */
-	public function create(string $title, $parent_id): Album
+	public function create(string $title, int $parent_id): Album
 	{
 		$num = Album::where('id', '=', $parent_id)->count();
 		// id cannot be 0, so by definition if $parent_id is 0 then...
@@ -37,10 +41,9 @@ class AlbumFunctions
 				}
 			}
 			catch (QueryException $e) {
-				$errorCode = $e->errorInfo[1];
+				$errorCode = $e->getCode();
 				if ($errorCode == 1062) {
 					// Duplicate entry
-					$newId = '';
 					do {
 						usleep(rand(0, 1000000));
 						$newId = Helpers::generateID();
@@ -67,7 +70,7 @@ class AlbumFunctions
 	 * @param $photos_sql
 	 * @return array
 	 */
-	public function photos($photos_sql)
+	public function photos(Builder $photos_sql)
 	{
 
 		$previousPhotoID = '';
@@ -119,7 +122,7 @@ class AlbumFunctions
 	 * @param $albums
 	 * @return array
 	 */
-	function prepare_albums($albums)
+	function prepare_albums(array $albums)
 	{
 
 		$return = array();
@@ -155,7 +158,7 @@ class AlbumFunctions
 	 * @param $kind
 	 * @return mixed
 	 */
-	function genSmartAlbumsThumbs($return, $photos_sql, $kind)
+	function genSmartAlbumsThumbs(array $return, Builder $photos_sql, string $kind)
 	{
 		$photos = $photos_sql->get();
 		$i = 0;

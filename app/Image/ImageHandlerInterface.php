@@ -5,6 +5,7 @@ namespace App\Image;
 interface ImageHandlerInterface
 {
 	/**
+	 * @param int $compressionQuality
 	 */
 	public function __construct(int $compressionQuality);
 

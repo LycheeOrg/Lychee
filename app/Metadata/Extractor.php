@@ -4,6 +4,7 @@ namespace App\Metadata;
 
 use App\Logs;
 use FFMpeg;
+use Exception;
 
 class Extractor
 {
@@ -47,7 +48,7 @@ class Extractor
 		else {
 			try {
 				$this->extractVideo($filename, $metadata);
-			} catch (\Exception $exception) {
+			} catch (Exception $exception) {
 				Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 			}
 			$metadata['type'] = $type;

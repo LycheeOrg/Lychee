@@ -3,37 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Metadata\GitHubFunctions;
+use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\ConfigFunctions;
+use App\ModelFunctions\SessionFunctions;
 use App\Photo;
-use Illuminate\Http\Request;
 
 
 class DemoController extends Controller
 {
-	public function js(Request $request)
+	public function js()
 	{
 		$functions = array();
+
+		$configFunctions = new ConfigFunctions();
+		$sessionFunctions =  new SessionFunctions();
+		$githubFunctions = new GitHubFunctions();
+		$albumFunctions = new AlbumFunctions();
 
 		/**
 		 * Session::init
 		 */
 
-		$session_init = new SessionController();
+		$session_init = new SessionController($configFunctions, $sessionFunctions, $githubFunctions);
 		$return_session = array();
 		$return_session['name'] = 'Session::init()';
 		$return_session['type'] = 'string';
-		$return_session['data'] = json_encode($session_init->init($request));
+		$return_session['data'] = json_encode($session_init->init());
 
 		$functions[] = $return_session;
 
 		/**
 		 * Albums::get
 		 */
-		$albums_controller = new AlbumsController();
+		$albums_controller = new AlbumsController($albumFunctions);
 
 		$return_albums = array();
 		$return_albums['name'] = 'Albums::get';
 		$return_albums['type'] = 'string';
-		$return_albums['data'] = json_encode($albums_controller->get($request));
+		$return_albums['data'] = json_encode($albums_controller->get());
 
 		$functions[] = $return_albums;
 
@@ -64,6 +72,7 @@ class DemoController extends Controller
 			$previousPhotoID = '';
 			$return_album_json['photos'] = array();
 			$photo_counter = 0;
+			/** @var Photo[] $photos */
 			$photos = $photos_sql->get();
 			foreach ($photos as $photo_model) {
 
@@ -130,6 +139,7 @@ class DemoController extends Controller
 
 		$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->get();
 		foreach ($albums as $album) {
+			/** @var Photo $photo */
 			foreach ($album->photos as $photo) {
 				$return_photo = array();
 				$return_photo_json = $photo->prepareData();
