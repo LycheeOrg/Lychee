@@ -4,8 +4,6 @@ namespace Tests\Feature;
 
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AlbumTest extends TestCase
 {

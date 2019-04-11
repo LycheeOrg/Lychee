@@ -3,10 +3,7 @@
 namespace Tests\Feature;
 
 use App\Locale\Lang;
-use App\Logs;
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LangTest extends TestCase
 {
@@ -17,10 +14,10 @@ class LangTest extends TestCase
      */
     public function testLang()
     {
-	    $lang_availables = Lang::get_lang_available();
+	    $lang_available = Lang::get_lang_available();
 
 		$keys = array_keys(Lang::get_lang());
-		foreach ($lang_availables as $lang)
+		foreach ($lang_available as $lang)
 		{
 			$lang_test = Lang::get_lang($lang);
 

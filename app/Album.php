@@ -1,11 +1,11 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
 
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -316,7 +316,9 @@ class Album extends Model
 			->Where(
 				function ($query) use ($id) {
 					// album is shared with user
+					/** @noinspection PhpUndefinedMethodInspection (whereIn) */
 					$query->whereIn('id', function ($query) use ($id) {
+						/** @noinspection PhpUndefinedMethodInspection (select) */
 						$query->select('album_id')
 							->from('user_album')
 							->where('user_id', '=', $id);
@@ -324,6 +326,7 @@ class Album extends Model
 						// or album is visible to user
 						->orWhere(
 							function ($query) {
+								/** @noinspection PhpUndefinedMethodInspection (where) */
 								$query->where('public', '=', true)->where('visible_hidden', '=', true);
 							});
 				})

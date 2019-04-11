@@ -1,4 +1,7 @@
 <?php
+/** @noinspection PhpUndefinedNamespaceInspection */
+
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
 
@@ -490,7 +493,7 @@ class AlbumController extends Controller
 
 				Logs::notice(__METHOD__, __LINE__, $album->title.' has been downloaded.');
 
-				// we do not provide pictures from sub albums but it would be a nice thing to do later...
+				//TODO: we do not provide pictures from sub albums but it would be a nice thing to do later...
 
 //				->orWhereIn('album_id',function ($query) { function ($query) use ($id)
 //				{
@@ -506,10 +509,9 @@ class AlbumController extends Controller
 		$response = new StreamedResponse(function () use ($zipTitle, $photos_sql, $badChars) {
 
 			$opt = array(
-//				'comment' => 'test zip file.',
-'largeFileSize' => 100 * 1024 * 1024,
-'enableZip64'   => true,
-'send_headers'  => true,
+				'largeFileSize' => 100 * 1024 * 1024,
+				'enableZip64'   => true,
+				'send_headers'  => true,
 			);
 
 			$zip = new ZipStream($zipTitle, $opt);
