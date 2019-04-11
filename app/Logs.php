@@ -1,11 +1,41 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
 
+use Eloquent;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * App\Logs
+ *
+ * @property int $id
+ * @property string $type
+ * @property string $function
+ * @property int $line
+ * @property string $text
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @method static Builder|Logs newModelQuery()
+ * @method static Builder|Logs newQuery()
+ * @method static Builder|Logs query()
+ * @method static Builder|Logs whereCreatedAt($value)
+ * @method static Builder|Logs whereFunction($value)
+ * @method static Builder|Logs whereId($value)
+ * @method static Builder|Logs whereLine($value)
+ * @method static Builder|Logs whereText($value)
+ * @method static Builder|Logs whereType($value)
+ * @method static Builder|Logs whereUpdatedAt($value)
+ * @mixin Eloquent
+ */
 class Logs extends Model
 {
+	/**
+	 * allow these properties to be mass assigned
+	 */
 	protected $fillable = [
 		'type',
 		'function',
@@ -16,6 +46,8 @@ class Logs extends Model
 
 
 	/**
+	 * Create a notice entry in the Log database
+	 *
 	 * @param string $function
 	 * @param string $line
 	 * @param string $text
@@ -23,6 +55,7 @@ class Logs extends Model
 	 */
 	public static function notice(string $function, string $line, string $text = '')
 	{
+		/** @noinspection PhpUndefinedMethodInspection (create) */
 		$log = self::create([
 			'type'     => 'notice',
 			'function' => $function,
@@ -30,9 +63,10 @@ class Logs extends Model
 			'text'     => $text
 		]);
 		try{
+			/** @noinspection PhpUndefinedMethodInspection (save) */
 			$log->save();
 		}
-		catch (\Exception $e)
+		catch (Exception $e)
 		{
 			return false;
 		}
@@ -42,6 +76,8 @@ class Logs extends Model
 
 
 	/**
+	 * Create a warning entry in the Log database
+	 *
 	 * @param string $function
 	 * @param string $line
 	 * @param string $text
@@ -49,19 +85,22 @@ class Logs extends Model
 	 */
 	public static function warning(string $function, string $line, string $text = '')
 	{
+		/** @noinspection PhpUndefinedMethodInspection (create) */
 		$log = self::create([
 			'type'     => 'warning',
 			'function' => $function,
 			'line'     => $line,
 			'text'     => $text
 		]);
-		$log->save();
-		return true;
+		/** @noinspection PhpUndefinedMethodInspection (save) */
+		return @$log->save();
 	}
 
 
 
 	/**
+	 * create an error entry in the database
+	 *
 	 * @param string $function
 	 * @param string $line
 	 * @param string $text
@@ -69,35 +108,14 @@ class Logs extends Model
 	 */
 	public static function error(string $function, string $line, string $text = '')
 	{
+		/** @noinspection PhpUndefinedMethodInspection (create) */
 		$log = self::create([
 			'type'     => 'error',
 			'function' => $function,
 			'line'     => $line,
 			'text'     => $text
 		]);
-		$log->save();
-		return true;
+		/** @noinspection PhpUndefinedMethodInspection (save) */
+		return @$log->save();
 	}
-
-
-
-	/**
-	 * @param string $type
-	 * @param string $function
-	 * @param string $line
-	 * @param string $text
-	 * @return boolean Returns true when successful.
-	 */
-	private static function text(string $type, string $function, string $line, string $text = '')
-	{
-		$log = self::create([
-			'type'     => $type,
-			'function' => $function,
-			'line'     => $line,
-			'text'     => $text
-		]);
-		$log->save();
-		return true;
-	}
-
 }
