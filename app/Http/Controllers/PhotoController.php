@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
 
@@ -71,9 +72,9 @@ class PhotoController extends Controller
 
 	/**
 	 * @param Request $request
-	 * @return array
+	 * @return string
 	 */
-	function getRandom(Request $request)
+	function getRandom()
 	{
 
 
@@ -99,7 +100,6 @@ class PhotoController extends Controller
 	/**
 	 * @param Request $request
 	 * @return false|string
-	 * @throws \ImagickException
 	 */
 	function add(Request $request)
 	{

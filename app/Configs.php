@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
 
@@ -56,12 +55,10 @@ class Configs extends Model
 		}
 
 		try {
-			/** @noinspection PhpUndefinedMethodInspection (select) */
 			$query = Configs::select([
 				'key',
 				'value'
 			]);
-			/** @noinspection PhpUndefinedMethodInspection (pluck) */
 			$return = $query->pluck('value', 'key')->all();
 
 			$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
@@ -115,7 +112,6 @@ class Configs extends Model
 			try {
 				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
 			}
-				/** @noinspection PhpFullyQualifiedNameUsageInspection */
 			catch (Exception $e) {
 				// yeah we do nothing because we cannot do anything in that case ...  :p
 			}
@@ -138,7 +134,6 @@ class Configs extends Model
 	public static function set(string $key, $value)
 	{
 
-		/** @noinspection PhpUndefinedMethodInspection (where, first) */
 		$config = Configs::where('key', '=', $key)->first();
 
 		// first() may return null, fixup 'Creating default object from empty value' error
@@ -150,7 +145,6 @@ class Configs extends Model
 
 		$config->value = $value;
 		try {
-			/** @noinspection PhpUndefinedMethodInspection (save) */
 			$config->save();
 		}
 		catch (Exception $e) {
@@ -188,9 +182,8 @@ class Configs extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	public function scopePublic($query)
+	public function scopePublic(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return $query->where('confidentiality', '=', 0);
 	}
 
@@ -202,9 +195,8 @@ class Configs extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	public function scopeInfo($query)
+	public function scopeInfo(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return $query->where('confidentiality', '<=', 2);
 	}
 
@@ -216,9 +208,8 @@ class Configs extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	public function scopeAdmin($query)
+	public function scopeAdmin(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return $query->where('confidentiality', '<=', 3);
 	}
 }

@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
 
@@ -61,10 +60,8 @@ class Page extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	public function scopeMenu($query)
+	public function scopeMenu(Builder $query)
 	{
-
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return $query->where('in_menu', true)->where('enabled', true)->orderBy('order', 'ASC');
 	}
 
@@ -74,9 +71,8 @@ class Page extends Model
 	 * @param $query
 	 * @return mixed
 	 */
-	public function scopeEnabled($query)
+	public function scopeEnabled(Builder $query)
 	{
-		/** @noinspection PhpUndefinedMethodInspection (where) */
 		return $query->where('enabled', true)->orderBy('order', 'ASC');
 	}
 }

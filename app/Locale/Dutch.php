@@ -3,7 +3,7 @@
 namespace App\Locale;
 
 
-final class Dutch
+final class Dutch implements LangInterface
 {
     static public function code()
     {

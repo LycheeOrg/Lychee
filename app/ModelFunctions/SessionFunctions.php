@@ -1,10 +1,9 @@
-<?php
+<?php /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\ModelFunctions;
 
 
 use App\Configs;
-use App\Logs;
 use Illuminate\Support\Facades\Session;
 
 class SessionFunctions

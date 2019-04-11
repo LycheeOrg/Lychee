@@ -1,6 +1,4 @@
 <?php
-/** @noinspection PhpUndefinedNamespaceInspection */
-
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;

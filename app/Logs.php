@@ -1,5 +1,4 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
 
@@ -55,7 +54,6 @@ class Logs extends Model
 	 */
 	public static function notice(string $function, string $line, string $text = '')
 	{
-		/** @noinspection PhpUndefinedMethodInspection (create) */
 		$log = self::create([
 			'type'     => 'notice',
 			'function' => $function,
@@ -63,7 +61,6 @@ class Logs extends Model
 			'text'     => $text
 		]);
 		try{
-			/** @noinspection PhpUndefinedMethodInspection (save) */
 			$log->save();
 		}
 		catch (Exception $e)
@@ -85,14 +82,12 @@ class Logs extends Model
 	 */
 	public static function warning(string $function, string $line, string $text = '')
 	{
-		/** @noinspection PhpUndefinedMethodInspection (create) */
 		$log = self::create([
 			'type'     => 'warning',
 			'function' => $function,
 			'line'     => $line,
 			'text'     => $text
 		]);
-		/** @noinspection PhpUndefinedMethodInspection (save) */
 		return @$log->save();
 	}
 
@@ -108,14 +103,12 @@ class Logs extends Model
 	 */
 	public static function error(string $function, string $line, string $text = '')
 	{
-		/** @noinspection PhpUndefinedMethodInspection (create) */
 		$log = self::create([
 			'type'     => 'error',
 			'function' => $function,
 			'line'     => $line,
 			'text'     => $text
 		]);
-		/** @noinspection PhpUndefinedMethodInspection (save) */
 		return @$log->save();
 	}
 }

@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
 
@@ -68,7 +69,7 @@ class ViewController extends Controller
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 
-		$parseUrl = parse_url(env('APP_URL').$request->server->get('REQUEST_URI'));
+//		$parseUrl = parse_url(env('APP_URL').$request->server->get('REQUEST_URI'));
 //		dd($parseUrl);
 		$url = env('APP_URL').$request->server->get('REQUEST_URI');
 //		$picture  = '//' . $request->server->get('HTTP_HOST') . $parseUrl['path'] . '/../uploads/' . $dir . '/' . $photo->url;

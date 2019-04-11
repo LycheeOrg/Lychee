@@ -1,17 +1,19 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Middleware;
 
 use App\Http\Controllers\SessionController;
 use Closure;
+use Illuminate\Http\Request;
 
 class AlbumPWCheck
 {
 	/**
 	 * Handle an incoming request.
 	 *
-	 * @param  \Illuminate\Http\Request $request
-	 * @param  \Closure $next
+	 * @param Request $request
+	 * @param Closure $next
 	 * @return mixed
 	 */
 	public function handle($request, Closure $next)

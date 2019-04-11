@@ -1,5 +1,6 @@
 <?php
 /** @noinspection PhpComposerExtensionStubsInspection */
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
 
@@ -7,6 +8,7 @@ use App\Configs;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
+use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -253,7 +255,7 @@ class DiagnosticsController extends Controller
 						$results = DB::select(DB::raw("select version()"));
 						$dbver = $results[0]->{'version()'};
 					}
-					catch (\Exception $e) {
+					catch (Exception $e) {
 						$dbver = 'unknown';
 					}
 					$dbtype = DB::getDriverName();

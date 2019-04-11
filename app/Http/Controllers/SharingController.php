@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
 
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Session;
 
 class SharingController extends Controller
 {
-	public function listSharing(Request $request)
+	public function listSharing()
 	{
 
 		if (Session::get('UserID') == 0) {
@@ -23,8 +24,8 @@ class SharingController extends Controller
 				->orderBy('username', 'ASC')
 				->get();
 
-			$albums = Album::select('id', 'title')->orderBy('title', 'ASC')->get();
-			$users = User::select('id', 'username')->orderBy('username', 'ASC')->get();
+			$albums = Album::select(['id', 'title'])->orderBy('title', 'ASC')->get();
+			$users = User::select(['id', 'username'])->orderBy('username', 'ASC')->get();
 		}
 		else {
 			$id = Session::get('UserID');
@@ -37,8 +38,8 @@ class SharingController extends Controller
 				->orderBy('username', 'ASC')
 				->get();
 
-			$albums = Album::select('id', 'title')->where('owner_id', '=', $id)->orderBy('title', 'ASC')->get();
-			$users = User::select('id', 'username')->orderBy('username', 'ASC')->get();
+			$albums = Album::select(['id', 'title'])->where('owner_id', '=', $id)->orderBy('title', 'ASC')->get();
+			$users = User::select(['id', 'username'])->orderBy('username', 'ASC')->get();
 		}
 		return [
 			'shared' => $shared,

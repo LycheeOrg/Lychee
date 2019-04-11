@@ -11,7 +11,7 @@ class ConfigFunctions
 
 
 	/**
-	 * return the basic informations for a Page.
+	 * return the basic information for a Page.
 	 *
 	 * @return array
 	 */

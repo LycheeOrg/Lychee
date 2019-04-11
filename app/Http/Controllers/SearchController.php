@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
 
@@ -69,7 +70,7 @@ class SearchController extends Controller
 		for ($i = 0; $i < count($escaped_terms); ++$i) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
-				function ($query) use ($id, $escaped_term) {
+				function (Builder $query) use ($id, $escaped_term) {
 					$query->where('title', 'like', '%'.$escaped_term.'%')
 						->orWhere('description', 'like', '%'.$escaped_term.'%')
 						->orWhere('tags', 'like', '%'.$escaped_term.'%');
@@ -92,7 +93,7 @@ class SearchController extends Controller
 		for ($i = 0; $i < count($escaped_terms); ++$i) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
-				function ($query) use ($id, $escaped_term) {
+				function (Builder $query) use ($id, $escaped_term) {
 					$query->where('title', 'like', '%'.$escaped_term.'%')
 						->orWhere('description', 'like', '%'.$escaped_term.'%');
 				});

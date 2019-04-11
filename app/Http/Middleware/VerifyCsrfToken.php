@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Configs;
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
+use Illuminate\Session\TokenMismatchException;
 
 class VerifyCsrfToken extends Middleware
 {
@@ -20,6 +21,12 @@ class VerifyCsrfToken extends Middleware
 
 
 
+	/**
+	 * @param $request
+	 * @param Closure $next
+	 * @return mixed
+	 * @throws TokenMismatchException
+	 */
 	public function handle($request, Closure $next)
 	{
 		if ($request->is('/api/*')) {

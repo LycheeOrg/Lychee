@@ -1,8 +1,8 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Image;
 
-use App\Image;
 use App\Logs;
 
 class GdHandler implements ImageHandlerInterface
@@ -216,7 +216,7 @@ class GdHandler implements ImageHandlerInterface
 	/**
 	 * @param  string $source
 	 * @param  int    $mime
-	 * @return resource|null
+	 * @return resource|null|bool
 	 */
 	private function createImage(string $source, int $mime)
 	{
