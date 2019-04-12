@@ -13,6 +13,9 @@ env:
   - TRAVIS_COMPOSER_DEV=yes
   - TRAVIS_COMPOSER_DEV=no
 
+services:
+  - postgresql
+
 addons:
   mariadb: '10.3'
   apt:
@@ -25,11 +28,23 @@ addons:
 
 before_script:
   - printf "\n" | pecl install imagick
-  - cp .env.travis .env
+  # create db for postgresql
+  - psql -c 'create database homestead_test;' -U postgres
+  # create db for mariadb
   - mysql -e 'create database homestead_test;'
-  - ./travis.composer.sh
+  # composer stuff
+  - composer self-update
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then composer install --no-interaction --no-dev ; fi"
 
 script:
+  # test mariadb
+  - cp .env.mariadb.travis .env
   - php artisan key:generate
   - php artisan migrate
-  - ./travis.tests.sh
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
+  # test postgresql
+  - cp .env.postgresql.travis .env
+  - php artisan key:generate
+  - php artisan migrate
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
