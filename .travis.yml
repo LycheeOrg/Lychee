@@ -34,17 +34,17 @@ before_script:
   - mysql -e 'create database homestead_test;'
   # composer stuff
   - composer self-update
-  - if [ $TRAVIS_COMPOSER_DEV = "yes" ] ; composer install --no-interaction ; fi
-  - if [ $TRAVIS_COMPOSER_DEV = "no" ] ; composer install --no-interaction --no-dev ; fi
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then composer install --no-interaction --no-dev ; fi"
 
 script:
   # test mariadb
   - cp .env.mariadb.travis .env
   - php artisan key:generate
   - php artisan migrate
-  - if [ $TRAVIS_COMPOSER_DEV = "yes" ] ; vendor/bin/phpunit --verbose ; fi
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
   # test postgresql
   - cp .env.postgresql.travis .env
   - php artisan key:generate
   - php artisan migrate
-  - if [ $TRAVIS_COMPOSER_DEV = "yes" ] ; vendor/bin/phpunit --verbose ; fi
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
