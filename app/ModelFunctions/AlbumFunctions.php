@@ -124,7 +124,7 @@ class AlbumFunctions
 	 * @param Collection $albums
 	 * @return array
 	 */
-	function prepare_albums(Collection $albums)
+	function prepare_albums(?Collection $albums)
 	{
 
 		$return = array();

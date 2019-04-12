@@ -51,14 +51,12 @@ class AlbumsController extends Controller
 		if (Session::get('login')) {
 			$id = Session::get('UserID');
 
-			/** @noinspection PhpUndefinedMethodInspection (find) */
 			$user = User::find($id);
 			if ($id == 0 || $user->upload) {
 				$return['smartalbums'] = $this->albumFunctions->getSmartAlbums();
 			}
 
 			if ($id == 0) {
-				/** @noinspection PhpUndefinedMethodInspection (where) */
 				$albums = Album::where('owner_id', '=', 0)
 					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
 				$shared_albums = Album::with([
@@ -76,7 +74,6 @@ class AlbumsController extends Controller
 					return Response::error('I could not find you.');
 				}
 				else {
-					/** @noinspection PhpUndefinedMethodInspection (where) */
 					$albums = Album::where('owner_id', '=', $user->id)
 						->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
 						->get();
@@ -85,7 +82,6 @@ class AlbumsController extends Controller
 			}
 		}
 		else {
-			/** @noinspection PhpUndefinedMethodInspection (where) */
 			$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->where('parent_id', '=', null)
 				->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
 		}
