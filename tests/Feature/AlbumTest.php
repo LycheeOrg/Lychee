@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUndefinedClassInspection */
 
 namespace Tests\Feature;
 
@@ -22,6 +22,7 @@ class AlbumTest extends TestCase
 		    'title'     => 'test_album',
 		    'parent_id' => '0'
 	    ]);
+	    $response->assertOk();
 	    $response->assertSee('false');
     }
 
@@ -40,6 +41,7 @@ class AlbumTest extends TestCase
 		    'title'     => 'test_album',
 		    'parent_id' => '0'
 	    ]);
+	    $response->assertOk();
 	    $response->assertDontSee('false');
 
 	    /**
@@ -51,6 +53,7 @@ class AlbumTest extends TestCase
 		 * Let's get all current albums
 		 */
 	    $response = $this->post('/api/Albums::get', []);
+	    $response->assertOk();
 	    $response->assertSee($albumID);
 
 	    Session::put('login', true);
@@ -59,6 +62,7 @@ class AlbumTest extends TestCase
 	     * Let's try to get the info of the album we just created
 	     */
 	    $response = $this->post('/api/Album::get', ['albumID' => $albumID, 'password' => '']);
+	    $response->assertOk();
 	    $response->assertSee($albumID);
 	    $response->assertSee('test_album');
 
@@ -66,12 +70,14 @@ class AlbumTest extends TestCase
 	     * Let's try to change the title of the album we just created
 	     */
 	    $response = $this->post('/api/Album::setTitle', ['albumIDs' => $albumID, 'title' => 'NEW_TEST']);
+	    $response->assertOk();
 	    $response->assertSee('true');
 
 	    /**
 	     * Let's see if the title changed
 	     */
 	    $response = $this->post('/api/Album::get', ['albumID' => $albumID]);
+	    $response->assertOk();
 	    $response->assertSee($albumID);
 	    $response->assertDontSee('test_album');
 	    $response->assertSee('NEW_TEST');
@@ -80,12 +86,14 @@ class AlbumTest extends TestCase
 	     * Let's change the description of the album we just created
 	     */
 	    $response = $this->post('/api/Album::setDescription', ['albumID' => $albumID, 'description' => 'new description']);
+	    $response->assertOk();
 	    $response->assertSee('true');
 
 	    /**
 	     * Let's see if the description changed
 	     */
 	    $response = $this->post('/api/Album::get', ['albumID' => $albumID]);
+	    $response->assertOk();
 	    $response->assertSee($albumID);
 	    $response->assertDontSee('test_album');
 	    $response->assertSee('NEW_TEST');
@@ -96,6 +104,7 @@ class AlbumTest extends TestCase
 	     */
 		Session::flush();
 	    $response = $this->post('/api/Album::get', ['albumID' => $albumID]);
+	    $response->assertOk();
 	    $response->assertSee('"Warning: Album private!"');
 
 
@@ -109,12 +118,14 @@ class AlbumTest extends TestCase
 	     * Let's try to delete this album
 	     */
 	    $response = $this->post('/api/Album::delete', ['albumIDs' => $albumID]);
+	    $response->assertOk();
 	    $response->assertSee('true');
 
 	    /**
 	     * Because we deleted the album, we should not see it anymore
 	     */
 	    $response = $this->post('/api/Albums::get', []);
+	    $response->assertOk();
 	    $response->assertDontSee($albumID);
 
 

@@ -51,12 +51,14 @@ class HtmlTest extends TestCase
 				'username' => 'lychee',
 				'password' => 'password'
 			]);
+			$response->assertOk();
 			$response->assertSee("true");
 
 			/**
 			 * We log out (when creating we are automatically logged in as Admin)
 			 */
 			$response = $this->post('/api/Session::logout');
+			$response->assertOk();
 			$response->assertSee("true");
 
 			/**
@@ -66,12 +68,14 @@ class HtmlTest extends TestCase
 				'user'     => 'lychee',
 				'password' => 'password'
 			]);
+			$response->assertOk();
 			$response->assertSee("true");
 
 			/**
 			 * We log out (We are going to test wrong username - password)
 			 */
 			$response = $this->post('/api/Session::logout');
+			$response->assertOk();
 			$response->assertSee("true");
 
 		}
@@ -93,6 +97,7 @@ class HtmlTest extends TestCase
 			'user'     => 'foo',
 			'password' => 'bar'
 		]);
+		$response->assertOk();
 		$response->assertSee("false");
 
 		/**
@@ -102,6 +107,7 @@ class HtmlTest extends TestCase
 			'user'     => 'lychee',
 			'password' => 'bar'
 		]);
+		$response->assertOk();
 		$response->assertSee("false");
 
 		/**
@@ -111,6 +117,7 @@ class HtmlTest extends TestCase
 			'user'     => 'foo',
 			'password' => 'password'
 		]);
+		$response->assertOk();
 		$response->assertSee("false");
 
 		/**
