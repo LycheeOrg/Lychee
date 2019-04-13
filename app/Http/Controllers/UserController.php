@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Logs;
+use App\Response;
 use App\User;
 use Illuminate\Http\Request;
 
@@ -81,13 +82,17 @@ class UserController extends Controller
 			'lock'     => 'required'
 		]);
 
+		if (User::where('username', '=', $request['username'])->count()) {
+			return Response::error('username must be unique');
+		}
+
 		$user = new User();
 		$user->upload = ($request['upload'] == '1');
 		$user->lock = ($request['lock'] == '1');
 		$user->username = $request['username'];
 		$user->password = bcrypt($request['password']);
 
-		return $user->save() ? 'true' : 'false';
+		return @$user->save() ? 'true' : 'false';
 	}
 
 }
