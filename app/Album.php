@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
@@ -313,8 +314,8 @@ class Album extends Model
 			->Where(
 				function (Builder $query) use ($id) {
 					// album is shared with user
-					$query->whereIn('id', function (Builder $query) use ($id) {
-						$query->select('album_id')
+					$query->whereIn('id', function (QBuilder $query) use ($id){
+					                                                    $query->select('album_id')
 							->from('user_album')
 							->where('user_id', '=', $id);
 					})
