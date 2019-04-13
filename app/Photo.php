@@ -109,6 +109,12 @@ class Photo extends Model
 	];
 
 
+	protected $casts = [
+		'public' => 'int',
+		'star'  => 'int',
+		'downloadable'  => 'int'
+	];
+
 
 	/**
 	 * Return the relationship between a Photo and its Album

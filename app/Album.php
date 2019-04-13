@@ -64,6 +64,11 @@ class Album extends Model
 		'max_takestamp'
 	];
 
+	protected $casts = [
+		'public' => 'int',
+		'visible_hidden'  => 'int',
+		'downloadable'  => 'int'
+	];
 
 
 	/**
