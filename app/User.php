@@ -62,6 +62,10 @@ class User extends Authenticatable
 		'updated_at'
 	];
 
+	protected $casts = [
+		'upload' => 'int',
+		'lock'  => 'int'
+	];
 
 
 	/**
