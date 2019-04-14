@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Photo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
