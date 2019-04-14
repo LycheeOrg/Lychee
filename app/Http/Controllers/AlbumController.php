@@ -176,7 +176,7 @@ class AlbumController extends Controller
 	function setTitle(Request $request)
 	{
 		$request->validate([
-			'albumIDs' => 'integer|required',
+			'albumIDs' => 'string|required',
 			'title'    => 'string|required|max:100'
 		]);
 
