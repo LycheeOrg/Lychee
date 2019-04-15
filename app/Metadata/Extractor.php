@@ -189,6 +189,9 @@ class Extractor
 			if ($metadata['lens'] == '' && !empty($exif['UndefinedTag:0xA434'])) {
 				$metadata['lens'] = trim($exif['UndefinedTag:0xA434']);
 			}
+			if ($metadata['lens'] == '' && !empty($exif['LensType'])) {
+				$metadata['lens'] = trim($exif['LensType']);
+			}
 
 			// Deal with GPS coordinates
 			if (!empty($exif['GPSLatitude']) && !empty($exif['GPSLatitudeRef'])) {
