@@ -94,6 +94,8 @@ Route::get('/api/Logs::clear',                  'LogController@clear')->middlewa
 Route::post('/api/Diagnostics',                 'DiagnosticsController@show');
 Route::get('/Diagnostics',                      'DiagnosticsController@show');
 
+Route::get('/api/Update',                       'UpdateController@do')->middleware('admin');
+
 // unused
 Route::post('/api/Logs::clear',                 'LogController@clear')->middleware('admin');
 
