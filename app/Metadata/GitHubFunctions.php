@@ -6,6 +6,7 @@ namespace App\Metadata;
 
 use App\Configs;
 use App\Logs;
+use Exception;
 
 class GitHubFunctions
 {
@@ -180,8 +181,7 @@ class GitHubFunctions
 		}
 
 		$count = $this->count_behind();
-		if ($count === 0)
-		{
+		if ($count === 0) {
 			return ' - Up to date.';
 		}
 		if ($count != false) {
@@ -189,6 +189,32 @@ class GitHubFunctions
 		}
 
 		return ' - Probably more than 30 commits behind master';
+	}
+
+
+
+	/**
+	 * Check if the repo is up to date, throw an exception if fails.
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function is_up_to_date()
+	{
+		$branch = $this->get_current_branch();
+		if ($branch != 'master') {
+			throw new Exception('Branch is not master, cannot compare.');
+		}
+
+		if ($this->get_commits() == false) {
+			throw new Exception('Check for update failed.');
+		}
+
+		$count = $this->count_behind();
+		if ($count === 0) {
+			return true;
+		}
+		return false;
 	}
 
 
