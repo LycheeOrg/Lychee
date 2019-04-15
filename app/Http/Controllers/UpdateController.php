@@ -59,8 +59,8 @@ class UpdateController extends Controller
 			chdir('../');
 			$command = 'git pull https://github.com/LycheeOrg/Lychee-Laravel.git master 2>&1';
 			exec($command, $output, $ret);
-//			$command = 'php artisan migrate';
-//			exec($command, $output, $ret);
+			$command = 'php artisan migrate';
+			exec($command, $output, $ret);
 			return $output;
 		}
 		else
