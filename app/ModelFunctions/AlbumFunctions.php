@@ -44,7 +44,7 @@ class AlbumFunctions
 			}
 			catch (QueryException $e) {
 				$errorCode = $e->getCode();
-				if ($errorCode == 1062) {
+				if ($errorCode == 23000 || $errorCode == 23505) {
 					// Duplicate entry
 					do {
 						usleep(rand(0, 1000000));
