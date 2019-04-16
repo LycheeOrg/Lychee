@@ -21,6 +21,11 @@ class ConfigAllowUpdate extends Migration
 					'value'           => '0',
 					'confidentiality' => 3
 				],
+				[
+					'key'             => 'force_migration_in_production',
+					'value'           => '0',
+					'confidentiality' => 3
+				],
 			]);
 		}
 		else {
@@ -39,7 +44,7 @@ class ConfigAllowUpdate extends Migration
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
 			Configs::where('key', '=', 'allow_online_git_pull')->delete();
-
+			Configs::where('key', '=', 'force_migration_in_production')->delete();
 		}
 	}
 }

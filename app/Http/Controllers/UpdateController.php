@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 use App\Configs;
+use App\Logs;
 use App\Metadata\GitHubFunctions;
 use App\Response;
 use Exception;
@@ -17,6 +18,8 @@ class UpdateController extends Controller
 
 	private $gitHubFunctions;
 
+
+
 	/**
 	 * @param GitHubFunctions $gitHubFunctions
 	 */
@@ -24,6 +27,8 @@ class UpdateController extends Controller
 	{
 		$this->gitHubFunctions = $gitHubFunctions;
 	}
+
+
 
 	/**
 	 * This requires a php to have a shell access.
@@ -45,26 +50,35 @@ class UpdateController extends Controller
 		}
 
 
-		try{
+		try {
 			$up_to_date = $this->gitHubFunctions->is_up_to_date();
 		}
-		catch (Exception $e)
-		{
+		catch (Exception $e) {
 			return Response::error($e->getMessage());
 		}
 
-		if ($up_to_date)
-		{
+		if ($up_to_date) {
 			$output = [];
 			chdir('../');
 			$command = 'git pull https://github.com/LycheeOrg/Lychee-Laravel.git master 2>&1';
-			exec($command, $output, $ret);
-			$command = 'php artisan migrate';
-			exec($command, $output, $ret);
+			exec($command, $output);
+			if (env('APP_ENV', 'production') == 'production') {
+				if (Configs::get_value('force_migration_in_production') == '1') {
+					Logs::warning(__METHOD__,__LINE__,'Force migration is production.');
+					$command = 'php artisan migrate --force'; # we use force to also be able to apply it in production environment.
+				}
+				else {
+					$output[] = 'Migration not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.';
+					Logs::warning(__METHOD__,__LINE__,'Migration not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.');
+				}
+			}
+			else {
+				$command = 'php artisan migrate';
+			}
+			exec($command, $output);
 			return $output;
 		}
-		else
-		{
+		else {
 			return Response::json('Already up to date');
 		}
 	}
