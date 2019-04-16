@@ -1,5 +1,6 @@
 <?php
 /** @noinspection PhpComposerExtensionStubsInspection */
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -114,7 +115,7 @@ class DiagnosticsController extends Controller
 				$errors += ['Warning: \'dist/\' has insufficient read/write privileges.'];
 			}
 		}
-		
+
 		// About GD
 		if (function_exists('gd_info')) {
 			$gdVersion = gd_info();
@@ -197,11 +198,10 @@ class DiagnosticsController extends Controller
 
 		// Load json (we need to add a try case here
 		$json = @file_get_contents(Config::get('defines.path.LYCHEE').'public/Lychee-front/package.json');
-		if ($json == false)
-		{
+		if ($json == false) {
 			$json = ['version' => '-'];
 		}
-		else{
+		else {
 			$json = json_decode($json, true);
 		}
 
@@ -301,9 +301,32 @@ class DiagnosticsController extends Controller
 
 	public function get()
 	{
+		$errors = $this->get_errors();
+		$infos = ['You must be logged to see this.'];
+		$configs = ['You must be logged to see this.'];
+		if (Session::get('login') == true && Session::get('UserID') == 0) {
+			$infos = $this->get_info();
+			$configs = $this->get_config();
+		}
+
+		$update = true;
+		$update &= Configs::get_value('allow_online_git_pull', '0') == '1';
+		$update &= function_exists('exec');
+		$update &= is_executable('../.git');
+
+		try {
+			$update &= $this->gitHubFunctions->is_up_to_date();
+		}
+		catch (Exception $e) {
+			$update = false;
+		}
+
+
 		return [
-			'errors' => self::get_errors(),
-			'infos'  => self::get_info()
+			'errors'  => $errors,
+			'infos'   => $infos,
+			'configs' => $configs,
+			'update'  => $update
 		];
 	}
 

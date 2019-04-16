@@ -3,10 +3,9 @@
 
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class PhpScriptLimit extends Migration
+class ConfigAllowUpdate extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -19,7 +18,12 @@ class PhpScriptLimit extends Migration
 
 			DB::table('configs')->insert([
 				[
-					'key'             => 'php_script_limit',
+					'key'             => 'allow_online_git_pull',
+					'value'           => '0',
+					'confidentiality' => 3
+				],
+				[
+					'key'             => 'force_migration_in_production',
 					'value'           => '0',
 					'confidentiality' => 3
 				],
@@ -40,7 +44,8 @@ class PhpScriptLimit extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'php_script_limit')->delete();
+			Configs::where('key', '=', 'allow_online_git_pull')->delete();
+			Configs::where('key', '=', 'force_migration_in_production')->delete();
 		}
 	}
 }

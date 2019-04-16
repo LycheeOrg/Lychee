@@ -91,8 +91,10 @@ Route::post('/api/Logs',                        'LogController@display')->middle
 Route::get('/Logs',                             'LogController@display')->middleware('admin');
 Route::post('/api/Logs::clearNoise',            'LogController@clearNoise')->middleware('admin');
 Route::get('/api/Logs::clear',                  'LogController@clear')->middleware('admin');
-Route::post('/api/Diagnostics',                 'DiagnosticsController@show');
+Route::post('/api/Diagnostics',                 'DiagnosticsController@get');
 Route::get('/Diagnostics',                      'DiagnosticsController@show');
+
+Route::get('/api/Update',                       'UpdateController@do')->middleware('admin');
 
 // unused
 Route::post('/api/Logs::clear',                 'LogController@clear')->middleware('admin');

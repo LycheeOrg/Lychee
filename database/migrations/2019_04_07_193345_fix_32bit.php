@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

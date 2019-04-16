@@ -6,6 +6,7 @@ namespace App\Metadata;
 
 use App\Configs;
 use App\Logs;
+use Exception;
 
 class GitHubFunctions
 {
@@ -62,7 +63,10 @@ class GitHubFunctions
 			if ($this->branch != false) {
 				$this->branch = explode("/", $this->branch, 3)[2]; //separate out by the "/" in the string
 			}
-			$this->branch = $this->trim($this->branch);
+			else {
+				Logs::notice(__METHOD__, __LINE__, "Could not access: ../.git/HEAD");
+			}
+			$this->branch = trim($this->branch);
 		}
 		return $this->branch;
 	}
@@ -79,6 +83,9 @@ class GitHubFunctions
 			$this->head = @file_get_contents(sprintf('../.git/refs/heads/%s', $this->branch));
 			if ($this->head != false) {
 				$this->head = $this->trim($this->head);
+			}
+			else {
+				Logs::notice(__METHOD__, __LINE__, sprintf("Could not access: ../.git/refs/heads/%s", $this->branch));
 			}
 		}
 		return $this->head;
@@ -119,7 +126,7 @@ class GitHubFunctions
 		$branch = $this->get_current_branch();
 		$head = $this->get_current_commit();
 		if ($head == false || $branch == false) {
-			return 'No git data found. Probably installed from release.';
+			return 'No git data found. Probably installed from release or could not read .git';
 		}
 		return sprintf('%s (%s)', $head, $branch).$this->get_behind_text();
 	}
@@ -180,8 +187,7 @@ class GitHubFunctions
 		}
 
 		$count = $this->count_behind();
-		if ($count === 0)
-		{
+		if ($count === 0) {
 			return ' - Up to date.';
 		}
 		if ($count != false) {
@@ -189,6 +195,32 @@ class GitHubFunctions
 		}
 
 		return ' - Probably more than 30 commits behind master';
+	}
+
+
+
+	/**
+	 * Check if the repo is up to date, throw an exception if fails.
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function is_up_to_date()
+	{
+		$branch = $this->get_current_branch();
+		if ($branch != 'master') {
+			throw new Exception('Branch is not master, cannot compare.');
+		}
+
+		if ($this->get_commits() == false) {
+			throw new Exception('Check for update failed.');
+		}
+
+		$count = $this->count_behind();
+		if ($count === 0) {
+			return true;
+		}
+		return false;
 	}
 
 
