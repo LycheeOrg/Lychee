@@ -43,8 +43,10 @@ script:
   - php artisan key:generate
   - php artisan migrate
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
+  - php artisan migrate:rollback
   # test postgresql
   - cp .env.postgresql.travis .env
   - php artisan key:generate
   - php artisan migrate
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
+  - php artisan migrate:rollback
