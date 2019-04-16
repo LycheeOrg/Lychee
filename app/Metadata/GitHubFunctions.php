@@ -63,7 +63,10 @@ class GitHubFunctions
 			if ($this->branch != false) {
 				$this->branch = explode("/", $this->branch, 3)[2]; //separate out by the "/" in the string
 			}
-			$this->branch = $this->trim($this->branch);
+			else {
+				Logs::notice(__METHOD__, __LINE__, "Could not access: ../.git/HEAD");
+			}
+			$this->branch = trim($this->branch);
 		}
 		return $this->branch;
 	}
@@ -80,6 +83,9 @@ class GitHubFunctions
 			$this->head = @file_get_contents(sprintf('../.git/refs/heads/%s', $this->branch));
 			if ($this->head != false) {
 				$this->head = $this->trim($this->head);
+			}
+			else {
+				Logs::notice(__METHOD__, __LINE__, sprintf("Could not access: ../.git/refs/heads/%s", $this->branch));
 			}
 		}
 		return $this->head;
@@ -120,7 +126,7 @@ class GitHubFunctions
 		$branch = $this->get_current_branch();
 		$head = $this->get_current_commit();
 		if ($head == false || $branch == false) {
-			return 'No git data found. Probably installed from release.';
+			return 'No git data found. Probably installed from release or could not read .git';
 		}
 		return sprintf('%s (%s)', $head, $branch).$this->get_behind_text();
 	}
