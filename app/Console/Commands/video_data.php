@@ -16,7 +16,7 @@ class video_data extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'video_data {count=100 : number of videos to process} {timeout=600 : timeout time requirement}';
+	protected $signature = 'lychee:video_data {count=100 : number of videos to process} {timeout=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.

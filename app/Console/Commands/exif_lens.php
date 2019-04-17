@@ -1,8 +1,7 @@
-<?php
+<?php /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\PhotoController;
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
@@ -17,7 +16,7 @@ class exif_lens extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'exif_lens {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'lychee:exif_lens {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
@@ -36,11 +35,13 @@ class exif_lens extends Command
 	 */
 	private $metadataExtractor;
 
+
+
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
-	 * @return void
+	 * @param Extractor $metadataExtractor
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
 	{
@@ -88,8 +89,8 @@ class exif_lens extends Command
 				if ($photo->make == '') {
 					$photo->make = $info['make'];
 				}
-				if ($photo->model == '') {
-					$photo->model = $info['model'];
+				if ($photo->getAttribute('model') == '') {
+					$photo->setAttribute('model', $info['model']);
 				}
 				if ($photo->lens == '') {
 					$photo->lens = $info['lens'];
