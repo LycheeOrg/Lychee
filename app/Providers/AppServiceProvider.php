@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Configs;
+use App\ControllerFunctions\UpdateFunctions;
 use App\Image;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\AlbumFunctions;
@@ -20,7 +21,8 @@ class AppServiceProvider extends ServiceProvider
 		PhotoFunctions::class   => PhotoFunctions::class,
 		ConfigFunctions::class  => ConfigFunctions::class,
 		SessionFunctions::class => SessionFunctions::class,
-		GitHubFunctions::class  => GitHubFunctions::class
+		GitHubFunctions::class  => GitHubFunctions::class,
+		UpdateFunctions::class  => UpdateFunctions::class
 	];
 
 
