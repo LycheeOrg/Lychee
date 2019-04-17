@@ -60,11 +60,11 @@ class UpdateController extends Controller
 			return Response::error($e->getMessage());
 		}
 
-//		if (!$up_to_date) {
+		if (!$up_to_date) {
 			return $this->updateFunctions->apply();
-//		}
-//		else {
-//			return Response::json('Already up to date');
-//		}
+		}
+		else {
+			return Response::json('Already up to date');
+		}
 	}
 }
