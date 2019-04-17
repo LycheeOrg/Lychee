@@ -17,14 +17,14 @@ class takedate extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'takedate {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'lychee:takedate {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Makesure takedate is correct';
+	protected $description = 'Make sure takedate is correct';
 
 	/**
 	 * @var PhotoFunctions
@@ -36,11 +36,13 @@ class takedate extends Command
 	 */
 	private $metadataExtractor;
 
+
+
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
-	 * @return void
+	 * @param Extractor $metadataExtractor
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
 	{
@@ -73,7 +75,7 @@ class takedate extends Command
 		foreach ($photos as $photo) {
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
 			if (file_exists($url)) {
-				$info = $this->metadataExtractor->extract($url);
+				$info = $this->metadataExtractor->extract($url, $photo->type);
 				if ($photo->takestamp == '') {
 					$photo->takestamp = $info['takestamp'];
 				}

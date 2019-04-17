@@ -12,14 +12,19 @@ class generate_thumbs extends Command
 	/**
 	 * @var array
 	 */
-	const THUMB_TYPES = ['small', 'small2x', 'medium', 'medium2x'];
+	const THUMB_TYPES = [
+		'small',
+		'small2x',
+		'medium',
+		'medium2x'
+	];
 
 	/**
 	 * The name and signature of the console command.
 	 *
 	 * @var string
 	 */
-	protected $signature = 'generate_thumbs {type : thumb name} {amount=100 : amount of photos to process} {timeout=600 : timeout time requirement}';
+	protected $signature = 'lychee:generate_thumbs {type : thumb name} {amount=100 : amount of photos to process} {timeout=600 : timeout time requirement}';
 
 	/**
 	 * The console command description.
@@ -33,6 +38,8 @@ class generate_thumbs extends Command
 	 */
 	private $photoFunctions;
 
+
+
 	/**
 	 * Create a new command instance.
 	 *
@@ -45,6 +52,8 @@ class generate_thumbs extends Command
 
 		$this->photoFunctions = $photoFunctions;
 	}
+
+
 
 	/**
 	 * Execute the console command.
@@ -86,13 +95,15 @@ class generate_thumbs extends Command
 		$photos = Photo::where($type, '=', '')
 			->where('type', 'like', 'image/%')
 			->take($this->argument('amount'))
-			->get()
-		;
+			->get();
 
 		if (count($photos) == 0) {
 			$this->line('No picture requires '.$type.'.');
 			return 0;
 		}
+
+		$bar = $this->output->createProgressBar(count($photos));
+		$bar->start();
 
 		foreach ($photos as $photo) {
 			if ($this->photoFunctions->resizePhoto(
@@ -102,10 +113,16 @@ class generate_thumbs extends Command
 				$maxHeight)
 			) {
 				$photo->save();
-				$this->line($type. ' ('.$photo->{$type}.') for '.$photo->title.' created.');
-			} else {
-				$this->line('Could not create '.$type.' for '.$photo->title.' ('.$photo->width.'x'.$photo->height.').');
+				$this->line('   '.$type.' ('.$photo->{$type}.') for '.$photo->title.' created.');
 			}
+			else {
+				$this->line('   Could not create '.$type.' for '.$photo->title.' ('.$photo->width.'x'.$photo->height.').');
+			}
+			$bar->advance();
 		}
+
+		$bar->finish();
+		$this->line('  ');
+
 	}
 }

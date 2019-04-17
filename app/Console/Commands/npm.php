@@ -11,7 +11,7 @@ class npm extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'npm {cmd=compile : the operation to send to npm (start or compile)}';
+	protected $signature = 'lychee:npm {cmd=compile : the operation to send to npm (start or compile)}';
 
 	/**
 	 * The console command description.
