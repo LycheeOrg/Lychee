@@ -315,7 +315,7 @@ class DiagnosticsController extends Controller
 		$update &= is_executable('../.git');
 
 		try {
-			$update &= $this->gitHubFunctions->is_up_to_date();
+			$update &= !$this->gitHubFunctions->is_up_to_date();
 		}
 		catch (Exception $e) {
 			$update = false;

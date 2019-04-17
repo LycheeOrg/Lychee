@@ -8109,7 +8109,7 @@ view.diagnostics = {
 	clearContent: function clearContent(update) {
 		lychee.content.unbind('mousedown');
 		var html = '';
-		if (update === true) {
+		if (update === 1) {
 			html += lychee.html(_templateObject59, lychee.locale['UPDATE_AVAILABLE']);
 		}
 		html += '<pre class="logs_diagnostics_view"></pre>';
