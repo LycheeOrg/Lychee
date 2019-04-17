@@ -205,6 +205,13 @@ class Extractor
 			}
 		}
 
+		//validate the data
+		foreach($metadata as $k => $v) {
+			//reset field value to empty string if the data is binary (invalid UTF-8 chars)
+			if (!mb_check_encoding($v)) {
+				$metadata[$k] = '';
+			}
+		}
 		return $metadata;
 	}
 
