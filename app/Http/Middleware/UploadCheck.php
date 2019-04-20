@@ -66,8 +66,8 @@ class UploadCheck
      */
     public function album_check(Request $request, int $id)
     {
-        if ($request->has('albumID')) {
-            $albumID = $request['albumID'];
+        if ($request->has('albumID') || $request->has('parent_id')) {
+            $albumID = $request[$request->has('albumID') ? 'albumID' : 'parent_id'];
             if ($albumID == 'f' || $albumID == 's' || $albumID == 'r' || $albumID == 0)
                 return true;
 
