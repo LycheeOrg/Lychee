@@ -316,7 +316,7 @@ class PhotoFunctions
 			}
 
 			// Set original date
-			if ($info['takestamp'] !== '' && $info['takestamp'] !== 0) {
+			if ($info['takestamp'] !== '' && $info['takestamp'] !== 0 && $info['takestamp'] !== null) {
 				@touch($path, strtotime($info['takestamp']));
 			}
 
