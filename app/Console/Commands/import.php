@@ -18,7 +18,7 @@ class import extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:import {dir : directory to import} {--flatten} {--album_id : Album ID to import to}
+	protected $signature = 'lychee:import {dir : directory to import} {--flatten} {--album_id= : Album ID to import to}
 							{--owner_id=0 : User}';
 
 	/**
