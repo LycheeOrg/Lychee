@@ -118,7 +118,7 @@ class import extends Command
 		}
 
 
-		$dir_iterator = new \RecursiveDirectoryIterator("/home/spotlight/photos", \FilesystemIterator::SKIP_DOTS);
+		$dir_iterator = new \RecursiveDirectoryIterator($directory, \FilesystemIterator::SKIP_DOTS);
 		$iterator = new \RecursiveIteratorIterator($dir_iterator, \RecursiveIteratorIterator::SELF_FIRST);
 		foreach ($iterator as $file) {
 			if ($file->isDir()) {
