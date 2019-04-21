@@ -528,7 +528,7 @@ class Photo extends Model
 	 */
 	public function scopeOwnedBy(Builder $query, $id)
 	{
-		return $id == 0 ? $query : $query->where('id', '=', $id);
+		return $id == 0 ? $query : $query->where('owner_id', '=', $id);
 	}
 
 }
