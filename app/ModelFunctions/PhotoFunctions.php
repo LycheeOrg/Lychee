@@ -464,7 +464,7 @@ class PhotoFunctions
 			}
 			catch (QueryException $e) {
 				$errorCode = $e->getCode();
-				if ($errorCode == 1062) {
+				if ($errorCode == 23000 || $errorCode == 23505) {
 					// houston, we have a duplicate entry problem
 					do {
 						// Our ids are based on current system time, so
