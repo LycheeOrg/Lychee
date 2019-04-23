@@ -8128,14 +8128,20 @@ view.diagnostics = {
 
 		$("#Update_Lychee").on('click', function () {
 			api.get('api/Update', function (data) {
-				data = JSON.parse(data);
+				var data_json = void 0;
+				try {
+					data_json = JSON.parse(data);
+				} catch (e) {
+					data_json = "JSON error. Check the console logs.";
+					console.log(data);
+				}
 				html = '<pre>';
-				if (typeof data == "string") {
-					html += '    ' + data;
-				} else {
-					for (var i = 0; i < data.length; i++) {
-						html += '    ' + data[i];
+				if (Array.isArray(data_json)) {
+					for (var i = 0; i < data_json.length; i++) {
+						html += '    ' + data_json[i] + '\n';
 					}
+				} else {
+					html += '    ' + data_json;
 				}
 				html += '</pre>';
 				$(html).prependTo(".logs_diagnostics_view");
