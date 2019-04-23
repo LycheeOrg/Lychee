@@ -5192,11 +5192,18 @@ photo.setAlbum = function (photoIDs, albumID) {
 		if (data !== true) {
 			lychee.error(null, params, data);
 		} else {
-			if (visible.album() && album.hasSub(albumID)) {
+			if (album.hasSub(albumID)) {
 				// If we moved photos to a subalbum of the currently
 				// displayed album, that may change the subalbum thumbs
 				// being displayed so we need to reload.
-				album.reload();
+				if (visible.album()) {
+					album.reload();
+				} else {
+					// We're most likely in photo view.  We still need to
+					// refresh the album but we don't want to reload it
+					// since that would switch the view being displayed.
+					album.refresh();
+				}
 			}
 		}
 	});
@@ -7315,7 +7322,7 @@ view.album = {
 			var justify = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 
-			if (visible.album() && album.json) {
+			if (album.json && album.json.num) {
 				album.json.num--;
 			}
 			$('.photo[data-id="' + photoID + '"]').css('opacity', 0).animate({
@@ -7324,8 +7331,10 @@ view.album = {
 			}, 300, function () {
 				$(this).remove();
 				// Only when search is not active
-				if (visible.album() && album.json) {
-					view.album.num();
+				if (album.json) {
+					if (album.json.num) {
+						view.album.num();
+					}
 					if (justify) {
 						view.album.content.justify();
 					}
