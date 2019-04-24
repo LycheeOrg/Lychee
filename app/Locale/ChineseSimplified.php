@@ -46,7 +46,7 @@ final class ChineseSimplified implements LangInterface
 			'RENAME'			=> '重命名',
 			'RENAME_ALL'		=> '重命名已选中',
 			'MERGE'				=> '合并',
-			'MERGE_ALL'			=> '合并全部',
+			'MERGE_ALL'			=> '合并选中',
 			'MAKE_PUBLIC' 		=> '设为公开',
 			'SHARE_ALBUM' 		=> '分享相册',
 			'SHARE_PHOTO' 		=> '分享照片',

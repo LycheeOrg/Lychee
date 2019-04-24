@@ -45,7 +45,7 @@ final class English implements LangInterface
 			'RENAME'			=> 'Rename',
 			'RENAME_ALL'		=> 'Rename Selected',
 			'MERGE'				=> 'Merge',
-			'MERGE_ALL'			=> 'Merge All',
+			'MERGE_ALL'			=> 'Merge Selected',
 			'MAKE_PUBLIC'		=> 'Make Public',
 			'SHARE_ALBUM'		=> 'Share Album',
 			'SHARE_PHOTO'		=> 'Share Photo',

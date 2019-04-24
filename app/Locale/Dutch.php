@@ -45,7 +45,7 @@ final class Dutch implements LangInterface
 			'RENAME'			=> 'Hernoem',
 			'RENAME_ALL'		=> 'Geselecteerde Hernoem',
 			'MERGE'				=> 'Voeg samen',
-			'MERGE_ALL'			=> 'Voeg alle samen',
+			'MERGE_ALL'			=> 'Geselecteerd samenvoegen',
 			'MAKE_PUBLIC'		=> 'Maak Publiek',
 			'SHARE_ALBUM'		=> 'Deel Album',
 			'SHARE_PHOTO'		=> 'Deel Photo',
