@@ -43,7 +43,7 @@ final class French implements LangInterface
 			'PHOTOS'			=> 'Pictures',
 
 			'RENAME'			=> 'Renommer',
-			'RENAME_ALL'		=> 'Renommer les sélectionnés',
+			'RENAME_ALL'		=> 'Renommer la sélection',
 			'MERGE'				=> 'Fusionner',
 			'MERGE_ALL'			=> 'Tout fusionner',
 			'MAKE_PUBLIC'		=> 'Rendre public',
@@ -79,9 +79,9 @@ final class French implements LangInterface
 			'MOVE'							=> 'Déplacer',
 			'MOVE_ALL'						=> 'Déplacer la sélection',
 			'DUPLICATE'						=> 'Dupliquer',
-			'DUPLICATE_ALL'					=> 'Dupliquer Sélectionné',
-			'COPY_TO'						=> 'Copie à...',
-			'COPY_ALL_TO'					=> 'Copier sélectionné dans...',
+			'DUPLICATE_ALL'					=> 'Dupliquer la sélection',
+			'COPY_TO'						=> 'Copier vers...',
+			'COPY_ALL_TO'					=> 'Copier la sélection vers...',
 			'DELETE'						=> 'Supprimer',
 			'DELETE_ALL'					=> 'Supprimer la sélection',
 			'DOWNLOAD'						=> 'Télécharger',
@@ -103,9 +103,9 @@ final class French implements LangInterface
 
 			'STAR_PHOTO'				=> 'Mettre en Favoris',
 			'STAR'						=> 'Favori',
-			'STAR_ALL'					=> 'Marquer sélectionné comme favoris',
+			'STAR_ALL'					=> 'Marquer la sélection comme favoris',
 			'TAGS'						=> 'Tagger',
-			'TAGS_ALL'					=> 'Tagger sélectionnées',
+			'TAGS_ALL'					=> 'Tagger la sélection',
 			'UNSTAR_PHOTO'				=> 'Retirer des Favoris',
 
 			'FULL_PHOTO'				=> 'Taille réelle',
