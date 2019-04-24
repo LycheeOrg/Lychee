@@ -46,7 +46,7 @@ final class German implements LangInterface
 			'RENAME'			=> 'Umbenennen',
 			'RENAME_ALL'		=> 'Ausgewählte umbenennen',
 			'MERGE'				=> 'Zusammenführen',
-			'MERGE_ALL'			=> 'Alle zusammenführen',
+			'MERGE_ALL'			=> 'Ausgewählte zusammenführen',
 			'MAKE_PUBLIC'		=> 'Veröffentlichen',
 			'SHARE_ALBUM'		=> 'Album freigeben',
 			'SHARE_PHOTO'		=> 'Foto freigeben',

@@ -45,7 +45,7 @@ final class Swedish implements LangInterface
 			'RENAME'			=> 'Ändra namnet',
 			'RENAME_ALL'		=> 'Byt namn på vald',
 			'MERGE'				=> 'Slå ihop',
-			'MERGE_ALL'			=> 'Slå ihop alla',
+			'MERGE_ALL'			=> 'Sammanfoga vald',
 			'MAKE_PUBLIC'		=> 'Gör publika',
 			'SHARE_ALBUM'		=> 'Dela album',
 			'SHARE_PHOTO'		=> 'Dela fotografi',
