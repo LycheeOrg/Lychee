@@ -45,7 +45,7 @@ final class French implements LangInterface
 			'RENAME'			=> 'Renommer',
 			'RENAME_ALL'		=> 'Renommer la sélection',
 			'MERGE'				=> 'Fusionner',
-			'MERGE_ALL'			=> 'Fusioner la sélection',
+			'MERGE_ALL'			=> 'Fusionner la sélection',
 			'MAKE_PUBLIC'		=> 'Rendre public',
 			'SHARE_ALBUM'		=> 'Partager l\'album',
 			'SHARE_PHOTO'		=> 'Partager la photo',
