@@ -2,7 +2,7 @@
 
 namespace App\Locale;
 
-final class Italian
+final class Italian implements LangInterface
 {
 	static public function code()
 	{
