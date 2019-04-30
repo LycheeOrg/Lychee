@@ -322,13 +322,11 @@ class PhotoFunctions
 
 			// For videos extract a frame from the middle
 			$frame_tmp = '';
-			$path_thumb = '';
 			if (in_array($photo->type, $this->validVideoTypes, true)) {
 				try {
 					$frame_tmp = $this->extractVideoFrame($photo);
 				} catch (Exception $exception) {
 					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-					$path_thumb = '';
 				}
 			}
 
@@ -339,16 +337,17 @@ class PhotoFunctions
 					return Response::error('Could not create thumbnail for photo!');
 				}
 
-				$path_thumb = basename($photo_name, $extension).".jpeg";
+				$photo->thumbUrl = basename($photo_name, $extension).".jpeg";
+
+				$this->createSmallerImages($photo, $frame_tmp);
+
+				if ($frame_tmp !== '') {
+					unlink($frame_tmp);
+				}
 			}
-
-			Logs::notice(__METHOD__, __LINE__, $path_thumb);
-			$photo->thumbUrl = $path_thumb;
-
-			$this->createSmallerImages($photo, $frame_tmp);
-
-			if ($frame_tmp !== '') {
-				unlink($frame_tmp);
+			else {
+				$photo->thumbUrl = '';
+				$photo->thumb2x = 0;
 			}
 		}
 
