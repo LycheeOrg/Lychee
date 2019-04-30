@@ -1,6 +1,6 @@
 <?php
 
-namespace Lychee\Locale;
+namespace App\Locale;
 
 final class Italian
 {
