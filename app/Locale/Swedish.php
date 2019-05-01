@@ -52,7 +52,7 @@ final class Swedish implements LangInterface
 			'DOWNLOAD_ALBUM'	=> 'Ladda ner album',
 			'ABOUT_ALBUM'		=> 'Om albumet',
 			'DELETE_ALBUM'		=> 'Radera albumet',
-			'MOVE_ALBUM',		=> 'Move Album',
+			'MOVE_ALBUM'		=> 'Move Album',
 			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
 			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 
