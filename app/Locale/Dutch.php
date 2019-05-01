@@ -52,6 +52,7 @@ final class Dutch implements LangInterface
 			'DOWNLOAD_ALBUM'	=> 'Download Album',
 			'ABOUT_ALBUM'		=> 'Over Album',
 			'DELETE_ALBUM'		=> 'Verwijder Album',
+			'MOVE_ALBUM'		=> 'Move Album',
 			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
 			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 

@@ -52,6 +52,7 @@ final class English implements LangInterface
 			'DOWNLOAD_ALBUM'	=> 'Download Album',
 			'ABOUT_ALBUM'		=> 'About Album',
 			'DELETE_ALBUM'		=> 'Delete Album',
+			'MOVE_ALBUM'		=> 'Move Album',
 			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
 			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 

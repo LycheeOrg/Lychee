@@ -52,6 +52,7 @@ final class French implements LangInterface
 			'DOWNLOAD_ALBUM'	=> 'Télécharger l\'album',
 			'ABOUT_ALBUM'		=> 'À propos de l\'album',
 			'DELETE_ALBUM'		=> 'Supprimer l\'album',
+			'MOVE_ALBUM'		=> 'Move Album',
 			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
 			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 
