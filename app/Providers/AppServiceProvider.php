@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Configs;
 use App\ControllerFunctions\UpdateFunctions;
 use App\Image;
+use App\Image\ImageHandler;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
@@ -12,7 +13,6 @@ use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -59,11 +59,7 @@ class AppServiceProvider extends ServiceProvider
 	{
 		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
 			$compressionQuality = Configs::get_value('compression_quality', 90);
-			/** @noinspection PhpUndefinedClassInspection */
-			if (Configs::hasImagick()) {
-				return new Image\ImagickHandler($compressionQuality);
-			}
-			return new Image\GdHandler($compressionQuality);
+			return new ImageHandler($compressionQuality);
 		});
 	}
 }
