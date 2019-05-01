@@ -2,6 +2,7 @@
 
 namespace App\Locale;
 
+
 final class Italian implements LangInterface
 {
 	static public function code()
@@ -18,10 +19,10 @@ final class Italian implements LangInterface
 			'CANCEL'		=> 'Annulla',
 			'SIGN_IN'		=> 'Entra',
 			'CLOSE'			=> 'Chiudi',
-
 			'SETTINGS'			=> 'Impostazioni',
 			'SEARCH'			=> 'Cerca...',
 			'MORE'				=> 'Altro',
+
 			'USERS'				=> 'Utenti',
 			'SHARING'			=> 'Condivisione',
 			'CHANGE_LOGIN'		=> 'Cambia Login',
@@ -51,6 +52,7 @@ final class Italian implements LangInterface
 			'DOWNLOAD_ALBUM'	=> 'Scarica Album',
 			'ABOUT_ALBUM'		=> 'Informazioni Album',
 			'DELETE_ALBUM'		=> 'Elimina Album',
+			'MOVE_ALBUM'		=> 'Move Album',
 			'FULLSCREEN_ENTER'	=> 'Entra In Modalità Schermo Intero',
 			'FULLSCREEN_EXIT'	=> 'Esci Dalla Modalità Schermo Intero',
 
