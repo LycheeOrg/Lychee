@@ -53,6 +53,7 @@ final class German implements LangInterface
 			'DOWNLOAD_ALBUM'	=> 'Album herunterladen',
 			'ABOUT_ALBUM'		=> 'Über dieses Album',
 			'DELETE_ALBUM'		=> 'Album löschen',
+			'MOVE_ALBUM'		=> 'Move Album',
 			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
 			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 

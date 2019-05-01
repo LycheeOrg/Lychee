@@ -53,6 +53,7 @@ final class ChineseSimplified implements LangInterface
 			'DOWNLOAD_ALBUM'	=> '下载相册',
 			'ABOUT_ALBUM'		=> '关于相册',
 			'DELETE_ALBUM'		=> '删除相册',
+			'MOVE_ALBUM'		=> 'Move Album',
 			'FULLSCREEN_ENTER'	=> 'Enter Fullscreen',
 			'FULLSCREEN_EXIT'	=> 'Exit Fullscreen',
 

@@ -64,6 +64,9 @@
         <a class="button button--info" id="button_info_album" title="{{ $locale['ABOUT_ALBUM'] }}">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>
+        <a class="button" id="button_move_album" title="{{ $locale['MOVE_ALBUM'] }}">
+            <svg class="iconic"><use xlink:href="#folder"></use></svg>
+        </a>
         <a class="button" id="button_trash_album" title="{{ $locale['DELETE_ALBUM'] }}">
             <svg class="iconic"><use xlink:href="#trash"></use></svg>
         </a>
