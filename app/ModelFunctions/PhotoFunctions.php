@@ -427,7 +427,7 @@ class PhotoFunctions
 
 		// Is photo big enough?
 		if (($width <= $maxWidth || $maxWidth == 0) && ($height <= $maxHeight || $maxHeight == 0)) {
-			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small)!');
+			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: '.$maxWidth.'x'.$maxHeight.')!');
 			return false;
 		}
 

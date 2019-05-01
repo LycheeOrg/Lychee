@@ -17,6 +17,12 @@ class GitHubFunctions
 
 
 
+	/**
+	 * Given a commit id, return the 7 first characters (7 hex digits) and trim it to remove \n
+	 *
+	 * @param $commit_id
+	 * @return string
+	 */
 	private function trim($commit_id)
 	{
 		return trim(substr($commit_id, 0, 7));
@@ -26,6 +32,7 @@ class GitHubFunctions
 
 	/**
 	 * Fetch an url with 1sec timout.
+	 *
 	 * @param $url
 	 * @return bool|mixed
 	 */
@@ -54,6 +61,7 @@ class GitHubFunctions
 
 	/**
 	 * look at .git/HEAD and return the current branch
+	 *
 	 * @return false|string
 	 */
 	public function get_current_branch()
@@ -75,6 +83,7 @@ class GitHubFunctions
 
 	/**
 	 * Return the current commit id (7 hex digits)
+	 *
 	 * @return false|string
 	 */
 	public function get_current_commit()
@@ -94,7 +103,9 @@ class GitHubFunctions
 
 
 	/**
-	 * @return bool
+	 * return the list of the last 30 commits on the master branch.
+	 *
+	 * @return bool|array
 	 */
 	public function get_commits()
 	{
@@ -119,6 +130,7 @@ class GitHubFunctions
 
 	/**
 	 * Return a string like 'commit number (branch)' or 'no git data found'
+	 *
 	 * @return string
 	 */
 	public function get_info()
@@ -134,7 +146,8 @@ class GitHubFunctions
 
 
 	/**
-	 * Counter number of commits between current version and master/HEAD
+	 * Count the number of commits between current version and master/HEAD
+	 *
 	 * @return bool|int
 	 */
 	public function count_behind()
@@ -161,6 +174,8 @@ class GitHubFunctions
 
 
 	/**
+	 * return the commit id (7 hex digits) of the had if found.
+	 *
 	 * @return string
 	 */
 	public function get_github_head()
@@ -172,7 +187,8 @@ class GitHubFunctions
 
 
 	/**
-	 * Check if current version is
+	 * Return a string indicating whether we are up to date (used in Diagnostics)
+	 *
 	 * @return string
 	 */
 	public function get_behind_text()
