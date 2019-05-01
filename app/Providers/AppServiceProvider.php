@@ -60,7 +60,7 @@ class AppServiceProvider extends ServiceProvider
 		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
 			$compressionQuality = Configs::get_value('compression_quality', 90);
 			/** @noinspection PhpUndefinedClassInspection */
-			if (Schema::hasTable('logs') && Configs::hasImagick()) {
+			if (Configs::hasImagick()) {
 				return new Image\ImagickHandler($compressionQuality);
 			}
 			return new Image\GdHandler($compressionQuality);
