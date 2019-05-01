@@ -12,6 +12,7 @@ use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,7 +36,9 @@ class AppServiceProvider extends ServiceProvider
 	public function boot()
 	{
 		if (config('app.debug', false)) {
+			/** @noinspection PhpUndefinedClassInspection */
 			DB::listen(function ($query) {
+				/** @noinspection PhpUndefinedClassInspection */
 				Log::info(
 					$query->sql,
 					$query->bindings,
@@ -56,7 +59,8 @@ class AppServiceProvider extends ServiceProvider
 	{
 		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
 			$compressionQuality = Configs::get_value('compression_quality', 90);
-			if (Configs::hasImagick()) {
+			/** @noinspection PhpUndefinedClassInspection */
+			if (Schema::hasTable('logs') && Configs::hasImagick()) {
 				return new Image\ImagickHandler($compressionQuality);
 			}
 			return new Image\GdHandler($compressionQuality);
