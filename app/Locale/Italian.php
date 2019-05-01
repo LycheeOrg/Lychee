@@ -20,6 +20,8 @@ final class Italian implements LangInterface
 			'CLOSE'			=> 'Chiudi',
 
 			'SETTINGS'			=> 'Impostazioni',
+			'SEARCH'			=> 'Cerca...',
+			'MORE'				=> 'Altro',
 			'USERS'				=> 'Utenti',
 			'SHARING'			=> 'Condivisione',
 			'CHANGE_LOGIN'		=> 'Cambia Login',
@@ -170,9 +172,12 @@ final class Italian implements LangInterface
 			'PHOTO_LICENSE_NONE'		=> 'Nessuna',
 			'PHOTO_RESERVED'			=> 'Tutti i Diritti Riservati',
 			'PHOTO_IMAGE'				=> 'Immagine',
+			'PHOTO_VIDEO'				=> 'Video',
 			'PHOTO_SIZE'				=> 'Dimensioni',
 			'PHOTO_FORMAT'				=> 'Formato',
 			'PHOTO_RESOLUTION'			=> 'Risoluzione',
+			'PHOTO_DURATION'			=> 'Durata',
+			'PHOTO_FPS'					=> 'Frame rate',
 			'PHOTO_TAGS'				=> 'Tag',
 			'PHOTO_NOTAGS'				=> 'Nessun Tag',
 			'PHOTO_NEW_TAGS'			=> 'Inserisci i tuoi tag per questa foto. Puoi aggiungere più tag separandoli con una virgola:',
@@ -235,6 +240,7 @@ final class Italian implements LangInterface
 			'LOGIN_TITLE'				=> 'Inserisci un nome utente e una password per la tua installazione:',
 			'LOGIN_USERNAME'			=> 'Nuovo Nome Utente',
 			'LOGIN_PASSWORD'			=> 'Nuova Password',
+			'LOGIN_PASSWORD_CONFIRM'	=> 'Conferma Password',
 			'LOGIN_CREATE'				=> 'Crea Login',
 
 			'PASSWORD_TITLE'			=> 'Inserisci la tua password attuale:',
@@ -328,7 +334,8 @@ final class Italian implements LangInterface
 			'UPLOAD_IMPORT_SERVER_EMPT'	=> 'È stato impossibile avviare l\'importazione dato che la cartella era vuota!',
 
 			'ABOUT_SUBTITLE'			=> 'Gestione propria delle foto fatta nel modo giusto',
-			'ABOUT_DESCRIPTION'			=> 'è uno strumento gratuito di gestione delle foto, eseguito nel server o sul tuo spazio web. L\'installazione è questione di secondi. Carica, gestisci e condividi foto come in un\'applicazione nativa. Lychee offre tutto ciò di cui hai bisogno e tutte le tue foto vengono salvate in modo sicuro.'
+			'ABOUT_DESCRIPTION'			=> 'è uno strumento gratuito di gestione delle foto, eseguito nel server o sul tuo spazio web. L\'installazione è questione di secondi. Carica, gestisci e condividi foto come in un\'applicazione nativa. Lychee offre tutto ciò di cui hai bisogno e tutte le tue foto vengono salvate in modo sicuro.',
+			'FOOTER_COPYRIGHT'			=> 'Tutte le immagini su questo sito web sono soggette a Copyright di'
 		);
 
 		return $locale;
