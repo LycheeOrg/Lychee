@@ -80,7 +80,7 @@ class SessionController extends Controller
 
 				$return['config'] = $this->configFunctions->admin();
 
-				$return['config']['location'] = Config::get('defines.path.LYCHEE');
+				$return['config']['location'] = Config::get('defines.path.LYCHEE').'public/';
 			}
 			else {
 
