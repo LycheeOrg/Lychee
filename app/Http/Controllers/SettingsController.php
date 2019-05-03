@@ -243,7 +243,7 @@ class SettingsController extends Controller
 	{
 
 		$no_error = true;
-		foreach ($request->except(['_token','function']) as $key => $value) {
+		foreach ($request->except(['_token', 'function', '/api/Settings::saveAll']) as $key => $value) {
 				$value = ($value == null) ? '' : $value;
 				$no_error &= Configs::set($key, $value);
 		}
