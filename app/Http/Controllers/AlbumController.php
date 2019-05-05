@@ -95,7 +95,7 @@ class AlbumController extends Controller
 					return 'false';
 				}
 				$return = $album->prepareData();
-				$return['albums'] = $album->get_albums(Session::get('UserID'));
+				$return['albums'] = $album->get_albums();
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
 				break;
 		}

@@ -58,6 +58,7 @@ class AlbumsController extends Controller
 
 			if ($id == 0) {
 				$albums = Album::where('owner_id', '=', 0)
+					->where('parent_id', '=', null)
 					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
 				$shared_albums = Album::with([
 					'owner',
@@ -66,6 +67,7 @@ class AlbumsController extends Controller
 					->where('owner_id', '<>', 0)
 					->where('parent_id', '=', null)
 					->orderBy('owner_id', 'ASC')
+					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
 					->get();
 			}
 			else {
@@ -75,6 +77,7 @@ class AlbumsController extends Controller
 				}
 				else {
 					$albums = Album::where('owner_id', '=', $user->id)
+						->where('parent_id', '=', null)
 						->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
 						->get();
 					$shared_albums = Album::get_albums_user($user->id);

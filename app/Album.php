@@ -210,22 +210,20 @@ class Album extends Model
 
 
 	/**
-	 * Recursively returns the tree structure of albums. Private user albums are returned
-	 * only if `$userId` is set.
-	 * TODO: Remove $userId dependency.
+	 * Recursively returns the tree structure of albums.
 	 *
-	 * @param int $userId
 	 * @return array
 	 */
-	public function get_albums(int $userId = null): array
+	public function get_albums(): array
 	{
 		$subAlbums = [];
+		$userId = Session::get('UserID');
 		foreach ($this->children as $subAlbum) {
 
 			if (($subAlbum->public == '1' && $subAlbum->visible_hidden == '1') || $userId === 0 || ($userId === $subAlbum->owner->id)) {
 
 				$album = $subAlbum->prepareData();
-				$album['albums'] = $subAlbum->get_albums($userId);
+				$album['albums'] = $subAlbum->get_albums();
 				if ($subAlbum->password === null || Session::get('login')) {
 					$album = $subAlbum->gen_thumbs($album);
 				}
