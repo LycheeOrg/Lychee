@@ -336,7 +336,7 @@ class AlbumController extends Controller
 
 		$no_error = true;
 		if ($request['albumIDs'] == '0') {
-			$photos = Photo::Unsorted()->get();
+			$photos = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID')))->get();
 			foreach ($photos as $photo) {
 				$no_error &= $photo->predelete();
 				$no_error &= $photo->delete();
