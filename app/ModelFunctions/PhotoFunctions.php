@@ -10,6 +10,7 @@ use App\Logs;
 use App\Metadata\Extractor;
 use App\Photo;
 use App\Response;
+use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;

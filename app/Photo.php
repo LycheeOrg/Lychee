@@ -365,29 +365,31 @@ class Photo extends Model
 		else {
 			$photoName = $this->url;
 		}
-		$photoName2x = explode('.', $photoName);
-		$photoName2x = $photoName2x[0].'@2x.'.$photoName2x[1];
+		if ($photoName !== '') {
+			$photoName2x = explode('.', $photoName);
+			$photoName2x = $photoName2x[0].'@2x.'.$photoName2x[1];
 
-		// Delete medium
-		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
-			$error = true;
-		}
+			// Delete medium
+			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
+				$error = true;
+			}
 
-		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName2x)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
-			$error = true;
-		}
+			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName2x)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
+				$error = true;
+			}
 
-		// Delete small
-		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
-			$error = true;
-		}
+			// Delete small
+			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
+				$error = true;
+			}
 
-		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName2x)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
-			$error = true;
+			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName2x)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
+				$error = true;
+			}
 		}
 
 		if ($this->thumbUrl != '') {
