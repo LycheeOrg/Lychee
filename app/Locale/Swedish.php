@@ -127,6 +127,7 @@ final class Swedish implements LangInterface
 			'ALBUM_CREATED'				=> 'Skapad',
 			'ALBUM_IMAGES'				=> 'Fotografier',
 			'ALBUM_VIDEOS'				=> 'Videos',
+			'ALBUM_SUBALBUMS'			=> 'Subalbums',
 			'ALBUM_SHARING'				=> 'Dela',
 			'ALBUM_SHR_YES'				=> 'Ja',
 			'ALBUM_SHR_NO'				=> 'Nej',

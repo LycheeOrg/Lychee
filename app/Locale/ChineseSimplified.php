@@ -128,6 +128,7 @@ final class ChineseSimplified implements LangInterface
 			'ALBUM_CREATED'				=> '创建时间',
 			'ALBUM_IMAGES'				=> '图片信息',
 			'ALBUM_VIDEOS'				=> 'Videos',
+			'ALBUM_SUBALBUMS'			=> 'Subalbums',
 			'ALBUM_SHARING'				=> '共享',
 			'ALBUM_SHR_YES'				=> '是',
 			'ALBUM_SHR_NO'				=> '否',
