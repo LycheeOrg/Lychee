@@ -128,6 +128,7 @@ final class German implements LangInterface
 			'ALBUM_CREATED'				=> 'Erstellt',
 			'ALBUM_IMAGES'				=> 'Bilder',
 			'ALBUM_VIDEOS'				=> 'Videos',
+			'ALBUM_SUBALBUMS'			=> 'Subalbums',
 			'ALBUM_SHARING'				=> 'Teilen',
 			'ALBUM_SHR_YES'				=> 'Ja',
 			'ALBUM_SHR_NO'				=> 'Nein',

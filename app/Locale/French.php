@@ -127,6 +127,7 @@ final class French implements LangInterface
 			'ALBUM_CREATED'				=> 'Créé',
 			'ALBUM_IMAGES'				=> 'Images',
 			'ALBUM_VIDEOS'				=> 'Videos',
+			'ALBUM_SUBALBUMS'			=> 'Subalbums',
 			'ALBUM_SHARING'				=> 'Partager',
 			'ALBUM_SHR_YES'				=> 'Oui',
 			'ALBUM_SHR_NO'				=> 'Non',

@@ -127,6 +127,7 @@ final class Dutch implements LangInterface
 			'ALBUM_CREATED'				=> 'Aangemaakt',
 			'ALBUM_IMAGES'				=> 'Afbeeldingen',
 			'ALBUM_VIDEOS'				=> 'Videos',
+			'ALBUM_SUBALBUMS'			=> 'Subalbums',
 			'ALBUM_SHARING'				=> 'Deel',
 			'ALBUM_SHR_YES'				=> 'Ja',
 			'ALBUM_SHR_NO'				=> 'Nee',

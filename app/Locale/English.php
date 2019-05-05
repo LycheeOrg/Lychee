@@ -127,6 +127,7 @@ final class English implements LangInterface
 			'ALBUM_CREATED'				=> 'Created',
 			'ALBUM_IMAGES'				=> 'Images',
 			'ALBUM_VIDEOS'				=> 'Videos',
+			'ALBUM_SUBALBUMS'			=> 'Subalbums',
 			'ALBUM_SHARING'				=> 'Share',
 			'ALBUM_SHR_YES'				=> 'YES',
 			'ALBUM_SHR_NO'				=> 'No',

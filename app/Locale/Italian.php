@@ -129,6 +129,7 @@ final class Italian implements LangInterface
 			'ALBUM_CREATED'				=> 'Creato',
 			'ALBUM_IMAGES'				=> 'Immagini',
 			'ALBUM_VIDEOS'				=> 'Video',
+			'ALBUM_SUBALBUMS'			=> 'Subalbums',
 			'ALBUM_SHARING'				=> 'Condividi',
 			'ALBUM_SHR_YES'				=> 'SI',
 			'ALBUM_SHR_NO'				=> 'No',
