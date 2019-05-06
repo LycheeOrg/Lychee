@@ -103,7 +103,7 @@ class ImportController extends Controller
 			}
 			// Verify image
 			$type = @exif_imagetype($url);
-			if (!$this->photoFunctions->isValidImageType($type)) {
+			if (!$this->photoFunctions->isValidImageType($type) && !in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported ('.$url.')');
 				continue;
