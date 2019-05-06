@@ -41,7 +41,7 @@ class ReadAccessFunctions
 	public function albums($albumID)
 	{
 		// if we are logged in then we have access
-		// we do not use this function to check if there is proper acess in case of sharing... yet?
+		// we do not use this function to check if there is proper access in case of sharing... yet?
 		if ($this->sessionFunctions->is_logged_in()) {
 			return 1; // access granted
 		}
