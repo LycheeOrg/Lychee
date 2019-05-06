@@ -50,6 +50,6 @@ class AlbumPWCheck
 			return response('false');
 		}
 
-		return response('"Error: no AlbumID provided');
+		return response('"Error: no AlbumID provided"');
 	}
 }
