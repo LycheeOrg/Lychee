@@ -320,13 +320,31 @@ class Photo extends Model
 
 		}
 
-		$photo['public'] = $this->public == 1 ? '1' : '0';
-
-		if ($this->album_id != null) {
-			$photo['public'] = $this->album->public == '1' ? '2' : $photo['public'];
-		}
+		$photo['public'] = $this->get_public();
 
 		return $photo;
+
+	}
+
+
+
+	/**
+	 * Get the public value of a picture
+	 * if 0 : picture is private
+	 * if 1 : picture is public alone
+	 * if 2 : picture is public by album being public (if being in an album)
+	 *
+	 * @return string
+	 */
+	public function get_public()
+	{
+		$ret = $this->public == 1 ? '1' : '0';
+
+		if ($this->album_id != null) {
+			$ret= $this->album->public == '1' ? '2' : $ret;
+		}
+
+		return $ret;
 
 	}
 

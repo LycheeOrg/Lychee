@@ -15,11 +15,28 @@ use Illuminate\Support\Facades\Session;
 
 class AlbumFunctions
 {
+
+	/**
+	 * given an albumID return if the said album is "smart"
+	 *
+	 * @param $albumID
+	 * @return bool
+	 */
+	public function is_smart_album($albumID)
+	{
+		if ($albumID === 'f' || $albumID === 's' || $albumID === 'r' || $albumID === 0) {
+			return true;
+		}
+		return false;
+	}
+
+
+
 	/**
 	 * Create a new album from a title and optional parent_id
 	 *
-	 * @param  string $title
-	 * @param  int $parent_id
+	 * @param string $title
+	 * @param int $parent_id
 	 * @return Album|string
 	 */
 	public function create(string $title, int $parent_id): Album
@@ -154,6 +171,7 @@ class AlbumFunctions
 	}
 
 
+
 	/**
 	 * @param $return
 	 * @param $photos_sql
@@ -166,10 +184,10 @@ class AlbumFunctions
 		$i = 0;
 
 		$return[$kind] = array(
-			'thumbs' => array(),
+			'thumbs'   => array(),
 			'thumbs2x' => array(),
-			'types'  => array(),
-			'num'    => $photos_sql->count()
+			'types'    => array(),
+			'num'      => $photos_sql->count()
 		);
 
 		foreach ($photos as $photo) {

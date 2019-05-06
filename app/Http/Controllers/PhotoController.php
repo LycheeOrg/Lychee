@@ -4,14 +4,15 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\PhotoFunctions;
+use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
@@ -22,14 +23,29 @@ class PhotoController extends Controller
 	 */
 	private $photoFunctions;
 
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+
+	/**
+	 * @var ReadAccessFunctions
+	 */
+	private $readAccessFunctions;
+
 
 
 	/**
 	 * @param PhotoFunctions $photoFunctions
+	 * @param SessionFunctions $sessionFunctions
+	 * @param ReadAccessFunctions $readAccessFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
 	{
 		$this->photoFunctions = $photoFunctions;
+		$this->sessionFunctions = $sessionFunctions;
+		$this->readAccessFunctions = $readAccessFunctions;
 	}
 
 
@@ -55,12 +71,11 @@ class PhotoController extends Controller
 			return 'false';
 		}
 
-		$return = $photo->prepareData();
-		if ((!Session::get('login') && $return['public'] == '1') ||
-			(Session::get('login')) ||
-			SessionController::checkAccess($request, $photo->album_id) === 1) {
+		if ($this->readAccessFunctions->photo($photo)) {
+
+			$return = $photo->prepareData();
 			$return['original_album'] = $return['album'];
-			$return['album'] = $request['albumID'];
+			$return['album'] = $photo->album_id;
 			return $return;
 		}
 
@@ -71,7 +86,6 @@ class PhotoController extends Controller
 
 
 	/**
-	 * @param Request $request
 	 * @return string
 	 */
 	function getRandom()
@@ -82,7 +96,7 @@ class PhotoController extends Controller
 
 		$photo = Photo::where('photos.star', '=', 1)
 			->join('albums', 'album_id', '=', 'albums.id')
-			->where('albums.public','=','1')
+			->where('albums.public', '=', '1')
 			->inRandomOrder()
 			->first();
 
@@ -111,7 +125,7 @@ class PhotoController extends Controller
 			//                |max:2048'
 		]);
 
-		$id = Session::get('UserID');
+//		$id = Session::get('UserID');
 
 		if (!$request->hasfile('0')) {
 			return Response::error('missing files');
@@ -441,15 +455,7 @@ class PhotoController extends Controller
 			return abort(404);
 		}
 
-		$public = $photo->public == 1 ? '1' : '0';
-		if ($photo->album_id != null) {
-			$public = $photo->album->public == '1' ? '2' : $public;
-		}
-
-		if ((!Session::get('login') && $public == '1') ||
-			(Session::get('login')) ||
-			SessionController::checkAccess($request, $photo->album_id) === 1) {
-
+		if ($this->readAccessFunctions->photo($photo)) {
 
 			$title = ($photo->title == '') ? 'Untitled' : str_replace($badChars, '', $photo->title);
 
