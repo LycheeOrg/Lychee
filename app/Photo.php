@@ -291,7 +291,7 @@ class Photo extends Model
 		// Parse paths
 		$photo['thumbUrl'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$this->thumbUrl;
 
-		if ($this->thumb2x == '1') {
+		if ($this->thumb2x == '1' && $this->thumbUrl !== '') {
 			$thumbUrl2x = explode(".", $this->thumbUrl);
 			$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
 			$photo['thumb2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
