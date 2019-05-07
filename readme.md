@@ -1,6 +1,8 @@
 # Lychee
 
 [![Build Status](https://travis-ci.com/LycheeOrg/Lychee-Laravel.svg?branch=master)](https://travis-ci.com/LycheeOrg/Lychee-Laravel)
+[![codecov](https://codecov.io/gh/LycheeOrg/Lychee-Laravel/branch/master/graph/badge.svg)](https://codecov.io/gh/LycheeOrg/Lychee-Laravel)
+
 
 #### A great looking and easy-to-use photo-management-system.
 

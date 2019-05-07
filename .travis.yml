@@ -42,7 +42,7 @@ script:
   - cp .env.mariadb.travis .env
   - php artisan key:generate
   - php artisan migrate
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose; fi"
   - php artisan migrate:rollback
   # test postgresql
   - cp .env.postgresql.travis .env
@@ -50,3 +50,7 @@ script:
   - php artisan migrate
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
   - php artisan migrate:rollback
+
+after_success:
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash codecov.sh ; fi"
+
