@@ -52,5 +52,5 @@ script:
   - php artisan migrate:rollback
 
 after_success:
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then codecov.sh ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash codecov.sh ; fi"
 
