@@ -16,7 +16,14 @@ use Exception;
 class UpdateController extends Controller
 {
 
+	/**
+	 * @var GitHubFunctions
+	 */
 	private $gitHubFunctions;
+
+	/**
+	 * @var UpdateFunctions
+	 */
 	private $updateFunctions;
 
 

@@ -3,7 +3,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
 use App\Configs;
 use App\Locale\Lang;
 use App\Logs;
@@ -13,7 +12,6 @@ use App\ModelFunctions\SessionFunctions;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class SessionController extends Controller
@@ -28,11 +26,11 @@ class SessionController extends Controller
 	 * @var SessionFunctions
 	 */
 	private $sessionFunctions;
+
 	/**
 	 * @var GitHubFunctions
 	 */
 	private $gitHubFunctions;
-
 
 
 	/**
@@ -143,22 +141,12 @@ class SessionController extends Controller
 			return 'true';
 		}
 
-		$configs = Configs::get();
-
 		// this is probably sensitive to timing attacks...
-		$user = User::where('username', '=', $request['user'])->first();
-
-		if (Hash::check($request['user'], $configs['username']) && Hash::check($request['password'], $configs['password'])) {
-			Session::put('login', true);
-			Session::put('UserID', 0);
-			Logs::notice(__METHOD__, __LINE__, 'User ('.$request['user'].') has logged in from '.$request->ip());
+		if ($this->sessionFunctions->log_as_admin($request['user'],$request['password'], $request->ip()) === true) {
 			return 'true';
 		}
 
-		if ($user != null && Hash::check($request['password'], $user->password)) {
-			Session::put('login', true);
-			Session::put('UserID', $user->id);
-			Logs::notice(__METHOD__, __LINE__, 'User ('.$request['user'].') has logged in from '.$request->ip());
+		if ($this->sessionFunctions->log_as_user($request['user'], $request['password'], $request->ip()) === true) {
 			return 'true';
 		}
 
@@ -171,7 +159,7 @@ class SessionController extends Controller
 
 
 	/**
-	 * Unsets the session values.
+	 * Unset the session values.
 	 * @return boolean Returns true when logout was successful.
 	 */
 	public function logout()
@@ -193,48 +181,4 @@ class SessionController extends Controller
 		dd(Session::all());
 	}
 
-
-
-	/**
-	 * @param $request
-	 * @param string $albumID
-	 * @return int
-	 */
-	static public function checkAccess($request, $albumID = '')
-	{
-		if (Session::get('login')) {
-			return 1;
-		}
-		if ($albumID != '') {
-			$album = Album::find($albumID);
-		}
-		else {
-			$album = Album::find($request['albumID']);
-		}
-		if ($album == null) {
-			return 0;
-		} // Does not exist
-		if ($album->public != 1) {
-			return 2;
-		} // Warning: Album private!
-		if ($album->password == '') {
-			return 1;
-		}
-
-		if (!Session::has('visible_albums')) {
-			return 3;
-		} // Please enter password first. // Warning: Wrong password!
-
-		$visible_albums = Session::get('visible_albums');
-		$visible_albums = explode('|', $visible_albums);
-		$found = false;
-		foreach ($visible_albums as $visible_album) {
-			$found |= ($visible_album == $request['albumID']);
-		}
-		if ($found) {
-			return 1;
-		}
-
-		return 3;  // Please enter password first. // Warning: Wrong password!
-	}
 }

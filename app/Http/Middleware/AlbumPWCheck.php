@@ -3,12 +3,26 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Controllers\SessionController;
+use App\ControllerFunctions\ReadAccessFunctions;
 use Closure;
 use Illuminate\Http\Request;
 
 class AlbumPWCheck
 {
+	/**
+	 * @var ReadAccessFunctions
+	 */
+	private $readAccessFunctions;
+
+
+
+	function __construct(ReadAccessFunctions $readAccessFunctions)
+	{
+		$this->readAccessFunctions = $readAccessFunctions;
+	}
+
+
+
 	/**
 	 * Handle an incoming request.
 	 *
@@ -18,18 +32,24 @@ class AlbumPWCheck
 	 */
 	public function handle($request, Closure $next)
 	{
-		$sess = SessionController::checkAccess($request);
-		if ($sess == 0) {
+		if ($request->has('albumID')) {
+			$sess = $this->readAccessFunctions->albums($request['albumID']);
+			if ($sess === 0) {
+				return response('false');
+			}
+			if ($sess === 1) {
+				return $next($request);
+			}
+			if ($sess === 2) {
+				return response('"Warning: Album private!"');
+			}
+			if ($sess === 3) {
+				return response('"Warning: Wrong password!"');
+			}
+			// should not happen
 			return response('false');
 		}
-		if ($sess == 1) {
-			return $next($request);
-		}
-		if ($sess == 2) {
-			return response('"Warning: Album private!"');
-		}
-		if ($sess == 3) {
-			return response('"Warning: Wrong password!"');
-		}
+
+		return response('"Error: no AlbumID provided"');
 	}
 }

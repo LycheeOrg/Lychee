@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Configs;
+use App\ControllerFunctions\ReadAccessFunctions;
 use App\ControllerFunctions\UpdateFunctions;
 use App\Image;
 use App\Image\ImageHandler;
@@ -18,12 +19,13 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
 	public $singletons = [
-		AlbumFunctions::class   => AlbumFunctions::class,
-		PhotoFunctions::class   => PhotoFunctions::class,
-		ConfigFunctions::class  => ConfigFunctions::class,
-		SessionFunctions::class => SessionFunctions::class,
-		GitHubFunctions::class  => GitHubFunctions::class,
-		UpdateFunctions::class  => UpdateFunctions::class
+		AlbumFunctions::class      => AlbumFunctions::class,
+		PhotoFunctions::class      => PhotoFunctions::class,
+		ConfigFunctions::class     => ConfigFunctions::class,
+		SessionFunctions::class    => SessionFunctions::class,
+		GitHubFunctions::class     => GitHubFunctions::class,
+		UpdateFunctions::class     => UpdateFunctions::class,
+		ReadAccessFunctions::class => ReadAccessFunctions::class,
 	];
 
 

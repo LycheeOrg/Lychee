@@ -22,6 +22,10 @@ class DiagnosticsController extends Controller
 	 * @var ConfigFunctions
 	 */
 	private $configFunctions;
+
+	/**
+	 * @var GitHubFunctions
+	 */
 	private $gitHubFunctions;
 
 
