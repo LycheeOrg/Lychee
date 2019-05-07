@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Page
+ * App\SomethingUseless
  *
  * @property int $id
  * @property string $title
@@ -38,7 +38,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Page whereUpdatedAt($value)
  * @mixin Eloquent
  */
-class Page extends Model
+class SomethingUseless extends Model
 {
 
 	/**
