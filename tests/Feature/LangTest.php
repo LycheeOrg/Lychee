@@ -25,5 +25,7 @@ class LangTest extends TestCase
 				$this->assertArrayHasKey($key,$lang_test, 'Language '.$lang.' is incomplete.');
 			}
 		}
+
+		$this->assertEquals(Lang::get_lang(), Lang::get_lang('does_not_exists'));
     }
 }
