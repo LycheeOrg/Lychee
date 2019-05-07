@@ -50,3 +50,6 @@ script:
   - php artisan migrate
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
   - php artisan migrate:rollback
+
+after_success:
+  - bash < (curl -s https://codecov.io/bash)
