@@ -35,15 +35,6 @@ class DiagnosticsTest extends TestCase
 		$response = $this->get('/Diagnostics');
 		$response->assertStatus(200); // code 200 something
 
-//		// get logs
-//		$logs = Logs::orderBy('id', 'ASC')->get();
-//		$print = '';
-//		foreach ($logs as $log) {
-//			$print .= $log->created_at." -- ".str_pad($log->type, 7)." -- ".$log->function." -- ".$log->line.". -- ".$log->text."\n";
-//		}
-//		if ($print != '') {
-//			$this->($print);
-//		}
 		$response = $this->post('/api/Diagnostics');
 		$response->assertStatus(200); // code 200 something too
 

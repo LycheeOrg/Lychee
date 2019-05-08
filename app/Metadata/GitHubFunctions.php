@@ -15,6 +15,7 @@ class GitHubFunctions
 	private $commits = false;
 	private $head = false;
 	private $branch = false;
+	private $CI_commit = false;
 
 
 
@@ -87,7 +88,16 @@ class GitHubFunctions
 		if ($this->branch == false) {
 			$this->branch = @file_get_contents(sprintf('%s/HEAD', $this->git_path()));
 			if ($this->branch != false) {
-				$this->branch = explode("/", $this->branch, 3)[2]; //separate out by the "/" in the string
+
+				// this is to handle CI where it actually checks a commit instead of a branch
+				if (substr($this->branch, 0, 4) == "refs:") {
+					$this->branch = explode("/", $this->branch, 3)[2]; //separate out by the "/" in the string
+				}
+				else {
+					$this->branch = 'master';
+					$this->CI_commit = $this->branch;
+				}
+
 			}
 			else {
 				Logs::notice(__METHOD__, __LINE__, "Could not access: ".$this->git_path()."/HEAD");
@@ -113,6 +123,9 @@ class GitHubFunctions
 			}
 			else {
 				Logs::notice(__METHOD__, __LINE__, sprintf("Could not access: ".$this->git_path()."/refs/heads/%s", $this->branch));
+				if ($this->CI_commit != false) {
+					$this->head = $this->trim($this->CI_commit);
+				}
 			}
 		}
 		return $this->head;
