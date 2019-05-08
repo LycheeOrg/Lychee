@@ -95,7 +95,7 @@ class AlbumController extends Controller
 					return 'false';
 				}
 				$return = $album->prepareData();
-				$return['albums'] = $album->get_albums();
+				$return['albums'] = $this->albumFunctions->get_albums($album);
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
 				break;
 		}
