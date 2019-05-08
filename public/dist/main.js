@@ -2041,6 +2041,9 @@ albums.isShared = function (albumID) {
 			found = true;
 			return false; // stop the loop
 		}
+		if (this.albums) {
+			$.each(this.albums, func);
+		}
 	};
 
 	if (albums.json.shared_albums !== null) $.each(albums.json.shared_albums, func);
@@ -2063,7 +2066,9 @@ albums.getByID = function (albumID) {
 			json = this;
 			return false; // stop the loop
 		}
-		if (this.albums) $.each(this.albums, func);
+		if (this.albums) {
+			$.each(this.albums, func);
+		}
 	};
 
 	$.each(albums.json.albums, func);
@@ -2076,6 +2081,8 @@ albums.getByID = function (albumID) {
 albums.deleteByID = function (albumID) {
 
 	// Function returns the JSON of an album
+	// This function is only ever invoked for top-level albums so it
+	// doesn't need to descend down the albums tree.
 
 	if (albumID == null) return false;
 	if (!albums.json) return false;
@@ -2223,11 +2230,11 @@ build.photo = function (data) {
 	var thumb2x = '';
 
 	var isVideo = data.type && data.type.indexOf('video') > -1;
-	if (data.thumb === 'uploads/thumb/' && isVideo) {
+	if (data.thumbUrl === 'uploads/thumb/' && isVideo) {
 		thumbnail = "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	} else if (lychee.layout === '0') {
 
-		if (data.thumb2x) {
+		if (data.hasOwnProperty('thumb2x')) {
 			// Lychee v4
 			thumb2x = data.thumb2x;
 		} else {
@@ -2246,7 +2253,7 @@ build.photo = function (data) {
 	} else {
 
 		if (data.small !== '') {
-			if (data.small2x && data.small2x !== '') {
+			if (data.hasOwnProperty('small2x') && data.small2x !== '') {
 				thumb2x = "data-srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
 			}
 
@@ -2254,33 +2261,38 @@ build.photo = function (data) {
 			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else if (data.medium !== '') {
-			if (data.medium2x && data.medium2x !== '') {
+			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
 				thumb2x = "data-srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
 			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
-		} else {
-
-			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+		} else if (!isVideo) {
+			// Fallback for images with no small or medium.
+			thumbnail = "<span class=\"thumbimg\">";
 			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
+		} else {
+			// Fallback for videos with no small (the case of no thumb is
+			// handled at the top of this function).
 
-			// 	{ // safe case if neither medium nor small exists
-			// 	if (data.thumb2x) { // Lychee v4
-			// 		thumb2x = data.thumb2x
-			// 	} else { // Lychee v3
-			// 		var {path: thumb2x} = lychee.retinize(data.thumbUrl)
-			// 	}
-			//
-			// 	if (thumb2x !== '') {
-			// 		thumb2x = `data-srcset='${data.thumbUrl} 200w, ${thumb2x} 400w'`
-			// 	}
-			//
-			// 	thumbnail = `<span class="thumbimg${isVideo ? ' video' : ''}">`;
-			// 	thumbnail += `<img class='lazyload' src='dist/images/placeholder.png' data-src='${data.thumbUrl}' ` + thumb2x + ` alt='Photo thumbnail' data-overlay='false' draggable='false'>`;
-			// 	thumbnail += `</span>`;
+			if (data.hasOwnProperty('thumb2x')) {
+				// Lychee v4
+				thumb2x = data.thumb2x;
+			} else {
+				// Lychee v3
+				var _lychee$retinize3 = lychee.retinize(data.thumbUrl),
+				    thumb2x = _lychee$retinize3.path;
+			}
+
+			if (thumb2x !== '') {
+				thumb2x = "data-srcset='" + data.thumbUrl + " 200w, " + thumb2x + " 400w'";
+			}
+
+			thumbnail = "<span class=\"thumbimg video\">";
+			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "</span>";
 		}
 	}
 
@@ -2333,7 +2345,7 @@ build.imageview = function (data, visibleControls) {
 		if (data.medium !== '') {
 			var medium = '';
 
-			if (data.medium2x && data.medium2x !== '') {
+			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
 				medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 			}
 			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
@@ -2455,7 +2467,9 @@ contextMenu.album = function (albumID, e) {
 	if (album.isSmartID(albumID)) return false;
 
 	// Show merge-item when there's more than one album
-	var showMerge = albums.json && albums.json.albums && Object.keys(albums.json.albums).length > 1;
+	// Commented out because it doesn't consider subalbums or shared albums.
+	// let showMerge = (albums.json && albums.json.albums && Object.keys(albums.json.albums).length>1);
+	var showMerge = true;
 
 	var items = [{ title: build.iconic('pencil') + lychee.locale['RENAME'], fn: function fn() {
 			return album.setTitle([albumID]);
@@ -2483,7 +2497,9 @@ contextMenu.albumMulti = function (albumIDs, e) {
 	var autoMerge = albumIDs.length > 1;
 
 	// Show merge-item when there's more than one album
-	var showMerge = albums.json && albums.json.albums && Object.keys(albums.json.albums).length > 1;
+	// Commented out because it doesn't consider subalbums or shared albums.
+	// let showMerge = (albums.json && albums.json.albums && Object.keys(albums.json.albums).length>1);
+	var showMerge = true;
 
 	var items = [{ title: build.iconic('pencil') + lychee.locale['RENAME_ALL'], fn: function fn() {
 			return album.setTitle(albumIDs);
@@ -2541,7 +2557,13 @@ contextMenu.buildList = function (lists, exclude, action) {
 					}
 				});
 
-				items = items.concat(contextMenu.buildList(lists, exclude, action, item.id, layer + 1));
+				if (item.albums && item.albums.length > 0) {
+					items = items.concat(contextMenu.buildList(item.albums, exclude, action, item.id, layer + 1));
+				} else {
+					// Fallback for flat tree representation.  Should not be
+					// needed anymore but shouldn't hurt either.
+					items = items.concat(contextMenu.buildList(lists, exclude, action, item.id, layer + 1));
+				}
 			})();
 		}
 
@@ -2728,11 +2750,11 @@ contextMenu.getSubIDs = function (albums, albumID) {
 
 	for (a = 0; a < albums.length; a++) {
 		if (parseInt(albums[a].parent_id, 10) === parseInt(albumID, 10)) {
+			ids = ids.concat(contextMenu.getSubIDs(albums, albums[a].id));
+		}
 
-			var sub = contextMenu.getSubIDs(albums, albums[a].id);
-			for (id = 0; id < sub.length; id++) {
-				ids.push(sub[id]);
-			}
+		if (albums[a].albums && albums[a].albums.length > 0) {
+			ids = ids.concat(contextMenu.getSubIDs(albums[a].albums, albumID));
 		}
 	}
 
@@ -2763,7 +2785,12 @@ contextMenu.move = function (IDs, e, callback) {
 			}
 			if (visible.album()) {
 				if (callback !== album.merge) {
-					exclude.push(album.json.id.toString());
+					// For merging, don't exclude the parent.
+					exclude.push(album.getID().toString());
+				}
+				if (IDs.length === 1 && IDs[0] === album.getID() && album.getParent() && callback === album.setAlbum) {
+					// If moving the current album, exclude its parent.
+					exclude.push(album.getParent().toString());
 				}
 			} else if (visible.photo()) {
 				exclude.push(photo.json.album.toString());
@@ -6257,6 +6284,11 @@ sidebar.createStructure.photo = function (data) {
 	};
 
 	if (isVideo) {
+		if (data.width === 0 || data.height === 0) {
+			// Remove the "Resolution" line if we don't have the data.
+			structure.image.rows.splice(-1, 1);
+		}
+
 		// We overload the database, storing duration (in full seconds) in
 		// "aperture" and frame rate (floating point with three digits after
 		// the decimal point) in "focal".
@@ -6418,8 +6450,19 @@ sidebar.createStructure.album = function (data) {
 	structure.album = {
 		title: lychee.locale['ALBUM_ALBUM'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }, { title: lychee.locale['ALBUM_IMAGES'], kind: 'images', value: (data.photos ? data.photos.length : 0) - videoCount }]
+		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }]
 	};
+	if (data.albums && data.albums.length > 0) {
+		structure.album.rows.push({ title: lychee.locale['ALBUM_SUBALBUMS'],
+			kind: 'subalbums', value: data.albums.length });
+	}
+	if (data.photos) {
+		if (data.photos.length - videoCount > 0) {
+			structure.album.rows.push({ title: lychee.locale['ALBUM_IMAGES'],
+				kind: 'images',
+				value: data.photos.length - videoCount });
+		}
+	}
 	if (videoCount > 0) {
 		structure.album.rows.push({ title: lychee.locale['ALBUM_VIDEOS'],
 			kind: 'videos', value: videoCount });
@@ -7351,6 +7394,9 @@ view.album = {
 					if (album.json.num) {
 						view.album.num();
 					}
+					if (album.json.photos.length <= 0) {
+						lychee.content.find('.divider').remove();
+					}
 					if (justify) {
 						view.album.content.justify();
 					}
@@ -7379,9 +7425,14 @@ view.album = {
 				}
 				var ratio = [];
 				$.each(album.json.photos, function (i) {
-					var l_width = this.width > 0 ? this.width : 200;
-					var l_height = this.height > 0 ? this.height : 200;
-					ratio[i] = l_width / l_height;
+					ratio[i] = this.height > 0 ? this.width / this.height : 1;
+					if (this.type && this.type.indexOf('video') > -1) {
+						// Video.  If there's no small and medium, we have
+						// to fall back to the square thumb.
+						if (this.small === '' && this.medium === '') {
+							ratio[i] = 1;
+						}
+					}
 				});
 				var layoutGeometry = require('justified-layout')(ratio, {
 					containerWidth: containerWidth,
@@ -7408,6 +7459,14 @@ view.album = {
 				}
 				$('.unjustified-layout > div').each(function (i) {
 					var ratio = album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1;
+					if (album.json.photos[i].type && album.json.photos[i].type.indexOf('video') > -1) {
+						// Video.  If there's no small and medium, we have
+						// to fall back to the square thumb.
+						if (album.json.photos[i].small === '' && album.json.photos[i].medium === '') {
+							ratio = 1;
+						}
+					}
+
 					var height = parseFloat($(this).css('max-height'), 10);
 					var width = height * ratio;
 					var margin = parseFloat($(this).css('margin-right'), 10);

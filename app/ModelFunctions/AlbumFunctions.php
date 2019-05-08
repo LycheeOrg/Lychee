@@ -152,7 +152,7 @@ class AlbumFunctions
 
 				// Turn data from the database into a front-end friendly format
 				$album = $album_model->prepareData();
-				$album['albums'] = $album_model->get_albums();
+				$album['albums'] = $this->get_albums($album_model);
 
 				// Thumbs
 				if ((!Session::get('login') && $album_model->password === null) ||
@@ -257,6 +257,35 @@ class AlbumFunctions
 		return $return;
 
 	}
+
+
+
+	/**
+	 * Recursively returns the tree structure of albums.
+	 *
+	 * @return array
+	 */
+	public function get_albums(Album $album): array
+	{
+		$subAlbums = [];
+		$userId = Session::get('UserID');
+		foreach ($album->children as $subAlbum) {
+
+			if (($subAlbum->public == '1' && $subAlbum->visible_hidden == '1') || $userId === 0 || ($userId === $subAlbum->owner->id)) {
+
+				$album = $subAlbum->prepareData();
+				$album['albums'] = $this->get_albums($subAlbum);
+				if ($subAlbum->password === null || Session::get('login')) {
+					$album = $subAlbum->gen_thumbs($album);
+				}
+
+				$subAlbums[] = $album;
+			}
+		}
+
+		return $subAlbums;
+	}
+
 
 
 }

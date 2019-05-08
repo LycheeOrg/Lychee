@@ -1279,11 +1279,11 @@ build.photo = function (data) {
 	var thumb2x = '';
 
 	var isVideo = data.type && data.type.indexOf('video') > -1;
-	if (data.thumb === 'uploads/thumb/' && isVideo) {
+	if (data.thumbUrl === 'uploads/thumb/' && isVideo) {
 		thumbnail = "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	} else if (lychee.layout === '0') {
 
-		if (data.thumb2x) {
+		if (data.hasOwnProperty('thumb2x')) {
 			// Lychee v4
 			thumb2x = data.thumb2x;
 		} else {
@@ -1302,7 +1302,7 @@ build.photo = function (data) {
 	} else {
 
 		if (data.small !== '') {
-			if (data.small2x && data.small2x !== '') {
+			if (data.hasOwnProperty('small2x') && data.small2x !== '') {
 				thumb2x = "data-srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
 			}
 
@@ -1310,33 +1310,38 @@ build.photo = function (data) {
 			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else if (data.medium !== '') {
-			if (data.medium2x && data.medium2x !== '') {
+			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
 				thumb2x = "data-srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
 			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
-		} else {
-
-			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+		} else if (!isVideo) {
+			// Fallback for images with no small or medium.
+			thumbnail = "<span class=\"thumbimg\">";
 			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
+		} else {
+			// Fallback for videos with no small (the case of no thumb is
+			// handled at the top of this function).
 
-			// 	{ // safe case if neither medium nor small exists
-			// 	if (data.thumb2x) { // Lychee v4
-			// 		thumb2x = data.thumb2x
-			// 	} else { // Lychee v3
-			// 		var {path: thumb2x} = lychee.retinize(data.thumbUrl)
-			// 	}
-			//
-			// 	if (thumb2x !== '') {
-			// 		thumb2x = `data-srcset='${data.thumbUrl} 200w, ${thumb2x} 400w'`
-			// 	}
-			//
-			// 	thumbnail = `<span class="thumbimg${isVideo ? ' video' : ''}">`;
-			// 	thumbnail += `<img class='lazyload' src='dist/images/placeholder.png' data-src='${data.thumbUrl}' ` + thumb2x + ` alt='Photo thumbnail' data-overlay='false' draggable='false'>`;
-			// 	thumbnail += `</span>`;
+			if (data.hasOwnProperty('thumb2x')) {
+				// Lychee v4
+				thumb2x = data.thumb2x;
+			} else {
+				// Lychee v3
+				var _lychee$retinize3 = lychee.retinize(data.thumbUrl),
+				    thumb2x = _lychee$retinize3.path;
+			}
+
+			if (thumb2x !== '') {
+				thumb2x = "data-srcset='" + data.thumbUrl + " 200w, " + thumb2x + " 400w'";
+			}
+
+			thumbnail = "<span class=\"thumbimg video\">";
+			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "</span>";
 		}
 	}
 
@@ -1389,7 +1394,7 @@ build.imageview = function (data, visibleControls) {
 		if (data.medium !== '') {
 			var medium = '';
 
-			if (data.medium2x && data.medium2x !== '') {
+			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
 				medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 			}
 			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
@@ -1919,6 +1924,11 @@ sidebar.createStructure.photo = function (data) {
 	};
 
 	if (isVideo) {
+		if (data.width === 0 || data.height === 0) {
+			// Remove the "Resolution" line if we don't have the data.
+			structure.image.rows.splice(-1, 1);
+		}
+
 		// We overload the database, storing duration (in full seconds) in
 		// "aperture" and frame rate (floating point with three digits after
 		// the decimal point) in "focal".
@@ -2080,8 +2090,19 @@ sidebar.createStructure.album = function (data) {
 	structure.album = {
 		title: lychee.locale['ALBUM_ALBUM'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }, { title: lychee.locale['ALBUM_IMAGES'], kind: 'images', value: (data.photos ? data.photos.length : 0) - videoCount }]
+		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }]
 	};
+	if (data.albums && data.albums.length > 0) {
+		structure.album.rows.push({ title: lychee.locale['ALBUM_SUBALBUMS'],
+			kind: 'subalbums', value: data.albums.length });
+	}
+	if (data.photos) {
+		if (data.photos.length - videoCount > 0) {
+			structure.album.rows.push({ title: lychee.locale['ALBUM_IMAGES'],
+				kind: 'images',
+				value: data.photos.length - videoCount });
+		}
+	}
 	if (videoCount > 0) {
 		structure.album.rows.push({ title: lychee.locale['ALBUM_VIDEOS'],
 			kind: 'videos', value: videoCount });
