@@ -1,9 +1,8 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace Tests\Feature;
 
-use App\Logs;
-use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class FailTest extends TestCase
@@ -13,7 +12,7 @@ class FailTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function fail_test()
+	public function test_fail()
 	{
 		$this->assertTrue(false);
 
