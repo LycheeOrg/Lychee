@@ -54,3 +54,10 @@ script:
 after_success:
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash codecov.sh ; fi"
 
+notifications:
+  webhooks:
+    urls:
+      - secure: "c1eBiIYJlvsoRdz4nSF4UHI7OV+OKdZhbMCz4wz+ToTxXN6D//RbAZcMIBnJtuhzHpEYqvAII8UeIfP6JI2JraPt8+pjjEa+So7lEBqHPI/yBBsXVWNlcAR1w1Od2rU+L/aAn9t+PZMHCpc1DXsTfinM0+yg7V6EZ/tiLSXxCFA1B4yvECAZDWS/NwfJvM0KDjOFlBmc/7R+nu/vP1PTWWZ8x7PWl0/8uMQUCMu9yJNR9XcOiAZZa5Re0WqhsmJQdiu+/u3INvSlQsYOU/BNeoGdKf8LOFmKZnN9MnopBcHG3Y4KFbT8hmKy9Mu5CqvUXZds6EgSLc/IuTJUXLxvcBtvKUOWdHvrSugDH0gUum4xW2FKWEAPAAOMUqX88m4xYVQSIRA6lp2eZIk1u8/EDVcLNhkZIXyUNZXFXziKb0rg2AHhPB/htGRL7dE9YsVOhmzwUeWisIcRObgVIWN+1YTbWMM+pwxfTWRrAg9LDK2PX4PteqNe4Xq2AMR6JXkGlZy/2BJosdlvVHMllbX8wtJpFX8g+zCkij7Ok2wK4UhWC6m3IGa+YaPhGTammWB2Aci2CfCjsBriMQ/rpku+RM5rRZEtWM3EcymS/ZUU8JPZEBdB27dHD60RTttEXqYbETHHgRWOUZmFg/lPfO3FRsIx/OTsmqsBZ4SJMFwlasA="
+    on_success: change  # options: [always|never|change] default: always
+    on_failure: always  # options: [always|never|change] default: always
+    on_start: never     # options: [always|never|change] default: always
