@@ -16,7 +16,8 @@ class FailTest extends TestCase
 	public function fail_test()
 	{
 		$response = $this->get('/Logs');
-		$response->assertStatus(false); // code 200 something
+		$response->assertStatus("rabbit"); // code 200 something
+		$response->assertStatus(12345); // code 200 something
 
 		Session::flush();
 
