@@ -41,7 +41,7 @@ class DiagnosticsTest extends TestCase
 		foreach ($logs as $log) {
 			$print .= $log->created_at." -- ".str_pad($log->type, 7)." -- ".$log->function." -- ".$log->line.". -- ".$log->text."\n";
 		}
-		if ($logs != '') {
+		if ($print != '') {
 			$this->addWarning($print);
 		}
 		$response = $this->post('/api/Diagnostics');
