@@ -41,15 +41,26 @@ class AlbumFunctions
 	 */
 	public function create(string $title, int $parent_id): Album
 	{
-		$num = Album::where('id', '=', $parent_id)->count();
-		// id cannot be 0, so by definition if $parent_id is 0 then...
-
 		$album = new Album();
 		$album->id = Helpers::generateID();
 		$album->title = $title;
 		$album->description = '';
-		$album->owner_id = Session::get('UserID');
-		$album->parent_id = ($num == 0 ? null : $parent_id);
+		$album->parent_id = ($parent_id === 0 ? null : $parent_id);
+
+		if (Session::get('login') && Session::get('UserID') === 0 && $parent_id !== 0) {
+			// Admin can add subalbums to other users' albums.  Make sure that
+			// the ownership stays with that user.
+			$parentAlb = Album::find($parent_id);
+			if ($parentAlb === null) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+				return Response::error('Could not find specified album');
+			}
+
+			$album->owner_id = $parentAlb->owner_id;
+		}
+		else {
+			$album->owner_id = Session::get('UserID');
+		}
 
 		do {
 			$retry = false;
@@ -286,6 +297,34 @@ class AlbumFunctions
 		return $subAlbums;
 	}
 
+
+
+	/**
+	 * Recursively set the ownership of the contents of an album.
+	 *
+	 * @param $albumID
+	 * @param int $ownerId
+	 * @return bool
+	 */
+	public function setContentsOwner($albumID, int $ownerId)
+	{
+		$photos = Photo::where('album_id', '=', $albumID)->get();
+		$no_error = true;
+		foreach ($photos as $photo) {
+			$photo->owner_id = $ownerId;
+			$no_error &= $photo->save();
+		}
+
+		$albums = Album::where('parent_id', '=', $albumID)->get();
+		foreach ($albums as $album) {
+			$album->owner_id = $ownerId;
+			$no_error &= $album->save();
+
+			$no_error &= $this->setContentsOwner($album->id, $ownerId);
+		}
+
+		return $no_error;
+	}
 
 
 }

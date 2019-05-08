@@ -7,6 +7,7 @@ use App\Album;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\Helpers;
+use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
@@ -22,14 +23,21 @@ class AlbumController extends Controller
 	 */
 	private $albumFunctions;
 
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
 
 
 	/**
 	 * @param AlbumFunctions $albumFunctions
+	 * @param SessionFunctions $sessionFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions)
+	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
 	{
 		$this->albumFunctions = $albumFunctions;
+		$this->sessionFunctions = $sessionFunctions;
 	}
 
 
@@ -384,14 +392,25 @@ class AlbumController extends Controller
 		$no_error = true;
 		foreach ($photos as $photo) {
 			$photo->album_id = $albumID;
+			if ($this->sessionFunctions->is_admin()) {
+				// Admin can merge albums between users.  Make sure that the
+				// ownership changes in the process.
+				$photo->owner_id = $album->owner_id;
+			}
 			$no_error &= $photo->save();
 		}
 
 		$albums = Album::whereIn('parent_id', $albumIDs)->get();
 		$no_error = true;
-		foreach ($albums as $album) {
-			$album->parent_id = $albumID;
-			$no_error &= $album->save();
+		foreach ($albums as $album_t) {
+			$album_t->parent_id = $albumID;
+			if ($this->sessionFunctions->is_admin()) {
+				// Admin can merge albums between users.  Make sure that the
+				// ownership changes in the process.
+				$album_t->owner_id = $album->owner_id;
+				$no_error &= $this->albumFunctions->setContentsOwner($album_t->id, $album->owner_id);
+			}
+			$no_error &= $album_t->save();
 		}
 
 		$albums = Album::whereIn('id', $albumIDs)->get();
@@ -417,11 +436,18 @@ class AlbumController extends Controller
 		// Get first albumID
 		$albumID = array_shift($albumIDs);
 
+		$ownerId = null;
 		if ($albumID != 0) {
 			$album = Album::find($albumID);
 			if ($album === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
 				return 'false';
+			}
+
+			if ($this->sessionFunctions->is_admin()) {
+				// Admin can move albums between users.  Make sure that the
+				// ownership changes in the process.
+				$ownerId = $album->owner_id;
 			}
 		}
 
@@ -429,6 +455,10 @@ class AlbumController extends Controller
 		$no_error = true;
 		foreach ($albums as $album) {
 			$album->parent_id = ($albumID == 0 ? null : $albumID);
+			if ($ownerId !== null) {
+				$album->owner_id = $ownerId;
+				$no_error &= $this->albumFunctions->setContentsOwner($album->id, $ownerId);
+			}
 			$no_error &= $album->save();
 		}
 

@@ -301,10 +301,24 @@ class PhotoFunctions
 		$photo->longitude = $info['longitude'];
 		$photo->altitude = $info['altitude'];
 		$photo->public = $public;
-		$photo->owner_id = Session::get('UserID');
 		$photo->star = $star;
 		$photo->checksum = $checksum;
 		$photo->album_id = $albumID;
+
+		if (Session::get('login') && Session::get('UserID') === 0 && $albumID !== null) {
+			// Admin can add photos to other users' albums.  Make sure that
+			// the ownership stays with that user.
+			$album = Album::find($albumID);
+			if ($album === null) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+				return Response::error('Could not find specified album');
+			}
+
+			$photo->owner_id = $album->owner_id;
+		}
+		else {
+			$photo->owner_id = Session::get('UserID');
+		}
 
 		if ($exists === false) {
 
