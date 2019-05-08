@@ -20,18 +20,6 @@ class DiagnosticsTest extends TestCase
 		Session::put('login', true);
 		Session::put('UserID', 0);
 
-		$response = $this->get('/Logs');
-		$response->assertStatus(200); // code 200 something
-
-		$response = $this->post('/api/Logs');
-		$response->assertStatus(200); // code 200 something
-
-		$response = $this->post('/api/Logs::clearNoise');
-		$response->assertStatus(200); // code 200 something
-
-		$response = $this->post('/api/Logs::clear');
-		$response->assertStatus(200); // code 200 something
-
 		$response = $this->get('/Diagnostics');
 		$response->assertStatus(200); // code 200 something
 
