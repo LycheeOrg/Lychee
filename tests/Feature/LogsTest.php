@@ -30,7 +30,7 @@ class LogsTest extends TestCase
 			$response->assertSeeText('Everything looks fine, Lychee has not reported any problems!');
 		}
 		else {
-			$response->assertViewIs('list');
+			$response->assertViewIs('logs.list');
 		}
 
 		Session::flush();
@@ -43,6 +43,8 @@ class LogsTest extends TestCase
 	{
 		$response = $this->post('/api/Logs');
 		$response->assertStatus(200); // code 200 something
+
+		// we may decide to change for another out there so
 	}
 
 
