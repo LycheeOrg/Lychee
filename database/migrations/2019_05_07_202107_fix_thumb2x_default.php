@@ -1,4 +1,5 @@
 <?php
+/** @noinspection PhpUndefinedClassInspection */
 
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
@@ -16,14 +17,13 @@ class FixThumb2xDefault extends Migration
 	{
 		if (Schema::hasTable('photos')) {
 
-			$photos = Photo::all();
-			foreach ($photos as $photo) {
-				if ($photo->thumbUrl === '' && $photo->thumb2x === 1) {
-					echo "Fixing thumb2x in ".$photo->title."\n";
-					$photo->thumb2x = 0;
-					$photo->save();
-				}
-			}
+
+			Photo::where('thumbUrl', '=', '')
+				->where('thumb2x', '=', '1')
+				->update([
+					'thumb2x' => 0
+				]);
+
 			Schema::table('photos', function (Blueprint $table) {
 				$table->boolean('thumb2x')->default(false)->change();
 			});
@@ -32,6 +32,8 @@ class FixThumb2xDefault extends Migration
 			echo "Table photos does not exist\n";
 		}
 	}
+
+
 
 	/**
 	 * Reverse the migrations.
