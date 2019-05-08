@@ -22,6 +22,13 @@ class HtmlTest extends TestCase
 		 */
 		$response = $this->get('/');
 		$response->assertOk();
+
+		$response = $this->post('/php/index.php', []);
+		$response->assertOk();
+
+		$response = $this->post('/api/Albums::get', []);
+		$response->assertOk();
+
 	}
 
 
