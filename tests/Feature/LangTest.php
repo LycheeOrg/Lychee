@@ -8,7 +8,7 @@ use Tests\TestCase;
 class LangTest extends TestCase
 {
     /**
-     * A basic feature test example.
+     * Test Languages are complete
      *
      * @return void
      */

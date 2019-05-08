@@ -9,7 +9,7 @@ use Tests\TestCase;
 class LogsTest extends TestCase
 {
 	/**
-	 * A basic feature test example.
+	 * Test log handling
 	 *
 	 * @return void
 	 */

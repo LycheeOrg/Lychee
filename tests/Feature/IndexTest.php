@@ -8,7 +8,7 @@ use Tests\TestCase;
 class IndexTest extends TestCase
 {
 	/**
-	 * A basic feature test example.
+	 * More tests
 	 *
 	 * @return void
 	 */

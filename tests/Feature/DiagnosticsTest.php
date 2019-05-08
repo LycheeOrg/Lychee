@@ -10,11 +10,11 @@ use Tests\TestCase;
 class DiagnosticsTest extends TestCase
 {
 	/**
-	 * A basic feature test example.
+	 * Test diagnostics
 	 *
 	 * @return void
 	 */
-	public function testExample()
+	public function test_diagnostics()
 	{
 		// set user as admin
 		Session::put('login', true);

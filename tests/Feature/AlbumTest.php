@@ -8,7 +8,7 @@ use Tests\TestCase;
 class AlbumTest extends TestCase
 {
     /**
-     * A basic feature test example.
+     * Test album functions
      *
      * @return void
      */
