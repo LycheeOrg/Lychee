@@ -124,7 +124,8 @@ class SessionFunctions
 	 * @param $albumID
 	 * @return bool
 	 */
-	public function has_visible_album($albumID){
+	public function has_visible_album($albumID)
+	{
 		if (!Session::has('visible_albums')) {
 			return false;
 		}

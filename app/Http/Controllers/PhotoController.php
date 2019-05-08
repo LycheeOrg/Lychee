@@ -283,9 +283,8 @@ class PhotoController extends Controller
 		$albumID = $request['albumID'];
 
 		$album = null;
-		if ($this->sessionFunctions->is_admin() && $albumID !== '0') {
-			// Admin can move photos between users.  Make sure that the
-			// ownership changes in the process.
+		if ($albumID !== '0') {
+			// just to be sure to handle ownership changes in the process.
 			$album = Album::find($albumID);
 			if ($album === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');

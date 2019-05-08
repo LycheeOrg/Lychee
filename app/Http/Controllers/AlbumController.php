@@ -55,7 +55,7 @@ class AlbumController extends Controller
 			'parent_id' => 'int|nullable'
 		]);
 
-		$album = $this->albumFunctions->create($request['title'], $request['parent_id']);
+		$album = $this->albumFunctions->create($request['title'], $request['parent_id'], Session::get('UserID'));
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}
@@ -404,12 +404,11 @@ class AlbumController extends Controller
 		$no_error = true;
 		foreach ($albums as $album_t) {
 			$album_t->parent_id = $albumID;
-			if ($this->sessionFunctions->is_admin()) {
-				// Admin can merge albums between users.  Make sure that the
-				// ownership changes in the process.
-				$album_t->owner_id = $album->owner_id;
-				$no_error &= $this->albumFunctions->setContentsOwner($album_t->id, $album->owner_id);
-			}
+
+			// just to be sure to handle ownership changes in the process.
+			$album_t->owner_id = $album->owner_id;
+			$no_error &= $this->albumFunctions->setContentsOwner($album_t->id, $album->owner_id);
+
 			$no_error &= $album_t->save();
 		}
 
@@ -433,32 +432,35 @@ class AlbumController extends Controller
 
 		// Convert to array
 		$albumIDs = explode(',', $request['albumIDs']);
+
 		// Get first albumID
 		$albumID = array_shift($albumIDs);
 
-		$ownerId = null;
+		$album_master = null;
 		if ($albumID != 0) {
-			$album = Album::find($albumID);
-			if ($album === null) {
+			$album_master = Album::find($albumID);
+			if ($album_master === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
 				return 'false';
-			}
-
-			if ($this->sessionFunctions->is_admin()) {
-				// Admin can move albums between users.  Make sure that the
-				// ownership changes in the process.
-				$ownerId = $album->owner_id;
 			}
 		}
 
 		$albums = Album::whereIn('id', $albumIDs)->get();
 		$no_error = true;
 		foreach ($albums as $album) {
-			$album->parent_id = ($albumID == 0 ? null : $albumID);
-			if ($ownerId !== null) {
-				$album->owner_id = $ownerId;
-				$no_error &= $this->albumFunctions->setContentsOwner($album->id, $ownerId);
+			if ($albumID != 0)
+			{
+				$album->parent_id = $albumID;
+
+				// just to be sure to handle ownership changes in the process.
+				$album->owner_id = $album_master->owner_id;
+				$no_error &= $this->albumFunctions->setContentsOwner($album->id, $album_master->owner_id);
 			}
+			else
+			{
+				$album->parent_id = null;
+			}
+
 			$no_error &= $album->save();
 		}
 

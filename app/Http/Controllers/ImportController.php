@@ -1,5 +1,6 @@
 <?php
 /** @noinspection PhpComposerExtensionStubsInspection */
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -12,6 +13,7 @@ use App\ModelFunctions\PhotoFunctions;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Session;
 use ImagickException;
 
 class ImportController extends Controller
@@ -218,7 +220,7 @@ class ImportController extends Controller
 					// Album creation
 
 					// Folder
-					$album = $this->albumFunctions->create(basename($file), $albumID);
+					$album = $this->albumFunctions->create(basename($file), $albumID, Session::get('UserID'));
 					// this actually should not fail.
 					if ($album === false) {
 						$error = true;

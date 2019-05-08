@@ -75,9 +75,11 @@ class PhotoFunctions
 	 * @param Photo $photo
 	 * @return string Path of the video frame
 	 */
-	public function extractVideoFrame(Photo $photo) : string
+	public function extractVideoFrame(Photo $photo): string
 	{
-		if ($photo->aperture === '') return '';
+		if ($photo->aperture === '') {
+			return '';
+		}
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
 		$video = $ffmpeg->open(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url);
@@ -171,7 +173,7 @@ class PhotoFunctions
 				$albumID = null;
 				break;
 
-			// r for recent
+			// 0 for unsorted
 			case '0':
 				$public = 0;
 				$star = 0;
@@ -303,20 +305,20 @@ class PhotoFunctions
 		$photo->public = $public;
 		$photo->star = $star;
 		$photo->checksum = $checksum;
-		$photo->album_id = $albumID;
 
-		if (Session::get('login') && Session::get('UserID') === 0 && $albumID !== null) {
-			// Admin can add photos to other users' albums.  Make sure that
-			// the ownership stays with that user.
+		if ($albumID !== null) {
 			$album = Album::find($albumID);
-			if ($album === null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-				return Response::error('Could not find specified album');
+			if ($album == null) {
+				$photo->album_id = null;
+				$photo->owner_id = Session::get('UserID');
 			}
-
-			$photo->owner_id = $album->owner_id;
+			else {
+				$photo->album_id = $albumID;
+				$photo->owner_id = $album->owner_id;
+			}
 		}
 		else {
+			$photo->album_id = null;
 			$photo->owner_id = Session::get('UserID');
 		}
 
@@ -340,7 +342,8 @@ class PhotoFunctions
 			if (in_array($photo->type, $this->validVideoTypes, true)) {
 				try {
 					$frame_tmp = $this->extractVideoFrame($photo);
-				} catch (Exception $exception) {
+				}
+				catch (Exception $exception) {
 					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 				}
 			}
@@ -372,8 +375,8 @@ class PhotoFunctions
 
 
 	/**
-	 * @param  Photo $photo
-	 * @param  string Path of the video frame
+	 * @param Photo $photo
+	 * @param string Path of the video frame
 	 * @return void
 	 */
 	public function createSmallerImages(Photo $photo, string $frame_tmp = '')
@@ -402,11 +405,11 @@ class PhotoFunctions
 	/**
 	 * Creates smaller copies of Photo
 	 *
-	 * @param  Photo $photo
-	 * @param  string $type
-	 * @param  int $maxWidth
-	 * @param  int $maxHeight
-	 * @param  string Path of the video frame
+	 * @param Photo $photo
+	 * @param string $type
+	 * @param int $maxWidth
+	 * @param int $maxHeight
+	 * @param string Path of the video frame
 	 * @return bool
 	 */
 	public function resizePhoto(Photo $photo, string $type, int $maxWidth, int $maxHeight, string $frame_tmp = ''): bool
@@ -417,7 +420,8 @@ class PhotoFunctions
 		if ($frame_tmp === '') {
 			$filename = $photo->url;
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
-		} else {
+		}
+		else {
 			$filename = $photo->thumbUrl;
 			$url = $frame_tmp;
 		}
@@ -520,7 +524,7 @@ class PhotoFunctions
 	/**
 	 * Validates whether $type is a valid image type.
 	 *
-	 * @param  int $type
+	 * @param int $type
 	 * @return boolean
 	 */
 	public function isValidImageType(int $type): bool
@@ -545,7 +549,7 @@ class PhotoFunctions
 	/**
 	 * Validates whether $type is a valid video type
 	 *
-	 * @param  string $type
+	 * @param string $type
 	 * @return boolean
 	 */
 	public function isValidVideoType(string $type): bool
@@ -570,7 +574,7 @@ class PhotoFunctions
 	/**
 	 * Validates whether $extension is a valid image or video extension
 	 *
-	 * @param  string $extension
+	 * @param string $extension
 	 * @return boolean
 	 */
 	public function isValidExtension(string $extension): bool

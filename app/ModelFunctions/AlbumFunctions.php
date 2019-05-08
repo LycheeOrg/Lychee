@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Session;
 class AlbumFunctions
 {
 
+
 	/**
 	 * given an albumID return if the said album is "smart"
 	 *
@@ -37,29 +38,29 @@ class AlbumFunctions
 	 *
 	 * @param string $title
 	 * @param int $parent_id
+	 * @param int $user_id
 	 * @return Album|string
 	 */
-	public function create(string $title, int $parent_id): Album
+	public function create(string $title, int $parent_id, int $user_id): Album
 	{
+		$parent = Album::find($parent_id);
+		// we get the parent if it exists.
+
 		$album = new Album();
 		$album->id = Helpers::generateID();
 		$album->title = $title;
 		$album->description = '';
-		$album->parent_id = ($parent_id === 0 ? null : $parent_id);
 
-		if (Session::get('login') && Session::get('UserID') === 0 && $parent_id !== 0) {
+		if ($parent !== null) {
+			$album->parent_id = $album->id;
+
 			// Admin can add subalbums to other users' albums.  Make sure that
 			// the ownership stays with that user.
-			$parentAlb = Album::find($parent_id);
-			if ($parentAlb === null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-				return Response::error('Could not find specified album');
-			}
-
-			$album->owner_id = $parentAlb->owner_id;
+			$album->owner_id = $parent->owner_id;
 		}
 		else {
-			$album->owner_id = Session::get('UserID');
+			$album->parent_id = null;
+			$album->owner_id = $user_id;
 		}
 
 		do {
