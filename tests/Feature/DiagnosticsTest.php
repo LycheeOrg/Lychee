@@ -42,7 +42,7 @@ class DiagnosticsTest extends TestCase
 //			$print .= $log->created_at." -- ".str_pad($log->type, 7)." -- ".$log->function." -- ".$log->line.". -- ".$log->text."\n";
 //		}
 //		if ($print != '') {
-//			$this->addWarning($print);
+//			$this->($print);
 //		}
 		$response = $this->post('/api/Diagnostics');
 		$response->assertStatus(200); // code 200 something too

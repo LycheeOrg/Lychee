@@ -44,7 +44,7 @@ class GithubTest extends TestCase
 	public function test_github()
 	{
 		$this->branch = @file_get_contents(sprintf('%s/HEAD', $this->git_path()));
-		$this->warning($this->branch);
+		$this->addWarning($this->branch);
 
 		$git_info = $this->gitHubFunctions->get_info();
 		$this->assertEquals('', $git_info);
