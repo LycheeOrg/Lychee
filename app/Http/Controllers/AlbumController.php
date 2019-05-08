@@ -392,11 +392,10 @@ class AlbumController extends Controller
 		$no_error = true;
 		foreach ($photos as $photo) {
 			$photo->album_id = $albumID;
-			if ($this->sessionFunctions->is_admin()) {
-				// Admin can merge albums between users.  Make sure that the
-				// ownership changes in the process.
-				$photo->owner_id = $album->owner_id;
-			}
+
+			// just to be sure to handle ownership changes in the process.
+			$photo->owner_id = $album->owner_id;
+
 			$no_error &= $photo->save();
 		}
 
