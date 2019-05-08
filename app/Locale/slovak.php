@@ -128,6 +128,7 @@ final class Slovak implements LangInterface
 			'ALBUM_CREATED'				=> 'Vytvorené',
 			'ALBUM_IMAGES'				=> 'Obrázky',
 			'ALBUM_VIDEOS'				=> 'Videá',
+			'ALBUM_SUBALBUMS'			=> 'Subalbumy',
 			'ALBUM_SHARING'				=> 'Zdieľanie',
 			'ALBUM_SHR_YES'				=> 'Áno',
 			'ALBUM_SHR_NO'				=> 'Nie',
@@ -245,6 +246,7 @@ final class Slovak implements LangInterface
 			'LOGIN_TITLE'				=> 'Zadajte meno a heslo pre vašu inštaláciu:',
 			'LOGIN_USERNAME'			=> 'Nový užívateľ',
 			'LOGIN_PASSWORD'			=> 'Nové heslo',
+			'LOGIN_PASSWORD_CONFIRM'	=> 'Heslo potvrdiť',
 			'LOGIN_CREATE'				=> 'Založiť užívateľa',
 
 			'PASSWORD_TITLE'			=> 'Zadajte vaše heslo:',
@@ -252,7 +254,6 @@ final class Slovak implements LangInterface
 			'PASSWORD_CURRENT'			=> 'Vaše pôvodné heslo',
 			'PASSWORD_TEXT'				=> 'Vaše meno a heslo bolo zmenené nasledovne:',
 			'PASSWORD_CHANGE'			=> 'Prihlásenie zmeniť',
-
 
 			'EDIT_SHARING_TITLE'		=> 'Zdieľanie spracovať',
 			'EDIT_SHARING_TEXT'			=> 'Nastavenie zdieľania pre tento album bolo zmenené nasledovne:',
