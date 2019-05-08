@@ -52,7 +52,7 @@ class AlbumFunctions
 		$album->description = '';
 
 		if ($parent !== null) {
-			$album->parent_id = $album->id;
+			$album->parent_id = $parent->id;
 
 			// Admin can add subalbums to other users' albums.  Make sure that
 			// the ownership stays with that user.
