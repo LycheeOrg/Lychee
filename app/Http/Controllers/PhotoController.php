@@ -75,7 +75,9 @@ class PhotoController extends Controller
 
 			$return = $photo->prepareData();
 			$return['original_album'] = $return['album'];
-			$return['album'] = $photo->album_id;
+			// This way preserves the back button functionality for photos
+			// in smart albums.
+			$return['album'] = $request['albumID'];
 			return $return;
 		}
 
