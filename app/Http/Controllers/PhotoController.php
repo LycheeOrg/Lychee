@@ -282,9 +282,22 @@ class PhotoController extends Controller
 
 		$albumID = $request['albumID'];
 
+		$album = null;
+		if ($albumID !== '0') {
+			// just to be sure to handle ownership changes in the process.
+			$album = Album::find($albumID);
+			if ($album === null) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+				return false;
+			}
+		}
+
 		$no_error = true;
 		foreach ($photos as $photo) {
 			$photo->album_id = ($albumID == '0') ? null : $albumID;
+			if ($album !== null) {
+				$photo->owner_id = $album->owner_id;
+			}
 			$no_error &= $photo->save();
 		}
 		Album::reset_takestamp();
