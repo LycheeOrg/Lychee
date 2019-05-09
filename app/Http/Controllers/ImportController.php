@@ -54,11 +54,11 @@ class ImportController extends Controller
 	{
 		// No need to validate photo type and extension in this function.
 		// $photo->add will take care of it.
-		$info = getimagesize($path);
+		$mime = mime_content_type($path);
 
 		$nameFile = array();
 		$nameFile['name'] = $path;
-		$nameFile['type'] = $info['mime'];
+		$nameFile['type'] = $mime;
 		$nameFile['tmp_name'] = $path;
 
 		if ($this->photoFunctions->add($nameFile, $albumID) === false) {
@@ -105,7 +105,7 @@ class ImportController extends Controller
 			}
 			// Verify image
 			$type = @exif_imagetype($url);
-			if (!$this->photoFunctions->isValidImageType($type)) {
+			if (!$this->photoFunctions->isValidImageType($type) && !in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported ('.$url.')');
 				continue;
@@ -205,8 +205,9 @@ class ImportController extends Controller
 				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory ('.$file.')');
 				continue;
 			}
-			if (@exif_imagetype($file) !== false) {
-				// Photo
+			$extension = Helpers::getExtension($file, true);
+			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
+				// Photo or Video
 				$contains['photos'] = true;
 				if ($this->photo($file, $albumID) === false) {
 					$error = true;
