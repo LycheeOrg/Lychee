@@ -25,7 +25,7 @@ class AlbumFunctions
 	 */
 	public function is_smart_album($albumID)
 	{
-		if ($albumID === 'f' || $albumID === 's' || $albumID === 'r' || $albumID === 0) {
+		if ($albumID === 'f' || $albumID === 's' || $albumID === 'r' || $albumID === '0') {
 			return true;
 		}
 		return false;
