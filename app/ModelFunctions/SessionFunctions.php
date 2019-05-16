@@ -45,6 +45,20 @@ class SessionFunctions
 
 
 	/**
+	 * Return true if the currently logged in user is the one provided
+	 * (or if that user is Admin)
+	 *
+	 * @param int userId
+	 * @return bool
+	 */
+	public function is_current_user(int $userId)
+	{
+		return Session::get('login') && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
+	}
+
+
+
+	/**
 	 * Sets the session values when no there is no username and password in the database.
 	 * @return boolean Returns true when no login was found.
 	 */
@@ -132,11 +146,34 @@ class SessionFunctions
 
 		$visible_albums = Session::get('visible_albums');
 		$visible_albums = explode('|', $visible_albums);
-		$found = false;
-		foreach ($visible_albums as $visible_album) {
-			$found |= ($visible_album == $albumID);
+
+		return in_array($albumID, $visible_albums);
+	}
+
+
+
+	/**
+	 * Add new album to the visible_albums session variable.
+	 *
+	 * @param $albumID
+	 */
+	public function add_visible_album($albumID)
+	{
+		if (Session::has('visible_albums')) {
+			$visible_albums = Session::get('visible_albums');
+		}
+		else {
+			$visible_albums = '';
 		}
 
-		return $found;
+		$visible_albums = explode('|', $visible_albums);
+		if (!in_array($albumID, $visible_albums)) {
+			$visible_albums[] = $albumID;
+		}
+
+		$visible_albums = implode('|', $visible_albums);
+		Session::put('visible_albums', $visible_albums);
 	}
+
+
 }
