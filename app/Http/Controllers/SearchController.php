@@ -4,6 +4,7 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\ModelFunctions\AlbumFunctions;
 use App\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -11,6 +12,23 @@ use Illuminate\Support\Facades\Session;
 
 class SearchController extends Controller
 {
+
+	/**
+	 * @var AlbumFunctions
+	 */
+	private $albumFunctions;
+
+
+
+	/**
+	 * @param AlbumFunctions $albumFunctions
+	 */
+	public function __construct(AlbumFunctions $albumFunctions)
+	{
+		$this->albumFunctions = $albumFunctions;
+	}
+
+
 
 	/**
 	 * Escape special characters for a LIKE query.
@@ -104,8 +122,9 @@ class SearchController extends Controller
 			$i = 0;
 			foreach ($albums as $album_model) {
 				$album = $album_model->prepareData();
+				// FIXME! Unused?
 				$album['sysstamp'] = $album_model['created_at'];
-				$album = $album_model->gen_thumbs($album);
+				$album = $album_model->gen_thumbs($album, $this->albumFunctions->get_sub_albums($album_model, [$album_model->id]));
 				$return['albums'][$i] = $album;
 				++$i;
 			}
