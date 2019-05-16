@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\ControllerFunctions\ReadAccessFunctions;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
@@ -19,7 +20,8 @@ class DemoController extends Controller
 		$configFunctions = new ConfigFunctions();
 		$sessionFunctions =  new SessionFunctions();
 		$githubFunctions = new GitHubFunctions();
-		$albumFunctions = new AlbumFunctions();
+		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
+		$albumFunctions = new AlbumFunctions($readAccessFunctions);
 
 		/**
 		 * Session::init
@@ -66,7 +68,7 @@ class DemoController extends Controller
 			// Get photos
 			// Get album information
 			$return_album_json = $album->prepareData();
-			$return_album_json['albums'] = $album->get_albums();
+			$return_album_json['albums'] = $albumFunctions->get_albums($album);
 			$photos_sql = Photo::set_order(Photo::where('album_id', '=', $album->id));
 
 			$previousPhotoID = '';

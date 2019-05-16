@@ -4,6 +4,7 @@
 namespace App\ModelFunctions;
 
 use App\Album;
+use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\Photo;
 use App\Response;
@@ -15,6 +16,19 @@ use Illuminate\Support\Facades\Session;
 
 class AlbumFunctions
 {
+
+	/**
+	 * @var readAccessFunctions
+	 */
+	private $readAccessFunctions;
+
+
+
+	function __construct(ReadAccessFunctions $readAccessFunctions)
+	{
+		$this->readAccessFunctions = $readAccessFunctions;
+	}
+
 
 
 	/**
@@ -164,14 +178,13 @@ class AlbumFunctions
 
 				// Turn data from the database into a front-end friendly format
 				$album = $album_model->prepareData();
-				$album['albums'] = $this->get_albums($album_model);
 
-				// Thumbs
-				if ((!Session::get('login') && $album_model->password === null) ||
-					(Session::get('login'))) {
+				if ($this->readAccessFunctions->album($album_model->id) === 1) {
+					$album['albums'] = $this->get_albums($album_model);
+					$album = $album_model->gen_thumbs($album, $this->get_sub_albums($album_model, [$album_model->id]));
 
+					// FIXME! Unused?
 					$album['sysstamp'] = $album_model['created_at'];
-					$album = $album_model->gen_thumbs($album);
 				}
 
 				// Add to return
@@ -283,12 +296,16 @@ class AlbumFunctions
 		$userId = Session::get('UserID');
 		foreach ($album->children as $subAlbum) {
 
-			if (($subAlbum->public == '1' && $subAlbum->visible_hidden == '1') || $userId === 0 || ($userId === $subAlbum->owner->id)) {
+			$haveAccess = $this->readAccessFunctions->album($subAlbum->id, true);
 
+			// We do list albums that need a password, but we limit what we
+			// return about them.
+			if ($haveAccess === 1 || $haveAccess === 3) {
 				$album = $subAlbum->prepareData();
-				$album['albums'] = $this->get_albums($subAlbum);
-				if ($subAlbum->password === null || Session::get('login')) {
-					$album = $subAlbum->gen_thumbs($album);
+
+				if ($haveAccess === 1) {
+					$album['albums'] = $this->get_albums($subAlbum);
+					$album = $subAlbum->gen_thumbs($album, $this->get_sub_albums($subAlbum, [$subAlbum->id]));
 				}
 
 				$subAlbums[] = $album;
@@ -326,6 +343,29 @@ class AlbumFunctions
 
 		return $no_error;
 	}
+
+
+
+	/**
+	 * Recursively go through each sub album and build a list of them.
+	 * Unlike Album::get_all_sub_albums(), this function follows access
+	 * checks and skips hidden subalbums.
+	 *
+	 * @param $parentAlbum
+	 * @param array $return
+	 * @return array
+	 */
+	public function get_sub_albums($parentAlbum, $return = array())
+	{
+		foreach ($parentAlbum->children as $album) {
+			if ($this->readAccessFunctions->album($album->id, true) === 1) {
+				$return[] = $album->id;
+				$return = $this->get_sub_albums($album, $return);
+			}
+		}
+		return $return;
+	}
+
 
 
 }

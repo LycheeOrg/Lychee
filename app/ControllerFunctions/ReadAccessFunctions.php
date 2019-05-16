@@ -7,6 +7,8 @@ namespace App\ControllerFunctions;
 use App\Album;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class ReadAccessFunctions
 {
@@ -20,6 +22,7 @@ class ReadAccessFunctions
 
 	/**
 	 * @param SessionFunctions $sessionFunctions
+	 * @param AlbumFunctions $albumFunctions
 	 */
 	public function __construct(SessionFunctions $sessionFunctions)
 	{
@@ -36,24 +39,39 @@ class ReadAccessFunctions
 	 * if 3 : album is password protected and require user input
 	 *
 	 * @param $albumID
+	 * @param bool obeyHidden
 	 * @return int
 	 */
-	public function albums($albumID)
+	public function album($albumID, bool $obeyHidden = false)
 	{
-		// if we are logged in then we have access
-		// we do not use this function to check if there is proper access in case of sharing... yet?
-		if ($this->sessionFunctions->is_logged_in()) {
+		if ($this->sessionFunctions->is_logged_in() &&
+		in_array($albumID, array('f', 's', 'r', '0'))) {
 			return 1; // access granted
 		}
-
 
 		$album = Album::find($albumID);
 		if ($album == null) {
 			return 0;  // Does not exist
 		}
-		if ($album->public != 1) {
+
+		if ($this->sessionFunctions->is_current_user($album->owner_id)) {
+			return 1; // access granted
+		}
+
+		// Check if the album is shared with us
+		if ($this->sessionFunctions->is_logged_in() &&
+		DB::table('user_album')
+			->where('user_id', '=', Session::get('UserID'))
+			->where('album_id', '=', $albumID)
+			->count() === 1) {
+			return 1; // access granted
+		}
+
+		if ($album->public != 1 ||
+		($obeyHidden && $album->visible_hidden !== 1)) {
 			return 2;  // Warning: Album private!
 		}
+
 		if ($album->password == '') {
 			return 1;  // access granted
 		}
@@ -76,11 +94,16 @@ class ReadAccessFunctions
 	 */
 	public function photo(Photo $photo)
 	{
-		if ($this->sessionFunctions->is_logged_in())
+		if ($this->sessionFunctions->is_current_user($photo->owner_id)) {
 			return true;
-		if ($photo->get_public() == '1')
+		}
+		if ($photo->get_public() == '1') {
 			return true;
-		if ($this->albums($photo->album_id) === 1)
+		}
+		if ($this->album($photo->album_id) === 1) {
 			return true;
+		}
+
+		return false;
 	}
 }
