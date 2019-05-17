@@ -120,8 +120,6 @@ class PhotoController extends Controller
 			//                |max:2048'
 		]);
 
-//		$id = Session::get('UserID');
-
 		if (!$request->hasfile('0')) {
 			return Response::error('missing files');
 		}
