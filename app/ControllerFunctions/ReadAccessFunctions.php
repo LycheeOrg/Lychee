@@ -5,6 +5,7 @@ namespace App\ControllerFunctions;
 
 
 use App\Album;
+use App\Logs;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use Illuminate\Support\Facades\DB;
@@ -44,8 +45,7 @@ class ReadAccessFunctions
 	 */
 	public function album($albumID, bool $obeyHidden = false)
 	{
-		if ($this->sessionFunctions->is_logged_in() &&
-		in_array($albumID, array('f', 's', 'r', '0'))) {
+		if (in_array($albumID, array('f', 's', 'r', '0'))) {
 			return 1; // access granted
 		}
 
@@ -97,7 +97,7 @@ class ReadAccessFunctions
 		if ($this->sessionFunctions->is_current_user($photo->owner_id)) {
 			return true;
 		}
-		if ($photo->get_public() == '1') {
+		if ($photo->public === 1) {
 			return true;
 		}
 		if ($this->album($photo->album_id) === 1) {
