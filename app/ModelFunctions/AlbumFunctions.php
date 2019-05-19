@@ -183,8 +183,6 @@ class AlbumFunctions
 					$album['albums'] = $this->get_albums($album_model);
 					$album = $album_model->gen_thumbs($album, $this->get_sub_albums($album_model, [$album_model->id]));
 
-					// FIXME! Unused?
-					$album['sysstamp'] = $album_model['created_at'];
 				}
 
 				// Add to return

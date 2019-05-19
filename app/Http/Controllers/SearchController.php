@@ -122,8 +122,6 @@ class SearchController extends Controller
 			$i = 0;
 			foreach ($albums as $album_model) {
 				$album = $album_model->prepareData();
-				// FIXME! Unused?
-				$album['sysstamp'] = $album_model['created_at'];
 				$album = $album_model->gen_thumbs($album, $this->albumFunctions->get_sub_albums($album_model, [$album_model->id]));
 				$return['albums'][$i] = $album;
 				++$i;
