@@ -8,12 +8,12 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 
 /**
  * App\Album
@@ -122,6 +122,14 @@ class Album extends Model
 	}
 
 
+
+	/**
+	 * @return BelongsToMany
+	 */
+	public function shared_with()
+	{
+		return $this->belongsToMany('App\User', 'user_album', 'album_id', 'user_id');
+	}
 
 	/**
 	 * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.

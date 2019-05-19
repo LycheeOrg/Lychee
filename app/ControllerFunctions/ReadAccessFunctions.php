@@ -5,11 +5,8 @@ namespace App\ControllerFunctions;
 
 
 use App\Album;
-use App\Logs;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 class ReadAccessFunctions
 {
@@ -23,7 +20,6 @@ class ReadAccessFunctions
 
 	/**
 	 * @param SessionFunctions $sessionFunctions
-	 * @param AlbumFunctions $albumFunctions
 	 */
 	public function __construct(SessionFunctions $sessionFunctions)
 	{
@@ -45,7 +41,12 @@ class ReadAccessFunctions
 	 */
 	public function album($albumID, bool $obeyHidden = false)
 	{
-		if (in_array($albumID, array('f', 's', 'r', '0'))) {
+		if (in_array($albumID, array(
+			'f',
+			's',
+			'r',
+			'0'
+		))) {
 			return 1; // access granted
 		}
 
@@ -60,15 +61,14 @@ class ReadAccessFunctions
 
 		// Check if the album is shared with us
 		if ($this->sessionFunctions->is_logged_in() &&
-		DB::table('user_album')
-			->where('user_id', '=', Session::get('UserID'))
-			->where('album_id', '=', $albumID)
-			->count() === 1) {
+			$album->shared_with->map(function ($user) {
+				return $user->id;
+			})->contains($this->sessionFunctions->id())) {
 			return 1; // access granted
 		}
 
 		if ($album->public != 1 ||
-		($obeyHidden && $album->visible_hidden !== 1)) {
+			($obeyHidden && $album->visible_hidden !== 1)) {
 			return 2;  // Warning: Album private!
 		}
 

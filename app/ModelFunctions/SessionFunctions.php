@@ -45,6 +45,20 @@ class SessionFunctions
 
 
 	/**
+	 * Return the current ID of the user
+	 * TODO: use this function instead of the facade SESSION.
+	 * what happens when UserID is not set? :p
+	 *
+	 * @return int
+	 */
+	public function id()
+	{
+		return Session::get('UserID');
+	}
+
+
+
+	/**
 	 * Return true if the currently logged in user is the one provided
 	 * (or if that user is Admin)
 	 *
@@ -60,6 +74,7 @@ class SessionFunctions
 
 	/**
 	 * Sets the session values when no there is no username and password in the database.
+	 *
 	 * @return boolean Returns true when no login was found.
 	 */
 	public function noLogin()
