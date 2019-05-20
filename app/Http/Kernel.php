@@ -62,7 +62,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 
         'login' => \App\Http\Middleware\LoginCheck::class,
-        'AlbumPWCheck' => \App\Http\Middleware\AlbumPWCheck::class,
+        'read' => \App\Http\Middleware\ReadCheck::class,
         'admin' => \App\Http\Middleware\AdminCheck::class,
         'upload' => \App\Http\Middleware\UploadCheck::class,
     ];

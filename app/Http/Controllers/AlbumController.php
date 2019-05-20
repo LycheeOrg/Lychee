@@ -155,20 +155,17 @@ class AlbumController extends Controller
 					return 'false';
 				}
 				if ($album->public == 1) {
-					if ($album->checkPassword($request['password'])) {
-						if (Session::has('visible_albums')) {
-							$visible_albums = Session::get('visible_albums');
-						}
-						else {
-							$visible_albums = '';
-						}
-						$visible_albums = explode('|', $visible_albums);
-						$visible_albums[] = $album->id;
-						$visible_albums = implode('|', $visible_albums);
-						Session::put('visible_albums', $visible_albums);
+					if ($album->password === '') {
 						return 'true';
 					}
-				};
+					if ($this->sessionFunctions->has_visible_album($album->id)) {
+						return 'true';
+					}
+					if ($album->checkPassword($request['password'])) {
+						$this->sessionFunctions->add_visible_album($album->id);
+						return 'true';
+					}
+				}
 				return 'false';
 		}
 	}

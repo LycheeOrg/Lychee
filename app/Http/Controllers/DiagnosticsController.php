@@ -9,10 +9,10 @@ use App\Configs;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
+use App\ModelFunctions\SessionFunctions;
 use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 use Imagick;
 
 class DiagnosticsController extends Controller
@@ -28,16 +28,23 @@ class DiagnosticsController extends Controller
 	 */
 	private $gitHubFunctions;
 
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
 
 
 	/**
 	 * @param ConfigFunctions $configFunctions
 	 * @param GitHubFunctions $gitHubFunctions
+	 * @param SessionFunctions $sessionFunctions
 	 */
-	public function __construct(ConfigFunctions $configFunctions, GitHubFunctions $gitHubFunctions)
+	public function __construct(ConfigFunctions $configFunctions, GitHubFunctions $gitHubFunctions, SessionFunctions $sessionFunctions)
 	{
 		$this->configFunctions = $configFunctions;
 		$this->gitHubFunctions = $gitHubFunctions;
+		$this->sessionFunctions = $sessionFunctions;
 	}
 
 
@@ -308,7 +315,7 @@ class DiagnosticsController extends Controller
 		$errors = $this->get_errors();
 		$infos = ['You must be logged to see this.'];
 		$configs = ['You must be logged to see this.'];
-		if (Session::get('login') == true && Session::get('UserID') == 0) {
+		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
 			$configs = $this->get_config();
 		}
@@ -342,7 +349,7 @@ class DiagnosticsController extends Controller
 		$errors = $this->get_errors();
 		$infos = ['You must be logged to see this.'];
 		$configs = ['You must be logged to see this.'];
-		if (Session::get('login') == true && Session::get('UserID') == 0) {
+		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
 			$configs = $this->get_config();
 		}

@@ -1302,6 +1302,7 @@ album.load = function (albumID) {
 				params.password = password.value;
 
 				api.post('Album::get', params, function (data) {
+					albums.refresh();
 					processData(data);
 				});
 			});
@@ -1973,14 +1974,11 @@ albums.load = function () {
 
 albums.parse = function (album) {
 
-	if (album.password === '1' && lychee.publicMode === true) {
-		album.thumbs[0] = 'Lychee-front/images/password.svg';
-		album.thumbs[1] = 'Lychee-front/images/password.svg';
-		album.thumbs[2] = 'Lychee-front/images/password.svg';
-	} else {
-		if (!album.thumbs[0]) album.thumbs[0] = 'Lychee-front/images/no_images.svg';
-		if (!album.thumbs[1]) album.thumbs[1] = 'Lychee-front/images/no_images.svg';
-		if (!album.thumbs[2]) album.thumbs[2] = 'Lychee-front/images/no_images.svg';
+	var i = void 0;
+	for (i = 0; i < 3; i++) {
+		if (!album.thumbs[i]) {
+			album.thumbs[i] = album.password === '1' ? 'img/password.svg' : 'img/no_images.svg';
+		}
 	}
 };
 
@@ -2163,7 +2161,7 @@ build.getAlbumThumb = function (data, i) {
 	var thumb = data.thumbs[i];
 
 	if (thumb === 'uploads/thumb/' && isVideo) {
-		return "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		return "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
 	thumb2x = '';
@@ -2182,7 +2180,7 @@ build.getAlbumThumb = function (data, i) {
 		}
 	}
 
-	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img class='lazyload' src='dist/placeholder.png' data-src='" + thumb + "' " + (thumb2x !== '' ? 'data-srcset=\'' + thumb2x + ' 2x\'' : '') + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img class='lazyload' src='img/placeholder.png' data-src='" + thumb + "' " + (thumb2x !== '' ? 'data-srcset=\'' + thumb2x + ' 2x\'' : '') + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
 build.album = function (data) {
@@ -2231,7 +2229,7 @@ build.photo = function (data) {
 
 	var isVideo = data.type && data.type.indexOf('video') > -1;
 	if (data.thumbUrl === 'uploads/thumb/' && isVideo) {
-		thumbnail = "<span class=\"thumbimg\"><img src='dist/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	} else if (lychee.layout === '0') {
 
 		if (data.hasOwnProperty('thumb2x')) {
@@ -2248,7 +2246,7 @@ build.photo = function (data) {
 		}
 
 		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
-		thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 		thumbnail += "</span>";
 	} else {
 
@@ -2258,7 +2256,7 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
-			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else if (data.medium !== '') {
 			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
@@ -2266,12 +2264,12 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
-			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else if (!isVideo) {
 			// Fallback for images with no small or medium.
 			thumbnail = "<span class=\"thumbimg\">";
-			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else {
 			// Fallback for videos with no small (the case of no thumb is
@@ -2291,7 +2289,7 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg video\">";
-			thumbnail += "<img class='lazyload' src='dist/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		}
 	}
@@ -2540,7 +2538,7 @@ contextMenu.buildList = function (lists, exclude, action) {
 
 				var item = lists[i];
 
-				var thumb = 'Lychee-front/images/no_cover.svg';
+				var thumb = 'img/no_cover.svg';
 				if (item.thumbs && item.thumbs[0]) thumb = item.thumbs[0];else if (item.thumbUrl) thumb = item.thumbUrl;
 
 				if (item.title === '') item.title = lychee.locale['UNTITLED'];

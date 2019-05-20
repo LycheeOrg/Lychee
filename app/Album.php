@@ -8,12 +8,12 @@ use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 
 /**
  * App\Album
@@ -124,6 +124,14 @@ class Album extends Model
 
 
 	/**
+	 * @return BelongsToMany
+	 */
+	public function shared_with()
+	{
+		return $this->belongsToMany('App\User', 'user_album', 'album_id', 'user_id');
+	}
+
+	/**
 	 * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
 	 *
 	 * @return array
@@ -170,20 +178,16 @@ class Album extends Model
 
 	/**
 	 * get the thumbs of an album.
-	 * TODO: Check if this may leak private pictures
 	 *
 	 * @param array $return
+	 * @param array $album_list
 	 * @return array
 	 */
-	public function gen_thumbs($return)
+	public function gen_thumbs($return, $album_list)
 	{
 
-		// First we get the list of all sub albums
-		$alb = $this->get_all_sub_albums();
-		$alb[] = $this->id;
-
 		$thumbs_types = Photo::select(['thumbUrl', 'thumb2x', 'type'])
-			->whereIn('album_id', $alb)
+			->whereIn('album_id', $album_list)
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
 			->limit(3)->get();
@@ -211,16 +215,15 @@ class Album extends Model
 
 	/**
 	 * Recursively go through each sub album and build a list of them.
-	 * TODO: prevent private user albums to be returned if $userId is not set.
 	 *
 	 * @param array $return
 	 * @return array
 	 */
-	public function get_all_sub_albums($return = array())
+	private function get_all_sub_albums($return = array())
 	{
 		foreach ($this->children as $album) {
 			$return[] = $album->id;
-			$album->get_all_sub_albums($return);
+			$return = $album->get_all_sub_albums($return);
 		}
 		return $return;
 	}
@@ -244,6 +247,9 @@ class Album extends Model
 
 	/**
 	 * Go through each sub album and update the minimum and maximum takestamp of the pictures.
+	 * TODO: this seems needlessly expensive (should use takestamps of
+	 * subalbums rather than going through all their photos).
+	 * Also, the caller should recursively update the parents.
 	 */
 	public function update_min_max_takestamp()
 	{
@@ -259,6 +265,8 @@ class Album extends Model
 
 	/**
 	 * Apply the previous method on each album in the database
+	 * TODO: this seems expensive and avoidable (should only need to update
+	 * the albums that were modified, plus recursively their parents).
 	 */
 	static public function reset_takestamp()
 	{

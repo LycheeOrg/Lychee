@@ -34,7 +34,7 @@ Route::post('/api/Session::logout',             'SessionController@logout');
 
 Route::post('/api/Albums::get',                 'AlbumsController@get');
 
-Route::post('/api/Album::get',                  'AlbumController@get')->middleware('AlbumPWCheck');
+Route::post('/api/Album::get',                  'AlbumController@get')->middleware('read');
 Route::post('/api/Album::getPublic',            'AlbumController@getPublic');
 Route::post('/api/Album::add',                  'AlbumController@add')->middleware('upload');
 Route::post('/api/Album::setTitle',             'AlbumController@setTitle')->middleware('upload');
@@ -44,12 +44,11 @@ Route::post('/api/Album::delete',               'AlbumController@delete')->middl
 Route::post('/api/Album::merge',                'AlbumController@merge')->middleware('upload');
 Route::post('/api/Album::move',                 'AlbumController@move')->middleware('upload');
 Route::post('/api/Album::setLicense',           'AlbumController@setLicense')->middleware('upload');
-Route::get('/api/Album::getArchive',            'AlbumController@getArchive')->middleware('AlbumPWCheck');
+Route::get('/api/Album::getArchive',            'AlbumController@getArchive')->middleware('read');
 
 Route::post('/api/Frame::getSettings',          'FrameController@getSettings');
 
-//Route::post('/api/Photo::get',              'PhotoController@get')->middleware('AlbumPWCheck');
-Route::post('/api/Photo::get',                  'PhotoController@get');
+Route::post('/api/Photo::get',                  'PhotoController@get')->middleware('read');
 Route::post('/api/Photo::getRandom',            'PhotoController@getRandom');
 Route::post('/api/Photo::setTitle',             'PhotoController@setTitle')->middleware('upload');
 Route::post('/api/Photo::setDescription',       'PhotoController@setDescription')->middleware('upload');
@@ -61,7 +60,7 @@ Route::post('/api/Photo::add',                  'PhotoController@add')->middlewa
 Route::post('/api/Photo::delete',               'PhotoController@delete')->middleware('upload');
 Route::post('/api/Photo::duplicate',            'PhotoController@duplicate')->middleware('upload');
 Route::post('/api/Photo::setLicense',           'PhotoController@setLicense')->middleware('upload');
-Route::get('/api/Photo::getArchive',            'PhotoController@getArchive');
+Route::get('/api/Photo::getArchive',            'PhotoController@getArchive')->middleware('read');
 
 Route::post('/api/Sharing::List',               'SharingController@listSharing')->middleware('upload');
 Route::post('/api/Sharing::ListUser',           'SharingController@getUserList')->middleware('upload');

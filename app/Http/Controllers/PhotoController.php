@@ -57,7 +57,6 @@ class PhotoController extends Controller
 	function get(Request $request)
 	{
 		$request->validate([
-			// we actually don't care about that one...
 			'albumID' => 'string|required',
 
 			'photoID' => 'string|required'
@@ -71,18 +70,12 @@ class PhotoController extends Controller
 			return 'false';
 		}
 
-		if ($this->readAccessFunctions->photo($photo)) {
-
-			$return = $photo->prepareData();
-			$return['original_album'] = $return['album'];
-			// This way preserves the back button functionality for photos
-			// in smart albums.
-			$return['album'] = $request['albumID'];
-			return $return;
-		}
-
-		Logs::error(__METHOD__, __LINE__, 'Accessing non public photo: '.$photo->id);
-		return 'false';
+		$return = $photo->prepareData();
+		$return['original_album'] = $return['album'];
+		// This way preserves the back button functionality for photos
+		// in smart albums.
+		$return['album'] = $request['albumID'];
+		return $return;
 	}
 
 
@@ -126,8 +119,6 @@ class PhotoController extends Controller
 			'0.*'     => 'image|mimes:jpeg,png,jpg,gif,mov,webm,mp4,ogv',
 			//                |max:2048'
 		]);
-
-//		$id = Session::get('UserID');
 
 		if (!$request->hasfile('0')) {
 			return Response::error('missing files');
@@ -470,58 +461,52 @@ class PhotoController extends Controller
 			return abort(404);
 		}
 
-		if ($this->readAccessFunctions->photo($photo)) {
 
-			$title = ($photo->title == '') ? 'Untitled' : str_replace($badChars, '', $photo->title);
+		$title = ($photo->title == '') ? 'Untitled' : str_replace($badChars, '', $photo->title);
 
-			// determine the file based on given size
-			switch ($request['kind']) {
-				case 'MEDIUM':
-					$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url;
-					$kind = '-MQ-'.$photo->medium;
-					break;
-				case 'SMALL':
-					$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url;
-					$kind = '-LQ-'.$photo->small;
-					break;
-				default:
-					$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
-					$kind = '-HQ-'.$photo->width.'x'.$photo->height;
-			}
-
-			// Check the file actually exists
-			if (!file_exists($filepath)) {
-				Logs::error(__METHOD__, __LINE__, 'File is missing: '.$filepath.' ('.$title.')');
-				return abort(404);
-			}
-
-			$response = new StreamedResponse(function () use ($title, $kind, $filepath) {
-
-				$opt = array(
-					'largeFileSize' => 100 * 1024 * 1024,
-					'enableZip64'   => true,
-					'send_headers'  => true,
-				);
-
-				$zip = new ZipStream($title.'.zip', $opt);
-
-				// Get extension of image
-				$extension = Helpers::getExtension($filepath, false);
-
-				// Set title for photo
-				$zip->addFileFromPath($title.$kind.$extension, $filepath);
-
-				# finish the zip stream
-				$zip->finish();
-
-			});
-
-			return $response;
-
+		// determine the file based on given size
+		switch ($request['kind']) {
+			case 'MEDIUM':
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url;
+				$kind = '-MQ-'.$photo->medium;
+				break;
+			case 'SMALL':
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url;
+				$kind = '-LQ-'.$photo->small;
+				break;
+			default:
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
+				$kind = '-HQ-'.$photo->width.'x'.$photo->height;
 		}
 
-		Logs::error(__METHOD__, __LINE__, 'Accessing non public photo: '.$photo->id);
-		return abort(403);
+		// Check the file actually exists
+		if (!file_exists($filepath)) {
+			Logs::error(__METHOD__, __LINE__, 'File is missing: '.$filepath.' ('.$title.')');
+			return abort(404);
+		}
+
+		$response = new StreamedResponse(function () use ($title, $kind, $filepath) {
+
+			$opt = array(
+				'largeFileSize' => 100 * 1024 * 1024,
+				'enableZip64'   => true,
+				'send_headers'  => true,
+			);
+
+			$zip = new ZipStream($title.'.zip', $opt);
+
+			// Get extension of image
+			$extension = Helpers::getExtension($filepath, false);
+
+			// Set title for photo
+			$zip->addFileFromPath($title.$kind.$extension, $filepath);
+
+			# finish the zip stream
+			$zip->finish();
+
+		});
+
+		return $response;
 
 	}
 }

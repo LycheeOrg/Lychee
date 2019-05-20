@@ -80,8 +80,7 @@ class UploadCheck
 			return response('false');
 		}
 
-		// why do we want this ?
-		// I don't remember >_<
+		// Only used for /api/Sharing::Delete
 		$ret = $this->share_check($request, $user_id);
 		if ($ret === false) {
 			return response('false');
