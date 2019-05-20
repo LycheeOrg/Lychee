@@ -229,6 +229,7 @@ final class German implements LangInterface
 			'SETTINGS_SUCCESS_LANG' => 'Sprache aktualisiert',
 			'SETTINGS_SUCCESS_LAYOUT' => 'Layout aktualisiert',
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF-Overlay-Einstellungen aktualisiert',
+			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Public search updated',
 			'SETTINGS_SUCCESS_LICENSE' => 'Standard-Lizenz aktualisiert',
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
 			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
@@ -293,6 +294,7 @@ final class German implements LangInterface
 
 			'CSS_TEXT' => 'CSS personalisieren:',
 			'CSS_TITLE' => 'CSS ändern',
+			'PUBLIC_SEARCH_TEXT' => 'Öffentliche Suche erlauben:',
 			'IMAGE_OVERLAY_TEXT' => 'EXIF-Daten-Overlay standardmäßig anzeigen:',
 			'OVERLAY_TYPE' => 'Data to use in image overlay:',
 			'OVERLAY_EXIF' => 'Photo EXIF data',

@@ -11,6 +11,8 @@
 |
 */
 
+use App\Configs;
+
 // We need that to force https everywhere
 //if (env('APP_ENV') === 'production') {
 
@@ -71,6 +73,7 @@ Route::post('/api/Settings::setLogin', 'SettingsController@setLogin');
 Route::post('/api/Settings::setSorting', 'SettingsController@setSorting')->middleware('admin');
 Route::post('/api/Settings::setLang', 'SettingsController@setLang')->middleware('admin');
 Route::post('/api/Settings::setLayout', 'SettingsController@setLayout')->middleware('admin');
+Route::post('/api/Settings::setPublicSearch', 'SettingsController@setPublicSearch')->middleware('admin');
 Route::post('/api/Settings::setImageOverlay', 'SettingsController@setImageOverlay')->middleware('admin');
 Route::post('/api/Settings::setDefaultLicense', 'SettingsController@setDefaultLicense')->middleware('admin');
 Route::post('/api/Settings::setCSS', 'SettingsController@setCSS')->middleware('admin');
@@ -98,6 +101,6 @@ Route::get('/api/Update', 'UpdateController@do')->middleware('admin');
 // unused
 Route::post('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 
-Route::post('/api/search', 'SearchController@search')->middleware('upload');
+Route::post('/api/search', 'SearchController@search')->middleware((Configs::get_value('public_search', '0') == '1') ? 'read' : 'upload');
 
 Route::get('/{page}', 'PageController@page');

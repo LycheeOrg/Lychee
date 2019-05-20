@@ -132,6 +132,19 @@ class SettingsController extends Controller
 		return 'false';
 	}
 
+	public function setPublicSearch(Request $request)
+	{
+		$request->validate([
+			'public_search' => 'required|string'
+		]);
+
+		if ($request['public_search'] == '1') {
+			return (Configs::set('public_search', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('public_search', '0')) ? 'true' : 'false';
+	}
+
 	public function setImageOverlay(Request $request)
 	{
 		$request->validate([
