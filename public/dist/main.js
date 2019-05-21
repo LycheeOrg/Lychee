@@ -804,18 +804,19 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject45 = _taggedTemplateLiteral(["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"], ["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"]),
     _templateObject46 = _taggedTemplateLiteral(["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"], ["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"]),
     _templateObject47 = _taggedTemplateLiteral(["?photoID=", "&kind=", ""], ["?photoID=", "&kind=", ""]),
-    _templateObject48 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject49 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
-    _templateObject50 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
-    _templateObject51 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
-    _templateObject52 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
-    _templateObject53 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
-    _templateObject54 = _taggedTemplateLiteral(["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject55 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"]),
-    _templateObject56 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
-    _templateObject57 = _taggedTemplateLiteral(["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"], ["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"]),
-    _templateObject58 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"]),
-    _templateObject59 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a></div>"]);
+    _templateObject48 = _taggedTemplateLiteral(["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"], ["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"]),
+    _templateObject49 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject50 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
+    _templateObject51 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
+    _templateObject52 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
+    _templateObject53 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
+    _templateObject54 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
+    _templateObject55 = _taggedTemplateLiteral(["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject56 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"]),
+    _templateObject57 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
+    _templateObject58 = _taggedTemplateLiteral(["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"], ["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"]),
+    _templateObject59 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"]),
+    _templateObject60 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a></div>"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -6054,6 +6055,40 @@ settings.save = function (params) {
 	});
 };
 
+settings.save_enter = function (e) {
+	if (e.which === 13) {
+		// show confirmation box
+		$(':focus').blur();
+
+		var action = {};
+		var cancel = {};
+
+		action.title = lychee.locale['ENTER'];
+		action.msg = lychee.html(_templateObject48, lychee.locale['SAVE_RISK']);
+
+		cancel.title = lychee.locale['CANCEL'];
+
+		action.fn = function () {
+			settings.save(settings.getValues('#fullSettings'));
+			basicModal.close();
+		};
+
+		basicModal.show({
+			body: action.msg,
+			buttons: {
+				action: {
+					title: action.title,
+					fn: action.fn,
+					class: 'red'
+				},
+				cancel: {
+					title: cancel.title,
+					fn: basicModal.close
+				}
+			}
+		});
+	}
+};
 sharing = {
 	json: null
 };
@@ -6508,12 +6543,12 @@ sidebar.render = function (structure) {
 			if (value === '' || value == null) value = '-';
 
 			// Wrap span-element around value for easier selecting on change
-			value = lychee.html(_templateObject48, row.kind, value);
+			value = lychee.html(_templateObject49, row.kind, value);
 
 			// Add edit-icon to the value when editable
 			if (row.editable === true) value += ' ' + build.editIcon('edit_' + row.kind);
 
-			_html += lychee.html(_templateObject49, row.title, value);
+			_html += lychee.html(_templateObject50, row.title, value);
 		});
 
 		_html += "\n\t\t\t\t </table>\n\t\t\t\t ";
@@ -6529,7 +6564,7 @@ sidebar.render = function (structure) {
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon('edit_tags');
 
-		_html += lychee.html(_templateObject50, section.title, section.title.toLowerCase(), section.value, editable);
+		_html += lychee.html(_templateObject51, section.title, section.title.toLowerCase(), section.value, editable);
 
 		return _html;
 	};
@@ -6876,7 +6911,7 @@ upload.start = {
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject51) + lychee.locale['UPLOAD_IMPORT_INSTR'] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + _url + "'></p>"),
+			body: lychee.html(_templateObject52) + lychee.locale['UPLOAD_IMPORT_INSTR'] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + _url + "'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale['UPLOAD_IMPORT'],
@@ -6963,7 +6998,7 @@ upload.start = {
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject51) + lychee.locale['UPLOAD_IMPORT_SERVER_INSTR'] + " <input class='text' name='path' type='text' maxlength='100' placeholder='" + lychee.locale['UPLOAD_ABSOLUTE_PATH'] + ("' value='" + lychee.location + "uploads/import/'></p>"),
+			body: lychee.html(_templateObject52) + lychee.locale['UPLOAD_IMPORT_SERVER_INSTR'] + " <input class='text' name='path' type='text' maxlength='100' placeholder='" + lychee.locale['UPLOAD_ABSOLUTE_PATH'] + ("' value='" + lychee.location + "uploads/import/'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale['UPLOAD_IMPORT'],
@@ -7737,7 +7772,7 @@ view.photo = {
 			var nextPhotoID = album.getByID(photoID).nextPhoto;
 			var nextPhoto = album.getByID(nextPhotoID);
 
-			$nextArrow.css('background-image', lychee.html(_templateObject52, nextPhoto.thumbUrl));
+			$nextArrow.css('background-image', lychee.html(_templateObject53, nextPhoto.thumbUrl));
 		}
 
 		if (hasPrevious === false || lychee.viewMode === true) {
@@ -7748,7 +7783,7 @@ view.photo = {
 			var previousPhotoID = album.getByID(photoID).previousPhoto;
 			var previousPhoto = album.getByID(previousPhotoID);
 
-			$previousArrow.css('background-image', lychee.html(_templateObject52, previousPhoto.thumbUrl));
+			$previousArrow.css('background-image', lychee.html(_templateObject53, previousPhoto.thumbUrl));
 		}
 	}),
 
@@ -7941,7 +7976,7 @@ view.settings = {
 		},
 
 		moreButton: function moreButton() {
-			var msg = lychee.html(_templateObject53, lychee.locale['MORE']);
+			var msg = lychee.html(_templateObject54, lychee.locale['MORE']);
 
 			$(".settings_view").append(msg);
 
@@ -7979,23 +8014,27 @@ view.full_settings = {
 
 			api.post('Settings::getAll', {}, function (data) {
 
-				var msg = lychee.html(_templateObject54, lychee.locale['SETTINGS_WARNING']);
+				var msg = lychee.html(_templateObject55, lychee.locale['SETTINGS_WARNING']);
 
 				var prev = '';
 				$.each(data, function () {
 
 					if (this.cat && prev !== this.cat) {
-						msg += lychee.html(_templateObject55, this.cat);
+						msg += lychee.html(_templateObject56, this.cat);
 						prev = this.cat;
 					}
 
-					msg += lychee.html(_templateObject56, this.key, this.key, this.value);
+					msg += lychee.html(_templateObject57, this.key, this.key, this.value);
 				});
 
-				msg += lychee.html(_templateObject57, lychee.locale['SAVE_RISK']);
+				msg += lychee.html(_templateObject58, lychee.locale['SAVE_RISK']);
 				$(".settings_view").append(msg);
 
 				settings.bind('#FullSettingsSave_button', '#fullSettings', settings.save);
+
+				$('#fullSettings').on('keypress', function (e) {
+					settings.save_enter(e);
+				});
 			});
 		}
 
@@ -8154,7 +8193,7 @@ view.logs = {
 		lychee.content.unbind('mousedown');
 		var html = '';
 		if (lychee.api_V2) {
-			html += lychee.html(_templateObject58, lychee.locale['CLEAN_LOGS']);
+			html += lychee.html(_templateObject59, lychee.locale['CLEAN_LOGS']);
 		}
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);
@@ -8194,7 +8233,7 @@ view.diagnostics = {
 		lychee.content.unbind('mousedown');
 		var html = '';
 		if (update === 1) {
-			html += lychee.html(_templateObject59, lychee.locale['UPDATE_AVAILABLE']);
+			html += lychee.html(_templateObject60, lychee.locale['UPDATE_AVAILABLE']);
 		}
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);

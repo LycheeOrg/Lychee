@@ -29,6 +29,7 @@ class ConfigFunctions
 		$infos['background'] = Configs::get_value('landing_background');
 		$infos['copyright_enable'] = Configs::get_value('site_copyright_enable');
 		$infos['copyright_year'] = Configs::get_value('site_copyright_begin');
+		$infos['additional_footer_text'] = Configs::get_value('additional_footer_text');
 		if (Configs::get_value('site_copyright_begin') != Configs::get_value('site_copyright_end'))
 		{
 			$infos['copyright_year'] = Configs::get_value('site_copyright_begin').'-'.Configs::get_value('site_copyright_end');

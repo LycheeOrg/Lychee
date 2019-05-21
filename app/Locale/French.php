@@ -333,7 +333,8 @@ final class French implements LangInterface
 
 			'ABOUT_SUBTITLE'			=> 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION'			=> 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
-			'FOOTER_COPYRIGHT'			=> 'Toutes les images de ce site Web sont protégées par le droit d\'auteur par'
+			'FOOTER_COPYRIGHT'			=> 'Toutes les images de ce site Web sont protégées par le droit d\'auteur par',
+			'HOSTED_WITH_LYCHEE'        =>'Hosted with Lychee',
 		);
 
 		return $locale;

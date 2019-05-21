@@ -58,11 +58,13 @@ class IndexController extends Controller
 	public function gallery()
 	{
 
+		$infos = $this->configFunctions->get_pages_infos();
+
 		$lang = Lang::get_lang(Configs::get_value('lang'));
 		$lang['language'] = Configs::get_value('lang');
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 
-		return view('gallery', ['locale' => $lang, 'title' => $title]);
+		return view('gallery', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'show_hosted_by' => true ]);
 	}
 }
