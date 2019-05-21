@@ -8,6 +8,7 @@ use App\Configs;
 use App\Album;
 use App\ModelFunctions\AlbumFunctions;
 use App\Photo;
+use App\ControllerFunctions\ReadAccessFunctions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -20,11 +21,18 @@ class SearchController extends Controller
 	private $albumFunctions;
 
 	/**
-	 * @param AlbumFunctions $albumFunctions
+	 * @var readAccessFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions)
+	private $readAccessFunctions;
+
+	/**
+	 * @param AlbumFunctions $albumFunctions
+	 * @param ReadAccessFunctions $readAccessFunctions
+	 */
+	public function __construct(AlbumFunctions $albumFunctions, ReadAccessFunctions $readAccessFunctions)
 	{
 		$this->albumFunctions = $albumFunctions;
+		$this->readAccessFunctions = $readAccessFunctions;
 	}
 
 	/**
@@ -54,6 +62,10 @@ class SearchController extends Controller
 
 	public function search(Request $request)
 	{
+		if (! (Session::has('UserID') || (Configs::get_value('public_search', '0') == '1'))) {
+			return false;
+		}
+
 		$request->validate([
 			'term' => 'required|string',
 		]);
@@ -100,7 +112,7 @@ class SearchController extends Controller
 		if ($photos != null) {
 			$i = 0;
 			foreach ($photos as $photo) {
-				if (Session::has('UserID') || $photo->get_public()) {
+				if ($this->readAccessFunctions->photo($photo) === true) {
 					$return['photos'][$i] = $photo->prepareData();
 					++$i;
 				}

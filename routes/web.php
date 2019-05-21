@@ -101,6 +101,6 @@ Route::get('/api/Update', 'UpdateController@do')->middleware('admin');
 // unused
 Route::post('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 
-Route::post('/api/search', 'SearchController@search')->middleware((Configs::get_value('public_search', '0') == '1') ? 'read' : 'upload');
+Route::post('/api/search', 'SearchController@search');
 
 Route::get('/{page}', 'PageController@page');
