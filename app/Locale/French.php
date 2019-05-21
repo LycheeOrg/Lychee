@@ -226,6 +226,7 @@ final class French implements LangInterface
 			'SETTINGS_SUCCESS_LANG' => 'Language updated',
 			'SETTINGS_SUCCESS_LAYOUT' => 'Layout updated',
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF Overlay setting updated',
+			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Recherche publique mise à jour',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
@@ -285,6 +286,7 @@ final class French implements LangInterface
 
 			'LANG_TEXT' => 'Change Lychee language for:',
 			'LANG_TITLE' => 'Change Language',
+			'PUBLIC_SEARCH_TEXT' => 'Recherche publique autorisée:',
 			'IMAGE_OVERLAY_TEXT' => 'Display data overlay by default:',
 			'OVERLAY_TYPE' => 'Data to use in image overlay:',
 			'OVERLAY_EXIF' => 'Photo EXIF data',

@@ -226,6 +226,7 @@ final class Dutch implements LangInterface
 			'SETTINGS_SUCCESS_LANG' => 'Language updated',
 			'SETTINGS_SUCCESS_LAYOUT' => 'Layout updated',
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF Overlay setting updated',
+			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Publieke zoekactie bijgewerkt',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 
 			'DB_INFO_TITLE' => 'Voer je database connectie gegevens hieronder in:',
@@ -285,6 +286,7 @@ final class Dutch implements LangInterface
 
 			'LANG_TEXT' => 'Change Lychee language for:',
 			'LANG_TITLE' => 'Change Language',
+			'PUBLIC_SEARCH_TEXT' => 'Openbare zoekactie toegestaan:',
 			'IMAGE_OVERLAY_TEXT' => 'Display data overlay by default:',
 			'OVERLAY_TYPE' => 'Data to use in image overlay:',
 			'OVERLAY_EXIF' => 'Photo EXIF data',
