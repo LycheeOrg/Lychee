@@ -339,7 +339,8 @@ final class Italian implements LangInterface
 
 			'ABOUT_SUBTITLE'			=> 'Gestione propria delle foto fatta nel modo giusto',
 			'ABOUT_DESCRIPTION'			=> 'è uno strumento gratuito di gestione delle foto, eseguito nel server o sul tuo spazio web. L\'installazione è questione di secondi. Carica, gestisci e condividi foto come in un\'applicazione nativa. Lychee offre tutto ciò di cui hai bisogno e tutte le tue foto vengono salvate in modo sicuro.',
-			'FOOTER_COPYRIGHT'			=> 'Tutte le immagini su questo sito web sono soggette a Copyright di'
+			'FOOTER_COPYRIGHT'			=> 'Tutte le immagini su questo sito web sono soggette a Copyright di',
+			'HOSTED_WITH_LYCHEE'        =>'Hosted with Lychee',
 		);
 
 		return $locale;

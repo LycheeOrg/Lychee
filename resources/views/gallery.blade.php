@@ -28,7 +28,7 @@
 
         <a class="header__title"></a>
 
-        <a class="header__hostedwith">Hosted with Lychee</a>
+{{--        <a class="header__hostedwith">{{ $locale['HOSTED_WITH_LYCHEE'] }}</a>--}}
 
     </div>
     <div class="header__toolbar header__toolbar--albums">
@@ -145,4 +145,7 @@
 
 <!-- JS -->
 <script async type="text/javascript" src="dist/main.js"></script>
+
+
+@include('includes.footer')
 @endsection
