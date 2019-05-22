@@ -43,6 +43,5 @@
         @include('includes.socials')
     </div><!-- socials -->
 
-
     @include('includes.footer')
 @endsection

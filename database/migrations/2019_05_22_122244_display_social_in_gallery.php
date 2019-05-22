@@ -5,7 +5,7 @@ use App\Configs;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
 
-class AdditionalFooterText extends Migration
+class DisplaySocialInGallery extends Migration
 {
     /**
      * Run the migrations.
@@ -18,9 +18,9 @@ class AdditionalFooterText extends Migration
 
 		    DB::table('configs')->insert([
 			    [
-				    'key'             => 'additional_footer_text',
-				    'value'           => '',
-				    'confidentiality' => 0
+				    'key'             => 'display_social_in_gallery',
+				    'value'           => '0',
+				    'confidentiality' => 2
 			    ],
 		    ]);
 	    }
@@ -37,7 +37,7 @@ class AdditionalFooterText extends Migration
     public function down()
     {
 	    if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-		    Configs::where('key', '=', 'additional_footer_text')->delete();
+		    Configs::where('key', '=', 'display_social_in_gallery')->delete();
 	    }
     }
 }

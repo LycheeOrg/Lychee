@@ -1276,7 +1276,9 @@ album.load = function (albumID) {
 
 		album.json = data;
 
-		if (refresh === false) lychee.animate('.content', 'contentZoomOut');
+		if (refresh === false) {
+			lychee.animate('.content', 'contentZoomOut');
+		}
 		var waitTime = 300;
 
 		// Skip delay when refresh is true
@@ -1292,6 +1294,10 @@ album.load = function (albumID) {
 				lychee.animate(lychee.content, 'contentZoomIn');
 				header.setMode('album');
 			}
+
+			setTimeout(function () {
+				lychee.footer.show();
+			}, 300);
 		}, waitTime);
 	};
 
@@ -1961,6 +1967,9 @@ albums.load = function () {
 				header.setMode('albums');
 				view.albums.init();
 				lychee.animate(lychee.content, 'contentZoomIn');
+				setTimeout(function () {
+					lychee.footer.show();
+				}, 300);
 			}, waitTime);
 		});
 	} else {
@@ -3512,6 +3521,7 @@ lychee = {
 
 	content: $('.content'),
 	imageview: $('#imageview'),
+	footer: $('#footer'),
 
 	locale: {}
 };
@@ -3734,6 +3744,7 @@ lychee.load = function () {
 		// Show Photo
 		if (lychee.content.html() === '' || header.dom('.header__search').length && header.dom('.header__search').val().length !== 0) {
 			lychee.content.hide();
+			lychee.footer.hide();
 			album.load(albumID, true);
 		}
 		photo.load(photoID, albumID);
