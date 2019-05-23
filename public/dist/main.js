@@ -1266,9 +1266,11 @@ album.load = function (albumID) {
 			if (document.location.hash.replace('#', '').split('/')[1] !== undefined) {
 				// Display photo only
 				lychee.setMode('view');
+				lychee.footer_hide();
 			} else {
 				// Album not public
 				lychee.content.show();
+				lychee.footer_show();
 				if (!visible.albums() && !visible.album()) lychee.goto();
 			}
 			return false;
@@ -1276,7 +1278,9 @@ album.load = function (albumID) {
 
 		album.json = data;
 
-		if (refresh === false) lychee.animate('.content', 'contentZoomOut');
+		if (refresh === false) {
+			lychee.animate('.content', 'contentZoomOut');
+		}
 		var waitTime = 300;
 
 		// Skip delay when refresh is true
@@ -1961,6 +1965,9 @@ albums.load = function () {
 				header.setMode('albums');
 				view.albums.init();
 				lychee.animate(lychee.content, 'contentZoomIn');
+				setTimeout(function () {
+					lychee.footer_show();
+				}, 300);
 			}, waitTime);
 		});
 	} else {
@@ -3303,7 +3310,8 @@ leftMenu.build = function () {
 /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
 leftMenu.open = function () {
 	leftMenu._dom.addClass('leftMenu__visible');
-	$('.content').addClass('leftMenu__open');
+	lychee.content.addClass('leftMenu__open');
+	lychee.footer.addClass('leftMenu__open');
 	header.dom('.header__title').addClass('leftMenu__open');
 	loadingBar.dom().addClass('leftMenu__open');
 };
@@ -3311,6 +3319,8 @@ leftMenu.open = function () {
 /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
 leftMenu.close = function () {
 	leftMenu._dom.removeClass('leftMenu__visible');
+	lychee.content.removeClass('leftMenu__open');
+	lychee.footer.removeClass('leftMenu__open');
 	$('.content').removeClass('leftMenu__open');
 	header.dom('.header__title').removeClass('leftMenu__open');
 	loadingBar.dom().removeClass('leftMenu__open');
@@ -3512,6 +3522,7 @@ lychee = {
 
 	content: $('.content'),
 	imageview: $('#imageview'),
+	footer: $('#footer'),
 
 	locale: {}
 };
@@ -3737,6 +3748,7 @@ lychee.load = function () {
 			album.load(albumID, true);
 		}
 		photo.load(photoID, albumID);
+		lychee.footer_hide();
 	} else if (albumID) {
 
 		// Trash data
@@ -3746,6 +3758,7 @@ lychee.load = function () {
 		if (visible.photo()) view.photo.hide();
 		if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) sidebar.toggle();
 		if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
+		lychee.footer_show();
 	} else {
 
 		// Trash albums.json when filled with search results
@@ -3764,6 +3777,7 @@ lychee.load = function () {
 		// Show Albums
 		if (visible.photo()) view.photo.hide();
 		lychee.content.show();
+		lychee.footer_show();
 		albums.load();
 	}
 };
@@ -4029,6 +4043,15 @@ lychee.fullscreenUpdate = function () {
 	}
 };
 
+lychee.footer_show = function () {
+	setTimeout(function () {
+		lychee.footer.removeClass('hide_footer');
+	}, 200);
+};
+
+lychee.footer_hide = function () {
+	lychee.footer.addClass('hide_footer');
+};
 lychee.locale = {
 
 	'USERNAME': 'username',
@@ -6110,6 +6133,15 @@ sharing.add = function () {
 		params.UserIDs += this.value;
 	});
 
+	if (params.albumIDs === '') {
+		loadingBar.show('error', 'Select an album to share!');
+		return false;
+	}
+	if (params.UserIDs === '') {
+		loadingBar.show('error', 'Select a user to share with!');
+		return false;
+	}
+
 	api.post('Sharing::Add', params, function (data) {
 		if (data !== true) {
 			loadingBar.show('error', data.description);
@@ -6127,11 +6159,15 @@ sharing.delete = function () {
 		ShareIDs: ''
 	};
 
-	$('input[name="remove_id"]').each(function () {
+	$('input[name="remove_id"]:checked').each(function () {
 		if (params.ShareIDs !== '') params.ShareIDs += ',';
 		params.ShareIDs += this.value;
 	});
 
+	if (params.ShareIDs === '') {
+		loadingBar.show('error', 'Select a sharing to remove!');
+		return false;
+	}
 	api.post('Sharing::Delete', params, function (data) {
 		if (data !== true) {
 			loadingBar.show('error', data.description);
@@ -7088,6 +7124,11 @@ users = {
 
 users.update = function (params) {
 
+	if (params.username.length < 1) {
+		loadingBar.show('error', 'new username cannot be empty.');
+		return false;
+	}
+
 	if ($('#UserData' + params.id + ' .choice input[name="upload"]:checked').length === 1) {
 		params.upload = '1';
 	} else {
@@ -7111,6 +7152,15 @@ users.update = function (params) {
 };
 
 users.create = function (params) {
+
+	if (params.username.length < 1) {
+		loadingBar.show('error', 'new username cannot be empty.');
+		return false;
+	}
+	if (params.password.length < 1) {
+		loadingBar.show('error', 'new password cannot be empty.');
+		return false;
+	}
 
 	if ($('#UserCreate .choice input[name="upload"]:checked').length === 1) {
 		params.upload = '1';

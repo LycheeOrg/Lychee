@@ -43,7 +43,10 @@ class PageController extends Controller
 		$menus = Page::menu()->get();
 
 		$contents = $page->content;
+		$page_config = array();
+		$page_config['show_hosted_by'] = false;
+		$page_config['display_socials'] = false;
 
-		return view('page', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'contents' => $contents]);
+		return view('page', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'contents' => $contents, 'page_config' => $page_config]);
 	}
 }

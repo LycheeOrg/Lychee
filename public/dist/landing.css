@@ -2718,6 +2718,7 @@ a {
 
 .socialicons {
   display: block;
+  font-size: 23px;
   font-family: 'socials' !important;
   speak: none;
   font-style: normal;
@@ -2726,7 +2727,6 @@ a {
   text-transform: none;
   line-height: 1;
   color: #ffffff;
-  font-size: 1.1em;
   text-decoration: none;
   margin: 15px;
   transition: all 0.3s;
@@ -2735,9 +2735,9 @@ a {
   -o-transition: all 0.3s; }
   .socialicons:hover {
     color: #b5b5b5;
-    -ms-transform: scale(1.2);
-        transform: scale(1.2);
-    -webkit-transform: scale(1.2); }
+    -ms-transform: scale(1.3);
+        transform: scale(1.3);
+    -webkit-transform: scale(1.3); }
 
 #twitter:before {
   content: "\ea96"; }
@@ -2753,6 +2753,27 @@ a {
 
 #facebook:before {
   content: "\ea91"; }
+
+#footer {
+  z-index: 3;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  padding: 5px 0 5px 0;
+  -webkit-transition: color .3s, opacity .3s ease-out, margin-left .5s, -webkit-transform .3s ease-out, -webkit-box-shadow .3s;
+  transition: color .3s, opacity .3s ease-out, margin-left .5s, -webkit-transform .3s ease-out, -webkit-box-shadow .3s;
+  -o-transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s, margin-left .5s;
+  transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s, margin-left .5s;
+  transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s, margin-left .5s, -webkit-transform .3s ease-out, -webkit-box-shadow .3s; }
+  #footer p {
+    color: #CCCCCC;
+    font-size: 0.5em;
+    font-weight: 400; }
+    #footer p a {
+      color: #CCC; }
+  #footer p.hosted_by, #footer p.home_copyright {
+    text-transform: uppercase; }
 
 #menu {
   width: 100%; }
@@ -2846,14 +2867,6 @@ a {
 
 #footer {
   position: absolute;
-  z-index: 3;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 0 0 10px 0;
-  text-align: center; }
-  #footer .home_copyright {
-    text-transform: uppercase;
-    color: #FFFFFF;
-    font-size: 0.5em;
-    font-weight: 400; }
+  background: #000000; }
+  #footer p.home_copyright {
+    color: #FFFFFF; }
