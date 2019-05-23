@@ -3310,7 +3310,8 @@ leftMenu.build = function () {
 /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
 leftMenu.open = function () {
 	leftMenu._dom.addClass('leftMenu__visible');
-	$('.content').addClass('leftMenu__open');
+	lychee.content.addClass('leftMenu__open');
+	lychee.footer.addClass('leftMenu__open');
 	header.dom('.header__title').addClass('leftMenu__open');
 	loadingBar.dom().addClass('leftMenu__open');
 };
@@ -3318,6 +3319,8 @@ leftMenu.open = function () {
 /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
 leftMenu.close = function () {
 	leftMenu._dom.removeClass('leftMenu__visible');
+	lychee.content.removeClass('leftMenu__open');
+	lychee.footer.removeClass('leftMenu__open');
 	$('.content').removeClass('leftMenu__open');
 	header.dom('.header__title').removeClass('leftMenu__open');
 	loadingBar.dom().removeClass('leftMenu__open');
@@ -3755,11 +3758,7 @@ lychee.load = function () {
 		if (visible.photo()) view.photo.hide();
 		if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) sidebar.toggle();
 		if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
-
-		// setTimeout(() => {
 		lychee.footer_show();
-		// },
-		// 300);
 	} else {
 
 		// Trash albums.json when filled with search results
@@ -4045,7 +4044,9 @@ lychee.fullscreenUpdate = function () {
 };
 
 lychee.footer_show = function () {
-	lychee.footer.removeClass('hide_footer');
+	setTimeout(function () {
+		lychee.footer.removeClass('hide_footer');
+	}, 200);
 };
 
 lychee.footer_hide = function () {
