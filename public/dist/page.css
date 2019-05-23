@@ -2917,6 +2917,8 @@ a {
     font-weight: 400; }
     #footer p a {
       color: #CCC; }
+    #footer p a:visited {
+      color: #CCC; }
   #footer p.hosted_by, #footer p.home_copyright {
     text-transform: uppercase; }
 
