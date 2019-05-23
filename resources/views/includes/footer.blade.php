@@ -1,4 +1,4 @@
-<div id="footer" class="animate animate-up">
+<div id="footer" class="animate animate-up hide_footer">
 
     <!-- socials -->
     @if($page_config['display_socials'])

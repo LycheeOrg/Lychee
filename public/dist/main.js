@@ -1266,9 +1266,11 @@ album.load = function (albumID) {
 			if (document.location.hash.replace('#', '').split('/')[1] !== undefined) {
 				// Display photo only
 				lychee.setMode('view');
+				lychee.footer_hide();
 			} else {
 				// Album not public
 				lychee.content.show();
+				lychee.footer_show();
 				if (!visible.albums() && !visible.album()) lychee.goto();
 			}
 			return false;
@@ -1294,10 +1296,6 @@ album.load = function (albumID) {
 				lychee.animate(lychee.content, 'contentZoomIn');
 				header.setMode('album');
 			}
-
-			setTimeout(function () {
-				lychee.footer.show();
-			}, 300);
 		}, waitTime);
 	};
 
@@ -1968,7 +1966,7 @@ albums.load = function () {
 				view.albums.init();
 				lychee.animate(lychee.content, 'contentZoomIn');
 				setTimeout(function () {
-					lychee.footer.show();
+					lychee.footer_show();
 				}, 300);
 			}, waitTime);
 		});
@@ -3744,10 +3742,10 @@ lychee.load = function () {
 		// Show Photo
 		if (lychee.content.html() === '' || header.dom('.header__search').length && header.dom('.header__search').val().length !== 0) {
 			lychee.content.hide();
-			lychee.footer.hide();
 			album.load(albumID, true);
 		}
 		photo.load(photoID, albumID);
+		lychee.footer_hide();
 	} else if (albumID) {
 
 		// Trash data
@@ -3757,6 +3755,11 @@ lychee.load = function () {
 		if (visible.photo()) view.photo.hide();
 		if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) sidebar.toggle();
 		if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
+
+		// setTimeout(() => {
+		lychee.footer_show();
+		// },
+		// 300);
 	} else {
 
 		// Trash albums.json when filled with search results
@@ -3775,6 +3778,7 @@ lychee.load = function () {
 		// Show Albums
 		if (visible.photo()) view.photo.hide();
 		lychee.content.show();
+		lychee.footer_show();
 		albums.load();
 	}
 };
@@ -4040,6 +4044,13 @@ lychee.fullscreenUpdate = function () {
 	}
 };
 
+lychee.footer_show = function () {
+	lychee.footer.removeClass('hide_footer');
+};
+
+lychee.footer_hide = function () {
+	lychee.footer.addClass('hide_footer');
+};
 lychee.locale = {
 
 	'USERNAME': 'username',
