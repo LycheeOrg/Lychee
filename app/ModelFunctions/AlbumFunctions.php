@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\ModelFunctions;
@@ -16,25 +17,21 @@ use Illuminate\Support\Facades\Session;
 
 class AlbumFunctions
 {
-
 	/**
 	 * @var readAccessFunctions
 	 */
 	private $readAccessFunctions;
 
-
-
-	function __construct(ReadAccessFunctions $readAccessFunctions)
+	public function __construct(ReadAccessFunctions $readAccessFunctions)
 	{
 		$this->readAccessFunctions = $readAccessFunctions;
 	}
 
-
-
 	/**
-	 * given an albumID return if the said album is "smart"
+	 * given an albumID return if the said album is "smart".
 	 *
 	 * @param $albumID
+	 *
 	 * @return bool
 	 */
 	public function is_smart_album($albumID)
@@ -42,17 +39,17 @@ class AlbumFunctions
 		if ($albumID === 'f' || $albumID === 's' || $albumID === 'r' || $albumID === '0') {
 			return true;
 		}
+
 		return false;
 	}
 
-
-
 	/**
-	 * Create a new album from a title and optional parent_id
+	 * Create a new album from a title and optional parent_id.
 	 *
 	 * @param string $title
-	 * @param int $parent_id
-	 * @param int $user_id
+	 * @param int    $parent_id
+	 * @param int    $user_id
+	 *
 	 * @return Album|string
 	 */
 	public function create(string $title, int $parent_id, int $user_id): Album
@@ -71,8 +68,7 @@ class AlbumFunctions
 			// Admin can add subalbums to other users' albums.  Make sure that
 			// the ownership stays with that user.
 			$album->owner_id = $parent->owner_id;
-		}
-		else {
+		} else {
 			$album->parent_id = null;
 			$album->owner_id = $user_id;
 		}
@@ -84,8 +80,7 @@ class AlbumFunctions
 				if (!$album->save()) {
 					return Response::error('Could not save album in database!');
 				}
-			}
-			catch (QueryException $e) {
+			} catch (QueryException $e) {
 				$errorCode = $e->getCode();
 				if ($errorCode == 23000 || $errorCode == 23505) {
 					// Duplicate entry
@@ -96,9 +91,9 @@ class AlbumFunctions
 
 					$album->id = $newId;
 					$retry = true;
-				}
-				else {
+				} else {
 					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
+
 					return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
 				}
 			}
@@ -107,23 +102,20 @@ class AlbumFunctions
 		return $album;
 	}
 
-
-
 	/**
 	 * take a $photo_sql query and return an array containing their pictures.
 	 *
 	 * @param $photos_sql
+	 *
 	 * @return array
 	 */
 	public function photos(Builder $photos_sql)
 	{
-
 		$previousPhotoID = '';
 		$return_photos = array();
 		$photo_counter = 0;
 		$photos = $photos_sql->get();
 		foreach ($photos as $photo_model) {
-
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->prepareData();
 
@@ -159,30 +151,26 @@ class AlbumFunctions
 		return $return_photos;
 	}
 
-
-
 	/**
-	 * Given a list of albums, generate an array to be returned
+	 * Given a list of albums, generate an array to be returned.
 	 *
 	 * @param Collection $albums
+	 *
 	 * @return array
 	 */
-	function prepare_albums(?Collection $albums)
+	public function prepare_albums(?Collection $albums)
 	{
-
 		$return = array();
 
 		if ($albums != null) {
 			// For each album
 			foreach ($albums as $album_model) {
-
 				// Turn data from the database into a front-end friendly format
 				$album = $album_model->prepareData();
 
 				if ($this->readAccessFunctions->album($album_model->id) === 1) {
 					$album['albums'] = $this->get_albums($album_model);
 					$album = $album_model->gen_thumbs($album, $this->get_sub_albums($album_model, [$album_model->id]));
-
 				}
 
 				// Add to return
@@ -193,41 +181,38 @@ class AlbumFunctions
 		return $return;
 	}
 
-
-
 	/**
 	 * @param $return
 	 * @param $photos_sql
 	 * @param $kind
+	 *
 	 * @return mixed
 	 */
-	function genSmartAlbumsThumbs(array $return, Builder $photos_sql, string $kind)
+	public function genSmartAlbumsThumbs(array $return, Builder $photos_sql, string $kind)
 	{
 		$photos = $photos_sql->get();
 		$i = 0;
 
 		$return[$kind] = array(
-			'thumbs'   => array(),
+			'thumbs' => array(),
 			'thumbs2x' => array(),
-			'types'    => array(),
-			'num'      => $photos_sql->count()
+			'types' => array(),
+			'num' => $photos_sql->count(),
 		);
 
 		foreach ($photos as $photo) {
 			if ($i < 3) {
 				$return[$kind]['thumbs'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->thumbUrl;
 				if ($photo->thumb2x == '1') {
-					$thumbUrl2x = explode(".", $photo->thumbUrl);
+					$thumbUrl2x = explode('.', $photo->thumbUrl);
 					$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
 					$return[$kind]['thumbs2x'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
-				}
-				else {
+				} else {
 					$return[$kind]['thumbs2x'][$i] = '';
 				}
 				$return[$kind]['types'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->type;
 				$i++;
-			}
-			else {
+			} else {
 				break;
 			}
 		}
@@ -235,53 +220,47 @@ class AlbumFunctions
 		return $return;
 	}
 
-
-
 	/**
-	 * @return array|false Returns an array of smart albums or false on failure.
+	 * @return array|false returns an array of smart albums or false on failure
 	 */
-	function getSmartAlbums()
+	public function getSmartAlbums()
 	{
-
 		/**
-		 * Initialize return var
+		 * Initialize return var.
 		 */
 		$return = array(
 			'unsorted' => null,
-			'public'   => null,
-			'starred'  => null,
-			'recent'   => null
+			'public' => null,
+			'starred' => null,
+			'recent' => null,
 		);
 
 		/**
-		 * Unsorted
+		 * Unsorted.
 		 */
 		$photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
 
 		/**
-		 * Starred
+		 * Starred.
 		 */
 		$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 
 		/**
-		 * Public
+		 * Public.
 		 */
 		$photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
 
 		/**
-		 * Recent
+		 * Recent.
 		 */
 		$photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
 
 		return $return;
-
 	}
-
-
 
 	/**
 	 * Recursively returns the tree structure of albums.
@@ -293,7 +272,6 @@ class AlbumFunctions
 		$subAlbums = [];
 		$userId = Session::get('UserID');
 		foreach ($album->children as $subAlbum) {
-
 			$haveAccess = $this->readAccessFunctions->album($subAlbum->id, true);
 
 			// We do list albums that need a password, but we limit what we
@@ -313,13 +291,12 @@ class AlbumFunctions
 		return $subAlbums;
 	}
 
-
-
 	/**
 	 * Recursively set the ownership of the contents of an album.
 	 *
 	 * @param $albumID
 	 * @param int $ownerId
+	 *
 	 * @return bool
 	 */
 	public function setContentsOwner($albumID, int $ownerId)
@@ -342,8 +319,6 @@ class AlbumFunctions
 		return $no_error;
 	}
 
-
-
 	/**
 	 * Recursively go through each sub album and build a list of them.
 	 * Unlike Album::get_all_sub_albums(), this function follows access
@@ -351,6 +326,7 @@ class AlbumFunctions
 	 *
 	 * @param $parentAlbum
 	 * @param array $return
+	 *
 	 * @return array
 	 */
 	public function get_sub_albums($parentAlbum, $return = array())
@@ -361,9 +337,7 @@ class AlbumFunctions
 				$return = $this->get_sub_albums($album, $return);
 			}
 		}
+
 		return $return;
 	}
-
-
-
 }

@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Configs;
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
@@ -39,6 +38,7 @@ class video_data extends Command
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
+	 *
 	 * @return void
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
@@ -74,6 +74,7 @@ class video_data extends Command
 
 		if (count($photos) == 0) {
 			$this->line('No videos require processing');
+
 			return 0;
 		}
 

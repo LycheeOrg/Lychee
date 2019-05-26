@@ -23,3 +23,5 @@ aliases
 Lychee-v*
 .phpunit*
 _ide*
+
+.php_cs.cache

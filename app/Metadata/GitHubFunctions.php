@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Metadata;
-
 
 use App;
 use App\Configs;
@@ -11,16 +9,13 @@ use Exception;
 
 class GitHubFunctions
 {
-
 	private $commits = false;
 	private $head = false;
 	private $branch = false;
 	private $CI_commit = false;
 
-
-
 	/**
-	 * return the correct git path depending whether we are running tests or from web
+	 * return the correct git path depending whether we are running tests or from web.
 	 *
 	 * @return string
 	 */
@@ -28,18 +23,16 @@ class GitHubFunctions
 	{
 		if (App::runningUnitTests()) {
 			return '.git';
-		}
-		else {
+		} else {
 			return '../.git';
 		}
 	}
 
-
-
 	/**
-	 * Given a commit id, return the 7 first characters (7 hex digits) and trim it to remove \n
+	 * Given a commit id, return the 7 first characters (7 hex digits) and trim it to remove \n.
 	 *
 	 * @param $commit_id
+	 *
 	 * @return string
 	 */
 	private function trim($commit_id)
@@ -47,24 +40,23 @@ class GitHubFunctions
 		return trim(substr($commit_id, 0, 7));
 	}
 
-
-
 	/**
 	 * Fetch an url with 1sec timout.
 	 *
 	 * @param $url
+	 *
 	 * @return bool|mixed
 	 */
 	private function get_json($url)
 	{
 		$opts = [
 			'http' => [
-				'method'  => 'GET',
+				'method' => 'GET',
 				'timeout' => 1,
-				'header'  => [
-					'User-Agent: PHP'
-				]
-			]
+				'header' => [
+					'User-Agent: PHP',
+				],
+			],
 		];
 		$context = stream_context_create($opts);
 
@@ -72,14 +64,13 @@ class GitHubFunctions
 		if ($json != false) {
 			return json_decode($json);
 		}
-		Logs::notice(__METHOD__, __LINE__, "Could not access: ".$url);
+		Logs::notice(__METHOD__, __LINE__, 'Could not access: '.$url);
+
 		return false;
 	}
 
-
-
 	/**
-	 * look at .git/HEAD and return the current branch
+	 * look at .git/HEAD and return the current branch.
 	 *
 	 * @return false|string
 	 */
@@ -88,29 +79,24 @@ class GitHubFunctions
 		if ($this->branch == false) {
 			$this->branch = @file_get_contents(sprintf('%s/HEAD', $this->git_path()));
 			if ($this->branch != false) {
-
 				// this is to handle CI where it actually checks a commit instead of a branch
-				if (substr($this->branch, 0, 4) == "refs:") {
-					$this->branch = explode("/", $this->branch, 3)[2]; //separate out by the "/" in the string
-				}
-				else {
+				if (substr($this->branch, 0, 4) == 'refs:') {
+					$this->branch = explode('/', $this->branch, 3)[2]; //separate out by the "/" in the string
+				} else {
 					$this->branch = 'master';
 					$this->CI_commit = $this->branch;
 				}
-
-			}
-			else {
-				Logs::notice(__METHOD__, __LINE__, "Could not access: ".$this->git_path()."/HEAD");
+			} else {
+				Logs::notice(__METHOD__, __LINE__, 'Could not access: '.$this->git_path().'/HEAD');
 			}
 			$this->branch = trim($this->branch);
 		}
+
 		return $this->branch;
 	}
 
-
-
 	/**
-	 * Return the current commit id (7 hex digits)
+	 * Return the current commit id (7 hex digits).
 	 *
 	 * @return false|string
 	 */
@@ -120,18 +106,16 @@ class GitHubFunctions
 			$this->head = @file_get_contents(sprintf('%s/refs/heads/%s', $this->git_path(), $this->branch));
 			if ($this->head != false) {
 				$this->head = $this->trim($this->head);
-			}
-			else {
-				Logs::notice(__METHOD__, __LINE__, sprintf("Could not access: ".$this->git_path()."/refs/heads/%s", $this->branch));
+			} else {
+				Logs::notice(__METHOD__, __LINE__, sprintf('Could not access: '.$this->git_path().'/refs/heads/%s', $this->branch));
 				if ($this->CI_commit != false) {
 					$this->head = $this->trim($this->CI_commit);
 				}
 			}
 		}
+
 		return $this->head;
 	}
-
-
 
 	/**
 	 * return the list of the last 30 commits on the master branch.
@@ -154,13 +138,12 @@ class GitHubFunctions
 			// get 30 last commits.
 			$this->commits = $this->get_json('http://api.github.com/repos/LycheeOrg/Lychee-Laravel/commits');
 		}
+
 		return $this->commits;
 	}
 
-
-
 	/**
-	 * Return a string like 'commit number (branch)' or 'no git data found'
+	 * Return a string like 'commit number (branch)' or 'no git data found'.
 	 *
 	 * @return string
 	 */
@@ -171,13 +154,12 @@ class GitHubFunctions
 		if ($head == false || $branch == false) {
 			return 'No git data found. Probably installed from release or could not read .git';
 		}
+
 		return sprintf('%s (%s)', $head, $branch).$this->get_behind_text();
 	}
 
-
-
 	/**
-	 * Count the number of commits between current version and master/HEAD
+	 * Count the number of commits between current version and master/HEAD.
 	 *
 	 * @return bool|int
 	 */
@@ -202,8 +184,6 @@ class GitHubFunctions
 		return ($i == count($commits)) ? false : $i;
 	}
 
-
-
 	/**
 	 * return the commit id (7 hex digits) of the had if found.
 	 *
@@ -212,13 +192,12 @@ class GitHubFunctions
 	public function get_github_head()
 	{
 		$commits = $this->get_commits();
+
 		return ($commits != false) ? ' ('.$this->trim($commits[0]->sha).')' : '';
 	}
 
-
-
 	/**
-	 * Return a string indicating whether we are up to date (used in Diagnostics)
+	 * Return a string indicating whether we are up to date (used in Diagnostics).
 	 *
 	 * @return string
 	 */
@@ -244,12 +223,11 @@ class GitHubFunctions
 		return ' - Probably more than 30 commits behind master';
 	}
 
-
-
 	/**
 	 * Check if the repo is up to date, throw an exception if fails.
 	 *
 	 * @return bool
+	 *
 	 * @throws Exception
 	 */
 	public function is_up_to_date()
@@ -267,13 +245,12 @@ class GitHubFunctions
 		if ($count === 0) {
 			return true;
 		}
+
 		return false;
 	}
 
-
-
 	/**
-	 * Check for updates
+	 * Check for updates.
 	 *
 	 * @param $return
 	 */

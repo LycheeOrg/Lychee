@@ -1,6 +1,6 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -27,42 +27,40 @@ class CreatePagesTable extends Migration
 		});
 
 		DB::table('pages')->insert([
-//			[
-//				'title'      => 'contact',
-//				'menu_title' => 'contact',
-//				'in_menu'    => true,
-//				'link'       => '/contact',
-//				'enabled'    => true,
-//				'order'      => 0
-//			],
-//			[
-//				'title'      => 'about',
-//				'menu_title' => 'about',
-//				'in_menu'    => true,
-//				'link'       => '/about',
-//				'enabled'    => true,
-//				'order'      => 1
-//			],
+			//			[
+			//				'title'      => 'contact',
+			//				'menu_title' => 'contact',
+			//				'in_menu'    => true,
+			//				'link'       => '/contact',
+			//				'enabled'    => true,
+			//				'order'      => 0
+			//			],
+			//			[
+			//				'title'      => 'about',
+			//				'menu_title' => 'about',
+			//				'in_menu'    => true,
+			//				'link'       => '/about',
+			//				'enabled'    => true,
+			//				'order'      => 1
+			//			],
 			[
-				'title'      => 'gallery',
+				'title' => 'gallery',
 				'menu_title' => 'gallery',
-				'in_menu'    => true,
-				'link'       => '/gallery',
-				'enabled'    => true,
-				'order'      => 2
+				'in_menu' => true,
+				'link' => '/gallery',
+				'enabled' => true,
+				'order' => 2,
 			],
-//			[
-//				'title'      => 'portfolio',
-//				'menu_title' => 'portfolio',
-//				'in_menu'    => true,
-//				'link'       => '/portfolio',
-//				'enabled'    => true,
-//				'order'      => 3
-//			],
+			//			[
+			//				'title'      => 'portfolio',
+			//				'menu_title' => 'portfolio',
+			//				'in_menu'    => true,
+			//				'link'       => '/portfolio',
+			//				'enabled'    => true,
+			//				'order'      => 3
+			//			],
 		]);
 	}
-
-
 
 	/**
 	 * Reverse the migrations.

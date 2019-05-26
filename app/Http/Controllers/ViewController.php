@@ -1,8 +1,8 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
-
 
 use App\Configs;
 use App\Logs;
@@ -12,15 +12,12 @@ use Illuminate\Support\Facades\Config;
 
 class ViewController extends Controller
 {
-
 	public function __construct()
 	{
 		$this->middleware([]);
 	}
 
-
-
-	static function sport($port)
+	public static function sport($port)
 	{
 		if ($port == 80) {
 			return '';
@@ -28,22 +25,21 @@ class ViewController extends Controller
 		if ($port == 443) {
 			return '';
 		}
+
 		return ':'.$port;
 	}
 
-
-
 	public function view(Request $request)
 	{
-
 		$request->validate([
-			'p' => 'required'
+			'p' => 'required',
 		]);
 
 		$photo = Photo::find($request->get('p'));
 
 		if ($photo == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find photo in database');
+
 			return abort(404);
 		}
 
@@ -59,11 +55,9 @@ class ViewController extends Controller
 			return abort(403);
 		}
 
-
 		if ($photo->medium == '1') {
 			$dir = 'medium';
-		}
-		else {
+		} else {
 			$dir = 'big';
 		}
 
@@ -76,14 +70,11 @@ class ViewController extends Controller
 		$picture = env('APP_URL').'/uploads/'.$dir.'/'.$photo->url;
 //		$picture  = $parseUrl['host'] . '/uploads/' . $dir . '/' . $photo->url;
 
-
 		return view('view', [
-			'url'     => $url,
-			'photo'   => $photo,
+			'url' => $url,
+			'photo' => $photo,
 			'picture' => $picture,
-			'title'   => $title
+			'title' => $title,
 		]);
 	}
-
-
 }

@@ -14,19 +14,20 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 
 /**
- * App\User
+ * App\User.
  *
- * @property int $id
- * @property string $username
- * @property string $password
- * @property int $upload
- * @property int $lock
- * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection|Album[] $albums
- * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property-read Collection|Album[] $shared
+ * @property int                                                   $id
+ * @property string                                                $username
+ * @property string                                                $password
+ * @property int                                                   $upload
+ * @property int                                                   $lock
+ * @property string|null                                           $remember_token
+ * @property Carbon|null                                           $created_at
+ * @property Carbon|null                                           $updated_at
+ * @property Collection|Album[]                                    $albums
+ * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
+ * @property Collection|Album[]                                    $shared
+ *
  * @method static Builder|User newModelQuery()
  * @method static Builder|User newQuery()
  * @method static Builder|User query()
@@ -59,17 +60,16 @@ class User extends Authenticatable
 		'password',
 		'remember_token',
 		'created_at',
-		'updated_at'
+		'updated_at',
 	];
 
 	protected $casts = [
 		'upload' => 'int',
-		'lock'  => 'int'
+		'lock' => 'int',
 	];
 
-
 	/**
-	 * Return the albums owned by the user
+	 * Return the albums owned by the user.
 	 *
 	 * @return HasMany
 	 */
@@ -78,10 +78,8 @@ class User extends Authenticatable
 		return $this->hasMany('App\Album', 'owner_id', 'id');
 	}
 
-
-
 	/**
-	 * Return the albums shared to the user
+	 * Return the albums shared to the user.
 	 *
 	 * @return BelongsToMany
 	 */

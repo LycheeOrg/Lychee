@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use App\Configs;
@@ -10,12 +9,10 @@ use App\Response;
 use Exception;
 
 /**
- * Class UpdateController
- * @package App\Http\Controllers
+ * Class UpdateController.
  */
 class UpdateController extends Controller
 {
-
 	/**
 	 * @var GitHubFunctions
 	 */
@@ -25,8 +22,6 @@ class UpdateController extends Controller
 	 * @var UpdateFunctions
 	 */
 	private $updateFunctions;
-
-
 
 	/**
 	 * @param GitHubFunctions $gitHubFunctions
@@ -38,8 +33,6 @@ class UpdateController extends Controller
 		$this->updateFunctions = $updateFunctions;
 	}
 
-
-
 	/**
 	 * This requires a php to have a shell access.
 	 * This method execute the update (git pull).
@@ -48,7 +41,6 @@ class UpdateController extends Controller
 	 */
 	public function do()
 	{
-
 		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
 			return Response::error('Online updates are not allowed.');
 		}
@@ -59,18 +51,15 @@ class UpdateController extends Controller
 			return Response::error('../.git is not executable, check the permissions');
 		}
 
-
 		try {
 			$up_to_date = $this->gitHubFunctions->is_up_to_date();
-		}
-		catch (Exception $e) {
+		} catch (Exception $e) {
 			return Response::error($e->getMessage());
 		}
 
 		if (!$up_to_date) {
 			return $this->updateFunctions->apply();
-		}
-		else {
+		} else {
 			return Response::json('Already up to date');
 		}
 	}

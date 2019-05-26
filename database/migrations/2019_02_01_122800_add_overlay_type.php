@@ -27,8 +27,6 @@ class AddOverlayType extends Migration
 //		}
 	}
 
-
-
 	/**
 	 * Reverse the migrations.
 	 *

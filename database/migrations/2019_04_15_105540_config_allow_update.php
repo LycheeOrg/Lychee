@@ -1,6 +1,6 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
@@ -15,26 +15,22 @@ class ConfigAllowUpdate extends Migration
 	public function up()
 	{
 		if (Schema::hasTable('configs')) {
-
 			DB::table('configs')->insert([
 				[
-					'key'             => 'allow_online_git_pull',
-					'value'           => '0',
-					'confidentiality' => 3
+					'key' => 'allow_online_git_pull',
+					'value' => '0',
+					'confidentiality' => 3,
 				],
 				[
-					'key'             => 'force_migration_in_production',
-					'value'           => '0',
-					'confidentiality' => 3
+					'key' => 'force_migration_in_production',
+					'value' => '0',
+					'confidentiality' => 3,
 				],
 			]);
-		}
-		else {
+		} else {
 			echo "Table configs does not exists\n";
 		}
 	}
-
-
 
 	/**
 	 * Reverse the migrations.

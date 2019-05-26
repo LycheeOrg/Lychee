@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php
+
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Console\Commands;
 
@@ -10,7 +12,6 @@ use Illuminate\Support\Facades\Config;
 
 class exif_lens extends Command
 {
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -35,13 +36,11 @@ class exif_lens extends Command
 	 */
 	private $metadataExtractor;
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
-	 * @param Extractor $metadataExtractor
+	 * @param Extractor      $metadataExtractor
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
 	{
@@ -50,8 +49,6 @@ class exif_lens extends Command
 		$this->photoFunctions = $photoFunctions;
 		$this->metadataExtractor = $metadataExtractor;
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -69,6 +66,7 @@ class exif_lens extends Command
 		$photos = Photo::where('lens', '=', '')->whereNotIn('lens', $this->photoFunctions->getValidVideoTypes())->offset($from)->limit($argument)->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires EXIF updates.');
+
 			return false;
 		}
 
@@ -103,12 +101,10 @@ class exif_lens extends Command
 				}
 				if ($photo->save()) {
 					$this->line($i.': EXIF updated for '.$photo->title);
-				}
-				else {
+				} else {
 					$this->line($i.': Could not get EXIF data/nothing to update for '.$photo->title.'.');
 				}
-			}
-			else {
+			} else {
 				$this->line($i.': File does not exists for '.$photo->title.'.');
 			}
 			$i++;

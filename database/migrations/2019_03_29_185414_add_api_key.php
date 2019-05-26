@@ -1,6 +1,6 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
@@ -16,19 +16,15 @@ class AddApiKey extends Migration
 	public function up()
 	{
 		if (Schema::hasTable('configs')) {
-
 			DB::table('configs')->insert([
-				['key'   => 'api_key',
-				 'value' => ''
+				['key' => 'api_key',
+					'value' => '',
 				],
 			]);
-		}
-		else {
+		} else {
 			echo "Table configs does not exists\n";
 		}
 	}
-
-
 
 	/**
 	 * Reverse the migrations.

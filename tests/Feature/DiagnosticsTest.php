@@ -1,16 +1,16 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace Tests\Feature;
 
-use App\Logs;
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class DiagnosticsTest extends TestCase
 {
 	/**
-	 * Test diagnostics
+	 * Test diagnostics.
 	 *
 	 * @return void
 	 */

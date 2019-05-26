@@ -2,7 +2,6 @@
 
 namespace App\Image;
 
-use App\Configs;
 use App\Logs;
 use ImagickException;
 
@@ -14,17 +13,15 @@ class ImagickHandler implements ImageHandlerInterface
 	private $compressionQuality;
 
 	/**
-	 * @{inheritdoc}
+	 * {@inheritdoc}
 	 */
 	public function __construct(int $compressionQuality)
 	{
 		$this->compressionQuality = $compressionQuality;
 	}
 
-
-
 	/**
-	 * @{inheritdoc}
+	 * {@inheritdoc}
 	 */
 	public function scale(
 		string $source,
@@ -33,8 +30,7 @@ class ImagickHandler implements ImageHandlerInterface
 		int $newHeight,
 		int &$resWidth,
 		int &$resHeight
-	): bool
-	{
+	): bool {
 		try {
 			// Read image
 			$image = new \Imagick();
@@ -52,27 +48,24 @@ class ImagickHandler implements ImageHandlerInterface
 			$resHeight = $image->getImageHeight();
 			$image->clear();
 			$image->destroy();
-		}
-		catch (ImagickException $exception) {
+		} catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+
 			return false;
 		}
 
 		return true;
 	}
 
-
-
 	/**
-	 * @{inheritdoc}
+	 * {@inheritdoc}
 	 */
 	public function crop(
 		string $source,
 		string $destination,
 		int $newWidth,
 		int $newHeight
-	): bool
-	{
+	): bool {
 		try {
 			$image = new \Imagick();
 			$image->readImage($source);
@@ -87,19 +80,17 @@ class ImagickHandler implements ImageHandlerInterface
 			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to '.$destination);
 			$image->clear();
 			$image->destroy();
-		}
-		catch (ImagickException $exception) {
+		} catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+
 			return false;
 		}
 
 		return true;
 	}
 
-
-
 	/**
-	 * @{inheritdoc}
+	 * {@inheritdoc}
 	 */
 	public function autoRotate(string $path, array $info): array
 	{
@@ -139,15 +130,14 @@ class ImagickHandler implements ImageHandlerInterface
 				break;
 		}
 
-		if($rotate) // we only write if there is a need. Fixes #111
-		{
+		if ($rotate) { // we only write if there is a need. Fixes #111
 			$image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
 			$image->writeImage($path);
 		}
 
 		$dimensions = [
-			'width'  => $image->getImageWidth(),
-			'height' => $image->getImageHeight()
+			'width' => $image->getImageWidth(),
+			'height' => $image->getImageHeight(),
 		];
 
 		$image->clear();

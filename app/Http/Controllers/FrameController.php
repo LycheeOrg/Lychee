@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Configs;
 use App\Locale\Lang;
 use App\Response;
-
 
 class FrameController extends Controller
 {
 	/**
 	 * @return false|string
 	 */
-	function init()
+	public function init()
 	{
 		Configs::get();
 
@@ -38,14 +36,13 @@ class FrameController extends Controller
 		$title = Configs::get_value('site_title');
 
 		return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos]);
-
 	}
 
-	function getSettings()
+	public function getSettings()
 	{
 		Configs::get();
 
-		if(Configs::get_value('Mod_Frame') != '1') {
+		if (Configs::get_value('Mod_Frame') != '1') {
 			return Response::error('Frame is not enabled');
 		}
 
@@ -53,7 +50,5 @@ class FrameController extends Controller
 		$return['refresh'] = Configs::get_value('Mod_Frame_refresh');
 
 		return $return;
-
 	}
-
 }

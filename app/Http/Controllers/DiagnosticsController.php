@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpComposerExtensionStubsInspection */
 
 /** @noinspection PhpUndefinedClassInspection */
@@ -17,7 +18,6 @@ use Imagick;
 
 class DiagnosticsController extends Controller
 {
-
 	/**
 	 * @var ConfigFunctions
 	 */
@@ -33,11 +33,9 @@ class DiagnosticsController extends Controller
 	 */
 	private $sessionFunctions;
 
-
-
 	/**
-	 * @param ConfigFunctions $configFunctions
-	 * @param GitHubFunctions $gitHubFunctions
+	 * @param ConfigFunctions  $configFunctions
+	 * @param GitHubFunctions  $gitHubFunctions
 	 * @param SessionFunctions $sessionFunctions
 	 */
 	public function __construct(ConfigFunctions $configFunctions, GitHubFunctions $gitHubFunctions, SessionFunctions $sessionFunctions)
@@ -47,14 +45,10 @@ class DiagnosticsController extends Controller
 		$this->sessionFunctions = $sessionFunctions;
 	}
 
-
-
 	public function get_errors()
 	{
-
 		// Declare
 		$errors = array();
-
 
 		// PHP Version
 		if (floatval(phpversion()) < 7.2) {
@@ -141,7 +135,6 @@ class DiagnosticsController extends Controller
 			}
 		}
 
-
 		// Load settings
 		$settings = Configs::get();
 
@@ -184,8 +177,7 @@ class DiagnosticsController extends Controller
 		// Check imagick
 		if (!extension_loaded('imagick')) {
 			$errors += ['Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.'];
-		}
-		else {
+		} else {
 			if (!$settings['imagick']) {
 				$errors += ['Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.'];
 			}
@@ -193,8 +185,6 @@ class DiagnosticsController extends Controller
 
 		return $errors;
 	}
-
-
 
 	/**
 	 * @return array
@@ -211,8 +201,7 @@ class DiagnosticsController extends Controller
 		$json = @file_get_contents(Config::get('defines.path.LYCHEE').'public/Lychee-front/package.json');
 		if ($json == false) {
 			$json = ['version' => '-'];
-		}
-		else {
+		} else {
 			$json = json_decode($json, true);
 		}
 
@@ -223,50 +212,42 @@ class DiagnosticsController extends Controller
 		$imagick = extension_loaded('imagick');
 		if ($imagick === true) {
 			$imagickVersion = @Imagick::getVersion();
-		}
-		else {
+		} else {
 			$imagick = '-';
 		}
 		if (!isset($imagickVersion, $imagickVersion['versionNumber']) || $imagickVersion === '') {
 			$imagickVersion = '-';
-		}
-		else {
+		} else {
 			$imagickVersion = $imagickVersion['versionNumber'];
 		}
 
 		// About GD version
 		if (function_exists('gd_info')) {
 			$gdVersion = gd_info();
-		}
-		else {
+		} else {
 			$gdVersion = ['GD Version' => '-'];
 		}
 
-
 		// About SQL version
 		if (DB::getDriverName() == 'mysql') {
-			$results = DB::select(DB::raw("select version()"));
+			$results = DB::select(DB::raw('select version()'));
 			$dbver = $results[0]->{'version()'};
 			$dbtype = 'MySQL';
-		}
-		else {
+		} else {
 			if (DB::getDriverName() == 'sqlite') {
-				$results = DB::select(DB::raw("select sqlite_version()"));
+				$results = DB::select(DB::raw('select sqlite_version()'));
 				$dbver = $results[0]->{'sqlite_version()'};
 				$dbtype = 'SQLite';
-			}
-			else {
+			} else {
 				if (DB::getDriverName() == 'pgsql') {
 					$results = DB::select(DB::raw('select version()'));
 					$dbver = $results[0]->{'version'};
 					$dbtype = 'PostgreSQL';
-				}
-				else {
+				} else {
 					try {
-						$results = DB::select(DB::raw("select version()"));
+						$results = DB::select(DB::raw('select version()'));
 						$dbver = $results[0]->{'version()'};
-					}
-					catch (Exception $e) {
+					} catch (Exception $e) {
 						$dbver = 'unknown';
 					}
 					$dbtype = DB::getDriverName();
@@ -287,10 +268,7 @@ class DiagnosticsController extends Controller
 		$infos[] = str_pad('GD Version:', 25).$gdVersion['GD Version'];
 
 		return $infos;
-
 	}
-
-
 
 	public function get_config()
 	{
@@ -304,11 +282,9 @@ class DiagnosticsController extends Controller
 				$configs[] = str_pad($key.':', 24).' '.$value;
 			}
 		}
+
 		return $configs;
-
 	}
-
-
 
 	public function get()
 	{
@@ -327,25 +303,20 @@ class DiagnosticsController extends Controller
 
 		try {
 			$update &= !$this->gitHubFunctions->is_up_to_date();
-		}
-		catch (Exception $e) {
+		} catch (Exception $e) {
 			$update = false;
 		}
 
-
 		return [
-			'errors'  => $errors,
-			'infos'   => $infos,
+			'errors' => $errors,
+			'infos' => $infos,
 			'configs' => $configs,
-			'update'  => $update
+			'update' => $update,
 		];
 	}
 
-
-
 	public function show()
 	{
-
 		$errors = $this->get_errors();
 		$infos = ['You must be logged to see this.'];
 		$configs = ['You must be logged to see this.'];
@@ -356,9 +327,9 @@ class DiagnosticsController extends Controller
 
 		// Show separator
 		return view('diagnostics', [
-			'errors'  => $errors,
-			'infos'   => $infos,
-			'configs' => $configs
+			'errors' => $errors,
+			'infos' => $infos,
+			'configs' => $configs,
 		]);
 	}
 }

@@ -2,14 +2,11 @@
 
 namespace App\ModelFunctions;
 
-
 use App\Configs;
 use App\Locale\Lang;
 
 class ConfigFunctions
 {
-
-
 	/**
 	 * return the basic information for a Page.
 	 *
@@ -30,14 +27,12 @@ class ConfigFunctions
 		$infos['copyright_enable'] = Configs::get_value('site_copyright_enable');
 		$infos['copyright_year'] = Configs::get_value('site_copyright_begin');
 		$infos['additional_footer_text'] = Configs::get_value('additional_footer_text');
-		if (Configs::get_value('site_copyright_begin') != Configs::get_value('site_copyright_end'))
-		{
+		if (Configs::get_value('site_copyright_begin') != Configs::get_value('site_copyright_end')) {
 			$infos['copyright_year'] = Configs::get_value('site_copyright_begin').'-'.Configs::get_value('site_copyright_end');
 		}
 
 		return $infos;
 	}
-
 
 	/**
 	 * Returns the public settings of Lychee.
@@ -46,10 +41,8 @@ class ConfigFunctions
 	 */
 	public function min_info()
 	{
-
 		// Execute query
-		return Configs::info()->pluck('value','key')->all();
-
+		return Configs::info()->pluck('value', 'key')->all();
 	}
 
 	/**
@@ -59,12 +52,9 @@ class ConfigFunctions
 	 */
 	public function public()
 	{
-
 		// Execute query
-		return Configs::public()->pluck('value','key')->all();
-
+		return Configs::public()->pluck('value', 'key')->all();
 	}
-
 
 	/**
 	 * Returns the admin settings of Lychee.
@@ -73,15 +63,13 @@ class ConfigFunctions
 	 */
 	public function admin()
 	{
-
 		// Execute query
-		$return = Configs::admin()->pluck('value','key')->all();
+		$return = Configs::admin()->pluck('value', 'key')->all();
 		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
 		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
 
 		$return['lang_available'] = Lang::get_lang_available();
 
 		return $return;
-
 	}
 }
