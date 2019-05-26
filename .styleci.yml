@@ -35,7 +35,7 @@ enabled:
   - method_visibility_required
   - native_function_casing
   - new_with_braces
-#  - no_alias_functions
+#  - no_alias_functions # (risky)
   - no_blank_lines_after_class_opening
   - no_blank_lines_after_phpdoc
   - no_blank_lines_after_throw
@@ -88,9 +88,9 @@ enabled:
   - print_to_echo
   - property_separation
   - property_visibility_required
-#  - psr4
+#  - psr4 # (risky)
   - return_type_declaration
-  - self_accessor
+#  - self_accessor  # (risky)
   - short_scalar_cast
   - silenced_deprecation_error
   - single_blank_line_at_eof
