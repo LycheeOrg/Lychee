@@ -113,7 +113,7 @@ enabled:
   - unix_line_endings
   - whitespace_after_comma_in_array
 disabled:
-  - indentation
+#  - indentation
 finder:
   exclude:
     - modules
