@@ -113,7 +113,6 @@ enabled:
   - whitespace_after_comma_in_array
 disabled:
   - indentation
-  - no_tab_indentation
 finder:
   exclude:
     - modules
