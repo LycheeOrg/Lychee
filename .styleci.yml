@@ -35,7 +35,7 @@ enabled:
   - method_visibility_required
   - native_function_casing
   - new_with_braces
-  - no_alias_functions
+#  - no_alias_functions
   - no_blank_lines_after_class_opening
   - no_blank_lines_after_phpdoc
   - no_blank_lines_after_throw
