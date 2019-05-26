@@ -92,7 +92,7 @@ enabled:
   - return_type_declaration
 #  - self_accessor  # (risky)
   - short_scalar_cast
-  - silenced_deprecation_error
+#  - silenced_deprecation_error # (risky)
   - single_blank_line_at_eof
   - single_blank_line_before_namespace
   - single_class_element_per_statement
