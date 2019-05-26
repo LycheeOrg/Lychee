@@ -13,6 +13,12 @@ env:
   - TRAVIS_COMPOSER_DEV=yes
   - TRAVIS_COMPOSER_DEV=no
 
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.php-cs-fixer
+    - $HOME/.local
 services:
   - postgresql
 
@@ -27,6 +33,7 @@ addons:
       - php-gd
 
 before_script:
+  - phpenv config-rm xdebug.ini
   - printf "\n" | pecl install imagick
   # create db for postgresql
   - psql -c 'create database homestead_test;' -U postgres
@@ -50,6 +57,7 @@ script:
   - php artisan migrate
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
   - php artisan migrate:rollback
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run ; fi"
 
 after_success:
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash codecov.sh ; fi"
