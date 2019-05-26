@@ -1,8 +1,8 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Middleware;
-
 
 use App\Album;
 use App\Logs;
@@ -19,202 +19,203 @@ use Illuminate\Support\Facades\Session;
 
 class UploadCheck
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
+    /**
+     * @var SessionFunctions
+     */
+    private $sessionFunctions;
 
+    /**
+     * @var AlbumFunctions
+     */
+    private $albumFunctions;
 
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
+    public function __construct(SessionFunctions $sessionFunctions, AlbumFunctions $albumFunctions)
+    {
+        $this->sessionFunctions = $sessionFunctions;
+        $this->albumFunctions = $albumFunctions;
+    }
 
+    /**
+     * Handle an incoming request.
+     *
+     * @param Request $request
+     * @param Closure $next
+     *
+     * @return mixed
+     */
+    public function handle(Request $request, Closure $next)
+    {
+        // not logged!
+        if (!$this->sessionFunctions->is_logged_in()) {
+            return response('false');
+        }
 
-	public function __construct(SessionFunctions $sessionFunctions, AlbumFunctions $albumFunctions)
-	{
-		$this->sessionFunctions = $sessionFunctions;
-		$this->albumFunctions = $albumFunctions;
-	}
+        // is admin
+        if ($this->sessionFunctions->is_admin()) {
+            return $next($request);
+        }
 
+        $user_id = Session::get('UserID');
+        $user = User::find($user_id);
+        if ($user == null) {
+            return response('false');
+        }
 
+        // is not admin and does not have upload rights
+        if (!$user->upload) {
+            return response('false');
+        }
 
-	/**
-	 * Handle an incoming request.
-	 *
-	 * @param Request $request
-	 * @param Closure $next
-	 * @return mixed
-	 */
-	public function handle(Request $request, Closure $next)
-	{
-		// not logged!
-		if (!$this->sessionFunctions->is_logged_in()) {
-			return response('false');
-		}
+        $ret = $this->album_check($request, $user_id);
+        if ($ret === false) {
+            return response('false');
+        }
 
-		// is admin
-		if ($this->sessionFunctions->is_admin()) {
-			return $next($request);
-		}
+        $ret = $this->photo_check($request, $user_id);
+        if ($ret === false) {
+            return response('false');
+        }
 
-		$user_id = Session::get('UserID');
-		$user = User::find($user_id);
-		if ($user == null)
-		{
-			return response('false');
-		}
+        // Only used for /api/Sharing::Delete
+        $ret = $this->share_check($request, $user_id);
+        if ($ret === false) {
+            return response('false');
+        }
 
-		// is not admin and does not have upload rights
-		if (!$user->upload) {
-			return response('false');
-		}
+        return $next($request);
+    }
 
-		$ret = $this->album_check($request, $user_id);
-		if ($ret === false) {
-			return response('false');
-		}
+    /**
+     * Take of checking if a user can actually modify that Album.
+     *
+     * @param $request
+     * @param int $user_id
+     *
+     * @return ResponseFactory|Response|mixed
+     */
+    public function album_check(Request $request, int $user_id)
+    {
+        if ($request->has('albumID') || $request->has('parent_id')) {
+            $albumID = $request->has('albumID') ? $request['albumID'] : $request['parent_id'];
 
-		$ret = $this->photo_check($request, $user_id);
-		if ($ret === false) {
-			return response('false');
-		}
+            if ($this->albumFunctions->is_smart_album($albumID)) {
+                return true;
+            }
 
-		// Only used for /api/Sharing::Delete
-		$ret = $this->share_check($request, $user_id);
-		if ($ret === false) {
-			return response('false');
-		}
+            $num = Album::where('id', '=', $albumID)->where('owner_id', '=', $user_id)->count();
+            if ($num == 0) {
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
 
-		return $next($request);
+                return false;
+            }
 
-	}
+            return true;
+        }
 
+        if ($request->has('albumIDs')) {
+            $albumIDs = $request['albumIDs'];
 
+            $albums = Album::whereIn('id', explode(',', $albumIDs))->get();
+            if ($albums == null) {
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
 
-	/**
-	 * Take of checking if a user can actually modify that Album
-	 *
-	 * @param $request
-	 * @param int $user_id
-	 * @return ResponseFactory|Response|mixed
-	 */
-	public function album_check(Request $request, int $user_id)
-	{
-		if ($request->has('albumID') || $request->has('parent_id')) {
-			$albumID = $request->has('albumID') ? $request['albumID'] : $request['parent_id'];
+                return false;
+            }
+            $no_error = true;
+            foreach ($albums as $album_t) {
+                $no_error &= ($album_t->owner_id == $user_id);
+            }
+            if ($no_error) {
+                return true;
+            }
 
-			if ($this->albumFunctions->is_smart_album($albumID)){
-				return true;
-			}
+            Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
 
-			$num = Album::where('id', '=', $albumID)->where('owner_id', '=', $user_id)->count();
-			if ($num == 0) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-				return false;
-			}
-			return true;
-		}
+            return false;
+        }
 
-		if ($request->has('albumIDs')) {
-			$albumIDs = $request['albumIDs'];
+        return null;
+    }
 
-			$albums = Album::whereIn('id', explode(',', $albumIDs))->get();
-			if ($albums == null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
-				return false;
-			}
-			$no_error = true;
-			foreach ($albums as $album_t) {
-				$no_error &= ($album_t->owner_id == $user_id);
-			}
-			if ($no_error) {
-				return true;
-			}
+    /**
+     * Check if the user is authorized to do anything to that picture.
+     *
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return ResponseFactory|Response|mixed
+     */
+    public function photo_check(Request $request, int $id)
+    {
+        if ($request->has('photoID')) {
+            $photoID = $request['photoID'];
+            $num = Photo::where('id', '=', $photoID)->where('owner_id', '=', $id)->count();
+            if ($num == 0) {
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
 
-			Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
-			return false;
-		}
+                return false;
+            }
 
-		return null;
-	}
+            return true;
+        }
 
+        if ($request->has('photoIDs')) {
+            $photoIDs = $request['photoIDs'];
 
+            $photos = Photo::whereIn('id', explode(',', $photoIDs))->get();
+            if ($photos == null) {
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified photos');
 
-	/**
-	 * Check if the user is authorized to do anything to that picture
-	 *
-	 * @param Request $request
-	 * @param int $id
-	 * @return ResponseFactory|Response|mixed
-	 */
-	public function photo_check(Request $request, int $id)
-	{
-		if ($request->has('photoID')) {
-			$photoID = $request['photoID'];
-			$num = Photo::where('id', '=', $photoID)->where('owner_id', '=', $id)->count();
-			if ($num == 0) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-				return false;
-			}
-			return true;
-		}
+                return false;
+            }
+            $no_error = true;
+            foreach ($photos as $photo_t) {
+                // either you own the picture or it is in an album you own
+                $no_error &= (($photo_t->owner_id == $id) || ($photo_t->album != null && $photo_t->album->owner_id == $id));
+            }
+            if ($no_error) {
+                return true;
+            }
 
-		if ($request->has('photoIDs')) {
-			$photoIDs = $request['photoIDs'];
+            Logs::error(__METHOD__, __LINE__, 'Photos ownership mismatch!');
 
-			$photos = Photo::whereIn('id', explode(',', $photoIDs))->get();
-			if ($photos == null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified photos');
-				return false;
-			}
-			$no_error = true;
-			foreach ($photos as $photo_t) {
-				// either you own the picture or it is in an album you own
-				$no_error &= (($photo_t->owner_id == $id) || ($photo_t->album != null && $photo_t->album->owner_id == $id));
-			}
-			if ($no_error) {
-				return true;
-			}
+            return false;
+        }
+    }
 
-			Logs::error(__METHOD__, __LINE__, 'Photos ownership mismatch!');
-			return false;
-		}
-	}
+    /**
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return bool
+     */
+    public function share_check(Request $request, int $id)
+    {
+        if ($request->has('ShareIDs')) {
+            $shareIDs = $request['ShareIDs'];
 
-
-
-	/**
-	 * @param Request $request
-	 * @param int $id
-	 * @return bool
-	 */
-	public function share_check(Request $request, int $id)
-	{
-		if ($request->has('ShareIDs')) {
-			$shareIDs = $request['ShareIDs'];
-
-			$albums = Album::whereIn('id', function (Builder $query) use ($shareIDs) {
-				$query->select('album_id')
+            $albums = Album::whereIn('id', function (Builder $query) use ($shareIDs) {
+                $query->select('album_id')
 					->from('user_album')
 					->whereIn('id', explode(',', $shareIDs));
-			})->select('owner_id')->get();
+            })->select('owner_id')->get();
 
-			if ($albums == null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
-				return false;
-			}
-			$no_error = true;
-			foreach ($albums as $album_t) {
-				$no_error &= ($album_t->owner_id == $id);
-			}
-			if ($no_error) {
-				return true;
-			}
+            if ($albums == null) {
+                Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
 
-			Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
-			return false;
+                return false;
+            }
+            $no_error = true;
+            foreach ($albums as $album_t) {
+                $no_error &= ($album_t->owner_id == $id);
+            }
+            if ($no_error) {
+                return true;
+            }
 
-		}
-	}
+            Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
+
+            return false;
+        }
+    }
 }

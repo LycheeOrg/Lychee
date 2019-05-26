@@ -7,24 +7,20 @@ class ApiKeySecurityLevel extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
-        $config = Configs::where('key','api_key')->first();
+        $config = Configs::where('key', 'api_key')->first();
         $config->confidentiality = 3;
         $config->save();
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
-        /**
+        /*
          * This is a not reversible change.
          * Anyway the key would be deleted with the next rollback: add_api_key
          */

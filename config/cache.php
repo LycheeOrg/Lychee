@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Default Cache Store
@@ -29,7 +28,6 @@ return [
     */
 
     'stores' => [
-
         'apc' => [
             'driver' => 'apc',
         ],
@@ -72,7 +70,6 @@ return [
             'driver' => 'redis',
             'connection' => 'default',
         ],
-
     ],
 
     /*
@@ -90,5 +87,4 @@ return [
         'CACHE_PREFIX',
         str_slug(env('APP_NAME', 'laravel'), '_').'_cache'
     ),
-
 ];

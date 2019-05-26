@@ -14,7 +14,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 
 /**
- * App\User
+ * App\User.
  *
  * @property int $id
  * @property string $username
@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property-read Collection|Album[] $albums
  * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read Collection|Album[] $shared
+ *
  * @method static Builder|User newModelQuery()
  * @method static Builder|User newQuery()
  * @method static Builder|User query()
@@ -42,51 +43,48 @@ use Illuminate\Support\Carbon;
  */
 class User extends Authenticatable
 {
-	use Notifiable;
+    use Notifiable;
 
-	/**
-	 * The attributes that are mass assignable.
-	 */
-	protected $fillable = [
+    /**
+     * The attributes that are mass assignable.
+     */
+    protected $fillable = [
 		'username',
 		'password',
 	];
 
-	/**
-	 * The attributes that should be hidden for arrays.
-	 */
-	protected $hidden = [
+    /**
+     * The attributes that should be hidden for arrays.
+     */
+    protected $hidden = [
 		'password',
 		'remember_token',
 		'created_at',
-		'updated_at'
+		'updated_at',
 	];
 
-	protected $casts = [
+    protected $casts = [
 		'upload' => 'int',
-		'lock'  => 'int'
+		'lock' => 'int',
 	];
 
+    /**
+     * Return the albums owned by the user.
+     *
+     * @return HasMany
+     */
+    public function albums()
+    {
+        return $this->hasMany('App\Album', 'owner_id', 'id');
+    }
 
-	/**
-	 * Return the albums owned by the user
-	 *
-	 * @return HasMany
-	 */
-	public function albums()
-	{
-		return $this->hasMany('App\Album', 'owner_id', 'id');
-	}
-
-
-
-	/**
-	 * Return the albums shared to the user
-	 *
-	 * @return BelongsToMany
-	 */
-	public function shared()
-	{
-		return $this->belongsToMany('App\Album', 'user_album', 'user_id', 'album_id');
-	}
+    /**
+     * Return the albums shared to the user.
+     *
+     * @return BelongsToMany
+     */
+    public function shared()
+    {
+        return $this->belongsToMany('App\Album', 'user_album', 'user_id', 'album_id');
+    }
 }

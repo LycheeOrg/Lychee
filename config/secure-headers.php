@@ -2,7 +2,6 @@
 
 
 return [
-
     /*
      * Server
      *
@@ -337,7 +336,7 @@ return [
             'hashes' => [
 	            'sha256' => [
 	            	'8bLztrDF3NUpheSuvAzpebgX1DpPJEfhmUHKTwGF4qA=',
-		            ]
+		            ],
             ],
             'nonces' => [
                 // 'base64-encoded',
@@ -357,7 +356,7 @@ return [
 
         'style-src' => [
             'allow' => [
-	            'https://fonts.googleapis.com'
+	            'https://fonts.googleapis.com',
             ],
             'hashes' => [
                 // 'sha256' => [
@@ -388,13 +387,13 @@ return [
 	        'allow' => [
 		        'http://lycheeorg.github.io/update.json',
 	        ],
-            'self' => true
+            'self' => true,
         ],
         'font-src' => [
         	'allow' => [
-		        'https://fonts.gstatic.com'
+		        'https://fonts.gstatic.com',
 	        ],
-            'self' => true
+            'self' => true,
             //
         ],
         'form-action' => [
@@ -410,7 +409,7 @@ return [
             //
         ],
         'media-src' => [
-            'self' => true
+            'self' => true,
         ],
         'object-src' => [
             //
@@ -423,7 +422,5 @@ return [
         ],
         'require-sri-for' => '',
         'sandbox' => '',
-
     ],
-
 ];

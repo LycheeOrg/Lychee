@@ -1,43 +1,37 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class DisplaySocialInGallery extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
-	    if (Schema::hasTable('configs')) {
-
-		    DB::table('configs')->insert([
+        if (Schema::hasTable('configs')) {
+            DB::table('configs')->insert([
 			    [
-				    'key'             => 'display_social_in_gallery',
-				    'value'           => '0',
-				    'confidentiality' => 2
+				    'key' => 'display_social_in_gallery',
+				    'value' => '0',
+				    'confidentiality' => 2,
 			    ],
 		    ]);
-	    }
-	    else {
-		    echo "Table configs does not exists\n";
-	    }
+        } else {
+            echo "Table configs does not exists\n";
+        }
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
-	    if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-		    Configs::where('key', '=', 'display_social_in_gallery')->delete();
-	    }
+        if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
+            Configs::where('key', '=', 'display_social_in_gallery')->delete();
+        }
     }
 }

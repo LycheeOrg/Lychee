@@ -2,7 +2,7 @@
 
 return [
     'path' => [
-        'LYCHEE' => substr(__DIR__,0,-6),
+        'LYCHEE' => substr(__DIR__, 0, -6),
     ],
 
 	// Define status
@@ -28,10 +28,10 @@ return [
 	    'LYCHEE_URL_UPLOADS_BIG' => 'uploads/big/',
 	    'LYCHEE_URL_UPLOADS_MEDIUM' => 'uploads/medium/',
 	    'LYCHEE_URL_UPLOADS_SMALL' => 'uploads/small/',
-	    'LYCHEE_URL_UPLOADS_THUMB' => 'uploads/thumb/'
+	    'LYCHEE_URL_UPLOADS_THUMB' => 'uploads/thumb/',
     ],
 
     'defaults' => [
-    	'SITE_TITLE' => 'Lychee v4'
-    ]
+    	'SITE_TITLE' => 'Lychee v4',
+    ],
 ];

@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * App\Album
+ * App\Album.
  *
  * @property int $id
  * @property string $title
@@ -36,6 +37,7 @@ use Illuminate\Support\Facades\Hash;
  * @property-read User $owner
  * @property-read Album $parent
  * @property-read Photo[] $photos
+ *
  * @method static Builder|Album newModelQuery()
  * @method static Builder|Album newQuery()
  * @method static Builder|Album query()
@@ -57,320 +59,298 @@ use Illuminate\Support\Facades\Hash;
  */
 class Album extends Model
 {
-
-	protected $dates = [
+    protected $dates = [
 		'created_at',
 		'updated_at',
 		'min_takestamp',
-		'max_takestamp'
+		'max_takestamp',
 	];
 
-	protected $casts = [
+    protected $casts = [
 		'public' => 'int',
-		'visible_hidden'  => 'int',
-		'downloadable'  => 'int'
+		'visible_hidden' => 'int',
+		'downloadable' => 'int',
 	];
 
+    /**
+     * Return the relationship between Photos and their Album.
+     *
+     * @return HasMany
+     */
+    public function photos()
+    {
+        return $this->hasMany('App\Photo', 'album_id', 'id');
+    }
 
-	/**
-	 * Return the relationship between Photos and their Album
-	 *
-	 * @return HasMany
-	 */
-	public function photos()
-	{
-		return $this->hasMany('App\Photo', 'album_id', 'id');
-	}
-
-
-
-	/**
-	 * Return the relationship between an album and its owner
-	 *
-	 * @return BelongsTo
-	 */
-	public function owner()
-	{
-		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
-			'id'       => 0,
-			'username' => 'Admin'
+    /**
+     * Return the relationship between an album and its owner.
+     *
+     * @return BelongsTo
+     */
+    public function owner()
+    {
+        return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
+			'id' => 0,
+			'username' => 'Admin',
 		]);
-	}
+    }
 
+    /**
+     * Return the relationship between an album and its sub albums.
+     *
+     * @return HasMany
+     */
+    public function children()
+    {
+        return $this->hasMany('App\Album', 'parent_id', 'id');
+    }
 
+    /**
+     * Return the relationship between a sub album and its parent.
+     *
+     * @return BelongsTo
+     */
+    public function parent()
+    {
+        return $this->belongsTo('App\Album', 'id', 'parent_id');
+    }
 
-	/**
-	 * Return the relationship between an album and its sub albums
-	 *
-	 * @return HasMany
-	 */
-	public function children()
-	{
-		return $this->hasMany('App\Album', 'parent_id', 'id');
-	}
+    /**
+     * @return BelongsToMany
+     */
+    public function shared_with()
+    {
+        return $this->belongsToMany('App\User', 'user_album', 'album_id', 'user_id');
+    }
 
+    /**
+     * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
+     *
+     * @return array
+     */
+    public function prepareData()
+    {
+        // Init
+        $album = array();
 
+        // Set unchanged attributes
+        $album['id'] = $this->id;
+        $album['title'] = $this->title;
+        $album['public'] = strval($this->public);
+        $album['hidden'] = strval($this->visible_hidden);
+        $album['parent_id'] = $this->parent_id;
 
-	/**
-	 * Return the relationship between a sub album and its parent
-	 *
-	 * @return BelongsTo
-	 */
-	public function parent()
-	{
-		return $this->belongsTo('App\Album', 'id', 'parent_id');
-	}
+        // Additional attributes
+        // Only part of $album when available
+        $album['description'] = strval($this->description);
+        $album['visible'] = strval($this->visible_hidden);
+        $album['downloadable'] = strval($this->downloadable);
 
+        // Parse date
+        $album['sysdate'] = $this->created_at->format('F Y');
+        $album['min_takestamp'] = $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
+        $album['max_takestamp'] = $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
 
+        // Parse password
+        $album['password'] = ($this->password == '' ? '0' : '1');
 
-	/**
-	 * @return BelongsToMany
-	 */
-	public function shared_with()
-	{
-		return $this->belongsToMany('App\User', 'user_album', 'album_id', 'user_id');
-	}
+        $album['license'] = $this->license == 'none' ? Configs::get_value('default_license') : $this->license;
 
-	/**
-	 * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
-	 *
-	 * @return array
-	 */
-	public function prepareData()
-	{
+        $album['owner'] = $this->owner->username;
 
-		// Init
-		$album = array();
+        $album['thumbs'] = array();
+        $album['thumbs2x'] = array();
+        $album['types'] = array();
 
-		// Set unchanged attributes
-		$album['id'] = $this->id;
-		$album['title'] = $this->title;
-		$album['public'] = strval($this->public);
-		$album['hidden'] = strval($this->visible_hidden);
-		$album['parent_id'] = $this->parent_id;
+        return $album;
+    }
 
-		// Additional attributes
-		// Only part of $album when available
-		$album['description'] = strval($this->description);
-		$album['visible'] = strval($this->visible_hidden);
-		$album['downloadable'] = strval($this->downloadable);
-
-		// Parse date
-		$album['sysdate'] = $this->created_at->format('F Y');
-		$album['min_takestamp'] = $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
-		$album['max_takestamp'] = $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
-
-		// Parse password
-		$album['password'] = ($this->password == '' ? '0' : '1');
-
-		$album['license'] = $this->license == 'none' ? Configs::get_value('default_license') : $this->license;
-
-		$album['owner'] = $this->owner->username;
-
-		$album['thumbs'] = array();
-		$album['thumbs2x'] = array();
-		$album['types'] = array();
-
-		return $album;
-	}
-
-
-
-	/**
-	 * get the thumbs of an album.
-	 *
-	 * @param array $return
-	 * @param array $album_list
-	 * @return array
-	 */
-	public function gen_thumbs($return, $album_list)
-	{
-
-		$thumbs_types = Photo::select(['thumbUrl', 'thumb2x', 'type'])
+    /**
+     * get the thumbs of an album.
+     *
+     * @param array $return
+     * @param array $album_list
+     *
+     * @return array
+     */
+    public function gen_thumbs($return, $album_list)
+    {
+        $thumbs_types = Photo::select(['thumbUrl', 'thumb2x', 'type'])
 			->whereIn('album_id', $album_list)
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
 			->limit(3)->get();
 
-		// For each thumb
-		$k = 0;
-		foreach ($thumbs_types as $thumb_types) {
-			$return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->thumbUrl;
-			if ($thumb_types->thumb2x == '1') {
-				$thumbUrl2x = explode(".", $thumb_types->thumbUrl);
-				$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-				$return['thumbs2x'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
-			}
-			else {
-				$return['thumbs2x'][$k] = '';
-			}
-			$return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->type;
-			$k++;
-		}
+        // For each thumb
+        $k = 0;
+        foreach ($thumbs_types as $thumb_types) {
+            $return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->thumbUrl;
+            if ($thumb_types->thumb2x == '1') {
+                $thumbUrl2x = explode('.', $thumb_types->thumbUrl);
+                $thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
+                $return['thumbs2x'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
+            } else {
+                $return['thumbs2x'][$k] = '';
+            }
+            $return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->type;
+            ++$k;
+        }
 
-		return $return;
-	}
+        return $return;
+    }
 
+    /**
+     * Recursively go through each sub album and build a list of them.
+     *
+     * @param array $return
+     *
+     * @return array
+     */
+    private function get_all_sub_albums($return = array())
+    {
+        foreach ($this->children as $album) {
+            $return[] = $album->id;
+            $return = $album->get_all_sub_albums($return);
+        }
 
+        return $return;
+    }
 
-	/**
-	 * Recursively go through each sub album and build a list of them.
-	 *
-	 * @param array $return
-	 * @return array
-	 */
-	private function get_all_sub_albums($return = array())
-	{
-		foreach ($this->children as $album) {
-			$return[] = $album->id;
-			$return = $album->get_all_sub_albums($return);
-		}
-		return $return;
-	}
+    /**
+     * Given a password, check if it matches albums password.
+     *
+     * @param string $password
+     *
+     * @return bool returns when album is public
+     */
+    public function checkPassword(string $password)
+    {
+        // album password is empty or input is correct.
+        return $this->password == '' || Hash::check($password, $this->password);
+    }
 
+    /**
+     * Go through each sub album and update the minimum and maximum takestamp of the pictures.
+     * TODO: this seems needlessly expensive (should use takestamps of
+     * subalbums rather than going through all their photos).
+     * Also, the caller should recursively update the parents.
+     */
+    public function update_min_max_takestamp()
+    {
+        $album_list = $this->get_all_sub_albums([$this->id]);
 
+        $min = Photo::whereIn('album_id', $album_list)->min('takestamp');
+        $max = Photo::whereIn('album_id', $album_list)->max('takestamp');
+        $this->min_takestamp = $min;
+        $this->max_takestamp = $max;
+    }
 
-	/**
-	 * Given a password, check if it matches albums password
-	 *
-	 * @param string $password
-	 * @return boolean Returns when album is public.
-	 */
-	public function checkPassword(string $password)
-	{
+    /**
+     * Apply the previous method on each album in the database
+     * TODO: this seems expensive and avoidable (should only need to update
+     * the albums that were modified, plus recursively their parents).
+     */
+    public static function reset_takestamp()
+    {
+        $albums = Album::all();
+        foreach ($albums as $album) {
+            $album->update_min_max_takestamp();
+            $album->save();
+        }
+    }
 
-		// album password is empty or input is correct.
-		return ($this->password == '' || Hash::check($password, $this->password));
-	}
-
-
-
-	/**
-	 * Go through each sub album and update the minimum and maximum takestamp of the pictures.
-	 * TODO: this seems needlessly expensive (should use takestamps of
-	 * subalbums rather than going through all their photos).
-	 * Also, the caller should recursively update the parents.
-	 */
-	public function update_min_max_takestamp()
-	{
-		$album_list = $this->get_all_sub_albums([$this->id]);
-
-		$min = Photo::whereIn('album_id', $album_list)->min('takestamp');
-		$max = Photo::whereIn('album_id', $album_list)->max('takestamp');
-		$this->min_takestamp = $min;
-		$this->max_takestamp = $max;
-	}
-
-
-
-	/**
-	 * Apply the previous method on each album in the database
-	 * TODO: this seems expensive and avoidable (should only need to update
-	 * the albums that were modified, plus recursively their parents).
-	 */
-	static public function reset_takestamp()
-	{
-		$albums = Album::all();
-		foreach ($albums as $album) {
-			$album->update_min_max_takestamp();
-			$album->save();
-		}
-	}
-
-
-
-	/**
-	 * Given a user, retrieve all the shared albums it can see.
-	 * TODO: Move this function to another file
-	 *
-	 * @param $id
-	 * @return Album[]
-	 */
-	public static function get_albums_user($id)
-	{
-		return Album::with([
+    /**
+     * Given a user, retrieve all the shared albums it can see.
+     * TODO: Move this function to another file.
+     *
+     * @param $id
+     *
+     * @return Album[]
+     */
+    public static function get_albums_user($id)
+    {
+        return Album::with([
 			'owner',
-			'children'
+			'children',
 		])
 			->where('owner_id', '<>', $id)
 			->where('parent_id', '=', null)
 			->Where(
 				function (Builder $query) use ($id) {
-					// album is shared with user
-					$query->whereIn('id', function (QBuilder $query) use ($id){
-					                                                    $query->select('album_id')
+				    // album is shared with user
+				    $query->whereIn('id', function (QBuilder $query) use ($id) {
+				        $query->select('album_id')
 							->from('user_album')
 							->where('user_id', '=', $id);
-					})
+				    })
 						// or album is visible to user
 						->orWhere(
 							function (Builder $query) {
-								$query->where('public', '=', true)->where('visible_hidden', '=', true);
+							    $query->where('public', '=', true)->where('visible_hidden', '=', true);
 							});
 				})
 			->orderBy('owner_id', 'ASC')
 			->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
 			->get();
-	}
+    }
 
+    /**
+     * Given two list of albums, merge them without duplicates.
+     * Current complexity is in O(n^2)
+     * TODO: Move this function to another file.
+     *
+     * @param Album[] $albums1
+     * @param Album[] $albums2
+     *
+     * @return array
+     */
+    public static function merge(array $albums1, array $albums2)
+    {
+        $return = $albums1;
 
+        foreach ($albums2 as $album2_t) {
+            $found = false;
+            foreach ($albums1 as $album1_t) {
+                if ($album1_t->id == $album2_t->id) {
+                    $found = true;
 
-	/**
-	 * Given two list of albums, merge them without duplicates.
-	 * Current complexity is in O(n^2)
-	 * TODO: Move this function to another file
-	 *
-	 * @param Album[] $albums1
-	 * @param Album[] $albums2
-	 * @return array
-	 */
-	public static function merge(array $albums1, array $albums2)
-	{
-		$return = $albums1;
+                    break;
+                }
+            }
 
-		foreach ($albums2 as $album2_t) {
-			$found = false;
-			foreach ($albums1 as $album1_t) {
-				if ($album1_t->id == $album2_t->id) {
-					$found = true;
-					break;
-				}
-			}
+            if (!$found) {
+                $return[] = $album2_t;
+            }
+        }
 
-			if (!$found) {
-				$return[] = $album2_t;
-			}
-		}
+        return $return;
+    }
 
-		return $return;
-	}
+    /**
+     * Before calling delete() to remove the album from the database
+     * we need to go through each sub album and delete it.
+     * Idem we also delete each pictures inside an album (recursively).
+     *
+     * @return bool|null
+     *
+     * @throws Exception
+     */
+    public function predelete()
+    {
+        $no_error = true;
+        $albums = $this->children;
 
+        foreach ($albums as $album) {
+            $no_error &= $album->predelete();
+            $no_error &= $album->delete();
+        }
 
+        $photos = $this->photos;
+        foreach ($photos as $photo) {
+            $no_error &= $photo->predelete();
+            $no_error &= $photo->delete();
+        }
 
-
-	/**
-	 * Before calling delete() to remove the album from the database
-	 * we need to go through each sub album and delete it.
-	 * Idem we also delete each pictures inside an album (recursively).
-	 *
-	 * @return bool|null
-	 * @throws Exception
-	 */
-	public function predelete()
-	{
-		$no_error = true;
-		$albums = $this->children;
-
-		foreach ($albums as $album) {
-			$no_error &= $album->predelete();
-			$no_error &= $album->delete();
-		}
-
-		$photos = $this->photos;
-		foreach ($photos as $photo) {
-			$no_error &= $photo->predelete();
-			$no_error &= $photo->delete();
-		}
-		return $no_error;
-	}
+        return $no_error;
+    }
 }

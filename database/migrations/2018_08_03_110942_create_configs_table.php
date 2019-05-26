@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /*
 MariaDB [lychee]> show columns from lychee_settings;
@@ -19,20 +19,18 @@ class CreateConfigsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
-	    if(!Schema::hasTable('configs')) {
+        if (!Schema::hasTable('configs')) {
 //        Schema::dropIfExists('configs');
-		    Schema::create('configs', function (Blueprint $table) {
-			    $table->increments('id');
-			    $table->string('key', 50);
-			    $table->string('value', 200)->nullable();
-		    });
+            Schema::create('configs', function (Blueprint $table) {
+                $table->increments('id');
+                $table->string('key', 50);
+                $table->string('value', 200)->nullable();
+            });
 
-		    DB::table('configs')->insert([
+            DB::table('configs')->insert([
 			    ['key' => 'version', 'value' => '040000'],
 			    ['key' => 'username', 'value' => ''],
 			    ['key' => 'password', 'value' => ''],
@@ -59,24 +57,19 @@ class CreateConfigsTable extends Migration
 
 			    ['key' => 'Mod_Frame', 'value' => '0'],
 			    ['key' => 'Mod_Frame_refresh', 'value' => '30000'],
-
 		    ]);
-	    }
-	    else {
-		    echo "Table configs already exists\n";
-	    }
-
+        } else {
+            echo "Table configs already exists\n";
+        }
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
-	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
-		    Schema::dropIfExists('configs');
-	    }
+        if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
+            Schema::dropIfExists('configs');
+        }
     }
 }

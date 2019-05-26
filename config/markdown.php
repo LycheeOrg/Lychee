@@ -12,7 +12,6 @@ declare(strict_types=1);
  */
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Enable View Integration
@@ -61,7 +60,7 @@ return [
     'renderer' => [
         'block_separator' => "\n",
         'inner_separator' => "\n",
-        'soft_break'      => "\n",
+        'soft_break' => "\n",
     ],
 
     /*
@@ -154,5 +153,4 @@ return [
     */
 
     'max_nesting_level' => INF,
-
 ];

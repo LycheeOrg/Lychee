@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
@@ -12,7 +13,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 
 /**
- * App\Photo
+ * App\Photo.
  *
  * @property int $id
  * @property string $title
@@ -50,6 +51,7 @@ use Illuminate\Support\Facades\Config;
  * @property int $thumb2x
  * @property-read Album|null $album
  * @property-read User $owner
+ *
  * @method static Builder|Photo newModelQuery()
  * @method static Builder|Photo newQuery()
  * @method static Builder|Photo ownedBy($id)
@@ -96,461 +98,414 @@ use Illuminate\Support\Facades\Config;
  */
 class Photo extends Model
 {
-
-	/**
-	 * This extends the date types from Model to allow coercion with Carbon object.
-	 *
-	 * @var array dates
-	 */
-	protected $dates = [
+    /**
+     * This extends the date types from Model to allow coercion with Carbon object.
+     *
+     * @var array dates
+     */
+    protected $dates = [
 		'created_at',
 		'updated_at',
-		'takestamp'
+		'takestamp',
 	];
 
-
-	protected $casts = [
+    protected $casts = [
 		'public' => 'int',
-		'star'  => 'int',
-		'downloadable'  => 'int'
+		'star' => 'int',
+		'downloadable' => 'int',
 	];
 
+    /**
+     * Return the relationship between a Photo and its Album.
+     *
+     * @return BelongsTo
+     */
+    public function album()
+    {
+        return $this->belongsTo('App\Album', 'album_id', 'id')->withDefault(['public' => '1']);
+    }
 
-	/**
-	 * Return the relationship between a Photo and its Album
-	 *
-	 * @return BelongsTo
-	 */
-	public function album()
-	{
-		return $this->belongsTo('App\Album', 'album_id', 'id')->withDefault(['public' => '1']);
-	}
-
-
-
-	/**
-	 * Return the relationship between a Photo and its Owner
-	 *
-	 * @return BelongsTo
-	 */
-	public function owner()
-	{
-		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
-			'id'       => 0,
-			'username' => 'Admin'
+    /**
+     * Return the relationship between a Photo and its Owner.
+     *
+     * @return BelongsTo
+     */
+    public function owner()
+    {
+        return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
+			'id' => 0,
+			'username' => 'Admin',
 		]);
-	}
+    }
 
+    /**
+     * Check if a photo already exists in the database via its checksum.
+     *
+     * @param string $checksum
+     * @param $photoID
+     *
+     * @return Photo|bool|Builder|Model|object
+     */
+    public function isDuplicate(string $checksum, $photoID = null)
+    {
+        $sql = $this->where('checksum', '=', $checksum);
+        if (isset($photoID)) {
+            $sql = $sql->where('id', '<>', $photoID);
+        }
 
+        return ($sql->count() == 0) ? false : $sql->first();
+    }
 
-	/**
-	 * Check if a photo already exists in the database via its checksum
-	 *
-	 * @param string $checksum
-	 * @param $photoID
-	 * @return Photo|bool|Builder|Model|object
-	 */
-	public function isDuplicate(string $checksum, $photoID = null)
-	{
-		$sql = $this->where('checksum', '=', $checksum);
-		if (isset($photoID)) {
-			$sql = $sql->where('id', '<>', $photoID);
-		}
+    /**
+     * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
+     *
+     * @return array returns photo-attributes in a normalized structure
+     */
+    public function prepareData()
+    {
+        // Init
+        $photo = array();
 
-		return ($sql->count() == 0) ? false : $sql->first();
-	}
+        // Set unchanged attributes
+        $photo['id'] = $this->id;
+        $photo['title'] = $this->title;
+        $photo['tags'] = $this->tags;
+        $photo['star'] = $this->star == 1 ? '1' : '0';
+        $photo['album'] = $this->album_id;
+        $photo['width'] = $this->width;
+        $photo['height'] = $this->height;
+        $photo['type'] = $this->type;
+        $photo['size'] = $this->size;
+        $photo['iso'] = $this->iso;
+        $photo['aperture'] = $this->aperture;
+        $photo['make'] = $this->make;
+        $photo['model'] = $this->model;
+        $photo['shutter'] = $this->shutter;
+        $photo['focal'] = $this->focal;
+        $photo['lens'] = $this->lens;
+        $photo['latitude'] = $this->latitude;
+        $photo['longitude'] = $this->longitude;
+        $photo['altitude'] = $this->altitude;
+        $photo['sysdate'] = $this->created_at->format('d F Y');
+        $photo['tags'] = $this->tags;
+        $photo['description'] = $this->description == null ? '' : $this->description;
+        $photo['license'] = Configs::get_value('default_license'); // default
 
+        // shutter speed needs to be processed. It is stored as a string `a/b s`
+        if ($photo['shutter'] != '' && substr($photo['shutter'], 0, 2) != '1/') {
+            preg_match('/(\d+)\/(\d+) s/', $photo['shutter'], $matches);
+            if ($matches) {
+                $a = intval($matches[1]);
+                $b = intval($matches[2]);
+                $gcd = Helpers::gcd($a, $b);
+                $a = $a / $gcd;
+                $b = $b / $gcd;
+                if ($a == 1) {
+                    $photo['shutter'] = '1/'.$b.' s';
+                } else {
+                    $photo['shutter'] = ($a / $b).' s';
+                }
+            }
+        }
 
+        if ($photo['shutter'] == '1/1 s') {
+            $photo['shutter'] = '1 s';
+        }
 
-	/**
-	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
-	 *
-	 * @return array Returns photo-attributes in a normalized structure.
-	 */
-	public function prepareData()
-	{
+        // check if license is none
+        if ($this->license == 'none') {
+            // check if it has an album
+            if ($this->album_id != 0) {
+                // this does not include sub albums setting. Do we want this ?
+                // this will need to be changed if we want to add license backtracking
+                $l = $this->album->license;
+                if ($l != 'none') {
+                    $photo['license'] = $l;
+                }
+            }
+        } else {
+            $photo['license'] = $this->license;
+        }
 
-		// Init
-		$photo = array();
+        // if this is a video
+        if (strpos($this->type, 'video') === 0) {
+            $photoUrl = $this->thumbUrl;
+        } else {
+            $photoUrl = $this->url;
+        }
+        if ($photoUrl !== '') {
+            $photoUrl2x = explode('.', $photoUrl);
+            $photoUrl2x = $photoUrl2x[0].'@2x.'.$photoUrl2x[1];
+        }
 
-		// Set unchanged attributes
-		$photo['id'] = $this->id;
-		$photo['title'] = $this->title;
-		$photo['tags'] = $this->tags;
-		$photo['star'] = $this->star == 1 ? '1' : '0';
-		$photo['album'] = $this->album_id;
-		$photo['width'] = $this->width;
-		$photo['height'] = $this->height;
-		$photo['type'] = $this->type;
-		$photo['size'] = $this->size;
-		$photo['iso'] = $this->iso;
-		$photo['aperture'] = $this->aperture;
-		$photo['make'] = $this->make;
-		$photo['model'] = $this->model;
-		$photo['shutter'] = $this->shutter;
-		$photo['focal'] = $this->focal;
-		$photo['lens'] = $this->lens;
-		$photo['latitude'] = $this->latitude;
-		$photo['longitude'] = $this->longitude;
-		$photo['altitude'] = $this->altitude;
-		$photo['sysdate'] = $this->created_at->format('d F Y');
-		$photo['tags'] = $this->tags;
-		$photo['description'] = $this->description == null ? '' : $this->description;
-		$photo['license'] = Configs::get_value('default_license'); // default
+        // Parse medium
+        if ($this->medium != '') {
+            $photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoUrl;
+            $photo['medium_dim'] = $this->medium;
+        } else {
+            $photo['medium'] = '';
+            $photo['medium_dim'] = '';
+        }
 
-		// shutter speed needs to be processed. It is stored as a string `a/b s`
-		if ($photo['shutter'] != '' && substr($photo['shutter'], 0, 2) != '1/') {
+        if ($this->medium2x != '') {
+            $photo['medium2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoUrl2x;
+            $photo['medium2x_dim'] = $this->medium2x;
+        } else {
+            $photo['medium2x'] = '';
+            $photo['medium2x_dim'] = '';
+        }
 
-			preg_match('/(\d+)\/(\d+) s/', $photo['shutter'], $matches);
-			if ($matches) {
-				$a = intval($matches[1]);
-				$b = intval($matches[2]);
-				$gcd = Helpers::gcd($a, $b);
-				$a = $a / $gcd;
-				$b = $b / $gcd;
-				if ($a == 1) {
-					$photo['shutter'] = '1/'.$b.' s';
-				}
-				else {
-					$photo['shutter'] = ($a / $b).' s';
-				}
-			}
-		}
+        if ($this->small != '') {
+            $photo['small'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoUrl;
+            $photo['small_dim'] = $this->small;
+        } else {
+            $photo['small'] = '';
+            $photo['small_dim'] = '';
+        }
 
-		if ($photo['shutter'] == '1/1 s') {
-			$photo['shutter'] = '1 s';
-		}
+        if ($this->small2x != '') {
+            $photo['small2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoUrl2x;
+            $photo['small2x_dim'] = $this->small2x;
+        } else {
+            $photo['small2x'] = '';
+            $photo['small2x_dim'] = '';
+        }
 
+        // Parse paths
+        $photo['thumbUrl'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$this->thumbUrl;
 
-		// check if license is none
-		if ($this->license == 'none') {
+        if ($this->thumb2x == '1') {
+            $thumbUrl2x = explode('.', $this->thumbUrl);
+            $thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
+            $photo['thumb2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
+        } else {
+            $photo['thumb2x'] = '';
+        }
 
-			// check if it has an album
-			if ($this->album_id != 0) {
-				// this does not include sub albums setting. Do we want this ?
-				// this will need to be changed if we want to add license backtracking
-				$l = $this->album->license;
-				if ($l != 'none') {
-					$photo['license'] = $l;
-				}
-			}
-		}
-		else {
-			$photo['license'] = $this->license;
-		}
+        $photo['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG').$this->url;
 
-		// if this is a video
-		if (strpos($this->type, 'video') === 0) {
-			$photoUrl = $this->thumbUrl;
-		}
-		else {
-			$photoUrl = $this->url;
-		}
-		if ($photoUrl !== '') {
-			$photoUrl2x = explode('.', $photoUrl);
-			$photoUrl2x = $photoUrl2x[0].'@2x.'.$photoUrl2x[1];
-		}
+        // Use takestamp as sysdate when possible
+        if (isset($this->takestamp) && $this->takestamp != null) {
+            // Use takestamp
+            $photo['cameraDate'] = '1';
+            $photo['sysdate'] = $this->created_at->format('d F Y');
+            $photo['takedate'] = $this->takestamp->format('d F Y \a\t H:i');
+        } else {
+            // Use sysstamp from the id
+            $photo['cameraDate'] = '0';
+            $photo['sysdate'] = $this->created_at->format('d F Y');
+            $photo['takedate'] = '';
+        }
 
-		// Parse medium
-		if ($this->medium != '') {
-			$photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoUrl;
-			$photo['medium_dim'] = $this->medium;
-		}
-		else {
-			$photo['medium'] = '';
-			$photo['medium_dim'] = '';
-		}
+        $photo['public'] = $this->get_public();
 
-		if ($this->medium2x != '') {
-			$photo['medium2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM').$photoUrl2x;
-			$photo['medium2x_dim'] = $this->medium2x;
-		}
-		else {
-			$photo['medium2x'] = '';
-			$photo['medium2x_dim'] = '';
-		}
+        return $photo;
+    }
 
-		if ($this->small != '') {
-			$photo['small'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoUrl;
-			$photo['small_dim'] = $this->small;
-		}
-		else {
-			$photo['small'] = '';
-			$photo['small_dim'] = '';
-		}
+    /**
+     * Get the public value of a picture
+     * if 0 : picture is private
+     * if 1 : picture is public alone
+     * if 2 : picture is public by album being public (if being in an album).
+     *
+     * @return string
+     */
+    public function get_public()
+    {
+        $ret = $this->public == 1 ? '1' : '0';
 
-		if ($this->small2x != '') {
-			$photo['small2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL').$photoUrl2x;
-			$photo['small2x_dim'] = $this->small2x;
-		}
-		else {
-			$photo['small2x'] = '';
-			$photo['small2x_dim'] = '';
-		}
+        if ($this->album_id != null) {
+            $ret = $this->album->public == '1' ? '2' : $ret;
+        }
 
-		// Parse paths
-		$photo['thumbUrl'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$this->thumbUrl;
+        return $ret;
+    }
 
-		if ($this->thumb2x == '1') {
-			$thumbUrl2x = explode(".", $this->thumbUrl);
-			$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-			$photo['thumb2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
-		}
-		else {
-			$photo['thumb2x'] = '';
-		}
+    /**
+     * Before calling the delete() method which will remove the entry from the database, we need to remove the files.
+     *
+     * @return bool
+     */
+    public function predelete()
+    {
+        if ($this->isDuplicate($this->checksum, $this->id)) {
+            Logs::notice(__METHOD__, __LINE__, $this->id.' is a duplicate!');
+            // it is a duplicate, we do not delete!
+            return true;
+        }
 
-		$photo['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG').$this->url;
+        $error = false;
+        // quick check...
+        if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$this->url)) {
+            Logs::error(__METHOD__, __LINE__, 'Could not find picture in '.Config::get('defines.dirs.LYCHEE_UPLOADS_BIG'));
+            $error = true;
+        }
 
-		// Use takestamp as sysdate when possible
-		if (isset($this->takestamp) && $this->takestamp != null) {
+        // Delete big
+        if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$this->url) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$this->url)) {
+            Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/big/');
+            $error = true;
+        }
 
-			// Use takestamp
-			$photo['cameraDate'] = '1';
-			$photo['sysdate'] = $this->created_at->format('d F Y');
-			$photo['takedate'] = $this->takestamp->format('d F Y \a\t H:i');
+        if (strpos($this->type, 'video') === 0) {
+            $photoName = $this->thumbUrl;
+        } else {
+            $photoName = $this->url;
+        }
+        if ($photoName !== '') {
+            $photoName2x = explode('.', $photoName);
+            $photoName2x = $photoName2x[0].'@2x.'.$photoName2x[1];
 
-		}
-		else {
+            // Delete medium
+            if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName)) {
+                Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
+                $error = true;
+            }
 
-			// Use sysstamp from the id
-			$photo['cameraDate'] = '0';
-			$photo['sysdate'] = $this->created_at->format('d F Y');
-			$photo['takedate'] = '';
+            if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName2x)) {
+                Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
+                $error = true;
+            }
 
-		}
+            // Delete small
+            if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName)) {
+                Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
+                $error = true;
+            }
 
-		$photo['public'] = $this->get_public();
+            if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName2x)) {
+                Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
+                $error = true;
+            }
+        }
 
-		return $photo;
+        if ($this->thumbUrl != '') {
+            // Get retina thumb url
+            $thumbUrl2x = explode('.', $this->thumbUrl);
+            $thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
+            // Delete thumb
+            if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$this->thumbUrl) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$this->thumbUrl)) {
+                Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
+                $error = true;
+            }
 
-	}
+            // Delete thumb@2x
+            if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl2x)) {
+                Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
+                $error = true;
+            }
+        }
 
+        return !$error;
+    }
 
+    /**
+     *  Defines a bunch of helpers.
+     */
 
-	/**
-	 * Get the public value of a picture
-	 * if 0 : picture is private
-	 * if 1 : picture is public alone
-	 * if 2 : picture is public by album being public (if being in an album)
-	 *
-	 * @return string
-	 */
-	public function get_public()
-	{
-		$ret = $this->public == 1 ? '1' : '0';
-
-		if ($this->album_id != null) {
-			$ret= $this->album->public == '1' ? '2' : $ret;
-		}
-
-		return $ret;
-
-	}
-
-
-
-	/**
-	 * Before calling the delete() method which will remove the entry from the database, we need to remove the files.
-	 *
-	 * @return bool
-	 */
-	public function predelete()
-	{
-
-		if ($this->isDuplicate($this->checksum, $this->id)) {
-			Logs::notice(__METHOD__, __LINE__, $this->id.' is a duplicate!');
-			// it is a duplicate, we do not delete!
-			return true;
-		}
-
-		$error = false;
-		// quick check...
-		if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$this->url)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find picture in '.Config::get('defines.dirs.LYCHEE_UPLOADS_BIG'));
-			$error = true;
-		}
-
-		// Delete big
-		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$this->url) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$this->url)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/big/');
-			$error = true;
-		}
-
-		if (strpos($this->type, 'video') === 0) {
-			$photoName = $this->thumbUrl;
-		}
-		else {
-			$photoName = $this->url;
-		}
-		if ($photoName !== '') {
-			$photoName2x = explode('.', $photoName);
-			$photoName2x = $photoName2x[0].'@2x.'.$photoName2x[1];
-
-			// Delete medium
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
-				$error = true;
-			}
-
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photoName2x)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
-				$error = true;
-			}
-
-			// Delete small
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
-				$error = true;
-			}
-
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photoName2x)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
-				$error = true;
-			}
-		}
-
-		if ($this->thumbUrl != '') {
-			// Get retina thumb url
-			$thumbUrl2x = explode(".", $this->thumbUrl);
-			$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-			// Delete thumb
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$this->thumbUrl) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$this->thumbUrl)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
-				$error = true;
-			}
-
-			// Delete thumb@2x
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl2x)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
-				$error = true;
-			}
-		}
-
-
-		return !$error;
-
-	}
-
-
-	/**
-	 *  Defines a bunch of helpers
-	 */
-
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	static public function set_order(Builder $query)
-	{
-		return $query->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public static function set_order(Builder $query)
+    {
+        return $query->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
 			->orderBy('photos.id', 'ASC');
-	}
+    }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public static function select_stars(Builder $query)
+    {
+        return self::set_order($query->where('star', '=', 1));
+    }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public static function select_public(Builder $query)
+    {
+        return self::set_order($query->where('public', '=', 1));
+    }
 
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	static public function select_stars(Builder $query)
-	{
-		return self::set_order($query->where('star', '=', 1));
-	}
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public static function select_recent(Builder $query)
+    {
+        return self::set_order($query->where('created_at', '>=', Carbon::now()->subDays(1)->toDateTimeString()));
+    }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public static function select_unsorted(Builder $query)
+    {
+        return self::set_order($query->where('album_id', '=', null));
+    }
 
+    /**
+     * Define scopes which we can directly use e.g. Photo::stars()->all().
+     */
 
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	static public function select_public(Builder $query)
-	{
-		return self::set_order($query->where('public', '=', 1));
-	}
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeStars($query)
+    {
+        return self::select_stars($query);
+    }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopePublic($query)
+    {
+        return self::select_public($query);
+    }
 
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeRecent($query)
+    {
+        return self::select_recent($query);
+    }
 
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	static public function select_recent(Builder $query)
-	{
-		return self::set_order($query->where('created_at', '>=', Carbon::now()->subDays(1)->toDateTimeString()));
-	}
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeUnsorted($query)
+    {
+        return self::select_unsorted($query);
+    }
 
-
-
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	static public function select_unsorted(Builder $query)
-	{
-		return self::set_order($query->where('album_id', '=', null));
-	}
-
-
-
-
-	/**
-	 * Define scopes which we can directly use e.g. Photo::stars()->all()
-	 *
-	 */
-
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	public function scopeStars($query)
-	{
-		return self::select_stars($query);
-	}
-
-
-
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	public function scopePublic($query)
-	{
-		return self::select_public($query);
-	}
-
-
-
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	public function scopeRecent($query)
-	{
-		return self::select_recent($query);
-	}
-
-
-
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	public function scopeUnsorted($query)
-	{
-		return self::select_unsorted($query);
-	}
-
-
-
-	/**
-	 * @param $query
-	 * @param $id
-	 * @return mixed
-	 */
-	public function scopeOwnedBy(Builder $query, $id)
-	{
-		return $id == 0 ? $query : $query->where('owner_id', '=', $id);
-	}
-
+    /**
+     * @param $query
+     * @param $id
+     *
+     * @return mixed
+     */
+    public function scopeOwnedBy(Builder $query, $id)
+    {
+        return $id == 0 ? $query : $query->where('owner_id', '=', $id);
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -8,47 +9,41 @@ use Illuminate\Support\Facades\DB;
 
 class LogController extends Controller
 {
+    /**
+     * @param string $order
+     *
+     * @return mixed
+     */
+    public function list($order = 'DESC')
+    {
+        $logs = Logs::orderBy('id', $order)->get();
 
-	/**
-	 * @param string $order
-	 * @return mixed
-	 */
-	public function list($order = 'DESC')
-	{
-		$logs = Logs::orderBy('id', $order)->get();
-		return $logs;
-	}
+        return $logs;
+    }
 
+    public function display()
+    {
+        if (Logs::count() == 0) {
+            return 'Everything looks fine, Lychee has not reported any problems!';
+        } else {
+            $logs = $this->list();
 
+            return view('logs.list', ['logs' => $logs]);
+        }
+    }
 
-	public function display()
-	{
+    public static function clear()
+    {
+        DB::table('logs')->truncate();
 
-		if (Logs::count() == 0) {
-			return 'Everything looks fine, Lychee has not reported any problems!';
-		}
-		else {
-			$logs = $this->list();
-			return view('logs.list', ['logs' => $logs]);
-		}
-	}
+        return 'Log cleared';
+    }
 
+    public static function clearNoise()
+    {
+        Logs::where('function', '!=', 'App\Http\Controllers\SessionController::login')->
+			where('type', '=', 'notice')->delete();
 
-
-	static public function clear()
-	{
-		DB::table('logs')->truncate();
-		return 'Log cleared';
-	}
-
-
-
-	static public function clearNoise()
-	{
-		Logs::where('function','!=','App\Http\Controllers\SessionController::login')->
-			where('type','=','notice')->delete();
-
-		return 'Log Noise cleared';
-	}
-
+        return 'Log Noise cleared';
+    }
 }

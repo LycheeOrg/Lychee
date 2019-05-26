@@ -10,13 +10,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
 /**
- * App\Configs
+ * App\Configs.
  *
  * @property int $id
  * @property string $key
  * @property string|null $value
  * @property string $cat
  * @property int $confidentiality
+ *
  * @method static Builder|Configs admin()
  * @method static Builder|Configs info()
  * @method static Builder|Configs newModelQuery()
@@ -32,191 +33,178 @@ use Illuminate\Database\QueryException;
  */
 class Configs extends Model
 {
-	/**
-	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
-	 */
-	public $timestamps = false;
+    /**
+     *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
+     */
+    public $timestamps = false;
 
+    /** We define this as a singleton */
+    private static $cache = null;
 
-	/** We define this as a singleton */
-	private static $cache = null;
+    /**
+     * Cache and return the current settings of this Lychee installation.
+     *
+     * @return array
+     */
+    public static function get()
+    {
+        if (self::$cache) {
+            return self::$cache;
+        }
 
-
-
-	/**
-	 * Cache and return the current settings of this Lychee installation
-	 *
-	 * @return array
-	 */
-	public static function get()
-	{
-		if (self::$cache) {
-			return self::$cache;
-		}
-
-		try {
-			$query = Configs::select([
+        try {
+            $query = Configs::select([
 				'key',
-				'value'
+				'value',
 			]);
-			$return = $query->pluck('value', 'key')->all();
+            $return = $query->pluck('value', 'key')->all();
 
-			$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
-			$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
+            $return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
+            $return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
 
-			$return['lang_available'] = Lang::get_lang_available();
+            $return['lang_available'] = Lang::get_lang_available();
 
-			self::$cache = $return;
-		}
-		catch (Exception $e) {
-			self::$cache = null;
+            self::$cache = $return;
+        } catch (Exception $e) {
+            self::$cache = null;
 
-			return null;
-		}
+            return null;
+        }
 
-		return $return;
-	}
+        return $return;
+    }
 
+    /**
+     * The best way to request a value from the config...
+     *
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return int|bool|string
+     */
+    public static function get_value(string $key, $default = null)
+    {
+        if (!self::$cache) {
+            /*
+             * try is here because when composer does the package discovery it
+             * looks at AppServiceProvider which register a singleton with:
+             * $compressionQuality = Configs::get_value('compression_quality', 90);
+             *
+             * this will fail for sure as the config table does not exist yet
+             */
+            try {
+                self::get();
+            } catch (QueryException $e) {
+                return $default;
+            }
+        }
 
+        if (!isset(self::$cache[$key])) {
+            /*
+             * For some reason the $default is not returned above...
+             */
+            try {
+                Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
+            } catch (Exception $e) {
+                // yeah we do nothing because we cannot do anything in that case ...  :p
+            }
 
-	/**
-	 * The best way to request a value from the config...
-	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @return int|bool|string
-	 */
-	public static function get_value(string $key, $default = null)
-	{
-		if (!self::$cache) {
-			/**
-			 * try is here because when composer does the package discovery it
-			 * looks at AppServiceProvider which register a singleton with:
-			 * $compressionQuality = Configs::get_value('compression_quality', 90);
-			 *
-			 * this will fail for sure as the config table does not exist yet
-			 */
-			try {
-				self::get();
-			}
-			catch (QueryException $e) {
-				return $default;
-			}
+            return $default;
+        }
 
-		}
+        return self::$cache[$key];
+    }
 
-		if (!isset(self::$cache[$key])) {
-			/**
-			 * For some reason the $default is not returned above...
-			 */
-			try {
-				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
-			}
-			catch (Exception $e) {
-				// yeah we do nothing because we cannot do anything in that case ...  :p
-			}
-			return $default;
-		}
+    /**
+     * Update Lychee configuration
+     * Note that we must invalidate the cache now.
+     *
+     * @param string $key
+     * @param $value
+     *
+     * @return bool returns true when successful
+     */
+    public static function set(string $key, $value)
+    {
+        $config = Configs::where('key', '=', $key)->first();
 
-		return self::$cache[$key];
-	}
+        // first() may return null, fixup 'Creating default object from empty value' error
+        // we also log a warning
+        if ($config == null) {
+            Logs::warning(__FUNCTION__, __LINE__, 'key '.$key.' not found!');
 
+            return true;
+        }
 
+        $config->value = $value;
 
-	/**
-	 * Update Lychee configuration
-	 * Note that we must invalidate the cache now.
-	 *
-	 * @param string $key
-	 * @param $value
-	 * @return bool Returns true when successful.
-	 */
-	public static function set(string $key, $value)
-	{
+        try {
+            $config->save();
+        } catch (Exception $e) {
+            Logs::error(__METHOD__, __LINE__, $e->getMessage());
 
-		$config = Configs::where('key', '=', $key)->first();
+            return false;
+        }
 
-		// first() may return null, fixup 'Creating default object from empty value' error
-		// we also log a warning
-		if ($config == null) {
-			Logs::warning(__FUNCTION__, __LINE__, 'key '.$key.' not found!');
-			return true;
-		}
+        // invalidate cache.
+        self::$cache = null;
 
-		$config->value = $value;
-		try {
-			$config->save();
-		}
-		catch (Exception $e) {
-			Logs::error(__METHOD__, __LINE__, $e->getMessage());
-			return false;
-		}
+        return true;
+    }
 
-		// invalidate cache.
-		self::$cache = null;
+    /**
+     * @return bool returns the Imagick setting
+     */
+    public static function hasImagick()
+    {
+        if ((bool) (extension_loaded('imagick') && self::get_value('imagick', '1') == '1')) {
+            return true;
+        }
 
-		return true;
-	}
+        try {
+            Logs::notice(__METHOD__, __LINE__, 'hasImagick : false');
+        } catch (Exception $e) {
+            //do nothing
+        }
 
+        return false;
+    }
 
+    /**
+     * Define scopes.
+     */
 
-	/**
-	 * @return bool Returns the Imagick setting.
-	 */
-	public static function hasImagick()
-	{
-		if ((bool) (extension_loaded('imagick') && self::get_value('imagick', '1') == '1')) {
-			return true;
-		}
-		try{
-			Logs::notice(__METHOD__, __LINE__, "hasImagick : false");
-		}
-		catch (Exception $e)
-		{
-			//do nothing
-		}
+    /**
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopePublic(Builder $query)
+    {
+        return $query->where('confidentiality', '=', 0);
+    }
 
-		return false;
-	}
+    /**
+     * Logged user can see.
+     *
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeInfo(Builder $query)
+    {
+        return $query->where('confidentiality', '<=', 2);
+    }
 
-
-
-	/**
-	 * Define scopes
-	 */
-
-	/**
-	 * @param $query
-	 * @return mixed
-	 */
-	public function scopePublic(Builder $query)
-	{
-		return $query->where('confidentiality', '=', 0);
-	}
-
-
-
-	/**
-	 * Logged user can see
-	 *
-	 * @param $query
-	 * @return mixed
-	 */
-	public function scopeInfo(Builder $query)
-	{
-		return $query->where('confidentiality', '<=', 2);
-	}
-
-
-
-	/**
-	 * Only admin can see
-	 *
-	 * @param $query
-	 * @return mixed
-	 */
-	public function scopeAdmin(Builder $query)
-	{
-		return $query->where('confidentiality', '<=', 3);
-	}
+    /**
+     * Only admin can see.
+     *
+     * @param $query
+     *
+     * @return mixed
+     */
+    public function scopeAdmin(Builder $query)
+    {
+        return $query->where('confidentiality', '<=', 3);
+    }
 }

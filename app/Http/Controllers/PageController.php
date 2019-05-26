@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -12,41 +13,39 @@ use Illuminate\Support\Facades\Config;
 
 class PageController extends Controller
 {
-	/**
-	 * @var ConfigFunctions
-	 */
-	private $configFunctions;
+    /**
+     * @var ConfigFunctions
+     */
+    private $configFunctions;
 
+    /**
+     * @param ConfigFunctions $configFunctions
+     */
+    public function __construct(ConfigFunctions $configFunctions)
+    {
+        $this->configFunctions = $configFunctions;
+    }
 
+    public function page(Request $request, $page)
+    {
+        $page = Page::enabled()->where('link', '/'.$page)->first();
 
-	/**
-	 * @param ConfigFunctions $configFunctions
-	 */
-	public function __construct(ConfigFunctions $configFunctions)
-	{
-		$this->configFunctions = $configFunctions;
-	}
+        if ($page == null) {
+            abort(404);
+        }
 
+        $lang = Lang::get_lang(Configs::get_value('lang'));
+        $lang['language'] = Configs::get_value('lang');
 
-	function page(Request $request, $page)
-	{
-		$page = Page::enabled()->where('link','/'.$page)->first();
+        $infos = $this->configFunctions->get_pages_infos();
+        $title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+        $menus = Page::menu()->get();
 
-		if($page == null)
-			abort(404);
+        $contents = $page->content;
+        $page_config = array();
+        $page_config['show_hosted_by'] = false;
+        $page_config['display_socials'] = false;
 
-		$lang = Lang::get_lang(Configs::get_value('lang'));
-		$lang['language'] = Configs::get_value('lang');
-
-		$infos = $this->configFunctions->get_pages_infos();
-		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$menus = Page::menu()->get();
-
-		$contents = $page->content;
-		$page_config = array();
-		$page_config['show_hosted_by'] = false;
-		$page_config['display_socials'] = false;
-
-		return view('page', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'contents' => $contents, 'page_config' => $page_config]);
-	}
+        return view('page', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'contents' => $contents, 'page_config' => $page_config]);
+    }
 }

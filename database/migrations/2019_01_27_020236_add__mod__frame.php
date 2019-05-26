@@ -9,12 +9,10 @@ class AddModFrame extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
-//	    if(Schema::hasTable('configs')) {
+        //	    if(Schema::hasTable('configs')) {
 //
 //		    DB::table('configs')->insert([
 //			    ['key' => 'Mod_Frame', 'value' => '0'],
@@ -28,12 +26,10 @@ class AddModFrame extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
-//	    if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
+        //	    if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
 //		    Configs::where('key', '=', 'Mod_Frame')->delete();
 //		    Configs::where('key', '=', 'Mod_Frame_refresh')->delete();
 //	    }
