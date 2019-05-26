@@ -85,6 +85,7 @@ class SessionController extends Controller
 					$return['config'] = $this->configFunctions->public();
 					$return['lock'] = ($user->lock == '1');         // can user change his password
 					$return['upload'] = ($user->upload == '1');     // can user upload ?
+					$return['username'] = $user->username;
 				}
 			}
 
