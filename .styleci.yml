@@ -88,7 +88,7 @@ enabled:
   - print_to_echo
   - property_separation
   - property_visibility_required
-  - psr4
+#  - psr4
   - return_type_declaration
   - self_accessor
   - short_scalar_cast
