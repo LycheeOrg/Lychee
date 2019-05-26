@@ -10,18 +10,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * App\Page
+ * App\Page.
  *
- * @property int $id
- * @property string $title
- * @property string $menu_title
- * @property int $in_menu
- * @property int $enabled
- * @property string $link
- * @property int $order
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection|PageContent[] $content
+ * @property int                      $id
+ * @property string                   $title
+ * @property string                   $menu_title
+ * @property int                      $in_menu
+ * @property int                      $enabled
+ * @property string                   $link
+ * @property int                      $order
+ * @property Carbon|null              $created_at
+ * @property Carbon|null              $updated_at
+ * @property Collection|PageContent[] $content
+ *
  * @method static Builder|Page enabled()
  * @method static Builder|Page menu()
  * @method static Builder|Page newModelQuery()
@@ -40,7 +41,6 @@ use Illuminate\Support\Carbon;
  */
 class Page extends Model
 {
-
 	/**
 	 * Return the relationship between a page and its content.
 	 *
@@ -51,13 +51,13 @@ class Page extends Model
 		return $this->hasMany('App\PageContent', 'page_id', 'id')->orderBy('order', 'ASC');
 	}
 
-
 	/**
-	 * Define some scopes
+	 * Define some scopes.
 	 */
 
 	/**
 	 * @param $query
+	 *
 	 * @return mixed
 	 */
 	public function scopeMenu(Builder $query)
@@ -65,10 +65,9 @@ class Page extends Model
 		return $query->where('in_menu', true)->where('enabled', true)->orderBy('order', 'ASC');
 	}
 
-
-
 	/**
 	 * @param $query
+	 *
 	 * @return mixed
 	 */
 	public function scopeEnabled(Builder $query)

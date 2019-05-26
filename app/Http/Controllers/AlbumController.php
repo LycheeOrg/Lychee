@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -28,10 +29,8 @@ class AlbumController extends Controller
 	 */
 	private $sessionFunctions;
 
-
-
 	/**
-	 * @param AlbumFunctions $albumFunctions
+	 * @param AlbumFunctions   $albumFunctions
 	 * @param SessionFunctions $sessionFunctions
 	 */
 	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
@@ -40,19 +39,18 @@ class AlbumController extends Controller
 		$this->sessionFunctions = $sessionFunctions;
 	}
 
-
-
 	/**
-	 * Add a new Album
+	 * Add a new Album.
 	 *
 	 * @param Request $request
+	 *
 	 * @return false|string
 	 */
-	function add(Request $request)
+	public function add(Request $request)
 	{
 		$request->validate([
-			'title'     => 'string|required|max:100',
-			'parent_id' => 'int|nullable'
+			'title' => 'string|required|max:100',
+			'parent_id' => 'int|nullable',
 		]);
 
 		$album = $this->albumFunctions->create($request['title'], $request['parent_id'], Session::get('UserID'));
@@ -60,15 +58,14 @@ class AlbumController extends Controller
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}
 
-
-
 	/**
 	 * Provided an albumID, returns the album.
 	 *
 	 * @param Request $request
+	 *
 	 * @return array|string
 	 */
-	function get(Request $request)
+	public function get(Request $request)
 	{
 		$request->validate(['albumID' => 'string|required']);
 		$return = array();
@@ -76,7 +73,6 @@ class AlbumController extends Controller
 		// Get photos
 		// Get album information
 		switch ($request['albumID']) {
-
 			case 'f':
 				$return['public'] = '0';
 				$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID')));
@@ -96,10 +92,11 @@ class AlbumController extends Controller
 			default:
 				$album = Album::with([
 					'owner',
-					'children'
+					'children',
 				])->find($request['albumID']);
 				if ($album === null) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 					return 'false';
 				}
 				$return = $album->prepareData();
@@ -115,31 +112,27 @@ class AlbumController extends Controller
 
 		// finalize the loop
 		if ($return['num'] === 0) {
-
 			$return['photos'] = false;
-
 		}
 
 		return $return;
 	}
 
-
-
 	/**
 	 * Provided the albumID and passwords, return whether the album can be accessed or not.
 	 *
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function getPublic(Request $request)
+	public function getPublic(Request $request)
 	{
 		$request->validate([
-			'albumID'  => 'string|required',
-			'password' => 'string|nullable'
+			'albumID' => 'string|required',
+			'password' => 'string|nullable',
 		]);
 
 		switch ($request['albumID']) {
-
 			case 'f':
 				return 'false';
 			case 's':
@@ -152,6 +145,7 @@ class AlbumController extends Controller
 				$album = Album::find($request['albumID']);
 				if ($album === null) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 					return 'false';
 				}
 				if ($album->public == 1) {
@@ -163,26 +157,27 @@ class AlbumController extends Controller
 					}
 					if ($album->checkPassword($request['password'])) {
 						$this->sessionFunctions->add_visible_album($album->id);
+
 						return 'true';
 					}
 				}
+
 				return 'false';
 		}
 	}
 
-
-
 	/**
-	 * Provided a title and an albumID, change the title of the album
+	 * Provided a title and an albumID, change the title of the album.
 	 *
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function setTitle(Request $request)
+	public function setTitle(Request $request)
 	{
 		$request->validate([
 			'albumIDs' => 'string|required',
-			'title'    => 'string|required|max:100'
+			'title' => 'string|required|max:100',
 		]);
 
 		$albums = Album::whereIn('id', explode(',', $request['albumIDs']))->get();
@@ -192,31 +187,31 @@ class AlbumController extends Controller
 			$album->title = $request['title'];
 			$no_error |= $album->save();
 		}
+
 		return $no_error ? 'true' : 'false';
 	}
 
-
-
 	/**
-	 * Change the sharing properties of the album
+	 * Change the sharing properties of the album.
 	 *
 	 * @param Request $request
+	 *
 	 * @return bool|string
 	 */
-	function setPublic(Request $request)
+	public function setPublic(Request $request)
 	{
 		$request->validate([
-			'albumID'      => 'integer|required',
-			'password'     => 'string|nullable|max:100',
-			'visible'      => 'integer|required',
-			'downloadable' => 'integer|required'
+			'albumID' => 'integer|required',
+			'password' => 'string|nullable|max:100',
+			'visible' => 'integer|required',
+			'downloadable' => 'integer|required',
 		]);
-
 
 		$album = Album::find($request['albumID']);
 
 		if ($album === null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 			return false;
 		}
 
@@ -242,36 +237,36 @@ class AlbumController extends Controller
 		if ($request->has('password')) {
 			if (strlen($request['password']) > 0) {
 				$album->password = bcrypt($request['password']);
-			}
-			else {
+			} else {
 				$album->password = null;
 			}
 			if (!$album->save()) {
 				return 'false';
 			}
 		}
+
 		return 'true';
 	}
 
-
-
 	/**
-	 * Change the description of the album
+	 * Change the description of the album.
 	 *
 	 * @param Request $request
+	 *
 	 * @return bool|string
 	 */
-	function setDescription(Request $request)
+	public function setDescription(Request $request)
 	{
 		$request->validate([
-			'albumID'     => 'integer|required',
-			'description' => 'string|nullable|max:1000'
+			'albumID' => 'integer|required',
+			'description' => 'string|nullable|max:1000',
 		]);
 
 		$album = Album::find($request['albumID']);
 
 		if ($album === null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 			return false;
 		}
 
@@ -280,20 +275,18 @@ class AlbumController extends Controller
 		return ($album->save()) ? 'true' : 'false';
 	}
 
-
-
-	function setLicense(Request $request)
+	public function setLicense(Request $request)
 	{
-
 		$request->validate([
 			'albumID' => 'required|string',
-			'license' => 'required|string'
+			'license' => 'required|string',
 		]);
 
 		$album = Album::find($request['albumID']);
 
 		if ($album == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 			return 'false';
 		}
 
@@ -306,7 +299,7 @@ class AlbumController extends Controller
 			'CC-BY-SA',
 			'CC-BY-ND',
 			'CC-BY-NC-ND',
-			'CC-BY-SA'
+			'CC-BY-SA',
 		];
 		$found = false;
 		$i = 0;
@@ -314,26 +307,27 @@ class AlbumController extends Controller
 			if ($licenses[$i] == $request['license']) {
 				$found = true;
 			}
-			$i++;
+			++$i;
 		}
 		if (!$found) {
 			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: '.$request['license']);
+
 			return Response::error('wrong kind of license!');
 		}
 
 		$album->license = $request['license'];
+
 		return $album->save() ? 'true' : 'false';
 	}
-
-
 
 	/**
 	 * Delete the album and all pictures in the album.
 	 *
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function delete(Request $request)
+	public function delete(Request $request)
 	{
 		$request->validate([
 			'albumIDs' => 'string|required',
@@ -346,6 +340,7 @@ class AlbumController extends Controller
 				$no_error &= $photo->predelete();
 				$no_error &= $photo->delete();
 			}
+
 			return $no_error ? 'true' : 'false';
 		}
 		$albums = Album::whereIn('id', explode(',', $request['albumIDs']))->get();
@@ -356,18 +351,16 @@ class AlbumController extends Controller
 		}
 
 		return $no_error ? 'true' : 'false';
-
 	}
 
-
-
 	/**
-	 * Merge albums. The first of the list is the destination of the merge
+	 * Merge albums. The first of the list is the destination of the merge.
 	 *
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function merge(Request $request)
+	public function merge(Request $request)
 	{
 		$request->validate([
 			'albumIDs' => 'string|required',
@@ -382,6 +375,7 @@ class AlbumController extends Controller
 
 		if ($album === null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
+
 			return 'false';
 		}
 
@@ -417,12 +411,9 @@ class AlbumController extends Controller
 		$no_error &= $album->save();
 
 		return $no_error ? 'true' : 'false';
-
 	}
 
-
-
-	function move(Request $request)
+	public function move(Request $request)
 	{
 		$request->validate(['albumIDs' => 'string|required']);
 
@@ -437,6 +428,7 @@ class AlbumController extends Controller
 			$album_master = Album::find($albumID);
 			if ($album_master === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
+
 				return 'false';
 			}
 		}
@@ -444,16 +436,13 @@ class AlbumController extends Controller
 		$albums = Album::whereIn('id', $albumIDs)->get();
 		$no_error = true;
 		foreach ($albums as $album) {
-			if ($albumID != 0)
-			{
+			if ($albumID != 0) {
 				$album->parent_id = $albumID;
 
 				// just to be sure to handle ownership changes in the process.
 				$album->owner_id = $album_master->owner_id;
 				$no_error &= $this->albumFunctions->setContentsOwner($album->id, $album_master->owner_id);
-			}
-			else
-			{
+			} else {
 				$album->parent_id = null;
 			}
 
@@ -461,27 +450,25 @@ class AlbumController extends Controller
 		}
 
 		Album::reset_takestamp();
+
 		return $no_error ? 'true' : 'false';
 	}
 
-
-
-	function getArchive(Request $request)
+	public function getArchive(Request $request)
 	{
-
 		// Illicit chars
 		$badChars = array_merge(
 			array_map('chr', range(0, 31)),
 			array(
-				"<",
-				">",
-				":",
+				'<',
+				'>',
+				':',
 				'"',
-				"/",
-				"\\",
-				"|",
-				"?",
-				"*"
+				'/',
+				'\\',
+				'|',
+				'?',
+				'*',
 			)
 		);
 
@@ -490,7 +477,6 @@ class AlbumController extends Controller
 		]);
 
 		switch ($request['albumID']) {
-
 			case 'f':
 				$zipTitle = 'Starred';
 				$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID')));
@@ -511,6 +497,7 @@ class AlbumController extends Controller
 				$album = Album::find($request['albumID']);
 				if ($album === null) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 					return 'false';
 				}
 				$zipTitle = $album->title;
@@ -533,22 +520,20 @@ class AlbumController extends Controller
 		$zipTitle = str_replace($badChars, '', $zipTitle).'.zip';
 
 		$response = new StreamedResponse(function () use ($zipTitle, $photos_sql, $badChars) {
-
 			$opt = array(
 				'largeFileSize' => 100 * 1024 * 1024,
-				'enableZip64'   => true,
-				'send_headers'  => true,
+				'enableZip64' => true,
+				'send_headers' => true,
 			);
 
 			$zip = new ZipStream($zipTitle, $opt);
 
-
 			// Check if album empty
 			if ($photos_sql->count() == 0) {
 				Logs::error(__METHOD__, __LINE__, 'Could not create ZipStream without images');
+
 				return false;
 			}
-
 
 			$photos = $photos_sql->get();
 			foreach ($photos as $photo) {
@@ -574,23 +559,20 @@ class AlbumController extends Controller
 					while (in_array($zipFileName, $files)) {
 						// Set new title for photo
 						$zipFileName = $zipTitle.'/'.$title.'-'.$i.$extension;
-						$i++;
+						++$i;
 					}
 				}
 				// Add to array
 				$files[] = $zipFileName;
 
-				# add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
+				// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
 				$zip->addFileFromPath($zipFileName, $url);
-
 			}
 
-			# finish the zip stream
+			// finish the zip stream
 			$zip->finish();
-
 		});
 
 		return $response;
 	}
-
 }

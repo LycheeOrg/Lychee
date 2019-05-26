@@ -20,8 +20,6 @@ class npm extends Command
 	 */
 	protected $description = 'Launch npm on the public/src folder';
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
@@ -31,8 +29,6 @@ class npm extends Command
 	{
 		parent::__construct();
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -53,8 +49,7 @@ class npm extends Command
 		}
 		if ($argument == 'start') {
 			$cmd = 'cd public/Lychee-front; npm start';
-		}
-		else {
+		} else {
 			$cmd = 'cd public/Lychee-front; npm run compile';
 		}
 		$this->info('execute: '.$cmd);

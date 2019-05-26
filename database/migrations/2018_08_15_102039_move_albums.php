@@ -28,20 +28,15 @@ class MoveAlbums extends Migration
 					$album->created_at = date('Y-m-d H:i:s', $result->sysstamp);
 					$album->save();
 				}
-			}
-			else {
+			} else {
 				echo env('DB_OLD_LYCHEE_PREFIX', '')."lychee_albums does not exists!\n";
 			}
-		}
-		else {
+		} else {
 			echo "albums is not empty.\n";
 		}
 
-
 		Album::reset_takestamp();
 	}
-
-
 
 	/**
 	 * Reverse the migrations.

@@ -19,16 +19,14 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
 	public $singletons = [
-		AlbumFunctions::class      => AlbumFunctions::class,
-		PhotoFunctions::class      => PhotoFunctions::class,
-		ConfigFunctions::class     => ConfigFunctions::class,
-		SessionFunctions::class    => SessionFunctions::class,
-		GitHubFunctions::class     => GitHubFunctions::class,
-		UpdateFunctions::class     => UpdateFunctions::class,
+		AlbumFunctions::class => AlbumFunctions::class,
+		PhotoFunctions::class => PhotoFunctions::class,
+		ConfigFunctions::class => ConfigFunctions::class,
+		SessionFunctions::class => SessionFunctions::class,
+		GitHubFunctions::class => GitHubFunctions::class,
+		UpdateFunctions::class => UpdateFunctions::class,
 		ReadAccessFunctions::class => ReadAccessFunctions::class,
 	];
-
-
 
 	/**
 	 * Bootstrap any application services.
@@ -38,9 +36,9 @@ class AppServiceProvider extends ServiceProvider
 	public function boot()
 	{
 		if (config('app.debug', false)) {
-			/** @noinspection PhpUndefinedClassInspection */
+			/* @noinspection PhpUndefinedClassInspection */
 			DB::listen(function ($query) {
-				/** @noinspection PhpUndefinedClassInspection */
+				/* @noinspection PhpUndefinedClassInspection */
 				Log::info(
 					$query->sql,
 					$query->bindings,
@@ -49,8 +47,6 @@ class AppServiceProvider extends ServiceProvider
 			});
 		}
 	}
-
-
 
 	/**
 	 * Register any application services.
@@ -61,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
 	{
 		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
 			$compressionQuality = Configs::get_value('compression_quality', 90);
+
 			return new ImageHandler($compressionQuality);
 		});
 	}

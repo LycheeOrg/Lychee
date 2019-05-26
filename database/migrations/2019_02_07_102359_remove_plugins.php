@@ -16,8 +16,6 @@ class RemovePlugins extends Migration
 //		Configs::where('key', '=', 'plugins')->delete();
 	}
 
-
-
 	/**
 	 * Reverse the migrations.
 	 *

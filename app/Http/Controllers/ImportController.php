@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpComposerExtensionStubsInspection */
 
 /** @noinspection PhpUndefinedClassInspection */
@@ -28,8 +29,6 @@ class ImportController extends Controller
 	 */
 	private $albumFunctions;
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
@@ -42,13 +41,13 @@ class ImportController extends Controller
 		$this->albumFunctions = $albumFunctions;
 	}
 
-
-
 	/**
 	 * Creates an array similar to a file upload array and adds the photo to Lychee.
+	 *
 	 * @param $path
 	 * @param int $albumID
-	 * @return boolean Returns true when photo import was successful.
+	 *
+	 * @return bool returns true when photo import was successful
 	 */
 	private function photo($path, $albumID = 0)
 	{
@@ -64,25 +63,26 @@ class ImportController extends Controller
 		if ($this->photoFunctions->add($nameFile, $albumID) === false) {
 			return false;
 		}
+
 		return true;
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return false|string
 	 */
 	public function url(Request $request)
 	{
 		$request->validate([
-			'url'     => 'string|required',
-			'albumID' => 'string|required'
+			'url' => 'string|required',
+			'albumID' => 'string|required',
 		]);
 
 		// Check permissions
 		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT')) === false) {
 			Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
+
 			return Response::error('An upload-folder is missing or not readable and writable!');
 		}
 
@@ -128,22 +128,22 @@ class ImportController extends Controller
 		if ($error === false) {
 			return 'true';
 		}
+
 		return 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return bool|string
+	 *
 	 * @throws ImagickException
 	 */
 	public function server(Request $request)
 	{
-
 		$request->validate([
-			'path'    => 'string|required',
-			'albumID' => 'int|required'
+			'path' => 'string|required',
+			'albumID' => 'int|required',
 		]);
 
 		$php_script_no_limit = Configs::get_value('php_script_no_limit', '0');
@@ -153,23 +153,21 @@ class ImportController extends Controller
 		}
 
 		return $this->server_exec($request['path'], $request['albumID']);
-
 	}
-
-
 
 	/**
 	 * @param string $path
-	 * @param integer $albumID
-	 * @return boolean|string Returns true when successful.
-	 *                        Warning: Folder empty or no readable files to process!
-	 *                        Notice: Import only contained albums!
+	 * @param int    $albumID
+	 *
+	 * @return bool|string Returns true when successful.
+	 *                     Warning: Folder empty or no readable files to process!
+	 *                     Notice: Import only contained albums!
+	 *
 	 * @throws ImagickException
 	 */
 	// I switched this to private, as it should not be needed to be public. if it breaks something we will double check.
 	private function server_exec(string $path, $albumID)
 	{
-
 		// Parse path
 		if (!isset($path)) {
 			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT');
@@ -179,6 +177,7 @@ class ImportController extends Controller
 		}
 		if (is_dir($path) === false) {
 			Logs::error(__METHOD__, __LINE__, 'Given path is not a directory ('.$path.')');
+
 			return 'false';
 		}
 
@@ -188,6 +187,7 @@ class ImportController extends Controller
 			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') ||
 			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) {
 			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee ('.$path.')');
+
 			return 'false';
 		}
 
@@ -214,10 +214,8 @@ class ImportController extends Controller
 					Logs::error(__METHOD__, __LINE__, 'Could not import file ('.$file.')');
 					continue;
 				}
-			}
-			else {
+			} else {
 				if (is_dir($file)) {
-
 					// Album creation
 
 					// Folder
@@ -250,6 +248,7 @@ class ImportController extends Controller
 		if ($error === true) {
 			return 'false';
 		}
+
 		return 'true';
 	}
 }

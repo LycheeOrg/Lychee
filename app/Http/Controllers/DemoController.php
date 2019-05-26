@@ -10,7 +10,6 @@ use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 
-
 class DemoController extends Controller
 {
 	public function js()
@@ -18,15 +17,14 @@ class DemoController extends Controller
 		$functions = array();
 
 		$configFunctions = new ConfigFunctions();
-		$sessionFunctions =  new SessionFunctions();
+		$sessionFunctions = new SessionFunctions();
 		$githubFunctions = new GitHubFunctions();
 		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
 		$albumFunctions = new AlbumFunctions($readAccessFunctions);
 
 		/**
-		 * Session::init
+		 * Session::init.
 		 */
-
 		$session_init = new SessionController($configFunctions, $sessionFunctions, $githubFunctions);
 		$return_session = array();
 		$return_session['name'] = 'Session::init()';
@@ -36,7 +34,7 @@ class DemoController extends Controller
 		$functions[] = $return_session;
 
 		/**
-		 * Albums::get
+		 * Albums::get.
 		 */
 		$albums_controller = new AlbumsController($albumFunctions);
 
@@ -48,7 +46,7 @@ class DemoController extends Controller
 		$functions[] = $return_albums;
 
 		/**
-		 * Album::get
+		 * Album::get.
 		 */
 		$return_album_list = array();
 		$return_album_list['name'] = 'Album::get';
@@ -58,11 +56,9 @@ class DemoController extends Controller
 
 		$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->get();
 		foreach ($albums as $album) {
-
 			/**
-			 * Copy paste from Album::get()
+			 * Copy paste from Album::get().
 			 */
-
 			$return_album_json = array();
 			$return_album_json['albums'] = array();
 			// Get photos
@@ -77,7 +73,6 @@ class DemoController extends Controller
 			/** @var Photo[] $photos */
 			$photos = $photos_sql->get();
 			foreach ($photos as $photo_model) {
-
 				// Turn data from the database into a front-end friendly format
 				$photo = $photo_model->prepareData();
 
@@ -94,17 +89,13 @@ class DemoController extends Controller
 				// Add to $return_album_json
 				$return_album_json['photos'][$photo_counter] = $photo;
 
-				$photo_counter++;
+				++$photo_counter;
 			}
 
 			if ($photos_sql->count() === 0) {
-
 				// Album empty
 				$return_album_json['photos'] = false;
-
-			}
-			else {
-
+			} else {
 				// Enable next and previous for the first and last photo
 				$lastElement = end($return_album_json['photos']);
 				$lastElementId = $lastElement['id'];
@@ -115,7 +106,6 @@ class DemoController extends Controller
 					$return_album_json['photos'][$photo_counter - 1]['nextPhoto'] = $firstElementId;
 					$return_album_json['photos'][0]['previousPhoto'] = $lastElementId;
 				}
-
 			}
 			$return_album_json['id'] = $album->id;
 			$return_album_json['num'] = $photos_sql->count();
@@ -130,9 +120,8 @@ class DemoController extends Controller
 		$functions[] = $return_album_list;
 
 		/**
-		 * Photo::get
+		 * Photo::get.
 		 */
-
 		$return_photo_list = array();
 		$return_photo_list['name'] = 'Photo::get';
 		$return_photo_list['type'] = 'array';
@@ -156,8 +145,6 @@ class DemoController extends Controller
 
 		$functions[] = $return_photo_list;
 
-
 		return view('demo', ['functions' => $functions]);
 	}
-
 }

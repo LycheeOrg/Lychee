@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -13,12 +14,10 @@ use Illuminate\Support\Facades\Session;
 
 class AlbumsController extends Controller
 {
-
 	/**
 	 * @var AlbumFunctions
 	 */
 	private $albumFunctions;
-
 
 	/**
 	 * @param AlbumFunctions $albumFunctions
@@ -28,14 +27,11 @@ class AlbumsController extends Controller
 		$this->albumFunctions = $albumFunctions;
 	}
 
-
-
 	/**
-	 * @return array|string Returns an array of albums or false on failure.
+	 * @return array|string returns an array of albums or false on failure
 	 */
 	public function get()
 	{
-
 		// caching to avoid further request
 		Configs::get();
 
@@ -62,20 +58,19 @@ class AlbumsController extends Controller
 					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
 				$shared_albums = Album::with([
 					'owner',
-					'children'
+					'children',
 				])
 					->where('owner_id', '<>', 0)
 					->where('parent_id', '=', null)
 					->orderBy('owner_id', 'ASC')
 					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
 					->get();
-			}
-			else {
+			} else {
 				if ($user == null) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find specified user ('.Session::get('UserID').')');
+
 					return Response::error('I could not find you.');
-				}
-				else {
+				} else {
 					$albums = Album::where('owner_id', '=', $user->id)
 						->where('parent_id', '=', null)
 						->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
@@ -83,19 +78,14 @@ class AlbumsController extends Controller
 					$shared_albums = Album::get_albums_user($user->id);
 				}
 			}
-		}
-		else {
+		} else {
 			$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->where('parent_id', '=', null)
 				->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
 		}
-
 
 		$return['albums'] = $this->albumFunctions->prepare_albums($albums);
 		$return['shared_albums'] = $this->albumFunctions->prepare_albums($shared_albums);
 
 		return $return;
-
 	}
-
-
 }

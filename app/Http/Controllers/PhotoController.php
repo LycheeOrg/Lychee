@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -28,17 +29,14 @@ class PhotoController extends Controller
 	 */
 	private $sessionFunctions;
 
-
 	/**
 	 * @var ReadAccessFunctions
 	 */
 	private $readAccessFunctions;
 
-
-
 	/**
-	 * @param PhotoFunctions $photoFunctions
-	 * @param SessionFunctions $sessionFunctions
+	 * @param PhotoFunctions      $photoFunctions
+	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
@@ -48,18 +46,17 @@ class PhotoController extends Controller
 		$this->readAccessFunctions = $readAccessFunctions;
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return array|string
 	 */
-	function get(Request $request)
+	public function get(Request $request)
 	{
 		$request->validate([
 			'albumID' => 'string|required',
 
-			'photoID' => 'string|required'
+			'photoID' => 'string|required',
 		]);
 
 		$photo = Photo::with('album')->find($request['photoID']);
@@ -67,6 +64,7 @@ class PhotoController extends Controller
 		// Photo not found?
 		if ($photo == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
 			return 'false';
 		}
 
@@ -75,18 +73,15 @@ class PhotoController extends Controller
 		// This way preserves the back button functionality for photos
 		// in smart albums.
 		$return['album'] = $request['albumID'];
+
 		return $return;
 	}
-
-
 
 	/**
 	 * @return string
 	 */
-	function getRandom()
+	public function getRandom()
 	{
-
-
 		// here we need to refine.
 
 		$photo = Photo::where('photos.star', '=', 1)
@@ -104,19 +99,18 @@ class PhotoController extends Controller
 		return $return;
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return false|string
 	 */
-	function add(Request $request)
+	public function add(Request $request)
 	{
 		$request->validate([
 			'albumID' => 'string|required',
-			'0'       => 'required',
+			'0' => 'required',
 			//            '0.*' => 'image|mimes:jpeg,png,jpg,gif',
-			'0.*'     => 'image|mimes:jpeg,png,jpg,gif,mov,webm,mp4,ogv',
+			'0.*' => 'image|mimes:jpeg,png,jpg,gif,mov,webm,mp4,ogv',
 			//                |max:2048'
 		]);
 
@@ -135,18 +129,16 @@ class PhotoController extends Controller
 		return $this->photoFunctions->add($nameFile, $request['albumID']);
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function setTitle(Request $request)
+	public function setTitle(Request $request)
 	{
-
 		$request->validate([
 			'photoIDs' => 'required|string',
-			'title'    => 'required|string|max:100'
+			'title' => 'required|string|max:100',
 		]);
 
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
@@ -156,18 +148,17 @@ class PhotoController extends Controller
 			$photo->title = $request['title'];
 			$no_error |= $photo->save();
 		}
+
 		return $no_error ? 'true' : 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function setStar(Request $request)
+	public function setStar(Request $request)
 	{
-
 		$request->validate([
 			'photoIDs' => 'required|string',
 		]);
@@ -179,21 +170,20 @@ class PhotoController extends Controller
 			$photo->star = ($photo->star != 1) ? 1 : 0;
 			$no_error |= $photo->save();
 		}
+
 		return $no_error ? 'true' : 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function setDescription(Request $request)
+	public function setDescription(Request $request)
 	{
-
 		$request->validate([
-			'photoID'     => 'required|string',
-			'description' => 'string|nullable'
+			'photoID' => 'required|string',
+			'description' => 'string|nullable',
 		]);
 
 		$photo = Photo::find($request['photoID']);
@@ -201,24 +191,24 @@ class PhotoController extends Controller
 		// Photo not found?
 		if ($photo == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
 			return 'false';
 		}
 
 		$photo->description = $request['description'];
+
 		return $photo->save() ? 'true' : 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function setPublic(Request $request)
+	public function setPublic(Request $request)
 	{
-
 		$request->validate([
-			'photoID' => 'required|string'
+			'photoID' => 'required|string',
 		]);
 
 		$photo = Photo::find($request['photoID']);
@@ -226,25 +216,25 @@ class PhotoController extends Controller
 		// Photo not found?
 		if ($photo == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
 			return 'false';
 		}
 
 		$photo->public = $photo->public != 1 ? 1 : 0;
+
 		return $photo->save() ? 'true' : 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function setTags(Request $request)
+	public function setTags(Request $request)
 	{
-
 		$request->validate([
 			'photoIDs' => 'required|string',
-			'tags'     => 'string|nullable'
+			'tags' => 'string|nullable',
 		]);
 
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
@@ -254,21 +244,20 @@ class PhotoController extends Controller
 			$photo->tags = $request['tags'];
 			$no_error &= $photo->save();
 		}
+
 		return $no_error ? 'true' : 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function setAlbum(Request $request)
+	public function setAlbum(Request $request)
 	{
-
 		$request->validate([
 			'photoIDs' => 'required|string',
-			'albumID'  => 'required|string'
+			'albumID' => 'required|string',
 		]);
 
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
@@ -281,6 +270,7 @@ class PhotoController extends Controller
 			$album = Album::find($albumID);
 			if ($album === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 				return false;
 			}
 		}
@@ -294,21 +284,20 @@ class PhotoController extends Controller
 			$no_error &= $photo->save();
 		}
 		Album::reset_takestamp();
+
 		return $no_error ? 'true' : 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return false|string
 	 */
-	function setLicense(Request $request)
+	public function setLicense(Request $request)
 	{
-
 		$request->validate([
 			'photoID' => 'required|string',
-			'license' => 'required|string'
+			'license' => 'required|string',
 		]);
 
 		$photo = Photo::find($request['photoID']);
@@ -316,6 +305,7 @@ class PhotoController extends Controller
 		// Photo not found?
 		if ($photo == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
 			return 'false';
 		}
 
@@ -328,7 +318,7 @@ class PhotoController extends Controller
 			'CC-BY-SA',
 			'CC-BY-ND',
 			'CC-BY-NC-ND',
-			'CC-BY-SA'
+			'CC-BY-SA',
 		];
 		$found = false;
 		$i = 0;
@@ -336,26 +326,26 @@ class PhotoController extends Controller
 			if ($licenses[$i] == $request['license']) {
 				$found = true;
 			}
-			$i++;
+			++$i;
 		}
 		if (!$found) {
 			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: '.$request['license']);
+
 			return Response::error('wrong kind of license!');
 		}
 
 		$photo->license = $request['license'];
+
 		return $photo->save() ? 'true' : 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function delete(Request $request)
+	public function delete(Request $request)
 	{
-
 		$request->validate([
 			'photoIDs' => 'required|string',
 		]);
@@ -368,16 +358,16 @@ class PhotoController extends Controller
 			$no_error &= $photo->delete();
 		}
 		Album::reset_takestamp();
+
 		return $no_error ? 'true' : 'false';
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
-	function duplicate(Request $request)
+	public function duplicate(Request $request)
 	{
 		$request->validate([
 			'photoIDs' => 'required|string',
@@ -420,47 +410,45 @@ class PhotoController extends Controller
 			$duplicate->owner_id = $photo->owner_id;
 			$no_error &= $duplicate->save();
 		}
+
 		return $no_error ? 'true' : 'false';
-
 	}
-
-
 
 	/**
 	 * @param Request $request
+	 *
 	 * @return StreamedResponse|void
 	 */
-	function getArchive(Request $request)
+	public function getArchive(Request $request)
 	{
-
 		// Illicit chars
 		$badChars = array_merge(
 			array_map('chr', range(0, 31)),
 			array(
-				"<",
-				">",
-				":",
+				'<',
+				'>',
+				':',
 				'"',
-				"/",
-				"\\",
-				"|",
-				"?",
-				"*"
+				'/',
+				'\\',
+				'|',
+				'?',
+				'*',
 			)
 		);
 
 		$request->validate([
 			'photoID' => 'required|string',
-			'KIND'    => 'nullable|string'
+			'KIND' => 'nullable|string',
 		]);
 
 		$photo = Photo::with('album')->find($request['photoID']);
 
 		if ($photo == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
 			return abort(404);
 		}
-
 
 		$title = ($photo->title == '') ? 'Untitled' : str_replace($badChars, '', $photo->title);
 
@@ -482,15 +470,15 @@ class PhotoController extends Controller
 		// Check the file actually exists
 		if (!file_exists($filepath)) {
 			Logs::error(__METHOD__, __LINE__, 'File is missing: '.$filepath.' ('.$title.')');
+
 			return abort(404);
 		}
 
 		$response = new StreamedResponse(function () use ($title, $kind, $filepath) {
-
 			$opt = array(
 				'largeFileSize' => 100 * 1024 * 1024,
-				'enableZip64'   => true,
-				'send_headers'  => true,
+				'enableZip64' => true,
+				'send_headers' => true,
 			);
 
 			$zip = new ZipStream($title.'.zip', $opt);
@@ -501,12 +489,10 @@ class PhotoController extends Controller
 			// Set title for photo
 			$zip->addFileFromPath($title.$kind.$extension, $filepath);
 
-			# finish the zip stream
+			// finish the zip stream
 			$zip->finish();
-
 		});
 
 		return $response;
-
 	}
 }

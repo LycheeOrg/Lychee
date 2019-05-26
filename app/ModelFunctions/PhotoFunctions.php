@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\ModelFunctions;
@@ -34,17 +35,17 @@ class PhotoFunctions
 	public $validTypes = array(
 		IMAGETYPE_JPEG,
 		IMAGETYPE_GIF,
-		IMAGETYPE_PNG
+		IMAGETYPE_PNG,
 	);
 
 	/**
 	 * @var array
 	 */
 	public $validVideoTypes = array(
-		"video/mp4",
-		"video/ogg",
-		"video/webm",
-		"video/quicktime"
+		'video/mp4',
+		'video/ogg',
+		'video/webm',
+		'video/quicktime',
 	);
 
 	/**
@@ -58,10 +59,8 @@ class PhotoFunctions
 		'.ogv',
 		'.mp4',
 		'.webm',
-		'.mov'
+		'.mov',
 	);
-
-
 
 	public function __construct(Extractor $metadataExtractor, ImageHandlerInterface $imageHandler)
 	{
@@ -69,10 +68,9 @@ class PhotoFunctions
 		$this->imageHandler = $imageHandler;
 	}
 
-
-
 	/**
 	 * @param Photo $photo
+	 *
 	 * @return string Path of the video frame
 	 */
 	public function extractVideoFrame(Photo $photo): string
@@ -92,12 +90,11 @@ class PhotoFunctions
 		return $tmp;
 	}
 
-
-
 	/**
 	 * @param Photo $photo
 	 * @param string Path of the video frame
-	 * @return boolean Returns true when successful.
+	 *
+	 * @return bool returns true when successful
 	 */
 	public function createThumb(Photo $photo, string $frame_tmp = '')
 	{
@@ -122,23 +119,21 @@ class PhotoFunctions
 				400
 			);
 			$photo->thumb2x = 1;
-		}
-		else {
+		} else {
 			$photo->thumb2x = 0;
 		}
 
 		return true;
 	}
 
-
-
 	/**
 	 * Add new photo(s) to the database.
 	 * Exits on error.
 	 *
 	 * @param array $file
-	 * @param int $albumID_in
-	 * @return string|false ID of the added photo.
+	 * @param int   $albumID_in
+	 *
+	 * @return string|false ID of the added photo
 	 */
 	public function add(array $file, $albumID_in = 0)
 	{
@@ -148,6 +143,7 @@ class PhotoFunctions
 			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')) === false ||
 			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) === false) {
 			Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
+
 			return Response::error('An upload-folder is missing or not readable and writable!');
 		}
 
@@ -191,6 +187,7 @@ class PhotoFunctions
 		$extension = Helpers::getExtension($file['name'], false);
 		if (!in_array(strtolower($extension), $this->validExtensions, true)) {
 			Logs::error(__METHOD__, __LINE__, 'Photo format not supported');
+
 			return Response::error('Photo format not supported!');
 		}
 
@@ -198,9 +195,9 @@ class PhotoFunctions
 		// Verify video
 		$mimeType = $file['type'];
 		if (!in_array($mimeType, $this->validVideoTypes, true)) {
-
-			if (!function_exists("exif_imagetype")) {
+			if (!function_exists('exif_imagetype')) {
 				Logs::error(__METHOD__, __LINE__, 'EXIF library not loaded. Make sure exif is enabled in php.ini');
+
 				return Response::error('EXIF library not loaded on the server!');
 			}
 
@@ -208,6 +205,7 @@ class PhotoFunctions
 			$type = @exif_imagetype($file['tmp_name']);
 			if (!in_array($type, $this->validTypes, true)) {
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
+
 				return Response::error('Photo type not supported!');
 			}
 		}
@@ -225,9 +223,9 @@ class PhotoFunctions
 		$checksum = sha1_file($tmp_name);
 		if ($checksum === false) {
 			Logs::error(__METHOD__, __LINE__, 'Could not calculate checksum for photo');
+
 			return Response::error('Could not calculate checksum for photo!');
 		}
-
 
 		$exists = $photo->isDuplicate($checksum);
 
@@ -244,36 +242,31 @@ class PhotoFunctions
 			$exists = true;
 		}
 
-
 		if ($exists === false) {
-
 			// Import if not uploaded via web
 			if (!is_uploaded_file($tmp_name)) {
 				if (!@copy($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
+
 					return Response::error('Could not copy photo to uploads!');
-				}
-				elseif (Configs::get_value('deleteImported') === '1') {
+				} elseif (Configs::get_value('deleteImported') === '1') {
 					@unlink($tmp_name);
 				}
-			}
-			else {
+			} else {
 				if (!@move_uploaded_file($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not move photo to uploads');
+
 					return Response::error('Could not move photo to uploads!');
 				}
 			}
-
-		}
-		else {
-
+		} else {
 			// Photo already exists
 			// Check if the user wants to skip duplicates
 			if (Configs::get()['skipDuplicates'] === '1') {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
+
 				return Response::warning('This photo has been skipped because it\'s already in your library.');
 			}
-
 		}
 
 		$info = $this->metadataExtractor->extract($path, $mimeType);
@@ -311,19 +304,16 @@ class PhotoFunctions
 			if ($album == null) {
 				$photo->album_id = null;
 				$photo->owner_id = Session::get('UserID');
-			}
-			else {
+			} else {
 				$photo->album_id = $albumID;
 				$photo->owner_id = $album->owner_id;
 			}
-		}
-		else {
+		} else {
 			$photo->album_id = null;
 			$photo->owner_id = Session::get('UserID');
 		}
 
 		if ($exists === false) {
-
 			// Set orientation based on EXIF data
 			if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
 				$rotation = $this->imageHandler->autoRotate($path, $info);
@@ -342,8 +332,7 @@ class PhotoFunctions
 			if (in_array($photo->type, $this->validVideoTypes, true)) {
 				try {
 					$frame_tmp = $this->extractVideoFrame($photo);
-				}
-				catch (Exception $exception) {
+				} catch (Exception $exception) {
 					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 				}
 			}
@@ -352,18 +341,18 @@ class PhotoFunctions
 			if (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
 				if (!$this->createThumb($photo, $frame_tmp)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
+
 					return Response::error('Could not create thumbnail for photo!');
 				}
 
-				$photo->thumbUrl = basename($photo_name, $extension).".jpeg";
+				$photo->thumbUrl = basename($photo_name, $extension).'.jpeg';
 
 				$this->createSmallerImages($photo, $frame_tmp);
 
 				if ($frame_tmp !== '') {
 					unlink($frame_tmp);
 				}
-			}
-			else {
+			} else {
 				$photo->thumbUrl = '';
 				$photo->thumb2x = 0;
 			}
@@ -372,11 +361,10 @@ class PhotoFunctions
 		return $this->save($photo, $albumID);
 	}
 
-
-
 	/**
 	 * @param Photo $photo
 	 * @param string Path of the video frame
+	 *
 	 * @return void
 	 */
 	public function createSmallerImages(Photo $photo, string $frame_tmp = '')
@@ -400,16 +388,15 @@ class PhotoFunctions
 		}
 	}
 
-
-
 	/**
-	 * Creates smaller copies of Photo
+	 * Creates smaller copies of Photo.
 	 *
-	 * @param Photo $photo
+	 * @param Photo  $photo
 	 * @param string $type
-	 * @param int $maxWidth
-	 * @param int $maxHeight
+	 * @param int    $maxWidth
+	 * @param int    $maxHeight
 	 * @param string Path of the video frame
+	 *
 	 * @return bool
 	 */
 	public function resizePhoto(Photo $photo, string $type, int $maxWidth, int $maxHeight, string $frame_tmp = ''): bool
@@ -420,8 +407,7 @@ class PhotoFunctions
 		if ($frame_tmp === '') {
 			$filename = $photo->url;
 			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
-		}
-		else {
+		} else {
 			$filename = $photo->thumbUrl;
 			$url = $frame_tmp;
 		}
@@ -436,6 +422,7 @@ class PhotoFunctions
 		$uploadFolder = Config::get('defines.dirs.LYCHEE_UPLOADS_'.$pathType);
 		if (Helpers::hasPermissions($uploadFolder) === false) {
 			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because '.$uploadFolder.' is missing or not readable and writable.');
+
 			return false;
 		}
 
@@ -447,12 +434,14 @@ class PhotoFunctions
 		// Is photo big enough?
 		if (($width <= $maxWidth || $maxWidth == 0) && ($height <= $maxHeight || $maxHeight == 0)) {
 			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: '.$maxWidth.'x'.$maxHeight.')!');
+
 			return false;
 		}
 
 		$resWidth = $resHeight = 0;
 		if (!$this->imageHandler->scale($url, $uploadFolder.$filename, $maxWidth, $maxHeight, $resWidth, $resHeight)) {
 			Logs::error(__METHOD__, __LINE__, 'Failed to '.$type.' resize image');
+
 			return false;
 		}
 
@@ -461,13 +450,12 @@ class PhotoFunctions
 		return true;
 	}
 
-
-
 	/**
-	 * We create this function to try to fix the duplicate entry key problem
+	 * We create this function to try to fix the duplicate entry key problem.
 	 *
 	 * @param Photo $photo
 	 * @param $albumID
+	 *
 	 * @return false|mixed|string
 	 */
 	public function save(Photo $photo, $albumID)
@@ -479,8 +467,7 @@ class PhotoFunctions
 				if (!$photo->save()) {
 					return Response::error('Could not save photo in database!');
 				}
-			}
-			catch (QueryException $e) {
+			} catch (QueryException $e) {
 				$errorCode = $e->getCode();
 				if ($errorCode == 23000 || $errorCode == 23505) {
 					// houston, we have a duplicate entry problem
@@ -493,9 +480,9 @@ class PhotoFunctions
 
 					$photo->id = $newId;
 					$retry = true;
-				}
-				else {
+				} else {
 					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
+
 					return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
 				}
 			}
@@ -506,6 +493,7 @@ class PhotoFunctions
 			$album = Album::find($albumID);
 			if ($album === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 				return Response::error('Could not find specified album');
 			}
 			// TODO: should also recursively update the parent albums.
@@ -517,26 +505,22 @@ class PhotoFunctions
 
 		// return the ID.
 		return $photo->id;
-
 	}
-
-
 
 	/**
 	 * Validates whether $type is a valid image type.
 	 *
 	 * @param int $type
-	 * @return boolean
+	 *
+	 * @return bool
 	 */
 	public function isValidImageType(int $type): bool
 	{
 		return in_array($type, $this->validTypes, true);
 	}
 
-
-
 	/**
-	 * Returns a list of valid image types
+	 * Returns a list of valid image types.
 	 *
 	 * @return array
 	 */
@@ -545,23 +529,20 @@ class PhotoFunctions
 		return $this->validTypes;
 	}
 
-
-
 	/**
-	 * Validates whether $type is a valid video type
+	 * Validates whether $type is a valid video type.
 	 *
 	 * @param string $type
-	 * @return boolean
+	 *
+	 * @return bool
 	 */
 	public function isValidVideoType(string $type): bool
 	{
 		return in_array($type, $this->validVideoTypes, true);
 	}
 
-
-
 	/**
-	 * Returns a list of valid video types
+	 * Returns a list of valid video types.
 	 *
 	 * @return array
 	 */
@@ -570,23 +551,20 @@ class PhotoFunctions
 		return $this->validVideoTypes;
 	}
 
-
-
 	/**
-	 * Validates whether $extension is a valid image or video extension
+	 * Validates whether $extension is a valid image or video extension.
 	 *
 	 * @param string $extension
-	 * @return boolean
+	 *
+	 * @return bool
 	 */
 	public function isValidExtension(string $extension): bool
 	{
 		return in_array(strtolower($extension), $this->validExtensions, true);
 	}
 
-
-
 	/**
-	 * Returns a list of valid image/video extensions
+	 * Returns a list of valid image/video extensions.
 	 *
 	 * @return array
 	 */

@@ -16,7 +16,7 @@ class generate_thumbs extends Command
 		'small',
 		'small2x',
 		'medium',
-		'medium2x'
+		'medium2x',
 	];
 
 	/**
@@ -38,12 +38,11 @@ class generate_thumbs extends Command
 	 */
 	private $photoFunctions;
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
+	 *
 	 * @return void
 	 */
 	public function __construct(PhotoFunctions $photoFunctions)
@@ -52,8 +51,6 @@ class generate_thumbs extends Command
 
 		$this->photoFunctions = $photoFunctions;
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -66,6 +63,7 @@ class generate_thumbs extends Command
 
 		if (!in_array($type, self::THUMB_TYPES)) {
 			$this->error(sprintf('Type %s is not one of %s', $type, implode(', ', self::THUMB_TYPES)));
+
 			return 1;
 		}
 
@@ -99,6 +97,7 @@ class generate_thumbs extends Command
 
 		if (count($photos) == 0) {
 			$this->line('No picture requires '.$type.'.');
+
 			return 0;
 		}
 
@@ -114,8 +113,7 @@ class generate_thumbs extends Command
 			) {
 				$photo->save();
 				$this->line('   '.$type.' ('.$photo->{$type}.') for '.$photo->title.' created.');
-			}
-			else {
+			} else {
 				$this->line('   Could not create '.$type.' for '.$photo->title.' ('.$photo->width.'x'.$photo->height.').');
 			}
 			$bar->advance();
@@ -123,6 +121,5 @@ class generate_thumbs extends Command
 
 		$bar->finish();
 		$this->line('  ');
-
 	}
 }

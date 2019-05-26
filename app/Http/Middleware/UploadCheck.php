@@ -1,8 +1,8 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Middleware;
-
 
 use App\Album;
 use App\Logs;
@@ -24,12 +24,10 @@ class UploadCheck
 	 */
 	private $sessionFunctions;
 
-
 	/**
 	 * @var AlbumFunctions
 	 */
 	private $albumFunctions;
-
 
 	public function __construct(SessionFunctions $sessionFunctions, AlbumFunctions $albumFunctions)
 	{
@@ -37,13 +35,12 @@ class UploadCheck
 		$this->albumFunctions = $albumFunctions;
 	}
 
-
-
 	/**
 	 * Handle an incoming request.
 	 *
 	 * @param Request $request
 	 * @param Closure $next
+	 *
 	 * @return mixed
 	 */
 	public function handle(Request $request, Closure $next)
@@ -60,8 +57,7 @@ class UploadCheck
 
 		$user_id = Session::get('UserID');
 		$user = User::find($user_id);
-		if ($user == null)
-		{
+		if ($user == null) {
 			return response('false');
 		}
 
@@ -87,16 +83,14 @@ class UploadCheck
 		}
 
 		return $next($request);
-
 	}
 
-
-
 	/**
-	 * Take of checking if a user can actually modify that Album
+	 * Take of checking if a user can actually modify that Album.
 	 *
 	 * @param $request
 	 * @param int $user_id
+	 *
 	 * @return ResponseFactory|Response|mixed
 	 */
 	public function album_check(Request $request, int $user_id)
@@ -104,15 +98,17 @@ class UploadCheck
 		if ($request->has('albumID') || $request->has('parent_id')) {
 			$albumID = $request->has('albumID') ? $request['albumID'] : $request['parent_id'];
 
-			if ($this->albumFunctions->is_smart_album($albumID)){
+			if ($this->albumFunctions->is_smart_album($albumID)) {
 				return true;
 			}
 
 			$num = Album::where('id', '=', $albumID)->where('owner_id', '=', $user_id)->count();
 			if ($num == 0) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 				return false;
 			}
+
 			return true;
 		}
 
@@ -122,6 +118,7 @@ class UploadCheck
 			$albums = Album::whereIn('id', explode(',', $albumIDs))->get();
 			if ($albums == null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
+
 				return false;
 			}
 			$no_error = true;
@@ -133,19 +130,19 @@ class UploadCheck
 			}
 
 			Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
+
 			return false;
 		}
 
 		return null;
 	}
 
-
-
 	/**
-	 * Check if the user is authorized to do anything to that picture
+	 * Check if the user is authorized to do anything to that picture.
 	 *
 	 * @param Request $request
-	 * @param int $id
+	 * @param int     $id
+	 *
 	 * @return ResponseFactory|Response|mixed
 	 */
 	public function photo_check(Request $request, int $id)
@@ -155,8 +152,10 @@ class UploadCheck
 			$num = Photo::where('id', '=', $photoID)->where('owner_id', '=', $id)->count();
 			if ($num == 0) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
 				return false;
 			}
+
 			return true;
 		}
 
@@ -166,6 +165,7 @@ class UploadCheck
 			$photos = Photo::whereIn('id', explode(',', $photoIDs))->get();
 			if ($photos == null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified photos');
+
 				return false;
 			}
 			$no_error = true;
@@ -178,15 +178,15 @@ class UploadCheck
 			}
 
 			Logs::error(__METHOD__, __LINE__, 'Photos ownership mismatch!');
+
 			return false;
 		}
 	}
 
-
-
 	/**
 	 * @param Request $request
-	 * @param int $id
+	 * @param int     $id
+	 *
 	 * @return bool
 	 */
 	public function share_check(Request $request, int $id)
@@ -202,6 +202,7 @@ class UploadCheck
 
 			if ($albums == null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
+
 				return false;
 			}
 			$no_error = true;
@@ -213,8 +214,8 @@ class UploadCheck
 			}
 
 			Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
-			return false;
 
+			return false;
 		}
 	}
 }

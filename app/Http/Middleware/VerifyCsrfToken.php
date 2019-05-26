@@ -16,35 +16,34 @@ class VerifyCsrfToken extends Middleware
 	 */
 	protected $except = [
 		// entry point...
-		'/php/index.php'
+		'/php/index.php',
 	];
-
-
 
 	/**
 	 * @param $request
 	 * @param Closure $next
+	 *
 	 * @return mixed
+	 *
 	 * @throws TokenMismatchException
 	 */
 	public function handle($request, Closure $next)
 	{
 		if ($request->is('/api/*')) {
-
 			/**
 			 * default value is ''
 			 * we force it in case of the migration has not been done.
 			 */
 			$apiKey = Configs::get_value('api_key', '');
 
-			/**
+			/*
 			 * if apiKey is the empty string we directly return the parent handle.
 			 */
 			if ($apiKey && $apiKey == '') {
 				return parent::handle($request, $next);
 			}
 
-			/**
+			/*
 			 * We are currently checking for Authorization.
 			 * Do we also want to check if there is a POST value with the apiKey ?
 			 */

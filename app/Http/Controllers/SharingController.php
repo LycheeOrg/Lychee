@@ -1,8 +1,8 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
-
 
 use App\Album;
 use App\User;
@@ -14,7 +14,6 @@ class SharingController extends Controller
 {
 	public function listSharing()
 	{
-
 		if (Session::get('UserID') == 0) {
 			$shared = DB::table('user_album')
 				->select('user_album.id', 'user_id', 'album_id', 'username', 'title')
@@ -26,8 +25,7 @@ class SharingController extends Controller
 
 			$albums = Album::select(['id', 'title'])->orderBy('title', 'ASC')->get();
 			$users = User::select(['id', 'username'])->orderBy('username', 'ASC')->get();
-		}
-		else {
+		} else {
 			$id = Session::get('UserID');
 			$shared = DB::table('user_album')
 				->select('user_album.id', 'user_id', 'album_id', 'username', 'title')
@@ -41,20 +39,18 @@ class SharingController extends Controller
 			$albums = Album::select(['id', 'title'])->where('owner_id', '=', $id)->orderBy('title', 'ASC')->get();
 			$users = User::select(['id', 'username'])->orderBy('username', 'ASC')->get();
 		}
+
 		return [
 			'shared' => $shared,
 			'albums' => $albums,
-			'users'  => $users
+			'users' => $users,
 		];
 	}
 
-
-
 	public function getUserList(Request $request)
 	{
-
 		$request->validate([
-			'albumIDs' => 'string|required'
+			'albumIDs' => 'string|required',
 		]);
 		$array_albumIDs = explode(',', $request['albumIDs']);
 		sort($array_albumIDs);
@@ -79,8 +75,7 @@ class SharingController extends Controller
 		foreach ($users as $user) {
 			if (!isset($user_share[$user->id])) {
 				$return_array[] = $user;
-			}
-			else {
+			} else {
 				$no = false;
 
 				// quick test to avoid the loop
@@ -93,7 +88,7 @@ class SharingController extends Controller
 					if ($user_share[$user->id][$i] != $array_albumIDs[$i]) {
 						$no = true;
 					}
-					$i++;
+					++$i;
 				}
 
 				if ($no) {
@@ -105,18 +100,16 @@ class SharingController extends Controller
 		return $return_array;
 	}
 
-
-
 	/**
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
 	public function add(Request $request)
 	{
-
 		$request->validate([
-			'UserIDs'  => 'string|required',
-			'albumIDs' => 'string|required'
+			'UserIDs' => 'string|required',
+			'albumIDs' => 'string|required',
 		]);
 
 		$users = User::whereIn('id', explode(',', $request['UserIDs']))->get();
@@ -128,12 +121,10 @@ class SharingController extends Controller
 		return 'true';
 	}
 
-
-
 	public function delete(Request $request)
 	{
 		$request->validate([
-			'ShareIDs' => 'string|required'
+			'ShareIDs' => 'string|required',
 		]);
 
 		DB::table('user_album')->whereIn('id', explode(',', $request['ShareIDs']))->delete();

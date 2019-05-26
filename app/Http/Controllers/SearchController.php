@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -12,13 +13,10 @@ use Illuminate\Support\Facades\Session;
 
 class SearchController extends Controller
 {
-
 	/**
 	 * @var AlbumFunctions
 	 */
 	private $albumFunctions;
-
-
 
 	/**
 	 * @param AlbumFunctions $albumFunctions
@@ -27,8 +25,6 @@ class SearchController extends Controller
 	{
 		$this->albumFunctions = $albumFunctions;
 	}
-
-
 
 	/**
 	 * Escape special characters for a LIKE query.
@@ -44,31 +40,28 @@ class SearchController extends Controller
 			[
 				$char,
 				'%',
-				'_'
+				'_',
 			],
 			[
 				$char.$char,
 				$char.'%',
-				$char.'_'
+				$char.'_',
 			],
 			$value
 		);
 	}
 
-
-
 	public function search(Request $request)
 	{
-
 		$request->validate([
-			'term' => 'required|string'
+			'term' => 'required|string',
 		]);
 
 		// Initialize return var
 		$return = array(
 			'photos' => null,
 			'albums' => null,
-			'hash'   => ''
+			'hash' => '',
 		);
 
 		$terms = explode(' ', $request['term']);
@@ -82,7 +75,7 @@ class SearchController extends Controller
 		$id = Session::get('UserID');
 
 		/**
-		 * Photos
+		 * Photos.
 		 */
 		// for now we only look in OUR pictures
 		$query = Photo::where('owner_id', '=', $id);
@@ -106,7 +99,7 @@ class SearchController extends Controller
 		}
 
 		/**
-		 * Albums
+		 * Albums.
 		 */
 		$query = Album::where('owner_id', '=', $id);
 		for ($i = 0; $i < count($escaped_terms); ++$i) {
@@ -130,8 +123,7 @@ class SearchController extends Controller
 
 		// Hash
 		$return['hash'] = md5(json_encode($return));
+
 		return $return;
-
 	}
-
 }

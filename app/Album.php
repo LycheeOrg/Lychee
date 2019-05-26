@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App;
@@ -16,26 +17,27 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * App\Album
+ * App\Album.
  *
- * @property int $id
- * @property string $title
- * @property int $owner_id
- * @property int|null $parent_id
- * @property string $description
+ * @property int         $id
+ * @property string      $title
+ * @property int         $owner_id
+ * @property int|null    $parent_id
+ * @property string      $description
  * @property Carbon|null $min_takestamp
  * @property Carbon|null $max_takestamp
- * @property int $public
- * @property int $visible_hidden
- * @property int $downloadable
+ * @property int         $public
+ * @property int         $visible_hidden
+ * @property int         $downloadable
  * @property string|null $password
- * @property string $license
+ * @property string      $license
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read Album[] $children
- * @property-read User $owner
- * @property-read Album $parent
- * @property-read Photo[] $photos
+ * @property Album[]     $children
+ * @property User        $owner
+ * @property Album       $parent
+ * @property Photo[]     $photos
+ *
  * @method static Builder|Album newModelQuery()
  * @method static Builder|Album newQuery()
  * @method static Builder|Album query()
@@ -57,23 +59,21 @@ use Illuminate\Support\Facades\Hash;
  */
 class Album extends Model
 {
-
 	protected $dates = [
 		'created_at',
 		'updated_at',
 		'min_takestamp',
-		'max_takestamp'
+		'max_takestamp',
 	];
 
 	protected $casts = [
 		'public' => 'int',
-		'visible_hidden'  => 'int',
-		'downloadable'  => 'int'
+		'visible_hidden' => 'int',
+		'downloadable' => 'int',
 	];
 
-
 	/**
-	 * Return the relationship between Photos and their Album
+	 * Return the relationship between Photos and their Album.
 	 *
 	 * @return HasMany
 	 */
@@ -82,25 +82,21 @@ class Album extends Model
 		return $this->hasMany('App\Photo', 'album_id', 'id');
 	}
 
-
-
 	/**
-	 * Return the relationship between an album and its owner
+	 * Return the relationship between an album and its owner.
 	 *
 	 * @return BelongsTo
 	 */
 	public function owner()
 	{
 		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
-			'id'       => 0,
-			'username' => 'Admin'
+			'id' => 0,
+			'username' => 'Admin',
 		]);
 	}
 
-
-
 	/**
-	 * Return the relationship between an album and its sub albums
+	 * Return the relationship between an album and its sub albums.
 	 *
 	 * @return HasMany
 	 */
@@ -109,10 +105,8 @@ class Album extends Model
 		return $this->hasMany('App\Album', 'parent_id', 'id');
 	}
 
-
-
 	/**
-	 * Return the relationship between a sub album and its parent
+	 * Return the relationship between a sub album and its parent.
 	 *
 	 * @return BelongsTo
 	 */
@@ -120,8 +114,6 @@ class Album extends Model
 	{
 		return $this->belongsTo('App\Album', 'id', 'parent_id');
 	}
-
-
 
 	/**
 	 * @return BelongsToMany
@@ -138,7 +130,6 @@ class Album extends Model
 	 */
 	public function prepareData()
 	{
-
 		// Init
 		$album = array();
 
@@ -174,18 +165,16 @@ class Album extends Model
 		return $album;
 	}
 
-
-
 	/**
 	 * get the thumbs of an album.
 	 *
 	 * @param array $return
 	 * @param array $album_list
+	 *
 	 * @return array
 	 */
 	public function gen_thumbs($return, $album_list)
 	{
-
 		$thumbs_types = Photo::select(['thumbUrl', 'thumb2x', 'type'])
 			->whereIn('album_id', $album_list)
 			->orderBy('star', 'DESC')
@@ -197,26 +186,24 @@ class Album extends Model
 		foreach ($thumbs_types as $thumb_types) {
 			$return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->thumbUrl;
 			if ($thumb_types->thumb2x == '1') {
-				$thumbUrl2x = explode(".", $thumb_types->thumbUrl);
+				$thumbUrl2x = explode('.', $thumb_types->thumbUrl);
 				$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
 				$return['thumbs2x'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
-			}
-			else {
+			} else {
 				$return['thumbs2x'][$k] = '';
 			}
 			$return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->type;
-			$k++;
+			++$k;
 		}
 
 		return $return;
 	}
 
-
-
 	/**
 	 * Recursively go through each sub album and build a list of them.
 	 *
 	 * @param array $return
+	 *
 	 * @return array
 	 */
 	private function get_all_sub_albums($return = array())
@@ -225,25 +212,22 @@ class Album extends Model
 			$return[] = $album->id;
 			$return = $album->get_all_sub_albums($return);
 		}
+
 		return $return;
 	}
 
-
-
 	/**
-	 * Given a password, check if it matches albums password
+	 * Given a password, check if it matches albums password.
 	 *
 	 * @param string $password
-	 * @return boolean Returns when album is public.
+	 *
+	 * @return bool returns when album is public
 	 */
 	public function checkPassword(string $password)
 	{
-
 		// album password is empty or input is correct.
-		return ($this->password == '' || Hash::check($password, $this->password));
+		return $this->password == '' || Hash::check($password, $this->password);
 	}
-
-
 
 	/**
 	 * Go through each sub album and update the minimum and maximum takestamp of the pictures.
@@ -261,14 +245,12 @@ class Album extends Model
 		$this->max_takestamp = $max;
 	}
 
-
-
 	/**
 	 * Apply the previous method on each album in the database
 	 * TODO: this seems expensive and avoidable (should only need to update
 	 * the albums that were modified, plus recursively their parents).
 	 */
-	static public function reset_takestamp()
+	public static function reset_takestamp()
 	{
 		$albums = Album::all();
 		foreach ($albums as $album) {
@@ -277,28 +259,27 @@ class Album extends Model
 		}
 	}
 
-
-
 	/**
 	 * Given a user, retrieve all the shared albums it can see.
-	 * TODO: Move this function to another file
+	 * TODO: Move this function to another file.
 	 *
 	 * @param $id
+	 *
 	 * @return Album[]
 	 */
 	public static function get_albums_user($id)
 	{
 		return Album::with([
 			'owner',
-			'children'
+			'children',
 		])
 			->where('owner_id', '<>', $id)
 			->where('parent_id', '=', null)
 			->Where(
 				function (Builder $query) use ($id) {
 					// album is shared with user
-					$query->whereIn('id', function (QBuilder $query) use ($id){
-					                                                    $query->select('album_id')
+					$query->whereIn('id', function (QBuilder $query) use ($id) {
+						$query->select('album_id')
 							->from('user_album')
 							->where('user_id', '=', $id);
 					})
@@ -313,15 +294,14 @@ class Album extends Model
 			->get();
 	}
 
-
-
 	/**
 	 * Given two list of albums, merge them without duplicates.
 	 * Current complexity is in O(n^2)
-	 * TODO: Move this function to another file
+	 * TODO: Move this function to another file.
 	 *
 	 * @param Album[] $albums1
 	 * @param Album[] $albums2
+	 *
 	 * @return array
 	 */
 	public static function merge(array $albums1, array $albums2)
@@ -345,15 +325,13 @@ class Album extends Model
 		return $return;
 	}
 
-
-
-
 	/**
 	 * Before calling delete() to remove the album from the database
 	 * we need to go through each sub album and delete it.
 	 * Idem we also delete each pictures inside an album (recursively).
 	 *
 	 * @return bool|null
+	 *
 	 * @throws Exception
 	 */
 	public function predelete()
@@ -371,6 +349,7 @@ class Album extends Model
 			$no_error &= $photo->predelete();
 			$no_error &= $photo->delete();
 		}
+
 		return $no_error;
 	}
 }

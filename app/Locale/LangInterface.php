@@ -1,12 +1,10 @@
 <?php
 
-
 namespace App\Locale;
-
 
 interface LangInterface
 {
-	static public function code();
-	static public function get_locale();
+	public static function code();
 
+	public static function get_locale();
 }

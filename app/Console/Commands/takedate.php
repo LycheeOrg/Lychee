@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Controllers\PhotoController;
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
@@ -11,7 +10,6 @@ use Illuminate\Support\Facades\Config;
 
 class takedate extends Command
 {
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -36,13 +34,11 @@ class takedate extends Command
 	 */
 	private $metadataExtractor;
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
-	 * @param Extractor $metadataExtractor
+	 * @param Extractor      $metadataExtractor
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
 	{
@@ -68,6 +64,7 @@ class takedate extends Command
 		$photos = Photo::where('make', '=', '')->whereNotIn('lens', $this->photoFunctions->getValidVideoTypes())->offset($from)->limit($argument)->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires takedate updates.');
+
 			return false;
 		}
 
@@ -81,15 +78,13 @@ class takedate extends Command
 				}
 				if ($photo->save()) {
 					$this->line($i.': Takestamp updated for '.$photo->title);
-				}
-				else {
+				} else {
 					$this->line($i.': Could not get Takestamp data/nothing to update for '.$photo->title.'.');
 				}
-			}
-			else {
+			} else {
 				$this->line($i.': File does not exists for '.$photo->title.'.');
 			}
-			$i++;
+			++$i;
 		}
 	}
 }

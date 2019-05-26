@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
@@ -17,8 +18,6 @@ class PageController extends Controller
 	 */
 	private $configFunctions;
 
-
-
 	/**
 	 * @param ConfigFunctions $configFunctions
 	 */
@@ -27,13 +26,13 @@ class PageController extends Controller
 		$this->configFunctions = $configFunctions;
 	}
 
-
-	function page(Request $request, $page)
+	public function page(Request $request, $page)
 	{
-		$page = Page::enabled()->where('link','/'.$page)->first();
+		$page = Page::enabled()->where('link', '/'.$page)->first();
 
-		if($page == null)
+		if ($page == null) {
 			abort(404);
+		}
 
 		$lang = Lang::get_lang(Configs::get_value('lang'));
 		$lang['language'] = Configs::get_value('lang');

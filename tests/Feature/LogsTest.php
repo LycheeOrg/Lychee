@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php
+
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace Tests\Feature;
 
@@ -9,7 +11,7 @@ use Tests\TestCase;
 class LogsTest extends TestCase
 {
 	/**
-	 * Test log handling
+	 * Test log handling.
 	 *
 	 * @return void
 	 */
@@ -28,16 +30,12 @@ class LogsTest extends TestCase
 		$response->assertDontSeeText('false');
 		if (Logs::count() == 0) {
 			$response->assertSeeText('Everything looks fine, Lychee has not reported any problems!');
-		}
-		else {
+		} else {
 			$response->assertViewIs('logs.list');
 		}
 
 		Session::flush();
-
 	}
-
-
 
 	public function test_api_Logs()
 	{
@@ -46,8 +44,6 @@ class LogsTest extends TestCase
 
 		// we may decide to change for another out there so
 	}
-
-
 
 	public function test_clear_Logs()
 	{

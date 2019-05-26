@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\ControllerFunctions;
-
 
 use App\Album;
 use App\ModelFunctions\SessionFunctions;
@@ -10,13 +8,10 @@ use App\Photo;
 
 class ReadAccessFunctions
 {
-
 	/**
 	 * @var SessionFunctions
 	 */
 	private $sessionFunctions;
-
-
 
 	/**
 	 * @param SessionFunctions $sessionFunctions
@@ -26,17 +21,16 @@ class ReadAccessFunctions
 		$this->sessionFunctions = $sessionFunctions;
 	}
 
-
-
 	/**
 	 * Check if a (public) user has access to an album
 	 * if 0 : album does not exists
 	 * if 1 : access is granted
 	 * if 2 : album is private
-	 * if 3 : album is password protected and require user input
+	 * if 3 : album is password protected and require user input.
 	 *
 	 * @param $albumID
 	 * @param bool obeyHidden
+	 *
 	 * @return int
 	 */
 	public function album($albumID, bool $obeyHidden = false)
@@ -45,7 +39,7 @@ class ReadAccessFunctions
 			'f',
 			's',
 			'r',
-			'0'
+			'0',
 		))) {
 			return 1; // access granted
 		}
@@ -81,15 +75,13 @@ class ReadAccessFunctions
 		}
 
 		return 3;      // Please enter password first. // Warning: Wrong password!
-
 	}
-
-
 
 	/**
 	 * Check if a (public) user has access to a picture.
 	 *
 	 * @param Photo $photo
+	 *
 	 * @return bool
 	 */
 	public function photo(Photo $photo)
