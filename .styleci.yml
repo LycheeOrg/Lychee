@@ -1,6 +1,6 @@
 risky: false
 enabled:
-  - alpha_ordered_imports
+#  - alpha_ordered_imports # (already enabled)
   - binary_operator_spaces
   - blank_line_after_namespace
   - blank_line_after_opening_tag
