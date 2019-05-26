@@ -88,7 +88,7 @@ class SharingController extends Controller
 					if ($user_share[$user->id][$i] != $array_albumIDs[$i]) {
 						$no = true;
 					}
-					++$i;
+					$i++;
 				}
 
 				if ($no) {

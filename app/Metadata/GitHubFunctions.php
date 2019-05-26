@@ -178,7 +178,7 @@ class GitHubFunctions
 			if ($this->trim($commits[$i]->sha) == $head) {
 				break;
 			}
-			++$i;
+			$i++;
 		}
 
 		return ($i == count($commits)) ? false : $i;

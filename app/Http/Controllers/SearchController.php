@@ -79,7 +79,7 @@ class SearchController extends Controller
 		 */
 		// for now we only look in OUR pictures
 		$query = Photo::where('owner_id', '=', $id);
-		for ($i = 0; $i < count($escaped_terms); ++$i) {
+		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
 				function (Builder $query) use ($id, $escaped_term) {
@@ -94,7 +94,7 @@ class SearchController extends Controller
 			$i = 0;
 			foreach ($photos as $photo) {
 				$return['photos'][$i] = $photo->prepareData();
-				++$i;
+				$i++;
 			}
 		}
 
@@ -102,7 +102,7 @@ class SearchController extends Controller
 		 * Albums.
 		 */
 		$query = Album::where('owner_id', '=', $id);
-		for ($i = 0; $i < count($escaped_terms); ++$i) {
+		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
 				function (Builder $query) use ($id, $escaped_term) {
@@ -117,7 +117,7 @@ class SearchController extends Controller
 				$album = $album_model->prepareData();
 				$album = $album_model->gen_thumbs($album, $this->albumFunctions->get_sub_albums($album_model, [$album_model->id]));
 				$return['albums'][$i] = $album;
-				++$i;
+				$i++;
 			}
 		}
 

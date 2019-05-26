@@ -39,7 +39,7 @@ class ImageHandler implements ImageHandlerInterface
 	{
 		$i = 0;
 		while ($i < count($this->engines) && !$this->engines[$i]->scale($source, $destination, $newWidth, $newHeight, $resWidth, $resHeight)) {
-			++$i;
+			$i++;
 		}
 
 		return $i != count($this->engines);
@@ -57,7 +57,7 @@ class ImageHandler implements ImageHandlerInterface
 	{
 		$i = 0;
 		while ($i < count($this->engines) && !$this->engines[$i]->crop($source, $destination, $newWidth, $newHeight)) {
-			++$i;
+			$i++;
 		}
 
 		return $i != count($this->engines);

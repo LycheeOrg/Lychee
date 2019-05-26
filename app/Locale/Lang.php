@@ -8,7 +8,7 @@ class Lang
 	{
 		$return = array();
 		$list_lang = scandir(__DIR__);
-		for ($i = 0; $i < count($list_lang); ++$i) {
+		for ($i = 0; $i < count($list_lang); $i++) {
 			if ($list_lang[$i] != '.' &&
 				$list_lang[$i] != '..' &&
 				$list_lang[$i] != 'Lang.php' &&
@@ -24,7 +24,7 @@ class Lang
 	public static function get_lang($value = 'en')
 	{
 		$list_lang = Lang::get_classes();
-		for ($i = 0; $i < count($list_lang); ++$i) {
+		for ($i = 0; $i < count($list_lang); $i++) {
 			if ($list_lang[$i]::code() == $value) {
 				return $list_lang[$i]::get_locale();
 			}
@@ -41,7 +41,7 @@ class Lang
 	{
 		$list_lang = Lang::get_classes();
 		$return = array();
-		for ($i = 0; $i < count($list_lang); ++$i) {
+		for ($i = 0; $i < count($list_lang); $i++) {
 			$return[] = $list_lang[$i]::code();
 		}
 

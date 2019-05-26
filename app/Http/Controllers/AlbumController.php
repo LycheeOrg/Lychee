@@ -307,7 +307,7 @@ class AlbumController extends Controller
 			if ($licenses[$i] == $request['license']) {
 				$found = true;
 			}
-			++$i;
+			$i++;
 		}
 		if (!$found) {
 			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: '.$request['license']);
@@ -559,7 +559,7 @@ class AlbumController extends Controller
 					while (in_array($zipFileName, $files)) {
 						// Set new title for photo
 						$zipFileName = $zipTitle.'/'.$title.'-'.$i.$extension;
-						++$i;
+						$i++;
 					}
 				}
 				// Add to array

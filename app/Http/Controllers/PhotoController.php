@@ -326,7 +326,7 @@ class PhotoController extends Controller
 			if ($licenses[$i] == $request['license']) {
 				$found = true;
 			}
-			++$i;
+			$i++;
 		}
 		if (!$found) {
 			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: '.$request['license']);

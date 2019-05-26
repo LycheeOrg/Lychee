@@ -132,7 +132,7 @@ class AlbumFunctions
 			// Add to return
 			$return_photos[$photo_counter] = $photo;
 
-			++$photo_counter;
+			$photo_counter++;
 		}
 
 		if (count($return_photos) > 0) {
@@ -211,7 +211,7 @@ class AlbumFunctions
 					$return[$kind]['thumbs2x'][$i] = '';
 				}
 				$return[$kind]['types'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->type;
-				++$i;
+				$i++;
 			} else {
 				break;
 			}

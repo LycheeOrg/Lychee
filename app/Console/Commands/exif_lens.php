@@ -107,7 +107,7 @@ class exif_lens extends Command
 			} else {
 				$this->line($i.': File does not exists for '.$photo->title.'.');
 			}
-			++$i;
+			$i++;
 		}
 	}
 }

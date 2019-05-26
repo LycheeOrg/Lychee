@@ -106,7 +106,7 @@ class SettingsController extends Controller
 		]);
 
 		$lang_available = Lang::get_lang_available();
-		for ($i = 0; $i < count($lang_available); ++$i) {
+		for ($i = 0; $i < count($lang_available); $i++) {
 			if ($request['lang'] == $lang_available[$i]) {
 				return (Configs::set('lang', $lang_available[$i])) ? 'true' : 'false';
 			}
@@ -159,7 +159,7 @@ class SettingsController extends Controller
 			if ($overlays[$i] === $request['image_overlay_type']) {
 				$found = true;
 			}
-			++$i;
+			$i++;
 		}
 		if (!$found) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find the submitted overlay type');
@@ -192,7 +192,7 @@ class SettingsController extends Controller
 			if ($licenses[$i] === $request['license']) {
 				return (Configs::set('default_license', $request['license'])) ? 'true' : 'false';
 			}
-			++$i;
+			$i++;
 		}
 
 		Logs::error(__METHOD__, __LINE__, 'Could not find the submitted license');

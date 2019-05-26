@@ -89,7 +89,7 @@ class DemoController extends Controller
 				// Add to $return_album_json
 				$return_album_json['photos'][$photo_counter] = $photo;
 
-				++$photo_counter;
+				$photo_counter++;
 			}
 
 			if ($photos_sql->count() === 0) {

@@ -193,7 +193,7 @@ class Album extends Model
 				$return['thumbs2x'][$k] = '';
 			}
 			$return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->type;
-			++$k;
+			$k++;
 		}
 
 		return $return;

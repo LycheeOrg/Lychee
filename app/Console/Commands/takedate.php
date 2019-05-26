@@ -84,7 +84,7 @@ class takedate extends Command
 			} else {
 				$this->line($i.': File does not exists for '.$photo->title.'.');
 			}
-			++$i;
+			$i++;
 		}
 	}
 }

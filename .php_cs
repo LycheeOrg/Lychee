@@ -21,6 +21,7 @@ $rules = [
     'no_php4_constructor' => true,
     'phpdoc_no_empty_return' => false,
     'yoda_style' => false,
+    'increment_style' => ['style' => 'post'],
 ];
 return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
