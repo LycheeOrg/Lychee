@@ -14,14 +14,15 @@ $finder = array_reduce(
 )->notName('*.blade.php');
 $rules = [
     '@Symfony' => true,
-    'array_indentation' => true,
     'align_multiline_comment' => true,
+    'array_indentation' => true,
     'backtick_to_shell_exec' => true,
+    'increment_style' => ['style' => 'post'],
     'indentation_type' => true,
     'no_php4_constructor' => true,
     'phpdoc_no_empty_return' => false,
+    'single_blank_line_at_eof' => false,
     'yoda_style' => false,
-    'increment_style' => ['style' => 'post'],
 ];
 return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)

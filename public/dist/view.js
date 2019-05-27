@@ -726,7 +726,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject5 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject6 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject7 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
-    _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
+    _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject9 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject10 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
     _templateObject11 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
@@ -1258,7 +1258,7 @@ build.album = function (data) {
 
 	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.id, build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
 
-	if (lychee.publicMode === false) {
+	if (album.isUploadable() && !disabled) {
 
 		html += lychee.html(_templateObject6, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' ? 'badge--visible' : '', data.hidden === '1' ? 'badge--not--hidden' : 'badge--hidden', build.iconic('eye'), data.unsorted === '1' ? 'badge--visible' : '', build.iconic('list'), data.recent === '1' ? 'badge--visible badge--list' : '', build.iconic('clock'), data.password === '1' ? 'badge--visible' : '', build.iconic('lock-locked'));
 	}
@@ -1273,6 +1273,8 @@ build.album = function (data) {
 };
 
 build.photo = function (data) {
+	var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
 
 	var html = '';
 	var thumbnail = '';
@@ -1345,13 +1347,13 @@ build.photo = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject8, data.album, data.id, thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject8, disabled ? "disabled" : "", data.album, data.id, thumbnail, data.title, data.title);
 
 	if (data.cameraDate === '1') html += lychee.html(_templateObject9, build.iconic('camera-slr'), data.takedate);else html += lychee.html(_templateObject10, data.sysdate);
 
 	html += "</div>";
 
-	if (lychee.publicMode === false) {
+	if (album.isUploadable()) {
 
 		html += lychee.html(_templateObject11, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' && album.json.public !== '1' ? 'badge--visible' : '', build.iconic('eye'));
 	}
@@ -1515,11 +1517,11 @@ header.bind = function () {
 	});
 
 	header.dom('#button_share').on(eventName, function (e) {
-		if (photo.json.public === '1' || photo.json.public === '2' || lychee.api_V2 && !lychee.upload) contextMenu.sharePhoto(photo.getID(), e);else photo.setPublic(photo.getID(), e);
+		if (photo.json.public === '1' || photo.json.public === '2' || !album.isUploadable()) contextMenu.sharePhoto(photo.getID(), e);else photo.setPublic(photo.getID(), e);
 	});
 
 	header.dom('#button_share_album').on(eventName, function (e) {
-		if (album.json.public === '1' || lychee.api_V2 && !lychee.upload) contextMenu.shareAlbum(album.getID(), e);else album.setPublic(album.getID(), true, e);
+		if (album.json.public === '1' || !album.isUploadable()) contextMenu.shareAlbum(album.getID(), e);else album.setPublic(album.getID(), true, e);
 	});
 
 	header.dom('#button_signin').on(eventName, lychee.loginDialog);
@@ -1654,19 +1656,29 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
 
-			// Hide download button when album empty
-			if (!album.json || album.json.photos === false) $('#button_archive').hide();else $('#button_archive').show();
-
-			// Hide download button when not logged in and album not downloadable
-			if (lychee.publicMode === true && album.json.downloadable === '0') $('#button_archive').hide();
+			// Hide download button when album empty or we are not allowed to
+			// upload to it and it's not explicitly marked as downloadable.
+			if (!album.json || album.json.photos === false || !album.isUploadable() && album.json.downloadable === '0') {
+				$('#button_archive').hide();
+			} else {
+				$('#button_archive').show();
+			}
 
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
 				$('#button_info_album, #button_trash_album, #button_share_album, #button_move_album').hide();
+				$('.button_add, .header__divider', '.header__toolbar--album').show();
 			} else if (albumID === '0') {
 				$('#button_info_album, #button_share_album, #button_move_album').hide();
-				$('#button_trash_album').show();
+				$('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album').show();
 			} else {
-				$('#button_info_album, #button_trash_album, #button_share_album, #button_move_album').show();
+				$('#button_info_album, #button_share_album').show();
+				if (album.isUploadable()) {
+					$('#button_trash_album, #button_move_album, .button_add, .header__divider', '.header__toolbar--album').show();
+					$('#button_share_album').removeClass('button--share').addClass('button--eye').find('use').attr('xlink:href', '#eye');
+				} else {
+					$('#button_trash_album, #button_move_album, .button_add, .header__divider', '.header__toolbar--album').hide();
+					$('#button_share_album').removeClass('button--eye').addClass('button--share').find('use').attr('xlink:href', '#share');
+				}
 			}
 
 			return true;
@@ -1676,8 +1688,16 @@ header.setMode = function (mode) {
 			header.dom().addClass('header--view');
 			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
+			if (album.isUploadable()) {
+				$('#button_trash, #button_move, #button_star').show();
+				$('#button_share').removeClass('button--share').addClass('button--eye').find('use').attr('xlink:href', '#eye');
+			} else {
+				$('#button_trash, #button_move, #button_star').hide();
+				$('#button_share').removeClass('button--eye').addClass('button--share').find('use').attr('xlink:href', '#share');
+			}
+
 			// Hide More menu if empty (see contextMenu.photoMore)
-			if (!lychee.full_photo && lychee.publicMode && !(album.json && album.json.downloadable && album.json.downloadable === '1')) {
+			if (!lychee.full_photo && !album.isUploadable() && !(album.json && album.json.downloadable && album.json.downloadable === '1')) {
 				$('#button_more').hide();
 			}
 
@@ -1688,12 +1708,12 @@ header.setMode = function (mode) {
 	return false;
 };
 
+// Note that the pull-down menu is now enabled not only for editable
+// items but for all of public/albums/album/photo views, so 'editable' is a
+// bit of a misnomer at this point...
 header.setEditable = function (editable) {
 
 	var $title = header.dom('.header__title');
-
-	// Hide editable icon when not logged in
-	if (lychee.publicMode === true || lychee.api_V2 && !lychee.upload) editable = false;
 
 	if (editable) $title.addClass('header__title--editable');else $title.removeClass('header__title--editable');
 
@@ -1868,14 +1888,11 @@ sidebar.createStructure.photo = function (data) {
 
 	if (data == null || data === '') return false;
 
-	var editable = false;
+	var editable = album.isUploadable();
 	var exifHash = data.takedate + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
 	var structure = {};
 	var _public = '';
 	var isVideo = data.type && data.type.indexOf('video') > -1;
-
-	// Enable editable when user logged in
-	if (lychee.publicMode === false && lychee.upload) editable = true;
 
 	// Set the license string for a photo
 	switch (data.license) {
@@ -1942,8 +1959,8 @@ sidebar.createStructure.photo = function (data) {
 		}
 	}
 
-	// Only create tags section when user logged in
-	if (lychee.publicMode === false && lychee.upload) {
+	// Only create tags section when the photo is editable
+	if (editable) {
 
 		structure.tags = {
 			title: lychee.locale['PHOTO_TAGS'],
@@ -1991,16 +2008,13 @@ sidebar.createStructure.album = function (data) {
 
 	if (data == null || data === '') return false;
 
-	var editable = false;
+	var editable = album.isUploadable();
 	var structure = {};
 	var _public = '';
 	var hidden = '';
 	var downloadable = '';
 	var password = '';
 	var license = '';
-
-	// Enable editable when user logged in
-	if (lychee.publicMode === false && lychee.upload) editable = true;
 
 	// Set value for public
 	switch (data.public) {
