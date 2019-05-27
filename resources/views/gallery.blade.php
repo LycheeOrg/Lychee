@@ -98,7 +98,6 @@
         <a class="button button--eye" id="button_share" title="{{ $locale['SHARE_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#eye"></use></svg>
         </a>
-        <a class="header__divider"></a>
         <a class="button button--info" id="button_info" title="{{ $locale['ABOUT_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>
