@@ -1,4 +1,4 @@
-<p align="center"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee-Laravel/master/Banner.png" alt="@LycheeOrg"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee-Laravel/master/Banner.png" width="400px" alt="@LycheeOrg"></p>
 
 <p align="center">
 <a href="https://travis-ci.com/LycheeOrg/Lychee-Laravel"><img src="https://travis-ci.com/LycheeOrg/Lychee-Laravel.svg?branch=master" alt="Build Status"></a>
