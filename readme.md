@@ -1,7 +1,12 @@
-# Lychee
+<h1 align="center"><img itemprop="image" class="avatar float-left" src="https://avatars2.githubusercontent.com/u/37916028?s=60&amp;v=4" width="40" height="40" alt="@LycheeOrg"> Lychee<span></h1>
 
-[![Build Status](https://travis-ci.com/LycheeOrg/Lychee-Laravel.svg?branch=master)](https://travis-ci.com/LycheeOrg/Lychee-Laravel)
-[![codecov](https://codecov.io/gh/LycheeOrg/Lychee-Laravel/branch/master/graph/badge.svg)](https://codecov.io/gh/LycheeOrg/Lychee-Laravel)
+<p align="center">
+<a href="https://travis-ci.com/LycheeOrg/Lychee-Laravel"><img src="https://travis-ci.com/LycheeOrg/Lychee-Laravel.svg?branch=master" alt="Build Status"></a>
+<a href="https://codecov.io/gh/LycheeOrg/Lychee-Laravel"><img src="https://codecov.io/gh/LycheeOrg/Lychee-Laravel/branch/master/graph/badge.svg" alt="Code Coverage"></a>
+<a href="https://github.com/LycheeOrg/Lychee-Laravel/releases"><img alt="GitHub release" src="https://img.shields.io/github/release-pre/LycheeOrg/Lychee-Laravel.svg"></a>
+<a href="https://github.com/LycheeOrg/Lychee-Laravel/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/LycheeOrg/Lychee-Laravel.svg"></a>
+<a href="https://gitter.im/LycheeOrg/Lobby"><img src="https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter" alt="Gitter"></a>
+</p>
 
 
 #### A great looking and easy-to-use photo-management-system.
