@@ -20,6 +20,7 @@ assignees: ''
 **Screenshots**
 *If applicable, add screenshots to help explain your problem.*
 
-### Output of the diagnostics (Settings => Diagnostics or https://example.com/Diagnostics )
+### Output of the diagnostics
+*(Settings => Diagnostics or https://example.com/Diagnostics )*
 
 ### Browser and system
