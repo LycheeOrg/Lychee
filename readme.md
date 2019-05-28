@@ -1,4 +1,4 @@
-<h1 align="center"><img itemprop="image" class="avatar float-left" src="https://avatars2.githubusercontent.com/u/37916028?s=60&amp;v=4" width="40" height="40" alt="@LycheeOrg"> Lychee<span></h1>
+<p align="center"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee-Laravel/master/Banner.png" alt="@LycheeOrg"></p>
 
 <p align="center">
 <a href="https://travis-ci.com/LycheeOrg/Lychee-Laravel"><img src="https://travis-ci.com/LycheeOrg/Lychee-Laravel.svg?branch=master" alt="Build Status"></a>
