@@ -5,7 +5,7 @@
 <a href="https://codecov.io/gh/LycheeOrg/Lychee-Laravel"><img src="https://codecov.io/gh/LycheeOrg/Lychee-Laravel/branch/master/graph/badge.svg" alt="Code Coverage"></a>
 <a href="https://github.com/LycheeOrg/Lychee-Laravel/releases"><img alt="GitHub release" src="https://img.shields.io/github/release-pre/LycheeOrg/Lychee-Laravel.svg"></a>
 <a href="https://github.com/LycheeOrg/Lychee-Laravel/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/LycheeOrg/Lychee-Laravel.svg"></a>
-[![Gitter](https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter)](https://gitter.im/LycheeOrg/Lobby)
+<a href="https://gitter.im/LycheeOrg/Lobby"><img src="https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter" alt="Gitter"></a>
 </p>
 
 
