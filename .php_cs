@@ -23,6 +23,7 @@ $rules = [
     'phpdoc_no_empty_return' => false,
     'single_blank_line_at_eof' => false,
     'yoda_style' => false,
+    'concat_space' => ['spacing' => 'one'],
 ];
 return PhpCsFixer\Config::create()
     ->setRiskyAllowed(true)
