@@ -30,6 +30,8 @@
 
         <a class="header__title"></a>
 
+        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}">
+        <a class="header__clear header__clear_public">&times;</a>
 {{--        <a class="header__hostedwith">{{ $locale['HOSTED_WITH_LYCHEE'] }}</a>--}}
 
     </div>

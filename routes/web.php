@@ -11,8 +11,6 @@
 |
 */
 
-use App\Configs;
-
 // We need that to force https everywhere
 //if (env('APP_ENV') === 'production') {
 
