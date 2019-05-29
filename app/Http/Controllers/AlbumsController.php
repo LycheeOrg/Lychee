@@ -4,14 +4,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
 use App\Configs;
-use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Response;
 use App\User;
-use Illuminate\Support\Facades\Session;
 
 class AlbumsController extends Controller
 {

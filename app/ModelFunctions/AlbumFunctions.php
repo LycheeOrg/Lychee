@@ -8,7 +8,6 @@ use App\Album;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
-use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
 use App\User;

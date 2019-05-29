@@ -1,6 +1,6 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
@@ -15,22 +15,17 @@ class ConfigPublicSearch extends Migration
 	public function up()
 	{
 		if (Schema::hasTable('configs')) {
-
 			DB::table('configs')->insert([
 				[
-					'key'             => 'public_search',
-					'value'           => '0',
-					'confidentiality' => 0
-				]
+					'key' => 'public_search',
+					'value' => '0',
+					'confidentiality' => 0,
+				],
 			]);
-
-		}
-		else {
+		} else {
 			echo "Table configs does not exists\n";
 		}
 	}
-
-
 
 	/**
 	 * Reverse the migrations.

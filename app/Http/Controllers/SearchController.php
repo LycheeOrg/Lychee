@@ -10,10 +10,8 @@ use App\Album;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
-use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Session;
 
 class SearchController extends Controller
 {
@@ -33,7 +31,7 @@ class SearchController extends Controller
 	private $readAccessFunctions;
 
 	/**
-	 * @param AlbumFunctions $albumFunctions
+	 * @param AlbumFunctions      $albumFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 */
 	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
@@ -100,7 +98,7 @@ class SearchController extends Controller
 
 		$albumIDs = [];
 		if ($toplevel['albums'] !== null) {
-			foreach($toplevel['albums'] as $album) {
+			foreach ($toplevel['albums'] as $album) {
 				$albumIDs[] = $album->id;
 				if ($this->readAccessFunctions->album($album->id) === 1) {
 					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs);
@@ -108,7 +106,7 @@ class SearchController extends Controller
 			}
 		}
 		if ($toplevel['shared_albums'] !== null) {
-			foreach($toplevel['shared_albums'] as $album) {
+			foreach ($toplevel['shared_albums'] as $album) {
 				$albumIDs[] = $album->id;
 				if ($this->readAccessFunctions->album($album->id) === 1) {
 					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs);
@@ -120,7 +118,7 @@ class SearchController extends Controller
 		 * Albums.
 		 */
 		$query = Album::whereIn('id', $albumIDs);
-		for ($i = 0; $i < count($escaped_terms); ++$i) {
+		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
 				function (Builder $query) use ($escaped_term) {
@@ -142,7 +140,7 @@ class SearchController extends Controller
 			}
 		}
 
-		/**
+		/*
 		 * Photos.
 		 *
 		 * Begin by eliminating albums we can see but can't access (i.e.,
@@ -151,8 +149,7 @@ class SearchController extends Controller
 		for ($i = 0; $i < count($albumIDs);) {
 			if ($this->readAccessFunctions->album($albumIDs[$i]) !== 1) {
 				array_splice($albumIDs, $i, 1);
-			}
-			else {
+			} else {
 				$i++;
 			}
 		}
@@ -168,7 +165,7 @@ class SearchController extends Controller
 					}
 				}
 			});
-		for ($i = 0; $i < count($escaped_terms); ++$i) {
+		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
 				function (Builder $query) use ($escaped_term) {

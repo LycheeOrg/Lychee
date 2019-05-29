@@ -135,7 +135,7 @@ class SettingsController extends Controller
 	public function setPublicSearch(Request $request)
 	{
 		$request->validate([
-			'public_search' => 'required|string'
+			'public_search' => 'required|string',
 		]);
 
 		if ($request['public_search'] == '1') {
