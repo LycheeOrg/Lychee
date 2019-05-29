@@ -5,10 +5,13 @@
 namespace App\ModelFunctions;
 
 use App\Album;
+use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
+use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
+use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
@@ -22,8 +25,14 @@ class AlbumFunctions
 	 */
 	private $readAccessFunctions;
 
-	public function __construct(ReadAccessFunctions $readAccessFunctions)
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
 	{
+		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 	}
 
@@ -336,6 +345,57 @@ class AlbumFunctions
 				$return[] = $album->id;
 				$return = $this->get_sub_albums($album, $return);
 			}
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Returns an array of top-level albums and shared albums accessible by
+	 * the current user.
+	 *
+	 * @return array or null
+	 */
+	public function getToplevelAlbums()
+	{
+		$return = array(
+			'albums' => null,
+			'shared_albums' => null,
+		);
+
+		if ($this->sessionFunctions->is_logged_in()) {
+			$id = $this->sessionFunctions->id();
+			$user = User::find($id);
+
+			if ($id == 0) {
+				$return['albums'] = Album::where('owner_id', '=', 0)
+					->where('parent_id', '=', null)
+					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
+				$return['shared_albums'] = Album::with([
+					'owner',
+					'children',
+				])
+					->where('owner_id', '<>', 0)
+					->where('parent_id', '=', null)
+					->orderBy('owner_id', 'ASC')
+					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
+					->get();
+			} else {
+				if ($user == null) {
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified user ('.Session::get('UserID').')');
+
+					return null;
+				} else {
+					$return['albums'] = Album::where('owner_id', '=', $user->id)
+						->where('parent_id', '=', null)
+						->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
+						->get();
+					$return['shared_albums'] = Album::get_albums_user($user->id);
+				}
+			}
+		} else {
+			$return['albums'] = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->where('parent_id', '=', null)
+				->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
 		}
 
 		return $return;
