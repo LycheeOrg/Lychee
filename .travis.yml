@@ -33,7 +33,6 @@ addons:
       - php-gd
 
 before_script:
-  - phpenv config-rm xdebug.ini
   - printf "\n" | pecl install imagick
   # create db for postgresql
   - psql -c 'create database homestead_test;' -U postgres
