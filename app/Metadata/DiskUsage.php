@@ -51,14 +51,17 @@ class DiskUsage
 		if (is_dir($dir) === true) {
 			// If on a Unix Host (Linux, Mac OS)
 			if (!$this->is_win()) {
-				$io = popen('/usr/bin/du -sk ' . $dir, 'r');
-				if ($io !== false) {
-					$size = fgets($io, 4096);
-					$size = substr($size, 0, strpos($size, "\t"));
-					pclose($io);
-
-					return $size;
-				}
+				$io = popen("ls -ltrR {$dir} |awk '{print $5}'|awk 'BEGIN{sum=0} {sum=sum+$1} END {print sum}'", 'r');
+				$size = fgets($io, 80);
+				pclose($io);
+//				$io = popen('/usr/bin/du -sk ' . $dir, 'r');
+//				if ($io !== false) {
+//					$size = fgets($io, 4096);
+//					$size = substr($size, 0, strpos($size, "\t"));
+//					pclose($io);
+//					return intval($size) * 1024;
+//				}
+				return intval($size);
 			} // If on a Windows Host (WIN32, WINNT, Windows)
 			else {
 				if (extension_loaded('com_dotnet')) {
