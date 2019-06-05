@@ -132,9 +132,10 @@ class DiskUsage
 		if (!$this->is_win()) {
 			return floor(100 * disk_free_space('/') / disk_total_space('/'))
 				.'%';
+		} else {
+			return floor(100 * disk_free_space('C:') / disk_total_space('C:'))
+				.'%';
 		}
-
-		return 'NAN';
 	}
 
 	/**
