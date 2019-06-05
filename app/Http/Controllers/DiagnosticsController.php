@@ -7,6 +7,7 @@
 namespace App\Http\Controllers;
 
 use App\Configs;
+use App\Metadata\DiskUsage;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
@@ -34,15 +35,29 @@ class DiagnosticsController extends Controller
 	private $sessionFunctions;
 
 	/**
+	 * @var DiskUsage
+	 */
+	private $diskUsage;
+
+	/**
+	 * padding for alignment.
+	 *
+	 * @var int
+	 */
+	private $pad_length = 27;
+
+	/**
 	 * @param ConfigFunctions  $configFunctions
 	 * @param GitHubFunctions  $gitHubFunctions
 	 * @param SessionFunctions $sessionFunctions
+	 * @param DiskUsage        $diskUsage
 	 */
-	public function __construct(ConfigFunctions $configFunctions, GitHubFunctions $gitHubFunctions, SessionFunctions $sessionFunctions)
+	public function __construct(ConfigFunctions $configFunctions, GitHubFunctions $gitHubFunctions, SessionFunctions $sessionFunctions, DiskUsage $diskUsage)
 	{
 		$this->configFunctions = $configFunctions;
 		$this->gitHubFunctions = $gitHubFunctions;
 		$this->sessionFunctions = $sessionFunctions;
+		$this->diskUsage = $diskUsage;
 	}
 
 	public function get_errors()
@@ -256,16 +271,22 @@ class DiagnosticsController extends Controller
 		}
 
 		// Output system information
-		$infos[] = str_pad('Lychee-front Version:', 25).$json['version'];
-		$infos[] = str_pad('Lychee Version (git):', 25).$git_info;
-		$infos[] = str_pad('DB Version:', 25).$settings['version'];
-		$infos[] = str_pad('System:', 25).PHP_OS;
-		$infos[] = str_pad('PHP Version:', 25).floatval(phpversion());
-		$infos[] = str_pad($dbtype.' Version:', 25).$dbver;
-		$infos[] = str_pad('Imagick:', 25).$imagick;
-		$infos[] = str_pad('Imagick Active:', 25).$settings['imagick'];
-		$infos[] = str_pad('Imagick Version:', 25).$imagickVersion;
-		$infos[] = str_pad('GD Version:', 25).$gdVersion['GD Version'];
+		$infos[] = str_pad('Lychee-front Version:', $this->pad_length).$json['version'];
+		$infos[] = str_pad('Lychee Version (git):', $this->pad_length).$git_info;
+		$infos[] = str_pad('DB Version:', $this->pad_length).$settings['version'];
+		$infos[] = str_pad('System:', $this->pad_length).PHP_OS;
+		$infos[] = str_pad('PHP Version:', $this->pad_length).floatval(phpversion());
+		$infos[] = str_pad($dbtype.' Version:', $this->pad_length).$dbver;
+		$infos[] = '';
+		$infos[] = str_pad('Lychee total space:', $this->pad_length).$this->diskUsage->get_lychee_space();
+		$infos[] = str_pad('Upload folder space:', $this->pad_length).$this->diskUsage->get_lychee_upload_space();
+		$infos[] = str_pad('System total space:', $this->pad_length).$this->diskUsage->get_total_space();
+		$infos[] = str_pad('System free space:', $this->pad_length).$this->diskUsage->get_free_space().' ('.$this->diskUsage->get_free_percent().')';
+		$infos[] = '';
+		$infos[] = str_pad('Imagick:', $this->pad_length).$imagick;
+		$infos[] = str_pad('Imagick Active:', $this->pad_length).$settings['imagick'];
+		$infos[] = str_pad('Imagick Version:', $this->pad_length).$imagickVersion;
+		$infos[] = str_pad('GD Version:', $this->pad_length).$gdVersion['GD Version'];
 
 		return $infos;
 	}
@@ -279,7 +300,7 @@ class DiagnosticsController extends Controller
 		$settings = $this->configFunctions->min_info();
 		foreach ($settings as $key => $value) {
 			if (!is_array($value)) {
-				$configs[] = str_pad($key.':', 24).' '.$value;
+				$configs[] = str_pad($key.':', $this->pad_length - 1).' '.$value;
 			}
 		}
 
