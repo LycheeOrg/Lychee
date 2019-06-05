@@ -33,7 +33,8 @@ class DiskUsage
 		);
 		$exp = intval(floor(log($bytes) / log(1024)));
 
-		return sprintf('%.2f %s', ($bytes / pow(1024, floor($exp))), $symbols[$exp]);
+		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)),
+			$symbols[$exp]);
 	}
 
 	/**
@@ -90,8 +91,7 @@ class DiskUsage
 	}
 
 	/**
-	 * Return the total space available on / (we assume we run on / )
-	 * Return NAN on Windows.
+	 * Return the total space available on / (we assume we run on / ).
 	 *
 	 * @return string
 	 */
@@ -99,16 +99,15 @@ class DiskUsage
 	{
 		if (!$this->is_win()) {
 			$ds = disk_total_space('/');
-
-			return $this->getSymbolByQuantity($ds);
+		} else {
+			$ds = disk_total_space('C:');
 		}
 
-		return 'NAN';
+		return $this->getSymbolByQuantity($ds);
 	}
 
 	/**
-	 * Return the free space available on / (we assume we run on / )
-	 * Return NAN on Windows.
+	 * Return the free space available on / (we assume we run on / ).
 	 *
 	 * @return string
 	 */
@@ -116,11 +115,11 @@ class DiskUsage
 	{
 		if (!$this->is_win()) {
 			$ds = disk_free_space('/');
-
-			return $this->getSymbolByQuantity($ds);
+		} else {
+			$ds = disk_free_space('C:');
 		}
 
-		return 'NAN';
+		return $this->getSymbolByQuantity($ds);
 	}
 
 	/**
@@ -131,7 +130,8 @@ class DiskUsage
 	public function get_free_percent()
 	{
 		if (!$this->is_win()) {
-			return floor(100 * disk_free_space('/') / disk_total_space('/')).'%';
+			return floor(100 * disk_free_space('/') / disk_total_space('/'))
+				.'%';
 		}
 
 		return 'NAN';
@@ -151,7 +151,7 @@ class DiskUsage
 	}
 
 	/**
-	 * Return the space takem by the upload folder (Big, Medium, Small, Thumbs).
+	 * Return the space taken by the upload folder (Big, Medium, Small, Thumbs).
 	 *
 	 * @return string
 	 */
