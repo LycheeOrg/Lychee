@@ -42,31 +42,6 @@ class UpdateFunctions
 	}
 
 	/**
-	 * call for `php artisan migrate` over exec.
-	 *
-	 * @param array $output
-	 */
-	private function shelled(array &$output)
-	{
-		// we need to change directory because current code is executed in /Path/To/Lychee-Laravel/public
-		chdir('../');
-
-		// if we are in a production environment we actually require a double check.
-		if (env('APP_ENV', 'production') == 'production') {
-			if (Configs::get_value('force_migration_in_production') == '1') {
-				Logs::warning(__METHOD__, __LINE__, 'Force migration is production.');
-				$command = 'php artisan migrate --force'; // we use force to also be able to apply it in production environment.
-			} else {
-				$output[] = 'Migration not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.';
-				Logs::warning(__METHOD__, __LINE__, 'Migration not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.');
-			}
-		} else {
-			$command = 'php artisan migrate';
-		}
-		exec($command, $output);
-	}
-
-	/**
 	 * call for migrate via the Artisan Facade.
 	 *
 	 * @param array $output
@@ -103,12 +78,7 @@ class UpdateFunctions
 	{
 		$output = [];
 		$this->git_pull($output);
-		// we use an environment variable this time because this is just a temporary setting.
-		if (env('DB_MIGRATE_ART', false)) {
-			$this->internal($output);
-		} else {
-			$this->shelled($output);
-		}
+		$this->internal($output);
 
 		return $output;
 	}
