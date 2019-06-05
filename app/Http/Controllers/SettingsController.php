@@ -52,26 +52,26 @@ class SettingsController extends Controller
 			$user = User::find($id);
 
 			if ($user == null) {
-				Logs::error(__METHOD__, __LINE__, 'User ('.$id.') does not exist!');
+				Logs::error(__METHOD__, __LINE__, 'User (' . $id . ') does not exist!');
 
 				return Response::error('Could not find User.');
 			}
 
 			if ($user->lock) {
-				Logs::notice(__METHOD__, __LINE__, 'Locked user ('.$user->username.') tried to change his identity from '.$request->ip());
+				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change his identity from ' . $request->ip());
 
 				return Response::error('Locked account!');
 			}
 
 			if ($user->username == $oldUsername && Hash::check($oldPassword, $user->password)) {
-				Logs::notice(__METHOD__, __LINE__, 'User ('.$user->username.') changed his identity for ('.$request['username'].') from '.$request->ip());
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for (' . $request['username'] . ') from ' . $request->ip());
 				$user->username = $request['username'];
 				$user->password = bcrypt($request['password']);
 				$user->save();
 
 				return 'true';
 			} else {
-				Logs::notice(__METHOD__, __LINE__, 'User ('.$user->username.') tried to change his identity from '.$request->ip());
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity from ' . $request->ip());
 
 				return Response::error('Old username or password entered incorrectly!');
 			}

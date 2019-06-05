@@ -28,7 +28,7 @@ class PageController extends Controller
 
 	public function page(Request $request, $page)
 	{
-		$page = Page::enabled()->where('link', '/'.$page)->first();
+		$page = Page::enabled()->where('link', '/' . $page)->first();
 
 		if ($page == null) {
 			abort(404);

@@ -100,27 +100,27 @@ class ImportController extends Controller
 			$extension = Helpers::getExtension($url, true);
 			if (!$this->photoFunctions->isValidExtension($extension)) {
 				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Photo format not supported ('.$url.')');
+				Logs::error(__METHOD__, __LINE__, 'Photo format not supported (' . $url . ')');
 				continue;
 			}
 			// Verify image
 			$type = @exif_imagetype($url);
 			if (!$this->photoFunctions->isValidImageType($type) && !in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
 				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Photo type not supported ('.$url.')');
+				Logs::error(__METHOD__, __LINE__, 'Photo type not supported (' . $url . ')');
 				continue;
 			}
-			$filename = pathinfo($url, PATHINFO_FILENAME).$extension;
-			$tmp_name = Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT').$filename;
+			$filename = pathinfo($url, PATHINFO_FILENAME) . $extension;
+			$tmp_name = Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT') . $filename;
 			if (@copy($url, $tmp_name) === false) {
 				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not copy file ('.$url.') to temp-folder ('.$tmp_name.')');
+				Logs::error(__METHOD__, __LINE__, 'Could not copy file (' . $url . ') to temp-folder (' . $tmp_name . ')');
 				continue;
 			}
 			// Import photo
 			if (!$this->photo($tmp_name, $request['albumID'])) {
 				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not import file ('.$tmp_name.')');
+				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
 				continue;
 			}
 		}
@@ -176,17 +176,17 @@ class ImportController extends Controller
 			$path = substr($path, 0, -1);
 		}
 		if (is_dir($path) === false) {
-			Logs::error(__METHOD__, __LINE__, 'Given path is not a directory ('.$path.')');
+			Logs::error(__METHOD__, __LINE__, 'Given path is not a directory (' . $path . ')');
 
 			return 'false';
 		}
 
 		// Skip folders of Lychee
-		if ($path === Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') ||
-			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') ||
-			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') ||
-			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') || ($path.'/') === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) {
-			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee ('.$path.')');
+		if ($path === Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') || ($path . '/') === Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') ||
+			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') || ($path . '/') === Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') ||
+			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') || ($path . '/') === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') ||
+			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') || ($path . '/') === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) {
+			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee (' . $path . ')');
 
 			return 'false';
 		}
@@ -196,13 +196,13 @@ class ImportController extends Controller
 		$contains['albums'] = false;
 
 		// Get all files
-		$files = glob($path.'/*');
+		$files = glob($path . '/*');
 		foreach ($files as $file) {
 			// It is possible to move a file because of directory permissions but
 			// the file may still be unreadable by the user
 			if (!is_readable($file)) {
 				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory ('.$file.')');
+				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
 				continue;
 			}
 			$extension = Helpers::getExtension($file, true);
@@ -211,7 +211,7 @@ class ImportController extends Controller
 				$contains['photos'] = true;
 				if ($this->photo($file, $albumID) === false) {
 					$error = true;
-					Logs::error(__METHOD__, __LINE__, 'Could not import file ('.$file.')');
+					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					continue;
 				}
 			} else {
@@ -223,12 +223,12 @@ class ImportController extends Controller
 					// this actually should not fail.
 					if ($album === false) {
 						$error = true;
-						Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee ('.basename($file).')');
+						Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($file) . ')');
 						continue;
 					}
 					$newAlbumID = $album->id;
 					$contains['albums'] = true;
-					$import = $this->server_exec($file.'/', $newAlbumID);
+					$import = $this->server_exec($file . '/', $newAlbumID);
 					if ($import !== 'true' && $import !== 'Notice: Import only contains albums!') {
 						$error = true;
 						Logs::error(__METHOD__, __LINE__, 'Could not import folder. Function returned warning.');

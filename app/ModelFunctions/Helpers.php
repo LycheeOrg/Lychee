@@ -53,7 +53,7 @@ class Helpers
 		list($extension) = explode(':', $extension, 2);
 
 		if (empty($extension) === false) {
-			$extension = '.'.$extension;
+			$extension = '.' . $extension;
 		}
 
 		return $extension;

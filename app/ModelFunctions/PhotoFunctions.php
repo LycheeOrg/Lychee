@@ -80,11 +80,11 @@ class PhotoFunctions
 		}
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
-		$video = $ffmpeg->open(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url);
+		$video = $ffmpeg->open(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url);
 		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
 
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
-		Logs::notice(__METHOD__, __LINE__, 'Saving frame to '.$tmp);
+		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
 		$frame->save($tmp);
 
 		return $tmp;
@@ -98,13 +98,13 @@ class PhotoFunctions
 	 */
 	public function createThumb(Photo $photo, string $frame_tmp = '')
 	{
-		Logs::notice(__METHOD__, __LINE__, 'Photo URL is '.$photo->url);
+		Logs::notice(__METHOD__, __LINE__, 'Photo URL is ' . $photo->url);
 
-		$src = ($frame_tmp === '') ? Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url : $frame_tmp;
+		$src = ($frame_tmp === '') ? Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url : $frame_tmp;
 		$photoName = explode('.', $photo->url);
 		$this->imageHandler->crop(
 			$src,
-			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'.jpeg',
+			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $photoName[0] . '.jpeg',
 			200,
 			200
 		);
@@ -114,7 +114,7 @@ class PhotoFunctions
 			// Retina thumbs
 			$this->imageHandler->crop(
 				$src,
-				Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'@2x.jpeg',
+				Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $photoName[0] . '@2x.jpeg',
 				400,
 				400
 			);
@@ -216,8 +216,8 @@ class PhotoFunctions
 
 		// Set paths
 		$tmp_name = $file['tmp_name'];
-		$photo_name = md5(microtime()).$extension;
-		$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo_name;
+		$photo_name = md5(microtime()) . $extension;
+		$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo_name;
 
 		// Calculate checksum
 		$checksum = sha1_file($tmp_name);
@@ -232,7 +232,7 @@ class PhotoFunctions
 		// double check that
 		if ($exists !== false) {
 			$photo_name = $exists->url;
-			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$exists->url;
+			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $exists->url;
 			$photo->thumbUrl = $exists->thumbUrl;
 			$photo->thumb2x = $exists->thumb2x;
 			$photo->medium = $exists->medium;
@@ -345,7 +345,7 @@ class PhotoFunctions
 					return Response::error('Could not create thumbnail for photo!');
 				}
 
-				$photo->thumbUrl = basename($photo_name, $extension).'.jpeg';
+				$photo->thumbUrl = basename($photo_name, $extension) . '.jpeg';
 
 				$this->createSmallerImages($photo, $frame_tmp);
 
@@ -406,7 +406,7 @@ class PhotoFunctions
 
 		if ($frame_tmp === '') {
 			$filename = $photo->url;
-			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
+			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $filename;
 		} else {
 			$filename = $photo->thumbUrl;
 			$url = $frame_tmp;
@@ -419,9 +419,9 @@ class PhotoFunctions
 			$pathType = substr($pathType, 0, $split);
 		}
 
-		$uploadFolder = Config::get('defines.dirs.LYCHEE_UPLOADS_'.$pathType);
+		$uploadFolder = Config::get('defines.dirs.LYCHEE_UPLOADS_' . $pathType);
 		if (Helpers::hasPermissions($uploadFolder) === false) {
-			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because '.$uploadFolder.' is missing or not readable and writable.');
+			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because ' . $uploadFolder . ' is missing or not readable and writable.');
 
 			return false;
 		}
@@ -433,19 +433,19 @@ class PhotoFunctions
 
 		// Is photo big enough?
 		if (($width <= $maxWidth || $maxWidth == 0) && ($height <= $maxHeight || $maxHeight == 0)) {
-			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: '.$maxWidth.'x'.$maxHeight.')!');
+			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: ' . $maxWidth . 'x' . $maxHeight . ')!');
 
 			return false;
 		}
 
 		$resWidth = $resHeight = 0;
-		if (!$this->imageHandler->scale($url, $uploadFolder.$filename, $maxWidth, $maxHeight, $resWidth, $resHeight)) {
-			Logs::error(__METHOD__, __LINE__, 'Failed to '.$type.' resize image');
+		if (!$this->imageHandler->scale($url, $uploadFolder . $filename, $maxWidth, $maxHeight, $resWidth, $resHeight)) {
+			Logs::error(__METHOD__, __LINE__, 'Failed to ' . $type . ' resize image');
 
 			return false;
 		}
 
-		$photo->{$type} = $resWidth.'x'.$resHeight;
+		$photo->{$type} = $resWidth . 'x' . $resHeight;
 
 		return true;
 	}
@@ -481,9 +481,9 @@ class PhotoFunctions
 					$photo->id = $newId;
 					$retry = true;
 				} else {
-					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
+					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error ' . $errorCode . ', ' . $e->getMessage());
 
-					return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
+					return Response::error('Something went wrong, error' . $errorCode . ', please check the logs');
 				}
 			}
 		} while ($retry);

@@ -43,9 +43,9 @@ class SearchController extends Controller
 				'_',
 			],
 			[
-				$char.$char,
-				$char.'%',
-				$char.'_',
+				$char . $char,
+				$char . '%',
+				$char . '_',
 			],
 			$value
 		);
@@ -83,9 +83,9 @@ class SearchController extends Controller
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
 				function (Builder $query) use ($id, $escaped_term) {
-					$query->where('title', 'like', '%'.$escaped_term.'%')
-						->orWhere('description', 'like', '%'.$escaped_term.'%')
-						->orWhere('tags', 'like', '%'.$escaped_term.'%');
+					$query->where('title', 'like', '%' . $escaped_term . '%')
+						->orWhere('description', 'like', '%' . $escaped_term . '%')
+						->orWhere('tags', 'like', '%' . $escaped_term . '%');
 				});
 		}
 		$photos = $query->get();
@@ -106,8 +106,8 @@ class SearchController extends Controller
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
 				function (Builder $query) use ($id, $escaped_term) {
-					$query->where('title', 'like', '%'.$escaped_term.'%')
-						->orWhere('description', 'like', '%'.$escaped_term.'%');
+					$query->where('title', 'like', '%' . $escaped_term . '%')
+						->orWhere('description', 'like', '%' . $escaped_term . '%');
 				});
 		}
 		$albums = $query->get();

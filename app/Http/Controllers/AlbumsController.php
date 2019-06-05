@@ -67,7 +67,7 @@ class AlbumsController extends Controller
 					->get();
 			} else {
 				if ($user == null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find specified user ('.Session::get('UserID').')');
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . Session::get('UserID') . ')');
 
 					return Response::error('I could not find you.');
 				} else {

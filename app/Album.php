@@ -184,15 +184,15 @@ class Album extends Model
 		// For each thumb
 		$k = 0;
 		foreach ($thumbs_types as $thumb_types) {
-			$return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->thumbUrl;
+			$return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->thumbUrl;
 			if ($thumb_types->thumb2x == '1') {
 				$thumbUrl2x = explode('.', $thumb_types->thumbUrl);
-				$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-				$return['thumbs2x'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
+				$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+				$return['thumbs2x'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumbUrl2x;
 			} else {
 				$return['thumbs2x'][$k] = '';
 			}
-			$return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumb_types->type;
+			$return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->type;
 			$k++;
 		}
 

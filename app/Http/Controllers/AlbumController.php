@@ -310,7 +310,7 @@ class AlbumController extends Controller
 			$i++;
 		}
 		if (!$found) {
-			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: '.$request['license']);
+			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: ' . $request['license']);
 
 			return Response::error('wrong kind of license!');
 		}
@@ -504,7 +504,7 @@ class AlbumController extends Controller
 
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
 
-				Logs::notice(__METHOD__, __LINE__, $album->title.' has been downloaded.');
+				Logs::notice(__METHOD__, __LINE__, $album->title . ' has been downloaded.');
 
 				//TODO: we do not provide pictures from sub albums but it would be a nice thing to do later...
 
@@ -517,7 +517,7 @@ class AlbumController extends Controller
 				break;
 		}
 
-		$zipTitle = str_replace($badChars, '', $zipTitle).'.zip';
+		$zipTitle = str_replace($badChars, '', $zipTitle) . '.zip';
 
 		$response = new StreamedResponse(function () use ($zipTitle, $photos_sql, $badChars) {
 			$opt = array(
@@ -538,27 +538,27 @@ class AlbumController extends Controller
 			$photos = $photos_sql->get();
 			foreach ($photos as $photo) {
 				$title = str_replace($badChars, '', $photo->title);
-				$url = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG').$photo->url;
+				$url = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG') . $photo->url;
 
 				if (!isset($title) || $title === '') {
 					$title = 'Untitled';
 				}
 				// Check if readable
 				if (!@is_readable($url)) {
-					Logs::error(__METHOD__, __LINE__, 'Original photo missing: '.$url);
+					Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
 					continue;
 				}
 
 				// Get extension of image
 				$extension = Helpers::getExtension($url, false);
 				// Set title for photo
-				$zipFileName = $zipTitle.'/'.$title.$extension;
+				$zipFileName = $zipTitle . '/' . $title . $extension;
 				// Check for duplicates
 				if (!empty($files)) {
 					$i = 1;
 					while (in_array($zipFileName, $files)) {
 						// Set new title for photo
-						$zipFileName = $zipTitle.'/'.$title.'-'.$i.$extension;
+						$zipFileName = $zipTitle . '/' . $title . '-' . $i . $extension;
 						$i++;
 					}
 				}

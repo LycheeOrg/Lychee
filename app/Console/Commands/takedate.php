@@ -70,19 +70,19 @@ class takedate extends Command
 
 		$i = $from;
 		foreach ($photos as $photo) {
-			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
+			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url;
 			if (file_exists($url)) {
 				$info = $this->metadataExtractor->extract($url, $photo->type);
 				if ($photo->takestamp == '') {
 					$photo->takestamp = $info['takestamp'];
 				}
 				if ($photo->save()) {
-					$this->line($i.': Takestamp updated for '.$photo->title);
+					$this->line($i . ': Takestamp updated for ' . $photo->title);
 				} else {
-					$this->line($i.': Could not get Takestamp data/nothing to update for '.$photo->title.'.');
+					$this->line($i . ': Could not get Takestamp data/nothing to update for ' . $photo->title . '.');
 				}
 			} else {
-				$this->line($i.': File does not exists for '.$photo->title.'.');
+				$this->line($i . ': File does not exists for ' . $photo->title . '.');
 			}
 			$i++;
 		}

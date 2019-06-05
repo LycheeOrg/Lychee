@@ -41,7 +41,7 @@ class npm extends Command
 		$ret = [];
 		if (!file_exists('public/Lychee-front/package-lock.json')) {
 			$cmd = 'cd public/Lychee-front; npm install';
-			$this->info('execute: '.$cmd);
+			$this->info('execute: ' . $cmd);
 			exec($cmd, $ret);
 			foreach ($ret as $retline) {
 				$this->line($retline);
@@ -52,7 +52,7 @@ class npm extends Command
 		} else {
 			$cmd = 'cd public/Lychee-front; npm run compile';
 		}
-		$this->info('execute: '.$cmd);
+		$this->info('execute: ' . $cmd);
 		exec($cmd, $ret);
 		foreach ($ret as $retline) {
 			$this->line($retline);

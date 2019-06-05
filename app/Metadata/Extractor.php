@@ -57,9 +57,9 @@ class Extractor
 		// Size
 		$size = filesize($filename) / 1024;
 		if ($size >= 1024) {
-			$metadata['size'] = round($size / 1024, 1).' MB';
+			$metadata['size'] = round($size / 1024, 1) . ' MB';
 		} else {
-			$metadata['size'] = round($size, 1).' KB';
+			$metadata['size'] = round($size, 1) . ' KB';
 		}
 
 		// IPTC Metadata
@@ -147,7 +147,7 @@ class Extractor
 
 			// Exposure
 			if (!empty($exif['ExposureTime'])) {
-				$metadata['shutter'] = $exif['ExposureTime'].' s';
+				$metadata['shutter'] = $exif['ExposureTime'] . ' s';
 			}
 
 			// Focal Length
@@ -156,9 +156,9 @@ class Extractor
 					$temp = explode('/', $exif['FocalLength'], 2);
 					$temp = $temp[0] / $temp[1];
 					$temp = round($temp, 1);
-					$metadata['focal'] = $temp.' mm';
+					$metadata['focal'] = $temp . ' mm';
 				} else {
-					$metadata['focal'] = $exif['FocalLength'].' mm';
+					$metadata['focal'] = $exif['FocalLength'] . ' mm';
 				}
 			}
 
