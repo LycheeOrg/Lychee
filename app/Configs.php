@@ -59,8 +59,8 @@ class Configs extends Model
 			]);
 			$return = $query->pluck('value', 'key')->all();
 
-			$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
-			$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
+			$return['sortingPhotos'] = 'ORDER BY ' . $return['sortingPhotos_col'] . ' ' . $return['sortingPhotos_order'];
+			$return['sortingAlbums'] = 'ORDER BY ' . $return['sortingAlbums_col'] . ' ' . $return['sortingAlbums_order'];
 
 			$return['lang_available'] = Lang::get_lang_available();
 
@@ -104,7 +104,7 @@ class Configs extends Model
 			 * For some reason the $default is not returned above...
 			 */
 			try {
-				Logs::error(__METHOD__, __LINE__, $key.' does not exist in config (local) !');
+				Logs::error(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
 			} catch (Exception $e) {
 				// yeah we do nothing because we cannot do anything in that case ...  :p
 			}
@@ -131,7 +131,7 @@ class Configs extends Model
 		// first() may return null, fixup 'Creating default object from empty value' error
 		// we also log a warning
 		if ($config == null) {
-			Logs::warning(__FUNCTION__, __LINE__, 'key '.$key.' not found!');
+			Logs::warning(__FUNCTION__, __LINE__, 'key ' . $key . ' not found!');
 
 			return true;
 		}

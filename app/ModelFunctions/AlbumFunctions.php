@@ -100,9 +100,9 @@ class AlbumFunctions
 					$album->id = $newId;
 					$retry = true;
 				} else {
-					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
+					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error ' . $errorCode . ', ' . $e->getMessage());
 
-					return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
+					return Response::error('Something went wrong, error' . $errorCode . ', please check the logs');
 				}
 			}
 		} while ($retry);
@@ -210,15 +210,15 @@ class AlbumFunctions
 
 		foreach ($photos as $photo) {
 			if ($i < 3) {
-				$return[$kind]['thumbs'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->thumbUrl;
+				$return[$kind]['thumbs'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $photo->thumbUrl;
 				if ($photo->thumb2x == '1') {
 					$thumbUrl2x = explode('.', $photo->thumbUrl);
-					$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-					$return[$kind]['thumbs2x'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$thumbUrl2x;
+					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+					$return[$kind]['thumbs2x'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumbUrl2x;
 				} else {
 					$return[$kind]['thumbs2x'][$i] = '';
 				}
-				$return[$kind]['types'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB').$photo->type;
+				$return[$kind]['types'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $photo->type;
 				$i++;
 			} else {
 				break;
@@ -381,7 +381,7 @@ class AlbumFunctions
 					->get();
 			} else {
 				if ($user == null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find specified user ('.Session::get('UserID').')');
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . Session::get('UserID') . ')');
 
 					return null;
 				} else {

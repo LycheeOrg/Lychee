@@ -232,7 +232,7 @@ class GdHandler implements ImageHandlerInterface
 				return imagecreatefromgif($source);
 				break;
 			default:
-				Logs::error(__METHOD__, __LINE__, 'Type of photo "'.$mime.'" is not supported');
+				Logs::error(__METHOD__, __LINE__, 'Type of photo "' . $mime . '" is not supported');
 
 				return false;
 				break;

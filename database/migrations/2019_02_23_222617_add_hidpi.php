@@ -69,8 +69,8 @@ class AddHidpi extends Migration
 					$photo->thumb2x = 0;
 					$save = true;
 				} else {
-					$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-					if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl2x)) {
+					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+					if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $thumbUrl2x)) {
 						$photo->thumb2x = 0;
 						$save = true;
 					}
@@ -78,22 +78,22 @@ class AddHidpi extends Migration
 
 				// Extract the sizes of medium and small
 				if ($photo->medium_old == '1') {
-					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url)) {
-						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url);
-						$photo->medium = $width.'x'.$height;
+					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photo->url)) {
+						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photo->url);
+						$photo->medium = $width . 'x' . $height;
 						$save = true;
 					} else {
-						echo 'Missing file '.Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url."\n";
+						echo 'Missing file ' . Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photo->url . "\n";
 						$this->failMessage();
 					}
 				}
 				if ($photo->small_old == '1') {
-					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url)) {
-						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url);
-						$photo->small = $width.'x'.$height;
+					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photo->url)) {
+						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photo->url);
+						$photo->small = $width . 'x' . $height;
 						$save = true;
 					} else {
-						echo 'Missing file '.Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url."\n";
+						echo 'Missing file ' . Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photo->url . "\n";
 						$this->failMessage();
 					}
 				}
@@ -118,10 +118,10 @@ class AddHidpi extends Migration
 	 */
 	private function failMessage()
 	{
-		$ignoreFile = Config::get('defines.dirs.LYCHEE_UPLOADS').'/ignore-missing-files.txt';
+		$ignoreFile = Config::get('defines.dirs.LYCHEE_UPLOADS') . '/ignore-missing-files.txt';
 		if (!file_exists($ignoreFile)) {
 			echo "Please ensure that photos are moved to the new installation and run this command again!\n\n";
-			echo 'To ignore, run this command again after creating a file at '.$ignoreFile."\n";
+			echo 'To ignore, run this command again after creating a file at ' . $ignoreFile . "\n";
 			echo "You can then create intermediate sizes later using 'php artisan generate_thumbs'\n";
 			exit(1);
 		}

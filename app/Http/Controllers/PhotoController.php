@@ -329,7 +329,7 @@ class PhotoController extends Controller
 			$i++;
 		}
 		if (!$found) {
-			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: '.$request['license']);
+			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: ' . $request['license']);
 
 			return Response::error('wrong kind of license!');
 		}
@@ -455,21 +455,21 @@ class PhotoController extends Controller
 		// determine the file based on given size
 		switch ($request['kind']) {
 			case 'MEDIUM':
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url;
-				$kind = '-MQ-'.$photo->medium;
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photo->url;
+				$kind = '-MQ-' . $photo->medium;
 				break;
 			case 'SMALL':
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url;
-				$kind = '-LQ-'.$photo->small;
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photo->url;
+				$kind = '-LQ-' . $photo->small;
 				break;
 			default:
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
-				$kind = '-HQ-'.$photo->width.'x'.$photo->height;
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url;
+				$kind = '-HQ-' . $photo->width . 'x' . $photo->height;
 		}
 
 		// Check the file actually exists
 		if (!file_exists($filepath)) {
-			Logs::error(__METHOD__, __LINE__, 'File is missing: '.$filepath.' ('.$title.')');
+			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $filepath . ' (' . $title . ')');
 
 			return abort(404);
 		}
@@ -481,13 +481,13 @@ class PhotoController extends Controller
 				'send_headers' => true,
 			);
 
-			$zip = new ZipStream($title.'.zip', $opt);
+			$zip = new ZipStream($title . '.zip', $opt);
 
 			// Get extension of image
 			$extension = Helpers::getExtension($filepath, false);
 
 			// Set title for photo
-			$zip->addFileFromPath($title.$kind.$extension, $filepath);
+			$zip->addFileFromPath($title . $kind . $extension, $filepath);
 
 			// finish the zip stream
 			$zip->finish();

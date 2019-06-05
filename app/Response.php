@@ -17,7 +17,7 @@ class Response
 	 */
 	public static function warning($msg)
 	{
-		return json_encode('Warning: '.$msg);
+		return json_encode('Warning: ' . $msg);
 	}
 
 	/**
@@ -30,7 +30,7 @@ class Response
 	 */
 	public static function error($msg)
 	{
-		return json_encode('Error: '.$msg);
+		return json_encode('Error: ' . $msg);
 	}
 
 	/**

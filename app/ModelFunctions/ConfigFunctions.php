@@ -28,7 +28,7 @@ class ConfigFunctions
 		$infos['copyright_year'] = Configs::get_value('site_copyright_begin');
 		$infos['additional_footer_text'] = Configs::get_value('additional_footer_text');
 		if (Configs::get_value('site_copyright_begin') != Configs::get_value('site_copyright_end')) {
-			$infos['copyright_year'] = Configs::get_value('site_copyright_begin').'-'.Configs::get_value('site_copyright_end');
+			$infos['copyright_year'] = Configs::get_value('site_copyright_begin') . '-' . Configs::get_value('site_copyright_end');
 		}
 
 		return $infos;
@@ -65,8 +65,8 @@ class ConfigFunctions
 	{
 		// Execute query
 		$return = Configs::admin()->pluck('value', 'key')->all();
-		$return['sortingPhotos'] = 'ORDER BY '.$return['sortingPhotos_col'].' '.$return['sortingPhotos_order'];
-		$return['sortingAlbums'] = 'ORDER BY '.$return['sortingAlbums_col'].' '.$return['sortingAlbums_order'];
+		$return['sortingPhotos'] = 'ORDER BY ' . $return['sortingPhotos_col'] . ' ' . $return['sortingPhotos_order'];
+		$return['sortingAlbums'] = 'ORDER BY ' . $return['sortingAlbums_col'] . ' ' . $return['sortingAlbums_order'];
 
 		$return['lang_available'] = Lang::get_lang_available();
 

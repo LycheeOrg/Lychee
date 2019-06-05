@@ -77,15 +77,15 @@ class Fix32Bit extends Migration
 		$albums = DB::table('albums')->get();
 		foreach ($albums as $album) {
 			DB::table('albums')->where('id', '=', $album->id)->update([
-				'id' => $album->id.'0000',
+				'id' => $album->id . '0000',
 			]);
 		}
 
 		$photos = DB::table('photos')->get();
 		foreach ($photos as $photo) {
 			DB::table('photos')->where('id', '=', $photo->id)->update([
-				'id' => $photo->id.'0000',
-				'album_id' => $photo->album_id.'0000',
+				'id' => $photo->id . '0000',
+				'album_id' => $photo->album_id . '0000',
 			]);
 		}
 

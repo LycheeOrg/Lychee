@@ -15,8 +15,8 @@ class MoveAlbums extends Migration
 	public function up()
 	{
 		if (count(Album::all()) == 0) {
-			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '').'lychee_albums')) {
-				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '').'lychee_albums')->select('*')->get();
+			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')) {
+				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')->select('*')->get();
 				foreach ($results as $result) {
 					$album = new Album();
 					$album->id = $result->id;
@@ -29,7 +29,7 @@ class MoveAlbums extends Migration
 					$album->save();
 				}
 			} else {
-				echo env('DB_OLD_LYCHEE_PREFIX', '')."lychee_albums does not exists!\n";
+				echo env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_albums does not exists!\n";
 			}
 		} else {
 			echo "albums is not empty.\n";

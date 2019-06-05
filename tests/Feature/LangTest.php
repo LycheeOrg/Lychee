@@ -21,7 +21,7 @@ class LangTest extends TestCase
 			$lang_test = Lang::get_lang($lang);
 
 			foreach ($keys as $key) {
-				$this->assertArrayHasKey($key, $lang_test, 'Language '.$lang.' is incomplete.');
+				$this->assertArrayHasKey($key, $lang_test, 'Language ' . $lang . ' is incomplete.');
 			}
 		}
 

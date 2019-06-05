@@ -107,6 +107,6 @@ class ChangeIdType extends Migration
 	 */
 	public function down()
 	{
-		echo 'There is no going back for '.__CLASS__."!\n";
+		echo 'There is no going back for ' . __CLASS__ . "!\n";
 	}
 }

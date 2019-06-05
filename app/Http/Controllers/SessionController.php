@@ -71,12 +71,12 @@ class SessionController extends Controller
 
 				$return['config'] = $this->configFunctions->admin();
 
-				$return['config']['location'] = Config::get('defines.path.LYCHEE').'public/';
+				$return['config']['location'] = Config::get('defines.path.LYCHEE') . 'public/';
 			} else {
 				$user = User::find($user_id);
 
 				if ($user == null) {
-					Logs::notice(__METHOD__, __LINE__, 'UserID '.$user_id.' not found!');
+					Logs::notice(__METHOD__, __LINE__, 'UserID ' . $user_id . ' not found!');
 
 					return $this->logout();
 				} else {
@@ -138,7 +138,7 @@ class SessionController extends Controller
 			return 'true';
 		}
 
-		Logs::error(__METHOD__, __LINE__, 'User ('.$request['user'].') has tried to log in from '.$request->ip());
+		Logs::error(__METHOD__, __LINE__, 'User (' . $request['user'] . ') has tried to log in from ' . $request->ip());
 
 		return 'false';
 	}
