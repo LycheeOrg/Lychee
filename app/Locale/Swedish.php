@@ -226,6 +226,7 @@ final class Swedish implements LangInterface
 			'SETTINGS_SUCCESS_LANG' => 'Language updated',
 			'SETTINGS_SUCCESS_LAYOUT' => 'Layout updated',
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF Overlay setting updated',
+			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Offentlig sökning uppdaterad',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 
 			'DB_INFO_TITLE' => 'Ange dina uppgifter för databasanslutninge nedan:',
@@ -285,6 +286,7 @@ final class Swedish implements LangInterface
 
 			'LANG_TEXT' => 'Ändra språket i Lychee till:',
 			'LANG_TITLE' => 'Spara ändringen av språket',
+			'PUBLIC_SEARCH_TEXT' => 'Offentlig sökning tillåts:',
 			'IMAGE_OVERLAY_TEXT' => 'Display data overlay by default:',
 			'OVERLAY_TYPE' => 'Data to use in image overlay:',
 			'OVERLAY_EXIF' => 'Photo EXIF data',

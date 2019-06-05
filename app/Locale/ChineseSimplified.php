@@ -226,6 +226,7 @@ final class ChineseSimplified implements LangInterface
 			'SETTINGS_SUCCESS_LANG' => 'Language updated',
 			'SETTINGS_SUCCESS_LAYOUT' => 'Layout updated',
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF Overlay setting updated',
+			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => '公开搜索已更新',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 
 			'DB_INFO_TITLE' => '请输入数据库信息',
@@ -285,6 +286,7 @@ final class ChineseSimplified implements LangInterface
 
 			'LANG_TEXT' => 'Change Lychee language for:',
 			'LANG_TITLE' => 'Change Language',
+			'PUBLIC_SEARCH_TEXT' => '允许公共搜索:',
 			'IMAGE_OVERLAY_TEXT' => 'Display data overlay by default:',
 			'OVERLAY_TYPE' => 'Data to use in image overlay:',
 			'OVERLAY_EXIF' => 'Photo EXIF data',

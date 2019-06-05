@@ -229,6 +229,7 @@ final class Slovak implements LangInterface
 			'SETTINGS_SUCCESS_LANG' => 'Jazyk aktualizovaný',
 			'SETTINGS_SUCCESS_LAYOUT' => 'Layout aktualizovaný',
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF-Overlay nastavenia aktualizované',
+			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Verejné vyhľadávanie bolo aktualizované',
 			'SETTINGS_SUCCESS_LICENSE' => 'Prednastavená licencia aktualizovaná',
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualizované',
 			'SETTINGS_SUCCESS_UPDATE' => 'Nastavenia úspešne aktualizované',
@@ -293,6 +294,7 @@ final class Slovak implements LangInterface
 
 			'CSS_TEXT' => 'CSS na želanie:',
 			'CSS_TITLE' => 'CSS zmeniť',
+			'PUBLIC_SEARCH_TEXT' => 'Verejné vyhľadávanie povolené:',
 			'IMAGE_OVERLAY_TEXT' => 'Predvolené zobrazenie rozmiestnenia:',
 			'OVERLAY_TYPE' => 'Dáta použité pre overlay:',
 			'OVERLAY_EXIF' => 'EXIF dáta obrázku',

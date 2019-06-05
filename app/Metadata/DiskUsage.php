@@ -51,7 +51,7 @@ class DiskUsage
 		if (is_dir($dir) === true) {
 			// If on a Unix Host (Linux, Mac OS)
 			if (!$this->is_win()) {
-				$io = popen('/usr/bin/du -sk '.$dir, 'r');
+				$io = popen('/usr/bin/du -sk ' . $dir, 'r');
 				if ($io !== false) {
 					$size = fgets($io, 4096);
 					$size = substr($size, 0, strpos($size, "\t"));
@@ -131,10 +131,10 @@ class DiskUsage
 	{
 		if (!$this->is_win()) {
 			return floor(100 * disk_free_space('/') / disk_total_space('/'))
-				.'%';
+				. '%';
 		} else {
 			return floor(100 * disk_free_space('C:') / disk_total_space('C:'))
-				.'%';
+				. '%';
 		}
 	}
 

@@ -17,8 +17,8 @@ class MovePhotos extends Migration
 		// only do if photos is empty
 		if (count(Photo::all()) == 0) {
 			// check if there is a table to import from
-			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '').'lychee_photos')) {
-				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '').'lychee_photos')->select('*')->get();
+			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')) {
+				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->get();
 				foreach ($results as $result) {
 					$photo = new Photo();
 					$photo->id = $result->id;
@@ -49,7 +49,7 @@ class MovePhotos extends Migration
 					$photo->save();
 				}
 			} else {
-				echo env('DB_OLD_LYCHEE_PREFIX', '')."lychee_photos does not exists!\n";
+				echo env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_photos does not exists!\n";
 			}
 		} else {
 			echo "photos is not empty.\n";

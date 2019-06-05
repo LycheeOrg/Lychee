@@ -26,7 +26,7 @@ class ViewController extends Controller
 			return '';
 		}
 
-		return ':'.$port;
+		return ':' . $port;
 	}
 
 	public function view(Request $request)
@@ -65,9 +65,9 @@ class ViewController extends Controller
 
 //		$parseUrl = parse_url(env('APP_URL').$request->server->get('REQUEST_URI'));
 //		dd($parseUrl);
-		$url = env('APP_URL').$request->server->get('REQUEST_URI');
+		$url = env('APP_URL') . $request->server->get('REQUEST_URI');
 //		$picture  = '//' . $request->server->get('HTTP_HOST') . $parseUrl['path'] . '/../uploads/' . $dir . '/' . $photo->url;
-		$picture = env('APP_URL').'/uploads/'.$dir.'/'.$photo->url;
+		$picture = env('APP_URL') . '/uploads/' . $dir . '/' . $photo->url;
 //		$picture  = $parseUrl['host'] . '/uploads/' . $dir . '/' . $photo->url;
 
 		return view('view', [

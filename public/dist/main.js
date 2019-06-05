@@ -3087,6 +3087,11 @@ header.setMode = function (mode) {
 			header.dom().removeClass('header--view');
 			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--public').addClass('header__toolbar--visible');
+			if (lychee.public_search) {
+				$('.header__search, .header__clear', '.header__toolbar--public').show();
+			} else {
+				$('.header__search, .header__clear', '.header__toolbar--public').hide();
+			}
 
 			return true;
 
@@ -3270,7 +3275,7 @@ $(document).ready(function () {
 	});
 
 	Mousetrap.bindGlobal(['esc', 'command+up'], function () {
-		if (basicModal.visible() === true) basicModal.cancel();else if (visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParent());else if (visible.albums() && header.dom('.header__search').val().length !== 0) search.reset();
+		if (basicModal.visible() === true) basicModal.cancel();else if (visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParent());else if (visible.albums() && search.hash !== null) search.reset();
 		return false;
 	});
 
@@ -3570,6 +3575,7 @@ lychee = {
 	lock: false, // locked user (multi-user)
 	username: null,
 	layout: '1', // 0: Use default, "square" layout. 1: Use Flickr-like "justified" layout. 2: Use Google-like "unjustified" layout
+	public_search: false, // display Search in publicMode
 	image_overlay: false, // display Overlay like in Lightroom
 	image_overlay_default: false, // display Overlay like in Lightroom by default
 	image_overlay_type: 'exif', // current Overlay display type
@@ -3685,6 +3691,7 @@ lychee.init = function () {
 			lychee.lang = data.config.lang || '';
 			lychee.lang_available = data.config.lang_available || {};
 			lychee.layout = data.config.layout || '1';
+			lychee.public_search = data.config.public_search && data.config.public_search === '1' || false;
 			lychee.image_overlay_default = data.config.image_overlay && data.config.image_overlay === '1' || false;
 			lychee.image_overlay = lychee.image_overlay_default;
 			lychee.image_overlay_type = !data.config.image_overlay_type ? 'exif' : data.config.image_overlay_type;
@@ -3704,8 +3711,8 @@ lychee.init = function () {
 				lychee.admin = data.admin;
 				lychee.lock = data.lock;
 				lychee.username = data.username;
-				lychee.setMode('logged_in');
 			}
+			lychee.setMode('logged_in');
 
 			// Show dialog when there is no username and password
 			if (data.config.login === false) settings.createLogin();
@@ -3718,6 +3725,7 @@ lychee.init = function () {
 			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === '1';
 			lychee.checkForUpdates = data.config.checkForUpdates || '1';
 			lychee.layout = data.config.layout || '1';
+			lychee.public_search = data.config.public_search && data.config.public_search === '1' || false;
 			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;
 			lychee.image_overlay_type = !data.config.image_overlay_type ? 'exif' : data.config.image_overlay_type;
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
@@ -3900,7 +3908,13 @@ lychee.setMode = function (mode) {
 		$('#button_users, #button_logs, #button_diagnostics').remove();
 	}
 
-	if (mode === 'logged_in') return;
+	if (mode === 'logged_in') {
+		// The code searches by class, so remove the other instance.
+		$('.header__search, .header__clear', '.header__toolbar--public').remove();
+		return;
+	} else {
+		$('.header__search, .header__clear', '.header__toolbar--albums').remove();
+	}
 
 	$('#button_settings, .header__divider, .leftMenu').remove();
 
@@ -4344,6 +4358,7 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_LANG': 'Language updated',
 	'SETTINGS_SUCCESS_LAYOUT': 'Layout updated',
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
+	'SETTINGS_SUCCESS_PUBLIC_SEARCH': 'Public search updated',
 	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
 	'SETTINGS_SUCCESS_CSS': 'CSS updated',
 	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
@@ -4414,6 +4429,7 @@ lychee.locale = {
 	'LAYOUT_JUSTIFIED': 'With aspect, justified',
 	'LAYOUT_UNJUSTIFIED': 'With aspect, unjustified',
 	'SET_LAYOUT': 'Change layout',
+	'PUBLIC_SEARCH_TEXT': 'Public search allowed:',
 
 	'IMAGE_OVERLAY_TEXT': 'Display image overlay by default:',
 
@@ -6077,6 +6093,21 @@ settings.setLayout = function (params) {
 	});
 };
 
+settings.changePublicSearch = function () {
+	var params = {};
+	if ($('#PublicSearch:checked').length === 1) {
+		params.public_search = '1';
+	} else {
+		params.public_search = '0';
+	}
+	api.post('Settings::setPublicSearch', params, function (data) {
+		if (data === true) {
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_PUBLIC_SEARCH']);
+			lychee.public_search = params.public_search === '1';
+		} else lychee.error(null, params, data);
+	});
+};
+
 settings.changeImageOverlay = function () {
 	var params = {};
 	if ($('#ImageOverlay:checked').length === 1) {
@@ -7563,7 +7594,7 @@ view.album = {
 		},
 
 		justify: function justify() {
-			if (!album.json.photos || album.json.photos === false) return;
+			if (!album.json || !album.json.photos || album.json.photos === false) return;
 			if (lychee.layout === '1') {
 				var containerWidth = parseFloat($('.justified-layout').width(), 10);
 				if (containerWidth == 0) {
@@ -7588,6 +7619,12 @@ view.album = {
 				if (lychee.admin) console.log(layoutGeometry);
 				$('.justified-layout').css('height', layoutGeometry.containerHeight + 'px').css('height', layoutGeometry.containerHeight + 'px');
 				$('.justified-layout > div').each(function (i) {
+					if (!layoutGeometry.boxes[i]) {
+						// Race condition in search.find -- window content
+						// and album.json can get out of sync as search
+						// query is being modified.
+						return false;
+					}
 					$(this).css('top', layoutGeometry.boxes[i].top);
 					$(this).css('width', layoutGeometry.boxes[i].width);
 					$(this).css('height', layoutGeometry.boxes[i].height);
@@ -7605,6 +7642,12 @@ view.album = {
 					_containerWidth = $(window).width() - parseFloat($('.unjustified-layout').css('margin-left'), 10) - parseFloat($('.unjustified-layout').css('margin-right'), 10);
 				}
 				$('.unjustified-layout > div').each(function (i) {
+					if (!album.json.photos[i]) {
+						// Race condition in search.find -- window content
+						// and album.json can get out of sync as search
+						// query is being modified.
+						return false;
+					}
 					var ratio = album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1;
 					if (album.json.photos[i].type && album.json.photos[i].type.indexOf('video') > -1) {
 						// Video.  If there's no small and medium, we have
@@ -7974,6 +8017,7 @@ view.settings = {
 				view.settings.content.setLang();
 				view.settings.content.setDefaultLicense();
 				view.settings.content.setLayout();
+				view.settings.content.setPublicSearch();
 				view.settings.content.setOverlay();
 				view.settings.content.setOverlayType();
 				view.settings.content.setCSS();
@@ -8054,6 +8098,15 @@ view.settings = {
 			$(".settings_view").append(msg);
 			$('select#layout').val(lychee.layout);
 			settings.bind('#basicModal__action_set_layout', '.setLayout', settings.setLayout);
+		},
+
+		setPublicSearch: function setPublicSearch() {
+			var msg = "\n\t\t\t<div class=\"setPublicSearch\">\n\t\t\t<p>" + lychee.locale['PUBLIC_SEARCH_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"PublicSearch\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+
+			$(".settings_view").append(msg);
+			if (lychee.public_search) $('#PublicSearch').click();
+
+			settings.bind('#PublicSearch', '.setPublicSearch', settings.changePublicSearch);
 		},
 
 		setOverlay: function setOverlay() {

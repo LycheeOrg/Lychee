@@ -14,7 +14,7 @@ class Lang
 				$list_lang[$i] != 'Lang.php' &&
 				$list_lang[$i] != 'LangInterface.php'
 			) {
-				$return[] = __NAMESPACE__.'\\'.substr($list_lang[$i], 0, -4);
+				$return[] = __NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4);
 			}
 		}
 
@@ -32,7 +32,7 @@ class Lang
 
 		// default: we force English
 		/** @var LangInterface $class_name */
-		$class_name = __NAMESPACE__.'\\'.'English';
+		$class_name = __NAMESPACE__ . '\\' . 'English';
 
 		return $class_name::get_locale();
 	}

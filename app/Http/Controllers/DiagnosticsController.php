@@ -129,7 +129,7 @@ class DiagnosticsController extends Controller
 		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS')) === false) {
 			$errors += ['Error: \'uploads/\' is missing or has insufficient read/write privileges'];
 		}
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST').'/user.css') === false) {
+		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST') . '/user.css') === false) {
 			$errors += ['Warning: \'dist/user.css\' does not exist or has insufficient read/write privileges.'];
 			if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST')) === false) {
 				$errors += ['Warning: \'dist/\' has insufficient read/write privileges.'];
@@ -213,7 +213,7 @@ class DiagnosticsController extends Controller
 		$settings = Configs::get();
 
 		// Load json (we need to add a try case here
-		$json = @file_get_contents(Config::get('defines.path.LYCHEE').'public/Lychee-front/package.json');
+		$json = @file_get_contents(Config::get('defines.path.LYCHEE') . 'public/Lychee-front/package.json');
 		if ($json == false) {
 			$json = ['version' => '-'];
 		} else {
@@ -271,22 +271,22 @@ class DiagnosticsController extends Controller
 		}
 
 		// Output system information
-		$infos[] = str_pad('Lychee-front Version:', $this->pad_length).$json['version'];
-		$infos[] = str_pad('Lychee Version (git):', $this->pad_length).$git_info;
-		$infos[] = str_pad('DB Version:', $this->pad_length).$settings['version'];
-		$infos[] = str_pad('System:', $this->pad_length).PHP_OS;
-		$infos[] = str_pad('PHP Version:', $this->pad_length).floatval(phpversion());
-		$infos[] = str_pad($dbtype.' Version:', $this->pad_length).$dbver;
+		$infos[] = str_pad('Lychee-front Version:', $this->pad_length) . $json['version'];
+		$infos[] = str_pad('Lychee Version (git):', $this->pad_length) . $git_info;
+		$infos[] = str_pad('DB Version:', $this->pad_length) . $settings['version'];
+		$infos[] = str_pad('System:', $this->pad_length) . PHP_OS;
+		$infos[] = str_pad('PHP Version:', $this->pad_length) . floatval(phpversion());
+		$infos[] = str_pad($dbtype . ' Version:', $this->pad_length) . $dbver;
 		$infos[] = '';
-		$infos[] = str_pad('Lychee total space:', $this->pad_length).$this->diskUsage->get_lychee_space();
-		$infos[] = str_pad('Upload folder space:', $this->pad_length).$this->diskUsage->get_lychee_upload_space();
-		$infos[] = str_pad('System total space:', $this->pad_length).$this->diskUsage->get_total_space();
-		$infos[] = str_pad('System free space:', $this->pad_length).$this->diskUsage->get_free_space().' ('.$this->diskUsage->get_free_percent().')';
+		$infos[] = str_pad('Lychee total space:', $this->pad_length) . $this->diskUsage->get_lychee_space();
+		$infos[] = str_pad('Upload folder space:', $this->pad_length) . $this->diskUsage->get_lychee_upload_space();
+		$infos[] = str_pad('System total space:', $this->pad_length) . $this->diskUsage->get_total_space();
+		$infos[] = str_pad('System free space:', $this->pad_length) . $this->diskUsage->get_free_space() . ' (' . $this->diskUsage->get_free_percent() . ')';
 		$infos[] = '';
-		$infos[] = str_pad('Imagick:', $this->pad_length).$imagick;
-		$infos[] = str_pad('Imagick Active:', $this->pad_length).$settings['imagick'];
-		$infos[] = str_pad('Imagick Version:', $this->pad_length).$imagickVersion;
-		$infos[] = str_pad('GD Version:', $this->pad_length).$gdVersion['GD Version'];
+		$infos[] = str_pad('Imagick:', $this->pad_length) . $imagick;
+		$infos[] = str_pad('Imagick Active:', $this->pad_length) . $settings['imagick'];
+		$infos[] = str_pad('Imagick Version:', $this->pad_length) . $imagickVersion;
+		$infos[] = str_pad('GD Version:', $this->pad_length) . $gdVersion['GD Version'];
 
 		return $infos;
 	}
@@ -300,7 +300,7 @@ class DiagnosticsController extends Controller
 		$settings = $this->configFunctions->min_info();
 		foreach ($settings as $key => $value) {
 			if (!is_array($value)) {
-				$configs[] = str_pad($key.':', $this->pad_length - 1).' '.$value;
+				$configs[] = str_pad($key . ':', $this->pad_length - 1) . ' ' . $value;
 			}
 		}
 

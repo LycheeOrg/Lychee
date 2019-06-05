@@ -32,7 +32,7 @@ class UserController extends Controller
 
 		$user = User::find($request['id']);
 		if ($user === null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified user '.$request['id']);
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified user ' . $request['id']);
 
 			return 'false';
 		}
@@ -55,7 +55,7 @@ class UserController extends Controller
 
 		$user = User::find($request['id']);
 		if ($user === null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified user '.$request['id']);
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified user ' . $request['id']);
 
 			return 'false';
 		}

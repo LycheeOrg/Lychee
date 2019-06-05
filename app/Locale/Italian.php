@@ -229,6 +229,7 @@ final class Italian implements LangInterface
 			'SETTINGS_SUCCESS_LANG' => 'Lingua aggiornata',
 			'SETTINGS_SUCCESS_LAYOUT' => 'Layout aggiornato',
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'Impostazioni filigrana EXIF aggiornate',
+			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Ricerca pubblica aggiornata',
 			'SETTINGS_SUCCESS_LICENSE' => 'Licenza predefinita aggiornata',
 
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
@@ -295,6 +296,7 @@ final class Italian implements LangInterface
 			'LAYOUT_UNJUSTIFIED' => 'Relativo all\'aspetto, non giustificate',
 			'SET_LAYOUT' => 'Cambia layout',
 
+			'PUBLIC_SEARCH_TEXT' => 'Ricerca pubblica consentita:',
 			'IMAGE_OVERLAY_TEXT' => 'Mostra dati della filigrana per impostazione predefinita:',
 
 			'OVERLAY_TYPE' => 'Contenuto da utilizzare nella filigrana:',

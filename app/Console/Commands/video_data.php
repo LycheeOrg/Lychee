@@ -79,17 +79,17 @@ class video_data extends Command
 		}
 
 		foreach ($photos as $photo) {
-			$this->line('Processing '.$photo->title.'...');
-			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
+			$this->line('Processing ' . $photo->title . '...');
+			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url;
 
 			if ($photo->thumbUrl != '') {
-				$thumb = Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photo->thumbUrl;
+				$thumb = Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $photo->thumbUrl;
 				if (file_exists($thumb)) {
 					$urlBase = explode('.', $photo->url);
 					$thumbBase = explode('.', $photo->thumbUrl);
 					if ($urlBase !== $thumbBase) {
-						$photo->thumbUrl = $urlBase[0].'.'.$thumbBase[1];
-						rename($thumb, Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photo->thumbUrl);
+						$photo->thumbUrl = $urlBase[0] . '.' . $thumbBase[1];
+						rename($thumb, Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $photo->thumbUrl);
 						$this->line('Renamed thumb to match the video file');
 					}
 				}

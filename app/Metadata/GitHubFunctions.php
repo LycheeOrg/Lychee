@@ -64,7 +64,7 @@ class GitHubFunctions
 		if ($json != false) {
 			return json_decode($json);
 		}
-		Logs::notice(__METHOD__, __LINE__, 'Could not access: '.$url);
+		Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . $url);
 
 		return false;
 	}
@@ -87,7 +87,7 @@ class GitHubFunctions
 					$this->CI_commit = $this->branch;
 				}
 			} else {
-				Logs::notice(__METHOD__, __LINE__, 'Could not access: '.$this->git_path().'/HEAD');
+				Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . $this->git_path() . '/HEAD');
 			}
 			$this->branch = trim($this->branch);
 		}
@@ -107,7 +107,7 @@ class GitHubFunctions
 			if ($this->head != false) {
 				$this->head = $this->trim($this->head);
 			} else {
-				Logs::notice(__METHOD__, __LINE__, sprintf('Could not access: '.$this->git_path().'/refs/heads/%s', $this->branch));
+				Logs::notice(__METHOD__, __LINE__, sprintf('Could not access: ' . $this->git_path() . '/refs/heads/%s', $this->branch));
 				if ($this->CI_commit != false) {
 					$this->head = $this->trim($this->CI_commit);
 				}
@@ -155,7 +155,7 @@ class GitHubFunctions
 			return 'No git data found. Probably installed from release or could not read .git';
 		}
 
-		return sprintf('%s (%s)', $head, $branch).$this->get_behind_text();
+		return sprintf('%s (%s)', $head, $branch) . $this->get_behind_text();
 	}
 
 	/**
@@ -193,7 +193,7 @@ class GitHubFunctions
 	{
 		$commits = $this->get_commits();
 
-		return ($commits != false) ? ' ('.$this->trim($commits[0]->sha).')' : '';
+		return ($commits != false) ? ' (' . $this->trim($commits[0]->sha) . ')' : '';
 	}
 
 	/**
@@ -217,7 +217,7 @@ class GitHubFunctions
 			return ' - Up to date.';
 		}
 		if ($count != false) {
-			return ' - '.$count.' commits behind master'.$this->get_github_head();
+			return ' - ' . $count . ' commits behind master' . $this->get_github_head();
 		}
 
 		return ' - Probably more than 30 commits behind master';

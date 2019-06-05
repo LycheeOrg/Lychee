@@ -43,7 +43,7 @@ class ImagickHandler implements ImageHandlerInterface
 
 			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
 			$image->writeImage($destination);
-			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to '.$destination);
+			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
 			$resWidth = $image->getImageWidth();
 			$resHeight = $image->getImageHeight();
 			$image->clear();
@@ -77,7 +77,7 @@ class ImagickHandler implements ImageHandlerInterface
 
 			$image->cropThumbnailImage($newWidth, $newHeight);
 			$image->writeImage($destination);
-			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to '.$destination);
+			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
 			$image->clear();
 			$image->destroy();
 		} catch (ImagickException $exception) {

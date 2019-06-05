@@ -46,9 +46,9 @@ class PageContent extends Model
 	{
 		$return = '';
 		if ($this->type == 'img') {
-			$return = '<div class="'.$this->class.'"><img src="'.$this->content.'" alt="image" /></div>';
+			$return = '<div class="' . $this->class . '"><img src="' . $this->content . '" alt="image" /></div>';
 		} elseif ($this->type == 'div') {
-			$return = '<div class="'.$this->class.'">';
+			$return = '<div class="' . $this->class . '">';
 			$return .= Markdown::convertToHtml($this->content);
 			$return .= '</div>';
 		}

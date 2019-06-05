@@ -1637,6 +1637,11 @@ header.setMode = function (mode) {
 			header.dom().removeClass('header--view');
 			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--public').addClass('header__toolbar--visible');
+			if (lychee.public_search) {
+				$('.header__search, .header__clear', '.header__toolbar--public').show();
+			} else {
+				$('.header__search, .header__clear', '.header__toolbar--public').hide();
+			}
 
 			return true;
 
@@ -2420,6 +2425,7 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_LANG': 'Language updated',
 	'SETTINGS_SUCCESS_LAYOUT': 'Layout updated',
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
+	'SETTINGS_SUCCESS_PUBLIC_SEARCH': 'Public search updated',
 	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
 	'SETTINGS_SUCCESS_CSS': 'CSS updated',
 	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
@@ -2490,6 +2496,7 @@ lychee.locale = {
 	'LAYOUT_JUSTIFIED': 'With aspect, justified',
 	'LAYOUT_UNJUSTIFIED': 'With aspect, unjustified',
 	'SET_LAYOUT': 'Change layout',
+	'PUBLIC_SEARCH_TEXT': 'Public search allowed:',
 
 	'IMAGE_OVERLAY_TEXT': 'Display image overlay by default:',
 
