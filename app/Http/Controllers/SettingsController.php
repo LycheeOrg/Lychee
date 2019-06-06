@@ -92,10 +92,6 @@ class SettingsController extends Controller
 		Configs::set('sortingAlbums_col', $request['typeAlbums']);
 		Configs::set('sortingAlbums_order', $request['orderAlbums']);
 
-		if ('typeAlbums' == 'max_takestamp' or 'typeAlbums' == 'min_takestamp') {
-			Album::reset_takestamp();
-		}
-
 		return 'true';
 	}
 
