@@ -276,14 +276,29 @@ class PhotoController extends Controller
 		}
 
 		$no_error = true;
+		$takestamps = [];
 		foreach ($photos as $photo) {
+			$oldAlbumID = $photo->album_id;
+
 			$photo->album_id = ($albumID == '0') ? null : $albumID;
 			if ($album !== null) {
 				$photo->owner_id = $album->owner_id;
+				$takestamps[] = $photo->takestamp;
 			}
 			$no_error &= $photo->save();
+
+			if ($oldAlbumID !== null) {
+				$oldAlbum = Album::find($oldAlbumID);
+				if ($oldAlbum === null) {
+					Logs::error(__METHOD__, __LINE__, 'Could not find an album');
+					$no_error = false;
+				}
+				$oldAlbum->update_takestamps([$photo->takestamp], false);
+			}
 		}
-		Album::reset_takestamp();
+		if ($album !== null) {
+			$album->update_takestamps($takestamps, true);
+		}
 
 		return $no_error ? 'true' : 'false';
 	}
@@ -355,9 +370,19 @@ class PhotoController extends Controller
 		$no_error = true;
 		foreach ($photos as $photo) {
 			$no_error &= $photo->predelete();
+
+			$album = null;
+			if ($photo->album_id !== null) {
+				$album = $photo->album;
+				$takestamp = $photo->takestamp;
+			}
+
 			$no_error &= $photo->delete();
+
+			if ($album !== null) {
+				$album->update_takestamps([$takestamp], false);
+			}
 		}
-		Album::reset_takestamp();
 
 		return $no_error ? 'true' : 'false';
 	}

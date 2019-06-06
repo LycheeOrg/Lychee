@@ -496,11 +496,7 @@ class PhotoFunctions
 
 				return Response::error('Could not find specified album');
 			}
-			// TODO: should also recursively update the parent albums.
-			$album->update_min_max_takestamp();
-			if (!$album->save()) {
-				return Response::error('Could not update album takestamp in database!');
-			}
+			$album->update_takestamps([$photo->takestamp], true);
 		}
 
 		// return the ID.
