@@ -4,7 +4,6 @@
 
 namespace App;
 
-use App\Logs;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -250,9 +249,9 @@ class Album extends Model
 	 * to the album content.  If needed, recursively updates parent album(s).
 	 *
 	 * @param array $takestamps: an array with the takestamps of changed
-	 *     elements; for albums needs to include both min and max takestamps
-	 *     (including null elements in the array is safe).
-	 * @param bool $adding: true if adding new content, false if removing.
+	 *                           elements; for albums needs to include both min and max takestamps
+	 *                           (including null elements in the array is safe)
+	 * @param bool  $adding:     true if adding new content, false if removing
 	 */
 	public function update_takestamps(array $takestamps, bool $adding)
 	{
@@ -297,7 +296,7 @@ class Album extends Model
 				$min_albums = Album::where('parent_id', '=', $this->id)->whereNotNull('min_takestamp')->min('min_takestamp');
 				if ($min_photos !== null && $min_albums !== null) {
 					$this->min_takestamp = min($min_photos, $min_albums);
-				} else if ($min_photos !== null) {
+				} elseif ($min_photos !== null) {
 					$this->min_takestamp = $min_photos;
 				} else {
 					$this->min_takestamp = $min_albums;
@@ -309,7 +308,7 @@ class Album extends Model
 				$max_albums = Album::where('parent_id', '=', $this->id)->whereNotNull('max_takestamp')->max('max_takestamp');
 				if ($max_photos !== null && $max_albums !== null) {
 					$this->max_takestamp = max($max_photos, $max_albums);
-				} else if ($max_photos !== null) {
+				} elseif ($max_photos !== null) {
 					$this->max_takestamp = $max_photos;
 				} else {
 					$this->max_takestamp = $max_albums;
