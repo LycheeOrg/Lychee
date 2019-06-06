@@ -4,6 +4,7 @@
 
 namespace App;
 
+use App\Logs;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -112,7 +113,7 @@ class Album extends Model
 	 */
 	public function parent()
 	{
-		return $this->belongsTo('App\Album', 'id', 'parent_id');
+		return $this->belongsTo('App\Album', 'parent_id', 'id');
 	}
 
 	/**
@@ -231,11 +232,10 @@ class Album extends Model
 
 	/**
 	 * Go through each sub album and update the minimum and maximum takestamp of the pictures.
-	 * TODO: this seems needlessly expensive (should use takestamps of
-	 * subalbums rather than going through all their photos).
-	 * Also, the caller should recursively update the parents.
+	 * This is expensive and not normally necessary so we only use it
+	 * during migration.
 	 */
-	public function update_min_max_takestamp()
+	private function update_min_max_takestamp()
 	{
 		$album_list = $this->get_all_sub_albums([$this->id]);
 
@@ -246,9 +246,94 @@ class Album extends Model
 	}
 
 	/**
-	 * Apply the previous method on each album in the database
-	 * TODO: this seems expensive and avoidable (should only need to update
-	 * the albums that were modified, plus recursively their parents).
+	 * Update album's min_takestamp and max_takestamp based on changes made
+	 * to the album content.  If needed, recursively updates parent album(s).
+	 *
+	 * @param array $takestamps: an array with the takestamps of changed
+	 *     elements; for albums needs to include both min and max takestamps
+	 *     (including null elements in the array is safe).
+	 * @param bool $adding: true if adding new content, false if removing.
+	 */
+	public function update_takestamps(array $takestamps, bool $adding)
+	{
+		// Begin by calculating min and max takestamps from the array.
+		// The array may contain null values, which is why we can't use the
+		// built-in min() function for this (it will always return null if
+		// present).  For consistency, we don't use the built-in max()
+		// either.
+		$minTS = $maxTS = null;
+		foreach ($takestamps as $takestamp) {
+			if ($takestamp !== null) {
+				if ($minTS === null || $minTS > $takestamp) {
+					$minTS = $takestamp;
+				}
+				if ($maxTS === null || $maxTS < $takestamp) {
+					$maxTS = $takestamp;
+				}
+			}
+		}
+		if ($minTS === null || $maxTS === null) {
+			return;
+		}
+
+		$changed = false;
+
+		if ($adding) {
+			// Adding is easy: essentially a single operation per takestamp.
+			if ($this->min_takestamp === null || $this->min_takestamp > $minTS) {
+				$this->min_takestamp = $minTS;
+				$changed = true;
+			}
+			if ($this->max_takestamp === null || $this->max_takestamp < $maxTS) {
+				$this->max_takestamp = $maxTS;
+				$changed = true;
+			}
+		} else {
+			// We're removing.  That can be more complicated, requiring us
+			// to rescan the content at the current level to find the new
+			// min/max.
+			if ($this->min_takestamp == $minTS) {
+				$min_photos = Photo::where('album_id', '=', $this->id)->whereNotNull('takestamp')->min('takestamp');
+				$min_albums = Album::where('parent_id', '=', $this->id)->whereNotNull('min_takestamp')->min('min_takestamp');
+				if ($min_photos !== null && $min_albums !== null) {
+					$this->min_takestamp = min($min_photos, $min_albums);
+				} else if ($min_photos !== null) {
+					$this->min_takestamp = $min_photos;
+				} else {
+					$this->min_takestamp = $min_albums;
+				}
+				$changed = true;
+			}
+			if ($this->max_takestamp == $maxTS) {
+				$max_photos = Photo::where('album_id', '=', $this->id)->whereNotNull('takestamp')->max('takestamp');
+				$max_albums = Album::where('parent_id', '=', $this->id)->whereNotNull('max_takestamp')->max('max_takestamp');
+				if ($max_photos !== null && $max_albums !== null) {
+					$this->max_takestamp = max($max_photos, $max_albums);
+				} else if ($max_photos !== null) {
+					$this->max_takestamp = $max_photos;
+				} else {
+					$this->max_takestamp = $max_albums;
+				}
+				$changed = true;
+			}
+		}
+
+		if ($changed) {
+			$this->save();
+
+			// Since we changed our takestamps, we need to recursively ascend
+			// up the album tree to give the parent albums a chance to
+			// update their takestamps as well.
+			if ($this->parent_id !== null) {
+				$this->parent->update_takestamps([$minTS, $maxTS], $adding);
+			}
+		}
+	}
+
+	/**
+	 * Recalculate takestamps of all albums in the database.
+	 * This is expensive and not normally necessary so we only use it
+	 * during migration.
 	 */
 	public static function reset_takestamp()
 	{
@@ -298,6 +383,8 @@ class Album extends Model
 	 * Given two list of albums, merge them without duplicates.
 	 * Current complexity is in O(n^2)
 	 * TODO: Move this function to another file.
+	 * FIXME: Is this function even used anywhere?  AlbumController has its
+	 * own merge()...
 	 *
 	 * @param Album[] $albums1
 	 * @param Album[] $albums2
