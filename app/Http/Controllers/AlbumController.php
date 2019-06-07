@@ -358,7 +358,7 @@ class AlbumController extends Controller
 			$no_error &= $album->delete();
 
 			if ($parentAlbum !== null) {
-				$parentAlbum->update_takestamps([$minTS, $maxTS], false);
+				$no_error &= $parentAlbum->update_takestamps([$minTS, $maxTS], false);
 			}
 		}
 
@@ -432,10 +432,10 @@ class AlbumController extends Controller
 			$no_error &= $album_t->delete();
 
 			if ($parentAlbum !== null) {
-				$parentAlbum->update_takestamps(array_slice($takestamps, -2), false);
+				$no_error &= $parentAlbum->update_takestamps(array_slice($takestamps, -2), false);
 			}
 		}
-		$album->update_takestamps($takestamps, true);
+		$no_error &= $album->update_takestamps($takestamps, true);
 
 		return $no_error ? 'true' : 'false';
 	}
@@ -489,11 +489,11 @@ class AlbumController extends Controller
 
 					$no_error = false;
 				}
-				$oldParentAlbum->update_takestamps([$album->min_takestamp, $album->max_takestamp], false);
+				$no_error &= $oldParentAlbum->update_takestamps([$album->min_takestamp, $album->max_takestamp], false);
 			}
 		}
 		if ($album_master !== null) {
-			$album_master->update_takestamps($takestamps, true);
+			$no_error &= $album_master->update_takestamps($takestamps, true);
 		}
 
 		return $no_error ? 'true' : 'false';

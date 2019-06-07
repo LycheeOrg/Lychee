@@ -496,7 +496,11 @@ class PhotoFunctions
 
 				return Response::error('Could not find specified album');
 			}
-			$album->update_takestamps([$photo->takestamp], true);
+			if (!$album->update_takestamps([$photo->takestamp], true)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not update album takestamps');
+
+				return Response::error('Could not update album takestamps');
+			}
 		}
 
 		// return the ID.

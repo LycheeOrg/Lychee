@@ -293,11 +293,11 @@ class PhotoController extends Controller
 					Logs::error(__METHOD__, __LINE__, 'Could not find an album');
 					$no_error = false;
 				}
-				$oldAlbum->update_takestamps([$photo->takestamp], false);
+				$no_error &= $oldAlbum->update_takestamps([$photo->takestamp], false);
 			}
 		}
 		if ($album !== null) {
-			$album->update_takestamps($takestamps, true);
+			$no_error &= $album->update_takestamps($takestamps, true);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -380,7 +380,7 @@ class PhotoController extends Controller
 			$no_error &= $photo->delete();
 
 			if ($album !== null) {
-				$album->update_takestamps([$takestamp], false);
+				$no_error &= $album->update_takestamps([$takestamp], false);
 			}
 		}
 

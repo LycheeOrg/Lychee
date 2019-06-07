@@ -252,6 +252,8 @@ class Album extends Model
 	 *                           elements; for albums needs to include both min and max takestamps
 	 *                           (including null elements in the array is safe)
 	 * @param bool  $adding:     true if adding new content, false if removing
+	 *
+	 * @return bool: true if successful
 	 */
 	public function update_takestamps(array $takestamps, bool $adding)
 	{
@@ -272,9 +274,10 @@ class Album extends Model
 			}
 		}
 		if ($minTS === null || $maxTS === null) {
-			return;
+			return true;
 		}
 
+		$no_error = true;
 		$changed = false;
 
 		if ($adding) {
@@ -318,15 +321,17 @@ class Album extends Model
 		}
 
 		if ($changed) {
-			$this->save();
+			$no_error &= $this->save();
 
 			// Since we changed our takestamps, we need to recursively ascend
 			// up the album tree to give the parent albums a chance to
 			// update their takestamps as well.
 			if ($this->parent_id !== null) {
-				$this->parent->update_takestamps([$minTS, $maxTS], $adding);
+				$no_error &= $this->parent->update_takestamps([$minTS, $maxTS], $adding);
 			}
 		}
+
+		return $no_error;
 	}
 
 	/**
