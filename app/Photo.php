@@ -192,7 +192,7 @@ class Photo extends Model
 		$photo['license'] = Configs::get_value('default_license'); // default
 
 		// shutter speed needs to be processed. It is stored as a string `a/b s`
-		if ($photo['shutter'] != '' && substr($photo['shutter'], 0, 2) != '1/') {
+		if ($photo['shutter'] != '' && substr($photo['shutter'], 0, 2) != '1/' && substr($photo['shutter'], 1, 2) != '/0') {
 			preg_match('/(\d+)\/(\d+) s/', $photo['shutter'], $matches);
 			if ($matches) {
 				$a = intval($matches[1]);
