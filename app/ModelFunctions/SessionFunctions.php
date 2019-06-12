@@ -4,6 +4,7 @@
 
 namespace App\ModelFunctions;
 
+use App;
 use App\Configs;
 use App\Logs;
 use App\User;
@@ -12,6 +13,14 @@ use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
+	public function log_as_id($id)
+	{
+		if (App::runningUnitTests()) {
+			Session::put('login', true);
+			Session::put('UserID', $id);
+		}
+	}
+
 	/**
 	 * Return true if the user is logged in (Admin or User)
 	 * Return false if it is Guest access.
@@ -39,7 +48,6 @@ class SessionFunctions
 
 	/**
 	 * Return the current ID of the user
-	 * TODO: use this function instead of the facade SESSION.
 	 * what happens when UserID is not set? :p.
 	 *
 	 * @return int
@@ -174,5 +182,13 @@ class SessionFunctions
 
 		$visible_albums = implode('|', $visible_albums);
 		Session::put('visible_albums', $visible_albums);
+	}
+
+	/**
+	 * Log out the current user.
+	 */
+	public function logout()
+	{
+		Session::flush();
 	}
 }

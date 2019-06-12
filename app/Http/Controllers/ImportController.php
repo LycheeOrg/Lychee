@@ -11,10 +11,10 @@ use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\PhotoFunctions;
+use App\ModelFunctions\SessionFunctions;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
 use ImagickException;
 
 class ImportController extends Controller
@@ -30,15 +30,22 @@ class ImportController extends Controller
 	private $albumFunctions;
 
 	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	/**
 	 * Create a new command instance.
 	 *
-	 * @param PhotoFunctions $photoFunctions
-	 * @param AlbumFunctions $albumFunctions
+	 * @param PhotoFunctions   $photoFunctions
+	 * @param AlbumFunctions   $albumFunctions
+	 * @param SessionFunctions $sessionFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
 	{
 		$this->photoFunctions = $photoFunctions;
 		$this->albumFunctions = $albumFunctions;
+		$this->sessionFunctions = $sessionFunctions;
 	}
 
 	/**
@@ -219,7 +226,7 @@ class ImportController extends Controller
 					// Album creation
 
 					// Folder
-					$album = $this->albumFunctions->create(basename($file), $albumID, Session::get('UserID'));
+					$album = $this->albumFunctions->create(basename($file), $albumID, $this->sessionFunctions->id());
 					// this actually should not fail.
 					if ($album === false) {
 						$error = true;

@@ -15,7 +15,6 @@ use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Session;
 
 class UploadCheck
 {
@@ -55,7 +54,7 @@ class UploadCheck
 			return $next($request);
 		}
 
-		$user_id = Session::get('UserID');
+		$user_id = $this->sessionFunctions->id();
 		$user = User::find($user_id);
 		if ($user == null) {
 			return response('false');

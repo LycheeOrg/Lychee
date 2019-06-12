@@ -5,39 +5,58 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\ModelFunctions\SessionFunctions;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 class SharingController extends Controller
 {
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	/**
+	 * @param SessionFunctions $sessionFunctions
+	 */
+	public function __construct(SessionFunctions $sessionFunctions)
+	{
+		$this->sessionFunctions = $sessionFunctions;
+	}
+
 	public function listSharing()
 	{
-		if (Session::get('UserID') == 0) {
+		$UserId = $this->sessionFunctions->id();
+		if ($UserId == 0) {
 			$shared = DB::table('user_album')
-				->select('user_album.id', 'user_id', 'album_id', 'username', 'title')
+				->select('user_album.id', 'user_id', 'album_id', 'username',
+					'title')
 				->join('users', 'user_id', 'users.id')
 				->join('albums', 'album_id', 'albums.id')
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
 
-			$albums = Album::select(['id', 'title'])->orderBy('title', 'ASC')->get();
-			$users = User::select(['id', 'username'])->orderBy('username', 'ASC')->get();
+			$albums = Album::select(['id', 'title'])->orderBy('title', 'ASC')
+				->get();
+			$users = User::select(['id', 'username'])
+				->orderBy('username', 'ASC')->get();
 		} else {
-			$id = Session::get('UserID');
 			$shared = DB::table('user_album')
-				->select('user_album.id', 'user_id', 'album_id', 'username', 'title')
+				->select('user_album.id', 'user_id', 'album_id', 'username',
+					'title')
 				->join('users', 'user_id', 'users.id')
 				->join('albums', 'album_id', 'albums.id')
-				->where('albums.owner_id', '=', $id)
+				->where('albums.owner_id', '=', $UserId)
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
 
-			$albums = Album::select(['id', 'title'])->where('owner_id', '=', $id)->orderBy('title', 'ASC')->get();
-			$users = User::select(['id', 'username'])->orderBy('username', 'ASC')->get();
+			$albums = Album::select(['id', 'title'])
+				->where('owner_id', '=', $UserId)->orderBy('title', 'ASC')->get();
+			$users = User::select(['id', 'username'])
+				->orderBy('username', 'ASC')->get();
 		}
 
 		return [
@@ -127,7 +146,8 @@ class SharingController extends Controller
 			'ShareIDs' => 'string|required',
 		]);
 
-		DB::table('user_album')->whereIn('id', explode(',', $request['ShareIDs']))->delete();
+		DB::table('user_album')
+			->whereIn('id', explode(',', $request['ShareIDs']))->delete();
 
 		return 'true';
 	}

@@ -4,6 +4,7 @@
 
 namespace Tests\Feature;
 
+use App\ModelFunctions\SessionFunctions;
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
@@ -17,8 +18,8 @@ class DiagnosticsTest extends TestCase
 	public function test_diagnostics()
 	{
 		// set user as admin
-		Session::put('login', true);
-		Session::put('UserID', 0);
+		$sessionFunctions = new SessionFunctions();
+		$sessionFunctions->log_as_id(0);
 
 		$response = $this->get('/Diagnostics');
 		$response->assertStatus(200); // code 200 something

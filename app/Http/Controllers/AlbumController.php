@@ -13,7 +13,6 @@ use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
@@ -53,7 +52,7 @@ class AlbumController extends Controller
 			'parent_id' => 'int|nullable',
 		]);
 
-		$album = $this->albumFunctions->create($request['title'], $request['parent_id'], Session::get('UserID'));
+		$album = $this->albumFunctions->create($request['title'], $request['parent_id'], $this->sessionFunctions->id());
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}
@@ -72,22 +71,23 @@ class AlbumController extends Controller
 		$return['albums'] = array();
 		// Get photos
 		// Get album information
+		$UserId = $this->sessionFunctions->id();
 		switch ($request['albumID']) {
 			case 'f':
 				$return['public'] = '0';
-				$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID')));
+				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
 				break;
 			case 's':
 				$return['public'] = '0';
-				$photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID')));
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
 			case 'r':
 				$return['public'] = '0';
-				$photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID')));
+				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
 				break;
 			case '0':
 				$return['public'] = '0';
-				$photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID')));
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
 				$album = Album::with([
@@ -335,7 +335,7 @@ class AlbumController extends Controller
 
 		$no_error = true;
 		if ($request['albumIDs'] == '0') {
-			$photos = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID')))->get();
+			$photos = Photo::select_unsorted(Photo::OwnedBy($this->sessionFunctions->id()))->get();
 			foreach ($photos as $photo) {
 				$no_error &= $photo->predelete();
 				$no_error &= $photo->delete();
@@ -521,22 +521,23 @@ class AlbumController extends Controller
 			'albumID' => 'required|string',
 		]);
 
+		$UserId = $this->sessionFunctions->id();
 		switch ($request['albumID']) {
 			case 'f':
 				$zipTitle = 'Starred';
-				$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID')));
+				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
 				break;
 			case 's':
 				$zipTitle = 'Public';
-				$photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID')));
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
 			case 'r':
 				$zipTitle = 'Recent';
-				$photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID')));
+				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
 				break;
 			case '0':
 				$zipTitle = 'Unsorted';
-				$photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID')));
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
 				$album = Album::find($request['albumID']);

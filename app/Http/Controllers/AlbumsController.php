@@ -23,7 +23,8 @@ class AlbumsController extends Controller
 	private $sessionFunctions;
 
 	/**
-	 * @param AlbumFunctions $albumFunctions
+	 * @param AlbumFunctions   $albumFunctions
+	 * @param SessionFunctions $sessionFunctions
 	 */
 	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
 	{

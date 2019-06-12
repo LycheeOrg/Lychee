@@ -15,7 +15,6 @@ use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
 
 class PhotoFunctions
 {
@@ -28,6 +27,11 @@ class PhotoFunctions
 	 * @var ImageHandlerInterface
 	 */
 	private $imageHandler;
+
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
 
 	/**
 	 * @var array
@@ -62,10 +66,11 @@ class PhotoFunctions
 		'.mov',
 	);
 
-	public function __construct(Extractor $metadataExtractor, ImageHandlerInterface $imageHandler)
+	public function __construct(Extractor $metadataExtractor, ImageHandlerInterface $imageHandler, SessionFunctions $sessionFunctions)
 	{
 		$this->metadataExtractor = $metadataExtractor;
 		$this->imageHandler = $imageHandler;
+		$this->sessionFunctions = $sessionFunctions;
 	}
 
 	/**
@@ -303,14 +308,14 @@ class PhotoFunctions
 			$album = Album::find($albumID);
 			if ($album == null) {
 				$photo->album_id = null;
-				$photo->owner_id = Session::get('UserID');
+				$photo->owner_id = $this->sessionFunctions->id();
 			} else {
 				$photo->album_id = $albumID;
 				$photo->owner_id = $album->owner_id;
 			}
 		} else {
 			$photo->album_id = null;
-			$photo->owner_id = Session::get('UserID');
+			$photo->owner_id = $this->sessionFunctions->id();
 		}
 
 		if ($exists === false) {
