@@ -6,6 +6,7 @@ namespace App;
 
 use App\ModelFunctions\Helpers;
 use Eloquent;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -160,6 +161,8 @@ class Photo extends Model
 	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
 	 *
 	 * @return array returns photo-attributes in a normalized structure
+	 *
+	 * @throws Exception
 	 */
 	public function prepareData()
 	{
@@ -197,13 +200,15 @@ class Photo extends Model
 			if ($matches) {
 				$a = intval($matches[1]);
 				$b = intval($matches[2]);
-				$gcd = Helpers::gcd($a, $b);
-				$a = $a / $gcd;
-				$b = $b / $gcd;
-				if ($a == 1) {
-					$photo['shutter'] = '1/' . $b . ' s';
-				} else {
-					$photo['shutter'] = ($a / $b) . ' s';
+				if ($b != 0) {
+					$gcd = Helpers::gcd($a, $b);
+					$a = $a / $gcd;
+					$b = $b / $gcd;
+					if ($a == 1) {
+						$photo['shutter'] = '1/' . $b . ' s';
+					} else {
+						$photo['shutter'] = ($a / $b) . ' s';
+					}
 				}
 			}
 		}

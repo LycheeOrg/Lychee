@@ -2,6 +2,8 @@
 
 namespace App\ModelFunctions;
 
+use Exception;
+
 class Helpers
 {
 	/**
@@ -84,10 +86,16 @@ class Helpers
 	 * @param $a
 	 * @param $b
 	 *
+	 * @throws Exception
+	 *
 	 * @return mixed
 	 */
 	public static function gcd($a, $b)
 	{
+		if ($b == 0) {
+			throw new Exception('gcd: Modulo by zero error.');
+		}
+
 		return ($a % $b) ? Helpers::gcd($b, $a % $b) : $b;
 	}
 }
