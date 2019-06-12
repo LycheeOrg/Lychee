@@ -5,7 +5,7 @@
 namespace Tests\Feature;
 
 use App\Logs;
-use Illuminate\Support\Facades\Session;
+use App\ModelFunctions\SessionFunctions;
 use Tests\TestCase;
 
 class LogsTest extends TestCase
@@ -22,8 +22,8 @@ class LogsTest extends TestCase
 		$response->assertSeeText('false');
 
 		// set user as admin
-		Session::put('login', true);
-		Session::put('UserID', 0);
+		$sessionFunctions = new SessionFunctions();
+		$sessionFunctions->log_as_id(0);
 
 		$response = $this->get('/Logs');
 		$response->assertStatus(200); // code 200 something
@@ -34,7 +34,7 @@ class LogsTest extends TestCase
 			$response->assertViewIs('logs.list');
 		}
 
-		Session::flush();
+		$sessionFunctions->logout();
 	}
 
 	public function test_api_Logs()
@@ -56,8 +56,8 @@ class LogsTest extends TestCase
 		$response->assertSeeText('false');
 
 		// set user as admin
-		Session::put('login', true);
-		Session::put('UserID', 0);
+		$sessionFunctions = new SessionFunctions();
+		$sessionFunctions->log_as_id(0);
 
 		$response = $this->post('/api/Logs::clearNoise');
 		$response->assertStatus(200); // code 200 something
@@ -67,6 +67,6 @@ class LogsTest extends TestCase
 		$response->assertStatus(200); // code 200 something
 		$response->assertSeeText('Log cleared');
 
-		Session::flush();
+		$sessionFunctions->logout();
 	}
 }

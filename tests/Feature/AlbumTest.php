@@ -4,6 +4,7 @@
 
 namespace Tests\Feature;
 
+use App\ModelFunctions\SessionFunctions;
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
@@ -32,8 +33,8 @@ class AlbumTest extends TestCase
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
 		 */
-		Session::put('login', true);
-		Session::put('UserID', 0);
+		$sessionFunctions = new SessionFunctions();
+		$sessionFunctions->log_as_id(0);
 
 		/**
 		 * We are logged as ADMIN (we don't test the other users yet) so this should not fail and it should return an id.
@@ -57,8 +58,7 @@ class AlbumTest extends TestCase
 		$response->assertOk();
 		$response->assertSee($albumID);
 
-		Session::put('login', true);
-		Session::put('UserID', 0);
+		//        $sessionFunctions->log_as_id(0);
 		/**
 		 * Let's try to get the info of the album we just created.
 		 */
@@ -111,8 +111,7 @@ class AlbumTest extends TestCase
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
 		 */
-		Session::put('login', true);
-		Session::put('UserID', 0);
+		$sessionFunctions->log_as_id(0);
 
 		/**
 		 * Let's try to delete this album.

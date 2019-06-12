@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
 
 class AlbumFunctions
 {
@@ -243,28 +242,29 @@ class AlbumFunctions
 			'recent' => null,
 		);
 
+		$UserId = $this->sessionFunctions->id();
 		/**
 		 * Unsorted.
 		 */
-		$photos_sql = Photo::select_unsorted(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+		$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
 
 		/**
 		 * Starred.
 		 */
-		$photos_sql = Photo::select_stars(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+		$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 
 		/**
 		 * Public.
 		 */
-		$photos_sql = Photo::select_public(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+		$photos_sql = Photo::select_public(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
 
 		/**
 		 * Recent.
 		 */
-		$photos_sql = Photo::select_recent(Photo::OwnedBy(Session::get('UserID'))->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+		$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
 		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
 
 		return $return;
@@ -273,12 +273,14 @@ class AlbumFunctions
 	/**
 	 * Recursively returns the tree structure of albums.
 	 *
+	 * @param Album $album
+	 *
 	 * @return array
 	 */
 	public function get_albums(Album $album): array
 	{
 		$subAlbums = [];
-		$userId = Session::get('UserID');
+		$userId = $this->sessionFunctions->id();
 		foreach ($album->children as $subAlbum) {
 			$haveAccess = $this->readAccessFunctions->album($subAlbum->id, true);
 
@@ -381,7 +383,7 @@ class AlbumFunctions
 					->get();
 			} else {
 				if ($user == null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . Session::get('UserID') . ')');
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $this->sessionFunctions->id() . ')');
 
 					return null;
 				} else {
