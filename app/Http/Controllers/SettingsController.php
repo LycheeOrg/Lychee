@@ -4,7 +4,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
 use App\Configs;
 use App\Locale\Lang;
 use App\Logs;
@@ -91,10 +90,6 @@ class SettingsController extends Controller
 		Configs::set('sortingPhotos_order', $request['orderPhotos']);
 		Configs::set('sortingAlbums_col', $request['typeAlbums']);
 		Configs::set('sortingAlbums_order', $request['orderAlbums']);
-
-		if ('typeAlbums' == 'max_takestamp' or 'typeAlbums' == 'min_takestamp') {
-			Album::reset_takestamp();
-		}
 
 		return 'true';
 	}

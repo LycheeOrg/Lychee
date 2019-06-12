@@ -34,8 +34,6 @@ class MoveAlbums extends Migration
 		} else {
 			echo "albums is not empty.\n";
 		}
-
-		Album::reset_takestamp();
 	}
 
 	/**
