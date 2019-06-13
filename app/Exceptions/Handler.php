@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Exception;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 
 class Handler extends ExceptionHandler
@@ -13,6 +14,7 @@ class Handler extends ExceptionHandler
 	 * @var array
 	 */
 	protected $dontReport = [
+		DecryptException::class,
 	];
 
 	/**
@@ -47,6 +49,10 @@ class Handler extends ExceptionHandler
 	 */
 	public function render($request, Exception $exception)
 	{
+		if ($exception instanceof DecryptException && $exception->getMessage() === 'The payload is invalid.') {
+			return response()->json(['error' => 'Session timed out'], 400);
+		}
+
 		return parent::render($request, $exception);
 	}
 }
