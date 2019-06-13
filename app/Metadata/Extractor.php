@@ -283,6 +283,12 @@ class Extractor
 			$metadata['height'] = $stream['height'];
 		}
 
+		if (isset($stream['tags']) && isset($stream['tags']['rotate']) && ($stream['tags']['rotate'] === '90' || $stream['tags']['rotate'] === '270')) {
+			$tmp = $metadata['width'];
+			$metadata['width'] = $metadata['height'];
+			$metadata['height'] = $tmp;
+		}
+
 		if (isset($stream['avg_frame_rate'])) {
 			$framerate = explode('/', $stream['avg_frame_rate']);
 			if (count($framerate) == 1) {
