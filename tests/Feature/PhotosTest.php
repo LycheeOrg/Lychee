@@ -9,7 +9,7 @@ use Tests\TestCase;
 class PhotosTest extends TestCase
 {
 	/**
-	 * A basic feature test example.
+	 * Test photo operations.
 	 *
 	 * @return void
 	 */
@@ -18,7 +18,8 @@ class PhotosTest extends TestCase
 		$sessionFunctions = new SessionFunctions();
 		$sessionFunctions->log_as_id(0);
 
-		// we copy because import delete the file and we want to be able to use the test on local machine and not just in CI.
+		// Make a copy of the image because import deletes the file and we want to be
+		// able to use the test on a local machine and not just in CI.
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
 
 		$file = new UploadedFile('public/uploads/import/night.jpg', 'night.jpg',
@@ -62,7 +63,7 @@ class PhotosTest extends TestCase
 		$response->assertStatus(200);
 		$response->assertDontSee($id);
 		/**
-		 * Check if we see the picture in favorite.
+		 * Check if we see the picture in favorites.
 		 */
 		$response = $this->post('/api/Album::get', [
 			'albumID' => 'f',
@@ -81,7 +82,7 @@ class PhotosTest extends TestCase
 		$response->assertSee('true');
 
 		/**
-		 * Try ot set the description.
+		 * Try to set the description.
 		 */
 		$response = $this->post('/api/Photo::setDescription', [
 			'description' => 'A night photography',
