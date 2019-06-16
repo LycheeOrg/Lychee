@@ -50,6 +50,7 @@ class ReadAccessFunctions
 					return 1; // access granted
 				}
 			}
+
 			return 2; // Warning: Album private!
 		}
 
