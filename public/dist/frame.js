@@ -755,6 +755,14 @@ api.get_url = function (fn) {
 	return api_url;
 };
 
+api.isTimeout = function (errorThrown, jqXHR) {
+	if (errorThrown && errorThrown === 'Bad Request' && jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error === 'Session timed out') {
+		return true;
+	}
+
+	return false;
+};
+
 api.post = function (fn, params, callback) {
 
 	loadingBar.show();
@@ -778,7 +786,7 @@ api.post = function (fn, params, callback) {
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
 
-		api.onError('Server error or API not found.', params, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', params, errorThrown);
 	};
 
 	$.ajax({
@@ -810,7 +818,7 @@ api.get = function (url, callback) {
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
 
-		api.onError('Server error or API not found.', {}, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', {}, errorThrown);
 	};
 
 	$.ajax({
@@ -845,7 +853,7 @@ api.post_raw = function (fn, params, callback) {
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
 
-		api.onError('Server error or API not found.', params, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', params, errorThrown);
 	};
 
 	$.ajax({
