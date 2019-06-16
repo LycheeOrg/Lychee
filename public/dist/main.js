@@ -3568,8 +3568,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.14',
-	versionCode: '030214', // not really needed anymore
+	version: '3.2.15',
+	versionCode: '030215', // not really needed anymore
 
 	updatePath: 'https://LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee/releases',
@@ -4153,6 +4153,7 @@ lychee.footer_show = function () {
 lychee.footer_hide = function () {
 	lychee.footer.addClass('hide_footer');
 };
+
 lychee.locale = {
 
 	'USERNAME': 'username',
@@ -7473,7 +7474,7 @@ view.album = {
 
 			switch (album.getID()) {
 				case 'f':
-					lychee.setTitle(lychee.locale['STARED'], true);
+					lychee.setTitle(lychee.locale['STARRED'], true);
 					break;
 				case 's':
 					lychee.setTitle(lychee.locale['PUBLIC'], true);
