@@ -5,6 +5,7 @@ namespace App\ControllerFunctions;
 use App\Album;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
+use App\User;
 
 class ReadAccessFunctions
 {
@@ -41,7 +42,16 @@ class ReadAccessFunctions
 			'r',
 			'0',
 		))) {
-			return 1; // access granted
+			if ($this->sessionFunctions->is_logged_in()) {
+				$id = $this->sessionFunctions->id();
+
+				$user = User::find($id);
+				if ($id == 0 || $user->upload) {
+					return 1; // access granted
+				}
+			}
+
+			return 2; // Warning: Album private!
 		}
 
 		$album = Album::find($albumID);
