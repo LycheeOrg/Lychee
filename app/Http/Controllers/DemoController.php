@@ -3,24 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
+use Response;
 
 class DemoController extends Controller
 {
+	/**
+	 * This function returns what are the possible return output to simulate
+	 * the server interaction in the case of the demo server here:
+	 * https://lycheeorg.github.io/demo/.
+	 *
+	 * Call /demo and use the generated code to replace the api.post() function
+	 *
+	 * @return \Illuminate\Http\Response|string
+	 */
 	public function js()
 	{
+		if (Configs::get_value('gen_demo_js', '0') != '1') {
+			return redirect()->route('home');
+		}
+
 		$functions = array();
 
 		$configFunctions = new ConfigFunctions();
 		$sessionFunctions = new SessionFunctions();
 		$githubFunctions = new GitHubFunctions();
 		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
-		$albumFunctions = new AlbumFunctions($readAccessFunctions);
+		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions);
 
 		/**
 		 * Session::init.
@@ -36,7 +51,7 @@ class DemoController extends Controller
 		/**
 		 * Albums::get.
 		 */
-		$albums_controller = new AlbumsController($albumFunctions);
+		$albums_controller = new AlbumsController($albumFunctions, $sessionFunctions);
 
 		$return_albums = array();
 		$return_albums['name'] = 'Albums::get';
@@ -145,6 +160,10 @@ class DemoController extends Controller
 
 		$functions[] = $return_photo_list;
 
-		return view('demo', ['functions' => $functions]);
+		$contents = view('demo', ['functions' => $functions]);
+		$response = Response::make($contents, 200);
+		$response->header('Content-Type', 'text/plain');
+
+		return $response;
 	}
 }
