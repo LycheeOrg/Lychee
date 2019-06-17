@@ -9,6 +9,7 @@ use App\Locale\Lang;
 use App\ModelFunctions\ConfigFunctions;
 use App\Page;
 use Illuminate\Support\Facades\Config;
+use Illuminate\View\View;
 
 class IndexController extends Controller
 {
@@ -25,6 +26,12 @@ class IndexController extends Controller
 		$this->configFunctions = $configFunctions;
 	}
 
+	/**
+	 * Display the landing page if enabled
+	 * otherwise display the gallery.
+	 *
+	 * @return View
+	 */
 	public function show()
 	{
 		if (Configs::get_value('landing_page_enable', '0') == '1') {
@@ -47,11 +54,21 @@ class IndexController extends Controller
 		return $this->gallery();
 	}
 
+	/**
+	 * Just call the phpinfo function.
+	 *
+	 * @return string
+	 */
 	public function phpinfo()
 	{
 		return (string) phpinfo();
 	}
 
+	/**
+	 * Display the gallery.
+	 *
+	 * @return View
+	 */
 	public function gallery()
 	{
 		$infos = $this->configFunctions->get_pages_infos();

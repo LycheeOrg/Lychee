@@ -10,6 +10,7 @@ use App\ModelFunctions\ConfigFunctions;
 use App\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\View\View;
 
 class PageController extends Controller
 {
@@ -26,6 +27,16 @@ class PageController extends Controller
 		$this->configFunctions = $configFunctions;
 	}
 
+	/**
+	 * given a URL: http://example.com/<something>
+	 * fetches in the tables if the page <something> exists and returns it
+	 * return 404 otherwise.
+	 *
+	 * @param Request $request
+	 * @param $page
+	 *
+	 * @return View
+	 */
 	public function page(Request $request, $page)
 	{
 		$page = Page::enabled()->where('link', '/' . $page)->first();
@@ -47,5 +58,23 @@ class PageController extends Controller
 		$page_config['display_socials'] = false;
 
 		return view('page', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'contents' => $contents, 'page_config' => $page_config]);
+	}
+
+	/**
+	 * TODO: add function to allow the edition of pages.
+	 *
+	 * @param Request $request
+	 */
+	public function edit(Request $request, $page)
+	{
+	}
+
+	/**
+	 * TODO: add function to save the edition of pages.
+	 *
+	 * @param Request $request
+	 */
+	public function save(Request $request, $page)
+	{
 	}
 }

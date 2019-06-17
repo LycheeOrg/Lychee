@@ -25,6 +25,11 @@ class SharingController extends Controller
 		$this->sessionFunctions = $sessionFunctions;
 	}
 
+	/**
+	 * Return the list of current sharing rights.
+	 *
+	 * @return array
+	 */
 	public function listSharing()
 	{
 		$UserId = $this->sessionFunctions->id();
@@ -66,6 +71,13 @@ class SharingController extends Controller
 		];
 	}
 
+	/**
+	 * FIXME: What does this function actually do ? It is not called anywhere in the Lychee-front O.o.
+	 *
+	 * @param Request $request
+	 *
+	 * @return array
+	 */
 	public function getUserList(Request $request)
 	{
 		$request->validate([
@@ -120,6 +132,8 @@ class SharingController extends Controller
 	}
 
 	/**
+	 * Add a sharing between selected users and selected albums.
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -140,6 +154,17 @@ class SharingController extends Controller
 		return 'true';
 	}
 
+	/**
+	 * Given a list of shared ID we delete them
+	 * This function is the only reason why we test SharedIDs in
+	 * app/Http/Middleware/UploadCheck.php.
+	 *
+	 * FIXME: make sure that the Lychee-front is sending the correct ShareIDs
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
 	public function delete(Request $request)
 	{
 		$request->validate([

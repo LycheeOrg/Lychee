@@ -66,6 +66,13 @@ class PhotoFunctions
 		'.mov',
 	);
 
+	/**
+	 * PhotoFunctions constructor.
+	 *
+	 * @param Extractor             $metadataExtractor
+	 * @param ImageHandlerInterface $imageHandler
+	 * @param SessionFunctions      $sessionFunctions
+	 */
 	public function __construct(Extractor $metadataExtractor, ImageHandlerInterface $imageHandler, SessionFunctions $sessionFunctions)
 	{
 		$this->metadataExtractor = $metadataExtractor;
@@ -96,6 +103,8 @@ class PhotoFunctions
 	}
 
 	/**
+	 * Create thumbnail for a picture.
+	 *
 	 * @param Photo $photo
 	 * @param string Path of the video frame
 	 *
@@ -456,7 +465,9 @@ class PhotoFunctions
 	}
 
 	/**
-	 * We create this function to try to fix the duplicate entry key problem.
+	 * This function aims to fix the duplicate entry key problem.
+	 *
+	 * TODO: find where the array to string conversion is...
 	 *
 	 * @param Photo $photo
 	 * @param $albumID

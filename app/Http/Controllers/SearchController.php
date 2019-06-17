@@ -66,6 +66,15 @@ class SearchController extends Controller
 		);
 	}
 
+	/**
+	 * Given a string split it by spaces to get terms and make a like search on the database.
+	 * We search on albums and photos. title, tags, description are considered.
+	 * TODO: add search by date.
+	 *
+	 * @param Request $request
+	 *
+	 * @return array
+	 */
 	public function search(Request $request)
 	{
 		if (!$this->sessionFunctions->is_logged_in() && Configs::get_value('public_search', '0') !== '1') {

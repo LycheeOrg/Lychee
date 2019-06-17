@@ -9,26 +9,28 @@ use App\Logs;
 use App\Photo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Illuminate\View\View;
 
 class ViewController extends Controller
 {
+	/**
+	 * Just the constructor
+	 * This also shows how to apply a middlewear directly in a controller.
+	 *
+	 * ViewController constructor.
+	 */
 	public function __construct()
 	{
 		$this->middleware([]);
 	}
 
-	public static function sport($port)
-	{
-		if ($port == 80) {
-			return '';
-		}
-		if ($port == 443) {
-			return '';
-		}
-
-		return ':' . $port;
-	}
-
+	/**
+	 * View is only used when sharing a single picture.
+	 *
+	 * @param Request $request
+	 *
+	 * @return View|void
+	 */
 	public function view(Request $request)
 	{
 		$request->validate([
@@ -63,12 +65,8 @@ class ViewController extends Controller
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 
-//		$parseUrl = parse_url(env('APP_URL').$request->server->get('REQUEST_URI'));
-//		dd($parseUrl);
 		$url = env('APP_URL') . $request->server->get('REQUEST_URI');
-//		$picture  = '//' . $request->server->get('HTTP_HOST') . $parseUrl['path'] . '/../uploads/' . $dir . '/' . $photo->url;
 		$picture = env('APP_URL') . '/uploads/' . $dir . '/' . $photo->url;
-//		$picture  = $parseUrl['host'] . '/uploads/' . $dir . '/' . $photo->url;
 
 		return view('view', [
 			'url' => $url,

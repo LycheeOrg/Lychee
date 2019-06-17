@@ -15,6 +15,7 @@ use App\ModelFunctions\SessionFunctions;
 use Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 use Imagick;
 
 class DiagnosticsController extends Controller
@@ -60,6 +61,12 @@ class DiagnosticsController extends Controller
 		$this->diskUsage = $diskUsage;
 	}
 
+	/**
+	 * Return the list of error which are currently breaking Lychee.
+	 *
+	 *
+	 * @return array
+	 */
 	public function get_errors()
 	{
 		// Declare
@@ -202,6 +209,9 @@ class DiagnosticsController extends Controller
 	}
 
 	/**
+	 * get the basic pieces of information of the Lychee installation
+	 * such as version number, commit id, operating system ...
+	 *
 	 * @return array
 	 */
 	public function get_info()
@@ -291,6 +301,12 @@ class DiagnosticsController extends Controller
 		return $infos;
 	}
 
+	/**
+	 * Return the config pieces of information of the Lychee installation.
+	 * Note that some information such as password and username are hidden.
+	 *
+	 * @return array
+	 */
 	public function get_config()
 	{
 		// Declare
@@ -307,6 +323,12 @@ class DiagnosticsController extends Controller
 		return $configs;
 	}
 
+	/**
+	 * This function return the Diagnostic data as an JSON array.
+	 * should be used for AJAX request.
+	 *
+	 * @return array
+	 */
 	public function get()
 	{
 		$errors = $this->get_errors();
@@ -336,6 +358,11 @@ class DiagnosticsController extends Controller
 		];
 	}
 
+	/**
+	 * Return the diagnostic information as a page.
+	 *
+	 * @return View
+	 */
 	public function show()
 	{
 		$errors = $this->get_errors();

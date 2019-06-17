@@ -28,6 +28,12 @@ class AlbumFunctions
 	 */
 	private $sessionFunctions;
 
+	/**
+	 * AlbumFunctions constructor.
+	 *
+	 * @param SessionFunctions    $sessionFunctions
+	 * @param ReadAccessFunctions $readAccessFunctions
+	 */
 	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
 	{
 		$this->sessionFunctions = $sessionFunctions;

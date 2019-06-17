@@ -9,6 +9,8 @@ use App\Response;
 class FrameController extends Controller
 {
 	/**
+	 * Return the page /frame if enabled.
+	 *
 	 * @return false|string
 	 */
 	public function init()
@@ -38,6 +40,11 @@ class FrameController extends Controller
 		return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos]);
 	}
 
+	/**
+	 * Return is the refresh rate of the the Frame if it is enabled.
+	 *
+	 * @return array|string
+	 */
 	public function getSettings()
 	{
 		Configs::get();

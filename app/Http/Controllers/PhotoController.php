@@ -47,6 +47,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Given a photoID and albumID returns the data of the photo.
+	 *
 	 * @param Request $request
 	 *
 	 * @return array|string
@@ -55,7 +57,6 @@ class PhotoController extends Controller
 	{
 		$request->validate([
 			'albumID' => 'string|required',
-
 			'photoID' => 'string|required',
 		]);
 
@@ -78,6 +79,9 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Return a random public photo (starred)
+	 * This is used in the Frame Controller.
+	 *
 	 * @return string
 	 */
 	public function getRandom()
@@ -100,6 +104,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Add a function given an AlbumID.
+	 *
 	 * @param Request $request
 	 *
 	 * @return false|string
@@ -130,6 +136,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Change the title of a photo.
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -153,6 +161,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Set if a photo is a favorite.
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -175,6 +185,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Set the description of a photo.
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -201,6 +213,10 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Define if a photo is public.
+	 * We do not advise the use of this and would rather see people use albums visibility
+	 * This would highly simplify the code if we remove this. Do we really want to keep it ?
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -226,6 +242,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Set the tags of a photo.
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -249,6 +267,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Define the album of a photo.
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -304,6 +324,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Define the license of the photo.
+	 *
 	 * @param Request $request
 	 *
 	 * @return false|string
@@ -355,6 +377,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Delete a photo.
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -388,6 +412,9 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Duplicate a photo.
+	 * Only the SQL entry is duplicated for space reason.
+	 *
 	 * @param Request $request
 	 *
 	 * @return string
@@ -440,6 +467,8 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * Return a photo as an archive just to annoy @SerenaButler.
+	 *
 	 * @param Request $request
 	 *
 	 * @return StreamedResponse|void
