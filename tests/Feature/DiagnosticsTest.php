@@ -5,7 +5,6 @@
 namespace Tests\Feature;
 
 use App\ModelFunctions\SessionFunctions;
-use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class DiagnosticsTest extends TestCase
@@ -27,6 +26,6 @@ class DiagnosticsTest extends TestCase
 		$response = $this->post('/api/Diagnostics');
 		$response->assertStatus(200); // code 200 something too
 
-		Session::flush();
+		$sessionFunctions->logout();
 	}
 }
