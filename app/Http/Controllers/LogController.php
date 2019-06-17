@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Logs;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class LogController extends Controller
 {
@@ -21,6 +22,11 @@ class LogController extends Controller
 		return $logs;
 	}
 
+	/**
+	 * display the Logs.
+	 *
+	 * @return View|string
+	 */
 	public function display()
 	{
 		if (Logs::count() == 0) {
@@ -32,6 +38,11 @@ class LogController extends Controller
 		}
 	}
 
+	/**
+	 * Empty the log table.
+	 *
+	 * @return string
+	 */
 	public static function clear()
 	{
 		DB::table('logs')->truncate();
@@ -39,6 +50,12 @@ class LogController extends Controller
 		return 'Log cleared';
 	}
 
+	/**
+	 * This function does pretty much the same as clear but only does it on notice
+	 * and also keeps the log of the loggin attempts.
+	 *
+	 * @return string
+	 */
 	public static function clearNoise()
 	{
 		Logs::where('function', '!=', 'App\Http\Controllers\SessionController::login')->

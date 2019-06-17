@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Logs;
 use App\Response;
 use App\User;
+use Exception;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -21,6 +22,14 @@ class UserController extends Controller
 		return $users;
 	}
 
+	/**
+	 * Save modification done to a user.
+	 * Note that an admin can change the password of a user at will.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
 	public function save(Request $request)
 	{
 		$request->validate([
@@ -47,6 +56,16 @@ class UserController extends Controller
 		return $user->save() ? 'true' : 'false';
 	}
 
+	/**
+	 * Delete a user.
+	 * FIXME: What happen to the albums owned ?
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 *
+	 * @throws Exception
+	 */
 	public function delete(Request $request)
 	{
 		$request->validate([
@@ -63,6 +82,13 @@ class UserController extends Controller
 		return $user->delete() ? 'true' : 'false';
 	}
 
+	/**
+	 * Create a new user.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
 	public function create(Request $request)
 	{
 		$request->validate([

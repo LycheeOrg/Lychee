@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 class RedirectIfAuthenticated
 {
 	/**
+	 * NOT USED.
+	 *
 	 * Handle an incoming request.
 	 *
 	 * @param Request     $request

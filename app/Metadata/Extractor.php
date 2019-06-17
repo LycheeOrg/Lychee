@@ -268,6 +268,10 @@ class Extractor
 		return $flip * $this->formattedToFloatGPS($altitude);
 	}
 
+	/**
+	 * @param string $filename
+	 * @param array  $metadata
+	 */
 	private function extractVideo(string $filename, array &$metadata)
 	{
 		$ffprobe = FFMpeg\FFProbe::create();

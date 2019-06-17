@@ -20,6 +20,11 @@ class VerifyCsrfToken extends Middleware
 	];
 
 	/**
+	 * The goal of this function is to allow to bypass the CSRF token requirement
+	 * if an Authorization value is provided in the header and matches the apiKey.
+	 *
+	 * FIXME: Do we want to hash this API key ? Might actually be a good idea...
+	 *
 	 * @param $request
 	 * @param Closure $next
 	 *
