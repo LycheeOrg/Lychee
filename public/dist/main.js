@@ -3568,8 +3568,8 @@ loadingBar.hide = function (force) {
 lychee = {
 
 	title: document.title,
-	version: '3.2.15',
-	versionCode: '030215', // not really needed anymore
+	version: '',
+	versionCode: '', // not really needed anymore
 
 	updatePath: 'https://LycheeOrg.github.io/update.json',
 	updateURL: 'https://github.com/LycheeOrg/Lychee/releases',
@@ -3668,11 +3668,14 @@ lychee.init = function () {
 		lychee.sub_albums = data.sub_albums || false;
 		lychee.update_json = data.update_json;
 		lychee.update_available = data.update_available;
-		lychee.versionCode = data.config.version.slice(7, data.config.version);
 		lychee.landing_page_enable = data.config.landing_page_enable && data.config.landing_page_enable === '1' || false;
 
 		if (lychee.api_V2) {
 			lychee.versionCode = data.config.version;
+		} else {
+			lychee.versionCode = data.config.version.slice(7, data.config.version.length);
+		}
+		if (lychee.versionCode !== '') {
 			var digits = lychee.versionCode.match(/.{1,2}/g);
 			lychee.version = parseInt(digits[0]).toString() + '.' + parseInt(digits[1]).toString() + '.' + parseInt(digits[2]).toString();
 		}
