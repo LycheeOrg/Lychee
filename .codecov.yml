@@ -1,6 +1,6 @@
 ignore:
 	- "app/Console/"
-	- "app/Http/Controlers/Auth"
+	- "app/Http/Controllers/Auth"
 	- "app/Http/Middleware/LoginCheck.php"
 	- "app/Http/Middleware/RedirectIfAuthenticated.php"
 	- "app/Providers/BroadcastServiceProvider.php"
