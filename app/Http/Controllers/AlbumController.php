@@ -182,6 +182,10 @@ class AlbumController extends Controller
 
 		$albums = Album::whereIn('id', explode(',', $request['albumIDs']))->get();
 
+		if ($albums == null) {
+			return 'false';
+		}
+
 		$no_error = false;
 		foreach ($albums as $album) {
 			$album->title = $request['title'];
@@ -212,7 +216,7 @@ class AlbumController extends Controller
 		if ($album === null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
 
-			return false;
+			return 'false';
 		}
 
 		// Convert values
@@ -267,7 +271,7 @@ class AlbumController extends Controller
 		if ($album === null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
 
-			return false;
+			return 'false';
 		}
 
 		$album->description = ($request['description'] == null) ? '' : $request['description'];
@@ -578,7 +582,7 @@ class AlbumController extends Controller
 			if ($photos_sql->count() == 0) {
 				Logs::error(__METHOD__, __LINE__, 'Could not create ZipStream without images');
 
-				return false;
+				return 'false';
 			}
 
 			$photos = $photos_sql->get();

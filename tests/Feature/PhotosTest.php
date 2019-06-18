@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Configs;
 use App\ModelFunctions\SessionFunctions;
 use Illuminate\Http\UploadedFile;
 use Tests\TestCase;
@@ -120,6 +121,25 @@ class PhotosTest extends TestCase
 		$response->assertSee('true');
 
 		/**
+		 * Try to set the photo to public.
+		 */
+		$response = $this->post('/api/Photo::setPublic', [
+			'photoID' => $id,
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		/**
+		 * Try to set the photo license type of the photo.
+		 */
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'reserved',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		/**
 		 * Actually try to display the picture.
 		 */
 		$response = $this->post('/api/Photo::get', [
@@ -127,7 +147,6 @@ class PhotosTest extends TestCase
 			'photoID' => $id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($id);
 
 		/*
 		 * Check some Exif data
@@ -154,6 +173,45 @@ class PhotosTest extends TestCase
 		]);
 
 		/**
+		 * Actually try to display the picture.
+		 */
+		$response = $this->post('/api/Photo::getRandom', []);
+		$response->assertStatus(200);
+
+		$response = $this->post('/api/Album::add', [
+			'title' => 'test_album_2',
+			'parent_id' => '0',
+		]);
+		$response->assertOk();
+		$response->assertDontSee('false');
+
+		/**
+		 * We also get the id of the album we just created.
+		 */
+		$albumID = $response->getContent();
+
+		$response = $this->post('/api/Photo::setAlbum', [
+			'photoIDs' => $id,
+			'albumID' => $albumID,
+		]);
+		$response->assertOk();
+		$response->assertDontSee('false');
+
+		$response = $this->post('/api/Photo::duplicate', [
+			'photoIDs' => $id,
+		]);
+		$response->assertOk();
+		$response->assertDontSee('false');
+
+		$response = $this->post('/api/Album::get', [
+			'albumID' => $albumID,
+		]);
+		$response->assertOk();
+		$content = $response->getContent();
+		$array_content = json_decode($content);
+		$this->assertEquals(2, count($array_content->photos));
+
+		/**
 		 * Try to delete the picture.
 		 */
 		$response = $this->post('/api/Photo::delete', [
@@ -171,5 +229,32 @@ class PhotosTest extends TestCase
 		]);
 		$response->assertStatus(200);
 		$response->assertSee('false');
+
+		$response = $this->post('/api/Album::setPublic', [
+			'albumID' => $albumID,
+			'password' => '',
+			'visible' => 1,
+			'downloadable' => 1,
+		]);
+		$response->assertOk();
+
+		// save initial value
+		$init_config_value = Configs::get_value('gen_demo_js');
+
+		// set to 0
+		Configs::set('gen_demo_js', '1');
+		$this->assertEquals(Configs::get_value('gen_demo_js'), '1');
+
+		// check redirection
+		$response = $this->get('/demo');
+		$response->assertStatus(200);
+		$response->assertViewIs('demo');
+
+		// set back to initial value
+		Configs::set('gen_demo_js', $init_config_value);
+
+		$response = $this->post('/api/Album::delete', ['albumIDs' => $albumID]);
+		$response->assertOk();
+		$response->assertSee('true');
 	}
 }
