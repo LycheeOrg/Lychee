@@ -25,3 +25,5 @@ Lychee-v*
 _ide*
 
 .php_cs.cache
+
+clover.xml

@@ -5,11 +5,72 @@
 namespace Tests\Feature;
 
 use App\ModelFunctions\SessionFunctions;
+use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class AlbumTest extends TestCase
 {
+	/**
+	 * Pack the possible response of test.
+	 *
+	 * @param $response
+	 * @param $should_fail
+	 */
+	private function fail_test(TestResponse &$response, bool &$should_fail)
+	{
+		if ($should_fail) {
+			$response->assertSee('false');
+		} else {
+			$response->assertSee('true');
+		}
+	}
+
+	/**
+	 * Pack the title tests.
+	 *
+	 * @param $id
+	 * @param $text
+	 * @param $should_fail
+	 */
+	private function set_title($id, string $text, bool $should_fail)
+	{
+		/**
+		 * Let's try to change the title of the album we just created.
+		 */
+		$response = $this->post('/api/Album::setTitle', ['albumIDs' => $id, 'title' => $text]);
+		$response->assertOk();
+		$this->fail_test($response, $should_fail);
+	}
+
+	/**
+	 * Pack the description tests.
+	 *
+	 * @param $id
+	 * @param $text
+	 * @param $should_fail
+	 */
+	private function set_description($id, string $text, bool $should_fail)
+	{
+		$response = $this->post('/api/Album::setDescription', ['albumID' => $id, 'description' => $text]);
+		$response->assertOk();
+		$this->fail_test($response, $should_fail);
+	}
+
+	/**
+	 * Pack the licence.
+	 *
+	 * @param $id
+	 * @param $text
+	 * @param $should_fail
+	 */
+	private function set_licence($id, string $text, bool $should_fail)
+	{
+		$response = $this->post('/api/Album::setLicense', ['albumID' => $id, 'license' => $text]);
+		$response->assertOk();
+		$this->fail_test($response, $should_fail);
+	}
+
 	/**
 	 * Test album functions.
 	 *
@@ -58,52 +119,66 @@ class AlbumTest extends TestCase
 		$response->assertOk();
 		$response->assertSee($albumID);
 
-		//        $sessionFunctions->log_as_id(0);
+		/**
+		 * Let's try to get a non existing album.
+		 */
+		$response = $this->post('/api/Album::get', ['albumID' => 999, 'password' => '']);
+		$response->assertOk();
+		$response->assertSeeText('false');
+
 		/**
 		 * Let's try to get the info of the album we just created.
 		 */
 		$response = $this->post('/api/Album::get', ['albumID' => $albumID, 'password' => '']);
 		$response->assertOk();
 		$response->assertSee($albumID);
-		$response->assertSee('test_album');
+		$response->assertJson([
+			'id' => $albumID,
+			'description' => '',
+			'title' => 'test_album',
+		]);
 
-		/**
+		/*
 		 * Let's try to change the title of the album we just created.
 		 */
-		$response = $this->post('/api/Album::setTitle', ['albumIDs' => $albumID, 'title' => 'NEW_TEST']);
-		$response->assertOk();
-		$response->assertSee('true');
+		$this->set_title($albumID, 'NEW_TEST', false);
+		//        $this->set_title(9999,'NEW_TEST',true);
 
-		/**
-		 * Let's see if the title changed.
-		 */
-		$response = $this->post('/api/Album::get', ['albumID' => $albumID]);
-		$response->assertOk();
-		$response->assertSee($albumID);
-		$response->assertDontSee('test_album');
-		$response->assertSee('NEW_TEST');
-
-		/**
+		/*
 		 * Let's change the description of the album we just created.
 		 */
-		$response = $this->post('/api/Album::setDescription', ['albumID' => $albumID, 'description' => 'new description']);
-		$response->assertOk();
-		$response->assertSee('true');
+		$this->set_description($albumID, 'new description', false);
+		//        $this->set_description(9999,'new description', true);
+
+		/*
+		 * Let's change the licence used
+		 */
+		$this->set_licence($albumID, 'reserved', false);
 
 		/**
-		 * Let's see if the description changed.
+		 * Let's see if the info changed.
 		 */
-		$response = $this->post('/api/Album::get', ['albumID' => $albumID]);
+		$response = $this->post('/api/Album::get', ['albumID' => $albumID, 'password' => '']);
 		$response->assertOk();
 		$response->assertSee($albumID);
-		$response->assertDontSee('test_album');
-		$response->assertSee('NEW_TEST');
-		$response->assertSee('new description');
+		$response->assertJson([
+			'id' => $albumID,
+			'description' => 'new description',
+			'title' => 'NEW_TEST',
+		]);
 
 		/*
 		 * Flush the session to see if we can access the album
 		 */
-		Session::flush();
+		$sessionFunctions->logout();
+
+		/**
+		 * Let's try to get the info of the album we just created.
+		 */
+		$response = $this->post('/api/Album::getPublic', ['albumID' => $albumID, 'password' => '']);
+		$response->assertOk();
+		$response->assertSeeText('false');
+
 		$response = $this->post('/api/Album::get', ['albumID' => $albumID]);
 		$response->assertOk();
 		$response->assertSee('"Warning: Album private!"');
