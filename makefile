@@ -74,3 +74,10 @@ contrib_check:
 
 clean:
 	@rm -r Lychee-v* 2> /dev/null || true
+
+test:
+	@cp .env .env.bck
+	@sed -i -e 's/dist/public\/dist/' .env
+	@sed -i -e 's/uploads/public\/uploads/' .env
+	./vendor/bin/phpunit --verbose
+	@mv .env.bck .env

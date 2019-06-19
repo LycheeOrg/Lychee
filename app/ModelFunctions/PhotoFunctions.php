@@ -14,7 +14,7 @@ use App\Response;
 use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Config;
+use Storage;
 
 class PhotoFunctions
 {
@@ -92,7 +92,7 @@ class PhotoFunctions
 		}
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
-		$video = $ffmpeg->open(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url);
+		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
 		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
 
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
@@ -114,11 +114,11 @@ class PhotoFunctions
 	{
 		Logs::notice(__METHOD__, __LINE__, 'Photo URL is ' . $photo->url);
 
-		$src = ($frame_tmp === '') ? Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url : $frame_tmp;
+		$src = ($frame_tmp === '') ? Storage::path('big/' . $photo->url) : $frame_tmp;
 		$photoName = explode('.', $photo->url);
 		$this->imageHandler->crop(
 			$src,
-			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $photoName[0] . '.jpeg',
+			Storage::path('thumb/' . $photoName[0] . '.jpeg'),
 			200,
 			200
 		);
@@ -128,7 +128,7 @@ class PhotoFunctions
 			// Retina thumbs
 			$this->imageHandler->crop(
 				$src,
-				Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $photoName[0] . '@2x.jpeg',
+				Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'),
 				400,
 				400
 			);
@@ -152,10 +152,13 @@ class PhotoFunctions
 	public function add(array $file, $albumID_in = 0)
 	{
 		// Check permissions
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS')) === false ||
-			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')) === false ||
-			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')) === false ||
-			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) === false) {
+		if (Helpers::hasPermissions(Storage::path('')) === false ||
+			Helpers::hasPermissions(Storage::path('big/')) === false ||
+			Helpers::hasPermissions(Storage::path('medium/')) === false ||
+			Helpers::hasPermissions(Storage::path('small/')) === false ||
+			Helpers::hasPermissions(Storage::path('thumb/')) === false ||
+			Helpers::hasPermissions(Storage::path('import/')) === false
+	) {
 			Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
 
 			return Response::error('An upload-folder is missing or not readable and writable!');
@@ -231,7 +234,7 @@ class PhotoFunctions
 		// Set paths
 		$tmp_name = $file['tmp_name'];
 		$photo_name = md5(microtime()) . $extension;
-		$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo_name;
+		$path = Storage::path('big/' . $photo_name);
 
 		// Calculate checksum
 		$checksum = sha1_file($tmp_name);
@@ -246,7 +249,7 @@ class PhotoFunctions
 		// double check that
 		if ($exists !== false) {
 			$photo_name = $exists->url;
-			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $exists->url;
+			$path = Storage::path('big/' . $exists->url);
 			$photo->thumbUrl = $exists->thumbUrl;
 			$photo->thumb2x = $exists->thumb2x;
 			$photo->medium = $exists->medium;
@@ -420,7 +423,7 @@ class PhotoFunctions
 
 		if ($frame_tmp === '') {
 			$filename = $photo->url;
-			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $filename;
+			$url = Storage::path('big/' . $filename);
 		} else {
 			$filename = $photo->thumbUrl;
 			$url = $frame_tmp;
@@ -433,7 +436,7 @@ class PhotoFunctions
 			$pathType = substr($pathType, 0, $split);
 		}
 
-		$uploadFolder = Config::get('defines.dirs.LYCHEE_UPLOADS_' . $pathType);
+		$uploadFolder = Storage::path(strtolower($pathType) . '/');
 		if (Helpers::hasPermissions($uploadFolder) === false) {
 			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because ' . $uploadFolder . ' is missing or not readable and writable.');
 

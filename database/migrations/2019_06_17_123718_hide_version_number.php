@@ -1,5 +1,6 @@
 <?php
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;

@@ -13,8 +13,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
+use Storage;
 
 /**
  * App\Album.
@@ -184,15 +184,15 @@ class Album extends Model
 		// For each thumb
 		$k = 0;
 		foreach ($thumbs_types as $thumb_types) {
-			$return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->thumbUrl;
+			$return['thumbs'][$k] = Storage::disk('images')->path('thumb/' . $thumb_types->thumbUrl);
 			if ($thumb_types->thumb2x == '1') {
 				$thumbUrl2x = explode('.', $thumb_types->thumbUrl);
 				$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-				$return['thumbs2x'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumbUrl2x;
+				$return['thumbs2x'][$k] = Storage::disk('images')->path('thumb/' . $thumbUrl2x);
 			} else {
 				$return['thumbs2x'][$k] = '';
 			}
-			$return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->type;
+			$return['types'][$k] = Storage::disk('images')->path('thumb/' . $thumb_types->type);
 			$k++;
 		}
 
