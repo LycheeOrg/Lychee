@@ -100,6 +100,13 @@ class SearchController extends Controller
 			$escaped_terms[] = SearchController::escape_like($term);
 		}
 
+		/**
+		 * Albums.
+		 *
+		 * Begin by building a list of all albums and subalbums accessible
+		 * from the top level.  This includes password-protected albums
+		 * (since they are visible) but not their content.
+		 */
 		$toplevel = $this->albumFunctions->getToplevelAlbums();
 		if ($toplevel === null) {
 			return Response::error('I could not find you.');
@@ -110,7 +117,7 @@ class SearchController extends Controller
 			foreach ($toplevel['albums'] as $album) {
 				$albumIDs[] = $album->id;
 				if ($this->readAccessFunctions->album($album->id) === 1) {
-					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs);
+					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs, true);
 				}
 			}
 		}
@@ -118,14 +125,11 @@ class SearchController extends Controller
 			foreach ($toplevel['shared_albums'] as $album) {
 				$albumIDs[] = $album->id;
 				if ($this->readAccessFunctions->album($album->id) === 1) {
-					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs);
+					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs, true);
 				}
 			}
 		}
 
-		/**
-		 * Albums.
-		 */
 		$query = Album::whereIn('id', $albumIDs);
 		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
@@ -152,8 +156,9 @@ class SearchController extends Controller
 		/*
 		 * Photos.
 		 *
-		 * Begin by eliminating albums we can see but can't access (i.e.,
-		 * password-protected ones).
+		 * Begin by reusing the previously built list of albums.  We need to
+		 * eliminate password-protected albums and subalbums from it though,
+		 * since we can't access them.
 		 */
 		for ($i = 0; $i < count($albumIDs);) {
 			if ($this->readAccessFunctions->album($albumIDs[$i]) !== 1) {
@@ -167,10 +172,13 @@ class SearchController extends Controller
 				$query->whereIn('album_id', $albumIDs);
 				// Add the 'Unsorted' album.
 				if ($this->sessionFunctions->is_logged_in()) {
-					$query = $query->orWhere('album_id', '=', null);
 					$id = $this->sessionFunctions->id();
-					if ($id !== 0) {
-						$query = $query->where('owner_id', '=', $id);
+					$user = User::find($id);
+					if ($id == 0 || $user->upload) {
+						$query = $query->orWhere('album_id', '=', null);
+						if ($id !== 0) {
+							$query = $query->where('owner_id', '=', $id);
+						}
 					}
 				}
 			});
