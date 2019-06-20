@@ -188,7 +188,6 @@ class Photo extends Model
 		$photo['longitude'] = $this->longitude;
 		$photo['altitude'] = $this->altitude;
 		$photo['sysdate'] = $this->created_at->format('d F Y');
-		$photo['tags'] = $this->tags;
 		$photo['description'] = $this->description == null ? '' : $this->description;
 		$photo['license'] = Configs::get_value('default_license'); // default
 
