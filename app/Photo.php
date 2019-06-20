@@ -447,7 +447,7 @@ class Photo extends Model
 	 */
 	public static function select_recent(Builder $query)
 	{
-		return self::set_order($query->where('created_at', '>=', Carbon::now()->subDays(Configs::get_value('recent_age'))->toDateTimeString()));
+		return self::set_order($query->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))->toDateTimeString()));
 	}
 
 	/**

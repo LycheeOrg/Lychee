@@ -318,7 +318,7 @@ class AlbumFunctions
 			}
 		}
 
-		if (Configs::get_value('public_recent') === '1') {
+		if (Configs::get_value('public_recent', '0') === '1') {
 			/**
 			 * Recent.
 			 */
