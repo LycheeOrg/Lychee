@@ -259,7 +259,7 @@ class PhotoController extends Controller
 
 		$no_error = true;
 		foreach ($photos as $photo) {
-			$photo->tags = $request['tags'];
+			$photo->tags = ($request['tags'] !== null ? $request['tags'] : '');
 			$no_error &= $photo->save();
 		}
 
