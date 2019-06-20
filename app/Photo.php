@@ -246,7 +246,7 @@ class Photo extends Model
 
 		// Parse medium
 		if ($this->medium != '') {
-			$photo['medium'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM') . $photoUrl;
+			$photo['medium'] = Storage::path('medium/' . $photoUrl);
 			$photo['medium_dim'] = $this->medium;
 		} else {
 			$photo['medium'] = '';
@@ -254,7 +254,7 @@ class Photo extends Model
 		}
 
 		if ($this->medium2x != '') {
-			$photo['medium2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_MEDIUM') . $photoUrl2x;
+			$photo['medium2x'] = Storage::path('medium/' . $photoUrl2x);
 			$photo['medium2x_dim'] = $this->medium2x;
 		} else {
 			$photo['medium2x'] = '';
@@ -262,7 +262,7 @@ class Photo extends Model
 		}
 
 		if ($this->small != '') {
-			$photo['small'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL') . $photoUrl;
+			$photo['small'] = Storage::path('small/' . $photoUrl);
 			$photo['small_dim'] = $this->small;
 		} else {
 			$photo['small'] = '';
@@ -270,7 +270,7 @@ class Photo extends Model
 		}
 
 		if ($this->small2x != '') {
-			$photo['small2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_SMALL') . $photoUrl2x;
+			$photo['small2x'] = Storage::path('small/' . $photoUrl2x);
 			$photo['small2x_dim'] = $this->small2x;
 		} else {
 			$photo['small2x'] = '';
@@ -278,17 +278,17 @@ class Photo extends Model
 		}
 
 		// Parse paths
-		$photo['thumbUrl'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $this->thumbUrl;
+		$photo['thumbUrl'] = Storage::path('thumb/' . $this->thumbUrl);
 
 		if ($this->thumb2x == '1') {
 			$thumbUrl2x = explode('.', $this->thumbUrl);
 			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-			$photo['thumb2x'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumbUrl2x;
+			$photo['thumb2x'] = Storage::path('thumb/' . $thumbUrl2x);
 		} else {
 			$photo['thumb2x'] = '';
 		}
 
-		$photo['url'] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG') . $this->url;
+		$photo['url'] = Storage::path('big/' . $this->url);
 
 		// Use takestamp as sysdate when possible
 		if (isset($this->takestamp) && $this->takestamp != null) {
