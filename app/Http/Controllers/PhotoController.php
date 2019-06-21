@@ -78,6 +78,7 @@ class PhotoController extends Controller
 		}
 
 		$return = $photo->prepareData();
+		$this->photoFunctions->getUrl($photo, $return);
 		$return['original_album'] = $return['album'];
 		// This way preserves the back button functionality for photos
 		// in smart albums.

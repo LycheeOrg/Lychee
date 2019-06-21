@@ -56,6 +56,8 @@ use Storage;
  * @method static Builder|Album whereUpdatedAt($value)
  * @method static Builder|Album whereVisibleHidden($value)
  * @mixin Eloquent
+ *
+ * @property \Illuminate\Database\Eloquent\Collection|\App\User[] $shared_with
  */
 class Album extends Model
 {
@@ -184,15 +186,15 @@ class Album extends Model
 		// For each thumb
 		$k = 0;
 		foreach ($thumbs_types as $thumb_types) {
-			$return['thumbs'][$k] = Storage::path('thumb/' . $thumb_types->thumbUrl);
+			$return['thumbs'][$k] = Storage::url('thumb/' . $thumb_types->thumbUrl);
 			if ($thumb_types->thumb2x == '1') {
 				$thumbUrl2x = explode('.', $thumb_types->thumbUrl);
 				$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-				$return['thumbs2x'][$k] = Storage::path('thumb/' . $thumbUrl2x);
+				$return['thumbs2x'][$k] = Storage::url('thumb/' . $thumbUrl2x);
 			} else {
 				$return['thumbs2x'][$k] = '';
 			}
-			$return['types'][$k] = Storage::path('thumb/' . $thumb_types->type);
+			$return['types'][$k] = Storage::url('thumb/' . $thumb_types->type);
 			$k++;
 		}
 

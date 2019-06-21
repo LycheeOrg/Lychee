@@ -246,7 +246,7 @@ class Photo extends Model
 
 		// Parse medium
 		if ($this->medium != '') {
-			$photo['medium'] = Storage::path('medium/' . $photoUrl);
+			$photo['medium'] = Storage::url('medium/' . $photoUrl);
 			$photo['medium_dim'] = $this->medium;
 		} else {
 			$photo['medium'] = '';
@@ -254,7 +254,7 @@ class Photo extends Model
 		}
 
 		if ($this->medium2x != '') {
-			$photo['medium2x'] = Storage::path('medium/' . $photoUrl2x);
+			$photo['medium2x'] = Storage::url('medium/' . $photoUrl2x);
 			$photo['medium2x_dim'] = $this->medium2x;
 		} else {
 			$photo['medium2x'] = '';
@@ -262,7 +262,7 @@ class Photo extends Model
 		}
 
 		if ($this->small != '') {
-			$photo['small'] = Storage::path('small/' . $photoUrl);
+			$photo['small'] = Storage::url('small/' . $photoUrl);
 			$photo['small_dim'] = $this->small;
 		} else {
 			$photo['small'] = '';
@@ -270,7 +270,7 @@ class Photo extends Model
 		}
 
 		if ($this->small2x != '') {
-			$photo['small2x'] = Storage::path('small/' . $photoUrl2x);
+			$photo['small2x'] = Storage::url('small/' . $photoUrl2x);
 			$photo['small2x_dim'] = $this->small2x;
 		} else {
 			$photo['small2x'] = '';
@@ -278,17 +278,17 @@ class Photo extends Model
 		}
 
 		// Parse paths
-		$photo['thumbUrl'] = Storage::path('thumb/' . $this->thumbUrl);
+		$photo['thumbUrl'] = Storage::url('thumb/' . $this->thumbUrl);
 
 		if ($this->thumb2x == '1') {
 			$thumbUrl2x = explode('.', $this->thumbUrl);
 			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-			$photo['thumb2x'] = Storage::path('thumb/' . $thumbUrl2x);
+			$photo['thumb2x'] = Storage::url('thumb/' . $thumbUrl2x);
 		} else {
 			$photo['thumb2x'] = '';
 		}
 
-		$photo['url'] = Storage::path('big/' . $this->url);
+		$photo['url'] = Storage::url('big/' . $this->url);
 
 		// Use takestamp as sysdate when possible
 		if (isset($this->takestamp) && $this->takestamp != null) {
@@ -345,11 +345,8 @@ class Photo extends Model
 		if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $this->url)) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find picture in ' . Config::get('defines.dirs.LYCHEE_UPLOADS_BIG'));
 			$error = true;
-		}
-
-		// Delete big
-		if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $this->url) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $this->url)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/big/');
+		} elseif (!Storage::delete('big/' . $this->url)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in ' . Storage::path('big/' . $this->url));
 			$error = true;
 		}
 

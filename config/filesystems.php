@@ -44,28 +44,23 @@ return [
 		'images' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_UPLOADS', public_path('uploads/')),
-			'url' => env('LYCHEE_UPLOADS_URL', public_path('uploads/')),
+			'url' => env('LYCHEE_UPLOADS_URL', 'uploads/'),
 			'visibility' => 'public',
 		],
 
 		'dist' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_DIST', public_path('dist/')),
-			'url' => env('LYCHEE_DIST_URL', public_path('dist/')),
+			'url' => env('LYCHEE_DIST_URL', 'dist/'),
 			'visibility' => 'public',
 		],
 
-		//        'local' => [
-		//            'driver' => 'local',
-		//            'root' => public_path(''),
-		//        ],
-
-		//        'public' => [
-		//            'driver' => 'local',
-		//            'root' => storage_path('app/public'),
-		//            'url' => env('APP_URL').'/storage',
-		//            'visibility' => 'public',
-		//        ],
+		'symbolic' => [
+			'driver' => 'local',
+			'root' => public_path('sym'),
+			'url' => 'sym',
+			'visibility' => 'public',
+		],
 
 		's3' => [
 			'driver' => 's3',

@@ -11,6 +11,7 @@ use App\Logs;
 use App\Metadata\Extractor;
 use App\Photo;
 use App\Response;
+use App\SymLink;
 use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
@@ -590,5 +591,26 @@ class PhotoFunctions
 	public function getValidExtensions(): array
 	{
 		return $this->validExtensions;
+	}
+
+	/**
+	 * get URLS of pictures.
+	 *
+	 * @param Photo $photo
+	 * @param $return
+	 */
+	public function getUrl(Photo $photo, &$return)
+	{
+		if (Storage::getDefaultDriver() == 's3') {
+//			$return['temporary_big'] = Storage::temporaryUrl('big/' . $photo->url, now()->addDay());
+		} else {
+			$sym = SymLink::where('photo_id', $photo->id)->orderBy('created_at', 'DESC')->first();
+			if ($sym == null) {
+				$sym = new SymLink();
+				$sym->set($photo);
+				$sym->save();
+			}
+			$sym->override($return);
+		}
 	}
 }

@@ -215,15 +215,15 @@ class AlbumFunctions
 
 		foreach ($photos as $photo) {
 			if ($i < 3) {
-				$return[$kind]['thumbs'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $photo->thumbUrl;
+				$return[$kind]['thumbs'][$i] = Storage::url('thumb/' . $photo->thumbUrl);
 				if ($photo->thumb2x == '1') {
 					$thumbUrl2x = explode('.', $photo->thumbUrl);
 					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-					$return[$kind]['thumbs2x'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumbUrl2x;
+					$return[$kind]['thumbs2x'][$i] = Storage::url('thumb/' . $thumbUrl2x);
 				} else {
 					$return[$kind]['thumbs2x'][$i] = '';
 				}
-				$return[$kind]['types'][$i] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $photo->type;
+				$return[$kind]['types'][$i] = Storage::url('thumb/' . $photo->type);
 				$i++;
 			} else {
 				break;
