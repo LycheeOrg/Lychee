@@ -29,15 +29,22 @@ class AlbumFunctions
 	private $sessionFunctions;
 
 	/**
+	 * @var PhotoFunctions
+	 */
+	private $photoFunctions;
+
+	/**
 	 * AlbumFunctions constructor.
 	 *
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
+	 * @param PhotoFunctions      $photoFunctions
 	 */
-	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
+	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, PhotoFunctions $photoFunctions)
 	{
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
+		$this->photoFunctions = $photoFunctions;
 	}
 
 	/**
@@ -131,6 +138,7 @@ class AlbumFunctions
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->prepareData();
+			$this->photoFunctions->getUrl($photo_model, $photo);
 
 			// Set previous and next photoID for navigation purposes
 			$photo['previousPhoto'] = $previousPhotoID;

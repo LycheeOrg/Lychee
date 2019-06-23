@@ -613,4 +613,20 @@ class PhotoFunctions
 			$sym->override($return);
 		}
 	}
+
+	/**
+	 * Clear the table of existing SymLinks.
+	 *
+	 * @return string
+	 */
+	public function clearSymLink()
+	{
+		$symlinks = SymLink::all();
+		$no_error = true;
+		foreach ($symlinks as $symlink) {
+			$no_error &= $symlink->delete();
+		}
+
+		return $no_error ? 'true' : 'false';
+	}
 }

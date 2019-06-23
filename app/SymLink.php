@@ -24,11 +24,12 @@ class SymLink extends Model
 	 * @param Photo  $photo
 	 * @param string $kind
 	 * @param string $salt
+	 * @param $field
 	 */
-	private function symlinking(Photo $photo, string $kind, string $salt)
+	private function symlinking(Photo $photo, string $kind, string $salt, $field)
 	{
 		$dir = $kind;
-		$urls = explode('.', $photo->url);
+		$urls = explode('.', $photo->$field);
 		if (substr($kind, -2, 2) == '2x') {
 			$dir = substr($kind, 0, -2);
 			$url = $urls[0] . '@2x.' . $urls[1];
@@ -48,7 +49,7 @@ class SymLink extends Model
 			unlink($sym);
 			symlink($original, $sym);
 		}
-		$this->$kind = Storage::drive('symbolic')->url($file_name);
+		$this->$kind = $file_name;
 	}
 
 	/**
@@ -66,11 +67,19 @@ class SymLink extends Model
 		$this->updated_at = $now;
 
 		$kinds = [
-			'big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x',
+			'url', 'medium', 'medium2x', 'small', 'small2x',
 		];
 		foreach ($kinds as $kind) {
 			if ($photo->$kind != '') {
-				$this->symlinking($photo, $kind, strval($now));
+				$this->symlinking($photo, $kind, strval($now), 'url');
+			}
+		}
+		$kinds = [
+			'thumbUrl', 'thumb2x',
+		];
+		foreach ($kinds as $kind) {
+			if ($photo->$kind != '') {
+				$this->symlinking($photo, $kind, strval($now), 'thumbUrl');
 			}
 		}
 	}
@@ -83,11 +92,11 @@ class SymLink extends Model
 	public function override(array &$return)
 	{
 		$kinds = [
-			'big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x',
+			'url', 'medium', 'medium2x', 'small', 'small2x', 'thumbUrl', 'thumb2x',
 		];
 		foreach ($kinds as $kind) {
 			if ($this->$kind != '') {
-				$return[$kind] = $this->$kind;
+				$return[$kind] = Storage::drive('symbolic')->url($this->$kind);
 			}
 		}
 	}
@@ -102,11 +111,11 @@ class SymLink extends Model
 	public function delete()
 	{
 		$kinds = [
-			'big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x',
+			'url', 'medium', 'medium2x', 'small', 'small2x', 'thumbUrl', 'thumb2x',
 		];
 		foreach ($kinds as $kind) {
 			if ($this->$kind != '') {
-				$this->unlink(Storage::drive('symbolic')->path($this->$kind));
+				unlink(Storage::drive('symbolic')->path($this->$kind));
 			}
 		}
 

@@ -556,4 +556,14 @@ class PhotoController extends Controller
 
 		return $response;
 	}
+
+	/**
+	 * GET to manually clear the symlinks.
+	 *
+	 * @return string
+	 */
+	public function clearSymLink()
+	{
+		return $this->photoFunctions->clearSymLink();
+	}
 }
