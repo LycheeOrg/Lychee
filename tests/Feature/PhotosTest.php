@@ -278,7 +278,7 @@ class PhotosTest extends TestCase
 		$init_config_value = Configs::get_value('enable_picture_symlink');
 
 		// set to 0
-		Configs::set('gen_demo_js', '1');
+		Configs::set('enable_picture_symlink', '1');
 		$this->assertEquals(Configs::get_value('enable_picture_symlink'), '1');
 
 		// just redo the test above :'D
