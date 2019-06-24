@@ -270,6 +270,10 @@ class PhotosTest extends TestCase
 		$response = $this->post('/api/Album::delete', ['albumIDs' => $albumID]);
 		$response->assertOk();
 		$response->assertSee('true');
+
+		$response = $this->get('/api/Photo::clearSymLink');
+		$response->assertOk();
+		$response->assertSee('true');
 	}
 
 	public function testUpload2()
