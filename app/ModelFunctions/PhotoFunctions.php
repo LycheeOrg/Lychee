@@ -11,7 +11,6 @@ use App\Logs;
 use App\Metadata\Extractor;
 use App\Photo;
 use App\Response;
-use App\SymLink;
 use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
@@ -591,51 +590,5 @@ class PhotoFunctions
 	public function getValidExtensions(): array
 	{
 		return $this->validExtensions;
-	}
-
-	/**
-	 * get URLS of pictures.
-	 *
-	 * @param Photo $photo
-	 * @param $return
-	 */
-	public function getUrl(Photo $photo, &$return)
-	{
-		if (Storage::getDefaultDriver() == 's3') {
-//			$return['temporary_big'] = Storage::temporaryUrl('big/' . $photo->url, now()->addDay());
-		} else {
-			$sym = SymLink::where('photo_id', $photo->id)->orderBy('created_at', 'DESC')->first();
-			if ($sym == null) {
-				$sym = new SymLink();
-				$sym->set($photo);
-				$sym->save();
-			}
-			$kinds = [
-				'big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x',
-			];
-			$kindsRet = [
-				'url', 'medium', 'medium2x', 'small', 'small2x', 'thumbUrl', 'thumb2x',
-			];
-
-			foreach ($kinds as $i => $kind) {
-				$return[$kindsRet[$i]] = $sym->get($kind);
-			}
-		}
-	}
-
-	/**
-	 * Clear the table of existing SymLinks.
-	 *
-	 * @return string
-	 */
-	public function clearSymLink()
-	{
-		$symlinks = SymLink::all();
-		$no_error = true;
-		foreach ($symlinks as $symlink) {
-			$no_error &= $symlink->delete();
-		}
-
-		return $no_error ? 'true' : 'false';
 	}
 }

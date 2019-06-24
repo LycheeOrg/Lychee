@@ -4,7 +4,6 @@
 
 namespace App;
 
-use App\SymLink;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,10 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Storage;
 
 /**
  * App\Album.
@@ -169,52 +166,6 @@ class Album extends Model
 	}
 
 	/**
-	 * get the thumbs of an album.
-	 *
-	 * @param array $return
-	 * @param array $album_list
-	 *
-	 * @return array
-	 */
-	public function gen_thumbs($return, $album_list)
-	{
-		$photos = Photo::whereIn('album_id', $album_list)
-			->orderBy('star', 'DESC')
-			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
-			->limit(3)->get();
-
-		// For each thumb
-		$k = 0;
-		foreach ($photos as $photo) {
-			$sym = null;
-			if (Storage::getDefaultDriver() != 's3') {
-				$sym = SymLink::where('photo_id', $photo->id)->orderBy('created_at', 'DESC')->first();
-				if ($sym == null) {
-					$sym = new SymLink();
-					$sym->set($photo);
-					$sym->save();
-				}
-			}
-			$return['thumbs'][$k] = ($sym !== null ?  $sym->get('thumb') : Storage::url('thumb/' . $photo->thumbUrl));
-			if ($photo->thumb2x == '1') {
-				if ($sym !== null) {
-					$return['thumbs2x'][$k] = $sym->get('thumb2x');
-				} else {
-					$thumbUrl2x = explode('.', $photo->thumbUrl);
-					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-					$return['thumbs2x'][$k] = Storage::url('thumb/' . $thumbUrl2x);
-				}
-			} else {
-				$return['thumbs2x'][$k] = '';
-			}
-			$return['types'][$k] = $photo->type;
-			$k++;
-		}
-
-		return $return;
-	}
-
-	/**
 	 * Recursively go through each sub album and build a list of them.
 	 *
 	 * @param array $return
@@ -364,41 +315,6 @@ class Album extends Model
 	}
 
 	/**
-	 * Given a user, retrieve all the shared albums it can see.
-	 * TODO: Move this function to another file.
-	 *
-	 * @param $id
-	 *
-	 * @return Album[]
-	 */
-	public static function get_albums_user($id)
-	{
-		return Album::with([
-			'owner',
-			'children',
-		])
-			->where('owner_id', '<>', $id)
-			->where('parent_id', '=', null)
-			->Where(
-				function (Builder $query) use ($id) {
-					// album is shared with user
-					$query->whereIn('id', function (QBuilder $query) use ($id) {
-						$query->select('album_id')
-							->from('user_album')
-							->where('user_id', '=', $id);
-					})
-						// or album is visible to user
-						->orWhere(
-							function (Builder $query) {
-								$query->where('public', '=', true)->where('visible_hidden', '=', true);
-							});
-				})
-			->orderBy('owner_id', 'ASC')
-			->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
-			->get();
-	}
-
-	/**
 	 * Given two list of albums, merge them without duplicates.
 	 * Current complexity is in O(n^2)
 	 * TODO: Move this function to another file.
@@ -410,26 +326,26 @@ class Album extends Model
 	 *
 	 * @return array
 	 */
-	public static function merge(array $albums1, array $albums2)
-	{
-		$return = $albums1;
-
-		foreach ($albums2 as $album2_t) {
-			$found = false;
-			foreach ($albums1 as $album1_t) {
-				if ($album1_t->id == $album2_t->id) {
-					$found = true;
-					break;
-				}
-			}
-
-			if (!$found) {
-				$return[] = $album2_t;
-			}
-		}
-
-		return $return;
-	}
+//	public static function merge(array $albums1, array $albums2)
+//	{
+//		$return = $albums1;
+//
+//		foreach ($albums2 as $album2_t) {
+//			$found = false;
+//			foreach ($albums1 as $album1_t) {
+//				if ($album1_t->id == $album2_t->id) {
+//					$found = true;
+//					break;
+//				}
+//			}
+//
+//			if (!$found) {
+//				$return[] = $album2_t;
+//			}
+//		}
+//
+//		return $return;
+//	}
 
 	/**
 	 * Before calling delete() to remove the album from the database

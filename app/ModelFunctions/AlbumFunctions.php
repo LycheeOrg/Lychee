@@ -14,6 +14,7 @@ use App\SymLink;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Config;
 
@@ -30,22 +31,22 @@ class AlbumFunctions
 	private $sessionFunctions;
 
 	/**
-	 * @var PhotoFunctions
+	 * @var SymLinkFunctions
 	 */
-	private $photoFunctions;
+	private $symLinkFunctions;
 
 	/**
 	 * AlbumFunctions constructor.
 	 *
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
-	 * @param PhotoFunctions      $photoFunctions
+	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, PhotoFunctions $photoFunctions)
+	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, SymLinkFunctions $symLinkFunctions)
 	{
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
-		$this->photoFunctions = $photoFunctions;
+		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
 	/**
@@ -124,6 +125,44 @@ class AlbumFunctions
 	}
 
 	/**
+	 * get the thumbs of an album.
+	 *
+	 * @param array $return
+	 * @param array $album_list
+	 *
+	 * @return array
+	 */
+	public function gen_thumbs($return, $album_list)
+	{
+		$photos = Photo::whereIn('album_id', $album_list)
+			->orderBy('star', 'DESC')
+			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
+			->limit(3)->get();
+
+		// For each thumb
+		$k = 0;
+		foreach ($photos as $photo) {
+			$sym = $this->symLinkFunctions->find($photo);
+			if ($sym !== null) {
+				$return['thumbs'][$k] = $sym->get('thumbUrl');
+				// default is '' so if thumb2x does not exist we just reply '' which is the behaviour we want
+				$return['thumbs2x'][$k] = $sym->get('thumb2x');
+			} else {
+				$return['thumbs'][$k] = Storage::url('thumb/' . $photo->thumbUrl);
+				if ($photo->thumb2x == '1') {
+					$thumbUrl2x = explode('.', $photo->thumbUrl);
+					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+					$return['thumbs2x'][$k] = Storage::url('thumb/' . $thumbUrl2x);
+				}
+			}
+			$return['types'][$k] = $photo->type;
+			$k++;
+		}
+
+		return $return;
+	}
+
+	/**
 	 * take a $photo_sql query and return an array containing their pictures.
 	 *
 	 * @param $photos_sql
@@ -139,7 +178,7 @@ class AlbumFunctions
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->prepareData();
-			$this->photoFunctions->getUrl($photo_model, $photo);
+			$this->symLinkFunctions->getUrl($photo_model, $photo);
 
 			// Set previous and next photoID for navigation purposes
 			$photo['previousPhoto'] = $previousPhotoID;
@@ -176,7 +215,7 @@ class AlbumFunctions
 	/**
 	 * Given a list of albums, generate an array to be returned.
 	 *
-	 * @param Collection $albums
+	 * @param Collection[Album] $albums
 	 *
 	 * @return array
 	 */
@@ -192,7 +231,7 @@ class AlbumFunctions
 
 				if ($this->readAccessFunctions->album($album_model->id) === 1) {
 					$album['albums'] = $this->get_albums($album_model);
-					$album = $album_model->gen_thumbs($album, $this->get_sub_albums($album_model, [$album_model->id]));
+					$album = $this->gen_thumbs($album, $this->get_sub_albums($album_model, [$album_model->id]));
 				}
 
 				// Add to return
@@ -233,7 +272,7 @@ class AlbumFunctions
 						$sym->save();
 					}
 				}
-				$return[$kind]['thumbs'][$i] = ($sym !== null ?  $sym->get('thumb') : Storage::url('thumb/' . $photo->thumbUrl));
+				$return[$kind]['thumbs'][$i] = ($sym !== null ? $sym->get('thumb') : Storage::url('thumb/' . $photo->thumbUrl));
 				if ($photo->thumb2x == '1') {
 					if ($sym !== null) {
 						$return[$kind]['thumbs2x'][$i] = $sym->get('thumb2x');
@@ -389,7 +428,7 @@ class AlbumFunctions
 
 				if ($haveAccess === 1) {
 					$album['albums'] = $this->get_albums($subAlbum);
-					$album = $subAlbum->gen_thumbs($album, $this->get_sub_albums($subAlbum, [$subAlbum->id]));
+					$album = $this->gen_thumbs($album, $this->get_sub_albums($subAlbum, [$subAlbum->id]));
 				}
 
 				$subAlbums[] = $album;
@@ -499,7 +538,7 @@ class AlbumFunctions
 						->where('parent_id', '=', null)
 						->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
 						->get();
-					$return['shared_albums'] = Album::get_albums_user($user->id);
+					$return['shared_albums'] = $this->get_albums_user($user->id);
 				}
 			}
 		} else {
@@ -508,5 +547,39 @@ class AlbumFunctions
 		}
 
 		return $return;
+	}
+
+	/**
+	 * Given a user, retrieve all the shared albums it can see.
+	 *
+	 * @param $id
+	 *
+	 * @return Album[]
+	 */
+	public function get_albums_user($id)
+	{
+		return Album::with([
+			'owner',
+			'children',
+		])
+			->where('owner_id', '<>', $id)
+			->where('parent_id', '=', null)
+			->Where(
+				function (Builder $query) use ($id) {
+					// album is shared with user
+					$query->whereIn('id', function (QBuilder $query) use ($id) {
+						$query->select('album_id')
+							->from('user_album')
+							->where('user_id', '=', $id);
+					})
+						// or album is visible to user
+						->orWhere(
+							function (Builder $query) {
+								$query->where('public', '=', true)->where('visible_hidden', '=', true);
+							});
+				})
+			->orderBy('owner_id', 'ASC')
+			->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
+			->get();
 	}
 }

@@ -11,6 +11,7 @@ use App\ModelFunctions\Helpers;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
+use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
@@ -36,22 +37,22 @@ class PhotoController extends Controller
 	private $readAccessFunctions;
 
 	/**
-	 * @var AlbumFunctions
+	 * @var SymLinkFunctions
 	 */
-	private $albumFunctions;
+	private $symLinkFunctions;
 
 	/**
 	 * @param PhotoFunctions      $photoFunctions
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
-	 * @param AlbumFunctions      $albumFunctions
+	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, SymLinkFunctions $symLinkFunctions)
 	{
 		$this->photoFunctions = $photoFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
-		$this->albumFunctions = $albumFunctions;
+		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
 	/**
@@ -78,7 +79,7 @@ class PhotoController extends Controller
 		}
 
 		$return = $photo->prepareData();
-		$this->photoFunctions->getUrl($photo, $return);
+		$this->symLinkFunctions->getUrl($photo, $return);
 		$return['original_album'] = $return['album'];
 		// This way preserves the back button functionality for photos
 		// in smart albums.
@@ -106,7 +107,7 @@ class PhotoController extends Controller
 		}
 
 		$return = $photo->prepareData();
-		$this->photoFunctions->getUrl($photo, $return);
+		$this->symLinkFunctions->getUrl($photo, $return);
 
 		return $return;
 	}
@@ -304,14 +305,14 @@ class PhotoController extends Controller
 		}
 
 		$no_error = true;
-		$takestamps = [];
+		$takestamp = [];
 		foreach ($photos as $photo) {
 			$oldAlbumID = $photo->album_id;
 
 			$photo->album_id = ($albumID == '0') ? null : $albumID;
 			if ($album !== null) {
 				$photo->owner_id = $album->owner_id;
-				$takestamps[] = $photo->takestamp;
+				$takestamp[] = $photo->takestamp;
 			}
 			$no_error &= $photo->save();
 
@@ -325,7 +326,7 @@ class PhotoController extends Controller
 			}
 		}
 		if ($album !== null) {
-			$no_error &= $album->update_takestamps($takestamps, true);
+			$no_error &= $album->update_takestamps($takestamp, true);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -400,20 +401,23 @@ class PhotoController extends Controller
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
 
 		$no_error = true;
+		$albums = [];
+		$takestamp = [];
+
 		foreach ($photos as $photo) {
 			$no_error &= $photo->predelete();
 
-			$album = null;
 			if ($photo->album_id !== null) {
-				$album = $photo->album;
-				$takestamp = $photo->takestamp;
+				$albums[] = $photo->album;
+				$takestamp[] = $photo->takestamp;
 			}
 
 			$no_error &= $photo->delete();
+		}
 
-			if ($album !== null) {
-				$no_error &= $album->update_takestamps([$takestamp], false);
-			}
+		// TODO: ideally we would like to avoid duplicates here...
+		for ($i = 0; $i < count($albums);  $i++) {
+			$no_error &= $albums[$i]->update_takestamps([$takestamp[$i]], false);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -565,6 +569,6 @@ class PhotoController extends Controller
 	 */
 	public function clearSymLink()
 	{
-		return $this->photoFunctions->clearSymLink();
+		return $this->symLinkFunctions->clearSymLink();
 	}
 }
