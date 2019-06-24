@@ -416,7 +416,7 @@ class PhotoController extends Controller
 		}
 
 		// TODO: ideally we would like to avoid duplicates here...
-		for ($i = 0; $i < count($albums);  $i++) {
+		for ($i = 0; $i < count($albums); $i++) {
 			$no_error &= $albums[$i]->update_takestamps([$takestamp[$i]], false);
 		}
 

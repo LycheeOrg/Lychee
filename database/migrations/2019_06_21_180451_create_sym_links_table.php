@@ -17,12 +17,12 @@ class CreateSymLinksTable extends Migration
 		Schema::create('sym_links', function (Blueprint $table) {
 			$table->bigIncrements('id');
 			$table->bigInteger('photo_id')->nullable();
-			$table->string('big')->default('');
+			$table->string('url')->default('');
 			$table->string('medium')->default('');
 			$table->string('medium2x')->default('');
 			$table->string('small')->default('');
 			$table->string('small2x')->default('');
-			$table->string('thumb')->default('');
+			$table->string('thumbUrl')->default('');
 			$table->string('thumb2x')->default('');
 			$table->timestamps();
 		});
