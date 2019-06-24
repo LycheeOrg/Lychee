@@ -4,6 +4,7 @@
 
 namespace App;
 
+use App\SymLink;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -177,24 +178,36 @@ class Album extends Model
 	 */
 	public function gen_thumbs($return, $album_list)
 	{
-		$thumbs_types = Photo::select(['thumbUrl', 'thumb2x', 'type'])
-			->whereIn('album_id', $album_list)
+		$photos = Photo::whereIn('album_id', $album_list)
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
 			->limit(3)->get();
 
 		// For each thumb
 		$k = 0;
-		foreach ($thumbs_types as $thumb_types) {
-			$return['thumbs'][$k] = Storage::url('thumb/' . $thumb_types->thumbUrl);
-			if ($thumb_types->thumb2x == '1') {
-				$thumbUrl2x = explode('.', $thumb_types->thumbUrl);
-				$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-				$return['thumbs2x'][$k] = Storage::url('thumb/' . $thumbUrl2x);
+		foreach ($photos as $photo) {
+			$sym = null;
+			if (Storage::getDefaultDriver() != 's3') {
+				$sym = SymLink::where('photo_id', $photo->id)->orderBy('created_at', 'DESC')->first();
+				if ($sym == null) {
+					$sym = new SymLink();
+					$sym->set($photo);
+					$sym->save();
+				}
+			}
+			$return['thumbs'][$k] = ($sym !== null ?  $sym->get('thumb') : Storage::url('thumb/' . $photo->thumbUrl));
+			if ($photo->thumb2x == '1') {
+				if ($sym !== null) {
+					$return['thumbs2x'][$k] = $sym->get('thumb2x');
+				} else {
+					$thumbUrl2x = explode('.', $photo->thumbUrl);
+					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+					$return['thumbs2x'][$k] = Storage::url('thumb/' . $thumbUrl2x);
+				}
 			} else {
 				$return['thumbs2x'][$k] = '';
 			}
-			$return['types'][$k] = Storage::url('thumb/' . $thumb_types->type);
+			$return['types'][$k] = $photo->type;
 			$k++;
 		}
 

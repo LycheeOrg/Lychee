@@ -610,7 +610,16 @@ class PhotoFunctions
 				$sym->set($photo);
 				$sym->save();
 			}
-			$sym->override($return);
+			$kinds = [
+				'big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x',
+			];
+			$kindsRet = [
+				'url', 'medium', 'medium2x', 'small', 'small2x', 'thumbUrl', 'thumb2x',
+			];
+
+			foreach ($kinds as $i => $kind) {
+				$return[$kindsRet[$i]] = $sym->get($kind);
+			}
 		}
 	}
 

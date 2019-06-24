@@ -66,21 +66,22 @@ class SymLink extends Model
 		$this->created_at = $now;
 		$this->updated_at = $now;
 
-		$kinds = [
-			'url', 'medium', 'medium2x', 'small', 'small2x',
-		];
-		foreach ($kinds as $kind) {
-			if ($photo->$kind != '') {
-				$this->symlinking($photo, $kind, strval($now), 'url');
-			}
+		if ($photo->url != '') {
+			$this->symlinking($photo, 'big', strval($now), 'url');
 		}
 		$kinds = [
-			'thumbUrl', 'thumb2x',
+			'medium', 'medium2x', 'small', 'small2x',
 		];
 		foreach ($kinds as $kind) {
 			if ($photo->$kind != '') {
-				$this->symlinking($photo, $kind, strval($now), 'thumbUrl');
+				$this->symlinking($photo, $kind, strval($now), (strpos($photo->type, 'video') === 0 ? 'thumbUrl' : 'url'));
 			}
+		}
+		if ($photo->thumbUrl != '') {
+			$this->symlinking($photo, 'thumb', strval($now), 'thumbUrl');
+		}
+		if ($photo->thumb2x != '0') {
+			$this->symlinking($photo, 'thumb2x', strval($now), 'thumbUrl');
 		}
 	}
 
@@ -92,12 +93,27 @@ class SymLink extends Model
 	public function override(array &$return)
 	{
 		$kinds = [
-			'url', 'medium', 'medium2x', 'small', 'small2x', 'thumbUrl', 'thumb2x',
+			'big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x',
 		];
 		foreach ($kinds as $kind) {
 			if ($this->$kind != '') {
 				$return[$kind] = Storage::drive('symbolic')->url($this->$kind);
 			}
+		}
+	}
+
+	/**
+	 * @param $kind
+	 *
+	 * @return URL to symbolic link
+	 */
+	public function get($kind)
+	{
+		if ($this->$kind != '') {
+			return Storage::drive('symbolic')->url($this->$kind);
+		}
+		else {
+			return '';
 		}
 	}
 
@@ -111,7 +127,7 @@ class SymLink extends Model
 	public function delete()
 	{
 		$kinds = [
-			'url', 'medium', 'medium2x', 'small', 'small2x', 'thumbUrl', 'thumb2x',
+			'big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x',
 		];
 		foreach ($kinds as $kind) {
 			if ($this->$kind != '') {

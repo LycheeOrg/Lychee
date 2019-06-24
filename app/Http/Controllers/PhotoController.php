@@ -106,6 +106,7 @@ class PhotoController extends Controller
 		}
 
 		$return = $photo->prepareData();
+		$this->photoFunctions->getUrl($photo, $return);
 
 		return $return;
 	}

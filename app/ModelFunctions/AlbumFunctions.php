@@ -10,6 +10,7 @@ use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\Photo;
 use App\Response;
+use App\SymLink;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -223,15 +224,28 @@ class AlbumFunctions
 
 		foreach ($photos as $photo) {
 			if ($i < 3) {
-				$return[$kind]['thumbs'][$i] = Storage::url('thumb/' . $photo->thumbUrl);
+				$sym = null;
+				if (Storage::getDefaultDriver() != 's3') {
+					$sym = SymLink::where('photo_id', $photo->id)->orderBy('created_at', 'DESC')->first();
+					if ($sym == null) {
+						$sym = new SymLink();
+						$sym->set($photo);
+						$sym->save();
+					}
+				}
+				$return[$kind]['thumbs'][$i] = ($sym !== null ?  $sym->get('thumb') : Storage::url('thumb/' . $photo->thumbUrl));
 				if ($photo->thumb2x == '1') {
-					$thumbUrl2x = explode('.', $photo->thumbUrl);
-					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-					$return[$kind]['thumbs2x'][$i] = Storage::url('thumb/' . $thumbUrl2x);
+					if ($sym !== null) {
+						$return[$kind]['thumbs2x'][$i] = $sym->get('thumb2x');
+					} else {
+						$thumbUrl2x = explode('.', $photo->thumbUrl);
+						$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+						$return[$kind]['thumbs2x'][$i] = Storage::url('thumb/' . $thumbUrl2x);
+					}
 				} else {
 					$return[$kind]['thumbs2x'][$i] = '';
 				}
-				$return[$kind]['types'][$i] = Storage::url('thumb/' . $photo->type);
+				$return[$kind]['types'][$i] = $photo->type;
 				$i++;
 			} else {
 				break;
