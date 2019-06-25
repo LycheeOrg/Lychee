@@ -79,7 +79,7 @@ class IndexController extends Controller
 	 */
 	public function gallery()
 	{
-		$this->symLinkFunctions->clearSymLink();
+		$this->symLinkFunctions->remove_outdated();
 		$infos = $this->configFunctions->get_pages_infos();
 
 		$lang = Lang::get_lang(Configs::get_value('lang'));
