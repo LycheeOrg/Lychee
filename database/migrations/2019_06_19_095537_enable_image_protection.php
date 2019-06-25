@@ -15,9 +15,22 @@ class EnableImageProtection extends Migration
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				[
-					'key' => 'enable_picture_symlink',
+					'key' => 'SL_enable',
 					'value' => '0',
 					'confidentiality' => 3,
+					'cat' => 'Symbolic Link',
+				],
+				[
+					'key' => 'SL_for_admin',
+					'value' => '0',
+					'confidentiality' => 3,
+					'cat' => 'Symbolic Link',
+				],
+				[
+					'key' => 'SL_life_time_days',
+					'value' => '1',
+					'confidentiality' => 3,
+					'cat' => 'Symbolic Link',
 				],
 			]);
 		} else {
@@ -33,7 +46,9 @@ class EnableImageProtection extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'enable_picture_symlink')->delete();
+			Configs::where('key', '=', 'SL_enable')->delete();
+			Configs::where('key', '=', 'SL_for_admin')->delete();
+			Configs::where('key', '=', 'SL_life_time_days')->delete();
 		}
 	}
 }

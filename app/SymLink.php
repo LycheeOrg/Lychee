@@ -176,7 +176,12 @@ class SymLink extends Model
 	{
 		foreach ($this->kinds_dir as $kind => $dir) {
 			if ($this->$kind != '') {
-				unlink(Storage::drive('symbolic')->path($this->$kind));
+				$path = Storage::drive('symbolic')->path($this->$kind);
+				try {
+					unlink($path);
+				} catch (Exception $e) {
+					Logs::error(__METHOD__, __LINE__, 'could not unlink ' . $path);
+				}
 			}
 		}
 

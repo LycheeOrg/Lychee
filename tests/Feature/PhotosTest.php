@@ -279,16 +279,20 @@ class PhotosTest extends TestCase
 	public function testUpload2()
 	{
 		// save initial value
-		$init_config_value = Configs::get_value('enable_picture_symlink');
+		$init_config_value1 = Configs::get_value('symbolic_link_enable');
+		$init_config_value2 = Configs::get_value('symbolic_link_for_admin');
 
 		// set to 0
-		Configs::set('enable_picture_symlink', '1');
-		$this->assertEquals(Configs::get_value('enable_picture_symlink'), '1');
+		Configs::set('symbolic_link_enable', '1');
+		Configs::set('symbolic_link_for_admin', '1');
+		$this->assertEquals(Configs::get_value('symbolic_link_enable'), '1');
+		$this->assertEquals(Configs::get_value('symbolic_link_for_admin'), '1');
 
 		// just redo the test above :'D
 		$this->testUpload();
 
 		// set back to initial value
-		Configs::set('enable_picture_symlink', $init_config_value);
+		Configs::set('symbolic_link_enable', $init_config_value1);
+		Configs::set('symbolic_link_for_admin', $init_config_value2);
 	}
 }

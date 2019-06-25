@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Configs;
 use App\Locale\Lang;
 use App\ModelFunctions\ConfigFunctions;
+use App\ModelFunctions\SymLinkFunctions;
 use App\Page;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
@@ -19,11 +20,18 @@ class IndexController extends Controller
 	private $configFunctions;
 
 	/**
-	 * @param ConfigFunctions $configFunctions
+	 * @var SymLinkFunctions
 	 */
-	public function __construct(ConfigFunctions $configFunctions)
+	private $symLinkFunctions;
+
+	/**
+	 * @param ConfigFunctions  $configFunctions
+	 * @param SymLinkFunctions $symLinkFunctions
+	 */
+	public function __construct(ConfigFunctions $configFunctions, SymLinkFunctions $symLinkFunctions)
 	{
 		$this->configFunctions = $configFunctions;
+		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
 	/**
@@ -71,6 +79,7 @@ class IndexController extends Controller
 	 */
 	public function gallery()
 	{
+		$this->symLinkFunctions->clearSymLink();
 		$infos = $this->configFunctions->get_pages_infos();
 
 		$lang = Lang::get_lang(Configs::get_value('lang'));

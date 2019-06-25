@@ -36,7 +36,7 @@ class DemoController extends Controller
 		$sessionFunctions = new SessionFunctions();
 		$githubFunctions = new GitHubFunctions();
 		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
-		$symLinkFunction = new SymLinkFunctions();
+		$symLinkFunction = new SymLinkFunctions($sessionFunctions);
 		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions, $symLinkFunction);
 
 		/**
