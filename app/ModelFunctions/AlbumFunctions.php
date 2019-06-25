@@ -236,9 +236,9 @@ class AlbumFunctions
 	/**
 	 * @param $toplevel optional return from getToplevelAlbums()
 	 *
-	 * @return SQL query extracting all recent public pictures
+	 * @return array of all recursive albums accessible by the current user from the top level
 	 */
-	public function getPublicRecent($toplevel = null)
+	public function getPublicAlbums($toplevel = null)
 	{
 		if ($toplevel === null) {
 			$toplevel = $this->getToplevelAlbums();
@@ -265,7 +265,7 @@ class AlbumFunctions
 			}
 		}
 
-		return Photo::select_recent(Photo::whereIn('album_id', $albumIDs));
+		return $albumIDs;
 	}
 
 	/**
@@ -318,12 +318,25 @@ class AlbumFunctions
 			}
 		}
 
-		if (Configs::get_value('public_recent', '0') === '1') {
-			/**
-			 * Recent.
-			 */
-			$photos_sql = $this->getPublicRecent($toplevel)->select('thumbUrl', 'thumb2x', 'type')->limit(3);
-			$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
+		if (Configs::get_value('public_starred', '0') === '1' ||
+			Configs::get_value('public_recent', '0') === '1') {
+			$publicAlbums = $this->getPublicAlbums($toplevel);
+
+			if (Configs::get_value('public_starred', '0') === '1') {
+				/**
+				 * Starred.
+				 */
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $publicAlbums))->select('thumbUrl', 'thumb2x', 'type')->limit(3);
+				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
+			}
+
+			if (Configs::get_value('public_recent', '0') === '1') {
+				/**
+				 * Recent.
+				 */
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $publicAlbums))->select('thumbUrl', 'thumb2x', 'type')->limit(3);
+				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
+			}
 
 			return $return;
 		}

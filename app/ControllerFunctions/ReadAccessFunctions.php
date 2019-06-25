@@ -52,7 +52,8 @@ class ReadAccessFunctions
 				}
 			}
 
-			if ($albumID === 'r' && Configs::get_value('public_recent', '0') === '1') {
+			if (($albumID === 'r' && Configs::get_value('public_recent', '0') === '1') ||
+				($albumID === 'f' && Configs::get_value('public_starred', '0') === '1')) {
 				return 1; // access granted
 			} else {
 				return 2; // Warning: Album private!
