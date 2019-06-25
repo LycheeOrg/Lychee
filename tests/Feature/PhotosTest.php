@@ -160,11 +160,15 @@ class PhotosTest extends TestCase
 			'id' => $id,
 			'iso' => '1250',
 			'lens' => 'EF16-35mm f/2.8L USM',
+			'license' => 'reserved',
 			'make' => 'Canon',
 			'model' => 'Canon EOS R',
+			'public' => '1',
 			'shutter' => '30 s',
 			'size' => '20.1 MB',
 			'small_dim' => '540x360',
+			'star' => '1',
+			'tags' => 'night',
 			'medium_dim' => '1620x1080',
 			'takedate' => '01 June 2019 at 01:28',
 			'title' => "Night in Ploumanac'h",
@@ -177,6 +181,16 @@ class PhotosTest extends TestCase
 		 */
 		$response = $this->post('/api/Photo::getRandom', []);
 		$response->assertStatus(200);
+
+		/**
+		 * Try to delete the tag.
+		 */
+		$response = $this->post('/api/Photo::setTags', [
+			'photoIDs' => $id,
+			'tags' => null,
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
 
 		$response = $this->post('/api/Album::add', [
 			'title' => 'test_album_2',
