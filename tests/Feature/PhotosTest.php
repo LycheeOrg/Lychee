@@ -176,6 +176,62 @@ class PhotosTest extends TestCase
 			'width' => 6720,
 		]);
 
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'reserved',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC0',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-ND',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-SA',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-NC',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-NC-ND',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-NC-SA',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
 		/**
 		 * Actually try to display the picture.
 		 */
@@ -251,6 +307,12 @@ class PhotosTest extends TestCase
 			'downloadable' => 1,
 		]);
 		$response->assertOk();
+
+		/**
+		 * Actually try to display the picture.
+		 */
+		$response = $this->post('/api/Photo::getRandom', []);
+		$response->assertStatus(200);
 
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');

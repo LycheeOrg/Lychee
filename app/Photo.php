@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 use Storage;
 
 /**
@@ -344,8 +343,8 @@ class Photo extends Model
 
 		$error = false;
 		// quick check...
-		if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $this->url)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find picture in ' . Config::get('defines.dirs.LYCHEE_UPLOADS_BIG'));
+		if (!Storage::exists('big/' . $this->url)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find picture in ' . Storage::path('big/' . $this->url));
 			$error = true;
 		} elseif (!Storage::delete('big/' . $this->url)) {
 			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in ' . Storage::path('big/' . $this->url));
@@ -362,23 +361,23 @@ class Photo extends Model
 			$photoName2x = $photoName2x[0] . '@2x.' . $photoName2x[1];
 
 			// Delete medium
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photoName)) {
+			if (Storage::exists('medium/' . $photoName) && !unlink(Storage::path('medium/' . $photoName))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
 				$error = true;
 			}
 
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photoName2x)) {
+			if (Storage::exists('medium/' . $photoName2x) && !unlink(Storage::path('medium/' . $photoName2x))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
 				$error = true;
 			}
 
 			// Delete small
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photoName) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photoName)) {
+			if (Storage::exists('small/' . $photoName) && !unlink(Storage::path('small/' . $photoName))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
 				$error = true;
 			}
 
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photoName2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photoName2x)) {
+			if (Storage::exists('medium/' . $photoName2x) && !unlink(Storage::path('medium/' . $photoName2x))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
 				$error = true;
 			}
@@ -389,13 +388,13 @@ class Photo extends Model
 			$thumbUrl2x = explode('.', $this->thumbUrl);
 			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 			// Delete thumb
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $this->thumbUrl) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $this->thumbUrl)) {
+			if (Storage::exists('thumb/' . $this->thumbUrl) && !unlink(Storage::path('thumb/' . $this->thumbUrl))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
 				$error = true;
 			}
 
 			// Delete thumb@2x
-			if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $thumbUrl2x) && !unlink(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') . $thumbUrl2x)) {
+			if (Storage::exists('thumb/' . $thumbUrl2x) && !unlink(Storage::path('thumb/' . $thumbUrl2x))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
 				$error = true;
 			}

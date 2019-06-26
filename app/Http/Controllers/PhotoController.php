@@ -366,9 +366,9 @@ class PhotoController extends Controller
 			'CC-BY',
 			'CC-BY-ND',
 			'CC-BY-SA',
-			'CC-BY-ND',
+			'CC-BY-NC',
 			'CC-BY-NC-ND',
-			'CC-BY-SA',
+			'CC-BY-NC-SA',
 		];
 		$found = false;
 		$i = 0;
