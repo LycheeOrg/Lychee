@@ -8,6 +8,7 @@ use App\Album;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\ModelFunctions\Helpers;
+use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
@@ -35,15 +36,22 @@ class PhotoController extends Controller
 	private $readAccessFunctions;
 
 	/**
+	 * @var AlbumFunctions
+	 */
+	private $albumFunctions;
+
+	/**
 	 * @param PhotoFunctions      $photoFunctions
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
+	 * @param AlbumFunctions      $albumFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions)
 	{
 		$this->photoFunctions = $photoFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
+		$this->albumFunctions = $albumFunctions;
 	}
 
 	/**
@@ -88,9 +96,7 @@ class PhotoController extends Controller
 	{
 		// here we need to refine.
 
-		$photo = Photo::where('photos.star', '=', 1)
-			->join('albums', 'album_id', '=', 'albums.id')
-			->where('albums.public', '=', '1')
+		$photo = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()))
 			->inRandomOrder()
 			->first();
 

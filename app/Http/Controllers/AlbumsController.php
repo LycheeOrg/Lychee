@@ -8,7 +8,6 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Response;
-use App\User;
 
 class AlbumsController extends Controller
 {
@@ -47,22 +46,12 @@ class AlbumsController extends Controller
 			'shared_albums' => null,
 		);
 
-		$shared_albums = null;
-
 		$toplevel = $this->albumFunctions->getToplevelAlbums();
 		if ($toplevel === null) {
 			return Response::error('I could not find you.');
 		}
 
-		if ($this->sessionFunctions->is_logged_in()) {
-			$id = $this->sessionFunctions->id();
-
-			$user = User::find($id);
-			if ($id == 0 || $user->upload) {
-				$return['smartalbums'] = $this->albumFunctions->getSmartAlbums();
-			}
-		}
-
+		$return['smartalbums'] = $this->albumFunctions->getSmartAlbums($toplevel);
 		$return['albums'] = $this->albumFunctions->prepare_albums($toplevel['albums']);
 		$return['shared_albums'] = $this->albumFunctions->prepare_albums($toplevel['shared_albums']);
 

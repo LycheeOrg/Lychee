@@ -234,9 +234,46 @@ class AlbumFunctions
 	}
 
 	/**
+	 * @param $toplevel optional return from getToplevelAlbums()
+	 *
+	 * @return array of all recursive albums accessible by the current user from the top level
+	 */
+	public function getPublicAlbums($toplevel = null)
+	{
+		if ($toplevel === null) {
+			$toplevel = $this->getToplevelAlbums();
+			if ($toplevel === null) {
+				return null;
+			}
+		}
+
+		$albumIDs = [];
+		if ($toplevel['albums'] !== null) {
+			foreach ($toplevel['albums'] as $album) {
+				if ($this->readAccessFunctions->album($album->id) === 1) {
+					$albumIDs[] = $album->id;
+					$albumIDs = $this->get_sub_albums($album, $albumIDs);
+				}
+			}
+		}
+		if ($toplevel['shared_albums'] !== null) {
+			foreach ($toplevel['shared_albums'] as $album) {
+				if ($this->readAccessFunctions->album($album->id) === 1) {
+					$albumIDs[] = $album->id;
+					$albumIDs = $this->get_sub_albums($album, $albumIDs);
+				}
+			}
+		}
+
+		return $albumIDs;
+	}
+
+	/**
+	 * @param $toplevel optional return from getToplevelAlbums()
+	 *
 	 * @return array|false returns an array of smart albums or false on failure
 	 */
-	public function getSmartAlbums()
+	public function getSmartAlbums($toplevel = null)
 	{
 		/**
 		 * Initialize return var.
@@ -248,32 +285,63 @@ class AlbumFunctions
 			'recent' => null,
 		);
 
-		$UserId = $this->sessionFunctions->id();
-		/**
-		 * Unsorted.
-		 */
-		$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
-		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
+		if ($this->sessionFunctions->is_logged_in()) {
+			$UserId = $this->sessionFunctions->id();
 
-		/**
-		 * Starred.
-		 */
-		$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
-		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
+			$user = User::find($UserId);
+			if ($UserId == 0 || $user->upload) {
+				/**
+				 * Unsorted.
+				 */
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
 
-		/**
-		 * Public.
-		 */
-		$photos_sql = Photo::select_public(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
-		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
+				/**
+				 * Starred.
+				 */
+				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 
-		/**
-		 * Recent.
-		 */
-		$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
-		$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
+				/**
+				 * Public.
+				 */
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
 
-		return $return;
+				/**
+				 * Recent.
+				 */
+				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
+
+				return $return;
+			}
+		}
+
+		if (Configs::get_value('public_starred', '0') === '1' ||
+			Configs::get_value('public_recent', '0') === '1') {
+			$publicAlbums = $this->getPublicAlbums($toplevel);
+
+			if (Configs::get_value('public_starred', '0') === '1') {
+				/**
+				 * Starred.
+				 */
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $publicAlbums))->select('thumbUrl', 'thumb2x', 'type')->limit(3);
+				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
+			}
+
+			if (Configs::get_value('public_recent', '0') === '1') {
+				/**
+				 * Recent.
+				 */
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $publicAlbums))->select('thumbUrl', 'thumb2x', 'type')->limit(3);
+				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
+			}
+
+			return $return;
+		}
+
+		return null;
 	}
 
 	/**
@@ -338,19 +406,27 @@ class AlbumFunctions
 	/**
 	 * Recursively go through each sub album and build a list of them.
 	 * Unlike Album::get_all_sub_albums(), this function follows access
-	 * checks and skips hidden subalbums.
+	 * checks and skips hidden subalbums.  The optional third argument, if
+	 * true, will result in password-protected albums being included (but not
+	 * their content).
 	 *
 	 * @param $parentAlbum
 	 * @param array $return
+	 * @param bool  $includePassProtected
 	 *
 	 * @return array
 	 */
-	public function get_sub_albums($parentAlbum, $return = array())
+	public function get_sub_albums($parentAlbum, $return, $includePassProtected = false)
 	{
 		foreach ($parentAlbum->children as $album) {
-			if ($this->readAccessFunctions->album($album->id, true) === 1) {
+			$haveAccess = $this->readAccessFunctions->album($album->id, true);
+
+			if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
 				$return[] = $album->id;
-				$return = $this->get_sub_albums($album, $return);
+
+				if ($haveAccess === 1) {
+					$return = $this->get_sub_albums($album, $return, $includePassProtected);
+				}
 			}
 		}
 
@@ -358,8 +434,10 @@ class AlbumFunctions
 	}
 
 	/**
-	 * Returns an array of top-level albums and shared albums accessible by
+	 * Returns an array of top-level albums and shared albums visible to
 	 * the current user.
+	 * Note: the array may include password-protected albums that are not
+	 * accessible (but are visible).
 	 *
 	 * @return array or null
 	 */

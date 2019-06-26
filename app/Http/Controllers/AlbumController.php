@@ -11,6 +11,7 @@ use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
+use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -74,16 +75,34 @@ class AlbumController extends Controller
 		$UserId = $this->sessionFunctions->id();
 		switch ($request['albumID']) {
 			case 'f':
-				$return['public'] = '0';
-				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$return['public'] = '0';
+						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$return['public'] = '1';
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case 's':
 				$return['public'] = '0';
 				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
 			case 'r':
-				$return['public'] = '0';
-				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$return['public'] = '0';
+						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$return['public'] = '1';
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case '0':
 				$return['public'] = '0';
@@ -529,7 +548,15 @@ class AlbumController extends Controller
 		switch ($request['albumID']) {
 			case 'f':
 				$zipTitle = 'Starred';
-				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case 's':
 				$zipTitle = 'Public';
@@ -537,7 +564,15 @@ class AlbumController extends Controller
 				break;
 			case 'r':
 				$zipTitle = 'Recent';
-				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case '0':
 				$zipTitle = 'Unsorted';

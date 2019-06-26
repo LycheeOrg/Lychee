@@ -1976,7 +1976,7 @@ albums.load = function () {
 			var waitTime = 0;
 
 			// Smart Albums
-			if (lychee.publicMode === false && data.smartalbums != null) albums._createSmartAlbums(data.smartalbums);
+			if (data.smartalbums != null) albums._createSmartAlbums(data.smartalbums);
 
 			albums.json = data;
 
@@ -2019,46 +2019,54 @@ albums.parse = function (album) {
 
 albums._createSmartAlbums = function (data) {
 
-	data.unsorted = {
-		id: 0,
-		title: lychee.locale['UNSORTED'],
-		sysdate: data.unsorted.num + ' ' + lychee.locale['NUM_PHOTOS'],
-		unsorted: '1',
-		thumbs: data.unsorted.thumbs,
-		thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
-		types: data.unsorted.types
-	};
+	if (data.unsorted) {
+		data.unsorted = {
+			id: 0,
+			title: lychee.locale['UNSORTED'],
+			sysdate: data.unsorted.num + ' ' + lychee.locale['NUM_PHOTOS'],
+			unsorted: '1',
+			thumbs: data.unsorted.thumbs,
+			thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
+			types: data.unsorted.types
+		};
+	}
 
-	data.starred = {
-		id: 'f',
-		title: lychee.locale['STARRED'],
-		sysdate: data.starred.num + ' ' + lychee.locale['NUM_PHOTOS'],
-		star: '1',
-		thumbs: data.starred.thumbs,
-		thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
-		types: data.starred.types
-	};
+	if (data.starred) {
+		data.starred = {
+			id: 'f',
+			title: lychee.locale['STARRED'],
+			sysdate: data.starred.num + ' ' + lychee.locale['NUM_PHOTOS'],
+			star: '1',
+			thumbs: data.starred.thumbs,
+			thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
+			types: data.starred.types
+		};
+	}
 
-	data.public = {
-		id: 's',
-		title: lychee.locale['PUBLIC'],
-		sysdate: data.public.num + ' ' + lychee.locale['NUM_PHOTOS'],
-		public: '1',
-		thumbs: data.public.thumbs,
-		thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
-		hidden: '1',
-		types: data.public.types
-	};
+	if (data.public) {
+		data.public = {
+			id: 's',
+			title: lychee.locale['PUBLIC'],
+			sysdate: data.public.num + ' ' + lychee.locale['NUM_PHOTOS'],
+			public: '1',
+			thumbs: data.public.thumbs,
+			thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
+			hidden: '1',
+			types: data.public.types
+		};
+	}
 
-	data.recent = {
-		id: 'r',
-		title: lychee.locale['RECENT'],
-		sysdate: data.recent.num + ' ' + lychee.locale['NUM_PHOTOS'],
-		recent: '1',
-		thumbs: data.recent.thumbs,
-		thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
-		types: data.recent.types
-	};
+	if (data.recent) {
+		data.recent = {
+			id: 'r',
+			title: lychee.locale['RECENT'],
+			sysdate: data.recent.num + ' ' + lychee.locale['NUM_PHOTOS'],
+			recent: '1',
+			thumbs: data.recent.thumbs,
+			thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
+			types: data.recent.types
+		};
+	}
 };
 
 albums.isShared = function (albumID) {
@@ -7361,18 +7369,27 @@ view.albums = {
 			var sharedData = '';
 
 			// Smart Albums
-			if (lychee.publicMode === false && albums.json.smartalbums != null) {
+			if (albums.json.smartalbums != null) {
 
-				albums.parse(albums.json.smartalbums.unsorted);
-				albums.parse(albums.json.smartalbums.public);
-				albums.parse(albums.json.smartalbums.starred);
-				albums.parse(albums.json.smartalbums.recent);
-
-				smartData = build.divider(lychee.locale['SMART_ALBUMS']);
-				smartData += build.album(albums.json.smartalbums.unsorted);
-				smartData += build.album(albums.json.smartalbums.public);
-				smartData += build.album(albums.json.smartalbums.starred);
-				smartData += build.album(albums.json.smartalbums.recent);
+				if (lychee.publicMode === false) {
+					smartData = build.divider(lychee.locale['SMART_ALBUMS']);
+				}
+				if (albums.json.smartalbums.unsorted) {
+					albums.parse(albums.json.smartalbums.unsorted);
+					smartData += build.album(albums.json.smartalbums.unsorted);
+				}
+				if (albums.json.smartalbums.public) {
+					albums.parse(albums.json.smartalbums.public);
+					smartData += build.album(albums.json.smartalbums.public);
+				}
+				if (albums.json.smartalbums.starred) {
+					albums.parse(albums.json.smartalbums.starred);
+					smartData += build.album(albums.json.smartalbums.starred);
+				}
+				if (albums.json.smartalbums.recent) {
+					albums.parse(albums.json.smartalbums.recent);
+					smartData += build.album(albums.json.smartalbums.recent);
+				}
 			}
 
 			// Albums
@@ -7622,7 +7639,7 @@ view.album = {
 				var containerWidth = parseFloat($('.justified-layout').width(), 10);
 				if (containerWidth == 0) {
 					// Triggered on Reload in photo view.
-					containerWidth = $(window).width() - parseFloat($('.justified-layout').css('margin-left'), 10) - parseFloat($('.justified-layout').css('margin-right'), 10);
+					containerWidth = $(window).width() - parseFloat($('.justified-layout').css('margin-left'), 10) - parseFloat($('.justified-layout').css('margin-right'), 10) - parseFloat($('.content').css('padding-right'), 10);
 				}
 				var ratio = [];
 				$.each(album.json.photos, function (i) {
@@ -7662,7 +7679,7 @@ view.album = {
 				var _containerWidth = parseFloat($('.unjustified-layout').width(), 10);
 				if (_containerWidth == 0) {
 					// Triggered on Reload in photo view.
-					_containerWidth = $(window).width() - parseFloat($('.unjustified-layout').css('margin-left'), 10) - parseFloat($('.unjustified-layout').css('margin-right'), 10);
+					_containerWidth = $(window).width() - parseFloat($('.unjustified-layout').css('margin-left'), 10) - parseFloat($('.unjustified-layout').css('margin-right'), 10) - parseFloat($('.content').css('padding-right'), 10);
 				}
 				$('.unjustified-layout > div').each(function (i) {
 					if (!album.json.photos[i]) {

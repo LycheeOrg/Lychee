@@ -3,6 +3,7 @@
 namespace App\ControllerFunctions;
 
 use App\Album;
+use App\Configs;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\User;
@@ -51,7 +52,12 @@ class ReadAccessFunctions
 				}
 			}
 
-			return 2; // Warning: Album private!
+			if (($albumID === 'r' && Configs::get_value('public_recent', '0') === '1') ||
+				($albumID === 'f' && Configs::get_value('public_starred', '0') === '1')) {
+				return 1; // access granted
+			} else {
+				return 2; // Warning: Album private!
+			}
 		}
 
 		$album = Album::find($albumID);
