@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Config;
+use Storage;
 
 class AlbumFunctions
 {

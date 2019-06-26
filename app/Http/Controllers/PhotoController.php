@@ -36,6 +36,8 @@ class PhotoController extends Controller
 	 */
 	private $readAccessFunctions;
 
+	private $albumFunctions;
+
 	/**
 	 * @var SymLinkFunctions
 	 */
@@ -43,13 +45,15 @@ class PhotoController extends Controller
 
 	/**
 	 * @param PhotoFunctions      $photoFunctions
+	 * @param AlbumFunctions      $albumFunctions
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, SymLinkFunctions $symLinkFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, SymLinkFunctions $symLinkFunctions)
 	{
 		$this->photoFunctions = $photoFunctions;
+		$this->albumFunctions = $albumFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
