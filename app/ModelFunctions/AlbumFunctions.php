@@ -10,7 +10,6 @@ use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\Photo;
 use App\Response;
-use App\SymLink;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
