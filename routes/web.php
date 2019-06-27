@@ -22,8 +22,6 @@ Route::get('/', 'IndexController@show')->name('home');
 Route::get('/phpinfo', 'IndexController@phpinfo')->middleware('admin');
 Route::get('/gallery', 'IndexController@gallery')->name('gallery');
 
-Route::get('/images/{img}', 'ImageController@view');
-
 Route::get('/view', 'ViewController@view');
 Route::get('/demo', 'DemoController@js');
 Route::get('/frame', 'FrameController@init')->name('frame');

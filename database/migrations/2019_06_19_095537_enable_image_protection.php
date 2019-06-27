@@ -28,7 +28,7 @@ class EnableImageProtection extends Migration
 				],
 				[
 					'key' => 'SL_life_time_days',
-					'value' => '1',
+					'value' => '3',
 					'confidentiality' => 3,
 					'cat' => 'Symbolic Link',
 				],
