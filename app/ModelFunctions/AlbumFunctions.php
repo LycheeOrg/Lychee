@@ -153,6 +153,8 @@ class AlbumFunctions
 					$thumbUrl2x = explode('.', $photo->thumbUrl);
 					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 					$return['thumbs2x'][$k] = Storage::url('thumb/' . $thumbUrl2x);
+				} else {
+					$return['thumbs2x'][$k] = '';
 				}
 			}
 			$return['types'][$k] = $photo->type;
@@ -263,26 +265,20 @@ class AlbumFunctions
 
 		foreach ($photos as $photo) {
 			if ($i < 3) {
-				$sym = null;
-				if (Storage::getDefaultDriver() != 's3') {
-					$sym = SymLink::where('photo_id', $photo->id)->orderBy('created_at', 'DESC')->first();
-					if ($sym == null) {
-						$sym = new SymLink();
-						$sym->set($photo);
-						$sym->save();
-					}
-				}
-				$return[$kind]['thumbs'][$i] = ($sym !== null ? $sym->get('thumb') : Storage::url('thumb/' . $photo->thumbUrl));
-				if ($photo->thumb2x == '1') {
-					if ($sym !== null) {
-						$return[$kind]['thumbs2x'][$i] = $sym->get('thumb2x');
-					} else {
+				$sym = $this->symLinkFunctions->find($photo);
+				if ($sym !== null) {
+					$return[$kind]['thumbs'][$i] = $sym->get('thumbUrl');
+					// default is '' so if thumb2x does not exist we just reply '' which is the behaviour we want
+					$return[$kind]['thumbs2x'][$i] = $sym->get('thumb2x');
+				} else {
+					$return[$kind]['thumbs'][$i] = Storage::url('thumb/' . $photo->thumbUrl);
+					if ($photo->thumb2x == '1') {
 						$thumbUrl2x = explode('.', $photo->thumbUrl);
 						$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 						$return[$kind]['thumbs2x'][$i] = Storage::url('thumb/' . $thumbUrl2x);
+					} else {
+						$return[$kind]['thumbs2x'][$i] = '';
 					}
-				} else {
-					$return[$kind]['thumbs2x'][$i] = '';
 				}
 				$return[$kind]['types'][$i] = $photo->type;
 				$i++;
@@ -354,25 +350,25 @@ class AlbumFunctions
 				/**
 				 * Unsorted.
 				 */
-				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId))->limit(3);
 				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
 
 				/**
 				 * Starred.
 				 */
-				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId))->limit(3);
 				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 
 				/**
 				 * Public.
 				 */
-				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId))->limit(3);
 				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
 
 				/**
 				 * Recent.
 				 */
-				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId)->select('thumbUrl', 'thumb2x', 'type'))->limit(3);
+				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId))->limit(3);
 				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
 
 				return $return;
@@ -387,7 +383,7 @@ class AlbumFunctions
 				/**
 				 * Starred.
 				 */
-				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $publicAlbums))->select('thumbUrl', 'thumb2x', 'type')->limit(3);
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $publicAlbums))->limit(3);
 				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 			}
 
@@ -395,7 +391,7 @@ class AlbumFunctions
 				/**
 				 * Recent.
 				 */
-				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $publicAlbums))->select('thumbUrl', 'thumb2x', 'type')->limit(3);
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $publicAlbums))->limit(3);
 				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
 			}
 
