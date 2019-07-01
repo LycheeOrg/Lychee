@@ -166,11 +166,12 @@ class AlbumFunctions
 	/**
 	 * take a $photo_sql query and return an array containing their pictures.
 	 *
-	 * @param $photos_sql
+	 * @param Builder $photos_sql
+	 * @param bool    $full_photo
 	 *
 	 * @return array
 	 */
-	public function photos(Builder $photos_sql)
+	public function photos(Builder $photos_sql, bool $full_photo)
 	{
 		$previousPhotoID = '';
 		$return_photos = array();
@@ -180,6 +181,9 @@ class AlbumFunctions
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->prepareData();
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
+			if (!$this->sessionFunctions->is_logged_in() && !$full_photo) {
+				$photo_model->downgrade($photo);
+			}
 
 			// Set previous and next photoID for navigation purposes
 			$photo['previousPhoto'] = $previousPhotoID;

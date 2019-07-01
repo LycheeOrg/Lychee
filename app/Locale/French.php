@@ -132,6 +132,8 @@ final class French implements LangInterface
 			'ALBUM_SHR_NO' => 'Non',
 			'ALBUM_PUBLIC' => 'Public',
 			'ALBUM_HIDDEN' => 'Masqué',
+			'ALBUM_FULL' => 'Full size',
+			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
 			'ALBUM_HIDDEN_EXPL' => 'Seules les personnes avec le lien peuvent voir cet album.',
 			'ALBUM_DOWNLOADABLE' => 'Téléchargeable',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Les visiteurs peuvent télécharger cet album.',

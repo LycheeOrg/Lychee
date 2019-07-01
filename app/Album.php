@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Hash;
  * @property Carbon|null $min_takestamp
  * @property Carbon|null $max_takestamp
  * @property int         $public
+ * @property int         $full_photo
  * @property int         $visible_hidden
  * @property int         $downloadable
  * @property string|null $password
@@ -59,18 +60,20 @@ use Illuminate\Support\Facades\Hash;
  */
 class Album extends Model
 {
-	protected $dates = [
-		'created_at',
-		'updated_at',
-		'min_takestamp',
-		'max_takestamp',
-	];
+	protected $dates
+		= [
+			'created_at',
+			'updated_at',
+			'min_takestamp',
+			'max_takestamp',
+		];
 
-	protected $casts = [
-		'public' => 'int',
-		'visible_hidden' => 'int',
-		'downloadable' => 'int',
-	];
+	protected $casts
+		= [
+			'public' => 'int',
+			'visible_hidden' => 'int',
+			'downloadable' => 'int',
+		];
 
 	/**
 	 * Return the relationship between Photos and their Album.
@@ -120,7 +123,22 @@ class Album extends Model
 	 */
 	public function shared_with()
 	{
-		return $this->belongsToMany('App\User', 'user_album', 'album_id', 'user_id');
+		return $this->belongsToMany('App\User', 'user_album', 'album_id',
+			'user_id');
+	}
+
+	/**
+	 * Return whether or not public users will see the full photo.
+	 *
+	 * @return bool
+	 */
+	public function full_photo_visible()
+	{
+		if ($this->public) {
+			return $this->full_photo == 1;
+		} else {
+			return Configs::get_value('full_photo', '1') === '1';
+		}
 	}
 
 	/**
@@ -137,6 +155,7 @@ class Album extends Model
 		$album['id'] = $this->id;
 		$album['title'] = $this->title;
 		$album['public'] = strval($this->public);
+		$album['full_photo'] = strval($this->full_photo_visible());
 		$album['hidden'] = strval($this->visible_hidden);
 		$album['parent_id'] = $this->parent_id;
 
@@ -148,13 +167,16 @@ class Album extends Model
 
 		// Parse date
 		$album['sysdate'] = $this->created_at->format('F Y');
-		$album['min_takestamp'] = $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
-		$album['max_takestamp'] = $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
+		$album['min_takestamp'] = $this->min_takestamp == null ? ''
+			: $this->min_takestamp->format('M Y');
+		$album['max_takestamp'] = $this->max_takestamp == null ? ''
+			: $this->max_takestamp->format('M Y');
 
 		// Parse password
 		$album['password'] = ($this->password == '' ? '0' : '1');
 
-		$album['license'] = $this->license == 'none' ? Configs::get_value('default_license') : $this->license;
+		$album['license'] = $this->license == 'none'
+			? Configs::get_value('default_license') : $this->license;
 
 		$album['owner'] = $this->owner->username;
 
@@ -214,10 +236,10 @@ class Album extends Model
 	 * Update album's min_takestamp and max_takestamp based on changes made
 	 * to the album content.  If needed, recursively updates parent album(s).
 	 *
-	 * @param array $takestamps: an array with the takestamps of changed
-	 *                           elements; for albums needs to include both min and max takestamps
-	 *                           (including null elements in the array is safe)
-	 * @param bool  $adding:     true if adding new content, false if removing
+	 * @param array $takestamps : an array with the takestamps of changed
+	 *                          elements; for albums needs to include both min and max takestamps
+	 *                          (including null elements in the array is safe)
+	 * @param bool  $adding     :     true if adding new content, false if removing
 	 *
 	 * @return bool: true if successful
 	 */
@@ -248,11 +270,15 @@ class Album extends Model
 
 		if ($adding) {
 			// Adding is easy: essentially a single operation per takestamp.
-			if ($this->min_takestamp === null || $this->min_takestamp > $minTS) {
+			if ($this->min_takestamp === null
+				|| $this->min_takestamp > $minTS
+			) {
 				$this->min_takestamp = $minTS;
 				$changed = true;
 			}
-			if ($this->max_takestamp === null || $this->max_takestamp < $maxTS) {
+			if ($this->max_takestamp === null
+				|| $this->max_takestamp < $maxTS
+			) {
 				$this->max_takestamp = $maxTS;
 				$changed = true;
 			}
@@ -261,8 +287,10 @@ class Album extends Model
 			// to rescan the content at the current level to find the new
 			// min/max.
 			if ($this->min_takestamp == $minTS) {
-				$min_photos = Photo::where('album_id', '=', $this->id)->whereNotNull('takestamp')->min('takestamp');
-				$min_albums = Album::where('parent_id', '=', $this->id)->whereNotNull('min_takestamp')->min('min_takestamp');
+				$min_photos = Photo::where('album_id', '=', $this->id)
+					->whereNotNull('takestamp')->min('takestamp');
+				$min_albums = Album::where('parent_id', '=', $this->id)
+					->whereNotNull('min_takestamp')->min('min_takestamp');
 				if ($min_photos !== null && $min_albums !== null) {
 					$this->min_takestamp = min($min_photos, $min_albums);
 				} elseif ($min_photos !== null) {
@@ -273,8 +301,10 @@ class Album extends Model
 				$changed = true;
 			}
 			if ($this->max_takestamp == $maxTS) {
-				$max_photos = Photo::where('album_id', '=', $this->id)->whereNotNull('takestamp')->max('takestamp');
-				$max_albums = Album::where('parent_id', '=', $this->id)->whereNotNull('max_takestamp')->max('max_takestamp');
+				$max_photos = Photo::where('album_id', '=', $this->id)
+					->whereNotNull('takestamp')->max('takestamp');
+				$max_albums = Album::where('parent_id', '=', $this->id)
+					->whereNotNull('max_takestamp')->max('max_takestamp');
 				if ($max_photos !== null && $max_albums !== null) {
 					$this->max_takestamp = max($max_photos, $max_albums);
 				} elseif ($max_photos !== null) {
@@ -293,7 +323,8 @@ class Album extends Model
 			// up the album tree to give the parent albums a chance to
 			// update their takestamps as well.
 			if ($this->parent_id !== null) {
-				$no_error &= $this->parent->update_takestamps([$minTS, $maxTS], $adding);
+				$no_error &= $this->parent->update_takestamps([$minTS, $maxTS],
+					$adding);
 			}
 		}
 

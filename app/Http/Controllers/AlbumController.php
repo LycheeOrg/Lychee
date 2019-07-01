@@ -5,6 +5,7 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Configs;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\Helpers;
@@ -73,6 +74,8 @@ class AlbumController extends Controller
 		// Get photos
 		// Get album information
 		$UserId = $this->sessionFunctions->id();
+		$full_photo = Configs::get_value('full_photo', '1') == '1';
+
 		switch ($request['albumID']) {
 			case 'f':
 				if ($this->sessionFunctions->is_logged_in()) {
@@ -119,18 +122,18 @@ class AlbumController extends Controller
 					return 'false';
 				}
 				$return = $album->prepareData();
-
 				// we just require is_logged_in for this one.
 				if (!$this->sessionFunctions->is_logged_in()) {
 					unset($return['owner']);
 				}
 
+				$full_photo = $album->full_photo_visible();
 				$return['albums'] = $this->albumFunctions->get_albums($album);
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
 				break;
 		}
 
-		$return['photos'] = $this->albumFunctions->photos($photos_sql);
+		$return['photos'] = $this->albumFunctions->photos($photos_sql, $full_photo);
 
 		$return['id'] = $request['albumID'];
 		$return['num'] = count($return['photos']);
@@ -234,6 +237,7 @@ class AlbumController extends Controller
 			'password' => 'string|nullable|max:100',
 			'visible' => 'integer|required',
 			'downloadable' => 'integer|required',
+			'full_photo' => 'integer|required',
 		]);
 
 		$album = Album::find($request['albumID']);
@@ -245,6 +249,7 @@ class AlbumController extends Controller
 		}
 
 		// Convert values
+		$album->full_photo = ($request['full_photo'] === '1' ? 1 : 0);
 		$album->public = ($request['public'] === '1' ? 1 : 0);
 		$album->visible_hidden = ($request['visible'] === '1' ? 1 : 0);
 		$album->downloadable = ($request['downloadable'] === '1' ? 1 : 0);
@@ -304,6 +309,13 @@ class AlbumController extends Controller
 		return ($album->save()) ? 'true' : 'false';
 	}
 
+	/**
+	 * Set the license of the Album.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
 	public function setLicense(Request $request)
 	{
 		$request->validate([
@@ -377,6 +389,9 @@ class AlbumController extends Controller
 		foreach ($albums as $album) {
 			$no_error &= $album->predelete();
 
+			/**
+			 * @var Album
+			 */
 			$parentAlbum = null;
 			if ($album->parent_id !== null) {
 				$parentAlbum = $album->parent;
@@ -469,6 +484,13 @@ class AlbumController extends Controller
 		return $no_error ? 'true' : 'false';
 	}
 
+	/**
+	 * Move multiple albums into another album.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
 	public function move(Request $request)
 	{
 		$request->validate(['albumIDs' => 'string|required']);
@@ -528,6 +550,13 @@ class AlbumController extends Controller
 		return $no_error ? 'true' : 'false';
 	}
 
+	/**
+	 * Return the archive of the pictures of the album (but not the sub albums !).
+	 *
+	 * @param Request $request
+	 *
+	 * @return string|StreamedResponse
+	 */
 	public function getArchive(Request $request)
 	{
 		// Illicit chars

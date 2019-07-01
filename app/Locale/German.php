@@ -132,6 +132,8 @@ final class German implements LangInterface
 			'ALBUM_SHR_YES' => 'Ja',
 			'ALBUM_SHR_NO' => 'Nein',
 			'ALBUM_PUBLIC' => 'Öffentlich',
+			'ALBUM_FULL' => 'Full size',
+			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
 			'ALBUM_HIDDEN' => 'Versteckt',
 			'ALBUM_HIDDEN_EXPL' => 'Nur Personen mit dem direkten Link können dieses Album ansehen.',
 			'ALBUM_DOWNLOADABLE' => 'Zum Herunterladen',

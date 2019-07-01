@@ -131,6 +131,8 @@ final class English implements LangInterface
 			'ALBUM_SHR_YES' => 'YES',
 			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Public',
+			'ALBUM_FULL' => 'Full size',
+			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
 			'ALBUM_HIDDEN' => 'Hidden',
 			'ALBUM_HIDDEN_EXPL' => 'Only people with the direct link can view this album.',
 			'ALBUM_DOWNLOADABLE' => 'Downloadable',

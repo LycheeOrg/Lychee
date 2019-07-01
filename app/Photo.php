@@ -310,6 +310,20 @@ class Photo extends Model
 	}
 
 	/**
+	 * Downgrade the quality of the pictures.
+	 *
+	 * @param array $return
+	 */
+	public function downgrade(array &$return)
+	{
+		if ($return['medium2x'] != '') {
+			$return['url'] = $return['medium2x'];
+		} else {
+			$return['url'] = $return['medium'];
+		}
+	}
+
+	/**
 	 * Get the public value of a picture
 	 * if 0 : picture is private
 	 * if 1 : picture is public alone

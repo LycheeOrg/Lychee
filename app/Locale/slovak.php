@@ -132,6 +132,8 @@ final class Slovak implements LangInterface
 			'ALBUM_SHR_YES' => 'Áno',
 			'ALBUM_SHR_NO' => 'Nie',
 			'ALBUM_PUBLIC' => 'Verejný',
+			'ALBUM_FULL' => 'Full size',
+			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
 			'ALBUM_HIDDEN' => 'Skrytý',
 			'ALBUM_HIDDEN_EXPL' => 'Album viditeľný len cez priamy link.',
 			'ALBUM_DOWNLOADABLE' => 'Stiahnuteľný',

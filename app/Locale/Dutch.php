@@ -131,6 +131,8 @@ final class Dutch implements LangInterface
 			'ALBUM_SHR_YES' => 'Ja',
 			'ALBUM_SHR_NO' => 'Nee',
 			'ALBUM_PUBLIC' => 'Publiekelijk',
+			'ALBUM_FULL' => 'Full size',
+			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
 			'ALBUM_HIDDEN' => 'Verborgen',
 			'ALBUM_HIDDEN_EXPL' => 'Alleen mensen met een link kunnen dit album bekjiken.',
 			'ALBUM_DOWNLOADABLE' => 'Downloadbaar',
