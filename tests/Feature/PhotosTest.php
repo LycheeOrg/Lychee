@@ -301,6 +301,7 @@ class PhotosTest extends TestCase
 		$response->assertSee('false');
 
 		$response = $this->post('/api/Album::setPublic', [
+			'full_photo' => 1,
 			'albumID' => $albumID,
 			'password' => '',
 			'visible' => 1,
