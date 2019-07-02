@@ -90,7 +90,7 @@ class PhotoController extends Controller
 
 		$return = $photo->prepareData();
 		$this->symLinkFunctions->getUrl($photo, $return);
-		if (!$this->sessionFunctions->is_logged_in()) {
+		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
 			if ($photo->album_id != null) {
 				if (!$photo->album->full_photo_visible()) {
 					$photo->downgrade($return);

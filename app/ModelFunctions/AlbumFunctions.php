@@ -177,11 +177,15 @@ class AlbumFunctions
 		$return_photos = array();
 		$photo_counter = 0;
 		$photos = $photos_sql->get();
+
+		/**
+		 * @var Photo
+		 */
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->prepareData();
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
-			if (!$this->sessionFunctions->is_logged_in() && !$full_photo) {
+			if (!$this->sessionFunctions->is_current_user($photo_model->owner_id) && !$full_photo) {
 				$photo_model->downgrade($photo);
 			}
 
@@ -230,6 +234,9 @@ class AlbumFunctions
 
 		if ($albums != null) {
 			// For each album
+			/**
+			 * @var Album
+			 */
 			foreach ($albums as $album_model) {
 				// Turn data from the database into a front-end friendly format
 				$album = $album_model->prepareData();
@@ -266,6 +273,9 @@ class AlbumFunctions
 			'num' => $photos_sql->count(),
 		);
 
+		/**
+		 * @var Photo
+		 */
 		foreach ($photos as $photo) {
 			if ($i < 3) {
 				$sym = $this->symLinkFunctions->find($photo);
@@ -309,6 +319,9 @@ class AlbumFunctions
 
 		$albumIDs = [];
 		if ($toplevel['albums'] !== null) {
+			/**
+			 * @var Album
+			 */
 			foreach ($toplevel['albums'] as $album) {
 				if ($this->readAccessFunctions->album($album->id) === 1) {
 					$albumIDs[] = $album->id;
@@ -317,6 +330,9 @@ class AlbumFunctions
 			}
 		}
 		if ($toplevel['shared_albums'] !== null) {
+			/**
+			 * @var Album
+			 */
 			foreach ($toplevel['shared_albums'] as $album) {
 				if ($this->readAccessFunctions->album($album->id) === 1) {
 					$albumIDs[] = $album->id;
@@ -449,12 +465,19 @@ class AlbumFunctions
 	{
 		$photos = Photo::where('album_id', '=', $albumID)->get();
 		$no_error = true;
+		/**
+		 * @var Photo
+		 */
 		foreach ($photos as $photo) {
 			$photo->owner_id = $ownerId;
 			$no_error &= $photo->save();
 		}
 
 		$albums = Album::where('parent_id', '=', $albumID)->get();
+
+		/**
+		 * @var Album
+		 */
 		foreach ($albums as $album) {
 			$album->owner_id = $ownerId;
 			$no_error &= $album->save();
@@ -480,6 +503,9 @@ class AlbumFunctions
 	 */
 	public function get_sub_albums($parentAlbum, $return, $includePassProtected = false)
 	{
+		/**
+		 * @var Album
+		 */
 		foreach ($parentAlbum->children as $album) {
 			$haveAccess = $this->readAccessFunctions->album($album->id, true);
 

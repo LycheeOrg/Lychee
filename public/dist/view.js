@@ -1715,9 +1715,12 @@ header.setMode = function (mode) {
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
-			if (!lychee.full_photo && !album.isUploadable() && !(album.json && album.json.downloadable && album.json.downloadable === '1')) {
+			$('#button_more').show();
+			if (!album.isUploadable() && !(album.json && album.json.downloadable && album.json.downloadable === '1') && !(album.json && album.json.full_photo && album.json.full_photo === '1') || photo.json && photo.json.url && photo.json.url === '') {
 				$('#button_more').hide();
 			}
+			console.log(album.json);
+			console.log(photo.json);
 
 			return true;
 

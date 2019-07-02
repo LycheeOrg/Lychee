@@ -316,10 +316,13 @@ class Photo extends Model
 	 */
 	public function downgrade(array &$return)
 	{
-		if ($return['medium2x'] != '') {
-			$return['url'] = $return['medium2x'];
-		} else {
-			$return['url'] = $return['medium'];
+		if (strpos($this->type, 'video') == 0) {
+			if ($return['medium2x'] != '') {
+				$return['url'] = '';
+			} elseif ($return['medium'] != '') {
+				$return['url'] = '';
+			} else {
+			}
 		}
 	}
 

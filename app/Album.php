@@ -155,7 +155,7 @@ class Album extends Model
 		$album['id'] = $this->id;
 		$album['title'] = $this->title;
 		$album['public'] = strval($this->public);
-		$album['full_photo'] = strval($this->full_photo_visible());
+		$album['full_photo'] = $this->full_photo_visible() ? '1' : '0';
 		$album['hidden'] = strval($this->visible_hidden);
 		$album['parent_id'] = $this->parent_id;
 

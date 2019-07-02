@@ -2802,7 +2802,8 @@ contextMenu.photoMore = function (photoID, e) {
 
 	var showMedium = photo.json.medium && photo.json.medium !== '' && showDownload;
 	var showSmall = photo.json.small && photo.json.small !== '' && showDownload;
-	var items = [{ title: build.iconic('fullscreen-enter') + lychee.locale['FULL_PHOTO'], visible: !!lychee.full_photo, fn: function fn() {
+	var showFull = album.json && album.json.full_photo && photo.json.url && photo.json.url !== '';
+	var items = [{ title: build.iconic('fullscreen-enter') + lychee.locale['FULL_PHOTO'], visible: !!showFull, fn: function fn() {
 			return window.open(photo.getDirectLink());
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], visible: !!showDownload, fn: function fn() {
 			return photo.getArchive(photoID, 'FULL');
@@ -3181,9 +3182,12 @@ header.setMode = function (mode) {
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
-			if (!lychee.full_photo && !album.isUploadable() && !(album.json && album.json.downloadable && album.json.downloadable === '1')) {
+			$('#button_more').show();
+			if (!album.isUploadable() && !(album.json && album.json.downloadable && album.json.downloadable === '1') && !(album.json && album.json.full_photo && album.json.full_photo === '1') || photo.json && photo.json.url && photo.json.url === '') {
 				$('#button_more').hide();
 			}
+			console.log(album.json);
+			console.log(photo.json);
 
 			return true;
 
