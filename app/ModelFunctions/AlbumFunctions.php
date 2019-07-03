@@ -178,7 +178,7 @@ class AlbumFunctions
 		$photo_counter = 0;
 		$photos = $photos_sql->get();
 
-		/**
+		/*
 		 * @var Photo
 		 */
 		foreach ($photos as $photo_model) {
@@ -234,7 +234,7 @@ class AlbumFunctions
 
 		if ($albums != null) {
 			// For each album
-			/**
+			/*
 			 * @var Album
 			 */
 			foreach ($albums as $album_model) {
@@ -273,7 +273,7 @@ class AlbumFunctions
 			'num' => $photos_sql->count(),
 		);
 
-		/**
+		/*
 		 * @var Photo
 		 */
 		foreach ($photos as $photo) {
@@ -319,7 +319,7 @@ class AlbumFunctions
 
 		$albumIDs = [];
 		if ($toplevel['albums'] !== null) {
-			/**
+			/*
 			 * @var Album
 			 */
 			foreach ($toplevel['albums'] as $album) {
@@ -330,7 +330,7 @@ class AlbumFunctions
 			}
 		}
 		if ($toplevel['shared_albums'] !== null) {
-			/**
+			/*
 			 * @var Album
 			 */
 			foreach ($toplevel['shared_albums'] as $album) {
@@ -465,7 +465,7 @@ class AlbumFunctions
 	{
 		$photos = Photo::where('album_id', '=', $albumID)->get();
 		$no_error = true;
-		/**
+		/*
 		 * @var Photo
 		 */
 		foreach ($photos as $photo) {
@@ -475,7 +475,7 @@ class AlbumFunctions
 
 		$albums = Album::where('parent_id', '=', $albumID)->get();
 
-		/**
+		/*
 		 * @var Album
 		 */
 		foreach ($albums as $album) {
@@ -503,7 +503,7 @@ class AlbumFunctions
 	 */
 	public function get_sub_albums($parentAlbum, $return, $includePassProtected = false)
 	{
-		/**
+		/*
 		 * @var Album
 		 */
 		foreach ($parentAlbum->children as $album) {
