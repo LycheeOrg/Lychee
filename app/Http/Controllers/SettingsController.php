@@ -326,21 +326,10 @@ class SettingsController extends Controller
 		$css = $request->get('css');
 		$css = $css == null ? '' : $css;
 
-		if (!Storage::put('dist/user.css', $css, 'public')) {
+		if (!Storage::disk('dist')->put('user.css', $css)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not save css.');
+
 			return 'false';
-		}
-
-		// this is a very bad way to do it. Any improvement are welcomed.
-		if (file_exists('../storage/app/dist/user.css')) {
-			if (!@rename('../storage/app/dist/user.css', 'dist/user.css')) {
-				Logs::error(__METHOD__, __LINE__, 'Could not move css file');
-
-				return Response::error('Could not move css file.');
-			}
-		} else {
-			Logs::error(__METHOD__, __LINE__, 'Could not find css file.');
-
-			return Response::error('Could not find css file.');
 		}
 
 		return 'true';

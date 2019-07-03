@@ -8,6 +8,7 @@ use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Album;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\User;
@@ -32,14 +33,20 @@ class SearchController extends Controller
 	private $readAccessFunctions;
 
 	/**
+	 * @var PhotoFunctions
+	 */
+	private $photoFunctions;
+
+	/**
 	 * @param AlbumFunctions      $albumFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
+	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, PhotoFunctions $photoFunctions)
 	{
 		$this->albumFunctions = $albumFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
+		$this->photoFunctions = $photoFunctions;
 	}
 
 	/**
@@ -197,6 +204,7 @@ class SearchController extends Controller
 			$i = 0;
 			foreach ($photos as $photo) {
 				$return['photos'][$i] = $photo->prepareData();
+				$this->photoFunctions->getUrl($photo, $return['photos'][$i]);
 				$i++;
 			}
 		}

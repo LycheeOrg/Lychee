@@ -11,9 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -27,6 +25,7 @@ use Illuminate\Support\Facades\Hash;
  * @property Carbon|null $min_takestamp
  * @property Carbon|null $max_takestamp
  * @property int         $public
+ * @property int         $full_photo
  * @property int         $visible_hidden
  * @property int         $downloadable
  * @property string|null $password
@@ -56,21 +55,25 @@ use Illuminate\Support\Facades\Hash;
  * @method static Builder|Album whereUpdatedAt($value)
  * @method static Builder|Album whereVisibleHidden($value)
  * @mixin Eloquent
+ *
+ * @property \Illuminate\Database\Eloquent\Collection|\App\User[] $shared_with
  */
 class Album extends Model
 {
-	protected $dates = [
-		'created_at',
-		'updated_at',
-		'min_takestamp',
-		'max_takestamp',
-	];
+	protected $dates
+		= [
+			'created_at',
+			'updated_at',
+			'min_takestamp',
+			'max_takestamp',
+		];
 
-	protected $casts = [
-		'public' => 'int',
-		'visible_hidden' => 'int',
-		'downloadable' => 'int',
-	];
+	protected $casts
+		= [
+			'public' => 'int',
+			'visible_hidden' => 'int',
+			'downloadable' => 'int',
+		];
 
 	/**
 	 * Return the relationship between Photos and their Album.
@@ -120,7 +123,22 @@ class Album extends Model
 	 */
 	public function shared_with()
 	{
-		return $this->belongsToMany('App\User', 'user_album', 'album_id', 'user_id');
+		return $this->belongsToMany('App\User', 'user_album', 'album_id',
+			'user_id');
+	}
+
+	/**
+	 * Return whether or not public users will see the full photo.
+	 *
+	 * @return bool
+	 */
+	public function full_photo_visible()
+	{
+		if ($this->public) {
+			return $this->full_photo == 1;
+		} else {
+			return Configs::get_value('full_photo', '1') === '1';
+		}
 	}
 
 	/**
@@ -137,6 +155,7 @@ class Album extends Model
 		$album['id'] = $this->id;
 		$album['title'] = $this->title;
 		$album['public'] = strval($this->public);
+		$album['full_photo'] = $this->full_photo_visible() ? '1' : '0';
 		$album['hidden'] = strval($this->visible_hidden);
 		$album['parent_id'] = $this->parent_id;
 
@@ -148,13 +167,16 @@ class Album extends Model
 
 		// Parse date
 		$album['sysdate'] = $this->created_at->format('F Y');
-		$album['min_takestamp'] = $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
-		$album['max_takestamp'] = $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
+		$album['min_takestamp'] = $this->min_takestamp == null ? ''
+			: $this->min_takestamp->format('M Y');
+		$album['max_takestamp'] = $this->max_takestamp == null ? ''
+			: $this->max_takestamp->format('M Y');
 
 		// Parse password
 		$album['password'] = ($this->password == '' ? '0' : '1');
 
-		$album['license'] = $this->license == 'none' ? Configs::get_value('default_license') : $this->license;
+		$album['license'] = $this->license == 'none'
+			? Configs::get_value('default_license') : $this->license;
 
 		$album['owner'] = $this->owner->username;
 
@@ -163,40 +185,6 @@ class Album extends Model
 		$album['types'] = array();
 
 		return $album;
-	}
-
-	/**
-	 * get the thumbs of an album.
-	 *
-	 * @param array $return
-	 * @param array $album_list
-	 *
-	 * @return array
-	 */
-	public function gen_thumbs($return, $album_list)
-	{
-		$thumbs_types = Photo::select(['thumbUrl', 'thumb2x', 'type'])
-			->whereIn('album_id', $album_list)
-			->orderBy('star', 'DESC')
-			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
-			->limit(3)->get();
-
-		// For each thumb
-		$k = 0;
-		foreach ($thumbs_types as $thumb_types) {
-			$return['thumbs'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->thumbUrl;
-			if ($thumb_types->thumb2x == '1') {
-				$thumbUrl2x = explode('.', $thumb_types->thumbUrl);
-				$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-				$return['thumbs2x'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumbUrl2x;
-			} else {
-				$return['thumbs2x'][$k] = '';
-			}
-			$return['types'][$k] = Config::get('defines.urls.LYCHEE_URL_UPLOADS_THUMB') . $thumb_types->type;
-			$k++;
-		}
-
-		return $return;
 	}
 
 	/**
@@ -248,10 +236,10 @@ class Album extends Model
 	 * Update album's min_takestamp and max_takestamp based on changes made
 	 * to the album content.  If needed, recursively updates parent album(s).
 	 *
-	 * @param array $takestamps: an array with the takestamps of changed
-	 *                           elements; for albums needs to include both min and max takestamps
-	 *                           (including null elements in the array is safe)
-	 * @param bool  $adding:     true if adding new content, false if removing
+	 * @param array $takestamps : an array with the takestamps of changed
+	 *                          elements; for albums needs to include both min and max takestamps
+	 *                          (including null elements in the array is safe)
+	 * @param bool  $adding     :     true if adding new content, false if removing
 	 *
 	 * @return bool: true if successful
 	 */
@@ -282,11 +270,15 @@ class Album extends Model
 
 		if ($adding) {
 			// Adding is easy: essentially a single operation per takestamp.
-			if ($this->min_takestamp === null || $this->min_takestamp > $minTS) {
+			if ($this->min_takestamp === null
+				|| $this->min_takestamp > $minTS
+			) {
 				$this->min_takestamp = $minTS;
 				$changed = true;
 			}
-			if ($this->max_takestamp === null || $this->max_takestamp < $maxTS) {
+			if ($this->max_takestamp === null
+				|| $this->max_takestamp < $maxTS
+			) {
 				$this->max_takestamp = $maxTS;
 				$changed = true;
 			}
@@ -295,8 +287,10 @@ class Album extends Model
 			// to rescan the content at the current level to find the new
 			// min/max.
 			if ($this->min_takestamp == $minTS) {
-				$min_photos = Photo::where('album_id', '=', $this->id)->whereNotNull('takestamp')->min('takestamp');
-				$min_albums = Album::where('parent_id', '=', $this->id)->whereNotNull('min_takestamp')->min('min_takestamp');
+				$min_photos = Photo::where('album_id', '=', $this->id)
+					->whereNotNull('takestamp')->min('takestamp');
+				$min_albums = Album::where('parent_id', '=', $this->id)
+					->whereNotNull('min_takestamp')->min('min_takestamp');
 				if ($min_photos !== null && $min_albums !== null) {
 					$this->min_takestamp = min($min_photos, $min_albums);
 				} elseif ($min_photos !== null) {
@@ -307,8 +301,10 @@ class Album extends Model
 				$changed = true;
 			}
 			if ($this->max_takestamp == $maxTS) {
-				$max_photos = Photo::where('album_id', '=', $this->id)->whereNotNull('takestamp')->max('takestamp');
-				$max_albums = Album::where('parent_id', '=', $this->id)->whereNotNull('max_takestamp')->max('max_takestamp');
+				$max_photos = Photo::where('album_id', '=', $this->id)
+					->whereNotNull('takestamp')->max('takestamp');
+				$max_albums = Album::where('parent_id', '=', $this->id)
+					->whereNotNull('max_takestamp')->max('max_takestamp');
 				if ($max_photos !== null && $max_albums !== null) {
 					$this->max_takestamp = max($max_photos, $max_albums);
 				} elseif ($max_photos !== null) {
@@ -327,7 +323,8 @@ class Album extends Model
 			// up the album tree to give the parent albums a chance to
 			// update their takestamps as well.
 			if ($this->parent_id !== null) {
-				$no_error &= $this->parent->update_takestamps([$minTS, $maxTS], $adding);
+				$no_error &= $this->parent->update_takestamps([$minTS, $maxTS],
+					$adding);
 			}
 		}
 
@@ -349,41 +346,6 @@ class Album extends Model
 	}
 
 	/**
-	 * Given a user, retrieve all the shared albums it can see.
-	 * TODO: Move this function to another file.
-	 *
-	 * @param $id
-	 *
-	 * @return Album[]
-	 */
-	public static function get_albums_user($id)
-	{
-		return Album::with([
-			'owner',
-			'children',
-		])
-			->where('owner_id', '<>', $id)
-			->where('parent_id', '=', null)
-			->Where(
-				function (Builder $query) use ($id) {
-					// album is shared with user
-					$query->whereIn('id', function (QBuilder $query) use ($id) {
-						$query->select('album_id')
-							->from('user_album')
-							->where('user_id', '=', $id);
-					})
-						// or album is visible to user
-						->orWhere(
-							function (Builder $query) {
-								$query->where('public', '=', true)->where('visible_hidden', '=', true);
-							});
-				})
-			->orderBy('owner_id', 'ASC')
-			->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
-			->get();
-	}
-
-	/**
 	 * Given two list of albums, merge them without duplicates.
 	 * Current complexity is in O(n^2)
 	 * TODO: Move this function to another file.
@@ -395,26 +357,26 @@ class Album extends Model
 	 *
 	 * @return array
 	 */
-	public static function merge(array $albums1, array $albums2)
-	{
-		$return = $albums1;
-
-		foreach ($albums2 as $album2_t) {
-			$found = false;
-			foreach ($albums1 as $album1_t) {
-				if ($album1_t->id == $album2_t->id) {
-					$found = true;
-					break;
-				}
-			}
-
-			if (!$found) {
-				$return[] = $album2_t;
-			}
-		}
-
-		return $return;
-	}
+//	public static function merge(array $albums1, array $albums2)
+//	{
+//		$return = $albums1;
+//
+//		foreach ($albums2 as $album2_t) {
+//			$found = false;
+//			foreach ($albums1 as $album1_t) {
+//				if ($album1_t->id == $album2_t->id) {
+//					$found = true;
+//					break;
+//				}
+//			}
+//
+//			if (!$found) {
+//				$return[] = $album2_t;
+//			}
+//		}
+//
+//		return $return;
+//	}
 
 	/**
 	 * Before calling delete() to remove the album from the database

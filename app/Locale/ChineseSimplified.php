@@ -131,6 +131,8 @@ final class ChineseSimplified implements LangInterface
 			'ALBUM_SHR_YES' => '是',
 			'ALBUM_SHR_NO' => '否',
 			'ALBUM_PUBLIC' => '公开',
+			'ALBUM_FULL' => 'Full size',
+			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
 			'ALBUM_HIDDEN' => '隐藏',
 			'ALBUM_HIDDEN_EXPL' => '只有使用外链才能查看。',
 			'ALBUM_DOWNLOADABLE' => '下载',

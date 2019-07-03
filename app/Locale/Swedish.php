@@ -131,6 +131,8 @@ final class Swedish implements LangInterface
 			'ALBUM_SHR_YES' => 'Ja',
 			'ALBUM_SHR_NO' => 'Nej',
 			'ALBUM_PUBLIC' => 'Publikt',
+			'ALBUM_FULL' => 'Full size',
+			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
 			'ALBUM_HIDDEN' => 'Dold',
 			'ALBUM_HIDDEN_EXPL' => 'Bara personer med korrekt länk kan se detta album.',
 			'ALBUM_DOWNLOADABLE' => 'Nedladdningsbart',

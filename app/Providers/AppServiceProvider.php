@@ -12,6 +12,7 @@ use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
+use App\ModelFunctions\SymLinkFunctions;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -19,8 +20,9 @@ use Illuminate\Support\ServiceProvider;
 class AppServiceProvider extends ServiceProvider
 {
 	public $singletons = [
-		AlbumFunctions::class => AlbumFunctions::class,
+		SymLinkFunctions::class => SymLinkFunctions::class,
 		PhotoFunctions::class => PhotoFunctions::class,
+		AlbumFunctions::class => AlbumFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitHubFunctions::class => GitHubFunctions::class,

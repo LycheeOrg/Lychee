@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Imagick;
+use Storage;
 
 class DiagnosticsController extends Controller
 {
@@ -74,12 +75,12 @@ class DiagnosticsController extends Controller
 
 		// PHP Version
 		if (floatval(phpversion()) < 7.2) {
-			$errors += ['Warning: Upgrade to PHP 7.2 or higher'];
+			$errors[] = 'Warning: Upgrade to PHP 7.2 or higher';
 			// on Dec 1 2019 enable this to an error.
 //			$errors += ['Error: Upgrade to PHP 7.2 or higher'];
 		}
 		if (floatval(phpversion()) < 7.3) {
-			$errors += ['Info: Latest version of PHP is 7.3'];
+			$errors[] = 'Info: Latest version of PHP is 7.3';
 			// on November 30 2019 enable this as warning.
 //			$errors += ['Warning: Upgrade to PHP 7.3 or higher'];
 			// on November 30 2020 enable this as warning.
@@ -88,58 +89,58 @@ class DiagnosticsController extends Controller
 
 		// 32 or 64 bits ?
 		if (PHP_INT_MAX == 2147483647) {
-			$errors += ['Warning: Using 32 bit PHP, recommended upgrade to 64 bit'];
+			$errors[] = 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
 		}
 
 		// Extensions
 		if (!extension_loaded('session')) {
-			$errors += ['Error: PHP session extension not activated'];
+			$errors[] = 'Error: PHP session extension not activated';
 		}
 		if (!extension_loaded('exif')) {
-			$errors += ['Error: PHP exif extension not activated'];
+			$errors[] = 'Error: PHP exif extension not activated';
 		}
 		if (!extension_loaded('mbstring')) {
-			$errors += ['Error: PHP mbstring extension not activated'];
+			$errors[] = 'Error: PHP mbstring extension not activated';
 		}
 		if (!extension_loaded('gd')) {
-			$errors += ['Error: PHP gd extension not activated'];
+			$errors[] = 'Error: PHP gd extension not activated';
 		}
 		if (!extension_loaded('PDO')) {
-			$errors += ['Error: PHP PDO extension not activated'];
+			$errors[] = 'Error: PHP PDO extension not activated';
 		}
 		if (!extension_loaded('mysqli') && !DB::getDriverName() == 'pgsql') {
-			$errors += ['Error: PHP mysqli extension not activated'];
+			$errors[] = 'Error: PHP mysqli extension not activated';
 		}
 		if (!extension_loaded('json')) {
-			$errors += ['Error: PHP json extension not activated'];
+			$errors[] = 'Error: PHP json extension not activated';
 		}
 		if (!extension_loaded('zip')) {
-			$errors += ['Error: PHP zip extension not activated'];
+			$errors[] = 'Error: PHP zip extension not activated';
 		}
 
 		// Permissions
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')) === false) {
-			$errors += ['Error: \'uploads/big\' is missing or has insufficient read/write privileges'];
+		if (Helpers::hasPermissions(Storage::path('big')) === false) {
+			$errors[] = 'Error: \'uploads/big\' is missing or has insufficient read/write privileges';
 		}
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')) === false) {
-			$errors += ['Error: \'uploads/medium\' is missing or has insufficient read/write privileges'];
+		if (Helpers::hasPermissions(Storage::path('medium')) === false) {
+			$errors[] = 'Error: \'uploads/medium\' is missing or has insufficient read/write privileges';
 		}
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL')) === false) {
-			$errors += ['Error: \'uploads/small\' is missing or has insufficient read/write privileges'];
+		if (Helpers::hasPermissions(Storage::path('small')) === false) {
+			$errors[] = 'Error: \'uploads/small\' is missing or has insufficient read/write privileges';
 		}
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) === false) {
-			$errors += ['Error: \'uploads/thumb\' is missing or has insufficient read/write privileges'];
+		if (Helpers::hasPermissions(Storage::path('thumb')) === false) {
+			$errors[] = 'Error: \'uploads/thumb\' is missing or has insufficient read/write privileges';
 		}
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT')) === false) {
-			$errors += ['Error: \'uploads/import\' is missing or has insufficient read/write privileges'];
+		if (Helpers::hasPermissions(Storage::path('import')) === false) {
+			$errors[] = 'Error: \'uploads/import\' is missing or has insufficient read/write privileges';
 		}
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS')) === false) {
-			$errors += ['Error: \'uploads/\' is missing or has insufficient read/write privileges'];
+		if (Helpers::hasPermissions(Storage::path('')) === false) {
+			$errors[] = 'Error: \'uploads/\' is missing or has insufficient read/write privileges';
 		}
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST') . '/user.css') === false) {
-			$errors += ['Warning: \'dist/user.css\' does not exist or has insufficient read/write privileges.'];
-			if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_DIST')) === false) {
-				$errors += ['Warning: \'dist/\' has insufficient read/write privileges.'];
+		if (Helpers::hasPermissions(Storage::disk('dist')->path('user.css')) === false) {
+			$errors[] = 'Warning: \'dist/user.css\' does not exist or has insufficient read/write privileges.';
+			if (Helpers::hasPermissions(Storage::disk('dist')->path('')) === false) {
+				$errors[] = 'Warning: \'dist/\' has insufficient read/write privileges.';
 			}
 		}
 
@@ -147,13 +148,13 @@ class DiagnosticsController extends Controller
 		if (function_exists('gd_info')) {
 			$gdVersion = gd_info();
 			if (!$gdVersion['JPEG Support']) {
-				$errors += ['Error: PHP gd extension without jpeg support'];
+				$errors[] = 'Error: PHP gd extension without jpeg support';
 			}
 			if (!$gdVersion['PNG Support']) {
-				$errors += ['Error: PHP gd extension without png support'];
+				$errors[] = 'Error: PHP gd extension without png support';
 			}
 			if (!$gdVersion['GIF Read Support'] || !$gdVersion['GIF Create Support']) {
-				$errors += ['Error: PHP gd extension without full gif support'];
+				$errors[] = 'Error: PHP gd extension without full gif support';
 			}
 		}
 
@@ -162,46 +163,46 @@ class DiagnosticsController extends Controller
 
 		// Settings
 		if (!isset($settings['username']) || $settings['username'] == '') {
-			$errors += ['Error: Username empty or not set in database'];
+			$errors[] = 'Error: Username empty or not set in database';
 		}
 		if (!isset($settings['password']) || $settings['password'] == '') {
-			$errors += ['Error: Password empty or not set in database'];
+			$errors[] = 'Error: Password empty or not set in database';
 		}
 		if (!isset($settings['sortingPhotos']) || $settings['sortingPhotos'] == '') {
-			$errors += ['Error: Wrong property for sortingPhotos in database'];
+			$errors[] = 'Error: Wrong property for sortingPhotos in database';
 		}
 		if (!isset($settings['sortingAlbums']) || $settings['sortingAlbums'] == '') {
-			$errors += ['Error: Wrong property for sortingAlbums in database'];
+			$errors[] = 'Error: Wrong property for sortingAlbums in database';
 		}
 		if (!isset($settings['imagick']) || $settings['imagick'] == '') {
-			$errors += ['Error: No or wrong property for imagick in database'];
+			$errors[] = 'Error: No or wrong property for imagick in database';
 		}
 		if (!isset($settings['skipDuplicates']) || $settings['skipDuplicates'] == '') {
-			$errors += ['Error: No or wrong property for skipDuplicates in database'];
+			$errors[] = 'Error: No or wrong property for skipDuplicates in database';
 		}
 		if (!isset($settings['checkForUpdates']) || ($settings['checkForUpdates'] != '0' && $settings['checkForUpdates'] != '1')) {
-			$errors += ['Error: No or wrong property for checkForUpdates in database'];
+			$errors[] = 'Error: No or wrong property for checkForUpdates in database';
 		}
 
 		// Check dropboxKey
 		if (!$settings['dropboxKey']) {
-			$errors += ['Warning: Dropbox import not working. No property for dropboxKey.'];
+			$errors[] = 'Warning: Dropbox import not working. No property for dropboxKey.';
 		}
 
 		// Check php.ini Settings
 		if (ini_get('max_execution_time') < 200 && ini_set('upload_max_filesize', '20M') === false) {
-			$errors += ['Warning: You may experience problems when uploading a large amount of photos. Take a look in the FAQ for details.'];
+			$errors[] = 'Warning: You may experience problems when uploading a large amount of photos. Take a look in the FAQ for details.';
 		}
 		if (empty(ini_get('allow_url_fopen'))) {
-			$errors += ['Warning: You may experience problems with the Dropbox- and URL-Import. Edit your php.ini and set allow_url_fopen to 1.'];
+			$errors[] = 'Warning: You may experience problems with the Dropbox- and URL-Import. Edit your php.ini and set allow_url_fopen to 1.';
 		}
 
 		// Check imagick
 		if (!extension_loaded('imagick')) {
-			$errors += ['Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.'];
+			$errors[] = 'Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.';
 		} else {
 			if (!$settings['imagick']) {
-				$errors += ['Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.'];
+				$errors[] = 'Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.';
 			}
 		}
 

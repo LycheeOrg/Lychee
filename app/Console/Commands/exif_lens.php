@@ -8,7 +8,7 @@ use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
+use Storage;
 
 class exif_lens extends Command
 {
@@ -72,7 +72,7 @@ class exif_lens extends Command
 
 		$i = $from;
 		foreach ($photos as $photo) {
-			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url;
+			$url = Storage::path('big/' . $photo->url);
 			if (file_exists($url)) {
 				$info = $this->metadataExtractor->extract($url, $photo->type);
 				if ($photo->size == '') {

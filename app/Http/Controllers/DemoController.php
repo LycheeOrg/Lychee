@@ -9,6 +9,7 @@ use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
+use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use Response;
 
@@ -35,7 +36,8 @@ class DemoController extends Controller
 		$sessionFunctions = new SessionFunctions();
 		$githubFunctions = new GitHubFunctions();
 		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
-		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions);
+		$symLinkFunction = new SymLinkFunctions($sessionFunctions);
+		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions, $symLinkFunction);
 
 		/**
 		 * Session::init.

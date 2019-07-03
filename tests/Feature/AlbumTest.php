@@ -6,7 +6,6 @@ namespace Tests\Feature;
 
 use App\ModelFunctions\SessionFunctions;
 use Illuminate\Foundation\Testing\TestResponse;
-use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 
 class AlbumTest extends TestCase

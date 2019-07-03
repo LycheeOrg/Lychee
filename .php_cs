@@ -19,6 +19,7 @@ $rules = [
     'backtick_to_shell_exec' => true,
     'increment_style' => ['style' => 'post'],
     'indentation_type' => true,
+    'multiline_comment_opening_closing' => true,
     'no_php4_constructor' => true,
     'phpdoc_no_empty_return' => false,
     'single_blank_line_at_eof' => false,

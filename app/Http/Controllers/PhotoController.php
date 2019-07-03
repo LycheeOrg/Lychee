@@ -5,12 +5,14 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
-use App\ModelFunctions\Helpers;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\Helpers;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
+use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
@@ -35,23 +37,32 @@ class PhotoController extends Controller
 	 */
 	private $readAccessFunctions;
 
-	/**
-	 * @var AlbumFunctions
-	 */
 	private $albumFunctions;
 
 	/**
+	 * @var SymLinkFunctions
+	 */
+	private $symLinkFunctions;
+
+	/**
 	 * @param PhotoFunctions      $photoFunctions
+	 * @param AlbumFunctions      $albumFunctions
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
-	 * @param AlbumFunctions      $albumFunctions
+	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions)
-	{
+	public function __construct(
+		PhotoFunctions $photoFunctions,
+		AlbumFunctions $albumFunctions,
+		SessionFunctions $sessionFunctions,
+		ReadAccessFunctions $readAccessFunctions,
+		SymLinkFunctions $symLinkFunctions
+	) {
 		$this->photoFunctions = $photoFunctions;
+		$this->albumFunctions = $albumFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
-		$this->albumFunctions = $albumFunctions;
+		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
 	/**
@@ -78,6 +89,21 @@ class PhotoController extends Controller
 		}
 
 		$return = $photo->prepareData();
+		$this->symLinkFunctions->getUrl($photo, $return);
+		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
+			if ($photo->album_id != null) {
+				if (!$photo->album->full_photo_visible()) {
+					$photo->downgrade($return);
+				}
+			} else {
+				if ($request['albumID'] == 'f' || $request['albumID'] == 'r') {
+					if (Configs::get_value('full_photo', '1') != '1') {
+						$photo->downgrade($return);
+					}
+				}
+			}
+		}
+
 		$return['original_album'] = $return['album'];
 		// This way preserves the back button functionality for photos
 		// in smart albums.
@@ -96,7 +122,8 @@ class PhotoController extends Controller
 	{
 		// here we need to refine.
 
-		$photo = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()))
+		$photo = Photo::select_stars(Photo::whereIn('album_id',
+			$this->albumFunctions->getPublicAlbums()))
 			->inRandomOrder()
 			->first();
 
@@ -105,6 +132,7 @@ class PhotoController extends Controller
 		}
 
 		$return = $photo->prepareData();
+		$this->symLinkFunctions->getUrl($photo, $return);
 
 		return $return;
 	}
@@ -155,7 +183,8 @@ class PhotoController extends Controller
 			'title' => 'required|string|max:100',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
+		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
+			->get();
 
 		$no_error = true;
 		foreach ($photos as $photo) {
@@ -179,7 +208,8 @@ class PhotoController extends Controller
 			'photoIDs' => 'required|string',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
+		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
+			->get();
 
 		$no_error = true;
 		foreach ($photos as $photo) {
@@ -261,7 +291,8 @@ class PhotoController extends Controller
 			'tags' => 'string|nullable',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
+		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
+			->get();
 
 		$no_error = true;
 		foreach ($photos as $photo) {
@@ -286,7 +317,8 @@ class PhotoController extends Controller
 			'albumID' => 'required|string',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
+		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
+			->get();
 
 		$albumID = $request['albumID'];
 
@@ -295,35 +327,38 @@ class PhotoController extends Controller
 			// just to be sure to handle ownership changes in the process.
 			$album = Album::find($albumID);
 			if ($album === null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+				Logs::error(__METHOD__, __LINE__,
+					'Could not find specified album');
 
 				return false;
 			}
 		}
 
 		$no_error = true;
-		$takestamps = [];
+		$takestamp = [];
 		foreach ($photos as $photo) {
 			$oldAlbumID = $photo->album_id;
 
 			$photo->album_id = ($albumID == '0') ? null : $albumID;
 			if ($album !== null) {
 				$photo->owner_id = $album->owner_id;
-				$takestamps[] = $photo->takestamp;
+				$takestamp[] = $photo->takestamp;
 			}
 			$no_error &= $photo->save();
 
 			if ($oldAlbumID !== null) {
 				$oldAlbum = Album::find($oldAlbumID);
 				if ($oldAlbum === null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find an album');
+					Logs::error(__METHOD__, __LINE__,
+						'Could not find an album');
 					$no_error = false;
 				}
-				$no_error &= $oldAlbum->update_takestamps([$photo->takestamp], false);
+				$no_error &= $oldAlbum->update_takestamps([$photo->takestamp],
+					false);
 			}
 		}
 		if ($album !== null) {
-			$no_error &= $album->update_takestamps($takestamps, true);
+			$no_error &= $album->update_takestamps($takestamp, true);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -359,9 +394,9 @@ class PhotoController extends Controller
 			'CC-BY',
 			'CC-BY-ND',
 			'CC-BY-SA',
-			'CC-BY-ND',
+			'CC-BY-NC',
 			'CC-BY-NC-ND',
-			'CC-BY-SA',
+			'CC-BY-NC-SA',
 		];
 		$found = false;
 		$i = 0;
@@ -372,7 +407,8 @@ class PhotoController extends Controller
 			$i++;
 		}
 		if (!$found) {
-			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: ' . $request['license']);
+			Logs::error(__METHOD__, __LINE__,
+				'wrong kind of license: ' . $request['license']);
 
 			return Response::error('wrong kind of license!');
 		}
@@ -395,23 +431,28 @@ class PhotoController extends Controller
 			'photoIDs' => 'required|string',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
+		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
+			->get();
 
 		$no_error = true;
+		$albums = [];
+		$takestamp = [];
+
 		foreach ($photos as $photo) {
 			$no_error &= $photo->predelete();
 
-			$album = null;
 			if ($photo->album_id !== null) {
-				$album = $photo->album;
-				$takestamp = $photo->takestamp;
+				$albums[] = $photo->album;
+				$takestamp[] = $photo->takestamp;
 			}
 
 			$no_error &= $photo->delete();
+		}
 
-			if ($album !== null) {
-				$no_error &= $album->update_takestamps([$takestamp], false);
-			}
+		// TODO: ideally we would like to avoid duplicates here...
+		for ($i = 0; $i < count($albums); $i++) {
+			$no_error &= $albums[$i]->update_takestamps([$takestamp[$i]],
+				false);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -431,7 +472,8 @@ class PhotoController extends Controller
 			'photoIDs' => 'required|string',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))->get();
+		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
+			->get();
 
 		$no_error = true;
 		foreach ($photos as $photo) {
@@ -510,31 +552,40 @@ class PhotoController extends Controller
 			return abort(404);
 		}
 
-		$title = ($photo->title == '') ? 'Untitled' : str_replace($badChars, '', $photo->title);
+		$title = ($photo->title == '') ? 'Untitled'
+			: str_replace($badChars, '', $photo->title);
 
 		// determine the file based on given size
 		switch ($request['kind']) {
 			case 'MEDIUM':
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') . $photo->url;
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')
+					. $photo->url;
 				$kind = '-MQ-' . $photo->medium;
 				break;
 			case 'SMALL':
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') . $photo->url;
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL')
+					. $photo->url;
 				$kind = '-LQ-' . $photo->small;
 				break;
 			default:
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') . $photo->url;
+				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')
+					. $photo->url;
 				$kind = '-HQ-' . $photo->width . 'x' . $photo->height;
 		}
 
 		// Check the file actually exists
 		if (!file_exists($filepath)) {
-			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $filepath . ' (' . $title . ')');
+			Logs::error(__METHOD__, __LINE__,
+				'File is missing: ' . $filepath . ' (' . $title . ')');
 
 			return abort(404);
 		}
 
-		$response = new StreamedResponse(function () use ($title, $kind, $filepath) {
+		$response = new StreamedResponse(function () use (
+			$title,
+			$kind,
+			$filepath
+		) {
 			$opt = array(
 				'largeFileSize' => 100 * 1024 * 1024,
 				'enableZip64' => true,
@@ -554,5 +605,15 @@ class PhotoController extends Controller
 		});
 
 		return $response;
+	}
+
+	/**
+	 * GET to manually clear the symlinks.
+	 *
+	 * @return string
+	 */
+	public function clearSymLink()
+	{
+		return $this->symLinkFunctions->clearSymLink();
 	}
 }

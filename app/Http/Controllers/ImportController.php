@@ -14,8 +14,8 @@ use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use ImagickException;
+use Storage;
 
 class ImportController extends Controller
 {
@@ -87,7 +87,7 @@ class ImportController extends Controller
 		]);
 
 		// Check permissions
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT')) === false) {
+		if (Helpers::hasPermissions(Storage::path('import') === false)) {
 			Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
 
 			return Response::error('An upload-folder is missing or not readable and writable!');
@@ -118,7 +118,7 @@ class ImportController extends Controller
 				continue;
 			}
 			$filename = pathinfo($url, PATHINFO_FILENAME) . $extension;
-			$tmp_name = Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT') . $filename;
+			$tmp_name = Storage::path('import/' . $filename);
 			if (@copy($url, $tmp_name) === false) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not copy file (' . $url . ') to temp-folder (' . $tmp_name . ')');
@@ -177,7 +177,7 @@ class ImportController extends Controller
 	{
 		// Parse path
 		if (!isset($path)) {
-			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_IMPORT');
+			$path = Storage::path('import/');
 		}
 		if (substr($path, -1) === '/') {
 			$path = substr($path, 0, -1);
@@ -189,10 +189,10 @@ class ImportController extends Controller
 		}
 
 		// Skip folders of Lychee
-		if ($path === Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') || ($path . '/') === Config::get('defines.dirs.LYCHEE_UPLOADS_BIG') ||
-			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') || ($path . '/') === Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM') ||
-			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') || ($path . '/') === Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL') ||
-			$path === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB') || ($path . '/') === Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) {
+		if ($path === Storage::path('big/') || ($path . '/') === Storage::path('big/') ||
+			$path === Storage::path('medium/') || ($path . '/') === Storage::path('medium/') ||
+			$path === Storage::path('small/') || ($path . '/') === Storage::path('small/') ||
+			$path === Storage::path('thumb/') || ($path . '/') === Storage::path('thumb/')) {
 			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee (' . $path . ')');
 
 			return 'false';

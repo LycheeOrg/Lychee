@@ -176,6 +176,62 @@ class PhotosTest extends TestCase
 			'width' => 6720,
 		]);
 
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'reserved',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC0',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-ND',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-SA',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-NC',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-NC-ND',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
+		$response = $this->post('/api/Photo::setLicense', [
+			'photoID' => $id,
+			'license' => 'CC-BY-NC-SA',
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('true');
+
 		/**
 		 * Actually try to display the picture.
 		 */
@@ -245,12 +301,19 @@ class PhotosTest extends TestCase
 		$response->assertSee('false');
 
 		$response = $this->post('/api/Album::setPublic', [
+			'full_photo' => 1,
 			'albumID' => $albumID,
 			'password' => '',
 			'visible' => 1,
 			'downloadable' => 1,
 		]);
 		$response->assertOk();
+
+		/**
+		 * Actually try to display the picture.
+		 */
+		$response = $this->post('/api/Photo::getRandom', []);
+		$response->assertStatus(200);
 
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');
@@ -270,5 +333,29 @@ class PhotosTest extends TestCase
 		$response = $this->post('/api/Album::delete', ['albumIDs' => $albumID]);
 		$response->assertOk();
 		$response->assertSee('true');
+
+		$response = $this->get('/api/Photo::clearSymLink');
+		$response->assertOk();
+		$response->assertSee('true');
+	}
+
+	public function testUpload2()
+	{
+		// save initial value
+		$init_config_value1 = Configs::get_value('SL_enable');
+		$init_config_value2 = Configs::get_value('SL_for_admin');
+
+		// set to 0
+		Configs::set('SL_enable', '1');
+		Configs::set('SL_for_admin', '1');
+		$this->assertEquals(Configs::get_value('SL_enable'), '1');
+		$this->assertEquals(Configs::get_value('SL_for_admin'), '1');
+
+		// just redo the test above :'D
+		$this->testUpload();
+
+		// set back to initial value
+		Configs::set('SL_enable', $init_config_value1);
+		Configs::set('SL_for_admin', $init_config_value2);
 	}
 }

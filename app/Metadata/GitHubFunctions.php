@@ -15,20 +15,6 @@ class GitHubFunctions
 	private $CI_commit = false;
 
 	/**
-	 * return the correct git path depending whether we are running tests or from web.
-	 *
-	 * @return string
-	 */
-	private function git_path()
-	{
-		if (App::runningUnitTests()) {
-			return '.git';
-		} else {
-			return '../.git';
-		}
-	}
-
-	/**
 	 * Given a commit id, return the 7 first characters (7 hex digits) and trim it to remove \n.
 	 *
 	 * @param $commit_id
@@ -77,7 +63,7 @@ class GitHubFunctions
 	public function get_current_branch()
 	{
 		if ($this->branch == false) {
-			$this->branch = @file_get_contents(sprintf('%s/HEAD', $this->git_path()));
+			$this->branch = @file_get_contents(base_path('.git/HEAD'));
 			if ($this->branch != false) {
 				// this is to handle CI where it actually checks a commit instead of a branch
 				if (substr($this->branch, 0, 4) == 'refs:') {
@@ -87,7 +73,7 @@ class GitHubFunctions
 					$this->CI_commit = $this->branch;
 				}
 			} else {
-				Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . $this->git_path() . '/HEAD');
+				Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . base_path('.git/HEAD'));
 			}
 			$this->branch = trim($this->branch);
 		}
@@ -103,11 +89,11 @@ class GitHubFunctions
 	public function get_current_commit()
 	{
 		if ($this->head == false && $this->get_current_branch() != false) {
-			$this->head = @file_get_contents(sprintf('%s/refs/heads/%s', $this->git_path(), $this->branch));
+			$this->head = @file_get_contents(base_path('.git/refs/heads/' . $this->branch));
 			if ($this->head != false) {
 				$this->head = $this->trim($this->head);
 			} else {
-				Logs::notice(__METHOD__, __LINE__, sprintf('Could not access: ' . $this->git_path() . '/refs/heads/%s', $this->branch));
+				Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . base_path('.git/refs/heads/' . $this->branch));
 				if ($this->CI_commit != false) {
 					$this->head = $this->trim($this->CI_commit);
 				}
