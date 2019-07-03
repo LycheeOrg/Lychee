@@ -354,7 +354,6 @@ class AlbumFunctions
 	public function get_albums(Album $album): array
 	{
 		$subAlbums = [];
-		$userId = $this->sessionFunctions->id();
 		foreach ($album->children as $subAlbum) {
 			$haveAccess = $this->readAccessFunctions->album($subAlbum->id, true);
 
@@ -362,6 +361,9 @@ class AlbumFunctions
 			// return about them.
 			if ($haveAccess === 1 || $haveAccess === 3) {
 				$album = $subAlbum->prepareData();
+				if (!$this->sessionFunctions->is_logged_in()) {
+					unset($album['owner']);
+				}
 
 				if ($haveAccess === 1) {
 					$album['albums'] = $this->get_albums($subAlbum);
