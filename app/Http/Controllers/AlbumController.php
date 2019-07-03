@@ -121,10 +121,9 @@ class AlbumController extends Controller
 				$return = $album->prepareData();
 
 				// we just require is_logged_in for this one.
-				if(!$this->sessionFunctions->is_logged_in())
-                {
-                    unset($return['owner']);
-                }
+				if (!$this->sessionFunctions->is_logged_in()) {
+					unset($return['owner']);
+				}
 
 				$return['albums'] = $this->albumFunctions->get_albums($album);
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));

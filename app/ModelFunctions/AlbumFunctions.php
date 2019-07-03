@@ -361,10 +361,9 @@ class AlbumFunctions
 			// return about them.
 			if ($haveAccess === 1 || $haveAccess === 3) {
 				$album = $subAlbum->prepareData();
-				if (!$this->sessionFunctions->is_logged_in())
-                {
-                    unset($album['owner']);
-                }
+				if (!$this->sessionFunctions->is_logged_in()) {
+					unset($album['owner']);
+				}
 
 				if ($haveAccess === 1) {
 					$album['albums'] = $this->get_albums($subAlbum);
