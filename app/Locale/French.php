@@ -85,6 +85,7 @@ final class French implements LangInterface
 			'DELETE' => 'Supprimer',
 			'DELETE_ALL' => 'Supprimer la sélection',
 			'DOWNLOAD' => 'Télécharger',
+			'DOWNLOAD_ALL' => 'Télécharger la sélection',
 			'UPLOAD_PHOTO' => 'Ajouter une photo ou une vidéo',
 			'IMPORT_LINK' => 'Importer depuis un lien',
 			'IMPORT_DROPBOX' => 'Importer depuis Dropbox',

@@ -17,6 +17,9 @@ use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
@@ -519,90 +522,148 @@ class PhotoController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return StreamedResponse|void
+	 * @return Response|void
 	 */
 	public function getArchive(Request $request)
 	{
-		// Illicit chars
-		$badChars = array_merge(
-			array_map('chr', range(0, 31)),
-			array(
-				'<',
-				'>',
-				':',
-				'"',
-				'/',
-				'\\',
-				'|',
-				'?',
-				'*',
-			)
-		);
-
 		$request->validate([
-			'photoID' => 'required|string',
-			'KIND' => 'nullable|string',
+			'photoIDs' => 'required|string',
+			'kind' => 'nullable|string',
 		]);
 
-		$photo = Photo::with('album')->find($request['photoID']);
+		$photoIDs = explode(',', $request['photoIDs']);
 
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-			return abort(404);
-		}
-
-		$title = ($photo->title == '') ? 'Untitled'
-			: str_replace($badChars, '', $photo->title);
-
-		// determine the file based on given size
-		switch ($request['kind']) {
-			case 'MEDIUM':
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')
-					. $photo->url;
-				$kind = '-MQ-' . $photo->medium;
-				break;
-			case 'SMALL':
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL')
-					. $photo->url;
-				$kind = '-LQ-' . $photo->small;
-				break;
-			default:
-				$filepath = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')
-					. $photo->url;
-				$kind = '-HQ-' . $photo->width . 'x' . $photo->height;
-		}
-
-		// Check the file actually exists
-		if (!file_exists($filepath)) {
-			Logs::error(__METHOD__, __LINE__,
-				'File is missing: ' . $filepath . ' (' . $title . ')');
-
-			return abort(404);
-		}
-
-		$response = new StreamedResponse(function () use (
-			$title,
-			$kind,
-			$filepath
-		) {
-			$opt = array(
-				'largeFileSize' => 100 * 1024 * 1024,
-				'enableZip64' => true,
-				'send_headers' => true,
+		$extract_names = function ($photoID) use ($request) {
+			// Illicit chars
+			$badChars = array_merge(
+				array_map('chr', range(0, 31)),
+				array(
+					'<',
+					'>',
+					':',
+					'"',
+					'/',
+					'\\',
+					'|',
+					'?',
+					'*',
+				)
 			);
 
-			$zip = new ZipStream($title . '.zip', $opt);
+			$photo = Photo::with('album')->find($photoID);
+
+			if ($photo == null) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
+				return null;
+			}
+
+			$title = str_replace($badChars, '', $photo->title);
+			if ($title === '') {
+				$title = 'Untitled';
+			}
+
+			// determine the file based on given size
+			switch ($request['kind']) {
+				case 'MEDIUM':
+					if (strpos($photo->type, 'video') !== 0) {
+						$url = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')
+							. $photo->url;
+					} else {
+						$url = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')
+							. $photo->thumbUrl;
+					}
+					$kind = '-' . $photo->medium;
+					break;
+				case 'SMALL':
+					if (strpos($photo->type, 'video') !== 0) {
+						$url = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL')
+							. $photo->url;
+					} else {
+						$url = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL')
+							. $photo->thumbUrl;
+					}
+					$kind = '-' . $photo->small;
+					break;
+				default:
+					$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')
+						. $photo->url;
+					$kind = '';
+					break;
+			}
+
+			// Check the file actually exists
+			if (!file_exists($url)) {
+				Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $url . ' (' . $title . ')');
+
+				return null;
+			}
 
 			// Get extension of image
-			$extension = Helpers::getExtension($filepath, false);
+			$extension = Helpers::getExtension($url, false);
+
+			return array($title, $kind, $extension, $url);
+		};
+
+		if (count($photoIDs) === 1) {
+			$ret = $extract_names($photoIDs[0]);
+			if ($ret === null) {
+				return abort(404);
+			}
+
+			list($title, $kind, $extension, $url) = $ret;
 
 			// Set title for photo
-			$zip->addFileFromPath($title . $kind . $extension, $filepath);
+			$file = $title . $kind . $extension;
 
-			// finish the zip stream
-			$zip->finish();
-		});
+			$response = new BinaryFileResponse($url);
+			$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
+		} else {
+			$response = new StreamedResponse(function () use ($request, $photoIDs, &$extract_names) {
+				$zip = new ZipStream(null);
+
+				$files = [];
+				foreach ($photoIDs as $photoID) {
+					$ret = $extract_names($photoID);
+					if ($ret == null) {
+						return abort(404);
+					}
+
+					list($title, $kind, $extension, $url) = $ret;
+
+					// Set title for photo
+					$file = $title . $kind . $extension;
+					// Check for duplicates
+					if (!empty($files)) {
+						$i = 1;
+						$tmp_file = $file;
+						while (in_array($tmp_file, $files)) {
+							// Set new title for photo
+							$tmp_file = $title . $kind . '-' . $i . $extension;
+							$i++;
+						}
+						$file = $tmp_file;
+					}
+					// Add to array
+					$files[] = $file;
+
+					$zip->addFileFromPath($file, $url);
+				} // foreach ($photoIDs)
+
+				// finish the zip stream
+				$zip->finish();
+			});
+
+			// Set file type and destination
+			$response->headers->set('Content-Type', 'application/x-zip');
+			$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, 'Photos.zip');
+			$response->headers->set('Content-Disposition', $disposition);
+		}
+
+		// Disable caching
+		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+		$response->headers->set('Pragma', 'no-cache');
+		$response->headers->set('Expires', '0');
 
 		return $response;
 	}

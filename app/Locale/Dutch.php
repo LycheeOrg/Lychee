@@ -85,6 +85,7 @@ final class Dutch implements LangInterface
 			'DELETE' => 'Verwijder',
 			'DELETE_ALL' => 'Geselecteerde verwijderen',
 			'DOWNLOAD' => 'Download',
+			'DOWNLOAD_ALL' => 'Download Geselecteerd',
 			'UPLOAD_PHOTO' => 'Upload Foto',
 			'IMPORT_LINK' => 'Importeer van Link',
 			'IMPORT_DROPBOX' => 'Importeer van Dropbox',

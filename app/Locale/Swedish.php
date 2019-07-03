@@ -85,6 +85,7 @@ final class Swedish implements LangInterface
 			'DELETE' => 'Radera',
 			'DELETE_ALL' => 'Radera vald',
 			'DOWNLOAD' => 'Ladda ner',
+			'DOWNLOAD_ALL' => 'Download Selected',
 			'UPLOAD_PHOTO' => 'Ladda upp fotografi',
 			'IMPORT_LINK' => 'Importera från länk',
 			'IMPORT_DROPBOX' => 'Importera från Dropbox',
