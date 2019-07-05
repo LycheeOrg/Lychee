@@ -560,7 +560,7 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Return the archive of the pictures of the album (but not the sub albums !).
+	 * Return the archive of the pictures of the album and its subalbums.
 	 *
 	 * @param Request $request
 	 *
