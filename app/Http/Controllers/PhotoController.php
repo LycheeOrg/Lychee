@@ -16,7 +16,7 @@ use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
+use Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -567,27 +567,22 @@ class PhotoController extends Controller
 			switch ($request['kind']) {
 				case 'MEDIUM':
 					if (strpos($photo->type, 'video') !== 0) {
-						$url = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')
-							. $photo->url;
+						$url = Storage::path('medium/' . $photo->url);
 					} else {
-						$url = Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')
-							. $photo->thumbUrl;
+						$url = Storage::path('medium/' . $photo->thumbUrl);
 					}
 					$kind = '-' . $photo->medium;
 					break;
 				case 'SMALL':
 					if (strpos($photo->type, 'video') !== 0) {
-						$url = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL')
-							. $photo->url;
+						$url = Storage::path('small/' . $photo->url);
 					} else {
-						$url = Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL')
-							. $photo->thumbUrl;
+						$url = Storage::path('small/' . $photo->thumbUrl);
 					}
 					$kind = '-' . $photo->small;
 					break;
 				default:
-					$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')
-						. $photo->url;
+					$url = Storage::path('big/' . $photo->url);
 					$kind = '';
 					break;
 			}

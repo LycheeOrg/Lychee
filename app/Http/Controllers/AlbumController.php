@@ -15,7 +15,7 @@ use App\Photo;
 use App\Response;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
+use Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -699,7 +699,7 @@ class AlbumController extends Controller
 					$files = [];
 					$photos = $photos_sql->get();
 					foreach ($photos as $photo) {
-						$url = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG') . $photo->url;
+						$url = Storage::path('big/' . $photo->url);
 						// Check if readable
 						if (!@is_readable($url)) {
 							Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
