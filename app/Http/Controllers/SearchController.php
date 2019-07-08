@@ -8,8 +8,8 @@ use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Album;
 use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
+use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,20 +33,22 @@ class SearchController extends Controller
 	private $readAccessFunctions;
 
 	/**
-	 * @var PhotoFunctions
+	 * @var SymLinkFunctions
 	 */
-	private $photoFunctions;
+	private $symLinkFunctions;
 
 	/**
 	 * @param AlbumFunctions      $albumFunctions
+	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
+	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, PhotoFunctions $photoFunctions)
+	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, SymLinkFunctions $symLinkFunctions)
 	{
 		$this->albumFunctions = $albumFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
-		$this->photoFunctions = $photoFunctions;
+		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
 	/**
@@ -154,7 +156,7 @@ class SearchController extends Controller
 				$album = $album_model->prepareData();
 				if ($this->readAccessFunctions->album($album_model->id) === 1) {
 					$album['albums'] = $this->albumFunctions->get_albums($album_model);
-					$album = $album_model->gen_thumbs($album, $this->albumFunctions->get_sub_albums($album_model, [$album_model->id]));
+					$album = $this->albumFunctions->gen_thumbs($album, $this->albumFunctions->get_sub_albums($album_model, [$album_model->id]));
 				}
 				$return['albums'][$i] = $album;
 				$i++;
@@ -189,6 +191,9 @@ class SearchController extends Controller
 						}
 					}
 				}
+
+				// most likely missing
+				return $query;
 			});
 		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
@@ -197,6 +202,9 @@ class SearchController extends Controller
 					$query->where('title', 'like', '%' . $escaped_term . '%')
 						->orWhere('description', 'like', '%' . $escaped_term . '%')
 						->orWhere('tags', 'like', '%' . $escaped_term . '%');
+
+					// most likely missing
+					return $query;
 				});
 		}
 		$photos = $query->get();
@@ -204,7 +212,7 @@ class SearchController extends Controller
 			$i = 0;
 			foreach ($photos as $photo) {
 				$return['photos'][$i] = $photo->prepareData();
-				$this->photoFunctions->getUrl($photo, $return['photos'][$i]);
+				$this->symLinkFunctions->getUrl($photo, $return['photos'][$i]);
 				$i++;
 			}
 		}
