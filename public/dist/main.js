@@ -769,7 +769,7 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject3 = _taggedTemplateLiteral(["<p>", " $", " ", " ", "</p>"], ["<p>", " $", " ", " ", "</p>"]),
     _templateObject4 = _taggedTemplateLiteral(["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"], ["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"]),
     _templateObject5 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"], ["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"]),
-    _templateObject6 = _taggedTemplateLiteral(["?albumID=", ""], ["?albumID=", ""]),
+    _templateObject6 = _taggedTemplateLiteral(["?albumIDs=", ""], ["?albumIDs=", ""]),
     _templateObject7 = _taggedTemplateLiteral(["<p>", " '$", "' ", " '$", "'?</p>"], ["<p>", " '$", "' ", " '$", "'?</p>"]),
     _templateObject8 = _taggedTemplateLiteral(["<p>", " '$", "'?</p>"], ["<p>", " '$", "'?</p>"]),
     _templateObject9 = _taggedTemplateLiteral(["<p>", " '$", "' ", "</p>"], ["<p>", " '$", "' ", "</p>"]),
@@ -810,7 +810,7 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject44 = _taggedTemplateLiteral(["<p>", " ", " ", " ", "</p>"], ["<p>", " ", " ", " ", "</p>"]),
     _templateObject45 = _taggedTemplateLiteral(["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"], ["<p>", " <input class='text' name='description' type='text' maxlength='800' placeholder='", "' value='$", "'></p>"]),
     _templateObject46 = _taggedTemplateLiteral(["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"], ["<input class='text' name='tags' type='text' maxlength='800' placeholder='Tags' value='$", "'>"]),
-    _templateObject47 = _taggedTemplateLiteral(["?photoID=", "&kind=", ""], ["?photoID=", "&kind=", ""]),
+    _templateObject47 = _taggedTemplateLiteral(["?photoIDs=", "&kind=", ""], ["?photoIDs=", "&kind=", ""]),
     _templateObject48 = _taggedTemplateLiteral(["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"], ["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"]),
     _templateObject49 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
     _templateObject50 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
@@ -1703,15 +1703,15 @@ album.share = function (service) {
 	}
 };
 
-album.getArchive = function (albumID) {
+album.getArchive = function (albumIDs) {
 
 	var link = '';
 
 	// double check with API_V2 this will not work...
 	if (lychee.api_V2) {
-		location.href = api.get_url('Album::getArchive') + lychee.html(_templateObject6, albumID);
+		location.href = api.get_url('Album::getArchive') + lychee.html(_templateObject6, albumIDs.join());
 	} else {
-		var url = api.path + "?function=Album::getArchive&albumID=" + albumID;
+		var url = api.path + "?function=Album::getArchive&albumID=" + albumIDs[0];
 
 		if (location.href.indexOf('index.html') > 0) link = location.href.replace(location.hash, '').replace('index.html', url);else link = location.href.replace(location.hash, '') + url;
 
@@ -2535,6 +2535,8 @@ contextMenu.album = function (albumID, e) {
 	// { title: build.iconic('cloud') + lychee.locale['SHARE_WITH'],    visible: lychee.api_V2 && lychee.upload,   fn: () => alert('ho')},
 	{ title: build.iconic('trash') + lychee.locale['DELETE'], fn: function fn() {
 			return album.delete([albumID]);
+		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], fn: function fn() {
+			return album.getArchive([albumID]);
 		} }];
 
 	$('.album[data-id="' + albumID + '"]').addClass('active');
@@ -2565,9 +2567,13 @@ contextMenu.albumMulti = function (albumIDs, e) {
 			basicContext.close();contextMenu.move(albumIDs, e, album.setAlbum, 'ROOT');
 		} }, { title: build.iconic('trash') + lychee.locale['DELETE_ALL'], fn: function fn() {
 			return album.delete(albumIDs);
+		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_ALL'], fn: function fn() {
+			return album.getArchive(albumIDs);
 		} }];
 
-	items.push();
+	if (!lychee.api_V2) {
+		items.splice(-1);
+	}
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
 };
@@ -2699,6 +2705,8 @@ contextMenu.photo = function (photoID, e) {
 			basicContext.close();contextMenu.move([photoID], e, photo.setAlbum, 'UNSORTED');
 		} }, { title: build.iconic('trash') + lychee.locale['DELETE'], fn: function fn() {
 			return photo.delete([photoID]);
+		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], fn: function fn() {
+			return photo.getArchive([photoID], 'FULL');
 		} }];
 
 	$('.photo[data-id="' + photoID + '"]').addClass('active');
@@ -2763,7 +2771,13 @@ contextMenu.photoMulti = function (photoIDs, e) {
 			basicContext.close();contextMenu.move(photoIDs, e, photo.setAlbum, 'UNSORTED');
 		} }, { title: build.iconic('trash') + lychee.locale['DELETE_ALL'], fn: function fn() {
 			return photo.delete(photoIDs);
+		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_ALL'], fn: function fn() {
+			return photo.getArchive(photoIDs, 'FULL');
 		} }];
+
+	if (!lychee.api_V2) {
+		items.splice(-1);
+	}
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
 };
@@ -2797,20 +2811,22 @@ contextMenu.photoMore = function (photoID, e) {
 
 	// Show download-item when
 	// a) We are allowed to upload to the album
-	// b) or the album is explicitly marked as downloadable
-	var showDownload = album.isUploadable() || album.json && album.json.downloadable && album.json.downloadable === '1';
-
+	// b) the photo is explicitly marked as downloadable (v4-only)
+	// c) or, the album is explicitly marked as downloadable
+	var showDownload = album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1');
 	var showMedium = photo.json.medium && photo.json.medium !== '' && showDownload;
 	var showSmall = photo.json.small && photo.json.small !== '' && showDownload;
-	var showFull = album.json && album.json.full_photo && photo.json.url && photo.json.url !== '';
+
+	var showFull = photo.json.url && photo.json.url !== '';
+
 	var items = [{ title: build.iconic('fullscreen-enter') + lychee.locale['FULL_PHOTO'], visible: !!showFull, fn: function fn() {
 			return window.open(photo.getDirectLink());
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], visible: !!showDownload, fn: function fn() {
-			return photo.getArchive(photoID, 'FULL');
+			return photo.getArchive([photoID], 'FULL');
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_MEDIUM'], visible: !!showMedium, fn: function fn() {
-			return photo.getArchive(photoID, 'MEDIUM');
+			return photo.getArchive([photoID], 'MEDIUM');
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_SMALL'], visible: !!showSmall, fn: function fn() {
-			return photo.getArchive(photoID, 'SMALL');
+			return photo.getArchive([photoID], 'SMALL');
 		} }];
 
 	basicContext.show(items, e.originalEvent);
@@ -3028,7 +3044,7 @@ header.bind = function () {
 		photo.delete([photo.getID()]);
 	});
 	header.dom('#button_archive').on(eventName, function () {
-		album.getArchive(album.getID());
+		album.getArchive([album.getID()]);
 	});
 	header.dom('#button_star').on(eventName, function () {
 		photo.setStar([photo.getID()]);
@@ -3183,11 +3199,9 @@ header.setMode = function (mode) {
 
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$('#button_more').show();
-			if (!album.isUploadable() && !(album.json && album.json.downloadable && album.json.downloadable === '1') && !(album.json && album.json.full_photo && album.json.full_photo === '1') || photo.json && photo.json.url && photo.json.url === '') {
+			if (!(album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(photo.json.url && photo.json.url !== '')) {
 				$('#button_more').hide();
 			}
-			console.log(album.json);
-			console.log(photo.json);
 
 			return true;
 
@@ -3900,8 +3914,8 @@ lychee.load = function () {
 
 lychee.getUpdate = function () {
 
-	console.log(lychee.update_available);
-	console.log(lychee.update_json);
+	// console.log(lychee.update_available);
+	// console.log(lychee.update_json);
 
 	if (lychee.update_json !== 0) {
 		if (lychee.update_available) {
@@ -5018,7 +5032,6 @@ photo.load = function (photoID, albumID) {
 
 	var params = {
 		photoID: photoID,
-		albumID: albumID,
 		password: password.value
 	};
 
@@ -5036,6 +5049,8 @@ photo.load = function (photoID, albumID) {
 		}
 
 		photo.json = data;
+		photo.json.original_album = photo.json.album;
+		photo.json.album = albumID;
 
 		if (!visible.photo()) view.photo.show();
 		view.photo.init();
@@ -5082,7 +5097,7 @@ photo.update_overlay_type = function () {
 			$('#image_overlay').remove();
 			lychee.imageview.append(build.overlay_image(photo.json));
 		} else {
-			console.log('no other data found, displaying ' + types[j]);
+			// console.log('no other data found, displaying ' + types[j]);
 		}
 	}
 };
@@ -5685,15 +5700,14 @@ photo.setLicense = function (photoID) {
 	});
 };
 
-photo.getArchive = function (photoID, kind) {
+photo.getArchive = function (photoIDs, kind) {
 
 	var link = void 0;
 
 	if (lychee.api_V2) {
-		console.log(api.get_url('Photo::getArchive') + lychee.html(_templateObject47, photoID, kind));
-		location.href = api.get_url('Photo::getArchive') + lychee.html(_templateObject47, photoID, kind);
+		location.href = api.get_url('Photo::getArchive') + lychee.html(_templateObject47, photoIDs.join(), kind);
 	} else {
-		var url = api.path + "?function=Photo::getArchive&photoID=" + photoID + "&kind=" + kind;
+		var url = api.path + "?function=Photo::getArchive&photoID=" + photoIDs[0] + "&kind=" + kind;
 
 		if (location.href.indexOf('index.html') > 0) link = location.href.replace(location.hash, '').replace('index.html', url);else link = location.href.replace(location.hash, '') + url;
 
@@ -6405,7 +6419,7 @@ sidebar.toggle = function () {
 		header.dom('.button--info').toggleClass('active');
 		lychee.content.toggleClass('content--sidebar');
 		lychee.imageview.toggleClass('image--sidebar');
-		view.album.content.justify();
+		if (typeof view !== 'undefined') view.album.content.justify();
 		sidebar.dom().toggleClass('active');
 
 		return true;
@@ -6457,7 +6471,7 @@ sidebar.createStructure.photo = function (data) {
 
 	if (data == null || data === '') return false;
 
-	var editable = album.isUploadable();
+	var editable = typeof album !== 'undefined' ? album.isUploadable() : false;
 	var exifHash = data.takedate + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
 	var structure = {};
 	var _public = '';
@@ -7684,7 +7698,7 @@ view.album = {
 					containerWidth: containerWidth,
 					containerPadding: 0
 				});
-				if (lychee.admin) console.log(layoutGeometry);
+				// if (lychee.admin) console.log(layoutGeometry);
 				$('.justified-layout').css('height', layoutGeometry.containerHeight + 'px').css('height', layoutGeometry.containerHeight + 'px');
 				$('.justified-layout > div').each(function (i) {
 					if (!layoutGeometry.boxes[i]) {
@@ -7772,7 +7786,7 @@ view.album = {
 				break;
 			default:
 				license = album.json.license;
-				console.log('default');
+				// console.log('default');
 				break;
 		}
 
