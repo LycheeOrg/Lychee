@@ -86,6 +86,7 @@ final class Slovak implements LangInterface
 			'DELETE' => 'Zmazať',
 			'DELETE_ALL' => 'Zmazať vybrané',
 			'DOWNLOAD' => 'Stiahnuť',
+			'DOWNLOAD_ALL' => 'Stiahnuť vybrané',
 			'UPLOAD_PHOTO' => 'Foto nahrať',
 			'IMPORT_LINK' => 'Importovať z linku',
 			'IMPORT_DROPBOX' => 'Importovať z Dropbox',

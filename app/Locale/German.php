@@ -86,6 +86,7 @@ final class German implements LangInterface
 			'DELETE' => 'Löschen',
 			'DELETE_ALL' => 'Ausgewählte löschen',
 			'DOWNLOAD' => 'Herunterladen',
+			'DOWNLOAD_ALL' => 'Ausgewählte herunterladen',
 			'UPLOAD_PHOTO' => 'Foto hochladen',
 			'IMPORT_LINK' => 'Aus Link importieren',
 			'IMPORT_DROPBOX' => 'Aus Dropbox importieren',

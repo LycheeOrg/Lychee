@@ -85,6 +85,7 @@ final class ChineseSimplified implements LangInterface
 			'DELETE' => '删除',
 			'DELETE_ALL' => '删除已选中',
 			'DOWNLOAD' => '下载',
+			'DOWNLOAD_ALL' => 'Download Selected',
 			'UPLOAD_PHOTO' => '上传相片',
 			'IMPORT_LINK' => '从链接导入',
 			'IMPORT_DROPBOX' => '从 Dropbox 导入',

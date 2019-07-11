@@ -930,6 +930,7 @@ csrf.bind = function () {
 var lychee = {};
 
 lychee.content = $('.content');
+lychee.imageview = $('#imageview');
 
 lychee.escapeHTML = function () {
 	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -1124,7 +1125,6 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 
 	var params = {
 		photoID: photoID,
-		albumID: '0',
 		password: ''
 	};
 
@@ -1561,7 +1561,7 @@ header.bind = function () {
 		photo.delete([photo.getID()]);
 	});
 	header.dom('#button_archive').on(eventName, function () {
-		album.getArchive(album.getID());
+		album.getArchive([album.getID()]);
 	});
 	header.dom('#button_star').on(eventName, function () {
 		photo.setStar([photo.getID()]);
@@ -1716,11 +1716,9 @@ header.setMode = function (mode) {
 
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$('#button_more').show();
-			if (!album.isUploadable() && !(album.json && album.json.downloadable && album.json.downloadable === '1') && !(album.json && album.json.full_photo && album.json.full_photo === '1') || photo.json && photo.json.url && photo.json.url === '') {
+			if (!(album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(photo.json.url && photo.json.url !== '')) {
 				$('#button_more').hide();
 			}
-			console.log(album.json);
-			console.log(photo.json);
 
 			return true;
 
@@ -1859,7 +1857,7 @@ sidebar.toggle = function () {
 		header.dom('.button--info').toggleClass('active');
 		lychee.content.toggleClass('content--sidebar');
 		lychee.imageview.toggleClass('image--sidebar');
-		view.album.content.justify();
+		if (typeof view !== 'undefined') view.album.content.justify();
 		sidebar.dom().toggleClass('active');
 
 		return true;
@@ -1911,7 +1909,7 @@ sidebar.createStructure.photo = function (data) {
 
 	if (data == null || data === '') return false;
 
-	var editable = album.isUploadable();
+	var editable = typeof album !== 'undefined' ? album.isUploadable() : false;
 	var exifHash = data.takedate + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
 	var structure = {};
 	var _public = '';

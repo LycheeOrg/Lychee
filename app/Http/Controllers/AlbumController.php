@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Album;
 use App\Configs;
+use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\Helpers;
@@ -14,7 +15,8 @@ use App\Photo;
 use App\Response;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
+use Storage;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
@@ -31,13 +33,20 @@ class AlbumController extends Controller
 	private $sessionFunctions;
 
 	/**
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param SessionFunctions $sessionFunctions
+	 * @var readAccessFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
+	private $readAccessFunctions;
+
+	/**
+	 * @param AlbumFunctions      $albumFunctions
+	 * @param SessionFunctions    $sessionFunctions
+	 * @param ReadAccessFunctions $readAccessFunctions
+	 */
+	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
 	{
 		$this->albumFunctions = $albumFunctions;
 		$this->sessionFunctions = $sessionFunctions;
+		$this->readAccessFunctions = $readAccessFunctions;
 	}
 
 	/**
@@ -83,15 +92,18 @@ class AlbumController extends Controller
 
 					if ($UserId == 0 || $user->upload) {
 						$return['public'] = '0';
+						$return['downloadable'] = '1';
 						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
 						break;
 					}
 				}
 				$return['public'] = '1';
+				$return['downloadable'] = Configs::get_value('downloadable', '0');
 				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case 's':
 				$return['public'] = '0';
+				$return['downloadable'] = '1';
 				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
 			case 'r':
@@ -100,15 +112,18 @@ class AlbumController extends Controller
 
 					if ($UserId == 0 || $user->upload) {
 						$return['public'] = '0';
+						$return['downloadable'] = '1';
 						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
 						break;
 					}
 				}
 				$return['public'] = '1';
+				$return['downloadable'] = Configs::get_value('downloadable', '0');
 				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case '0':
 				$return['public'] = '0';
+				$return['downloadable'] = '1';
 				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
@@ -551,7 +566,7 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Return the archive of the pictures of the album (but not the sub albums !).
+	 * Return the archive of the pictures of the album and its subalbums.
 	 *
 	 * @param Request $request
 	 *
@@ -559,6 +574,12 @@ class AlbumController extends Controller
 	 */
 	public function getArchive(Request $request)
 	{
+		if (Storage::getDefaultDriver() === 's3') {
+			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
+
+			return 'false';
+		}
+
 		// Illicit chars
 		$badChars = array_merge(
 			array_map('chr', range(0, 31)),
@@ -576,122 +597,202 @@ class AlbumController extends Controller
 		);
 
 		$request->validate([
-			'albumID' => 'required|string',
+			'albumIDs' => 'required|string',
 		]);
 
-		$UserId = $this->sessionFunctions->id();
-		switch ($request['albumID']) {
-			case 'f':
-				$zipTitle = 'Starred';
-				if ($this->sessionFunctions->is_logged_in()) {
-					$user = User::find($UserId);
+		$albumIDs = explode(',', $request['albumIDs']);
 
-					if ($UserId == 0 || $user->upload) {
-						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
-						break;
+		if (count($albumIDs) === 1) {
+			switch ($albumIDs[0]) {
+				case 'f':
+					$zipTitle = 'Starred';
+					break;
+				case 's':
+					$zipTitle = 'Public';
+					break;
+				case 'r':
+					$zipTitle = 'Recent';
+					break;
+				case '0':
+					$zipTitle = 'Unsorted';
+					break;
+				default:
+					$album = Album::find($albumIDs[0]);
+					if ($album === null) {
+						Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
+						return 'false';
 					}
-				}
-				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
-				break;
-			case 's':
-				$zipTitle = 'Public';
-				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
-				break;
-			case 'r':
-				$zipTitle = 'Recent';
-				if ($this->sessionFunctions->is_logged_in()) {
-					$user = User::find($UserId);
-
-					if ($UserId == 0 || $user->upload) {
-						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
-						break;
+					$zipTitle = str_replace($badChars, '', $album->title);
+					if ($zipTitle === '') {
+						$zipTitle = 'Untitled';
 					}
-				}
-				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
-				break;
-			case '0':
-				$zipTitle = 'Unsorted';
-				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
-				break;
-			default:
-				$album = Album::find($request['albumID']);
-				if ($album === null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-					return 'false';
-				}
-				$zipTitle = $album->title;
-
-				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
-
-				Logs::notice(__METHOD__, __LINE__, $album->title . ' has been downloaded.');
-
-				//TODO: we do not provide pictures from sub albums but it would be a nice thing to do later...
-
-//				->orWhereIn('album_id',function ($query) { function ($query) use ($id)
-//				{
-//					$query->select('album_id')
-//						->from('user_album')
-//						->where('parent_id','=',$id);
-//				}}));
-				break;
+					break;
+			}
+		} else {
+			$zipTitle = 'Albums';
 		}
 
-		$zipTitle = str_replace($badChars, '', $zipTitle) . '.zip';
+		$response = new StreamedResponse(function () use ($albumIDs, $badChars) {
+			$zip = new ZipStream(null);
 
-		$response = new StreamedResponse(function () use ($zipTitle, $photos_sql, $badChars) {
-			$opt = array(
-				'largeFileSize' => 100 * 1024 * 1024,
-				'enableZip64' => true,
-				'send_headers' => true,
-			);
+			$UserId = $this->sessionFunctions->id();
 
-			$zip = new ZipStream($zipTitle, $opt);
+			$dirs = [];
+			foreach ($albumIDs as $albumID) {
+				$album = null;
+				switch ($albumID) {
+					case 'f':
+						$dir = 'Starred';
+						if ($this->sessionFunctions->is_logged_in()) {
+							$user = User::find($UserId);
 
-			// Check if album empty
-			if ($photos_sql->count() == 0) {
-				Logs::error(__METHOD__, __LINE__, 'Could not create ZipStream without images');
+							if ($UserId == 0 || $user->upload) {
+								$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+								break;
+							}
+						}
+						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+						break;
+					case 's':
+						$dir = 'Public';
+						$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
+						break;
+					case 'r':
+						$dir = 'Recent';
+						if ($this->sessionFunctions->is_logged_in()) {
+							$user = User::find($UserId);
 
-				return 'false';
-			}
+							if ($UserId == 0 || $user->upload) {
+								$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+								break;
+							}
+						}
+						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+						break;
+					case '0':
+						$dir = 'Unsorted';
+						$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
+						break;
+					default:
+						$album = Album::find($albumID);
+						if ($album === null) {
+							Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
 
-			$photos = $photos_sql->get();
-			foreach ($photos as $photo) {
-				$title = str_replace($badChars, '', $photo->title);
-				$url = Config::get('defines.urls.LYCHEE_URL_UPLOADS_BIG') . $photo->url;
+							return 'false';
+						}
+						$dir = $album->title;
+						$photos_sql = Photo::set_order(Photo::where('album_id', '=', $albumID));
+						break;
+				} // switch (albumID)
 
-				if (!isset($title) || $title === '') {
-					$title = 'Untitled';
-				}
-				// Check if readable
-				if (!@is_readable($url)) {
-					Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
-					continue;
-				}
-
-				// Get extension of image
-				$extension = Helpers::getExtension($url, false);
-				// Set title for photo
-				$zipFileName = $zipTitle . '/' . $title . $extension;
-				// Check for duplicates
-				if (!empty($files)) {
-					$i = 1;
-					while (in_array($zipFileName, $files)) {
-						// Set new title for photo
-						$zipFileName = $zipTitle . '/' . $title . '-' . $i . $extension;
-						$i++;
+				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album) use (&$zip, $badChars, &$compress_album) {
+					if ($album !== null) {
+						if (!$this->sessionFunctions->is_current_user($album->owner_id) &&
+						!$album->is_downloadable()) {
+							return;
+						}
+					} else {
+						if (!$this->sessionFunctions->is_logged_in() &&
+						Configs::get_value('downloadable', '0') === '0') {
+							return;
+						}
 					}
-				}
-				// Add to array
-				$files[] = $zipFileName;
 
-				// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
-				$zip->addFileFromPath($zipFileName, $url);
-			}
+					$dir = str_replace($badChars, '', $dir);
+					if ($dir === '') {
+						$dir = 'Untitled';
+					}
+					// Check for duplicates
+					if (!empty($dirs)) {
+						$i = 1;
+						$tmp_dir = $dir;
+						while (in_array($tmp_dir, $dirs)) {
+							// Set new directory name
+							$tmp_dir = $dir . '-' . $i;
+							$i++;
+						}
+						$dir = $tmp_dir;
+					}
+					$dirs[] = $dir;
+
+					if ($parent_dir !== '') {
+						$dir = $parent_dir . '/' . $dir;
+					}
+
+					$files = [];
+					$photos = $photos_sql->get();
+					foreach ($photos as $photo) {
+						// For photos in public smart albums, skip the ones
+						// that are not downloadable based on their actual
+						// parent album.
+						if ($album === null && !$this->sessionFunctions->is_logged_in() &&
+						$photo->album_id !== null && !$photo->album->is_downloadable()) {
+							continue;
+						}
+
+						$url = Storage::path('big/' . $photo->url);
+						// Check if readable
+						if (!@is_readable($url)) {
+							Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
+							continue;
+						}
+
+						$title = str_replace($badChars, '', $photo->title);
+						if (!isset($title) || $title === '') {
+							$title = 'Untitled';
+						}
+
+						// Get extension of image
+						$extension = Helpers::getExtension($url, false);
+						// Set title for photo
+						$file = $title . $extension;
+						// Check for duplicates
+						if (!empty($files)) {
+							$i = 1;
+							$tmp_file = $file;
+							while (in_array($tmp_file, $files)) {
+								// Set new title for photo
+								$tmp_file = $title . '-' . $i . $extension;
+								$i++;
+							}
+							$file = $tmp_file;
+						}
+						// Add to array
+						$files[] = $file;
+
+						// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
+						$zip->addFileFromPath($dir . '/' . $file, $url);
+					} // foreach ($photos)
+
+					// Recursively compress subalbums
+					if ($album !== null) {
+						$subDirs = [];
+						foreach ($album->children as $subAlbum) {
+							if ($this->readAccessFunctions->album($subAlbum->id, true) === 1) {
+								$subSql = Photo::set_order(Photo::where('album_id', '=', $subAlbum->id));
+								$compress_album($subSql, $subAlbum->title, $subDirs, $dir, $subAlbum);
+							}
+						}
+					}
+				}; // $compress_album
+
+				$compress_album($photos_sql, $dir, $dirs, '', $album);
+			} // foreach ($albumIDs)
 
 			// finish the zip stream
 			$zip->finish();
 		});
+
+		// Set file type and destination
+		$response->headers->set('Content-Type', 'application/x-zip');
+		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip');
+		$response->headers->set('Content-Disposition', $disposition);
+
+		// Disable caching
+		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+		$response->headers->set('Pragma', 'no-cache');
+		$response->headers->set('Expires', '0');
 
 		return $response;
 	}

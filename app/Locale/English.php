@@ -85,6 +85,7 @@ final class English implements LangInterface
 			'DELETE' => 'Delete',
 			'DELETE_ALL' => 'Delete Selected',
 			'DOWNLOAD' => 'Download',
+			'DOWNLOAD_ALL' => 'Download Selected',
 			'UPLOAD_PHOTO' => 'Upload Photo',
 			'IMPORT_LINK' => 'Import from Link',
 			'IMPORT_DROPBOX' => 'Import from Dropbox',
