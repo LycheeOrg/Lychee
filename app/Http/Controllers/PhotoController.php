@@ -69,7 +69,7 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Given a photoID and albumID returns the data of the photo.
+	 * Given a photoID returns the data of the photo.
 	 *
 	 * @param Request $request
 	 *
@@ -78,7 +78,6 @@ class PhotoController extends Controller
 	public function get(Request $request)
 	{
 		$request->validate([
-			'albumID' => 'string|required',
 			'photoID' => 'string|required',
 		]);
 
@@ -95,22 +94,20 @@ class PhotoController extends Controller
 		$this->symLinkFunctions->getUrl($photo, $return);
 		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
 			if ($photo->album_id != null) {
-				if (!$photo->album->full_photo_visible()) {
+				$album = $photo->album;
+				if (!$album->full_photo_visible()) {
 					$photo->downgrade($return);
 				}
-			} else {
-				if ($request['albumID'] == 'f' || $request['albumID'] == 'r') {
-					if (Configs::get_value('full_photo', '1') != '1') {
-						$photo->downgrade($return);
-					}
+				$return['downloadable'] = $album->is_downloadable() ? '1' : '0';
+			} else { // Unsorted
+				if (Configs::get_value('full_photo', '1') != '1') {
+					$photo->downgrade($return);
 				}
+				$return['downloadable'] = Configs::get_value('downloadable', '0');
 			}
+		} else {
+			$return['downloadable'] = '1';
 		}
-
-		$return['original_album'] = $return['album'];
-		// This way preserves the back button functionality for photos
-		// in smart albums.
-		$return['album'] = $request['albumID'];
 
 		return $return;
 	}
@@ -136,6 +133,9 @@ class PhotoController extends Controller
 
 		$return = $photo->prepareData();
 		$this->symLinkFunctions->getUrl($photo, $return);
+		if ($photo->album_id !== null && !$photo->album->full_photo_visible()) {
+			$photo->downgrade($return);
+		}
 
 		return $return;
 	}
