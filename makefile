@@ -74,3 +74,6 @@ contrib_check:
 
 clean:
 	@rm -r Lychee-v* 2> /dev/null || true
+
+test:
+	./vendor/bin/phpunit --verbose

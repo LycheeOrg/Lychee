@@ -20,8 +20,6 @@ class npm extends Command
 	 */
 	protected $description = 'Launch npm on the public/src folder';
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
@@ -31,8 +29,6 @@ class npm extends Command
 	{
 		parent::__construct();
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -45,7 +41,7 @@ class npm extends Command
 		$ret = [];
 		if (!file_exists('public/Lychee-front/package-lock.json')) {
 			$cmd = 'cd public/Lychee-front; npm install';
-			$this->info('execute: '.$cmd);
+			$this->info('execute: ' . $cmd);
 			exec($cmd, $ret);
 			foreach ($ret as $retline) {
 				$this->line($retline);
@@ -53,11 +49,10 @@ class npm extends Command
 		}
 		if ($argument == 'start') {
 			$cmd = 'cd public/Lychee-front; npm start';
-		}
-		else {
+		} else {
 			$cmd = 'cd public/Lychee-front; npm run compile';
 		}
-		$this->info('execute: '.$cmd);
+		$this->info('execute: ' . $cmd);
 		exec($cmd, $ret);
 		foreach ($ret as $retline) {
 			$this->line($retline);

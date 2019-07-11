@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Middleware;
@@ -14,20 +15,17 @@ class LoginCheck
 	 */
 	private $sessionFunctions;
 
-
-
 	public function __construct(SessionFunctions $sessionFunctions)
 	{
 		$this->sessionFunctions = $sessionFunctions;
 	}
-
-
 
 	/**
 	 * Handle an incoming request.
 	 *
 	 * @param Request $request
 	 * @param Closure $next
+	 *
 	 * @return mixed
 	 */
 	public function handle($request, Closure $next)
@@ -35,6 +33,7 @@ class LoginCheck
 		if (!$this->sessionFunctions->is_logged_in()) {
 			return response('false');
 		}
+
 		return $next($request);
 	}
 }

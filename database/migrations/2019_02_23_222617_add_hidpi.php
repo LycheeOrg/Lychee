@@ -1,11 +1,10 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -20,23 +19,21 @@ class AddHidpi extends Migration
 	{
 		if (!Schema::hasColumn('photos', 'thumb2x')) {
 			if (Schema::hasTable('configs')) {
-
 				DB::table('configs')->insert([
 					[
-						'key'   => 'thumb_2x',
-						'value' => '1'
+						'key' => 'thumb_2x',
+						'value' => '1',
 					],
 					[
-						'key'   => 'small_2x',
-						'value' => '0'
+						'key' => 'small_2x',
+						'value' => '0',
 					],
 					[
-						'key'   => 'medium_2x',
-						'value' => '0'
+						'key' => 'medium_2x',
+						'value' => '0',
 					],
 				]);
-			}
-			else {
+			} else {
 				echo "Table configs does not exists\n";
 			}
 
@@ -55,14 +52,11 @@ class AddHidpi extends Migration
 					$table->string('small2x', 20)->default('');
 					$table->boolean('thumb2x')->default(true);
 				});
-			}
-			else {
+			} else {
 				echo "Table photos does not exists\n";
 			}
-
 		}
 		if (Schema::hasTable('photos')) {
-
 			$photos = Photo::all();
 			foreach ($photos as $photo) {
 				$save = false;
@@ -73,10 +67,9 @@ class AddHidpi extends Migration
 				if (count($thumbUrl2x) < 2) {
 					$photo->thumb2x = 0;
 					$save = true;
-				}
-				else {
-					$thumbUrl2x = $thumbUrl2x[0].'@2x.'.$thumbUrl2x[1];
-					if (!file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$thumbUrl2x)) {
+				} else {
+					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+					if (!Storage::exists('thumb/' . $thumbUrl2x)) {
 						$photo->thumb2x = 0;
 						$save = true;
 					}
@@ -84,24 +77,22 @@ class AddHidpi extends Migration
 
 				// Extract the sizes of medium and small
 				if ($photo->medium_old == '1') {
-					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url)) {
-						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url);
-						$photo->medium = $width.'x'.$height;
+					if (Storage::exists('medium/' . $photo->url)) {
+						list($width, $height) = getimagesize(Storage::path('medium/' . $photo->url));
+						$photo->medium = $width . 'x' . $height;
 						$save = true;
-					}
-					else {
-						echo "Missing file ".Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM').$photo->url."\n";
+					} else {
+						echo 'Missing file ' . Storage::path('medium/' . $photo->url) . "\n";
 						$this->failMessage();
 					}
 				}
 				if ($photo->small_old == '1') {
-					if (file_exists(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url)) {
-						list($width, $height) = getimagesize(Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url);
-						$photo->small = $width.'x'.$height;
+					if (Storage::exists('small/' . $photo->url)) {
+						list($width, $height) = getimagesize(Storage::path('small/' . $photo->url));
+						$photo->small = $width . 'x' . $height;
 						$save = true;
-					}
-					else {
-						echo "Missing file ".Config::get('defines.dirs.LYCHEE_UPLOADS_SMALL').$photo->url."\n";
+					} else {
+						echo 'Missing file ' . Storage::path('small/' . $photo->url) . "\n";
 						$this->failMessage();
 					}
 				}
@@ -114,31 +105,26 @@ class AddHidpi extends Migration
 			Schema::table('photos', function (Blueprint $table) {
 				$table->dropColumn('medium_old', 'small_old');
 			});
-		}
-		else {
+		} else {
 			echo "Table photos does not exist\n";
 		}
 	}
 
-
-
 	/**
-	 * Provide diagnostics to the caller
+	 * Provide diagnostics to the caller.
 	 *
 	 * @return void
 	 */
 	private function failMessage()
 	{
-		$ignoreFile = Config::get('defines.dirs.LYCHEE_UPLOADS').'/ignore-missing-files.txt';
-		if (!file_exists($ignoreFile)) {
+		$ignoreFile = Storage::path('ignore-missing-files.txt');
+		if (!Storage::exists('ignore-missing-files.txt')) {
 			echo "Please ensure that photos are moved to the new installation and run this command again!\n\n";
-			echo "To ignore, run this command again after creating a file at ".$ignoreFile."\n";
+			echo 'To ignore, run this command again after creating a file at ' . $ignoreFile . "\n";
 			echo "You can then create intermediate sizes later using 'php artisan generate_thumbs'\n";
 			exit(1);
 		}
 	}
-
-
 
 	/**
 	 * Reverse the migrations.

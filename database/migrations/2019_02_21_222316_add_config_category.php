@@ -1,6 +1,6 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
@@ -18,17 +18,14 @@ class AddConfigCategory extends Migration
 			Schema::table('configs', function ($table) {
 				$table->string('cat', 50)->after('value')->default('Config');
 			});
-			Configs::where('key','like','Mod_Frame%')->update([
-				'cat' => 'Mod Frame'
+			Configs::where('key', 'like', 'Mod_Frame%')->update([
+				'cat' => 'Mod Frame',
 			]);
-			Configs::where('key','like','landing_%')->update([
-				'cat' => 'Landing Page'
+			Configs::where('key', 'like', 'landing_%')->update([
+				'cat' => 'Landing Page',
 			]);
-
 		}
 	}
-
-
 
 	/**
 	 * Reverse the migrations.

@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Middleware;
@@ -16,28 +17,33 @@ class ReadCheck
 	 */
 	private $readAccessFunctions;
 
-
-
-	function __construct(ReadAccessFunctions $readAccessFunctions)
+	public function __construct(ReadAccessFunctions $readAccessFunctions)
 	{
 		$this->readAccessFunctions = $readAccessFunctions;
 	}
-
-
 
 	/**
 	 * Handle an incoming request.
 	 *
 	 * @param Request $request
 	 * @param Closure $next
+	 *
 	 * @return mixed
 	 */
 	public function handle($request, Closure $next)
 	{
+		$albumIDs = [];
+		if ($request->has('albumIDs')) {
+			$albumIDs = explode(',', $request['albumIDs']);
+		}
 		if ($request->has('albumID')) {
-			$sess = $this->readAccessFunctions->album($request['albumID']);
+			$albumIDs[] = $request['albumID'];
+		}
+		foreach ($albumIDs as $albumID) {
+			$sess = $this->readAccessFunctions->album($albumID);
 			if ($sess === 0) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 				return response('false');
 			}
 			if ($sess === 2) {
@@ -48,10 +54,18 @@ class ReadCheck
 			}
 		}
 
+		$photoIDs = [];
+		if ($request->has('photoIDs')) {
+			$photoIDs = explode(',', $request['photoIDs']);
+		}
 		if ($request->has('photoID')) {
-			$photo = Photo::with('album')->find($request['photoID']);
+			$photoIDs[] = $request['photoID'];
+		}
+		foreach ($photoIDs as $photoID) {
+			$photo = Photo::with('album')->find($photoID);
 			if ($photo === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
 				return response('false');
 			}
 			if ($this->readAccessFunctions->photo($photo) === false) {

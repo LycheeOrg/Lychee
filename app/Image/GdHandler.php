@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Image;
@@ -13,16 +14,15 @@ class GdHandler implements ImageHandlerInterface
 	private $compressionQuality;
 
 	/**
-	 * @{inheritdoc}
+	 * {@inheritdoc}
 	 */
 	public function __construct(int $compressionQuality)
 	{
 		$this->compressionQuality = $compressionQuality;
 	}
 
-
 	/**
-	 * @{inheritdoc}
+	 * {@inheritdoc}
 	 */
 	public function scale(
 		string $source,
@@ -31,7 +31,7 @@ class GdHandler implements ImageHandlerInterface
 		int $newHeight,
 		int &$resWidth,
 		int &$resHeight
-	) : bool {
+	): bool {
 		list($width, $height, $mime) = getimagesize($source);
 
 		if ($newWidth == 0) {
@@ -40,8 +40,7 @@ class GdHandler implements ImageHandlerInterface
 			$tmpHeight = $newWidth / ($width / $height);
 			if ($newHeight != 0 && $tmpHeight > $newHeight) {
 				$newWidth = $newHeight * ($width / $height);
-			}
-			else {
+			} else {
 				$newHeight = $tmpHeight;
 			}
 		}
@@ -66,14 +65,14 @@ class GdHandler implements ImageHandlerInterface
 	}
 
 	/**
-	 * @{inheritdoc}
+	 * {@inheritdoc}
 	 */
 	public function crop(
 		string $source,
 		string $destination,
 		int $newWidth,
 		int $newHeight
-	) : bool {
+	): bool {
 		list($width, $height, $mime) = getimagesize($source);
 
 		if ($width < $height) {
@@ -105,7 +104,7 @@ class GdHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function autoRotate(string $path, array $info) : array
+	public function autoRotate(string $path, array $info): array
 	{
 		$image = imagecreatefromjpeg($path);
 
@@ -145,8 +144,7 @@ class GdHandler implements ImageHandlerInterface
 				break;
 		}
 
-		if ($rotate) // we only rotate if there is a need. Fixes #111
-		{
+		if ($rotate) { // we only rotate if there is a need. Fixes #111
 			imagejpeg($image, $path, 100);
 		}
 
@@ -171,18 +169,19 @@ class GdHandler implements ImageHandlerInterface
 	 * 4 = Up to 25 times faster.  Almost identical to imagecopyresampled for most images.
 	 * 5 = No speedup. Just uses imagecopyresampled, no advantage over imagecopyresampled.
 	 *
-	 * @param  resource  &$dst_image
-	 * @param  resource  $src_image
-	 * @param  int       $dst_x
-	 * @param  int       $dst_y
-	 * @param  int       $src_x
-	 * @param  int       $src_y
-	 * @param  int       $dst_w
-	 * @param  int       $dst_h
-	 * @param  int       $src_w
-	 * @param  int       $src_h
-	 * @param  int       $quality
-	 * @return boolean
+	 * @param resource &$dst_image
+	 * @param resource $src_image
+	 * @param int      $dst_x
+	 * @param int      $dst_y
+	 * @param int      $src_x
+	 * @param int      $src_y
+	 * @param int      $dst_w
+	 * @param int      $dst_h
+	 * @param int      $src_w
+	 * @param int      $src_h
+	 * @param int      $quality
+	 *
+	 * @return bool
 	 */
 	private function fastImageCopyResampled(
 		&$dst_image,
@@ -196,7 +195,7 @@ class GdHandler implements ImageHandlerInterface
 		int $src_w,
 		int $src_h,
 		int $quality = 4
-	) : bool {
+	): bool {
 		if (empty($src_image) || empty($dst_image) || $quality <= 0) {
 			return false;
 		}
@@ -214,9 +213,10 @@ class GdHandler implements ImageHandlerInterface
 	}
 
 	/**
-	 * @param  string $source
-	 * @param  int    $mime
-	 * @return resource|null|bool
+	 * @param string $source
+	 * @param int    $mime
+	 *
+	 * @return resource|bool|null
 	 */
 	private function createImage(string $source, int $mime)
 	{
@@ -232,7 +232,8 @@ class GdHandler implements ImageHandlerInterface
 				return imagecreatefromgif($source);
 				break;
 			default:
-				Logs::error(__METHOD__, __LINE__, 'Type of photo "'.$mime.'" is not supported');
+				Logs::error(__METHOD__, __LINE__, 'Type of photo "' . $mime . '" is not supported');
+
 				return false;
 				break;
 		}

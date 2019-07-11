@@ -1,6 +1,6 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -16,24 +16,19 @@ class FixThumb2xDefault extends Migration
 	public function up()
 	{
 		if (Schema::hasTable('photos')) {
-
-
 			Photo::where('thumbUrl', '=', '')
 				->where('thumb2x', '=', '1')
 				->update([
-					'thumb2x' => 0
+					'thumb2x' => 0,
 				]);
 
 			Schema::table('photos', function (Blueprint $table) {
 				$table->boolean('thumb2x')->default(false)->change();
 			});
-		}
-		else {
+		} else {
 			echo "Table photos does not exist\n";
 		}
 	}
-
-
 
 	/**
 	 * Reverse the migrations.

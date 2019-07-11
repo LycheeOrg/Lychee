@@ -16,7 +16,7 @@ class generate_thumbs extends Command
 		'small',
 		'small2x',
 		'medium',
-		'medium2x'
+		'medium2x',
 	];
 
 	/**
@@ -38,12 +38,11 @@ class generate_thumbs extends Command
 	 */
 	private $photoFunctions;
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
+	 *
 	 * @return void
 	 */
 	public function __construct(PhotoFunctions $photoFunctions)
@@ -52,8 +51,6 @@ class generate_thumbs extends Command
 
 		$this->photoFunctions = $photoFunctions;
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -66,6 +63,7 @@ class generate_thumbs extends Command
 
 		if (!in_array($type, self::THUMB_TYPES)) {
 			$this->error(sprintf('Type %s is not one of %s', $type, implode(', ', self::THUMB_TYPES)));
+
 			return 1;
 		}
 
@@ -78,8 +76,8 @@ class generate_thumbs extends Command
 			$multiplier = 2;
 		}
 
-		$maxWidth = intval(Configs::get_value($basicType.'_max_width')) * $multiplier;
-		$maxHeight = intval(Configs::get_value($basicType.'_max_height')) * $multiplier;
+		$maxWidth = intval(Configs::get_value($basicType . '_max_width')) * $multiplier;
+		$maxHeight = intval(Configs::get_value($basicType . '_max_height')) * $multiplier;
 
 		$this->line(
 			sprintf(
@@ -98,7 +96,8 @@ class generate_thumbs extends Command
 			->get();
 
 		if (count($photos) == 0) {
-			$this->line('No picture requires '.$type.'.');
+			$this->line('No picture requires ' . $type . '.');
+
 			return 0;
 		}
 
@@ -113,16 +112,14 @@ class generate_thumbs extends Command
 				$maxHeight)
 			) {
 				$photo->save();
-				$this->line('   '.$type.' ('.$photo->{$type}.') for '.$photo->title.' created.');
-			}
-			else {
-				$this->line('   Could not create '.$type.' for '.$photo->title.' ('.$photo->width.'x'.$photo->height.').');
+				$this->line('   ' . $type . ' (' . $photo->{$type} . ') for ' . $photo->title . ' created.');
+			} else {
+				$this->line('   Could not create ' . $type . ' for ' . $photo->title . ' (' . $photo->width . 'x' . $photo->height . ').');
 			}
 			$bar->advance();
 		}
 
 		$bar->finish();
 		$this->line('  ');
-
 	}
 }

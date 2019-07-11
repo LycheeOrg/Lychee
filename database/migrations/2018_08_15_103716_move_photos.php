@@ -3,7 +3,6 @@
 use App\Photo;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class MovePhotos extends Migration
@@ -17,7 +16,6 @@ class MovePhotos extends Migration
 	{
 		// only do if photos is empty
 		if (count(Photo::all()) == 0) {
-
 			// check if there is a table to import from
 			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->get();

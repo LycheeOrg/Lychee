@@ -13,11 +13,9 @@ class RenamePhpScriptLimit extends Migration
 	public function up()
 	{
 		Configs::where('key', 'php_script_limit')->update([
-			'key' => 'php_script_no_limit'
+			'key' => 'php_script_no_limit',
 		]);
 	}
-
-
 
 	/**
 	 * Reverse the migrations.
@@ -27,7 +25,7 @@ class RenamePhpScriptLimit extends Migration
 	public function down()
 	{
 		Configs::where('key', 'php_script_no_limit')->update([
-			'key' => 'php_script_limit'
+			'key' => 'php_script_limit',
 		]);
 	}
 }

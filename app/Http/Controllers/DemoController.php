@@ -3,30 +3,45 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
+use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
-
+use Response;
 
 class DemoController extends Controller
 {
+	/**
+	 * This function returns what are the possible return output to simulate
+	 * the server interaction in the case of the demo server here:
+	 * https://lycheeorg.github.io/demo/.
+	 *
+	 * Call /demo and use the generated code to replace the api.post() function
+	 *
+	 * @return \Illuminate\Http\Response|string
+	 */
 	public function js()
 	{
+		if (Configs::get_value('gen_demo_js', '0') != '1') {
+			return redirect()->route('home');
+		}
+
 		$functions = array();
 
 		$configFunctions = new ConfigFunctions();
-		$sessionFunctions =  new SessionFunctions();
+		$sessionFunctions = new SessionFunctions();
 		$githubFunctions = new GitHubFunctions();
 		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
-		$albumFunctions = new AlbumFunctions($readAccessFunctions);
+		$symLinkFunction = new SymLinkFunctions($sessionFunctions);
+		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions, $symLinkFunction);
 
 		/**
-		 * Session::init
+		 * Session::init.
 		 */
-
 		$session_init = new SessionController($configFunctions, $sessionFunctions, $githubFunctions);
 		$return_session = array();
 		$return_session['name'] = 'Session::init()';
@@ -36,9 +51,9 @@ class DemoController extends Controller
 		$functions[] = $return_session;
 
 		/**
-		 * Albums::get
+		 * Albums::get.
 		 */
-		$albums_controller = new AlbumsController($albumFunctions);
+		$albums_controller = new AlbumsController($albumFunctions, $sessionFunctions);
 
 		$return_albums = array();
 		$return_albums['name'] = 'Albums::get';
@@ -48,7 +63,7 @@ class DemoController extends Controller
 		$functions[] = $return_albums;
 
 		/**
-		 * Album::get
+		 * Album::get.
 		 */
 		$return_album_list = array();
 		$return_album_list['name'] = 'Album::get';
@@ -58,11 +73,9 @@ class DemoController extends Controller
 
 		$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->get();
 		foreach ($albums as $album) {
-
 			/**
-			 * Copy paste from Album::get()
+			 * Copy paste from Album::get().
 			 */
-
 			$return_album_json = array();
 			$return_album_json['albums'] = array();
 			// Get photos
@@ -77,7 +90,6 @@ class DemoController extends Controller
 			/** @var Photo[] $photos */
 			$photos = $photos_sql->get();
 			foreach ($photos as $photo_model) {
-
 				// Turn data from the database into a front-end friendly format
 				$photo = $photo_model->prepareData();
 
@@ -98,13 +110,9 @@ class DemoController extends Controller
 			}
 
 			if ($photos_sql->count() === 0) {
-
 				// Album empty
 				$return_album_json['photos'] = false;
-
-			}
-			else {
-
+			} else {
 				// Enable next and previous for the first and last photo
 				$lastElement = end($return_album_json['photos']);
 				$lastElementId = $lastElement['id'];
@@ -115,7 +123,6 @@ class DemoController extends Controller
 					$return_album_json['photos'][$photo_counter - 1]['nextPhoto'] = $firstElementId;
 					$return_album_json['photos'][0]['previousPhoto'] = $lastElementId;
 				}
-
 			}
 			$return_album_json['id'] = $album->id;
 			$return_album_json['num'] = $photos_sql->count();
@@ -130,9 +137,8 @@ class DemoController extends Controller
 		$functions[] = $return_album_list;
 
 		/**
-		 * Photo::get
+		 * Photo::get.
 		 */
-
 		$return_photo_list = array();
 		$return_photo_list['name'] = 'Photo::get';
 		$return_photo_list['type'] = 'array';
@@ -156,8 +162,10 @@ class DemoController extends Controller
 
 		$functions[] = $return_photo_list;
 
+		$contents = view('demo', ['functions' => $functions]);
+		$response = Response::make($contents, 200);
+		$response->header('Content-Type', 'text/plain');
 
-		return view('demo', ['functions' => $functions]);
+		return $response;
 	}
-
 }

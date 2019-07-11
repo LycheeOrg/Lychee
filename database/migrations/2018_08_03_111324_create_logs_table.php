@@ -16,42 +16,39 @@ use Illuminate\Database\Migrations\Migration;
 //| text     | text         | YES  |     | NULL    |                |
 //+----------+--------------+------+-----+---------+----------------+
 
-
 class CreateLogsTable extends Migration
 {
-    /**
-     * Run the migrations.
-     *
-     * @return void
-     */
-    public function up()
-    {
-	    if(!Schema::hasTable('logs')) {
-//        Schema::dropIfExists('logs');
-		    Schema::create('logs', function (Blueprint $table) {
-			    $table->bigIncrements('id');
-			    $table->string('type', 11);
-			    $table->string('function', 100);
-			    $table->integer('line');
-			    $table->text('text');
-			    $table->timestamps();
-		    });
-	    }
-	    else {
-		    echo "Table logs already exists\n";
-	    }
+	/**
+	 * Run the migrations.
+	 *
+	 * @return void
+	 */
+	public function up()
+	{
+		if (!Schema::hasTable('logs')) {
+			//        Schema::dropIfExists('logs');
+			Schema::create('logs', function (Blueprint $table) {
+				$table->bigIncrements('id');
+				$table->string('type', 11);
+				$table->string('function', 100);
+				$table->integer('line');
+				$table->text('text');
+				$table->timestamps();
+			});
+		} else {
+			echo "Table logs already exists\n";
+		}
+	}
 
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-	    if(env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK',false)) {
-		    Schema::dropIfExists('logs');
-	    }
-    }
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
+		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
+			Schema::dropIfExists('logs');
+		}
+	}
 }

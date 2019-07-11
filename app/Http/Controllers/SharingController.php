@@ -1,60 +1,87 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Http\Controllers;
 
-
 use App\Album;
+use App\ModelFunctions\SessionFunctions;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Session;
 
 class SharingController extends Controller
 {
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	/**
+	 * @param SessionFunctions $sessionFunctions
+	 */
+	public function __construct(SessionFunctions $sessionFunctions)
+	{
+		$this->sessionFunctions = $sessionFunctions;
+	}
+
+	/**
+	 * Return the list of current sharing rights.
+	 *
+	 * @return array
+	 */
 	public function listSharing()
 	{
-
-		if (Session::get('UserID') == 0) {
+		$UserId = $this->sessionFunctions->id();
+		if ($UserId == 0) {
 			$shared = DB::table('user_album')
-				->select('user_album.id', 'user_id', 'album_id', 'username', 'title')
+				->select('user_album.id', 'user_id', 'album_id', 'username',
+					'title')
 				->join('users', 'user_id', 'users.id')
 				->join('albums', 'album_id', 'albums.id')
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
 
-			$albums = Album::select(['id', 'title'])->orderBy('title', 'ASC')->get();
-			$users = User::select(['id', 'username'])->orderBy('username', 'ASC')->get();
-		}
-		else {
-			$id = Session::get('UserID');
+			$albums = Album::select(['id', 'title'])->orderBy('title', 'ASC')
+				->get();
+			$users = User::select(['id', 'username'])
+				->orderBy('username', 'ASC')->get();
+		} else {
 			$shared = DB::table('user_album')
-				->select('user_album.id', 'user_id', 'album_id', 'username', 'title')
+				->select('user_album.id', 'user_id', 'album_id', 'username',
+					'title')
 				->join('users', 'user_id', 'users.id')
 				->join('albums', 'album_id', 'albums.id')
-				->where('albums.owner_id', '=', $id)
+				->where('albums.owner_id', '=', $UserId)
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get();
 
-			$albums = Album::select(['id', 'title'])->where('owner_id', '=', $id)->orderBy('title', 'ASC')->get();
-			$users = User::select(['id', 'username'])->orderBy('username', 'ASC')->get();
+			$albums = Album::select(['id', 'title'])
+				->where('owner_id', '=', $UserId)->orderBy('title', 'ASC')->get();
+			$users = User::select(['id', 'username'])
+				->orderBy('username', 'ASC')->get();
 		}
+
 		return [
 			'shared' => $shared,
 			'albums' => $albums,
-			'users'  => $users
+			'users' => $users,
 		];
 	}
 
-
-
+	/**
+	 * FIXME: What does this function actually do ? It is not called anywhere in the Lychee-front O.o.
+	 *
+	 * @param Request $request
+	 *
+	 * @return array
+	 */
 	public function getUserList(Request $request)
 	{
-
 		$request->validate([
-			'albumIDs' => 'string|required'
+			'albumIDs' => 'string|required',
 		]);
 		$array_albumIDs = explode(',', $request['albumIDs']);
 		sort($array_albumIDs);
@@ -79,8 +106,7 @@ class SharingController extends Controller
 		foreach ($users as $user) {
 			if (!isset($user_share[$user->id])) {
 				$return_array[] = $user;
-			}
-			else {
+			} else {
 				$no = false;
 
 				// quick test to avoid the loop
@@ -105,18 +131,18 @@ class SharingController extends Controller
 		return $return_array;
 	}
 
-
-
 	/**
+	 * Add a sharing between selected users and selected albums.
+	 *
 	 * @param Request $request
+	 *
 	 * @return string
 	 */
 	public function add(Request $request)
 	{
-
 		$request->validate([
-			'UserIDs'  => 'string|required',
-			'albumIDs' => 'string|required'
+			'UserIDs' => 'string|required',
+			'albumIDs' => 'string|required',
 		]);
 
 		$users = User::whereIn('id', explode(',', $request['UserIDs']))->get();
@@ -128,15 +154,25 @@ class SharingController extends Controller
 		return 'true';
 	}
 
-
-
+	/**
+	 * Given a list of shared ID we delete them
+	 * This function is the only reason why we test SharedIDs in
+	 * app/Http/Middleware/UploadCheck.php.
+	 *
+	 * FIXME: make sure that the Lychee-front is sending the correct ShareIDs
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
 	public function delete(Request $request)
 	{
 		$request->validate([
-			'ShareIDs' => 'string|required'
+			'ShareIDs' => 'string|required',
 		]);
 
-		DB::table('user_album')->whereIn('id', explode(',', $request['ShareIDs']))->delete();
+		DB::table('user_album')
+			->whereIn('id', explode(',', $request['ShareIDs']))->delete();
 
 		return 'true';
 	}

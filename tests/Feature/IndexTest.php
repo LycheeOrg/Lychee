@@ -8,22 +8,18 @@ use Tests\TestCase;
 class IndexTest extends TestCase
 {
 	/**
-	 * More tests
+	 * More tests.
 	 *
 	 * @return void
 	 */
 	public function test_php_info()
 	{
-
 		// we don't want a non admin to access this
 		$response = $this->get('/phpinfo');
 		$response->assertStatus(200);
 		$response->assertDontSeeText('php');
 		$response->assertSeeText('false');
-
 	}
-
-
 
 	public function test_landing_page()
 	{
@@ -39,7 +35,5 @@ class IndexTest extends TestCase
 		$response->assertViewIs('gallery');
 
 		Configs::set('landing_page_enable', $landing_on_off);
-
 	}
-
 }

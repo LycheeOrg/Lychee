@@ -30,6 +30,8 @@
 
         <a class="header__title"></a>
 
+        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}">
+        <a class="header__clear header__clear_public">&times;</a>
 {{--        <a class="header__hostedwith">{{ $locale['HOSTED_WITH_LYCHEE'] }}</a>--}}
 
     </div>
@@ -98,7 +100,6 @@
         <a class="button button--eye" id="button_share" title="{{ $locale['SHARE_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#eye"></use></svg>
         </a>
-        <a class="header__divider"></a>
         <a class="button button--info" id="button_info" title="{{ $locale['ABOUT_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>

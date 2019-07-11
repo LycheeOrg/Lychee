@@ -1,6 +1,6 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
 
+/** @noinspection PhpUndefinedClassInspection */
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
@@ -34,10 +34,10 @@ class Fix32Bit extends Migration
 				$shortId = $prevShortId + 1;
 			}
 			DB::table('albums')->where('id', '=', $album->id)->update([
-				'id' => $shortId
+				'id' => $shortId,
 			]);
 			DB::table('photos')->where('album_id', '=', $album->id)->update([
-				'album_id' => $shortId
+				'album_id' => $shortId,
 			]);
 			$prevShortId = $shortId;
 		}
@@ -51,7 +51,7 @@ class Fix32Bit extends Migration
 				$shortId = $prevShortId + 1;
 			}
 			DB::table('photos')->where('id', '=', $photo->id)->update([
-				'id' => $shortId
+				'id' => $shortId,
 			]);
 			$prevShortId = $shortId;
 		}
@@ -77,15 +77,15 @@ class Fix32Bit extends Migration
 		$albums = DB::table('albums')->get();
 		foreach ($albums as $album) {
 			DB::table('albums')->where('id', '=', $album->id)->update([
-				'id' => $album->id.'0000'
+				'id' => $album->id . '0000',
 			]);
 		}
 
 		$photos = DB::table('photos')->get();
 		foreach ($photos as $photo) {
 			DB::table('photos')->where('id', '=', $photo->id)->update([
-				'id' => $photo->id.'0000',
-				'album_id' => $photo->album_id.'0000'
+				'id' => $photo->id . '0000',
+				'album_id' => $photo->album_id . '0000',
 			]);
 		}
 

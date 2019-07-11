@@ -1,4 +1,6 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php
+
+/** @noinspection PhpUndefinedClassInspection */
 
 namespace App\Console\Commands;
 
@@ -6,11 +8,10 @@ use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
+use Storage;
 
 class exif_lens extends Command
 {
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -35,13 +36,11 @@ class exif_lens extends Command
 	 */
 	private $metadataExtractor;
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
-	 * @param Extractor $metadataExtractor
+	 * @param Extractor      $metadataExtractor
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
 	{
@@ -50,8 +49,6 @@ class exif_lens extends Command
 		$this->photoFunctions = $photoFunctions;
 		$this->metadataExtractor = $metadataExtractor;
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -69,12 +66,13 @@ class exif_lens extends Command
 		$photos = Photo::where('lens', '=', '')->whereNotIn('lens', $this->photoFunctions->getValidVideoTypes())->offset($from)->limit($argument)->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires EXIF updates.');
+
 			return false;
 		}
 
 		$i = $from;
 		foreach ($photos as $photo) {
-			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
+			$url = Storage::path('big/' . $photo->url);
 			if (file_exists($url)) {
 				$info = $this->metadataExtractor->extract($url, $photo->type);
 				if ($photo->size == '') {
@@ -102,14 +100,12 @@ class exif_lens extends Command
 					$photo->focal = $info['focal'];
 				}
 				if ($photo->save()) {
-					$this->line($i.': EXIF updated for '.$photo->title);
+					$this->line($i . ': EXIF updated for ' . $photo->title);
+				} else {
+					$this->line($i . ': Could not get EXIF data/nothing to update for ' . $photo->title . '.');
 				}
-				else {
-					$this->line($i.': Could not get EXIF data/nothing to update for '.$photo->title.'.');
-				}
-			}
-			else {
-				$this->line($i.': File does not exists for '.$photo->title.'.');
+			} else {
+				$this->line($i . ': File does not exists for ' . $photo->title . '.');
 			}
 			$i++;
 		}

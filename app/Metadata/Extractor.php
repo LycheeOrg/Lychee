@@ -9,34 +9,35 @@ use Exception;
 class Extractor
 {
 	/**
-	 * Extracts metadata from an image file
+	 * Extracts metadata from an image file.
 	 *
-	 * @param  string $filename
+	 * @param string $filename
 	 * @param  string mime type
+	 *
 	 * @return array
 	 */
 	public function extract(string $filename, string $type): array
 	{
 		$metadata = [
-			'type'        => '',
-			'width'       => 0,
-			'height'      => 0,
-			'title'       => '',
+			'type' => '',
+			'width' => 0,
+			'height' => 0,
+			'title' => '',
 			'description' => '',
 			'orientation' => '',
-			'iso'         => '',
-			'aperture'    => '',
-			'make'        => '',
-			'model'       => '',
-			'shutter'     => '',
-			'focal'       => '',
-			'takestamp'   => null,
-			'lens'        => '',
-			'tags'        => '',
-			'position'    => '',
-			'latitude'    => null,
-			'longitude'   => null,
-			'altitude'    => null
+			'iso' => '',
+			'aperture' => '',
+			'make' => '',
+			'model' => '',
+			'shutter' => '',
+			'focal' => '',
+			'takestamp' => null,
+			'lens' => '',
+			'tags' => '',
+			'position' => '',
+			'latitude' => null,
+			'longitude' => null,
+			'altitude' => null,
 		];
 		$imageInfo = [];
 		if (strpos($type, 'video') !== 0) {
@@ -44,8 +45,7 @@ class Extractor
 			$metadata['type'] = $info['mime'];
 			$metadata['width'] = $info[0];
 			$metadata['height'] = $info[1];
-		}
-		else {
+		} else {
 			try {
 				$this->extractVideo($filename, $metadata);
 			} catch (Exception $exception) {
@@ -57,10 +57,9 @@ class Extractor
 		// Size
 		$size = filesize($filename) / 1024;
 		if ($size >= 1024) {
-			$metadata['size'] = round($size / 1024, 1).' MB';
-		}
-		else {
-			$metadata['size'] = round($size, 1).' KB';
+			$metadata['size'] = round($size / 1024, 1) . ' MB';
+		} else {
+			$metadata['size'] = round($size, 1) . ' KB';
 		}
 
 		// IPTC Metadata
@@ -71,8 +70,7 @@ class Extractor
 				// Title
 				if (!empty($imageInfo['2#105'][0])) {
 					$metadata['title'] = $imageInfo['2#105'][0];
-				}
-				else {
+				} else {
 					if (!empty($imageInfo['2#005'][0])) {
 						$metadata['title'] = $imageInfo['2#005'][0];
 					}
@@ -112,8 +110,7 @@ class Extractor
 		// Read EXIF
 		if ($metadata['type'] === 'image/jpeg') {
 			$exif = @exif_read_data($filename, 'EXIF', false, false);
-		}
-		else {
+		} else {
 			$exif = false;
 		}
 
@@ -122,8 +119,7 @@ class Extractor
 			// Orientation
 			if (isset($exif['Orientation'])) {
 				$metadata['orientation'] = $exif['Orientation'];
-			}
-			else {
+			} else {
 				if (isset($exif['IFD0']['Orientation'])) {
 					$metadata['orientation'] = $exif['IFD0']['Orientation'];
 				}
@@ -151,7 +147,7 @@ class Extractor
 
 			// Exposure
 			if (!empty($exif['ExposureTime'])) {
-				$metadata['shutter'] = $exif['ExposureTime'].' s';
+				$metadata['shutter'] = $exif['ExposureTime'] . ' s';
 			}
 
 			// Focal Length
@@ -160,10 +156,9 @@ class Extractor
 					$temp = explode('/', $exif['FocalLength'], 2);
 					$temp = $temp[0] / $temp[1];
 					$temp = round($temp, 1);
-					$metadata['focal'] = $temp.' mm';
-				}
-				else {
-					$metadata['focal'] = $exif['FocalLength'].' mm';
+					$metadata['focal'] = $temp . ' mm';
+				} else {
+					$metadata['focal'] = $exif['FocalLength'] . ' mm';
 				}
 			}
 
@@ -171,13 +166,11 @@ class Extractor
 			if (!empty($exif['DateTimeOriginal'])) {
 				if ($exif['DateTimeOriginal'] == '0000:00:00 00:00:00') {
 					$metadata['takestamp'] = null;
-				}
-				else {
+				} else {
 					if (strtotime($exif['DateTimeOriginal']) == 0) {
 						$metadata['takestamp'] = null;
-					}
-					else {
-						$metadata['takestamp'] = date("Y-m-d H:i:s", strtotime($exif['DateTimeOriginal']));
+					} else {
+						$metadata['takestamp'] = date('Y-m-d H:i:s', strtotime($exif['DateTimeOriginal']));
 					}
 				}
 			}
@@ -206,22 +199,22 @@ class Extractor
 		}
 
 		//validate the data
-		foreach($metadata as $k => $v) {
+		foreach ($metadata as $k => $v) {
 			//reset field value to empty string if the data is binary (invalid UTF-8 chars)
 			if (!mb_check_encoding($v)) {
 				$metadata[$k] = '';
 			}
 		}
+
 		return $metadata;
 	}
 
-
-
 	/**
-	 * Returns the normalized coordinate from EXIF array
+	 * Returns the normalized coordinate from EXIF array.
 	 *
-	 * @param array $coordinate
+	 * @param array  $coordinate
 	 * @param string $ref
+	 *
 	 * @return float Normalized coordinate as float number (degrees)
 	 */
 	private function getGPSCoordinate(array $coordinate, string $ref): float
@@ -235,12 +228,11 @@ class Extractor
 		return $flip * ($degrees + (float) $minutes / 60 + (float) $seconds / 3600);
 	}
 
-
-
 	/**
-	 * Converts a `rational64u` to a float (`29451/625 => 47.1216`)
+	 * Converts a `rational64u` to a float (`29451/625 => 47.1216`).
 	 *
-	 * @param  string $rational
+	 * @param string $rational
+	 *
 	 * @return float
 	 */
 	private function formattedToFloatGPS(string $rational): float
@@ -254,29 +246,32 @@ class Extractor
 			return (float) $parts[0];
 		}
 		// case part[1] is 0, div by 0 is forbidden.
-		if ($parts[1] == 0)
+		if ($parts[1] == 0) {
 			return (float) 0;
+		}
 
 		return (float) $parts[0] / $parts[1];
 	}
 
-
-
 	/**
-	 * Returns the altitude either above or below sea level
+	 * Returns the altitude either above or below sea level.
 	 *
-	 * @param  string $altitude
-	 * @param  string $ref
+	 * @param string $altitude
+	 * @param string $ref
+	 *
 	 * @return float
 	 */
 	private function getGPSAltitude(string $altitude, string $ref): float
 	{
 		$flip = ($ref == '1') ? -1 : 1;
+
 		return $flip * $this->formattedToFloatGPS($altitude);
 	}
 
-
-
+	/**
+	 * @param string $filename
+	 * @param array  $metadata
+	 */
 	private function extractVideo(string $filename, array &$metadata)
 	{
 		$ffprobe = FFMpeg\FFProbe::create();
@@ -292,14 +287,19 @@ class Extractor
 			$metadata['height'] = $stream['height'];
 		}
 
+		if (isset($stream['tags']) && isset($stream['tags']['rotate']) && ($stream['tags']['rotate'] === '90' || $stream['tags']['rotate'] === '270')) {
+			$tmp = $metadata['width'];
+			$metadata['width'] = $metadata['height'];
+			$metadata['height'] = $tmp;
+		}
+
 		if (isset($stream['avg_frame_rate'])) {
 			$framerate = explode('/', $stream['avg_frame_rate']);
 			if (count($framerate) == 1) {
 				$framerate = $framerate[0];
 			} elseif (count($framerate) == 2 && $framerate[1] != 0) {
 				$framerate = number_format($framerate[0] / $framerate[1], 3);
-			}
-			else {
+			} else {
 				$framerate = '';
 			}
 			if ($framerate !== '') {
@@ -313,7 +313,7 @@ class Extractor
 
 		if (isset($format['tags'])) {
 			if (isset($format['tags']['creation_time']) && strtotime($format['tags']['creation_time']) !== 0) {
-				$metadata['takestamp'] = date("Y-m-d H:i:s", strtotime($format['tags']['creation_time']));
+				$metadata['takestamp'] = date('Y-m-d H:i:s', strtotime($format['tags']['creation_time']));
 			}
 
 			if (isset($format['tags']['location'])) {

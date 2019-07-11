@@ -1,22 +1,19 @@
 <?php
 
-
 namespace App\ControllerFunctions;
 
-
 use App\Album;
+use App\Configs;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
+use App\User;
 
 class ReadAccessFunctions
 {
-
 	/**
 	 * @var SessionFunctions
 	 */
 	private $sessionFunctions;
-
-
 
 	/**
 	 * @param SessionFunctions $sessionFunctions
@@ -26,17 +23,16 @@ class ReadAccessFunctions
 		$this->sessionFunctions = $sessionFunctions;
 	}
 
-
-
 	/**
 	 * Check if a (public) user has access to an album
 	 * if 0 : album does not exists
 	 * if 1 : access is granted
 	 * if 2 : album is private
-	 * if 3 : album is password protected and require user input
+	 * if 3 : album is password protected and require user input.
 	 *
 	 * @param $albumID
 	 * @param bool obeyHidden
+	 *
 	 * @return int
 	 */
 	public function album($albumID, bool $obeyHidden = false)
@@ -45,9 +41,23 @@ class ReadAccessFunctions
 			'f',
 			's',
 			'r',
-			'0'
+			'0',
 		))) {
-			return 1; // access granted
+			if ($this->sessionFunctions->is_logged_in()) {
+				$id = $this->sessionFunctions->id();
+
+				$user = User::find($id);
+				if ($id == 0 || $user->upload) {
+					return 1; // access granted
+				}
+			}
+
+			if (($albumID === 'r' && Configs::get_value('public_recent', '0') === '1') ||
+				($albumID === 'f' && Configs::get_value('public_starred', '0') === '1')) {
+				return 1; // access granted
+			} else {
+				return 2; // Warning: Album private!
+			}
 		}
 
 		$album = Album::find($albumID);
@@ -81,15 +91,13 @@ class ReadAccessFunctions
 		}
 
 		return 3;      // Please enter password first. // Warning: Wrong password!
-
 	}
-
-
 
 	/**
 	 * Check if a (public) user has access to a picture.
 	 *
 	 * @param Photo $photo
+	 *
 	 * @return bool
 	 */
 	public function photo(Photo $photo)

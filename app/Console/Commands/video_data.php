@@ -2,12 +2,12 @@
 
 namespace App\Console\Commands;
 
-use App\Configs;
+use App\Logs;
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
+use Storage;
 
 class video_data extends Command
 {
@@ -39,6 +39,7 @@ class video_data extends Command
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
+	 *
 	 * @return void
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
@@ -74,21 +75,22 @@ class video_data extends Command
 
 		if (count($photos) == 0) {
 			$this->line('No videos require processing');
+
 			return 0;
 		}
 
 		foreach ($photos as $photo) {
-			$this->line('Processing '.$photo->title.'...');
-			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url;
+			$this->line('Processing ' . $photo->title . '...');
+			$url = Storage::path('big/' . $photo->url);
 
 			if ($photo->thumbUrl != '') {
-				$thumb = Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photo->thumbUrl;
+				$thumb = Storage::path('thumb/') . $photo->thumbUrl;
 				if (file_exists($thumb)) {
 					$urlBase = explode('.', $photo->url);
 					$thumbBase = explode('.', $photo->thumbUrl);
 					if ($urlBase !== $thumbBase) {
-						$photo->thumbUrl = $urlBase[0].'.'.$thumbBase[1];
-						rename($thumb, Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photo->thumbUrl);
+						$photo->thumbUrl = $urlBase[0] . '.' . $thumbBase[1];
+						rename($thumb, Storage::path('thumb/') . $photo->thumbUrl);
 						$this->line('Renamed thumb to match the video file');
 					}
 				}

@@ -13,6 +13,12 @@ env:
   - TRAVIS_COMPOSER_DEV=yes
   - TRAVIS_COMPOSER_DEV=no
 
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.php-cs-fixer
+    - $HOME/.local
 services:
   - postgresql
 
@@ -38,6 +44,7 @@ before_script:
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then composer install --no-interaction --no-dev ; fi"
 
 script:
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run ; fi"
   # test mariadb
   - cp .env.mariadb.travis .env
   - php artisan key:generate

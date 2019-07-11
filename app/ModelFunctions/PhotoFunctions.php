@@ -1,4 +1,5 @@
 <?php
+
 /** @noinspection PhpUndefinedClassInspection */
 
 namespace App\ModelFunctions;
@@ -13,8 +14,7 @@ use App\Response;
 use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Session;
+use Storage;
 
 class PhotoFunctions
 {
@@ -29,22 +29,27 @@ class PhotoFunctions
 	private $imageHandler;
 
 	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	/**
 	 * @var array
 	 */
 	public $validTypes = array(
 		IMAGETYPE_JPEG,
 		IMAGETYPE_GIF,
-		IMAGETYPE_PNG
+		IMAGETYPE_PNG,
 	);
 
 	/**
 	 * @var array
 	 */
 	public $validVideoTypes = array(
-		"video/mp4",
-		"video/ogg",
-		"video/webm",
-		"video/quicktime"
+		'video/mp4',
+		'video/ogg',
+		'video/webm',
+		'video/quicktime',
 	);
 
 	/**
@@ -58,21 +63,26 @@ class PhotoFunctions
 		'.ogv',
 		'.mp4',
 		'.webm',
-		'.mov'
+		'.mov',
 	);
 
-
-
-	public function __construct(Extractor $metadataExtractor, ImageHandlerInterface $imageHandler)
+	/**
+	 * PhotoFunctions constructor.
+	 *
+	 * @param Extractor             $metadataExtractor
+	 * @param ImageHandlerInterface $imageHandler
+	 * @param SessionFunctions      $sessionFunctions
+	 */
+	public function __construct(Extractor $metadataExtractor, ImageHandlerInterface $imageHandler, SessionFunctions $sessionFunctions)
 	{
 		$this->metadataExtractor = $metadataExtractor;
 		$this->imageHandler = $imageHandler;
+		$this->sessionFunctions = $sessionFunctions;
 	}
-
-
 
 	/**
 	 * @param Photo $photo
+	 *
 	 * @return string Path of the video frame
 	 */
 	public function extractVideoFrame(Photo $photo): string
@@ -82,32 +92,33 @@ class PhotoFunctions
 		}
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
-		$video = $ffmpeg->open(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url);
+		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
 		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
 
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
-		Logs::notice(__METHOD__, __LINE__, 'Saving frame to '.$tmp);
+		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
 		$frame->save($tmp);
 
 		return $tmp;
 	}
 
-
-
 	/**
+	 * Create thumbnail for a picture.
+	 *
 	 * @param Photo $photo
 	 * @param string Path of the video frame
-	 * @return boolean Returns true when successful.
+	 *
+	 * @return bool returns true when successful
 	 */
 	public function createThumb(Photo $photo, string $frame_tmp = '')
 	{
-		Logs::notice(__METHOD__, __LINE__, 'Photo URL is '.$photo->url);
+		Logs::notice(__METHOD__, __LINE__, 'Photo URL is ' . $photo->url);
 
-		$src = ($frame_tmp === '') ? Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo->url : $frame_tmp;
+		$src = ($frame_tmp === '') ? Storage::path('big/' . $photo->url) : $frame_tmp;
 		$photoName = explode('.', $photo->url);
 		$this->imageHandler->crop(
 			$src,
-			Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'.jpeg',
+			Storage::path('thumb/' . $photoName[0] . '.jpeg'),
 			200,
 			200
 		);
@@ -117,37 +128,39 @@ class PhotoFunctions
 			// Retina thumbs
 			$this->imageHandler->crop(
 				$src,
-				Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB').$photoName[0].'@2x.jpeg',
+				Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'),
 				400,
 				400
 			);
 			$photo->thumb2x = 1;
-		}
-		else {
+		} else {
 			$photo->thumb2x = 0;
 		}
 
 		return true;
 	}
 
-
-
 	/**
 	 * Add new photo(s) to the database.
 	 * Exits on error.
 	 *
 	 * @param array $file
-	 * @param int $albumID_in
-	 * @return string|false ID of the added photo.
+	 * @param int   $albumID_in
+	 *
+	 * @return string|false ID of the added photo
 	 */
 	public function add(array $file, $albumID_in = 0)
 	{
 		// Check permissions
-		if (Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS')) === false ||
-			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_BIG')) === false ||
-			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_MEDIUM')) === false ||
-			Helpers::hasPermissions(Config::get('defines.dirs.LYCHEE_UPLOADS_THUMB')) === false) {
+		if (Helpers::hasPermissions(Storage::path('')) === false ||
+			Helpers::hasPermissions(Storage::path('big/')) === false ||
+			Helpers::hasPermissions(Storage::path('medium/')) === false ||
+			Helpers::hasPermissions(Storage::path('small/')) === false ||
+			Helpers::hasPermissions(Storage::path('thumb/')) === false ||
+			Helpers::hasPermissions(Storage::path('import/')) === false
+	) {
 			Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
+
 			return Response::error('An upload-folder is missing or not readable and writable!');
 		}
 
@@ -191,6 +204,7 @@ class PhotoFunctions
 		$extension = Helpers::getExtension($file['name'], false);
 		if (!in_array(strtolower($extension), $this->validExtensions, true)) {
 			Logs::error(__METHOD__, __LINE__, 'Photo format not supported');
+
 			return Response::error('Photo format not supported!');
 		}
 
@@ -198,9 +212,9 @@ class PhotoFunctions
 		// Verify video
 		$mimeType = $file['type'];
 		if (!in_array($mimeType, $this->validVideoTypes, true)) {
-
-			if (!function_exists("exif_imagetype")) {
+			if (!function_exists('exif_imagetype')) {
 				Logs::error(__METHOD__, __LINE__, 'EXIF library not loaded. Make sure exif is enabled in php.ini');
+
 				return Response::error('EXIF library not loaded on the server!');
 			}
 
@@ -208,6 +222,7 @@ class PhotoFunctions
 			$type = @exif_imagetype($file['tmp_name']);
 			if (!in_array($type, $this->validTypes, true)) {
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
+
 				return Response::error('Photo type not supported!');
 			}
 		}
@@ -218,23 +233,23 @@ class PhotoFunctions
 
 		// Set paths
 		$tmp_name = $file['tmp_name'];
-		$photo_name = md5(microtime()).$extension;
-		$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$photo_name;
+		$photo_name = md5(microtime()) . $extension;
+		$path = Storage::path('big/' . $photo_name);
 
 		// Calculate checksum
 		$checksum = sha1_file($tmp_name);
 		if ($checksum === false) {
 			Logs::error(__METHOD__, __LINE__, 'Could not calculate checksum for photo');
+
 			return Response::error('Could not calculate checksum for photo!');
 		}
-
 
 		$exists = $photo->isDuplicate($checksum);
 
 		// double check that
 		if ($exists !== false) {
 			$photo_name = $exists->url;
-			$path = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$exists->url;
+			$path = Storage::path('big/' . $exists->url);
 			$photo->thumbUrl = $exists->thumbUrl;
 			$photo->thumb2x = $exists->thumb2x;
 			$photo->medium = $exists->medium;
@@ -244,36 +259,31 @@ class PhotoFunctions
 			$exists = true;
 		}
 
-
 		if ($exists === false) {
-
 			// Import if not uploaded via web
 			if (!is_uploaded_file($tmp_name)) {
 				if (!@copy($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
+
 					return Response::error('Could not copy photo to uploads!');
-				}
-				elseif (Configs::get_value('deleteImported') === '1') {
+				} elseif (Configs::get_value('deleteImported') === '1') {
 					@unlink($tmp_name);
 				}
-			}
-			else {
+			} else {
 				if (!@move_uploaded_file($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not move photo to uploads');
+
 					return Response::error('Could not move photo to uploads!');
 				}
 			}
-
-		}
-		else {
-
+		} else {
 			// Photo already exists
 			// Check if the user wants to skip duplicates
 			if (Configs::get()['skipDuplicates'] === '1') {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
+
 				return Response::warning('This photo has been skipped because it\'s already in your library.');
 			}
-
 		}
 
 		$info = $this->metadataExtractor->extract($path, $mimeType);
@@ -310,20 +320,17 @@ class PhotoFunctions
 			$album = Album::find($albumID);
 			if ($album == null) {
 				$photo->album_id = null;
-				$photo->owner_id = Session::get('UserID');
-			}
-			else {
+				$photo->owner_id = $this->sessionFunctions->id();
+			} else {
 				$photo->album_id = $albumID;
 				$photo->owner_id = $album->owner_id;
 			}
-		}
-		else {
+		} else {
 			$photo->album_id = null;
-			$photo->owner_id = Session::get('UserID');
+			$photo->owner_id = $this->sessionFunctions->id();
 		}
 
 		if ($exists === false) {
-
 			// Set orientation based on EXIF data
 			if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
 				$rotation = $this->imageHandler->autoRotate($path, $info);
@@ -342,8 +349,7 @@ class PhotoFunctions
 			if (in_array($photo->type, $this->validVideoTypes, true)) {
 				try {
 					$frame_tmp = $this->extractVideoFrame($photo);
-				}
-				catch (Exception $exception) {
+				} catch (Exception $exception) {
 					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 				}
 			}
@@ -352,18 +358,18 @@ class PhotoFunctions
 			if (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
 				if (!$this->createThumb($photo, $frame_tmp)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
+
 					return Response::error('Could not create thumbnail for photo!');
 				}
 
-				$photo->thumbUrl = basename($photo_name, $extension).".jpeg";
+				$photo->thumbUrl = basename($photo_name, $extension) . '.jpeg';
 
 				$this->createSmallerImages($photo, $frame_tmp);
 
 				if ($frame_tmp !== '') {
 					unlink($frame_tmp);
 				}
-			}
-			else {
+			} else {
 				$photo->thumbUrl = '';
 				$photo->thumb2x = 0;
 			}
@@ -372,11 +378,10 @@ class PhotoFunctions
 		return $this->save($photo, $albumID);
 	}
 
-
-
 	/**
 	 * @param Photo $photo
 	 * @param string Path of the video frame
+	 *
 	 * @return void
 	 */
 	public function createSmallerImages(Photo $photo, string $frame_tmp = '')
@@ -400,16 +405,15 @@ class PhotoFunctions
 		}
 	}
 
-
-
 	/**
-	 * Creates smaller copies of Photo
+	 * Creates smaller copies of Photo.
 	 *
-	 * @param Photo $photo
+	 * @param Photo  $photo
 	 * @param string $type
-	 * @param int $maxWidth
-	 * @param int $maxHeight
+	 * @param int    $maxWidth
+	 * @param int    $maxHeight
 	 * @param string Path of the video frame
+	 *
 	 * @return bool
 	 */
 	public function resizePhoto(Photo $photo, string $type, int $maxWidth, int $maxHeight, string $frame_tmp = ''): bool
@@ -419,9 +423,8 @@ class PhotoFunctions
 
 		if ($frame_tmp === '') {
 			$filename = $photo->url;
-			$url = Config::get('defines.dirs.LYCHEE_UPLOADS_BIG').$filename;
-		}
-		else {
+			$url = Storage::path('big/' . $filename);
+		} else {
 			$filename = $photo->thumbUrl;
 			$url = $frame_tmp;
 		}
@@ -433,9 +436,10 @@ class PhotoFunctions
 			$pathType = substr($pathType, 0, $split);
 		}
 
-		$uploadFolder = Config::get('defines.dirs.LYCHEE_UPLOADS_'.$pathType);
+		$uploadFolder = Storage::path(strtolower($pathType) . '/');
 		if (Helpers::hasPermissions($uploadFolder) === false) {
-			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because '.$uploadFolder.' is missing or not readable and writable.');
+			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because ' . $uploadFolder . ' is missing or not readable and writable.');
+
 			return false;
 		}
 
@@ -446,28 +450,31 @@ class PhotoFunctions
 
 		// Is photo big enough?
 		if (($width <= $maxWidth || $maxWidth == 0) && ($height <= $maxHeight || $maxHeight == 0)) {
-			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: '.$maxWidth.'x'.$maxHeight.')!');
+			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: ' . $maxWidth . 'x' . $maxHeight . ')!');
+
 			return false;
 		}
 
 		$resWidth = $resHeight = 0;
-		if (!$this->imageHandler->scale($url, $uploadFolder.$filename, $maxWidth, $maxHeight, $resWidth, $resHeight)) {
-			Logs::error(__METHOD__, __LINE__, 'Failed to '.$type.' resize image');
+		if (!$this->imageHandler->scale($url, $uploadFolder . $filename, $maxWidth, $maxHeight, $resWidth, $resHeight)) {
+			Logs::error(__METHOD__, __LINE__, 'Failed to ' . $type . ' resize image');
+
 			return false;
 		}
 
-		$photo->{$type} = $resWidth.'x'.$resHeight;
+		$photo->{$type} = $resWidth . 'x' . $resHeight;
 
 		return true;
 	}
 
-
-
 	/**
-	 * We create this function to try to fix the duplicate entry key problem
+	 * This function aims to fix the duplicate entry key problem.
+	 *
+	 * TODO: find where the array to string conversion is...
 	 *
 	 * @param Photo $photo
 	 * @param $albumID
+	 *
 	 * @return false|mixed|string
 	 */
 	public function save(Photo $photo, $albumID)
@@ -479,8 +486,7 @@ class PhotoFunctions
 				if (!$photo->save()) {
 					return Response::error('Could not save photo in database!');
 				}
-			}
-			catch (QueryException $e) {
+			} catch (QueryException $e) {
 				$errorCode = $e->getCode();
 				if ($errorCode == 23000 || $errorCode == 23505) {
 					// houston, we have a duplicate entry problem
@@ -493,10 +499,10 @@ class PhotoFunctions
 
 					$photo->id = $newId;
 					$retry = true;
-				}
-				else {
-					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error '.$errorCode.', '.$e->getMessage());
-					return Response::error('Something went wrong, error'.$errorCode.', please check the logs');
+				} else {
+					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error ' . $errorCode . ', ' . $e->getMessage());
+
+					return Response::error('Something went wrong, error' . $errorCode . ', please check the logs');
 				}
 			}
 		} while ($retry);
@@ -506,37 +512,34 @@ class PhotoFunctions
 			$album = Album::find($albumID);
 			if ($album === null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 				return Response::error('Could not find specified album');
 			}
-			// TODO: should also recursively update the parent albums.
-			$album->update_min_max_takestamp();
-			if (!$album->save()) {
-				return Response::error('Could not update album takestamp in database!');
+			if (!$album->update_takestamps([$photo->takestamp], true)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not update album takestamps');
+
+				return Response::error('Could not update album takestamps');
 			}
 		}
 
 		// return the ID.
 		return $photo->id;
-
 	}
-
-
 
 	/**
 	 * Validates whether $type is a valid image type.
 	 *
 	 * @param int $type
-	 * @return boolean
+	 *
+	 * @return bool
 	 */
 	public function isValidImageType(int $type): bool
 	{
 		return in_array($type, $this->validTypes, true);
 	}
 
-
-
 	/**
-	 * Returns a list of valid image types
+	 * Returns a list of valid image types.
 	 *
 	 * @return array
 	 */
@@ -545,23 +548,20 @@ class PhotoFunctions
 		return $this->validTypes;
 	}
 
-
-
 	/**
-	 * Validates whether $type is a valid video type
+	 * Validates whether $type is a valid video type.
 	 *
 	 * @param string $type
-	 * @return boolean
+	 *
+	 * @return bool
 	 */
 	public function isValidVideoType(string $type): bool
 	{
 		return in_array($type, $this->validVideoTypes, true);
 	}
 
-
-
 	/**
-	 * Returns a list of valid video types
+	 * Returns a list of valid video types.
 	 *
 	 * @return array
 	 */
@@ -570,23 +570,20 @@ class PhotoFunctions
 		return $this->validVideoTypes;
 	}
 
-
-
 	/**
-	 * Validates whether $extension is a valid image or video extension
+	 * Validates whether $extension is a valid image or video extension.
 	 *
 	 * @param string $extension
-	 * @return boolean
+	 *
+	 * @return bool
 	 */
 	public function isValidExtension(string $extension): bool
 	{
 		return in_array(strtolower($extension), $this->validExtensions, true);
 	}
 
-
-
 	/**
-	 * Returns a list of valid image/video extensions
+	 * Returns a list of valid image/video extensions.
 	 *
 	 * @return array
 	 */

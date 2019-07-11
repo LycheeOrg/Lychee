@@ -23,6 +23,7 @@
         "ext-imagick": "*",
         "barryvdh/laravel-ide-helper": "^2.6",
         "filp/whoops": "^2.0",
+        "friendsofphp/php-cs-fixer": "^2.15",
         "fzaninotto/faker": "^1.4",
         "itsgoingd/clockwork": "^3.1",
         "laravel/homestead": "^8.2",
