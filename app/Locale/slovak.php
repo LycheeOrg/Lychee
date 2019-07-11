@@ -133,8 +133,8 @@ final class Slovak implements LangInterface
 			'ALBUM_SHR_YES' => 'Áno',
 			'ALBUM_SHR_NO' => 'Nie',
 			'ALBUM_PUBLIC' => 'Verejný',
-			'ALBUM_FULL' => 'Full size',
-			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
+			'ALBUM_FULL' => 'Plná veľkosť',
+			'ALBUM_FULL_EXPL' => 'Dostupné obrázky v plnej veľkosti',
 			'ALBUM_HIDDEN' => 'Skrytý',
 			'ALBUM_HIDDEN_EXPL' => 'Album viditeľný len cez priamy link.',
 			'ALBUM_DOWNLOADABLE' => 'Stiahnuteľný',
@@ -345,7 +345,7 @@ final class Slovak implements LangInterface
 			'ABOUT_SUBTITLE' => 'Vlastný hostovaný manažment obrázkov!',
 			'ABOUT_DESCRIPTION' => 'je open-source nástroj, bežiaci na vašom vlastnom serveri alebo v cloude. Inštalácia je otázkou sekúnd. Nahrať, spravovať a zdieľať obrázky ako v natívnej aplikácii. Lychee ponúka všetko čo potrebujete vy a vaše obrázky pre bezpečné uloženie.',
 			'FOOTER_COPYRIGHT' => 'Všetky obrázky na tejto webovej stránke sú chránené autorským právom ',
-			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
+			'HOSTED_WITH_LYCHEE' => 'Hostované s Lychee',
 		);
 
 		return $locale;
