@@ -142,6 +142,20 @@ class Album extends Model
 	}
 
 	/**
+	 * Return whether or not public users can download photos.
+	 *
+	 * @return bool
+	 */
+	public function is_downloadable()
+	{
+		if ($this->public) {
+			return $this->downloadable == 1;
+		} else {
+			return Configs::get_value('downloadable', '0') === '1';
+		}
+	}
+
+	/**
 	 * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
 	 *
 	 * @return array
@@ -163,7 +177,7 @@ class Album extends Model
 		// Only part of $album when available
 		$album['description'] = strval($this->description);
 		$album['visible'] = strval($this->visible_hidden);
-		$album['downloadable'] = strval($this->downloadable);
+		$album['downloadable'] = $this->is_downloadable() ? '1' : '0';
 
 		// Parse date
 		$album['sysdate'] = $this->created_at->format('F Y');

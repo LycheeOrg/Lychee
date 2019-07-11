@@ -92,15 +92,18 @@ class AlbumController extends Controller
 
 					if ($UserId == 0 || $user->upload) {
 						$return['public'] = '0';
+						$return['downloadable'] = '1';
 						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
 						break;
 					}
 				}
 				$return['public'] = '1';
+				$return['downloadable'] = Configs::get_value('downloadable', '0');
 				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case 's':
 				$return['public'] = '0';
+				$return['downloadable'] = '1';
 				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
 			case 'r':
@@ -109,15 +112,18 @@ class AlbumController extends Controller
 
 					if ($UserId == 0 || $user->upload) {
 						$return['public'] = '0';
+						$return['downloadable'] = '1';
 						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
 						break;
 					}
 				}
 				$return['public'] = '1';
+				$return['downloadable'] = Configs::get_value('downloadable', '0');
 				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case '0':
 				$return['public'] = '0';
+				$return['downloadable'] = '1';
 				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
@@ -568,6 +574,12 @@ class AlbumController extends Controller
 	 */
 	public function getArchive(Request $request)
 	{
+		if (Storage::getDefaultDriver() === 's3') {
+			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
+
+			return 'false';
+		}
+
 		// Illicit chars
 		$badChars = array_merge(
 			array_map('chr', range(0, 31)),
@@ -675,6 +687,18 @@ class AlbumController extends Controller
 				} // switch (albumID)
 
 				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album) use (&$zip, $badChars, &$compress_album) {
+					if ($album !== null) {
+						if (!$this->sessionFunctions->is_current_user($album->owner_id) &&
+						!$album->is_downloadable()) {
+							return;
+						}
+					} else {
+						if (!$this->sessionFunctions->is_logged_in() &&
+						Configs::get_value('downloadable', '0') === '0') {
+							return;
+						}
+					}
+
 					$dir = str_replace($badChars, '', $dir);
 					if ($dir === '') {
 						$dir = 'Untitled';
@@ -699,6 +723,14 @@ class AlbumController extends Controller
 					$files = [];
 					$photos = $photos_sql->get();
 					foreach ($photos as $photo) {
+						// For photos in public smart albums, skip the ones
+						// that are not downloadable based on their actual
+						// parent album.
+						if ($album === null && !$this->sessionFunctions->is_logged_in() &&
+						$photo->album_id !== null && !$photo->album->is_downloadable()) {
+							continue;
+						}
+
 						$url = Storage::path('big/' . $photo->url);
 						// Check if readable
 						if (!@is_readable($url)) {

@@ -518,7 +518,7 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Return a photo as an archive just to annoy @SerenaButler.
+	 * Return the archive of pictures or just a picture if only one.
 	 *
 	 * @param Request $request
 	 *
@@ -526,6 +526,12 @@ class PhotoController extends Controller
 	 */
 	public function getArchive(Request $request)
 	{
+		if (Storage::getDefaultDriver() === 's3') {
+			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
+
+			return 'false';
+		}
+
 		$request->validate([
 			'photoIDs' => 'required|string',
 			'kind' => 'nullable|string',
@@ -556,6 +562,18 @@ class PhotoController extends Controller
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
 
 				return null;
+			}
+
+			if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
+				if ($photo->album_id !== null) {
+					if (!$photo->album->is_downloadable()) {
+						return null;
+					}
+				} else {
+					if (Configs::get_value('downloadable', '0') === '0') {
+						return null;
+					}
+				}
 			}
 
 			$title = str_replace($badChars, '', $photo->title);
