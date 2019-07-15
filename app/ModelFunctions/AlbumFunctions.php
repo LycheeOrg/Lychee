@@ -205,7 +205,7 @@ class AlbumFunctions
 			$photo_counter++;
 		}
 
-		if (count($return_photos) > 0) {
+		if (count($return_photos) > 0 && Configs::get_value('photos_wraparound', '1') === '1') {
 			// Enable next and previous for the first and last photo
 			$lastElement = end($return_photos);
 			$lastElementId = $lastElement['id'];
