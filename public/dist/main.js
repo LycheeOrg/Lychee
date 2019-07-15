@@ -816,14 +816,15 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject50 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
     _templateObject51 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
     _templateObject52 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
-    _templateObject53 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
-    _templateObject54 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
-    _templateObject55 = _taggedTemplateLiteral(["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"]),
-    _templateObject56 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"]),
-    _templateObject57 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
-    _templateObject58 = _taggedTemplateLiteral(["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"], ["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"]),
-    _templateObject59 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"]),
-    _templateObject60 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a></div>"]);
+    _templateObject53 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
+    _templateObject54 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
+    _templateObject55 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
+    _templateObject56 = _taggedTemplateLiteral(["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p class=\"warning\">\n\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject57 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>"]),
+    _templateObject58 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
+    _templateObject59 = _taggedTemplateLiteral(["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"], ["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"]),
+    _templateObject60 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"]),
+    _templateObject61 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a></div>"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -2390,11 +2391,23 @@ build.overlay_image = function (data) {
 build.imageview = function (data, visibleControls) {
 
 	var html = '';
+	var thumb = '';
 
 	if (data.type.indexOf('video') > -1) {
 		html += lychee.html(_templateObject25, visibleControls === true ? '' : 'full', data.url);
 	} else {
 		var img = '';
+
+		// See if we have the thumbnail loaded...
+		$('.photo').each(function () {
+			if ($(this).attr('data-id') && $(this).attr('data-id') == data.id) {
+				var thumbimg = $(this).find('img');
+				if (thumbimg.length > 0) {
+					thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
+					return false;
+				}
+			}
+		});
 
 		if (data.medium !== '') {
 			var medium = '';
@@ -2413,7 +2426,7 @@ build.imageview = function (data, visibleControls) {
 
 	html += "\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic('caret-left') + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic('caret-right') + "</a></div>\n\t\t\t";
 
-	return html;
+	return { html: html, thumb: thumb };
 };
 
 build.no_content = function (typ) {
@@ -5001,7 +5014,8 @@ password.getDialog = function (albumID, callback) {
 photo = {
 
 	json: null,
-	cache: null
+	cache: null,
+	supportsPrefetch: null
 
 };
 
@@ -5058,7 +5072,6 @@ photo.load = function (photoID, albumID) {
 
 		setTimeout(function () {
 			lychee.content.show();
-			photo.preloadNext(photoID);
 		}, 300);
 	});
 };
@@ -5111,30 +5124,73 @@ photo.update_display_overlay = function () {
 	}
 };
 
-// Preload the next photo for better response time
-photo.preloadNext = function (photoID) {
-	if (album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).nextPhoto !== '') {
+// Preload the next and previous photos for better response time
+photo.preloadNextPrev = function (photoID) {
+	if (album.json && album.json.photos && album.getByID(photoID)) {
 
-		var nextPhoto = album.getByID(photoID).nextPhoto;
-		var url = album.getByID(nextPhoto).url;
-		var medium = album.getByID(nextPhoto).medium;
-		var href = url;
-		if (medium != null && medium !== '') {
-			href = medium;
-
-			var medium2x = album.getByID(nextPhoto).medium2x;
-			if (medium2x && medium2x !== '') {
-				// If the currently displayed image uses the 2x variant,
-				// chances are that so will the next one.
-				var imgs = $('img#image');
-				if (imgs.length > 0 && imgs[0].currentSrc != null && imgs[0].currentSrc.includes('@2x.')) {
-					href = medium2x;
-				}
-			}
-		}
+		var previousPhotoID = album.getByID(photoID).previousPhoto;
+		var nextPhotoID = album.getByID(photoID).nextPhoto;
+		var current2x = null;
 
 		$('head [data-prefetch]').remove();
-		$('head').append("<link data-prefetch rel=\"prefetch\" href=\"" + href + "\">");
+
+		var preload = function preload(preloadID) {
+			var preloadPhoto = album.getByID(preloadID);
+			var href = '';
+
+			if (preloadPhoto.medium != null && preloadPhoto.medium !== '') {
+				href = preloadPhoto.medium;
+
+				if (preloadPhoto.medium2x && preloadPhoto.medium2x !== '') {
+					if (current2x === null) {
+						var imgs = $('img#image');
+						current2x = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes('@2x.');
+					}
+					if (current2x) {
+						// If the currently displayed image uses the 2x variant,
+						// chances are that so will the next one.
+						href = preloadPhoto.medium2x;
+					}
+				}
+			} else if (preloadPhoto.type && preloadPhoto.type.indexOf('video') === -1) {
+				// Preload the original size, but only if it's not a video
+				href = preloadPhoto.url;
+			}
+
+			if (photo.supportsPrefetch === null) {
+				// Copied from https://www.smashingmagazine.com/2016/02/preload-what-is-it-good-for/
+				var DOMTokenListSupports = function DOMTokenListSupports(tokenList, token) {
+					if (!tokenList || !tokenList.supports) {
+						return null;
+					}
+					try {
+						return tokenList.supports(token);
+					} catch (e) {
+						if (e instanceof TypeError) {
+							console.log('The DOMTokenList doesn\'t have a supported tokens list');
+						} else {
+							console.error('That shouldn\'t have happened');
+						}
+					}
+				};
+				photo.supportsPrefetch = DOMTokenListSupports(document.createElement('link').relList, 'prefetch');
+			}
+
+			if (photo.supportsPrefetch) {
+				$('head').append("<link data-prefetch rel=\"prefetch\" href=\"" + href + "\">");
+			} else {
+				// According to https://caniuse.com/#feat=link-rel-prefetch,
+				// as of mid-2019 it's mainly Safari (both on desktop and mobile)
+				new Image().src = href;
+			}
+		};
+
+		if (nextPhotoID !== '') {
+			preload(nextPhotoID);
+		}
+		if (previousPhotoID !== '') {
+			preload(previousPhotoID);
+		}
 	}
 };
 
@@ -5240,8 +5296,8 @@ photo.delete = function (photoIDs) {
 
 	action.fn = function () {
 
-		var nextPhoto = null;
-		var previousPhoto = null;
+		var nextPhoto = '';
+		var previousPhoto = '';
 
 		basicModal.close();
 
@@ -5253,8 +5309,12 @@ photo.delete = function (photoIDs) {
 				nextPhoto = album.getByID(id).nextPhoto;
 				previousPhoto = album.getByID(id).previousPhoto;
 
-				album.getByID(previousPhoto).nextPhoto = nextPhoto;
-				album.getByID(nextPhoto).previousPhoto = previousPhoto;
+				if (previousPhoto !== '') {
+					album.getByID(previousPhoto).nextPhoto = nextPhoto;
+				}
+				if (nextPhoto !== '') {
+					album.getByID(nextPhoto).previousPhoto = previousPhoto;
+				}
 			}
 
 			album.deleteByID(id);
@@ -5264,8 +5324,19 @@ photo.delete = function (photoIDs) {
 		albums.refresh();
 
 		// Go to next photo if there is a next photo and
-		// next photo is not the current one. Show album otherwise.
-		if (visible.photo() && nextPhoto != null && nextPhoto !== photo.getID()) lychee.goto(album.getID() + '/' + nextPhoto);else if (!visible.albums()) lychee.goto(album.getID());
+		// next photo is not the current one. Also try the previous one.
+		// Show album otherwise.
+		if (visible.photo()) {
+			if (nextPhoto !== '' && nextPhoto !== photo.getID()) {
+				lychee.goto(album.getID() + '/' + nextPhoto);
+			} else if (previousPhoto !== '' && previousPhoto !== photo.getID()) {
+				lychee.goto(album.getID() + '/' + previousPhoto);
+			} else {
+				lychee.goto(album.getID());
+			}
+		} else if (!visible.albums()) {
+			lychee.goto(album.getID());
+		}
 
 		var params = {
 			photoIDs: photoIDs.join()
@@ -5377,8 +5448,8 @@ photo.copyTo = function (photoIDs, albumID) {
 
 photo.setAlbum = function (photoIDs, albumID) {
 
-	var nextPhoto = null;
-	var previousPhoto = null;
+	var nextPhoto = '';
+	var previousPhoto = '';
 
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
@@ -5391,8 +5462,12 @@ photo.setAlbum = function (photoIDs, albumID) {
 			nextPhoto = album.getByID(id).nextPhoto;
 			previousPhoto = album.getByID(id).previousPhoto;
 
-			album.getByID(previousPhoto).nextPhoto = nextPhoto;
-			album.getByID(nextPhoto).previousPhoto = previousPhoto;
+			if (previousPhoto !== '') {
+				album.getByID(previousPhoto).nextPhoto = nextPhoto;
+			}
+			if (nextPhoto !== '') {
+				album.getByID(nextPhoto).previousPhoto = previousPhoto;
+			}
 		}
 
 		album.deleteByID(id);
@@ -5402,8 +5477,19 @@ photo.setAlbum = function (photoIDs, albumID) {
 	albums.refresh();
 
 	// Go to next photo if there is a next photo and
-	// next photo is not the current one. Show album otherwise.
-	if (visible.photo() && nextPhoto != null && nextPhoto !== photo.getID()) lychee.goto(album.getID() + '/' + nextPhoto);else if (!visible.albums()) lychee.goto(album.getID());
+	// next photo is not the current one. Also try the previous one.
+	// Show album otherwise.
+	if (visible.photo()) {
+		if (nextPhoto !== '' && nextPhoto !== photo.getID()) {
+			lychee.goto(album.getID() + '/' + nextPhoto);
+		} else if (previousPhoto !== '' && previousPhoto !== photo.getID()) {
+			lychee.goto(album.getID() + '/' + previousPhoto);
+		} else {
+			lychee.goto(album.getID());
+		}
+	} else if (!visible.albums()) {
+		lychee.goto(album.getID());
+	}
 
 	var params = {
 		photoIDs: photoIDs.join(),
@@ -7999,7 +8085,8 @@ view.photo = {
 		return photo;
 	}(function () {
 
-		lychee.imageview.html(build.imageview(photo.json, visible.header()));
+		var ret = build.imageview(photo.json, visible.header());
+		lychee.imageview.html(ret.html);
 		view.photo.onresize();
 
 		var $nextArrow = lychee.imageview.find('a#next');
@@ -8007,6 +8094,25 @@ view.photo = {
 		var photoID = photo.getID();
 		var hasNext = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).nextPhoto != null && album.getByID(photoID).nextPhoto !== '';
 		var hasPrevious = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).previousPhoto != null && album.getByID(photoID).previousPhoto !== '';
+
+		var img = $('img#image');
+		if (img.length > 0) {
+			if (!img[0].complete) {
+				// Image is still loading.  Display the thumb version in the
+				// background.
+				if (ret.thumb !== '') {
+					img.css('background-image', lychee.html(_templateObject53, ret.thumb));
+				}
+
+				// Don't preload next/prev until the requested image is
+				// fully loaded.
+				img.on('load', function () {
+					photo.preloadNextPrev(photo.getID());
+				});
+			} else {
+				photo.preloadNextPrev(photo.getID());
+			}
+		}
 
 		if (hasNext === false || lychee.viewMode === true) {
 
@@ -8016,7 +8122,7 @@ view.photo = {
 			var nextPhotoID = album.getByID(photoID).nextPhoto;
 			var nextPhoto = album.getByID(nextPhotoID);
 
-			$nextArrow.css('background-image', lychee.html(_templateObject53, nextPhoto.thumbUrl));
+			$nextArrow.css('background-image', lychee.html(_templateObject54, nextPhoto.thumbUrl));
 		}
 
 		if (hasPrevious === false || lychee.viewMode === true) {
@@ -8027,7 +8133,7 @@ view.photo = {
 			var previousPhotoID = album.getByID(photoID).previousPhoto;
 			var previousPhoto = album.getByID(previousPhotoID);
 
-			$previousArrow.css('background-image', lychee.html(_templateObject53, previousPhoto.thumbUrl));
+			$previousArrow.css('background-image', lychee.html(_templateObject54, previousPhoto.thumbUrl));
 		}
 	}),
 
@@ -8051,7 +8157,7 @@ view.photo = {
 	}),
 
 	onresize: function onresize() {
-		if (photo.json.medium === '' || !photo.json.medium2x || photo.json.medium2x === '') return;
+		if (!photo.json || photo.json.medium === '' || !photo.json.medium2x || photo.json.medium2x === '') return;
 
 		// Calculate the width of the image in the current window and
 		// set 'sizes' to it.
@@ -8229,7 +8335,7 @@ view.settings = {
 		},
 
 		moreButton: function moreButton() {
-			var msg = lychee.html(_templateObject54, lychee.locale['MORE']);
+			var msg = lychee.html(_templateObject55, lychee.locale['MORE']);
 
 			$(".settings_view").append(msg);
 
@@ -8266,20 +8372,20 @@ view.full_settings = {
 
 			api.post('Settings::getAll', {}, function (data) {
 
-				var msg = lychee.html(_templateObject55, lychee.locale['SETTINGS_WARNING']);
+				var msg = lychee.html(_templateObject56, lychee.locale['SETTINGS_WARNING']);
 
 				var prev = '';
 				$.each(data, function () {
 
 					if (this.cat && prev !== this.cat) {
-						msg += lychee.html(_templateObject56, this.cat);
+						msg += lychee.html(_templateObject57, this.cat);
 						prev = this.cat;
 					}
 
-					msg += lychee.html(_templateObject57, this.key, this.key, this.value);
+					msg += lychee.html(_templateObject58, this.key, this.key, this.value);
 				});
 
-				msg += lychee.html(_templateObject58, lychee.locale['SAVE_RISK']);
+				msg += lychee.html(_templateObject59, lychee.locale['SAVE_RISK']);
 				$(".settings_view").append(msg);
 
 				settings.bind('#FullSettingsSave_button', '#fullSettings', settings.save);
@@ -8442,7 +8548,7 @@ view.logs = {
 	clearContent: function clearContent() {
 		var html = '';
 		if (lychee.api_V2) {
-			html += lychee.html(_templateObject59, lychee.locale['CLEAN_LOGS']);
+			html += lychee.html(_templateObject60, lychee.locale['CLEAN_LOGS']);
 		}
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);
@@ -8481,7 +8587,7 @@ view.diagnostics = {
 	clearContent: function clearContent(update) {
 		var html = '';
 		if (update === 1) {
-			html += lychee.html(_templateObject60, lychee.locale['UPDATE_AVAILABLE']);
+			html += lychee.html(_templateObject61, lychee.locale['UPDATE_AVAILABLE']);
 		}
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);

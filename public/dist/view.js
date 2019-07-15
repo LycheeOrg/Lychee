@@ -1400,11 +1400,23 @@ build.overlay_image = function (data) {
 build.imageview = function (data, visibleControls) {
 
 	var html = '';
+	var thumb = '';
 
 	if (data.type.indexOf('video') > -1) {
 		html += lychee.html(_templateObject15, visibleControls === true ? '' : 'full', data.url);
 	} else {
 		var img = '';
+
+		// See if we have the thumbnail loaded...
+		$('.photo').each(function () {
+			if ($(this).attr('data-id') && $(this).attr('data-id') == data.id) {
+				var thumbimg = $(this).find('img');
+				if (thumbimg.length > 0) {
+					thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
+					return false;
+				}
+			}
+		});
 
 		if (data.medium !== '') {
 			var medium = '';
@@ -1423,7 +1435,7 @@ build.imageview = function (data, visibleControls) {
 
 	html += "\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic('caret-left') + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic('caret-right') + "</a></div>\n\t\t\t";
 
-	return html;
+	return { html: html, thumb: thumb };
 };
 
 build.no_content = function (typ) {
