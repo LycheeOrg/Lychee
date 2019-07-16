@@ -161,28 +161,18 @@ class DiagnosticsController extends Controller
 		// Load settings
 		$settings = Configs::get();
 
-		// Settings
-		if (!isset($settings['username']) || $settings['username'] == '') {
-			$errors[] = 'Error: Username empty or not set in database';
+		$keys_checked = ['username', 'password', 'sorting_Photos', 'sorting_Albums', 'imagick', 'skip_duplicates', 'check_for_updates'];
+
+		foreach ($keys_checked as $key) {
+			if (!isset($settings[$key])) {
+				$errors[] = 'Error: ' . $key . ' not set in database';
+			}
 		}
-		if (!isset($settings['password']) || $settings['password'] == '') {
-			$errors[] = 'Error: Password empty or not set in database';
-		}
-		if (!isset($settings['sorting_Photos']) || $settings['sorting_Photos'] == '') {
-			$errors[] = 'Error: Wrong property for sortingPhotos in database';
-		}
-		if (!isset($settings['sorting_Albums']) || $settings['sorting_Albums'] == '') {
-			$errors[] = 'Error: Wrong property for sortingAlbums in database';
-		}
-		if (!isset($settings['imagick']) || $settings['imagick'] == '') {
-			$errors[] = 'Error: No or wrong property for imagick in database';
-		}
-		if (!isset($settings['skip_duplicates']) || $settings['skip_duplicates'] == '') {
-			$errors[] = 'Error: No or wrong property for skip_duplicates in database';
-		}
-		if (!isset($settings['check_for_updates']) || ($settings['check_for_updates'] != '0' && $settings['check_for_updates'] != '1')) {
-			$errors[] = 'Error: No or wrong property for check_for_updates in database';
-		}
+
+		/*
+		 * Sanity check over all the variables
+		 */
+		$this->configFunctions->sanity($errors);
 
 		// Check dropboxKey
 		if (!$settings['dropboxKey']) {

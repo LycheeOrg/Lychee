@@ -1,7 +1,9 @@
 <?php
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class PrivateConfigFields extends Migration
@@ -79,7 +81,7 @@ class PrivateConfigFields extends Migration
 	public function down()
 	{
 		if (Schema::hasTable('configs')) {
-			Schema::table('configs', function ($table) {
+			Schema::table('configs', function (Blueprint $table) {
 				$table->dropColumn('confidentiality');
 			});
 		}

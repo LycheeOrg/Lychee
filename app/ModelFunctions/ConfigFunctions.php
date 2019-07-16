@@ -72,4 +72,57 @@ class ConfigFunctions
 
 		return $return;
 	}
+
+	/**
+	 * Sanity check of the config.
+	 *
+	 * @param array $return
+	 */
+	public function sanity(array &$return)
+	{
+		define('INT', 'int');
+		define('STRING', 'string');
+		define('STRING_REQ', 'string_required');
+		define('BOOL', '0|1');
+		define('TERNARY', '0|1|2');
+		define('DISABLED', '');
+
+		$val_range = [BOOL => explode('|', BOOL), TERNARY => explode('|', TERNARY)];
+
+		$configs = Configs::all(['key', 'value', 'type_range']);
+		foreach ($configs as $config) {
+			switch ($config->type_range) {
+				case DISABLED:
+					break;
+				case STRING:
+					break;
+				case STRING_REQ:
+					if ($config->value == '') {
+						$return[] = 'Error: ' . $config->key . ' empty or not set in database';
+					}
+					break;
+				case INT:
+					if (intval($config->value) < 0) {
+						$return[] = 'Error: Wrong property for ' . $config->key . ' in database, expected positive integer.';
+					}
+					break;
+				case BOOL:
+				case TERNARY:
+					if (!in_array($config->value, $val_range[$config->type_range])) { // BOOL or TERNARY
+						$return[] = 'Error: Wrong property for ' . $config->key
+							. ' in database, expected ' . implode(' or ',
+								$val_range[$config->type_range]) . ', got ' . $config->value;
+					}
+					break;
+				default:
+					$values = explode('|', $config->type_range);
+					if (!in_array($config->value, $values)) {
+						$return[] = 'Error: Wrong property for ' . $config->key
+							. ' in database, expected ' . implode(' or ', $values)
+							. ', got ' . $config->value;
+					}
+					break;
+			}
+		}
+	}
 }

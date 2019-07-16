@@ -16,7 +16,9 @@ use Illuminate\Database\QueryException;
  * @property string      $key
  * @property string|null $value
  * @property string      $cat
+ * @property string      $type_range
  * @property int         $confidentiality
+ * @property string      $description
  *
  * @method static Builder|Configs admin()
  * @method static Builder|Configs info()
