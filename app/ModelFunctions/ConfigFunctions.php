@@ -80,12 +80,14 @@ class ConfigFunctions
 	 */
 	public function sanity(array &$return)
 	{
-		define('INT', 'int');
-		define('STRING', 'string');
-		define('STRING_REQ', 'string_required');
-		define('BOOL', '0|1');
-		define('TERNARY', '0|1|2');
-		define('DISABLED', '');
+		if (!defined('INT')) {
+			define('INT', 'int');
+			define('STRING', 'string');
+			define('STRING_REQ', 'string_required');
+			define('BOOL', '0|1');
+			define('TERNARY', '0|1|2');
+			define('DISABLED', '');
+		}
 
 		$val_range = [BOOL => explode('|', BOOL), TERNARY => explode('|', TERNARY)];
 
