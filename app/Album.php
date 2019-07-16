@@ -7,6 +7,7 @@ namespace App;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -56,7 +57,7 @@ use Illuminate\Support\Facades\Hash;
  * @method static Builder|Album whereVisibleHidden($value)
  * @mixin Eloquent
  *
- * @property \Illuminate\Database\Eloquent\Collection|\App\User[] $shared_with
+ * @property Collection|User[] $shared_with
  */
 class Album extends Model
 {
@@ -358,39 +359,6 @@ class Album extends Model
 			$album->save();
 		}
 	}
-
-	/**
-	 * Given two list of albums, merge them without duplicates.
-	 * Current complexity is in O(n^2)
-	 * TODO: Move this function to another file.
-	 * FIXME: Is this function even used anywhere?  AlbumController has its
-	 * own merge()...
-	 *
-	 * @param Album[] $albums1
-	 * @param Album[] $albums2
-	 *
-	 * @return array
-	 */
-//	public static function merge(array $albums1, array $albums2)
-//	{
-//		$return = $albums1;
-//
-//		foreach ($albums2 as $album2_t) {
-//			$found = false;
-//			foreach ($albums1 as $album1_t) {
-//				if ($album1_t->id == $album2_t->id) {
-//					$found = true;
-//					break;
-//				}
-//			}
-//
-//			if (!$found) {
-//				$return[] = $album2_t;
-//			}
-//		}
-//
-//		return $return;
-//	}
 
 	/**
 	 * Before calling delete() to remove the album from the database

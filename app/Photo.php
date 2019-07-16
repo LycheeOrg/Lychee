@@ -431,7 +431,7 @@ class Photo extends Model
 	 */
 	public static function set_order(Builder $query)
 	{
-		return $query->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
+		return $query->orderBy(Configs::get_value('sorting_Photos_col'), Configs::get_value('sorting_Photos_order'))
 			->orderBy('photos.id', 'ASC');
 	}
 

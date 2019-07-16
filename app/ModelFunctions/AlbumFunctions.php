@@ -135,7 +135,7 @@ class AlbumFunctions
 	{
 		$photos = Photo::whereIn('album_id', $album_list)
 			->orderBy('star', 'DESC')
-			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
+			->orderBy(Configs::get_value('sorting_Photos_col'), Configs::get_value('sorting_Photos_order'))
 			->limit(3)->get();
 
 		// For each thumb
@@ -543,7 +543,7 @@ class AlbumFunctions
 			if ($id == 0) {
 				$return['albums'] = Album::where('owner_id', '=', 0)
 					->where('parent_id', '=', null)
-					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
+					->orderBy(Configs::get_value('sorting_Albums_col'), Configs::get_value('sorting_Albums_order'))->get();
 				$return['shared_albums'] = Album::with([
 					'owner',
 					'children',
@@ -551,7 +551,7 @@ class AlbumFunctions
 					->where('owner_id', '<>', 0)
 					->where('parent_id', '=', null)
 					->orderBy('owner_id', 'ASC')
-					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
+					->orderBy(Configs::get_value('sorting_Albums_col'), Configs::get_value('sorting_Albums_order'))
 					->get();
 			} else {
 				if ($user == null) {
@@ -561,14 +561,14 @@ class AlbumFunctions
 				} else {
 					$return['albums'] = Album::where('owner_id', '=', $user->id)
 						->where('parent_id', '=', null)
-						->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
+						->orderBy(Configs::get_value('sorting_Albums_col'), Configs::get_value('sorting_Albums_order'))
 						->get();
 					$return['shared_albums'] = $this->get_albums_user($user->id);
 				}
 			}
 		} else {
 			$return['albums'] = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->where('parent_id', '=', null)
-				->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
+				->orderBy(Configs::get_value('sorting_Albums_col'), Configs::get_value('sorting_Albums_order'))->get();
 		}
 
 		return $return;
@@ -604,7 +604,7 @@ class AlbumFunctions
 							});
 				})
 			->orderBy('owner_id', 'ASC')
-			->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
+			->orderBy(Configs::get_value('sorting_Albums_col'), Configs::get_value('sorting_Albums_order'))
 			->get();
 	}
 }

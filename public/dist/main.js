@@ -3748,11 +3748,11 @@ lychee.init = function () {
 
 			// Logged in
 
-			lychee.sortingPhotos = data.config.sortingPhotos || '';
-			lychee.sortingAlbums = data.config.sortingAlbums || '';
+			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || '';
+			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || '';
 			lychee.dropboxKey = data.config.dropboxKey || '';
 			lychee.location = data.config.location || '';
-			lychee.checkForUpdates = data.config.checkForUpdates || '1';
+			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates || '1';
 			lychee.lang = data.config.lang || '';
 			lychee.lang_available = data.config.lang_available || {};
 			lychee.layout = data.config.layout || '1';
@@ -3785,10 +3785,10 @@ lychee.init = function () {
 
 			// Logged out
 
-			lychee.sortingPhotos = data.config.sortingPhotos || '';
-			lychee.sortingAlbums = data.config.sortingAlbums || '';
+			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || '';
+			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || '';
 			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === '1';
-			lychee.checkForUpdates = data.config.checkForUpdates || '1';
+			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates || '1';
 			lychee.layout = data.config.layout || '1';
 			lychee.public_search = data.config.public_search && data.config.public_search === '1' || false;
 			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;

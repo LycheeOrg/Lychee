@@ -168,20 +168,20 @@ class DiagnosticsController extends Controller
 		if (!isset($settings['password']) || $settings['password'] == '') {
 			$errors[] = 'Error: Password empty or not set in database';
 		}
-		if (!isset($settings['sortingPhotos']) || $settings['sortingPhotos'] == '') {
+		if (!isset($settings['sorting_Photos']) || $settings['sorting_Photos'] == '') {
 			$errors[] = 'Error: Wrong property for sortingPhotos in database';
 		}
-		if (!isset($settings['sortingAlbums']) || $settings['sortingAlbums'] == '') {
+		if (!isset($settings['sorting_Albums']) || $settings['sorting_Albums'] == '') {
 			$errors[] = 'Error: Wrong property for sortingAlbums in database';
 		}
 		if (!isset($settings['imagick']) || $settings['imagick'] == '') {
 			$errors[] = 'Error: No or wrong property for imagick in database';
 		}
-		if (!isset($settings['skipDuplicates']) || $settings['skipDuplicates'] == '') {
-			$errors[] = 'Error: No or wrong property for skipDuplicates in database';
+		if (!isset($settings['skip_duplicates']) || $settings['skip_duplicates'] == '') {
+			$errors[] = 'Error: No or wrong property for skip_duplicates in database';
 		}
-		if (!isset($settings['checkForUpdates']) || ($settings['checkForUpdates'] != '0' && $settings['checkForUpdates'] != '1')) {
-			$errors[] = 'Error: No or wrong property for checkForUpdates in database';
+		if (!isset($settings['check_for_updates']) || ($settings['check_for_updates'] != '0' && $settings['check_for_updates'] != '1')) {
+			$errors[] = 'Error: No or wrong property for check_for_updates in database';
 		}
 
 		// Check dropboxKey
