@@ -175,8 +175,10 @@ class DiagnosticsController extends Controller
 		$this->configFunctions->sanity($errors);
 
 		// Check dropboxKey
-		if (!$settings['dropboxKey']) {
-			$errors[] = 'Warning: Dropbox import not working. No property for dropboxKey.';
+		if (!isset($settings['dropbox_key'])) {
+			$errors[] = 'Warning: Dropbox import not working. No property for dropbox_key.';
+		} elseif ($settings['dropbox_key'] == '') {
+			$errors[] = 'Warning: Dropbox import not working. dropbox_key is empty.';
 		}
 
 		// Check php.ini Settings
@@ -191,7 +193,7 @@ class DiagnosticsController extends Controller
 		if (!extension_loaded('imagick')) {
 			$errors[] = 'Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.';
 		} else {
-			if (!$settings['imagick']) {
+			if (!isset($settings['imagick'])) {
 				$errors[] = 'Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.';
 			}
 		}
