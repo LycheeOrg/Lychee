@@ -76,7 +76,7 @@ class Configs extends Model
 				break;
 			case INT:
 				// we make sure that we only have digits in the chosen value.
-				if (ctype_digit(strval($value))) {
+				if (!ctype_digit(strval($value))) {
 					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
 				}
 				break;
