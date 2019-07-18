@@ -23,6 +23,7 @@ class ConfigUpgrade extends Migration
 			Configs::where('key', '=', 'sortingAlbums_order')->update(['key' => 'sorting_Albums_order']);
 			Configs::where('key', '=', 'skipDuplicates')->update(['key' => 'skip_duplicates']);
 			Configs::where('key', '=', 'deleteImported')->update(['key' => 'delete_imported']);
+			Configs::where('key', '=', 'dropboxKey')->update(['key' => 'dropbox_key']);
 
 			define('INT', 'int');
 			define('STRING', 'string');
@@ -45,7 +46,7 @@ class ConfigUpgrade extends Migration
 			Configs::where('key', '=', 'sorting_Albums_col')->update(['type_range' => 'id|title|description|public|max_takestamp|min_takestamp']);
 			Configs::where('key', '=', 'sorting_Albums_order')->update(['type_range' => 'ASC|DESC']);
 			Configs::where('key', '=', 'imagick')->update(['type_range' => BOOL]);
-			Configs::where('key', '=', 'dropboxKey')->update(['type_range' => STRING]);
+			Configs::where('key', '=', 'dropbox_key')->update(['type_range' => STRING]);
 			Configs::where('key', '=', 'skip_duplicates')->update(['type_range' => BOOL]);
 			Configs::where('key', '=', 'lang')->update(['type_range' => DISABLED]);
 			Configs::where('key', '=', 'layout')->update(['type_range' => TERNARY]);
@@ -113,8 +114,9 @@ class ConfigUpgrade extends Migration
 			Configs::where('key', '=', 'sorting_Photos_order')->update(['key' => 'sortingPhotos_order']);
 			Configs::where('key', '=', 'sorting_Albums_col')->update(['key' => 'sortingAlbums_col']);
 			Configs::where('key', '=', 'sorting_Albums_order')->update(['key' => 'sortingAlbums_order']);
-			Configs::where('key', '=', 'skip_Duplicates')->update(['key' => 'skipDuplicates']);
-			Configs::where('key', '=', 'delete_Imported')->update(['key' => 'deleteImported']);
+			Configs::where('key', '=', 'skip_duplicates')->update(['key' => 'skipDuplicates']);
+			Configs::where('key', '=', 'delete_imported')->update(['key' => 'deleteImported']);
+			Configs::where('key', '=', 'dropbox_key')->update(['key' => 'dropboxKey']);
 
 			Schema::table('configs', function (Blueprint $table) {
 				$table->dropColumn(['type_range', 'description']);

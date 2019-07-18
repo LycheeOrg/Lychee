@@ -3750,7 +3750,7 @@ lychee.init = function () {
 
 			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || '';
 			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || '';
-			lychee.dropboxKey = data.config.dropboxKey || '';
+			lychee.dropboxKey = data.config.dropbox_key || data.config.dropboxKey || '';
 			lychee.location = data.config.location || '';
 			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates || '1';
 			lychee.lang = data.config.lang || '';
@@ -6332,7 +6332,7 @@ settings.save = function (params) {
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_UPDATE']);
 			view.full_settings.init();
 			// lychee.init();
-		} else lychee.error(null, params, data);
+		} else lychee.error('Check the Logs', params, data);
 	});
 };
 

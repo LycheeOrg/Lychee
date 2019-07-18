@@ -44,6 +44,64 @@ class Configs extends Model
 	private static $cache = null;
 
 	/**
+	 * Sanity check.
+	 *
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public function sanity($value)
+	{
+		if (!defined('INT')) {
+			define('INT', 'int');
+			define('STRING', 'string');
+			define('STRING_REQ', 'string_required');
+			define('BOOL', '0|1');
+			define('TERNARY', '0|1|2');
+			define('DISABLED', '');
+		}
+
+		$message = '';
+		$val_range = [BOOL => explode('|', BOOL), TERNARY => explode('|', TERNARY)];
+
+		switch ($this->type_range) {
+			case DISABLED:
+				break;
+			case STRING:
+				break;
+			case STRING_REQ:
+				if ($value == '') {
+					$message = 'Error: ' . $this->key . ' empty or not set in database';
+				}
+				break;
+			case INT:
+				// we make sure that we only have digits in the chosen value.
+				if (ctype_digit(strval($value))) {
+					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
+				}
+				break;
+			case BOOL:
+			case TERNARY:
+				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
+					$message = 'Error: Wrong property for ' . $this->key
+						. ' in database, expected ' . implode(' or ',
+							$val_range[$this->type_range]) . ', got ' . $value;
+				}
+				break;
+			default:
+				$values = explode('|', $this->type_range);
+				if (!in_array($value, $values)) {
+					$message = 'Error: Wrong property for ' . $this->key
+						. ' in database, expected ' . implode(' or ', $values)
+						. ', got ' . $value;
+				}
+				break;
+		}
+
+		return $message;
+	}
+
+	/**
 	 * Cache and return the current settings of this Lychee installation.
 	 *
 	 * @return array
@@ -138,7 +196,18 @@ class Configs extends Model
 			return true;
 		}
 
+		/**
+		 * Sanity check. :).
+		 */
+		$message = $config->sanity($value);
+		if ($message != '') {
+			Logs::error(__METHOD__, __LINE__, $message);
+
+			return false;
+		}
+
 		$config->value = $value;
+
 		try {
 			$config->save();
 		} catch (Exception $e) {
