@@ -161,32 +161,24 @@ class DiagnosticsController extends Controller
 		// Load settings
 		$settings = Configs::get();
 
-		// Settings
-		if (!isset($settings['username']) || $settings['username'] == '') {
-			$errors[] = 'Error: Username empty or not set in database';
-		}
-		if (!isset($settings['password']) || $settings['password'] == '') {
-			$errors[] = 'Error: Password empty or not set in database';
-		}
-		if (!isset($settings['sortingPhotos']) || $settings['sortingPhotos'] == '') {
-			$errors[] = 'Error: Wrong property for sortingPhotos in database';
-		}
-		if (!isset($settings['sortingAlbums']) || $settings['sortingAlbums'] == '') {
-			$errors[] = 'Error: Wrong property for sortingAlbums in database';
-		}
-		if (!isset($settings['imagick']) || $settings['imagick'] == '') {
-			$errors[] = 'Error: No or wrong property for imagick in database';
-		}
-		if (!isset($settings['skipDuplicates']) || $settings['skipDuplicates'] == '') {
-			$errors[] = 'Error: No or wrong property for skipDuplicates in database';
-		}
-		if (!isset($settings['checkForUpdates']) || ($settings['checkForUpdates'] != '0' && $settings['checkForUpdates'] != '1')) {
-			$errors[] = 'Error: No or wrong property for checkForUpdates in database';
+		$keys_checked = ['username', 'password', 'sorting_Photos', 'sorting_Albums', 'imagick', 'skip_duplicates', 'check_for_updates'];
+
+		foreach ($keys_checked as $key) {
+			if (!isset($settings[$key])) {
+				$errors[] = 'Error: ' . $key . ' not set in database';
+			}
 		}
 
+		/*
+		 * Sanity check over all the variables
+		 */
+		$this->configFunctions->sanity($errors);
+
 		// Check dropboxKey
-		if (!$settings['dropboxKey']) {
-			$errors[] = 'Warning: Dropbox import not working. No property for dropboxKey.';
+		if (!isset($settings['dropbox_key'])) {
+			$errors[] = 'Warning: Dropbox import not working. No property for dropbox_key.';
+		} elseif ($settings['dropbox_key'] == '') {
+			$errors[] = 'Warning: Dropbox import not working. dropbox_key is empty.';
 		}
 
 		// Check php.ini Settings
@@ -201,7 +193,7 @@ class DiagnosticsController extends Controller
 		if (!extension_loaded('imagick')) {
 			$errors[] = 'Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.';
 		} else {
-			if (!$settings['imagick']) {
+			if (!isset($settings['imagick'])) {
 				$errors[] = 'Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.';
 			}
 		}

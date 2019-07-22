@@ -79,6 +79,7 @@ Route::post('/api/Settings::setCSS', 'SettingsController@setCSS')->middleware('a
 Route::post('/api/Settings::getAll', 'SettingsController@getAll')->middleware('admin');
 Route::post('/api/Settings::saveAll', 'SettingsController@saveAll')->middleware('admin');
 Route::post('/api/Settings::setOverlayType', 'SettingsController@setImageOverlayType')->middleware('admin');
+Route::post('/api/Settings::setDropboxKey', 'SettingsController@setDropboxKey')->middleware('admin');
 
 Route::post('/api/Import::url', 'ImportController@url')->middleware('upload');
 Route::post('/api/Import::server', 'ImportController@server')->middleware('admin');

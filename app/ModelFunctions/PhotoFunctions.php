@@ -266,7 +266,7 @@ class PhotoFunctions
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
 
 					return Response::error('Could not copy photo to uploads!');
-				} elseif (Configs::get_value('deleteImported') === '1') {
+				} elseif (Configs::get_value('delete_imported') === '1') {
 					@unlink($tmp_name);
 				}
 			} else {
@@ -279,7 +279,7 @@ class PhotoFunctions
 		} else {
 			// Photo already exists
 			// Check if the user wants to skip duplicates
-			if (Configs::get()['skipDuplicates'] === '1') {
+			if (Configs::get()['skip_duplicates'] === '1') {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
 				return Response::warning('This photo has been skipped because it\'s already in your library.');
