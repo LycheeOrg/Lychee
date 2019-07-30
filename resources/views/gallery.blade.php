@@ -59,8 +59,11 @@
 
         <a class="header__title"></a>
 
-        <a class="button button--eye" id="button_share_album" title="{{ $locale['SHARE_ALBUM'] }}">
+        <a class="button button--eye" id="button_visibility_album" title="{{ $locale['VISIBILITY_ALBUM'] }}">
             <svg class="iconic iconic--eye"><use xlink:href="#eye"></use></svg>
+        </a>
+        <a class="button button--share" id="button_share_album" title="{{ $locale['SHARE_ALBUM'] }}">
+            <svg class="iconic ionicons"><use xlink:href="#share-ion"></use></svg>
         </a>
         <a class="button" id="button_archive" title="{{ $locale['DOWNLOAD_ALBUM'] }}">
             <svg class="iconic"><use xlink:href="#cloud-download"></use></svg>
@@ -97,8 +100,11 @@
         <a class="button button--star" id="button_star" title="{{ $locale['STAR_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#star"></use></svg>
         </a>
-        <a class="button button--eye" id="button_share" title="{{ $locale['SHARE_PHOTO'] }}">
+        <a class="button button--eye" id="button_visibility" title="{{ $locale['VISIBILITY_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#eye"></use></svg>
+        </a>
+        <a class="button button--share" id="button_share" title="{{ $locale['SHARE_PHOTO'] }}">
+            <svg class="iconic ionicons"><use xlink:href="#share-ion"></use></svg>
         </a>
         <a class="button button--info" id="button_info" title="{{ $locale['ABOUT_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#info"></use></svg>

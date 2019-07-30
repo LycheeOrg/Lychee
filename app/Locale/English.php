@@ -48,6 +48,8 @@ final class English implements LangInterface
 			'MAKE_PUBLIC' => 'Make Public',
 			'SHARE_ALBUM' => 'Share Album',
 			'SHARE_PHOTO' => 'Share Photo',
+			'VISIBILITY_ALBUM' => 'Album Visibility',
+			'VISIBILITY_PHOTO' => 'Photo Visibility',
 			'DOWNLOAD_ALBUM' => 'Download Album',
 			'ABOUT_ALBUM' => 'About Album',
 			'DELETE_ALBUM' => 'Delete Album',
@@ -132,8 +134,9 @@ final class English implements LangInterface
 			'ALBUM_SHR_YES' => 'YES',
 			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Public',
+			'ALBUM_PUBLIC_EXPL' => 'Album can be viewed by everybody.',
 			'ALBUM_FULL' => 'Full size',
-			'ALBUM_FULL_EXPL' => 'Full size pictures are available',
+			'ALBUM_FULL_EXPL' => 'Full-size pictures are available.',
 			'ALBUM_HIDDEN' => 'Hidden',
 			'ALBUM_HIDDEN_EXPL' => 'Only people with the direct link can view this album.',
 			'ALBUM_DOWNLOADABLE' => 'Downloadable',
@@ -254,7 +257,7 @@ final class English implements LangInterface
 			'PASSWORD_CHANGE' => 'Change Login',
 
 			'EDIT_SHARING_TITLE' => 'Edit Sharing',
-			'EDIT_SHARING_TEXT' => 'The sharing-properties of this album will be changed to the following:',
+			'EDIT_SHARING_TEXT' => 'The sharing properties of this album will be changed to the following:',
 			'SHARE_ALBUM_TEXT' => 'This album will be shared with the following properties:',
 
 			'SORT_ALBUM_BY_1' => 'Sort albums by',
