@@ -249,7 +249,7 @@ class AlbumController extends Controller
 	{
 		$request->validate([
 			'albumID' => 'integer|required',
-			'password' => 'string|nullable|max:100',
+			'public' => 'integer|required',
 			'visible' => 'integer|required',
 			'downloadable' => 'integer|required',
 			'full_photo' => 'integer|required',
