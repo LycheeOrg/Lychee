@@ -583,6 +583,21 @@ class PhotoController extends Controller
 
 			// determine the file based on given size
 			switch ($request['kind']) {
+				case 'FULL':
+					$url = Storage::path('big/' . $photo->url);
+					$kind = '';
+					break;
+				case 'MEDIUM2X':
+					if (strpos($photo->type, 'video') !== 0) {
+						$fileName = $photo->url;
+					} else {
+						$fileName = $photo->thumbUrl;
+					}
+					$fileName2x = explode('.', $fileName);
+					$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
+					$url = Storage::path('medium/' . $fileName2x);
+					$kind = '-' . $photo->medium2x;
+					break;
 				case 'MEDIUM':
 					if (strpos($photo->type, 'video') !== 0) {
 						$url = Storage::path('medium/' . $photo->url);
@@ -590,6 +605,17 @@ class PhotoController extends Controller
 						$url = Storage::path('medium/' . $photo->thumbUrl);
 					}
 					$kind = '-' . $photo->medium;
+					break;
+				case 'SMALL2X':
+					if (strpos($photo->type, 'video') !== 0) {
+						$fileName = $photo->url;
+					} else {
+						$fileName = $photo->thumbUrl;
+					}
+					$fileName2x = explode('.', $fileName);
+					$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
+					$url = Storage::path('small/' . $fileName2x);
+					$kind = '-' . $photo->small2x;
 					break;
 				case 'SMALL':
 					if (strpos($photo->type, 'video') !== 0) {
@@ -599,10 +625,20 @@ class PhotoController extends Controller
 					}
 					$kind = '-' . $photo->small;
 					break;
-				default:
-					$url = Storage::path('big/' . $photo->url);
-					$kind = '';
+				case 'THUMB2X':
+					$fileName2x = explode('.', $photo->thumbUrl);
+					$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
+					$url = Storage::path('thumb/' . $fileName2x);
+					$kind = '-400x400';
 					break;
+				case 'THUMB':
+					$url = Storage::path('thumb/' . $photo->thumbUrl);
+					$kind = '-200x200';
+					break;
+				default:
+					Logs::error(__METHOD__, __LINE__, 'Invalid kind ' . $request['kind']);
+
+					return null;
 			}
 
 			// Check the file actually exists
