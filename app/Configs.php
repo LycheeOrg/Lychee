@@ -65,9 +65,8 @@ class Configs extends Model
 		$val_range = [BOOL => explode('|', BOOL), TERNARY => explode('|', TERNARY)];
 
 		switch ($this->type_range) {
-			case DISABLED:
-				break;
 			case STRING:
+			case DISABLED:
 				break;
 			case STRING_REQ:
 				if ($value == '') {

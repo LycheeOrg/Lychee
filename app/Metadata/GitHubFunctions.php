@@ -243,7 +243,7 @@ class GitHubFunctions
 	public function checkUpdates(&$return)
 	{
 		// add a setting to do this check only once per day ?
-		if (Configs::get_value('checkForUpdates', '0') == '1') {
+		if (Configs::get_value('check_for_updates', '0') == '1') {
 			$json = $this->get_json('https://lycheeorg.github.io/update.json');
 			if ($json != false) {
 				$return['update_json'] = $json->lychee->version;
