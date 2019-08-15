@@ -145,6 +145,9 @@ class AlbumController extends Controller
 				$full_photo = $album->full_photo_visible();
 				$return['albums'] = $this->albumFunctions->get_albums($album);
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
+				foreach ($return['albums'] as &$alb) {
+					unset($alb['thumbIDs']);
+				}
 				unset($return['thumbIDs']);
 				break;
 		}
