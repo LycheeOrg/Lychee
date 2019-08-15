@@ -133,7 +133,19 @@ class AlbumFunctions
 	 */
 	public function gen_thumbs($return, $album_list)
 	{
+		$childThumbIDs = [];
+
+		// As an optimization, we start by extracting the thumbs from the
+		// children of this album (which had their thumbs calculated already).
+		if ($return['albums'] !== null) {
+			foreach($return['albums'] as &$album) {
+				$childThumbIDs = array_merge($childThumbIDs, $album['thumbIDs']);
+				unset($album['thumbIDs']);
+			}
+		}
+
 		$photos = Photo::whereIn('album_id', $album_list)
+			->orWhereIn('id', $childThumbIDs)
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sorting_Photos_col'), Configs::get_value('sorting_Photos_order'))
 			->limit(3)->get();
@@ -157,6 +169,7 @@ class AlbumFunctions
 				}
 			}
 			$return['types'][$k] = $photo->type;
+			$return['thumbIDs'][$k] = $photo->id;
 			$k++;
 		}
 
@@ -243,8 +256,9 @@ class AlbumFunctions
 
 				if ($this->readAccessFunctions->album($album_model->id) === 1) {
 					$album['albums'] = $this->get_albums($album_model);
-					$album = $this->gen_thumbs($album, $this->get_sub_albums($album_model, [$album_model->id]));
+					$album = $this->gen_thumbs($album, [$album_model->id]);
 				}
+				unset($album['thumbIDs']);
 
 				// Add to return
 				$return[] = $album;
@@ -443,7 +457,7 @@ class AlbumFunctions
 
 				if ($haveAccess === 1) {
 					$album['albums'] = $this->get_albums($subAlbum);
-					$album = $this->gen_thumbs($album, $this->get_sub_albums($subAlbum, [$subAlbum->id]));
+					$album = $this->gen_thumbs($album, [$subAlbum->id]);
 				}
 
 				$subAlbums[] = $album;

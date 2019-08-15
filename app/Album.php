@@ -198,6 +198,10 @@ class Album extends Model
 		$album['thumbs2x'] = array();
 		$album['types'] = array();
 
+		// For server use only; will be unset before sending the response
+		// to the front end.
+		$album['thumbIDs'] = array();
+
 		return $album;
 	}
 

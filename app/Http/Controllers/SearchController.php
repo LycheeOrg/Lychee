@@ -156,8 +156,9 @@ class SearchController extends Controller
 				$album = $album_model->prepareData();
 				if ($this->readAccessFunctions->album($album_model->id) === 1) {
 					$album['albums'] = $this->albumFunctions->get_albums($album_model);
-					$album = $this->albumFunctions->gen_thumbs($album, $this->albumFunctions->get_sub_albums($album_model, [$album_model->id]));
+					$album = $this->albumFunctions->gen_thumbs($album, [$album_model->id]);
 				}
+				unset($album['thumbIDs']);
 				$return['albums'][$i] = $album;
 				$i++;
 			}
