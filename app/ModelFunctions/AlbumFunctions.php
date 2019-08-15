@@ -138,7 +138,7 @@ class AlbumFunctions
 		// As an optimization, we start by extracting the thumbs from the
 		// children of this album (which had their thumbs calculated already).
 		if ($return['albums'] !== null) {
-			foreach($return['albums'] as &$album) {
+			foreach ($return['albums'] as &$album) {
 				$childThumbIDs = array_merge($childThumbIDs, $album['thumbIDs']);
 				unset($album['thumbIDs']);
 			}
