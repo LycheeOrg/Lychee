@@ -137,6 +137,7 @@ final class Italian implements LangInterface
 			'ALBUM_SHR_YES' => 'SI',
 			'ALBUM_SHR_NO' => 'No',
 			'ALBUM_PUBLIC' => 'Pubblico',
+			'ALBUM_PUBLIC_EXPL' => 'Album can be viewed by others, subject to the restrictions below.',
 			'ALBUM_FULL' => 'Original',
 			'ALBUM_FULL_EXPL' => 'Full-resolution pictures are available.',
 			'ALBUM_HIDDEN' => 'Nascosto',
