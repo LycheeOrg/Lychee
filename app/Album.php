@@ -106,7 +106,8 @@ class Album extends Model
 	 */
 	public function children()
 	{
-		return $this->hasMany('App\Album', 'parent_id', 'id');
+		return $this->hasMany('App\Album', 'parent_id', 'id')
+			->orderBy(Configs::get_value('sorting_Albums_col'), Configs::get_value('sorting_Albums_order'));
 	}
 
 	/**
