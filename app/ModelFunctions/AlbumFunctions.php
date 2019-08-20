@@ -147,8 +147,7 @@ class AlbumFunctions
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sorting_Photos_col'), Configs::get_value('sorting_Photos_order'))
 			->limit(3)
-			->get()
-			->sortBy(Configs::get_value('sorting_Photos_col'), SORT_NATURAL, (Configs::get_value('sorting_Photos_order') === 'DESC'));
+			->get();
 
 		// For each thumb
 		$k = 0;
