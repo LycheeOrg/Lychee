@@ -727,7 +727,10 @@ class AlbumController extends Controller
 					}
 
 					$files = [];
-					$photos = $photos_sql->get();
+					$photos = $photos_sql
+						->get()
+						->sortBy(Configs::get_value('sorting_Photos_col'), SORT_NATURAL, (Configs::get_value('sorting_Photos_order') === 'DESC'));
+
 					foreach ($photos as $photo) {
 						// For photos in public smart albums, skip the ones
 						// that are not downloadable based on their actual

@@ -186,7 +186,9 @@ class AlbumFunctions
 		$previousPhotoID = '';
 		$return_photos = array();
 		$photo_counter = 0;
-		$photos = $photos_sql->with('album')->get();
+		$photos = $photos_sql->with('album')
+			->get()
+			->sortBy(Configs::get_value('sorting_Photos_col'), SORT_NATURAL, (Configs::get_value('sorting_Photos_order') === 'DESC'));
 
 		/*
 		 * @var Photo
