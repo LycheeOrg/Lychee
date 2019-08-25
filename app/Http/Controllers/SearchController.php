@@ -126,21 +126,25 @@ class SearchController extends Controller
 		if ($toplevel['albums'] !== null) {
 			foreach ($toplevel['albums'] as $album) {
 				$albumIDs[] = $album->id;
-				if ($this->readAccessFunctions->album($album->id) === 1) {
-					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs, true);
+				if ($this->readAccessFunctions->album($album) === 1) {
+					$this->albumFunctions->get_sub_albums($album, $albumIDs, true);
 				}
 			}
 		}
 		if ($toplevel['shared_albums'] !== null) {
 			foreach ($toplevel['shared_albums'] as $album) {
 				$albumIDs[] = $album->id;
-				if ($this->readAccessFunctions->album($album->id) === 1) {
-					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs, true);
+				if ($this->readAccessFunctions->album($album) === 1) {
+					$this->albumFunctions->get_sub_albums($album, $albumIDs, true);
 				}
 			}
 		}
 
-		$query = Album::whereIn('id', $albumIDs);
+		$query = Album::with([
+			'owner',
+			'children',
+		])
+			->whereIn('id', $albumIDs);
 		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
@@ -154,9 +158,16 @@ class SearchController extends Controller
 			$i = 0;
 			foreach ($albums as $album_model) {
 				$album = $album_model->prepareData();
-				if ($this->readAccessFunctions->album($album_model->id) === 1) {
-					$album['albums'] = $this->albumFunctions->get_albums($album_model);
-					$album = $this->albumFunctions->gen_thumbs($album, [$album_model->id]);
+				$username = null;
+				if ($this->sessionFunctions->is_logged_in()) {
+					$album['owner'] = $username = $album_model->owner->username;
+				}
+				if ($this->readAccessFunctions->album($album_model) === 1) {
+					// We need 'albums' just for the displaying of the
+					// subalbum_badge in the front end, and for that we don't
+					// need more than one level down.
+					$album['albums'] = $this->albumFunctions->get_albums($album_model, $username, 1);
+					$this->albumFunctions->gen_thumbs($album, [$album_model->id]);
 				}
 				unset($album['thumbIDs']);
 				$return['albums'][$i] = $album;

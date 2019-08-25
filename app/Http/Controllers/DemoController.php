@@ -36,8 +36,8 @@ class DemoController extends Controller
 		$sessionFunctions = new SessionFunctions();
 		$githubFunctions = new GitHubFunctions();
 		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
-		$symLinkFunction = new SymLinkFunctions($sessionFunctions);
-		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions, $symLinkFunction);
+		$symLinkFunctions = new SymLinkFunctions($sessionFunctions);
+		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions, $symLinkFunctions);
 
 		/**
 		 * Session::init.
@@ -71,27 +71,41 @@ class DemoController extends Controller
 		$return_album_list['kind'] = 'albumID';
 		$return_album_list['array'] = array();
 
-		$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->get();
+		$albums = Album::with('children')
+			->where('public', '=', '1')
+			->where('visible_hidden', '=', '1')
+			->get();
 		foreach ($albums as $album) {
 			/**
 			 * Copy paste from Album::get().
 			 */
-			$return_album_json = array();
-			$return_album_json['albums'] = array();
 			// Get photos
 			// Get album information
 			$return_album_json = $album->prepareData();
-			$return_album_json['albums'] = $albumFunctions->get_albums($album);
+			$username = null;
+			if ($this->sessionFunctions->is_logged_in()) {
+				$return_album_json['owner'] = $username = $album->owner->username;
+			}
+			$full_photo = $album->full_photo_visible();
+			$return_album_json['albums'] = $albumFunctions->get_albums($album, $username, 2);
 			$photos_sql = Photo::set_order(Photo::where('album_id', '=', $album->id));
+			foreach ($return_album_json['albums'] as &$alb) {
+				unset($alb['thumbIDs']);
+			}
+			unset($return_album_json['thumbIDs']);
 
 			$previousPhotoID = '';
 			$return_album_json['photos'] = array();
 			$photo_counter = 0;
 			/** @var Photo[] $photos */
-			$photos = $photos_sql->get();
+			$photos = $photos_sql->with('album')->get();
 			foreach ($photos as $photo_model) {
 				// Turn data from the database into a front-end friendly format
-				$photo = $photo_model->prepareData();
+				$photo = $photo_model->prepareData($album);
+				$this->symLinkFunctions->getUrl($photo_model, $photo);
+				if (!$this->sessionFunctions->is_current_user($photo_model->owner_id) && !$full_photo) {
+					$photo_model->downgrade($photo);
+				}
 
 				// Set previous and next photoID for navigation purposes
 				$photo['previousPhoto'] = $previousPhotoID;
@@ -109,10 +123,10 @@ class DemoController extends Controller
 				$photo_counter++;
 			}
 
-			if ($photos_sql->count() === 0) {
+			if (count($return_album_json['photos']) === 0) {
 				// Album empty
 				$return_album_json['photos'] = false;
-			} else {
+			} elseif (Configs::get_value('photos_wraparound', '1') === '1') {
 				// Enable next and previous for the first and last photo
 				$lastElement = end($return_album_json['photos']);
 				$lastElementId = $lastElement['id'];
@@ -125,7 +139,7 @@ class DemoController extends Controller
 				}
 			}
 			$return_album_json['id'] = $album->id;
-			$return_album_json['num'] = $photos_sql->count();
+			$return_album_json['num'] = count($return_album_json['photos']);
 
 			$return_album = array();
 			$return_album['id'] = $album->id;
@@ -150,7 +164,7 @@ class DemoController extends Controller
 			/** @var Photo $photo */
 			foreach ($album->photos as $photo) {
 				$return_photo = array();
-				$return_photo_json = $photo->prepareData();
+				$return_photo_json = $photo->prepareData($album);
 				$return_photo_json['original_album'] = $return_photo_json['album'];
 				$return_photo_json['album'] = $album->id;
 				$return_photo['id'] = $photo->id;

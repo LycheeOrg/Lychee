@@ -192,7 +192,7 @@ class Album extends Model
 		$album['license'] = $this->license == 'none'
 			? Configs::get_value('default_license') : $this->license;
 
-		$album['owner'] = $this->owner->username;
+		// $album['owner'] will be set by the caller as needed.
 
 		$album['thumbs'] = array();
 		$album['thumbs2x'] = array();
