@@ -727,9 +727,9 @@ class AlbumController extends Controller
 					}
 
 					$files = [];
-					$photos = $photos_sql
-						->get()
-						->sortBy(Configs::get_value('sorting_Photos_col'), SORT_NATURAL, (Configs::get_value('sorting_Photos_order') === 'DESC'));
+					$photos = $photos_sql->get();
+					// We don't bother with additional sorting here; who
+					// cares in what order photos are zipped?
 
 					foreach ($photos as $photo) {
 						// For photos in public smart albums, skip the ones

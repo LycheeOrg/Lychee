@@ -127,7 +127,7 @@ class SearchController extends Controller
 			foreach ($toplevel['albums'] as $album) {
 				$albumIDs[] = $album->id;
 				if ($this->readAccessFunctions->album($album) === 1) {
-					$this->albumFunctions->get_sub_albums($album, $albumIDs, true);
+					$this->albumFunctions->get_sub_albums($albumIDs, $album, true);
 				}
 			}
 		}
@@ -135,7 +135,7 @@ class SearchController extends Controller
 			foreach ($toplevel['shared_albums'] as $album) {
 				$albumIDs[] = $album->id;
 				if ($this->readAccessFunctions->album($album) === 1) {
-					$this->albumFunctions->get_sub_albums($album, $albumIDs, true);
+					$this->albumFunctions->get_sub_albums($albumIDs, $album, true);
 				}
 			}
 		}
