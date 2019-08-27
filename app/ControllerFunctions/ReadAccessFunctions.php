@@ -30,39 +30,41 @@ class ReadAccessFunctions
 	 * if 2 : album is private
 	 * if 3 : album is password protected and require user input.
 	 *
-	 * @param $albumID
+	 * @param mixed $album: Album object or Album id
 	 * @param bool obeyHidden
 	 *
 	 * @return int
 	 */
-	public function album($albumID, bool $obeyHidden = false)
+	public function album($album, bool $obeyHidden = false)
 	{
-		if (in_array($albumID, array(
-			'f',
-			's',
-			'r',
-			'0',
-		))) {
-			if ($this->sessionFunctions->is_logged_in()) {
-				$id = $this->sessionFunctions->id();
+		if (!is_object($album)) {
+			if (in_array($album, array(
+				'f',
+				's',
+				'r',
+				'0',
+			))) {
+				if ($this->sessionFunctions->is_logged_in()) {
+					$id = $this->sessionFunctions->id();
 
-				$user = User::find($id);
-				if ($id == 0 || $user->upload) {
+					$user = User::find($id);
+					if ($id == 0 || $user->upload) {
+						return 1; // access granted
+					}
+				}
+
+				if (($album === 'r' && Configs::get_value('public_recent', '0') === '1') ||
+					($album === 'f' && Configs::get_value('public_starred', '0') === '1')) {
 					return 1; // access granted
+				} else {
+					return 2; // Warning: Album private!
+				}
+			} else {
+				$album = Album::find($album);
+				if ($album == null) {
+					return 0;  // Does not exist
 				}
 			}
-
-			if (($albumID === 'r' && Configs::get_value('public_recent', '0') === '1') ||
-				($albumID === 'f' && Configs::get_value('public_starred', '0') === '1')) {
-				return 1; // access granted
-			} else {
-				return 2; // Warning: Album private!
-			}
-		}
-
-		$album = Album::find($albumID);
-		if ($album == null) {
-			return 0;  // Does not exist
 		}
 
 		if ($this->sessionFunctions->is_current_user($album->owner_id)) {
@@ -86,7 +88,7 @@ class ReadAccessFunctions
 			return 1;  // access granted
 		}
 
-		if ($this->sessionFunctions->has_visible_album($albumID)) {
+		if ($this->sessionFunctions->has_visible_album($album->id)) {
 			return 1;  // access granted
 		}
 

@@ -127,10 +127,7 @@ class AlbumController extends Controller
 				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
-				$album = Album::with([
-					'owner',
-					'children',
-				])->find($request['albumID']);
+				$album = Album::with('children')->find($request['albumID']);
 				if ($album === null) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
 
@@ -138,13 +135,22 @@ class AlbumController extends Controller
 				}
 				$return = $album->prepareData();
 				// we just require is_logged_in for this one.
-				if (!$this->sessionFunctions->is_logged_in()) {
-					unset($return['owner']);
+				$username = null;
+				if ($this->sessionFunctions->is_logged_in()) {
+					$return['owner'] = $username = $album->owner->username;
 				}
 
 				$full_photo = $album->full_photo_visible();
-				$return['albums'] = $this->albumFunctions->get_albums($album);
+				// To speed things up, we limit subalbum data to at most two
+				// levels down.  The second level is needed only for the
+				// displaying of the subalbum_badge for the subalbums in the
+				// front end.
+				$return['albums'] = $this->albumFunctions->get_albums($album, $username, 2);
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
+				foreach ($return['albums'] as &$alb) {
+					unset($alb['thumbIDs']);
+				}
+				unset($return['thumbIDs']);
 				break;
 		}
 
@@ -769,7 +775,7 @@ class AlbumController extends Controller
 					if ($album !== null) {
 						$subDirs = [];
 						foreach ($album->children as $subAlbum) {
-							if ($this->readAccessFunctions->album($subAlbum->id, true) === 1) {
+							if ($this->readAccessFunctions->album($subAlbum, true) === 1) {
 								$subSql = Photo::set_order(Photo::where('album_id', '=', $subAlbum->id));
 								$compress_album($subSql, $subAlbum->title, $subDirs, $dir, $subAlbum);
 							}
