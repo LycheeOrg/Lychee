@@ -1145,7 +1145,7 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 		header.dom('.header__title').html(lychee.escapeHTML(data.title));
 
 		// Render HTML
-		imageview.html(build.imageview(data, true));
+		imageview.html(build.imageview(data, true).html);
 		imageview.find('.arrow_wrapper').remove();
 		imageview.addClass('fadeIn').show();
 		photo.onresize();
@@ -1273,7 +1273,7 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 
-		html += lychee.html(_templateObject6, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' ? 'badge--visible' : '', data.hidden === '1' ? 'badge--not--hidden' : 'badge--hidden', build.iconic('eye'), data.unsorted === '1' ? 'badge--visible' : '', build.iconic('list'), data.recent === '1' ? 'badge--visible badge--list' : '', build.iconic('clock'), data.password === '1' ? 'badge--visible' : '', build.iconic('lock-locked'));
+		html += lychee.html(_templateObject6, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' ? 'badge--visible' : '', data.visible === '1' ? 'badge--not--hidden' : 'badge--hidden', build.iconic('eye'), data.unsorted === '1' ? 'badge--visible' : '', build.iconic('list'), data.recent === '1' ? 'badge--visible badge--list' : '', build.iconic('clock'), data.password === '1' ? 'badge--visible' : '', build.iconic('lock-locked'));
 	}
 
 	if (data.albums && data.albums.length > 0) {
@@ -1368,7 +1368,7 @@ build.photo = function (data) {
 
 	if (album.isUploadable()) {
 
-		html += lychee.html(_templateObject11, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' && album.json.public !== '1' ? 'badge--visible' : '', build.iconic('eye'));
+		html += lychee.html(_templateObject11, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' && album.json.public !== '1' ? 'badge--visible badge--hidden' : '', build.iconic('eye'));
 	}
 
 	html += "</div>";
@@ -1541,12 +1541,18 @@ header.bind = function () {
 		if (visible.photo()) contextMenu.photoTitle(album.getID(), photo.getID(), e);else contextMenu.albumTitle(album.getID(), e);
 	});
 
+	header.dom('#button_visibility').on(eventName, function (e) {
+		photo.setPublic(photo.getID(), e);
+	});
 	header.dom('#button_share').on(eventName, function (e) {
-		if (photo.json.public === '1' || photo.json.public === '2' || !album.isUploadable()) contextMenu.sharePhoto(photo.getID(), e);else photo.setPublic(photo.getID(), e);
+		contextMenu.sharePhoto(photo.getID(), e);
 	});
 
+	header.dom('#button_visibility_album').on(eventName, function (e) {
+		album.setPublic(album.getID(), e);
+	});
 	header.dom('#button_share_album').on(eventName, function (e) {
-		if (album.json.public === '1' || !album.isUploadable()) contextMenu.shareAlbum(album.getID(), e);else album.setPublic(album.getID(), true, e);
+		contextMenu.shareAlbum(album.getID(), e);
 	});
 
 	header.dom('#button_signin').on(eventName, lychee.loginDialog);
@@ -1695,19 +1701,17 @@ header.setMode = function (mode) {
 			}
 
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
-				$('#button_info_album, #button_trash_album, #button_share_album, #button_move_album').hide();
+				$('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album').hide();
 				$('.button_add, .header__divider', '.header__toolbar--album').show();
 			} else if (albumID === '0') {
-				$('#button_info_album, #button_share_album, #button_move_album').hide();
+				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
 				$('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album').show();
 			} else {
-				$('#button_info_album, #button_share_album').show();
+				$('#button_info_album, #button_visibility_album').show();
 				if (album.isUploadable()) {
-					$('#button_trash_album, #button_move_album, .button_add, .header__divider', '.header__toolbar--album').show();
-					$('#button_share_album').removeClass('button--share').addClass('button--eye').find('use').attr('xlink:href', '#eye');
+					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
 				} else {
-					$('#button_trash_album, #button_move_album, .button_add, .header__divider', '.header__toolbar--album').hide();
-					$('#button_share_album').removeClass('button--eye').addClass('button--share').find('use').attr('xlink:href', '#share');
+					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').hide();
 				}
 			}
 
@@ -1719,11 +1723,9 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
 			if (album.isUploadable()) {
-				$('#button_trash, #button_move, #button_star').show();
-				$('#button_share').removeClass('button--share').addClass('button--eye').find('use').attr('xlink:href', '#eye');
+				$('#button_trash, #button_move, #button_visibility, #button_star').show();
 			} else {
-				$('#button_trash, #button_move, #button_star').hide();
-				$('#button_share').removeClass('button--eye').addClass('button--share').find('use').attr('xlink:href', '#share');
+				$('#button_trash, #button_move, #button_visibility, #button_star').hide();
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
@@ -1950,7 +1952,7 @@ sidebar.createStructure.photo = function (data) {
 			_public = lychee.locale['PHOTO_SHR_NO'];
 			break;
 		case '1':
-			_public = lychee.locale['PHOTO_SHR_YES'];
+			_public = lychee.locale['PHOTO_SHR_PHT'];
 			break;
 		case '2':
 			_public = lychee.locale['PHOTO_SHR_ALB'];
@@ -2306,7 +2308,7 @@ lychee.locale = {
 	'COPY_ALL_TO': 'Copy All to...',
 	'DELETE': 'Delete',
 	'DELETE_ALL': 'Delete All',
-	'DOWNLOAD': 'Download original size',
+	'DOWNLOAD': 'Download',
 	'DOWNLOAD_MEDIUM': 'Download medium size',
 	'DOWNLOAD_SMALL': 'Download small size',
 	'UPLOAD_PHOTO': 'Upload Photo',
@@ -2335,6 +2337,7 @@ lychee.locale = {
 	'FULL_PHOTO': 'Full Photo',
 	'ABOUT_PHOTO': 'About Photo',
 	'DIRECT_LINK': 'Direct Link',
+	'DIRECT_LINKS': 'Direct Links',
 
 	'ALBUM_ABOUT': 'About',
 	'ALBUM_BASICS': 'Basics',
@@ -2355,6 +2358,7 @@ lychee.locale = {
 	'ALBUM_SHR_YES': 'YES',
 	'ALBUM_SHR_NO': 'No',
 	'ALBUM_PUBLIC': 'Public',
+	'ALBUM_PUBLIC_EXPL': 'Album can be viewed by others, subject to the restrictions below.',
 	'ALBUM_FULL': 'Full size (v4 only)',
 	'ALBUM_FULL_EXPL': 'Full size pictures are available',
 	'ALBUM_HIDDEN': 'Hidden',
@@ -2436,6 +2440,20 @@ lychee.locale = {
 	'PHOTOS_NEW_TITLE_2': 'selected photos:',
 	'PHOTO_MAKE_PRIVATE_ALBUM': 'This photo is located in a public album. To make this photo private or public, edit the visibility of the associated album.',
 	'PHOTO_SHOW_ALBUM': 'Show Album',
+	'PHOTO_PUBLIC': 'Public',
+	'PHOTO_PUBLIC_EXPL': 'Photo can be viewed by others, subject to the restrictions below.',
+	'PHOTO_FULL': 'Original',
+	'PHOTO_FULL_EXPL': 'Full-resolution picture is available.',
+	'PHOTO_HIDDEN': 'Hidden',
+	'PHOTO_HIDDEN_EXPL': 'Only people with the direct link can view this photo.',
+	'PHOTO_DOWNLOADABLE': 'Downloadable',
+	'PHOTO_DOWNLOADABLE_EXPL': 'Visitors of your gallery can download this photo.',
+	'PHOTO_PASSWORD_PROT': 'Password protected',
+	'PHOTO_PASSWORD_PROT_EXPL': 'Photo only accessible with a valid password.',
+	'PHOTO_EDIT_SHARING_TEXT': 'The sharing properties of this photo will be changed to the following:',
+	'PHOTO_NO_EDIT_SHARING_TEXT': 'Because this photo is located in a public album, it inherits that album\'s visibility settings.  Its current visibility is shown below for informational purposes only.',
+	'PHOTO_EDIT_GLOBAL_SHARING_TEXT': 'The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.',
+	'PHOTO_SHARING_CONFIRM': 'Save',
 
 	'LOADING': 'Loading',
 	'ERROR': 'Error',
@@ -2484,6 +2502,7 @@ lychee.locale = {
 	'EDIT_SHARING_TITLE': 'Edit Sharing',
 	'EDIT_SHARING_TEXT': 'The sharing-properties of this album will be changed to the following:',
 	'SHARE_ALBUM_TEXT': 'This album will be shared with the following properties:',
+	'ALBUM_SHARING_CONFIRM': 'Save',
 
 	'SORT_ALBUM_BY_1': 'Sort albums by',
 	'SORT_ALBUM_BY_2': 'in an',
@@ -2569,5 +2588,16 @@ lychee.locale = {
 	'UPLOAD_IMPORT_SERVER_EMPT': 'Could not start import because the folder was empty!',
 
 	'ABOUT_SUBTITLE': 'Self-hosted photo-management done right',
-	'ABOUT_DESCRIPTION': 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.'
+	'ABOUT_DESCRIPTION': 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
+
+	'URL_COPY_TO_CLIPBOARD': 'Copy to clipboard',
+	'URL_COPIED_TO_CLIPBOARD': 'Copied URL to clipboard!',
+	'PHOTO_DIRECT_LINKS_TO_IMAGES': 'Direct links to image files:',
+	'PHOTO_MEDIUM': 'Medium',
+	'PHOTO_MEDIUM_HIDPI': 'Medium HiDPI',
+	'PHOTO_SMALL': 'Thumb',
+	'PHOTO_SMALL_HIDPI': 'Thumb HiDPI',
+	'PHOTO_THUMB': 'Square thumb',
+	'PHOTO_THUMB_HIDPI': 'Square thumb HiDPI',
+	'PHOTO_VIEW': 'Lychee Photo View:'
 };

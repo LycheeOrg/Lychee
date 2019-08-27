@@ -171,13 +171,12 @@ class Album extends Model
 		$album['title'] = $this->title;
 		$album['public'] = strval($this->public);
 		$album['full_photo'] = $this->full_photo_visible() ? '1' : '0';
-		$album['hidden'] = strval($this->visible_hidden);
+		$album['visible'] = strval($this->visible_hidden);
 		$album['parent_id'] = $this->parent_id;
 
 		// Additional attributes
 		// Only part of $album when available
 		$album['description'] = strval($this->description);
-		$album['visible'] = strval($this->visible_hidden);
 		$album['downloadable'] = $this->is_downloadable() ? '1' : '0';
 
 		// Parse date

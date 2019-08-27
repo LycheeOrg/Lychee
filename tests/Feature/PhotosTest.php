@@ -303,7 +303,7 @@ class PhotosTest extends TestCase
 		$response = $this->post('/api/Album::setPublic', [
 			'full_photo' => 1,
 			'albumID' => $albumID,
-			'password' => '',
+			'public' => 1,
 			'visible' => 1,
 			'downloadable' => 1,
 		]);
