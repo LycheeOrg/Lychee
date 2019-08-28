@@ -83,7 +83,7 @@ class DemoController extends Controller
 			// Get album information
 			$return_album_json = $album->prepareData();
 			$username = null;
-			if ($this->sessionFunctions->is_logged_in()) {
+			if ($sessionFunctions->is_logged_in()) {
 				$return_album_json['owner'] = $username = $album->owner->username;
 			}
 			$full_photo = $album->full_photo_visible();
@@ -102,8 +102,8 @@ class DemoController extends Controller
 			foreach ($photos as $photo_model) {
 				// Turn data from the database into a front-end friendly format
 				$photo = $photo_model->prepareData($album);
-				$this->symLinkFunctions->getUrl($photo_model, $photo);
-				if (!$this->sessionFunctions->is_current_user($photo_model->owner_id) && !$full_photo) {
+				$symLinkFunctions->getUrl($photo_model, $photo);
+				if (!$sessionFunctions->is_current_user($photo_model->owner_id) && !$full_photo) {
 					$photo_model->downgrade($photo);
 				}
 
