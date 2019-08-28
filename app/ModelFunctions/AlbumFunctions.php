@@ -549,10 +549,10 @@ class AlbumFunctions
 	 * their content).
 	 *
 	 * @param array $return
-	 * @param $parentAlbum
+	 * @param Album $parentAlbum
 	 * @param bool $includePassProtected
 	 */
-	public function get_sub_albums(array &$return, $parentAlbum, $includePassProtected = false)
+	public function get_sub_albums(array &$return, Album $parentAlbum, $includePassProtected = false)
 	{
 		/*
 		 * @var Album
