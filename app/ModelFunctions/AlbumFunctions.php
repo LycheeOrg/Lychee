@@ -496,6 +496,7 @@ class AlbumFunctions
 						$subSubAlbums = [$subAlbum->id];
 						$this->get_sub_albums($subSubAlbums, $subAlbum);
 						$this->gen_thumbs($subAlbumData, $subSubAlbums);
+						$subAlbumData['has_albums'] = count($subSubAlbums) > 1 ? '1' : '0';
 					}
 				}
 
