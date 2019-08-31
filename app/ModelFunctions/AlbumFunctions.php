@@ -569,8 +569,6 @@ class AlbumFunctions
 				}
 			}
 		}
-
-		return $return;
 	}
 
 	/**
