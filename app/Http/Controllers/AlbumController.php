@@ -141,11 +141,9 @@ class AlbumController extends Controller
 				}
 
 				$full_photo = $album->full_photo_visible();
-				// To speed things up, we limit subalbum data to at most two
-				// levels down.  The second level is needed only for the
-				// displaying of the subalbum_badge for the subalbums in the
-				// front end.
-				$return['albums'] = $this->albumFunctions->get_albums($album, $username, 2);
+				// To speed things up, we limit subalbum data to at most one
+				// level down.
+				$return['albums'] = $this->albumFunctions->get_albums($album, $username, 1);
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
 				foreach ($return['albums'] as &$alb) {
 					unset($alb['thumbIDs']);

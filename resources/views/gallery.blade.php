@@ -1,4 +1,4 @@
-@extends('layouts.simple')
+@extends('layouts.gallery')
 
 @section('head-js')
 @endsection

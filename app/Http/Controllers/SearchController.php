@@ -158,16 +158,17 @@ class SearchController extends Controller
 			$i = 0;
 			foreach ($albums as $album_model) {
 				$album = $album_model->prepareData();
-				$username = null;
 				if ($this->sessionFunctions->is_logged_in()) {
-					$album['owner'] = $username = $album_model->owner->username;
+					$album['owner'] = $album_model->owner->username;
 				}
 				if ($this->readAccessFunctions->album($album_model) === 1) {
-					// We need 'albums' just for the displaying of the
-					// subalbum_badge in the front end, and for that we don't
-					// need more than one level down.
-					$album['albums'] = $this->albumFunctions->get_albums($album_model, $username, 1);
-					$this->albumFunctions->gen_thumbs($album, [$album_model->id]);
+					// We don't need 'albums' but we do need to come up with
+					// all the subalbums in order to get accurate thumbs info
+					// and to let the front end know if there are any.
+					$subAlbums = [$album_model->id];
+					$this->albumFunctions->get_sub_albums($subAlbums, $album_model);
+					$this->albumFunctions->gen_thumbs($album, $subAlbums);
+					$album['has_albums'] = count($subAlbums) > 1 ? '1' : '0';
 				}
 				unset($album['thumbIDs']);
 				$return['albums'][$i] = $album;
@@ -189,7 +190,7 @@ class SearchController extends Controller
 				$i++;
 			}
 		}
-		$query = Photo::where(
+		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);
 				// Add the 'Unsorted' album.

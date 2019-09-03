@@ -87,7 +87,7 @@ class DemoController extends Controller
 				$return_album_json['owner'] = $username = $album->owner->username;
 			}
 			$full_photo = $album->full_photo_visible();
-			$return_album_json['albums'] = $albumFunctions->get_albums($album, $username, 2);
+			$return_album_json['albums'] = $albumFunctions->get_albums($album, $username, 1);
 			$photos_sql = Photo::set_order(Photo::where('album_id', '=', $album->id));
 			foreach ($return_album_json['albums'] as &$alb) {
 				unset($alb['thumbIDs']);
