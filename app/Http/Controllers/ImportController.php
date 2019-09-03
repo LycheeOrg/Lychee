@@ -245,24 +245,28 @@ class ImportController extends Controller
 					$newAlbumID = $album->id;
 					$contains['albums'] = true;
 					$import = $this->server_exec($file . '/', $newAlbumID, $delete_imported);
-					if ($import !== 'true' && $import !== 'Notice: Import only contains albums!') {
+					if ($import !== 'true' && $import !== '"Notice: Import only contains albums!"' && $import !== '"Warning: Folder empty or no readable files to process!"') {
 						$error = true;
 						Logs::error(__METHOD__, __LINE__, 'Could not import folder. Function returned warning.');
 						continue;
 					}
+				} else {
+					$error = true;
+					Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
+					continue;
 				}
 			}
 		}
 
 		// The following returns will be caught in the front-end
 		if ($contains['photos'] === false && $contains['albums'] === false) {
-			return 'Warning: Folder empty or no readable files to process!';
-		}
-		if ($contains['photos'] === false && $contains['albums'] === true) {
-			return 'Notice: Import only contained albums!';
+			return '"Warning: Folder empty or no readable files to process!"';
 		}
 		if ($error === true) {
 			return 'false';
+		}
+		if ($contains['photos'] === false && $contains['albums'] === true) {
+			return '"Notice: Import only contained albums!"';
 		}
 
 		return 'true';
