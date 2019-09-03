@@ -355,9 +355,11 @@ final class Italian implements LangInterface
 			'UPLOAD_IMPORT' => 'Importa',
 			'UPLOAD_IMPORT_SERVER' => 'Importa da server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Cartella vuota o nessun file leggibile da elaborare. Per favore controlla il log (Impostazioni -> Visualizza Log) per ulteriori dettagli.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Questa azione importerà tutte le foto, cartelle e sottocartelle presenti nella seguente directory. I <b>file originali saranno eliminati</b> dopo l\'importazione se possibile.',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Questa azione importerà tutte le foto, cartelle e sottocartelle presenti nella seguente directory.',
 			'UPLOAD_ABSOLUTE_PATH' => 'Percorso assoluto alla directory',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'È stato impossibile avviare l\'importazione dato che la cartella era vuota!',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'I file originali saranno eliminati dopo l\'importazione se possibile.',
 
 			'ABOUT_SUBTITLE' => 'Gestione propria delle foto fatta nel modo giusto',
 			'ABOUT_DESCRIPTION' => 'è uno strumento gratuito di gestione delle foto, eseguito nel server o sul tuo spazio web. L\'installazione è questione di secondi. Carica, gestisci e condividi foto come in un\'applicazione nativa. Lychee offre tutto ciò di cui hai bisogno e tutte le tue foto vengono salvate in modo sicuro.',

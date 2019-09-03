@@ -357,9 +357,11 @@ final class German implements LangInterface
 			'UPLOAD_IMPORT' => 'Import',
 			'UPLOAD_IMPORT_SERVER' => 'Importieren von Server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Der Ordner ist leer oder enthält keine lesbaren Dateien zum Verarbeiten. Schauen Sie bitte ins Protokoll (Einstellungen/Protokoll ansehen).',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Diese Aktion wird alle Fotos, Ordner und Unterordner importieren, die sich in folgendem Verzeichnis befinden. <b>Die Originaldateien werden nach dem Import gelöscht, falls möglich.</b>',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Diese Aktion wird alle Fotos, Ordner und Unterordner importieren, die sich in folgendem Verzeichnis befinden.',
 			'UPLOAD_ABSOLUTE_PATH' => 'Absoluter Pfad zum Verzeichnis',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Konnte Import nicht starten, weil der Ordner leer ist.',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Die Originaldateien werden nach dem Import gelöscht, falls möglich.',
 
 			'ABOUT_SUBTITLE' => 'Selbst gehostetes Foto-Management, aber richtig!',
 			'ABOUT_DESCRIPTION' => 'ist ein freies Foto-Management-Werkzeug, dass auf Ihrem Server oder Webspace läuft. Die Installation ist eine Sache von Sekunden. Hochladen, Organisieren und Teilen von Fotos funktioniert wie in einer nativen Anwendung. Lychee hält alles bereit, was Sie benötigen, und alle Bilder werden sicher abgespeichert.',

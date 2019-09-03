@@ -194,10 +194,11 @@ class PhotoFunctions
 	 *
 	 * @param array $file
 	 * @param int   $albumID_in
+	 * @param bool  $delete_imported
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0)
+	public function add(array $file, $albumID_in = 0, $delete_imported = true)
 	{
 		// Check permissions
 		if (Helpers::hasPermissions(Storage::path('')) === false ||
@@ -294,7 +295,7 @@ class PhotoFunctions
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
 
 					return Response::error('Could not copy photo to uploads!');
-				} elseif (Configs::get_value('delete_imported') === '1') {
+				} elseif ($delete_imported) {
 					@unlink($tmp_name);
 				}
 			} else {

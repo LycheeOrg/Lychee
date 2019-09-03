@@ -349,9 +349,11 @@ final class ChineseSimplified implements LangInterface
 			'UPLOAD_IMPORT' => '导入',
 			'UPLOAD_IMPORT_SERVER' => '从服务器导入',
 			'UPLOAD_IMPORT_SERVER_FOLD' => '文件夹中没有可读的文件。请查看日志（设置->显示日志）以获取详细信息。',
-			'UPLOAD_IMPORT_SERVER_INSTR' => '此操作将导入位于以下目录中的所有照片、文件夹和子文件夹。导入完成后，在可能的情况下 <b>源文件将被删除</b>。',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'This action will import all photos, folders and sub-folders which are located in the following directory.',
 			'UPLOAD_ABSOLUTE_PATH' => '绝对路径',
 			'UPLOAD_IMPORT_SERVER_EMPT' => '无法导入空文件夹！',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Original files will be deleted after the import when possible.',
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',

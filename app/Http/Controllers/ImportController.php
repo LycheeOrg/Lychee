@@ -52,11 +52,12 @@ class ImportController extends Controller
 	 * Creates an array similar to a file upload array and adds the photo to Lychee.
 	 *
 	 * @param $path
-	 * @param int $albumID
+	 * @param bool $delete_imported
+	 * @param int  $albumID
 	 *
 	 * @return bool returns true when photo import was successful
 	 */
-	private function photo($path, $albumID = 0)
+	private function photo($path, $delete_imported, $albumID = 0)
 	{
 		// No need to validate photo type and extension in this function.
 		// $photo->add will take care of it.
@@ -67,7 +68,7 @@ class ImportController extends Controller
 		$nameFile['type'] = $mime;
 		$nameFile['tmp_name'] = $path;
 
-		if ($this->photoFunctions->add($nameFile, $albumID) === false) {
+		if ($this->photoFunctions->add($nameFile, $albumID, $delete_imported) === false) {
 			return false;
 		}
 
@@ -151,6 +152,7 @@ class ImportController extends Controller
 		$request->validate([
 			'path' => 'string|required',
 			'albumID' => 'int|required',
+			'delete_imported' => 'int',
 		]);
 
 		$php_script_no_limit = Configs::get_value('php_script_no_limit', '0');
@@ -159,12 +161,19 @@ class ImportController extends Controller
 			Logs::notice(__METHOD__, __LINE__, 'Importing using unlimited execution time');
 		}
 
-		return $this->server_exec($request['path'], $request['albumID']);
+		if (isset($request['delete_imported'])) {
+			$delete_imported = $request['delete_imported'] === '1';
+		} else {
+			$delete_imported = Configs::get_value('delete_imported', '1') === '1';
+		}
+
+		return $this->server_exec($request['path'], $request['albumID'], $delete_imported);
 	}
 
 	/**
 	 * @param string $path
 	 * @param int    $albumID
+	 * @param bool   $delete_imported
 	 *
 	 * @return bool|string Returns true when successful.
 	 *                     Warning: Folder empty or no readable files to process!
@@ -173,7 +182,7 @@ class ImportController extends Controller
 	 * @throws ImagickException
 	 */
 	// I switched this to private, as it should not be needed to be public. if it breaks something we will double check.
-	private function server_exec(string $path, $albumID)
+	private function server_exec(string $path, $albumID, $delete_imported)
 	{
 		// Parse path
 		if (!isset($path)) {
@@ -216,7 +225,7 @@ class ImportController extends Controller
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
 				// Photo or Video
 				$contains['photos'] = true;
-				if ($this->photo($file, $albumID) === false) {
+				if ($this->photo($file, $delete_imported, $albumID) === false) {
 					$error = true;
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					continue;
@@ -235,7 +244,7 @@ class ImportController extends Controller
 					}
 					$newAlbumID = $album->id;
 					$contains['albums'] = true;
-					$import = $this->server_exec($file . '/', $newAlbumID);
+					$import = $this->server_exec($file . '/', $newAlbumID, $delete_imported);
 					if ($import !== 'true' && $import !== 'Notice: Import only contains albums!') {
 						$error = true;
 						Logs::error(__METHOD__, __LINE__, 'Could not import folder. Function returned warning.');

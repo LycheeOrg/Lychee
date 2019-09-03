@@ -357,9 +357,11 @@ final class Slovak implements LangInterface
 			'UPLOAD_IMPORT' => 'Import',
 			'UPLOAD_IMPORT_SERVER' => 'Import zo servera',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Priečinok je prázdny alebo obsahuje nečitateľný obsah pre spracovanie. Skontrolujte protokoly (Nastavenia/ Protokoly) pre zistenie ďalších podrobností.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Táto akcia naimportuje všetky obrázky, priečinky a podpriečinky, ktoré sa v danom adresári nachádzajú. <b>Ak je možné, budú pôvodné súbory po importe zmazané.</b>',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Táto akcia naimportuje všetky obrázky, priečinky a podpriečinky, ktoré sa v danom adresári nachádzajú.</b>',
 			'UPLOAD_ABSOLUTE_PATH' => 'Absolútna cesta k adresáru',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Import sa nedá spustiť, priečinok je prázdny.',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Ak je možné, budú pôvodné súbory po importe zmazané.',
 
 			'ABOUT_SUBTITLE' => 'Vlastný hostovaný manažment obrázkov!',
 			'ABOUT_DESCRIPTION' => 'je open-source nástroj, bežiaci na vašom vlastnom serveri alebo v cloude. Inštalácia je otázkou sekúnd. Nahrať, spravovať a zdieľať obrázky ako v natívnej aplikácii. Lychee ponúka všetko čo potrebujete vy a vaše obrázky pre bezpečné uloženie.',

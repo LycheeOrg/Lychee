@@ -349,9 +349,11 @@ final class French implements LangInterface
 			'UPLOAD_IMPORT' => 'Importer',
 			'UPLOAD_IMPORT_SERVER' => 'Importation à partir du serveur',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Dossier vide ou aucun fichier lisible à traiter. Veuillez consulter le journal (Paramètres -> Afficher le journal) pour obtenir plus de détails.',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Cette action importera toutes les photos ainsi que tous les dossiers et sous-dossiers situés dans le répertoire suivant. Les <b>fichiers originaux seront supprimés</b> après l\'importation lorsque cela est possible.',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Cette action importera toutes les photos ainsi que tous les dossiers et sous-dossiers situés dans le répertoire suivant.',
 			'UPLOAD_ABSOLUTE_PATH' => 'Chemin absolu du répertoire',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Impossible de démarrer l\'importation car le dossier était vide !',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Les fichiers originaux seront supprimés après l\'importation lorsque cela est possible.',
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',

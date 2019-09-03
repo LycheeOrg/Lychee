@@ -349,9 +349,11 @@ final class Swedish implements LangInterface
 			'UPLOAD_IMPORT' => 'Importera',
 			'UPLOAD_IMPORT_SERVER' => 'Importera från server',
 			'UPLOAD_IMPORT_SERVER_FOLD' => 'Mappen du angav var tom eller saknade läsbara filer. Kontrollera logfilen (Inställningar -> Visa logfilen) för ytterligare detaljer',
-			'UPLOAD_IMPORT_SERVER_INSTR' => 'Den här processen kommer att importera alla fotografier, inklusive alla mappar och undermappar från platse du angav. <b>Originalfotografierna kommer att raderas.</b> efter att importering genomförts.',
+			'UPLOAD_IMPORT_SERVER_INSTR' => 'Den här processen kommer att importera alla fotografier, inklusive alla mappar och undermappar från platse du angav.',
 			'UPLOAD_ABSOLUTE_PATH' => 'Exakt sökväg till mappen',
 			'UPLOAD_IMPORT_SERVER_EMPT' => 'Kunde inte påbörja importeringen då mappen saknade innehåll!',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS' => 'Delete originals',
+			'UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL' => 'Originalfotografierna kommer att raderas efter att importering genomförts.',
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
