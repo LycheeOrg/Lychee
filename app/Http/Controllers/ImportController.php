@@ -164,7 +164,7 @@ class ImportController extends Controller
 		if (isset($request['delete_imported'])) {
 			$delete_imported = $request['delete_imported'] === '1';
 		} else {
-			$delete_imported = Configs::get_value('delete_imported', '1') === '1';
+			$delete_imported = Configs::get_value('delete_imported', '0') === '1';
 		}
 
 		return $this->server_exec($request['path'], $request['albumID'], $delete_imported);

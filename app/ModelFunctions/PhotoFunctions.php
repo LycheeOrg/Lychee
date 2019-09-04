@@ -198,7 +198,7 @@ class PhotoFunctions
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0, $delete_imported = true)
+	public function add(array $file, $albumID_in = 0, $delete_imported = false)
 	{
 		// Check permissions
 		if (Helpers::hasPermissions(Storage::path('')) === false ||

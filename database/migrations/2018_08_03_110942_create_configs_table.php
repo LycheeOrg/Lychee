@@ -55,7 +55,7 @@ class CreateConfigsTable extends Migration
 				['key' => 'default_license', 'value' => 'none'],
 				['key' => 'compression_quality', 'value' => '90'],
 				['key' => 'full_photo', 'value' => '1'],
-				['key' => 'deleteImported', 'value' => '1'],
+				['key' => 'deleteImported', 'value' => '0'],
 
 				['key' => 'Mod_Frame', 'value' => '0'],
 				['key' => 'Mod_Frame_refresh', 'value' => '30000'],
