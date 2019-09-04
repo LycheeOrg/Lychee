@@ -211,8 +211,12 @@ class ImportController extends Controller
 		$contains['photos'] = false;
 		$contains['albums'] = false;
 
-		// Get all files
+		// We process breadth-first: first all the files in a directory,
+		// then the subdirectories.  This way, if the process fails along the
+		// way, it's much easier for the user to figure out what was imported
+		// and what was not.
 		$files = glob($path . '/*');
+		$dirs = [];
 		foreach ($files as $file) {
 			// It is possible to move a file because of directory permissions but
 			// the file may still be unreadable by the user
@@ -230,31 +234,32 @@ class ImportController extends Controller
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					continue;
 				}
+			} elseif (is_dir($file)) {
+				$dirs[] = $file;
 			} else {
-				if (is_dir($file)) {
-					// Album creation
+				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
+				continue;
+			}
+		}
 
-					// Folder
-					$album = $this->albumFunctions->create(basename($file), $albumID, $this->sessionFunctions->id());
-					// this actually should not fail.
-					if ($album === false) {
-						$error = true;
-						Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($file) . ')');
-						continue;
-					}
-					$newAlbumID = $album->id;
-					$contains['albums'] = true;
-					$import = $this->server_exec($file . '/', $newAlbumID, $delete_imported);
-					if ($import !== 'true' && $import !== '"Notice: Import only contains albums!"' && $import !== '"Warning: Folder empty or no readable files to process!"') {
-						$error = true;
-						Logs::error(__METHOD__, __LINE__, 'Could not import folder. Function returned warning.');
-						continue;
-					}
-				} else {
-					$error = true;
-					Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
-					continue;
-				}
+		// Album creation
+		foreach ($dirs as $dir) {
+			// Folder
+			$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
+			// this actually should not fail.
+			if ($album === false) {
+				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
+				continue;
+			}
+			$newAlbumID = $album->id;
+			$contains['albums'] = true;
+			$import = $this->server_exec($dir . '/', $newAlbumID, $delete_imported);
+			if ($import !== 'true' && $import !== '"Notice: Import only contains albums!"' && $import !== '"Warning: Folder empty or no readable files to process!"') {
+				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Could not import folder. Function returned warning.');
+				continue;
 			}
 		}
 
