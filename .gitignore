@@ -28,3 +28,4 @@ _ide*
 .php_cs.cache
 
 clover.xml
+*.swp
