@@ -377,6 +377,12 @@ return [
         ],
         'img-src' => [
             'self' => true,
+            'allow' => [
+              'http://a.tile.osm.org/',
+              'http://b.tile.osm.org/',
+              'http://c.tile.osm.org/',
+              'data:',
+            ],
         ],
         'default-src' => [
             'self' => true,
