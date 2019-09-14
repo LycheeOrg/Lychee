@@ -152,9 +152,6 @@ class PhotoController extends Controller
 		$request->validate([
 			'albumID' => 'string|required',
 			'0' => 'required',
-			//            '0.*' => 'image|mimes:jpeg,png,jpg,gif',
-			'0.*' => 'image|mimes:jpeg,png,jpg,gif,mov,webm,mp4,ogv',
-			//                |max:2048'
 		]);
 
 		if (!$request->hasfile('0')) {
@@ -518,11 +515,141 @@ class PhotoController extends Controller
 	}
 
 	/**
+	 * extract the file names.
+	 *
+	 * @param $photoID
+	 * @param $request
+	 *
+	 * @return array|null
+	 */
+	public function extract_names($photoID, $request)
+	{
+		// Illicit chars
+		$badChars = array_merge(
+			array_map('chr', range(0, 31)),
+			array(
+				'<',
+				'>',
+				':',
+				'"',
+				'/',
+				'\\',
+				'|',
+				'?',
+				'*',
+			)
+		);
+
+		$photo = Photo::with('album')->find($photoID);
+
+		if ($photo == null) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
+			return null;
+		}
+
+		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
+			if ($photo->album_id !== null) {
+				if (!$photo->album->is_downloadable()) {
+					return null;
+				}
+			} else {
+				if (Configs::get_value('downloadable', '0') === '0') {
+					return null;
+				}
+			}
+		}
+
+		$title = str_replace($badChars, '', $photo->title);
+		if ($title === '') {
+			$title = 'Untitled';
+		}
+
+		$prefix_path = $photo->type == 'raw' ? 'raw/' : 'big/';
+		// determine the file based on given size
+		switch ($request['kind']) {
+			case 'FULL':
+				$url = Storage::path($prefix_path . $photo->url);
+				$kind = '';
+				break;
+			case 'MEDIUM2X':
+				if (strpos($photo->type, 'video') !== 0) {
+					$fileName = $photo->url;
+				} else {
+					$fileName = $photo->thumbUrl;
+				}
+				$fileName2x = explode('.', $fileName);
+				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
+				$url = Storage::path('medium/' . $fileName2x);
+				$kind = '-' . $photo->medium2x;
+				break;
+			case 'MEDIUM':
+				if (strpos($photo->type, 'video') !== 0) {
+					$url = Storage::path('medium/' . $photo->url);
+				} else {
+					$url = Storage::path('medium/' . $photo->thumbUrl);
+				}
+				$kind = '-' . $photo->medium;
+				break;
+			case 'SMALL2X':
+				if (strpos($photo->type, 'video') !== 0) {
+					$fileName = $photo->url;
+				} else {
+					$fileName = $photo->thumbUrl;
+				}
+				$fileName2x = explode('.', $fileName);
+				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
+				$url = Storage::path('small/' . $fileName2x);
+				$kind = '-' . $photo->small2x;
+				break;
+			case 'SMALL':
+				if (strpos($photo->type, 'video') !== 0) {
+					$url = Storage::path('small/' . $photo->url);
+				} else {
+					$url = Storage::path('small/' . $photo->thumbUrl);
+				}
+				$kind = '-' . $photo->small;
+				break;
+			case 'THUMB2X':
+				$fileName2x = explode('.', $photo->thumbUrl);
+				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
+				$url = Storage::path('thumb/' . $fileName2x);
+				$kind = '-400x400';
+				break;
+			case 'THUMB':
+				$url = Storage::path('thumb/' . $photo->thumbUrl);
+				$kind = '-200x200';
+				break;
+			default:
+				Logs::error(__METHOD__, __LINE__,
+					'Invalid kind ' . $request['kind']);
+
+				return null;
+		}
+
+		// Check the file actually exists
+		// TODO: USE STORAGE FACADE HERE
+		if (!file_exists($url)) {
+			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $url . ' (' . $title . ')');
+
+			return null;
+		}
+
+		// Get extension of image
+		$extension = '';
+		if ($photo->type != 'raw') {
+			$extension = Helpers::getExtension($url, false);
+		}
+
+		return array($title, $kind, $extension, $url);
+	}
+
+	/**
 	 * Return the archive of pictures or just a picture if only one.
 	 *
 	 * @param Request $request
 	 *
-	 * @return Response|void
+	 * @return StreamedResponse|Response|string|void
 	 */
 	public function getArchive(Request $request)
 	{
@@ -539,123 +666,8 @@ class PhotoController extends Controller
 
 		$photoIDs = explode(',', $request['photoIDs']);
 
-		$extract_names = function ($photoID) use ($request) {
-			// Illicit chars
-			$badChars = array_merge(
-				array_map('chr', range(0, 31)),
-				array(
-					'<',
-					'>',
-					':',
-					'"',
-					'/',
-					'\\',
-					'|',
-					'?',
-					'*',
-				)
-			);
-
-			$photo = Photo::with('album')->find($photoID);
-
-			if ($photo == null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-				return null;
-			}
-
-			if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
-				if ($photo->album_id !== null) {
-					if (!$photo->album->is_downloadable()) {
-						return null;
-					}
-				} else {
-					if (Configs::get_value('downloadable', '0') === '0') {
-						return null;
-					}
-				}
-			}
-
-			$title = str_replace($badChars, '', $photo->title);
-			if ($title === '') {
-				$title = 'Untitled';
-			}
-
-			// determine the file based on given size
-			switch ($request['kind']) {
-				case 'FULL':
-					$url = Storage::path('big/' . $photo->url);
-					$kind = '';
-					break;
-				case 'MEDIUM2X':
-					if (strpos($photo->type, 'video') !== 0) {
-						$fileName = $photo->url;
-					} else {
-						$fileName = $photo->thumbUrl;
-					}
-					$fileName2x = explode('.', $fileName);
-					$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-					$url = Storage::path('medium/' . $fileName2x);
-					$kind = '-' . $photo->medium2x;
-					break;
-				case 'MEDIUM':
-					if (strpos($photo->type, 'video') !== 0) {
-						$url = Storage::path('medium/' . $photo->url);
-					} else {
-						$url = Storage::path('medium/' . $photo->thumbUrl);
-					}
-					$kind = '-' . $photo->medium;
-					break;
-				case 'SMALL2X':
-					if (strpos($photo->type, 'video') !== 0) {
-						$fileName = $photo->url;
-					} else {
-						$fileName = $photo->thumbUrl;
-					}
-					$fileName2x = explode('.', $fileName);
-					$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-					$url = Storage::path('small/' . $fileName2x);
-					$kind = '-' . $photo->small2x;
-					break;
-				case 'SMALL':
-					if (strpos($photo->type, 'video') !== 0) {
-						$url = Storage::path('small/' . $photo->url);
-					} else {
-						$url = Storage::path('small/' . $photo->thumbUrl);
-					}
-					$kind = '-' . $photo->small;
-					break;
-				case 'THUMB2X':
-					$fileName2x = explode('.', $photo->thumbUrl);
-					$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-					$url = Storage::path('thumb/' . $fileName2x);
-					$kind = '-400x400';
-					break;
-				case 'THUMB':
-					$url = Storage::path('thumb/' . $photo->thumbUrl);
-					$kind = '-200x200';
-					break;
-				default:
-					Logs::error(__METHOD__, __LINE__, 'Invalid kind ' . $request['kind']);
-
-					return null;
-			}
-
-			// Check the file actually exists
-			if (!file_exists($url)) {
-				Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $url . ' (' . $title . ')');
-
-				return null;
-			}
-
-			// Get extension of image
-			$extension = Helpers::getExtension($url, false);
-
-			return array($title, $kind, $extension, $url);
-		};
-
 		if (count($photoIDs) === 1) {
-			$ret = $extract_names($photoIDs[0]);
+			$ret = $this->extract_names($photoIDs[0], $request);
 			if ($ret === null) {
 				return abort(404);
 			}
@@ -673,7 +685,7 @@ class PhotoController extends Controller
 
 				$files = [];
 				foreach ($photoIDs as $photoID) {
-					$ret = $extract_names($photoID);
+					$ret = $this->extract_names($photoID, $request);
 					if ($ret == null) {
 						return abort(404);
 					}
@@ -721,6 +733,8 @@ class PhotoController extends Controller
 	 * GET to manually clear the symlinks.
 	 *
 	 * @return string
+	 *
+	 * @throws \Exception
 	 */
 	public function clearSymLink()
 	{

@@ -9,14 +9,11 @@ use Exception;
 class Extractor
 {
 	/**
-	 * Extracts metadata from an image file.
-	 *
-	 * @param string $filename
-	 * @param  string mime type
+	 * return bare array for info.
 	 *
 	 * @return array
 	 */
-	public function extract(string $filename, string $type): array
+	public function bare()
 	{
 		$metadata = [
 			'type' => '',
@@ -39,6 +36,37 @@ class Extractor
 			'longitude' => null,
 			'altitude' => null,
 		];
+
+		return $metadata;
+	}
+
+	/**
+	 * @param array  $metadata
+	 * @param string $filename
+	 */
+	public function size(array &$metadata, string $filename)
+	{
+		// Size
+		$size = filesize($filename) / 1024;
+		if ($size >= 1024) {
+			$metadata['size'] = round($size / 1024, 1) . ' MB';
+		} else {
+			$metadata['size'] = round($size, 1) . ' KB';
+		}
+	}
+
+	/**
+	 * Extracts metadata from an image file.
+	 *
+	 * @param string $filename
+	 * @param  string mime type
+	 *
+	 * @return array
+	 */
+	public function extract(string $filename, string $type): array
+	{
+		$metadata = $this->bare();
+
 		$imageInfo = [];
 		if (strpos($type, 'video') !== 0) {
 			$info = getimagesize($filename, $imageInfo);
@@ -55,12 +83,7 @@ class Extractor
 		}
 
 		// Size
-		$size = filesize($filename) / 1024;
-		if ($size >= 1024) {
-			$metadata['size'] = round($size / 1024, 1) . ' MB';
-		} else {
-			$metadata['size'] = round($size, 1) . ' KB';
-		}
+		$this->size($metadata, $filename);
 
 		// IPTC Metadata
 		// See https://www.iptc.org/std/IIM/4.2/specification/IIMV4.2.pdf for mapping
@@ -198,15 +221,23 @@ class Extractor
 			}
 		}
 
-		//validate the data
+		$this->validate($metadata);
+
+		return $metadata;
+	}
+
+	/**
+	 * Reset field value to empty string if the data is binary (invalid UTF-8 chars).
+	 *
+	 * @param array $metadata
+	 */
+	public function validate(array &$metadata)
+	{
 		foreach ($metadata as $k => $v) {
-			//reset field value to empty string if the data is binary (invalid UTF-8 chars)
 			if (!mb_check_encoding($v)) {
 				$metadata[$k] = '';
 			}
 		}
-
-		return $metadata;
 	}
 
 	/**

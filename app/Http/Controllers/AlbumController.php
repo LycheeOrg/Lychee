@@ -738,7 +738,8 @@ class AlbumController extends Controller
 							continue;
 						}
 
-						$url = Storage::path('big/' . $photo->url);
+						$prefix_url = $photo->type == 'raw' ? 'raw/' : 'big/';
+						$url = Storage::path($prefix_url . $photo->url);
 						// Check if readable
 						if (!@is_readable($url)) {
 							Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
@@ -753,7 +754,11 @@ class AlbumController extends Controller
 						// Get extension of image
 						$extension = Helpers::getExtension($url, false);
 						// Set title for photo
-						$file = $title . $extension;
+						if ($prefix_url != 'raw/') {
+							$file = $title . $extension;
+						} else {
+							$file = $title;
+						}
 						// Check for duplicates
 						if (!empty($files)) {
 							$i = 1;

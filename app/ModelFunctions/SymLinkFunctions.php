@@ -77,6 +77,8 @@ class SymLinkFunctions
 	 * Clear the table of existing SymLinks.
 	 *
 	 * @return string
+	 *
+	 * @throws \Exception
 	 */
 	public function clearSymLink()
 	{
