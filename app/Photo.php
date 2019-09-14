@@ -362,10 +362,10 @@ class Photo extends Model
 		$error = false;
 		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
 		// quick check...
-		if (!Storage::exists('raw/' . $this->url)) {
+		if (!Storage::exists($path_prefix . $this->url)) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->url));
 			$error = true;
-		} elseif (!Storage::delete('raw/' . $this->url)) {
+		} elseif (!Storage::delete($path_prefix . $this->url)) {
 			Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($path_prefix . $this->url));
 			$error = true;
 		}
