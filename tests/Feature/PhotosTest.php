@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Configs;
 use App\ModelFunctions\SessionFunctions;
 use Illuminate\Http\UploadedFile;
+use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\TestCase;
 
 class PhotosTest extends TestCase
@@ -19,6 +21,9 @@ class PhotosTest extends TestCase
 		$sessionFunctions = new SessionFunctions();
 		$sessionFunctions->log_as_id(0);
 
+		$photos_tests = new PhotosUnitTest();
+		$album_tests = new AlbumsUnitTest();
+
 		// Make a copy of the image because import deletes the file and we want to be
 		// able to use the test on a local machine and not just in CI.
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
@@ -26,128 +31,27 @@ class PhotosTest extends TestCase
 		$file = new UploadedFile('public/uploads/import/night.jpg', 'night.jpg',
 			'image/jpg', null, true);
 
-		/**
-		 * Test if we can upload.
-		 */
-		$response = $this->post('/api/Photo::add',
-			[
-				'albumID' => '0',
-				'0' => $file,
-			]);
-		$id = $response->getContent();
+		$id = $photos_tests->upload($this, $file);
+		$photos_tests->get($this, $id, 'true');
 
-		$response->assertStatus(200);
-		$response->assertDontSee('Error');
+		$photos_tests->see_in_unsorted($this, $id);
+		$photos_tests->see_in_recent($this, $id);
+		$photos_tests->dont_see_in_shared($this, $id);
+		$photos_tests->dont_see_in_favorite($this, $id);
 
-		/**
-		 * Check if we see the picture in unsorted.
-		 */
-		$response = $this->post('/api/Album::get', [
-			'albumID' => '0',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee($id);
-		/**
-		 * Check if we see the picture in recent.
-		 */
-		$response = $this->post('/api/Album::get', [
-			'albumID' => 'r',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee($id);
-		/**
-		 * Check if we see the picture in shared.
-		 */
-		$response = $this->post('/api/Album::get', [
-			'albumID' => 's',
-		]);
-		$response->assertStatus(200);
-		$response->assertDontSee($id);
-		/**
-		 * Check if we see the picture in favorites.
-		 */
-		$response = $this->post('/api/Album::get', [
-			'albumID' => 'f',
-		]);
-		$response->assertStatus(200);
-		$response->assertDontSee($id);
+		$photos_tests->set_title($this, $id, "Night in Ploumanac'h");
+		$photos_tests->set_description($this, $id, 'A night photography');
 
-		/**
-		 * Try to set the title.
-		 */
-		$response = $this->post('/api/Photo::setTitle', [
-			'title' => "Night in Ploumanac'h",
-			'photoIDs' => $id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
+		$photos_tests->set_star($this, $id);
+		$photos_tests->see_in_favorite($this, $id);
 
-		/**
-		 * Try to set the description.
-		 */
-		$response = $this->post('/api/Photo::setDescription', [
-			'description' => 'A night photography',
-			'photoID' => $id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
+		$photos_tests->set_tag($this, $id, 'night');
 
-		/**
-		 * Try to set the stars.
-		 */
-		$response = $this->post('/api/Photo::setStar', [
-			'photoIDs' => $id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
+		$photos_tests->set_public($this, $id);
+		$photos_tests->see_in_shared($this, $id);
+		$photos_tests->set_license($this, $id, 'reserved');
 
-		/**
-		 * Check if we see the picture in favorite.
-		 */
-		$response = $this->post('/api/Album::get', [
-			'albumID' => 'f',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee($id);
-
-		/**
-		 * Try to set the tags.
-		 */
-		$response = $this->post('/api/Photo::setTags', [
-			'photoIDs' => $id,
-			'tags' => 'night',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		/**
-		 * Try to set the photo to public.
-		 */
-		$response = $this->post('/api/Photo::setPublic', [
-			'photoID' => $id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		/**
-		 * Try to set the photo license type of the photo.
-		 */
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'reserved',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		/**
-		 * Actually try to display the picture.
-		 */
-		$response = $this->post('/api/Photo::get', [
-			'albumID' => '0',
-			'photoID' => $id,
-		]);
-		$response->assertStatus(200);
-
+		$response = $photos_tests->get($this, $id, 'true');
 		/*
 		 * Check some Exif data
 		 */
@@ -176,61 +80,13 @@ class PhotosTest extends TestCase
 			'width' => 6720,
 		]);
 
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'reserved',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'CC0',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'CC-BY',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'CC-BY-ND',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'CC-BY-SA',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'CC-BY-NC',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'CC-BY-NC-ND',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		$response = $this->post('/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => 'CC-BY-NC-SA',
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
+		$photos_tests->set_license($this, $id, 'CC0');
+		$photos_tests->set_license($this, $id, 'CC-BY');
+		$photos_tests->set_license($this, $id, 'CC-BY-ND');
+		$photos_tests->set_license($this, $id, 'CC-BY-SA');
+		$photos_tests->set_license($this, $id, 'CC-BY-NC');
+		$photos_tests->set_license($this, $id, 'CC-BY-NC-ND');
+		$photos_tests->set_license($this, $id, 'CC-BY-NC-SA');
 
 		/**
 		 * Actually try to display the picture.
@@ -238,67 +94,20 @@ class PhotosTest extends TestCase
 		$response = $this->post('/api/Photo::getRandom', []);
 		$response->assertStatus(200);
 
-		/**
-		 * Try to delete the tag.
-		 */
-		$response = $this->post('/api/Photo::setTags', [
-			'photoIDs' => $id,
-			'tags' => null,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
+		$photos_tests->set_tag($this, $id, '');
 
-		$response = $this->post('/api/Album::add', [
-			'title' => 'test_album_2',
-			'parent_id' => '0',
-		]);
-		$response->assertOk();
-		$response->assertDontSee('false');
+		$albumID = $album_tests->add($this, '0', 'test_album_2');
 
-		/**
-		 * We also get the id of the album we just created.
-		 */
-		$albumID = $response->getContent();
+		$photos_tests->set_album($this, $albumID, $id, 'true');
+		$photos_tests->duplicate($this, $id, 'true');
 
-		$response = $this->post('/api/Photo::setAlbum', [
-			'photoIDs' => $id,
-			'albumID' => $albumID,
-		]);
-		$response->assertOk();
-		$response->assertDontSee('false');
-
-		$response = $this->post('/api/Photo::duplicate', [
-			'photoIDs' => $id,
-		]);
-		$response->assertOk();
-		$response->assertDontSee('false');
-
-		$response = $this->post('/api/Album::get', [
-			'albumID' => $albumID,
-		]);
-		$response->assertOk();
+		$response = $album_tests->get($this, $albumID, '', 'true');
 		$content = $response->getContent();
 		$array_content = json_decode($content);
 		$this->assertEquals(2, count($array_content->photos));
 
-		/**
-		 * Try to delete the picture.
-		 */
-		$response = $this->post('/api/Photo::delete', [
-			'photoIDs' => $id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('true');
-
-		/**
-		 * Try to get the picture again (should return an error).
-		 */
-		$response = $this->post('/api/Photo::get', [
-			'albumID' => '0',
-			'photoID' => $id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee('false');
+		$photos_tests->delete($this, $id, 'true');
+		$photos_tests->get($this, $id, 'false');
 
 		$response = $this->post('/api/Album::setPublic', [
 			'full_photo' => 1,
