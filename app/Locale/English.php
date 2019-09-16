@@ -360,7 +360,7 @@ final class English implements LangInterface
 			'UPLOAD_IMPORT_NOT_A_DIRECTORY' => 'The given path is not a readable directory!',
 			'UPLOAD_IMPORT_PATH_RESERVED' => 'The given path is a reserved path of Lychee!',
 			'UPLOAD_IMPORT_UNREADABLE' => 'Could not read the file!',
-			'UPLOAD_IMPORT_FAILED' => 'Cound not import the file!',
+			'UPLOAD_IMPORT_FAILED' => 'Could not import the file!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Unsupported file type!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Could not create the album!',
 
