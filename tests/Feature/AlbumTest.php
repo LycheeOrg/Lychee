@@ -4,8 +4,8 @@
 
 namespace Tests\Feature;
 
-use App\ModelFunctions\SessionFunctions;
 use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class AlbumTest extends TestCase
@@ -23,10 +23,10 @@ class AlbumTest extends TestCase
 
 	public function test_add_read_logged()
 	{
-		$sessionFunctions = new SessionFunctions();
 		$album_tests = new AlbumsUnitTest();
+		$session_tests = new SessionUnitTest();
 
-		$sessionFunctions->log_as_id(0);
+		$session_tests->log_as_id(0);
 
 		$albumID = $album_tests->add($this, '0', 'test_album', 'true');
 		$album_tests->see_in_albums($this, $albumID);
@@ -60,7 +60,7 @@ class AlbumTest extends TestCase
 		/*
 		 * Flush the session to see if we can access the album
 		 */
-		$sessionFunctions->logout();
+		$session_tests->logout($this);
 
 		/*
 		 * Let's try to get the info of the album we just created.
@@ -71,7 +71,7 @@ class AlbumTest extends TestCase
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
 		 */
-		$sessionFunctions->log_as_id(0);
+		$session_tests->log_as_id(0);
 
 		/**
 		 * Let's try to delete this album.
@@ -86,5 +86,7 @@ class AlbumTest extends TestCase
 		$response = $this->post('/api/Albums::get', []);
 		$response->assertOk();
 		$response->assertDontSee($albumID);
+
+		$session_tests->logout($this);
 	}
 }

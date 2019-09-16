@@ -4,7 +4,7 @@
 
 namespace Tests\Feature;
 
-use App\ModelFunctions\SessionFunctions;
+use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class DiagnosticsTest extends TestCase
@@ -16,9 +16,8 @@ class DiagnosticsTest extends TestCase
 	 */
 	public function test_diagnostics()
 	{
-		// set user as admin
-		$sessionFunctions = new SessionFunctions();
-		$sessionFunctions->log_as_id(0);
+		$session_tests = new SessionUnitTest();
+		$session_tests->log_as_id(0);
 
 		$response = $this->get('/Diagnostics');
 		$response->assertStatus(200); // code 200 something
@@ -26,6 +25,6 @@ class DiagnosticsTest extends TestCase
 		$response = $this->post('/api/Diagnostics');
 		$response->assertStatus(200); // code 200 something too
 
-		$sessionFunctions->logout();
+		$session_tests->logout($this);
 	}
 }

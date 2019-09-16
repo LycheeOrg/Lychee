@@ -3,10 +3,10 @@
 namespace Tests\Feature;
 
 use App\Configs;
-use App\ModelFunctions\SessionFunctions;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
+use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class PhotosTest extends TestCase
@@ -18,14 +18,16 @@ class PhotosTest extends TestCase
 	 */
 	public function testUpload()
 	{
-		$sessionFunctions = new SessionFunctions();
-		$sessionFunctions->log_as_id(0);
-
 		$photos_tests = new PhotosUnitTest();
-		$album_tests = new AlbumsUnitTest();
+		$albums_tests = new AlbumsUnitTest();
+		$session_tests = new SessionUnitTest();
 
-		// Make a copy of the image because import deletes the file and we want to be
-		// able to use the test on a local machine and not just in CI.
+		$session_tests->log_as_id(0);
+
+		/*
+		 * Make a copy of the image because import deletes the file and we want to be
+		 * able to use the test on a local machine and not just in CI.
+		 */
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
 
 		$file = new UploadedFile('public/uploads/import/night.jpg', 'night.jpg',
@@ -41,16 +43,20 @@ class PhotosTest extends TestCase
 
 		$photos_tests->set_title($this, $id, "Night in Ploumanac'h");
 		$photos_tests->set_description($this, $id, 'A night photography');
-
 		$photos_tests->set_star($this, $id);
-		$photos_tests->see_in_favorite($this, $id);
-
 		$photos_tests->set_tag($this, $id, 'night');
-
 		$photos_tests->set_public($this, $id);
-		$photos_tests->see_in_shared($this, $id);
+		$photos_tests->set_license($this, $id, 'CC0');
+		$photos_tests->set_license($this, $id, 'CC-BY');
+		$photos_tests->set_license($this, $id, 'CC-BY-ND');
+		$photos_tests->set_license($this, $id, 'CC-BY-SA');
+		$photos_tests->set_license($this, $id, 'CC-BY-NC');
+		$photos_tests->set_license($this, $id, 'CC-BY-NC-ND');
+		$photos_tests->set_license($this, $id, 'CC-BY-NC-SA');
 		$photos_tests->set_license($this, $id, 'reserved');
 
+		$photos_tests->see_in_favorite($this, $id);
+		$photos_tests->see_in_shared($this, $id);
 		$response = $photos_tests->get($this, $id, 'true');
 		/*
 		 * Check some Exif data
@@ -80,28 +86,26 @@ class PhotosTest extends TestCase
 			'width' => 6720,
 		]);
 
-		$photos_tests->set_license($this, $id, 'CC0');
-		$photos_tests->set_license($this, $id, 'CC-BY');
-		$photos_tests->set_license($this, $id, 'CC-BY-ND');
-		$photos_tests->set_license($this, $id, 'CC-BY-SA');
-		$photos_tests->set_license($this, $id, 'CC-BY-NC');
-		$photos_tests->set_license($this, $id, 'CC-BY-NC-ND');
-		$photos_tests->set_license($this, $id, 'CC-BY-NC-SA');
-
 		/**
 		 * Actually try to display the picture.
 		 */
 		$response = $this->post('/api/Photo::getRandom', []);
 		$response->assertStatus(200);
 
+		/*
+		 * Erase tag
+		 */
 		$photos_tests->set_tag($this, $id, '');
 
-		$albumID = $album_tests->add($this, '0', 'test_album_2');
-
+		/**
+		 * We now test interaction with albums.
+		 */
+		$albumID = $albums_tests->add($this, '0', 'test_album_2');
 		$photos_tests->set_album($this, $albumID, $id, 'true');
-		$photos_tests->duplicate($this, $id, 'true');
+		$photos_tests->dont_see_in_unsorted($this, $id);
 
-		$response = $album_tests->get($this, $albumID, '', 'true');
+		$photos_tests->duplicate($this, $id, 'true');
+		$response = $albums_tests->get($this, $albumID, '', 'true');
 		$content = $response->getContent();
 		$array_content = json_decode($content);
 		$this->assertEquals(2, count($array_content->photos));
@@ -109,6 +113,11 @@ class PhotosTest extends TestCase
 		$photos_tests->delete($this, $id, 'true');
 		$photos_tests->get($this, $id, 'false');
 
+		// TODO: delete duplicate
+		// TODO: check that picture has been physically removed from folder
+		// TODO: check that there picture is absent from recent
+
+		// TODO: CONTINUE
 		$response = $this->post('/api/Album::setPublic', [
 			'full_photo' => 1,
 			'albumID' => $albumID,
@@ -146,6 +155,8 @@ class PhotosTest extends TestCase
 		$response = $this->get('/api/Photo::clearSymLink');
 		$response->assertOk();
 		$response->assertSee('true');
+
+		$session_tests->logout($this);
 	}
 
 	public function testUpload2()
