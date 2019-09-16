@@ -27,6 +27,8 @@ class DeleteScriptLimit extends Migration
 	 */
 	public function down()
 	{
+		define('BOOL', '0|1');
+
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				[
