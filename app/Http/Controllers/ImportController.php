@@ -16,6 +16,7 @@ use App\Response;
 use Illuminate\Http\Request;
 use ImagickException;
 use Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ImportController extends Controller
 {
@@ -33,6 +34,9 @@ class ImportController extends Controller
 	 * @var SessionFunctions
 	 */
 	private $sessionFunctions;
+
+	private $memLimit;
+	private $memWarningGiven;
 
 	/**
 	 * Create a new command instance.
@@ -102,6 +106,9 @@ class ImportController extends Controller
 		$urls = explode(',', $urls);
 
 		foreach ($urls as &$url) {
+			// Reset the execution timeout for every iteration.
+			set_time_limit(ini_get('max_execution_time'));
+
 			// Validate photo type and extension even when $this->photo (=> $photo->add) will do the same.
 			// This prevents us from downloading invalid photos.
 			// Verify extension
@@ -155,19 +162,64 @@ class ImportController extends Controller
 			'delete_imported' => 'int',
 		]);
 
-		$php_script_no_limit = Configs::get_value('php_script_no_limit', '0');
-		if ($php_script_no_limit == '1') {
-			set_time_limit(0);
-			Logs::notice(__METHOD__, __LINE__, 'Importing using unlimited execution time');
-		}
-
 		if (isset($request['delete_imported'])) {
 			$delete_imported = $request['delete_imported'] === '1';
 		} else {
 			$delete_imported = Configs::get_value('delete_imported', '0') === '1';
 		}
 
-		return $this->server_exec($request['path'], $request['albumID'], $delete_imported);
+		// memory_limit can have a K/M/etc suffix which makes querying it
+		// more complicated...
+		if (sscanf(ini_get('memory_limit'), '%d%c', $this->memLimit, $memExt) === 2) {
+			switch (strtolower($memExt)) {
+				case 'k':
+					$this->memLimit *= 1024;
+					break;
+				case 'm':
+					$this->memLimit *= 1024 * 1024;
+					break;
+				case 'g':
+					$this->memLimit *= 1024 * 1024 * 1024;
+					break;
+				case 't':
+					$this->memLimit *= 1024 * 1024 * 1024 * 1024;
+					break;
+			}
+		}
+		// We set the warning threshold at 90% of the limit.
+		$this->memLimit = intval($this->memLimit * 0.9);
+		$this->memWarningGiven = false;
+
+		return new StreamedResponse(function () use ($request, $delete_imported) {
+			// Surround the response in '"' characters to make it a valid
+			// JSON string.
+			echo '"';
+			$this->server_exec($request['path'], $request['albumID'], $delete_imported);
+			echo '"';
+		});
+	}
+
+	/**
+	 * Output status update to stdout (from where StreamedResponse picks it up).
+	 * Every line of output is terminated with a newline so that the front end
+	 * can be sure that it's complete.
+	 * The status can be one of:
+	 * - Status: <directory name>: <percentage of completion>
+	 *   (A status is always sent for 0 and 100 percent at least).
+	 * - Problem: <file or directory name>: <problem description>
+	 *   (We avoid starting a line with 'Error' as that has a special meaning
+	 *   in the front end, preventing the completion callback from being
+	 *   invoked).
+	 * - Warning: Approaching memory limit.
+	 */
+	private function status_update(string $status)
+	{
+		// We append a newline to the status string, JSON-encode the
+		// result, and strip the  surrounding '"' characters since this
+		// isn't a complete JSON string yet.
+		echo substr(json_encode($status . "\n"), 1, -1);
+		ob_flush();
+		flush();
 	}
 
 	/**
@@ -175,39 +227,36 @@ class ImportController extends Controller
 	 * @param int    $albumID
 	 * @param bool   $delete_imported
 	 *
-	 * @return bool|string Returns true when successful.
-	 *                     Warning: Folder empty or no readable files to process!
-	 *                     Notice: Import only contained albums!
-	 *
 	 * @throws ImagickException
 	 */
-	// I switched this to private, as it should not be needed to be public. if it breaks something we will double check.
 	private function server_exec(string $path, $albumID, $delete_imported)
 	{
 		// Parse path
+		$origPath = $path;
 		if (!isset($path)) {
-			$path = Storage::path('import/');
+			$path = Storage::path('import');
 		}
 		if (substr($path, -1) === '/') {
 			$path = substr($path, 0, -1);
 		}
 		if (is_dir($path) === false) {
-			Logs::error(__METHOD__, __LINE__, 'Given path is not a directory (' . $path . ')');
+			$this->status_update('Problem: ' . $origPath . ': Given path is not a directory');
+			Logs::error(__METHOD__, __LINE__, 'Given path is not a directory (' . $origPath . ')');
 
-			return 'false';
+			return;
 		}
 
 		// Skip folders of Lychee
-		if ($path === Storage::path('big/') || ($path . '/') === Storage::path('big/') ||
-			$path === Storage::path('medium/') || ($path . '/') === Storage::path('medium/') ||
-			$path === Storage::path('small/') || ($path . '/') === Storage::path('small/') ||
-			$path === Storage::path('thumb/') || ($path . '/') === Storage::path('thumb/')) {
-			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee (' . $path . ')');
+		if ($path === Storage::path('big') ||
+			$path === Storage::path('medium') ||
+			$path === Storage::path('small') ||
+			$path === Storage::path('thumb')) {
+			$this->status_update('Problem: ' . $origPath . ': Given path is reserved');
+			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee (' . $origPath . ')');
 
-			return 'false';
+			return;
 		}
 
-		$error = false;
 		$contains['photos'] = false;
 		$contains['albums'] = false;
 
@@ -216,12 +265,40 @@ class ImportController extends Controller
 		// way, it's much easier for the user to figure out what was imported
 		// and what was not.
 		$files = glob($path . '/*');
+		$filesTotal = count($files);
+		$filesCount = 0;
 		$dirs = [];
+		$lastStatus = microtime(true);
+		$this->status_update('Status: ' . $origPath . ': 0');
 		foreach ($files as $file) {
+			// Reset the execution timeout for every iteration.
+			set_time_limit(ini_get('max_execution_time'));
+
+			// Report if we might be running out of memory.
+			if (!$this->memWarningGiven && memory_get_usage() > $this->memLimit) {
+				$this->status_update('Warning: Approaching memory limit');
+				$this->memWarningGiven = true;
+			}
+
+			// Generate the status at most once a second, except for 0% and
+			// 100%, which are always generated.
+			$time = microtime(true);
+			if ($time - $lastStatus >= 1) {
+				$this->status_update('Status: ' . $origPath . ': ' . intval($filesCount / $filesTotal * 100));
+				$lastStatus = $time;
+			}
+
+			if (is_dir($file)) {
+				$dirs[] = $file;
+				$filesTotal--;
+				continue;
+			}
+
+			$filesCount++;
 			// It is possible to move a file because of directory permissions but
 			// the file may still be unreadable by the user
 			if (!is_readable($file)) {
-				$error = true;
+				$this->status_update('Problem: ' . $file . ': Could not read file');
 				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
 				continue;
 			}
@@ -230,18 +307,17 @@ class ImportController extends Controller
 				// Photo or Video
 				$contains['photos'] = true;
 				if ($this->photo($file, $delete_imported, $albumID) === false) {
-					$error = true;
+					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					continue;
 				}
-			} elseif (is_dir($file)) {
-				$dirs[] = $file;
 			} else {
-				$error = true;
+				$this->status_update('Problem: ' . $file . ': Unsupported file type');
 				Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
 				continue;
 			}
 		}
+		$this->status_update('Status: ' . $origPath . ': 100');
 
 		// Album creation
 		foreach ($dirs as $dir) {
@@ -249,31 +325,13 @@ class ImportController extends Controller
 			$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
 			// this actually should not fail.
 			if ($album === false) {
-				$error = true;
+				$this->status_update('Problem: ' . $basename($dir) . ': Could not create album');
 				Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
 				continue;
 			}
 			$newAlbumID = $album->id;
 			$contains['albums'] = true;
-			$import = $this->server_exec($dir . '/', $newAlbumID, $delete_imported);
-			if ($import !== 'true' && $import !== '"Notice: Import only contains albums!"' && $import !== '"Warning: Folder empty or no readable files to process!"') {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not import folder. Function returned warning.');
-				continue;
-			}
+			$this->server_exec($dir . '/', $newAlbumID, $delete_imported);
 		}
-
-		// The following returns will be caught in the front-end
-		if ($contains['photos'] === false && $contains['albums'] === false) {
-			return '"Warning: Folder empty or no readable files to process!"';
-		}
-		if ($error === true) {
-			return 'false';
-		}
-		if ($contains['photos'] === false && $contains['albums'] === true) {
-			return '"Notice: Import only contained albums!"';
-		}
-
-		return 'true';
 	}
 }
