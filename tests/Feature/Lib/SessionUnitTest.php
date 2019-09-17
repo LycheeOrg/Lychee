@@ -45,11 +45,33 @@ class SessionUnitTest
 	 * @param string   $password
 	 * @param string   $result
 	 */
-	public function set(TestCase &$testCase, string $login, string $password, string $result = 'true')
+	public function set_new(TestCase &$testCase, string $login, string $password, string $result = 'true')
 	{
 		$response = $testCase->post('/api/Settings::setLogin', [
 			'username' => $login,
 			'password' => $password,
+		]);
+		$response->assertOk();
+		$response->assertSee($result);
+	}
+
+	/**
+	 * Set a new login and password.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $login
+	 * @param string   $password
+	 * @param string   $oldUsername
+	 * @param string   $oldPassword
+	 * @param string   $result
+	 */
+	public function set_old(TestCase &$testCase, string $login, string $password, string $oldUsername, string $oldPassword, string $result = 'true')
+	{
+		$response = $testCase->post('/api/Settings::setLogin', [
+			'username' => $login,
+			'password' => $password,
+			'oldUsername' => $oldUsername,
+			'oldPassword' => $oldPassword,
 		]);
 		$response->assertOk();
 		$response->assertSee($result);
