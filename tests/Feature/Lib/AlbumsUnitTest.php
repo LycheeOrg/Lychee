@@ -38,6 +38,27 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * Get all albums.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $result
+	 *
+	 * @return TestResponse
+	 */
+	public function get_all(
+		TestCase &$testCase,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Albums::get', []);
+		$response->assertOk();
+		if ($result != 'true') {
+			$response->assertSee($result);
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Get album by ID.
 	 *
 	 * @param TestCase $testCase
@@ -165,6 +186,52 @@ class AlbumsUnitTest
 	) {
 		$response = $testCase->post('/api/Album::setLicense',
 			['albumID' => $id, 'license' => $license]);
+		$response->assertOk();
+		$response->assertSee($result);
+	}
+
+	/**
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param int      $full_photo
+	 * @param int      $public
+	 * @param int      $visible
+	 * @param int      $downloadable
+	 * @param string   $result
+	 */
+	public function set_public(
+		TestCase &$testCase,
+		string $id,
+		int $full_photo = 1,
+		int $public = 1,
+		int $visible = 1,
+		int $downloadable = 1,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Album::setPublic', [
+			'full_photo' => $full_photo,
+			'albumID' => $id,
+			'public' => $public,
+			'visible' => $visible,
+			'downloadable' => $downloadable,
+		]);
+		$response->assertOk();
+		$response->assertSee($result);
+	}
+
+	/**
+	 * Delete.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $result
+	 */
+	public function delete(
+		TestCase &$testCase,
+		string $id,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Album::delete', ['albumIDs' => $id]);
 		$response->assertOk();
 		$response->assertSee($result);
 	}

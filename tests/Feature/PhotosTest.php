@@ -117,15 +117,7 @@ class PhotosTest extends TestCase
 		// TODO: check that picture has been physically removed from folder
 		// TODO: check that there picture is absent from recent
 
-		// TODO: CONTINUE
-		$response = $this->post('/api/Album::setPublic', [
-			'full_photo' => 1,
-			'albumID' => $albumID,
-			'public' => 1,
-			'visible' => 1,
-			'downloadable' => 1,
-		]);
-		$response->assertOk();
+		$albums_tests->set_public($this, $albumID, 1, 1, 1, 1, 'true');
 
 		/**
 		 * Actually try to display the picture.
@@ -148,9 +140,7 @@ class PhotosTest extends TestCase
 		// set back to initial value
 		Configs::set('gen_demo_js', $init_config_value);
 
-		$response = $this->post('/api/Album::delete', ['albumIDs' => $albumID]);
-		$response->assertOk();
-		$response->assertSee('true');
+		$albums_tests->delete($this, $albumID);
 
 		$response = $this->get('/api/Photo::clearSymLink');
 		$response->assertOk();

@@ -73,19 +73,15 @@ class AlbumTest extends TestCase
 		 */
 		$session_tests->log_as_id(0);
 
-		/**
+		/*
 		 * Let's try to delete this album.
 		 */
-		$response = $this->post('/api/Album::delete', ['albumIDs' => $albumID]);
-		$response->assertOk();
-		$response->assertSee('true');
+		$album_tests->delete($this, $albumID);
 
-		/**
+		/*
 		 * Because we deleted the album, we should not see it anymore.
 		 */
-		$response = $this->post('/api/Albums::get', []);
-		$response->assertOk();
-		$response->assertDontSee($albumID);
+		$album_tests->dont_see_in_albums($this, $albumID);
 
 		$session_tests->logout($this);
 	}
