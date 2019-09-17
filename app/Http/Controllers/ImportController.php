@@ -200,6 +200,7 @@ class ImportController extends Controller
 		});
 		// nginx-specific voodoo, as per https://symfony.com/doc/current/components/http_foundation.html#streaming-a-response
 		$response->headers->set('X-Accel-Buffering', 'no');
+
 		return $response;
 	}
 
