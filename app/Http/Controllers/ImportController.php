@@ -190,13 +190,17 @@ class ImportController extends Controller
 		$this->memLimit = intval($this->memLimit * 0.9);
 		$this->memWarningGiven = false;
 
-		return new StreamedResponse(function () use ($request, $delete_imported) {
+		$response = new StreamedResponse();
+		$response->setCallback(function () use ($request, $delete_imported) {
 			// Surround the response in '"' characters to make it a valid
 			// JSON string.
 			echo '"';
 			$this->server_exec($request['path'], $request['albumID'], $delete_imported);
 			echo '"';
 		});
+		// nginx-specific voodoo, as per https://symfony.com/doc/current/components/http_foundation.html#streaming-a-response
+		$response->headers->set('X-Accel-Buffering', 'no');
+		return $response;
 	}
 
 	/**
