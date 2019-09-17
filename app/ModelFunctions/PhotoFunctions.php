@@ -151,11 +151,11 @@ class PhotoFunctions
 	 *
 	 * @return string
 	 */
-	private function kind($file, string $extension)
+	private function file_type($file, string $extension)
 	{
 		// check raw files
 		if (in_array(strtolower($extension), explode('|', Configs::get_value('raw_formats', '')), true)) {
-			return 'RAW';
+			return 'raw';
 		}
 
 		if (!in_array(strtolower($extension), $this->validExtensions, true)) {
@@ -243,12 +243,12 @@ class PhotoFunctions
 				break;
 		}
 
-//		// Verify extension
+		// Verify extension
 		$extension = Helpers::getExtension($file['name'], false);
 		$mimeType = $file['type'];
-		$kind = $this->kind($file, $extension);
+		$kind = $this->file_type($file, $extension);
 
-		if ($kind != 'photo' && $kind != 'video' && $kind != 'RAW') {
+		if ($kind != 'photo' && $kind != 'video' && $kind != 'raw') {
 			return Response::error($kind);
 		}
 
@@ -260,7 +260,7 @@ class PhotoFunctions
 		$tmp_name = $file['tmp_name'];
 		$photo_name = md5(microtime()) . $extension;
 
-		$path_prefix = $kind != 'RAW' ? 'big/' : 'raw/';
+		$path_prefix = $kind != 'raw' ? 'big/' : 'raw/';
 		$path = Storage::path($path_prefix . $photo_name);
 
 		// Calculate checksum
@@ -315,7 +315,7 @@ class PhotoFunctions
 			}
 		}
 
-		if ($kind == 'RAW') {
+		if ($kind == 'raw') {
 			$info = $this->metadataExtractor->bare();
 			$this->metadataExtractor->size($info, $path);
 			$this->metadataExtractor->validate($info);
@@ -325,7 +325,7 @@ class PhotoFunctions
 		}
 
 		// Use title of file if IPTC title missing
-		if ($kind == 'RAW') {
+		if ($kind == 'raw') {
 			$info['title'] = substr(basename($file['name']), 0, 30);
 		} elseif ($info['title'] === '') {
 			$info['title'] = substr(basename($file['name'], $extension), 0, 30);
@@ -393,7 +393,7 @@ class PhotoFunctions
 			}
 
 			// Create Thumb
-			if ($kind == 'RAW') {
+			if ($kind == 'raw') {
 				$photo->thumbUrl = '';
 				$photo->thumb2x = 0;
 			} elseif (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {

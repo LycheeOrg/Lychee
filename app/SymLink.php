@@ -180,6 +180,7 @@ class SymLink extends Model
 			if ($this->$kind != '') {
 				$path = Storage::drive('symbolic')->path($this->$kind);
 				try {
+					Logs::warning(__FUNCTION__, __LINE__, $path);
 					unlink($path);
 				} catch (Exception $e) {
 					Logs::error(__METHOD__, __LINE__, 'could not unlink ' . $path);
