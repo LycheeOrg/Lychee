@@ -102,9 +102,8 @@ class SettingsController extends Controller
 					. $request['username'] . ') from ' . $request->ip());
 				$user->username = $request['username'];
 				$user->password = bcrypt($request['password']);
-				$user->save();
 
-				return 'true';
+				return $user->save() ? 'true' : 'false';
 			} else {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username
 					. ') tried to change his identity from ' . $request->ip());
