@@ -289,7 +289,8 @@ class Photo extends Model
 			$photo['thumb2x'] = '';
 		}
 
-		$photo['url'] = Storage::url('big/' . $this->url);
+		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
+		$photo['url'] = Storage::url($path_prefix . $this->url);
 
 		// Use takestamp as sysdate when possible
 		if (isset($this->takestamp) && $this->takestamp != null) {
@@ -359,12 +360,13 @@ class Photo extends Model
 		}
 
 		$error = false;
+		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
 		// quick check...
-		if (!Storage::exists('big/' . $this->url)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find picture in ' . Storage::path('big/' . $this->url));
+		if (!Storage::exists($path_prefix . $this->url)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->url));
 			$error = true;
-		} elseif (!Storage::delete('big/' . $this->url)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in ' . Storage::path('big/' . $this->url));
+		} elseif (!Storage::delete($path_prefix . $this->url)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($path_prefix . $this->url));
 			$error = true;
 		}
 
@@ -378,22 +380,26 @@ class Photo extends Model
 			$photoName2x = $photoName2x[0] . '@2x.' . $photoName2x[1];
 
 			// Delete medium
+			// TODO: USE STORAGE FOR DELETE
 			if (Storage::exists('medium/' . $photoName) && !unlink(Storage::path('medium/' . $photoName))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
 				$error = true;
 			}
 
+			// TODO: USE STORAGE FOR DELETE
 			if (Storage::exists('medium/' . $photoName2x) && !unlink(Storage::path('medium/' . $photoName2x))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
 				$error = true;
 			}
 
 			// Delete small
+			// TODO: USE STORAGE FOR DELETE
 			if (Storage::exists('small/' . $photoName) && !unlink(Storage::path('small/' . $photoName))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
 				$error = true;
 			}
 
+			// TODO: USE STORAGE FOR DELETE
 			if (Storage::exists('medium/' . $photoName2x) && !unlink(Storage::path('medium/' . $photoName2x))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
 				$error = true;
@@ -405,12 +411,14 @@ class Photo extends Model
 			$thumbUrl2x = explode('.', $this->thumbUrl);
 			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 			// Delete thumb
+			// TODO: USE STORAGE FOR DELETE
 			if (Storage::exists('thumb/' . $this->thumbUrl) && !unlink(Storage::path('thumb/' . $this->thumbUrl))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
 				$error = true;
 			}
 
 			// Delete thumb@2x
+			// TODO: USE STORAGE FOR DELETE
 			if (Storage::exists('thumb/' . $thumbUrl2x) && !unlink(Storage::path('thumb/' . $thumbUrl2x))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
 				$error = true;
