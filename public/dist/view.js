@@ -1239,6 +1239,7 @@ sidebar.createStructure.photo = function (data) {
 
 	var editable = typeof album !== 'undefined' ? album.isUploadable() : false;
 	var exifHash = data.takedate + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
+	var locationHash = data.longitude + data.latitude + data.altitude;
 	var structure = {};
 	var _public = '';
 	var isVideo = data.type && data.type.indexOf('video') > -1;
@@ -1347,8 +1348,19 @@ sidebar.createStructure.photo = function (data) {
 		rows: [{ title: lychee.locale['PHOTO_LICENSE'], kind: 'license', value: license, editable: editable }]
 	};
 
+	if (locationHash !== '' && locationHash !== 0) {
+
+		structure.location = {
+			title: lychee.locale['PHOTO_LOCATION'],
+			type: sidebar.types.DEFAULT,
+			rows: [{ title: lychee.locale['PHOTO_LATITUDE'], kind: 'latitude', value: data.latitude ? DecimalToDegreeMinutesSeconds(data.latitude, true) : '' }, { title: lychee.locale['PHOTO_LONGITUDE'], kind: 'longitude', value: data.longitude ? DecimalToDegreeMinutesSeconds(data.longitude, false) : '' }, { title: lychee.locale['PHOTO_ALTITUDE'], kind: 'altitude', value: data.altitude ? data.altitude + 'm' : '' }, { title: lychee.locale['PHOTO_IMGDIRECTION'], kind: 'imgDirection', value: data.imgDirection ? data.imgDirection + '°' : '' }]
+		};
+	} else {
+		structure.location = {};
+	}
+
 	// Construct all parts of the structure
-	structure = [structure.basics, structure.image, structure.tags, structure.exif, structure.sharing, structure.license];
+	structure = [structure.basics, structure.image, structure.tags, structure.exif, structure.location, structure.sharing, structure.license];
 
 	return structure;
 };
@@ -1493,6 +1505,22 @@ sidebar.createStructure.album = function (data) {
 	return structure;
 };
 
+sidebar.has_location = function (structure) {
+
+	if (structure == null || structure === '' || structure === false) return false;
+
+	var _has_location = false;
+
+	structure.forEach(function (section) {
+
+		if (section.title == lychee.locale['PHOTO_LOCATION']) {
+			_has_location = true;
+		}
+	});
+
+	return _has_location;
+};
+
 sidebar.render = function (structure) {
 
 	if (structure == null || structure === '' || structure === false) return false;
@@ -1504,6 +1532,25 @@ sidebar.render = function (structure) {
 		var _html = '';
 
 		_html += "\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>" + section.title + "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t ";
+
+		if (section.title == lychee.locale['PHOTO_LOCATION']) {
+			var _has_latitude = false;
+			var _has_longitude = false;
+
+			section.rows.forEach(function (row) {
+				if (row.kind == 'latitude' && row.value !== '') {
+					_has_latitude = true;
+				}
+
+				if (row.kind == 'longitude' && row.value !== '') {
+					_has_longitude = true;
+				}
+			});
+
+			if (_has_latitude && _has_longitude && lychee.map_display) {
+				_html += "\n\t\t\t\t\t\t <div id=\"mapid\" style=\"margin: 10px 0px 0px 20px; height: 180px; width: calc(100% - 40px); float: left\"></div>\n\t\t\t\t\t\t ";
+			}
+		}
 
 		section.rows.forEach(function (row) {
 
@@ -1545,6 +1592,51 @@ sidebar.render = function (structure) {
 	});
 
 	return html;
+};
+
+function DecimalToDegreeMinutesSeconds(decimal, type) {
+
+	var degrees = 0;
+	var minutes = 0;
+	var seconds = 0;
+	var direction = 'X';
+
+	//decimal must be integer or float no larger than 180;
+	//type must be Boolean
+	if (Math.abs(decimal) > 180 || !(typeof type === "boolean")) {
+		return false;
+	}
+
+	//inputs OK, proceed
+	//type is latitude when true, longitude when false
+
+	//set direction; north assumed
+	if (type && decimal < 0) {
+		direction = 'S';
+	} else if (!type && decimal < 0) {
+		direction = 'W';
+	} else if (!type) {
+		direction = 'E';
+	} else {
+		direction = 'N';
+	}
+
+	//get absolute value of decimal
+	var d = Math.abs(decimal);
+
+	//get degrees
+	degrees = Math.floor(d);
+
+	//get seconds
+	seconds = (d - degrees) * 3600;
+
+	//get minutes
+	minutes = Math.floor(seconds / 60);
+
+	//reset seconds
+	seconds = Math.floor(seconds - minutes * 60);
+
+	return degrees + '° ' + minutes + '\' ' + seconds + '\" ' + direction;
 };
 
 lychee.locale = {
@@ -1768,6 +1860,11 @@ lychee.locale = {
 	'PHOTO_NO_EDIT_SHARING_TEXT': 'Because this photo is located in a public album, it inherits that album\'s visibility settings.  Its current visibility is shown below for informational purposes only.',
 	'PHOTO_EDIT_GLOBAL_SHARING_TEXT': 'The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.',
 	'PHOTO_SHARING_CONFIRM': 'Save',
+	'PHOTO_LOCATION': 'Location',
+	'PHOTO_LATITUDE': 'Latitude',
+	'PHOTO_LONGITUDE': 'Longitude',
+	'PHOTO_ALTITUDE': 'Altitude',
+	'PHOTO_IMGDIRECTION': 'Direction',
 
 	'LOADING': 'Loading',
 	'ERROR': 'Error',
@@ -1789,6 +1886,7 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
 	'SETTINGS_SUCCESS_PUBLIC_SEARCH': 'Public search updated',
 	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
+	'SETTINGS_SUCCESS_MAP_DISPLAY': 'Display map settings updated',
 	'SETTINGS_SUCCESS_CSS': 'CSS updated',
 	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
 
@@ -1867,6 +1965,8 @@ lychee.locale = {
 	'OVERLAY_EXIF': 'Photo EXIF data',
 	'OVERLAY_DESCRIPTION': 'Photo description',
 	'OVERLAY_DATE': 'Photo date taken',
+
+	'MAP_DISPLAY_TEXT': 'Display coordinates on map (OpenStreetMap):',
 
 	'VIEW_NO_RESULT': 'No results',
 	'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',
