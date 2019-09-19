@@ -51,6 +51,8 @@ api.isTimeout = function (errorThrown, jqXHR) {
 };
 
 api.post = function (fn, params, callback) {
+	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
 
 	loadingBar.show();
 
@@ -76,14 +78,22 @@ api.post = function (fn, params, callback) {
 		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', params, errorThrown);
 	};
 
-	$.ajax({
+	var ajaxParams = {
 		type: 'POST',
 		url: api_url,
 		data: params,
 		dataType: 'json',
 		success: success,
 		error: error
-	});
+	};
+
+	if (responseProgressCB !== null) {
+		ajaxParams.xhrFields = {
+			onprogress: responseProgressCB
+		};
+	}
+
+	$.ajax(ajaxParams);
 };
 
 api.get = function (url, callback) {
