@@ -23,9 +23,12 @@ class ConfigMapDisplay extends Migration
 				],
 			]);
 
-			define('BOOL', '0|1');
+			if (!defined('BOOL')) {
+				define('BOOL', '0|1');
+			}
+
 			Configs::where('key', '=', 'map_display')->update(['type_range' => BOOL]);
-			
+
 		} else {
 			echo "Table configs does not exists\n";
 		}
