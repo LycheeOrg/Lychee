@@ -14,21 +14,19 @@ class ConfigMapDisplay extends Migration
 	 */
 	public function up()
 	{
+		if (!defined('BOOL')) {
+			define('BOOL', '0|1');
+		}
+
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				[
 					'key' => 'map_display',
 					'value' => '0',
 					'confidentiality' => 0,
+					'type_range' => BOOL,
 				],
 			]);
-
-			if (!defined('BOOL')) {
-				define('BOOL', '0|1');
-			}
-
-			Configs::where('key', '=', 'map_display')->update(['type_range' => BOOL]);
-
 		} else {
 			echo "Table configs does not exists\n";
 		}

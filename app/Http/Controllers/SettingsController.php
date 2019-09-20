@@ -327,7 +327,6 @@ class SettingsController extends Controller
 	 */
 	public function setMapDisplay(Request $request)
 	{
-
 		$request->validate([
 			'map_display' => 'required|string',
 		]);
