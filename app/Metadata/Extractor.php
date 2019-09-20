@@ -304,7 +304,7 @@ class Extractor
 	}
 
 	/**
-	 * Returns the image direction
+	 * Returns the image direction.
 	 *
 	 * @param string direction
 	 * @param string $ref

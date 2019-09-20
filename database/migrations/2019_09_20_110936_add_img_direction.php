@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-
 class AddImgDirection extends Migration
 {
 	/**
@@ -14,9 +13,8 @@ class AddImgDirection extends Migration
 	 */
 	public function up()
 	{
-
 		if (Schema::hasTable('photos')) {
-				Schema::table('photos', function ($table) {
+			Schema::table('photos', function ($table) {
 				$table->decimal('imgDirection', 10, 4)->after('altitude')->nullable();
 			});
 		} else {
@@ -33,8 +31,8 @@ class AddImgDirection extends Migration
 	{
 		if (Schema::hasTable('photos')) {
 			Schema::table('photos', function (Blueprint $table) {
-					$table->dropColumn('imgDirection');
-				});
+				$table->dropColumn('imgDirection');
+			});
 		}
 	}
 }
