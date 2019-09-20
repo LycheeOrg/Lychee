@@ -249,6 +249,7 @@ final class Swedish implements LangInterface
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF Overlay setting updated',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Offentlig sökning uppdaterad',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 
 			'DB_INFO_TITLE' => 'Ange dina uppgifter för databasanslutninge nedan:',
 			'DB_INFO_HOST' => 'Databasens adress (valfritt)',
@@ -314,6 +315,7 @@ final class Swedish implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
+			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

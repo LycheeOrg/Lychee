@@ -252,6 +252,7 @@ final class Italian implements LangInterface
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'Impostazioni filigrana EXIF aggiornate',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Ricerca pubblica aggiornata',
 			'SETTINGS_SUCCESS_LICENSE' => 'Licenza predefinita aggiornata',
+			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
 			'DB_INFO_HOST' => 'Host Database (opzionale)',
@@ -325,6 +326,7 @@ final class Italian implements LangInterface
 			'OVERLAY_EXIF' => 'Dati Foto EXIF',
 			'OVERLAY_DESCRIPTION' => 'Descrizione della Foto',
 			'OVERLAY_DATE' => 'Data di Creazione della Foto',
+			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',

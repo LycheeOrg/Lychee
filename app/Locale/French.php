@@ -249,6 +249,7 @@ final class French implements LangInterface
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF Overlay setting updated',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Recherche publique mise à jour',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
 			'DB_INFO_HOST' => 'Hôte de la base de donnees (facultatif)',
@@ -314,6 +315,7 @@ final class French implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
+			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

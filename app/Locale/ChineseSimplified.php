@@ -249,6 +249,7 @@ final class ChineseSimplified implements LangInterface
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF Overlay setting updated',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => '公开搜索已更新',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 
 			'DB_INFO_TITLE' => '请输入数据库信息',
 			'DB_INFO_HOST' => '数据库主机 (可选)',
@@ -314,6 +315,7 @@ final class ChineseSimplified implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
+			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

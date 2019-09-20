@@ -252,6 +252,7 @@ final class German implements LangInterface
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF-Overlay-Einstellungen aktualisiert',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Public search updated',
 			'SETTINGS_SUCCESS_LICENSE' => 'Standard-Lizenz aktualisiert',
+			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Karteneinstellungen erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
 			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
 
