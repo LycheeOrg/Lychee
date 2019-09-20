@@ -377,6 +377,8 @@ return [
         ],
         'img-src' => [
             'self' => true,
+			// Allow OpenStreetMap images to be fetched from http://{a,b,c}.tile.osm.org
+			// Allow image to be directly encoded at the img source parameter
             'allow' => [
               'http://a.tile.osm.org/',
               'http://b.tile.osm.org/',
