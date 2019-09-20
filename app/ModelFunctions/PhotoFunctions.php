@@ -351,6 +351,7 @@ class PhotoFunctions
 		$photo->latitude = $info['latitude'];
 		$photo->longitude = $info['longitude'];
 		$photo->altitude = $info['altitude'];
+		$photo->imgDirection = $info['imgDirection'];
 		$photo->public = $public;
 		$photo->star = $star;
 		$photo->checksum = $checksum;

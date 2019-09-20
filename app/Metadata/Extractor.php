@@ -35,6 +35,7 @@ class Extractor
 			'latitude' => null,
 			'longitude' => null,
 			'altitude' => null,
+			'imgDirection' => null,
 		];
 
 		return $metadata;
@@ -219,6 +220,9 @@ class Extractor
 			if (!empty($exif['GPSAltitude']) && !empty($exif['GPSAltitudeRef'])) {
 				$metadata['altitude'] = $this->getGPSAltitude($exif['GPSAltitude'], $exif['GPSAltitudeRef']);
 			}
+			if (!empty($exif['GPSImgDirection']) && !empty($exif['GPSImgDirectionRef'])) {
+				$metadata['imgDirection'] = $this->getGPSImgDirection($exif['GPSImgDirection'], $exif['GPSImgDirectionRef']);
+			}
 		}
 
 		$this->validate($metadata);
@@ -297,6 +301,21 @@ class Extractor
 		$flip = ($ref == '1') ? -1 : 1;
 
 		return $flip * $this->formattedToFloatGPS($altitude);
+	}
+
+	/**
+	 * Returns the image direction
+	 *
+	 * @param string direction
+	 * @param string $ref
+	 *
+	 * @return float
+	 */
+	private function getGPSImgDirection(string $direction, string $ref): float
+	{
+		// Simplification: we ignore the difference between magnetic and true north
+
+		return $this->formattedToFloatGPS($direction);
 	}
 
 	/**
