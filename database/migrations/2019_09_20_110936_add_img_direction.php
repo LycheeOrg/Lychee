@@ -15,7 +15,7 @@ class AddImgDirection extends Migration
 	{
 		if (Schema::hasTable('photos')) {
 			Schema::table('photos', function ($table) {
-				$table->decimal('imgDirection', 10, 4)->after('altitude')->nullable();
+				$table->decimal('imgDirection', 10, 4)->default(null)->after('altitude')->nullable();
 			});
 		} else {
 			echo "Table photos does not exists\n";
