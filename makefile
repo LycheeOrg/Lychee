@@ -81,4 +81,23 @@ clean:
 	@rm -r Lychee-v* 2> /dev/null || true
 
 test:
-	./vendor/bin/phpunit --verbose
+	@if [ -x "vendor/bin/phpunit" ]; then \
+		./vendor/bin/phpunit --verbose; \
+	else \
+		echo ""; \
+		echo "Please install phpunit:"; \
+		echo ""; \
+		echo "  composer install"; \
+		echo ""; \
+	fi
+
+formatting:
+	@if [ -x "vendor/bin/php-cs-fixer" ]; then \
+		./vendor/bin/php-cs-fixer fix -v --config=.php_cs; \
+	else \
+		echo ""; \
+		echo "Please install php-cs-fixer:"; \
+		echo ""; \
+		echo "  composer install"; \
+		echo ""; \
+	fi
