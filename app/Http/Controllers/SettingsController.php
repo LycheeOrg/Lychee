@@ -319,6 +319,26 @@ class SettingsController extends Controller
 	}
 
 	/**
+	 * Enable display of photo coordinates on map.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapDisplay(Request $request)
+	{
+		$request->validate([
+			'map_display' => 'required|string',
+		]);
+
+		if ($request['map_display'] == '1') {
+			return (Configs::set('map_display', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('map_display', '0')) ? 'true' : 'false';
+	}
+
+	/**
 	 * take the css input text and put it into dist/user.css
 	 * this allow admins to actually personalize the look of their installation.
 	 *

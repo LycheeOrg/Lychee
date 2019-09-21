@@ -181,6 +181,10 @@ final class Italian implements LangInterface
 			'PHOTO_REUSE' => 'Riutilizzo',
 			'PHOTO_LICENSE_NONE' => 'Nessuna',
 			'PHOTO_RESERVED' => 'Tutti i Diritti Riservati',
+			'PHOTO_LATITUDE' => 'Latitude',
+			'PHOTO_LONGITUDE' => 'Longitude',
+			'PHOTO_ALTITUDE' => 'Altitude',
+			'PHOTO_IMGDIRECTION' => 'Direction',
 			'PHOTO_IMAGE' => 'Immagine',
 			'PHOTO_VIDEO' => 'Video',
 			'PHOTO_SIZE' => 'Dimensioni',
@@ -252,6 +256,7 @@ final class Italian implements LangInterface
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'Impostazioni filigrana EXIF aggiornate',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Ricerca pubblica aggiornata',
 			'SETTINGS_SUCCESS_LICENSE' => 'Licenza predefinita aggiornata',
+			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
 			'DB_INFO_HOST' => 'Host Database (opzionale)',
@@ -325,6 +330,7 @@ final class Italian implements LangInterface
 			'OVERLAY_EXIF' => 'Dati Foto EXIF',
 			'OVERLAY_DESCRIPTION' => 'Descrizione della Foto',
 			'OVERLAY_DATE' => 'Data di Creazione della Foto',
+			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',

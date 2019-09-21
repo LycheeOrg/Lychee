@@ -180,6 +180,10 @@ final class German implements LangInterface
 			'PHOTO_REUSE' => 'Weiterverwendung',
 			'PHOTO_LICENSE_NONE' => 'Keine',
 			'PHOTO_RESERVED' => 'Alle Rechte vorbehalten',
+			'PHOTO_LATITUDE' => 'Breite',
+			'PHOTO_LONGITUDE' => 'Länge',
+			'PHOTO_ALTITUDE' => 'Höhe',
+			'PHOTO_IMGDIRECTION' => 'Richtung',
 			'PHOTO_IMAGE' => 'Bild',
 			'PHOTO_VIDEO' => 'Video',
 			'PHOTO_SIZE' => 'Größe',
@@ -252,6 +256,7 @@ final class German implements LangInterface
 			'SETTINGS_SUCCESS_IMAGE_OVERLAY' => 'EXIF-Overlay-Einstellungen aktualisiert',
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Public search updated',
 			'SETTINGS_SUCCESS_LICENSE' => 'Standard-Lizenz aktualisiert',
+			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Karteneinstellungen erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
 			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
 
