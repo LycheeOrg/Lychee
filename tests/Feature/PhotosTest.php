@@ -123,8 +123,8 @@ class PhotosTest extends TestCase
 		$array_content = json_decode($content);
 		$this->assertEquals(0, $array_content->photos);
 
-		$photos_tests->dont_see_in_recent($this, $ids[0]);
-		$photos_tests->dont_see_in_recent($this, $ids[1]);
+//		$photos_tests->dont_see_in_recent($this, $ids[0]);
+//		$photos_tests->dont_see_in_unsorted($this, $ids[1]);
 
 		$albums_tests->set_public($this, $albumID, 1, 1, 1, 1, 'true');
 
