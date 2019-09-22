@@ -110,12 +110,21 @@ class PhotosTest extends TestCase
 		$array_content = json_decode($content);
 		$this->assertEquals(2, count($array_content->photos));
 
-		$photos_tests->delete($this, $id, 'true');
-		$photos_tests->get($this, $id, 'false');
+		$ids = array();
+		$ids[0] = $array_content->photos[0]->id;
+		$ids[1] = $array_content->photos[1]->id;
+		$photos_tests->delete($this, $ids[0], 'true');
+		$photos_tests->get($this, $id[0], 'false');
+		$photos_tests->delete($this, $ids[1], 'true');
+		$photos_tests->get($this, $id[1], 'false');
 
-		// TODO: delete duplicate
-		// TODO: check that picture has been physically removed from folder
-		// TODO: check that there picture is absent from recent
+		$response = $albums_tests->get($this, $albumID, '', 'true');
+		$content = $response->getContent();
+		$array_content = json_decode($content);
+		$this->assertEquals(0, $array_content->photos);
+
+		$photos_tests->dont_see_in_recent($this, $ids[0]);
+		$photos_tests->dont_see_in_recent($this, $ids[1]);
 
 		$albums_tests->set_public($this, $albumID, 1, 1, 1, 1, 'true');
 

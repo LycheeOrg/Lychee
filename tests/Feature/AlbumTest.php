@@ -19,6 +19,11 @@ class AlbumTest extends TestCase
 	{
 		$album_tests = new AlbumsUnitTest();
 		$album_tests->add($this, '0', 'test_album', 'false');
+
+		$album_tests->get($this, 'r', '', 'true');
+		$album_tests->get($this, 's', '', 'true');
+		$album_tests->get($this, 'f', '', 'true');
+		$album_tests->get($this, '0', '', 'true');
 	}
 
 	public function test_add_read_logged()
@@ -27,6 +32,11 @@ class AlbumTest extends TestCase
 		$session_tests = new SessionUnitTest();
 
 		$session_tests->log_as_id(0);
+
+		$album_tests->get($this, 'r', '', 'true');
+		$album_tests->get($this, 's', '', 'true');
+		$album_tests->get($this, 'f', '', 'true');
+		$album_tests->get($this, '0', '', 'true');
 
 		$albumID = $album_tests->add($this, '0', 'test_album', 'true');
 		$album_tests->see_in_albums($this, $albumID);
