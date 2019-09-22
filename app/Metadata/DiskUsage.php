@@ -67,6 +67,7 @@ class DiskUsage
 				return intval($size);
 			} // If on a Windows Host (WIN32, WINNT, Windows)
 			else {
+				// @codeCoverageIgnoreStart
 				if (extension_loaded('com_dotnet')) {
 					$obj = new \COM('scripting.filesystemobject');
 					if (is_object($obj)) {
@@ -77,6 +78,7 @@ class DiskUsage
 						return $totalSize;
 					}
 				}
+				// @codeCoverageIgnoreEnd
 			}
 
 			return 0;
@@ -106,7 +108,9 @@ class DiskUsage
 		if (!$this->is_win()) {
 			$ds = disk_total_space('/');
 		} else {
+			// @codeCoverageIgnoreStart
 			$ds = disk_total_space('C:');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $this->getSymbolByQuantity($ds);
@@ -122,7 +126,9 @@ class DiskUsage
 		if (!$this->is_win()) {
 			$ds = disk_free_space('/');
 		} else {
+			// @codeCoverageIgnoreStart
 			$ds = disk_free_space('C:');
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $this->getSymbolByQuantity($ds);
@@ -139,8 +145,10 @@ class DiskUsage
 			return floor(100 * disk_free_space('/') / disk_total_space('/'))
 				. '%';
 		} else {
+			// @codeCoverageIgnoreStart
 			return floor(100 * disk_free_space('C:') / disk_total_space('C:'))
 				. '%';
+			// @codeCoverageIgnoreEnd
 		}
 	}
 

@@ -239,7 +239,9 @@ class Extractor
 	{
 		foreach ($metadata as $k => $v) {
 			if (!mb_check_encoding($v)) {
+				// @codeCoverageIgnoreStart
 				$metadata[$k] = '';
+				// @codeCoverageIgnoreEnd
 			}
 		}
 	}

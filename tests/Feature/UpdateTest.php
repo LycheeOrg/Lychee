@@ -8,11 +8,11 @@ use Tests\TestCase;
 
 class UpdateTest extends TestCase
 {
-	private function do_call($response)
+	private function do_call($result)
 	{
 		$response = $this->get('/api/Update', []);
 		$response->assertOk();
-		$response->assertSee($response);
+		$response->assertSee($result);
 	}
 
 	public function test_do_not_logged()
@@ -31,7 +31,8 @@ class UpdateTest extends TestCase
 		$this->do_call('Error: Online updates are not allowed.');
 
 		Configs::set('allow_online_git_pull', '1');
-		$this->do_call('Error: ../.git is not executable, check the permissions');
+
+		$this->do_call('"Already up to date"');
 
 		Configs::set('allow_online_git_pull', $gitpull);
 
