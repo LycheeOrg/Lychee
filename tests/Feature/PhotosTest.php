@@ -34,6 +34,7 @@ class PhotosTest extends TestCase
 			'image/jpg', null, true);
 
 		$id = $photos_tests->upload($this, $file);
+
 		$photos_tests->get($this, $id, 'true');
 
 		$photos_tests->see_in_unsorted($this, $id);
@@ -46,6 +47,7 @@ class PhotosTest extends TestCase
 		$photos_tests->set_star($this, $id);
 		$photos_tests->set_tag($this, $id, 'night');
 		$photos_tests->set_public($this, $id);
+		$photos_tests->set_license($this, $id, 'WTFPL', '"Error: wrong kind of license!"');
 		$photos_tests->set_license($this, $id, 'CC0');
 		$photos_tests->set_license($this, $id, 'CC-BY');
 		$photos_tests->set_license($this, $id, 'CC-BY-ND');
@@ -101,6 +103,7 @@ class PhotosTest extends TestCase
 		 * We now test interaction with albums.
 		 */
 		$albumID = $albums_tests->add($this, '0', 'test_album_2');
+		$photos_tests->set_album($this, '-1', $id, 'false');
 		$photos_tests->set_album($this, $albumID, $id, 'true');
 		$photos_tests->dont_see_in_unsorted($this, $id);
 
@@ -158,7 +161,26 @@ class PhotosTest extends TestCase
 		$session_tests->logout($this);
 	}
 
-	public function testUpload2()
+	public function test_true_negative()
+	{
+		$photos_tests = new PhotosUnitTest();
+		$albums_tests = new AlbumsUnitTest();
+		$session_tests = new SessionUnitTest();
+
+		$session_tests->log_as_id(0);
+
+		$photos_tests->wrong_upload($this);
+		$photos_tests->wrong_upload2($this);
+		$photos_tests->get($this, '-1', 'false');
+		$photos_tests->set_description($this, '-1', 'test', 'false');
+		$photos_tests->set_public($this, '-1', 'false');
+		$photos_tests->set_album($this, '-1', '-1', 'false');
+		$photos_tests->set_license($this, '-1', 'CC0', 'false');
+
+		$session_tests->logout($this);
+	}
+
+	public function test_upload_2()
 	{
 		// save initial value
 		$init_config_value1 = Configs::get_value('SL_enable');

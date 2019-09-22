@@ -184,8 +184,10 @@ class AlbumsUnitTest
 		string $license,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::setLicense',
-			['albumID' => $id, 'license' => $license]);
+		$response = $testCase->post('/api/Album::setLicense', [
+			'albumID' => $id,
+			'license' => $license,
+		]);
 		$response->assertOk();
 		$response->assertSee($result);
 	}
