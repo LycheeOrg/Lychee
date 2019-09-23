@@ -94,6 +94,14 @@ class SettingsController extends Controller
 				return Response::error('Locked account!');
 			}
 
+			if (User::where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
+				Logs::notice(__METHOD__, __LINE__,
+					'User (' . $user->username
+					. ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip());
+
+				return Response::error('Username already exists.');
+			}
+
 			if ($user->username == $oldUsername
 				&& Hash::check($oldPassword, $user->password)
 			) {
@@ -102,9 +110,8 @@ class SettingsController extends Controller
 					. $request['username'] . ') from ' . $request->ip());
 				$user->username = $request['username'];
 				$user->password = bcrypt($request['password']);
-				$user->save();
 
-				return 'true';
+				return $user->save() ? 'true' : 'false';
 			} else {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username
 					. ') tried to change his identity from ' . $request->ip());
@@ -317,6 +324,26 @@ class SettingsController extends Controller
 			'Could not find the submitted license');
 
 		return 'false';
+	}
+
+	/**
+	 * Enable display of photo coordinates on map.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapDisplay(Request $request)
+	{
+		$request->validate([
+			'map_display' => 'required|string',
+		]);
+
+		if ($request['map_display'] == '1') {
+			return (Configs::set('map_display', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('map_display', '0')) ? 'true' : 'false';
 	}
 
 	/**

@@ -8,6 +8,26 @@ use Tests\TestCase;
 class IndexTest extends TestCase
 {
 	/**
+	 * Testing the Login interface.
+	 *
+	 * @return void
+	 */
+	public function test_home()
+	{
+		/**
+		 * check if we can actually get a nice answer.
+		 */
+		$response = $this->get('/');
+		$response->assertOk();
+
+		$response = $this->post('/php/index.php', []);
+		$response->assertOk();
+
+		$response = $this->post('/api/Albums::get', []);
+		$response->assertOk();
+	}
+
+	/**
 	 * More tests.
 	 *
 	 * @return void

@@ -3,10 +3,9 @@
 /** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class PhpScriptLimit extends Migration
+class ConfigMapDisplay extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -15,12 +14,17 @@ class PhpScriptLimit extends Migration
 	 */
 	public function up()
 	{
+		if (!defined('BOOL')) {
+			define('BOOL', '0|1');
+		}
+
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				[
-					'key' => 'php_script_limit',
+					'key' => 'map_display',
 					'value' => '0',
-					'confidentiality' => 3,
+					'confidentiality' => 0,
+					'type_range' => BOOL,
 				],
 			]);
 		} else {
@@ -36,7 +40,7 @@ class PhpScriptLimit extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'php_script_limit')->delete();
+			Configs::where('key', '=', 'map_display')->delete();
 		}
 	}
 }

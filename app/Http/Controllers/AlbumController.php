@@ -738,29 +738,35 @@ class AlbumController extends Controller
 							continue;
 						}
 
-						$url = Storage::path('big/' . $photo->url);
+						$is_raw = ($photo->type == 'raw');
+
+						$prefix_url = $is_raw ? 'raw/' : 'big/';
+						$url = Storage::path($prefix_url . $photo->url);
 						// Check if readable
 						if (!@is_readable($url)) {
 							Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
 							continue;
 						}
 
+						// Get extension of image
+						$extension = Helpers::getExtension($url, false);
+
+						// Set title for photo
 						$title = str_replace($badChars, '', $photo->title);
 						if (!isset($title) || $title === '') {
 							$title = 'Untitled';
 						}
 
-						// Get extension of image
-						$extension = Helpers::getExtension($url, false);
-						// Set title for photo
-						$file = $title . $extension;
+						$file = $title . ($is_raw ? '' : $extension);
+
 						// Check for duplicates
 						if (!empty($files)) {
 							$i = 1;
 							$tmp_file = $file;
+							$pos = strrpos($tmp_file, '.');
 							while (in_array($tmp_file, $files)) {
 								// Set new title for photo
-								$tmp_file = $title . '-' . $i . $extension;
+								$tmp_file = substr_replace($file, '-' . $i, $pos, 0);
 								$i++;
 							}
 							$file = $tmp_file;

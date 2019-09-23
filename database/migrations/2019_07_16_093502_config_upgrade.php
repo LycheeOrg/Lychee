@@ -80,7 +80,6 @@ class ConfigUpgrade extends Migration
 			Configs::where('key', '=', 'site_copyright_begin')->update(['type_range' => INT]);
 			Configs::where('key', '=', 'site_copyright_end')->update(['type_range' => INT]);
 			Configs::where('key', '=', 'api_key')->update(['type_range' => STRING]);
-			Configs::where('key', '=', 'php_script_no_limit')->update(['type_range' => BOOL]);
 			Configs::where('key', '=', 'allow_online_git_pull')->update(['type_range' => BOOL]);
 			Configs::where('key', '=', 'force_migration_in_production')->update(['type_range' => BOOL]);
 			Configs::where('key', '=', 'additional_footer_text')->update(['type_range' => STRING]);

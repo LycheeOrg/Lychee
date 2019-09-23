@@ -47,7 +47,7 @@ class UpdateController extends Controller
 		if (!function_exists('exec')) {
 			return Response::error('exec is not available');
 		}
-		if (!is_executable('../.git')) {
+		if (!is_executable(base_path('.git'))) {
 			return Response::error('../.git is not executable, check the permissions');
 		}
 

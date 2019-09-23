@@ -74,11 +74,17 @@ class DiagnosticsController extends Controller
 		$errors = array();
 
 		// PHP Version
+
+		// As we cannot test this as those are just raising warnings which we cannot check via Travis.
+		// I hereby solemnly  declare this code as covered !
+
+		// @codeCoverageIgnoreStart
 		if (floatval(phpversion()) < 7.2) {
 			$errors[] = 'Warning: Upgrade to PHP 7.2 or higher';
 			// on Dec 1 2019 enable this to an error.
 //			$errors += ['Error: Upgrade to PHP 7.2 or higher'];
 		}
+
 		if (floatval(phpversion()) < 7.3) {
 			$errors[] = 'Info: Latest version of PHP is 7.3';
 			// on November 30 2019 enable this as warning.
@@ -197,6 +203,7 @@ class DiagnosticsController extends Controller
 				$errors[] = 'Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.';
 			}
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $errors;
 	}
@@ -216,9 +223,11 @@ class DiagnosticsController extends Controller
 		$settings = Configs::get();
 
 		// Load json (we need to add a try case here
-		$json = @file_get_contents(Config::get('defines.path.LYCHEE') . 'public/Lychee-front/package.json');
+		$json = @file_get_contents(base_path('public/Lychee-front/package.json'));
 		if ($json == false) {
+			// @codeCoverageIgnoreStart
 			$json = ['version' => '-'];
+		// @codeCoverageIgnoreEnd
 		} else {
 			$json = json_decode($json, true);
 		}
@@ -231,10 +240,14 @@ class DiagnosticsController extends Controller
 		if ($imagick === true) {
 			$imagickVersion = @Imagick::getVersion();
 		} else {
+			// @codeCoverageIgnoreStart
 			$imagick = '-';
+			// @codeCoverageIgnoreEnd
 		}
 		if (!isset($imagickVersion, $imagickVersion['versionNumber']) || $imagickVersion === '') {
+			// @codeCoverageIgnoreStart
 			$imagickVersion = '-';
+		// @codeCoverageIgnoreEnd
 		} else {
 			$imagickVersion = $imagickVersion['versionNumber'];
 		}
@@ -243,35 +256,40 @@ class DiagnosticsController extends Controller
 		if (function_exists('gd_info')) {
 			$gdVersion = gd_info();
 		} else {
+			// @codeCoverageIgnoreStart
 			$gdVersion = ['GD Version' => '-'];
+			// @codeCoverageIgnoreEnd
 		}
 
 		// About SQL version
-		if (DB::getDriverName() == 'mysql') {
-			$results = DB::select(DB::raw('select version()'));
-			$dbver = $results[0]->{'version()'};
-			$dbtype = 'MySQL';
-		} else {
-			if (DB::getDriverName() == 'sqlite') {
+		// @codeCoverageIgnoreStart
+		switch (DB::getDriverName()) {
+			case 'mysql':
+				$results = DB::select(DB::raw('select version()'));
+				$dbver = $results[0]->{'version()'};
+				$dbtype = 'MySQL';
+				break;
+			case 'sqlite':
 				$results = DB::select(DB::raw('select sqlite_version()'));
 				$dbver = $results[0]->{'sqlite_version()'};
 				$dbtype = 'SQLite';
-			} else {
-				if (DB::getDriverName() == 'pgsql') {
+				break;
+			case 'pgsql':
+				$results = DB::select(DB::raw('select version()'));
+				$dbver = $results[0]->{'version'};
+				$dbtype = 'PostgreSQL';
+				break;
+			default:
+				try {
 					$results = DB::select(DB::raw('select version()'));
-					$dbver = $results[0]->{'version'};
-					$dbtype = 'PostgreSQL';
-				} else {
-					try {
-						$results = DB::select(DB::raw('select version()'));
-						$dbver = $results[0]->{'version()'};
-					} catch (Exception $e) {
-						$dbver = 'unknown';
-					}
-					$dbtype = DB::getDriverName();
+					$dbver = $results[0]->{'version()'};
+				} catch (Exception $e) {
+					$dbver = 'unknown';
 				}
-			}
+				$dbtype = DB::getDriverName();
+				break;
 		}
+		// @codeCoverageIgnoreEnd
 
 		// Output system information
 		$infos[] = str_pad('Lychee-front Version:', $this->pad_length) . $json['version'];
@@ -339,9 +357,11 @@ class DiagnosticsController extends Controller
 
 		try {
 			$update &= !$this->gitHubFunctions->is_up_to_date();
+			// @codeCoverageIgnoreStart
 		} catch (Exception $e) {
 			$update = false;
 		}
+		// @codeCoverageIgnoreEnd
 
 		return [
 			'errors' => $errors,
