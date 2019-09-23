@@ -29,6 +29,25 @@ class UsersUnitTest
 	}
 
 	/**
+	 * @param TestCase $testCase
+	 * @param string   $result
+	 *
+	 * @return TestResponse
+	 */
+	public function init(
+		TestCase &$testCase,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/php/index.php', []);
+		$response->assertStatus(200);
+		if ($result != 'true') {
+			$response->assertSee($result);
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Add a new user.
 	 *
 	 * @param TestCase $testCase

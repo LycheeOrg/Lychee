@@ -138,8 +138,10 @@ class GitHubFunctions
 		$branch = $this->get_current_branch();
 		$head = $this->get_current_commit();
 		if ($head == false || $branch == false) {
+			// @codeCoverageIgnoreStart
 			return 'No git data found. Probably installed from release or could not read .git';
 		}
+		// @codeCoverageIgnoreEnd
 
 		return sprintf('%s (%s)', $head, $branch) . $this->get_behind_text();
 	}

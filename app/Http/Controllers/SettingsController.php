@@ -94,6 +94,14 @@ class SettingsController extends Controller
 				return Response::error('Locked account!');
 			}
 
+			if (User::where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
+				Logs::notice(__METHOD__, __LINE__,
+					'User (' . $user->username
+					. ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip());
+
+				return Response::error('Username already exists.');
+			}
+
 			if ($user->username == $oldUsername
 				&& Hash::check($oldPassword, $user->password)
 			) {

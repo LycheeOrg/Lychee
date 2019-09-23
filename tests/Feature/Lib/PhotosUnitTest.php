@@ -30,6 +30,36 @@ class PhotosUnitTest
 	}
 
 	/**
+	 * Try uploading a picture without the file argument (will trigger the validate).
+	 *
+	 * @param TestCase $testcase
+	 */
+	public function wrong_upload(TestCase &$testcase)
+	{
+		$response = $testcase->post('/api/Photo::add',
+			[
+				'albumID' => '0',
+			]);
+		$response->assertStatus(302);
+	}
+
+	/**
+	 * Try uploading a picture without the file type (will trigger the hasfile).
+	 *
+	 * @param TestCase $testcase
+	 */
+	public function wrong_upload2(TestCase &$testcase)
+	{
+		$response = $testcase->post('/api/Photo::add',
+			[
+				'albumID' => '0',
+				'0' => '1',
+			]);
+		$response->assertStatus(200);
+		$response->assertSee('"Error: missing files"');
+	}
+
+	/**
 	 * Get a photo given a photo id.
 	 *
 	 * @param TestCase $testCase

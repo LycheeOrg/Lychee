@@ -330,7 +330,7 @@ class PhotoController extends Controller
 				Logs::error(__METHOD__, __LINE__,
 					'Could not find specified album');
 
-				return false;
+				return 'false';
 			}
 		}
 

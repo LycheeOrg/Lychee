@@ -46,6 +46,11 @@ class UserController extends Controller
 			return 'false';
 		}
 
+		if (User::where('username', '=', $request['username'])->where('id', '!=', $request['id'])->count()) {
+			return Response::error('username must be unique');
+		}
+
+		// check for duplicate name here !
 		$user->username = $request['username'];
 		$user->upload = ($request['upload'] == '1');
 		$user->lock = ($request['lock'] == '1');

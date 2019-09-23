@@ -134,7 +134,7 @@ var _templateObject = _taggedTemplateLiteral(["<input class='text' name='title' 
     _templateObject22 = _taggedTemplateLiteral(["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
-    _templateObject25 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autoplay><source src='", "'>Your browser does not support the video tag.</video>"]),
+    _templateObject25 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' ", "><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' ", "><source src='", "'>Your browser does not support the video tag.</video>"]),
     _templateObject26 = _taggedTemplateLiteral(["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big'>"], ["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big'>"]),
     _templateObject27 = _taggedTemplateLiteral(["", ""], ["", ""]),
     _templateObject28 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
@@ -1761,13 +1761,13 @@ build.overlay_image = function (data) {
 	return html;
 };
 
-build.imageview = function (data, visibleControls) {
+build.imageview = function (data, visibleControls, autoplay) {
 
 	var html = '';
 	var thumb = '';
 
 	if (data.type.indexOf('video') > -1) {
-		html += lychee.html(_templateObject25, visibleControls === true ? '' : 'full', data.url);
+		html += lychee.html(_templateObject25, visibleControls === true ? '' : 'full', autoplay ? 'autoplay' : '', data.url);
 	} else if (data.type.indexOf('raw') > -1) {
 		html += lychee.html(_templateObject26, visibleControls === true ? '' : 'full');
 	} else {
@@ -3024,7 +3024,7 @@ lychee = {
 	image_overlay_default: false, // display Overlay like in Lightroom by default
 	image_overlay_type: 'exif', // current Overlay display type
 	image_overlay_type_default: 'exif', // image overlay type default type
-	map_display: true, // display photo coordinates on map
+	map_display: false, // display photo coordinates on map
 	landing_page_enabled: false, // is landing page enabled ?
 	delete_imported: false,
 
@@ -3249,15 +3249,18 @@ lychee.logout = function () {
 
 lychee.goto = function () {
 	var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 
 	url = '#' + url;
 
 	history.pushState(null, null, url);
-	lychee.load();
+	lychee.load(autoplay);
 };
 
 lychee.load = function () {
+	var autoplay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
 
 	var albumID = '';
 	var photoID = '';
@@ -3280,7 +3283,7 @@ lychee.load = function () {
 			lychee.content.hide();
 			album.load(albumID, true);
 		}
-		photo.load(photoID, albumID);
+		photo.load(photoID, albumID, autoplay);
 		lychee.footer_hide();
 	} else if (albumID) {
 
@@ -4520,14 +4523,14 @@ photo.getID = function () {
 	if ($.isNumeric(id) === true) return id;else return false;
 };
 
-photo.load = function (photoID, albumID) {
+photo.load = function (photoID, albumID, autoplay) {
 
 	var checkContent = function checkContent() {
-		if (album.json != null && album.json.photos) photo.load(photoID, albumID);else setTimeout(checkContent, 100);
+		if (album.json != null && album.json.photos) photo.load(photoID, albumID, autoplay);else setTimeout(checkContent, 100);
 	};
 
 	var checkPasswd = function checkPasswd() {
-		if (password.value !== '') photo.load(photoID, albumID);else setTimeout(checkPasswd, 200);
+		if (password.value !== '') photo.load(photoID, albumID, autoplay);else setTimeout(checkPasswd, 200);
 	};
 
 	// we need to check the album.json.photos because otherwise the script is too fast and this raise an error.
@@ -4559,7 +4562,7 @@ photo.load = function (photoID, albumID) {
 		photo.json.album = albumID;
 
 		if (!visible.photo()) view.photo.show();
-		view.photo.init();
+		view.photo.init(autoplay);
 		lychee.imageview.show();
 
 		setTimeout(function () {
@@ -4711,7 +4714,7 @@ photo.previous = function (animate) {
 
 		setTimeout(function () {
 			if (photo.getID() === false) return false;
-			lychee.goto(album.getID() + '/' + album.getByID(photo.getID()).previousPhoto);
+			lychee.goto(album.getID() + '/' + album.getByID(photo.getID()).previousPhoto, false);
 		}, delay);
 	}
 };
@@ -4736,7 +4739,7 @@ photo.next = function (animate) {
 
 		setTimeout(function () {
 			if (photo.getID() === false) return false;
-			lychee.goto(album.getID() + '/' + album.getByID(photo.getID()).nextPhoto);
+			lychee.goto(album.getID() + '/' + album.getByID(photo.getID()).nextPhoto, false);
 		}, delay);
 	}
 };
@@ -6367,8 +6370,14 @@ sidebar.createStructure.photo = function (data) {
 		structure.location = {
 			title: lychee.locale['PHOTO_LOCATION'],
 			type: sidebar.types.DEFAULT,
-			rows: [{ title: lychee.locale['PHOTO_LATITUDE'], kind: 'latitude', value: data.latitude ? DecimalToDegreeMinutesSeconds(data.latitude, true) : '' }, { title: lychee.locale['PHOTO_LONGITUDE'], kind: 'longitude', value: data.longitude ? DecimalToDegreeMinutesSeconds(data.longitude, false) : '' }, { title: lychee.locale['PHOTO_ALTITUDE'], kind: 'altitude', value: data.altitude ? data.altitude + 'm' : '' }, { title: lychee.locale['PHOTO_IMGDIRECTION'], kind: 'imgDirection', value: data.imgDirection ? data.imgDirection + '°' : '' }]
+			rows: [{ title: lychee.locale['PHOTO_LATITUDE'], kind: 'latitude', value: data.latitude ? DecimalToDegreeMinutesSeconds(data.latitude, true) : '' }, { title: lychee.locale['PHOTO_LONGITUDE'], kind: 'longitude', value: data.longitude ? DecimalToDegreeMinutesSeconds(data.longitude, false) : '' },
+			// No point in displaying sub-mm precision; 10cm is more than enough.
+			{ title: lychee.locale['PHOTO_ALTITUDE'], kind: 'altitude', value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + 'm' : '' }]
 		};
+		if (data.imgDirection) {
+			// No point in display sub-degree precision.
+			structure.location.rows.push({ title: lychee.locale['PHOTO_IMGDIRECTION'], kind: 'imgDirection', value: Math.round(data.imgDirection).toString() + '°' });
+		}
 	} else {
 		structure.location = {};
 	}
@@ -6562,7 +6571,7 @@ sidebar.render = function (structure) {
 			});
 
 			if (_has_latitude && _has_longitude && lychee.map_display) {
-				_html += "\n\t\t\t\t\t\t <div id=\"mapid\" style=\"margin: 10px 0px 0px 20px; height: 180px; width: calc(100% - 40px); float: left\"></div>\n\t\t\t\t\t\t ";
+				_html += "\n\t\t\t\t\t\t <div id=\"mapid\"></div>\n\t\t\t\t\t\t ";
 			}
 		}
 
@@ -7915,7 +7924,7 @@ view.album = {
 
 view.photo = {
 
-	init: function init() {
+	init: function init(autoplay) {
 
 		multiselect.clearSelection();
 
@@ -7925,7 +7934,7 @@ view.photo = {
 		view.photo.title();
 		view.photo.star();
 		view.photo.public();
-		view.photo.photo();
+		view.photo.photo(autoplay);
 
 		photo.json.init = 1;
 	},
@@ -8051,7 +8060,7 @@ view.photo = {
 	},
 
 	photo: function (_photo) {
-		function photo() {
+		function photo(_x29) {
 			return _photo.apply(this, arguments);
 		}
 
@@ -8060,9 +8069,9 @@ view.photo = {
 		};
 
 		return photo;
-	}(function () {
+	}(function (autoplay) {
 
-		var ret = build.imageview(photo.json, visible.header());
+		var ret = build.imageview(photo.json, visible.header(), autoplay);
 		lychee.imageview.html(ret.html);
 		view.photo.onresize();
 
@@ -8146,8 +8155,8 @@ view.photo = {
 			var mymap = L.map('mapid').setView([photo.json.latitude, photo.json.longitude], 13);
 
 			// Add plain OpenStreetMap Layer
-			L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+			L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 			}).addTo(mymap);
 
 			if (!photo.json.imgDirection || photo.json.imgDirection === '') {
