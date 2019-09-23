@@ -54,20 +54,11 @@ class DiskUsage
 				$command = "ls -ltrR {$dir} |awk '{print $5}'|awk 'BEGIN{sum=0} {sum=sum+$1} END {print sum}' 2>&1";
 				exec($command, $output);
 				$size = $output[0] ?? 0;
-//				$io = popen("ls -ltrR {$dir} |awk '{print $5}'|awk 'BEGIN{sum=0} {sum=sum+$1} END {print sum}'", 'r');
-//				$size = fgets($io, 80);
-//				pclose($io);
-//				$io = popen('/usr/bin/du -sk ' . $dir, 'r');
-//				if ($io !== false) {
-//					$size = fgets($io, 4096);
-//					$size = substr($size, 0, strpos($size, "\t"));
-//					pclose($io);
-//					return intval($size) * 1024;
-//				}
+
 				return intval($size);
 			} // If on a Windows Host (WIN32, WINNT, Windows)
+			// @codeCoverageIgnoreStart
 			else {
-				// @codeCoverageIgnoreStart
 				if (extension_loaded('com_dotnet')) {
 					$obj = new \COM('scripting.filesystemobject');
 					if (is_object($obj)) {
@@ -78,17 +69,9 @@ class DiskUsage
 						return $totalSize;
 					}
 				}
-				// @codeCoverageIgnoreEnd
 			}
 
 			return 0;
-		// If System calls did't work, use slower PHP 5
-//            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
-//            foreach ($files as $file) {
-//                $totalSize += $file->getSize();
-//            }
-//
-//            return $totalSize;
 		} else {
 			if (is_file($dir) === true) {
 				return filesize($dir);
@@ -96,6 +79,7 @@ class DiskUsage
 		}
 
 		return 0;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**

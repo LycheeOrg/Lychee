@@ -64,13 +64,17 @@ class IndexController extends Controller
 
 	/**
 	 * Just call the phpinfo function.
+	 * Cannot be tested.
 	 *
 	 * @return string
 	 */
+	// @codeCoverageIgnoreStart
 	public function phpinfo()
 	{
 		return (string) phpinfo();
 	}
+
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Display the gallery.

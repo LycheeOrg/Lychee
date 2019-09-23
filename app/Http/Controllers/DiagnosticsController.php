@@ -74,11 +74,17 @@ class DiagnosticsController extends Controller
 		$errors = array();
 
 		// PHP Version
+
+		// As we cannot test this as those are just raising warnings which we cannot check via Travis.
+		// I hereby solemnly  declare this code as covered !
+
+		// @codeCoverageIgnoreStart
 		if (floatval(phpversion()) < 7.2) {
 			$errors[] = 'Warning: Upgrade to PHP 7.2 or higher';
 			// on Dec 1 2019 enable this to an error.
 //			$errors += ['Error: Upgrade to PHP 7.2 or higher'];
 		}
+
 		if (floatval(phpversion()) < 7.3) {
 			$errors[] = 'Info: Latest version of PHP is 7.3';
 			// on November 30 2019 enable this as warning.
@@ -197,6 +203,7 @@ class DiagnosticsController extends Controller
 				$errors[] = 'Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.';
 			}
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $errors;
 	}
@@ -216,9 +223,11 @@ class DiagnosticsController extends Controller
 		$settings = Configs::get();
 
 		// Load json (we need to add a try case here
-		$json = @file_get_contents(Config::get('defines.path.LYCHEE') . 'public/Lychee-front/package.json');
+		$json = @file_get_contents(base_path('public/Lychee-front/package.json'));
 		if ($json == false) {
+			// @codeCoverageIgnoreStart
 			$json = ['version' => '-'];
+		// @codeCoverageIgnoreEnd
 		} else {
 			$json = json_decode($json, true);
 		}
@@ -231,7 +240,9 @@ class DiagnosticsController extends Controller
 		if ($imagick === true) {
 			$imagickVersion = @Imagick::getVersion();
 		} else {
+			// @codeCoverageIgnoreStart
 			$imagick = '-';
+			// @codeCoverageIgnoreEnd
 		}
 		if (!isset($imagickVersion, $imagickVersion['versionNumber']) || $imagickVersion === '') {
 			$imagickVersion = '-';
@@ -243,7 +254,9 @@ class DiagnosticsController extends Controller
 		if (function_exists('gd_info')) {
 			$gdVersion = gd_info();
 		} else {
+			// @codeCoverageIgnoreStart
 			$gdVersion = ['GD Version' => '-'];
+			// @codeCoverageIgnoreEnd
 		}
 
 		// About SQL version
@@ -340,7 +353,9 @@ class DiagnosticsController extends Controller
 		try {
 			$update &= !$this->gitHubFunctions->is_up_to_date();
 		} catch (Exception $e) {
+			// @codeCoverageIgnoreStart
 			$update = false;
+			// @codeCoverageIgnoreEnd
 		}
 
 		return [
