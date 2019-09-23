@@ -164,6 +164,7 @@ class UsersTest extends TestCase
 
 		// 18
 		$sessions_test->login($this, 'test_abcde', 'testing');
+		$sessions_test->init($this, 'true');
 
 		// 19
 		$album_tests->get($this, 's', '', 'true');

@@ -245,7 +245,9 @@ class DiagnosticsController extends Controller
 			// @codeCoverageIgnoreEnd
 		}
 		if (!isset($imagickVersion, $imagickVersion['versionNumber']) || $imagickVersion === '') {
+			// @codeCoverageIgnoreStart
 			$imagickVersion = '-';
+		// @codeCoverageIgnoreEnd
 		} else {
 			$imagickVersion = $imagickVersion['versionNumber'];
 		}
@@ -260,31 +262,34 @@ class DiagnosticsController extends Controller
 		}
 
 		// About SQL version
-		if (DB::getDriverName() == 'mysql') {
-			$results = DB::select(DB::raw('select version()'));
-			$dbver = $results[0]->{'version()'};
-			$dbtype = 'MySQL';
-		} else {
-			if (DB::getDriverName() == 'sqlite') {
+		// @codeCoverageIgnoreStart
+		switch (DB::getDriverName()) {
+			case 'mysql':
+				$results = DB::select(DB::raw('select version()'));
+				$dbver = $results[0]->{'version()'};
+				$dbtype = 'MySQL';
+				break;
+			case 'sqlite':
 				$results = DB::select(DB::raw('select sqlite_version()'));
 				$dbver = $results[0]->{'sqlite_version()'};
 				$dbtype = 'SQLite';
-			} else {
-				if (DB::getDriverName() == 'pgsql') {
+				break;
+			case 'pgsql':
+				$results = DB::select(DB::raw('select version()'));
+				$dbver = $results[0]->{'version'};
+				$dbtype = 'PostgreSQL';
+				break;
+			default:
+				try {
 					$results = DB::select(DB::raw('select version()'));
-					$dbver = $results[0]->{'version'};
-					$dbtype = 'PostgreSQL';
-				} else {
-					try {
-						$results = DB::select(DB::raw('select version()'));
-						$dbver = $results[0]->{'version()'};
-					} catch (Exception $e) {
-						$dbver = 'unknown';
-					}
-					$dbtype = DB::getDriverName();
+					$dbver = $results[0]->{'version()'};
+				} catch (Exception $e) {
+					$dbver = 'unknown';
 				}
-			}
+				$dbtype = DB::getDriverName();
+				break;
 		}
+		// @codeCoverageIgnoreEnd
 
 		// Output system information
 		$infos[] = str_pad('Lychee-front Version:', $this->pad_length) . $json['version'];
@@ -352,11 +357,11 @@ class DiagnosticsController extends Controller
 
 		try {
 			$update &= !$this->gitHubFunctions->is_up_to_date();
-		} catch (Exception $e) {
 			// @codeCoverageIgnoreStart
+		} catch (Exception $e) {
 			$update = false;
-			// @codeCoverageIgnoreEnd
 		}
+		// @codeCoverageIgnoreEnd
 
 		return [
 			'errors' => $errors,
