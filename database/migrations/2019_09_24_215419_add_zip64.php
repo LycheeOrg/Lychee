@@ -24,7 +24,7 @@ class AddZip64 extends Migration
 					'value' => '1',
 					'confidentiality' => 0,
 					'type_range' => BOOL,
-				]
+				],
 			]);
 		} else {
 			echo "Table configs does not exist\n";
