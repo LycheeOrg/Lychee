@@ -18,7 +18,7 @@ class AddImgDirection extends Migration
 				$table->decimal('imgDirection', 10, 4)->default(null)->after('altitude')->nullable();
 			});
 		} else {
-			echo "Table photos does not exists\n";
+			echo "Table photos does not exist\n";
 		}
 	}
 

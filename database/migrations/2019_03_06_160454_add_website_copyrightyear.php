@@ -22,7 +22,7 @@ class AddWebsiteCopyrightyear extends Migration
 				['key' => 'site_copyright_end', 'value' => '2019'],
 			]);
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 

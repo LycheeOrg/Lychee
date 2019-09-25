@@ -22,7 +22,7 @@ class AddApiKey extends Migration
 				],
 			]);
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 
