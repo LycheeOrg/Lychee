@@ -682,7 +682,9 @@ class PhotoController extends Controller
 			$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
 		} else {
 			$response = new StreamedResponse(function () use ($request, $photoIDs, &$extract_names) {
-				$zip = new ZipStream(null);
+				$options = new \ZipStream\Option\Archive();
+				$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
+				$zip = new ZipStream(null, $options);
 
 				$files = [];
 				foreach ($photoIDs as $photoID) {
@@ -708,6 +710,9 @@ class PhotoController extends Controller
 					}
 					// Add to array
 					$files[] = $file;
+
+					// Reset the execution timeout for every iteration.
+					set_time_limit(ini_get('max_execution_time'));
 
 					$zip->addFileFromPath($file, $url);
 				} // foreach ($photoIDs)
