@@ -298,7 +298,7 @@ class Extractor
 	 */
 	private function getGPSAltitude(string $altitude, string $ref): float
 	{
-		$flip = ($ref == '1') ? -1 : 1;
+		$flip = ($ref == '1' || $ref == "\u{0001}") ? -1 : 1;
 
 		return $flip * $this->formattedToFloatGPS($altitude);
 	}
