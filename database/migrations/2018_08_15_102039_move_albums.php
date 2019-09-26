@@ -29,7 +29,7 @@ class MoveAlbums extends Migration
 					$album->save();
 				}
 			} else {
-				echo env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_albums does not exists!\n";
+				echo env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_albums does not exist!\n";
 			}
 		} else {
 			echo "albums is not empty.\n";

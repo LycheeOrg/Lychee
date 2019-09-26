@@ -69,7 +69,7 @@ class PrivateConfigFields extends Migration
 					'confidentiality' => 2,
 				]);
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 

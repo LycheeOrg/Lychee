@@ -20,7 +20,7 @@ class AddWebsiteTitle extends Migration
 				['key' => 'site_title', 'value' => 'Lychee v4'],
 			]);
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 

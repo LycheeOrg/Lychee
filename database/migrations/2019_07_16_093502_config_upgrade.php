@@ -96,7 +96,7 @@ class ConfigUpgrade extends Migration
 			Configs::where('key', '=', 'downloadable')->update(['type_range' => BOOL]);
 			Configs::where('key', '=', 'photos_wraparound')->update(['type_range' => BOOL]);
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 

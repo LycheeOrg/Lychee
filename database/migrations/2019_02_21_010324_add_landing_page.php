@@ -29,7 +29,7 @@ class AddLandingPage extends Migration
 				['key' => 'landing_background', 'value' => 'dist/cat.jpg'],
 			]);
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 

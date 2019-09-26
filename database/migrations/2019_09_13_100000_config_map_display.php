@@ -19,16 +19,18 @@ class ConfigMapDisplay extends Migration
 		}
 
 		if (Schema::hasTable('configs')) {
-			DB::table('configs')->insert([
-				[
-					'key' => 'map_display',
-					'value' => '0',
-					'confidentiality' => 0,
-					'type_range' => BOOL,
-				],
-			]);
+			if (!Configs::where('key', '=', 'map_display')->exists()) {
+				DB::table('configs')->insert([
+					[
+						'key' => 'map_display',
+						'value' => '0',
+						'confidentiality' => 0,
+						'type_range' => BOOL,
+					],
+				]);
+			}
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 

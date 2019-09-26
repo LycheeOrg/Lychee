@@ -638,7 +638,9 @@ class AlbumController extends Controller
 		}
 
 		$response = new StreamedResponse(function () use ($albumIDs, $badChars) {
-			$zip = new ZipStream(null);
+			$options = new \ZipStream\Option\Archive();
+			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
+			$zip = new ZipStream(null, $options);
 
 			$UserId = $this->sessionFunctions->id();
 
@@ -773,6 +775,9 @@ class AlbumController extends Controller
 						}
 						// Add to array
 						$files[] = $file;
+
+						// Reset the execution timeout for every iteration.
+						set_time_limit(ini_get('max_execution_time'));
 
 						// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
 						$zip->addFileFromPath($dir . '/' . $file, $url);
