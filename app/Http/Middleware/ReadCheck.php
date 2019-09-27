@@ -32,6 +32,7 @@ class ReadCheck
 	 */
 	public function handle($request, Closure $next)
 	{
+		Logs::notice(__FUNCTION__, __LINE__, $request->getRequestUri() . ':' . $request['photoIDs'] . '/' . $request['photoID'] . '/' . $request['albumID'] . ':' . $request['kind']);
 		$albumIDs = [];
 		if ($request->has('albumIDs')) {
 			$albumIDs = explode(',', $request['albumIDs']);
