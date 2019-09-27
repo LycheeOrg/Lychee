@@ -60,6 +60,8 @@ class PhotosTest extends TestCase
 		$photos_tests->see_in_favorite($this, $id);
 		$photos_tests->see_in_shared($this, $id);
 		$response = $photos_tests->get($this, $id, 'true');
+		$photos_tests->download($this, $id, 'FULL');
+
 		/*
 		 * Check some Exif data
 		 */
@@ -105,6 +107,7 @@ class PhotosTest extends TestCase
 		$albumID = $albums_tests->add($this, '0', 'test_album_2');
 		$photos_tests->set_album($this, '-1', $id, 'false');
 		$photos_tests->set_album($this, $albumID, $id, 'true');
+		$albums_tests->download($this, $albumID);
 		$photos_tests->dont_see_in_unsorted($this, $id);
 
 		$photos_tests->duplicate($this, $id, 'true');
@@ -118,13 +121,6 @@ class PhotosTest extends TestCase
 		$ids[1] = $array_content->photos[1]->id;
 		$photos_tests->delete($this, $ids[0], 'true');
 		$photos_tests->get($this, $id[0], 'false');
-		$photos_tests->delete($this, $ids[1], 'true');
-		$photos_tests->get($this, $id[1], 'false');
-
-		$response = $albums_tests->get($this, $albumID, '', 'true');
-		$content = $response->getContent();
-		$array_content = json_decode($content);
-		$this->assertEquals(0, $array_content->photos);
 
 //		$photos_tests->dont_see_in_recent($this, $ids[0]);
 //		$photos_tests->dont_see_in_unsorted($this, $ids[1]);
@@ -136,6 +132,14 @@ class PhotosTest extends TestCase
 		 */
 		$response = $this->post('/api/Photo::getRandom', []);
 		$response->assertStatus(200);
+
+		// delete the picture after displaying it
+		$photos_tests->delete($this, $ids[1], 'true');
+		$photos_tests->get($this, $id[1], 'false');
+		$response = $albums_tests->get($this, $albumID, '', 'true');
+		$content = $response->getContent();
+		$array_content = json_decode($content);
+		$this->assertEquals(0, $array_content->photos);
 
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');

@@ -50,9 +50,11 @@ class GitHubFunctions
 		if ($json != false) {
 			return json_decode($json);
 		}
+		// @codeCoverageIgnoreStart
 		Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . $url);
 
 		return false;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -64,6 +66,7 @@ class GitHubFunctions
 	{
 		if ($this->branch == false) {
 			$this->branch = @file_get_contents(base_path('.git/HEAD'));
+			// @codeCoverageIgnoreStart
 			if ($this->branch != false) {
 				// this is to handle CI where it actually checks a commit instead of a branch
 				if (substr($this->branch, 0, 4) == 'refs:') {
@@ -75,6 +78,7 @@ class GitHubFunctions
 			} else {
 				Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . base_path('.git/HEAD'));
 			}
+			// @codeCoverageIgnoreEnd
 			$this->branch = trim($this->branch);
 		}
 
@@ -93,10 +97,12 @@ class GitHubFunctions
 			if ($this->head != false) {
 				$this->head = $this->trim($this->head);
 			} else {
+				// @codeCoverageIgnoreStart
 				Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . base_path('.git/refs/heads/' . $this->branch));
 				if ($this->CI_commit != false) {
 					$this->head = $this->trim($this->CI_commit);
 				}
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
@@ -138,10 +144,11 @@ class GitHubFunctions
 		$branch = $this->get_current_branch();
 		$head = $this->get_current_commit();
 		if ($head == false || $branch == false) {
+			// when going through CI, .git exists...
 			// @codeCoverageIgnoreStart
 			return 'No git data found. Probably installed from release or could not read .git';
+			// @codeCoverageIgnoreEnd
 		}
-		// @codeCoverageIgnoreEnd
 
 		return sprintf('%s (%s)', $head, $branch) . $this->get_behind_text();
 	}
@@ -193,22 +200,28 @@ class GitHubFunctions
 	{
 		$branch = $this->get_current_branch();
 		if ($branch != 'master') {
+			// @codeCoverageIgnoreStart
 			return ' - Branch is not master, cannot compare.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		if ($this->get_commits() == false) {
+			// @codeCoverageIgnoreStart
 			return ' - Check for update failed.';
+			// @codeCoverageIgnoreEnd
 		}
 
 		$count = $this->count_behind();
 		if ($count === 0) {
 			return ' - Up to date.';
 		}
+		// @codeCoverageIgnoreStart
 		if ($count != false) {
 			return ' - ' . $count . ' commits behind master' . $this->get_github_head();
 		}
 
 		return ' - Probably more than 30 commits behind master';
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -222,19 +235,24 @@ class GitHubFunctions
 	{
 		$branch = $this->get_current_branch();
 		if ($branch != 'master') {
+			// @codeCoverageIgnoreStart
 			throw new Exception('Branch is not master, cannot compare.');
+			// @codeCoverageIgnoreStart
 		}
 
 		if ($this->get_commits() == false) {
+			// @codeCoverageIgnoreStart
 			throw new Exception('Check for update failed.');
+			// @codeCoverageIgnoreEnd
 		}
 
 		$count = $this->count_behind();
 		if ($count === 0) {
 			return true;
 		}
-
+		// @codeCoverageIgnoreStart
 		return false;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
