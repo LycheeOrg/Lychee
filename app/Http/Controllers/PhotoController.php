@@ -665,7 +665,6 @@ class PhotoController extends Controller
 			'kind' => 'nullable|string',
 		]);
 
-		Logs::notice(__FUNCTION__, __LINE__, $request['photoIDs'] . ':' . $request['kind']);
 		$photoIDs = explode(',', $request['photoIDs']);
 
 		if (count($photoIDs) === 1) {
