@@ -36,6 +36,13 @@ use Illuminate\Database\QueryException;
 class Configs extends Model
 {
 	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $fillable = ['key', 'value', 'cat', 'type_range', 'confidentiality', 'description'];
+
+	/**
 	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
 	 */
 	public $timestamps = false;
