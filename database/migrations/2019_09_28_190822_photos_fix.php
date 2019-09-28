@@ -4,6 +4,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\Photo;
 
 class PhotosFix extends Migration
 {
@@ -56,5 +57,6 @@ class PhotosFix extends Migration
 	 */
 	public function down()
 	{
+		echo "There is no going back! HUE HUE HUE\n";
 	}
 }

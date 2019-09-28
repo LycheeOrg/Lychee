@@ -9,6 +9,112 @@ use Illuminate\Database\Migrations\Migration;
 class ConfigFix extends Migration
 {
 	/**
+	 * Create the table if it did not exists yet.
+	 */
+	private function create()
+	{
+		if (!Schema::hasTable('configs')) {
+			Schema::create('configs', function (Blueprint $table) {
+				$table->increments('id');
+				$table->string('key', 50);
+				$table->string('value', 200)->nullable();
+			});
+		}
+	}
+
+	/**
+	 * Update names with Snake Case.
+	 */
+	private function update_names()
+	{
+		Configs::where('key', 'justified_layout')
+			->update(['key' => 'layout']);
+		Configs::where('key', '=', 'checkForUpdates')
+			->update(['key' => 'check_for_updates']);
+		Configs::where('key', '=', 'sortingPhotos_col')
+			->update(['key' => 'sorting_Photos_col']);
+		Configs::where('key', '=', 'sortingPhotos_order')
+			->update(['key' => 'sorting_Photos_order']);
+		Configs::where('key', '=', 'sortingAlbums_col')
+			->update(['key' => 'sorting_Albums_col']);
+		Configs::where('key', '=', 'sortingAlbums_order')
+			->update(['key' => 'sorting_Albums_order']);
+		Configs::where('key', '=', 'skipDuplicates')
+			->update(['key' => 'skip_duplicates']);
+		Configs::where('key', '=', 'deleteImported')
+			->update(['key' => 'delete_imported']);
+		Configs::where('key', '=', 'dropboxKey')
+			->update(['key' => 'dropbox_key']);
+	}
+
+	/**
+	 * Cleaning up entries which do not exists anymore.
+	 *
+	 * @param array $values
+	 */
+	private function cleanup(array &$values)
+	{
+		function get_key($v)
+		{
+			return $v['key'];
+		}
+
+		$keys = array_map('get_key', $values);
+
+		try {
+			Configs::whereNotIn('key', $keys)->delete();
+		} catch (Exception $e) {
+			echo "Something weird happened.\n";
+		}
+	}
+
+	/**
+	 * Add potentially missing columns.
+	 */
+	private function missing_columns()
+	{
+		if (!Schema::hasColumn('configs', 'cat')) {
+			Schema::table('configs', function (Blueprint $table) {
+				$table->string('cat', 50)->after('value')->default('Config');
+			});
+		}
+		if (!Schema::hasColumn('configs', 'confidentiality')) {
+			Schema::table('configs', function (Blueprint $table) {
+				$table->tinyInteger('confidentiality')->after('cat')
+					->default(0);
+			});
+		}
+		if (!Schema::hasColumn('configs', 'type_range')) {
+			Schema::table('configs', function (Blueprint $table) {
+				$table->string('type_range')->after('cat')->default('0|1');
+				$table->string('description')->after('confidentiality')
+					->default('');
+			});
+		}
+	}
+
+	/**
+	 * Update the fields which are missing, set up the correct values for columns.
+	 *
+	 * @param array $default_values
+	 */
+	private function update_missing_fields(array &$default_values)
+	{
+		foreach ($default_values as $value) {
+			$config = Configs::updateOrCreate(['key' => $value['key']],
+				[
+					'cat' => $value['cat'],
+					'type_range' => $value['type_range'],
+					'confidentiality' => $value['confidentiality'],
+				]);
+			if ($config->value == '') {
+				$config->value = $value['value'];
+				$config->save();
+			}
+		}
+	}
+
+	/**
 	 * Run the migrations.
 	 *
 	 * @return void
@@ -452,79 +558,11 @@ class ConfigFix extends Migration
 			],
 		];
 
-		/*
-		 *
-		 */
-		if (!Schema::hasTable('configs')) {
-			Schema::create('configs', function (Blueprint $table) {
-				$table->increments('id');
-				$table->string('key', 50);
-				$table->string('value', 200)->nullable();
-			});
-		}
-
-		// cleaning things up
-		Configs::where('key', '=', 'php_script_no_limit')->delete();
-		// Old name from v3.
-		Configs::where('key', '=', 'php_script_limit')->delete();
-
-		Configs::where('key', 'justified_layout')
-			->update(['key' => 'layout']);
-		Configs::where('key', '=', 'checkForUpdates')
-			->update(['key' => 'check_for_updates']);
-		Configs::where('key', '=', 'sortingPhotos_col')
-			->update(['key' => 'sorting_Photos_col']);
-		Configs::where('key', '=', 'sortingPhotos_order')
-			->update(['key' => 'sorting_Photos_order']);
-		Configs::where('key', '=', 'sortingAlbums_col')
-			->update(['key' => 'sorting_Albums_col']);
-		Configs::where('key', '=', 'sortingAlbums_order')
-			->update(['key' => 'sorting_Albums_order']);
-		Configs::where('key', '=', 'skipDuplicates')
-			->update(['key' => 'skip_duplicates']);
-		Configs::where('key', '=', 'deleteImported')
-			->update(['key' => 'delete_imported']);
-		Configs::where('key', '=', 'dropboxKey')
-			->update(['key' => 'dropbox_key']);
-
-		/*
-		 * add the potentially missing columns
-		 */
-		if (!Schema::hasColumn('configs', 'cat')) {
-			Schema::table('configs', function (Blueprint $table) {
-				$table->string('cat', 50)->after('value')->default('Config');
-			});
-		}
-		if (!Schema::hasColumn('configs', 'confidentiality')) {
-			Schema::table('configs', function (Blueprint $table) {
-				$table->tinyInteger('confidentiality')->after('cat')
-					->default(0);
-			});
-		}
-		if (!Schema::hasColumn('configs', 'type_range')) {
-			Schema::table('configs', function (Blueprint $table) {
-				$table->string('type_range')->after('cat')->default('0|1');
-				$table->string('description')->after('confidentiality')
-					->default('');
-			});
-		}
-
-		/*
-		 * Update missing fields
-		 */
-		foreach ($default_values as $value) {
-//			print_r($value);
-			$config = Configs::updateOrCreate(['key' => $value['key']],
-				[
-					'cat' => $value['cat'],
-					'type_range' => $value['type_range'],
-					'confidentiality' => $value['confidentiality'],
-				]);
-			if ($config->value == '') {
-				$config->value = $value['value'];
-				$config->save();
-			}
-		}
+		$this->create();
+		$this->update_names();
+		$this->cleanup($default_values);
+		$this->missing_columns();
+		$this->update_missing_fields($default_values);
 	}
 
 	/**
@@ -534,9 +572,6 @@ class ConfigFix extends Migration
 	 */
 	public function down()
 	{
-		/*
-		 * THERE IS NO GOING BACK !
-		 */
 		echo "There is no going back! HUE HUE HUE\n";
 	}
 }
