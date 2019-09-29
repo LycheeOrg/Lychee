@@ -101,13 +101,14 @@ class ConfigFix extends Migration
 	private function update_missing_fields(array &$default_values)
 	{
 		foreach ($default_values as $value) {
+			$c = Configs::where('key', $value['key'])->count();
 			$config = Configs::updateOrCreate(['key' => $value['key']],
 				[
 					'cat' => $value['cat'],
 					'type_range' => $value['type_range'],
 					'confidentiality' => $value['confidentiality'],
 				]);
-			if ($config->value == '') {
+			if ($c == 0) {
 				$config->value = $value['value'];
 				$config->save();
 			}
@@ -159,7 +160,7 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'sorting_Photos_col',
-				'value' => 'title',
+				'value' => 'takestamp',
 				'cat' => 'Gallery',
 				'type_range' => 'id|takestamp|title|description|public|star|type',
 				'confidentiality' => '2',
@@ -175,7 +176,7 @@ class ConfigFix extends Migration
 				'key' => 'sorting_Albums_col',
 				'value' => 'max_takestamp',
 				'cat' => 'Gallery',
-				'type_range' => 'id|title|description|public|max_takestamp|min_takestamp',
+				'type_range' => 'id|title|description|public|max_takestamp|min_takestamp|created_at',
 				'confidentiality' => '2',
 			],
 			[
@@ -271,7 +272,7 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'delete_imported',
-				'value' => '1',
+				'value' => '0',
 				'cat' => 'Image Processing',
 				'type_range' => BOOL,
 				'confidentiality' => '2',
@@ -327,7 +328,7 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'landing_subtitle',
-				'value' => 'Cat, Dogs & Humans Photography',
+				'value' => 'Cats, Dogs & Humans Photography',
 				'cat' => 'Mod Welcome',
 				'type_range' => STRING,
 				'confidentiality' => '2',
@@ -341,14 +342,14 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'landing_flickr',
-				'value' => 'https://www.flickr.com//JohnSmith',
+				'value' => 'https://www.flickr.com/JohnSmith',
 				'cat' => 'Mod Welcome',
 				'type_range' => STRING,
 				'confidentiality' => '2',
 			],
 			[
 				'key' => 'landing_twitter',
-				'value' => 'https://www.twitter.com//JohnSmith',
+				'value' => 'https://www.twitter.com/JohnSmith',
 				'cat' => 'Mod Welcome',
 				'type_range' => STRING,
 				'confidentiality' => '2',
@@ -362,7 +363,7 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'landing_youtube',
-				'value' => 'https://www.youtube.com//JohnSmith',
+				'value' => 'https://www.youtube.com/JohnSmith',
 				'cat' => 'Mod Welcome',
 				'type_range' => STRING,
 				'confidentiality' => '2',
@@ -446,7 +447,7 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'additional_footer_text',
-				'value' => 'config',
+				'value' => '',
 				'cat' => 'config',
 				'type_range' => STRING,
 				'confidentiality' => '2',
@@ -467,7 +468,7 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'gen_demo_js',
-				'value' => '1',
+				'value' => '0',
 				'cat' => 'Admin',
 				'type_range' => BOOL,
 				'confidentiality' => '3',
