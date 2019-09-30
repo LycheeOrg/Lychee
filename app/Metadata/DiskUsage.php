@@ -2,9 +2,6 @@
 
 namespace App\Metadata;
 
-//use RecursiveDirectoryIterator;
-//use RecursiveIteratorIterator;
-
 class DiskUsage
 {
 	/**
@@ -89,15 +86,10 @@ class DiskUsage
 	 */
 	public function get_total_space()
 	{
-		if (!$this->is_win()) {
-			$ds = disk_total_space('/');
-		} else {
-			// @codeCoverageIgnoreStart
-			$ds = disk_total_space('C:');
-			// @codeCoverageIgnoreEnd
-		}
+		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		$dts = disk_total_space(base_path(''));
 
-		return $this->getSymbolByQuantity($ds);
+		return $this->getSymbolByQuantity($dts);
 	}
 
 	/**
@@ -107,15 +99,10 @@ class DiskUsage
 	 */
 	public function get_free_space()
 	{
-		if (!$this->is_win()) {
-			$ds = disk_free_space('/');
-		} else {
-			// @codeCoverageIgnoreStart
-			$ds = disk_free_space('C:');
-			// @codeCoverageIgnoreEnd
-		}
+		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		$dfs = disk_free_space(base_path(''));
 
-		return $this->getSymbolByQuantity($ds);
+		return $this->getSymbolByQuantity($dfs);
 	}
 
 	/**
@@ -125,15 +112,11 @@ class DiskUsage
 	 */
 	public function get_free_percent()
 	{
-		if (!$this->is_win()) {
-			return floor(100 * disk_free_space('/') / disk_total_space('/'))
-				. '%';
-		} else {
-			// @codeCoverageIgnoreStart
-			return floor(100 * disk_free_space('C:') / disk_total_space('C:'))
-				. '%';
-			// @codeCoverageIgnoreEnd
-		}
+		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		$dts = disk_total_space(base_path(''));
+		$dfs = disk_free_space(base_path(''));
+
+		return floor(100 * $dfs / $dts) . '%';
 	}
 
 	/**
@@ -143,8 +126,7 @@ class DiskUsage
 	 */
 	public function get_lychee_space()
 	{
-		// we currently are in public. we want Lychee
-		$ds = $this->getTotalSize('../');
+		$ds = $this->getTotalSize(base_path(''));
 
 		return $this->getSymbolByQuantity($ds);
 	}
@@ -156,8 +138,8 @@ class DiskUsage
 	 */
 	public function get_lychee_upload_space()
 	{
-		// we currently are in public. we want Lychee
-		$ds = $this->getTotalSize('uploads');
+		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		$ds = $this->getTotalSize(base_path('public/uploads/'));
 
 		return $this->getSymbolByQuantity($ds);
 	}
