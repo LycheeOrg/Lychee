@@ -50,6 +50,8 @@ class UpdateFunctions
 	{
 		// if we are in a production environment we actually require a double check.
 		if (env('APP_ENV', 'production') == 'production') {
+			// @codeCoverageIgnoreStart
+			// we cannot code cov this part. APP_ENV is dev in testing mode.
 			if (Configs::get_value('force_migration_in_production') == '1') {
 				Logs::warning(__METHOD__, __LINE__, 'Force migration is production.');
 				Artisan::call('migrate', ['--force' => true]);
@@ -58,6 +60,7 @@ class UpdateFunctions
 				$output[] = 'Migration not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.';
 				Logs::warning(__METHOD__, __LINE__, 'Migration not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.');
 			}
+			// @codeCoverageIgnoreEnd
 		} else {
 			Artisan::call('migrate');
 			$this->str_to_array(Artisan::output(), $output);

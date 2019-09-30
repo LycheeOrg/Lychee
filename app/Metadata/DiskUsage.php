@@ -2,9 +2,6 @@
 
 namespace App\Metadata;
 
-//use RecursiveDirectoryIterator;
-//use RecursiveIteratorIterator;
-
 class DiskUsage
 {
 	/**
@@ -54,18 +51,10 @@ class DiskUsage
 				$command = "ls -ltrR {$dir} |awk '{print $5}'|awk 'BEGIN{sum=0} {sum=sum+$1} END {print sum}' 2>&1";
 				exec($command, $output);
 				$size = $output[0] ?? 0;
-//				$io = popen("ls -ltrR {$dir} |awk '{print $5}'|awk 'BEGIN{sum=0} {sum=sum+$1} END {print sum}'", 'r');
-//				$size = fgets($io, 80);
-//				pclose($io);
-//				$io = popen('/usr/bin/du -sk ' . $dir, 'r');
-//				if ($io !== false) {
-//					$size = fgets($io, 4096);
-//					$size = substr($size, 0, strpos($size, "\t"));
-//					pclose($io);
-//					return intval($size) * 1024;
-//				}
+
 				return intval($size);
 			} // If on a Windows Host (WIN32, WINNT, Windows)
+			// @codeCoverageIgnoreStart
 			else {
 				if (extension_loaded('com_dotnet')) {
 					$obj = new \COM('scripting.filesystemobject');
@@ -80,13 +69,6 @@ class DiskUsage
 			}
 
 			return 0;
-		// If System calls did't work, use slower PHP 5
-//            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
-//            foreach ($files as $file) {
-//                $totalSize += $file->getSize();
-//            }
-//
-//            return $totalSize;
 		} else {
 			if (is_file($dir) === true) {
 				return filesize($dir);
@@ -94,6 +76,7 @@ class DiskUsage
 		}
 
 		return 0;
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -103,13 +86,10 @@ class DiskUsage
 	 */
 	public function get_total_space()
 	{
-		if (!$this->is_win()) {
-			$ds = disk_total_space('/');
-		} else {
-			$ds = disk_total_space('C:');
-		}
+		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		$dts = disk_total_space(base_path(''));
 
-		return $this->getSymbolByQuantity($ds);
+		return $this->getSymbolByQuantity($dts);
 	}
 
 	/**
@@ -119,13 +99,10 @@ class DiskUsage
 	 */
 	public function get_free_space()
 	{
-		if (!$this->is_win()) {
-			$ds = disk_free_space('/');
-		} else {
-			$ds = disk_free_space('C:');
-		}
+		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		$dfs = disk_free_space(base_path(''));
 
-		return $this->getSymbolByQuantity($ds);
+		return $this->getSymbolByQuantity($dfs);
 	}
 
 	/**
@@ -135,13 +112,11 @@ class DiskUsage
 	 */
 	public function get_free_percent()
 	{
-		if (!$this->is_win()) {
-			return floor(100 * disk_free_space('/') / disk_total_space('/'))
-				. '%';
-		} else {
-			return floor(100 * disk_free_space('C:') / disk_total_space('C:'))
-				. '%';
-		}
+		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		$dts = disk_total_space(base_path(''));
+		$dfs = disk_free_space(base_path(''));
+
+		return floor(100 * $dfs / $dts) . '%';
 	}
 
 	/**
@@ -151,8 +126,7 @@ class DiskUsage
 	 */
 	public function get_lychee_space()
 	{
-		// we currently are in public. we want Lychee
-		$ds = $this->getTotalSize('../');
+		$ds = $this->getTotalSize(base_path(''));
 
 		return $this->getSymbolByQuantity($ds);
 	}
@@ -164,8 +138,8 @@ class DiskUsage
 	 */
 	public function get_lychee_upload_space()
 	{
-		// we currently are in public. we want Lychee
-		$ds = $this->getTotalSize('uploads');
+		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		$ds = $this->getTotalSize(base_path('public/uploads/'));
 
 		return $this->getSymbolByQuantity($ds);
 	}

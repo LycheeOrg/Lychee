@@ -5,12 +5,14 @@ Lychee-front/package-lock.json
 uploads/big/*
 uploads/import/*
 uploads/medium/*
+uploads/raw/*
 uploads/small/*
 uploads/thumb/*
 
 !uploads/big/index.html
 !uploads/import/index.html
 !uploads/medium/index.html
+!uploads/raw/index.html
 !uploads/small/index.html
 !uploads/thumb/index.html
 

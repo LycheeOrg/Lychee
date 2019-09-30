@@ -9,14 +9,11 @@ use Exception;
 class Extractor
 {
 	/**
-	 * Extracts metadata from an image file.
-	 *
-	 * @param string $filename
-	 * @param  string mime type
+	 * return bare array for info.
 	 *
 	 * @return array
 	 */
-	public function extract(string $filename, string $type): array
+	public function bare()
 	{
 		$metadata = [
 			'type' => '',
@@ -38,7 +35,39 @@ class Extractor
 			'latitude' => null,
 			'longitude' => null,
 			'altitude' => null,
+			'imgDirection' => null,
 		];
+
+		return $metadata;
+	}
+
+	/**
+	 * @param array  $metadata
+	 * @param string $filename
+	 */
+	public function size(array &$metadata, string $filename)
+	{
+		// Size
+		$size = filesize($filename) / 1024;
+		if ($size >= 1024) {
+			$metadata['size'] = round($size / 1024, 1) . ' MB';
+		} else {
+			$metadata['size'] = round($size, 1) . ' KB';
+		}
+	}
+
+	/**
+	 * Extracts metadata from an image file.
+	 *
+	 * @param string $filename
+	 * @param  string mime type
+	 *
+	 * @return array
+	 */
+	public function extract(string $filename, string $type): array
+	{
+		$metadata = $this->bare();
+
 		$imageInfo = [];
 		if (strpos($type, 'video') !== 0) {
 			$info = getimagesize($filename, $imageInfo);
@@ -55,12 +84,7 @@ class Extractor
 		}
 
 		// Size
-		$size = filesize($filename) / 1024;
-		if ($size >= 1024) {
-			$metadata['size'] = round($size / 1024, 1) . ' MB';
-		} else {
-			$metadata['size'] = round($size, 1) . ' KB';
-		}
+		$this->size($metadata, $filename);
 
 		// IPTC Metadata
 		// See https://www.iptc.org/std/IIM/4.2/specification/IIMV4.2.pdf for mapping
@@ -196,17 +220,30 @@ class Extractor
 			if (!empty($exif['GPSAltitude']) && !empty($exif['GPSAltitudeRef'])) {
 				$metadata['altitude'] = $this->getGPSAltitude($exif['GPSAltitude'], $exif['GPSAltitudeRef']);
 			}
-		}
-
-		//validate the data
-		foreach ($metadata as $k => $v) {
-			//reset field value to empty string if the data is binary (invalid UTF-8 chars)
-			if (!mb_check_encoding($v)) {
-				$metadata[$k] = '';
+			if (!empty($exif['GPSImgDirection']) && !empty($exif['GPSImgDirectionRef'])) {
+				$metadata['imgDirection'] = $this->getGPSImgDirection($exif['GPSImgDirection'], $exif['GPSImgDirectionRef']);
 			}
 		}
 
+		$this->validate($metadata);
+
 		return $metadata;
+	}
+
+	/**
+	 * Reset field value to empty string if the data is binary (invalid UTF-8 chars).
+	 *
+	 * @param array $metadata
+	 */
+	public function validate(array &$metadata)
+	{
+		foreach ($metadata as $k => $v) {
+			if (!mb_check_encoding($v)) {
+				// @codeCoverageIgnoreStart
+				$metadata[$k] = '';
+				// @codeCoverageIgnoreEnd
+			}
+		}
 	}
 
 	/**
@@ -263,9 +300,24 @@ class Extractor
 	 */
 	private function getGPSAltitude(string $altitude, string $ref): float
 	{
-		$flip = ($ref == '1') ? -1 : 1;
+		$flip = ($ref == '1' || $ref == "\u{0001}") ? -1 : 1;
 
 		return $flip * $this->formattedToFloatGPS($altitude);
+	}
+
+	/**
+	 * Returns the image direction.
+	 *
+	 * @param string direction
+	 * @param string $ref
+	 *
+	 * @return float
+	 */
+	private function getGPSImgDirection(string $direction, string $ref): float
+	{
+		// Simplification: we ignore the difference between magnetic and true north
+
+		return $this->formattedToFloatGPS($direction);
 	}
 
 	/**

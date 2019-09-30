@@ -94,6 +94,14 @@ class SettingsController extends Controller
 				return Response::error('Locked account!');
 			}
 
+			if (User::where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
+				Logs::notice(__METHOD__, __LINE__,
+					'User (' . $user->username
+					. ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip());
+
+				return Response::error('Username already exists.');
+			}
+
 			if ($user->username == $oldUsername
 				&& Hash::check($oldPassword, $user->password)
 			) {
@@ -102,9 +110,8 @@ class SettingsController extends Controller
 					. $request['username'] . ') from ' . $request->ip());
 				$user->username = $request['username'];
 				$user->password = bcrypt($request['password']);
-				$user->save();
 
-				return 'true';
+				return $user->save() ? 'true' : 'false';
 			} else {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username
 					. ') tried to change his identity from ' . $request->ip());
@@ -131,10 +138,10 @@ class SettingsController extends Controller
 			'orderPhotos' => 'required|string',
 		]);
 
-		Configs::set('sortingPhotos_col', $request['typePhotos']);
-		Configs::set('sortingPhotos_order', $request['orderPhotos']);
-		Configs::set('sortingAlbums_col', $request['typeAlbums']);
-		Configs::set('sortingAlbums_order', $request['orderAlbums']);
+		Configs::set('sorting_Photos_col', $request['typePhotos']);
+		Configs::set('sorting_Photos_order', $request['orderPhotos']);
+		Configs::set('sorting_Albums_col', $request['typeAlbums']);
+		Configs::set('sorting_Albums_order', $request['orderAlbums']);
 
 		return 'true';
 	}
@@ -182,17 +189,23 @@ class SettingsController extends Controller
 			'layout' => 'required|string',
 		]);
 
-		if ($request['layout'] === '0' || $request['layout'] === '1'
-			|| $request['layout'] === '2'
-		) {
-			return (Configs::set('layout', $request['layout'])) ? 'true'
-				: 'false';
-		}
+		return (Configs::set('layout', $request['layout'])) ? 'true' : 'false';
+	}
 
-		Logs::error(__METHOD__, __LINE__,
-			'Could not find the submitted layout');
+	/**
+	 * Set the dropbox key for the API.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setDropboxKey(Request $request)
+	{
+		$request->validate([
+			'key' => 'string|nullable',
+		]);
 
-		return 'false';
+		return (Configs::set('dropbox_key', $request['key'])) ? 'true' : 'false';
 	}
 
 	/**
@@ -248,26 +261,26 @@ class SettingsController extends Controller
 	 */
 	public function setImageOverlayType(Request $request)
 	{
-		$overlays = ['exif', 'desc', 'takedate'];
-
 		$request->validate([
 			'image_overlay_type' => 'required|string',
 		]);
 
-		$found = false;
-		$i = 0;
-		while (!$found && $i < count($overlays)) {
-			if ($overlays[$i] === $request['image_overlay_type']) {
-				$found = true;
-			}
-			$i++;
-		}
-		if (!$found) {
-			Logs::error(__METHOD__, __LINE__,
-				'Could not find the submitted overlay type');
-
-			return Response::error('Could not find the submitted overlay type');
-		}
+		// in theory this code is not needed anymore as the check is done within the set
+		//        $overlays = ['exif', 'desc', 'takedate'];
+		//        $found = false;
+//		$i = 0;
+//		while (!$found && $i < count($overlays)) {
+//			if ($overlays[$i] === $request['image_overlay_type']) {
+//				$found = true;
+//			}
+//			$i++;
+//		}
+//		if (!$found) {
+//			Logs::error(__METHOD__, __LINE__,
+//				'Could not find the submitted overlay type');
+//
+//			return Response::error('Could not find the submitted overlay type');
+//		}
 
 		return (Configs::set('image_overlay_type',
 			$request['image_overlay_type'])) ? 'true' : 'false';
@@ -286,6 +299,7 @@ class SettingsController extends Controller
 			'license' => 'required|string',
 		]);
 
+		// add this to the list
 		$licenses = [
 			'none',
 			'reserved',
@@ -310,6 +324,26 @@ class SettingsController extends Controller
 			'Could not find the submitted license');
 
 		return 'false';
+	}
+
+	/**
+	 * Enable display of photo coordinates on map.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapDisplay(Request $request)
+	{
+		$request->validate([
+			'map_display' => 'required|string',
+		]);
+
+		if ($request['map_display'] == '1') {
+			return (Configs::set('map_display', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('map_display', '0')) ? 'true' : 'false';
 	}
 
 	/**

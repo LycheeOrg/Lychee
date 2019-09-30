@@ -127,10 +127,7 @@ class AlbumController extends Controller
 				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
-				$album = Album::with([
-					'owner',
-					'children',
-				])->find($request['albumID']);
+				$album = Album::with('children')->find($request['albumID']);
 				if ($album === null) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
 
@@ -138,13 +135,20 @@ class AlbumController extends Controller
 				}
 				$return = $album->prepareData();
 				// we just require is_logged_in for this one.
-				if (!$this->sessionFunctions->is_logged_in()) {
-					unset($return['owner']);
+				$username = null;
+				if ($this->sessionFunctions->is_logged_in()) {
+					$return['owner'] = $username = $album->owner->username;
 				}
 
 				$full_photo = $album->full_photo_visible();
-				$return['albums'] = $this->albumFunctions->get_albums($album);
+				// To speed things up, we limit subalbum data to at most one
+				// level down.
+				$return['albums'] = $this->albumFunctions->get_albums($album, $username, 1);
 				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
+				foreach ($return['albums'] as &$alb) {
+					unset($alb['thumbIDs']);
+				}
+				unset($return['thumbIDs']);
 				break;
 		}
 
@@ -249,7 +253,7 @@ class AlbumController extends Controller
 	{
 		$request->validate([
 			'albumID' => 'integer|required',
-			'password' => 'string|nullable|max:100',
+			'public' => 'integer|required',
 			'visible' => 'integer|required',
 			'downloadable' => 'integer|required',
 			'full_photo' => 'integer|required',
@@ -634,7 +638,9 @@ class AlbumController extends Controller
 		}
 
 		$response = new StreamedResponse(function () use ($albumIDs, $badChars) {
-			$zip = new ZipStream(null);
+			$options = new \ZipStream\Option\Archive();
+			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
+			$zip = new ZipStream(null, $options);
 
 			$UserId = $this->sessionFunctions->id();
 
@@ -722,6 +728,9 @@ class AlbumController extends Controller
 
 					$files = [];
 					$photos = $photos_sql->get();
+					// We don't bother with additional sorting here; who
+					// cares in what order photos are zipped?
+
 					foreach ($photos as $photo) {
 						// For photos in public smart albums, skip the ones
 						// that are not downloadable based on their actual
@@ -731,35 +740,44 @@ class AlbumController extends Controller
 							continue;
 						}
 
-						$url = Storage::path('big/' . $photo->url);
+						$is_raw = ($photo->type == 'raw');
+
+						$prefix_url = $is_raw ? 'raw/' : 'big/';
+						$url = Storage::path($prefix_url . $photo->url);
 						// Check if readable
 						if (!@is_readable($url)) {
 							Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
 							continue;
 						}
 
+						// Get extension of image
+						$extension = Helpers::getExtension($url, false);
+
+						// Set title for photo
 						$title = str_replace($badChars, '', $photo->title);
 						if (!isset($title) || $title === '') {
 							$title = 'Untitled';
 						}
 
-						// Get extension of image
-						$extension = Helpers::getExtension($url, false);
-						// Set title for photo
-						$file = $title . $extension;
+						$file = $title . ($is_raw ? '' : $extension);
+
 						// Check for duplicates
 						if (!empty($files)) {
 							$i = 1;
 							$tmp_file = $file;
+							$pos = strrpos($tmp_file, '.');
 							while (in_array($tmp_file, $files)) {
 								// Set new title for photo
-								$tmp_file = $title . '-' . $i . $extension;
+								$tmp_file = substr_replace($file, '-' . $i, $pos, 0);
 								$i++;
 							}
 							$file = $tmp_file;
 						}
 						// Add to array
 						$files[] = $file;
+
+						// Reset the execution timeout for every iteration.
+						set_time_limit(ini_get('max_execution_time'));
 
 						// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
 						$zip->addFileFromPath($dir . '/' . $file, $url);
@@ -769,7 +787,7 @@ class AlbumController extends Controller
 					if ($album !== null) {
 						$subDirs = [];
 						foreach ($album->children as $subAlbum) {
-							if ($this->readAccessFunctions->album($subAlbum->id, true) === 1) {
+							if ($this->readAccessFunctions->album($subAlbum, true) === 1) {
 								$subSql = Photo::set_order(Photo::where('album_id', '=', $subAlbum->id));
 								$compress_album($subSql, $subAlbum->title, $subDirs, $dir, $subAlbum);
 							}

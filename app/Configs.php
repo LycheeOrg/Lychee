@@ -16,7 +16,9 @@ use Illuminate\Database\QueryException;
  * @property string      $key
  * @property string|null $value
  * @property string      $cat
+ * @property string      $type_range
  * @property int         $confidentiality
+ * @property string      $description
  *
  * @method static Builder|Configs admin()
  * @method static Builder|Configs info()
@@ -30,11 +32,16 @@ use Illuminate\Database\QueryException;
  * @method static Builder|Configs whereKey($value)
  * @method static Builder|Configs whereValue($value)
  * @mixin Eloquent
- *
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Configs public()
  */
 class Configs extends Model
 {
+	/**
+	 * The attributes that are mass assignable.
+	 *
+	 * @var array
+	 */
+	protected $fillable = ['key', 'value', 'cat', 'type_range', 'confidentiality', 'description'];
+
 	/**
 	 *  this is a parameter for Laravel to indicate that there is no created_at, updated_at columns.
 	 */
@@ -42,6 +49,63 @@ class Configs extends Model
 
 	/** We define this as a singleton */
 	private static $cache = null;
+
+	/**
+	 * Sanity check.
+	 *
+	 * @param $value
+	 *
+	 * @return string
+	 */
+	public function sanity($value)
+	{
+		if (!defined('INT')) {
+			define('INT', 'int');
+			define('STRING', 'string');
+			define('STRING_REQ', 'string_required');
+			define('BOOL', '0|1');
+			define('TERNARY', '0|1|2');
+			define('DISABLED', '');
+		}
+
+		$message = '';
+		$val_range = [BOOL => explode('|', BOOL), TERNARY => explode('|', TERNARY)];
+
+		switch ($this->type_range) {
+			case STRING:
+			case DISABLED:
+				break;
+			case STRING_REQ:
+				if ($value == '') {
+					$message = 'Error: ' . $this->key . ' empty or not set in database';
+				}
+				break;
+			case INT:
+				// we make sure that we only have digits in the chosen value.
+				if (!ctype_digit(strval($value))) {
+					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
+				}
+				break;
+			case BOOL:
+			case TERNARY:
+				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
+					$message = 'Error: Wrong property for ' . $this->key
+						. ' in database, expected ' . implode(' or ',
+							$val_range[$this->type_range]) . ', got ' . $value;
+				}
+				break;
+			default:
+				$values = explode('|', $this->type_range);
+				if (!in_array($value, $values)) {
+					$message = 'Error: Wrong property for ' . $this->key
+						. ' in database, expected ' . implode(' or ', $values)
+						. ', got ' . $value;
+				}
+				break;
+		}
+
+		return $message;
+	}
 
 	/**
 	 * Cache and return the current settings of this Lychee installation.
@@ -61,8 +125,8 @@ class Configs extends Model
 			]);
 			$return = $query->pluck('value', 'key')->all();
 
-			$return['sortingPhotos'] = 'ORDER BY ' . $return['sortingPhotos_col'] . ' ' . $return['sortingPhotos_order'];
-			$return['sortingAlbums'] = 'ORDER BY ' . $return['sortingAlbums_col'] . ' ' . $return['sortingAlbums_order'];
+			$return['sorting_Photos'] = 'ORDER BY ' . $return['sorting_Photos_col'] . ' ' . $return['sorting_Photos_order'];
+			$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
 
 			$return['lang_available'] = Lang::get_lang_available();
 
@@ -138,7 +202,18 @@ class Configs extends Model
 			return true;
 		}
 
+		/**
+		 * Sanity check. :).
+		 */
+		$message = $config->sanity($value);
+		if ($message != '') {
+			Logs::error(__METHOD__, __LINE__, $message);
+
+			return false;
+		}
+
 		$config->value = $value;
+
 		try {
 			$config->save();
 		} catch (Exception $e) {

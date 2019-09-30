@@ -7,7 +7,9 @@ dist: clean
 	@echo "packaging..."
 	@mkdir Lychee-v$(VERSION)
 	@mkdir Lychee-v$(VERSION)/public
+	@mkdir Lychee-v$(VERSION)/public/dist
 	@mkdir Lychee-v$(VERSION)/public/docs
+	@mkdir Lychee-v$(VERSION)/public/img
 	@mkdir Lychee-v$(VERSION)/public/Lychee-front
 	@mkdir Lychee-v$(VERSION)/public/uploads
 	@mkdir Lychee-v$(VERSION)/public/uploads/small
@@ -15,8 +17,10 @@ dist: clean
 	@mkdir Lychee-v$(VERSION)/public/uploads/big
 	@mkdir Lychee-v$(VERSION)/public/uploads/thumb
 	@mkdir Lychee-v$(VERSION)/public/uploads/import
+	@mkdir Lychee-v$(VERSION)/public/sym
 	@cp -r public/dist                      Lychee-v$(VERSION)/public
 	@cp -r public/docs/*                    Lychee-v$(VERSION)/public/docs
+	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
 	@cp -r public/Lychee-front/images       Lychee-v$(VERSION)/public/Lychee-front/images
 	@cp -r public/Lychee-front/scripts      Lychee-v$(VERSION)/public/Lychee-front/scripts
 	@cp -r public/Lychee-front/styles       Lychee-v$(VERSION)/public/Lychee-front/styles
@@ -51,9 +55,9 @@ dist: clean
 	@cp -r readme.md                        Lychee-v$(VERSION)
 	@cp -r server.php                       Lychee-v$(VERSION)
 	@cp -r version.md                       Lychee-v$(VERSION)
-	@rm Lychee-v$(VERSION)/storage/framework/sessions/*
-	@rm Lychee-v$(VERSION)/storage/framework/views/*
-	@rm Lychee-v$(VERSION)/storage/logs/*
+	@rm Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
+	@rm Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
+	@rm Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
 	@touch Lychee-v$(VERSION)/storage/logs/laravel.log
 	@touch Lychee-v$(VERSION)/public/dist/user.css
 	@touch Lychee-v$(VERSION)/public/uploads/big/index.html
@@ -61,6 +65,7 @@ dist: clean
 	@touch Lychee-v$(VERSION)/public/uploads/medium/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/thumb/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/import/index.html
+	@touch Lychee-v$(VERSION)/public/sym/index.html
 	@zip -r Lychee-v$(VERSION).zip Lychee-v$(VERSION)
 
 contrib_add:
@@ -76,4 +81,23 @@ clean:
 	@rm -r Lychee-v* 2> /dev/null || true
 
 test:
-	./vendor/bin/phpunit --verbose
+	@if [ -x "vendor/bin/phpunit" ]; then \
+		./vendor/bin/phpunit --verbose; \
+	else \
+		echo ""; \
+		echo "Please install phpunit:"; \
+		echo ""; \
+		echo "  composer install"; \
+		echo ""; \
+	fi
+
+formatting:
+	@if [ -x "vendor/bin/php-cs-fixer" ]; then \
+		./vendor/bin/php-cs-fixer fix -v --config=.php_cs; \
+	else \
+		echo ""; \
+		echo "Please install php-cs-fixer:"; \
+		echo ""; \
+		echo "  composer install"; \
+		echo ""; \
+	fi

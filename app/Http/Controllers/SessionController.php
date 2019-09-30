@@ -71,7 +71,7 @@ class SessionController extends Controller
 
 				$return['config'] = $this->configFunctions->admin();
 
-				$return['config']['location'] = Config::get('defines.path.LYCHEE') . 'public/';
+				$return['config']['location'] = base_path('public/');
 			} else {
 				$user = User::find($user_id);
 

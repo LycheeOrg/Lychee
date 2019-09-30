@@ -65,11 +65,28 @@ class ConfigFunctions
 	{
 		// Execute query
 		$return = Configs::admin()->pluck('value', 'key')->all();
-		$return['sortingPhotos'] = 'ORDER BY ' . $return['sortingPhotos_col'] . ' ' . $return['sortingPhotos_order'];
-		$return['sortingAlbums'] = 'ORDER BY ' . $return['sortingAlbums_col'] . ' ' . $return['sortingAlbums_order'];
+		$return['sorting_Photos'] = 'ORDER BY ' . $return['sorting_Photos_col'] . ' ' . $return['sorting_Photos_order'];
+		$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
 
 		$return['lang_available'] = Lang::get_lang_available();
 
 		return $return;
+	}
+
+	/**
+	 * Sanity check of the config.
+	 *
+	 * @param array $return
+	 */
+	public function sanity(array &$return)
+	{
+		$configs = Configs::all(['key', 'value', 'type_range']);
+
+		foreach ($configs as $config) {
+			$message = $config->sanity($config->value);
+			if ($message != '') {
+				$return[] = $message;
+			}
+		}
 	}
 }

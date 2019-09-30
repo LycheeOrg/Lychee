@@ -126,21 +126,25 @@ class SearchController extends Controller
 		if ($toplevel['albums'] !== null) {
 			foreach ($toplevel['albums'] as $album) {
 				$albumIDs[] = $album->id;
-				if ($this->readAccessFunctions->album($album->id) === 1) {
-					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs, true);
+				if ($this->readAccessFunctions->album($album) === 1) {
+					$this->albumFunctions->get_sub_albums($albumIDs, $album, true);
 				}
 			}
 		}
 		if ($toplevel['shared_albums'] !== null) {
 			foreach ($toplevel['shared_albums'] as $album) {
 				$albumIDs[] = $album->id;
-				if ($this->readAccessFunctions->album($album->id) === 1) {
-					$albumIDs = $this->albumFunctions->get_sub_albums($album, $albumIDs, true);
+				if ($this->readAccessFunctions->album($album) === 1) {
+					$this->albumFunctions->get_sub_albums($albumIDs, $album, true);
 				}
 			}
 		}
 
-		$query = Album::whereIn('id', $albumIDs);
+		$query = Album::with([
+			'owner',
+			'children',
+		])
+			->whereIn('id', $albumIDs);
 		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
 			$query = $query->Where(
@@ -154,10 +158,19 @@ class SearchController extends Controller
 			$i = 0;
 			foreach ($albums as $album_model) {
 				$album = $album_model->prepareData();
-				if ($this->readAccessFunctions->album($album_model->id) === 1) {
-					$album['albums'] = $this->albumFunctions->get_albums($album_model);
-					$album = $this->albumFunctions->gen_thumbs($album, $this->albumFunctions->get_sub_albums($album_model, [$album_model->id]));
+				if ($this->sessionFunctions->is_logged_in()) {
+					$album['owner'] = $album_model->owner->username;
 				}
+				if ($this->readAccessFunctions->album($album_model) === 1) {
+					// We don't need 'albums' but we do need to come up with
+					// all the subalbums in order to get accurate thumbs info
+					// and to let the front end know if there are any.
+					$subAlbums = [$album_model->id];
+					$this->albumFunctions->get_sub_albums($subAlbums, $album_model);
+					$this->albumFunctions->gen_thumbs($album, $subAlbums);
+					$album['has_albums'] = count($subAlbums) > 1 ? '1' : '0';
+				}
+				unset($album['thumbIDs']);
 				$return['albums'][$i] = $album;
 				$i++;
 			}
@@ -177,7 +190,7 @@ class SearchController extends Controller
 				$i++;
 			}
 		}
-		$query = Photo::where(
+		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);
 				// Add the 'Unsorted' album.
