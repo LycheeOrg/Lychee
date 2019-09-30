@@ -76,6 +76,7 @@ final class ChineseSimplified implements LangInterface
 
 			'CLOSE_ALBUM' => '关闭相册',
 			'CLOSE_PHOTO' => '关闭照片',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => '添加',
 			'MOVE' => '移动',
@@ -113,6 +114,7 @@ final class ChineseSimplified implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => '关于照片',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => '外链',
 			'DIRECT_LINKS' => 'Direct Links',
 

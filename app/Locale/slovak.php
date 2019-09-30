@@ -77,6 +77,7 @@ final class Slovak implements LangInterface
 
 			'CLOSE_ALBUM' => 'Album zavrieť',
 			'CLOSE_PHOTO' => 'Foto Zavrieť',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Pridať',
 			'MOVE' => 'Presunúť',
@@ -114,6 +115,7 @@ final class Slovak implements LangInterface
 
 			'FULL_PHOTO' => 'Otvoriť originál',
 			'ABOUT_PHOTO' => 'O tomto obrázku',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Priamy link',
 			'DIRECT_LINKS' => 'Priame linky',
 
