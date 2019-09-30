@@ -71,6 +71,9 @@
         <a class="button button--info" id="button_info_album" title="{{ $locale['ABOUT_ALBUM'] }}">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>
+        <a class="button button--map" id="button_map_album" title="{{ $locale['DISPLAY_FULL_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#map"></use></svg>
+        </a>
         <a class="button" id="button_move_album" title="{{ $locale['MOVE_ALBUM'] }}">
             <svg class="iconic"><use xlink:href="#folder"></use></svg>
         </a>
@@ -109,6 +112,9 @@
         <a class="button button--info" id="button_info" title="{{ $locale['ABOUT_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>
+        <a class="button button--map" id="button_map" title="{{ $locale['DISPLAY_FULL_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#map"></use></svg>
+        </a>
         <a class="button" id="button_move" title="{{ $locale['MOVE'] }}">
             <svg class="iconic"><use xlink:href="#folder"></use></svg>
         </a>
@@ -128,6 +134,49 @@
 
     </div>
 
+    <div class="header__toolbar header__toolbar--map">
+
+        <a class="button" id="button_back_map" title="{{ $locale['CLOSE_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#chevron-left"></use></svg>
+        </a>
+
+        <a class="header__title"></a>
+
+        <!--<a class="button button--eye" id="button_visibility_album" title="{{ $locale['VISIBILITY_ALBUM'] }}">
+            <svg class="iconic iconic--eye"><use xlink:href="#eye"></use></svg>
+        </a>
+        <a class="button button--share" id="button_share_album" title="{{ $locale['SHARE_ALBUM'] }}">
+            <svg class="iconic ionicons"><use xlink:href="#share-ion"></use></svg>
+        </a>
+        <a class="button" id="button_archive" title="{{ $locale['DOWNLOAD_ALBUM'] }}">
+            <svg class="iconic"><use xlink:href="#cloud-download"></use></svg>
+        </a>
+        <a class="button button--info" id="button_info_album" title="{{ $locale['ABOUT_ALBUM'] }}">
+            <svg class="iconic"><use xlink:href="#info"></use></svg>
+        </a>
+        <a class="button button--map" id="button_map" title="{{ $locale['DISPLAY_FULL_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#info"></use></svg>
+        </a>
+        <a class="button" id="button_move_album" title="{{ $locale['MOVE_ALBUM'] }}">
+            <svg class="iconic"><use xlink:href="#folder"></use></svg>
+        </a>
+        <a class="button" id="button_trash_album" title="{{ $locale['DELETE_ALBUM'] }}">
+            <svg class="iconic"><use xlink:href="#trash"></use></svg>
+        </a>
+        <a class="button" id="button_fs_album_enter" title="{{ $locale['FULLSCREEN_ENTER'] }}">
+            <svg class="iconic"><use xlink:href="#fullscreen-enter"></use></svg>
+        </a>
+        <a class="button" id="button_fs_album_exit" title="{{ $locale['FULLSCREEN_EXIT'] }}">
+            <svg class="iconic"><use xlink:href="#fullscreen-exit"></use></svg>
+        </a>
+        <a class="header__divider"></a>
+        <a class="button button_add" title="{{ $locale['ADD'] }}">
+            <svg class="iconic"><use xlink:href="#plus"></use></svg>
+        </a>
+        -->
+    </div>
+
+
 </header>
 
 <!-- leftMenu -->
@@ -135,6 +184,11 @@
 
 <!-- Content -->
 <div class="content"></div>
+
+<!-- MapView -->
+<div id="mapview">
+  <div id="leaflet_map_full"></div>
+</div>
 
 <!-- ImageView -->
 <div id="imageview"></div>

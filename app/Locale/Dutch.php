@@ -76,6 +76,7 @@ final class Dutch implements LangInterface
 
 			'CLOSE_ALBUM' => 'Sluit Album',
 			'CLOSE_PHOTO' => 'Sluit Foto',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Voeg toe',
 			'MOVE' => 'Verplaats',
@@ -113,6 +114,7 @@ final class Dutch implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'Over Foto',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Directe Link',
 			'DIRECT_LINKS' => 'Directe Links',
 

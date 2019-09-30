@@ -76,6 +76,7 @@ final class Swedish implements LangInterface
 
 			'CLOSE_ALBUM' => 'Stäng albumet',
 			'CLOSE_PHOTO' => 'Stäng fotografiet',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Lägg till',
 			'MOVE' => 'Flytta',
@@ -113,6 +114,7 @@ final class Swedish implements LangInterface
 
 			'FULL_PHOTO' => 'Originalfotografi',
 			'ABOUT_PHOTO' => 'Om fotografiet',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Direktlänk',
 			'DIRECT_LINKS' => 'Direct Links',
 

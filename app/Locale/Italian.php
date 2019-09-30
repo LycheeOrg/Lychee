@@ -76,6 +76,7 @@ final class Italian implements LangInterface
 
 			'CLOSE_ALBUM' => 'Chiudi Album',
 			'CLOSE_PHOTO' => 'Chiudi Foto',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Aggiungi',
 			'MOVE' => 'Sposta',
@@ -115,6 +116,7 @@ final class Italian implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'Informazioni sulla Foto',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Link Diretto',
 			'DIRECT_LINKS' => 'Direct Links',
 

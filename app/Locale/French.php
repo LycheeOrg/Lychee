@@ -76,6 +76,7 @@ final class French implements LangInterface
 
 			'CLOSE_ALBUM' => 'Fermer l\'album',
 			'CLOSE_PHOTO' => 'Fermer la photo',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Ajouter',
 			'MOVE' => 'Déplacer',
@@ -113,6 +114,7 @@ final class French implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'À propos de la photo',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Lien direct',
 			'DIRECT_LINKS' => 'Direct Links',
 

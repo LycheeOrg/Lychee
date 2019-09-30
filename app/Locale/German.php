@@ -77,6 +77,7 @@ final class German implements LangInterface
 
 			'CLOSE_ALBUM' => 'Album schließen',
 			'CLOSE_PHOTO' => 'Foto schließen',
+			'CLOSE_MAP' => 'Karte schließen',
 
 			'ADD' => 'Hinzufügen',
 			'MOVE' => 'Verschieben',
@@ -114,6 +115,7 @@ final class German implements LangInterface
 
 			'FULL_PHOTO' => 'Original öffnen',
 			'ABOUT_PHOTO' => 'Über dieses Foto',
+			'DISPLAY_FULL_MAP' => 'Karte',
 			'DIRECT_LINK' => 'Direkter Link',
 			'DIRECT_LINKS' => 'Direkte Links',
 
