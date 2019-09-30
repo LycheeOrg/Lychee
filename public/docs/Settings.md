@@ -24,7 +24,7 @@ Your photos and albums are protected by a username and password. If both rows ar
 
 #### Check For Updates
 
-	checkForUpdates = [0|1]
+	check_for_updates = [0|1]
 
 If `1`, Lychee will check if you are using the latest version. The notice will be displayed beside the version-number when you sign in.
 
@@ -34,11 +34,15 @@ If `1`, Lychee will check if you are using the latest version. The notice will b
 
 Substring of a MySQL query. This string will be appended to all album-related MySQL queries.
 
+**TODO: FIX ME**
+
 #### Photo-Sorting
 
 	sortingPhotos = ORDER BY [field] [ASC|DESC]
 
 Substring of a MySQL query. This string will be appended to all photo-related MySQL queries.
+
+**TODO: FIX ME**
 
 #### Dropbox Key
 
@@ -56,4 +60,4 @@ If `1`, Lychee will use Imagick when available. Disable [Imagick](http://www.ima
 
 	skipDuplicates = [0|1]
 
-Lychee will skip the upload of existing photos when actived.
+Lychee will skip the upload of existing photos when activated.

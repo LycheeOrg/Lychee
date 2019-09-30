@@ -141,15 +141,64 @@ class PhotoFunctions
 	}
 
 	/**
+	 * Returns 'photo' if it is a photo
+	 * Returns 'video' if it is a video
+	 * Returns 'raw' if it is an accepted file (we only check extensions)
+	 * Returns 'error message' if it is something else.
+	 *
+	 * @param $file
+	 * @param $extension
+	 *
+	 * @return string
+	 */
+	private function file_type($file, string $extension)
+	{
+		// check raw files
+		if (in_array(strtolower($extension), explode('|', Configs::get_value('raw_formats', '')), true)) {
+			return 'raw';
+		}
+
+		if (!in_array(strtolower($extension), $this->validExtensions, true)) {
+			$mimeType = $file['type'];
+			if (!in_array($mimeType, $this->validVideoTypes, true)) {
+				// let's check for the mimetype
+				// maybe we don't have a photo
+				if (!function_exists('exif_imagetype')) {
+					Logs::error(__METHOD__, __LINE__,
+						'EXIF library not loaded. Make sure exif is enabled in php.ini');
+
+					return 'EXIF library not loaded on the server!';
+				}
+
+				$type = @exif_imagetype($file['tmp_name']);
+				if (!in_array($type, $this->validTypes, true)) {
+					Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
+
+					return 'Photo type not supported!';
+				}
+				// we have maybe a raw file
+				Logs::error(__METHOD__, __LINE__, 'Photo format not supported');
+
+				return 'Photo format not supported!';
+			}
+			// we have a video
+			return 'video';
+		}
+		// we have a normal photo
+		return 'photo';
+	}
+
+	/**
 	 * Add new photo(s) to the database.
 	 * Exits on error.
 	 *
 	 * @param array $file
 	 * @param int   $albumID_in
+	 * @param bool  $delete_imported
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0)
+	public function add(array $file, $albumID_in = 0, $delete_imported = false)
 	{
 		// Check permissions
 		if (Helpers::hasPermissions(Storage::path('')) === false ||
@@ -180,14 +229,9 @@ class PhotoFunctions
 				break;
 
 			// r for recent
-			case 'r':
-				$public = 0;
-				$star = 0;
-				$albumID = null;
-				break;
-
 			// 0 for unsorted
 			case '0':
+			case 'r':
 				$public = 0;
 				$star = 0;
 				$albumID = null;
@@ -202,29 +246,11 @@ class PhotoFunctions
 
 		// Verify extension
 		$extension = Helpers::getExtension($file['name'], false);
-		if (!in_array(strtolower($extension), $this->validExtensions, true)) {
-			Logs::error(__METHOD__, __LINE__, 'Photo format not supported');
-
-			return Response::error('Photo format not supported!');
-		}
-
-		// should not be needed
-		// Verify video
 		$mimeType = $file['type'];
-		if (!in_array($mimeType, $this->validVideoTypes, true)) {
-			if (!function_exists('exif_imagetype')) {
-				Logs::error(__METHOD__, __LINE__, 'EXIF library not loaded. Make sure exif is enabled in php.ini');
+		$kind = $this->file_type($file, $extension);
 
-				return Response::error('EXIF library not loaded on the server!');
-			}
-
-			// Verify image
-			$type = @exif_imagetype($file['tmp_name']);
-			if (!in_array($type, $this->validTypes, true)) {
-				Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
-
-				return Response::error('Photo type not supported!');
-			}
+		if ($kind != 'photo' && $kind != 'video' && $kind != 'raw') {
+			return Response::error($kind);
 		}
 
 		// Generate id
@@ -234,7 +260,9 @@ class PhotoFunctions
 		// Set paths
 		$tmp_name = $file['tmp_name'];
 		$photo_name = md5(microtime()) . $extension;
-		$path = Storage::path('big/' . $photo_name);
+
+		$path_prefix = $kind != 'raw' ? 'big/' : 'raw/';
+		$path = Storage::path($path_prefix . $photo_name);
 
 		// Calculate checksum
 		$checksum = sha1_file($tmp_name);
@@ -249,7 +277,7 @@ class PhotoFunctions
 		// double check that
 		if ($exists !== false) {
 			$photo_name = $exists->url;
-			$path = Storage::path('big/' . $exists->url);
+			$path = Storage::path($path_prefix . $exists->url);
 			$photo->thumbUrl = $exists->thumbUrl;
 			$photo->thumb2x = $exists->thumb2x;
 			$photo->medium = $exists->medium;
@@ -262,14 +290,16 @@ class PhotoFunctions
 		if ($exists === false) {
 			// Import if not uploaded via web
 			if (!is_uploaded_file($tmp_name)) {
+				// TODO: use the storage facade here
 				if (!@copy($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
 
 					return Response::error('Could not copy photo to uploads!');
-				} elseif (Configs::get_value('deleteImported') === '1') {
+				} elseif ($delete_imported) {
 					@unlink($tmp_name);
 				}
 			} else {
+				// TODO: use the storage facade here
 				if (!@move_uploaded_file($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not move photo to uploads');
 
@@ -279,17 +309,26 @@ class PhotoFunctions
 		} else {
 			// Photo already exists
 			// Check if the user wants to skip duplicates
-			if (Configs::get()['skipDuplicates'] === '1') {
+			if (Configs::get()['skip_duplicates'] === '1') {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
 				return Response::warning('This photo has been skipped because it\'s already in your library.');
 			}
 		}
 
-		$info = $this->metadataExtractor->extract($path, $mimeType);
+		if ($kind == 'raw') {
+			$info = $this->metadataExtractor->bare();
+			$this->metadataExtractor->size($info, $path);
+			$this->metadataExtractor->validate($info);
+			$info['type'] = 'raw';
+		} else {
+			$info = $this->metadataExtractor->extract($path, $mimeType);
+		}
 
 		// Use title of file if IPTC title missing
-		if ($info['title'] === '') {
+		if ($kind == 'raw') {
+			$info['title'] = substr(basename($file['name']), 0, 30);
+		} elseif ($info['title'] === '') {
 			$info['title'] = substr(basename($file['name'], $extension), 0, 30);
 		}
 
@@ -312,6 +351,7 @@ class PhotoFunctions
 		$photo->latitude = $info['latitude'];
 		$photo->longitude = $info['longitude'];
 		$photo->altitude = $info['altitude'];
+		$photo->imgDirection = $info['imgDirection'];
 		$photo->public = $public;
 		$photo->star = $star;
 		$photo->checksum = $checksum;
@@ -355,7 +395,10 @@ class PhotoFunctions
 			}
 
 			// Create Thumb
-			if (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
+			if ($kind == 'raw') {
+				$photo->thumbUrl = '';
+				$photo->thumb2x = 0;
+			} elseif (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
 				if (!$this->createThumb($photo, $frame_tmp)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
 

@@ -128,15 +128,30 @@ class AlbumFunctions
 	 *
 	 * @param array $return
 	 * @param array $album_list
-	 *
-	 * @return array
 	 */
-	public function gen_thumbs($return, $album_list)
+	public function gen_thumbs(array &$return, $album_list)
 	{
+		$childThumbIDs = [];
+
+		// As an optimization, we start by extracting the thumbs from the
+		// children of this album (which had their thumbs calculated already).
+		if (isset($return['albums'])) {
+			foreach ($return['albums'] as &$album) {
+				$childThumbIDs = array_merge($childThumbIDs, $album['thumbIDs']);
+				unset($album['thumbIDs']);
+			}
+		}
+
 		$photos = Photo::whereIn('album_id', $album_list)
+			->orWhereIn('id', $childThumbIDs)
 			->orderBy('star', 'DESC')
-			->orderBy(Configs::get_value('sortingPhotos_col'), Configs::get_value('sortingPhotos_order'))
-			->limit(3)->get();
+			->orderBy(Configs::get_value('sorting_Photos_col'), Configs::get_value('sorting_Photos_order'))
+			->orderBy('id', 'ASC')
+			->limit(3)
+			->get();
+		// We do not attempt natural sorting here because for large albums
+		// it can be many times slower than the SQL sort (since we can't
+		// use the "limit" clause).
 
 		// For each thumb
 		$k = 0;
@@ -157,10 +172,9 @@ class AlbumFunctions
 				}
 			}
 			$return['types'][$k] = $photo->type;
+			$return['thumbIDs'][$k] = $photo->id;
 			$k++;
 		}
-
-		return $return;
 	}
 
 	/**
@@ -176,7 +190,27 @@ class AlbumFunctions
 		$previousPhotoID = '';
 		$return_photos = array();
 		$photo_counter = 0;
-		$photos = $photos_sql->get();
+		$photos = $photos_sql->with('album')
+			->get();
+
+		$sortingCol = Configs::get_value('sorting_Photos_col');
+		if ($sortingCol === 'title' || $sortingCol === 'description') {
+			// The result is supposed to be sorted by the user-specified
+			// column as the primary key and by 'id' as the secondary key.
+			// Unfortunately, sortBy can't be chained the way orderBy can.
+			// Instead, we use array_multisort which can be used in a
+			// stable fashion, preserving the ordering of elements that
+			// compare equal.  We depend here on the collection already
+			// being sorted by 'id', via the SQL query.
+
+			// Convert to array so that we can use standard PHP functions.
+			$photos = $photos->all();
+			// Primary sorting key.
+			$values = array_column($photos, $sortingCol);
+			// Secondary sorting key -- just preserves current order.
+			$keys = array_keys($photos);
+			array_multisort($values, Configs::get_value('sorting_Photos_order') === 'ASC' ? SORT_ASC : SORT_DESC, SORT_NATURAL | SORT_FLAG_CASE, $keys, SORT_ASC, $photos);
+		}
 
 		/*
 		 * @var Photo
@@ -205,7 +239,7 @@ class AlbumFunctions
 			$photo_counter++;
 		}
 
-		if (count($return_photos) > 0) {
+		if (count($return_photos) > 0 && Configs::get_value('photos_wraparound', '1') === '1') {
 			// Enable next and previous for the first and last photo
 			$lastElement = end($return_photos);
 			$lastElementId = $lastElement['id'];
@@ -240,11 +274,16 @@ class AlbumFunctions
 			foreach ($albums as $album_model) {
 				// Turn data from the database into a front-end friendly format
 				$album = $album_model->prepareData();
-
-				if ($this->readAccessFunctions->album($album_model->id) === 1) {
-					$album['albums'] = $this->get_albums($album_model);
-					$album = $this->gen_thumbs($album, $this->get_sub_albums($album_model, [$album_model->id]));
+				$username = null;
+				if ($this->sessionFunctions->is_logged_in()) {
+					$album['owner'] = $username = $album_model->owner->username;
 				}
+
+				if ($this->readAccessFunctions->album($album_model) === 1) {
+					$album['albums'] = $this->get_albums($album_model, $username);
+					$this->gen_thumbs($album, [$album_model->id]);
+				}
+				unset($album['thumbIDs']);
 
 				// Add to return
 				$return[] = $album;
@@ -258,10 +297,8 @@ class AlbumFunctions
 	 * @param $return
 	 * @param $photos_sql
 	 * @param $kind
-	 *
-	 * @return mixed
 	 */
-	public function genSmartAlbumsThumbs(array $return, Builder $photos_sql, string $kind)
+	public function genSmartAlbumsThumbs(array &$return, Builder $photos_sql, string $kind)
 	{
 		$photos = $photos_sql->get();
 		$i = 0;
@@ -299,8 +336,6 @@ class AlbumFunctions
 				break;
 			}
 		}
-
-		return $return;
 	}
 
 	/**
@@ -323,9 +358,9 @@ class AlbumFunctions
 			 * @var Album
 			 */
 			foreach ($toplevel['albums'] as $album) {
-				if ($this->readAccessFunctions->album($album->id) === 1) {
+				if ($this->readAccessFunctions->album($album) === 1) {
 					$albumIDs[] = $album->id;
-					$albumIDs = $this->get_sub_albums($album, $albumIDs);
+					$this->get_sub_albums($albumIDs, $album);
 				}
 			}
 		}
@@ -334,9 +369,9 @@ class AlbumFunctions
 			 * @var Album
 			 */
 			foreach ($toplevel['shared_albums'] as $album) {
-				if ($this->readAccessFunctions->album($album->id) === 1) {
+				if ($this->readAccessFunctions->album($album) === 1) {
 					$albumIDs[] = $album->id;
-					$albumIDs = $this->get_sub_albums($album, $albumIDs);
+					$this->get_sub_albums($albumIDs, $album);
 				}
 			}
 		}
@@ -370,25 +405,25 @@ class AlbumFunctions
 				 * Unsorted.
 				 */
 				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId))->limit(3);
-				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
+				$this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
 
 				/**
 				 * Starred.
 				 */
 				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId))->limit(3);
-				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
+				$this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 
 				/**
 				 * Public.
 				 */
 				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId))->limit(3);
-				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
+				$this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
 
 				/**
 				 * Recent.
 				 */
 				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId))->limit(3);
-				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
+				$this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
 
 				return $return;
 			}
@@ -403,7 +438,7 @@ class AlbumFunctions
 				 * Starred.
 				 */
 				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $publicAlbums))->limit(3);
-				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
+				$this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 			}
 
 			if (Configs::get_value('public_recent', '0') === '1') {
@@ -411,7 +446,7 @@ class AlbumFunctions
 				 * Recent.
 				 */
 				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $publicAlbums))->limit(3);
-				$return = $this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
+				$this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
 			}
 
 			return $return;
@@ -424,29 +459,48 @@ class AlbumFunctions
 	 * Recursively returns the tree structure of albums.
 	 *
 	 * @param Album $album
+	 * @param $username : speed optimization to avoid an extra query,
+	 * taking advantage of the fact that subalbums inherit parent's owner
+	 * @param $recursionLimit : 0 means infinity
 	 *
 	 * @return array
 	 */
-	public function get_albums(Album $album): array
+	public function get_albums(Album $album, $username, $recursionLimit = 0): array
 	{
+		$sortingCol = Configs::get_value('sorting_Albums_col');
+		if ($sortingCol !== 'title' && $sortingCol !== 'description') {
+			$albums = $album->children()->orderBy($sortingCol, Configs::get_value('sorting_Albums_order'))->get();
+		} else {
+			$albums = $album->children->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, (Configs::get_value('sorting_Albums_order') === 'DESC'));
+		}
 		$subAlbums = [];
-		foreach ($album->children as $subAlbum) {
-			$haveAccess = $this->readAccessFunctions->album($subAlbum->id, true);
+		foreach ($albums as $subAlbum) {
+			$haveAccess = $this->readAccessFunctions->album($subAlbum, true);
 
 			// We do list albums that need a password, but we limit what we
 			// return about them.
 			if ($haveAccess === 1 || $haveAccess === 3) {
-				$album = $subAlbum->prepareData();
-				if (!$this->sessionFunctions->is_logged_in()) {
-					unset($album['owner']);
+				$subAlbumData = $subAlbum->prepareData();
+				if ($username !== null) {
+					$subAlbumData['owner'] = $username;
 				}
 
 				if ($haveAccess === 1) {
-					$album['albums'] = $this->get_albums($subAlbum);
-					$album = $this->gen_thumbs($album, $this->get_sub_albums($subAlbum, [$subAlbum->id]));
+					if ($recursionLimit !== 1) {
+						$subAlbumData['albums'] = $this->get_albums($subAlbum, $username, $recursionLimit > 0 ? $recursionLimit - 1 : 0);
+						$this->gen_thumbs($subAlbumData, [$subAlbum->id]);
+					} else {
+						// We will not return the 'albums' data about lower
+						// levels.  We still need to descend all the way down
+						// to get accurate thumbs info though.
+						$subSubAlbums = [$subAlbum->id];
+						$this->get_sub_albums($subSubAlbums, $subAlbum);
+						$this->gen_thumbs($subAlbumData, $subSubAlbums);
+						$subAlbumData['has_albums'] = count($subSubAlbums) > 1 ? '1' : '0';
+					}
 				}
 
-				$subAlbums[] = $album;
+				$subAlbums[] = $subAlbumData;
 			}
 		}
 
@@ -495,30 +549,26 @@ class AlbumFunctions
 	 * true, will result in password-protected albums being included (but not
 	 * their content).
 	 *
-	 * @param $parentAlbum
 	 * @param array $return
+	 * @param Album $parentAlbum
 	 * @param bool  $includePassProtected
-	 *
-	 * @return array
 	 */
-	public function get_sub_albums($parentAlbum, $return, $includePassProtected = false)
+	public function get_sub_albums(array &$return, Album $parentAlbum, $includePassProtected = false)
 	{
 		/*
 		 * @var Album
 		 */
 		foreach ($parentAlbum->children as $album) {
-			$haveAccess = $this->readAccessFunctions->album($album->id, true);
+			$haveAccess = $this->readAccessFunctions->album($album, true);
 
 			if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
 				$return[] = $album->id;
 
 				if ($haveAccess === 1) {
-					$return = $this->get_sub_albums($album, $return, $includePassProtected);
+					$this->get_sub_albums($return, $album, $includePassProtected);
 				}
 			}
 		}
-
-		return $return;
 	}
 
 	/**
@@ -536,39 +586,60 @@ class AlbumFunctions
 			'shared_albums' => null,
 		);
 
+		$sortingCol = Configs::get_value('sorting_Albums_col');
+		$sortingOrder = Configs::get_value('sorting_Albums_order');
+
+		$customSort = function ($query) use ($sortingCol, $sortingOrder) {
+			if ($sortingCol !== 'title' && $sortingCol !== 'description') {
+				return $query
+					->orderBy($sortingCol, $sortingOrder)
+					->get();
+			} else {
+				return $query
+					->get()
+					->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC');
+			}
+		};
+
 		if ($this->sessionFunctions->is_logged_in()) {
 			$id = $this->sessionFunctions->id();
 			$user = User::find($id);
 
 			if ($id == 0) {
-				$return['albums'] = Album::where('owner_id', '=', 0)
-					->where('parent_id', '=', null)
-					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
-				$return['shared_albums'] = Album::with([
+				$return['albums'] = $customSort(Album::with([
+					'owner',
+					'children',
+				])
+					->where('owner_id', '=', 0)
+					->where('parent_id', '=', null));
+
+				$return['shared_albums'] = $customSort(Album::with([
 					'owner',
 					'children',
 				])
 					->where('owner_id', '<>', 0)
 					->where('parent_id', '=', null)
-					->orderBy('owner_id', 'ASC')
-					->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
-					->get();
+					->orderBy('owner_id', 'ASC'));
 			} else {
 				if ($user == null) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $this->sessionFunctions->id() . ')');
 
 					return null;
 				} else {
-					$return['albums'] = Album::where('owner_id', '=', $user->id)
-						->where('parent_id', '=', null)
-						->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
-						->get();
-					$return['shared_albums'] = $this->get_albums_user($user->id);
+					$return['albums'] = $customSort(Album::with([
+						'owner',
+						'children',
+					])
+						->where('owner_id', '=', $user->id)
+						->where('parent_id', '=', null));
+					$return['shared_albums'] = $customSort($this->get_albums_user($user->id));
 				}
 			}
 		} else {
-			$return['albums'] = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->where('parent_id', '=', null)
-				->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))->get();
+			$return['albums'] = $customSort(Album::with('children')
+				->where('public', '=', '1')
+				->where('visible_hidden', '=', '1')
+				->where('parent_id', '=', null));
 		}
 
 		return $return;
@@ -579,7 +650,7 @@ class AlbumFunctions
 	 *
 	 * @param $id
 	 *
-	 * @return Album[]
+	 * @return Builder
 	 */
 	public function get_albums_user($id)
 	{
@@ -603,8 +674,6 @@ class AlbumFunctions
 								$query->where('public', '=', true)->where('visible_hidden', '=', true);
 							});
 				})
-			->orderBy('owner_id', 'ASC')
-			->orderBy(Configs::get_value('sortingAlbums_col'), Configs::get_value('sortingAlbums_order'))
-			->get();
+			->orderBy('owner_id', 'ASC');
 	}
 }

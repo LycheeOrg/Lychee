@@ -49,7 +49,7 @@ class MovePhotos extends Migration
 					$photo->save();
 				}
 			} else {
-				echo env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_photos does not exists!\n";
+				echo env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_photos does not exist!\n";
 			}
 		} else {
 			echo "photos is not empty.\n";

@@ -83,7 +83,11 @@ class SymLink extends Model
 			$url = $urls[0] . '.' . $urls[1];
 		}
 
-		$original = Storage::path($this->kinds_dir[$kind] . '/' . $url);
+		if ($photo->type == 'raw') {
+			$original = Storage::path('raw/' . $url);
+		} else {
+			$original = Storage::path($this->kinds_dir[$kind] . '/' . $url);
+		}
 		$extension = Helpers::getExtension($original);
 		$file_name = hash('sha256', $salt . '|' . $original) . $extension;
 		$sym = Storage::drive('symbolic')->path($file_name);
@@ -169,8 +173,6 @@ class SymLink extends Model
 	 * before deleting we actually unlink the symlinks.
 	 *
 	 * @return bool|null
-	 *
-	 * @throws Exception
 	 */
 	public function delete()
 	{
@@ -178,6 +180,7 @@ class SymLink extends Model
 			if ($this->$kind != '') {
 				$path = Storage::drive('symbolic')->path($this->$kind);
 				try {
+					Logs::warning(__FUNCTION__, __LINE__, $path);
 					unlink($path);
 				} catch (Exception $e) {
 					Logs::error(__METHOD__, __LINE__, 'could not unlink ' . $path);

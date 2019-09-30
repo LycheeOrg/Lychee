@@ -4,72 +4,12 @@
 
 namespace Tests\Feature;
 
-use App\ModelFunctions\SessionFunctions;
-use Illuminate\Foundation\Testing\TestResponse;
+use Tests\Feature\Lib\AlbumsUnitTest;
+use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class AlbumTest extends TestCase
 {
-	/**
-	 * Pack the possible response of test.
-	 *
-	 * @param $response
-	 * @param $should_fail
-	 */
-	private function fail_test(TestResponse &$response, bool &$should_fail)
-	{
-		if ($should_fail) {
-			$response->assertSee('false');
-		} else {
-			$response->assertSee('true');
-		}
-	}
-
-	/**
-	 * Pack the title tests.
-	 *
-	 * @param $id
-	 * @param $text
-	 * @param $should_fail
-	 */
-	private function set_title($id, string $text, bool $should_fail)
-	{
-		/**
-		 * Let's try to change the title of the album we just created.
-		 */
-		$response = $this->post('/api/Album::setTitle', ['albumIDs' => $id, 'title' => $text]);
-		$response->assertOk();
-		$this->fail_test($response, $should_fail);
-	}
-
-	/**
-	 * Pack the description tests.
-	 *
-	 * @param $id
-	 * @param $text
-	 * @param $should_fail
-	 */
-	private function set_description($id, string $text, bool $should_fail)
-	{
-		$response = $this->post('/api/Album::setDescription', ['albumID' => $id, 'description' => $text]);
-		$response->assertOk();
-		$this->fail_test($response, $should_fail);
-	}
-
-	/**
-	 * Pack the licence.
-	 *
-	 * @param $id
-	 * @param $text
-	 * @param $should_fail
-	 */
-	private function set_licence($id, string $text, bool $should_fail)
-	{
-		$response = $this->post('/api/Album::setLicense', ['albumID' => $id, 'license' => $text]);
-		$response->assertOk();
-		$this->fail_test($response, $should_fail);
-	}
-
 	/**
 	 * Test album functions.
 	 *
@@ -77,89 +17,51 @@ class AlbumTest extends TestCase
 	 */
 	public function test_add_not_logged()
 	{
-		/**
-		 * We are not logged in so this should fail.
-		 */
-		$response = $this->post('/api/Album::add', [
-			'title' => 'test_album',
-			'parent_id' => '0',
-		]);
-		$response->assertOk();
-		$response->assertSee('false');
+		$albums_tests = new AlbumsUnitTest();
+		$albums_tests->add($this, '0', 'test_album', 'false');
+
+		$albums_tests->get($this, 'r', '', 'true');
+		$albums_tests->get($this, 's', '', 'true');
+		$albums_tests->get($this, 'f', '', 'true');
+		$albums_tests->get($this, '0', '', 'true');
 	}
 
 	public function test_add_read_logged()
 	{
+		$albums_tests = new AlbumsUnitTest();
+		$session_tests = new SessionUnitTest();
+
+		$session_tests->log_as_id(0);
+
+		$albums_tests->get($this, 'r', '', 'true');
+		$albums_tests->get($this, 's', '', 'true');
+		$albums_tests->get($this, 'f', '', 'true');
+		$albums_tests->get($this, '0', '', 'true');
+
+		$albumID = $albums_tests->add($this, '0', 'test_album', 'true');
+		$albums_tests->see_in_albums($this, $albumID);
+
 		/*
-		 * Because we don't know login and password we are just going to assumed we are logged in.
+		 * try to get a non existing album
 		 */
-		$sessionFunctions = new SessionFunctions();
-		$sessionFunctions->log_as_id(0);
+		$albums_tests->get($this, '999', '', 'false');
 
-		/**
-		 * We are logged as ADMIN (we don't test the other users yet) so this should not fail and it should return an id.
-		 */
-		$response = $this->post('/api/Album::add', [
-			'title' => 'test_album',
-			'parent_id' => '0',
-		]);
-		$response->assertOk();
-		$response->assertDontSee('false');
-
-		/**
-		 * We also get the id of the album we just created.
-		 */
-		$albumID = $response->getContent();
-
-		/**
-		 * Let's get all current albums.
-		 */
-		$response = $this->post('/api/Albums::get', []);
-		$response->assertOk();
-		$response->assertSee($albumID);
-
-		/**
-		 * Let's try to get a non existing album.
-		 */
-		$response = $this->post('/api/Album::get', ['albumID' => 999, 'password' => '']);
-		$response->assertOk();
-		$response->assertSeeText('false');
-
-		/**
-		 * Let's try to get the info of the album we just created.
-		 */
-		$response = $this->post('/api/Album::get', ['albumID' => $albumID, 'password' => '']);
-		$response->assertOk();
-		$response->assertSee($albumID);
+		$response = $albums_tests->get($this, $albumID, '', 'true');
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => '',
 			'title' => 'test_album',
 		]);
 
-		/*
-		 * Let's try to change the title of the album we just created.
-		 */
-		$this->set_title($albumID, 'NEW_TEST', false);
-		//        $this->set_title(9999,'NEW_TEST',true);
-
-		/*
-		 * Let's change the description of the album we just created.
-		 */
-		$this->set_description($albumID, 'new description', false);
-		//        $this->set_description(9999,'new description', true);
-
-		/*
-		 * Let's change the licence used
-		 */
-		$this->set_licence($albumID, 'reserved', false);
+		$albums_tests->set_title($this, $albumID, 'NEW_TEST');
+		$albums_tests->set_description($this, $albumID, 'new description');
+		$albums_tests->set_license($this, $albumID, 'WTFPL', '"Error: wrong kind of license!"');
+		$albums_tests->set_license($this, $albumID, 'reserved');
 
 		/**
 		 * Let's see if the info changed.
 		 */
-		$response = $this->post('/api/Album::get', ['albumID' => $albumID, 'password' => '']);
-		$response->assertOk();
-		$response->assertSee($albumID);
+		$response = $albums_tests->get($this, $albumID, '', 'true');
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => 'new description',
@@ -169,36 +71,42 @@ class AlbumTest extends TestCase
 		/*
 		 * Flush the session to see if we can access the album
 		 */
-		$sessionFunctions->logout();
+		$session_tests->logout($this);
 
-		/**
+		/*
 		 * Let's try to get the info of the album we just created.
 		 */
-		$response = $this->post('/api/Album::getPublic', ['albumID' => $albumID, 'password' => '']);
-		$response->assertOk();
-		$response->assertSeeText('false');
-
-		$response = $this->post('/api/Album::get', ['albumID' => $albumID]);
-		$response->assertOk();
-		$response->assertSee('"Warning: Album private!"');
+		$albums_tests->get_public($this, $albumID, '', 'false');
+		$albums_tests->get($this, $albumID, '', '"Warning: Album private!"');
 
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
 		 */
-		$sessionFunctions->log_as_id(0);
+		$session_tests->log_as_id(0);
 
-		/**
+		/*
 		 * Let's try to delete this album.
 		 */
-		$response = $this->post('/api/Album::delete', ['albumIDs' => $albumID]);
-		$response->assertOk();
-		$response->assertSee('true');
+		$albums_tests->delete($this, $albumID);
 
-		/**
+		/*
 		 * Because we deleted the album, we should not see it anymore.
 		 */
-		$response = $this->post('/api/Albums::get', []);
-		$response->assertOk();
-		$response->assertDontSee($albumID);
+		$albums_tests->dont_see_in_albums($this, $albumID);
+
+		$session_tests->logout($this);
+	}
+
+	public function test_true_negative()
+	{
+		$albums_tests = new AlbumsUnitTest();
+		$session_tests = new SessionUnitTest();
+
+		$session_tests->log_as_id(0);
+
+		$albums_tests->set_description($this, '-1', 'new description', 'false');
+		$albums_tests->set_public($this, '-1', 1, 1, 1, 1, 'false');
+
+		$session_tests->logout($this);
 	}
 }

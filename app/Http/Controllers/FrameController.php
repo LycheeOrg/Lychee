@@ -4,10 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Configs;
 use App\Locale\Lang;
+use App\ModelFunctions\ConfigFunctions;
 use App\Response;
 
 class FrameController extends Controller
 {
+	/**
+	 * @var ConfigFunctions
+	 */
+	private $configFunctions;
+
+	/**
+	 * FrameController constructor.
+	 *
+	 * @param ConfigFunctions $configFunctions
+	 */
+	public function __construct(ConfigFunctions $configFunctions)
+	{
+		$this->configFunctions = $configFunctions;
+	}
+
 	/**
 	 * Return the page /frame if enabled.
 	 *
@@ -24,17 +40,7 @@ class FrameController extends Controller
 		$lang = Lang::get_lang(Configs::where('key', '=', 'lang')->first());
 		$lang['language'] = Configs::get_value('lang');
 
-		$infos = array();
-		$infos['owner'] = Configs::get_value('landing_owner');
-		$infos['title'] = Configs::get_value('landing_title');
-		$infos['subtitle'] = Configs::get_value('landing_subtitle');
-		$infos['facebook'] = Configs::get_value('landing_facebook');
-		$infos['flickr'] = Configs::get_value('landing_flickr');
-		$infos['twitter'] = Configs::get_value('landing_twitter');
-		$infos['instagram'] = Configs::get_value('landing_instagram');
-		$infos['youtube'] = Configs::get_value('landing_youtube');
-		$infos['background'] = Configs::get_value('landing_background');
-
+		$infos = $this->configFunctions->get_pages_infos();
 		$title = Configs::get_value('site_title');
 
 		return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos]);

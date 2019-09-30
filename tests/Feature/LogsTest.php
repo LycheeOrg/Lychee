@@ -5,7 +5,7 @@
 namespace Tests\Feature;
 
 use App\Logs;
-use App\ModelFunctions\SessionFunctions;
+use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class LogsTest extends TestCase
@@ -17,13 +17,14 @@ class LogsTest extends TestCase
 	 */
 	public function test_Logs()
 	{
+		$session_tests = new SessionUnitTest();
+
 		$response = $this->get('/Logs');
 		$response->assertOk();
 		$response->assertSeeText('false');
 
 		// set user as admin
-		$sessionFunctions = new SessionFunctions();
-		$sessionFunctions->log_as_id(0);
+		$session_tests->log_as_id(0);
 
 		Logs::notice(__METHOD__, __LINE__, 'test');
 		$response = $this->get('/Logs');
@@ -31,7 +32,7 @@ class LogsTest extends TestCase
 		$response->assertDontSeeText('false');
 		$response->assertViewIs('logs.list');
 
-		$sessionFunctions->logout();
+		$session_tests->logout($this);
 	}
 
 	public function test_api_Logs()
@@ -53,8 +54,8 @@ class LogsTest extends TestCase
 		$response->assertSeeText('false');
 
 		// set user as admin
-		$sessionFunctions = new SessionFunctions();
-		$sessionFunctions->log_as_id(0);
+		$session_tests = new SessionUnitTest();
+		$session_tests->log_as_id(0);
 
 		$response = $this->post('/api/Logs::clearNoise');
 		$response->assertOk();
@@ -68,6 +69,6 @@ class LogsTest extends TestCase
 		$response->assertOk();
 		$response->assertSeeText('Everything looks fine, Lychee has not reported any problems!');
 
-		$sessionFunctions->logout();
+		$session_tests->logout($this);
 	}
 }
