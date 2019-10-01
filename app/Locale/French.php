@@ -244,6 +244,7 @@ final class French implements LangInterface
 			'ERROR_CONFIG_FILE' => "Impossible d\'enregistrer cette configuration. Permission refusée dans <b>'data/'</b>. Veuillez paramétrer les droits de lecture, d\'ecriture et d\'exécution pour les autres utilisateurs dans <b>'data/'</b> et <b>'uploads/'</b>. Consultez le fichier Readme pour obtenir plus d\'information.",
 			'ERROR_UNKNOWN' => 'Une erreur inattendue est survenue. Veuillez réessayer et vérifier votre installation et votre serveur. Consultez le fichier Readme pour obtenir plus d\'information.',
 			'ERROR_LOGIN' => 'Impossible d\'enregistrer les informations de connexion. Veuillez réessayer avec un autre nom d\'utilisateur et mot de passe.',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Réessayer',
 
@@ -321,7 +322,7 @@ final class French implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

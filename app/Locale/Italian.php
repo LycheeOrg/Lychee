@@ -247,6 +247,7 @@ final class Italian implements LangInterface
 			'ERROR_CONFIG_FILE' => "Impossibile salvare questa configurazione. Permessi negati in <b>\'data/\'</b>. Per favore imposta i diritti di lettura, scrittura ed esecuzione per gli utenti esterni in <b>\'data/\'</b> e <b>\'uploads/\'</b>. Controlla il readme per più informazioni.",
 			'ERROR_UNKNOWN' => 'È successo qualcosa di inaspettato. Per favore prova di nuovo e controlla la tua installazione e il tuo server. Controlla il readme per più informazioni.',
 			'ERROR_LOGIN' => 'Impossibile salvare il login. Per favore prova con altri nomi utenti e password!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Riprova',
 
@@ -332,7 +333,7 @@ final class Italian implements LangInterface
 			'OVERLAY_EXIF' => 'Dati Foto EXIF',
 			'OVERLAY_DESCRIPTION' => 'Descrizione della Foto',
 			'OVERLAY_DATE' => 'Data di Creazione della Foto',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',

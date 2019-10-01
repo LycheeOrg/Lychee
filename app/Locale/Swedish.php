@@ -244,6 +244,7 @@ final class Swedish implements LangInterface
 			'ERROR_CONFIG_FILE' => "Kunde inte spara konfigureringen. Åtkomst nekades i <b>'data/'</b>. Kontrollera rättigheterna för läsning, skrivning och exekvering för andra i <b>'data/'</b> och <b>'uploads/'</b>. För mera information läs dokumentet <b>'readme'</b>.",
 			'ERROR_UNKNOWN' => 'Något oväntat inträffade. Vänligen försök igen och kontrollera installationen av Lychee och din server. För mera information läs dokumentet <b>readme</b>.',
 			'ERROR_LOGIN' => 'Kunde inte spara inloggningsuppgifterna. Vänligen prova med ett annat användarnamn och lösenord!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Försök igen',
 
@@ -321,7 +322,7 @@ final class Swedish implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

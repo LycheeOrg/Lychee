@@ -246,6 +246,7 @@ final class Slovak implements LangInterface
 			'ERROR_CONFIG_FILE' => "Túto konfiguráciu nemožno uložiť. Prístup zamietnutý k <b>'data/'</b>. Nastavte práva zápisu na <b>'data/'</b> a <b>'uploads/'</b>. Ďalšie informácie nájdete v súbore README.",
 			'ERROR_UNKNOWN' => 'Vyskytla sa neočakávaná chyba. Skúste to znova a skontrolujte inštaláciu na vašom serveri. Ďalšie informácie nájdete v súbore README.',
 			'ERROR_LOGIN' => 'Nemožno uložiť Login. Skúste to s iným menom a heslom!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Opakovať',
 
@@ -329,7 +330,7 @@ final class Slovak implements LangInterface
 			'OVERLAY_EXIF' => 'EXIF dáta obrázku',
 			'OVERLAY_DESCRIPTION' => 'Popis obrázku',
 			'OVERLAY_DATE' => 'Obrázok snímaný dňa',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 			'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 			'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',
