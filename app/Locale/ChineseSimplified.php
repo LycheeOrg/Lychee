@@ -244,6 +244,7 @@ final class ChineseSimplified implements LangInterface
 			'ERROR_CONFIG_FILE' => "无法保存配置。<b>'data/'</b> 拒绝访问。请为其他用户设置 <b>'data/'</b> 和 <b>'uploads/'</b> 目录的读写权限。查看自述文件以获取更多信息。",
 			'ERROR_UNKNOWN' => '发生未知问题！请再试一次，检查您的安装和服务器。请查看自述文件以获取更多信息。',
 			'ERROR_LOGIN' => '无法保存登录信息。请用另一个用户名和密码再试一次！',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => '重试',
 
@@ -321,7 +322,7 @@ final class ChineseSimplified implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

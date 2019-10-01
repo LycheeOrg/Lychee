@@ -246,6 +246,7 @@ final class German implements LangInterface
 			'ERROR_CONFIG_FILE' => "Kann diese Konfiguration nicht speichern. Zugriff verweigert auf <b>'data/'</b>. Bitte setzen Sie die Schreibrechte auf <b>'data/'</b> and <b>'uploads/'</b>. Lesen Sie die README-Datei für mehr Informationen.",
 			'ERROR_UNKNOWN' => 'Etwas Unerwartetes ist passiert. Bitte probieren Sie es erneut und überprüfen Sie die Installation und Ihren Server. Lesen Sie die README-Datei für mehr Informationen.',
 			'ERROR_LOGIN' => 'Kann Login nicht speichern. Bitte versuchen Sie es erneut mit einem anderen Benutzernamen und Kennwort!',
+			'ERROR_MAP_DEACTIVATED' => 'Karten sind unter Einstellungen deaktiviert worden.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Noch einmal versuchen',
 
@@ -329,7 +330,7 @@ final class German implements LangInterface
 			'OVERLAY_EXIF' => 'EXIF Daten des Fotos',
 			'OVERLAY_DESCRIPTION' => 'Beschreibung des Fotos',
 			'OVERLAY_DATE' => 'Erstellungsdatum des Fotos',
-			'MAP_DISPLAY_TEXT' => 'Zeige Koordinaten auf Karte (OpenStreetMap) an:',
+			'MAP_DISPLAY_TEXT' => 'Kartenfunktionalitäten aktivieren (OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout des Fotos:',
 			'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
 			'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',

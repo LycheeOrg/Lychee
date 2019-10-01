@@ -244,6 +244,7 @@ final class Dutch implements LangInterface
 			'ERROR_CONFIG_FILE' => "Kan configuatie niet opslaan. Toegant tot <b>'data/'</b> geweigerd. Geef iedereen lees, schijf en uitvoer permissie op <b>'data/'</b> en <b>'uploads/'</b>. Kijk naar de readme voor meer informatie.",
 			'ERROR_UNKNOWN' => 'Er is iets onverwachts gebeurd. Probeer het opnieuw of controleer je installatie en server. Kijk naar de readme voor meer informatie.',
 			'ERROR_LOGIN' => 'Kan login niet opslaan. Probeer het opnieuw met een andere gebruikersnaam en/of wachtwoord!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Probeer opnieuw',
 
@@ -321,7 +322,7 @@ final class Dutch implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',
