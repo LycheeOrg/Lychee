@@ -308,6 +308,9 @@ class PhotoFunctions
 			}
 		} else {
 			// Photo already exists
+			if ($delete_imported && !is_uploaded_file($tmp_name)) {
+				@unlink($tmp_name);
+			}
 			// Check if the user wants to skip duplicates
 			if (Configs::get()['skip_duplicates'] === '1') {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
