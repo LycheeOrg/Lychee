@@ -354,7 +354,7 @@ class PhotosUnitTest
 			'photoIDs' => $id,
 			'albumID' => $album_id,
 		]);
-		$response->assertOk();
+		$response->assertStatus(200);
 		$response->assertSee($result);
 	}
 
@@ -373,8 +373,27 @@ class PhotosUnitTest
 		$response = $testCase->post('/api/Photo::duplicate', [
 			'photoIDs' => $id,
 		]);
-		$response->assertOk();
+		$response->assertStatus(200);
 		$response->assertSee($result);
+	}
+
+	/**
+	 * We only test for a code 200.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $kind
+	 */
+	public function download(
+		TestCase &$testCase,
+		string $id,
+		string $kind = 'FULL'
+	) {
+		$response = $testCase->call('GET', '/api/Photo::getArchive', [
+			'photoIDs' => $id,
+			'kind' => $kind,
+		]);
+		$response->assertStatus(200);
 	}
 
 	/**

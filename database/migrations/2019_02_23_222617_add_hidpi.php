@@ -34,7 +34,7 @@ class AddHidpi extends Migration
 					],
 				]);
 			} else {
-				echo "Table configs does not exists\n";
+				echo "Table configs does not exist\n";
 			}
 
 			if (Schema::hasTable('photos')) {
@@ -53,7 +53,7 @@ class AddHidpi extends Migration
 					$table->boolean('thumb2x')->default(true);
 				});
 			} else {
-				echo "Table photos does not exists\n";
+				echo "Table photos does not exist\n";
 			}
 		}
 		if (Schema::hasTable('photos')) {

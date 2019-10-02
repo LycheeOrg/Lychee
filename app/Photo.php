@@ -403,7 +403,7 @@ class Photo extends Model
 			}
 
 			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('medium/' . $photoName2x) && !unlink(Storage::path('medium/' . $photoName2x))) {
+			if (Storage::exists('small/' . $photoName2x) && !unlink(Storage::path('small/' . $photoName2x))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
 				$error = true;
 			}

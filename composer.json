@@ -16,7 +16,7 @@
         "graham-campbell/markdown": "^11.1",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
-        "maennchen/zipstream-php": "^0.5.2",
+        "maennchen/zipstream-php": "^1.2.0",
         "php-ffmpeg/php-ffmpeg": "^0.13.0"
     },
     "require-dev": {

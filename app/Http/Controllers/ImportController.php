@@ -133,7 +133,7 @@ class ImportController extends Controller
 				continue;
 			}
 			// Import photo
-			if (!$this->photo($tmp_name, $request['albumID'])) {
+			if (!$this->photo($tmp_name, true, $request['albumID'])) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
 				continue;

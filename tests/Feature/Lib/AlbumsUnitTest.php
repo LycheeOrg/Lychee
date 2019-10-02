@@ -222,6 +222,24 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * We only test for a code 200.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $kind
+	 */
+	public function download(
+		TestCase &$testCase,
+		string $id,
+		string $kind = 'FULL'
+	) {
+		$response = $testCase->call('GET', '/api/Album::getArchive', [
+			'albumIDs' => $id,
+		]);
+		$response->assertStatus(200);
+	}
+
+	/**
 	 * Delete.
 	 *
 	 * @param TestCase $testCase
