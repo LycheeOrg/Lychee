@@ -114,6 +114,7 @@ final class Spanish implements LangInterface
 
 			'FULL_PHOTO' => 'Foto Completa',
 			'ABOUT_PHOTO' => 'Acerca de la Foto',
+			'DISPLAY_FULL_MAP' => 'Mapa',
 			'DIRECT_LINK' => 'Enlace Directo',
 			'DIRECT_LINKS' => 'Enlaces Directos',
 
