@@ -260,6 +260,7 @@ final class German implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Public search updated',
 			'SETTINGS_SUCCESS_LICENSE' => 'Standard-Lizenz aktualisiert',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Karteneinstellungen erfolgreich aktualisiert',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Karteneinstellungen für öffentlichen Alben erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
 			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
 
@@ -331,6 +332,7 @@ final class German implements LangInterface
 			'OVERLAY_DESCRIPTION' => 'Beschreibung des Fotos',
 			'OVERLAY_DATE' => 'Erstellungsdatum des Fotos',
 			'MAP_DISPLAY_TEXT' => 'Kartenfunktionalitäten aktivieren (OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Kartenfunktionalität für öffentliche Alben aktivieren (OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Layout des Fotos:',
 			'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
 			'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',
