@@ -76,6 +76,7 @@ final class Spanish implements LangInterface
 
 			'CLOSE_ALBUM' => 'Cerrar Álbum',
 			'CLOSE_PHOTO' => 'Cerrar Foto',
+			'CLOSE_MAP' => 'Cerrar Mapa',
 
 			'ADD' => 'Añadir',
 			'MOVE' => 'Mover',
