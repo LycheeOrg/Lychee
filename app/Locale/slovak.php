@@ -262,6 +262,7 @@ final class Slovak implements LangInterface
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualizované',
 			'SETTINGS_SUCCESS_UPDATE' => 'Nastavenia úspešne aktualizované',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Nastavenie zobrazenia mapy aktualizované',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
 
 			'DB_INFO_TITLE' => 'Zadajte prístupové údaje k databáze:',
 			'DB_INFO_HOST' => 'Názov databázového servera (voliteľné)',
@@ -331,6 +332,7 @@ final class Slovak implements LangInterface
 			'OVERLAY_DESCRIPTION' => 'Popis obrázku',
 			'OVERLAY_DATE' => 'Obrázok snímaný dňa',
 			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 			'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 			'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',

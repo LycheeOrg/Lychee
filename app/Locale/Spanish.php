@@ -257,6 +257,7 @@ final class Spanish implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Búsqueda pública actualizada',
 			'SETTINGS_SUCCESS_LICENSE' => 'Licencia predeterminada actualizada',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Configuración de visualización del mapa actualizada',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
 
 			'DB_INFO_TITLE' => 'Ingrese los detalles de conexión de su base de datos a continuación:',
 			'DB_INFO_HOST' => 'Host de base de datos (opcional)',
@@ -323,6 +324,7 @@ final class Spanish implements LangInterface
 			'OVERLAY_DESCRIPTION' => 'Descripción de la foto',
 			'OVERLAY_DATE' => 'Fecha de foto tomada',
 			'MAP_DISPLAY_TEXT' => 'Habilitar mapas (OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Diseño de fotos:',
 			'LAYOUT_SQUARES' => 'Miniaturas cuadradas',
 			'LAYOUT_JUSTIFIED' => 'Con aspecto justificado',
