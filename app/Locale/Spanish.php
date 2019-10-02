@@ -242,6 +242,7 @@ final class Spanish implements LangInterface
 			'ERROR_CONFIG_FILE' => 'No se puede guardar esta configuración. Permiso denegado en <b>\'datos\'</b>. Establezca los derechos de lectura, escritura y ejecución para otros en <b>\'datos\'</b>y<b>\'uploads\'</b>. Consulte el archivo Léame para obtener más información',
 			'ERROR_UNKNOWN' => 'Algo inesperado sucedió. Intente nuevamente y verifique su instalación y servidor. Eche un vistazo al archivo Léame para obtener más información.',
 			'ERROR_LOGIN' => 'No se puede guardar el inicio de sesión. ¡Inténtalo de nuevo con otro nombre de usuario y contraseña!',
+			'ERROR_MAP_DEACTIVATED' => 'La funcionalidad del mapa se ha desactivado en la configuración.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Procesar de nuevo',
 
@@ -319,7 +320,7 @@ final class Spanish implements LangInterface
 			'OVERLAY_EXIF' => 'Datos EXIF de fotos',
 			'OVERLAY_DESCRIPTION' => 'Descripción de la foto',
 			'OVERLAY_DATE' => 'Fecha de foto tomada',
-			'MAP_DISPLAY_TEXT' => 'Mostrar coordenadas en el mapa (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Habilitar mapas (OpenStreetMap):',
 			'LAYOUT_TYPE' => 'Diseño de fotos:',
 			'LAYOUT_SQUARES' => 'Miniaturas cuadradas',
 			'LAYOUT_JUSTIFIED' => 'Con aspecto justificado',
