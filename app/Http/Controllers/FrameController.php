@@ -60,7 +60,7 @@ class FrameController extends Controller
 		}
 
 		$return = array();
-		$return['refresh'] = Configs::get_value('Mod_Frame_refresh');
+		$return['refresh'] = Configs::get_value('Mod_Frame_refresh') * 1000;
 
 		return $return;
 	}
