@@ -46,7 +46,7 @@ class FrameTest extends TestCase
 		// check refresh returned
 		$response = $this->post('/api/Frame::getSettings');
 		$response->assertJsonMissingExact(['Error: Frame is not enabled']);
-		$ret = ['refresh' => Configs::get_value('Mod_Frame_refresh')];
+		$ret = ['refresh' => Configs::get_value('Mod_Frame_refresh') * 1000];
 		$response->assertExactJson($ret);
 
 		// set back to initial value
