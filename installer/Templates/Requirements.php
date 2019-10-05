@@ -11,10 +11,10 @@ class Requirements implements Template
 
 	public function print(array $input = [])
 	{
-//		print_r($input);
 		echo "<br>";
-		foreach ($input['requirements']['requirements'] as $type => $requirement) {
-//			print_r($requirement);
+		foreach (
+			$input['requirements'] as $type => $requirement
+		) {
 			echo "<br>";
 			echo "\t".'<ul class="list">';
 			echo "\t"."\t".'<li class="list__item list__title ';
@@ -53,7 +53,7 @@ class Requirements implements Template
 			echo "\t".'</ul >';
 		}
 
-		if (!isset($input['requirements']['errors'])
+		if (!isset($input['errors'])
 			&& $input['phpSupportInfo']['supported']
 		) {
 			echo "\t".'<div class="buttons" >'."\n";

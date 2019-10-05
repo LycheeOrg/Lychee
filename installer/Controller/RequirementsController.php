@@ -42,7 +42,7 @@ final class RequirementsController implements Controller
 			$this->config->get_requirements()
 		);
 
-		return ['phpSupportInfo' => $phpSupportInfo, 'requirements' => $requirements];
+		return ['phpSupportInfo' => $phpSupportInfo, 'requirements' => $requirements['requirements'], 'errors' => $requirements['errors'] ?? null];
 	}
 
 

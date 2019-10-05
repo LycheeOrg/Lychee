@@ -21,17 +21,17 @@ class EnvController implements Controller
 		if (file_exists('.env'))
 		{
 			$env = file_get_contents('.env');
-			$errors = false;
+			$exists = true;
 		}
 		else
 		{
 
 			$env = file_get_contents('.env.example');
 			file_put_contents('.env',$env);
-			$errors = true;
+			$exists = false;
 		}
 
-		return ['env' => $env, 'errors' => $errors];
+		return ['env' => $env, 'exists' => $exists];
 	}
 
 

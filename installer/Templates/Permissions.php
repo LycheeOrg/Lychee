@@ -25,7 +25,7 @@ class Permissions implements Template
 		}
 		echo "\t".'</ul>'."\n";
 
-		if (!isset($permissions['errors'])) {
+		if (!isset($input['errors'])) {
 			echo "\t".'<div class="buttons" >'."\n";
 			echo "\t"."\t"
 				.'<a href = "?step=env" class="button" >Next <i class="fa fa-angle-right fa-fw" aria-hidden="true"></i>'

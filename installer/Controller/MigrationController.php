@@ -15,7 +15,9 @@ class MigrationController implements Controller
 		$output = [];
 		exec('php artisan migrate', $output);
 		exec('php artisan key:generate', $output);
-		return ['artisan' => $output];
+
+		$this->installed($output);
+		return ['lines' => $output];
 	}
 
 
@@ -26,5 +28,18 @@ class MigrationController implements Controller
 	public function view()
 	{
 		return 'Migrate';
+	}
+
+
+
+	/**
+	 * @param  array  $output
+	 */
+	public function installed(array &$output)
+	{
+		$dateStamp = date('Y/m/d h:i:sa');
+		$message = 'Lychee INSTALLED on '.$dateStamp;
+		file_put_contents('installed.log', $message);
+		$output[] = $message;
 	}
 }

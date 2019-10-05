@@ -18,7 +18,7 @@ class Env implements Template
         </div>
     </form>';
 
-		if(!$input['errors'])
+		if($input['exists'] == true)
 		{
 			echo '<div class="buttons-container">
             <a class="button float-right" href="?step=migrate">
