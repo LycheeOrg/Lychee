@@ -35,6 +35,7 @@ final class Spanish implements LangInterface
 			'DEFAULT_LICENSE' => 'Licencia predeterminada para nuevas cargas:',
 			'SET_LICENSE' => 'Establecer Licencia',
 			'SET_OVERLAY_TYPE' => 'Establecer Superposición',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Álbumes inteligentes',
 			'SHARED_ALBUMS' => 'Álbumes compartidos',
@@ -258,6 +259,7 @@ final class Spanish implements LangInterface
 			'SETTINGS_SUCCESS_LICENSE' => 'Licencia predeterminada actualizada',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Configuración de visualización del mapa actualizada',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Ingrese los detalles de conexión de su base de datos a continuación:',
 			'DB_INFO_HOST' => 'Host de base de datos (opcional)',

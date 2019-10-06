@@ -366,6 +366,26 @@ class SettingsController extends Controller
 		return (Configs::set('map_display_public', '0')) ? 'true' : 'false';
 	}
 
+
+	/**
+	 * Set provider of OSM map tiles.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapProvider(Request $request)
+	{
+		$request->validate([
+			'map_provider' => 'required|string',
+		]);
+
+
+		return (Configs::set('map_provider',
+			$request['map_provider'])) ? 'true' : 'false';
+	}
+
+
 	/**
 	 * take the css input text and put it into dist/user.css
 	 * this allow admins to actually personalize the look of their installation.
