@@ -35,6 +35,7 @@ final class German implements LangInterface
 			'DEFAULT_LICENSE' => 'Standard-Lizenz für neue Uploads:',
 			'SET_LICENSE' => 'Lizenz anwenden',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Speichere Provider für OpenStreetMap Karten',
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 
 			'SMART_ALBUMS' => 'Intelligente Alben',
@@ -261,6 +262,7 @@ final class German implements LangInterface
 			'SETTINGS_SUCCESS_LICENSE' => 'Standard-Lizenz aktualisiert',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Karteneinstellungen erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Karteneinstellungen für öffentlichen Alben erfolgreich aktualisiert',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Provider für Karten erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
 			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
 
@@ -333,6 +335,12 @@ final class German implements LangInterface
 			'OVERLAY_DATE' => 'Erstellungsdatum des Fotos',
 			'MAP_DISPLAY_TEXT' => 'Kartenfunktionalitäten aktivieren (OpenStreetMap):',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Kartenfunktionalität für öffentliche Alben aktivieren (OpenStreetMap):',
+			'MAP_PROVIDER'            => 'Provider für OpenStreetMap Karten:',
+			'MAP_PROVIDER_WIKIMEDIA'  => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG'    => 'OpenStreetMap.org (kein retina)',
+			'MAP_PROVIDER_OSM_DE'     => 'OpenStreetMap.de (kein retina)',
+			'MAP_PROVIDER_OSM_FR'     => 'OpenStreetMap.fr (kein retina)',
+			'MAP_PROVIDER_RRZE'       => 'Universtät Erlangen, Deutschland (nur retina)',
 			'LAYOUT_TYPE' => 'Layout des Fotos:',
 			'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
 			'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',

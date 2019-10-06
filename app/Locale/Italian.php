@@ -35,6 +35,7 @@ final class Italian implements LangInterface
 			'DEFAULT_LICENSE' => 'Licenza predefinita per i nuovi caricamenti:',
 			'SET_LICENSE' => 'Imposta Licenza',
 			'SET_OVERLAY_TYPE' => 'Imposta Filigrana',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Album smart',
 			'SHARED_ALBUMS' => 'Album condivisi',
@@ -261,6 +262,7 @@ final class Italian implements LangInterface
 			'SETTINGS_SUCCESS_LICENSE' => 'Licenza predefinita aggiornata',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
 			'DB_INFO_HOST' => 'Host Database (opzionale)',
@@ -336,6 +338,12 @@ final class Italian implements LangInterface
 			'OVERLAY_DATE' => 'Data di Creazione della Foto',
 			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER'            => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA'  => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG'    => 'OpenStreetMap.org (no retina)',
+			'MAP_PROVIDER_OSM_DE'     => 'OpenStreetMap.de (no retina)',
+			'MAP_PROVIDER_OSM_FR'     => 'OpenStreetMap.fr (no retina)',
+			'MAP_PROVIDER_RRZE'       => 'University of Erlangen, Germany (only retina)',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',

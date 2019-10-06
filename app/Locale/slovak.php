@@ -35,6 +35,7 @@ final class Slovak implements LangInterface
 			'DEFAULT_LICENSE' => 'Predvolená licencia pre nové',
 			'SET_LICENSE' => 'Použiť licenciu',
 			'SET_OVERLAY_TYPE' => 'Nastaviť typ overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'SAVE_RISK' => 'Zmeny uložiť, riziko je známe!',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',
@@ -263,6 +264,7 @@ final class Slovak implements LangInterface
 			'SETTINGS_SUCCESS_UPDATE' => 'Nastavenia úspešne aktualizované',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Nastavenie zobrazenia mapy aktualizované',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Zadajte prístupové údaje k databáze:',
 			'DB_INFO_HOST' => 'Názov databázového servera (voliteľné)',
@@ -333,6 +335,12 @@ final class Slovak implements LangInterface
 			'OVERLAY_DATE' => 'Obrázok snímaný dňa',
 			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER'            => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA'  => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG'    => 'OpenStreetMap.org (no retina)',
+			'MAP_PROVIDER_OSM_DE'     => 'OpenStreetMap.de (no retina)',
+			'MAP_PROVIDER_OSM_FR'     => 'OpenStreetMap.fr (no retina)',
+			'MAP_PROVIDER_RRZE'       => 'University of Erlangen, Germany (only retina)',
 			'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 			'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 			'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',

@@ -35,6 +35,7 @@ final class Swedish implements LangInterface
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Smarta album',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -258,6 +259,7 @@ final class Swedish implements LangInterface
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Ange dina uppgifter för databasanslutninge nedan:',
 			'DB_INFO_HOST' => 'Databasens adress (valfritt)',

@@ -35,6 +35,7 @@ final class Dutch implements LangInterface
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Slimme albums',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -258,6 +259,7 @@ final class Dutch implements LangInterface
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Voer je database connectie gegevens hieronder in:',
 			'DB_INFO_HOST' => 'Database Host (optioneel)',
@@ -325,6 +327,12 @@ final class Dutch implements LangInterface
 			'OVERLAY_DATE' => 'Photo date taken',
 			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER'            => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA'  => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG'    => 'OpenStreetMap.org (no retina)',
+			'MAP_PROVIDER_OSM_DE'     => 'OpenStreetMap.de (no retina)',
+			'MAP_PROVIDER_OSM_FR'     => 'OpenStreetMap.fr (no retina)',
+			'MAP_PROVIDER_RRZE'       => 'University of Erlangen, Germany (only retina)',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',
