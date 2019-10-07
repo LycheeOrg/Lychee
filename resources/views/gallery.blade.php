@@ -46,6 +46,9 @@
         <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}">
         <a class="header__clear">&times;</a>
         <a class="header__divider"></a>
+        <a class="button button--map" id="button_map_albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#map"></use></svg>
+        </a>
         <a class="button button_add" title="{{ $locale['ADD'] }}">
             <svg class="iconic"><use xlink:href="#plus"></use></svg>
         </a>

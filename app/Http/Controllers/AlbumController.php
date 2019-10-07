@@ -165,28 +165,7 @@ class AlbumController extends Controller
 		return $return;
 	}
 
-	/**
-	* Provided an album tree structure, returns all album IDs
-	* @param array $album_tree_structure
-	*
-	* @return array
-	*/
-	public function getAlbumIDsfromAlbumTree(array $album_tree_structure)
-	{
-		$return = array();
 
-		foreach ($album_tree_structure as &$alb) {
-			// Add album ID to return array
-			$return[] = $alb['id'];
-			if(count($alb['albums'])>0) {
-				// Call recusively and merge array
-				$return = array_merge($return, $this->getAlbumIDsfromAlbumTree($alb['albums']));
-			}
-
-		}
-
-		return $return;
-	}
 
 	/**
 	 * Provided an albumID, returns the album with only map related data
@@ -253,7 +232,7 @@ class AlbumController extends Controller
 				$album_list = array();
 				if($request['includeSubAlbums']) {
 					// Get all subalbums of the current album
-					$album_list =  $this->getAlbumIDsfromAlbumTree($this->albumFunctions->get_albums($album, $username));
+					$album_list =  $this->albumFunctions->getAlbumIDsfromAlbumTree($this->albumFunctions->get_albums($album, $username));
 				}
 
 				// Add current albumID to array
