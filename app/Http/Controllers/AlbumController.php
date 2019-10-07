@@ -166,6 +166,131 @@ class AlbumController extends Controller
 	}
 
 	/**
+	* Provided an album tree structure, returns all album IDs
+	* @param array $album_tree_structure
+	*
+	* @return array
+	*/
+	public function getAlbumIDsfromAlbumTree(array $album_tree_structure)
+	{
+		$return = array();
+
+		foreach ($album_tree_structure as &$alb) {
+			// Add album ID to return array
+			$return[] = $alb['id'];
+			if(count($alb['albums'])>0) {
+				// Call recusively and merge array
+				$return = array_merge($return, $this->getAlbumIDsfromAlbumTree($alb['albums']));
+			}
+
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Provided an albumID, returns the album with only map related data
+	 *
+	 * @param Request $request
+	 *
+	 * @return array|string
+	 */
+	public function getPositionData(Request $request)
+	{
+		$request->validate(['albumID' => 'string|required']);
+		$return = array();
+		$return['albums'] = array();
+		// Get photos
+		// Get album information
+		$UserId = $this->sessionFunctions->id();
+		$full_photo = Configs::get_value('full_photo', '1') == '1';
+
+		switch ($request['albumID']) {
+			case 'f':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+				break;
+			case 's':
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
+				break;
+			case 'r':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+				break;
+			case '0':
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
+				break;
+			default:
+				$album = Album::with('children')->find($request['albumID']);
+				if ($album === null) {
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
+					return 'false';
+				}
+				$return = $album->prepareData();
+				// we just require is_logged_in for this one.
+				$username = null;
+				if ($this->sessionFunctions->is_logged_in()) {
+					$username = $album->owner->username;
+				}
+
+				$full_photo = $album->full_photo_visible();
+
+				$album_list = array();
+				if($request['includeSubAlbums']) {
+					// Get all subalbums of the current album
+					$album_list =  $this->getAlbumIDsfromAlbumTree($this->albumFunctions->get_albums($album, $username));
+				}
+
+				// Add current albumID to array
+				$album_list[] = $request['albumID'];
+
+				$photos_sql = Photo::whereIn('album_id', $album_list);
+
+				break;
+		}
+
+		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
+
+		$return['id'] = $request['albumID'];
+
+		// Remove all unnecessary data
+		unset($return['albums']);
+		unset($return['description']);
+		unset($return['downloadable']);
+		unset($return['full_photo']);
+		unset($return['license']);
+		unset($return['max_takestamp']);
+		unset($return['min_takestamp']);
+		unset($return['owner']);
+		unset($return['parent_id']);
+		unset($return['password']);
+		unset($return['public']);
+		unset($return['sysdate']);
+		unset($return['thumbs']);
+		unset($return['thumbs2x']);
+		unset($return['thumbIDs']);
+		unset($return['types']);
+		unset($return['visible']);
+
+		return $return;
+	}
+
+	/**
 	 * Provided the albumID and passwords, return whether the album can be accessed or not.
 	 *
 	 * @param Request $request

@@ -35,6 +35,7 @@ Route::post('/api/Session::logout', 'SessionController@logout');
 Route::post('/api/Albums::get', 'AlbumsController@get');
 
 Route::post('/api/Album::get', 'AlbumController@get')->middleware('read');
+Route::post('/api/Album::getPositionData', 'AlbumController@getPositionData')->middleware('read');
 Route::post('/api/Album::getPublic', 'AlbumController@getPublic');
 Route::post('/api/Album::add', 'AlbumController@add')->middleware('upload');
 Route::post('/api/Album::setTitle', 'AlbumController@setTitle')->middleware('upload');
