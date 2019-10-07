@@ -385,6 +385,25 @@ class SettingsController extends Controller
 			$request['map_provider'])) ? 'true' : 'false';
 	}
 
+	/**
+	 * Enable display of photos of subalbums on map.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapIncludeSubalbums(Request $request)
+	{
+		$request->validate([
+			'map_include_subalbums' => 'required|string',
+		]);
+
+		if ($request['map_include_subalbums'] == '1') {
+			return (Configs::set('map_include_subalbums', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('map_include_subalbums', '0')) ? 'true' : 'false';
+	}
 
 	/**
 	 * take the css input text and put it into dist/user.css

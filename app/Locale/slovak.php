@@ -341,6 +341,7 @@ final class Slovak implements LangInterface
 			'MAP_PROVIDER_OSM_DE'     => 'OpenStreetMap.de (no retina)',
 			'MAP_PROVIDER_OSM_FR'     => 'OpenStreetMap.fr (no retina)',
 			'MAP_PROVIDER_RRZE'       => 'University of Erlangen, Germany (only retina)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 			'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 			'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',

@@ -341,6 +341,7 @@ final class German implements LangInterface
 			'MAP_PROVIDER_OSM_DE'     => 'OpenStreetMap.de (kein retina)',
 			'MAP_PROVIDER_OSM_FR'     => 'OpenStreetMap.fr (kein retina)',
 			'MAP_PROVIDER_RRZE'       => 'Universtät Erlangen, Deutschland (nur retina)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Fotos von Unterordnern für Karten berücksichtigen:',
 			'LAYOUT_TYPE' => 'Layout des Fotos:',
 			'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
 			'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',
