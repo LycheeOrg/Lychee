@@ -33,6 +33,7 @@ Route::post('/api/Session::login', 'SessionController@login');
 Route::post('/api/Session::logout', 'SessionController@logout');
 
 Route::post('/api/Albums::get', 'AlbumsController@get');
+Route::post('/api/Albums::getPositionData', 'AlbumsController@getPositionData');
 
 Route::post('/api/Album::get', 'AlbumController@get')->middleware('read');
 Route::post('/api/Album::getPositionData', 'AlbumController@getPositionData')->middleware('read');
