@@ -190,10 +190,10 @@ class AlbumFunctions
 		$return_photos = array();
 		$photo_counter = 0;
 		$photos = $photos_sql->select('album_id', 'id', 'latitude', 'longitude', 'small', 'small2x', 'takestamp', 'thumb2x', 'thumbUrl', 'title', 'type', 'url')
-                         ->whereNotNull('latitude')
-                         ->whereNotNull('longitude')
-                         ->with('album')
-                         ->get();
+						 ->whereNotNull('latitude')
+						 ->whereNotNull('longitude')
+						 ->with('album')
+						 ->get();
 
 		/*
 		 * @var Photo
@@ -207,11 +207,10 @@ class AlbumFunctions
 			$return_photos[$photo_counter] = $photo;
 
 			$photo_counter++;
-
 		}
 
 		return $return_photos;
-}
+	}
 
 	/**
 	 * take a $photo_sql query and return an array containing their pictures.
@@ -714,11 +713,12 @@ class AlbumFunctions
 	}
 
 	/**
-	* Provided an album tree structure, returns all album IDs
-	* @param array $album_tree_structure
-	*
-	* @return array
-	*/
+	 * Provided an album tree structure, returns all album IDs.
+	 *
+	 * @param array $album_tree_structure
+	 *
+	 * @return array
+	 */
 	public function getAlbumIDsfromAlbumTree(array $album_tree_structure)
 	{
 		$return = array();
@@ -726,11 +726,10 @@ class AlbumFunctions
 		foreach ($album_tree_structure as &$alb) {
 			// Add album ID to return array
 			$return[] = $alb['id'];
-			if(count($alb['albums'])>0) {
+			if (count($alb['albums']) > 0) {
 				// Call recusively and merge array
 				$return = array_merge($return, $this->getAlbumIDsfromAlbumTree($alb['albums']));
 			}
-
 		}
 
 		return $return;

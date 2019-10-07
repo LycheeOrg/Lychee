@@ -72,7 +72,6 @@ class AlbumsController extends Controller
 		$return = array();
 		$return['albums'] = array();
 
-
 		// Get photos
 		// Get album information
 		$UserId = $this->sessionFunctions->id();
@@ -83,9 +82,9 @@ class AlbumsController extends Controller
 			return Response::error('I could not find you.');
 		}
 
-		$toplevel_albums    = $this->albumFunctions->prepare_albums($toplevel['albums']);
+		$toplevel_albums = $this->albumFunctions->prepare_albums($toplevel['albums']);
 		$toplevel_album_ids = array();
-		$album_list         = array();
+		$album_list = array();
 
 		foreach ($toplevel_albums as $album_iterator) {
 			$toplevel_album_ids[] = $album_iterator['id'];
@@ -108,14 +107,13 @@ class AlbumsController extends Controller
 			// Get all photos of subalbums -> you only call this function
 			// if you want all photos of subalbums
 			$album_list = array_merge($album_list, $this->albumFunctions->getAlbumIDsfromAlbumTree($this->albumFunctions->get_albums($album_tmp, $username)));
-
 		}
 
 		$album_list = array_merge($album_list, $toplevel_album_ids);
 		$photos_sql = Photo::whereIn('album_id', $album_list);
 
 		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
-		$return['id'] 		= '';
+		$return['id'] = '';
 
 		// Remove all unnecessary data
 		unset($return['albums']);
