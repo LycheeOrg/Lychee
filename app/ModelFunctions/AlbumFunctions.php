@@ -185,6 +185,42 @@ class AlbumFunctions
 	 *
 	 * @return array
 	 */
+	public function photosLocationData(Builder $photos_sql, bool $full_photo)
+	{
+		$return_photos = array();
+		$photo_counter = 0;
+		$photos = $photos_sql->select('album_id', 'id', 'latitude', 'longitude', 'small', 'small2x', 'takestamp', 'thumb2x', 'thumbUrl', 'title', 'type', 'url')
+                         ->whereNotNull('latitude')
+                         ->whereNotNull('longitude')
+                         ->with('album')
+                         ->get();
+
+		/*
+		 * @var Photo
+		 */
+		foreach ($photos as $photo_model) {
+			// Turn data from the database into a front-end friendly format
+			$photo = $photo_model->prepareLocationData();
+			$this->symLinkFunctions->getUrl($photo_model, $photo);
+
+			// Add to return
+			$return_photos[$photo_counter] = $photo;
+
+			$photo_counter++;
+
+		}
+
+		return $return_photos;
+}
+
+	/**
+	 * take a $photo_sql query and return an array containing their pictures.
+	 *
+	 * @param Builder $photos_sql
+	 * @param bool    $full_photo
+	 *
+	 * @return array
+	 */
 	public function photos(Builder $photos_sql, bool $full_photo)
 	{
 		$previousPhotoID = '';
