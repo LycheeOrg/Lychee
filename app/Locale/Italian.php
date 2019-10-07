@@ -344,6 +344,7 @@ final class Italian implements LangInterface
 			'MAP_PROVIDER_OSM_DE'     => 'OpenStreetMap.de (no retina)',
 			'MAP_PROVIDER_OSM_FR'     => 'OpenStreetMap.fr (no retina)',
 			'MAP_PROVIDER_RRZE'       => 'University of Erlangen, Germany (only retina)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',

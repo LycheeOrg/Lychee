@@ -369,6 +369,9 @@ class Photo extends Model
 			$photo['thumb2x'] = '';
 		}
 
+		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
+		$photo['url'] = Storage::url($path_prefix . $this->url);
+
 		if (isset($this->takestamp) && $this->takestamp != null) {
 			// Use takestamp
 			$photo['takedate'] = $this->takestamp->format('d F Y \a\t H:i');

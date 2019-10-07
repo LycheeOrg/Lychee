@@ -79,6 +79,7 @@ Route::post('/api/Settings::setDefaultLicense', 'SettingsController@setDefaultLi
 Route::post('/api/Settings::setMapDisplay', 'SettingsController@setMapDisplay')->middleware('admin');
 Route::post('/api/Settings::setMapDisplayPublic', 'SettingsController@setMapDisplayPublic')->middleware('admin');
 Route::post('/api/Settings::setMapProvider', 'SettingsController@setMapProvider')->middleware('admin');
+Route::post('/api/Settings::setMapIncludeSubalbums', 'SettingsController@setMapIncludeSubalbums')->middleware('admin');
 Route::post('/api/Settings::setCSS', 'SettingsController@setCSS')->middleware('admin');
 Route::post('/api/Settings::getAll', 'SettingsController@getAll')->middleware('admin');
 Route::post('/api/Settings::saveAll', 'SettingsController@saveAll')->middleware('admin');
