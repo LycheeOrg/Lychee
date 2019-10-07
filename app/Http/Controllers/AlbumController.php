@@ -165,10 +165,8 @@ class AlbumController extends Controller
 		return $return;
 	}
 
-
-
 	/**
-	 * Provided an albumID, returns the album with only map related data
+	 * Provided an albumID, returns the album with only map related data.
 	 *
 	 * @param Request $request
 	 *
@@ -230,9 +228,9 @@ class AlbumController extends Controller
 				$full_photo = $album->full_photo_visible();
 
 				$album_list = array();
-				if($request['includeSubAlbums']) {
+				if ($request['includeSubAlbums']) {
 					// Get all subalbums of the current album
-					$album_list =  $this->albumFunctions->getAlbumIDsfromAlbumTree($this->albumFunctions->get_albums($album, $username));
+					$album_list = $this->albumFunctions->getAlbumIDsfromAlbumTree($this->albumFunctions->get_albums($album, $username));
 				}
 
 				// Add current albumID to array

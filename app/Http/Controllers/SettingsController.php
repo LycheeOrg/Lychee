@@ -366,7 +366,6 @@ class SettingsController extends Controller
 		return (Configs::set('map_display_public', '0')) ? 'true' : 'false';
 	}
 
-
 	/**
 	 * Set provider of OSM map tiles.
 	 *
@@ -379,7 +378,6 @@ class SettingsController extends Controller
 		$request->validate([
 			'map_provider' => 'required|string',
 		]);
-
 
 		return (Configs::set('map_provider',
 			$request['map_provider'])) ? 'true' : 'false';

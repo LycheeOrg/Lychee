@@ -313,7 +313,6 @@ class Photo extends Model
 		return $photo;
 	}
 
-
 	/**
 	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
 	 *
@@ -330,7 +329,6 @@ class Photo extends Model
 		$photo['album'] = $this->album_id;
 		$photo['latitude'] = $this->latitude;
 		$photo['longitude'] = $this->longitude;
-
 
 		// if this is a video
 		if (strpos($this->type, 'video') === 0) {
@@ -357,7 +355,6 @@ class Photo extends Model
 			$photo['small2x'] = '';
 		}
 
-
 		// Parse paths
 		$photo['thumbUrl'] = Storage::url('thumb/' . $this->thumbUrl);
 
@@ -381,7 +378,6 @@ class Photo extends Model
 
 		return $photo;
 	}
-
 
 	/**
 	 * Downgrade the quality of the pictures.
