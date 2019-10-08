@@ -312,7 +312,7 @@ class PhotoFunctions
 				@unlink($tmp_name);
 			}
 			// Check if the user wants to skip duplicates
-			if (Configs::get()['skip_duplicates'] === '1') {
+			if (Configs::get_value('skip_duplicates', '0') === '1') {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
 				return Response::warning('This photo has been skipped because it\'s already in your library.');

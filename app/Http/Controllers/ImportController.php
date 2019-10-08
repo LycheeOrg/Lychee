@@ -6,6 +6,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Album;
 use App\Configs;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
@@ -327,12 +328,21 @@ class ImportController extends Controller
 		// Album creation
 		foreach ($dirs as $dir) {
 			// Folder
-			$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
-			// this actually should not fail.
-			if ($album === false) {
-				$this->status_update('Problem: ' . $basename($dir) . ': Could not create album');
-				Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
-				continue;
+			$album = null;
+			if (Configs::get_value('skip_duplicates', '0') === '1') {
+				$album = Album::where('parent_id', '=', $albumID)
+					->where('title', '=', basename($dir))
+					->get()
+					->first();
+			}
+			if ($album === null) {
+				$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
+				// this actually should not fail.
+				if ($album === false) {
+					$this->status_update('Problem: ' . $basename($dir) . ': Could not create album');
+					Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
+					continue;
+				}
 			}
 			$newAlbumID = $album->id;
 			$contains['albums'] = true;
