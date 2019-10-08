@@ -82,7 +82,11 @@ class AlbumsController extends Controller
 			return Response::error('I could not find you.');
 		}
 
+		// All normal albums
 		$toplevel_albums = $this->albumFunctions->prepare_albums($toplevel['albums']);
+		// Add albums shared with users
+		$toplevel_albums = array_merge($toplevel_albums, $this->albumFunctions->prepare_albums($toplevel['shared_albums']));
+
 		$toplevel_album_ids = array();
 		$album_list = array();
 
@@ -111,6 +115,11 @@ class AlbumsController extends Controller
 
 		$album_list = array_merge($album_list, $toplevel_album_ids);
 		$photos_sql = Photo::whereIn('album_id', $album_list);
+
+		// Unsorted photos only visible for admin (album_id = null)
+		if ($this->sessionFunctions->is_admin()) {
+			$photos_sql = $photos_sql->orWhereNull('album_id');
+		}
 
 		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
 		$return['id'] = '';
