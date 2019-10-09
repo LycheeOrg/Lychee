@@ -106,6 +106,98 @@ var merge=require("merge");var Row=module.exports=function(params){this.top=para
     });
 })();
 
+// http://spin.js.org/#v2.3.2
+!function(a,b){"object"==typeof module&&module.exports?module.exports=b():"function"==typeof define&&define.amd?define(b):a.Spinner=b()}(this,function(){"use strict";function a(a,b){var c,d=document.createElement(a||"div");for(c in b)d[c]=b[c];return d}function b(a){for(var b=1,c=arguments.length;c>b;b++)a.appendChild(arguments[b]);return a}function c(a,b,c,d){var e=["opacity",b,~~(100*a),c,d].join("-"),f=.01+c/d*100,g=Math.max(1-(1-a)/b*(100-f),a),h=j.substring(0,j.indexOf("Animation")).toLowerCase(),i=h&&"-"+h+"-"||"";return m[e]||(k.insertRule("@"+i+"keyframes "+e+"{0%{opacity:"+g+"}"+f+"%{opacity:"+a+"}"+(f+.01)+"%{opacity:1}"+(f+b)%100+"%{opacity:"+a+"}100%{opacity:"+g+"}}",k.cssRules.length),m[e]=1),e}function d(a,b){var c,d,e=a.style;if(b=b.charAt(0).toUpperCase()+b.slice(1),void 0!==e[b])return b;for(d=0;d<l.length;d++)if(c=l[d]+b,void 0!==e[c])return c}function e(a,b){for(var c in b)a.style[d(a,c)||c]=b[c];return a}function f(a){for(var b=1;b<arguments.length;b++){var c=arguments[b];for(var d in c)void 0===a[d]&&(a[d]=c[d])}return a}function g(a,b){return"string"==typeof a?a:a[b%a.length]}function h(a){this.opts=f(a||{},h.defaults,n)}function i(){function c(b,c){return a("<"+b+' xmlns="urn:schemas-microsoft.com:vml" class="spin-vml">',c)}k.addRule(".spin-vml","behavior:url(#default#VML)"),h.prototype.lines=function(a,d){function f(){return e(c("group",{coordsize:k+" "+k,coordorigin:-j+" "+-j}),{width:k,height:k})}function h(a,h,i){b(m,b(e(f(),{rotation:360/d.lines*a+"deg",left:~~h}),b(e(c("roundrect",{arcsize:d.corners}),{width:j,height:d.scale*d.width,left:d.scale*d.radius,top:-d.scale*d.width>>1,filter:i}),c("fill",{color:g(d.color,a),opacity:d.opacity}),c("stroke",{opacity:0}))))}var i,j=d.scale*(d.length+d.width),k=2*d.scale*j,l=-(d.width+d.length)*d.scale*2+"px",m=e(f(),{position:"absolute",top:l,left:l});if(d.shadow)for(i=1;i<=d.lines;i++)h(i,-2,"progid:DXImageTransform.Microsoft.Blur(pixelradius=2,makeshadow=1,shadowopacity=.3)");for(i=1;i<=d.lines;i++)h(i);return b(a,m)},h.prototype.opacity=function(a,b,c,d){var e=a.firstChild;d=d.shadow&&d.lines||0,e&&b+d<e.childNodes.length&&(e=e.childNodes[b+d],e=e&&e.firstChild,e=e&&e.firstChild,e&&(e.opacity=c))}}var j,k,l=["webkit","Moz","ms","O"],m={},n={lines:12,length:7,width:5,radius:10,scale:1,corners:1,color:"#000",opacity:.25,rotate:0,direction:1,speed:1,trail:100,fps:20,zIndex:2e9,className:"spinner",top:"50%",left:"50%",shadow:!1,hwaccel:!1,position:"absolute"};if(h.defaults={},f(h.prototype,{spin:function(b){this.stop();var c=this,d=c.opts,f=c.el=a(null,{className:d.className});if(e(f,{position:d.position,width:0,zIndex:d.zIndex,left:d.left,top:d.top}),b&&b.insertBefore(f,b.firstChild||null),f.setAttribute("role","progressbar"),c.lines(f,c.opts),!j){var g,h=0,i=(d.lines-1)*(1-d.direction)/2,k=d.fps,l=k/d.speed,m=(1-d.opacity)/(l*d.trail/100),n=l/d.lines;!function o(){h++;for(var a=0;a<d.lines;a++)g=Math.max(1-(h+(d.lines-a)*n)%l*m,d.opacity),c.opacity(f,a*d.direction+i,g,d);c.timeout=c.el&&setTimeout(o,~~(1e3/k))}()}return c},stop:function(){var a=this.el;return a&&(clearTimeout(this.timeout),a.parentNode&&a.parentNode.removeChild(a),this.el=void 0),this},lines:function(d,f){function h(b,c){return e(a(),{position:"absolute",width:f.scale*(f.length+f.width)+"px",height:f.scale*f.width+"px",background:b,boxShadow:c,transformOrigin:"left",transform:"rotate("+~~(360/f.lines*k+f.rotate)+"deg) translate("+f.scale*f.radius+"px,0)",borderRadius:(f.corners*f.scale*f.width>>1)+"px"})}for(var i,k=0,l=(f.lines-1)*(1-f.direction)/2;k<f.lines;k++)i=e(a(),{position:"absolute",top:1+~(f.scale*f.width/2)+"px",transform:f.hwaccel?"translate3d(0,0,0)":"",opacity:f.opacity,animation:j&&c(f.opacity,f.trail,l+k*f.direction,f.lines)+" "+1/f.speed+"s linear infinite"}),f.shadow&&b(i,e(h("#000","0 0 4px #000"),{top:"2px"})),b(d,b(i,h(g(f.color,k),"0 0 1px rgba(0,0,0,.1)")));return d},opacity:function(a,b,c){b<a.childNodes.length&&(a.childNodes[b].style.opacity=c)}}),"undefined"!=typeof document){k=function(){var c=a("style",{type:"text/css"});return b(document.getElementsByTagName("head")[0],c),c.sheet||c.styleSheet}();var o=e(a("group"),{behavior:"url(#default#VML)"});!d(o,"transform")&&o.adj?i():j=d(o,"animation")}return h});
+!function(n,i){"function"==typeof define&&define.amd?define(["leaflet"],function(i){n(i)}):"object"==typeof exports?module.exports=function(i){return void 0===i&&(i=require("leaflet")),n(i),i}:"undefined"!=typeof i&&i.L&&n(i.L)}(function(n){var i={spin:function(n,i){n?(this._spinner||(this._spinner=new Spinner(i).spin(this._container),this._spinning=0),this._spinning++):(this._spinning--,this._spinning<=0&&this._spinner&&(this._spinner.stop(),this._spinner=null))}},t=function(){this.on("layeradd",function(n){n.layer.loading&&this.spin(!0),"function"==typeof n.layer.on&&(n.layer.on("data:loading",function(){this.spin(!0)},this),n.layer.on("data:loaded",function(){this.spin(!1)},this))},this),this.on("layerremove",function(n){n.layer.loading&&this.spin(!1),"function"==typeof n.layer.on&&(n.layer.off("data:loaded"),n.layer.off("data:loading"))},this)}
+n.Map.include(i),n.Map.addInitHook(t)},window)
+
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e.Leaflet=e.Leaflet||{},e.Leaflet.markercluster=e.Leaflet.markercluster||{}))}(this,function(e){"use strict";var t=L.MarkerClusterGroup=L.FeatureGroup.extend({options:{maxClusterRadius:80,iconCreateFunction:null,clusterPane:L.Marker.prototype.options.pane,spiderfyOnMaxZoom:!0,showCoverageOnHover:!0,zoomToBoundsOnClick:!0,singleMarkerMode:!1,disableClusteringAtZoom:null,removeOutsideVisibleBounds:!0,animate:!0,animateAddingMarkers:!1,spiderfyDistanceMultiplier:1,spiderLegPolylineOptions:{weight:1.5,color:"#222",opacity:.5},chunkedLoading:!1,chunkInterval:200,chunkDelay:50,chunkProgress:null,polygonOptions:{}},initialize:function(e){L.Util.setOptions(this,e),this.options.iconCreateFunction||(this.options.iconCreateFunction=this._defaultIconCreateFunction),this._featureGroup=L.featureGroup(),this._featureGroup.addEventParent(this),this._nonPointGroup=L.featureGroup(),this._nonPointGroup.addEventParent(this),this._inZoomAnimation=0,this._needsClustering=[],this._needsRemoving=[],this._currentShownBounds=null,this._queue=[],this._childMarkerEventHandlers={dragstart:this._childMarkerDragStart,move:this._childMarkerMoved,dragend:this._childMarkerDragEnd};var t=L.DomUtil.TRANSITION&&this.options.animate;L.extend(this,t?this._withAnimation:this._noAnimation),this._markerCluster=t?L.MarkerCluster:L.MarkerClusterNonAnimated},addLayer:function(e){if(e instanceof L.LayerGroup)return this.addLayers([e]);if(!e.getLatLng)return this._nonPointGroup.addLayer(e),this.fire("layeradd",{layer:e}),this;if(!this._map)return this._needsClustering.push(e),this.fire("layeradd",{layer:e}),this;if(this.hasLayer(e))return this;this._unspiderfy&&this._unspiderfy(),this._addLayer(e,this._maxZoom),this.fire("layeradd",{layer:e}),this._topClusterLevel._recalculateBounds(),this._refreshClustersIcons();var t=e,i=this._zoom;if(e.__parent)for(;t.__parent._zoom>=i;)t=t.__parent;return this._currentShownBounds.contains(t.getLatLng())&&(this.options.animateAddingMarkers?this._animationAddLayer(e,t):this._animationAddLayerNonAnimated(e,t)),this},removeLayer:function(e){return e instanceof L.LayerGroup?this.removeLayers([e]):e.getLatLng?this._map?e.__parent?(this._unspiderfy&&(this._unspiderfy(),this._unspiderfyLayer(e)),this._removeLayer(e,!0),this.fire("layerremove",{layer:e}),this._topClusterLevel._recalculateBounds(),this._refreshClustersIcons(),e.off(this._childMarkerEventHandlers,this),this._featureGroup.hasLayer(e)&&(this._featureGroup.removeLayer(e),e.clusterShow&&e.clusterShow()),this):this:(!this._arraySplice(this._needsClustering,e)&&this.hasLayer(e)&&this._needsRemoving.push({layer:e,latlng:e._latlng}),this.fire("layerremove",{layer:e}),this):(this._nonPointGroup.removeLayer(e),this.fire("layerremove",{layer:e}),this)},addLayers:function(e,t){if(!L.Util.isArray(e))return this.addLayer(e);var i,n=this._featureGroup,r=this._nonPointGroup,s=this.options.chunkedLoading,o=this.options.chunkInterval,a=this.options.chunkProgress,h=e.length,l=0,u=!0;if(this._map){var _=(new Date).getTime(),d=L.bind(function(){for(var c=(new Date).getTime();h>l;l++){if(s&&0===l%200){var p=(new Date).getTime()-c;if(p>o)break}if(i=e[l],i instanceof L.LayerGroup)u&&(e=e.slice(),u=!1),this._extractNonGroupLayers(i,e),h=e.length;else if(i.getLatLng){if(!this.hasLayer(i)&&(this._addLayer(i,this._maxZoom),t||this.fire("layeradd",{layer:i}),i.__parent&&2===i.__parent.getChildCount())){var f=i.__parent.getAllChildMarkers(),m=f[0]===i?f[1]:f[0];n.removeLayer(m)}}else r.addLayer(i),t||this.fire("layeradd",{layer:i})}a&&a(l,h,(new Date).getTime()-_),l===h?(this._topClusterLevel._recalculateBounds(),this._refreshClustersIcons(),this._topClusterLevel._recursivelyAddChildrenToMap(null,this._zoom,this._currentShownBounds)):setTimeout(d,this.options.chunkDelay)},this);d()}else for(var c=this._needsClustering;h>l;l++)i=e[l],i instanceof L.LayerGroup?(u&&(e=e.slice(),u=!1),this._extractNonGroupLayers(i,e),h=e.length):i.getLatLng?this.hasLayer(i)||c.push(i):r.addLayer(i);return this},removeLayers:function(e){var t,i,n=e.length,r=this._featureGroup,s=this._nonPointGroup,o=!0;if(!this._map){for(t=0;n>t;t++)i=e[t],i instanceof L.LayerGroup?(o&&(e=e.slice(),o=!1),this._extractNonGroupLayers(i,e),n=e.length):(this._arraySplice(this._needsClustering,i),s.removeLayer(i),this.hasLayer(i)&&this._needsRemoving.push({layer:i,latlng:i._latlng}),this.fire("layerremove",{layer:i}));return this}if(this._unspiderfy){this._unspiderfy();var a=e.slice(),h=n;for(t=0;h>t;t++)i=a[t],i instanceof L.LayerGroup?(this._extractNonGroupLayers(i,a),h=a.length):this._unspiderfyLayer(i)}for(t=0;n>t;t++)i=e[t],i instanceof L.LayerGroup?(o&&(e=e.slice(),o=!1),this._extractNonGroupLayers(i,e),n=e.length):i.__parent?(this._removeLayer(i,!0,!0),this.fire("layerremove",{layer:i}),r.hasLayer(i)&&(r.removeLayer(i),i.clusterShow&&i.clusterShow())):(s.removeLayer(i),this.fire("layerremove",{layer:i}));return this._topClusterLevel._recalculateBounds(),this._refreshClustersIcons(),this._topClusterLevel._recursivelyAddChildrenToMap(null,this._zoom,this._currentShownBounds),this},clearLayers:function(){return this._map||(this._needsClustering=[],this._needsRemoving=[],delete this._gridClusters,delete this._gridUnclustered),this._noanimationUnspiderfy&&this._noanimationUnspiderfy(),this._featureGroup.clearLayers(),this._nonPointGroup.clearLayers(),this.eachLayer(function(e){e.off(this._childMarkerEventHandlers,this),delete e.__parent},this),this._map&&this._generateInitialClusters(),this},getBounds:function(){var e=new L.LatLngBounds;this._topClusterLevel&&e.extend(this._topClusterLevel._bounds);for(var t=this._needsClustering.length-1;t>=0;t--)e.extend(this._needsClustering[t].getLatLng());return e.extend(this._nonPointGroup.getBounds()),e},eachLayer:function(e,t){var i,n,r,s=this._needsClustering.slice(),o=this._needsRemoving;for(this._topClusterLevel&&this._topClusterLevel.getAllChildMarkers(s),n=s.length-1;n>=0;n--){for(i=!0,r=o.length-1;r>=0;r--)if(o[r].layer===s[n]){i=!1;break}i&&e.call(t,s[n])}this._nonPointGroup.eachLayer(e,t)},getLayers:function(){var e=[];return this.eachLayer(function(t){e.push(t)}),e},getLayer:function(e){var t=null;return e=parseInt(e,10),this.eachLayer(function(i){L.stamp(i)===e&&(t=i)}),t},hasLayer:function(e){if(!e)return!1;var t,i=this._needsClustering;for(t=i.length-1;t>=0;t--)if(i[t]===e)return!0;for(i=this._needsRemoving,t=i.length-1;t>=0;t--)if(i[t].layer===e)return!1;return!(!e.__parent||e.__parent._group!==this)||this._nonPointGroup.hasLayer(e)},zoomToShowLayer:function(e,t){"function"!=typeof t&&(t=function(){});var i=function(){!e._icon&&!e.__parent._icon||this._inZoomAnimation||(this._map.off("moveend",i,this),this.off("animationend",i,this),e._icon?t():e.__parent._icon&&(this.once("spiderfied",t,this),e.__parent.spiderfy()))};e._icon&&this._map.getBounds().contains(e.getLatLng())?t():e.__parent._zoom<Math.round(this._map._zoom)?(this._map.on("moveend",i,this),this._map.panTo(e.getLatLng())):(this._map.on("moveend",i,this),this.on("animationend",i,this),e.__parent.zoomToBounds())},onAdd:function(e){this._map=e;var t,i,n;if(!isFinite(this._map.getMaxZoom()))throw"Map has no maxZoom specified";for(this._featureGroup.addTo(e),this._nonPointGroup.addTo(e),this._gridClusters||this._generateInitialClusters(),this._maxLat=e.options.crs.projection.MAX_LATITUDE,t=0,i=this._needsRemoving.length;i>t;t++)n=this._needsRemoving[t],n.newlatlng=n.layer._latlng,n.layer._latlng=n.latlng;for(t=0,i=this._needsRemoving.length;i>t;t++)n=this._needsRemoving[t],this._removeLayer(n.layer,!0),n.layer._latlng=n.newlatlng;this._needsRemoving=[],this._zoom=Math.round(this._map._zoom),this._currentShownBounds=this._getExpandedVisibleBounds(),this._map.on("zoomend",this._zoomEnd,this),this._map.on("moveend",this._moveEnd,this),this._spiderfierOnAdd&&this._spiderfierOnAdd(),this._bindEvents(),i=this._needsClustering,this._needsClustering=[],this.addLayers(i,!0)},onRemove:function(e){e.off("zoomend",this._zoomEnd,this),e.off("moveend",this._moveEnd,this),this._unbindEvents(),this._map._mapPane.className=this._map._mapPane.className.replace(" leaflet-cluster-anim",""),this._spiderfierOnRemove&&this._spiderfierOnRemove(),delete this._maxLat,this._hideCoverage(),this._featureGroup.remove(),this._nonPointGroup.remove(),this._featureGroup.clearLayers(),this._map=null},getVisibleParent:function(e){for(var t=e;t&&!t._icon;)t=t.__parent;return t||null},_arraySplice:function(e,t){for(var i=e.length-1;i>=0;i--)if(e[i]===t)return e.splice(i,1),!0},_removeFromGridUnclustered:function(e,t){for(var i=this._map,n=this._gridUnclustered,r=Math.floor(this._map.getMinZoom());t>=r&&n[t].removeObject(e,i.project(e.getLatLng(),t));t--);},_childMarkerDragStart:function(e){e.target.__dragStart=e.target._latlng},_childMarkerMoved:function(e){if(!this._ignoreMove&&!e.target.__dragStart){var t=e.target._popup&&e.target._popup.isOpen();this._moveChild(e.target,e.oldLatLng,e.latlng),t&&e.target.openPopup()}},_moveChild:function(e,t,i){e._latlng=t,this.removeLayer(e),e._latlng=i,this.addLayer(e)},_childMarkerDragEnd:function(e){var t=e.target.__dragStart;delete e.target.__dragStart,t&&this._moveChild(e.target,t,e.target._latlng)},_removeLayer:function(e,t,i){var n=this._gridClusters,r=this._gridUnclustered,s=this._featureGroup,o=this._map,a=Math.floor(this._map.getMinZoom());t&&this._removeFromGridUnclustered(e,this._maxZoom);var h,l=e.__parent,u=l._markers;for(this._arraySplice(u,e);l&&(l._childCount--,l._boundsNeedUpdate=!0,!(l._zoom<a));)t&&l._childCount<=1?(h=l._markers[0]===e?l._markers[1]:l._markers[0],n[l._zoom].removeObject(l,o.project(l._cLatLng,l._zoom)),r[l._zoom].addObject(h,o.project(h.getLatLng(),l._zoom)),this._arraySplice(l.__parent._childClusters,l),l.__parent._markers.push(h),h.__parent=l.__parent,l._icon&&(s.removeLayer(l),i||s.addLayer(h))):l._iconNeedsUpdate=!0,l=l.__parent;delete e.__parent},_isOrIsParent:function(e,t){for(;t;){if(e===t)return!0;t=t.parentNode}return!1},fire:function(e,t,i){if(t&&t.layer instanceof L.MarkerCluster){if(t.originalEvent&&this._isOrIsParent(t.layer._icon,t.originalEvent.relatedTarget))return;e="cluster"+e}L.FeatureGroup.prototype.fire.call(this,e,t,i)},listens:function(e,t){return L.FeatureGroup.prototype.listens.call(this,e,t)||L.FeatureGroup.prototype.listens.call(this,"cluster"+e,t)},_defaultIconCreateFunction:function(e){var t=e.getChildCount(),i=" marker-cluster-";return i+=10>t?"small":100>t?"medium":"large",new L.DivIcon({html:"<div><span>"+t+"</span></div>",className:"marker-cluster"+i,iconSize:new L.Point(40,40)})},_bindEvents:function(){var e=this._map,t=this.options.spiderfyOnMaxZoom,i=this.options.showCoverageOnHover,n=this.options.zoomToBoundsOnClick;(t||n)&&this.on("clusterclick",this._zoomOrSpiderfy,this),i&&(this.on("clustermouseover",this._showCoverage,this),this.on("clustermouseout",this._hideCoverage,this),e.on("zoomend",this._hideCoverage,this))},_zoomOrSpiderfy:function(e){for(var t=e.layer,i=t;1===i._childClusters.length;)i=i._childClusters[0];i._zoom===this._maxZoom&&i._childCount===t._childCount&&this.options.spiderfyOnMaxZoom?t.spiderfy():this.options.zoomToBoundsOnClick&&t.zoomToBounds(),e.originalEvent&&13===e.originalEvent.keyCode&&this._map._container.focus()},_showCoverage:function(e){var t=this._map;this._inZoomAnimation||(this._shownPolygon&&t.removeLayer(this._shownPolygon),e.layer.getChildCount()>2&&e.layer!==this._spiderfied&&(this._shownPolygon=new L.Polygon(e.layer.getConvexHull(),this.options.polygonOptions),t.addLayer(this._shownPolygon)))},_hideCoverage:function(){this._shownPolygon&&(this._map.removeLayer(this._shownPolygon),this._shownPolygon=null)},_unbindEvents:function(){var e=this.options.spiderfyOnMaxZoom,t=this.options.showCoverageOnHover,i=this.options.zoomToBoundsOnClick,n=this._map;(e||i)&&this.off("clusterclick",this._zoomOrSpiderfy,this),t&&(this.off("clustermouseover",this._showCoverage,this),this.off("clustermouseout",this._hideCoverage,this),n.off("zoomend",this._hideCoverage,this))},_zoomEnd:function(){this._map&&(this._mergeSplitClusters(),this._zoom=Math.round(this._map._zoom),this._currentShownBounds=this._getExpandedVisibleBounds())},_moveEnd:function(){if(!this._inZoomAnimation){var e=this._getExpandedVisibleBounds();this._topClusterLevel._recursivelyRemoveChildrenFromMap(this._currentShownBounds,Math.floor(this._map.getMinZoom()),this._zoom,e),this._topClusterLevel._recursivelyAddChildrenToMap(null,Math.round(this._map._zoom),e),this._currentShownBounds=e}},_generateInitialClusters:function(){var e=Math.ceil(this._map.getMaxZoom()),t=Math.floor(this._map.getMinZoom()),i=this.options.maxClusterRadius,n=i;"function"!=typeof i&&(n=function(){return i}),null!==this.options.disableClusteringAtZoom&&(e=this.options.disableClusteringAtZoom-1),this._maxZoom=e,this._gridClusters={},this._gridUnclustered={};for(var r=e;r>=t;r--)this._gridClusters[r]=new L.DistanceGrid(n(r)),this._gridUnclustered[r]=new L.DistanceGrid(n(r));this._topClusterLevel=new this._markerCluster(this,t-1)},_addLayer:function(e,t){var i,n,r=this._gridClusters,s=this._gridUnclustered,o=Math.floor(this._map.getMinZoom());for(this.options.singleMarkerMode&&this._overrideMarkerIcon(e),e.on(this._childMarkerEventHandlers,this);t>=o;t--){i=this._map.project(e.getLatLng(),t);var a=r[t].getNearObject(i);if(a)return a._addChild(e),e.__parent=a,void 0;if(a=s[t].getNearObject(i)){var h=a.__parent;h&&this._removeLayer(a,!1);var l=new this._markerCluster(this,t,a,e);r[t].addObject(l,this._map.project(l._cLatLng,t)),a.__parent=l,e.__parent=l;var u=l;for(n=t-1;n>h._zoom;n--)u=new this._markerCluster(this,n,u),r[n].addObject(u,this._map.project(a.getLatLng(),n));return h._addChild(u),this._removeFromGridUnclustered(a,t),void 0}s[t].addObject(e,i)}this._topClusterLevel._addChild(e),e.__parent=this._topClusterLevel},_refreshClustersIcons:function(){this._featureGroup.eachLayer(function(e){e instanceof L.MarkerCluster&&e._iconNeedsUpdate&&e._updateIcon()})},_enqueue:function(e){this._queue.push(e),this._queueTimeout||(this._queueTimeout=setTimeout(L.bind(this._processQueue,this),300))},_processQueue:function(){for(var e=0;e<this._queue.length;e++)this._queue[e].call(this);this._queue.length=0,clearTimeout(this._queueTimeout),this._queueTimeout=null},_mergeSplitClusters:function(){var e=Math.round(this._map._zoom);this._processQueue(),this._zoom<e&&this._currentShownBounds.intersects(this._getExpandedVisibleBounds())?(this._animationStart(),this._topClusterLevel._recursivelyRemoveChildrenFromMap(this._currentShownBounds,Math.floor(this._map.getMinZoom()),this._zoom,this._getExpandedVisibleBounds()),this._animationZoomIn(this._zoom,e)):this._zoom>e?(this._animationStart(),this._animationZoomOut(this._zoom,e)):this._moveEnd()},_getExpandedVisibleBounds:function(){return this.options.removeOutsideVisibleBounds?L.Browser.mobile?this._checkBoundsMaxLat(this._map.getBounds()):this._checkBoundsMaxLat(this._map.getBounds().pad(1)):this._mapBoundsInfinite},_checkBoundsMaxLat:function(e){var t=this._maxLat;return void 0!==t&&(e.getNorth()>=t&&(e._northEast.lat=1/0),e.getSouth()<=-t&&(e._southWest.lat=-1/0)),e},_animationAddLayerNonAnimated:function(e,t){if(t===e)this._featureGroup.addLayer(e);else if(2===t._childCount){t._addToMap();var i=t.getAllChildMarkers();this._featureGroup.removeLayer(i[0]),this._featureGroup.removeLayer(i[1])}else t._updateIcon()},_extractNonGroupLayers:function(e,t){var i,n=e.getLayers(),r=0;for(t=t||[];r<n.length;r++)i=n[r],i instanceof L.LayerGroup?this._extractNonGroupLayers(i,t):t.push(i);return t},_overrideMarkerIcon:function(e){var t=e.options.icon=this.options.iconCreateFunction({getChildCount:function(){return 1},getAllChildMarkers:function(){return[e]}});return t}});L.MarkerClusterGroup.include({_mapBoundsInfinite:new L.LatLngBounds(new L.LatLng(-1/0,-1/0),new L.LatLng(1/0,1/0))}),L.MarkerClusterGroup.include({_noAnimation:{_animationStart:function(){},_animationZoomIn:function(e,t){this._topClusterLevel._recursivelyRemoveChildrenFromMap(this._currentShownBounds,Math.floor(this._map.getMinZoom()),e),this._topClusterLevel._recursivelyAddChildrenToMap(null,t,this._getExpandedVisibleBounds()),this.fire("animationend")},_animationZoomOut:function(e,t){this._topClusterLevel._recursivelyRemoveChildrenFromMap(this._currentShownBounds,Math.floor(this._map.getMinZoom()),e),this._topClusterLevel._recursivelyAddChildrenToMap(null,t,this._getExpandedVisibleBounds()),this.fire("animationend")},_animationAddLayer:function(e,t){this._animationAddLayerNonAnimated(e,t)}},_withAnimation:{_animationStart:function(){this._map._mapPane.className+=" leaflet-cluster-anim",this._inZoomAnimation++},_animationZoomIn:function(e,t){var i,n=this._getExpandedVisibleBounds(),r=this._featureGroup,s=Math.floor(this._map.getMinZoom());this._ignoreMove=!0,this._topClusterLevel._recursively(n,e,s,function(s){var o,a=s._latlng,h=s._markers;for(n.contains(a)||(a=null),s._isSingleParent()&&e+1===t?(r.removeLayer(s),s._recursivelyAddChildrenToMap(null,t,n)):(s.clusterHide(),s._recursivelyAddChildrenToMap(a,t,n)),i=h.length-1;i>=0;i--)o=h[i],n.contains(o._latlng)||r.removeLayer(o)}),this._forceLayout(),this._topClusterLevel._recursivelyBecomeVisible(n,t),r.eachLayer(function(e){e instanceof L.MarkerCluster||!e._icon||e.clusterShow()}),this._topClusterLevel._recursively(n,e,t,function(e){e._recursivelyRestoreChildPositions(t)}),this._ignoreMove=!1,this._enqueue(function(){this._topClusterLevel._recursively(n,e,s,function(e){r.removeLayer(e),e.clusterShow()}),this._animationEnd()})},_animationZoomOut:function(e,t){this._animationZoomOutSingle(this._topClusterLevel,e-1,t),this._topClusterLevel._recursivelyAddChildrenToMap(null,t,this._getExpandedVisibleBounds()),this._topClusterLevel._recursivelyRemoveChildrenFromMap(this._currentShownBounds,Math.floor(this._map.getMinZoom()),e,this._getExpandedVisibleBounds())},_animationAddLayer:function(e,t){var i=this,n=this._featureGroup;n.addLayer(e),t!==e&&(t._childCount>2?(t._updateIcon(),this._forceLayout(),this._animationStart(),e._setPos(this._map.latLngToLayerPoint(t.getLatLng())),e.clusterHide(),this._enqueue(function(){n.removeLayer(e),e.clusterShow(),i._animationEnd()})):(this._forceLayout(),i._animationStart(),i._animationZoomOutSingle(t,this._map.getMaxZoom(),this._zoom)))}},_animationZoomOutSingle:function(e,t,i){var n=this._getExpandedVisibleBounds(),r=Math.floor(this._map.getMinZoom());e._recursivelyAnimateChildrenInAndAddSelfToMap(n,r,t+1,i);var s=this;this._forceLayout(),e._recursivelyBecomeVisible(n,i),this._enqueue(function(){if(1===e._childCount){var o=e._markers[0];this._ignoreMove=!0,o.setLatLng(o.getLatLng()),this._ignoreMove=!1,o.clusterShow&&o.clusterShow()}else e._recursively(n,i,r,function(e){e._recursivelyRemoveChildrenFromMap(n,r,t+1)});s._animationEnd()})},_animationEnd:function(){this._map&&(this._map._mapPane.className=this._map._mapPane.className.replace(" leaflet-cluster-anim","")),this._inZoomAnimation--,this.fire("animationend")},_forceLayout:function(){L.Util.falseFn(document.body.offsetWidth)}}),L.markerClusterGroup=function(e){return new L.MarkerClusterGroup(e)};var i=L.MarkerCluster=L.Marker.extend({options:L.Icon.prototype.options,initialize:function(e,t,i,n){L.Marker.prototype.initialize.call(this,i?i._cLatLng||i.getLatLng():new L.LatLng(0,0),{icon:this,pane:e.options.clusterPane}),this._group=e,this._zoom=t,this._markers=[],this._childClusters=[],this._childCount=0,this._iconNeedsUpdate=!0,this._boundsNeedUpdate=!0,this._bounds=new L.LatLngBounds,i&&this._addChild(i),n&&this._addChild(n)},getAllChildMarkers:function(e,t){e=e||[];for(var i=this._childClusters.length-1;i>=0;i--)this._childClusters[i].getAllChildMarkers(e);for(var n=this._markers.length-1;n>=0;n--)t&&this._markers[n].__dragStart||e.push(this._markers[n]);return e},getChildCount:function(){return this._childCount},zoomToBounds:function(e){for(var t,i=this._childClusters.slice(),n=this._group._map,r=n.getBoundsZoom(this._bounds),s=this._zoom+1,o=n.getZoom();i.length>0&&r>s;){s++;var a=[];for(t=0;t<i.length;t++)a=a.concat(i[t]._childClusters);i=a}r>s?this._group._map.setView(this._latlng,s):o>=r?this._group._map.setView(this._latlng,o+1):this._group._map.fitBounds(this._bounds,e)},getBounds:function(){var e=new L.LatLngBounds;return e.extend(this._bounds),e},_updateIcon:function(){this._iconNeedsUpdate=!0,this._icon&&this.setIcon(this)},createIcon:function(){return this._iconNeedsUpdate&&(this._iconObj=this._group.options.iconCreateFunction(this),this._iconNeedsUpdate=!1),this._iconObj.createIcon()},createShadow:function(){return this._iconObj.createShadow()},_addChild:function(e,t){this._iconNeedsUpdate=!0,this._boundsNeedUpdate=!0,this._setClusterCenter(e),e instanceof L.MarkerCluster?(t||(this._childClusters.push(e),e.__parent=this),this._childCount+=e._childCount):(t||this._markers.push(e),this._childCount++),this.__parent&&this.__parent._addChild(e,!0)},_setClusterCenter:function(e){this._cLatLng||(this._cLatLng=e._cLatLng||e._latlng)},_resetBounds:function(){var e=this._bounds;e._southWest&&(e._southWest.lat=1/0,e._southWest.lng=1/0),e._northEast&&(e._northEast.lat=-1/0,e._northEast.lng=-1/0)},_recalculateBounds:function(){var e,t,i,n,r=this._markers,s=this._childClusters,o=0,a=0,h=this._childCount;if(0!==h){for(this._resetBounds(),e=0;e<r.length;e++)i=r[e]._latlng,this._bounds.extend(i),o+=i.lat,a+=i.lng;for(e=0;e<s.length;e++)t=s[e],t._boundsNeedUpdate&&t._recalculateBounds(),this._bounds.extend(t._bounds),i=t._wLatLng,n=t._childCount,o+=i.lat*n,a+=i.lng*n;this._latlng=this._wLatLng=new L.LatLng(o/h,a/h),this._boundsNeedUpdate=!1}},_addToMap:function(e){e&&(this._backupLatlng=this._latlng,this.setLatLng(e)),this._group._featureGroup.addLayer(this)},_recursivelyAnimateChildrenIn:function(e,t,i){this._recursively(e,this._group._map.getMinZoom(),i-1,function(e){var i,n,r=e._markers;for(i=r.length-1;i>=0;i--)n=r[i],n._icon&&(n._setPos(t),n.clusterHide())},function(e){var i,n,r=e._childClusters;for(i=r.length-1;i>=0;i--)n=r[i],n._icon&&(n._setPos(t),n.clusterHide())})},_recursivelyAnimateChildrenInAndAddSelfToMap:function(e,t,i,n){this._recursively(e,n,t,function(r){r._recursivelyAnimateChildrenIn(e,r._group._map.latLngToLayerPoint(r.getLatLng()).round(),i),r._isSingleParent()&&i-1===n?(r.clusterShow(),r._recursivelyRemoveChildrenFromMap(e,t,i)):r.clusterHide(),r._addToMap()})},_recursivelyBecomeVisible:function(e,t){this._recursively(e,this._group._map.getMinZoom(),t,null,function(e){e.clusterShow()})},_recursivelyAddChildrenToMap:function(e,t,i){this._recursively(i,this._group._map.getMinZoom()-1,t,function(n){if(t!==n._zoom)for(var r=n._markers.length-1;r>=0;r--){var s=n._markers[r];i.contains(s._latlng)&&(e&&(s._backupLatlng=s.getLatLng(),s.setLatLng(e),s.clusterHide&&s.clusterHide()),n._group._featureGroup.addLayer(s))}},function(t){t._addToMap(e)})},_recursivelyRestoreChildPositions:function(e){for(var t=this._markers.length-1;t>=0;t--){var i=this._markers[t];i._backupLatlng&&(i.setLatLng(i._backupLatlng),delete i._backupLatlng)}if(e-1===this._zoom)for(var n=this._childClusters.length-1;n>=0;n--)this._childClusters[n]._restorePosition();else for(var r=this._childClusters.length-1;r>=0;r--)this._childClusters[r]._recursivelyRestoreChildPositions(e)},_restorePosition:function(){this._backupLatlng&&(this.setLatLng(this._backupLatlng),delete this._backupLatlng)},_recursivelyRemoveChildrenFromMap:function(e,t,i,n){var r,s;this._recursively(e,t-1,i-1,function(e){for(s=e._markers.length-1;s>=0;s--)r=e._markers[s],n&&n.contains(r._latlng)||(e._group._featureGroup.removeLayer(r),r.clusterShow&&r.clusterShow())},function(e){for(s=e._childClusters.length-1;s>=0;s--)r=e._childClusters[s],n&&n.contains(r._latlng)||(e._group._featureGroup.removeLayer(r),r.clusterShow&&r.clusterShow())})},_recursively:function(e,t,i,n,r){var s,o,a=this._childClusters,h=this._zoom;if(h>=t&&(n&&n(this),r&&h===i&&r(this)),t>h||i>h)for(s=a.length-1;s>=0;s--)o=a[s],o._boundsNeedUpdate&&o._recalculateBounds(),e.intersects(o._bounds)&&o._recursively(e,t,i,n,r)},_isSingleParent:function(){return this._childClusters.length>0&&this._childClusters[0]._childCount===this._childCount}});L.Marker.include({clusterHide:function(){var e=this.options.opacity;return this.setOpacity(0),this.options.opacity=e,this},clusterShow:function(){return this.setOpacity(this.options.opacity)}}),L.DistanceGrid=function(e){this._cellSize=e,this._sqCellSize=e*e,this._grid={},this._objectPoint={}},L.DistanceGrid.prototype={addObject:function(e,t){var i=this._getCoord(t.x),n=this._getCoord(t.y),r=this._grid,s=r[n]=r[n]||{},o=s[i]=s[i]||[],a=L.Util.stamp(e);this._objectPoint[a]=t,o.push(e)},updateObject:function(e,t){this.removeObject(e),this.addObject(e,t)},removeObject:function(e,t){var i,n,r=this._getCoord(t.x),s=this._getCoord(t.y),o=this._grid,a=o[s]=o[s]||{},h=a[r]=a[r]||[];for(delete this._objectPoint[L.Util.stamp(e)],i=0,n=h.length;n>i;i++)if(h[i]===e)return h.splice(i,1),1===n&&delete a[r],!0},eachObject:function(e,t){var i,n,r,s,o,a,h,l=this._grid;for(i in l){o=l[i];for(n in o)for(a=o[n],r=0,s=a.length;s>r;r++)h=e.call(t,a[r]),h&&(r--,s--)}},getNearObject:function(e){var t,i,n,r,s,o,a,h,l=this._getCoord(e.x),u=this._getCoord(e.y),_=this._objectPoint,d=this._sqCellSize,c=null;for(t=u-1;u+1>=t;t++)if(r=this._grid[t])for(i=l-1;l+1>=i;i++)if(s=r[i])for(n=0,o=s.length;o>n;n++)a=s[n],h=this._sqDist(_[L.Util.stamp(a)],e),(d>h||d>=h&&null===c)&&(d=h,c=a);return c},_getCoord:function(e){var t=Math.floor(e/this._cellSize);return isFinite(t)?t:e},_sqDist:function(e,t){var i=t.x-e.x,n=t.y-e.y;return i*i+n*n}},function(){L.QuickHull={getDistant:function(e,t){var i=t[1].lat-t[0].lat,n=t[0].lng-t[1].lng;return n*(e.lat-t[0].lat)+i*(e.lng-t[0].lng)},findMostDistantPointFromBaseLine:function(e,t){var i,n,r,s=0,o=null,a=[];for(i=t.length-1;i>=0;i--)n=t[i],r=this.getDistant(n,e),r>0&&(a.push(n),r>s&&(s=r,o=n));return{maxPoint:o,newPoints:a}},buildConvexHull:function(e,t){var i=[],n=this.findMostDistantPointFromBaseLine(e,t);return n.maxPoint?(i=i.concat(this.buildConvexHull([e[0],n.maxPoint],n.newPoints)),i=i.concat(this.buildConvexHull([n.maxPoint,e[1]],n.newPoints))):[e[0]]},getConvexHull:function(e){var t,i=!1,n=!1,r=!1,s=!1,o=null,a=null,h=null,l=null,u=null,_=null;for(t=e.length-1;t>=0;t--){var d=e[t];(i===!1||d.lat>i)&&(o=d,i=d.lat),(n===!1||d.lat<n)&&(a=d,n=d.lat),(r===!1||d.lng>r)&&(h=d,r=d.lng),(s===!1||d.lng<s)&&(l=d,s=d.lng)}n!==i?(_=a,u=o):(_=l,u=h);var c=[].concat(this.buildConvexHull([_,u],e),this.buildConvexHull([u,_],e));return c}}}(),L.MarkerCluster.include({getConvexHull:function(){var e,t,i=this.getAllChildMarkers(),n=[];for(t=i.length-1;t>=0;t--)e=i[t].getLatLng(),n.push(e);return L.QuickHull.getConvexHull(n)}}),L.MarkerCluster.include({_2PI:2*Math.PI,_circleFootSeparation:25,_circleStartAngle:0,_spiralFootSeparation:28,_spiralLengthStart:11,_spiralLengthFactor:5,_circleSpiralSwitchover:9,spiderfy:function(){if(this._group._spiderfied!==this&&!this._group._inZoomAnimation){var e,t=this.getAllChildMarkers(null,!0),i=this._group,n=i._map,r=n.latLngToLayerPoint(this._latlng);this._group._unspiderfy(),this._group._spiderfied=this,t.length>=this._circleSpiralSwitchover?e=this._generatePointsSpiral(t.length,r):(r.y+=10,e=this._generatePointsCircle(t.length,r)),this._animationSpiderfy(t,e)}},unspiderfy:function(e){this._group._inZoomAnimation||(this._animationUnspiderfy(e),this._group._spiderfied=null)},_generatePointsCircle:function(e,t){var i,n,r=this._group.options.spiderfyDistanceMultiplier*this._circleFootSeparation*(2+e),s=r/this._2PI,o=this._2PI/e,a=[];for(s=Math.max(s,35),a.length=e,i=0;e>i;i++)n=this._circleStartAngle+i*o,a[i]=new L.Point(t.x+s*Math.cos(n),t.y+s*Math.sin(n))._round();return a},_generatePointsSpiral:function(e,t){var i,n=this._group.options.spiderfyDistanceMultiplier,r=n*this._spiralLengthStart,s=n*this._spiralFootSeparation,o=n*this._spiralLengthFactor*this._2PI,a=0,h=[];for(h.length=e,i=e;i>=0;i--)e>i&&(h[i]=new L.Point(t.x+r*Math.cos(a),t.y+r*Math.sin(a))._round()),a+=s/r+5e-4*i,r+=o/a;return h},_noanimationUnspiderfy:function(){var e,t,i=this._group,n=i._map,r=i._featureGroup,s=this.getAllChildMarkers(null,!0);for(i._ignoreMove=!0,this.setOpacity(1),t=s.length-1;t>=0;t--)e=s[t],r.removeLayer(e),e._preSpiderfyLatlng&&(e.setLatLng(e._preSpiderfyLatlng),delete e._preSpiderfyLatlng),e.setZIndexOffset&&e.setZIndexOffset(0),e._spiderLeg&&(n.removeLayer(e._spiderLeg),delete e._spiderLeg);i.fire("unspiderfied",{cluster:this,markers:s}),i._ignoreMove=!1,i._spiderfied=null}}),L.MarkerClusterNonAnimated=L.MarkerCluster.extend({_animationSpiderfy:function(e,t){var i,n,r,s,o=this._group,a=o._map,h=o._featureGroup,l=this._group.options.spiderLegPolylineOptions;for(o._ignoreMove=!0,i=0;i<e.length;i++)s=a.layerPointToLatLng(t[i]),n=e[i],r=new L.Polyline([this._latlng,s],l),a.addLayer(r),n._spiderLeg=r,n._preSpiderfyLatlng=n._latlng,n.setLatLng(s),n.setZIndexOffset&&n.setZIndexOffset(1e6),h.addLayer(n);this.setOpacity(.3),o._ignoreMove=!1,o.fire("spiderfied",{cluster:this,markers:e})},_animationUnspiderfy:function(){this._noanimationUnspiderfy()}}),L.MarkerCluster.include({_animationSpiderfy:function(e,t){var i,n,r,s,o,a,h=this,l=this._group,u=l._map,_=l._featureGroup,d=this._latlng,c=u.latLngToLayerPoint(d),p=L.Path.SVG,f=L.extend({},this._group.options.spiderLegPolylineOptions),m=f.opacity;for(void 0===m&&(m=L.MarkerClusterGroup.prototype.options.spiderLegPolylineOptions.opacity),p?(f.opacity=0,f.className=(f.className||"")+" leaflet-cluster-spider-leg"):f.opacity=m,l._ignoreMove=!0,i=0;i<e.length;i++)n=e[i],a=u.layerPointToLatLng(t[i]),r=new L.Polyline([d,a],f),u.addLayer(r),n._spiderLeg=r,p&&(s=r._path,o=s.getTotalLength()+.1,s.style.strokeDasharray=o,s.style.strokeDashoffset=o),n.setZIndexOffset&&n.setZIndexOffset(1e6),n.clusterHide&&n.clusterHide(),_.addLayer(n),n._setPos&&n._setPos(c);for(l._forceLayout(),l._animationStart(),i=e.length-1;i>=0;i--)a=u.layerPointToLatLng(t[i]),n=e[i],n._preSpiderfyLatlng=n._latlng,n.setLatLng(a),n.clusterShow&&n.clusterShow(),p&&(r=n._spiderLeg,s=r._path,s.style.strokeDashoffset=0,r.setStyle({opacity:m}));this.setOpacity(.3),l._ignoreMove=!1,setTimeout(function(){l._animationEnd(),l.fire("spiderfied",{cluster:h,markers:e})},200)},_animationUnspiderfy:function(e){var t,i,n,r,s,o,a=this,h=this._group,l=h._map,u=h._featureGroup,_=e?l._latLngToNewLayerPoint(this._latlng,e.zoom,e.center):l.latLngToLayerPoint(this._latlng),d=this.getAllChildMarkers(null,!0),c=L.Path.SVG;for(h._ignoreMove=!0,h._animationStart(),this.setOpacity(1),i=d.length-1;i>=0;i--)t=d[i],t._preSpiderfyLatlng&&(t.closePopup(),t.setLatLng(t._preSpiderfyLatlng),delete t._preSpiderfyLatlng,o=!0,t._setPos&&(t._setPos(_),o=!1),t.clusterHide&&(t.clusterHide(),o=!1),o&&u.removeLayer(t),c&&(n=t._spiderLeg,r=n._path,s=r.getTotalLength()+.1,r.style.strokeDashoffset=s,n.setStyle({opacity:0})));h._ignoreMove=!1,setTimeout(function(){var e=0;for(i=d.length-1;i>=0;i--)t=d[i],t._spiderLeg&&e++;for(i=d.length-1;i>=0;i--)t=d[i],t._spiderLeg&&(t.clusterShow&&t.clusterShow(),t.setZIndexOffset&&t.setZIndexOffset(0),e>1&&u.removeLayer(t),l.removeLayer(t._spiderLeg),delete t._spiderLeg);h._animationEnd(),h.fire("unspiderfied",{cluster:a,markers:d})},200)}}),L.MarkerClusterGroup.include({_spiderfied:null,unspiderfy:function(){this._unspiderfy.apply(this,arguments)},_spiderfierOnAdd:function(){this._map.on("click",this._unspiderfyWrapper,this),this._map.options.zoomAnimation&&this._map.on("zoomstart",this._unspiderfyZoomStart,this),this._map.on("zoomend",this._noanimationUnspiderfy,this),L.Browser.touch||this._map.getRenderer(this)},_spiderfierOnRemove:function(){this._map.off("click",this._unspiderfyWrapper,this),this._map.off("zoomstart",this._unspiderfyZoomStart,this),this._map.off("zoomanim",this._unspiderfyZoomAnim,this),this._map.off("zoomend",this._noanimationUnspiderfy,this),this._noanimationUnspiderfy()
+},_unspiderfyZoomStart:function(){this._map&&this._map.on("zoomanim",this._unspiderfyZoomAnim,this)},_unspiderfyZoomAnim:function(e){L.DomUtil.hasClass(this._map._mapPane,"leaflet-touching")||(this._map.off("zoomanim",this._unspiderfyZoomAnim,this),this._unspiderfy(e))},_unspiderfyWrapper:function(){this._unspiderfy()},_unspiderfy:function(e){this._spiderfied&&this._spiderfied.unspiderfy(e)},_noanimationUnspiderfy:function(){this._spiderfied&&this._spiderfied._noanimationUnspiderfy()},_unspiderfyLayer:function(e){e._spiderLeg&&(this._featureGroup.removeLayer(e),e.clusterShow&&e.clusterShow(),e.setZIndexOffset&&e.setZIndexOffset(0),this._map.removeLayer(e._spiderLeg),delete e._spiderLeg)}}),L.MarkerClusterGroup.include({refreshClusters:function(e){return e?e instanceof L.MarkerClusterGroup?e=e._topClusterLevel.getAllChildMarkers():e instanceof L.LayerGroup?e=e._layers:e instanceof L.MarkerCluster?e=e.getAllChildMarkers():e instanceof L.Marker&&(e=[e]):e=this._topClusterLevel.getAllChildMarkers(),this._flagParentsIconsNeedUpdate(e),this._refreshClustersIcons(),this.options.singleMarkerMode&&this._refreshSingleMarkerModeMarkers(e),this},_flagParentsIconsNeedUpdate:function(e){var t,i;for(t in e)for(i=e[t].__parent;i;)i._iconNeedsUpdate=!0,i=i.__parent},_refreshSingleMarkerModeMarkers:function(e){var t,i;for(t in e)i=e[t],this.hasLayer(i)&&i.setIcon(this._overrideMarkerIcon(i))}}),L.Marker.include({refreshIconOptions:function(e,t){var i=this.options.icon;return L.setOptions(i,e),this.setIcon(i),t&&this.__parent&&this.__parent._group.refreshClusters(this),this}}),e.MarkerClusterGroup=t,e.MarkerCluster=i});
+//# sourceMappingURL=leaflet.markercluster.js.map
+L.Photo = L.FeatureGroup.extend({
+	options: {
+		icon: {
+			iconSize: [40, 40]
+		}
+	},
+
+	initialize: function (photos, options) {
+		L.setOptions(this, options);
+		L.FeatureGroup.prototype.initialize.call(this, photos);
+	},
+
+	addLayers: function (photos) {
+		if (photos) {
+			for (var i = 0, len = photos.length; i < len; i++) {
+				this.addLayer(photos[i]);
+			}
+		}
+		return this;
+	},
+
+	addLayer: function (photo) {
+		L.FeatureGroup.prototype.addLayer.call(this, this.createMarker(photo));
+	},
+
+	createMarker: function (photo) {
+		var marker = L.marker(photo, {
+			icon: L.divIcon(L.extend({
+				html: '<img src="' + photo.thumbnail + '" ' + (photo.thumbnail2x!=='' ? 'srcset="' + photo.thumbnail + ' 1x, ' + photo.thumbnail2x + ' 2x"' : '' )+ '></img>​',
+				className: 'leaflet-marker-photo'
+			}, photo, this.options.icon)),
+			title: photo.caption || ''
+		});
+		marker.photo = photo;
+		return marker;
+	}
+});
+
+L.photo = function (photos, options) {
+	return new L.Photo(photos, options);
+};
+
+if (L.MarkerClusterGroup) {
+
+	L.Photo.Cluster = L.MarkerClusterGroup.extend({
+		options: {
+			featureGroup: L.photo,
+			maxClusterRadius: 100,
+			showCoverageOnHover: false,
+			iconCreateFunction: function(cluster) {
+				return new L.DivIcon(L.extend({
+					className: 'leaflet-marker-photo',
+					html: '<img src="' + cluster.getAllChildMarkers()[0].photo.thumbnail + '" ' + (cluster.getAllChildMarkers()[0].photo.thumbnail2x!=='' ? 'srcset="' + cluster.getAllChildMarkers()[0].photo.thumbnail + ' 1x, ' + cluster.getAllChildMarkers()[0].photo.thumbnail2x + ' 2x"' : '' )+ '></img>​<b>' + cluster.getChildCount() + '</b>'
+				}, this.icon));
+		   	},
+			icon: {
+				iconSize: [40, 40]
+			}
+		},
+
+		initialize: function (options) {
+			options = L.Util.setOptions(this, options);
+			L.MarkerClusterGroup.prototype.initialize.call(this);
+			this._photos = options.featureGroup(null, options);
+		},
+
+		add: function (photos) {
+			this.addLayer(this._photos.addLayers(photos));
+			return this;
+		},
+
+		clear: function () {
+			this._photos.clearLayers();
+			this.clearLayers();
+		}
+
+	});
+
+	L.photo.cluster = function (options) {
+		return new L.Photo.Cluster(options);
+	};
+
+}
+
 "use strict";
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -516,7 +608,7 @@ album.getID = function () {
 		return $.isNumeric(id);
 	};
 
-	if (photo.json) id = photo.json.album;else if (album.json) id = album.json.id;
+	if (photo.json) id = photo.json.album;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
 
 	// Search
 	if (isID(id) === false) id = $('.album:hover, .album.active').attr('data-id');
@@ -2394,6 +2486,15 @@ header.bind = function () {
 	header.dom('#button_settings').on(eventName, leftMenu.open);
 	header.dom('#button_info_album').on(eventName, sidebar.toggle);
 	header.dom('#button_info').on(eventName, sidebar.toggle);
+	header.dom('#button_map_albums').on(eventName, function () {
+		lychee.gotoMap();
+	});
+	header.dom('#button_map_album').on(eventName, function () {
+		lychee.gotoMap(album.getID());
+	});
+	header.dom('#button_map').on(eventName, function () {
+		lychee.gotoMap(album.getID());
+	});
 	header.dom('.button_add').on(eventName, contextMenu.add);
 	header.dom('#button_more').on(eventName, function (e) {
 		contextMenu.photoMore(photo.getID(), e);
@@ -2427,6 +2528,9 @@ header.bind = function () {
 		}
 	});
 	header.dom('#button_back').on(eventName, function () {
+		lychee.goto(album.getID());
+	});
+	header.dom('#button_back_map').on(eventName, function () {
 		lychee.goto(album.getID());
 	});
 	header.dom('#button_fs_album_enter,#button_fs_enter').on(eventName, lychee.fullscreenEnter);
@@ -2501,7 +2605,7 @@ header.setMode = function (mode) {
 		case 'public':
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--public').addClass('header__toolbar--visible');
 			if (lychee.public_search) {
 				$('.header__search, .header__clear', '.header__toolbar--public').show();
@@ -2514,8 +2618,27 @@ header.setMode = function (mode) {
 		case 'albums':
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--albums').addClass('header__toolbar--visible');
+
+			// If map is disabled, we should hide the icon
+			if (lychee.map_display) {
+				$('#button_map_albums').show();
+				$('.header__clear').removeClass('header__clear_nomap');
+			} else {
+				$('#button_map_albums').hide();
+				$('.header__clear').addClass('header__clear_nomap');
+			}
+			// Set icon in Public mode
+			if (lychee.publicMode === true) {
+				if (lychee.map_display_public) {
+					$('#button_map_albums').show();
+					$('.header__clear').removeClass('header__clear_nomap');
+				} else {
+					$('#button_map_albums').hide();
+					$('.header__clear').addClass('header__clear_nomap');
+				}
+			}
 
 			return true;
 
@@ -2524,7 +2647,7 @@ header.setMode = function (mode) {
 			var albumID = album.getID();
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
 
 			// Hide download button when album empty or we are not allowed to
@@ -2533,6 +2656,21 @@ header.setMode = function (mode) {
 				$('#button_archive').hide();
 			} else {
 				$('#button_archive').show();
+			}
+
+			// If map is disabled, we should hide the icon
+			if (lychee.map_display) {
+				$('#button_map_album').show();
+			} else {
+				$('#button_map_album').hide();
+			}
+			// Set icon in Public mode
+			if (lychee.publicMode === true) {
+				if (lychee.map_display_public) {
+					$('#button_map_album').show();
+				} else {
+					$('#button_map_album').hide();
+				}
 			}
 
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
@@ -2544,7 +2682,7 @@ header.setMode = function (mode) {
 			} else {
 				$('#button_info_album, #button_visibility_album').show();
 				if (album.isUploadable()) {
-					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
+					$('#button_trash_album, #button_move_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
 				} else {
 					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').hide();
 				}
@@ -2555,8 +2693,24 @@ header.setMode = function (mode) {
 		case 'photo':
 
 			header.dom().addClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
+
+			// If map is disabled, we should hide the icon
+			if (lychee.map_display) {
+				$('#button_map').show();
+			} else {
+				$('#button_map').hide();
+			}
+			// Set icon in Public mode
+			if (lychee.publicMode === true) {
+				if (lychee.map_display_public) {
+					$('#button_map').show();
+				} else {
+					$('#button_map').hide();
+				}
+			}
+
 			if (album.isUploadable()) {
 				$('#button_trash, #button_move, #button_visibility, #button_star').show();
 			} else {
@@ -2568,6 +2722,13 @@ header.setMode = function (mode) {
 			if (!(album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(photo.json.url && photo.json.url !== '')) {
 				$('#button_more').hide();
 			}
+
+			return true;
+		case 'map':
+
+			header.dom().removeClass('header--view');
+			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--map').addClass('header__toolbar--visible');
 
 			return true;
 
@@ -2716,7 +2877,7 @@ $(document).ready(function () {
 	});
 
 	Mousetrap.bindGlobal(['esc', 'command+up'], function () {
-		if (basicModal.visible() === true) basicModal.cancel();else if (visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParent());else if (visible.albums() && search.hash !== null) search.reset();
+		if (basicModal.visible() === true) basicModal.cancel();else if (visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParent());else if (visible.albums() && search.hash !== null) search.reset();else if (visible.mapview()) mapview.close();
 		return false;
 	});
 
@@ -2780,6 +2941,44 @@ $(document).ready(function () {
 		if (e.originalEvent.dataTransfer.files.length > 0) upload.start.local(e.originalEvent.dataTransfer.files);else if (e.originalEvent.dataTransfer.getData('Text').length > 3) upload.start.url(e.originalEvent.dataTransfer.getData('Text'));
 
 		return false;
+	})
+
+	// click on thumbnail on map
+	.on('click', '.image-leaflet-popup', function (e) {
+		mapview.goto($(this));
+	})
+
+	// Paste upload
+	.on('paste', function (e) {
+		if (e.originalEvent.clipboardData.items) {
+			var items = e.originalEvent.clipboardData.items;
+			var filesToUpload = [];
+
+			// Search clipboard items for an image
+			for (var i = 0; i < items.length; i++) {
+				if (items[i].type.indexOf('image') !== -1 || items[i].type.indexOf('video') !== -1) {
+					filesToUpload.push(items[i].getAsFile());
+				}
+			}
+
+			if (filesToUpload.length > 0) {
+				if (!album.isUploadable()) return;
+
+				// Close open overlays or views which are correlating with the upload
+
+				if (visible.photo()) lychee.goto(album.getID());
+
+				if (visible.contextMenu()) contextMenu.close();
+
+				if (basicModal.visible() || visible.leftMenu()) return;
+
+				if (visible.album() || visible.albums()) {
+					upload.start.local(filesToUpload);
+
+					return false;
+				}
+			}
+		}
 	})
 
 	// Fullscreen
@@ -3040,6 +3239,9 @@ lychee = {
 	image_overlay_type: 'exif', // current Overlay display type
 	image_overlay_type_default: 'exif', // image overlay type default type
 	map_display: false, // display photo coordinates on map
+	map_display_public: false, // display photos of public album on map (user not logged in)
+	map_provider: 'Wikimedia', // Provider of OSM Tiles
+	map_include_subalbums: false, // include photos of subalbums on map
 	landing_page_enabled: false, // is landing page enabled ?
 	delete_imported: false,
 
@@ -3168,6 +3370,9 @@ lychee.init = function () {
 			lychee.image_overlay_type = !data.config.image_overlay_type ? 'exif' : data.config.image_overlay_type;
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
 			lychee.map_display = data.config.map_display && data.config.map_display === '1' || false;
+			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === '1' || false;
+			lychee.map_provider = !data.config.map_provider ? 'Wikimedia' : data.config.map_provider;
+			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === '1' || false;
 			lychee.default_license = data.config.default_license || 'none';
 			lychee.css = data.config.css || '';
 			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === '1';
@@ -3204,6 +3409,7 @@ lychee.init = function () {
 			lychee.image_overlay_type = !data.config.image_overlay_type ? 'exif' : data.config.image_overlay_type;
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
 			lychee.map_display = data.config.map_display && data.config.map_display === '1' || false;
+			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === '1' || false;
 
 			// console.log(lychee.full_photo);
 			lychee.setMode('public');
@@ -3272,10 +3478,25 @@ lychee.goto = function () {
 	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 
+	if (url === false) url = '';
+
 	url = '#' + url;
 
 	history.pushState(null, null, url);
 	lychee.load(autoplay);
+};
+
+lychee.gotoMap = function () {
+	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+
+	// If map functionality is disabled -> go to album
+	if (!lychee.map_display) {
+		loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+		return;
+	}
+	lychee.goto('map/' + albumID, autoplay);
 };
 
 lychee.load = function () {
@@ -3295,26 +3516,73 @@ lychee.load = function () {
 
 	if (albumID && photoID) {
 
-		// Trash data
-		photo.json = null;
+		if (albumID == 'map') {
 
-		// Show Photo
-		if (lychee.content.html() === '' || header.dom('.header__search').length && header.dom('.header__search').val().length !== 0) {
-			lychee.content.hide();
-			album.load(albumID, true);
+			// If map functionality is disabled -> do nothing
+			if (!lychee.map_display) {
+				loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+				return;
+			}
+			// show map
+			// albumID has been stored in photoID due to URL format #map/albumID
+			albumID = photoID;
+
+			// Trash data
+			photo.json = null;
+
+			// Show Album -> it's below the map
+			if (visible.photo()) view.photo.hide();
+			if (visible.sidebar()) sidebar.toggle();
+			if (album.json && albumID === album.json.id) {
+				view.album.title();
+			}
+			mapview.open(albumID);
+			lychee.footer_hide();
+		} else {
+			// Show photo
+
+			// Trash data
+			photo.json = null;
+
+			// Show Photo
+			if (lychee.content.html() === '' || album.json == null || header.dom('.header__search').length && header.dom('.header__search').val().length !== 0) {
+				lychee.content.hide();
+				album.load(albumID, true);
+			}
+			photo.load(photoID, albumID, autoplay);
+			lychee.footer_hide();
 		}
-		photo.load(photoID, albumID, autoplay);
-		lychee.footer_hide();
 	} else if (albumID) {
 
-		// Trash data
-		photo.json = null;
+		if (albumID == 'map') {
 
-		// Show Album
-		if (visible.photo()) view.photo.hide();
-		if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) sidebar.toggle();
-		if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
-		lychee.footer_show();
+			// Show map of all albums
+			// If map functionality is disabled -> do nothing
+			if (!lychee.map_display) {
+				loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+				return;
+			}
+
+			// Trash data
+			photo.json = null;
+
+			// Show Album -> it's below the map
+			if (visible.photo()) view.photo.hide();
+			if (visible.sidebar()) sidebar.toggle();
+			mapview.open();
+			lychee.footer_hide();
+		} else {
+
+			// Trash data
+			photo.json = null;
+
+			// Show Album
+			if (visible.photo()) view.photo.hide();
+			if (visible.mapview()) mapview.close();
+			if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) sidebar.toggle();
+			if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
+			lychee.footer_show();
+		}
 	} else {
 
 		// Trash albums.json when filled with search results
@@ -3332,6 +3600,7 @@ lychee.load = function () {
 
 		// Show Albums
 		if (visible.photo()) view.photo.hide();
+		if (visible.mapview()) mapview.close();
 		lychee.content.show();
 		lychee.footer_show();
 		albums.load();
@@ -3712,6 +3981,7 @@ lychee.locale = {
 	'DEFAULT_LICENSE': 'Default License for new uploads:',
 	'SET_LICENSE': 'Set License',
 	'SET_OVERLAY_TYPE': 'Set Overlay',
+	'SET_MAP_PROVIDER': 'Set OpenStreetMap tiles provider',
 	'SAVE_RISK': 'Save my modifications, I accept the Risk!',
 	'MORE': 'More',
 
@@ -3753,6 +4023,7 @@ lychee.locale = {
 
 	'CLOSE_ALBUM': 'Close Album',
 	'CLOSE_PHOTO': 'Close Photo',
+	'CLOSE_MAP': 'Close Map',
 
 	'ADD': 'Add',
 	'MOVE': 'Move',
@@ -3791,6 +4062,7 @@ lychee.locale = {
 
 	'FULL_PHOTO': 'Full Photo',
 	'ABOUT_PHOTO': 'About Photo',
+	'DISPLAY_FULL_MAP': 'Map',
 	'DIRECT_LINK': 'Direct Link',
 	'DIRECT_LINKS': 'Direct Links',
 
@@ -3923,6 +4195,7 @@ lychee.locale = {
 	'ERROR_CONFIG_FILE': "Unable to save this configuration. Permission denied in <b>'data/'</b>. Please set the read, write and execute rights for others in <b>'data/'</b> and <b>'uploads/'</b>. Take a look at the readme for more information.",
 	'ERROR_UNKNOWN': 'Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.',
 	'ERROR_LOGIN': 'Unable to save login. Please try again with another username and password!',
+	'ERROR_MAP_DEACTIVATED': 'Map functionality has been deactivated under settings.',
 	'SUCCESS': 'OK',
 	'RETRY': 'Retry',
 
@@ -3935,7 +4208,10 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
 	'SETTINGS_SUCCESS_PUBLIC_SEARCH': 'Public search updated',
 	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
-	'SETTINGS_SUCCESS_MAP_DISPLAY': 'Display map settings updated',
+	'SETTINGS_SUCCESS_MAP_DISPLAY': 'Map display settings updated',
+	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC': 'Map display settings for public albums updated',
+	'SETTINGS_SUCCESS_MAP_PROVIDER': 'Map provider settings updated',
+
 	'SETTINGS_SUCCESS_CSS': 'CSS updated',
 	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
 
@@ -4015,7 +4291,16 @@ lychee.locale = {
 	'OVERLAY_DESCRIPTION': 'Photo description',
 	'OVERLAY_DATE': 'Photo date taken',
 
-	'MAP_DISPLAY_TEXT': 'Display coordinates on map (OpenStreetMap):',
+	'MAP_PROVIDER': 'Provider of OpenStreetMap tiles:',
+	'MAP_PROVIDER_WIKIMEDIA': 'Wikimedia',
+	'MAP_PROVIDER_OSM_ORG': 'OpenStreetMap.org (no retina)',
+	'MAP_PROVIDER_OSM_DE': 'OpenStreetMap.de (no retina)',
+	'MAP_PROVIDER_OSM_FR': 'OpenStreetMap.fr (no retina)',
+	'MAP_PROVIDER_RRZE': 'University of Erlangen, Germany (only retina)',
+
+	'MAP_DISPLAY_TEXT': 'Enable maps (provided by OpenStreetMap):',
+	'MAP_DISPLAY_PUBLIC_TEXT': 'Enable maps for public albums (provided by OpenStreetMap):',
+	'MAP_INCLUDE_SUBALBUMS_TEXT': 'Include photos of subalbums on map:',
 
 	'VIEW_NO_RESULT': 'No results',
 	'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',
@@ -4063,6 +4348,313 @@ lychee.locale = {
 	'PHOTO_THUMB': 'Square thumb',
 	'PHOTO_THUMB_HIDPI': 'Square thumb HiDPI',
 	'PHOTO_VIEW': 'Lychee Photo View:'
+};
+
+/**
+ * @description This module takes care of the map view of a full album and its sub-albums.
+ */
+
+map_provider_layer_attribution = {
+	'Wikimedia': {
+		layer: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
+		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
+	},
+	'OpenStreetMap.org': {
+		layer: 'https://{s}.tile.osm.org/{z}/{x}/{y}{r}.png',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'OpenStreetMap.de': {
+		layer: 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png ',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'OpenStreetMap.fr': {
+		layer: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'RRZE': {
+		layer: 'https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	}
+};
+
+mapview = {
+	map: null,
+	photoLayer: null,
+	min_lat: null,
+	min_lng: null,
+	max_lat: null,
+	max_lng: null,
+	albumID: null,
+	map_provider: null
+};
+
+mapview.isInitialized = function () {
+	if (mapview.map === null || mapview.photoLayer === null) {
+		return false;
+	}
+	return true;
+};
+
+mapview.title = function (_albumID, _albumTitle) {
+	switch (_albumID) {
+		case 'f':
+			lychee.setTitle(lychee.locale['STARRED'], false);
+			break;
+		case 's':
+			lychee.setTitle(lychee.locale['PUBLIC'], false);
+			break;
+		case 'r':
+			lychee.setTitle(lychee.locale['RECENT'], false);
+			break;
+		case '0':
+			lychee.setTitle(lychee.locale['UNSORTED'], false);
+			break;
+		case null:
+			lychee.setTitle(lychee.locale['ALBUMS'], false);
+			break;
+		default:
+			lychee.setTitle(_albumTitle, false);
+			break;
+	}
+};
+
+// Open the map view
+mapview.open = function () {
+	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display || lychee.publicMode === true && !lychee.map_display_public) {
+		loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+		return;
+	}
+
+	lychee.animate($('#mapview'), 'fadeIn');
+	$('#mapview').show();
+	header.setMode('map');
+
+	mapview.albumID = albumID;
+
+	// initialize container only once
+	if (mapview.isInitialized() == false) {
+
+		// Leaflet seaches for icon in same directoy as js file -> paths needs
+		// to be overwritten
+		delete L.Icon.Default.prototype._getIconUrl;
+		L.Icon.Default.mergeOptions({
+			iconRetinaUrl: 'img/marker-icon-2x.png',
+			iconUrl: 'img/marker-icon.png',
+			shadowUrl: 'img/marker-shadow.png'
+		});
+
+		// Set initial view to (0,0)
+		mapview.map = L.map('leaflet_map_full').setView([0.0, 0.0], 13);
+
+		L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
+			attribution: map_provider_layer_attribution[lychee.map_provider].attribution
+		}).addTo(mapview.map);
+
+		mapview.map_provider = lychee.map_provider;
+	} else {
+
+		if (mapview.map_provider !== lychee.map_provider) {
+
+			// removew all layers
+			mapview.map.eachLayer(function (layer) {
+				mapview.map.removeLayer(layer);
+			});
+
+			L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
+				attribution: map_provider_layer_attribution[lychee.map_provider].attribution
+			}).addTo(mapview.map);
+
+			mapview.map_provider = lychee.map_provider;
+		} else {
+
+			// Mapview has already shown data -> remove only photoLayer showing photos
+			mapview.photoLayer.clear();
+		}
+
+		// Reset min/max lat/lgn Values
+		mapview.min_lat = null;
+		mapview.max_lat = null;
+		mapview.min_lng = null;
+		mapview.max_lng = null;
+	}
+
+	// Define how the photos on the map should look like
+	mapview.photoLayer = L.photo.cluster().on('click', function (e) {
+		var photo = e.layer.photo;
+		var template = "";
+
+		// Retina version if available
+		if (photo.url2x !== "") {
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'srcset="{url} 1x, {url2x} 2x" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), '</span><p>{takedate}</p></div>');
+		} else {
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), '</span><p>{takedate}</p></div>');
+		}
+
+		e.layer.bindPopup(L.Util.template(template, photo), {
+			minWidth: 400
+		}).openPopup();
+	});
+
+	// Adjusts zoom and position of map to show all images
+	updateZoom = function updateZoom() {
+		if (mapview.min_lat && mapview.min_lng && mapview.max_lat && mapview.max_lng) {
+			var dist_lat = mapview.max_lat - mapview.min_lat;
+			var dist_lng = mapview.max_lng - mapview.min_lng;
+			mapview.map.fitBounds([[mapview.min_lat - 0.1 * dist_lat, mapview.min_lng - 0.1 * dist_lng], [mapview.max_lat + 0.1 * dist_lat, mapview.max_lng + 0.1 * dist_lng]]);
+		} else {
+			mapview.map.fitWorld();
+		}
+	};
+
+	// Adds photos to the map
+	addPhotosToMap = function addPhotosToMap(album) {
+
+		// check if empty
+		if (!album.photos) return;
+
+		photos = [];
+
+		album.photos.forEach(function (element, index) {
+			if (element.latitude || element.longitude) {
+				photos.push({
+					"lat": parseFloat(element.latitude),
+					"lng": parseFloat(element.longitude),
+					"thumbnail": element.thumbUrl !== "uploads/thumb/" ? element.thumbUrl : "img/placeholder.png",
+					"thumbnail2x": element.thumb2x,
+					"url": element.small !== "" ? element.small : element.url,
+					"url2x": element.small2x,
+					"name": element.title,
+					"takedate": element.takedate,
+					"albumID": element.album,
+					"photoID": element.id
+				});
+
+				// Update min/max lat/lng
+				if (mapview.min_lat === null || mapview.min_lat > element.latitude) {
+					mapview.min_lat = parseFloat(element.latitude);
+				}
+				if (mapview.min_lng === null || mapview.min_lng > element.longitude) {
+					mapview.min_lng = parseFloat(element.longitude);
+				}
+				if (mapview.max_lat === null || mapview.max_lat < element.latitude) {
+					mapview.max_lat = parseFloat(element.latitude);
+				}
+				if (mapview.max_lng === null || mapview.max_lng < element.longitude) {
+					mapview.max_lng = parseFloat(element.longitude);
+				}
+			}
+		});
+
+		// Add Photos to map
+		mapview.photoLayer.add(photos).addTo(mapview.map);
+
+		// Update Zoom and Position
+		updateZoom();
+	};
+
+	// Call backend, retrieve information of photos and display them
+	// This function is called recursively to retrieve data for sub-albums
+	// Possible enhancement could be to only have a single ajax call
+	getAlbumData = function getAlbumData(_albumID) {
+		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+		if (_albumID !== '' && _albumID !== null) {
+			// _ablumID has been to a specific album
+			var _params = {
+				albumID: _albumID,
+				includeSubAlbums: _includeSubAlbums,
+				password: ''
+			};
+
+			api.post('Album::getPositionData', _params, function (data) {
+
+				if (data === 'Warning: Wrong password!') {
+					password.getDialog(_albumID, function () {
+
+						_params.password = password.value;
+
+						api.post('Album::getPositionData', _params, function (data) {
+							addPhotosToMap(data);
+							mapview.title(_albumID, data.title);
+						});
+					});
+				} else {
+					addPhotosToMap(data);
+					mapview.title(_albumID, data.title);
+				}
+			});
+		} else {
+			// AlbumID is empty -> fetch all photos of all albums
+			// _ablumID has been to a specific album
+			var _params2 = {
+				includeSubAlbums: _includeSubAlbums,
+				password: ''
+			};
+
+			api.post('Albums::getPositionData', _params2, function (data) {
+
+				if (data === 'Warning: Wrong password!') {
+					password.getDialog(_albumID, function () {
+
+						_params2.password = password.value;
+
+						api.post('Albums::getPositionData', _params2, function (data) {
+							addPhotosToMap(data);
+							mapview.title(_albumID, data.title);
+						});
+					});
+				} else {
+					addPhotosToMap(data);
+					mapview.title(_albumID, data.title);
+				}
+			});
+		}
+	};
+
+	// If subalbums not being included and album.json already has all data
+	// -> we can reuse it
+	if (lychee.map_include_subalbums === false && album.json !== null && album.json.photos !== null) {
+
+		addPhotosToMap(album.json);
+	} else {
+
+		// Not all needed data has been  preloaded - we need to load everything
+		getAlbumData(albumID, lychee.map_include_subalbums);
+	}
+
+	// Update Zoom and Position once more (for empty map)
+	updateZoom();
+};
+
+mapview.close = function () {
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display) return;
+
+	lychee.animate($('#mapview'), 'fadeOut');
+	$('#mapview').hide();
+	header.setMode('album');
+};
+
+mapview.goto = function (elem) {
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display) return;
+
+	var photoID = elem.attr('data-id');
+	var albumID = elem.attr('data-album-id');
+
+	if (albumID == 'null') albumID = 0;
+
+	if (album.json == null || albumID !== album.json.id) {
+		album.refresh();
+	}
+
+	lychee.goto(albumID + '/' + photoID);
 };
 
 /**
@@ -6018,6 +6610,60 @@ settings.changeMapDisplay = function () {
 			lychee.map_display = params.map_display === '1';
 		} else lychee.error(null, params, data);
 	});
+	// Map functionality is disabled
+	// -> map for public albums also needs to be disabled
+	if (lychee.map_display_public === true) {
+		$('#MapDisplayPublic').click();
+	}
+};
+
+settings.changeMapDisplayPublic = function () {
+	var params = {};
+	if ($('#MapDisplayPublic:checked').length === 1) {
+		params.map_display_public = '1';
+
+		// If public map functionality is enabled, but map in general is disabled
+		// General map functionality needs to be enabled
+		if (lychee.map_display === false) {
+			$('#MapDisplay').click();
+		}
+	} else {
+		params.map_display_public = '0';
+	}
+	api.post('Settings::setMapDisplayPublic', params, function (data) {
+		if (data === true) {
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC']);
+			lychee.map_display_public = params.map_display_public === '1';
+		} else lychee.error(null, params, data);
+	});
+};
+
+settings.setMapProvider = function () {
+	// validate the input
+	var params = {};
+	params.map_provider = $('#MapProvider').val();
+
+	api.post('Settings::setMapProvider', params, function (data) {
+		if (data === true) {
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_PROVIDER']);
+			lychee.map_provider = params.map_provider;
+		} else lychee.error(null, params, data);
+	});
+};
+
+settings.changeMapIncludeSubalbums = function () {
+	var params = {};
+	if ($('#MapIncludeSubalbums:checked').length === 1) {
+		params.map_include_subalbums = '1';
+	} else {
+		params.map_include_subalbums = '0';
+	}
+	api.post('Settings::setMapIncludeSubalbums', params, function (data) {
+		if (data === true) {
+			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_DISPLAY']);
+			lychee.map_include_subalbums = params.map_include_subalbums === '1';
+		} else lychee.error(null, params, data);
+	});
 };
 
 settings.changeCSS = function () {
@@ -6585,7 +7231,7 @@ sidebar.render = function (structure) {
 			});
 
 			if (_has_latitude && _has_longitude && lychee.map_display) {
-				_html += "\n\t\t\t\t\t\t <div id=\"mapid\"></div>\n\t\t\t\t\t\t ";
+				_html += "\n\t\t\t\t\t\t <div id=\"leaflet_map_single_photo\"></div>\n\t\t\t\t\t\t ";
 			}
 		}
 
@@ -8074,7 +8720,7 @@ view.photo = {
 	},
 
 	photo: function (_photo) {
-		function photo(_x28) {
+		function photo(_x32) {
 			return _photo.apply(this, arguments);
 		}
 
@@ -8166,11 +8812,10 @@ view.photo = {
 				shadowUrl: 'img/marker-shadow.png'
 			});
 
-			var mymap = L.map('mapid').setView([photo.json.latitude, photo.json.longitude], 13);
+			var mymap = L.map('leaflet_map_single_photo').setView([photo.json.latitude, photo.json.longitude], 13);
 
-			// Add plain OpenStreetMap Layer
-			L.tileLayer('https://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-				attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+			L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
+				attribution: map_provider_layer_attribution[lychee.map_provider].attribution
 			}).addTo(mymap);
 
 			if (!photo.json.imgDirection || photo.json.imgDirection === '') {
@@ -8180,7 +8825,7 @@ view.photo = {
 				// Add Marker, direction has been set
 				var viewDirectionIcon = L.icon({
 					iconUrl: 'img/view-angle-icon.png',
-
+					iconRetinaUrl: 'img/view-angle-icon-2x.png',
 					iconSize: [100, 58], // size of the icon
 					iconAnchor: [50, 49] // point of the icon which will correspond to marker's location
 				});
@@ -8364,6 +9009,27 @@ view.settings = {
 			if (lychee.map_display) $('#MapDisplay').click();
 
 			settings.bind('#MapDisplay', '.setMapDisplay', settings.changeMapDisplay);
+
+			msg = "\n\t\t\t<div class=\"setMapDisplayPublic\">\n\t\t\t<p>" + lychee.locale['MAP_DISPLAY_PUBLIC_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"MapDisplayPublic\" type=\"checkbox\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+
+			$(".settings_view").append(msg);
+			if (lychee.map_display_public) $('#MapDisplayPublic').click();
+
+			settings.bind('#MapDisplayPublic', '.setMapDisplayPublic', settings.changeMapDisplayPublic);
+
+			msg = "\n\t\t\t<div class=\"setMapProvider\">\n\t\t\t<p>" + lychee.locale['MAP_PROVIDER'] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"MapProvider\" id=\"MapProvider\">\n\t\t\t\t\t<option value=\"Wikimedia\">" + lychee.locale['MAP_PROVIDER_WIKIMEDIA'] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.org\">" + lychee.locale['MAP_PROVIDER_OSM_ORG'] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.de\">" + lychee.locale['MAP_PROVIDER_OSM_DE'] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.fr\">" + lychee.locale['MAP_PROVIDER_OSM_FR'] + "</option>\n\t\t\t\t\t<option value=\"RRZE\">" + lychee.locale['MAP_PROVIDER_RRZE'] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_map_provider\" class=\"basicModal__button\">" + lychee.locale['SET_MAP_PROVIDER'] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+
+			$(".settings_view").append(msg);
+
+			$('select#MapProvider').val(!lychee.map_provider ? 'Wikimedia' : lychee.map_provider);
+			settings.bind('#basicModal__action_set_map_provider', '.setMapProvider', settings.setMapProvider);
+
+			msg = "\n\t\t\t<div class=\"setMapIncludeSubalbums\">\n\t\t\t<p>" + lychee.locale['MAP_INCLUDE_SUBALBUMS_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapIncludeSubalbums\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+
+			$(".settings_view").append(msg);
+			if (lychee.map_include_subalbums) $('#MapIncludeSubalbums').click();
+
+			settings.bind('#MapIncludeSubalbums', '.setMapIncludeSubalbums', settings.changeMapIncludeSubalbums);
 		},
 
 		setCSS: function setCSS() {
@@ -8717,6 +9383,11 @@ visible.photo = function () {
 	return false;
 };
 
+visible.mapview = function () {
+	if ($('#mapview.fadeIn').length > 0) return true;
+	return false;
+};
+
 visible.search = function () {
 	if (search.hash != null) return true;
 	return false;
@@ -8751,6 +9422,7 @@ visible.leftMenu = function () {
 	if (leftMenu.dom().hasClass('leftMenu__visible')) return true;
 	return false;
 };
+
 (function (window, factory) {
 	var basicContext = factory(window, window.document);
 	window.basicContext = basicContext;

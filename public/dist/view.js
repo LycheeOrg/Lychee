@@ -226,6 +226,7 @@ var lychee = {};
 
 lychee.content = $('.content');
 lychee.imageview = $('#imageview');
+lychee.mapview = $('#mapview');
 
 lychee.escapeHTML = function () {
 	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -411,6 +412,9 @@ $(document).ready(function () {
 
 	// Infobox
 	header.dom('#button_info').on('click', sidebar.toggle);
+
+	// Show overview Map
+	header.dom('#button_map').on('click', alert("Show Map"));
 
 	// Load photo
 	loadPhotoInfo(photoID);
@@ -873,6 +877,15 @@ header.bind = function () {
 	header.dom('#button_settings').on(eventName, leftMenu.open);
 	header.dom('#button_info_album').on(eventName, sidebar.toggle);
 	header.dom('#button_info').on(eventName, sidebar.toggle);
+	header.dom('#button_map_albums').on(eventName, function () {
+		lychee.gotoMap();
+	});
+	header.dom('#button_map_album').on(eventName, function () {
+		lychee.gotoMap(album.getID());
+	});
+	header.dom('#button_map').on(eventName, function () {
+		lychee.gotoMap(album.getID());
+	});
 	header.dom('.button_add').on(eventName, contextMenu.add);
 	header.dom('#button_more').on(eventName, function (e) {
 		contextMenu.photoMore(photo.getID(), e);
@@ -906,6 +919,9 @@ header.bind = function () {
 		}
 	});
 	header.dom('#button_back').on(eventName, function () {
+		lychee.goto(album.getID());
+	});
+	header.dom('#button_back_map').on(eventName, function () {
 		lychee.goto(album.getID());
 	});
 	header.dom('#button_fs_album_enter,#button_fs_enter').on(eventName, lychee.fullscreenEnter);
@@ -980,7 +996,7 @@ header.setMode = function (mode) {
 		case 'public':
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--public').addClass('header__toolbar--visible');
 			if (lychee.public_search) {
 				$('.header__search, .header__clear', '.header__toolbar--public').show();
@@ -993,8 +1009,27 @@ header.setMode = function (mode) {
 		case 'albums':
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--albums').addClass('header__toolbar--visible');
+
+			// If map is disabled, we should hide the icon
+			if (lychee.map_display) {
+				$('#button_map_albums').show();
+				$('.header__clear').removeClass('header__clear_nomap');
+			} else {
+				$('#button_map_albums').hide();
+				$('.header__clear').addClass('header__clear_nomap');
+			}
+			// Set icon in Public mode
+			if (lychee.publicMode === true) {
+				if (lychee.map_display_public) {
+					$('#button_map_albums').show();
+					$('.header__clear').removeClass('header__clear_nomap');
+				} else {
+					$('#button_map_albums').hide();
+					$('.header__clear').addClass('header__clear_nomap');
+				}
+			}
 
 			return true;
 
@@ -1003,7 +1038,7 @@ header.setMode = function (mode) {
 			var albumID = album.getID();
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
 
 			// Hide download button when album empty or we are not allowed to
@@ -1012,6 +1047,21 @@ header.setMode = function (mode) {
 				$('#button_archive').hide();
 			} else {
 				$('#button_archive').show();
+			}
+
+			// If map is disabled, we should hide the icon
+			if (lychee.map_display) {
+				$('#button_map_album').show();
+			} else {
+				$('#button_map_album').hide();
+			}
+			// Set icon in Public mode
+			if (lychee.publicMode === true) {
+				if (lychee.map_display_public) {
+					$('#button_map_album').show();
+				} else {
+					$('#button_map_album').hide();
+				}
 			}
 
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
@@ -1023,7 +1073,7 @@ header.setMode = function (mode) {
 			} else {
 				$('#button_info_album, #button_visibility_album').show();
 				if (album.isUploadable()) {
-					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
+					$('#button_trash_album, #button_move_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
 				} else {
 					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').hide();
 				}
@@ -1034,8 +1084,24 @@ header.setMode = function (mode) {
 		case 'photo':
 
 			header.dom().addClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
+
+			// If map is disabled, we should hide the icon
+			if (lychee.map_display) {
+				$('#button_map').show();
+			} else {
+				$('#button_map').hide();
+			}
+			// Set icon in Public mode
+			if (lychee.publicMode === true) {
+				if (lychee.map_display_public) {
+					$('#button_map').show();
+				} else {
+					$('#button_map').hide();
+				}
+			}
+
 			if (album.isUploadable()) {
 				$('#button_trash, #button_move, #button_visibility, #button_star').show();
 			} else {
@@ -1047,6 +1113,13 @@ header.setMode = function (mode) {
 			if (!(album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(photo.json.url && photo.json.url !== '')) {
 				$('#button_more').hide();
 			}
+
+			return true;
+		case 'map':
+
+			header.dom().removeClass('header--view');
+			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--map').addClass('header__toolbar--visible');
 
 			return true;
 
@@ -1115,6 +1188,11 @@ visible.photo = function () {
 	return false;
 };
 
+visible.mapview = function () {
+	if ($('#mapview.fadeIn').length > 0) return true;
+	return false;
+};
+
 visible.search = function () {
 	if (search.hash != null) return true;
 	return false;
@@ -1149,6 +1227,7 @@ visible.leftMenu = function () {
 	if (leftMenu.dom().hasClass('leftMenu__visible')) return true;
 	return false;
 };
+
 /**
  * @description This module takes care of the sidebar.
  */
@@ -1580,7 +1659,7 @@ sidebar.render = function (structure) {
 			});
 
 			if (_has_latitude && _has_longitude && lychee.map_display) {
-				_html += "\n\t\t\t\t\t\t <div id=\"mapid\"></div>\n\t\t\t\t\t\t ";
+				_html += "\n\t\t\t\t\t\t <div id=\"leaflet_map_single_photo\"></div>\n\t\t\t\t\t\t ";
 			}
 		}
 
@@ -1671,6 +1750,313 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	return degrees + '° ' + minutes + '\' ' + seconds + '\" ' + direction;
 };
 
+/**
+ * @description This module takes care of the map view of a full album and its sub-albums.
+ */
+
+map_provider_layer_attribution = {
+	'Wikimedia': {
+		layer: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
+		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
+	},
+	'OpenStreetMap.org': {
+		layer: 'https://{s}.tile.osm.org/{z}/{x}/{y}{r}.png',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'OpenStreetMap.de': {
+		layer: 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png ',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'OpenStreetMap.fr': {
+		layer: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'RRZE': {
+		layer: 'https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	}
+};
+
+mapview = {
+	map: null,
+	photoLayer: null,
+	min_lat: null,
+	min_lng: null,
+	max_lat: null,
+	max_lng: null,
+	albumID: null,
+	map_provider: null
+};
+
+mapview.isInitialized = function () {
+	if (mapview.map === null || mapview.photoLayer === null) {
+		return false;
+	}
+	return true;
+};
+
+mapview.title = function (_albumID, _albumTitle) {
+	switch (_albumID) {
+		case 'f':
+			lychee.setTitle(lychee.locale['STARRED'], false);
+			break;
+		case 's':
+			lychee.setTitle(lychee.locale['PUBLIC'], false);
+			break;
+		case 'r':
+			lychee.setTitle(lychee.locale['RECENT'], false);
+			break;
+		case '0':
+			lychee.setTitle(lychee.locale['UNSORTED'], false);
+			break;
+		case null:
+			lychee.setTitle(lychee.locale['ALBUMS'], false);
+			break;
+		default:
+			lychee.setTitle(_albumTitle, false);
+			break;
+	}
+};
+
+// Open the map view
+mapview.open = function () {
+	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display || lychee.publicMode === true && !lychee.map_display_public) {
+		loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+		return;
+	}
+
+	lychee.animate($('#mapview'), 'fadeIn');
+	$('#mapview').show();
+	header.setMode('map');
+
+	mapview.albumID = albumID;
+
+	// initialize container only once
+	if (mapview.isInitialized() == false) {
+
+		// Leaflet seaches for icon in same directoy as js file -> paths needs
+		// to be overwritten
+		delete L.Icon.Default.prototype._getIconUrl;
+		L.Icon.Default.mergeOptions({
+			iconRetinaUrl: 'img/marker-icon-2x.png',
+			iconUrl: 'img/marker-icon.png',
+			shadowUrl: 'img/marker-shadow.png'
+		});
+
+		// Set initial view to (0,0)
+		mapview.map = L.map('leaflet_map_full').setView([0.0, 0.0], 13);
+
+		L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
+			attribution: map_provider_layer_attribution[lychee.map_provider].attribution
+		}).addTo(mapview.map);
+
+		mapview.map_provider = lychee.map_provider;
+	} else {
+
+		if (mapview.map_provider !== lychee.map_provider) {
+
+			// removew all layers
+			mapview.map.eachLayer(function (layer) {
+				mapview.map.removeLayer(layer);
+			});
+
+			L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
+				attribution: map_provider_layer_attribution[lychee.map_provider].attribution
+			}).addTo(mapview.map);
+
+			mapview.map_provider = lychee.map_provider;
+		} else {
+
+			// Mapview has already shown data -> remove only photoLayer showing photos
+			mapview.photoLayer.clear();
+		}
+
+		// Reset min/max lat/lgn Values
+		mapview.min_lat = null;
+		mapview.max_lat = null;
+		mapview.min_lng = null;
+		mapview.max_lng = null;
+	}
+
+	// Define how the photos on the map should look like
+	mapview.photoLayer = L.photo.cluster().on('click', function (e) {
+		var photo = e.layer.photo;
+		var template = "";
+
+		// Retina version if available
+		if (photo.url2x !== "") {
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'srcset="{url} 1x, {url2x} 2x" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), '</span><p>{takedate}</p></div>');
+		} else {
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), '</span><p>{takedate}</p></div>');
+		}
+
+		e.layer.bindPopup(L.Util.template(template, photo), {
+			minWidth: 400
+		}).openPopup();
+	});
+
+	// Adjusts zoom and position of map to show all images
+	updateZoom = function updateZoom() {
+		if (mapview.min_lat && mapview.min_lng && mapview.max_lat && mapview.max_lng) {
+			var dist_lat = mapview.max_lat - mapview.min_lat;
+			var dist_lng = mapview.max_lng - mapview.min_lng;
+			mapview.map.fitBounds([[mapview.min_lat - 0.1 * dist_lat, mapview.min_lng - 0.1 * dist_lng], [mapview.max_lat + 0.1 * dist_lat, mapview.max_lng + 0.1 * dist_lng]]);
+		} else {
+			mapview.map.fitWorld();
+		}
+	};
+
+	// Adds photos to the map
+	addPhotosToMap = function addPhotosToMap(album) {
+
+		// check if empty
+		if (!album.photos) return;
+
+		photos = [];
+
+		album.photos.forEach(function (element, index) {
+			if (element.latitude || element.longitude) {
+				photos.push({
+					"lat": parseFloat(element.latitude),
+					"lng": parseFloat(element.longitude),
+					"thumbnail": element.thumbUrl !== "uploads/thumb/" ? element.thumbUrl : "img/placeholder.png",
+					"thumbnail2x": element.thumb2x,
+					"url": element.small !== "" ? element.small : element.url,
+					"url2x": element.small2x,
+					"name": element.title,
+					"takedate": element.takedate,
+					"albumID": element.album,
+					"photoID": element.id
+				});
+
+				// Update min/max lat/lng
+				if (mapview.min_lat === null || mapview.min_lat > element.latitude) {
+					mapview.min_lat = parseFloat(element.latitude);
+				}
+				if (mapview.min_lng === null || mapview.min_lng > element.longitude) {
+					mapview.min_lng = parseFloat(element.longitude);
+				}
+				if (mapview.max_lat === null || mapview.max_lat < element.latitude) {
+					mapview.max_lat = parseFloat(element.latitude);
+				}
+				if (mapview.max_lng === null || mapview.max_lng < element.longitude) {
+					mapview.max_lng = parseFloat(element.longitude);
+				}
+			}
+		});
+
+		// Add Photos to map
+		mapview.photoLayer.add(photos).addTo(mapview.map);
+
+		// Update Zoom and Position
+		updateZoom();
+	};
+
+	// Call backend, retrieve information of photos and display them
+	// This function is called recursively to retrieve data for sub-albums
+	// Possible enhancement could be to only have a single ajax call
+	getAlbumData = function getAlbumData(_albumID) {
+		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+		if (_albumID !== '' && _albumID !== null) {
+			// _ablumID has been to a specific album
+			var _params = {
+				albumID: _albumID,
+				includeSubAlbums: _includeSubAlbums,
+				password: ''
+			};
+
+			api.post('Album::getPositionData', _params, function (data) {
+
+				if (data === 'Warning: Wrong password!') {
+					password.getDialog(_albumID, function () {
+
+						_params.password = password.value;
+
+						api.post('Album::getPositionData', _params, function (data) {
+							addPhotosToMap(data);
+							mapview.title(_albumID, data.title);
+						});
+					});
+				} else {
+					addPhotosToMap(data);
+					mapview.title(_albumID, data.title);
+				}
+			});
+		} else {
+			// AlbumID is empty -> fetch all photos of all albums
+			// _ablumID has been to a specific album
+			var _params2 = {
+				includeSubAlbums: _includeSubAlbums,
+				password: ''
+			};
+
+			api.post('Albums::getPositionData', _params2, function (data) {
+
+				if (data === 'Warning: Wrong password!') {
+					password.getDialog(_albumID, function () {
+
+						_params2.password = password.value;
+
+						api.post('Albums::getPositionData', _params2, function (data) {
+							addPhotosToMap(data);
+							mapview.title(_albumID, data.title);
+						});
+					});
+				} else {
+					addPhotosToMap(data);
+					mapview.title(_albumID, data.title);
+				}
+			});
+		}
+	};
+
+	// If subalbums not being included and album.json already has all data
+	// -> we can reuse it
+	if (lychee.map_include_subalbums === false && album.json !== null && album.json.photos !== null) {
+
+		addPhotosToMap(album.json);
+	} else {
+
+		// Not all needed data has been  preloaded - we need to load everything
+		getAlbumData(albumID, lychee.map_include_subalbums);
+	}
+
+	// Update Zoom and Position once more (for empty map)
+	updateZoom();
+};
+
+mapview.close = function () {
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display) return;
+
+	lychee.animate($('#mapview'), 'fadeOut');
+	$('#mapview').hide();
+	header.setMode('album');
+};
+
+mapview.goto = function (elem) {
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display) return;
+
+	var photoID = elem.attr('data-id');
+	var albumID = elem.attr('data-album-id');
+
+	if (albumID == 'null') albumID = 0;
+
+	if (album.json == null || albumID !== album.json.id) {
+		album.refresh();
+	}
+
+	lychee.goto(albumID + '/' + photoID);
+};
+
 lychee.locale = {
 
 	'USERNAME': 'username',
@@ -1695,6 +2081,7 @@ lychee.locale = {
 	'DEFAULT_LICENSE': 'Default License for new uploads:',
 	'SET_LICENSE': 'Set License',
 	'SET_OVERLAY_TYPE': 'Set Overlay',
+	'SET_MAP_PROVIDER': 'Set OpenStreetMap tiles provider',
 	'SAVE_RISK': 'Save my modifications, I accept the Risk!',
 	'MORE': 'More',
 
@@ -1736,6 +2123,7 @@ lychee.locale = {
 
 	'CLOSE_ALBUM': 'Close Album',
 	'CLOSE_PHOTO': 'Close Photo',
+	'CLOSE_MAP': 'Close Map',
 
 	'ADD': 'Add',
 	'MOVE': 'Move',
@@ -1774,6 +2162,7 @@ lychee.locale = {
 
 	'FULL_PHOTO': 'Full Photo',
 	'ABOUT_PHOTO': 'About Photo',
+	'DISPLAY_FULL_MAP': 'Map',
 	'DIRECT_LINK': 'Direct Link',
 	'DIRECT_LINKS': 'Direct Links',
 
@@ -1906,6 +2295,7 @@ lychee.locale = {
 	'ERROR_CONFIG_FILE': "Unable to save this configuration. Permission denied in <b>'data/'</b>. Please set the read, write and execute rights for others in <b>'data/'</b> and <b>'uploads/'</b>. Take a look at the readme for more information.",
 	'ERROR_UNKNOWN': 'Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.',
 	'ERROR_LOGIN': 'Unable to save login. Please try again with another username and password!',
+	'ERROR_MAP_DEACTIVATED': 'Map functionality has been deactivated under settings.',
 	'SUCCESS': 'OK',
 	'RETRY': 'Retry',
 
@@ -1918,7 +2308,10 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
 	'SETTINGS_SUCCESS_PUBLIC_SEARCH': 'Public search updated',
 	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
-	'SETTINGS_SUCCESS_MAP_DISPLAY': 'Display map settings updated',
+	'SETTINGS_SUCCESS_MAP_DISPLAY': 'Map display settings updated',
+	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC': 'Map display settings for public albums updated',
+	'SETTINGS_SUCCESS_MAP_PROVIDER': 'Map provider settings updated',
+
 	'SETTINGS_SUCCESS_CSS': 'CSS updated',
 	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
 
@@ -1998,7 +2391,16 @@ lychee.locale = {
 	'OVERLAY_DESCRIPTION': 'Photo description',
 	'OVERLAY_DATE': 'Photo date taken',
 
-	'MAP_DISPLAY_TEXT': 'Display coordinates on map (OpenStreetMap):',
+	'MAP_PROVIDER': 'Provider of OpenStreetMap tiles:',
+	'MAP_PROVIDER_WIKIMEDIA': 'Wikimedia',
+	'MAP_PROVIDER_OSM_ORG': 'OpenStreetMap.org (no retina)',
+	'MAP_PROVIDER_OSM_DE': 'OpenStreetMap.de (no retina)',
+	'MAP_PROVIDER_OSM_FR': 'OpenStreetMap.fr (no retina)',
+	'MAP_PROVIDER_RRZE': 'University of Erlangen, Germany (only retina)',
+
+	'MAP_DISPLAY_TEXT': 'Enable maps (provided by OpenStreetMap):',
+	'MAP_DISPLAY_PUBLIC_TEXT': 'Enable maps for public albums (provided by OpenStreetMap):',
+	'MAP_INCLUDE_SUBALBUMS_TEXT': 'Include photos of subalbums on map:',
 
 	'VIEW_NO_RESULT': 'No results',
 	'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',

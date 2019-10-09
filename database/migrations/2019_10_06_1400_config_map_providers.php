@@ -24,6 +24,7 @@ class ConfigMapProviders extends Migration
 					'key' => 'map_provider',
 					'value' => 'Wikimedia',
 					'confidentiality' => 0,
+					'cat' => 'Mod Map',
 					'type_range' => MAP_PROVIDERS,
 				],
 			]);
