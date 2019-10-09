@@ -3,13 +3,15 @@
 namespace Installer\Helpers;
 
 
-
 class PermissionsChecker
 {
 	/**
 	 * @var array
 	 */
 	protected $results = [];
+
+
+
 	/**
 	 * Set the result array permissions and errors.
 	 *
@@ -20,33 +22,49 @@ class PermissionsChecker
 		$this->results['permissions'] = [];
 		$this->results['errors'] = null;
 	}
+
+
+
 	/**
 	 * Check for the folders permissions.
 	 *
-	 * @param array $folders
+	 * @param  array  $folders
+	 *
 	 * @return array
 	 */
 	public function check(array $folders)
 	{
 		foreach ($folders as $folder => $permission) {
-			if (! ($this->getPermission($folder) >= $permission)) {
-				$this->addFileAndSetErrors($folder, $permission, false);
-			} else {
-				$this->addFile($folder, $permission, true);
-			}
+			$this->addFile($folder, $permission, $this->getPermission($folder, $permission));
 		}
+
 		return $this->results;
 	}
+
+
+
 	/**
 	 * Get a folder permission.
 	 *
-	 * @param $folder
-	 * @return string
+	 * @param  string  $folder
+	 * @param  string  $permissions
+	 *
+	 * @return int the position of 1 determines the errors.
 	 */
-	private function getPermission($folder)
+	private function getPermission(string $folder, string $permissions)
 	{
-		return substr(sprintf('%o', fileperms($folder)), -4);
+		$return = 0;
+		foreach (explode('|', $permissions) as $permission) {
+			preg_match('/(!*)(.*)/', $permission, $f);
+			$return <<= 1;
+			$return |= ! (($f[2]($folder) xor ($f[1] == '!')));
+		}
+		return $return;
+//		return substr(sprintf('%o', fileperms($folder)), -4);
 	}
+
+
+
 	/**
 	 * Add the file to the list of results.
 	 *
@@ -57,21 +75,15 @@ class PermissionsChecker
 	private function addFile($folder, $permission, $isSet)
 	{
 		array_push($this->results['permissions'], [
-			'folder' => $folder,
+			'folder'     => $folder,
 			'permission' => $permission,
-			'isSet' => $isSet,
+			'isSet'      => $isSet,
 		]);
-	}
-	/**
-	 * Add the file and set the errors.
-	 *
-	 * @param $folder
-	 * @param $permission
-	 * @param $isSet
-	 */
-	private function addFileAndSetErrors($folder, $permission, $isSet)
-	{
-		$this->addFile($folder, $permission, $isSet);
-		$this->results['errors'] = true;
+
+		// set error if $isSet is positive
+		if ($isSet > 0)
+		{
+			$this->results['errors'] = true;
+		}
 	}
 }

@@ -12,7 +12,9 @@ class InstallCheck implements Check
 		$logfile = 'installed.log';
 		if (file_exists($logfile))
 		{
-			return ['lines' => [file_get_contents($logfile)]];
+			// we directly redirect to gallery
+			header("Location: /gallery");
+			exit;
 		}
 		return false;
 	}

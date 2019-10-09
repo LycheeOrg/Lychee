@@ -100,7 +100,7 @@ class RequirementsChecker
 
 
 	/**
-	 * Check if exec is enabled. This will allow use to execute the migration
+	 * Check if exec is enabled. This will allow us to execute the migration
 	 *
 	 * @return bool
 	 */

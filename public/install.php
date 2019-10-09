@@ -8,6 +8,8 @@ use Installer\View;
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', 'On');  //On or Off
 
+chdir('..');
+
 include 'installer/Controller/Controller.php';
 include 'installer/Templates/Template.php';
 
@@ -17,7 +19,6 @@ foreach (glob("installer/**/*.php") as $filename) {
 foreach (glob("installer/*.php") as $filename) {
 	include_once $filename;
 }
-
 
 // Initialize
 $config = new Config();
