@@ -11,7 +11,9 @@ class Env implements Template
 
 	public function print(array $input = [])
 	{
-		echo '<form method="post" action="?step=env">
+		echo '
+		<strong>Edit the form below to reflect your desired configuration:</strong><br/>
+		<form method="post" action="?step=env">
         <textarea class="textarea" name="envConfig">'.$input['env'].'</textarea>
         <div class="buttons buttons--right">
             <button class="button button--light" type="submit"><i class="fa fa-floppy-o fa-fw" aria-hidden="true"></i>Save</button>

@@ -19,7 +19,7 @@ class Permissions implements Template
 		$succ = '<i class="fa fa-fw fa-check-circle-o success"></i>';
 		foreach ($array_permission as $perm)
 		{
-			$ret[] = '<span class="perm">'.($areSet & 1 ? $err : $succ).$perm.'</span>';
+			$ret[] = '<span class="perm float-right">'.($areSet & 1 ? $err : $succ).$perm.'</span>';
 			$areSet >>= 1;
 		}
 		$ret =  join(' ', $ret);

@@ -41,5 +41,6 @@ class MigrationController implements Controller
 		$message = 'Lychee INSTALLED on '.$dateStamp;
 		file_put_contents('installed.log', $message);
 		$output[] = $message;
+		$output[] = 'Created installed.log';
 	}
 }
