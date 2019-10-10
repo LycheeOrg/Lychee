@@ -9,7 +9,9 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
+use App\User;
 use App\Response;
+use Illuminate\Database\Eloquent\Builder;
 
 class AlbumsController extends Controller
 {
@@ -70,78 +72,29 @@ class AlbumsController extends Controller
 
 		// Initialize return var
 		$return = array();
-		$return['albums'] = array();
 
-		// Get photos
-		// Get album information
-		$UserId = $this->sessionFunctions->id();
+		$albumIDs = $this->albumFunctions->getPublicAlbums();
+
+		$query = Photo::with('album')->where(
+				function (Builder $query) use ($albumIDs) {
+					$query->whereIn('album_id', $albumIDs);
+					// Add the 'Unsorted' album.
+					if ($this->sessionFunctions->is_logged_in()) {
+						$id = $this->sessionFunctions->id();
+						$user = User::find($id);
+						if ($id == 0 || $user->upload) {
+							$query = $query->orWhere('album_id', '=', null);
+							if ($id !== 0) {
+								$query = $query->where('owner_id', '=', $id);
+							}
+						}
+					}
+
+					return $query;
+				});
+
 		$full_photo = Configs::get_value('full_photo', '1') == '1';
-
-		$toplevel = $this->albumFunctions->getToplevelAlbums();
-		if ($toplevel === null) {
-			return Response::error('I could not find you.');
-		}
-
-		// All normal albums
-		$toplevel_albums = $this->albumFunctions->prepare_albums($toplevel['albums']);
-		// Add albums shared with users
-		$toplevel_albums = array_merge($toplevel_albums, $this->albumFunctions->prepare_albums($toplevel['shared_albums']));
-
-		$toplevel_album_ids = array();
-		$album_list = array();
-
-		foreach ($toplevel_albums as $album_iterator) {
-			$toplevel_album_ids[] = $album_iterator['id'];
-
-			$album_tmp = Album::with('children')->find($album_iterator['id']);
-			$full_photo = $album_tmp->full_photo_visible();
-
-			if ($album_tmp === null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-				return 'false';
-			}
-
-			// we just require is_logged_in for this one.
-			$username = null;
-			if ($this->sessionFunctions->is_logged_in()) {
-				$username = $album_iterator['owner'];
-			}
-
-			// Get all photos of subalbums -> you only call this function
-			// if you want all photos of subalbums
-			$album_list = array_merge($album_list, $this->albumFunctions->getAlbumIDsfromAlbumTree($this->albumFunctions->get_albums($album_tmp, $username)));
-		}
-
-		$album_list = array_merge($album_list, $toplevel_album_ids);
-		$photos_sql = Photo::whereIn('album_id', $album_list);
-
-		// Unsorted photos only visible for admin (album_id = null)
-		if ($this->sessionFunctions->is_admin()) {
-			$photos_sql = $photos_sql->orWhereNull('album_id');
-		}
-
-		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
-		$return['id'] = '';
-
-		// Remove all unnecessary data
-		unset($return['albums']);
-		unset($return['description']);
-		unset($return['downloadable']);
-		unset($return['full_photo']);
-		unset($return['license']);
-		unset($return['max_takestamp']);
-		unset($return['min_takestamp']);
-		unset($return['owner']);
-		unset($return['parent_id']);
-		unset($return['password']);
-		unset($return['public']);
-		unset($return['sysdate']);
-		unset($return['thumbs']);
-		unset($return['thumbs2x']);
-		unset($return['thumbIDs']);
-		unset($return['types']);
-		unset($return['visible']);
+		$return['photos'] = $this->albumFunctions->photosLocationData($query, $full_photo);
 
 		return $return;
 	}

@@ -175,6 +175,7 @@ class AlbumController extends Controller
 	public function getPositionData(Request $request)
 	{
 		$request->validate(['albumID' => 'string|required']);
+		$request->validate(['includeSubAlbums' => 'string|required']);
 		$return = array();
 		$return['albums'] = array();
 		// Get photos
@@ -230,7 +231,7 @@ class AlbumController extends Controller
 				$album_list = array();
 				if ($request['includeSubAlbums']) {
 					// Get all subalbums of the current album
-					$album_list = $this->albumFunctions->getAlbumIDsfromAlbumTree($this->albumFunctions->get_albums($album, $username));
+					$this->albumFunctions->get_sub_albums($album_list, $album);
 				}
 
 				// Add current albumID to array
