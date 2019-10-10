@@ -177,7 +177,6 @@ class AlbumController extends Controller
 		$request->validate(['albumID' => 'string|required']);
 		$request->validate(['includeSubAlbums' => 'string|required']);
 		$return = array();
-		$return['albums'] = array();
 		// Get photos
 		// Get album information
 		$UserId = $this->sessionFunctions->id();
@@ -219,12 +218,6 @@ class AlbumController extends Controller
 
 					return 'false';
 				}
-				$return = $album->prepareData();
-				// we just require is_logged_in for this one.
-				$username = null;
-				if ($this->sessionFunctions->is_logged_in()) {
-					$username = $album->owner->username;
-				}
 
 				$full_photo = $album->full_photo_visible();
 
@@ -245,25 +238,6 @@ class AlbumController extends Controller
 		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
 
 		$return['id'] = $request['albumID'];
-
-		// Remove all unnecessary data
-		unset($return['albums']);
-		unset($return['description']);
-		unset($return['downloadable']);
-		unset($return['full_photo']);
-		unset($return['license']);
-		unset($return['max_takestamp']);
-		unset($return['min_takestamp']);
-		unset($return['owner']);
-		unset($return['parent_id']);
-		unset($return['password']);
-		unset($return['public']);
-		unset($return['sysdate']);
-		unset($return['thumbs']);
-		unset($return['thumbs2x']);
-		unset($return['thumbIDs']);
-		unset($return['types']);
-		unset($return['visible']);
 
 		return $return;
 	}
