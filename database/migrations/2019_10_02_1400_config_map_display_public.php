@@ -24,6 +24,7 @@ class ConfigMapDisplayPublic extends Migration
 					'key' => 'map_display_public',
 					'value' => '0',
 					'confidentiality' => 0,
+					'cat' => 'Mod Map',
 					'type_range' => BOOL,
 				],
 			]);

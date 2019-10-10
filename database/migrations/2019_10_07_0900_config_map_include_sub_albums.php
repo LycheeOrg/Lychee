@@ -24,6 +24,7 @@ class ConfigMapIncludeSubAlbums extends Migration
 					'key' => 'map_include_subalbums',
 					'value' => '0',
 					'confidentiality' => 0,
+					'cat' => 'Mod Map',
 					'type_range' => BOOL,
 				],
 			]);
