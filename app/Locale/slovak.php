@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Locale;
+namespace App\Locale;
 
 final class Slovak implements LangInterface
 {
