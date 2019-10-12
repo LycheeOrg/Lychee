@@ -5,7 +5,11 @@ namespace App\Metadata;
 use App;
 use App\Configs;
 use App\Logs;
+use Cache;
 use Exception;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class GitHubFunctions
 {
@@ -35,26 +39,54 @@ class GitHubFunctions
 	 */
 	private function get_json($url)
 	{
-		$opts = [
-			'http' => [
-				'method' => 'GET',
-				'timeout' => 1,
-				'header' => [
-					'User-Agent: PHP',
+		$json = Cache::get($url);
+		if ($json == null) {
+			$opts = [
+				'http' => [
+					'method' => 'GET',
+					'timeout' => 1,
+					'header' => [
+						'User-Agent: PHP',
+					],
 				],
-			],
-		];
-		$context = stream_context_create($opts);
+			];
+			$context = stream_context_create($opts);
 
-		$json = @file_get_contents($url, false, $context);
-		if ($json != false) {
-			return json_decode($json);
+			/** @var string|false $json */
+			$json = @file_get_contents($url, false, $context);
+
+			if ($json != false) {
+				$days = intval(Configs::get_value('update_check_every_days', '3'), 10);
+				try {
+					Cache::set($url, $json, now()->addDays($days));
+					Logs::notice(__METHOD__, __LINE__, 'Setting cache for ' . $url . ' = ' . now()->addDays($days));
+					Cache::set($url . '_age', now(), now()->addDays($days));
+					Logs::notice(__METHOD__, __LINE__, 'Setting cache for ' . $url . '_age = ' . now()->addDays($days));
+				} catch (InvalidArgumentException $e) {
+					Logs::error(__METHOD__, __LINE__, 'Could not set in the cache');
+				}
+
+				return json_decode($json);
+			}
+			// @codeCoverageIgnoreStart
+			Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . $url);
+
+			return false;
+			// @codeCoverageIgnoreEnd
 		}
-		// @codeCoverageIgnoreStart
-		Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . $url);
+		Logs::notice(__METHOD__, __LINE__, 'cache has: ' . $url);
 
-		return false;
-		// @codeCoverageIgnoreEnd
+		return json_decode($json);
+	}
+
+	/**
+	 * return the date of the last request to api.github.com/repos/LycheeOrg/Lychee-Laravel/commits.
+	 *
+	 * @return Carbon|null
+	 */
+	public function get_update_age()
+	{
+		return Cache::get(Config::get('urls.update.git') . '_age');
 	}
 
 	/**
@@ -69,9 +101,11 @@ class GitHubFunctions
 			// @codeCoverageIgnoreStart
 			if ($this->branch != false) {
 				// this is to handle CI where it actually checks a commit instead of a branch
-				if (substr($this->branch, 0, 4) == 'refs:') {
+				if (substr($this->branch, 0, 4) == 'ref:') {
+					// not CI
 					$this->branch = explode('/', $this->branch, 3)[2]; //separate out by the "/" in the string
 				} else {
+					// this is CI
 					$this->branch = 'master';
 					$this->CI_commit = $this->branch;
 				}
@@ -128,29 +162,10 @@ class GitHubFunctions
 			}
 
 			// get 30 last commits.
-			$this->commits = $this->get_json('http://api.github.com/repos/LycheeOrg/Lychee-Laravel/commits');
+			$this->commits = $this->get_json(Config::get('urls.update.git'));
 		}
 
 		return $this->commits;
-	}
-
-	/**
-	 * Return a string like 'commit number (branch)' or 'no git data found'.
-	 *
-	 * @return string
-	 */
-	public function get_info()
-	{
-		$branch = $this->get_current_branch();
-		$head = $this->get_current_commit();
-		if ($head == false || $branch == false) {
-			// when going through CI, .git exists...
-			// @codeCoverageIgnoreStart
-			return 'No git data found. Probably installed from release or could not read .git';
-			// @codeCoverageIgnoreEnd
-		}
-
-		return sprintf('%s (%s)', $head, $branch) . $this->get_behind_text();
 	}
 
 	/**
@@ -212,16 +227,50 @@ class GitHubFunctions
 		}
 
 		$count = $this->count_behind();
+
+		/** @var Carbon|null $last_update */
+		$last_update = $this->get_update_age();
+		if (!$last_update) {
+			$last = 'unknown';
+			$end = '';
+		} else {
+			$last = now()->diffInDays($last_update);
+			$end = $last > 0 ? ' days' : '';
+			$last = ($last == 0 && $end = ' hours') ? now()->diffInHours($last_update) : $last;
+			$last = ($last == 0 && $end = ' minutes') ? now()->diffInMinutes($last_update) : $last;
+			$last = ($last == 0 && $end = ' seconds') ? now()->diffInSeconds($last_update) : $last;
+			$end = $end . ' ago';
+		}
+
 		if ($count === 0) {
-			return ' - Up to date.';
+			return sprintf(' - Up to date (%s).', $last . $end);
 		}
 		// @codeCoverageIgnoreStart
 		if ($count != false) {
-			return ' - ' . $count . ' commits behind master' . $this->get_github_head();
+			return sprintf(' - %s commits behind master %s (%s)', $count, $this->get_github_head(), $last);
 		}
 
 		return ' - Probably more than 30 commits behind master';
 		// @codeCoverageIgnoreEnd
+	}
+
+	/**
+	 * Return a string like 'commit number (branch)' or 'no git data found'.
+	 *
+	 * @return string
+	 */
+	public function get_info()
+	{
+		$branch = $this->get_current_branch();
+		$head = $this->get_current_commit();
+		if ($head == false || $branch == false) {
+			// when going through CI, .git exists...
+			// @codeCoverageIgnoreStart
+			return 'No git data found. Probably installed from release or could not read .git';
+			// @codeCoverageIgnoreEnd
+		}
+
+		return sprintf('%s (%s)', $head, $branch) . $this->get_behind_text();
 	}
 
 	/**
@@ -264,7 +313,7 @@ class GitHubFunctions
 	{
 		// add a setting to do this check only once per day ?
 		if (Configs::get_value('check_for_updates', '0') == '1') {
-			$json = $this->get_json('https://lycheeorg.github.io/update.json');
+			$json = $this->get_json(Config::get('urls.update.json'));
 			if ($json != false) {
 				$return['update_json'] = $json->lychee->version;
 				$return['update_available'] = ((intval(Configs::get_value('version', '40000'))) < $return['update_json']);

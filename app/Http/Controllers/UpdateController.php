@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Configs;
-use App\ControllerFunctions\UpdateFunctions;
+use App\ControllerFunctions\ApplyUpdateFunctions;
 use App\Metadata\GitHubFunctions;
 use App\Response;
 use Exception;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 
 /**
  * Class UpdateController.
@@ -19,18 +21,55 @@ class UpdateController extends Controller
 	private $gitHubFunctions;
 
 	/**
-	 * @var UpdateFunctions
+	 * @var ApplyUpdateFunctions
 	 */
-	private $updateFunctions;
+	private $applyUpdateFunctions;
 
 	/**
-	 * @param GitHubFunctions $gitHubFunctions
-	 * @param UpdateFunctions $updateFunctions
+	 * @param GitHubFunctions      $gitHubFunctions
+	 * @param ApplyUpdateFunctions $applyUpdateFunctions
 	 */
-	public function __construct(GitHubFunctions $gitHubFunctions, UpdateFunctions $updateFunctions)
+	public function __construct(GitHubFunctions $gitHubFunctions, ApplyUpdateFunctions $applyUpdateFunctions)
 	{
 		$this->gitHubFunctions = $gitHubFunctions;
-		$this->updateFunctions = $updateFunctions;
+		$this->applyUpdateFunctions = $applyUpdateFunctions;
+	}
+
+	/**
+	 * @return bool
+	 *
+	 * @throws Exception
+	 */
+	private function forget_and_check()
+	{
+		Cache::forget(Config::get('urls.update.git'));
+		Cache::forget(Config::get('urls.update.git') . '_age');
+
+		return $this->gitHubFunctions->is_up_to_date();
+	}
+
+	/**
+	 * Return if up to date or the number of commits behind
+	 * This invalidates the cache for the url.
+	 *
+	 * @return string
+	 */
+	public function check()
+	{
+		try {
+			$up_to_date = $this->forget_and_check();
+		} catch (Exception $e) {
+			return Response::error($e->getMessage());
+		}
+
+		// when going through the CI, we are always up to date...
+		if (!$up_to_date) {
+			// @codeCoverageIgnoreStart
+			return Response::json($this->gitHubFunctions->get_behind_text());
+		// @codeCoverageIgnoreEnd
+		} else {
+			return Response::json('Already up to date');
+		}
 	}
 
 	/**
@@ -56,7 +95,7 @@ class UpdateController extends Controller
 		// @codeCoverageIgnoreEnd
 
 		try {
-			$up_to_date = $this->gitHubFunctions->is_up_to_date();
+			$up_to_date = $this->forget_and_check();
 		} catch (Exception $e) {
 			return Response::error($e->getMessage());
 		}
@@ -64,7 +103,7 @@ class UpdateController extends Controller
 		// when going through the CI, we are always up to date...
 		if (!$up_to_date) {
 			// @codeCoverageIgnoreStart
-			return $this->updateFunctions->apply();
+			return $this->applyUpdateFunctions->apply();
 		// @codeCoverageIgnoreEnd
 		} else {
 			return Response::json('Already up to date');

@@ -4,7 +4,7 @@ namespace App\Providers;
 
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
-use App\ControllerFunctions\UpdateFunctions;
+use App\ControllerFunctions\ApplyUpdateFunctions;
 use App\Image;
 use App\Image\ImageHandler;
 use App\Metadata\GitHubFunctions;
@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
 		ConfigFunctions::class => ConfigFunctions::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitHubFunctions::class => GitHubFunctions::class,
-		UpdateFunctions::class => UpdateFunctions::class,
+		ApplyUpdateFunctions::class => ApplyUpdateFunctions::class,
 		ReadAccessFunctions::class => ReadAccessFunctions::class,
 	];
 
