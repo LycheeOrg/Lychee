@@ -2486,7 +2486,7 @@ header.bind = function () {
 	header.dom('#button_settings').on(eventName, leftMenu.open);
 	header.dom('#button_info_album').on(eventName, sidebar.toggle);
 	header.dom('#button_info').on(eventName, sidebar.toggle);
-	header.dom('#button_map_albums').on(eventName, function () {
+	header.dom('.button--map-albums').on(eventName, function () {
 		lychee.gotoMap();
 	});
 	header.dom('#button_map_album').on(eventName, function () {
@@ -2613,6 +2613,13 @@ header.setMode = function (mode) {
 				$('.header__search, .header__clear', '.header__toolbar--public').hide();
 			}
 
+			// Set icon in Public mode
+			if (lychee.map_display_public) {
+				$('.button--map-albums', '.header__toolbar--public').show();
+			} else {
+				$('.button--map-albums', '.header__toolbar--public').hide();
+			}
+
 			return true;
 
 		case 'albums':
@@ -2623,21 +2630,9 @@ header.setMode = function (mode) {
 
 			// If map is disabled, we should hide the icon
 			if (lychee.map_display) {
-				$('#button_map_albums').show();
-				$('.header__clear').removeClass('header__clear_nomap');
+				$('.button--map-albums', '.header__toolbar--albums').show();
 			} else {
-				$('#button_map_albums').hide();
-				$('.header__clear').addClass('header__clear_nomap');
-			}
-			// Set icon in Public mode
-			if (lychee.publicMode === true) {
-				if (lychee.map_display_public) {
-					$('#button_map_albums').show();
-					$('.header__clear').removeClass('header__clear_nomap');
-				} else {
-					$('#button_map_albums').hide();
-					$('.header__clear').addClass('header__clear_nomap');
-				}
+				$('.button--map-albums', '.header__toolbar--albums').hide();
 			}
 
 			return true;
@@ -2659,18 +2654,10 @@ header.setMode = function (mode) {
 			}
 
 			// If map is disabled, we should hide the icon
-			if (lychee.map_display) {
+			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
 				$('#button_map_album').show();
 			} else {
 				$('#button_map_album').hide();
-			}
-			// Set icon in Public mode
-			if (lychee.publicMode === true) {
-				if (lychee.map_display_public) {
-					$('#button_map_album').show();
-				} else {
-					$('#button_map_album').hide();
-				}
 			}
 
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
@@ -2682,7 +2669,7 @@ header.setMode = function (mode) {
 			} else {
 				$('#button_info_album, #button_visibility_album').show();
 				if (album.isUploadable()) {
-					$('#button_trash_album, #button_move_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
+					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
 				} else {
 					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').hide();
 				}
@@ -2697,18 +2684,10 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
 
 			// If map is disabled, we should hide the icon
-			if (lychee.map_display) {
+			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
 				$('#button_map').show();
 			} else {
 				$('#button_map').hide();
-			}
-			// Set icon in Public mode
-			if (lychee.publicMode === true) {
-				if (lychee.map_display_public) {
-					$('#button_map').show();
-				} else {
-					$('#button_map').hide();
-				}
 			}
 
 			if (album.isUploadable()) {
@@ -3410,6 +3389,8 @@ lychee.init = function () {
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
 			lychee.map_display = data.config.map_display && data.config.map_display === '1' || false;
 			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === '1' || false;
+			lychee.map_provider = !data.config.map_provider ? 'Wikimedia' : data.config.map_provider;
+			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === '1' || false;
 
 			// console.log(lychee.full_photo);
 			lychee.setMode('public');
@@ -4360,7 +4341,7 @@ map_provider_layer_attribution = {
 		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
 	},
 	'OpenStreetMap.org': {
-		layer: 'https://{s}.tile.osm.org/{z}/{x}/{y}{r}.png',
+		layer: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
 	'OpenStreetMap.de': {
