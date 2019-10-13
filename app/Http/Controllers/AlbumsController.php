@@ -83,14 +83,12 @@ class AlbumsController extends Controller
 						$id = $this->sessionFunctions->id();
 						$user = User::find($id);
 						if ($id == 0 || $user->upload) {
-							$query = $query->orWhere('album_id', '=', null);
+							$query->orWhere('album_id', '=', null);
 							if ($id !== 0) {
-								$query = $query->where('owner_id', '=', $id);
+								$query->where('owner_id', '=', $id);
 							}
 						}
 					}
-
-					return $query;
 				});
 
 		$full_photo = Configs::get_value('full_photo', '1') == '1';

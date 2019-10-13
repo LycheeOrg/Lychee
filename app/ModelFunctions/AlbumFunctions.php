@@ -695,7 +695,7 @@ class AlbumFunctions
 		])
 			->where('owner_id', '<>', $id)
 			->where('parent_id', '=', null)
-			->Where(
+			->where(
 				function (Builder $query) use ($id) {
 					// album is shared with user
 					$query->whereIn('id', function (QBuilder $query) use ($id) {
@@ -710,28 +710,5 @@ class AlbumFunctions
 							});
 				})
 			->orderBy('owner_id', 'ASC');
-	}
-
-	/**
-	 * Provided an album tree structure, returns all album IDs.
-	 *
-	 * @param array $album_tree_structure
-	 *
-	 * @return array
-	 */
-	public function getAlbumIDsfromAlbumTree(array $album_tree_structure)
-	{
-		$return = array();
-
-		foreach ($album_tree_structure as &$alb) {
-			// Add album ID to return array
-			$return[] = $alb['id'];
-			if (count($alb['albums']) > 0) {
-				// Call recusively and merge array
-				$return = array_merge($return, $this->getAlbumIDsfromAlbumTree($alb['albums']));
-			}
-		}
-
-		return $return;
 	}
 }
