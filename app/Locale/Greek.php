@@ -35,6 +35,7 @@ final class Greek implements LangInterface
 			'DEFAULT_LICENSE' => 'Προεπιλεγμένη άδεια για τις νέες μεταφορτώσεις:',
 			'SET_LICENSE' => 'Ορισμός Άδειας',
 			'SET_OVERLAY_TYPE' => 'Ορισμός Τύπου Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Έξυπνα λευκώματα',
 			'SHARED_ALBUMS' => 'Κοινόχρηστα λευκώματα',
@@ -76,6 +77,7 @@ final class Greek implements LangInterface
 
 			'CLOSE_ALBUM' => 'Κλείσιμο Λευκώματος',
 			'CLOSE_PHOTO' => 'Κλείσιμο Φωτογραφίας',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Προσθήκη',
 			'MOVE' => 'Μετακίνηση',
@@ -113,6 +115,7 @@ final class Greek implements LangInterface
 
 			'FULL_PHOTO' => 'Πρωτότυπη Φωτογραφία',
 			'ABOUT_PHOTO' => 'Πληροφορίες Φωτογραφίας',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Απευθείας Σύνδεσμος',
 			'DIRECT_LINKS' => 'Απευθείας Σύνδεσμοι',
 
@@ -242,6 +245,7 @@ final class Greek implements LangInterface
 			'ERROR_CONFIG_FILE' => "Αδυναμία αποθήκευσης ρυθμίσεων. Η πρόσβαση δεν επιτρέπεται στον κατάλογο <b>'data/'</b>. Παρακαλούμε ρυθμίστε τα δικαιώματα ανάγνωσης, γραφής και εκτέλεσης για άλλους (others) στον κατάλογο <b>'data/'</b> και <b>'uploads/'</b>. Ρίξτε μια ματιά στο αρχείο readme για περισσότερες πληροφορίες.",
 			'ERROR_UNKNOWN' => 'Κάτι απρόσμενο συνέβη. Παρακαλούμε προσπαθείστε ξανά και ελέγξτε την εγκατάστασή σας και τον εξυπηρετητή. Ρίξτε μια ματιά στο αρχείο readme για περισσότερες πληροφορίες.',
 			'ERROR_LOGIN' => 'Αδυναμία αποθήκευσης στοιχείων εισόδου. Παρακαλούμε δοκιμάστε ξανά με διαφορετικό όνομα χρήστη και κωδικό πρόσβασης!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Προσπάθεια ξανά',
 
@@ -254,6 +258,8 @@ final class Greek implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Η δημόσια αναζήτηση ενημερώθηκε',
 			'SETTINGS_SUCCESS_LICENSE' => 'Η προεπιλεγμένη άδεια ενημερώθηκε',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Οι ρυθμίσεις εμφάνισης χάρτη ενημερώθηκαν',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Εισάγετε τις ρυθμίσεις της βάσης δεδομένων παρακάτω:',
 			'DB_INFO_HOST' => 'Εξυπηρετητής Βάσης Δεδομένων (προαιρετικό)',
@@ -320,6 +326,14 @@ final class Greek implements LangInterface
 			'OVERLAY_DESCRIPTION' => 'Περιγραφή φωτογραφίας',
 			'OVERLAY_DATE' => 'Ημερομηνία λήψης της φωτογραφίας',
 			'MAP_DISPLAY_TEXT' => 'Εμφάνιση συντεταγμένων στον χάρτη (OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Διάταξη φωτογραφιών:',
 			'LAYOUT_SQUARES' => 'Τετράγωνες μικρογραφίες',
 			'LAYOUT_JUSTIFIED' => 'Με ίσες αναλογίες',
