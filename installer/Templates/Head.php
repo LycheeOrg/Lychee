@@ -1,21 +1,19 @@
 <?php
 
-
 namespace Installer\Templates;
-
 
 use Template;
 
 class Head implements Template
 {
-
 	/**
 	 * @var array list of the steps (ordered)
 	 */
 	private $steps = ['Welcome', 'Requirements', 'Permissions', 'Env', 'Migrate'];
 
-	private function get_index($step) {
-		return array_search($step , $this->steps);
+	private function get_index($step)
+	{
+		return array_search($step, $this->steps);
 	}
 
 	public function print(array $input = [])
@@ -38,19 +36,19 @@ class Head implements Template
         <div class="master">
             <div class="box">
                 <div class="header">
-                    <h1 class="header__title">'.$input['title'].'</h1>
+                    <h1 class="header__title">' . $input['title'] . '</h1>
                 </div>
                 <ul class="step">
                     <li class="step__divider"></li>
-                    <li class="step__item '.($input['step'] == 'Migrate' ? 'active' : '')
-			.'"  title="Creating the Database">';
+                    <li class="step__item ' . ($input['step'] == 'Migrate' ? 'active' : '')
+			. '"  title="Creating the Database">';
 		echo '<i class="step__icon fa fa-server" aria-hidden="true"></i>';
 		echo '
                     </li>';
 		echo '
                     <li class="step__divider"></li>
-                    <li class="step__item '.($input['step'] == 'Env' ? 'active' : '')
-			.'"  title="Setting the environment">';
+                    <li class="step__item ' . ($input['step'] == 'Env' ? 'active' : '')
+			. '"  title="Setting the environment">';
 		if ($this->get_index($input['step']) >= 3) {
 			echo '<a href="?step=env">
                                 <i class="step__icon fa fa-cog" aria-hidden="true"></i>
@@ -60,31 +58,31 @@ class Head implements Template
 		}
 		echo '</li>
                     <li class="step__divider"></li>
-                    <li class="step__item '.($input['step'] == 'Permissions' ? 'active'
-				: '').'"  title="Checking Permissions">';
+                    <li class="step__item ' . ($input['step'] == 'Permissions' ? 'active'
+				: '') . '"  title="Checking Permissions">';
 
 		if ($this->get_index($input['step']) >= 2) {
 			echo '<a href="?step=perm"><i class="step__icon fa fa-key" aria-hidden="true"></i></a>';
 		} else {
 			echo '<i class="step__icon fa fa-key" aria-hidden="true"></i>';
-		};
+		}
 		echo '
                     </li>
                     <li class="step__divider"></li>
-                    <li class="step__item '.($input['step'] == 'Requirements' ? 'active'
-				: '').'" title="Checking Requirements">';
+                    <li class="step__item ' . ($input['step'] == 'Requirements' ? 'active'
+				: '') . '" title="Checking Requirements">';
 
-		if ($this->get_index($input['step']) == 1) {
+		if ($this->get_index($input['step']) >= 1) {
 			echo '<a href="?step=req"><i class="step__icon fa fa-list" aria-hidden="true"></i></a>';
 		} else {
 			echo '<i class="step__icon fa fa-list" aria-hidden="true"></i>';
-		};
+		}
 
 		echo '</li>
                     <li class="step__divider"></li>
-                    <li class="step__item '.($input['step'] == 'Welcome' ? 'active' : '')
-			.'"  title="Welcome!">';
-			echo '<a href="?step="><i class="step__icon fa fa-home" aria-hidden="true"></i></a>';
+                    <li class="step__item ' . ($input['step'] == 'Welcome' ? 'active' : '')
+			. '"  title="Welcome!">';
+		echo '<a href="?step="><i class="step__icon fa fa-home" aria-hidden="true"></i></a>';
 
 		echo '
                     </li>
@@ -92,8 +90,7 @@ class Head implements Template
                 </ul>
                 <div class="main">';
 
-		if (isset($input['errors']))
-		{
+		if (isset($input['errors'])) {
 			echo '
 		            <p class="alert alert-danger text-center">
 		                <strong>Please fix the errors before going to the next step.</strong>

@@ -1,40 +1,29 @@
 <?php
 
-
 namespace Installer\Controller;
-
 
 class EnvController implements Controller
 {
-
 	/**
 	 * @return array
 	 */
 	public function do()
 	{
-
-		if (isset($_POST['envConfig']))
-		{
-			file_put_contents('.env',$_POST['envConfig']);
+		if (isset($_POST['envConfig'])) {
+			file_put_contents('.env', str_replace("\r", '', $_POST['envConfig']));
 		}
 
-		if (file_exists('.env'))
-		{
+		if (file_exists('.env')) {
 			$env = file_get_contents('.env');
 			$exists = true;
-		}
-		else
-		{
-
+		} else {
 			$env = file_get_contents('.env.example');
-			file_put_contents('.env',$env);
+			file_put_contents('.env', $env);
 			$exists = false;
 		}
 
 		return ['env' => $env, 'exists' => $exists];
 	}
-
-
 
 	/**
 	 * @return string

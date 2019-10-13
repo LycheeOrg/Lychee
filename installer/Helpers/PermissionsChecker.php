@@ -2,15 +2,12 @@
 
 namespace Installer\Helpers;
 
-
 class PermissionsChecker
 {
 	/**
 	 * @var array
 	 */
 	protected $results = [];
-
-
 
 	/**
 	 * Set the result array permissions and errors.
@@ -23,12 +20,10 @@ class PermissionsChecker
 		$this->results['errors'] = null;
 	}
 
-
-
 	/**
 	 * Check for the folders permissions.
 	 *
-	 * @param  array  $folders
+	 * @param array $folders
 	 *
 	 * @return array
 	 */
@@ -41,15 +36,13 @@ class PermissionsChecker
 		return $this->results;
 	}
 
-
-
 	/**
 	 * Get a folder permission.
 	 *
-	 * @param  string  $folder
-	 * @param  string  $permissions
+	 * @param string $folder
+	 * @param string $permissions
 	 *
-	 * @return int the position of 1 determines the errors.
+	 * @return int the position of 1 determines the errors
 	 */
 	private function getPermission(string $folder, string $permissions)
 	{
@@ -57,13 +50,11 @@ class PermissionsChecker
 		foreach (explode('|', $permissions) as $permission) {
 			preg_match('/(!*)(.*)/', $permission, $f);
 			$return <<= 1;
-			$return |= ! (($f[2]($folder) xor ($f[1] == '!')));
+			$return |= !(($f[2]($folder) xor ($f[1] == '!')));
 		}
+
 		return $return;
-//		return substr(sprintf('%o', fileperms($folder)), -4);
 	}
-
-
 
 	/**
 	 * Add the file to the list of results.
@@ -75,14 +66,13 @@ class PermissionsChecker
 	private function addFile($folder, $permission, $isSet)
 	{
 		array_push($this->results['permissions'], [
-			'folder'     => $folder,
+			'folder' => $folder,
 			'permission' => $permission,
-			'isSet'      => $isSet,
+			'isSet' => $isSet,
 		]);
 
 		// set error if $isSet is positive
-		if ($isSet > 0)
-		{
+		if ($isSet > 0) {
 			$this->results['errors'] = true;
 		}
 	}
