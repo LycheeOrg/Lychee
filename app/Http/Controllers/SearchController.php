@@ -147,7 +147,7 @@ class SearchController extends Controller
 			->whereIn('id', $albumIDs);
 		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
-			$query = $query->Where(
+			$query->where(
 				function (Builder $query) use ($escaped_term) {
 					$query->where('title', 'like', '%' . $escaped_term . '%')
 						->orWhere('description', 'like', '%' . $escaped_term . '%');
@@ -198,26 +198,20 @@ class SearchController extends Controller
 					$id = $this->sessionFunctions->id();
 					$user = User::find($id);
 					if ($id == 0 || $user->upload) {
-						$query = $query->orWhere('album_id', '=', null);
+						$query->orWhere('album_id', '=', null);
 						if ($id !== 0) {
-							$query = $query->where('owner_id', '=', $id);
+							$query->where('owner_id', '=', $id);
 						}
 					}
 				}
-
-				// most likely missing
-				return $query;
 			});
 		for ($i = 0; $i < count($escaped_terms); $i++) {
 			$escaped_term = $escaped_terms[$i];
-			$query = $query->Where(
+			$query->where(
 				function (Builder $query) use ($escaped_term) {
 					$query->where('title', 'like', '%' . $escaped_term . '%')
 						->orWhere('description', 'like', '%' . $escaped_term . '%')
 						->orWhere('tags', 'like', '%' . $escaped_term . '%');
-
-					// most likely missing
-					return $query;
 				});
 		}
 		$photos = $query->get();

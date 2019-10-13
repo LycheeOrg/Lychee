@@ -377,12 +377,22 @@ return [
         ],
         'img-src' => [
             'self' => true,
-			// Allow OpenStreetMap images to be fetched from http://{a,b,c}.tile.osm.org
-			// Allow image to be directly encoded at the img source parameter
+      			// Allow OpenStreetMap tile images to be fetched from the different provides
+      			// Allow image to be directly encoded at the img source parameter
             'allow' => [
-              'http://a.tile.osm.org/',
-              'http://b.tile.osm.org/',
-              'http://c.tile.osm.org/',
+              'https://maps.wikimedia.org/osm-intl/',
+              'https://a.tile.osm.org/',
+              'https://b.tile.osm.org/',
+              'https://c.tile.osm.org/',
+              'https://a.tile.openstreetmap.de/',
+              'https://b.tile.openstreetmap.de/',
+              'https://c.tile.openstreetmap.de/',
+              'https://a.tile.openstreetmap.fr/osmfr/',
+              'https://b.tile.openstreetmap.fr/osmfr/',
+              'https://c.tile.openstreetmap.fr/osmfr/',
+              'https://a.osm.rrze.fau.de/osmhd/',
+              'https://b.osm.rrze.fau.de/osmhd/',
+              'https://c.osm.rrze.fau.de/osmhd/',
               'data:',
             ],
         ],

@@ -32,6 +32,9 @@
 
         <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}">
         <a class="header__clear header__clear_public">&times;</a>
+        <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#map"></use></svg>
+        </a>
 {{--        <a class="header__hostedwith">{{ $locale['HOSTED_WITH_LYCHEE'] }}</a>--}}
 
     </div>
@@ -46,6 +49,9 @@
         <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}">
         <a class="header__clear">&times;</a>
         <a class="header__divider"></a>
+        <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#map"></use></svg>
+        </a>
         <a class="button button_add" title="{{ $locale['ADD'] }}">
             <svg class="iconic"><use xlink:href="#plus"></use></svg>
         </a>
@@ -70,6 +76,9 @@
         </a>
         <a class="button button--info" id="button_info_album" title="{{ $locale['ABOUT_ALBUM'] }}">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
+        </a>
+        <a class="button button--map" id="button_map_album" title="{{ $locale['DISPLAY_FULL_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#map"></use></svg>
         </a>
         <a class="button" id="button_move_album" title="{{ $locale['MOVE_ALBUM'] }}">
             <svg class="iconic"><use xlink:href="#folder"></use></svg>
@@ -109,6 +118,9 @@
         <a class="button button--info" id="button_info" title="{{ $locale['ABOUT_PHOTO'] }}">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>
+        <a class="button button--map" id="button_map" title="{{ $locale['DISPLAY_FULL_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#map"></use></svg>
+        </a>
         <a class="button" id="button_move" title="{{ $locale['MOVE'] }}">
             <svg class="iconic"><use xlink:href="#folder"></use></svg>
         </a>
@@ -128,6 +140,17 @@
 
     </div>
 
+    <div class="header__toolbar header__toolbar--map">
+
+        <a class="button" id="button_back_map" title="{{ $locale['CLOSE_MAP'] }}">
+            <svg class="iconic"><use xlink:href="#chevron-left"></use></svg>
+        </a>
+
+        <a class="header__title"></a>
+
+    </div>
+
+
 </header>
 
 <!-- leftMenu -->
@@ -135,6 +158,11 @@
 
 <!-- Content -->
 <div class="content"></div>
+
+<!-- MapView -->
+<div id="mapview">
+  <div id="leaflet_map_full"></div>
+</div>
 
 <!-- ImageView -->
 <div id="imageview"></div>

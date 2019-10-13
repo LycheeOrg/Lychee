@@ -47,6 +47,11 @@
     </div>
 </header>
 
+<!-- MapView -->
+<div id="mapview" class="mapview">
+  <div id="mapid"></div>
+</div>
+
 <!-- ImageView -->
 <div id="imageview" class="view"></div>
 

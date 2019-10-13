@@ -35,6 +35,7 @@ final class Dutch implements LangInterface
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Slimme albums',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -76,6 +77,7 @@ final class Dutch implements LangInterface
 
 			'CLOSE_ALBUM' => 'Sluit Album',
 			'CLOSE_PHOTO' => 'Sluit Foto',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Voeg toe',
 			'MOVE' => 'Verplaats',
@@ -113,6 +115,7 @@ final class Dutch implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'Over Foto',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Directe Link',
 			'DIRECT_LINKS' => 'Directe Links',
 
@@ -242,6 +245,7 @@ final class Dutch implements LangInterface
 			'ERROR_CONFIG_FILE' => "Kan configuatie niet opslaan. Toegant tot <b>'data/'</b> geweigerd. Geef iedereen lees, schijf en uitvoer permissie op <b>'data/'</b> en <b>'uploads/'</b>. Kijk naar de readme voor meer informatie.",
 			'ERROR_UNKNOWN' => 'Er is iets onverwachts gebeurd. Probeer het opnieuw of controleer je installatie en server. Kijk naar de readme voor meer informatie.',
 			'ERROR_LOGIN' => 'Kan login niet opslaan. Probeer het opnieuw met een andere gebruikersnaam en/of wachtwoord!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Probeer opnieuw',
 
@@ -254,6 +258,8 @@ final class Dutch implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Publieke zoekactie bijgewerkt',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Voer je database connectie gegevens hieronder in:',
 			'DB_INFO_HOST' => 'Database Host (optioneel)',
@@ -319,7 +325,15 @@ final class Dutch implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

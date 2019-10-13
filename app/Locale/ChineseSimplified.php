@@ -35,6 +35,7 @@ final class ChineseSimplified implements LangInterface
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => '智能相册',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -76,6 +77,7 @@ final class ChineseSimplified implements LangInterface
 
 			'CLOSE_ALBUM' => '关闭相册',
 			'CLOSE_PHOTO' => '关闭照片',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => '添加',
 			'MOVE' => '移动',
@@ -113,6 +115,7 @@ final class ChineseSimplified implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => '关于照片',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => '外链',
 			'DIRECT_LINKS' => 'Direct Links',
 
@@ -242,6 +245,7 @@ final class ChineseSimplified implements LangInterface
 			'ERROR_CONFIG_FILE' => "无法保存配置。<b>'data/'</b> 拒绝访问。请为其他用户设置 <b>'data/'</b> 和 <b>'uploads/'</b> 目录的读写权限。查看自述文件以获取更多信息。",
 			'ERROR_UNKNOWN' => '发生未知问题！请再试一次，检查您的安装和服务器。请查看自述文件以获取更多信息。',
 			'ERROR_LOGIN' => '无法保存登录信息。请用另一个用户名和密码再试一次！',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => '重试',
 
@@ -254,6 +258,8 @@ final class ChineseSimplified implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => '公开搜索已更新',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => '请输入数据库信息',
 			'DB_INFO_HOST' => '数据库主机 (可选)',
@@ -319,7 +325,15 @@ final class ChineseSimplified implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

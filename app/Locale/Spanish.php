@@ -35,6 +35,7 @@ final class Spanish implements LangInterface
 			'DEFAULT_LICENSE' => 'Licencia predeterminada para nuevas cargas:',
 			'SET_LICENSE' => 'Establecer Licencia',
 			'SET_OVERLAY_TYPE' => 'Establecer Superposición',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Álbumes inteligentes',
 			'SHARED_ALBUMS' => 'Álbumes compartidos',
@@ -76,6 +77,7 @@ final class Spanish implements LangInterface
 
 			'CLOSE_ALBUM' => 'Cerrar Álbum',
 			'CLOSE_PHOTO' => 'Cerrar Foto',
+			'CLOSE_MAP' => 'Cerrar Mapa',
 
 			'ADD' => 'Añadir',
 			'MOVE' => 'Mover',
@@ -113,6 +115,7 @@ final class Spanish implements LangInterface
 
 			'FULL_PHOTO' => 'Foto Completa',
 			'ABOUT_PHOTO' => 'Acerca de la Foto',
+			'DISPLAY_FULL_MAP' => 'Mapa',
 			'DIRECT_LINK' => 'Enlace Directo',
 			'DIRECT_LINKS' => 'Enlaces Directos',
 
@@ -242,6 +245,7 @@ final class Spanish implements LangInterface
 			'ERROR_CONFIG_FILE' => 'No se puede guardar esta configuración. Permiso denegado en <b>\'datos\'</b>. Establezca los derechos de lectura, escritura y ejecución para otros en <b>\'datos\'</b>y<b>\'uploads\'</b>. Consulte el archivo Léame para obtener más información',
 			'ERROR_UNKNOWN' => 'Algo inesperado sucedió. Intente nuevamente y verifique su instalación y servidor. Eche un vistazo al archivo Léame para obtener más información.',
 			'ERROR_LOGIN' => 'No se puede guardar el inicio de sesión. ¡Inténtalo de nuevo con otro nombre de usuario y contraseña!',
+			'ERROR_MAP_DEACTIVATED' => 'La funcionalidad del mapa se ha desactivado en la configuración.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Procesar de nuevo',
 
@@ -254,6 +258,8 @@ final class Spanish implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Búsqueda pública actualizada',
 			'SETTINGS_SUCCESS_LICENSE' => 'Licencia predeterminada actualizada',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Configuración de visualización del mapa actualizada',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Ingrese los detalles de conexión de su base de datos a continuación:',
 			'DB_INFO_HOST' => 'Host de base de datos (opcional)',
@@ -319,7 +325,15 @@ final class Spanish implements LangInterface
 			'OVERLAY_EXIF' => 'Datos EXIF de fotos',
 			'OVERLAY_DESCRIPTION' => 'Descripción de la foto',
 			'OVERLAY_DATE' => 'Fecha de foto tomada',
-			'MAP_DISPLAY_TEXT' => 'Mostrar coordenadas en el mapa (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Habilitar mapas (OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Diseño de fotos:',
 			'LAYOUT_SQUARES' => 'Miniaturas cuadradas',
 			'LAYOUT_JUSTIFIED' => 'Con aspecto justificado',

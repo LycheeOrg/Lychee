@@ -35,6 +35,7 @@ final class French implements LangInterface
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Smart albums',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -76,6 +77,7 @@ final class French implements LangInterface
 
 			'CLOSE_ALBUM' => 'Fermer l\'album',
 			'CLOSE_PHOTO' => 'Fermer la photo',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Ajouter',
 			'MOVE' => 'Déplacer',
@@ -113,6 +115,7 @@ final class French implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'À propos de la photo',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Lien direct',
 			'DIRECT_LINKS' => 'Direct Links',
 
@@ -242,6 +245,7 @@ final class French implements LangInterface
 			'ERROR_CONFIG_FILE' => "Impossible d\'enregistrer cette configuration. Permission refusée dans <b>'data/'</b>. Veuillez paramétrer les droits de lecture, d\'ecriture et d\'exécution pour les autres utilisateurs dans <b>'data/'</b> et <b>'uploads/'</b>. Consultez le fichier Readme pour obtenir plus d\'information.",
 			'ERROR_UNKNOWN' => 'Une erreur inattendue est survenue. Veuillez réessayer et vérifier votre installation et votre serveur. Consultez le fichier Readme pour obtenir plus d\'information.',
 			'ERROR_LOGIN' => 'Impossible d\'enregistrer les informations de connexion. Veuillez réessayer avec un autre nom d\'utilisateur et mot de passe.',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Réessayer',
 
@@ -254,6 +258,8 @@ final class French implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Recherche publique mise à jour',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
 			'DB_INFO_HOST' => 'Hôte de la base de donnees (facultatif)',
@@ -319,7 +325,15 @@ final class French implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

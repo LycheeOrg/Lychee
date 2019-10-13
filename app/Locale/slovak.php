@@ -35,6 +35,7 @@ final class Slovak implements LangInterface
 			'DEFAULT_LICENSE' => 'Predvolená licencia pre nové',
 			'SET_LICENSE' => 'Použiť licenciu',
 			'SET_OVERLAY_TYPE' => 'Nastaviť typ overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'SAVE_RISK' => 'Zmeny uložiť, riziko je známe!',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',
@@ -77,6 +78,7 @@ final class Slovak implements LangInterface
 
 			'CLOSE_ALBUM' => 'Album zavrieť',
 			'CLOSE_PHOTO' => 'Foto Zavrieť',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Pridať',
 			'MOVE' => 'Presunúť',
@@ -114,6 +116,7 @@ final class Slovak implements LangInterface
 
 			'FULL_PHOTO' => 'Otvoriť originál',
 			'ABOUT_PHOTO' => 'O tomto obrázku',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Priamy link',
 			'DIRECT_LINKS' => 'Priame linky',
 
@@ -244,6 +247,7 @@ final class Slovak implements LangInterface
 			'ERROR_CONFIG_FILE' => "Túto konfiguráciu nemožno uložiť. Prístup zamietnutý k <b>'data/'</b>. Nastavte práva zápisu na <b>'data/'</b> a <b>'uploads/'</b>. Ďalšie informácie nájdete v súbore README.",
 			'ERROR_UNKNOWN' => 'Vyskytla sa neočakávaná chyba. Skúste to znova a skontrolujte inštaláciu na vašom serveri. Ďalšie informácie nájdete v súbore README.',
 			'ERROR_LOGIN' => 'Nemožno uložiť Login. Skúste to s iným menom a heslom!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Opakovať',
 
@@ -259,6 +263,8 @@ final class Slovak implements LangInterface
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualizované',
 			'SETTINGS_SUCCESS_UPDATE' => 'Nastavenia úspešne aktualizované',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Nastavenie zobrazenia mapy aktualizované',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Zadajte prístupové údaje k databáze:',
 			'DB_INFO_HOST' => 'Názov databázového servera (voliteľné)',
@@ -327,7 +333,15 @@ final class Slovak implements LangInterface
 			'OVERLAY_EXIF' => 'EXIF dáta obrázku',
 			'OVERLAY_DESCRIPTION' => 'Popis obrázku',
 			'OVERLAY_DATE' => 'Obrázok snímaný dňa',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 			'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 			'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',
