@@ -5,7 +5,7 @@ use App\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class ConfigPublicSearch extends Migration
+class ConfigMapDisplayPublic extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -14,12 +14,18 @@ class ConfigPublicSearch extends Migration
 	 */
 	public function up()
 	{
+		if (!defined('BOOL')) {
+			define('BOOL', '0|1');
+		}
+
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				[
-					'key' => 'public_search',
+					'key' => 'map_display_public',
 					'value' => '0',
 					'confidentiality' => 0,
+					'cat' => 'Mod Map',
+					'type_range' => BOOL,
 				],
 			]);
 		} else {
@@ -35,7 +41,7 @@ class ConfigPublicSearch extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'public_search')->delete();
+			Configs::where('key', '=', 'map_display_public')->delete();
 		}
 	}
 }

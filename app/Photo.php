@@ -314,6 +314,72 @@ class Photo extends Model
 	}
 
 	/**
+	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
+	 *
+	 * @return array returns photo-attributes in a normalized structure
+	 */
+	public function prepareLocationData()
+	{
+		// Init
+		$photo = array();
+
+		// Set unchanged attributes
+		$photo['id'] = $this->id;
+		$photo['title'] = $this->title;
+		$photo['album'] = $this->album_id;
+		$photo['latitude'] = $this->latitude;
+		$photo['longitude'] = $this->longitude;
+
+		// if this is a video
+		if (strpos($this->type, 'video') === 0) {
+			$photoUrl = $this->thumbUrl;
+		} else {
+			$photoUrl = $this->url;
+		}
+
+		$photoUrl2x = '';
+		if ($photoUrl !== '') {
+			$photoUrl2x = explode('.', $photoUrl);
+			$photoUrl2x = $photoUrl2x[0] . '@2x.' . $photoUrl2x[1];
+		}
+
+		if ($this->small != '') {
+			$photo['small'] = Storage::url('small/' . $photoUrl);
+		} else {
+			$photo['small'] = '';
+		}
+
+		if ($this->small2x != '') {
+			$photo['small2x'] = Storage::url('small/' . $photoUrl2x);
+		} else {
+			$photo['small2x'] = '';
+		}
+
+		// Parse paths
+		$photo['thumbUrl'] = Storage::url('thumb/' . $this->thumbUrl);
+
+		if ($this->thumb2x == '1') {
+			$thumbUrl2x = explode('.', $this->thumbUrl);
+			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+			$photo['thumb2x'] = Storage::url('thumb/' . $thumbUrl2x);
+		} else {
+			$photo['thumb2x'] = '';
+		}
+
+		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
+		$photo['url'] = Storage::url($path_prefix . $this->url);
+
+		if (isset($this->takestamp) && $this->takestamp != null) {
+			// Use takestamp
+			$photo['takedate'] = $this->takestamp->format('d F Y \a\t H:i');
+		} else {
+			$photo['takedate'] = '';
+		}
+
+		return $photo;
+	}
+
+	/**
 	 * Downgrade the quality of the pictures.
 	 *
 	 * @param array $return
@@ -403,7 +469,7 @@ class Photo extends Model
 			}
 
 			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('medium/' . $photoName2x) && !unlink(Storage::path('medium/' . $photoName2x))) {
+			if (Storage::exists('small/' . $photoName2x) && !unlink(Storage::path('small/' . $photoName2x))) {
 				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
 				$error = true;
 			}

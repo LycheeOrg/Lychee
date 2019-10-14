@@ -470,6 +470,7 @@ class PhotoController extends Controller
 	{
 		$request->validate([
 			'photoIDs' => 'required|string',
+			'albumID' => 'string',
 		]);
 
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
@@ -478,6 +479,7 @@ class PhotoController extends Controller
 		$no_error = true;
 		foreach ($photos as $photo) {
 			$duplicate = new Photo();
+			$duplicate->id = Helpers::generateID();
 			$duplicate->title = $photo->title;
 			$duplicate->description = $photo->description;
 			$duplicate->url = $photo->url;
@@ -502,14 +504,14 @@ class PhotoController extends Controller
 			$duplicate->star = $photo->star;
 			$duplicate->thumbUrl = $photo->thumbUrl;
 			$duplicate->thumb2x = $photo->thumb2x;
-			$duplicate->album_id = $photo->album_id;
+			$duplicate->album_id = isset($request['albumID']) ? $request['albumID'] : $photo->album_id;
 			$duplicate->checksum = $photo->checksum;
 			$duplicate->medium = $photo->medium;
 			$duplicate->medium2x = $photo->medium2x;
 			$duplicate->small = $photo->small;
 			$duplicate->small2x = $photo->small2x;
 			$duplicate->owner_id = $photo->owner_id;
-			$no_error &= $duplicate->save();
+			$no_error &= !is_object($this->photoFunctions->save($duplicate, $duplicate->album_id));
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -682,7 +684,9 @@ class PhotoController extends Controller
 			$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
 		} else {
 			$response = new StreamedResponse(function () use ($request, $photoIDs, &$extract_names) {
-				$zip = new ZipStream(null);
+				$options = new \ZipStream\Option\Archive();
+				$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
+				$zip = new ZipStream(null, $options);
 
 				$files = [];
 				foreach ($photoIDs as $photoID) {
@@ -708,6 +712,9 @@ class PhotoController extends Controller
 					}
 					// Add to array
 					$files[] = $file;
+
+					// Reset the execution timeout for every iteration.
+					set_time_limit(ini_get('max_execution_time'));
 
 					$zip->addFileFromPath($file, $url);
 				} // foreach ($photoIDs)

@@ -1,0 +1,5 @@
+# Ignore everything in this directory, it's a placeholder for js source files needes for js.map files
+# of leaflet.Markercluster plugin
+*
+# Except this file
+!.gitignore

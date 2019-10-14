@@ -1,11 +1,10 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
 
-class HideVersionNumber extends Migration
+class AddForce32BitIds extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -17,13 +16,15 @@ class HideVersionNumber extends Migration
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				[
-					'key' => 'hide_version_number',
-					'value' => '1',
-					'confidentiality' => 3,
+					'key' => 'force_32bit_ids',
+					'value' => '0',
+					'cat' => 'config',
+					'type_range' => '0|1',
+					'confidentiality' => '0',
 				],
 			]);
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 
@@ -35,7 +36,7 @@ class HideVersionNumber extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'hide_version_number')->delete();
+			Configs::where('key', '=', 'force_32bit_ids')->delete();
 		}
 	}
 }

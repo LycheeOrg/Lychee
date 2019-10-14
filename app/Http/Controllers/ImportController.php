@@ -6,6 +6,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Album;
 use App\Configs;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
@@ -133,7 +134,7 @@ class ImportController extends Controller
 				continue;
 			}
 			// Import photo
-			if (!$this->photo($tmp_name, $request['albumID'])) {
+			if (!$this->photo($tmp_name, true, $request['albumID'])) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
 				continue;
@@ -262,9 +263,6 @@ class ImportController extends Controller
 			return;
 		}
 
-		$contains['photos'] = false;
-		$contains['albums'] = false;
-
 		// We process breadth-first: first all the files in a directory,
 		// then the subdirectories.  This way, if the process fails along the
 		// way, it's much easier for the user to figure out what was imported
@@ -310,7 +308,6 @@ class ImportController extends Controller
 			$extension = Helpers::getExtension($file, true);
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
 				// Photo or Video
-				$contains['photos'] = true;
 				if ($this->photo($file, $delete_imported, $albumID) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
@@ -327,15 +324,23 @@ class ImportController extends Controller
 		// Album creation
 		foreach ($dirs as $dir) {
 			// Folder
-			$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
-			// this actually should not fail.
-			if ($album === false) {
-				$this->status_update('Problem: ' . $basename($dir) . ': Could not create album');
-				Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
-				continue;
+			$album = null;
+			if (Configs::get_value('skip_duplicates', '0') === '1') {
+				$album = Album::where('parent_id', '=', $albumID == 0 ? null : $albumID)
+					->where('title', '=', basename($dir))
+					->get()
+					->first();
+			}
+			if ($album === null) {
+				$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
+				// this actually should not fail.
+				if ($album === false) {
+					$this->status_update('Problem: ' . $basename($dir) . ': Could not create album');
+					Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
+					continue;
+				}
 			}
 			$newAlbumID = $album->id;
-			$contains['albums'] = true;
 			$this->server_exec($dir . '/', $newAlbumID, $delete_imported);
 		}
 	}

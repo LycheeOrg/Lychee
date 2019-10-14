@@ -166,6 +166,83 @@ class AlbumController extends Controller
 	}
 
 	/**
+	 * Provided an albumID, returns the album with only map related data.
+	 *
+	 * @param Request $request
+	 *
+	 * @return array|string
+	 */
+	public function getPositionData(Request $request)
+	{
+		$request->validate(['albumID' => 'string|required']);
+		$request->validate(['includeSubAlbums' => 'string|required']);
+		$return = array();
+		// Get photos
+		// Get album information
+		$UserId = $this->sessionFunctions->id();
+		$full_photo = Configs::get_value('full_photo', '1') == '1';
+
+		switch ($request['albumID']) {
+			case 'f':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+				break;
+			case 's':
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
+				break;
+			case 'r':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+				break;
+			case '0':
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
+				break;
+			default:
+				$album = Album::with('children')->find($request['albumID']);
+				if ($album === null) {
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
+					return 'false';
+				}
+
+				$full_photo = $album->full_photo_visible();
+
+				$album_list = array();
+				if ($request['includeSubAlbums']) {
+					// Get all subalbums of the current album
+					$this->albumFunctions->get_sub_albums($album_list, $album);
+				}
+
+				// Add current albumID to array
+				$album_list[] = $request['albumID'];
+
+				$photos_sql = Photo::whereIn('album_id', $album_list);
+
+				break;
+		}
+
+		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
+
+		$return['id'] = $request['albumID'];
+
+		return $return;
+	}
+
+	/**
 	 * Provided the albumID and passwords, return whether the album can be accessed or not.
 	 *
 	 * @param Request $request
@@ -638,7 +715,9 @@ class AlbumController extends Controller
 		}
 
 		$response = new StreamedResponse(function () use ($albumIDs, $badChars) {
-			$zip = new ZipStream(null);
+			$options = new \ZipStream\Option\Archive();
+			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
+			$zip = new ZipStream(null, $options);
 
 			$UserId = $this->sessionFunctions->id();
 
@@ -773,6 +852,9 @@ class AlbumController extends Controller
 						}
 						// Add to array
 						$files[] = $file;
+
+						// Reset the execution timeout for every iteration.
+						set_time_limit(ini_get('max_execution_time'));
 
 						// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
 						$zip->addFileFromPath($dir . '/' . $file, $url);

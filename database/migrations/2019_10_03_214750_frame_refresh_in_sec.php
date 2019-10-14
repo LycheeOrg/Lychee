@@ -4,7 +4,7 @@ use App\Configs;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
 
-class GlobalDownloadable extends Migration
+class FrameRefreshInSec extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -14,15 +14,13 @@ class GlobalDownloadable extends Migration
 	public function up()
 	{
 		if (Schema::hasTable('configs')) {
-			DB::table('configs')->insert([
-				[
-					'key' => 'downloadable',
-					'value' => '0',
-					'confidentiality' => 0,
-				],
-			]);
+			Configs::where('key', 'Mod_Frame_refresh')
+				->update(
+					[
+						'value' => Configs::get_value('Mod_Frame_refresh') / 1000,
+					]);
 		} else {
-			echo "Table configs does not exists\n";
+			echo "Table configs does not exist\n";
 		}
 	}
 
@@ -34,7 +32,11 @@ class GlobalDownloadable extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'downloadable')->delete();
+			Configs::where('key', 'Mod_Frame_refresh')
+				->update(
+					[
+						'value' => Configs::get_value('Mod_Frame_refresh') * 1000,
+					]);
 		}
 	}
 }

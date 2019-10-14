@@ -2,6 +2,7 @@
 
 namespace App\ModelFunctions;
 
+use App\Configs;
 use Exception;
 
 class Helpers
@@ -15,7 +16,7 @@ class Helpers
 	{
 		// Generate id based on the current microtime
 
-		if (PHP_INT_MAX == 2147483647) {
+		if (PHP_INT_MAX == 2147483647 || Configs::get_value('force_32bit_ids', '0') === '1') {
 			// For 32-bit installations, we can only afford to store the
 			// full seconds in id.  The calling code needs to be able to
 			// handle duplicate ids.  Note that this also exposes us to

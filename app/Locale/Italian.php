@@ -35,6 +35,7 @@ final class Italian implements LangInterface
 			'DEFAULT_LICENSE' => 'Licenza predefinita per i nuovi caricamenti:',
 			'SET_LICENSE' => 'Imposta Licenza',
 			'SET_OVERLAY_TYPE' => 'Imposta Filigrana',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Album smart',
 			'SHARED_ALBUMS' => 'Album condivisi',
@@ -76,6 +77,7 @@ final class Italian implements LangInterface
 
 			'CLOSE_ALBUM' => 'Chiudi Album',
 			'CLOSE_PHOTO' => 'Chiudi Foto',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Aggiungi',
 			'MOVE' => 'Sposta',
@@ -115,6 +117,7 @@ final class Italian implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'Informazioni sulla Foto',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Link Diretto',
 			'DIRECT_LINKS' => 'Direct Links',
 
@@ -245,6 +248,7 @@ final class Italian implements LangInterface
 			'ERROR_CONFIG_FILE' => "Impossibile salvare questa configurazione. Permessi negati in <b>\'data/\'</b>. Per favore imposta i diritti di lettura, scrittura ed esecuzione per gli utenti esterni in <b>\'data/\'</b> e <b>\'uploads/\'</b>. Controlla il readme per più informazioni.",
 			'ERROR_UNKNOWN' => 'È successo qualcosa di inaspettato. Per favore prova di nuovo e controlla la tua installazione e il tuo server. Controlla il readme per più informazioni.',
 			'ERROR_LOGIN' => 'Impossibile salvare il login. Per favore prova con altri nomi utenti e password!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Riprova',
 
@@ -257,6 +261,8 @@ final class Italian implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Ricerca pubblica aggiornata',
 			'SETTINGS_SUCCESS_LICENSE' => 'Licenza predefinita aggiornata',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
 			'DB_INFO_HOST' => 'Host Database (opzionale)',
@@ -330,7 +336,15 @@ final class Italian implements LangInterface
 			'OVERLAY_EXIF' => 'Dati Foto EXIF',
 			'OVERLAY_DESCRIPTION' => 'Descrizione della Foto',
 			'OVERLAY_DATE' => 'Data di Creazione della Foto',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',
