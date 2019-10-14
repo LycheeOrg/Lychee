@@ -263,9 +263,6 @@ class ImportController extends Controller
 			return;
 		}
 
-		$contains['photos'] = false;
-		$contains['albums'] = false;
-
 		// We process breadth-first: first all the files in a directory,
 		// then the subdirectories.  This way, if the process fails along the
 		// way, it's much easier for the user to figure out what was imported
@@ -311,7 +308,6 @@ class ImportController extends Controller
 			$extension = Helpers::getExtension($file, true);
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
 				// Photo or Video
-				$contains['photos'] = true;
 				if ($this->photo($file, $delete_imported, $albumID) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
@@ -330,7 +326,7 @@ class ImportController extends Controller
 			// Folder
 			$album = null;
 			if (Configs::get_value('skip_duplicates', '0') === '1') {
-				$album = Album::where('parent_id', '=', $albumID)
+				$album = Album::where('parent_id', '=', $albumID == 0 ? null : $albumID)
 					->where('title', '=', basename($dir))
 					->get()
 					->first();
@@ -345,7 +341,6 @@ class ImportController extends Controller
 				}
 			}
 			$newAlbumID = $album->id;
-			$contains['albums'] = true;
 			$this->server_exec($dir . '/', $newAlbumID, $delete_imported);
 		}
 	}
