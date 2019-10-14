@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Configs;
 use App\ControllerFunctions\ApplyUpdateFunctions;
+use App\Exceptions\NotInCacheException;
+use App\Exceptions\NotMasterException;
 use App\Metadata\GitHubFunctions;
+use App\Metadata\GitRequest;
 use App\Response;
 use Exception;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Config;
 
 /**
  * Class UpdateController.
@@ -26,26 +27,36 @@ class UpdateController extends Controller
 	private $applyUpdateFunctions;
 
 	/**
+	 * @var GitRequest
+	 */
+	private $gitRequest;
+
+	/**
 	 * @param GitHubFunctions      $gitHubFunctions
 	 * @param ApplyUpdateFunctions $applyUpdateFunctions
+	 * @param GitRequest           $gitRequest
 	 */
-	public function __construct(GitHubFunctions $gitHubFunctions, ApplyUpdateFunctions $applyUpdateFunctions)
-	{
+	public function __construct(
+		GitHubFunctions $gitHubFunctions,
+		ApplyUpdateFunctions $applyUpdateFunctions,
+		GitRequest $gitRequest
+	) {
 		$this->gitHubFunctions = $gitHubFunctions;
 		$this->applyUpdateFunctions = $applyUpdateFunctions;
+		$this->gitRequest = $gitRequest;
 	}
 
 	/**
 	 * @return bool
 	 *
-	 * @throws Exception
+	 * @throws NotMasterException
+	 * @throws NotInCacheException
 	 */
 	private function forget_and_check()
 	{
-		Cache::forget(Config::get('urls.update.git'));
-		Cache::forget(Config::get('urls.update.git') . '_age');
+		$this->gitRequest->clear_cache();
 
-		return $this->gitHubFunctions->is_up_to_date();
+		return $this->gitHubFunctions->is_up_to_date(false);
 	}
 
 	/**
@@ -59,7 +70,7 @@ class UpdateController extends Controller
 		try {
 			$up_to_date = $this->forget_and_check();
 		} catch (Exception $e) {
-			return Response::error($e->getMessage());
+			return Response::error($e->getMessage()); // Not master
 		}
 
 		// when going through the CI, we are always up to date...
@@ -89,24 +100,11 @@ class UpdateController extends Controller
 		if (!function_exists('exec')) {
 			return Response::error('exec is not available');
 		}
-		if (!is_executable(base_path('.git'))) {
-			return Response::error('../.git is not executable, check the permissions');
-		}
-		// @codeCoverageIgnoreEnd
-
-		try {
-			$up_to_date = $this->forget_and_check();
-		} catch (Exception $e) {
-			return Response::error($e->getMessage());
+		if (!$this->gitHubFunctions->is_usable()) {
+			return Response::error('../.git (and subdirectories) are not executable, check the permissions');
 		}
 
-		// when going through the CI, we are always up to date...
-		if (!$up_to_date) {
-			// @codeCoverageIgnoreStart
-			return $this->applyUpdateFunctions->apply();
-		// @codeCoverageIgnoreEnd
-		} else {
-			return Response::json('Already up to date');
-		}
+		// @codeCoverageIgnoreStart
+		return $this->applyUpdateFunctions->apply();
 	}
 }

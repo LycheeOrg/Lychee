@@ -6,6 +6,7 @@ use App\Album;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Metadata\GitHubFunctions;
+use App\Metadata\GitRequest;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
@@ -34,7 +35,7 @@ class DemoController extends Controller
 
 		$configFunctions = new ConfigFunctions();
 		$sessionFunctions = new SessionFunctions();
-		$githubFunctions = new GitHubFunctions();
+		$githubFunctions = new GitHubFunctions(new GitRequest());
 		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
 		$symLinkFunctions = new SymLinkFunctions($sessionFunctions);
 		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions, $symLinkFunctions);
@@ -101,7 +102,7 @@ class DemoController extends Controller
 			$photos = $photos_sql->with('album')->get();
 			foreach ($photos as $photo_model) {
 				// Turn data from the database into a front-end friendly format
-				$photo = $photo_model->prepareData($album);
+				$photo = $photo_model->prepareData();
 				$symLinkFunctions->getUrl($photo_model, $photo);
 				if (!$sessionFunctions->is_current_user($photo_model->owner_id) && !$full_photo) {
 					$photo_model->downgrade($photo);
@@ -164,7 +165,7 @@ class DemoController extends Controller
 			/** @var Photo $photo */
 			foreach ($album->photos as $photo) {
 				$return_photo = array();
-				$return_photo_json = $photo->prepareData($album);
+				$return_photo_json = $photo->prepareData();
 				$return_photo_json['original_album'] = $return_photo_json['album'];
 				$return_photo_json['album'] = $album->id;
 				$return_photo['id'] = $photo->id;

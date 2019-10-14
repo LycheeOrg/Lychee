@@ -16,7 +16,9 @@ class Helpers
 	{
 		// Generate id based on the current microtime
 
-		if (PHP_INT_MAX == 2147483647 || Configs::get_value('force_32bit_ids', '0') === '1') {
+		if (PHP_INT_MAX == 2147483647
+			|| Configs::get_value('force_32bit_ids', '0') === '1'
+		) {
 			// For 32-bit installations, we can only afford to store the
 			// full seconds in id.  The calling code needs to be able to
 			// handle duplicate ids.  Note that this also exposes us to
@@ -73,7 +75,30 @@ class Helpers
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
-		if (file_exists($path) === true && is_readable($path) === true && is_writeable($path) === true) {
+		if (file_exists($path) === true && is_readable($path) === true
+			&& is_writeable($path) === true
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Check if $path has readable and writable permissions.
+	 *
+	 * @param $path
+	 *
+	 * @return bool
+	 */
+	public static function hasFullPermissions($path)
+	{
+		// Check if the given path is readable and writable
+		// Both functions are also verifying that the path exists
+		if (file_exists($path) === true && is_readable($path) === true
+			&& is_executable($path) === true
+			&& is_writeable($path) === true
+		) {
 			return true;
 		}
 
@@ -87,9 +112,9 @@ class Helpers
 	 * @param $a
 	 * @param $b
 	 *
-	 * @throws Exception
-	 *
 	 * @return mixed
+	 *
+	 * @throws Exception
 	 */
 	public static function gcd($a, $b)
 	{
