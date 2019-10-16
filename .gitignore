@@ -29,3 +29,4 @@ _ide*
 
 clover.xml
 *.swp
+.DS_Store
