@@ -321,6 +321,68 @@ class Extractor
 	}
 
 	/**
+	 * Converts results of ISO6709 parsing
+	 * to decimal format for latitude and longitude
+	 * See https://github.com/seanson/python-iso6709.git.
+	 *
+	 * @param string sign
+	 * @param string degrees
+	 * @param string minutes
+	 * @param string seconds
+	 * @param string fraction
+	 *
+	 * @return float
+	 */
+	private function convertDMStoDecimal(string $sign, string $degrees, string $minutes, string $seconds, string $fraction): float
+	{
+		if ($fraction !== '') {
+			if ($seconds !== '') {
+				$seconds = $seconds . $fraction;
+			} elseif ($minutes !== '') {
+				$minutes = $minutes . $fraction;
+			} else {
+				$degrees = $degrees . $fraction;
+			}
+		}
+		$decimal = floatval($degrees) + floatval($minutes) / 60.0 + floatval($seconds) / 3600.0;
+		if ($sign == '-') {
+			$decimal = -1.0 * $decimal;
+		}
+
+		return $decimal;
+	}
+
+	/**
+	 * Returns the latitude, longitude and altitude
+	 * of a GPS coordiante formattet with ISO6709
+	 * See https://github.com/seanson/python-iso6709.git.
+	 *
+	 * @param string val_ISO6709
+	 *
+	 * @return array
+	 */
+	private function readISO6709(string $val_ISO6709): array
+	{
+		$return = [
+			'latitude' => null,
+			'long2ip' => null,
+			'altitude' => null,
+		];
+		$matches = [];
+
+		// Adjustment compared to https://github.com/seanson/python-iso6709.git
+		// Altitude have format +XX.XXXX -> Adjustment for decimal
+		preg_match('/^(?<lat_sign>\+|-)(?<lat_degrees>[0,1]?\d{2})(?<lat_minutes>\d{2}?)?(?<lat_seconds>\d{2}?)?(?<lat_fraction>\.\d+)?(?<lng_sign>\+|-)(?<lng_degrees>[0,1]?\d{2})(?<lng_minutes>\d{2}?)?(?<lng_seconds>\d{2}?)?(?<lng_fraction>\.\d+)?(?<alt>[\+\-][0-9]\d*(\.\d+)?)?\/$/', $val_ISO6709, $matches);
+		$return['latitude'] = $this->convertDMStoDecimal($matches['lat_sign'], $matches['lat_degrees'], $matches['lat_minutes'], $matches['lat_seconds'], $matches['lat_fraction']);
+		$return['longitude'] = $this->convertDMStoDecimal($matches['lng_sign'], $matches['lng_degrees'], $matches['lng_minutes'], $matches['lng_seconds'], $matches['lng_fraction']);
+		if (isset($matches['alt'])) {
+			$return['altitude'] = doubleval($matches['alt']);
+		}
+
+		return $return;
+	}
+
+	/**
 	 * @param string $filename
 	 * @param array  $metadata
 	 */
@@ -377,6 +439,47 @@ class Extractor
 					$metadata['latitude'] = $matches[1];
 					$metadata['longitude'] = $matches[2];
 				}
+			}
+
+			// QuickTime File Format defines several additional metadata
+			// Source: https://developer.apple.com/library/archive/documentation/QuickTime/QTFF/Metadata/Metadata.html
+
+			// Special case: iPhones write into tags->creation_time the creation time of the file
+			// -> When converting the video from HEVC (iOS Video format) to MOV, the creation_time
+			// is the time when the mov file was created, not when the video was shot (fixed in iOS12)
+			// (see e.g. https://michaelkummer.com/tech/apple/photos-videos-wrong-date/ (for the symptom)
+			// Solution: Use com.apple.quicktime.creationdate which is the true creation date of the video
+			if (isset($format['tags']['com.apple.quicktime.creationdate'])) {
+				$metadata['takestamp'] = date('Y-m-d H:i:s', strtotime($format['tags']['com.apple.quicktime.creationdate']));
+			}
+
+			if (isset($format['tags']['com.apple.quicktime.description'])) {
+				$metadata['description'] = $format['tags']['com.apple.quicktime.description'];
+			}
+
+			if (isset($format['tags']['com.apple.quicktime.title'])) {
+				$metadata['title'] = $format['tags']['com.apple.quicktime.title'];
+			}
+
+			if (isset($format['tags']['com.apple.quicktime.keywords'])) {
+				$metadata['tags'] = implode(',', $format['tags']['com.apple.quicktime.keywords']);
+			}
+
+			if (isset($format['tags']['com.apple.quicktime.location.ISO6709'])) {
+				$location_data = $this->readISO6709($format['tags']['com.apple.quicktime.location.ISO6709']);
+				$metadata['latitude'] = $location_data['latitude'];
+				$metadata['longitude'] = $location_data['longitude'];
+				$metadata['altitude'] = $location_data['altitude'];
+			}
+
+			// Not documented, but available on iPhone videos
+			if (isset($format['tags']['com.apple.quicktime.make'])) {
+				$metadata['make'] = $format['tags']['com.apple.quicktime.make'];
+			}
+
+			// Not documented, but available on iPhone videos
+			if (isset($format['tags']['com.apple.quicktime.model'])) {
+				$metadata['model'] = $format['tags']['com.apple.quicktime.model'];
 			}
 		}
 	}
