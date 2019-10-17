@@ -41,6 +41,7 @@ final class Italian implements LangInterface
 			'SHARED_ALBUMS' => 'Album condivisi',
 			'ALBUMS' => 'Album',
 			'PHOTOS' => 'Immagini',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Rinomina',
 			'RENAME_ALL' => 'Rinomina Tutto',
@@ -249,6 +250,7 @@ final class Italian implements LangInterface
 			'ERROR_UNKNOWN' => 'È successo qualcosa di inaspettato. Per favore prova di nuovo e controlla la tua installazione e il tuo server. Controlla il readme per più informazioni.',
 			'ERROR_LOGIN' => 'Impossibile salvare il login. Per favore prova con altri nomi utenti e password!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Riprova',
 

@@ -41,6 +41,7 @@ final class ChineseSimplified implements LangInterface
 			'SHARED_ALBUMS' => 'Shared albums',
 			'ALBUMS' => '相册',
 			'PHOTOS' => 'Pictures',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => '重命名',
 			'RENAME_ALL' => '重命名已选中',
@@ -246,6 +247,7 @@ final class ChineseSimplified implements LangInterface
 			'ERROR_UNKNOWN' => '发生未知问题！请再试一次，检查您的安装和服务器。请查看自述文件以获取更多信息。',
 			'ERROR_LOGIN' => '无法保存登录信息。请用另一个用户名和密码再试一次！',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => '重试',
 

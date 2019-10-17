@@ -41,6 +41,7 @@ final class Dutch implements LangInterface
 			'SHARED_ALBUMS' => 'Shared albums',
 			'ALBUMS' => 'Albums',
 			'PHOTOS' => 'Pictures',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Hernoem',
 			'RENAME_ALL' => 'Geselecteerde Hernoem',
@@ -246,6 +247,7 @@ final class Dutch implements LangInterface
 			'ERROR_UNKNOWN' => 'Er is iets onverwachts gebeurd. Probeer het opnieuw of controleer je installatie en server. Kijk naar de readme voor meer informatie.',
 			'ERROR_LOGIN' => 'Kan login niet opslaan. Probeer het opnieuw met een andere gebruikersnaam en/of wachtwoord!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Probeer opnieuw',
 

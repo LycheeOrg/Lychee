@@ -41,6 +41,7 @@ final class English implements LangInterface
 			'SHARED_ALBUMS' => 'Shared albums',
 			'ALBUMS' => 'Albums',
 			'PHOTOS' => 'Pictures',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Rename',
 			'RENAME_ALL' => 'Rename Selected',
@@ -246,6 +247,7 @@ final class English implements LangInterface
 			'ERROR_UNKNOWN' => 'Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.',
 			'ERROR_LOGIN' => 'Unable to save login. Please try again with another username and password!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Retry',
 

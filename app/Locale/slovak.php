@@ -42,6 +42,7 @@ final class Slovak implements LangInterface
 			'SHARED_ALBUMS' => 'Zdieľané albumy',
 			'ALBUMS' => 'Albumy',
 			'PHOTOS' => 'Obrázky',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Premenovať',
 			'RENAME_ALL' => 'Premenovať vybrané',
@@ -248,6 +249,7 @@ final class Slovak implements LangInterface
 			'ERROR_UNKNOWN' => 'Vyskytla sa neočakávaná chyba. Skúste to znova a skontrolujte inštaláciu na vašom serveri. Ďalšie informácie nájdete v súbore README.',
 			'ERROR_LOGIN' => 'Nemožno uložiť Login. Skúste to s iným menom a heslom!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Opakovať',
 
