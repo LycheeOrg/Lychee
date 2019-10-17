@@ -41,6 +41,7 @@ final class Greek implements LangInterface
 			'SHARED_ALBUMS' => 'Κοινόχρηστα λευκώματα',
 			'ALBUMS' => 'Λευκώματα',
 			'PHOTOS' => 'Εικόνες',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Μετονομασία',
 			'RENAME_ALL' => 'Μετονομασία Επιλεγμένων',
@@ -246,6 +247,7 @@ final class Greek implements LangInterface
 			'ERROR_UNKNOWN' => 'Κάτι απρόσμενο συνέβη. Παρακαλούμε προσπαθείστε ξανά και ελέγξτε την εγκατάστασή σας και τον εξυπηρετητή. Ρίξτε μια ματιά στο αρχείο readme για περισσότερες πληροφορίες.',
 			'ERROR_LOGIN' => 'Αδυναμία αποθήκευσης στοιχείων εισόδου. Παρακαλούμε δοκιμάστε ξανά με διαφορετικό όνομα χρήστη και κωδικό πρόσβασης!',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Προσπάθεια ξανά',
 

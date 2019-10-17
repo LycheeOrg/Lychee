@@ -41,6 +41,7 @@ final class French implements LangInterface
 			'SHARED_ALBUMS' => 'Shared albums',
 			'ALBUMS' => 'Albums',
 			'PHOTOS' => 'Pictures',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Renommer',
 			'RENAME_ALL' => 'Renommer la sélection',
@@ -246,6 +247,7 @@ final class French implements LangInterface
 			'ERROR_UNKNOWN' => 'Une erreur inattendue est survenue. Veuillez réessayer et vérifier votre installation et votre serveur. Consultez le fichier Readme pour obtenir plus d\'information.',
 			'ERROR_LOGIN' => 'Impossible d\'enregistrer les informations de connexion. Veuillez réessayer avec un autre nom d\'utilisateur et mot de passe.',
 			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Réessayer',
 

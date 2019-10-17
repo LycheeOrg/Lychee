@@ -41,6 +41,7 @@ final class Spanish implements LangInterface
 			'SHARED_ALBUMS' => 'Álbumes compartidos',
 			'ALBUMS' => 'Álbumes',
 			'PHOTOS' => 'Imágenes',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Renombrar',
 			'RENAME_ALL' => 'Renombrar Todo',
@@ -246,6 +247,7 @@ final class Spanish implements LangInterface
 			'ERROR_UNKNOWN' => 'Algo inesperado sucedió. Intente nuevamente y verifique su instalación y servidor. Eche un vistazo al archivo Léame para obtener más información.',
 			'ERROR_LOGIN' => 'No se puede guardar el inicio de sesión. ¡Inténtalo de nuevo con otro nombre de usuario y contraseña!',
 			'ERROR_MAP_DEACTIVATED' => 'La funcionalidad del mapa se ha desactivado en la configuración.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Procesar de nuevo',
 

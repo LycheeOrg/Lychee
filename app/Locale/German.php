@@ -42,6 +42,7 @@ final class German implements LangInterface
 			'SHARED_ALBUMS' => 'Freigegebene Alben',
 			'ALBUMS' => 'Alben',
 			'PHOTOS' => 'Bilder',
+			'SEARCH_RESULTS' => 'Suchergebnisse',
 
 			'RENAME' => 'Umbenennen',
 			'RENAME_ALL' => 'Ausgewählte umbenennen',
@@ -248,6 +249,7 @@ final class German implements LangInterface
 			'ERROR_UNKNOWN' => 'Etwas Unerwartetes ist passiert. Bitte probieren Sie es erneut und überprüfen Sie die Installation und Ihren Server. Lesen Sie die README-Datei für mehr Informationen.',
 			'ERROR_LOGIN' => 'Kann Login nicht speichern. Bitte versuchen Sie es erneut mit einem anderen Benutzernamen und Kennwort!',
 			'ERROR_MAP_DEACTIVATED' => 'Karten sind unter Einstellungen deaktiviert worden.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Suchfunktion wurde unter Einstellungen deaktiviert.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Noch einmal versuchen',
 
