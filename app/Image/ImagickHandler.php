@@ -36,7 +36,6 @@ class ImagickHandler implements ImageHandlerInterface
 			$image = new \Imagick();
 			$image->readImage($source);
 			$image->setImageCompressionQuality($this->compressionQuality);
-			$image->setImageFormat('jpeg');
 
 			// Remove metadata to save some bytes
 			$image->stripImage();
@@ -70,7 +69,6 @@ class ImagickHandler implements ImageHandlerInterface
 			$image = new \Imagick();
 			$image->readImage($source);
 			$image->setImageCompressionQuality($this->compressionQuality);
-			$image->setImageFormat('jpeg');
 
 			// Remove metadata to save some bytes
 			$image->stripImage();
