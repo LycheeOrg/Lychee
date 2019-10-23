@@ -53,7 +53,20 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-		imagejpeg($image, $destination, $this->compressionQuality);
+
+		switch ($mime) {
+			case IMAGETYPE_JPEG:
+			case IMAGETYPE_JPEG2000:
+				imagejpeg($image, $destination, $this->compressionQuality);
+				break;
+			case IMAGETYPE_PNG:
+				imagepng($image, $destination);
+				break;
+			case IMAGETYPE_GIF:
+				imagegif($image, $destination);
+				break;
+			// createImage above already checked for any invalid values
+		}
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
