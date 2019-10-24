@@ -155,10 +155,10 @@ class AlbumController extends Controller
 		$return['photos'] = $this->albumFunctions->photos($photos_sql, $full_photo);
 
 		$return['id'] = $request['albumID'];
-		$return['num'] = count($return['photos']);
+		$return['num'] = strval(count($return['photos']));
 
 		// finalize the loop
-		if ($return['num'] === 0) {
+		if ($return['num'] === '0') {
 			$return['photos'] = false;
 		}
 
