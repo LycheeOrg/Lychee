@@ -881,7 +881,7 @@ class AlbumController extends Controller
 
 		// Set file type and destination
 		$response->headers->set('Content-Type', 'application/x-zip');
-		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip');
+		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip', 'Album.zip');
 		$response->headers->set('Content-Disposition', $disposition);
 
 		// Disable caching
