@@ -17,8 +17,16 @@
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "maennchen/zipstream-php": "^1.2.0",
-        "php-ffmpeg/php-ffmpeg": "^0.13.0"
+        "php-ffmpeg/php-ffmpeg": "^0.13.0",
+        "miljar/php-exif": "dev-dev"
     },
+    "repositories": [
+        {
+            "name": "miljar/php-exif",
+            "type": "git",
+            "url": "https://github.com/tmp-hallenser/php-exif.git"
+        }
+    ],
     "require-dev": {
         "ext-imagick": "*",
         "barryvdh/laravel-ide-helper": "^2.6",

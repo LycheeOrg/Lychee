@@ -36,6 +36,7 @@ class Extractor
 			'longitude' => null,
 			'altitude' => null,
 			'imgDirection' => null,
+			'size' => 0,
 		];
 
 		return $metadata;
@@ -65,6 +66,125 @@ class Extractor
 	 * @return array
 	 */
 	public function extract(string $filename, string $type): array
+	{
+
+		$metadata = $this->extract_phpexif($filename, $type, true);
+
+		// This section is only for debugging of new Solution
+		// to be removed in the future
+		$debug = true;
+		if($debug) {
+
+			$metadata_legacy = $this->extract_legacy($filename, $type);
+
+			$error_msg = '';
+			foreach ($metadata as $key => $value) {
+				$match = true;
+				// both are numbers
+				if(gettype($metadata[$key])=='double' || gettype($metadata_legacy[$key])=='double') {
+					// exiftool and php function have different precisions
+					// difference needs to be small
+					if(abs(floatval($metadata[$key])-floatval($metadata_legacy[$key]))>0.001) {
+						$match = false;
+					}
+				} else {
+					if(strval($metadata[$key])!==strval($metadata_legacy[$key])) {
+						$match = false;
+					}
+				}
+				if($match===false){
+					Logs::notice(__METHOD__, __LINE__, 'Extracted EXIF data to not match: ' . $key . ' ' . $metadata[$key] . ' (' . gettype($metadata[$key]) . ') '. $metadata_legacy[$key] . ' (' . gettype($metadata_legacy[$key]) . ') ');
+				}
+			}
+		}
+
+		return $metadata;
+	}
+
+	/**
+	 * Extracts metadata from an image file.
+	 *
+	 * @param string $filename
+	 * @param string mime type
+	 * @param bool force use of native extractor
+	 * @return array
+	 */
+	public function extract_phpexif(string $filename, string $type, bool $force_native_extractor): array
+	{
+		$reader = null;
+		$path_exiftool = exec('which exiftool');
+		if(!(strpos($path_exiftool, 'exiftool')===false)){
+			// reader with Exiftool adapter
+			$reader = \PHPExif\Reader\Reader::factory(\PHPExif\Reader\Reader::TYPE_EXIFTOOL);
+		} else {
+			// reader with Native adapter
+			Logs::notice(__METHOD__, __LINE__, 'Exiftool not found - using php standard functions and FFMpeg (if available)');
+			$reader = \PHPExif\Reader\Reader::factory(\PHPExif\Reader\Reader::TYPE_NATIVE);
+		}
+
+		$exif = $reader->read($filename);
+		$metadata = $this->bare();
+		$metadata['type'] = ($exif->getMimeType()!==false) ? $exif->getMimeType() : '';
+		$metadata['width'] = ($exif->getWidth()!==false) ? $exif->getWidth() : 0;
+		$metadata['height'] = ($exif->getHeight()!==false) ? $exif->getHeight() : 0;
+		$metadata['title'] = ($exif->getTitle()!==false) ? $exif->getTitle() : '';
+		$metadata['description'] = ($exif->getDescription()!==false) ? $exif->getDescription() : '';
+		$metadata['orientation'] = ($exif->getOrientation()!==false) ? $exif->getOrientation() : '';
+		$metadata['iso'] = ($exif->getIso()!==false) ? $exif->getIso() : '';
+		$metadata['make'] = ($exif->getMake()!==false) ? $exif->getMake() : '';
+		$metadata['model'] = ($exif->getCamera()!==false) ? $exif->getCamera() : '';
+		$metadata['shutter'] = ($exif->getExposure()!==false) ? $exif->getExposure() : '';
+		$metadata['takestamp'] = ($exif->getCreationDate()!==false) ? $exif->getCreationDate()->format('Y-m-d H:i:s') : null;
+		$metadata['lens'] = ($exif->getLens()!==false) ? $exif->getLens() : '';
+		$metadata['tags'] = ($exif->getKeywords()!==false) ? implode(',', $exif->getKeywords()) : '';
+		$metadata['latitude'] = ($exif->getLatitude()!==false) ? $exif->getLatitude() : null;
+		$metadata['longitude'] = ($exif->getLongitude()!==false) ? $exif->getLongitude() : null;
+		$metadata['altitude'] = ($exif->getAltitude()!==false) ? $exif->getAltitude() : null;
+		$metadata['imgDirection'] = ($exif->getImgDirection()!==false) ? $exif->getImgDirection() : null;
+		$metadata['size'] = ($exif->getFileSize()!==false) ? $exif->getFileSize() : 0;
+
+		if ((strpos($type, 'video') !== 0)) {
+			$metadata['aperture'] = ($exif->getAperture()!==false) ? $exif->getAperture() : '';
+			$metadata['focal'] = ($exif->getFocalLength()!==false) ? $exif->getFocalLength() : '';
+			if ($metadata['focal']!=='') {
+				$metadata['focal'] = round($metadata['focal']) . ' mm';
+			}
+		} else {
+			// Video -> reuse fields
+			$metadata['aperture'] = ($exif->getDuration()!==false) ? $exif->getDuration() : '';
+			$metadata['focal'] = ($exif->getFramerate()!==false) ? $exif->getFramerate() : '';
+		}
+
+		if ($metadata['title']=='') {
+			$metadata['title'] = ($exif->getHeadline()!==false) ? $exif->getHeadline() : '';
+		}
+
+		if ($metadata['shutter']!=='') {
+			$metadata['shutter'] = $metadata['shutter'] . ' s';
+		}
+		if ($metadata['size']>0) {
+			$metadata['size'] = $metadata['size'] / 1024;
+			if ($metadata['size'] >= 1024) {
+				$metadata['size'] = round($metadata['size'] / 1024, 1) . ' MB';
+			} else {
+				$metadata['size'] = round($metadata['size'], 1) . ' KB';
+			}
+		}
+
+
+
+		return $metadata;
+	}
+
+	/**
+	 * Extracts metadata from an image file.
+	 *
+	 * @param string $filename
+	 * @param  string mime type
+	 *
+	 * @return array
+	 */
+	public function extract_legacy(string $filename, string $type): array
 	{
 		$metadata = $this->bare();
 
@@ -388,7 +508,12 @@ class Extractor
 	 */
 	private function extractVideo(string $filename, array &$metadata)
 	{
-		$ffprobe = FFMpeg\FFProbe::create();
+		$path_ffmpeg = exec('which ffmpeg');
+		$path_ffprobe = exec('which ffprobe');
+		$ffprobe = FFMpeg\FFProbe::create(array(
+									'ffmpeg.binaries'  => $path_ffmpeg,
+									'ffprobe.binaries' => $path_ffprobe,
+							));
 
 		$stream = $ffprobe->streams($filename)->videos()->first()->all();
 		$format = $ffprobe->format($filename)->all();
