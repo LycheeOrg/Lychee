@@ -154,7 +154,7 @@ class Photo extends Model
 	 *
 	 * @return Photo|bool|Builder|Model|object
 	 */
-	public function findLivePhotoPartner(string $livePhotoContentID, string $albumID)
+	public function findLivePhotoPartner(string $livePhotoContentID, string $albumID = null)
 	{
 		// Todo: We need to search for pairs (Video + Photo)
 		// Photo+Photo or Video+Video does not work
