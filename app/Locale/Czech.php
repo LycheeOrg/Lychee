@@ -205,7 +205,7 @@ final class Czech implements LangInterface
 			'PHOTO_CAPTURED' => 'Pořízeno',
 			'PHOTO_MAKE' => 'Značka',
 			'PHOTO_TYPE' => 'Typ/model',
-			'PHOTO_LENS' => 'Objektiv',			
+			'PHOTO_LENS' => 'Objektiv',
 			'PHOTO_SHUTTER' => 'Uzávěrka',
 			'PHOTO_APERTURE' => 'Clona',
 			'PHOTO_FOCAL' => 'Fokus',
