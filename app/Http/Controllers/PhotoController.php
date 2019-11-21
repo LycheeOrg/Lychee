@@ -122,8 +122,9 @@ class PhotoController extends Controller
 	{
 		// here we need to refine.
 
-		$photo = Photo::select_stars(Photo::whereIn('album_id',
-			$this->albumFunctions->getPublicAlbums()))
+		$photo = Photo::whereIn('album_id',
+			$this->albumFunctions->getPublicAlbums())
+			->where('star', '=', 1)
 			->inRandomOrder()
 			->first();
 

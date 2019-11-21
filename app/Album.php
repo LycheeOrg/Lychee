@@ -167,12 +167,12 @@ class Album extends Model
 		$album = array();
 
 		// Set unchanged attributes
-		$album['id'] = $this->id;
+		$album['id'] = strval($this->id);
 		$album['title'] = $this->title;
 		$album['public'] = strval($this->public);
 		$album['full_photo'] = $this->full_photo_visible() ? '1' : '0';
 		$album['visible'] = strval($this->visible_hidden);
-		$album['parent_id'] = $this->parent_id;
+		$album['parent_id'] = $this->parent_id !== null ? strval($this->parent_id) : null;
 
 		// Additional attributes
 		// Only part of $album when available

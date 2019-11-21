@@ -342,7 +342,7 @@ class AlbumFunctions
 			'thumbs' => array(),
 			'thumbs2x' => array(),
 			'types' => array(),
-			'num' => $photos_sql->count(),
+			'num' => strval($photos_sql->count()),
 		);
 
 		/*

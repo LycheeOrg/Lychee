@@ -155,10 +155,10 @@ class AlbumController extends Controller
 		$return['photos'] = $this->albumFunctions->photos($photos_sql, $full_photo);
 
 		$return['id'] = $request['albumID'];
-		$return['num'] = count($return['photos']);
+		$return['num'] = strval(count($return['photos']));
 
 		// finalize the loop
-		if ($return['num'] === 0) {
+		if ($return['num'] === '0') {
 			$return['photos'] = false;
 		}
 
@@ -881,7 +881,7 @@ class AlbumController extends Controller
 
 		// Set file type and destination
 		$response->headers->set('Content-Type', 'application/x-zip');
-		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip');
+		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip', mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip');
 		$response->headers->set('Content-Disposition', $disposition);
 
 		// Disable caching
