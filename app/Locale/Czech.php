@@ -408,6 +408,7 @@ final class Czech implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Náhled HiDPI',
 			'PHOTO_THUMB' => 'Čtvercový náhled',
 			'PHOTO_THUMB_HIDPI' => 'Čtvercový náhled HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Zobrazení foto Lychee:',
 		);
 
