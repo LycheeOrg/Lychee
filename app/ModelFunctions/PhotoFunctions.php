@@ -554,7 +554,10 @@ class PhotoFunctions
 
 			$ffmpeg = FFMpeg\FFMpeg::create();
 			$video = $ffmpeg->open(stream_get_meta_data($fp_video)['uri']);
-			$video->save(new MOVFormat(), $uploadFolder . $filename_video_mov);
+			$format = new MOVFormat();
+			// Add additional parameter to extract the first video stream
+			$format->setAdditionalParameters(array('-map', '0:0'));
+			$video->save($format, $uploadFolder . $filename_video_mov);
 
 			// 3. Close files ($fp_video will be again deleted)
 			fclose($fp);

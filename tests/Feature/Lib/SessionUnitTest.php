@@ -10,11 +10,6 @@ class SessionUnitTest
 {
 	/**
 	 * Logging in.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $username
-	 * @param string   $password
-	 * @param string   $result
 	 */
 	public function login(
 		TestCase &$testCase,
@@ -31,9 +26,6 @@ class SessionUnitTest
 	}
 
 	/**
-	 * @param TestCase $testCase
-	 * @param string   $result
-	 *
 	 * @return TestResponse
 	 */
 	public function init(
@@ -51,8 +43,6 @@ class SessionUnitTest
 
 	/**
 	 * Logging out.
-	 *
-	 * @param TestCase $testCase
 	 */
 	public function logout(TestCase &$testCase)
 	{
@@ -63,11 +53,6 @@ class SessionUnitTest
 
 	/**
 	 * Set a new login and password.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $login
-	 * @param string   $password
-	 * @param string   $result
 	 */
 	public function set_new(
 		TestCase &$testCase,
@@ -85,13 +70,6 @@ class SessionUnitTest
 
 	/**
 	 * Set a new login and password.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $login
-	 * @param string   $password
-	 * @param string   $oldUsername
-	 * @param string   $oldPassword
-	 * @param string   $result
 	 */
 	public function set_old(
 		TestCase &$testCase,
@@ -111,9 +89,6 @@ class SessionUnitTest
 		$response->assertSee($result);
 	}
 
-	/**
-	 * @param int $id
-	 */
 	public function log_as_id(int $id)
 	{
 		$sessionFunctions = new SessionFunctions();

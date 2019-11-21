@@ -116,7 +116,7 @@ class PhotosTest extends TestCase
 		$array_content = json_decode($content);
 		$this->assertEquals(2, count($array_content->photos));
 
-		$ids = array();
+		$ids = [];
 		$ids[0] = $array_content->photos[0]->id;
 		$ids[1] = $array_content->photos[1]->id;
 		$photos_tests->delete($this, $ids[0], 'true');

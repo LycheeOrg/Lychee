@@ -408,6 +408,7 @@ final class Slovak implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Náhľad HiDPI',
 			'PHOTO_THUMB' => 'Štvorcový náhľad',
 			'PHOTO_THUMB_HIDPI' => 'Štvorcový náhľad HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Zobrazenie foto Lychee:',
 		);
 

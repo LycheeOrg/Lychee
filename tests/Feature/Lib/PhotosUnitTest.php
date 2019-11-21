@@ -11,9 +11,6 @@ class PhotosUnitTest
 	/**
 	 * Try upload a picture.
 	 *
-	 * @param TestCase     $testcase
-	 * @param UploadedFile $file
-	 *
 	 * @return string (id of the picture)
 	 */
 	public function upload(TestCase &$testcase, UploadedFile &$file)
@@ -31,8 +28,6 @@ class PhotosUnitTest
 
 	/**
 	 * Try uploading a picture without the file argument (will trigger the validate).
-	 *
-	 * @param TestCase $testcase
 	 */
 	public function wrong_upload(TestCase &$testcase)
 	{
@@ -45,8 +40,6 @@ class PhotosUnitTest
 
 	/**
 	 * Try uploading a picture without the file type (will trigger the hasfile).
-	 *
-	 * @param TestCase $testcase
 	 */
 	public function wrong_upload2(TestCase &$testcase)
 	{
@@ -61,10 +54,6 @@ class PhotosUnitTest
 
 	/**
 	 * Get a photo given a photo id.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $photo_id
-	 * @param string   $result
 	 *
 	 * @return TestResponse
 	 */
@@ -86,9 +75,6 @@ class PhotosUnitTest
 
 	/**
 	 * is ID visible in unsorted ?
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
 	 */
 	public function see_in_unsorted(TestCase &$testCase, string $id)
 	{
@@ -101,9 +87,6 @@ class PhotosUnitTest
 
 	/**
 	 * is ID NOT visible in unsorted ?
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
 	 */
 	public function dont_see_in_unsorted(TestCase &$testCase, string $id)
 	{
@@ -116,9 +99,6 @@ class PhotosUnitTest
 
 	/**
 	 * is ID visible in recent ?
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
 	 */
 	public function see_in_recent(TestCase &$testCase, string $id)
 	{
@@ -131,9 +111,6 @@ class PhotosUnitTest
 
 	/**
 	 * is ID NOT visible in recent ?
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
 	 */
 	public function dont_see_in_recent(TestCase &$testCase, string $id)
 	{
@@ -146,9 +123,6 @@ class PhotosUnitTest
 
 	/**
 	 * is ID visible in shared ?
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
 	 */
 	public function see_in_shared(TestCase &$testCase, string $id)
 	{
@@ -161,9 +135,6 @@ class PhotosUnitTest
 
 	/**
 	 * is ID NOT visible in shared ?
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
 	 */
 	public function dont_see_in_shared(TestCase &$testCase, string $id)
 	{
@@ -176,9 +147,6 @@ class PhotosUnitTest
 
 	/**
 	 * is ID visible in favorite ?
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
 	 */
 	public function see_in_favorite(TestCase &$testCase, string $id)
 	{
@@ -191,9 +159,6 @@ class PhotosUnitTest
 
 	/**
 	 * is ID NOT visible in favorite ?
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
 	 */
 	public function dont_see_in_favorite(TestCase &$testCase, string $id)
 	{
@@ -206,11 +171,6 @@ class PhotosUnitTest
 
 	/**
 	 * Set Title.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $title
-	 * @param string   $result
 	 */
 	public function set_title(
 		TestCase &$testCase,
@@ -231,11 +191,6 @@ class PhotosUnitTest
 
 	/**
 	 * Set Description.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $description
-	 * @param string   $result
 	 */
 	public function set_description(
 		TestCase &$testCase,
@@ -256,10 +211,6 @@ class PhotosUnitTest
 
 	/**
 	 * Set Star.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
 	 */
 	public function set_star(
 		TestCase &$testCase,
@@ -275,11 +226,6 @@ class PhotosUnitTest
 
 	/**
 	 * Set tags.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $tags
-	 * @param string   $result
 	 */
 	public function set_tag(
 		TestCase &$testCase,
@@ -297,10 +243,6 @@ class PhotosUnitTest
 
 	/**
 	 * Set public.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
 	 */
 	public function set_public(
 		TestCase &$testCase,
@@ -316,11 +258,6 @@ class PhotosUnitTest
 
 	/**
 	 * Set license.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $license
-	 * @param string   $result
 	 */
 	public function set_license(
 		TestCase &$testCase,
@@ -338,11 +275,6 @@ class PhotosUnitTest
 
 	/**
 	 * Set Album.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $album_id
-	 * @param string   $id
-	 * @param string   $result
 	 */
 	public function set_album(
 		TestCase &$testCase,
@@ -360,10 +292,6 @@ class PhotosUnitTest
 
 	/**
 	 * Duplicate a picture.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
 	 */
 	public function duplicate(
 		TestCase &$testCase,
@@ -379,10 +307,6 @@ class PhotosUnitTest
 
 	/**
 	 * We only test for a code 200.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $kind
 	 */
 	public function download(
 		TestCase &$testCase,
@@ -398,10 +322,6 @@ class PhotosUnitTest
 
 	/**
 	 * Delete a picture.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
 	 */
 	public function delete(
 		TestCase &$testCase,

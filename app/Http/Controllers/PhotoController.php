@@ -577,6 +577,10 @@ class PhotoController extends Controller
 				$url = Storage::path($prefix_path . $photo->url);
 				$kind = '';
 				break;
+			case 'LIVEPHOTOVIDEO':
+				$url = Storage::path($prefix_path . $photo->livePhotoUrl);
+				$kind = '';
+				break;
 			case 'MEDIUM2X':
 				if (strpos($photo->type, 'video') !== 0) {
 					$fileName = $photo->url;

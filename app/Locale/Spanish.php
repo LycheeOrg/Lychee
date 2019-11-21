@@ -400,6 +400,7 @@ final class Spanish implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Miniatura HiDPI',
 			'PHOTO_THUMB' => 'Cuadrado de Miniatura',
 			'PHOTO_THUMB_HIDPI' => 'Cuadrado de Miniatura HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Vista de Foto de Lychee',
 		);
 
