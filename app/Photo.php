@@ -319,10 +319,10 @@ class Photo extends Model
 		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
 		$photo['url'] = Storage::url($path_prefix . $this->url);
 
-		if($this->livePhotoUrl !== '') {
+		if($this->livePhotoUrl !== '' && $this->livePhotoUrl !== null) {
 			$photo['livePhotoUrl'] = Storage::url($path_prefix . $this->livePhotoUrl);
 		} else {
-			$photo['livePhotoUrl'] = '';
+			$photo['livePhotoUrl'] = null;
 		}
 
 

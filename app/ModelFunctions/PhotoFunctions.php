@@ -284,6 +284,7 @@ class PhotoFunctions
 			$photo->medium2x = $exists->medium2x;
 			$photo->small = $exists->small;
 			$photo->small2x = $exists->small2x;
+			$photo->livePhotoUrl = $exists->livePhotoUrl;
 			$exists = true;
 		}
 
@@ -356,7 +357,6 @@ class PhotoFunctions
 		$photo->altitude = $info['altitude'];
 		$photo->imgDirection = $info['imgDirection'];
 		$photo->livePhotoContentID = $info['livePhotoContentID'];
-		$photo->livePhotoUrl = '';// empty since we either extract it from jpg or from a second upload
 		$photo->public = $public;
 		$photo->star = $star;
 		$photo->checksum = $checksum;
