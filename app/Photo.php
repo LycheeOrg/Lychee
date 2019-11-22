@@ -159,7 +159,8 @@ class Photo extends Model
 		// Todo: We need to search for pairs (Video + Photo)
 		// Photo+Photo or Video+Video does not work
 		$sql = $this->where('livePhotoContentID', '=', $livePhotoContentID)
-		            ->where('album_id', '=', $albumID);
+		            ->where('album_id', '=', $albumID)
+		            ->whereNull('livePhotoUrl');
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
 
