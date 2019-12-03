@@ -3,6 +3,7 @@
 namespace App\Metadata;
 
 use App\Logs;
+use App\Configs;
 use FFMpeg;
 use Exception;
 
@@ -97,7 +98,6 @@ class Extractor
 				}
 			}
 		}
-
 		return $metadata;
 	}
 
@@ -112,14 +112,16 @@ class Extractor
 	public function extract_phpexif(string $filename, string $type, bool $force_native_extractor): array
 	{
 		$reader = null;
-		$path_exiftool = exec('which exiftool');
-		if(!(strpos($path_exiftool, 'exiftool')===false)){
+
+		if (Configs::hasExiftool()==true) {
 			// reader with Exiftool adapter
 			$reader = \PHPExif\Reader\Reader::factory(\PHPExif\Reader\Reader::TYPE_EXIFTOOL);
-		} else {
-			// reader with Native adapter
-			Logs::notice(__METHOD__, __LINE__, 'Exiftool not found - using php standard functions and FFMpeg (if available)');
+		} else if (strpos($type, 'video') !== 0) {
+			// It's a photo -> Use Php native tools
 			$reader = \PHPExif\Reader\Reader::factory(\PHPExif\Reader\Reader::TYPE_NATIVE);
+		} else {
+			// It's a video -> use FFProbe
+			$reader = \PHPExif\Reader\Reader::factory(\PHPExif\Reader\Reader::TYPE_FFPROBE);
 		}
 
 		$exif = $reader->read($filename);
@@ -142,6 +144,24 @@ class Extractor
 		$metadata['altitude'] = ($exif->getAltitude()!==false) ? $exif->getAltitude() : null;
 		$metadata['imgDirection'] = ($exif->getImgDirection()!==false) ? $exif->getImgDirection() : null;
 		$metadata['size'] = ($exif->getFileSize()!==false) ? $exif->getFileSize() : 0;
+
+		// Position
+		$fields = array();
+		if($exif->getCity()!==false) {
+			  $fields[] = trim($exif->getCity());
+		}
+		if($exif->getSublocation()!==false) {
+				$fields[] = trim($exif->getSublocation());
+		}
+		if($exif->getState()!==false) {
+				$fields[] = trim($exif->getState());
+		}
+		if($exif->getCountry()!==false) {
+				$fields[] = trim($exif->getCountry());
+		}
+		if (!empty($fields)) {
+			$metadata['position'] = implode(', ', $fields);
+		}
 
 		if ((strpos($type, 'video') !== 0)) {
 			$metadata['aperture'] = ($exif->getAperture()!==false) ? $exif->getAperture() : '';
