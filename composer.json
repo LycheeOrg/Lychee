@@ -17,7 +17,7 @@
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "maennchen/zipstream-php": "^1.2.0",
-        "miljar/php-exif": "dev-dev",
+        "miljar/php-exif": "dev-ffmpeg-adapter_fix-travis_add-fields",
         "php-ffmpeg/php-ffmpeg": "^0.14.0"
     },
     "repositories": [
