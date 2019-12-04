@@ -143,8 +143,7 @@ class Configs extends Model
 	/**
 	 * The best way to request a value from the config...
 	 *
-	 * @param string $key
-	 * @param mixed  $default
+	 * @param mixed $default
 	 *
 	 * @return int|bool|string
 	 */
@@ -185,7 +184,6 @@ class Configs extends Model
 	 * Update Lychee configuration
 	 * Note that we must invalidate the cache now.
 	 *
-	 * @param string $key
 	 * @param $value
 	 *
 	 * @return bool returns true when successful
@@ -266,7 +264,7 @@ class Configs extends Model
 		} else {
 			$has_exiftool = self::get_value('has_exiftool');
 		}
-		
+
 		return $has_exiftool;
 	}
 
