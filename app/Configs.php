@@ -250,7 +250,7 @@ class Configs extends Model
 	 */
 	public static function hasExiftool()
 	{
-			$has_exiftool = self::get_value('has_exiftool');
+		$has_exiftool = self::get_value('has_exiftool');
 		// value not yet set -> let's see if exiftool is available
 		if ($has_exiftool === null) {
 			$status = 0;
@@ -264,8 +264,9 @@ class Configs extends Model
 				$has_exiftool = true;
 			}
 		} else {
-        $has_exiftool = self::get_value('has_exiftool');
+			$has_exiftool = self::get_value('has_exiftool');
 		}
+		
 		return $has_exiftool;
 	}
 
