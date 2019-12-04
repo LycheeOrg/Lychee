@@ -92,7 +92,7 @@ class Extractor
 		$metadata['shutter'] = ($exif->getExposure() !== false) ? $exif->getExposure() : '';
 		$metadata['takestamp'] = ($exif->getCreationDate() !== false) ? $exif->getCreationDate()->format('Y-m-d H:i:s') : null;
 		$metadata['lens'] = ($exif->getLens() !== false) ? $exif->getLens() : '';
-		$metadata['tags'] = ($exif->getKeywords() !== false) ? ( is_array($exif->getKeywords()) ? implode(',', $exif->getKeywords()) : $exif->getKeywords() ): '';
+		$metadata['tags'] = ($exif->getKeywords() !== false) ? (is_array($exif->getKeywords()) ? implode(',', $exif->getKeywords()) : $exif->getKeywords() ): '';
 		$metadata['latitude'] = ($exif->getLatitude() !== false) ? $exif->getLatitude() : null;
 		$metadata['longitude'] = ($exif->getLongitude() !== false) ? $exif->getLongitude() : null;
 		$metadata['altitude'] = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
@@ -101,17 +101,17 @@ class Extractor
 
 		// Position
 		$fields = array();
-		if($exif->getCity() !== false) {
-        $fields[] = trim($exif->getCity());
+		if ($exif->getCity() !== false) {
+			$fields[] = trim($exif->getCity());
 		}
-		if($exif->getSublocation() !== false) {
-        $fields[] = trim($exif->getSublocation());
+		if ($exif->getSublocation() !== false) {
+			$fields[] = trim($exif->getSublocation());
 		}
-		if($exif->getState() !== false) {
-        $fields[] = trim($exif->getState());
+		if ($exif->getState() !== false) {
+			$fields[] = trim($exif->getState());
 		}
-		if($exif->getCountry() !== false) {
-        $fields[] = trim($exif->getCountry());
+		if ($exif->getCountry() !== false) {
+			$fields[] = trim($exif->getCountry());
 		}
 		if (!empty($fields)) {
 			$metadata['position'] = implode(', ', $fields);
@@ -129,7 +129,7 @@ class Extractor
 			$metadata['focal'] = ($exif->getFramerate() !== false) ? $exif->getFramerate() : '';
 		}
 
-		if ($metadata['title']=='') {
+		if ($metadata['title'] == '') {
 			$metadata['title'] = ($exif->getHeadline() !== false) ? $exif->getHeadline() : '';
 		}
 
