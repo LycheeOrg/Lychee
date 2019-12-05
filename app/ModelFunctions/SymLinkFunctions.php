@@ -2,7 +2,6 @@
 
 namespace App\ModelFunctions;
 
-use App;
 use App\Configs;
 use App\Photo;
 use App\SymLink;

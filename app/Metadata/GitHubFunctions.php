@@ -2,7 +2,6 @@
 
 namespace App\Metadata;
 
-use App;
 use App\Configs;
 use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;

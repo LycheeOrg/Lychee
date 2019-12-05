@@ -11,7 +11,7 @@ final class Greek implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'όνομα χρήστη',
 			'PASSWORD' => 'κωδικός πρόσβασης',
 			'ENTER' => 'Είσοδος',
@@ -401,7 +401,7 @@ final class Greek implements LangInterface
 			'PHOTO_THUMB' => 'Τετράγωνη Μικρογραφία',
 			'PHOTO_THUMB_HIDPI' => 'Τετράγωνη Μικρογραφία HiDPI',
 			'PHOTO_VIEW' => 'Lychee Προβολή Φωτογραφιών:',
-		);
+		];
 
 		return $locale;
 	}

@@ -3,8 +3,8 @@
 namespace App\Metadata;
 
 use App\Logs;
-use FFMpeg;
 use Exception;
+use FFMpeg;
 
 class Extractor
 {
@@ -111,7 +111,7 @@ class Extractor
 				}
 
 				// Position
-				$fields = array();
+				$fields = [];
 				if (!empty($imageInfo['2#090'])) {
 					$fields[] = trim($imageInfo['2#090'][0]);
 				}

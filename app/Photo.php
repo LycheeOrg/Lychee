@@ -167,7 +167,7 @@ class Photo extends Model
 	public function prepareData()
 	{
 		// Init
-		$photo = array();
+		$photo = [];
 
 		// Set unchanged attributes
 		$photo['id'] = strval($this->id);
@@ -321,7 +321,7 @@ class Photo extends Model
 	public function prepareLocationData()
 	{
 		// Init
-		$photo = array();
+		$photo = [];
 
 		// Set unchanged attributes
 		$photo['id'] = strval($this->id);

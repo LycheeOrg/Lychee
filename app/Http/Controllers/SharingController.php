@@ -94,15 +94,15 @@ class SharingController extends Controller
 			->orderBy('album_id', 'ASC')
 			->get();
 
-		$user_share = array();
+		$user_share = [];
 		foreach ($shared as $share) {
 			if (!isset($user_share[$share['user_id']])) {
-				$user_share[$share['user_id']] = array();
+				$user_share[$share['user_id']] = [];
 			}
 			$user_share[$share['user_id']][] = $share['album_id'];
 		}
 
-		$return_array = array();
+		$return_array = [];
 		foreach ($users as $user) {
 			if (!isset($user_share[$user->id])) {
 				$return_array[] = $user;

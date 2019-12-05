@@ -11,7 +11,7 @@ final class Czech implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'Uživatelské jméno',
 			'PASSWORD' => 'Heslo',
 			'ENTER' => 'Vložit',
@@ -409,7 +409,7 @@ final class Czech implements LangInterface
 			'PHOTO_THUMB' => 'Čtvercový náhled',
 			'PHOTO_THUMB_HIDPI' => 'Čtvercový náhled HiDPI',
 			'PHOTO_VIEW' => 'Zobrazení foto Lychee:',
-		);
+		];
 
 		return $locale;
 	}

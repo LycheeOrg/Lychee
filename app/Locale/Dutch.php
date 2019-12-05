@@ -11,7 +11,7 @@ final class Dutch implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'gebruikersnaam',
 			'PASSWORD' => 'wachtwoord',
 			'ENTER' => 'Enter',
@@ -401,7 +401,7 @@ final class Dutch implements LangInterface
 			'PHOTO_THUMB' => 'Square thumb',
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
-		);
+		];
 
 		return $locale;
 	}

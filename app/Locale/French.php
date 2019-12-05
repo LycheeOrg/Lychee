@@ -11,7 +11,7 @@ final class French implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'Nom d\'utilisateur',
 			'PASSWORD' => 'Mot de passe',
 			'ENTER' => 'Enter',
@@ -401,7 +401,7 @@ final class French implements LangInterface
 			'PHOTO_THUMB' => 'Square thumb',
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
-		);
+		];
 
 		return $locale;
 	}

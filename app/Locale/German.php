@@ -11,7 +11,7 @@ final class German implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'Benutzername',
 			'PASSWORD' => 'Kennwort',
 			'ENTER' => 'Eingabe',
@@ -409,7 +409,7 @@ final class German implements LangInterface
 			'PHOTO_THUMB' => 'Quadratische Miniaturansicht',
 			'PHOTO_THUMB_HIDPI' => 'Quadratische Miniaturansicht HiDPI',
 			'PHOTO_VIEW' => 'Lychee Foto Ansicht:',
-		);
+		];
 
 		return $locale;
 	}

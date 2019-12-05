@@ -15,7 +15,6 @@ use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
 use Exception;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Imagick;
@@ -50,6 +49,12 @@ class DiagnosticsController extends Controller
 	 */
 	private $pad_length = 27;
 
+	/**
+	 * @param ConfigFunctions  $configFunctions
+	 * @param GitHubFunctions  $gitHubFunctions
+	 * @param SessionFunctions $sessionFunctions
+	 * @param DiskUsage        $diskUsage
+	 */
 	public function __construct(
 		ConfigFunctions $configFunctions,
 		GitHubFunctions $gitHubFunctions,
@@ -87,17 +92,16 @@ class DiagnosticsController extends Controller
 		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
 		// 28 Nov 2021	 => 7.4 = DEPRECATED = ERROR
 
+		if (floatval(phpversion()) < $php_latest) {
+			$errors[] = 'Info: Latest version of PHP is ' . $php_latest;
+		}
+
 		if (floatval(phpversion()) < $php_error) {
 			$errors += ['Error: Upgrade to PHP ' . $php_error . ' or higher'];
 		}
 
 		if (floatval(phpversion()) < $php_warning) {
-			$errors[] = 'Info: Latest version of PHP is ' . $php_latest;
 			$errors += ['Warning: Upgrade to PHP ' . $php_latest . ' or higher'];
-		}
-
-		if (floatval(phpversion()) < $php_latest) {
-			$errors[] = 'Info: Latest version of PHP is ' . $php_latest;
 		}
 
 		// 32 or 64 bits ?
