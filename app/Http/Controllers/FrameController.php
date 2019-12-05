@@ -59,7 +59,7 @@ class FrameController extends Controller
 			return Response::error('Frame is not enabled');
 		}
 
-		$return = array();
+		$return = [];
 		$return['refresh'] = Configs::get_value('Mod_Frame_refresh') * 1000;
 
 		return $return;

@@ -1,10 +1,11 @@
 <?php
 
+/** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
-class AddForce32BitIds extends Migration
+class ConfigCheckUpdateEvery extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -13,18 +14,22 @@ class AddForce32BitIds extends Migration
 	 */
 	public function up()
 	{
+		if (!defined('INT')) {
+			define('INT', 'int');
+		}
+
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				[
-					'key' => 'force_32bit_ids',
-					'value' => '0',
-					'cat' => 'config',
-					'type_range' => '0|1',
-					'confidentiality' => '0',
+					'key' => 'update_check_every_days',
+					'value' => '3',
+					'confidentiality' => 2,
+					'cat' => 'Config',
+					'type_range' => INT,
 				],
 			]);
 		} else {
-			echo "Table configs does not exist\n";
+			echo "Table configs does not exists\n";
 		}
 	}
 
@@ -36,7 +41,7 @@ class AddForce32BitIds extends Migration
 	public function down()
 	{
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'force_32bit_ids')->delete();
+			Configs::where('key', '=', 'update_check_every_days')->delete();
 		}
 	}
 }

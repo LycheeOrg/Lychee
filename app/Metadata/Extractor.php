@@ -3,6 +3,7 @@
 namespace App\Metadata;
 
 use App\Configs;
+use PHPExif\Reader\Reader;
 
 class Extractor
 {
@@ -69,13 +70,13 @@ class Extractor
 
 		if (Configs::hasExiftool() == true) {
 			// reader with Exiftool adapter
-			$reader = \PHPExif\Reader\Reader::factory(\PHPExif\Reader\Reader::TYPE_EXIFTOOL);
+			$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
 		} elseif (strpos($type, 'video') !== 0) {
 			// It's a photo -> Use Php native tools
-			$reader = \PHPExif\Reader\Reader::factory(\PHPExif\Reader\Reader::TYPE_NATIVE);
+			$reader = Reader::factory(Reader::TYPE_NATIVE);
 		} else {
 			// It's a video -> use FFProbe
-			$reader = \PHPExif\Reader\Reader::factory(\PHPExif\Reader\Reader::TYPE_FFPROBE);
+			$reader = Reader::factory(Reader::TYPE_FFPROBE);
 		}
 
 		$exif = $reader->read($filename);
@@ -100,7 +101,7 @@ class Extractor
 		$metadata['size'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
 
 		// Position
-		$fields = array();
+		$fields = [];
 		if ($exif->getCity() !== false) {
 			$fields[] = trim($exif->getCity());
 		}

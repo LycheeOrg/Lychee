@@ -1,14 +1,13 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\ControllerFunctions;
 
 use App\Configs;
 use App\Logs;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
 
-class UpdateFunctions
+class ApplyUpdateFunctions
 {
 	/**
 	 * Arrayify a string and append it to $output.
@@ -37,7 +36,7 @@ class UpdateFunctions
 	 */
 	private function git_pull(array &$output)
 	{
-		$command = 'git pull https://github.com/LycheeOrg/Lychee-Laravel.git master 2>&1';
+		$command = 'git pull ' . Config::get('urls.git.pull') . ' master 2>&1';
 		exec($command, $output);
 	}
 

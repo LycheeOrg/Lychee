@@ -4,9 +4,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Album;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
-use App\Album;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -96,15 +96,15 @@ class SearchController extends Controller
 		]);
 
 		// Initialize return var
-		$return = array(
+		$return = [
 			'photos' => null,
 			'albums' => null,
 			'hash' => '',
-		);
+		];
 
 		$terms = explode(' ', $request['term']);
 
-		$escaped_terms = array();
+		$escaped_terms = [];
 
 		foreach ($terms as $term) {
 			$escaped_terms[] = SearchController::escape_like($term);

@@ -54,7 +54,7 @@ class SessionController extends Controller
 		$logged_in = $this->sessionFunctions->is_logged_in();
 
 		// Return settings
-		$return = array();
+		$return = [];
 
 		$return['api_V2'] = true;               // we are using api_V2
 		$return['sub_albums'] = true;           // Lychee-laravel does have sub albums

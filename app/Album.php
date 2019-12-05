@@ -164,15 +164,15 @@ class Album extends Model
 	public function prepareData()
 	{
 		// Init
-		$album = array();
+		$album = [];
 
 		// Set unchanged attributes
-		$album['id'] = $this->id;
+		$album['id'] = strval($this->id);
 		$album['title'] = $this->title;
 		$album['public'] = strval($this->public);
 		$album['full_photo'] = $this->full_photo_visible() ? '1' : '0';
 		$album['visible'] = strval($this->visible_hidden);
-		$album['parent_id'] = $this->parent_id;
+		$album['parent_id'] = $this->parent_id !== null ? strval($this->parent_id) : null;
 
 		// Additional attributes
 		// Only part of $album when available
@@ -194,13 +194,13 @@ class Album extends Model
 
 		// $album['owner'] will be set by the caller as needed.
 
-		$album['thumbs'] = array();
-		$album['thumbs2x'] = array();
-		$album['types'] = array();
+		$album['thumbs'] = [];
+		$album['thumbs2x'] = [];
+		$album['types'] = [];
 
 		// For server use only; will be unset before sending the response
 		// to the front end.
-		$album['thumbIDs'] = array();
+		$album['thumbIDs'] = [];
 
 		return $album;
 	}
@@ -212,7 +212,7 @@ class Album extends Model
 	 *
 	 * @return array
 	 */
-	private function get_all_sub_albums($return = array())
+	private function get_all_sub_albums($return = [])
 	{
 		foreach ($this->children as $album) {
 			$return[] = $album->id;

@@ -78,8 +78,8 @@ class AlbumController extends Controller
 	public function get(Request $request)
 	{
 		$request->validate(['albumID' => 'string|required']);
-		$return = array();
-		$return['albums'] = array();
+		$return = [];
+		$return['albums'] = [];
 		// Get photos
 		// Get album information
 		$UserId = $this->sessionFunctions->id();
@@ -155,10 +155,10 @@ class AlbumController extends Controller
 		$return['photos'] = $this->albumFunctions->photos($photos_sql, $full_photo);
 
 		$return['id'] = $request['albumID'];
-		$return['num'] = count($return['photos']);
+		$return['num'] = strval(count($return['photos']));
 
 		// finalize the loop
-		if ($return['num'] === 0) {
+		if ($return['num'] === '0') {
 			$return['photos'] = false;
 		}
 
@@ -176,7 +176,7 @@ class AlbumController extends Controller
 	{
 		$request->validate(['albumID' => 'string|required']);
 		$request->validate(['includeSubAlbums' => 'string|required']);
-		$return = array();
+		$return = [];
 		// Get photos
 		// Get album information
 		$UserId = $this->sessionFunctions->id();
@@ -221,7 +221,7 @@ class AlbumController extends Controller
 
 				$full_photo = $album->full_photo_visible();
 
-				$album_list = array();
+				$album_list = [];
 				if ($request['includeSubAlbums']) {
 					// Get all subalbums of the current album
 					$this->albumFunctions->get_sub_albums($album_list, $album);
@@ -358,7 +358,7 @@ class AlbumController extends Controller
 		// Reset permissions for photos
 		if ($album->public == 1) {
 			if ($album->photos()->count() > 0) {
-				if (!$album->photos()->update(array('public' => '0'))) {
+				if (!$album->photos()->update(['public' => '0'])) {
 					return 'false';
 				}
 			}
@@ -664,7 +664,7 @@ class AlbumController extends Controller
 		// Illicit chars
 		$badChars = array_merge(
 			array_map('chr', range(0, 31)),
-			array(
+			[
 				'<',
 				'>',
 				':',
@@ -674,7 +674,7 @@ class AlbumController extends Controller
 				'|',
 				'?',
 				'*',
-			)
+			]
 		);
 
 		$request->validate([
@@ -881,7 +881,7 @@ class AlbumController extends Controller
 
 		// Set file type and destination
 		$response->headers->set('Content-Type', 'application/x-zip');
-		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip');
+		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip', mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip');
 		$response->headers->set('Content-Disposition', $disposition);
 
 		// Disable caching

@@ -10,14 +10,24 @@ class UpdateTest extends TestCase
 {
 	private function do_call($result)
 	{
-		$response = $this->get('/api/Update', []);
+		$response = $this->post('/api/Update::Apply', []);
 		$response->assertOk();
 		$response->assertSee($result);
 	}
 
 	public function test_do_not_logged()
 	{
-		$this->do_call('false');
+		$response = $this->get('/Update', []);
+		$response->assertOk();
+		$response->assertSee('false');
+
+		$response = $this->post('/api/Update::Apply', []);
+		$response->assertOk();
+		$response->assertSee('false');
+
+		$response = $this->post('/api/Update::Check', []);
+		$response->assertOk();
+		$response->assertSee('false');
 	}
 
 	public function test_do_logged()
@@ -32,10 +42,14 @@ class UpdateTest extends TestCase
 
 		Configs::set('allow_online_git_pull', '1');
 
-		$response = $this->get('/api/Update', []);
+		$response = $this->get('/Update', []);
 		$response->assertOk();
 
-//		$this->do_call('"Already up to date"');
+		$response = $this->post('/api/Update::Apply', []);
+		$response->assertOk();
+
+		$response = $this->post('/api/Update::Check', []);
+		$response->assertOk();
 
 		Configs::set('allow_online_git_pull', $gitpull);
 

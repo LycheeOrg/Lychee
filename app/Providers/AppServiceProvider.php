@@ -3,11 +3,12 @@
 namespace App\Providers;
 
 use App\Configs;
+use App\ControllerFunctions\ApplyUpdateFunctions;
 use App\ControllerFunctions\ReadAccessFunctions;
-use App\ControllerFunctions\UpdateFunctions;
 use App\Image;
 use App\Image\ImageHandler;
 use App\Metadata\GitHubFunctions;
+use App\Metadata\GitRequest;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\PhotoFunctions;
@@ -19,16 +20,18 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-	public $singletons = [
-		SymLinkFunctions::class => SymLinkFunctions::class,
-		PhotoFunctions::class => PhotoFunctions::class,
-		AlbumFunctions::class => AlbumFunctions::class,
-		ConfigFunctions::class => ConfigFunctions::class,
-		SessionFunctions::class => SessionFunctions::class,
-		GitHubFunctions::class => GitHubFunctions::class,
-		UpdateFunctions::class => UpdateFunctions::class,
-		ReadAccessFunctions::class => ReadAccessFunctions::class,
-	];
+	public $singletons
+		= [
+			SymLinkFunctions::class => SymLinkFunctions::class,
+			PhotoFunctions::class => PhotoFunctions::class,
+			AlbumFunctions::class => AlbumFunctions::class,
+			ConfigFunctions::class => ConfigFunctions::class,
+			SessionFunctions::class => SessionFunctions::class,
+			GitRequest::class => GitRequest::class,
+			GitHubFunctions::class => GitHubFunctions::class,
+			ApplyUpdateFunctions::class => ApplyUpdateFunctions::class,
+			ReadAccessFunctions::class => ReadAccessFunctions::class,
+		];
 
 	/**
 	 * Bootstrap any application services.
@@ -57,10 +60,12 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
-			$compressionQuality = Configs::get_value('compression_quality', 90);
+		$this->app->singleton(Image\ImageHandlerInterface::class,
+			function ($app) {
+				$compressionQuality = Configs::get_value('compression_quality',
+					90);
 
-			return new ImageHandler($compressionQuality);
-		});
+				return new ImageHandler($compressionQuality);
+			});
 	}
 }

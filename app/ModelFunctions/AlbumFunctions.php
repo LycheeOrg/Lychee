@@ -187,7 +187,7 @@ class AlbumFunctions
 	 */
 	public function photosLocationData(Builder $photos_sql, bool $full_photo)
 	{
-		$return_photos = array();
+		$return_photos = [];
 		$photo_counter = 0;
 		$photos = $photos_sql->select('album_id', 'id', 'latitude', 'longitude', 'small', 'small2x', 'takestamp', 'thumb2x', 'thumbUrl', 'title', 'type', 'url')
 						 ->whereNotNull('latitude')
@@ -223,7 +223,7 @@ class AlbumFunctions
 	public function photos(Builder $photos_sql, bool $full_photo)
 	{
 		$previousPhotoID = '';
-		$return_photos = array();
+		$return_photos = [];
 		$photo_counter = 0;
 		$photos = $photos_sql->with('album')
 			->get();
@@ -299,7 +299,7 @@ class AlbumFunctions
 	 */
 	public function prepare_albums(?Collection $albums)
 	{
-		$return = array();
+		$return = [];
 
 		if ($albums != null) {
 			// For each album
@@ -338,12 +338,12 @@ class AlbumFunctions
 		$photos = $photos_sql->get();
 		$i = 0;
 
-		$return[$kind] = array(
-			'thumbs' => array(),
-			'thumbs2x' => array(),
-			'types' => array(),
-			'num' => $photos_sql->count(),
-		);
+		$return[$kind] = [
+			'thumbs' => [],
+			'thumbs2x' => [],
+			'types' => [],
+			'num' => strval($photos_sql->count()),
+		];
 
 		/*
 		 * @var Photo
@@ -424,12 +424,12 @@ class AlbumFunctions
 		/**
 		 * Initialize return var.
 		 */
-		$return = array(
+		$return = [
 			'unsorted' => null,
 			'public' => null,
 			'starred' => null,
 			'recent' => null,
-		);
+		];
 
 		if ($this->sessionFunctions->is_logged_in()) {
 			$UserId = $this->sessionFunctions->id();
@@ -616,10 +616,10 @@ class AlbumFunctions
 	 */
 	public function getToplevelAlbums()
 	{
-		$return = array(
+		$return = [
 			'albums' => null,
 			'shared_albums' => null,
-		);
+		];
 
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');

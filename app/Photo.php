@@ -167,16 +167,16 @@ class Photo extends Model
 	public function prepareData()
 	{
 		// Init
-		$photo = array();
+		$photo = [];
 
 		// Set unchanged attributes
-		$photo['id'] = $this->id;
+		$photo['id'] = strval($this->id);
 		$photo['title'] = $this->title;
 		$photo['tags'] = $this->tags;
 		$photo['star'] = $this->star == 1 ? '1' : '0';
-		$photo['album'] = $this->album_id;
-		$photo['width'] = $this->width;
-		$photo['height'] = $this->height;
+		$photo['album'] = $this->album_id !== null ? strval($this->album_id) : null;
+		$photo['width'] = strval($this->width);
+		$photo['height'] = strval($this->height);
 		$photo['type'] = $this->type;
 		$photo['size'] = $this->size;
 		$photo['iso'] = $this->iso;
@@ -321,12 +321,12 @@ class Photo extends Model
 	public function prepareLocationData()
 	{
 		// Init
-		$photo = array();
+		$photo = [];
 
 		// Set unchanged attributes
-		$photo['id'] = $this->id;
+		$photo['id'] = strval($this->id);
 		$photo['title'] = $this->title;
-		$photo['album'] = $this->album_id;
+		$photo['album'] = $this->album_id !== null ? strval($this->album_id) : null;
 		$photo['latitude'] = $this->latitude;
 		$photo['longitude'] = $this->longitude;
 

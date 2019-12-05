@@ -96,13 +96,16 @@ Route::post('/api/User::Delete', 'UserController@delete')->middleware('admin');
 Route::post('/api/User::Create', 'UserController@create')->middleware('admin');
 
 Route::post('/api/Logs', 'LogController@display')->middleware('admin');
-Route::get('/Logs', 'LogController@display')->middleware('admin');
 Route::post('/api/Logs::clearNoise', 'LogController@clearNoise')->middleware('admin');
-Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 Route::post('/api/Diagnostics', 'DiagnosticsController@get');
+
+Route::get('/Logs', 'LogController@display')->middleware('admin');
+Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 Route::get('/Diagnostics', 'DiagnosticsController@show');
 
-Route::get('/api/Update', 'UpdateController@do')->middleware('admin');
+Route::get('/Update', 'UpdateController@do')->middleware('admin');
+Route::post('/api/Update::Apply', 'UpdateController@do')->middleware('admin');
+Route::post('/api/Update::Check', 'UpdateController@check')->middleware('admin');
 
 // unused
 Route::post('/api/Logs::clear', 'LogController@clear')->middleware('admin');
