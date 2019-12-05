@@ -266,7 +266,7 @@ class Configs extends Model
 		} else {
 			$has_exiftool = self::get_value('has_exiftool');
 		}
-		
+
 		return $has_exiftool;
 	}
 
