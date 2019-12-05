@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83abffff50f6e527c1776513fa1e186d",
+    "content-hash": "a86083b9c1b553f4bfb6b14319f99087",
     "packages": [
         {
             "name": "alchemy/binary-driver",
-            "version": "v2.0.0",
+            "version": "5.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alchemy-fr/BinaryDriver.git",
-                "reference": "6ccde0e19e81e54da77b08da1a176d43e089f3a3"
+                "reference": "ae5abc1d51683f30494db76b688754683da87774"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alchemy-fr/BinaryDriver/zipball/6ccde0e19e81e54da77b08da1a176d43e089f3a3",
-                "reference": "6ccde0e19e81e54da77b08da1a176d43e089f3a3",
+                "url": "https://api.github.com/repos/alchemy-fr/BinaryDriver/zipball/ae5abc1d51683f30494db76b688754683da87774",
+                "reference": "ae5abc1d51683f30494db76b688754683da87774",
                 "shasum": ""
             },
             "require": {
@@ -67,7 +67,7 @@
                 "binary",
                 "driver"
             ],
-            "time": "2018-08-06T10:18:33+00:00"
+            "time": "2019-05-19T08:43:30+00:00"
         },
         {
             "name": "bepsvpt/secure-headers",
@@ -963,16 +963,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v6.6.1",
+            "version": "v6.6.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "0a8e3e6e96e5ec3af6b9f30026cb8e5551554875"
+                "reference": "27efba7e13aaf91a87ae9a63db158e943eb71410"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/0a8e3e6e96e5ec3af6b9f30026cb8e5551554875",
-                "reference": "0a8e3e6e96e5ec3af6b9f30026cb8e5551554875",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/27efba7e13aaf91a87ae9a63db158e943eb71410",
+                "reference": "27efba7e13aaf91a87ae9a63db158e943eb71410",
                 "shasum": ""
             },
             "require": {
@@ -1068,7 +1068,7 @@
                 "league/flysystem-sftp": "Required to use the Flysystem SFTP driver (^1.0).",
                 "moontoast/math": "Required to use ordered UUIDs (^1.1).",
                 "pda/pheanstalk": "Required to use the beanstalk queue driver (^4.0).",
-                "psr/http-message": "Required to allow Storage::put to accept a StreamInterface (^1.0)",
+                "psr/http-message": "Required to allow Storage::put to accept a StreamInterface (^1.0).",
                 "pusher/pusher-php-server": "Required to use the Pusher broadcast driver (^4.0).",
                 "symfony/cache": "Required to PSR-6 cache bridge (^4.3.4).",
                 "symfony/psr-http-message-bridge": "Required to use PSR-7 bridging features (^1.2).",
@@ -1105,7 +1105,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2019-12-03T15:23:55+00:00"
+            "time": "2019-12-05T13:49:53+00:00"
         },
         {
             "name": "laravel/tinker",
@@ -1385,6 +1385,72 @@
                 "zip"
             ],
             "time": "2019-07-17T11:01:58+00:00"
+        },
+        {
+            "name": "miljar/php-exif",
+            "version": "dev-ffmpeg-adapter_fix-travis_add-fields",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tmp-hallenser/php-exif.git",
+                "reference": "9764e6b294ec7e5dc410bb0075431151164aef8c"
+            },
+            "require": {
+                "php": ">=7.1",
+                "php-ffmpeg/php-ffmpeg": "^0.14.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16",
+                "jakub-onderka/php-parallel-lint": "^1.0",
+                "php-coveralls/php-coveralls": "^2.2",
+                "phpmd/phpmd": "^2.7",
+                "phpunit/phpunit": ">=8.4",
+                "sebastian/phpcpd": "^4.1",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "suggest": {
+                "FFmpeg": "Use FFmpeg/FFprobe as adapter",
+                "ext-exif": "Use exif PHP extension as adapter",
+                "lib-exiftool": "Use perl lib exiftool as adapter"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPExif": "lib/"
+                }
+            },
+            "scripts": {
+                "check-code-style": [
+                    "vendor/bin/phpcs --standard=PSR2 ./lib/"
+                ],
+                "run-tests": [
+                    "vendor/bin/phpunit -c phpunit.xml.dist",
+                    "vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml"
+                ],
+                "validate-files": [
+                    "vendor/bin/parallel-lint --exclude vendor ."
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tom Van Herreweghe",
+                    "homepage": "http://theanalogguy.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Object-Oriented EXIF parsing",
+            "keywords": [
+                "EXIF",
+                "FFmpeg",
+                "FFprobe",
+                "IPTC",
+                "exiftool",
+                "jpeg",
+                "tiff"
+            ],
+            "time": "2019-12-05T10:21:26+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -1779,22 +1845,22 @@
         },
         {
             "name": "php-ffmpeg/php-ffmpeg",
-            "version": "v0.13",
+            "version": "v0.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHP-FFMpeg/PHP-FFMpeg.git",
-                "reference": "c11b79ab5b0174aa1a56c54c67491169e78a4c17"
+                "reference": "f9cc3d0c429fade5a144db674272eb8b48db8dce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHP-FFMpeg/PHP-FFMpeg/zipball/c11b79ab5b0174aa1a56c54c67491169e78a4c17",
-                "reference": "c11b79ab5b0174aa1a56c54c67491169e78a4c17",
+                "url": "https://api.github.com/repos/PHP-FFMpeg/PHP-FFMpeg/zipball/f9cc3d0c429fade5a144db674272eb8b48db8dce",
+                "reference": "f9cc3d0c429fade5a144db674272eb8b48db8dce",
                 "shasum": ""
             },
             "require": {
-                "alchemy/binary-driver": "^1.5 || ~2.0.0",
+                "alchemy/binary-driver": "^1.5 || ~2.0.0 || ^5.0",
                 "doctrine/cache": "^1.0",
-                "evenement/evenement": "^2.0 || ^1.0",
+                "evenement/evenement": "^3.0 || ^2.0 || ^1.0",
                 "neutron/temporary-filesystem": "^2.1.1",
                 "php": "^5.3.9 || ^7.0"
             },
@@ -1859,7 +1925,7 @@
                 "video",
                 "video processing"
             ],
-            "time": "2018-08-06T20:02:43+00:00"
+            "time": "2019-02-26T17:04:09+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -6915,7 +6981,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "miljar/php-exif": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
