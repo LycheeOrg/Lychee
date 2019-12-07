@@ -14,7 +14,7 @@ class ConfigFunctions
 	 */
 	public function get_pages_infos()
 	{
-		$infos = array();
+		$infos = [];
 		$infos['owner'] = Configs::get_value('landing_owner');
 		$infos['title'] = Configs::get_value('landing_title');
 		$infos['subtitle'] = Configs::get_value('landing_subtitle');

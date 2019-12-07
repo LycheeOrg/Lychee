@@ -1,9 +1,9 @@
 <?php
 
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Database\Migrations\Migration;
 
 /*
 MariaDB [lychee]> show columns from lychee_settings;
@@ -36,11 +36,11 @@ class CreateConfigsTable extends Migration
 				['key' => 'version', 'value' => '040000'],
 				['key' => 'username', 'value' => ''],
 				['key' => 'password', 'value' => ''],
-				['key' => 'checkForUpdates', 'value' => '1'],
+				['key' => 'checkForUpdates', 'value' => '0'],
 				['key' => 'sortingPhotos_col', 'value' => 'takestamp'],
 				['key' => 'sortingPhotos_order', 'value' => 'ASC'],
-				['key' => 'sortingAlbums_col', 'value' => 'description'],
-				['key' => 'sortingAlbums_order', 'value' => 'DESC'],
+				['key' => 'sortingAlbums_col', 'value' => 'max_takestamp'],
+				['key' => 'sortingAlbums_order', 'value' => 'ASC'],
 				['key' => 'imagick', 'value' => '1'],
 				['key' => 'dropboxKey', 'value' => ''],
 				['key' => 'skipDuplicates', 'value' => '0'],
@@ -51,13 +51,13 @@ class CreateConfigsTable extends Migration
 				['key' => 'lang', 'value' => 'en'],
 				['key' => 'layout', 'value' => '1'],
 				['key' => 'image_overlay', 'value' => '1'],
-				['key' => 'image_overlay_type', 'value' => 'exif'],
+				['key' => 'image_overlay_type', 'value' => 'desc'],
 				['key' => 'default_license', 'value' => 'none'],
 				['key' => 'compression_quality', 'value' => '90'],
 				['key' => 'full_photo', 'value' => '1'],
 				['key' => 'deleteImported', 'value' => '0'],
 
-				['key' => 'Mod_Frame', 'value' => '0'],
+				['key' => 'Mod_Frame', 'value' => '1'],
 				['key' => 'Mod_Frame_refresh', 'value' => '30000'],
 			]);
 		} else {

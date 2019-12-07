@@ -18,7 +18,7 @@ class ImageHandler implements ImageHandlerInterface
 	public function __construct(int $compressionQuality)
 	{
 		$this->compressionQuality = $compressionQuality;
-		$this->engines = array();
+		$this->engines = [];
 		if (Configs::hasImagick()) {
 			$this->engines[] = new ImagickHandler($this->compressionQuality);
 		}

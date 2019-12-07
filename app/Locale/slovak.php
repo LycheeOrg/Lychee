@@ -11,7 +11,7 @@ final class Slovak implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'Meno užívateľa',
 			'PASSWORD' => 'Heslo',
 			'ENTER' => 'Zadať',
@@ -410,7 +410,7 @@ final class Slovak implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Štvorcový náhľad HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Zobrazenie foto Lychee:',
-		);
+		];
 
 		return $locale;
 	}

@@ -3,8 +3,8 @@
 namespace App\Metadata;
 
 use App\Configs;
-use Config;
 use App\ModelFunctions\JsonRequestFunctions;
+use Config;
 
 class GitRequest extends JsonRequestFunctions
 {

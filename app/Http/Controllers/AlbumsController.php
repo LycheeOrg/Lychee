@@ -9,8 +9,8 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
-use App\User;
 use App\Response;
+use App\User;
 use Illuminate\Database\Eloquent\Builder;
 
 class AlbumsController extends Controller
@@ -44,11 +44,11 @@ class AlbumsController extends Controller
 		Configs::get();
 
 		// Initialize return var
-		$return = array(
+		$return = [
 			'smartalbums' => null,
 			'albums' => null,
 			'shared_albums' => null,
-		);
+		];
 
 		$toplevel = $this->albumFunctions->getToplevelAlbums();
 		if ($toplevel === null) {
@@ -71,7 +71,7 @@ class AlbumsController extends Controller
 		Configs::get();
 
 		// Initialize return var
-		$return = array();
+		$return = [];
 
 		$albumIDs = $this->albumFunctions->getPublicAlbums();
 

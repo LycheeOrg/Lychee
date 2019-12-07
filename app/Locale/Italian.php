@@ -11,7 +11,7 @@ final class Italian implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'nome utente',
 			'PASSWORD' => 'password',
 			'ENTER' => 'Invia',
@@ -408,7 +408,7 @@ final class Italian implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
-		);
+		];
 
 		return $locale;
 	}

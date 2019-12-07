@@ -11,7 +11,7 @@ final class English implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'username',
 			'PASSWORD' => 'password',
 			'ENTER' => 'Enter',
@@ -402,7 +402,7 @@ final class English implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
-		);
+		];
 
 		return $locale;
 	}

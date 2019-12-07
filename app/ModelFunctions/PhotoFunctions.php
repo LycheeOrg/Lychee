@@ -36,26 +36,26 @@ class PhotoFunctions
 	/**
 	 * @var array
 	 */
-	public $validTypes = array(
+	public $validTypes = [
 		IMAGETYPE_JPEG,
 		IMAGETYPE_GIF,
 		IMAGETYPE_PNG,
-	);
+	];
 
 	/**
 	 * @var array
 	 */
-	public $validVideoTypes = array(
+	public $validVideoTypes = [
 		'video/mp4',
 		'video/ogg',
 		'video/webm',
 		'video/quicktime',
-	);
+	];
 
 	/**
 	 * @var array
 	 */
-	public $validExtensions = array(
+	public $validExtensions = [
 		'.jpg',
 		'.jpeg',
 		'.png',
@@ -64,7 +64,7 @@ class PhotoFunctions
 		'.mp4',
 		'.webm',
 		'.mov',
-	);
+	];
 
 	/**
 	 * PhotoFunctions constructor.

@@ -15,7 +15,6 @@ use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
 use Exception;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Imagick;
@@ -71,32 +70,38 @@ class DiagnosticsController extends Controller
 	/**
 	 * Return the list of error which are currently breaking Lychee.
 	 *
-	 *
 	 * @return array
 	 */
 	public function get_errors()
 	{
 		// Declare
-		$errors = array();
+		$errors = [];
 
 		// PHP Version
 
 		// As we cannot test this as those are just raising warnings which we cannot check via Travis.
 		// I hereby solemnly  declare this code as covered !
-
 		// @codeCoverageIgnoreStart
-		if (floatval(phpversion()) < 7.2) {
-			$errors[] = 'Warning: Upgrade to PHP 7.2 or higher';
-			// on Dec 1 2019 enable this to an error.
-//			$errors += ['Error: Upgrade to PHP 7.2 or higher'];
+
+		$php_error = 7.2;
+		$php_warning = 7.3;
+		$php_latest = 7.4;
+
+		// 30 Nov 2019	 => 7.2 = DEPRECATED = ERROR
+		// 28 Nov 2019	 => 7.4 = RELEASED   => 7.3 = WARNING
+		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
+		// 28 Nov 2021	 => 7.4 = DEPRECATED = ERROR
+
+		if (floatval(phpversion()) < $php_latest) {
+			$errors[] = 'Info: Latest version of PHP is ' . $php_latest;
 		}
 
-		if (floatval(phpversion()) < 7.3) {
-			$errors[] = 'Info: Latest version of PHP is 7.3';
-			// on November 30 2019 enable this as warning.
-//			$errors += ['Warning: Upgrade to PHP 7.3 or higher'];
-			// on November 30 2020 enable this as warning.
-//			$errors += ['Error: Upgrade to PHP 7.3 or higher'];
+		if (floatval(phpversion()) < $php_error) {
+			$errors += ['Error: Upgrade to PHP ' . $php_error . ' or higher'];
+		}
+
+		if (floatval(phpversion()) < $php_warning) {
+			$errors += ['Warning: Upgrade to PHP ' . $php_latest . ' or higher'];
 		}
 
 		// 32 or 64 bits ?
@@ -250,7 +255,7 @@ class DiagnosticsController extends Controller
 	public function get_info()
 	{
 		// Declare
-		$infos = array();
+		$infos = [];
 
 		// Load settings
 		$settings = Configs::get();
@@ -369,7 +374,7 @@ class DiagnosticsController extends Controller
 	public function get_config()
 	{
 		// Declare
-		$configs = array();
+		$configs = [];
 
 		// Load settings
 		$settings = $this->configFunctions->min_info();
