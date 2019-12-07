@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Configs;
-use App\ControllerFunctions\ReadAccessFunctions;
 use App\ControllerFunctions\ApplyUpdateFunctions;
+use App\ControllerFunctions\ReadAccessFunctions;
 use App\Image;
 use App\Image\ImageHandler;
 use App\Metadata\GitHubFunctions;

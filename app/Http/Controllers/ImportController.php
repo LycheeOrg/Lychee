@@ -68,7 +68,7 @@ class ImportController extends Controller
 		// $photo->add will take care of it.
 		$mime = mime_content_type($path);
 
-		$nameFile = array();
+		$nameFile = [];
 		$nameFile['name'] = $path;
 		$nameFile['type'] = $mime;
 		$nameFile['tmp_name'] = $path;

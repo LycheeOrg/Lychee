@@ -162,7 +162,7 @@ class PhotoController extends Controller
 		// Only process the first photo in the array
 		$file = $request->file('0');
 
-		$nameFile = array();
+		$nameFile = [];
 		$nameFile['name'] = $file->getClientOriginalName();
 		$nameFile['type'] = $file->getMimeType();
 		$nameFile['tmp_name'] = $file->getPathName();
@@ -533,7 +533,7 @@ class PhotoController extends Controller
 		// Illicit chars
 		$badChars = array_merge(
 			array_map('chr', range(0, 31)),
-			array(
+			[
 				'<',
 				'>',
 				':',
@@ -543,7 +543,7 @@ class PhotoController extends Controller
 				'|',
 				'?',
 				'*',
-			)
+			]
 		);
 
 		$photo = Photo::with('album')->find($photoID);
@@ -651,7 +651,7 @@ class PhotoController extends Controller
 			$extension = Helpers::getExtension($url, false);
 		}
 
-		return array($title, $kind, $extension, $url);
+		return [$title, $kind, $extension, $url];
 	}
 
 	/**

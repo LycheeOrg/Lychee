@@ -26,11 +26,11 @@ class AddHidpi extends Migration
 					],
 					[
 						'key' => 'small_2x',
-						'value' => '0',
+						'value' => '1',
 					],
 					[
 						'key' => 'medium_2x',
-						'value' => '0',
+						'value' => '1',
 					],
 				]);
 			} else {

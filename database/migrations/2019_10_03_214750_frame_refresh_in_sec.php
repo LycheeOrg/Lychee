@@ -1,8 +1,8 @@
 <?php
 
 use App\Configs;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class FrameRefreshInSec extends Migration
 {

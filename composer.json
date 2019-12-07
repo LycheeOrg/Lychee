@@ -17,8 +17,8 @@
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "maennchen/zipstream-php": "^1.2.0",
-        "php-ffmpeg/php-ffmpeg": "^0.13.0",
-        "miljar/php-exif": "dev-dev"
+        "miljar/php-exif": "dev-ffmpeg-adapter_fix-travis_add-fields",
+        "php-ffmpeg/php-ffmpeg": "^0.14.0"
     },
     "repositories": [
         {
@@ -31,7 +31,7 @@
         "ext-imagick": "*",
         "barryvdh/laravel-ide-helper": "^2.6",
         "filp/whoops": "^2.5",
-        "friendsofphp/php-cs-fixer": "^2.15",
+        "friendsofphp/php-cs-fixer": "^2.16",
         "fzaninotto/faker": "^1.8",
         "itsgoingd/clockwork": "^3.1",
         "laravel/homestead": "^8.6",
