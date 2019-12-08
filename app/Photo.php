@@ -488,7 +488,7 @@ class Photo extends Model
 			// Delete Live Photo Video file
 			// TODO: USE STORAGE FOR DELETE
 			// check first if livePhotoUrl is available
-			if ($this->livePhotoUrl !== '') {
+			if ($this->livePhotoUrl !== null) {
 				if (!Storage::exists($path_prefix . $this->livePhotoUrl)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->livePhotoUrl));
 					$error = true;
