@@ -378,23 +378,22 @@ class PhotoFunctions
 		}
 
 		$livePhotoPartner = false;
-		if($photo->livePhotoContentID) {
+		if ($photo->livePhotoContentID) {
 			$livePhotoPartner = $photo->findLivePhotoPartner($photo->livePhotoContentID, $photo->album_id);
 		}
 
 		$no_error = true;
 		$skip_db_entry_creation = false;
-		if(!($livePhotoPartner===false)){
+		if (!($livePhotoPartner === false)) {
 			// if both are a photo or a video -> it's not a live photo
-			if(in_array($photo->type, $this->validVideoTypes, true)===in_array($livePhotoPartner->type, $this->validVideoTypes, true)) {
+			if (in_array($photo->type, $this->validVideoTypes, true) === in_array($livePhotoPartner->type, $this->validVideoTypes, true)) {
 				$livePhotoPartner = false;
 			}
 		}
 
-		if(!($livePhotoPartner===false)){
-
+		if (!($livePhotoPartner === false)) {
 			// I'm uploading a photo, video already exists
-			if(!(in_array($photo->type, $this->validVideoTypes, true))) {
+			if (!(in_array($photo->type, $this->validVideoTypes, true))) {
 				$photo->livePhotoUrl = $livePhotoPartner->url;
 				// Todo: Delete the livePhotoPartner
 				$no_error &= $livePhotoPartner->predelete(true);
@@ -402,15 +401,11 @@ class PhotoFunctions
 			}
 		}
 
-
-
 		if ($exists === false) {
-
 			// Generate small files for 2 options:
 			// (1) There is no Live Photo Partner
 			// (2) There is a partner and we're uploading a photo
-			if(($livePhotoPartner===false) || !(in_array($photo->type, $this->validVideoTypes, true))) {
-
+			if (($livePhotoPartner === false) || !(in_array($photo->type, $this->validVideoTypes, true))) {
 				// Set orientation based on EXIF data
 				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
 					$rotation = $this->imageHandler->autoRotate($path, $info);
@@ -449,7 +444,7 @@ class PhotoFunctions
 
 					$this->createSmallerImages($photo, $frame_tmp);
 
-					if($GoogleMicroVideoOffset) {
+					if ($GoogleMicroVideoOffset) {
 						$this->extractVideo($photo, $GoogleMicroVideoOffset, $frame_tmp);
 					}
 
@@ -466,12 +461,12 @@ class PhotoFunctions
 				$no_error &= $livePhotoPartner->save();
 				$skip_db_entry_creation = true;
 			}
-
 		}
 		// In case it's a live photo and we've uploaded the video
-		if($skip_db_entry_creation===true) {
+		if ($skip_db_entry_creation === true) {
 			return $livePhotoPartner->id;
 		}
+
 		return $this->save($photo, $albumID);
 	}
 
@@ -538,7 +533,6 @@ class PhotoFunctions
 		}
 
 		try {
-
 			// 1. Extract the video part
 			$fp = fopen($uploadFolder . $photo->url, 'r+');
 			$fp_video = tmpfile(); // use a temporary file, will be delted once closed
@@ -556,7 +550,7 @@ class PhotoFunctions
 			$video = $ffmpeg->open(stream_get_meta_data($fp_video)['uri']);
 			$format = new MOVFormat();
 			// Add additional parameter to extract the first video stream
-			$format->setAdditionalParameters(array('-map', '0:0'));
+			$format->setAdditionalParameters(['-map', '0:0']);
 			$video->save($format, $uploadFolder . $filename_video_mov);
 
 			// 3. Close files ($fp_video will be again deleted)
@@ -565,17 +559,14 @@ class PhotoFunctions
 
 			// Save file path
 			$photo->livePhotoUrl = $filename_video_mov;
-
 		} catch (Exception $exception) {
-
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 
 			return false;
 		}
+
 		return true;
-
 	}
-
 
 	/**
 	 * Creates smaller copies of Photo.
@@ -765,34 +756,33 @@ class PhotoFunctions
 	}
 }
 
-
 // Class for FFMpeg to convert files to mov format
 class MOVFormat extends FFMpeg\Format\Video\DefaultVideo
 {
-    public function __construct($audioCodec = 'copy', $videoCodec = 'copy')
-    {
-        $this
-            ->setAudioCodec($audioCodec)
-            ->setVideoCodec($videoCodec);
-    }
+	public function __construct($audioCodec = 'copy', $videoCodec = 'copy')
+	{
+		$this
+			->setAudioCodec($audioCodec)
+			->setVideoCodec($videoCodec);
+	}
 
-    public function supportBFrames()
-    {
-        return false;
-    }
+	public function supportBFrames()
+	{
+		return false;
+	}
 
-    public function getExtraParams()
-    {
-        return array('-f', 'mov');
-    }
+	public function getExtraParams()
+	{
+		return ['-f', 'mov'];
+	}
 
-    public function getAvailableAudioCodecs()
-    {
-        return array('copy');
-    }
+	public function getAvailableAudioCodecs()
+	{
+		return ['copy'];
+	}
 
-    public function getAvailableVideoCodecs()
-    {
-        return array('copy');
-    }
+	public function getAvailableVideoCodecs()
+	{
+		return ['copy'];
+	}
 }

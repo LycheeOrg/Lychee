@@ -149,6 +149,7 @@ class Photo extends Model
 	 * Searches for a match of the livePhotoContentID to build a pair
 	 * of photo and video to form a live Photo
 	 * Warning: Only return the first hit!
+	 *
 	 * @param string $livePhotoContentID
 	 * @param string $albumID
 	 *
@@ -159,8 +160,9 @@ class Photo extends Model
 		// Todo: We need to search for pairs (Video + Photo)
 		// Photo+Photo or Video+Video does not work
 		$sql = $this->where('livePhotoContentID', '=', $livePhotoContentID)
-		            ->where('album_id', '=', $albumID)
-		            ->whereNull('livePhotoUrl');
+					->where('album_id', '=', $albumID)
+					->whereNull('livePhotoUrl');
+
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
 
@@ -320,12 +322,11 @@ class Photo extends Model
 		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
 		$photo['url'] = Storage::url($path_prefix . $this->url);
 
-		if($this->livePhotoUrl !== '' && $this->livePhotoUrl !== null) {
+		if ($this->livePhotoUrl !== '' && $this->livePhotoUrl !== null) {
 			$photo['livePhotoUrl'] = Storage::url($path_prefix . $this->livePhotoUrl);
 		} else {
 			$photo['livePhotoUrl'] = null;
 		}
-
 
 		// Use takestamp as sysdate when possible
 		if (isset($this->takestamp) && $this->takestamp != null) {
@@ -449,6 +450,7 @@ class Photo extends Model
 
 	/**
 	 * Before calling the delete() method which will remove the entry from the database, we need to remove the files.
+	 *
 	 * @param bool $keep_original
 	 *
 	 * @return bool
@@ -463,7 +465,7 @@ class Photo extends Model
 
 		$error = false;
 		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
-		if($keep_original===false) {
+		if ($keep_original === false) {
 			// quick check...
 			if (!Storage::exists($path_prefix . $this->url)) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->url));
@@ -472,9 +474,7 @@ class Photo extends Model
 				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($path_prefix . $this->url));
 				$error = true;
 			}
-
 		}
-
 
 		if (strpos($this->type, 'video') === 0) {
 			$photoName = $this->thumbUrl;
@@ -488,7 +488,7 @@ class Photo extends Model
 			// Delete Live Photo Video file
 			// TODO: USE STORAGE FOR DELETE
 			// check first if livePhotoUrl is available
-			if($this->livePhotoUrl !== '') {
+			if ($this->livePhotoUrl !== '') {
 				if (!Storage::exists($path_prefix . $this->livePhotoUrl)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->livePhotoUrl));
 					$error = true;
@@ -497,7 +497,6 @@ class Photo extends Model
 					$error = true;
 				}
 			}
-
 
 			// Delete medium
 			// TODO: USE STORAGE FOR DELETE
