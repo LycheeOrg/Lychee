@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a86083b9c1b553f4bfb6b14319f99087",
+    "content-hash": "7ae26f65f4b15e9af84840153e7ccb34",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -135,25 +135,25 @@
         },
         {
             "name": "dnoegel/php-xdg-base-dir",
-            "version": "0.1",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dnoegel/php-xdg-base-dir.git",
-                "reference": "265b8593498b997dc2d31e75b89f053b5cc9621a"
+                "reference": "8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dnoegel/php-xdg-base-dir/zipball/265b8593498b997dc2d31e75b89f053b5cc9621a",
-                "reference": "265b8593498b997dc2d31e75b89f053b5cc9621a",
+                "url": "https://api.github.com/repos/dnoegel/php-xdg-base-dir/zipball/8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd",
+                "reference": "8f8a6e48c5ecb0f991c2fdcf5f154a47d85f9ffd",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "@stable"
+                "phpunit/phpunit": "~7.0|~6.0|~5.0|~4.8.35"
             },
-            "type": "project",
+            "type": "library",
             "autoload": {
                 "psr-4": {
                     "XdgBaseDir\\": "src/"
@@ -164,7 +164,7 @@
                 "MIT"
             ],
             "description": "implementation of xdg base directory specification for php",
-            "time": "2014-10-24T07:27:01+00:00"
+            "time": "2019-12-04T15:06:13+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -1392,7 +1392,7 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/tmp-hallenser/php-exif.git",
-                "reference": "9764e6b294ec7e5dc410bb0075431151164aef8c"
+                "reference": "ceb6337afb659a029926b8aaac19cd8cad38f5a2"
             },
             "require": {
                 "php": ">=7.1",
@@ -1450,7 +1450,7 @@
                 "jpeg",
                 "tiff"
             ],
-            "time": "2019-12-05T10:21:26+00:00"
+            "time": "2019-12-07T05:36:49+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -2177,20 +2177,20 @@
         },
         {
             "name": "psy/psysh",
-            "version": "v0.9.11",
+            "version": "v0.9.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
-                "reference": "75d9ac1c16db676de27ab554a4152b594be4748e"
+                "reference": "90da7f37568aee36b116a030c5f99c915267edd4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/75d9ac1c16db676de27ab554a4152b594be4748e",
-                "reference": "75d9ac1c16db676de27ab554a4152b594be4748e",
+                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/90da7f37568aee36b116a030c5f99c915267edd4",
+                "reference": "90da7f37568aee36b116a030c5f99c915267edd4",
                 "shasum": ""
             },
             "require": {
-                "dnoegel/php-xdg-base-dir": "0.1",
+                "dnoegel/php-xdg-base-dir": "0.1.*",
                 "ext-json": "*",
                 "ext-tokenizer": "*",
                 "jakub-onderka/php-console-highlighter": "0.3.*|0.4.*",
@@ -2247,7 +2247,7 @@
                 "interactive",
                 "shell"
             ],
-            "time": "2019-11-27T22:44:29+00:00"
+            "time": "2019-12-06T14:19:43+00:00"
         },
         {
             "name": "ramsey/uuid",
@@ -5737,16 +5737,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "8.4.3",
+            "version": "8.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "67f9e35bffc0dd52d55d565ddbe4230454fd6a4e"
+                "reference": "3ee1c1fd6fc264480c25b6fb8285edefe1702dab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/67f9e35bffc0dd52d55d565ddbe4230454fd6a4e",
-                "reference": "67f9e35bffc0dd52d55d565ddbe4230454fd6a4e",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/3ee1c1fd6fc264480c25b6fb8285edefe1702dab",
+                "reference": "3ee1c1fd6fc264480c25b6fb8285edefe1702dab",
                 "shasum": ""
             },
             "require": {
@@ -5790,7 +5790,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "8.4-dev"
+                    "dev-master": "8.5-dev"
                 }
             },
             "autoload": {
@@ -5816,7 +5816,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-11-06T09:42:23+00:00"
+            "time": "2019-12-06T05:41:38+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -6860,8 +6860,8 @@
             "authors": [
                 {
                     "name": "Arne Blankerts",
-                    "role": "Developer",
-                    "email": "arne@blankerts.de"
+                    "email": "arne@blankerts.de",
+                    "role": "Developer"
                 }
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
