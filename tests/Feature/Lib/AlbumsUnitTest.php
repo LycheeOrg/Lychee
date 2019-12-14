@@ -199,7 +199,7 @@ class AlbumsUnitTest
 	 * @param int      $public
 	 * @param int      $visible
 	 * @param int      $downloadable
-	 * @param int      $sharable
+	 * @param int      $share_button_visible
 	 * @param string   $result
 	 */
 	public function set_public(
@@ -209,7 +209,7 @@ class AlbumsUnitTest
 		int $public = 1,
 		int $visible = 1,
 		int $downloadable = 1,
-		int $sharable = 1,
+		int $share_button_visible = 1,
 		string $result = 'true'
 	) {
 		$response = $testCase->post('/api/Album::setPublic', [
@@ -218,7 +218,7 @@ class AlbumsUnitTest
 			'public' => $public,
 			'visible' => $visible,
 			'downloadable' => $downloadable,
-			'sharable' => $sharable,
+			'share_button_visible' => $share_button_visible,
 		]);
 		$response->assertOk();
 		$response->assertSee($result);

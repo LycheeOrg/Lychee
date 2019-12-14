@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Hash;
  * @property int         $full_photo
  * @property int         $visible_hidden
  * @property int         $downloadable
- * @property int         $sharable
+ * @property int         $share_button_visible
  * @property string|null $password
  * @property string      $license
  * @property Carbon|null $created_at
@@ -45,7 +45,7 @@ use Illuminate\Support\Facades\Hash;
  * @method static Builder|Album whereCreatedAt($value)
  * @method static Builder|Album whereDescription($value)
  * @method static Builder|Album whereDownloadable($value)
- * @method static Builder|Album whereSharable($value)
+ * @method static Builder|Album whereShareButtonVisible($value)
  * @method static Builder|Album whereId($value)
  * @method static Builder|Album whereLicense($value)
  * @method static Builder|Album whereMaxTakestamp($value)
@@ -76,7 +76,7 @@ class Album extends Model
 			'public' => 'int',
 			'visible_hidden' => 'int',
 			'downloadable' => 'int',
-			'sharable' => 'int',
+			'share_button_visible' => 'int',
 		];
 
 	/**
@@ -164,12 +164,12 @@ class Album extends Model
 	 *
 	 * @return bool
 	 */
-	public function is_sharable()
+	public function is_share_button_visible()
 	{
 		if ($this->public) {
-			return $this->sharable == 1;
+			return $this->share_button_visible == 1;
 		} else {
-			return Configs::get_value('sharable', '0') === '1';
+			return Configs::get_value('share_button_visible', '0') === '1';
 		}
 	}
 
@@ -195,7 +195,7 @@ class Album extends Model
 		// Only part of $album when available
 		$album['description'] = strval($this->description);
 		$album['downloadable'] = $this->is_downloadable() ? '1' : '0';
-		$album['sharable'] = $this->is_sharable() ? '1' : '0';
+		$album['share_button_visible'] = $this->is_share_button_visible() ? '1' : '0';
 
 		// Parse date
 		$album['sysdate'] = $this->created_at->format('F Y');

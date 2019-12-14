@@ -5,7 +5,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddSharableOption extends Migration
+class AddShareButtonVisibleOption extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -14,25 +14,25 @@ class AddSharableOption extends Migration
 	 */
 	public function up()
 	{
-		if (Schema::hasTable('albums') && !Schema::hasColumn('albums', 'sharable')) {
+		if (Schema::hasTable('albums') && !Schema::hasColumn('albums', 'share_button_visible')) {
 			Schema::table('albums', function (Blueprint $table) {
-				$table->boolean('sharable')->after('downloadable')->default(false);
+				$table->boolean('share_button_visible')->after('downloadable')->default(false);
 			});
 
 			Album::where('id', '>', 1)
 				->where('public', '=', 1)
 				->update([
-					'sharable' => true,
+					'share_button_visible' => true,
 				]);
 		}
 
-		if (!DB::table('configs')->where('key', 'sharable')->exists()) {
+		if (!DB::table('configs')->where('key', 'share_button_visible')->exists()) {
 			if (!defined('BOOL')) {
 				define('BOOL', '0|1');
 			}
 
 			DB::table('configs')->insert([
-				'key' => 'sharable',
+				'key' => 'share_button_visible',
 				'value' => '0',
 				'cat' => 'config',
 				'type_range' => BOOL,
@@ -50,12 +50,12 @@ class AddSharableOption extends Migration
 	{
 		if (Schema::hasTable('albums')) {
 			Schema::table('albums', function (Blueprint $table) {
-				$table->dropColumn('sharable');
+				$table->dropColumn('share_button_visible');
 			});
 		}
 
-		if (DB::table('configs')->where('key', 'sharable')->exists()) {
-			DB::table('configs')->where('key', 'sharable')->delete();
+		if (DB::table('configs')->where('key', 'share_button_visible')->exists()) {
+			DB::table('configs')->where('key', 'share_button_visible')->delete();
 		}
 	}
 }
