@@ -24,7 +24,7 @@
         {
             "name": "miljar/php-exif",
             "type": "git",
-            "url": "https://github.com/tmp-hallenser/php-exif.git"
+            "url": "https://github.com/LycheeOrg/php-exif.git"
         }
     ],
     "require-dev": {
