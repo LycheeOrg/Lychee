@@ -26,8 +26,11 @@ class AddSharableOption extends Migration
 				]);
 		}
 
-		define('BOOL', '0|1');
 		if (!DB::table('configs')->where('key', 'sharable')->exists()) {
+			if (!defined('BOOL')) {
+				define('BOOL', '0|1');
+			}
+
 			DB::table('configs')->insert([
 				'key' => 'sharable',
 				'value' => '0',
