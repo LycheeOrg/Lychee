@@ -160,7 +160,7 @@ class Album extends Model
 	}
 
 	/**
-	 * Return whether or not public users can share photos.
+	 * Return whether or not display share button.
 	 *
 	 * @return bool
 	 */
