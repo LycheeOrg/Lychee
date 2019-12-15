@@ -1,12 +1,12 @@
 @extends('layouts.simple')
 
 @section('head-js')
-    <script type="text/javascript" src="dist/landing.js"></script>
+    <script type="text/javascript" src="{{ App\Assets\Helpers::cacheBusting('dist/landing.js') }}"></script>
 @endsection
 
 @section('head-css')
-    <link type="text/css" rel="stylesheet" href="dist/page.css">
-	<link type="text/css" rel="stylesheet" href="dist/user.css">
+    <link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/page.css') }}">
+	<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/user.css') }}">
 @endsection
 
 @section('content')
