@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f58400811730c0650ea87239c673373a",
+    "content-hash": "b7240793d1ca149a44355b4e57e667fb",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -1326,6 +1326,66 @@
             "time": "2019-12-08T21:46:50+00:00"
         },
         {
+            "name": "lychee-org/php-exif",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LycheeOrg/php-exif.git",
+                "reference": "1bbfa1a5ce10aa7c1e254802afe492092c380233"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/1bbfa1a5ce10aa7c1e254802afe492092c380233",
+                "reference": "1bbfa1a5ce10aa7c1e254802afe492092c380233",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2",
+                "php-ffmpeg/php-ffmpeg": "^0.14.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.16",
+                "jakub-onderka/php-parallel-lint": "^1.0",
+                "phpmd/phpmd": "^2.7",
+                "phpunit/phpunit": ">=8.4",
+                "sebastian/phpcpd": "^4.1",
+                "squizlabs/php_codesniffer": "^3.5"
+            },
+            "suggest": {
+                "FFmpeg": "Use FFmpeg/FFprobe as adapter",
+                "ext-exif": "Use exif PHP extension as adapter",
+                "lib-exiftool": "Use perl lib exiftool as adapter"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "PHPExif": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tom Van Herreweghe",
+                    "homepage": "http://theanalogguy.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Object-Oriented EXIF parsing",
+            "keywords": [
+                "IPTC",
+                "exif",
+                "exiftool",
+                "ffmpeg",
+                "ffprobe",
+                "jpeg",
+                "tiff"
+            ],
+            "time": "2019-12-16T13:37:49+00:00"
+        },
+        {
             "name": "maennchen/zipstream-php",
             "version": "1.2.0",
             "source": {
@@ -1385,72 +1445,6 @@
                 "zip"
             ],
             "time": "2019-07-17T11:01:58+00:00"
-        },
-        {
-            "name": "miljar/php-exif",
-            "version": "dev-ffmpeg-adapter_fix-travis_add-fields",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "c5044ae81216b101620d9c2acf7ecb304eec6c2d"
-            },
-            "require": {
-                "php": ">=7.1",
-                "php-ffmpeg/php-ffmpeg": "^0.14.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.16",
-                "jakub-onderka/php-parallel-lint": "^1.0",
-                "php-coveralls/php-coveralls": "^2.2",
-                "phpmd/phpmd": "^2.7",
-                "phpunit/phpunit": ">=8.4",
-                "sebastian/phpcpd": "^4.1",
-                "squizlabs/php_codesniffer": "^3.5"
-            },
-            "suggest": {
-                "FFmpeg": "Use FFmpeg/FFprobe as adapter",
-                "ext-exif": "Use exif PHP extension as adapter",
-                "lib-exiftool": "Use perl lib exiftool as adapter"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PHPExif": "lib/"
-                }
-            },
-            "scripts": {
-                "check-code-style": [
-                    "vendor/bin/phpcs --standard=PSR2 ./lib/"
-                ],
-                "run-tests": [
-                    "vendor/bin/phpunit -c phpunit.xml.dist",
-                    "vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml"
-                ],
-                "validate-files": [
-                    "vendor/bin/parallel-lint --exclude vendor ."
-                ]
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Tom Van Herreweghe",
-                    "homepage": "http://theanalogguy.be",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Object-Oriented EXIF parsing",
-            "keywords": [
-                "EXIF",
-                "FFmpeg",
-                "FFprobe",
-                "IPTC",
-                "exiftool",
-                "jpeg",
-                "tiff"
-            ],
-            "time": "2019-12-14T11:20:07+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -1929,16 +1923,16 @@
         },
         {
             "name": "phpoption/phpoption",
-            "version": "1.7.0",
+            "version": "1.7.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/schmittjoh/php-option.git",
-                "reference": "318ad673ba36e53e10ca510aec1c54b4f2a5f2ae"
+                "reference": "77f7c4d2e65413aff5b5a8cc8b3caf7a28d81959"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/318ad673ba36e53e10ca510aec1c54b4f2a5f2ae",
-                "reference": "318ad673ba36e53e10ca510aec1c54b4f2a5f2ae",
+                "url": "https://api.github.com/repos/schmittjoh/php-option/zipball/77f7c4d2e65413aff5b5a8cc8b3caf7a28d81959",
+                "reference": "77f7c4d2e65413aff5b5a8cc8b3caf7a28d81959",
                 "shasum": ""
             },
             "require": {
@@ -1980,7 +1974,7 @@
                 "php",
                 "type"
             ],
-            "time": "2019-12-13T00:10:22+00:00"
+            "time": "2019-12-15T19:35:24+00:00"
         },
         {
             "name": "psr/container",
@@ -4961,16 +4955,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.9.3",
+            "version": "1.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "007c053ae6f31bba39dfa19a7726f56e9763bbea"
+                "reference": "579bb7356d91f9456ccd505f24ca8b667966a0a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/007c053ae6f31bba39dfa19a7726f56e9763bbea",
-                "reference": "007c053ae6f31bba39dfa19a7726f56e9763bbea",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/579bb7356d91f9456ccd505f24ca8b667966a0a7",
+                "reference": "579bb7356d91f9456ccd505f24ca8b667966a0a7",
                 "shasum": ""
             },
             "require": {
@@ -5005,7 +4999,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2019-08-09T12:45:53+00:00"
+            "time": "2019-12-15T19:12:40+00:00"
         },
         {
             "name": "nunomaduro/collision",
@@ -6985,7 +6979,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "miljar/php-exif": 20
+        "lychee-org/php-exif": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
