@@ -246,6 +246,31 @@ class Configs extends Model
 	}
 
 	/**
+	 * @return bool returns the Exiftool setting
+	 */
+	public static function hasExiftool()
+	{
+		$has_exiftool = self::get_value('has_exiftool');
+		// value not yet set -> let's see if exiftool is available
+		if ($has_exiftool === null) {
+			$status = 0;
+			$output = '';
+			exec('which exiftool 2>&1 > /dev/null', $output, $status);
+			if ($status != 0) {
+				self::set('has_exiftool', false);
+				$has_exiftool = false;
+			} else {
+				self::set('has_exiftool', true);
+				$has_exiftool = true;
+			}
+		} else {
+			$has_exiftool = self::get_value('has_exiftool');
+		}
+
+		return $has_exiftool;
+	}
+
+	/**
 	 * Define scopes.
 	 */
 

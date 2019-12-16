@@ -8,11 +8,15 @@ language: php
 php:
   - '7.2'
   - '7.3'
+  - '7.4snapshot'
 #  - nightly
 env:
   - TRAVIS_COMPOSER_DEV=yes
   - TRAVIS_COMPOSER_DEV=no
 
+matrix:
+  allow_failures:
+    - php: 7.4snapshot
 
 cache:
   directories:
@@ -34,6 +38,11 @@ addons:
 
 before_script:
   - printf "\n" | pecl install imagick
+  # Install ExifTool
+  - wget http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-11.77.tar.gz
+  - tar -zxvf Image-ExifTool-11.77.tar.gz
+  - cd Image-ExifTool-11.77 && perl Makefile.PL && make test && sudo make install
+  - cd .. && rm -rf Image-ExifTool-11.77
   # create db for postgresql
   - psql -c 'create database homestead_test;' -U postgres
   # create db for mariadb
