@@ -271,7 +271,7 @@ class PhotoFunctions
 
 			return Response::error('Could not calculate checksum for photo!');
 		}
-
+		$photo->checksum = $checksum;
 		$exists = $photo->isDuplicate($checksum);
 
 		// double check that
@@ -285,6 +285,8 @@ class PhotoFunctions
 			$photo->small = $exists->small;
 			$photo->small2x = $exists->small2x;
 			$photo->livePhotoUrl = $exists->livePhotoUrl;
+			$photo->livePhotoChecksum = $exists->livePhotoChecksum;
+			$photo->checksum = $exists->checksum;
 			$exists = true;
 		}
 
@@ -359,7 +361,6 @@ class PhotoFunctions
 		$photo->livePhotoContentID = $info['livePhotoContentID'];
 		$photo->public = $public;
 		$photo->star = $star;
-		$photo->checksum = $checksum;
 
 		$GoogleMicroVideoOffset = $info['MicroVideoOffset'];
 
@@ -395,6 +396,7 @@ class PhotoFunctions
 			// I'm uploading a photo, video already exists
 			if (!(in_array($photo->type, $this->validVideoTypes, true))) {
 				$photo->livePhotoUrl = $livePhotoPartner->url;
+				$photo->livePhotoChecksum = $livePhotoPartner->checksum;
 				// Todo: Delete the livePhotoPartner
 				$no_error &= $livePhotoPartner->predelete(true);
 				$no_error &= $livePhotoPartner->delete();
@@ -458,6 +460,7 @@ class PhotoFunctions
 			} else {
 				// We're uploading a video -> overwrite everything from partner
 				$livePhotoPartner->livePhotoUrl = $photo->url;
+				$livePhotoPartner->livePhotoChecksum = $photo->checksum;
 				$no_error &= $livePhotoPartner->save();
 				$skip_db_entry_creation = true;
 			}
@@ -557,7 +560,8 @@ class PhotoFunctions
 			fclose($fp);
 			fclose($fp_video);
 
-			// Save file path
+			// Save file path; Checksum calclation not needed since
+			// we do not perform matching for Google Motion Photos (as for iOS Live Photos)
 			$photo->livePhotoUrl = $filename_video_mov;
 		} catch (Exception $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());

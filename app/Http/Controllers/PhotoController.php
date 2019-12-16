@@ -514,6 +514,7 @@ class PhotoController extends Controller
 			$duplicate->owner_id = $photo->owner_id;
 			$duplicate->livePhotoContentID = $photo->livePhotoContentID;
 			$duplicate->livePhotoUrl = $photo->livePhotoUrl;
+			$duplicate->livePhotoChecksum = $photo->livePhotoChecksum;
 			$no_error &= !is_object($this->photoFunctions->save($duplicate, $duplicate->album_id));
 		}
 

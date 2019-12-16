@@ -21,6 +21,10 @@ class LivephotoCols extends Migration
 			Schema::table('photos', function ($table) {
 				$table->string('livePhotoContentID')->default(null)->after('thumb2x')->nullable();
 			});
+
+			Schema::table('photos', function ($table) {
+				$table->string('livePhotoChecksum', 40)->default(null)->after('checksum')->nullable();
+			});
 		} else {
 			echo "Table photos does not exists\n";
 		}
@@ -37,6 +41,7 @@ class LivephotoCols extends Migration
 			Schema::table('photos', function (Blueprint $table) {
 				$table->dropColumn('livePhotoContentID');
 				$table->dropColumn('livePhotoUrl');
+				$table->dropColumn('livePhotoChecksum');
 			});
 		}
 	}

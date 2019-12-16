@@ -53,6 +53,7 @@ use Storage;
  * @property string      $small2x
  * @property int         $thumb2x
  * @property string      $livePhotoContentID
+ * @property string      $livePhotoChecksum
  * @property Album|null  $album
  * @property User        $owner
  *
@@ -78,6 +79,7 @@ use Storage;
  * @method static Builder|Photo whereLatitude($value)
  * @method static Builder|Photo whereLens($value)
  * @method static Builder|Photo whereLicense($value)
+ * @method static Builder|Photo wherelivePhotoChecksum($value)
  * @method static Builder|Photo wherelivePhotoContentID($value)
  * @method static Builder|Photo wherelivePhotoUrl($value)
  * @method static Builder|Photo whereLongitude($value)
@@ -176,7 +178,8 @@ class Photo extends Model
 	 */
 	public function isDuplicate(string $checksum, $photoID = null)
 	{
-		$sql = $this->where('checksum', '=', $checksum);
+		$sql = $this->where('checksum', '=', $checksum)
+			  ->orWhere('LivePhotoChecksum', '=', $checksum);
 		if (isset($photoID)) {
 			$sql = $sql->where('id', '<>', $photoID);
 		}
