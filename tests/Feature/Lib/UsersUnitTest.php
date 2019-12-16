@@ -10,6 +10,9 @@ class UsersUnitTest
 	/**
 	 * List users.
 	 *
+	 * @param TestCase $testCase
+	 * @param string   $result
+	 *
 	 * @return TestResponse
 	 */
 	public function list(
@@ -26,6 +29,9 @@ class UsersUnitTest
 	}
 
 	/**
+	 * @param TestCase $testCase
+	 * @param string   $result
+	 *
 	 * @return TestResponse
 	 */
 	public function init(
@@ -43,6 +49,13 @@ class UsersUnitTest
 
 	/**
 	 * Add a new user.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $username
+	 * @param string   $password
+	 * @param string   $upload
+	 * @param string   $lock
+	 * @param string   $result
 	 */
 	public function add(
 		TestCase &$testCase,
@@ -64,6 +77,10 @@ class UsersUnitTest
 
 	/**
 	 * Delete a user.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $result
 	 */
 	public function delete(
 		TestCase &$testCase,
@@ -79,6 +96,14 @@ class UsersUnitTest
 
 	/**
 	 * Save modifications to a user.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $username
+	 * @param string   $password
+	 * @param string   $upload
+	 * @param string   $lock
+	 * @param string   $result
 	 */
 	public function save(
 		TestCase &$testCase,

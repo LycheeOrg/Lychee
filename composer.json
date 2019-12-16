@@ -20,13 +20,6 @@
         "lychee-org/php-exif": "dev-master",
         "php-ffmpeg/php-ffmpeg": "^0.14.0"
     },
-    "repositories": [
-        {
-            "name": "miljar/php-exif",
-            "type": "git",
-            "url": "https://github.com/tmp-hallenser/php-exif.git"
-        }
-    ],
     "require-dev": {
         "ext-imagick": "*",
         "barryvdh/laravel-ide-helper": "^2.6",

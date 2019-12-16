@@ -10,6 +10,11 @@ class AlbumsUnitTest
 	/**
 	 * Add an album.
 	 *
+	 * @param TestCase $testCase
+	 * @param string   $parent_id
+	 * @param string   $title
+	 * @param string   $result
+	 *
 	 * @return string
 	 */
 	public function add(
@@ -35,6 +40,9 @@ class AlbumsUnitTest
 	/**
 	 * Get all albums.
 	 *
+	 * @param TestCase $testCase
+	 * @param string   $result
+	 *
 	 * @return TestResponse
 	 */
 	public function get_all(
@@ -52,6 +60,11 @@ class AlbumsUnitTest
 
 	/**
 	 * Get album by ID.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $password
+	 * @param string   $result
 	 *
 	 * @return TestResponse
 	 */
@@ -71,6 +84,12 @@ class AlbumsUnitTest
 		return $response;
 	}
 
+	/**
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $password
+	 * @param string   $result
+	 */
 	public function get_public(
 		TestCase &$testCase,
 		string $id,
@@ -86,6 +105,9 @@ class AlbumsUnitTest
 	/**
 	 * Check if we see id in the list of all visible albums
 	 * /!\ results varies depending if logged in or not !
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
 	 */
 	public function see_in_albums(TestCase &$testCase, string $id)
 	{
@@ -97,6 +119,9 @@ class AlbumsUnitTest
 	/**
 	 * Check if we don't see id in the list of all visible albums
 	 * /!\ results varies depending if logged in or not !
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
 	 */
 	public function dont_see_in_albums(TestCase &$testCase, string $id)
 	{
@@ -107,6 +132,11 @@ class AlbumsUnitTest
 
 	/**
 	 * Change title.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $title
+	 * @param string   $result
 	 */
 	public function set_title(
 		TestCase &$testCase,
@@ -122,6 +152,11 @@ class AlbumsUnitTest
 
 	/**
 	 * Change description.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $description
+	 * @param string   $result
 	 */
 	public function set_description(
 		TestCase &$testCase,
@@ -137,6 +172,11 @@ class AlbumsUnitTest
 
 	/**
 	 * Set the licence.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $license
+	 * @param string   $result
 	 */
 	public function set_license(
 		TestCase &$testCase,
@@ -152,6 +192,15 @@ class AlbumsUnitTest
 		$response->assertSee($result);
 	}
 
+	/**
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param int      $full_photo
+	 * @param int      $public
+	 * @param int      $visible
+	 * @param int      $downloadable
+	 * @param string   $result
+	 */
 	public function set_public(
 		TestCase &$testCase,
 		string $id,
@@ -174,6 +223,10 @@ class AlbumsUnitTest
 
 	/**
 	 * We only test for a code 200.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $kind
 	 */
 	public function download(
 		TestCase &$testCase,
@@ -188,6 +241,10 @@ class AlbumsUnitTest
 
 	/**
 	 * Delete.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $result
 	 */
 	public function delete(
 		TestCase &$testCase,
