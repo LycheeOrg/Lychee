@@ -84,7 +84,6 @@ class Extractor
 
 		$exif = $reader->read($filename);
 		$metadata = $this->bare();
-
 		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : '';
 		$metadata['width'] = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
 		$metadata['height'] = ($exif->getHeight() !== false) ? $exif->getHeight() : 0;
