@@ -385,7 +385,7 @@ class ImportController extends Controller
 		// This function checks if the given filename matches the pattern allowing for
 		// star als wildcard (as in *.jpg)
 		// Example: '*.jpg' matches all jpgs
-		
+
 		$pattern = preg_replace_callback('/([^*])/', [$this, 'preg_quote_callback_fct'], $pattern);
 		$pattern = str_replace('*', '.*', $pattern);
 
