@@ -99,14 +99,17 @@ class PhotoController extends Controller
 					$photo->downgrade($return);
 				}
 				$return['downloadable'] = $album->is_downloadable() ? '1' : '0';
+				$return['share_button_visible'] = $album->is_share_button_visible() ? '1' : '0';
 			} else { // Unsorted
 				if (Configs::get_value('full_photo', '1') != '1') {
 					$photo->downgrade($return);
 				}
 				$return['downloadable'] = Configs::get_value('downloadable', '0');
+				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
 			}
 		} else {
 			$return['downloadable'] = '1';
+			$return['share_button_visible'] = '1';
 		}
 
 		return $return;

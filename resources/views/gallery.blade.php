@@ -4,8 +4,8 @@
 @endsection
 
 @section('head-css')
-<link type="text/css" rel="stylesheet" href="dist/main.css">
-<link type="text/css" rel="stylesheet" href="dist/user.css">
+<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/main.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/user.css') }}">
 @endsection
 
 @section('content')
@@ -181,7 +181,7 @@
 </div>
 
 <!-- JS -->
-<script async type="text/javascript" src="dist/main.js"></script>
+<script async type="text/javascript" src="{{ App\Assets\Helpers::cacheBusting('dist/main.js') }}"></script>
 </div>
 
 @include('includes.footer')
