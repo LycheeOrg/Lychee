@@ -116,6 +116,7 @@ class Photo extends Model
 		'public' => 'int',
 		'star' => 'int',
 		'downloadable' => 'int',
+		'share_button_visible' => 'int',
 	];
 
 	/**

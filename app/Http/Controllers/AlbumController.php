@@ -99,11 +99,13 @@ class AlbumController extends Controller
 				}
 				$return['public'] = '1';
 				$return['downloadable'] = Configs::get_value('downloadable', '0');
+				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
 				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case 's':
 				$return['public'] = '0';
 				$return['downloadable'] = '1';
+				$return['share_button_visible'] = '0';
 				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
 			case 'r':
@@ -119,11 +121,13 @@ class AlbumController extends Controller
 				}
 				$return['public'] = '1';
 				$return['downloadable'] = Configs::get_value('downloadable', '0');
+				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
 				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case '0':
 				$return['public'] = '0';
 				$return['downloadable'] = '1';
+				$return['share_button_visible'] = '0';
 				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
@@ -333,6 +337,7 @@ class AlbumController extends Controller
 			'public' => 'integer|required',
 			'visible' => 'integer|required',
 			'downloadable' => 'integer|required',
+			'share_button_visible' => 'integer|required',
 			'full_photo' => 'integer|required',
 		]);
 
@@ -349,6 +354,7 @@ class AlbumController extends Controller
 		$album->public = ($request['public'] === '1' ? 1 : 0);
 		$album->visible_hidden = ($request['visible'] === '1' ? 1 : 0);
 		$album->downloadable = ($request['downloadable'] === '1' ? 1 : 0);
+		$album->share_button_visible = ($request['share_button_visible'] === '1' ? 1 : 0);
 
 		// Set public
 		if (!$album->save()) {
