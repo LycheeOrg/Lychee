@@ -1063,6 +1063,12 @@ header.setMode = function (mode) {
 				$('#button_archive').show();
 			}
 
+			if (album.json && album.json.hasOwnProperty('share_button_visible') && album.json.share_button_visible !== '1') {
+				$('#button_share_album').hide();
+			} else {
+				$('#button_share_album').show();
+			}
+
 			// If map is disabled, we should hide the icon
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
 				$('#button_map_album').show();
@@ -1104,6 +1110,12 @@ header.setMode = function (mode) {
 				$('#button_trash, #button_move, #button_visibility, #button_star').show();
 			} else {
 				$('#button_trash, #button_move, #button_visibility, #button_star').hide();
+			}
+
+			if (photo.json && photo.json.hasOwnProperty('share_button_visible') && photo.json.share_button_visible !== '1') {
+				$('#button_share').hide();
+			} else {
+				$('#button_share').show();
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
@@ -1499,6 +1511,7 @@ sidebar.createStructure.album = function (data) {
 	var _public = '';
 	var hidden = '';
 	var downloadable = '';
+	var share_button_visible = '';
 	var password = '';
 	var license = '';
 
@@ -1543,6 +1556,21 @@ sidebar.createStructure.album = function (data) {
 			break;
 		default:
 			downloadable = '-';
+			break;
+
+	}
+
+	// Set value for share_button_visible
+	switch (data.share_button_visible) {
+
+		case '0':
+			share_button_visible = lychee.locale['ALBUM_SHR_NO'];
+			break;
+		case '1':
+			share_button_visible = lychee.locale['ALBUM_SHR_YES'];
+			break;
+		default:
+			share_button_visible = '-';
 			break;
 
 	}
@@ -1611,7 +1639,7 @@ sidebar.createStructure.album = function (data) {
 	structure.share = {
 		title: lychee.locale['ALBUM_SHARING'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
+		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_SHARE_BUTTON_VISIBLE'], kind: 'share_button_visible', value: share_button_visible }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
 	};
 
 	if (data.owner != null) {
@@ -2209,6 +2237,8 @@ lychee.locale = {
 	'ALBUM_HIDDEN_EXPL': 'Only people with the direct link can view this album.',
 	'ALBUM_DOWNLOADABLE': 'Downloadable',
 	'ALBUM_DOWNLOADABLE_EXPL': 'Visitors of your Lychee can download this album.',
+	'ALBUM_SHARE_BUTTON_VISIBLE': 'Share button is visible',
+	'ALBUM_SHARE_BUTTON_VISIBLE_EXPL': 'Display social media sharing links.',
 	'ALBUM_PASSWORD': 'Password',
 	'ALBUM_PASSWORD_PROT': 'Password protected',
 	'ALBUM_PASSWORD_PROT_EXPL': 'Album only accessible with a valid password.',
@@ -2292,6 +2322,8 @@ lychee.locale = {
 	'PHOTO_HIDDEN_EXPL': 'Only people with the direct link can view this photo.',
 	'PHOTO_DOWNLOADABLE': 'Downloadable',
 	'PHOTO_DOWNLOADABLE_EXPL': 'Visitors of your gallery can download this photo.',
+	'PHOTO_SHARE_BUTTON_VISIBLE': 'Share button is visible',
+	'PHOTO_SHARE_BUTTON_VISIBLE_EXPL': 'Display social media sharing links.',
 	'PHOTO_PASSWORD_PROT': 'Password protected',
 	'PHOTO_PASSWORD_PROT_EXPL': 'Photo only accessible with a valid password.',
 	'PHOTO_EDIT_SHARING_TEXT': 'The sharing properties of this photo will be changed to the following:',
