@@ -4140,6 +4140,11 @@ span.perm ~ span.perm {
 	vertical-align: 1px;
 }
 
+.list__item--env {
+	font-size: 16px;
+	font-weight: 700;
+}
+
 i.success:before {
 	color: #2ecc71;
 	vertical-align: 1px;

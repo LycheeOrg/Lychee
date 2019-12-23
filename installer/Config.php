@@ -39,19 +39,20 @@ class Config
 			|
 			*/
 			'permissions' => [
-				'.' => 'file_exists|is_readable|is_writable',
-				'storage/framework/' => 'file_exists|is_readable|is_writable',
-				'storage/logs/' => 'file_exists|is_readable|is_writable',
-				'bootstrap/cache/' => 'file_exists|is_readable|is_writable',
-				'public/dist/' => 'file_exists|is_readable|is_writable',
-				'public/sym/' => 'file_exists|is_readable|is_writable',
-				'public/uploads/' => 'file_exists|is_readable|is_writable',
-				'public/uploads/big/' => 'file_exists|is_readable|is_writable',
-				'public/uploads/import/' => 'file_exists|is_readable|is_writable',
-				'public/uploads/medium/' => 'file_exists|is_readable|is_writable',
-				'public/uploads/raw/' => 'file_exists|is_readable|is_writable',
-				'public/uploads/small/' => 'file_exists|is_readable|is_writable',
-				'public/uploads/thumb/' => 'file_exists|is_readable|is_writable',
+				'.' => 'file_exists|is_readable|is_writable|is_executable',
+				'storage/framework/' => 'file_exists|is_readable|is_writable|is_executable',
+				'storage/logs/' => 'file_exists|is_readable|is_writable|is_executable',
+				'bootstrap/cache/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/dist/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/img/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/sym/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/uploads/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/uploads/big/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/uploads/import/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/uploads/medium/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/uploads/raw/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/uploads/small/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/uploads/thumb/' => 'file_exists|is_readable|is_writable|is_executable',
 			],
 			// not used yet.
 			//			'environment'  => [

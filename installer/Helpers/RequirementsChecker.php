@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Installer\Helpers;
-
 
 class RequirementsChecker
 {
@@ -11,14 +9,12 @@ class RequirementsChecker
 	 *
 	 * @var _minPhpVersion
 	 */
-	private $_minPhpVersion = '7.0.0';
-
-
+	private $_minPhpVersion = '7.2.0';
 
 	/**
 	 * Check for the server requirements.
 	 *
-	 * @param  array  $requirements
+	 * @param array $requirements
 	 *
 	 * @return array
 	 */
@@ -38,8 +34,7 @@ class RequirementsChecker
 						}
 					}
 
-					if($this->checkExec())
-					{
+					if ($this->checkExec()) {
 						$results['requirements'][$type]['Php exec() available'] = true;
 					}
 
@@ -65,12 +60,10 @@ class RequirementsChecker
 		return $results;
 	}
 
-
-
 	/**
 	 * Check PHP version requirement.
 	 *
-	 * @param  string|null  $minPhpVersion
+	 * @param string|null $minPhpVersion
 	 *
 	 * @return array
 	 */
@@ -88,19 +81,17 @@ class RequirementsChecker
 			$supported = true;
 		}
 		$phpStatus = [
-			'full'      => $currentPhpVersion['full'],
-			'current'   => $currentPhpVersion['version'],
-			'minimum'   => $minVersionPhp,
+			'full' => $currentPhpVersion['full'],
+			'current' => $currentPhpVersion['version'],
+			'minimum' => $minVersionPhp,
 			'supported' => $supported,
 		];
 
 		return $phpStatus;
 	}
 
-
-
 	/**
-	 * Check if exec is enabled. This will allow us to execute the migration
+	 * Check if exec is enabled. This will allow us to execute the migration.
 	 *
 	 * @return bool
 	 */
@@ -110,8 +101,6 @@ class RequirementsChecker
 
 		return !in_array('exec', $disabled);
 	}
-
-
 
 	/**
 	 * Get current Php version information.
@@ -125,12 +114,10 @@ class RequirementsChecker
 		$currentVersion = $filtered[0];
 
 		return [
-			'full'    => $currentVersionFull,
+			'full' => $currentVersionFull,
 			'version' => $currentVersion,
 		];
 	}
-
-
 
 	/**
 	 * Get minimum PHP version ID.

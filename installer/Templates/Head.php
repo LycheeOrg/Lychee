@@ -41,7 +41,7 @@ class Head implements Template
                 <ul class="step">
                     <li class="step__divider"></li>
                     <li class="step__item ' . ($input['step'] == 'Migrate' ? 'active' : '')
-			. '"  title="Creating the Database">';
+			. '"  title="Apply the database migration">';
 		echo '<i class="step__icon fa fa-server" aria-hidden="true"></i>';
 		echo '
                     </li>';

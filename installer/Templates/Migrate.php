@@ -13,6 +13,16 @@ class Migrate implements Template
 			echo $line . "\n";
 		}
 		echo '</code></pre>';
-		echo '<strong>If the migration failed, remove the installed.log file and reopen <a href="install.php">this page</a>.</strong>';
+
+		if (!isset($input['errors'])) {
+			echo '<strong>We did not detect any errors. However if the migration failed,
+			remove the installed.log file and reopen <a href="install.php">this page</a>.</strong>';
+		} else {
+			echo "\t" . '<div class="buttons" >' . "\n";
+			echo "\t\t"
+				. '<a class="button" href="?step=migrate"><i class="fa fa-refresh" aria-hidden="true" > Re-try</i>';
+			echo "\t\t" . '</a>';
+			echo "\t" . '</div>';
+		}
 	}
 }
