@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Hash;
  * @property int         $full_photo
  * @property int         $visible_hidden
  * @property int         $downloadable
+ * @property int         $share_button_visible
  * @property string|null $password
  * @property string      $license
  * @property Carbon|null $created_at
@@ -44,6 +45,7 @@ use Illuminate\Support\Facades\Hash;
  * @method static Builder|Album whereCreatedAt($value)
  * @method static Builder|Album whereDescription($value)
  * @method static Builder|Album whereDownloadable($value)
+ * @method static Builder|Album whereShareButtonVisible($value)
  * @method static Builder|Album whereId($value)
  * @method static Builder|Album whereLicense($value)
  * @method static Builder|Album whereMaxTakestamp($value)
@@ -74,6 +76,7 @@ class Album extends Model
 			'public' => 'int',
 			'visible_hidden' => 'int',
 			'downloadable' => 'int',
+			'share_button_visible' => 'int',
 		];
 
 	/**
@@ -157,6 +160,20 @@ class Album extends Model
 	}
 
 	/**
+	 * Return whether or not display share button.
+	 *
+	 * @return bool
+	 */
+	public function is_share_button_visible()
+	{
+		if ($this->public) {
+			return $this->share_button_visible == 1;
+		} else {
+			return Configs::get_value('share_button_visible', '0') === '1';
+		}
+	}
+
+	/**
 	 * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
 	 *
 	 * @return array
@@ -164,20 +181,21 @@ class Album extends Model
 	public function prepareData()
 	{
 		// Init
-		$album = array();
+		$album = [];
 
 		// Set unchanged attributes
-		$album['id'] = $this->id;
+		$album['id'] = strval($this->id);
 		$album['title'] = $this->title;
 		$album['public'] = strval($this->public);
 		$album['full_photo'] = $this->full_photo_visible() ? '1' : '0';
 		$album['visible'] = strval($this->visible_hidden);
-		$album['parent_id'] = $this->parent_id;
+		$album['parent_id'] = $this->parent_id !== null ? strval($this->parent_id) : null;
 
 		// Additional attributes
 		// Only part of $album when available
 		$album['description'] = strval($this->description);
 		$album['downloadable'] = $this->is_downloadable() ? '1' : '0';
+		$album['share_button_visible'] = $this->is_share_button_visible() ? '1' : '0';
 
 		// Parse date
 		$album['sysdate'] = $this->created_at->format('F Y');
@@ -194,13 +212,13 @@ class Album extends Model
 
 		// $album['owner'] will be set by the caller as needed.
 
-		$album['thumbs'] = array();
-		$album['thumbs2x'] = array();
-		$album['types'] = array();
+		$album['thumbs'] = [];
+		$album['thumbs2x'] = [];
+		$album['types'] = [];
 
 		// For server use only; will be unset before sending the response
 		// to the front end.
-		$album['thumbIDs'] = array();
+		$album['thumbIDs'] = [];
 
 		return $album;
 	}
@@ -212,7 +230,7 @@ class Album extends Model
 	 *
 	 * @return array
 	 */
-	private function get_all_sub_albums($return = array())
+	private function get_all_sub_albums($return = [])
 	{
 		foreach ($this->children as $album) {
 			$return[] = $album->id;

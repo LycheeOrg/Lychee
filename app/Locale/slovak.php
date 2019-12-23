@@ -1,6 +1,6 @@
 <?php
 
-namespace app\Locale;
+namespace App\Locale;
 
 final class Slovak implements LangInterface
 {
@@ -11,7 +11,7 @@ final class Slovak implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'Meno užívateľa',
 			'PASSWORD' => 'Heslo',
 			'ENTER' => 'Zadať',
@@ -35,12 +35,14 @@ final class Slovak implements LangInterface
 			'DEFAULT_LICENSE' => 'Predvolená licencia pre nové',
 			'SET_LICENSE' => 'Použiť licenciu',
 			'SET_OVERLAY_TYPE' => 'Nastaviť typ overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'SAVE_RISK' => 'Zmeny uložiť, riziko je známe!',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',
 			'SHARED_ALBUMS' => 'Zdieľané albumy',
 			'ALBUMS' => 'Albumy',
 			'PHOTOS' => 'Obrázky',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Premenovať',
 			'RENAME_ALL' => 'Premenovať vybrané',
@@ -77,6 +79,7 @@ final class Slovak implements LangInterface
 
 			'CLOSE_ALBUM' => 'Album zavrieť',
 			'CLOSE_PHOTO' => 'Foto Zavrieť',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Pridať',
 			'MOVE' => 'Presunúť',
@@ -114,6 +117,7 @@ final class Slovak implements LangInterface
 
 			'FULL_PHOTO' => 'Otvoriť originál',
 			'ABOUT_PHOTO' => 'O tomto obrázku',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Priamy link',
 			'DIRECT_LINKS' => 'Priame linky',
 
@@ -143,6 +147,8 @@ final class Slovak implements LangInterface
 			'ALBUM_HIDDEN_EXPL' => 'Album viditeľný len cez priamy link.',
 			'ALBUM_DOWNLOADABLE' => 'Stiahnuteľný',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Návštevníci môžu album stiahnuť.',
+			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'ALBUM_PASSWORD' => 'Heslo',
 			'ALBUM_PASSWORD_PROT' => 'Chránené heslom',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'Album viditeľný len s platným heslom.',
@@ -229,6 +235,8 @@ final class Slovak implements LangInterface
 			'PHOTO_HIDDEN_EXPL' => 'Obrázok viditeľný len pomocou priameho linku.',
 			'PHOTO_DOWNLOADABLE' => 'Stiahnuteľný',
 			'PHOTO_DOWNLOADABLE_EXPL' => 'Návšetvníci vašej galérie môžu tento obrázok stiahnuť.',
+			'PHOTO_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'PHOTO_PASSWORD_PROT' => 'Chránené heslom',
 			'PHOTO_PASSWORD_PROT_EXPL' => 'Obrázok dostupný len s platným heslom.',
 			'PHOTO_EDIT_SHARING_TEXT' => 'Vlastnosti zdieľania tejto fotografie sa zmenia na nasledujúce:',
@@ -244,6 +252,8 @@ final class Slovak implements LangInterface
 			'ERROR_CONFIG_FILE' => "Túto konfiguráciu nemožno uložiť. Prístup zamietnutý k <b>'data/'</b>. Nastavte práva zápisu na <b>'data/'</b> a <b>'uploads/'</b>. Ďalšie informácie nájdete v súbore README.",
 			'ERROR_UNKNOWN' => 'Vyskytla sa neočakávaná chyba. Skúste to znova a skontrolujte inštaláciu na vašom serveri. Ďalšie informácie nájdete v súbore README.',
 			'ERROR_LOGIN' => 'Nemožno uložiť Login. Skúste to s iným menom a heslom!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Opakovať',
 
@@ -259,6 +269,8 @@ final class Slovak implements LangInterface
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualizované',
 			'SETTINGS_SUCCESS_UPDATE' => 'Nastavenia úspešne aktualizované',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Nastavenie zobrazenia mapy aktualizované',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Zadajte prístupové údaje k databáze:',
 			'DB_INFO_HOST' => 'Názov databázového servera (voliteľné)',
@@ -327,7 +339,15 @@ final class Slovak implements LangInterface
 			'OVERLAY_EXIF' => 'EXIF dáta obrázku',
 			'OVERLAY_DESCRIPTION' => 'Popis obrázku',
 			'OVERLAY_DATE' => 'Obrázok snímaný dňa',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 			'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 			'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',
@@ -392,8 +412,9 @@ final class Slovak implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Náhľad HiDPI',
 			'PHOTO_THUMB' => 'Štvorcový náhľad',
 			'PHOTO_THUMB_HIDPI' => 'Štvorcový náhľad HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Zobrazenie foto Lychee:',
-		);
+		];
 
 		return $locale;
 	}

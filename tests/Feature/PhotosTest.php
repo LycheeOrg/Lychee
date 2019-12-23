@@ -116,7 +116,7 @@ class PhotosTest extends TestCase
 		$array_content = json_decode($content);
 		$this->assertEquals(2, count($array_content->photos));
 
-		$ids = array();
+		$ids = [];
 		$ids[0] = $array_content->photos[0]->id;
 		$ids[1] = $array_content->photos[1]->id;
 		$photos_tests->delete($this, $ids[0], 'true');
@@ -125,7 +125,7 @@ class PhotosTest extends TestCase
 //		$photos_tests->dont_see_in_recent($this, $ids[0]);
 //		$photos_tests->dont_see_in_unsorted($this, $ids[1]);
 
-		$albums_tests->set_public($this, $albumID, 1, 1, 1, 1, 'true');
+		$albums_tests->set_public($this, $albumID, 1, 1, 1, 1, 1, 'true');
 
 		/**
 		 * Actually try to display the picture.

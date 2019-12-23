@@ -52,7 +52,7 @@ class IndexController extends Controller
 
 			$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 
-			$page_config = array();
+			$page_config = [];
 			$page_config['show_hosted_by'] = false;
 			$page_config['display_socials'] = false;
 
@@ -90,7 +90,7 @@ class IndexController extends Controller
 		$lang['language'] = Configs::get_value('lang');
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$page_config = array();
+		$page_config = [];
 		$page_config['show_hosted_by'] = true;
 		$page_config['display_socials'] = Configs::get_value('display_social_in_gallery', '0') == '1';
 

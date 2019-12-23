@@ -99,14 +99,17 @@ class PhotoController extends Controller
 					$photo->downgrade($return);
 				}
 				$return['downloadable'] = $album->is_downloadable() ? '1' : '0';
+				$return['share_button_visible'] = $album->is_share_button_visible() ? '1' : '0';
 			} else { // Unsorted
 				if (Configs::get_value('full_photo', '1') != '1') {
 					$photo->downgrade($return);
 				}
 				$return['downloadable'] = Configs::get_value('downloadable', '0');
+				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
 			}
 		} else {
 			$return['downloadable'] = '1';
+			$return['share_button_visible'] = '1';
 		}
 
 		return $return;
@@ -122,8 +125,9 @@ class PhotoController extends Controller
 	{
 		// here we need to refine.
 
-		$photo = Photo::select_stars(Photo::whereIn('album_id',
-			$this->albumFunctions->getPublicAlbums()))
+		$photo = Photo::whereIn('album_id',
+			$this->albumFunctions->getPublicAlbums())
+			->where('star', '=', 1)
 			->inRandomOrder()
 			->first();
 
@@ -161,7 +165,7 @@ class PhotoController extends Controller
 		// Only process the first photo in the array
 		$file = $request->file('0');
 
-		$nameFile = array();
+		$nameFile = [];
 		$nameFile['name'] = $file->getClientOriginalName();
 		$nameFile['type'] = $file->getMimeType();
 		$nameFile['tmp_name'] = $file->getPathName();
@@ -470,6 +474,7 @@ class PhotoController extends Controller
 	{
 		$request->validate([
 			'photoIDs' => 'required|string',
+			'albumID' => 'string',
 		]);
 
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
@@ -478,6 +483,7 @@ class PhotoController extends Controller
 		$no_error = true;
 		foreach ($photos as $photo) {
 			$duplicate = new Photo();
+			$duplicate->id = Helpers::generateID();
 			$duplicate->title = $photo->title;
 			$duplicate->description = $photo->description;
 			$duplicate->url = $photo->url;
@@ -502,14 +508,17 @@ class PhotoController extends Controller
 			$duplicate->star = $photo->star;
 			$duplicate->thumbUrl = $photo->thumbUrl;
 			$duplicate->thumb2x = $photo->thumb2x;
-			$duplicate->album_id = $photo->album_id;
+			$duplicate->album_id = isset($request['albumID']) ? $request['albumID'] : $photo->album_id;
 			$duplicate->checksum = $photo->checksum;
 			$duplicate->medium = $photo->medium;
 			$duplicate->medium2x = $photo->medium2x;
 			$duplicate->small = $photo->small;
 			$duplicate->small2x = $photo->small2x;
 			$duplicate->owner_id = $photo->owner_id;
-			$no_error &= $duplicate->save();
+			$duplicate->livePhotoContentID = $photo->livePhotoContentID;
+			$duplicate->livePhotoUrl = $photo->livePhotoUrl;
+			$duplicate->livePhotoChecksum = $photo->livePhotoChecksum;
+			$no_error &= !is_object($this->photoFunctions->save($duplicate, $duplicate->album_id));
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -528,7 +537,7 @@ class PhotoController extends Controller
 		// Illicit chars
 		$badChars = array_merge(
 			array_map('chr', range(0, 31)),
-			array(
+			[
 				'<',
 				'>',
 				':',
@@ -538,7 +547,7 @@ class PhotoController extends Controller
 				'|',
 				'?',
 				'*',
-			)
+			]
 		);
 
 		$photo = Photo::with('album')->find($photoID);
@@ -571,6 +580,10 @@ class PhotoController extends Controller
 		switch ($request['kind']) {
 			case 'FULL':
 				$url = Storage::path($prefix_path . $photo->url);
+				$kind = '';
+				break;
+			case 'LIVEPHOTOVIDEO':
+				$url = Storage::path($prefix_path . $photo->livePhotoUrl);
 				$kind = '';
 				break;
 			case 'MEDIUM2X':
@@ -642,7 +655,7 @@ class PhotoController extends Controller
 			$extension = Helpers::getExtension($url, false);
 		}
 
-		return array($title, $kind, $extension, $url);
+		return [$title, $kind, $extension, $url];
 	}
 
 	/**

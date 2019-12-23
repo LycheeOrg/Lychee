@@ -2,17 +2,25 @@
 
 namespace App\Metadata;
 
-use App;
 use App\Configs;
+use App\Exceptions\NotInCacheException;
+use App\Exceptions\NotMasterException;
 use App\Logs;
+use App\ModelFunctions\Helpers;
+use App\ModelFunctions\JsonRequestFunctions;
+use Config;
 use Exception;
 
 class GitHubFunctions
 {
-	private $commits = false;
 	private $head = false;
 	private $branch = false;
-	private $CI_commit = false;
+	private $gitRequest;
+
+	public function __construct(GitRequest $gitRequest)
+	{
+		$this->gitRequest = $gitRequest;
+	}
 
 	/**
 	 * Given a commit id, return the 7 first characters (7 hex digits) and trim it to remove \n.
@@ -27,38 +35,21 @@ class GitHubFunctions
 	}
 
 	/**
-	 * Fetch an url with 1sec timout.
+	 * Simple check of whether CI is running or not.
 	 *
-	 * @param $url
+	 * @param $branch
 	 *
-	 * @return bool|mixed
+	 * @return bool
 	 */
-	private function get_json($url)
+	public function is_CI($branch)
 	{
-		$opts = [
-			'http' => [
-				'method' => 'GET',
-				'timeout' => 1,
-				'header' => [
-					'User-Agent: PHP',
-				],
-			],
-		];
-		$context = stream_context_create($opts);
-
-		$json = @file_get_contents($url, false, $context);
-		if ($json != false) {
-			return json_decode($json);
-		}
-		// @codeCoverageIgnoreStart
-		Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . $url);
-
-		return false;
-		// @codeCoverageIgnoreEnd
+		return substr($branch, 0, 4) != 'ref:';
 	}
 
 	/**
 	 * look at .git/HEAD and return the current branch.
+	 * Return false if the file is not readable.
+	 * Return master if it is CI.
 	 *
 	 * @return false|string
 	 */
@@ -69,17 +60,20 @@ class GitHubFunctions
 			// @codeCoverageIgnoreStart
 			if ($this->branch != false) {
 				// this is to handle CI where it actually checks a commit instead of a branch
-				if (substr($this->branch, 0, 4) == 'refs:') {
-					$this->branch = explode('/', $this->branch, 3)[2]; //separate out by the "/" in the string
-				} else {
+				if ($this->is_CI($this->branch)) {
+					// this is CI
 					$this->branch = 'master';
-					$this->CI_commit = $this->branch;
+				} else {
+					// not CI
+					$this->branch = explode('/', $this->branch,
+						3)[2]; //separate out by the "/" in the string
 				}
+				$this->branch = trim($this->branch);
 			} else {
-				Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . base_path('.git/HEAD'));
+				Logs::notice(__METHOD__, __LINE__,
+					'Could not access: ' . base_path('.git/HEAD'));
 			}
 			// @codeCoverageIgnoreEnd
-			$this->branch = trim($this->branch);
 		}
 
 		return $this->branch;
@@ -93,15 +87,15 @@ class GitHubFunctions
 	public function get_current_commit()
 	{
 		if ($this->head == false && $this->get_current_branch() != false) {
-			$this->head = @file_get_contents(base_path('.git/refs/heads/' . $this->branch));
+			$this->head = @file_get_contents(base_path('.git/refs/heads/'
+				. $this->branch));
 			if ($this->head != false) {
 				$this->head = $this->trim($this->head);
 			} else {
 				// @codeCoverageIgnoreStart
-				Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . base_path('.git/refs/heads/' . $this->branch));
-				if ($this->CI_commit != false) {
-					$this->head = $this->trim($this->CI_commit);
-				}
+				Logs::notice(__METHOD__, __LINE__,
+					'Could not access: ' . base_path('.git/refs/heads/'
+						. $this->branch));
 				// @codeCoverageIgnoreEnd
 			}
 		}
@@ -112,60 +106,44 @@ class GitHubFunctions
 	/**
 	 * return the list of the last 30 commits on the master branch.
 	 *
+	 * @param bool $cached
+	 *
 	 * @return bool|array
 	 */
-	public function get_commits()
+	public function get_commits(bool $cached = true)
 	{
-		if (!$this->commits) {
-			$branch = $this->get_current_branch();
-			if ($branch != 'master') {
-				return false;
-			}
-
-			$head = $this->get_current_commit();
-			if ($head == false) {
-				return false;
-			}
-
-			// get 30 last commits.
-			$this->commits = $this->get_json('http://api.github.com/repos/LycheeOrg/Lychee-Laravel/commits');
-		}
-
-		return $this->commits;
-	}
-
-	/**
-	 * Return a string like 'commit number (branch)' or 'no git data found'.
-	 *
-	 * @return string
-	 */
-	public function get_info()
-	{
-		$branch = $this->get_current_branch();
-		$head = $this->get_current_commit();
-		if ($head == false || $branch == false) {
-			// when going through CI, .git exists...
-			// @codeCoverageIgnoreStart
-			return 'No git data found. Probably installed from release or could not read .git';
-			// @codeCoverageIgnoreEnd
-		}
-
-		return sprintf('%s (%s)', $head, $branch) . $this->get_behind_text();
+		return $this->gitRequest->get_json($cached);
 	}
 
 	/**
 	 * Count the number of commits between current version and master/HEAD.
+	 * Throws NotMaster if the branch is not ... master
+	 * Throws NotInCache if the commits are not cached
+	 * Returns between 0 and 30 if we can find the value
+	 * Returns false if more than 30 commits behind.
+	 *
+	 * @param bool $cached
 	 *
 	 * @return bool|int
+	 *
+	 * @throws NotInCacheException
+	 * @throws NotMasterException
 	 */
-	public function count_behind()
+	public function count_behind(bool $cached = true)
 	{
+		$branch = $this->get_current_branch();
+		if ($branch != 'master') {
+			// @codeCoverageIgnoreStart
+			throw new NotMasterException();
+			// @codeCoverageIgnoreEnd
+		}
+
 		$head = $this->get_current_commit();
 
-		/** @var bool|array $commits */
-		$commits = $this->get_commits();
+		$commits = $this->get_commits($cached);
+
 		if ($commits == false) {
-			return false;
+			throw new NotInCacheException();
 		}
 
 		$i = 0;
@@ -188,11 +166,14 @@ class GitHubFunctions
 	{
 		$commits = $this->get_commits();
 
-		return ($commits != false) ? ' (' . $this->trim($commits[0]->sha) . ')' : '';
+		return ($commits != false) ? ' (' . $this->trim($commits[0]->sha) . ')'
+			: '';
 	}
 
 	/**
 	 * Return a string indicating whether we are up to date (used in Diagnostics).
+	 *
+	 * This function should not throw exceptions !
 	 *
 	 * @return string
 	 */
@@ -205,19 +186,21 @@ class GitHubFunctions
 			// @codeCoverageIgnoreEnd
 		}
 
-		if ($this->get_commits() == false) {
-			// @codeCoverageIgnoreStart
-			return ' - Check for update failed.';
-			// @codeCoverageIgnoreEnd
+		try {
+			$count = $this->count_behind(); // NotInCache or NotMaster
+		} catch (Exception $e) {
+			return ' - ' . $e->getMessage();
 		}
 
-		$count = $this->count_behind();
+		$last_update = $this->gitRequest->get_age_text();
+
 		if ($count === 0) {
-			return ' - Up to date.';
+			return sprintf(' - Up to date (%s).', $last_update);
 		}
 		// @codeCoverageIgnoreStart
 		if ($count != false) {
-			return ' - ' . $count . ' commits behind master' . $this->get_github_head();
+			return sprintf(' - %s commits behind master %s (%s)', $count,
+				$this->get_github_head(), $last_update);
 		}
 
 		return ' - Probably more than 30 commits behind master';
@@ -225,38 +208,63 @@ class GitHubFunctions
 	}
 
 	/**
-	 * Check if the repo is up to date, throw an exception if fails.
+	 * Return a string like 'commit number (branch)' or 'no git data found'.
 	 *
-	 * @return bool
-	 *
-	 * @throws Exception
+	 * @return string
 	 */
-	public function is_up_to_date()
+	public function get_info()
 	{
 		$branch = $this->get_current_branch();
-		if ($branch != 'master') {
+		$head = $this->get_current_commit();
+		if ($head == false || $branch == false) {
+			// when going through CI, .git exists...
 			// @codeCoverageIgnoreStart
-			throw new Exception('Branch is not master, cannot compare.');
-			// @codeCoverageIgnoreStart
-		}
-
-		if ($this->get_commits() == false) {
-			// @codeCoverageIgnoreStart
-			throw new Exception('Check for update failed.');
+			return 'No git data found. Probably installed from release or could not read .git';
 			// @codeCoverageIgnoreEnd
 		}
 
-		$count = $this->count_behind();
+		return sprintf('%s (%s)', $head, $branch) . $this->get_behind_text();
+	}
+
+	/**
+	 * Check if the repo is up to date, throw an exception if fails.
+	 *
+	 * @param bool $cached
+	 *
+	 * @return bool
+	 *
+	 * @throws NotMasterException
+	 * @throws NotInCacheException
+	 */
+	public function is_up_to_date(bool $cached = true)
+	{
+		$count = $this->count_behind($cached);
 		if ($count === 0) {
 			return true;
 		}
+
 		// @codeCoverageIgnoreStart
 		return false;
 		// @codeCoverageIgnoreEnd
 	}
 
 	/**
-	 * Check for updates.
+	 * Simple check if git is usable or not.
+	 *
+	 * @return bool
+	 */
+	public function is_usable()
+	{
+		$usable = Helpers::hasFullPermissions(base_path('.git'));
+		$branch = $this->get_current_branch();
+		$usable &= Helpers::hasPermissions(base_path('.git/refs/heads/'
+			. $branch));
+
+		return $usable;
+	}
+
+	/**
+	 * Check for updates (old).
 	 *
 	 * @param $return
 	 */
@@ -264,10 +272,14 @@ class GitHubFunctions
 	{
 		// add a setting to do this check only once per day ?
 		if (Configs::get_value('check_for_updates', '0') == '1') {
-			$json = $this->get_json('https://lycheeorg.github.io/update.json');
+			$json = new JsonRequestFunctions(Config::get('urls.update.json'));
+			$json = $json->get_json();
 			if ($json != false) {
+				/* @noinspection PhpUndefinedFieldInspection */
 				$return['update_json'] = $json->lychee->version;
-				$return['update_available'] = ((intval(Configs::get_value('version', '40000'))) < $return['update_json']);
+				$return['update_available']
+					= ((intval(Configs::get_value('version', '40000')))
+					< $return['update_json']);
 			}
 		}
 	}

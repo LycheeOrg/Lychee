@@ -25,9 +25,9 @@ class DiskUsage
 	 */
 	public function getSymbolByQuantity($bytes)
 	{
-		$symbols = array(
+		$symbols = [
 			'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB',
-		);
+		];
 		$exp = intval(floor(log($bytes) / log(1024)));
 
 		return sprintf('%.2f %s', ($bytes / pow(1024, $exp)),

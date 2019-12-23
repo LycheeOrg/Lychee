@@ -38,12 +38,12 @@ class ReadAccessFunctions
 	public function album($album, bool $obeyHidden = false)
 	{
 		if (!is_object($album)) {
-			if (in_array($album, array(
+			if (in_array($album, [
 				'f',
 				's',
 				'r',
 				'0',
-			))) {
+			])) {
 				if ($this->sessionFunctions->is_logged_in()) {
 					$id = $this->sessionFunctions->id();
 

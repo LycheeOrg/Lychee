@@ -150,6 +150,9 @@ class Configs extends Model
 	 */
 	public static function get_value(string $key, $default = null)
 	{
+		// These config values are allowed to be empty/null
+		$whitelist_keys_nullable = ['has_exiftool'];
+
 		if (!self::$cache) {
 			/*
 			 * try is here because when composer does the package discovery it
@@ -169,10 +172,12 @@ class Configs extends Model
 			/*
 			 * For some reason the $default is not returned above...
 			 */
-			try {
-				Logs::error(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
-			} catch (Exception $e) {
-				// yeah we do nothing because we cannot do anything in that case ...  :p
+			if (!in_array($key, $whitelist_keys_nullable)) {
+				try {
+					Logs::error(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
+				} catch (Exception $e) {
+					// yeah we do nothing because we cannot do anything in that case ...  :p
+				}
 			}
 
 			return $default;
@@ -243,6 +248,31 @@ class Configs extends Model
 		}
 
 		return false;
+	}
+
+	/**
+	 * @return bool returns the Exiftool setting
+	 */
+	public static function hasExiftool()
+	{
+		$has_exiftool = self::get_value('has_exiftool');
+		// value not yet set -> let's see if exiftool is available
+		if ($has_exiftool === null) {
+			$status = 0;
+			$output = '';
+			exec('which exiftool 2>&1 > /dev/null', $output, $status);
+			if ($status != 0) {
+				self::set('has_exiftool', false);
+				$has_exiftool = false;
+			} else {
+				self::set('has_exiftool', true);
+				$has_exiftool = true;
+			}
+		} else {
+			$has_exiftool = self::get_value('has_exiftool');
+		}
+
+		return $has_exiftool;
 	}
 
 	/**

@@ -11,7 +11,7 @@ final class Dutch implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'gebruikersnaam',
 			'PASSWORD' => 'wachtwoord',
 			'ENTER' => 'Enter',
@@ -35,11 +35,13 @@ final class Dutch implements LangInterface
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Slimme albums',
 			'SHARED_ALBUMS' => 'Shared albums',
 			'ALBUMS' => 'Albums',
 			'PHOTOS' => 'Pictures',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Hernoem',
 			'RENAME_ALL' => 'Geselecteerde Hernoem',
@@ -76,6 +78,7 @@ final class Dutch implements LangInterface
 
 			'CLOSE_ALBUM' => 'Sluit Album',
 			'CLOSE_PHOTO' => 'Sluit Foto',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Voeg toe',
 			'MOVE' => 'Verplaats',
@@ -113,6 +116,7 @@ final class Dutch implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'Over Foto',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Directe Link',
 			'DIRECT_LINKS' => 'Directe Links',
 
@@ -142,6 +146,8 @@ final class Dutch implements LangInterface
 			'ALBUM_HIDDEN_EXPL' => 'Alleen mensen met een link kunnen dit album bekjiken.',
 			'ALBUM_DOWNLOADABLE' => 'Downloadbaar',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Bezoekers van jouw Lychee kunnen dit album downloaden.',
+			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'ALBUM_PASSWORD' => 'Wachtwoord',
 			'ALBUM_PASSWORD_PROT' => 'Met wachtwoord beschermt',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'Album alleen beschikbaar met een geldig wachtwoord.',
@@ -227,6 +233,8 @@ final class Dutch implements LangInterface
 			'PHOTO_HIDDEN_EXPL' => 'Only people with the direct link can view this photo.',
 			'PHOTO_DOWNLOADABLE' => 'Downloadable',
 			'PHOTO_DOWNLOADABLE_EXPL' => 'Visitors of your gallery can download this photo.',
+			'PHOTO_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'PHOTO_PASSWORD_PROT' => 'Password protected',
 			'PHOTO_PASSWORD_PROT_EXPL' => 'Photo only accessible with a valid password.',
 			'PHOTO_EDIT_SHARING_TEXT' => 'The sharing properties of this photo will be changed to the following:',
@@ -242,6 +250,8 @@ final class Dutch implements LangInterface
 			'ERROR_CONFIG_FILE' => "Kan configuatie niet opslaan. Toegant tot <b>'data/'</b> geweigerd. Geef iedereen lees, schijf en uitvoer permissie op <b>'data/'</b> en <b>'uploads/'</b>. Kijk naar de readme voor meer informatie.",
 			'ERROR_UNKNOWN' => 'Er is iets onverwachts gebeurd. Probeer het opnieuw of controleer je installatie en server. Kijk naar de readme voor meer informatie.',
 			'ERROR_LOGIN' => 'Kan login niet opslaan. Probeer het opnieuw met een andere gebruikersnaam en/of wachtwoord!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Probeer opnieuw',
 
@@ -254,6 +264,8 @@ final class Dutch implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Publieke zoekactie bijgewerkt',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Voer je database connectie gegevens hieronder in:',
 			'DB_INFO_HOST' => 'Database Host (optioneel)',
@@ -319,7 +331,15 @@ final class Dutch implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',
@@ -384,8 +404,9 @@ final class Dutch implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Thumb HiDPI',
 			'PHOTO_THUMB' => 'Square thumb',
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
-		);
+		];
 
 		return $locale;
 	}

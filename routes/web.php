@@ -33,8 +33,10 @@ Route::post('/api/Session::login', 'SessionController@login');
 Route::post('/api/Session::logout', 'SessionController@logout');
 
 Route::post('/api/Albums::get', 'AlbumsController@get');
+Route::post('/api/Albums::getPositionData', 'AlbumsController@getPositionData');
 
 Route::post('/api/Album::get', 'AlbumController@get')->middleware('read');
+Route::post('/api/Album::getPositionData', 'AlbumController@getPositionData')->middleware('read');
 Route::post('/api/Album::getPublic', 'AlbumController@getPublic');
 Route::post('/api/Album::add', 'AlbumController@add')->middleware('upload');
 Route::post('/api/Album::setTitle', 'AlbumController@setTitle')->middleware('upload');
@@ -76,6 +78,9 @@ Route::post('/api/Settings::setPublicSearch', 'SettingsController@setPublicSearc
 Route::post('/api/Settings::setImageOverlay', 'SettingsController@setImageOverlay')->middleware('admin');
 Route::post('/api/Settings::setDefaultLicense', 'SettingsController@setDefaultLicense')->middleware('admin');
 Route::post('/api/Settings::setMapDisplay', 'SettingsController@setMapDisplay')->middleware('admin');
+Route::post('/api/Settings::setMapDisplayPublic', 'SettingsController@setMapDisplayPublic')->middleware('admin');
+Route::post('/api/Settings::setMapProvider', 'SettingsController@setMapProvider')->middleware('admin');
+Route::post('/api/Settings::setMapIncludeSubalbums', 'SettingsController@setMapIncludeSubalbums')->middleware('admin');
 Route::post('/api/Settings::setCSS', 'SettingsController@setCSS')->middleware('admin');
 Route::post('/api/Settings::getAll', 'SettingsController@getAll')->middleware('admin');
 Route::post('/api/Settings::saveAll', 'SettingsController@saveAll')->middleware('admin');
@@ -91,13 +96,16 @@ Route::post('/api/User::Delete', 'UserController@delete')->middleware('admin');
 Route::post('/api/User::Create', 'UserController@create')->middleware('admin');
 
 Route::post('/api/Logs', 'LogController@display')->middleware('admin');
-Route::get('/Logs', 'LogController@display')->middleware('admin');
 Route::post('/api/Logs::clearNoise', 'LogController@clearNoise')->middleware('admin');
-Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 Route::post('/api/Diagnostics', 'DiagnosticsController@get');
+
+Route::get('/Logs', 'LogController@display')->middleware('admin');
+Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 Route::get('/Diagnostics', 'DiagnosticsController@show');
 
-Route::get('/api/Update', 'UpdateController@do')->middleware('admin');
+Route::get('/Update', 'UpdateController@do')->middleware('admin');
+Route::post('/api/Update::Apply', 'UpdateController@do')->middleware('admin');
+Route::post('/api/Update::Check', 'UpdateController@check')->middleware('admin');
 
 // unused
 Route::post('/api/Logs::clear', 'LogController@clear')->middleware('admin');

@@ -29,13 +29,14 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"], ["\n\t\t\t<h1>$", "</h1>\n\t\t\t<div class='rows'>\n\t\t\t"]),
     _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='row'>\n\t\t\t\t\t<a class='name'>", "</a>\n\t\t\t\t\t<a class='status'></a>\n\t\t\t\t\t<p class='notice'></p>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject22 = _taggedTemplateLiteral(["\n\t\t<div class='row'>\n\t\t\t<a class='name'>", "</a>\n\t\t\t<a class='status'></a>\n\t\t\t<p class='notice'></p>\n\t\t</div>\n\t\t"], ["\n\t\t<div class='row'>\n\t\t\t<a class='name'>", "</a>\n\t\t\t<a class='status'></a>\n\t\t\t<p class='notice'></p>\n\t\t</div>\n\t\t"]),
-    _templateObject23 = _taggedTemplateLiteral(["<a class='tag'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='tag'>$", "<span data-index='", "'>", "</span></a>"]),
-    _templateObject24 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
-    _templateObject25 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
-    _templateObject26 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject27 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject28 = _taggedTemplateLiteral(["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "], ["\n\t\t\t\t\t <tr>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t </tr>\n\t\t\t\t\t "]),
-    _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
+    _templateObject23 = _taggedTemplateLiteral(["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"], ["<a class='", "'>$", "<span data-index='", "'>", "</span></a>"]),
+    _templateObject24 = _taggedTemplateLiteral(["<a class='", "'>$", "</a>"], ["<a class='", "'>$", "</a>"]),
+    _templateObject25 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
+    _templateObject26 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
+    _templateObject27 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
+    _templateObject28 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "], ["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "]),
+    _templateObject30 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -226,6 +227,7 @@ var lychee = {};
 
 lychee.content = $('.content');
 lychee.imageview = $('#imageview');
+lychee.mapview = $('#mapview');
 
 lychee.escapeHTML = function () {
 	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
@@ -297,7 +299,7 @@ photo.share = function (photoID, service) {
 			window.open("https://twitter.com/share?url=" + encodeURI(url));
 			break;
 		case 'facebook':
-			window.open("http://www.facebook.com/sharer.php?u=" + encodeURI(url));
+			window.open("https://www.facebook.com/sharer.php?u=" + encodeURI(url));
 			break;
 		case 'mail':
 			location.href = "mailto:?subject=&body=" + encodeURI(url);
@@ -411,6 +413,9 @@ $(document).ready(function () {
 
 	// Infobox
 	header.dom('#button_info').on('click', sidebar.toggle);
+
+	// Show overview Map
+	header.dom('#button_map').on('click', alert("Show Map"));
 
 	// Load photo
 	loadPhotoInfo(photoID);
@@ -594,7 +599,11 @@ build.photo = function (data) {
 
 	var isVideo = data.type && data.type.indexOf('video') > -1;
 	var isRaw = data.type && data.type.indexOf('raw') > -1;
+	var isLivePhoto = data.livePhotoUrl !== '' && data.livePhotoUrl !== null;
 
+	if (data.thumbUrl === 'uploads/thumb/' && isLivePhoto) {
+		thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	}
 	if (data.thumbUrl === 'uploads/thumb/' && isVideo) {
 		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	} else if (data.thumbUrl === 'uploads/thumb/' && isRaw) {
@@ -614,7 +623,7 @@ build.photo = function (data) {
 			thumb2x = "data-srcset='" + thumb2x + " 2x'";
 		}
 
-		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
 		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 		thumbnail += "</span>";
 	} else {
@@ -624,7 +633,7 @@ build.photo = function (data) {
 				thumb2x = "data-srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
 			}
 
-			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else if (data.medium !== '') {
@@ -632,12 +641,12 @@ build.photo = function (data) {
 				thumb2x = "data-srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 			}
 
-			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else if (!isVideo) {
 			// Fallback for images with no small or medium.
-			thumbnail = "<span class=\"thumbimg\">";
+			thumbnail = "<span class=\"thumbimg" + (isLivePhoto ? ' livephoto' : '') + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else {
@@ -712,27 +721,44 @@ build.imageview = function (data, visibleControls, autoplay) {
 	} else {
 		var img = '';
 
-		// See if we have the thumbnail loaded...
-		$('.photo').each(function () {
-			if ($(this).attr('data-id') && $(this).attr('data-id') == data.id) {
-				var thumbimg = $(this).find('img');
-				if (thumbimg.length > 0) {
-					thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
-					return false;
+		if (data.livePhotoUrl === '' || data.livePhotoUrl === null) {
+			// It's normal photo
+
+			// See if we have the thumbnail loaded...
+			$('.photo').each(function () {
+				if ($(this).attr('data-id') && $(this).attr('data-id') == data.id) {
+					var thumbimg = $(this).find('img');
+					if (thumbimg.length > 0) {
+						thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
+						return false;
+					}
 				}
-			}
-		});
+			});
 
-		if (data.medium !== '') {
-			var medium = '';
+			if (data.medium !== '') {
+				var medium = '';
 
-			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
-				medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+				if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
+					medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+				}
+				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
+			} else {
+				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
 			}
-			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
 		} else {
-			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
+
+			if (data.medium !== '') {
+				medium_dims = data.medium_dim.split("x");
+				medium_width = medium_dims[0];
+				medium_height = medium_dims[1];
+				// It's a live photo
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px'></div>";
+			} else {
+				// It's a live photo
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.url + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + data.width + "px; height: " + data.height + "px'></div>";
+			}
 		}
+
 		html += lychee.html(_templateObject17, img);
 
 		if (lychee.image_overlay) html += build.overlay_image(data);
@@ -805,24 +831,38 @@ build.uploadNewFile = function (name) {
 build.tags = function (tags) {
 
 	var html = '';
+	var editable = typeof album !== 'undefined' ? album.isUploadable() : false;
+
+	// Search is enabled if logged in (not publicMode) or public seach is enabled
+	var searchable = lychee.publicMode === false || lychee.public_search === true;
+
+	// build class_string for tag
+	var a_class = 'tag';
+	if (searchable) {
+		a_class = a_class + ' search';
+	}
 
 	if (tags !== '') {
 
 		tags = tags.split(',');
 
 		tags.forEach(function (tag, index) {
-			html += lychee.html(_templateObject23, tag, index, build.iconic('x'));
+			if (editable) {
+				html += lychee.html(_templateObject23, a_class, tag, index, build.iconic('x'));
+			} else {
+				html += lychee.html(_templateObject24, a_class, tag);
+			}
 		});
 	} else {
 
-		html = lychee.html(_templateObject24, lychee.locale['NO_TAGS']);
+		html = lychee.html(_templateObject25, lychee.locale['NO_TAGS']);
 	}
 
 	return html;
 };
 
 build.user = function (user) {
-	var html = lychee.html(_templateObject25, user.id, user.id, user.username, user.id, user.id);
+	var html = lychee.html(_templateObject26, user.id, user.id, user.username, user.id, user.id);
 
 	return html;
 };
@@ -873,6 +913,15 @@ header.bind = function () {
 	header.dom('#button_settings').on(eventName, leftMenu.open);
 	header.dom('#button_info_album').on(eventName, sidebar.toggle);
 	header.dom('#button_info').on(eventName, sidebar.toggle);
+	header.dom('.button--map-albums').on(eventName, function () {
+		lychee.gotoMap();
+	});
+	header.dom('#button_map_album').on(eventName, function () {
+		lychee.gotoMap(album.getID());
+	});
+	header.dom('#button_map').on(eventName, function () {
+		lychee.gotoMap(album.getID());
+	});
 	header.dom('.button_add').on(eventName, contextMenu.add);
 	header.dom('#button_more').on(eventName, function (e) {
 		contextMenu.photoMore(photo.getID(), e);
@@ -908,11 +957,18 @@ header.bind = function () {
 	header.dom('#button_back').on(eventName, function () {
 		lychee.goto(album.getID());
 	});
+	header.dom('#button_back_map').on(eventName, function () {
+		lychee.goto(album.getID());
+	});
 	header.dom('#button_fs_album_enter,#button_fs_enter').on(eventName, lychee.fullscreenEnter);
 	header.dom('#button_fs_album_exit,#button_fs_exit').on(eventName, lychee.fullscreenExit).hide();
 
 	header.dom('.header__search').on('keyup click', function () {
-		search.find($(this).val());
+		if ($(this).val().length > 0) {
+			lychee.goto('search/' + encodeURIComponent($(this).val()));
+		} else if (search.hash !== null) {
+			search.reset();
+		}
 	});
 	header.dom('.header__clear').on(eventName, function () {
 		header.dom('.header__search').focus();
@@ -943,7 +999,16 @@ header.show = function () {
 	lychee.imageview.removeClass('full');
 	header.dom().removeClass('header--hidden');
 
+	photo.updateSizeLivePhotoDuringAnimation();
+
 	return true;
+};
+
+header.hideIfLivePhotoNotPlaying = function () {
+
+	// Hides the header, if current live photo is not playing
+	if (photo.isLivePhotoPlaying() == true) return false;
+	return header.hide();
 };
 
 header.hide = function () {
@@ -952,6 +1017,8 @@ header.hide = function () {
 
 		lychee.imageview.addClass('full');
 		header.dom().addClass('header--hidden');
+
+		photo.updateSizeLivePhotoDuringAnimation();
 
 		return true;
 	}
@@ -964,7 +1031,7 @@ header.setTitle = function () {
 
 
 	var $title = header.dom('.header__title');
-	var html = lychee.html(_templateObject26, title, build.iconic('caret-bottom'));
+	var html = lychee.html(_templateObject27, title, build.iconic('caret-bottom'));
 
 	$title.html(html);
 
@@ -980,7 +1047,7 @@ header.setMode = function (mode) {
 		case 'public':
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--public').addClass('header__toolbar--visible');
 			if (lychee.public_search) {
 				$('.header__search, .header__clear', '.header__toolbar--public').show();
@@ -988,13 +1055,27 @@ header.setMode = function (mode) {
 				$('.header__search, .header__clear', '.header__toolbar--public').hide();
 			}
 
+			// Set icon in Public mode
+			if (lychee.map_display_public) {
+				$('.button--map-albums', '.header__toolbar--public').show();
+			} else {
+				$('.button--map-albums', '.header__toolbar--public').hide();
+			}
+
 			return true;
 
 		case 'albums':
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--albums').addClass('header__toolbar--visible');
+
+			// If map is disabled, we should hide the icon
+			if (lychee.map_display) {
+				$('.button--map-albums', '.header__toolbar--albums').show();
+			} else {
+				$('.button--map-albums', '.header__toolbar--albums').hide();
+			}
 
 			return true;
 
@@ -1003,7 +1084,7 @@ header.setMode = function (mode) {
 			var albumID = album.getID();
 
 			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
 
 			// Hide download button when album empty or we are not allowed to
@@ -1012,6 +1093,19 @@ header.setMode = function (mode) {
 				$('#button_archive').hide();
 			} else {
 				$('#button_archive').show();
+			}
+
+			if (album.json && album.json.hasOwnProperty('share_button_visible') && album.json.share_button_visible !== '1') {
+				$('#button_share_album').hide();
+			} else {
+				$('#button_share_album').show();
+			}
+
+			// If map is disabled, we should hide the icon
+			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
+				$('#button_map_album').show();
+			} else {
+				$('#button_map_album').hide();
 			}
 
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
@@ -1034,12 +1128,26 @@ header.setMode = function (mode) {
 		case 'photo':
 
 			header.dom().addClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
+
+			// If map is disabled, we should hide the icon
+			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
+				$('#button_map').show();
+			} else {
+				$('#button_map').hide();
+			}
+
 			if (album.isUploadable()) {
 				$('#button_trash, #button_move, #button_visibility, #button_star').show();
 			} else {
 				$('#button_trash, #button_move, #button_visibility, #button_star').hide();
+			}
+
+			if (photo.json && photo.json.hasOwnProperty('share_button_visible') && photo.json.share_button_visible !== '1') {
+				$('#button_share').hide();
+			} else {
+				$('#button_share').show();
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
@@ -1047,6 +1155,13 @@ header.setMode = function (mode) {
 			if (!(album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(photo.json.url && photo.json.url !== '')) {
 				$('#button_more').hide();
 			}
+
+			return true;
+		case 'map':
+
+			header.dom().removeClass('header--view');
+			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
+			header.dom('.header__toolbar--map').addClass('header__toolbar--visible');
 
 			return true;
 
@@ -1065,6 +1180,32 @@ header.setEditable = function (editable) {
 	if (editable) $title.addClass('header__title--editable');else $title.removeClass('header__title--editable');
 
 	return true;
+};
+
+header.applyTranslations = function () {
+
+	var selector_locale = {
+		'#button_signin': 'SIGN_IN',
+		'#button_settings': 'SETTINGS',
+		'#button_info_album': 'ABOUT_ALBUM',
+		'#button_info': 'ABOUT_PHOTO',
+		'.button_add': 'ADD',
+		'#button_move_album': 'MOVE_ALBUM',
+		'#button_move': 'MOVE',
+		'#button_trash_album': 'DELETE_ALBUM',
+		'#button_trash': 'DELETE',
+		'#button_archive': 'DOWNLOAD_ALBUM',
+		'#button_star': 'STAR_PHOTO',
+		'#button_back_home': 'CLOSE_ALBUM',
+		'#button_fs_album_enter': 'FULLSCREEN_ENTER',
+		'#button_fs_enter': 'FULLSCREEN_ENTER',
+		'#button_share': 'SHARE_PHOTO',
+		'#button_share_album': 'SHARE_ALBUM'
+	};
+
+	for (var selector in selector_locale) {
+		header.dom(selector).prop('title', lychee.locale[selector_locale[selector]]);
+	}
 };
 
 /**
@@ -1086,6 +1227,11 @@ visible.album = function () {
 
 visible.photo = function () {
 	if ($('#imageview.fadeIn').length > 0) return true;
+	return false;
+};
+
+visible.mapview = function () {
+	if ($('#mapview.fadeIn').length > 0) return true;
 	return false;
 };
 
@@ -1123,6 +1269,7 @@ visible.leftMenu = function () {
 	if (leftMenu.dom().hasClass('leftMenu__visible')) return true;
 	return false;
 };
+
 /**
  * @description This module takes care of the sidebar.
  */
@@ -1167,6 +1314,10 @@ sidebar.bind = function () {
 		photo.editTags([photo.getID()]);
 	});
 
+	sidebar.dom('#tags .tag').off(eventName).on(eventName, function () {
+		sidebar.triggerSearch($(this).text());
+	});
+
 	sidebar.dom('#tags .tag span').off(eventName).on(eventName, function () {
 		photo.deleteTag(photo.getID(), $(this).data('index'));
 	});
@@ -1178,6 +1329,19 @@ sidebar.bind = function () {
 	return true;
 };
 
+sidebar.triggerSearch = function (search_string) {
+
+	// If public search is diabled -> do nothing
+	if (lychee.publicMode === true && !lychee.public_search) {
+		// Do not display an error -> just do nothing to not confuse the user
+		return;
+	}
+
+	search.hash = null;
+	// We're either logged in or public search is allowed
+	lychee.goto('search/' + encodeURIComponent(search_string));
+};
+
 sidebar.toggle = function () {
 
 	if (visible.sidebar() || visible.sidebarbutton()) {
@@ -1187,6 +1351,7 @@ sidebar.toggle = function () {
 		lychee.imageview.toggleClass('image--sidebar');
 		if (typeof view !== 'undefined') view.album.content.justify();
 		sidebar.dom().toggleClass('active');
+		photo.updateSizeLivePhotoDuringAnimation();
 
 		return true;
 	}
@@ -1222,6 +1387,10 @@ sidebar.changeAttr = function (attr) {
 	sidebar.dom('.attr_' + attr).html(value);
 
 	return true;
+};
+
+sidebar.hideAttr = function (attr) {
+	sidebar.dom('.attr_' + attr).closest('tr').hide();
 };
 
 sidebar.secondsToHMS = function (d) {
@@ -1309,27 +1478,22 @@ sidebar.createStructure.photo = function (data) {
 		}
 	}
 
-	// Only create tags section when the photo is editable
-	if (editable) {
+	// Always create tags section - behaviour for editing
+	//tags handled when contructing the html code for tags
 
-		structure.tags = {
-			title: lychee.locale['PHOTO_TAGS'],
-			type: sidebar.types.TAGS,
-			value: build.tags(data.tags),
-			editable: editable
-		};
-	} else {
+	structure.tags = {
+		title: lychee.locale['PHOTO_TAGS'],
+		type: sidebar.types.TAGS,
+		value: build.tags(data.tags),
+		editable: editable
 
-		structure.tags = {};
-	}
-
-	// Only create EXIF section when EXIF data available
-	if (exifHash !== '') {
+		// Only create EXIF section when EXIF data available
+	};if (exifHash !== '') {
 
 		structure.exif = {
 			title: lychee.locale['PHOTO_CAMERA'],
 			type: sidebar.types.DEFAULT,
-			rows: isVideo ? [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }] : [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }, { title: lychee.locale['PHOTO_LENS'], kind: 'lens', value: data.lens }, { title: lychee.locale['PHOTO_SHUTTER'], kind: 'shutter', value: data.shutter }, { title: lychee.locale['PHOTO_APERTURE'], kind: 'aperture', value: data.aperture }, { title: lychee.locale['PHOTO_FOCAL'], kind: 'focal', value: data.focal }, { title: lychee.locale['PHOTO_ISO'], kind: 'iso', value: data.iso }]
+			rows: isVideo ? [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }] : [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }, { title: lychee.locale['PHOTO_LENS'], kind: 'lens', value: data.lens }, { title: lychee.locale['PHOTO_SHUTTER'], kind: 'shutter', value: data.shutter }, { title: lychee.locale['PHOTO_APERTURE'], kind: 'aperture', value: data.aperture }, { title: lychee.locale['PHOTO_FOCAL'], kind: 'focal', value: data.focal }, { title: lychee.locale['PHOTO_ISO'], kind: 'iso', value: data.iso }]
 		};
 	} else {
 
@@ -1380,6 +1544,7 @@ sidebar.createStructure.album = function (data) {
 	var _public = '';
 	var hidden = '';
 	var downloadable = '';
+	var share_button_visible = '';
 	var password = '';
 	var license = '';
 
@@ -1424,6 +1589,21 @@ sidebar.createStructure.album = function (data) {
 			break;
 		default:
 			downloadable = '-';
+			break;
+
+	}
+
+	// Set value for share_button_visible
+	switch (data.share_button_visible) {
+
+		case '0':
+			share_button_visible = lychee.locale['ALBUM_SHR_NO'];
+			break;
+		case '1':
+			share_button_visible = lychee.locale['ALBUM_SHR_YES'];
+			break;
+		default:
+			share_button_visible = '-';
 			break;
 
 	}
@@ -1492,7 +1672,7 @@ sidebar.createStructure.album = function (data) {
 	structure.share = {
 		title: lychee.locale['ALBUM_SHARING'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
+		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_SHARE_BUTTON_VISIBLE'], kind: 'share_button_visible', value: share_button_visible }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
 	};
 
 	if (data.owner != null) {
@@ -1554,7 +1734,7 @@ sidebar.render = function (structure) {
 			});
 
 			if (_has_latitude && _has_longitude && lychee.map_display) {
-				_html += "\n\t\t\t\t\t\t <div id=\"mapid\"></div>\n\t\t\t\t\t\t ";
+				_html += "\n\t\t\t\t\t\t <div id=\"leaflet_map_single_photo\"></div>\n\t\t\t\t\t\t ";
 			}
 		}
 
@@ -1562,16 +1742,17 @@ sidebar.render = function (structure) {
 
 			var value = row.value;
 
-			// Set a default for the value
-			if (value === '' || value == null) value = '-';
+			// show only Exif rows which have a value or if its editable
+			if (!(value === '' || value == null) || row.editable === true) {
 
-			// Wrap span-element around value for easier selecting on change
-			value = lychee.html(_templateObject27, row.kind, value);
+				// Wrap span-element around value for easier selecting on change
+				value = lychee.html(_templateObject28, row.kind, value);
 
-			// Add edit-icon to the value when editable
-			if (row.editable === true) value += ' ' + build.editIcon('edit_' + row.kind);
+				// Add edit-icon to the value when editable
+				if (row.editable === true) value += ' ' + build.editIcon('edit_' + row.kind);
 
-			_html += lychee.html(_templateObject28, row.title, value);
+				_html += lychee.html(_templateObject29, row.title, value);
+			}
 		});
 
 		_html += "\n\t\t\t\t </table>\n\t\t\t\t ";
@@ -1587,7 +1768,7 @@ sidebar.render = function (structure) {
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon('edit_tags');
 
-		_html += lychee.html(_templateObject29, section.title, section.title.toLowerCase(), section.value, editable);
+		_html += lychee.html(_templateObject30, section.title, section.title.toLowerCase(), section.value, editable);
 
 		return _html;
 	};
@@ -1645,6 +1826,313 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	return degrees + '° ' + minutes + '\' ' + seconds + '\" ' + direction;
 };
 
+/**
+ * @description This module takes care of the map view of a full album and its sub-albums.
+ */
+
+map_provider_layer_attribution = {
+	'Wikimedia': {
+		layer: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
+		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
+	},
+	'OpenStreetMap.org': {
+		layer: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'OpenStreetMap.de': {
+		layer: 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png ',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'OpenStreetMap.fr': {
+		layer: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	},
+	'RRZE': {
+		layer: 'https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png',
+		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+	}
+};
+
+mapview = {
+	map: null,
+	photoLayer: null,
+	min_lat: null,
+	min_lng: null,
+	max_lat: null,
+	max_lng: null,
+	albumID: null,
+	map_provider: null
+};
+
+mapview.isInitialized = function () {
+	if (mapview.map === null || mapview.photoLayer === null) {
+		return false;
+	}
+	return true;
+};
+
+mapview.title = function (_albumID, _albumTitle) {
+	switch (_albumID) {
+		case 'f':
+			lychee.setTitle(lychee.locale['STARRED'], false);
+			break;
+		case 's':
+			lychee.setTitle(lychee.locale['PUBLIC'], false);
+			break;
+		case 'r':
+			lychee.setTitle(lychee.locale['RECENT'], false);
+			break;
+		case '0':
+			lychee.setTitle(lychee.locale['UNSORTED'], false);
+			break;
+		case null:
+			lychee.setTitle(lychee.locale['ALBUMS'], false);
+			break;
+		default:
+			lychee.setTitle(_albumTitle, false);
+			break;
+	}
+};
+
+// Open the map view
+mapview.open = function () {
+	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
+
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display || lychee.publicMode === true && !lychee.map_display_public) {
+		loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+		return;
+	}
+
+	lychee.animate($('#mapview'), 'fadeIn');
+	$('#mapview').show();
+	header.setMode('map');
+
+	mapview.albumID = albumID;
+
+	// initialize container only once
+	if (mapview.isInitialized() == false) {
+
+		// Leaflet seaches for icon in same directoy as js file -> paths needs
+		// to be overwritten
+		delete L.Icon.Default.prototype._getIconUrl;
+		L.Icon.Default.mergeOptions({
+			iconRetinaUrl: 'img/marker-icon-2x.png',
+			iconUrl: 'img/marker-icon.png',
+			shadowUrl: 'img/marker-shadow.png'
+		});
+
+		// Set initial view to (0,0)
+		mapview.map = L.map('leaflet_map_full').setView([0.0, 0.0], 13);
+
+		L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
+			attribution: map_provider_layer_attribution[lychee.map_provider].attribution
+		}).addTo(mapview.map);
+
+		mapview.map_provider = lychee.map_provider;
+	} else {
+
+		if (mapview.map_provider !== lychee.map_provider) {
+
+			// removew all layers
+			mapview.map.eachLayer(function (layer) {
+				mapview.map.removeLayer(layer);
+			});
+
+			L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
+				attribution: map_provider_layer_attribution[lychee.map_provider].attribution
+			}).addTo(mapview.map);
+
+			mapview.map_provider = lychee.map_provider;
+		} else {
+
+			// Mapview has already shown data -> remove only photoLayer showing photos
+			mapview.photoLayer.clear();
+		}
+
+		// Reset min/max lat/lgn Values
+		mapview.min_lat = null;
+		mapview.max_lat = null;
+		mapview.min_lng = null;
+		mapview.max_lng = null;
+	}
+
+	// Define how the photos on the map should look like
+	mapview.photoLayer = L.photo.cluster().on('click', function (e) {
+		var photo = e.layer.photo;
+		var template = "";
+
+		// Retina version if available
+		if (photo.url2x !== "") {
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'srcset="{url} 1x, {url2x} 2x" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), '</span><p>{takedate}</p></div>');
+		} else {
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), '</span><p>{takedate}</p></div>');
+		}
+
+		e.layer.bindPopup(L.Util.template(template, photo), {
+			minWidth: 400
+		}).openPopup();
+	});
+
+	// Adjusts zoom and position of map to show all images
+	updateZoom = function updateZoom() {
+		if (mapview.min_lat && mapview.min_lng && mapview.max_lat && mapview.max_lng) {
+			var dist_lat = mapview.max_lat - mapview.min_lat;
+			var dist_lng = mapview.max_lng - mapview.min_lng;
+			mapview.map.fitBounds([[mapview.min_lat - 0.1 * dist_lat, mapview.min_lng - 0.1 * dist_lng], [mapview.max_lat + 0.1 * dist_lat, mapview.max_lng + 0.1 * dist_lng]]);
+		} else {
+			mapview.map.fitWorld();
+		}
+	};
+
+	// Adds photos to the map
+	addPhotosToMap = function addPhotosToMap(album) {
+
+		// check if empty
+		if (!album.photos) return;
+
+		photos = [];
+
+		album.photos.forEach(function (element, index) {
+			if (element.latitude || element.longitude) {
+				photos.push({
+					"lat": parseFloat(element.latitude),
+					"lng": parseFloat(element.longitude),
+					"thumbnail": element.thumbUrl !== "uploads/thumb/" ? element.thumbUrl : "img/placeholder.png",
+					"thumbnail2x": element.thumb2x,
+					"url": element.small !== "" ? element.small : element.url,
+					"url2x": element.small2x,
+					"name": element.title,
+					"takedate": element.takedate,
+					"albumID": element.album,
+					"photoID": element.id
+				});
+
+				// Update min/max lat/lng
+				if (mapview.min_lat === null || mapview.min_lat > element.latitude) {
+					mapview.min_lat = parseFloat(element.latitude);
+				}
+				if (mapview.min_lng === null || mapview.min_lng > element.longitude) {
+					mapview.min_lng = parseFloat(element.longitude);
+				}
+				if (mapview.max_lat === null || mapview.max_lat < element.latitude) {
+					mapview.max_lat = parseFloat(element.latitude);
+				}
+				if (mapview.max_lng === null || mapview.max_lng < element.longitude) {
+					mapview.max_lng = parseFloat(element.longitude);
+				}
+			}
+		});
+
+		// Add Photos to map
+		mapview.photoLayer.add(photos).addTo(mapview.map);
+
+		// Update Zoom and Position
+		updateZoom();
+	};
+
+	// Call backend, retrieve information of photos and display them
+	// This function is called recursively to retrieve data for sub-albums
+	// Possible enhancement could be to only have a single ajax call
+	getAlbumData = function getAlbumData(_albumID) {
+		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+		if (_albumID !== '' && _albumID !== null) {
+			// _ablumID has been to a specific album
+			var _params = {
+				albumID: _albumID,
+				includeSubAlbums: _includeSubAlbums,
+				password: ''
+			};
+
+			api.post('Album::getPositionData', _params, function (data) {
+
+				if (data === 'Warning: Wrong password!') {
+					password.getDialog(_albumID, function () {
+
+						_params.password = password.value;
+
+						api.post('Album::getPositionData', _params, function (data) {
+							addPhotosToMap(data);
+							mapview.title(_albumID, data.title);
+						});
+					});
+				} else {
+					addPhotosToMap(data);
+					mapview.title(_albumID, data.title);
+				}
+			});
+		} else {
+			// AlbumID is empty -> fetch all photos of all albums
+			// _ablumID has been to a specific album
+			var _params2 = {
+				includeSubAlbums: _includeSubAlbums,
+				password: ''
+			};
+
+			api.post('Albums::getPositionData', _params2, function (data) {
+
+				if (data === 'Warning: Wrong password!') {
+					password.getDialog(_albumID, function () {
+
+						_params2.password = password.value;
+
+						api.post('Albums::getPositionData', _params2, function (data) {
+							addPhotosToMap(data);
+							mapview.title(_albumID, data.title);
+						});
+					});
+				} else {
+					addPhotosToMap(data);
+					mapview.title(_albumID, data.title);
+				}
+			});
+		}
+	};
+
+	// If subalbums not being included and album.json already has all data
+	// -> we can reuse it
+	if (lychee.map_include_subalbums === false && album.json !== null && album.json.photos !== null) {
+
+		addPhotosToMap(album.json);
+	} else {
+
+		// Not all needed data has been  preloaded - we need to load everything
+		getAlbumData(albumID, lychee.map_include_subalbums);
+	}
+
+	// Update Zoom and Position once more (for empty map)
+	updateZoom();
+};
+
+mapview.close = function () {
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display) return;
+
+	lychee.animate($('#mapview'), 'fadeOut');
+	$('#mapview').hide();
+	header.setMode('album');
+};
+
+mapview.goto = function (elem) {
+
+	// If map functionality is disabled -> do nothing
+	if (!lychee.map_display) return;
+
+	var photoID = elem.attr('data-id');
+	var albumID = elem.attr('data-album-id');
+
+	if (albumID == 'null') albumID = 0;
+
+	if (album.json == null || albumID !== album.json.id) {
+		album.refresh();
+	}
+
+	lychee.goto(albumID + '/' + photoID);
+};
+
 lychee.locale = {
 
 	'USERNAME': 'username',
@@ -1666,9 +2154,11 @@ lychee.locale = {
 	'CLEAN_LOGS': 'Clean Noise',
 	'SIGN_OUT': 'Sign Out',
 	'UPDATE_AVAILABLE': 'Update available!',
+	'CHECK_FOR_UPDATE': 'Check for updates',
 	'DEFAULT_LICENSE': 'Default License for new uploads:',
 	'SET_LICENSE': 'Set License',
 	'SET_OVERLAY_TYPE': 'Set Overlay',
+	'SET_MAP_PROVIDER': 'Set OpenStreetMap tiles provider',
 	'SAVE_RISK': 'Save my modifications, I accept the Risk!',
 	'MORE': 'More',
 
@@ -1676,6 +2166,7 @@ lychee.locale = {
 	'SHARED_ALBUMS': 'Shared albums',
 	'ALBUMS': 'Albums',
 	'PHOTOS': 'Pictures',
+	'SEARCH_RESULTS': 'Search results',
 
 	'RENAME': 'Rename',
 	'RENAME_ALL': 'Rename All',
@@ -1710,6 +2201,7 @@ lychee.locale = {
 
 	'CLOSE_ALBUM': 'Close Album',
 	'CLOSE_PHOTO': 'Close Photo',
+	'CLOSE_MAP': 'Close Map',
 
 	'ADD': 'Add',
 	'MOVE': 'Move',
@@ -1748,6 +2240,7 @@ lychee.locale = {
 
 	'FULL_PHOTO': 'Full Photo',
 	'ABOUT_PHOTO': 'About Photo',
+	'DISPLAY_FULL_MAP': 'Map',
 	'DIRECT_LINK': 'Direct Link',
 	'DIRECT_LINKS': 'Direct Links',
 
@@ -1777,6 +2270,8 @@ lychee.locale = {
 	'ALBUM_HIDDEN_EXPL': 'Only people with the direct link can view this album.',
 	'ALBUM_DOWNLOADABLE': 'Downloadable',
 	'ALBUM_DOWNLOADABLE_EXPL': 'Visitors of your Lychee can download this album.',
+	'ALBUM_SHARE_BUTTON_VISIBLE': 'Share button is visible',
+	'ALBUM_SHARE_BUTTON_VISIBLE_EXPL': 'Display social media sharing links.',
 	'ALBUM_PASSWORD': 'Password',
 	'ALBUM_PASSWORD_PROT': 'Password protected',
 	'ALBUM_PASSWORD_PROT_EXPL': 'Album only accessible with a valid password.',
@@ -1860,6 +2355,8 @@ lychee.locale = {
 	'PHOTO_HIDDEN_EXPL': 'Only people with the direct link can view this photo.',
 	'PHOTO_DOWNLOADABLE': 'Downloadable',
 	'PHOTO_DOWNLOADABLE_EXPL': 'Visitors of your gallery can download this photo.',
+	'PHOTO_SHARE_BUTTON_VISIBLE': 'Share button is visible',
+	'PHOTO_SHARE_BUTTON_VISIBLE_EXPL': 'Display social media sharing links.',
 	'PHOTO_PASSWORD_PROT': 'Password protected',
 	'PHOTO_PASSWORD_PROT_EXPL': 'Photo only accessible with a valid password.',
 	'PHOTO_EDIT_SHARING_TEXT': 'The sharing properties of this photo will be changed to the following:',
@@ -1880,6 +2377,8 @@ lychee.locale = {
 	'ERROR_CONFIG_FILE': "Unable to save this configuration. Permission denied in <b>'data/'</b>. Please set the read, write and execute rights for others in <b>'data/'</b> and <b>'uploads/'</b>. Take a look at the readme for more information.",
 	'ERROR_UNKNOWN': 'Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.',
 	'ERROR_LOGIN': 'Unable to save login. Please try again with another username and password!',
+	'ERROR_MAP_DEACTIVATED': 'Map functionality has been deactivated under settings.',
+	'ERROR_SEARCH_DEACTIVATED': 'Search functionality has been deactivated under settings.',
 	'SUCCESS': 'OK',
 	'RETRY': 'Retry',
 
@@ -1892,7 +2391,10 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
 	'SETTINGS_SUCCESS_PUBLIC_SEARCH': 'Public search updated',
 	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
-	'SETTINGS_SUCCESS_MAP_DISPLAY': 'Display map settings updated',
+	'SETTINGS_SUCCESS_MAP_DISPLAY': 'Map display settings updated',
+	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC': 'Map display settings for public albums updated',
+	'SETTINGS_SUCCESS_MAP_PROVIDER': 'Map provider settings updated',
+
 	'SETTINGS_SUCCESS_CSS': 'CSS updated',
 	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
 
@@ -1972,7 +2474,16 @@ lychee.locale = {
 	'OVERLAY_DESCRIPTION': 'Photo description',
 	'OVERLAY_DATE': 'Photo date taken',
 
-	'MAP_DISPLAY_TEXT': 'Display coordinates on map (OpenStreetMap):',
+	'MAP_PROVIDER': 'Provider of OpenStreetMap tiles:',
+	'MAP_PROVIDER_WIKIMEDIA': 'Wikimedia',
+	'MAP_PROVIDER_OSM_ORG': 'OpenStreetMap.org (no retina)',
+	'MAP_PROVIDER_OSM_DE': 'OpenStreetMap.de (no retina)',
+	'MAP_PROVIDER_OSM_FR': 'OpenStreetMap.fr (no retina)',
+	'MAP_PROVIDER_RRZE': 'University of Erlangen, Germany (only retina)',
+
+	'MAP_DISPLAY_TEXT': 'Enable maps (provided by OpenStreetMap):',
+	'MAP_DISPLAY_PUBLIC_TEXT': 'Enable maps for public albums (provided by OpenStreetMap):',
+	'MAP_INCLUDE_SUBALBUMS_TEXT': 'Include photos of subalbums on map:',
 
 	'VIEW_NO_RESULT': 'No results',
 	'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',
@@ -2019,6 +2530,7 @@ lychee.locale = {
 	'PHOTO_SMALL_HIDPI': 'Thumb HiDPI',
 	'PHOTO_THUMB': 'Square thumb',
 	'PHOTO_THUMB_HIDPI': 'Square thumb HiDPI',
+	'PHOTO_LIVE_VIDEO': 'Video part of live-photo',
 	'PHOTO_VIEW': 'Lychee Photo View:'
 };
 

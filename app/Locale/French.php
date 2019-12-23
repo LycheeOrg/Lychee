@@ -11,7 +11,7 @@ final class French implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'Nom d\'utilisateur',
 			'PASSWORD' => 'Mot de passe',
 			'ENTER' => 'Enter',
@@ -35,11 +35,13 @@ final class French implements LangInterface
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Smart albums',
 			'SHARED_ALBUMS' => 'Shared albums',
 			'ALBUMS' => 'Albums',
 			'PHOTOS' => 'Pictures',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Renommer',
 			'RENAME_ALL' => 'Renommer la sélection',
@@ -76,6 +78,7 @@ final class French implements LangInterface
 
 			'CLOSE_ALBUM' => 'Fermer l\'album',
 			'CLOSE_PHOTO' => 'Fermer la photo',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Ajouter',
 			'MOVE' => 'Déplacer',
@@ -113,6 +116,7 @@ final class French implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'À propos de la photo',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Lien direct',
 			'DIRECT_LINKS' => 'Direct Links',
 
@@ -142,6 +146,8 @@ final class French implements LangInterface
 			'ALBUM_HIDDEN_EXPL' => 'Seules les personnes avec le lien peuvent voir cet album.',
 			'ALBUM_DOWNLOADABLE' => 'Téléchargeable',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Les visiteurs peuvent télécharger cet album.',
+			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'ALBUM_PASSWORD' => 'Mot de passe',
 			'ALBUM_PASSWORD_PROT' => 'Protéger par un mot de passe.',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'Cet album est accessible avec un mot de passe.',
@@ -227,6 +233,8 @@ final class French implements LangInterface
 			'PHOTO_HIDDEN_EXPL' => 'Only people with the direct link can view this photo.',
 			'PHOTO_DOWNLOADABLE' => 'Downloadable',
 			'PHOTO_DOWNLOADABLE_EXPL' => 'Visitors of your gallery can download this photo.',
+			'PHOTO_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'PHOTO_PASSWORD_PROT' => 'Password protected',
 			'PHOTO_PASSWORD_PROT_EXPL' => 'Photo only accessible with a valid password.',
 			'PHOTO_EDIT_SHARING_TEXT' => 'The sharing properties of this photo will be changed to the following:',
@@ -242,6 +250,8 @@ final class French implements LangInterface
 			'ERROR_CONFIG_FILE' => "Impossible d\'enregistrer cette configuration. Permission refusée dans <b>'data/'</b>. Veuillez paramétrer les droits de lecture, d\'ecriture et d\'exécution pour les autres utilisateurs dans <b>'data/'</b> et <b>'uploads/'</b>. Consultez le fichier Readme pour obtenir plus d\'information.",
 			'ERROR_UNKNOWN' => 'Une erreur inattendue est survenue. Veuillez réessayer et vérifier votre installation et votre serveur. Consultez le fichier Readme pour obtenir plus d\'information.',
 			'ERROR_LOGIN' => 'Impossible d\'enregistrer les informations de connexion. Veuillez réessayer avec un autre nom d\'utilisateur et mot de passe.',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Réessayer',
 
@@ -254,6 +264,8 @@ final class French implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Recherche publique mise à jour',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
 			'DB_INFO_HOST' => 'Hôte de la base de donnees (facultatif)',
@@ -319,7 +331,15 @@ final class French implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',
@@ -384,8 +404,9 @@ final class French implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Thumb HiDPI',
 			'PHOTO_THUMB' => 'Square thumb',
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
-		);
+		];
 
 		return $locale;
 	}

@@ -78,8 +78,8 @@ class AlbumController extends Controller
 	public function get(Request $request)
 	{
 		$request->validate(['albumID' => 'string|required']);
-		$return = array();
-		$return['albums'] = array();
+		$return = [];
+		$return['albums'] = [];
 		// Get photos
 		// Get album information
 		$UserId = $this->sessionFunctions->id();
@@ -99,11 +99,13 @@ class AlbumController extends Controller
 				}
 				$return['public'] = '1';
 				$return['downloadable'] = Configs::get_value('downloadable', '0');
+				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
 				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case 's':
 				$return['public'] = '0';
 				$return['downloadable'] = '1';
+				$return['share_button_visible'] = '0';
 				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
 			case 'r':
@@ -119,11 +121,13 @@ class AlbumController extends Controller
 				}
 				$return['public'] = '1';
 				$return['downloadable'] = Configs::get_value('downloadable', '0');
+				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
 				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
 			case '0':
 				$return['public'] = '0';
 				$return['downloadable'] = '1';
+				$return['share_button_visible'] = '0';
 				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
@@ -155,12 +159,89 @@ class AlbumController extends Controller
 		$return['photos'] = $this->albumFunctions->photos($photos_sql, $full_photo);
 
 		$return['id'] = $request['albumID'];
-		$return['num'] = count($return['photos']);
+		$return['num'] = strval(count($return['photos']));
 
 		// finalize the loop
-		if ($return['num'] === 0) {
+		if ($return['num'] === '0') {
 			$return['photos'] = false;
 		}
+
+		return $return;
+	}
+
+	/**
+	 * Provided an albumID, returns the album with only map related data.
+	 *
+	 * @param Request $request
+	 *
+	 * @return array|string
+	 */
+	public function getPositionData(Request $request)
+	{
+		$request->validate(['albumID' => 'string|required']);
+		$request->validate(['includeSubAlbums' => 'string|required']);
+		$return = [];
+		// Get photos
+		// Get album information
+		$UserId = $this->sessionFunctions->id();
+		$full_photo = Configs::get_value('full_photo', '1') == '1';
+
+		switch ($request['albumID']) {
+			case 'f':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+				break;
+			case 's':
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
+				break;
+			case 'r':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+				break;
+			case '0':
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
+				break;
+			default:
+				$album = Album::with('children')->find($request['albumID']);
+				if ($album === null) {
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
+					return 'false';
+				}
+
+				$full_photo = $album->full_photo_visible();
+
+				$album_list = [];
+				if ($request['includeSubAlbums']) {
+					// Get all subalbums of the current album
+					$this->albumFunctions->get_sub_albums($album_list, $album);
+				}
+
+				// Add current albumID to array
+				$album_list[] = $request['albumID'];
+
+				$photos_sql = Photo::whereIn('album_id', $album_list);
+
+				break;
+		}
+
+		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
+
+		$return['id'] = $request['albumID'];
 
 		return $return;
 	}
@@ -256,6 +337,7 @@ class AlbumController extends Controller
 			'public' => 'integer|required',
 			'visible' => 'integer|required',
 			'downloadable' => 'integer|required',
+			'share_button_visible' => 'integer|required',
 			'full_photo' => 'integer|required',
 		]);
 
@@ -272,6 +354,7 @@ class AlbumController extends Controller
 		$album->public = ($request['public'] === '1' ? 1 : 0);
 		$album->visible_hidden = ($request['visible'] === '1' ? 1 : 0);
 		$album->downloadable = ($request['downloadable'] === '1' ? 1 : 0);
+		$album->share_button_visible = ($request['share_button_visible'] === '1' ? 1 : 0);
 
 		// Set public
 		if (!$album->save()) {
@@ -281,7 +364,7 @@ class AlbumController extends Controller
 		// Reset permissions for photos
 		if ($album->public == 1) {
 			if ($album->photos()->count() > 0) {
-				if (!$album->photos()->update(array('public' => '0'))) {
+				if (!$album->photos()->update(['public' => '0'])) {
 					return 'false';
 				}
 			}
@@ -587,7 +670,7 @@ class AlbumController extends Controller
 		// Illicit chars
 		$badChars = array_merge(
 			array_map('chr', range(0, 31)),
-			array(
+			[
 				'<',
 				'>',
 				':',
@@ -597,7 +680,7 @@ class AlbumController extends Controller
 				'|',
 				'?',
 				'*',
-			)
+			]
 		);
 
 		$request->validate([
@@ -804,7 +887,7 @@ class AlbumController extends Controller
 
 		// Set file type and destination
 		$response->headers->set('Content-Type', 'application/x-zip');
-		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip');
+		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip', mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip');
 		$response->headers->set('Content-Disposition', $disposition);
 
 		// Disable caching

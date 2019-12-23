@@ -6,7 +6,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.1.3",
+        "php": "^7.2.0",
         "ext-exif": "*",
         "ext-gd": "*",
         "ext-json": "*",
@@ -17,13 +17,14 @@
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "maennchen/zipstream-php": "^1.2.0",
-        "php-ffmpeg/php-ffmpeg": "^0.13.0"
+        "lychee-org/php-exif": "dev-master",
+        "php-ffmpeg/php-ffmpeg": "^0.14.0"
     },
     "require-dev": {
         "ext-imagick": "*",
         "barryvdh/laravel-ide-helper": "^2.6",
         "filp/whoops": "^2.5",
-        "friendsofphp/php-cs-fixer": "^2.15",
+        "friendsofphp/php-cs-fixer": "^2.16",
         "fzaninotto/faker": "^1.8",
         "itsgoingd/clockwork": "^3.1",
         "laravel/homestead": "^8.6",

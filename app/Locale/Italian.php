@@ -11,7 +11,7 @@ final class Italian implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'nome utente',
 			'PASSWORD' => 'password',
 			'ENTER' => 'Invia',
@@ -35,11 +35,13 @@ final class Italian implements LangInterface
 			'DEFAULT_LICENSE' => 'Licenza predefinita per i nuovi caricamenti:',
 			'SET_LICENSE' => 'Imposta Licenza',
 			'SET_OVERLAY_TYPE' => 'Imposta Filigrana',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Album smart',
 			'SHARED_ALBUMS' => 'Album condivisi',
 			'ALBUMS' => 'Album',
 			'PHOTOS' => 'Immagini',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Rinomina',
 			'RENAME_ALL' => 'Rinomina Tutto',
@@ -76,6 +78,7 @@ final class Italian implements LangInterface
 
 			'CLOSE_ALBUM' => 'Chiudi Album',
 			'CLOSE_PHOTO' => 'Chiudi Foto',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Aggiungi',
 			'MOVE' => 'Sposta',
@@ -115,6 +118,7 @@ final class Italian implements LangInterface
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'Informazioni sulla Foto',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Link Diretto',
 			'DIRECT_LINKS' => 'Direct Links',
 
@@ -144,6 +148,8 @@ final class Italian implements LangInterface
 			'ALBUM_HIDDEN_EXPL' => 'Solo le persone con il link diretto possono vedere questo album.',
 			'ALBUM_DOWNLOADABLE' => 'Scaricabile',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'I visitatori del tuo Lychee possono scaricare questo album.',
+			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'ALBUM_PASSWORD' => 'Password',
 			'ALBUM_PASSWORD_PROT' => 'Password protetta',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'L\'album è accessibile soltanto con una password valida.',
@@ -230,6 +236,8 @@ final class Italian implements LangInterface
 			'PHOTO_HIDDEN_EXPL' => 'Only people with the direct link can view this photo.',
 			'PHOTO_DOWNLOADABLE' => 'Downloadable',
 			'PHOTO_DOWNLOADABLE_EXPL' => 'Visitors of your gallery can download this photo.',
+			'PHOTO_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'PHOTO_PASSWORD_PROT' => 'Password protected',
 			'PHOTO_PASSWORD_PROT_EXPL' => 'Photo only accessible with a valid password.',
 			'PHOTO_EDIT_SHARING_TEXT' => 'The sharing properties of this photo will be changed to the following:',
@@ -245,6 +253,8 @@ final class Italian implements LangInterface
 			'ERROR_CONFIG_FILE' => "Impossibile salvare questa configurazione. Permessi negati in <b>\'data/\'</b>. Per favore imposta i diritti di lettura, scrittura ed esecuzione per gli utenti esterni in <b>\'data/\'</b> e <b>\'uploads/\'</b>. Controlla il readme per più informazioni.",
 			'ERROR_UNKNOWN' => 'È successo qualcosa di inaspettato. Per favore prova di nuovo e controlla la tua installazione e il tuo server. Controlla il readme per più informazioni.',
 			'ERROR_LOGIN' => 'Impossibile salvare il login. Per favore prova con altri nomi utenti e password!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Riprova',
 
@@ -257,6 +267,8 @@ final class Italian implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Ricerca pubblica aggiornata',
 			'SETTINGS_SUCCESS_LICENSE' => 'Licenza predefinita aggiornata',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
 			'DB_INFO_HOST' => 'Host Database (opzionale)',
@@ -330,7 +342,15 @@ final class Italian implements LangInterface
 			'OVERLAY_EXIF' => 'Dati Foto EXIF',
 			'OVERLAY_DESCRIPTION' => 'Descrizione della Foto',
 			'OVERLAY_DATE' => 'Data di Creazione della Foto',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',
@@ -390,8 +410,9 @@ final class Italian implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Thumb HiDPI',
 			'PHOTO_THUMB' => 'Square thumb',
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
-		);
+		];
 
 		return $locale;
 	}

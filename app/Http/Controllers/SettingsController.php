@@ -347,6 +347,63 @@ class SettingsController extends Controller
 	}
 
 	/**
+	 * Enable display of photos on map for public albums.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapDisplayPublic(Request $request)
+	{
+		$request->validate([
+			'map_display_public' => 'required|string',
+		]);
+
+		if ($request['map_display_public'] == '1') {
+			return (Configs::set('map_display_public', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('map_display_public', '0')) ? 'true' : 'false';
+	}
+
+	/**
+	 * Set provider of OSM map tiles.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapProvider(Request $request)
+	{
+		$request->validate([
+			'map_provider' => 'required|string',
+		]);
+
+		return (Configs::set('map_provider',
+			$request['map_provider'])) ? 'true' : 'false';
+	}
+
+	/**
+	 * Enable display of photos of subalbums on map.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapIncludeSubalbums(Request $request)
+	{
+		$request->validate([
+			'map_include_subalbums' => 'required|string',
+		]);
+
+		if ($request['map_include_subalbums'] == '1') {
+			return (Configs::set('map_include_subalbums', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('map_include_subalbums', '0')) ? 'true' : 'false';
+	}
+
+	/**
 	 * take the css input text and put it into dist/user.css
 	 * this allow admins to actually personalize the look of their installation.
 	 *

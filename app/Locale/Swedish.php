@@ -11,7 +11,7 @@ final class Swedish implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'användarnamn',
 			'PASSWORD' => 'lösenord',
 			'ENTER' => 'Stig in',
@@ -35,11 +35,13 @@ final class Swedish implements LangInterface
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 
 			'SMART_ALBUMS' => 'Smarta album',
 			'SHARED_ALBUMS' => 'Shared albums',
 			'ALBUMS' => 'Album',
 			'PHOTOS' => 'Pictures',
+			'SEARCH_RESULTS' => 'Search results',
 
 			'RENAME' => 'Ändra namnet',
 			'RENAME_ALL' => 'Byt namn på vald',
@@ -76,6 +78,7 @@ final class Swedish implements LangInterface
 
 			'CLOSE_ALBUM' => 'Stäng albumet',
 			'CLOSE_PHOTO' => 'Stäng fotografiet',
+			'CLOSE_MAP' => 'Close Map',
 
 			'ADD' => 'Lägg till',
 			'MOVE' => 'Flytta',
@@ -113,6 +116,7 @@ final class Swedish implements LangInterface
 
 			'FULL_PHOTO' => 'Originalfotografi',
 			'ABOUT_PHOTO' => 'Om fotografiet',
+			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Direktlänk',
 			'DIRECT_LINKS' => 'Direct Links',
 
@@ -142,6 +146,8 @@ final class Swedish implements LangInterface
 			'ALBUM_HIDDEN_EXPL' => 'Bara personer med korrekt länk kan se detta album.',
 			'ALBUM_DOWNLOADABLE' => 'Nedladdningsbart',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Besökare till din Lychee kan ladda ner detta album.',
+			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'ALBUM_PASSWORD' => 'Lösenord',
 			'ALBUM_PASSWORD_PROT' => 'Lösenordsskyddad',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'Albumet kan bara ses med giltigt lösenord.',
@@ -227,6 +233,8 @@ final class Swedish implements LangInterface
 			'PHOTO_HIDDEN_EXPL' => 'Only people with the direct link can view this photo.',
 			'PHOTO_DOWNLOADABLE' => 'Downloadable',
 			'PHOTO_DOWNLOADABLE_EXPL' => 'Visitors of your gallery can download this photo.',
+			'PHOTO_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'PHOTO_PASSWORD_PROT' => 'Password protected',
 			'PHOTO_PASSWORD_PROT_EXPL' => 'Photo only accessible with a valid password.',
 			'PHOTO_EDIT_SHARING_TEXT' => 'The sharing properties of this photo will be changed to the following:',
@@ -242,6 +250,8 @@ final class Swedish implements LangInterface
 			'ERROR_CONFIG_FILE' => "Kunde inte spara konfigureringen. Åtkomst nekades i <b>'data/'</b>. Kontrollera rättigheterna för läsning, skrivning och exekvering för andra i <b>'data/'</b> och <b>'uploads/'</b>. För mera information läs dokumentet <b>'readme'</b>.",
 			'ERROR_UNKNOWN' => 'Något oväntat inträffade. Vänligen försök igen och kontrollera installationen av Lychee och din server. För mera information läs dokumentet <b>readme</b>.',
 			'ERROR_LOGIN' => 'Kunde inte spara inloggningsuppgifterna. Vänligen prova med ett annat användarnamn och lösenord!',
+			'ERROR_MAP_DEACTIVATED' => 'Map functionality has been deactivated under settings.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Search functionality has been deactivated under settings.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Försök igen',
 
@@ -254,6 +264,8 @@ final class Swedish implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Offentlig sökning uppdaterad',
 			'SETTINGS_SUCCESS_LICENSE' => 'Default license updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
 
 			'DB_INFO_TITLE' => 'Ange dina uppgifter för databasanslutninge nedan:',
 			'DB_INFO_HOST' => 'Databasens adress (valfritt)',
@@ -319,7 +331,15 @@ final class Swedish implements LangInterface
 			'OVERLAY_EXIF' => 'Photo EXIF data',
 			'OVERLAY_DESCRIPTION' => 'Photo description',
 			'OVERLAY_DATE' => 'Photo date taken',
-			'MAP_DISPLAY_TEXT' => 'Display coordinates on map (OpenStreetMap):',
+			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (no HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',
@@ -384,8 +404,9 @@ final class Swedish implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Thumb HiDPI',
 			'PHOTO_THUMB' => 'Square thumb',
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
-		);
+		];
 
 		return $locale;
 	}

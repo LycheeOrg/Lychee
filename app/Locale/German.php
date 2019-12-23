@@ -11,7 +11,7 @@ final class German implements LangInterface
 
 	public static function get_locale()
 	{
-		$locale = array(
+		$locale = [
 			'USERNAME' => 'Benutzername',
 			'PASSWORD' => 'Kennwort',
 			'ENTER' => 'Eingabe',
@@ -35,12 +35,14 @@ final class German implements LangInterface
 			'DEFAULT_LICENSE' => 'Standard-Lizenz für neue Uploads:',
 			'SET_LICENSE' => 'Lizenz anwenden',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
+			'SET_MAP_PROVIDER' => 'Speichere Provider für OpenStreetMap Karten',
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 
 			'SMART_ALBUMS' => 'Intelligente Alben',
 			'SHARED_ALBUMS' => 'Freigegebene Alben',
 			'ALBUMS' => 'Alben',
 			'PHOTOS' => 'Bilder',
+			'SEARCH_RESULTS' => 'Suchergebnisse',
 
 			'RENAME' => 'Umbenennen',
 			'RENAME_ALL' => 'Ausgewählte umbenennen',
@@ -77,6 +79,7 @@ final class German implements LangInterface
 
 			'CLOSE_ALBUM' => 'Album schließen',
 			'CLOSE_PHOTO' => 'Foto schließen',
+			'CLOSE_MAP' => 'Karte schließen',
 
 			'ADD' => 'Hinzufügen',
 			'MOVE' => 'Verschieben',
@@ -114,6 +117,7 @@ final class German implements LangInterface
 
 			'FULL_PHOTO' => 'Original öffnen',
 			'ABOUT_PHOTO' => 'Über dieses Foto',
+			'DISPLAY_FULL_MAP' => 'Karte',
 			'DIRECT_LINK' => 'Direkter Link',
 			'DIRECT_LINKS' => 'Direkte Links',
 
@@ -143,6 +147,8 @@ final class German implements LangInterface
 			'ALBUM_HIDDEN_EXPL' => 'Nur Personen mit dem direkten Link können dieses Album ansehen.',
 			'ALBUM_DOWNLOADABLE' => 'Zum Herunterladen',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Besucher können dieses Album herunterladen.',
+			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'ALBUM_PASSWORD' => 'Kennwort',
 			'ALBUM_PASSWORD_PROT' => 'Kennwortgeschützt',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'Album nur einsehbar mit gültigem Kennwort.',
@@ -229,6 +235,8 @@ final class German implements LangInterface
 			'PHOTO_HIDDEN_EXPL' => 'Nur Besucher mit dem direkten Link können dieses Foto sehen.',
 			'PHOTO_DOWNLOADABLE' => 'Herunterladbar',
 			'PHOTO_DOWNLOADABLE_EXPL' => 'Besucher der Gallerie können dieses Foto herunterladen.',
+			'PHOTO_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
+			'PHOTO_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
 			'PHOTO_PASSWORD_PROT' => 'Passwortgeschützt',
 			'PHOTO_PASSWORD_PROT_EXPL' => 'Foto nur mit gültigen Passwort verfügbar.',
 			'PHOTO_EDIT_SHARING_TEXT' => 'Die Einstellungen zum Teilen des Foto werden wie folgt angepasst:',
@@ -244,6 +252,8 @@ final class German implements LangInterface
 			'ERROR_CONFIG_FILE' => "Kann diese Konfiguration nicht speichern. Zugriff verweigert auf <b>'data/'</b>. Bitte setzen Sie die Schreibrechte auf <b>'data/'</b> and <b>'uploads/'</b>. Lesen Sie die README-Datei für mehr Informationen.",
 			'ERROR_UNKNOWN' => 'Etwas Unerwartetes ist passiert. Bitte probieren Sie es erneut und überprüfen Sie die Installation und Ihren Server. Lesen Sie die README-Datei für mehr Informationen.',
 			'ERROR_LOGIN' => 'Kann Login nicht speichern. Bitte versuchen Sie es erneut mit einem anderen Benutzernamen und Kennwort!',
+			'ERROR_MAP_DEACTIVATED' => 'Karten sind unter Einstellungen deaktiviert worden.',
+			'ERROR_SEARCH_DEACTIVATED' => 'Suchfunktion wurde unter Einstellungen deaktiviert.',
 			'SUCCESS' => 'OK',
 			'RETRY' => 'Noch einmal versuchen',
 
@@ -257,6 +267,8 @@ final class German implements LangInterface
 			'SETTINGS_SUCCESS_PUBLIC_SEARCH' => 'Public search updated',
 			'SETTINGS_SUCCESS_LICENSE' => 'Standard-Lizenz aktualisiert',
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Karteneinstellungen erfolgreich aktualisiert',
+			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Karteneinstellungen für öffentlichen Alben erfolgreich aktualisiert',
+			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Provider für Karten erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
 			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
 
@@ -327,7 +339,15 @@ final class German implements LangInterface
 			'OVERLAY_EXIF' => 'EXIF Daten des Fotos',
 			'OVERLAY_DESCRIPTION' => 'Beschreibung des Fotos',
 			'OVERLAY_DATE' => 'Erstellungsdatum des Fotos',
-			'MAP_DISPLAY_TEXT' => 'Zeige Koordinaten auf Karte (OpenStreetMap) an:',
+			'MAP_DISPLAY_TEXT' => 'Kartenfunktionalitäten aktivieren (OpenStreetMap):',
+			'MAP_DISPLAY_PUBLIC_TEXT' => 'Kartenfunktionalität für öffentliche Alben aktivieren (OpenStreetMap):',
+			'MAP_PROVIDER' => 'Provider für OpenStreetMap Karten:',
+			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
+			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (kein HiDPI)',
+			'MAP_PROVIDER_OSM_DE' => 'OpenStreetMap.de (kein HiDPI)',
+			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (kein HiDPI)',
+			'MAP_PROVIDER_RRZE' => 'Universtät Erlangen, Deutschland (nur HiDPI)',
+			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Fotos von Unterordnern für Karten berücksichtigen:',
 			'LAYOUT_TYPE' => 'Layout des Fotos:',
 			'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
 			'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',
@@ -392,8 +412,9 @@ final class German implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Miniaturansicht HiDPI',
 			'PHOTO_THUMB' => 'Quadratische Miniaturansicht',
 			'PHOTO_THUMB_HIDPI' => 'Quadratische Miniaturansicht HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video des Live-Photos',
 			'PHOTO_VIEW' => 'Lychee Foto Ansicht:',
-		);
+		];
 
 		return $locale;
 	}
