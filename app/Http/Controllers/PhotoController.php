@@ -515,6 +515,9 @@ class PhotoController extends Controller
 			$duplicate->small = $photo->small;
 			$duplicate->small2x = $photo->small2x;
 			$duplicate->owner_id = $photo->owner_id;
+			$duplicate->livePhotoContentID = $photo->livePhotoContentID;
+			$duplicate->livePhotoUrl = $photo->livePhotoUrl;
+			$duplicate->livePhotoChecksum = $photo->livePhotoChecksum;
 			$no_error &= !is_object($this->photoFunctions->save($duplicate, $duplicate->album_id));
 		}
 
@@ -577,6 +580,10 @@ class PhotoController extends Controller
 		switch ($request['kind']) {
 			case 'FULL':
 				$url = Storage::path($prefix_path . $photo->url);
+				$kind = '';
+				break;
+			case 'LIVEPHOTOVIDEO':
+				$url = Storage::path($prefix_path . $photo->livePhotoUrl);
 				$kind = '';
 				break;
 			case 'MEDIUM2X':

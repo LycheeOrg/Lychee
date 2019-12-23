@@ -271,7 +271,7 @@ class PhotoFunctions
 
 			return Response::error('Could not calculate checksum for photo!');
 		}
-
+		$photo->checksum = $checksum;
 		$exists = $photo->isDuplicate($checksum);
 
 		// double check that
@@ -284,6 +284,9 @@ class PhotoFunctions
 			$photo->medium2x = $exists->medium2x;
 			$photo->small = $exists->small;
 			$photo->small2x = $exists->small2x;
+			$photo->livePhotoUrl = $exists->livePhotoUrl;
+			$photo->livePhotoChecksum = $exists->livePhotoChecksum;
+			$photo->checksum = $exists->checksum;
 			$exists = true;
 		}
 
@@ -355,9 +358,11 @@ class PhotoFunctions
 		$photo->longitude = $info['longitude'];
 		$photo->altitude = $info['altitude'];
 		$photo->imgDirection = $info['imgDirection'];
+		$photo->livePhotoContentID = $info['livePhotoContentID'];
 		$photo->public = $public;
 		$photo->star = $star;
-		$photo->checksum = $checksum;
+
+		$GoogleMicroVideoOffset = $info['MicroVideoOffset'];
 
 		if ($albumID !== null) {
 			$album = Album::find($albumID);
@@ -373,52 +378,96 @@ class PhotoFunctions
 			$photo->owner_id = $this->sessionFunctions->id();
 		}
 
+		$livePhotoPartner = false;
+		if ($photo->livePhotoContentID) {
+			$livePhotoPartner = $photo->findLivePhotoPartner($photo->livePhotoContentID, $photo->album_id);
+		}
+
+		$no_error = true;
+		$skip_db_entry_creation = false;
+		if (!($livePhotoPartner === false)) {
+			// if both are a photo or a video -> it's not a live photo
+			if (in_array($photo->type, $this->validVideoTypes, true) === in_array($livePhotoPartner->type, $this->validVideoTypes, true)) {
+				$livePhotoPartner = false;
+			}
+		}
+
+		if (!($livePhotoPartner === false)) {
+			// I'm uploading a photo, video already exists
+			if (!(in_array($photo->type, $this->validVideoTypes, true))) {
+				$photo->livePhotoUrl = $livePhotoPartner->url;
+				$photo->livePhotoChecksum = $livePhotoPartner->checksum;
+				// Todo: Delete the livePhotoPartner
+				$no_error &= $livePhotoPartner->predelete(true);
+				$no_error &= $livePhotoPartner->delete();
+			}
+		}
+
 		if ($exists === false) {
-			// Set orientation based on EXIF data
-			if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
-				$rotation = $this->imageHandler->autoRotate($path, $info);
+			// Generate small files for 2 options:
+			// (1) There is no Live Photo Partner
+			// (2) There is a partner and we're uploading a photo
+			if (($livePhotoPartner === false) || !(in_array($photo->type, $this->validVideoTypes, true))) {
+				// Set orientation based on EXIF data
+				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
+					$rotation = $this->imageHandler->autoRotate($path, $info);
 
-				$photo->width = $rotation['width'];
-				$photo->height = $rotation['height'];
-			}
-
-			// Set original date
-			if ($info['takestamp'] !== '' && $info['takestamp'] !== 0 && $info['takestamp'] !== null) {
-				@touch($path, strtotime($info['takestamp']));
-			}
-
-			// For videos extract a frame from the middle
-			$frame_tmp = '';
-			if (in_array($photo->type, $this->validVideoTypes, true)) {
-				try {
-					$frame_tmp = $this->extractVideoFrame($photo);
-				} catch (Exception $exception) {
-					Logs::error(__METHOD__, __LINE__, $exception->getMessage());
-				}
-			}
-
-			// Create Thumb
-			if ($kind == 'raw') {
-				$photo->thumbUrl = '';
-				$photo->thumb2x = 0;
-			} elseif (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
-				if (!$this->createThumb($photo, $frame_tmp)) {
-					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
-
-					return Response::error('Could not create thumbnail for photo!');
+					$photo->width = $rotation['width'];
+					$photo->height = $rotation['height'];
 				}
 
-				$photo->thumbUrl = basename($photo_name, $extension) . '.jpeg';
+				// Set original date
+				if ($info['takestamp'] !== '' && $info['takestamp'] !== 0 && $info['takestamp'] !== null) {
+					@touch($path, strtotime($info['takestamp']));
+				}
 
-				$this->createSmallerImages($photo, $frame_tmp);
+				// For videos extract a frame from the middle
+				$frame_tmp = '';
+				if (in_array($photo->type, $this->validVideoTypes, true)) {
+					try {
+						$frame_tmp = $this->extractVideoFrame($photo);
+					} catch (Exception $exception) {
+						Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+					}
+				}
 
-				if ($frame_tmp !== '') {
-					unlink($frame_tmp);
+				// Create Thumb
+				if ($kind == 'raw') {
+					$photo->thumbUrl = '';
+					$photo->thumb2x = 0;
+				} elseif (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
+					if (!$this->createThumb($photo, $frame_tmp)) {
+						Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
+
+						return Response::error('Could not create thumbnail for photo!');
+					}
+
+					$photo->thumbUrl = basename($photo_name, $extension) . '.jpeg';
+
+					$this->createSmallerImages($photo, $frame_tmp);
+
+					if ($GoogleMicroVideoOffset) {
+						$this->extractVideo($photo, $GoogleMicroVideoOffset, $frame_tmp);
+					}
+
+					if ($frame_tmp !== '') {
+						unlink($frame_tmp);
+					}
+				} else {
+					$photo->thumbUrl = '';
+					$photo->thumb2x = 0;
 				}
 			} else {
-				$photo->thumbUrl = '';
-				$photo->thumb2x = 0;
+				// We're uploading a video -> overwrite everything from partner
+				$livePhotoPartner->livePhotoUrl = $photo->url;
+				$livePhotoPartner->livePhotoChecksum = $photo->checksum;
+				$no_error &= $livePhotoPartner->save();
+				$skip_db_entry_creation = true;
 			}
+		}
+		// In case it's a live photo and we've uploaded the video
+		if ($skip_db_entry_creation === true) {
+			return $livePhotoPartner->id;
 		}
 
 		return $this->save($photo, $albumID);
@@ -449,6 +498,78 @@ class PhotoFunctions
 		if (Configs::get_value('small_2x') === '1') {
 			$this->resizePhoto($photo, 'small2x', $smallMaxWidth * 2, $smallMaxHeight * 2, $frame_tmp);
 		}
+	}
+
+	/**
+	 * Creates smaller copies of Photo.
+	 *
+	 * @param Photo  $photo
+	 * @param string $type
+	 * @param int    $maxWidth
+	 * @param int    $maxHeight
+	 * @param string Path of the video frame
+	 *
+	 * @return bool
+	 */
+	public function extractVideo(Photo $photo, int $videoLengthBytes, string $frame_tmp = ''): bool
+	{
+		// We extract the video from the jpg file
+		// Google Motion Photo: See here for details
+		//
+
+		if ($frame_tmp === '') {
+			$filename = $photo->url;
+			$url = Storage::path('big/' . $filename);
+		} else {
+			$filename = $photo->thumbUrl;
+			$url = $frame_tmp;
+		}
+
+		$filename_video_mov = basename($filename, Helpers::getExtension($filename, false)) . '.mov';
+
+		$uploadFolder = Storage::path('big/');
+
+		if (Helpers::hasPermissions($uploadFolder) === false) {
+			Logs::notice(__METHOD__, __LINE__, 'Skipped extaction of video from live photo, because ' . $uploadFolder . ' is missing or not readable and writable.');
+
+			return false;
+		}
+
+		try {
+			// 1. Extract the video part
+			$fp = fopen($uploadFolder . $photo->url, 'r+');
+			$fp_video = tmpfile(); // use a temporary file, will be delted once closed
+
+			// The MP4 file is located in the last bytes of the file
+			fseek($fp, -1 * $videoLengthBytes, SEEK_END); // It needs to be negative
+			$data = fread($fp, $videoLengthBytes);
+			fwrite($fp_video, $data, $videoLengthBytes);
+
+			// 2. Convert file from mp4 to mov, but keeping audio and video codec
+			// This is needed to LivePhotosKit which only accepts mov files
+			// Computation is fast, since codecs, resolution, framerate etc. remain unchanged
+
+			$ffmpeg = FFMpeg\FFMpeg::create();
+			$video = $ffmpeg->open(stream_get_meta_data($fp_video)['uri']);
+			$format = new MOVFormat();
+			// Add additional parameter to extract the first video stream
+			$format->setAdditionalParameters(['-map', '0:0']);
+			$video->save($format, $uploadFolder . $filename_video_mov);
+
+			// 3. Close files ($fp_video will be again deleted)
+			fclose($fp);
+			fclose($fp_video);
+
+			// Save file path; Checksum calclation not needed since
+			// we do not perform matching for Google Motion Photos (as for iOS Live Photos)
+			$photo->livePhotoUrl = $filename_video_mov;
+		} catch (Exception $exception) {
+			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

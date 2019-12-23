@@ -394,10 +394,14 @@ return [
               'https://b.osm.rrze.fau.de/osmhd/',
               'https://c.osm.rrze.fau.de/osmhd/',
               'data:',
+              'blob:',
             ],
         ],
         'default-src' => [
             'self' => true,
+            'allow' => [
+              'blob:',
+            ],
         ],
         'base-uri' => [
             //
@@ -405,6 +409,7 @@ return [
         'connect-src' => [
 	        'allow' => [
 		        'http://lycheeorg.github.io/update.json',
+            'blob:'
 	        ],
             'self' => true
         ],
@@ -428,7 +433,10 @@ return [
             //
         ],
         'media-src' => [
-            'self' => true
+            'self' => true,
+            'allow' => [
+              'blob:',
+            ],
         ],
         'object-src' => [
             //

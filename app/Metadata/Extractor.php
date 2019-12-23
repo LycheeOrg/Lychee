@@ -36,6 +36,9 @@ class Extractor
 			'altitude' => null,
 			'imgDirection' => null,
 			'size' => 0,
+			'livePhotoContentID' => null,
+			'livePhotoStillImageTime' => null,
+			'MicroVideoOffset' => null,
 		];
 
 		return $metadata;
@@ -99,6 +102,8 @@ class Extractor
 		$metadata['altitude'] = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
 		$metadata['imgDirection'] = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata['size'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
+		$metadata['livePhotoContentID'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
+		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
 
 		// Position
 		$fields = [];

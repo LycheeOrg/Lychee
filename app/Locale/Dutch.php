@@ -404,6 +404,7 @@ final class Dutch implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Thumb HiDPI',
 			'PHOTO_THUMB' => 'Square thumb',
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
 		];
 

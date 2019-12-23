@@ -412,6 +412,7 @@ final class German implements LangInterface
 			'PHOTO_SMALL_HIDPI' => 'Miniaturansicht HiDPI',
 			'PHOTO_THUMB' => 'Quadratische Miniaturansicht',
 			'PHOTO_THUMB_HIDPI' => 'Quadratische Miniaturansicht HiDPI',
+			'PHOTO_LIVE_VIDEO' => 'Video des Live-Photos',
 			'PHOTO_VIEW' => 'Lychee Foto Ansicht:',
 		];
 
