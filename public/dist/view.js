@@ -599,7 +599,11 @@ build.photo = function (data) {
 
 	var isVideo = data.type && data.type.indexOf('video') > -1;
 	var isRaw = data.type && data.type.indexOf('raw') > -1;
+	var isLivePhoto = data.livePhotoUrl !== '' && data.livePhotoUrl !== null;
 
+	if (data.thumbUrl === 'uploads/thumb/' && isLivePhoto) {
+		thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	}
 	if (data.thumbUrl === 'uploads/thumb/' && isVideo) {
 		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	} else if (data.thumbUrl === 'uploads/thumb/' && isRaw) {
@@ -619,7 +623,7 @@ build.photo = function (data) {
 			thumb2x = "data-srcset='" + thumb2x + " 2x'";
 		}
 
-		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
 		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 		thumbnail += "</span>";
 	} else {
@@ -629,7 +633,7 @@ build.photo = function (data) {
 				thumb2x = "data-srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
 			}
 
-			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else if (data.medium !== '') {
@@ -637,12 +641,12 @@ build.photo = function (data) {
 				thumb2x = "data-srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 			}
 
-			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\">";
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else if (!isVideo) {
 			// Fallback for images with no small or medium.
-			thumbnail = "<span class=\"thumbimg\">";
+			thumbnail = "<span class=\"thumbimg" + (isLivePhoto ? ' livephoto' : '') + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false'>";
 			thumbnail += "</span>";
 		} else {
@@ -717,27 +721,44 @@ build.imageview = function (data, visibleControls, autoplay) {
 	} else {
 		var img = '';
 
-		// See if we have the thumbnail loaded...
-		$('.photo').each(function () {
-			if ($(this).attr('data-id') && $(this).attr('data-id') == data.id) {
-				var thumbimg = $(this).find('img');
-				if (thumbimg.length > 0) {
-					thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
-					return false;
+		if (data.livePhotoUrl === '' || data.livePhotoUrl === null) {
+			// It's normal photo
+
+			// See if we have the thumbnail loaded...
+			$('.photo').each(function () {
+				if ($(this).attr('data-id') && $(this).attr('data-id') == data.id) {
+					var thumbimg = $(this).find('img');
+					if (thumbimg.length > 0) {
+						thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
+						return false;
+					}
 				}
-			}
-		});
+			});
 
-		if (data.medium !== '') {
-			var medium = '';
+			if (data.medium !== '') {
+				var medium = '';
 
-			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
-				medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+				if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
+					medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+				}
+				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
+			} else {
+				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
 			}
-			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
 		} else {
-			img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
+
+			if (data.medium !== '') {
+				medium_dims = data.medium_dim.split("x");
+				medium_width = medium_dims[0];
+				medium_height = medium_dims[1];
+				// It's a live photo
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px'></div>";
+			} else {
+				// It's a live photo
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.url + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + data.width + "px; height: " + data.height + "px'></div>";
+			}
 		}
+
 		html += lychee.html(_templateObject17, img);
 
 		if (lychee.image_overlay) html += build.overlay_image(data);
@@ -978,7 +999,16 @@ header.show = function () {
 	lychee.imageview.removeClass('full');
 	header.dom().removeClass('header--hidden');
 
+	photo.updateSizeLivePhotoDuringAnimation();
+
 	return true;
+};
+
+header.hideIfLivePhotoNotPlaying = function () {
+
+	// Hides the header, if current live photo is not playing
+	if (photo.isLivePhotoPlaying() == true) return false;
+	return header.hide();
 };
 
 header.hide = function () {
@@ -987,6 +1017,8 @@ header.hide = function () {
 
 		lychee.imageview.addClass('full');
 		header.dom().addClass('header--hidden');
+
+		photo.updateSizeLivePhotoDuringAnimation();
 
 		return true;
 	}
@@ -1063,6 +1095,12 @@ header.setMode = function (mode) {
 				$('#button_archive').show();
 			}
 
+			if (album.json && album.json.hasOwnProperty('share_button_visible') && album.json.share_button_visible !== '1') {
+				$('#button_share_album').hide();
+			} else {
+				$('#button_share_album').show();
+			}
+
 			// If map is disabled, we should hide the icon
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
 				$('#button_map_album').show();
@@ -1104,6 +1142,12 @@ header.setMode = function (mode) {
 				$('#button_trash, #button_move, #button_visibility, #button_star').show();
 			} else {
 				$('#button_trash, #button_move, #button_visibility, #button_star').hide();
+			}
+
+			if (photo.json && photo.json.hasOwnProperty('share_button_visible') && photo.json.share_button_visible !== '1') {
+				$('#button_share').hide();
+			} else {
+				$('#button_share').show();
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
@@ -1307,6 +1351,7 @@ sidebar.toggle = function () {
 		lychee.imageview.toggleClass('image--sidebar');
 		if (typeof view !== 'undefined') view.album.content.justify();
 		sidebar.dom().toggleClass('active');
+		photo.updateSizeLivePhotoDuringAnimation();
 
 		return true;
 	}
@@ -1499,6 +1544,7 @@ sidebar.createStructure.album = function (data) {
 	var _public = '';
 	var hidden = '';
 	var downloadable = '';
+	var share_button_visible = '';
 	var password = '';
 	var license = '';
 
@@ -1543,6 +1589,21 @@ sidebar.createStructure.album = function (data) {
 			break;
 		default:
 			downloadable = '-';
+			break;
+
+	}
+
+	// Set value for share_button_visible
+	switch (data.share_button_visible) {
+
+		case '0':
+			share_button_visible = lychee.locale['ALBUM_SHR_NO'];
+			break;
+		case '1':
+			share_button_visible = lychee.locale['ALBUM_SHR_YES'];
+			break;
+		default:
+			share_button_visible = '-';
 			break;
 
 	}
@@ -1611,7 +1672,7 @@ sidebar.createStructure.album = function (data) {
 	structure.share = {
 		title: lychee.locale['ALBUM_SHARING'],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
+		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_SHARE_BUTTON_VISIBLE'], kind: 'share_button_visible', value: share_button_visible }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
 	};
 
 	if (data.owner != null) {
@@ -2209,6 +2270,8 @@ lychee.locale = {
 	'ALBUM_HIDDEN_EXPL': 'Only people with the direct link can view this album.',
 	'ALBUM_DOWNLOADABLE': 'Downloadable',
 	'ALBUM_DOWNLOADABLE_EXPL': 'Visitors of your Lychee can download this album.',
+	'ALBUM_SHARE_BUTTON_VISIBLE': 'Share button is visible',
+	'ALBUM_SHARE_BUTTON_VISIBLE_EXPL': 'Display social media sharing links.',
 	'ALBUM_PASSWORD': 'Password',
 	'ALBUM_PASSWORD_PROT': 'Password protected',
 	'ALBUM_PASSWORD_PROT_EXPL': 'Album only accessible with a valid password.',
@@ -2292,6 +2355,8 @@ lychee.locale = {
 	'PHOTO_HIDDEN_EXPL': 'Only people with the direct link can view this photo.',
 	'PHOTO_DOWNLOADABLE': 'Downloadable',
 	'PHOTO_DOWNLOADABLE_EXPL': 'Visitors of your gallery can download this photo.',
+	'PHOTO_SHARE_BUTTON_VISIBLE': 'Share button is visible',
+	'PHOTO_SHARE_BUTTON_VISIBLE_EXPL': 'Display social media sharing links.',
 	'PHOTO_PASSWORD_PROT': 'Password protected',
 	'PHOTO_PASSWORD_PROT_EXPL': 'Photo only accessible with a valid password.',
 	'PHOTO_EDIT_SHARING_TEXT': 'The sharing properties of this photo will be changed to the following:',
@@ -2465,6 +2530,7 @@ lychee.locale = {
 	'PHOTO_SMALL_HIDPI': 'Thumb HiDPI',
 	'PHOTO_THUMB': 'Square thumb',
 	'PHOTO_THUMB_HIDPI': 'Square thumb HiDPI',
+	'PHOTO_LIVE_VIDEO': 'Video part of live-photo',
 	'PHOTO_VIEW': 'Lychee Photo View:'
 };
 
