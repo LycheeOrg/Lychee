@@ -105,6 +105,18 @@ class Extractor
 		$metadata['livePhotoContentID'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
 
+		// We need to make sure, takestamp is between '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC.
+		// We set value to null in case we're out of bounds
+		if ($metadata['takestamp'] !== null) {
+				$min_date = new \DateTime('1970-01-01 00:00:01', new \DateTimeZone('UTC'));
+				$max_date = new \DateTime('2038-01-19 03:14:07', new \DateTimeZone('UTC'));
+				$takestamp = new \DateTime($metadata['takestamp']);
+				if ($takestamp<$min_date || $takestamp>$max_date) {
+						$metadata['takestamp'] = null;
+				}
+		}
+
+
 		// Position
 		$fields = [];
 		if ($exif->getCity() !== false) {
