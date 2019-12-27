@@ -23,7 +23,7 @@ class import extends Command
 	 */
 	protected $signature = 'lychee:import {dir : directory to import} {--flatten} {--album_id= : Album ID to import to}';
 //							{--owner_id=0 : User}';
-// We import as admin as we are in CLI
+	// We import as admin as we are in CLI
 
 	/**
 	 * The console command description.
@@ -42,13 +42,12 @@ class import extends Command
 	 */
 	private $photoFunctions;
 
-
-
 	/**
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
 	 * @param AlbumFunctions $albumFunctions
+	 *
 	 * @return void
 	 */
 	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions)
@@ -59,16 +58,15 @@ class import extends Command
 		$this->albumFunctions = $albumFunctions;
 	}
 
-
-
 	/**
-	 * Prints the album tree in a DFS fashion
+	 * Prints the album tree in a DFS fashion.
 	 *
 	 * @param Collection $albums
-	 * @param int $parent_id
-	 * @param int $indent
-	 * @param int $map
-	 * @param bool $is_last
+	 * @param int        $parent_id
+	 * @param int        $indent
+	 * @param int        $map
+	 * @param bool       $is_last
+	 *
 	 * @return void
 	 */
 	public function print_album(Collection $albums, int $parent_id, int $indent = 0, int $map = 0, bool $is_last = false)
@@ -80,8 +78,7 @@ class import extends Command
 			$i--;
 			if ((($map >> $i) & 1) == 1) {
 				$line_indent = '| ' . $line_indent;
-			}
-			else {
+			} else {
 				$line_indent = '  ' . $line_indent;
 			}
 		}
@@ -90,7 +87,7 @@ class import extends Command
 
 		if ($parent_id != 0) {
 			$own_album = $albums->where('id', '=', $parent_id)->first();
-			$this->line(sprintf("%s%s%s (id: %d)",
+			$this->line(sprintf('%s%s%s (id: %d)',
 				$line_indent,
 				$tile,
 				$own_album['title'],
@@ -103,13 +100,10 @@ class import extends Command
 			$child_album = $child_albums->pop();
 			$this->print_album($albums, $child_album->id, $indent + 1, $map_next, $child_albums->count() == 0);
 		}
-		if ($is_last)
-		{
-			$this->line(sprintf("%s",$line_indent));
+		if ($is_last) {
+			$this->line(sprintf('%s', $line_indent));
 		}
 	}
-
-
 
 	/**
 	 * Execute the console command.
@@ -123,19 +117,19 @@ class import extends Command
 		$album_id = $this->option('album_id');
 		$owner_id = 0; // $this->option('owner_id');
 		$import_controller = new ImportController($this->photoFunctions, $this->albumFunctions);
-		Session::put('UserID', $owner_id);;
+		Session::put('UserID', $owner_id);
 
 		if ($album_id == null) {
 			$album_title = null;
 			$albums = Album::all([
 				'id',
 				'title',
-				'parent_id'
+				'parent_id',
 			]);
 			$this->print_album($albums, 0 /* parent */, 0 /* indent */);
 			do {
 				if ($album_title != null) {
-					$this->line('No album '.$album_title.' found. Try again.');
+					$this->line('No album ' . $album_title . ' found. Try again.');
 				}
 				$album_title = $this->ask('album to insert into (title)?');
 				$sel_albums = $albums->where('title', '=', $album_title);
@@ -150,6 +144,7 @@ class import extends Command
 				));
 		}
 
+		$delete_imported = Configs::get_value('delete_imported', '0') === '1';
 
 		$dir_iterator = new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS);
 		$iterator = new RecursiveIteratorIterator($dir_iterator, RecursiveIteratorIterator::SELF_FIRST);
@@ -158,16 +153,16 @@ class import extends Command
 				continue;
 			}
 
-			$prefix = "Processing file ".$file;
+			$prefix = 'Processing file ' . $file;
 			try {
-				$ret = $import_controller->photo($file, $album_id);
+				$ret = $import_controller->photo($file, $delete_imported, $album_id);
 			} catch (Exception $e) {
-				$this->error($prefix." ERROR");
+				$this->error($prefix . ' ERROR');
 				$this->error($e);
 				continue;
 			}
-			$this->info($prefix." OK");
+			$this->info($prefix . ' OK');
 		}
-		$this->info("Done importing.");
+		$this->info('Done importing.');
 	}
 }
