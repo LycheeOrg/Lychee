@@ -37,13 +37,13 @@ class ImagickHandler implements ImageHandlerInterface
 			$image->readImage($source);
 			$image->setImageCompressionQuality($this->compressionQuality);
 
-			$profiles = $image->getImageProfiles("icc", true);
+			$profiles = $image->getImageProfiles('icc', true);
 
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
-			if(!empty($profiles)) {
-				$image->profileImage("icc", $profiles['icc']);
+			if (!empty($profiles)) {
+				$image->profileImage('icc', $profiles['icc']);
 			}
 
 			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
@@ -76,13 +76,13 @@ class ImagickHandler implements ImageHandlerInterface
 			$image->readImage($source);
 			$image->setImageCompressionQuality($this->compressionQuality);
 
-			$profiles = $image->getImageProfiles("icc", true);
+			$profiles = $image->getImageProfiles('icc', true);
 
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
-			if(!empty($profiles)) {
-				$image->profileImage("icc", $profiles['icc']);
+			if (!empty($profiles)) {
+				$image->profileImage('icc', $profiles['icc']);
 			}
 
 			$image->cropThumbnailImage($newWidth, $newHeight);
