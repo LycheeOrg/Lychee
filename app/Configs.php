@@ -91,7 +91,7 @@ class Configs extends Model
 				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
 					$message = 'Error: Wrong property for ' . $this->key
 						. ' in database, expected ' . implode(' or ',
-							$val_range[$this->type_range]) . ', got ' . $value;
+							$val_range[$this->type_range]) . ', got ' . ($value ? $value : 'NULL');
 				}
 				break;
 			default:
@@ -99,7 +99,7 @@ class Configs extends Model
 				if (!in_array($value, $values)) {
 					$message = 'Error: Wrong property for ' . $this->key
 						. ' in database, expected ' . implode(' or ', $values)
-						. ', got ' . $value;
+						. ', got ' . ($value ? $value : 'NULL');
 				}
 				break;
 		}
