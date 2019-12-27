@@ -6,6 +6,7 @@ use App\Album;
 use App\Http\Controllers\ImportController;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
+use App\ModelFunctions\SessionFunctions;
 use Exception;
 use FilesystemIterator;
 use Illuminate\Console\Command;
@@ -43,19 +44,26 @@ class import extends Command
 	private $photoFunctions;
 
 	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	/**
 	 * Create a new command instance.
 	 *
-	 * @param PhotoFunctions $photoFunctions
-	 * @param AlbumFunctions $albumFunctions
+	 * @param PhotoFunctions   $photoFunctions
+	 * @param AlbumFunctions   $albumFunctions
+	 * @param SessionFunctions $sessionFunctions
 	 *
 	 * @return void
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
 	{
 		parent::__construct();
 
 		$this->photoFunctions = $photoFunctions;
 		$this->albumFunctions = $albumFunctions;
+		$this->sessionFunctions = $sessionFunctions;
 	}
 
 	/**
@@ -116,7 +124,7 @@ class import extends Command
 		$flatten = $this->option('flatten');
 		$album_id = $this->option('album_id');
 		$owner_id = 0; // $this->option('owner_id');
-		$import_controller = new ImportController($this->photoFunctions, $this->albumFunctions);
+		$import_controller = new ImportController($this->photoFunctions, $this->albumFunctions, $this->sessionFunctions);
 		Session::put('UserID', $owner_id);
 
 		if ($album_id == null) {
