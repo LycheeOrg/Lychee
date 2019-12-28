@@ -232,10 +232,11 @@ class ImportController extends Controller
 	 * @param string $path
 	 * @param int    $albumID
 	 * @param bool   $delete_imported
+	 * @param array  $ignore_list
 	 *
 	 * @throws ImagickException
 	 */
-	private function server_exec(string $path, $albumID, $delete_imported)
+	private function server_exec(string $path, $albumID, $delete_imported, $ignore_list = null)
 	{
 		// Parse path
 		$origPath = $path;
@@ -267,6 +268,17 @@ class ImportController extends Controller
 		// then the subdirectories.  This way, if the process fails along the
 		// way, it's much easier for the user to figure out what was imported
 		// and what was not.
+
+		// Let's load the list of filenames to ignore
+		if (file_exists($path . '/.lycheeignore')) {
+			$ignore_list_new = file($path . '/.lycheeignore');
+			if (isset($ignore_list)) {
+				$ignore_list = array_merge($ignore_list, $ignore_list_new);
+			} else {
+				$ignore_list = $ignore_list_new;
+			}
+		}
+
 		$files = glob($path . '/*');
 		$filesTotal = count($files);
 		$filesCount = 0;
@@ -289,6 +301,24 @@ class ImportController extends Controller
 			if ($time - $lastStatus >= 1) {
 				$this->status_update('Status: ' . $origPath . ': ' . intval($filesCount / $filesTotal * 100));
 				$lastStatus = $time;
+			}
+
+			// Let's check if we should ignore the file
+
+			if (isset($ignore_list)) {
+				$ignore_file = false;
+
+				foreach ($ignore_list as $value_ignore) {
+					if ($this->check_file_matches_pattern(basename($file), $value_ignore) == true) {
+						$ignore_file = true;
+						break;
+					}
+				}
+
+				if ($ignore_file == true) {
+					$filesTotal--;
+					continue;
+				}
 			}
 
 			if (is_dir($file)) {
@@ -341,7 +371,34 @@ class ImportController extends Controller
 				}
 			}
 			$newAlbumID = $album->id;
-			$this->server_exec($dir . '/', $newAlbumID, $delete_imported);
+			$this->server_exec($dir . '/', $newAlbumID, $delete_imported, $ignore_list);
 		}
+	}
+
+	/**
+	 * @param array $my_array
+	 *
+	 * @return string
+	 */
+	private function check_file_matches_pattern(string $pattern, string $filename)
+	{
+		// This function checks if the given filename matches the pattern allowing for
+		// star als wildcard (as in *.jpg)
+		// Example: '*.jpg' matches all jpgs
+
+		$pattern = preg_replace_callback('/([^*])/', [$this, 'preg_quote_callback_fct'], $pattern);
+		$pattern = str_replace('*', '.*', $pattern);
+
+		return (bool) preg_match('/^' . $pattern . '$/i', $filename);
+	}
+
+	/**
+	 * @param array $my_array
+	 *
+	 * @return string
+	 */
+	private function preg_quote_callback_fct(array $my_array)
+	{
+		return preg_quote($my_array[1], '/');
 	}
 }
