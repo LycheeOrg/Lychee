@@ -72,12 +72,15 @@ class Extractor
 	{
 		$reader = null;
 
-		if (Configs::hasExiftool() == true) {
-			// reader with Exiftool adapter
-			$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-		} elseif (strpos($type, 'video') !== 0) {
-			// It's a photo -> Use Php native tools
-			$reader = Reader::factory(Reader::TYPE_NATIVE);
+		if (strpos($type, 'video') !== 0) {
+			// It's a photo
+			if (Configs::hasExiftool() == true) {
+				// reader with Exiftool adapter
+				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
+			} elseif (strpos($type, 'video') !== 0) {
+				// Use Php native tools
+				$reader = Reader::factory(Reader::TYPE_NATIVE);
+			}
 		} else {
 			// It's a video -> use FFProbe
 			$reader = Reader::factory(Reader::TYPE_FFPROBE);
