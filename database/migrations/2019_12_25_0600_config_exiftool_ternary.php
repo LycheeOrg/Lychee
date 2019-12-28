@@ -21,11 +21,26 @@ class ConfigExiftoolTernary extends Migration
 			define('TERNARY', '0|1|2');
 		}
 
+		// Let's run the check for exiftool right here
+		$status = 0;
+		$output = '';
+		$has_exiftool = 2; // not set
+		try {
+			exec('which exiftool 2>&1 > /dev/null', $output, $status);
+			if ($status != 0) {
+				$has_exiftool = 0; // false
+			} else {
+				$has_exiftool = 1; // true
+			}
+		} catch (\Exception $e) {
+			// let's do nothing
+		}
+
 		if (Schema::hasTable('configs')) {
 			Configs::where('key', '=', 'has_exiftool')
 			  ->update(
 				[
-					'value' => 2,
+					'value' => $has_exiftool,
 					'type_range' => TERNARY,
 				]);
 		} else {
