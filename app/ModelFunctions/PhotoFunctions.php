@@ -339,9 +339,9 @@ class PhotoFunctions
 
 		// Use title of file if IPTC title missing
 		if ($kind == 'raw') {
-			$info['title'] = substr(basename($file['name']), 0, 30);
+			$info['title'] = substr(basename($file['name']), 0, 98);
 		} elseif ($info['title'] === '') {
-			$info['title'] = substr(basename($file['name'], $extension), 0, 30);
+			$info['title'] = substr(basename($file['name'], $extension), 0, 98);
 		}
 
 		$photo->title = $info['title'];
