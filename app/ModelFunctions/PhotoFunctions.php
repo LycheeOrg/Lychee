@@ -47,9 +47,12 @@ class PhotoFunctions
 	 */
 	public $validVideoTypes = [
 		'video/mp4',
+		'video/mpeg',
 		'video/ogg',
 		'video/webm',
 		'video/quicktime',
+		'video/x-ms-asf', // wmv file
+		'video/x-msvideo', // Avi
 	];
 
 	/**
@@ -62,8 +65,11 @@ class PhotoFunctions
 		'.gif',
 		'.ogv',
 		'.mp4',
+		'.mpg',
 		'.webm',
 		'.mov',
+		'.avi',
+		'.wmv',
 	];
 
 	/**
