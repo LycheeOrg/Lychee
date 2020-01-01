@@ -53,6 +53,7 @@ class PhotoFunctions
 		'video/quicktime',
 		'video/x-ms-asf', // wmv file
 		'video/x-msvideo', // Avi
+		'video/x-m4v', // Avi
 	];
 
 	/**
@@ -68,6 +69,7 @@ class PhotoFunctions
 		'.mpg',
 		'.webm',
 		'.mov',
+		'.m4v',
 		'.avi',
 		'.wmv',
 	];
