@@ -34,7 +34,7 @@ class VerifyCsrfToken extends Middleware
 	 */
 	public function handle($request, Closure $next)
 	{
-		if ($request->is('/api/*')) {
+		if ($request->is('api/*')) {
 			/**
 			 * default value is ''
 			 * we force it in case of the migration has not been done.
