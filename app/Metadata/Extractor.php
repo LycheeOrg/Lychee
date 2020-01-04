@@ -82,8 +82,18 @@ class Extractor
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
 			}
 		} else {
-			// It's a video -> use FFProbe
-			$reader = Reader::factory(Reader::TYPE_FFPROBE);
+			// Let's try to use FFmpeg; if not available, let's try Exiftool
+			if (Configs::hasFFmpeg() == true) {
+			    // It's a video -> use FFProbe
+		    	$reader = Reader::factory(Reader::TYPE_FFPROBE);
+			} else if (Configs::hasExiftool() == true) {
+				  // reader with Exiftool adapter
+				  $reader = Reader::factory(Reader::TYPE_EXIFTOOL);
+			} else {
+				  // Use Php native tools to extract at least MimeType and Filesize
+					// For all other properties, it will not return anything
+				  $reader = Reader::factory(Reader::TYPE_NATIVE);
+			}
 		}
 
 		$exif = $reader->read($filename);
