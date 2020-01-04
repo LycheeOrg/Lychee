@@ -278,7 +278,6 @@ class Configs extends Model
 		return $has_exiftool;
 	}
 
-
 	/**
 	 * @return bool returns the Exiftool setting
 	 */
