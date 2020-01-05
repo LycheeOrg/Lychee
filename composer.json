@@ -23,13 +23,18 @@
     "require-dev": {
         "ext-imagick": "*",
         "barryvdh/laravel-ide-helper": "^2.6",
+        "cache/array-adapter": "^1.0",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^2.16",
         "fzaninotto/faker": "^1.8",
+        "geocoder-php/cache-provider": "^4.1",
+        "geocoder-php/nominatim-provider": "^5.1",
         "itsgoingd/clockwork": "^3.1",
         "laravel/homestead": "^8.6",
         "mockery/mockery": "^1.2",
         "nunomaduro/collision": "^3.0",
+        "nyholm/psr7": "^1.2",
+        "php-http/guzzle6-adapter": "^2.0",
         "phpunit/phpunit": "^8.3",
         "wnx/laravel-stats": "^2.0"
     },
