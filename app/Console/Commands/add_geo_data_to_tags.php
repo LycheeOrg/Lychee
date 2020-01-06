@@ -85,7 +85,7 @@ class add_geo_data_to_tags extends Command
 			try {
 				$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($photo->latitude, $photo->longitude));
 			} catch (\Exception $e) {
-				$this->line(__METHOD__ . __LINE__ . $exception->getMessage());
+				$this->line(__METHOD__ . __LINE__ . $e->getMessage());
 				continue;
 			}
 
