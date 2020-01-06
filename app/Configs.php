@@ -279,6 +279,39 @@ class Configs extends Model
 	}
 
 	/**
+	 * @return bool returns the Exiftool setting
+	 */
+	public static function hasFFmpeg()
+	{
+		// has_ffmpeg has the following values:
+		// 0: No FFmpeg
+		// 1: FFmpeg is available
+		// 2: Not yet tested if FFmpeg is available
+
+		$has_ffmpeg = self::get_value('has_ffmpeg');
+
+		// value not yet set -> let's see if FFmpeg is available
+		if ($has_ffmpeg == 2) {
+			$status = 0;
+			$output = '';
+			exec('which FFmpeg 2>&1 > /dev/null', $output, $status);
+			if ($status != 0) {
+				self::set('has_ffmpeg', 0);
+				$has_ffmpeg = false;
+			} else {
+				self::set('has_ffmpeg', 1);
+				$has_ffmpeg = true;
+			}
+		} elseif ($has_ffmpeg == 1) {
+			$has_ffmpeg = true;
+		} else {
+			$has_ffmpeg = false;
+		}
+
+		return $has_ffmpeg;
+	}
+
+	/**
 	 * Define scopes.
 	 */
 
