@@ -31,6 +31,7 @@
         "geocoder-php/nominatim-provider": "^5.1",
         "itsgoingd/clockwork": "^3.1",
         "laravel/homestead": "^8.6",
+        "league/iso3166": "^2.1",
         "mockery/mockery": "^1.2",
         "nunomaduro/collision": "^3.0",
         "nyholm/psr7": "^1.2",

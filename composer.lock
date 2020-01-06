@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e06d53ab6bef3f29756dba8ca2cb2995",
+    "content-hash": "61f9923f5e582b82b5cf974f44c9d1d7",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -1331,12 +1331,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "5112afb6319adbff52adcf37fbf4a4d6817969d8"
+                "reference": "af42ec7e8f435e746392fa1a3acd205ed93fd54f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/5112afb6319adbff52adcf37fbf4a4d6817969d8",
-                "reference": "5112afb6319adbff52adcf37fbf4a4d6817969d8",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/af42ec7e8f435e746392fa1a3acd205ed93fd54f",
+                "reference": "af42ec7e8f435e746392fa1a3acd205ed93fd54f",
                 "shasum": ""
             },
             "require": {
@@ -1383,7 +1383,7 @@
                 "jpeg",
                 "tiff"
             ],
-            "time": "2019-12-24T21:20:37+00:00"
+            "time": "2019-12-28T21:27:07+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -5493,6 +5493,60 @@
             ],
             "description": "A virtual machine for web artisans.",
             "time": "2019-06-21T00:49:25+00:00"
+        },
+        {
+            "name": "league/iso3166",
+            "version": "2.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/iso3166.git",
+                "reference": "f2dca0b179e3ea4486f8089d0f910716b2896033"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/iso3166/zipball/f2dca0b179e3ea4486f8089d0f910716b2896033",
+                "reference": "f2dca0b179e3ea4486f8089d0f910716b2896033",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.12",
+                "phpunit/phpunit": "^5.7.11 || ^6.0 || ^7.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\ISO3166\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rob Bast",
+                    "email": "rob.bast@gmail.com"
+                }
+            ],
+            "description": "ISO 3166-1 PHP Library",
+            "homepage": "https://github.com/thephpleague/iso3166",
+            "keywords": [
+                "3166",
+                "3166-1",
+                "ISO 3166",
+                "countries",
+                "iso",
+                "library"
+            ],
+            "time": "2019-10-23T06:57:59+00:00"
         },
         {
             "name": "mockery/mockery",

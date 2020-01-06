@@ -82,7 +82,12 @@ class add_geo_data_to_tags extends Command
 			$this->line('Processing ' . $photo->title . '...');
 			$existing_tags = explode(',', $photo->tags);
 
-			$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($photo->latitude, $photo->longitude));
+			try {
+				$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($photo->latitude, $photo->longitude));
+			} catch (\Exception $e) {
+				$this->line(__METHOD__ . __LINE__ . $exception->getMessage());
+				continue;
+			}
 
 			if ($result_list->count() == 0) {
 				$this->line('Location (' . $photo->latitude . ', ' . $photo->longitude . ') could not be decoded.');
@@ -99,7 +104,14 @@ class add_geo_data_to_tags extends Command
 			$tags[] = trim($formatter->format($result, '%A3'));
 			$tags[] = trim($formatter->format($result, '%A4'));
 			$tags[] = trim($formatter->format($result, '%A5'));
-			$tags[] = trim($formatter->format($result, '%C'));
+
+			// Country code seems to be more reliable
+			$country_code = trim($formatter->format($result, '%c'));
+			$data_ISO3166 = (new \League\ISO3166\ISO3166())->alpha2($country_code);
+
+			if (isset($data_ISO3166['name'])) {
+				$tags[] = $data_ISO3166['name'];
+			}
 			// remove empty entries
 			$tags = array_filter($tags);
 
