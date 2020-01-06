@@ -73,7 +73,7 @@ class add_geo_data_to_tags extends Command
 
 		$cachedProvider = new \Geocoder\Provider\Cache\ProviderCache(
 			$provider, // Provider to cache
-			$psr6Cache, // PSR-6 compatible cache
+			$psr6Cache // PSR-6 compatible cache
 		);
 
 		$geocoder = new \Geocoder\StatefulGeocoder($cachedProvider, 'en');
