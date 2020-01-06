@@ -158,7 +158,7 @@ class ImagickHandler implements ImageHandlerInterface
 		} catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 
-			return array(false, false);
+			return [false, false];
 		}
 	}
 }
