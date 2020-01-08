@@ -37,6 +37,7 @@
         "nyholm/psr7": "^1.2",
         "php-http/guzzle6-adapter": "^2.0",
         "phpunit/phpunit": "^8.3",
+        "spatie/guzzle-rate-limiter-middleware": "^1.0",
         "wnx/laravel-stats": "^2.0"
     },
     "autoload": {

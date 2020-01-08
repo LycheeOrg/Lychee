@@ -66,9 +66,18 @@ class add_geo_data_to_tags extends Command
 			return 0;
 		}
 
-		$httpClient = new \Http\Adapter\Guzzle6\Client();
+
+		$stack = \GuzzleHttp\HandlerStack::create();
+		$stack->push(\Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware::perSecond(1));
+
+		$httpClient = new \GuzzleHttp\Client([
+		    'handler' => $stack,
+		    'timeout' => 30.0,
+		]);
+
+		$httpAdapter = new \Http\Adapter\Guzzle6\Client($httpClient);
 		$psr6Cache = new \Cache\Adapter\PHPArray\ArrayCachePool();
-		$provider = new \Geocoder\Provider\Nominatim\Nominatim($httpClient, 'https://nominatim.openstreetmap.org', 'lychee laravel');
+		$provider = new \Geocoder\Provider\Nominatim\Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', 'lychee laravel');
 		$formatter = new \Geocoder\Formatter\StringFormatter();
 
 		$cachedProvider = new \Geocoder\Provider\Cache\ProviderCache(

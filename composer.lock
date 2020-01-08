@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61f9923f5e582b82b5cf974f44c9d1d7",
+    "content-hash": "a5e8e88af07015130e18dd44fdf0f357",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -7756,6 +7756,54 @@
                 "phra"
             ],
             "time": "2015-10-13T18:44:15+00:00"
+        },
+        {
+            "name": "spatie/guzzle-rate-limiter-middleware",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spatie/guzzle-rate-limiter-middleware.git",
+                "reference": "8b7f6abbf60edab6d074c74e68da06ac55a4f112"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spatie/guzzle-rate-limiter-middleware/zipball/8b7f6abbf60edab6d074c74e68da06ac55a4f112",
+                "reference": "8b7f6abbf60edab6d074c74e68da06ac55a4f112",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^6.3",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "larapack/dd": "^1.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\GuzzleRateLimiterMiddleware\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sebastian De Deyne",
+                    "email": "sebastiandedeyne@gmail.com",
+                    "homepage": "https://spatie.be",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A rate limiter for Guzzle",
+            "homepage": "https://github.com/spatie/guzzle-rate-limiter-middleware",
+            "keywords": [
+                "guzzle-rate-limiter-middleware",
+                "spatie"
+            ],
+            "time": "2019-10-24T21:32:06+00:00"
         },
         {
             "name": "symfony/options-resolver",
