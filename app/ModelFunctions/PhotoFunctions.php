@@ -418,8 +418,10 @@ class PhotoFunctions
 				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
 					$rotation = $this->imageHandler->autoRotate($path, $info);
 
-					$photo->width = $rotation['width'];
-					$photo->height = $rotation['height'];
+					if ($rotation !== [false, false]) {
+						$photo->width = $rotation['width'];
+						$photo->height = $rotation['height'];
+					}
 				}
 
 				// Set original date
