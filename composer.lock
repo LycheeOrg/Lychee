@@ -1331,12 +1331,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "5112afb6319adbff52adcf37fbf4a4d6817969d8"
+                "reference": "383c33f0d45d009afdda91261f50543f5c5ffaef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/5112afb6319adbff52adcf37fbf4a4d6817969d8",
-                "reference": "5112afb6319adbff52adcf37fbf4a4d6817969d8",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/383c33f0d45d009afdda91261f50543f5c5ffaef",
+                "reference": "383c33f0d45d009afdda91261f50543f5c5ffaef",
                 "shasum": ""
             },
             "require": {
