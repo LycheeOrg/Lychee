@@ -6185,7 +6185,7 @@ photo.getArchive = function (photoIDs) {
 		if (myPhoto.url) {
 			msg += buildButton('FULL', lychee.locale['PHOTO_FULL'] + " (" + myPhoto.width + "x" + myPhoto.height + ", " + myPhoto.size + ")");
 		}
-		if (myPhoto.livePhotoUrl) {
+		if (myPhoto.livePhotoUrl !== '') {
 			msg += buildButton('LIVEPHOTOVIDEO', "" + lychee.locale['PHOTO_LIVE_VIDEO']);
 		}
 		if (myPhoto.hasOwnProperty('medium2x') && myPhoto.medium2x !== '') {
@@ -9062,7 +9062,13 @@ view.photo = {
 			var nextPhotoID = album.getByID(photoID).nextPhoto;
 			var nextPhoto = album.getByID(nextPhotoID);
 
-			$nextArrow.css('background-image', lychee.html(_templateObject73, nextPhoto.thumbUrl));
+			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
+			var thumbUrl = nextPhoto.thumbUrl;
+
+			if (thumbUrl === 'uploads/thumb/' && nextPhoto.type.indexOf('video') > -1) {
+				thumbUrl = 'img/play-icon.png';
+			}
+			$nextArrow.css('background-image', lychee.html(_templateObject73, thumbUrl));
 		}
 
 		if (hasPrevious === false || lychee.viewMode === true) {
@@ -9073,7 +9079,13 @@ view.photo = {
 			var previousPhotoID = album.getByID(photoID).previousPhoto;
 			var previousPhoto = album.getByID(previousPhotoID);
 
-			$previousArrow.css('background-image', lychee.html(_templateObject73, previousPhoto.thumbUrl));
+			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
+			var _thumbUrl = previousPhoto.thumbUrl;
+
+			if (_thumbUrl === 'uploads/thumb/' && previousPhoto.type.indexOf('video') > -1) {
+				_thumbUrl = 'img/play-icon.png';
+			}
+			$previousArrow.css('background-image', lychee.html(_templateObject73, _thumbUrl));
 		}
 	}),
 

@@ -414,9 +414,6 @@ $(document).ready(function () {
 	// Infobox
 	header.dom('#button_info').on('click', sidebar.toggle);
 
-	// Show overview Map
-	header.dom('#button_map').on('click', alert("Show Map"));
-
 	// Load photo
 	loadPhotoInfo(photoID);
 });
