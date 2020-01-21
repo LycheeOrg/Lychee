@@ -300,7 +300,14 @@ class PhotoFunctions
 			// Import if not uploaded via web
 			if (!is_uploaded_file($tmp_name)) {
 				// TODO: use the storage facade here
-				if (!@copy($tmp_name, $path)) {
+				// Check if the user wants to create symlinks instead of copying the photo
+				if (Configs::get_value('import_via_symlink', '0') === '1') {
+					if (!symlink($tmp_name, $path)) {
+						Logs::error(__METHOD__, __LINE__, 'Could not create symlink');
+
+						return Response::error('Could not create symlink!');
+					}
+				} elseif (!@copy($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
 
 					return Response::error('Could not copy photo to uploads!');
