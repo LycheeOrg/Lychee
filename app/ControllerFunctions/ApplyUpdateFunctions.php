@@ -43,6 +43,9 @@ class ApplyUpdateFunctions
 	private function call_composer(array &$output)
 	{
 		if (Configs::get_value('apply_composer_update', '0') == '1') {
+			// @codeCoverageIgnoreStart
+			// we cannot code cov this part as phpunit is only available in dev mode.
+
 			Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
 
 			// Composer\Factory::getHomeDir() method
@@ -51,6 +54,7 @@ class ApplyUpdateFunctions
 			chdir(base_path());
 			exec('composer install --no-dev --no-progress --no-suggest 2>&1', $output);
 			chdir(base_path('public'));
+		// @codeCoverageIgnoreEnd
 		} else {
 			$output[] = 'Composer update are always dangerous when automated.';
 			$output[] = 'So we did not execute it.';
