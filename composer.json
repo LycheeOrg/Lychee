@@ -11,7 +11,6 @@
         "ext-gd": "*",
         "ext-json": "*",
         "bepsvpt/secure-headers": "^5.5",
-        "composer/composer": "^1.9",
         "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.2",
         "graham-campbell/markdown": "^11.1",
