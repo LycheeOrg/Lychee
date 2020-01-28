@@ -11,13 +11,14 @@
         "ext-gd": "*",
         "ext-json": "*",
         "bepsvpt/secure-headers": "^5.5",
+        "composer/composer": "^1.9",
         "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.2",
         "graham-campbell/markdown": "^11.1",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
-        "maennchen/zipstream-php": "^1.2.0",
         "lychee-org/php-exif": "dev-master",
+        "maennchen/zipstream-php": "^1.2.0",
         "php-ffmpeg/php-ffmpeg": "^0.14.0"
     },
     "require-dev": {
