@@ -53,6 +53,7 @@ class PhotoFunctions
 		'video/quicktime',
 		'video/x-ms-asf', // wmv file
 		'video/x-msvideo', // Avi
+		'video/x-m4v', // Avi
 	];
 
 	/**
@@ -68,6 +69,7 @@ class PhotoFunctions
 		'.mpg',
 		'.webm',
 		'.mov',
+		'.m4v',
 		'.avi',
 		'.wmv',
 	];
@@ -201,10 +203,11 @@ class PhotoFunctions
 	 * @param array $file
 	 * @param int   $albumID_in
 	 * @param bool  $delete_imported
+	 * @param bool  $force_skip_duplicates
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0, $delete_imported = false)
+	public function add(array $file, $albumID_in = 0, $delete_imported = false, $force_skip_duplicates = false)
 	{
 		// Check permissions
 		if (Helpers::hasPermissions(Storage::path('')) === false ||
@@ -293,6 +296,8 @@ class PhotoFunctions
 			$photo->livePhotoUrl = $exists->livePhotoUrl;
 			$photo->livePhotoChecksum = $exists->livePhotoChecksum;
 			$photo->checksum = $exists->checksum;
+			$photo->type = $exists->type;
+			$mimeType = $photo->type;
 			$exists = true;
 		}
 
@@ -328,7 +333,7 @@ class PhotoFunctions
 				@unlink($tmp_name);
 			}
 			// Check if the user wants to skip duplicates
-			if (Configs::get_value('skip_duplicates', '0') === '1') {
+			if ($force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
 				return Response::warning('This photo has been skipped because it\'s already in your library.');
