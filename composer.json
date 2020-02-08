@@ -6,7 +6,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.2.0",
+        "php": "^7.3.0",
         "ext-exif": "*",
         "ext-gd": "*",
         "ext-json": "*",
