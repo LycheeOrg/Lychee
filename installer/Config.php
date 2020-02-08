@@ -11,12 +11,11 @@ class Config
 			| Server Requirements
 			|--------------------------------------------------------------------------
 			|
-			| This is the default Laravel server requirements, you can add as many
-			| as your application require, we check if the extension is enabled
+			| This is our Lychee server requirements, we check if the extension is enabled
 			| by looping through the array and run "extension_loaded" on it.
 			|
 			*/
-			'core' => ['minPhpVersion' => '7.2.0'],
+			'core' => ['minPhpVersion' => '7.3.0'],
 			'requirements' => [
 				'php' => [
 					'openssl',
@@ -34,8 +33,8 @@ class Config
 			| Folders Permissions
 			|--------------------------------------------------------------------------
 			|
-			| This is the default Laravel folders permissions, if your application
-			| requires more permissions just add them to the array list bellow.
+			| This is the default Lychee folders permissions.
+			| you may want to enable more permissions to allow online updates
 			|
 			*/
 			'permissions' => [
@@ -54,7 +53,11 @@ class Config
 				'public/uploads/small/' => 'file_exists|is_readable|is_writable|is_executable',
 				'public/uploads/thumb/' => 'file_exists|is_readable|is_writable|is_executable',
 			],
-			// not used yet.
+			// This is from https://github.com/rashidlaasri/LaravelInstaller
+			// We keep it so we can make the .env edition a bit more friendly (later).
+			// This will also allow use to give more details of what each settings in the
+			// .env are for.
+			//
 			//			'environment'  => [
 			//				'form' => [
 			//					'rules' => [

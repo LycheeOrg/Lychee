@@ -75,7 +75,7 @@ class MigrationController implements Controller
 	 */
 	public function installed(array &$output)
 	{
-		$dateStamp = date('Y/m/d h:i:sa');
+		$dateStamp = date('Y-m-d H:i:s');
 		$message = 'Lychee INSTALLED on ' . $dateStamp;
 		file_put_contents('installed.log', $message);
 		$output[] = $message;

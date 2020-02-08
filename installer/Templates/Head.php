@@ -40,25 +40,20 @@ class Head implements Template
                 </div>
                 <ul class="step">
                     <li class="step__divider"></li>
-                    <li class="step__item ' . ($input['step'] == 'Migrate' ? 'active' : '')
+                    <li class="step__item' . ($input['step'] == 'Migrate' ? ' active' : '')
 			. '"  title="Apply the database migration">';
-		echo '<i class="step__icon fa fa-server" aria-hidden="true"></i>';
-		echo '
-                    </li>';
-		echo '
+		echo '<i class="step__icon fa fa-server" aria-hidden="true"></i></li>
                     <li class="step__divider"></li>
-                    <li class="step__item ' . ($input['step'] == 'Env' ? 'active' : '')
+                    <li class="step__item' . ($input['step'] == 'Env' ? ' active' : '')
 			. '"  title="Setting the environment">';
 		if ($this->get_index($input['step']) >= 3) {
-			echo '<a href="?step=env">
-                                <i class="step__icon fa fa-cog" aria-hidden="true"></i>
-                            </a>';
+			echo '<a href="?step=env"><i class="step__icon fa fa-cog" aria-hidden="true"></i></a>';
 		} else {
 			echo '<i class="step__icon fa fa-cog" aria-hidden="true"></i>';
 		}
 		echo '</li>
                     <li class="step__divider"></li>
-                    <li class="step__item ' . ($input['step'] == 'Permissions' ? 'active'
+                    <li class="step__item' . ($input['step'] == 'Permissions' ? ' active'
 				: '') . '"  title="Checking Permissions">';
 
 		if ($this->get_index($input['step']) >= 2) {
@@ -66,10 +61,9 @@ class Head implements Template
 		} else {
 			echo '<i class="step__icon fa fa-key" aria-hidden="true"></i>';
 		}
-		echo '
-                    </li>
+		echo '</li>
                     <li class="step__divider"></li>
-                    <li class="step__item ' . ($input['step'] == 'Requirements' ? 'active'
+                    <li class="step__item' . ($input['step'] == 'Requirements' ? ' active'
 				: '') . '" title="Checking Requirements">';
 
 		if ($this->get_index($input['step']) >= 1) {
@@ -80,12 +74,11 @@ class Head implements Template
 
 		echo '</li>
                     <li class="step__divider"></li>
-                    <li class="step__item ' . ($input['step'] == 'Welcome' ? 'active' : '')
+                    <li class="step__item' . ($input['step'] == 'Welcome' ? ' active' : '')
 			. '"  title="Welcome!">';
 		echo '<a href="?step="><i class="step__icon fa fa-home" aria-hidden="true"></i></a>';
 
-		echo '
-                    </li>
+		echo '</li>
                     <li class="step__divider"></li>
                 </ul>
                 <div class="main">';

@@ -11,8 +11,8 @@ class GenerateInstalledLog extends Migration
 	 */
 	public function up()
 	{
-		$dateStamp = date('Y/m/d h:i:sa');
-		$message = 'Lychee INSTALLED on ' . $dateStamp;
+		$dateStamp = date('Y-m-d H:i:s');
+		$message = 'Lychee INSTALLED before ' . $dateStamp;
 		file_put_contents(base_path('installed.log'), $message);
 	}
 
@@ -23,7 +23,8 @@ class GenerateInstalledLog extends Migration
 	 */
 	public function down()
 	{
-		// THIS WILL MAKE YOUR
+		// If we reverted the above change, it would make the laravel installation vulnerable.
+		// A malicious user could access ./install.php and read the content of .env !!
 		echo 'We do not delete ' . base_path('installed.log') . " as this would leave your installation vulnerable.\n";
 	}
 }
