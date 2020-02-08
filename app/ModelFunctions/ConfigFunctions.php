@@ -53,7 +53,10 @@ class ConfigFunctions
 	public function public()
 	{
 		// Execute query
-		return Configs::public()->pluck('value', 'key')->all();
+		$return = Configs::public()->pluck('value', 'key')->all();
+		$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
+
+		return $return;
 	}
 
 	/**

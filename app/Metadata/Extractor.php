@@ -3,6 +3,7 @@
 namespace App\Metadata;
 
 use App\Configs;
+use App\Logs;
 use PHPExif\Reader\Reader;
 
 class Extractor
@@ -71,15 +72,29 @@ class Extractor
 	{
 		$reader = null;
 
-		if (Configs::hasExiftool() == true) {
-			// reader with Exiftool adapter
-			$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-		} elseif (strpos($type, 'video') !== 0) {
-			// It's a photo -> Use Php native tools
-			$reader = Reader::factory(Reader::TYPE_NATIVE);
+		if (strpos($type, 'video') !== 0) {
+			// It's a photo
+			if (Configs::hasExiftool() == true) {
+				// reader with Exiftool adapter
+				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
+			} elseif (strpos($type, 'video') !== 0) {
+				// Use Php native tools
+				$reader = Reader::factory(Reader::TYPE_NATIVE);
+			}
 		} else {
-			// It's a video -> use FFProbe
-			$reader = Reader::factory(Reader::TYPE_FFPROBE);
+			// Let's try to use FFmpeg; if not available, let's try Exiftool
+			if (Configs::hasFFmpeg() == true) {
+				// It's a video -> use FFProbe
+				$reader = Reader::factory(Reader::TYPE_FFPROBE);
+			} elseif (Configs::hasExiftool() == true) {
+				// reader with Exiftool adapter
+				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
+			} else {
+				// Use Php native tools to extract at least MimeType and Filesize
+				// For all other properties, it will not return anything
+				$reader = Reader::factory(Reader::TYPE_NATIVE);
+				Logs::notice(__METHOD__, __LINE__, 'FFmpeg and Exiftool not being available; Extraction of metadata limited to mime type and file size.');
+			}
 		}
 
 		$exif = $reader->read($filename);
@@ -104,6 +119,18 @@ class Extractor
 		$metadata['size'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
 		$metadata['livePhotoContentID'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
+
+		// We need to make sure, takestamp is between '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC.
+		// We set value to null in case we're out of bounds
+		if ($metadata['takestamp'] !== null) {
+			$min_date = new \DateTime('1970-01-01 00:00:01', new \DateTimeZone('UTC'));
+			$max_date = new \DateTime('2038-01-19 03:14:07', new \DateTimeZone('UTC'));
+			$takestamp = new \DateTime($metadata['takestamp']);
+			if ($takestamp < $min_date || $takestamp > $max_date) {
+				$metadata['takestamp'] = null;
+				Logs::notice(__METHOD__, __LINE__, 'Takestamp (' . $takestamp->format('Y-m-d H:i:s') . ') out of bounds (needs to be between 1970-01-01 00:00:01 and 2038-01-19 03:14:07)');
+			}
+		}
 
 		// Position
 		$fields = [];

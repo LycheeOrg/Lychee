@@ -10,6 +10,59 @@ use Illuminate\Support\Facades\Config;
 class ApplyUpdateFunctions
 {
 	/**
+	 * If we are in a production environment we actually require a double check..
+	 *
+	 * @param array $output
+	 */
+	private function check_prod_env_allow_migration(array &$output)
+	{
+		if (Config::get('app.env') == 'production') {
+			// @codeCoverageIgnoreStart
+			// we cannot code cov this part. APP_ENV is dev in testing mode.
+			if (Configs::get_value('force_migration_in_production') == '1') {
+				Logs::warning(__METHOD__, __LINE__, 'Force update is production.');
+
+				return true;
+			}
+
+			$output[] = 'Update not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.';
+			Logs::warning(__METHOD__, __LINE__, 'Update not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.');
+
+			return false;
+			// @codeCoverageIgnoreEnd
+		}
+
+		return true;
+	}
+
+	/**
+	 * call composer over exec.
+	 *
+	 * @param array $output
+	 */
+	private function call_composer(array &$output)
+	{
+		if (Configs::get_value('apply_composer_update', '0') == '1') {
+			// @codeCoverageIgnoreStart
+			// we cannot code cov this part as phpunit is only available in dev mode.
+
+			Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
+
+			// Composer\Factory::getHomeDir() method
+			// needs COMPOSER_HOME environment variable set
+			putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
+			chdir(base_path());
+			exec('composer install --no-dev --no-progress --no-suggest 2>&1', $output);
+			chdir(base_path('public'));
+		// @codeCoverageIgnoreEnd
+		} else {
+			$output[] = 'Composer update are always dangerous when automated.';
+			$output[] = 'So we did not execute it.';
+			$output[] = 'If you want to have composer update applied, please set the setting to 1 at your own risk.';
+		}
+	}
+
+	/**
 	 * Arrayify a string and append it to $output.
 	 *
 	 * @param $string
@@ -45,25 +98,10 @@ class ApplyUpdateFunctions
 	 *
 	 * @param array $output
 	 */
-	private function internal(array &$output)
+	private function artisan(array &$output)
 	{
-		// if we are in a production environment we actually require a double check.
-		if (env('APP_ENV', 'production') == 'production') {
-			// @codeCoverageIgnoreStart
-			// we cannot code cov this part. APP_ENV is dev in testing mode.
-			if (Configs::get_value('force_migration_in_production') == '1') {
-				Logs::warning(__METHOD__, __LINE__, 'Force migration is production.');
-				Artisan::call('migrate', ['--force' => true]);
-				$this->str_to_array(Artisan::output(), $output);
-			} else {
-				$output[] = 'Migration not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.';
-				Logs::warning(__METHOD__, __LINE__, 'Migration not applied: `APP_ENV` in `.env` is `production` and `force_migration_in_production` is set to `0`.');
-			}
-			// @codeCoverageIgnoreEnd
-		} else {
-			Artisan::call('migrate');
-			$this->str_to_array(Artisan::output(), $output);
-		}
+		Artisan::call('migrate', ['--force' => true]);
+		$this->str_to_array(Artisan::output(), $output);
 	}
 
 	/**
@@ -76,8 +114,11 @@ class ApplyUpdateFunctions
 	public function apply()
 	{
 		$output = [];
-		$this->git_pull($output);
-		$this->internal($output);
+		if ($this->check_prod_env_allow_migration($output)) {
+			$this->git_pull($output);
+			$this->artisan($output);
+			$this->call_composer($output);
+		}
 
 		return $output;
 	}

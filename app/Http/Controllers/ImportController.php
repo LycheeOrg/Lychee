@@ -36,8 +36,10 @@ class ImportController extends Controller
 	 */
 	private $sessionFunctions;
 
+	private $memCheck;
 	private $memLimit;
 	private $memWarningGiven;
+	private $statusCLIFormatting;
 
 	/**
 	 * Create a new command instance.
@@ -51,6 +53,8 @@ class ImportController extends Controller
 		$this->photoFunctions = $photoFunctions;
 		$this->albumFunctions = $albumFunctions;
 		$this->sessionFunctions = $sessionFunctions;
+		$this->statusCLIFormatting = false;
+		$this->memCheck = true;
 	}
 
 	/**
@@ -59,10 +63,11 @@ class ImportController extends Controller
 	 * @param $path
 	 * @param bool $delete_imported
 	 * @param int  $albumID
+	 * @param bool $force_skip_duplicates
 	 *
 	 * @return bool returns true when photo import was successful
 	 */
-	private function photo($path, $delete_imported, $albumID = 0)
+	private function photo($path, $delete_imported, $albumID = 0, $force_skip_duplicates = false)
 	{
 		// No need to validate photo type and extension in this function.
 		// $photo->add will take care of it.
@@ -73,7 +78,7 @@ class ImportController extends Controller
 		$nameFile['type'] = $mime;
 		$nameFile['tmp_name'] = $path;
 
-		if ($this->photoFunctions->add($nameFile, $albumID, $delete_imported) === false) {
+		if ($this->photoFunctions->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates) === false) {
 			return false;
 		}
 
@@ -220,22 +225,28 @@ class ImportController extends Controller
 	 */
 	private function status_update(string $status)
 	{
-		// We append a newline to the status string, JSON-encode the
-		// result, and strip the  surrounding '"' characters since this
-		// isn't a complete JSON string yet.
-		echo substr(json_encode($status . "\n"), 1, -1);
-		ob_flush();
-		flush();
+		if (!$this->statusCLIFormatting) {
+			// We append a newline to the status string, JSON-encode the
+			// result, and strip the  surrounding '"' characters since this
+			// isn't a complete JSON string yet.
+			echo substr(json_encode($status . "\n"), 1, -1);
+			ob_flush();
+			flush();
+		} else {
+			echo $status . PHP_EOL;
+		}
 	}
 
 	/**
 	 * @param string $path
 	 * @param int    $albumID
 	 * @param bool   $delete_imported
+	 * @param bool   $force_skip_duplicates
+	 * @param array  $ignore_list
 	 *
 	 * @throws ImagickException
 	 */
-	private function server_exec(string $path, $albumID, $delete_imported)
+	public function server_exec(string $path, $albumID, $delete_imported, $force_skip_duplicates = false, $ignore_list = null)
 	{
 		// Parse path
 		$origPath = $path;
@@ -267,18 +278,33 @@ class ImportController extends Controller
 		// then the subdirectories.  This way, if the process fails along the
 		// way, it's much easier for the user to figure out what was imported
 		// and what was not.
+
+		// Let's load the list of filenames to ignore
+		if (file_exists($path . '/.lycheeignore')) {
+			$ignore_list_new = file($path . '/.lycheeignore');
+			if (isset($ignore_list)) {
+				$ignore_list = array_merge($ignore_list, $ignore_list_new);
+			} else {
+				$ignore_list = $ignore_list_new;
+			}
+		}
+
 		$files = glob($path . '/*');
 		$filesTotal = count($files);
 		$filesCount = 0;
 		$dirs = [];
 		$lastStatus = microtime(true);
-		$this->status_update('Status: ' . $origPath . ': 0');
+
+		// Add '%' at end for CLI output
+		$percent_symbol = ($this->statusCLIFormatting) ? '%' : '';
+
+		$this->status_update('Status: ' . $origPath . ': 0' . $percent_symbol);
 		foreach ($files as $file) {
 			// Reset the execution timeout for every iteration.
 			set_time_limit(ini_get('max_execution_time'));
 
 			// Report if we might be running out of memory.
-			if (!$this->memWarningGiven && memory_get_usage() > $this->memLimit) {
+			if ($this->memCheck && !$this->memWarningGiven && memory_get_usage() > $this->memLimit) {
 				$this->status_update('Warning: Approaching memory limit');
 				$this->memWarningGiven = true;
 			}
@@ -287,8 +313,26 @@ class ImportController extends Controller
 			// 100%, which are always generated.
 			$time = microtime(true);
 			if ($time - $lastStatus >= 1) {
-				$this->status_update('Status: ' . $origPath . ': ' . intval($filesCount / $filesTotal * 100));
+				$this->status_update('Status: ' . $origPath . ': ' . intval($filesCount / $filesTotal * 100) . $percent_symbol);
 				$lastStatus = $time;
+			}
+
+			// Let's check if we should ignore the file
+
+			if (isset($ignore_list)) {
+				$ignore_file = false;
+
+				foreach ($ignore_list as $value_ignore) {
+					if ($this->check_file_matches_pattern(basename($file), $value_ignore) == true) {
+						$ignore_file = true;
+						break;
+					}
+				}
+
+				if ($ignore_file == true) {
+					$filesTotal--;
+					continue;
+				}
 			}
 
 			if (is_dir($file)) {
@@ -308,7 +352,7 @@ class ImportController extends Controller
 			$extension = Helpers::getExtension($file, true);
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
 				// Photo or Video
-				if ($this->photo($file, $delete_imported, $albumID) === false) {
+				if ($this->photo($file, $delete_imported, $albumID, $force_skip_duplicates) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					continue;
@@ -319,13 +363,13 @@ class ImportController extends Controller
 				continue;
 			}
 		}
-		$this->status_update('Status: ' . $origPath . ': 100');
+		$this->status_update('Status: ' . $origPath . ': 100' . $percent_symbol);
 
 		// Album creation
 		foreach ($dirs as $dir) {
 			// Folder
 			$album = null;
-			if (Configs::get_value('skip_duplicates', '0') === '1') {
+			if ($force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
 				$album = Album::where('parent_id', '=', $albumID == 0 ? null : $albumID)
 					->where('title', '=', basename($dir))
 					->get()
@@ -341,7 +385,44 @@ class ImportController extends Controller
 				}
 			}
 			$newAlbumID = $album->id;
-			$this->server_exec($dir . '/', $newAlbumID, $delete_imported);
+			$this->server_exec($dir . '/', $newAlbumID, $delete_imported, $force_skip_duplicates, $ignore_list);
 		}
+	}
+
+	/**
+	 * @param array $my_array
+	 *
+	 * @return string
+	 */
+	private function check_file_matches_pattern(string $pattern, string $filename)
+	{
+		// This function checks if the given filename matches the pattern allowing for
+		// star als wildcard (as in *.jpg)
+		// Example: '*.jpg' matches all jpgs
+
+		$pattern = preg_replace_callback('/([^*])/', [$this, 'preg_quote_callback_fct'], $pattern);
+		$pattern = str_replace('*', '.*', $pattern);
+
+		return (bool) preg_match('/^' . $pattern . '$/i', $filename);
+	}
+
+	/**
+	 * @param array $my_array
+	 *
+	 * @return string
+	 */
+	private function preg_quote_callback_fct(array $my_array)
+	{
+		return preg_quote($my_array[1], '/');
+	}
+
+	public function enableCLIStatus()
+	{
+		$this->statusCLIFormatting = true;
+	}
+
+	public function disableMemCheck()
+	{
+		$this->memCheck = false;
 	}
 }
