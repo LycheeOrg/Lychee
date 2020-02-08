@@ -109,9 +109,6 @@ class ApplyUpdateFunctions
 	 * 1. git pull
 	 * 2. artisan migrate.
 	 *
-	 * Put DB_MIGRATE_ART=true in .env to use the internal version instead of the shelled version.
-	 * this is a test version on live. We probably will remove this distinction after more testing on live.
-	 *
 	 * @return array
 	 */
 	public function apply()
