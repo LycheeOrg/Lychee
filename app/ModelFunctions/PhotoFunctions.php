@@ -307,7 +307,6 @@ class PhotoFunctions
 				// TODO: use the storage facade here
 				// Check if the user wants to create symlinks instead of copying the photo
 				if (Configs::get_value('import_via_symlink', '0') === '1') {
-					Logs::notice(__METHOD__, __LINE__, 'test_upload');
 					if (!symlink($tmp_name, $path)) {
 						Logs::error(__METHOD__, __LINE__, 'Could not create symlink');
 
