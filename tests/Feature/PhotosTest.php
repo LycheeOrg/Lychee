@@ -204,12 +204,16 @@ class PhotosTest extends TestCase
 		Configs::set('SL_for_admin', $init_config_value2);
 	}
 
-	public function test_upload_symlink()
+	public function test_import()
 	{
 		$photos_tests = new PhotosUnitTest();
+		$albums_tests = new AlbumsUnitTest();
+		$session_tests = new SessionUnitTest();
+
+		$session_tests->log_as_id(0);
 
 		// save initial value
-		$init_config_value1 = Configs::get_value('import_via_symlink');
+		$init_config_value = Configs::get_value('import_via_symlink');
 
 		// enable import via symlink option
 		Configs::set('import_via_symlink', '1');
@@ -217,32 +221,22 @@ class PhotosTest extends TestCase
 
 		// upload the photo
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
-		$file = new UploadedFile('public/uploads/import/night.jpg', 'night.jpg',
-			'image/jpg', null, true);
-		$id = $photos_tests->upload($this, $file);
-		$photos_tests->get($this, $id, 'true');
+		$streamed_response = $photos_tests->import($this, base_path('public/uploads/import/'));
 
 		// check if the file is still there (without symlinks the photo would have been deleted)
 		$this->assertEquals(true, file_exists('public/uploads/import/night.jpg'));
 
-		// TODO...
+		$response = $albums_tests->get($this, 'r', '', 'true');
+		$content = $response->getContent();
+		$array_content = json_decode($content);
+		$this->assertEquals(1, count($array_content->photos));
 
-		// getting the photo after deleting it must fail if the symlink worked
-		$this->assertEquals(true, unlink('public/uploads/import/night.jpg'));
-		$photos_tests->get($this, $id, 'false');
-
-		// cleanup -> copy it again and gracefully delete it from DB
-		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
+		$id = $array_content->photos[0]->id;
 		$photos_tests->delete($this, $id, 'true');
 
-
-		// disable import via symlink option
-		Configs::set('import_via_symlink', '0');
-		$this->assertEquals(Configs::get_value('import_via_symlink'), '0');
-
-		// TODO
-
 		// set back to initial value
-		Configs::set('import_via_symlink', $init_config_value1);
+		Configs::set('import_via_symlink', $init_config_value);
+
+		$session_tests->logout($this);
 	}
 }
