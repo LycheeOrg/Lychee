@@ -308,9 +308,11 @@ class PhotoFunctions
 				// Check if the user wants to create symlinks instead of copying the photo
 				if (Configs::get_value('import_via_symlink', '0') === '1') {
 					if (!symlink($tmp_name, $path)) {
+						// @codeCoverageIgnoreStart
 						Logs::error(__METHOD__, __LINE__, 'Could not create symlink');
 
 						return Response::error('Could not create symlink!');
+						// @codeCoverageIgnoreEnd
 					}
 				} elseif (!@copy($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');

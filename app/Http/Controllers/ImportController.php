@@ -79,7 +79,9 @@ class ImportController extends Controller
 		$nameFile['tmp_name'] = $path;
 
 		if ($this->photoFunctions->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates) === false) {
+			// @codeCoverageIgnoreStart
 			return false;
+			// @codeCoverageIgnoreEnd
 		}
 
 		return true;
@@ -178,6 +180,7 @@ class ImportController extends Controller
 		// more complicated...
 		if (sscanf(ini_get('memory_limit'), '%d%c', $this->memLimit, $memExt) === 2) {
 			switch (strtolower($memExt)) {
+				// @codeCoverageIgnoreStart
 				case 'k':
 					$this->memLimit *= 1024;
 					break;
@@ -190,6 +193,7 @@ class ImportController extends Controller
 				case 't':
 					$this->memLimit *= 1024 * 1024 * 1024 * 1024;
 					break;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 		// We set the warning threshold at 90% of the limit.
@@ -251,7 +255,9 @@ class ImportController extends Controller
 		// Parse path
 		$origPath = $path;
 		if (!isset($path)) {
+			// @codeCoverageIgnoreStart
 			$path = Storage::path('import');
+			// @codeCoverageIgnoreEnd
 		}
 		if (substr($path, -1) === '/') {
 			$path = substr($path, 0, -1);
@@ -305,8 +311,10 @@ class ImportController extends Controller
 
 			// Report if we might be running out of memory.
 			if ($this->memCheck && !$this->memWarningGiven && memory_get_usage() > $this->memLimit) {
+				// @codeCoverageIgnoreStart
 				$this->status_update('Warning: Approaching memory limit');
 				$this->memWarningGiven = true;
+				// @codeCoverageIgnoreEnd
 			}
 
 			// Generate the status at most once a second, except for 0% and
