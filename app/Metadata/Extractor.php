@@ -97,7 +97,19 @@ class Extractor
 			}
 		}
 
-		$exif = $reader->read($filename);
+		try {
+			// this can throw an exception!
+			$exif = $reader->read($filename);
+		} catch (\Exception $e) {
+			// We treat it as RAW (cf in photofunctions)
+			// Notifiy the User Log and continue.
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			$metadata = $this->bare();
+			$this->size($metadata, $filename);
+			$this->validate($metadata);
+
+			return $metadata;
+		}
 		$metadata = $this->bare();
 		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : '';
 		$metadata['width'] = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
