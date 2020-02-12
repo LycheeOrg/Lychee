@@ -3,6 +3,7 @@
 /** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 class ConfigHasFFmpeg extends Migration
@@ -21,18 +22,17 @@ class ConfigHasFFmpeg extends Migration
 			define('TERNARY', '0|1|2');
 		}
 
-		// Let's run the check for exiftool right here
-		$status = 0;
-		$output = '';
+		// Let's run the check for ffmpeg right here
 		$has_ffmpeg = 2; // not set
 		try {
-			exec('which ffmpeg 2>&1 > /dev/null', $output, $status);
-			if ($status != 0) {
+			$path = exec('command -v ffmpeg');
+			if ($path == '') {
 				$has_ffmpeg = 0; // false
 			} else {
 				$has_ffmpeg = 1; // true
 			}
 		} catch (\Exception $e) {
+			$has_ffmpeg = 0;
 			// let's do nothing
 		}
 

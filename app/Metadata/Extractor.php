@@ -77,7 +77,7 @@ class Extractor
 			if (Configs::hasExiftool() == true) {
 				// reader with Exiftool adapter
 				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-			} elseif (strpos($type, 'video') !== 0) {
+			} else {
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
 			}
@@ -97,7 +97,15 @@ class Extractor
 			}
 		}
 
-		$exif = $reader->read($filename);
+		try {
+			// this can throw an exception in the case of Exiftool adapter!
+			$exif = $reader->read($filename);
+		} catch (\Exception $e) {
+			// Use Php native tools
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			$reader = Reader::factory(Reader::TYPE_NATIVE);
+			$exif = $reader->read($filename);
+		}
 		$metadata = $this->bare();
 		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : '';
 		$metadata['width'] = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
