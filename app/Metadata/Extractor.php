@@ -190,6 +190,7 @@ class Extractor
 
 		// Decode location data
 		$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
+
 		return $metadata;
 	}
 }

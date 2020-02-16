@@ -4,13 +4,11 @@
 
 namespace App\ModelFunctions;
 
-
 use App\Configs;
-use Storage;
-use Spatie\GuzzleRateLimiterMiddleware\Store;
-use Illuminate\Support\Facades\Cache;
 use Geocoder\Query\ReverseQuery;
-use Illuminate\Cache\ArrayStore;
+use Illuminate\Support\Facades\Cache;
+use Spatie\GuzzleRateLimiterMiddleware\Store;
+use Storage;
 
 class Geodecoder
 {
@@ -21,14 +19,16 @@ class Geodecoder
 	 */
 	public static function decodeLocation($latitude, $longitude)
 	{
-		if($latitude==null || $longitude==null) return null;
+		if ($latitude == null || $longitude == null) {
+			return null;
+		}
 
 		$stack = \GuzzleHttp\HandlerStack::create();
 		$stack->push(\Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware::perSecond(1));
 
 		$httpClient = new \GuzzleHttp\Client([
-		    'handler' => $stack,
-		    'timeout' => 30.0,
+			'handler' => $stack,
+			'timeout' => 30.0,
 		]);
 
 		$httpAdapter = new \Http\Adapter\Guzzle6\Client($httpClient);
@@ -48,23 +48,25 @@ class Geodecoder
 
 		$geocoder = new \Geocoder\StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
 		$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));
-		
-		// If no result has been returned -> return null
-		if($result_list->isEmpty()) return null;
-		return $result_list->first()->getDisplayName();
 
+		// If no result has been returned -> return null
+		if ($result_list->isEmpty()) {
+			return null;
+		}
+
+		return $result_list->first()->getDisplayName();
 	}
 }
 
 class RateLimiterStore implements Store
 {
-    public function get(): array
-    {
-        return Cache::get('rate-limiter', []);
-    }
+	public function get(): array
+	{
+		return Cache::get('rate-limiter', []);
+	}
 
-    public function push(int $timestamp)
-    {
-        Cache::put('rate-limiter', array_merge($this->get(), [$timestamp]));
-    }
+	public function push(int $timestamp)
+	{
+		Cache::put('rate-limiter', array_merge($this->get(), [$timestamp]));
+	}
 }

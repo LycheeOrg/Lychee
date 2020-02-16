@@ -47,6 +47,7 @@ class Config
 				'public/sym/' => 'file_exists|is_readable|is_writable|is_executable',
 				'public/uploads/' => 'file_exists|is_readable|is_writable|is_executable',
 				'public/uploads/big/' => 'file_exists|is_readable|is_writable|is_executable',
+				'public/uploads/cache/' => 'file_exists|is_readable|is_writable|is_executable',
 				'public/uploads/import/' => 'file_exists|is_readable|is_writable|is_executable',
 				'public/uploads/medium/' => 'file_exists|is_readable|is_writable|is_executable',
 				'public/uploads/raw/' => 'file_exists|is_readable|is_writable|is_executable',

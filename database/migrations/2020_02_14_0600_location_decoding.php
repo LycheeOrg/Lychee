@@ -52,6 +52,5 @@ class LocationDecoding extends Migration
 				$table->dropColumn('location');
 			});
 		}
-
 	}
 }

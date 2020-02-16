@@ -132,7 +132,7 @@ class DiskUsage
 	}
 
 	/**
-	 * Return the space taken by the upload folder (Big, Medium, Small, Thumbs).
+	 * Return the space taken by the upload folder (Big, Medium, Small, Thumbs, Cache).
 	 *
 	 * @return string
 	 */

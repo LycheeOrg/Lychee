@@ -153,6 +153,10 @@ class DiagnosticsController extends Controller
 			$errors[]
 				= 'Error: \'uploads/thumb\' is missing or has insufficient read/write privileges';
 		}
+		if (Helpers::hasPermissions(Storage::path('cache')) === false) {
+			$errors[]
+				= 'Error: \'uploads/cache\' is missing or has insufficient read/write privileges';
+		}
 		if (Helpers::hasPermissions(Storage::path('import')) === false) {
 			$errors[]
 				= 'Error: \'uploads/import\' is missing or has insufficient read/write privileges';

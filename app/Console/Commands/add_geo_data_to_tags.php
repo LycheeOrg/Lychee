@@ -2,15 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Configs;
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
-use App\Configs;
-use App\Locale\Lang;
-use Storage;
 use Geocoder\Query\ReverseQuery;
 use Illuminate\Console\Command;
-use Illuminate\Cache\ArrayStore;
+use Storage;
 
 class add_geo_data_to_tags extends Command
 {
@@ -70,13 +68,12 @@ class add_geo_data_to_tags extends Command
 			return 0;
 		}
 
-
 		$stack = \GuzzleHttp\HandlerStack::create();
 		$stack->push(\Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware::perSecond(1));
 
 		$httpClient = new \GuzzleHttp\Client([
-		    'handler' => $stack,
-		    'timeout' => 30.0,
+			'handler' => $stack,
+			'timeout' => 30.0,
 		]);
 
 		$httpAdapter = new \Http\Adapter\Guzzle6\Client($httpClient);
