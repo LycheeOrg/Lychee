@@ -19,6 +19,10 @@ class Geodecoder
 	 */
 	public static function decodeLocation($latitude, $longitude)
 	{
+		// User does not want to decode location data
+		if (Configs::get_value('location_decoding')) {
+			return null;
+		}
 		if ($latitude == null || $longitude == null) {
 			return null;
 		}
@@ -28,23 +32,37 @@ class Geodecoder
 
 		$httpClient = new \GuzzleHttp\Client([
 			'handler' => $stack,
-			'timeout' => 30.0,
+			'timeout' => Configs::get_value('location_decoding_timeout'),
 		]);
 
 		$httpAdapter = new \Http\Adapter\Guzzle6\Client($httpClient);
 
-		// Use filesystem adapter to cache data
-		$filesystemAdapter = new \League\Flysystem\Adapter\Local(Storage::path(''));
-		$filesystem = new \League\Flysystem\Filesystem($filesystemAdapter);
-		$psr6Cache = new \Cache\Adapter\Filesystem\FilesystemCachePool($filesystem);
+		$cachedProvider = null;
+		$caching_type = Configs::get_value('location_decoding');
 
-		$provider = new \Geocoder\Provider\Nominatim\Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', 'lychee laravel');
-		$formatter = new \Geocoder\Formatter\StringFormatter();
+		if ($caching_type == 'Memory') {
+			// Use Array Caching (in memory - only helps is involing command via console)
+			$psr6Cache = new \Cache\Adapter\PHPArray\ArrayCachePool();
+			$provider = new \Geocoder\Provider\Nominatim\Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', 'Lychee Laravel');
+			$cachedProvider = new \Geocoder\Provider\Cache\ProviderCache($provider, $psr6Cache);
+		} elseif ($caching_type == 'Harddisk') {
+			// Use filesystem adapter to cache data (writes files to /uploads/cache)
 
-		$cachedProvider = new \Geocoder\Provider\Cache\ProviderCache(
-			$provider, // Provider to cache
-			$psr6Cache // PSR-6 compatible cache
-		);
+			$filesystemAdapter = new \League\Flysystem\Adapter\Local(Storage::path(''));
+			$filesystem = new \League\Flysystem\Filesystem($filesystemAdapter);
+			$psr6Cache = new \Cache\Adapter\Filesystem\FilesystemCachePool($filesystem);
+
+			$provider = new \Geocoder\Provider\Nominatim\Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', 'Lychee Laravel');
+
+			$cachedProvider = new \Geocoder\Provider\Cache\ProviderCache(
+				$provider, // Provider to cache
+				$psr6Cache // PSR-6 compatible cache
+			);
+		} elseif ($caching_type == 'MongoDB') {
+			// Use a MongoDB to cache data
+		} else {
+			// None caching
+		}
 
 		$geocoder = new \Geocoder\StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
 		$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));
