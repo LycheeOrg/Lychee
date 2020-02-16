@@ -4,6 +4,9 @@
 
 namespace App\ModelFunctions;
 
+
+use App\Configs;
+use Storage;
 use Spatie\GuzzleRateLimiterMiddleware\Store;
 use Illuminate\Support\Facades\Cache;
 use Geocoder\Query\ReverseQuery;
@@ -16,9 +19,9 @@ class Geodecoder
 	 *
 	 * @return string generated ID
 	 */
-	public static function decodeLocation(float $latitude, float $longitude): string
+	public static function decodeLocation($latitude, $longitude)
 	{
-		if($latitude==0 || $longitude==0) return null;
+		if($latitude==null || $longitude==null) return null;
 
 		$stack = \GuzzleHttp\HandlerStack::create();
 		$stack->push(\Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware::perSecond(1));
@@ -45,6 +48,9 @@ class Geodecoder
 
 		$geocoder = new \Geocoder\StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
 		$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));
+		
+		// If no result has been returned -> return null
+		if($result_list->isEmpty()) return null;
 		return $result_list->first()->getDisplayName();
 
 	}
