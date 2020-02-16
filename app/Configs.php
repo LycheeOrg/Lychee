@@ -255,14 +255,12 @@ class Configs extends Model
 		// 1: Exiftool is available
 		// 2: Not yet tested if exiftool is available
 
-		$has_exiftool = self::get_value('has_exiftool');
+		$has_exiftool = intval(self::get_value('has_exiftool'));
 
 		// value not yet set -> let's see if exiftool is available
 		if ($has_exiftool == 2) {
-			$status = 0;
-			$output = '';
-			exec('which exiftool 2>&1 > /dev/null', $output, $status);
-			if ($status != 0) {
+			$path = exec('command -v exiftool');
+			if ($path == '') {
 				self::set('has_exiftool', 0);
 				$has_exiftool = false;
 			} else {
@@ -276,6 +274,37 @@ class Configs extends Model
 		}
 
 		return $has_exiftool;
+	}
+
+	/**
+	 * @return bool returns the Exiftool setting
+	 */
+	public static function hasFFmpeg()
+	{
+		// has_ffmpeg has the following values:
+		// 0: No ffmpeg
+		// 1: ffmpeg is available
+		// 2: Not yet tested if ffmpeg is available
+
+		$has_ffmpeg = intval(self::get_value('has_ffmpeg'));
+
+		// value not yet set -> let's see if ffmpeg is available
+		if ($has_ffmpeg == 2) {
+			$path = exec('command -v ffmpeg');
+			if ($path == '') {
+				self::set('has_ffmpeg', 0);
+				$has_ffmpeg = false;
+			} else {
+				self::set('has_ffmpeg', 1);
+				$has_ffmpeg = true;
+			}
+		} elseif ($has_ffmpeg == 1) {
+			$has_ffmpeg = true;
+		} else {
+			$has_ffmpeg = false;
+		}
+
+		return $has_ffmpeg;
 	}
 
 	/**

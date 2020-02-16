@@ -29,5 +29,6 @@ _ide*
 
 clover.xml
 *.swp
+installed.log
 .DS_Store
 cache/*

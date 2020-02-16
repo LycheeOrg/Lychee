@@ -1,5 +1,6 @@
 User-agent: Twitterbot
 Disallow:
+Allow: /uploads/small/
 Allow: /uploads/medium/
 Allow: /uploads/big/
 
@@ -7,7 +8,9 @@ User-agent: *
 Disallow: /data/
 Disallow: /dist/
 Disallow: /docs/
+Disallow: /img/
 Disallow: /php/
 Disallow: /plugins/
 Disallow: /src/
+Disallow: /sym/
 Disallow: /uploads/

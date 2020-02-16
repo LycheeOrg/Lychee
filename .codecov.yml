@@ -5,3 +5,5 @@ ignore:
 	- "app/Http/Middleware/VerifyCsrfToken.php"
 	- "app/Http/Middleware/RedirectIfAuthenticated.php"
 	- "app/Providers/BroadcastServiceProvider.php"
+	- "installer/"
+	- "install.php"

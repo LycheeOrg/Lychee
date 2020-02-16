@@ -53,6 +53,7 @@ class PhotoFunctions
 		'video/quicktime',
 		'video/x-ms-asf', // wmv file
 		'video/x-msvideo', // Avi
+		'video/x-m4v', // Avi
 	];
 
 	/**
@@ -68,6 +69,7 @@ class PhotoFunctions
 		'.mpg',
 		'.webm',
 		'.mov',
+		'.m4v',
 		'.avi',
 		'.wmv',
 	];
@@ -201,10 +203,11 @@ class PhotoFunctions
 	 * @param array $file
 	 * @param int   $albumID_in
 	 * @param bool  $delete_imported
+	 * @param bool  $force_skip_duplicates
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0, $delete_imported = false)
+	public function add(array $file, $albumID_in = 0, $delete_imported = false, $force_skip_duplicates = false)
 	{
 		// Check permissions
 		if (Helpers::hasPermissions(Storage::path('')) === false ||
@@ -293,6 +296,8 @@ class PhotoFunctions
 			$photo->livePhotoUrl = $exists->livePhotoUrl;
 			$photo->livePhotoChecksum = $exists->livePhotoChecksum;
 			$photo->checksum = $exists->checksum;
+			$photo->type = $exists->type;
+			$mimeType = $photo->type;
 			$exists = true;
 		}
 
@@ -300,7 +305,16 @@ class PhotoFunctions
 			// Import if not uploaded via web
 			if (!is_uploaded_file($tmp_name)) {
 				// TODO: use the storage facade here
-				if (!@copy($tmp_name, $path)) {
+				// Check if the user wants to create symlinks instead of copying the photo
+				if (Configs::get_value('import_via_symlink', '0') === '1') {
+					if (!symlink($tmp_name, $path)) {
+						// @codeCoverageIgnoreStart
+						Logs::error(__METHOD__, __LINE__, 'Could not create symlink');
+
+						return Response::error('Could not create symlink!');
+						// @codeCoverageIgnoreEnd
+					}
+				} elseif (!@copy($tmp_name, $path)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
 
 					return Response::error('Could not copy photo to uploads!');
@@ -321,7 +335,7 @@ class PhotoFunctions
 				@unlink($tmp_name);
 			}
 			// Check if the user wants to skip duplicates
-			if (Configs::get_value('skip_duplicates', '0') === '1') {
+			if ($force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
 				return Response::warning('This photo has been skipped because it\'s already in your library.');
@@ -419,8 +433,10 @@ class PhotoFunctions
 				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
 					$rotation = $this->imageHandler->autoRotate($path, $info);
 
-					$photo->width = $rotation['width'];
-					$photo->height = $rotation['height'];
+					if ($rotation !== [false, false]) {
+						$photo->width = $rotation['width'];
+						$photo->height = $rotation['height'];
+					}
 				}
 
 				// Set original date

@@ -22,12 +22,10 @@ class ConfigExiftoolTernary extends Migration
 		}
 
 		// Let's run the check for exiftool right here
-		$status = 0;
-		$output = '';
 		$has_exiftool = 2; // not set
 		try {
-			exec('which exiftool 2>&1 > /dev/null', $output, $status);
-			if ($status != 0) {
+			$path = exec('command -v exiftool');
+			if ($path == '') {
 				$has_exiftool = 0; // false
 			} else {
 				$has_exiftool = 1; // true

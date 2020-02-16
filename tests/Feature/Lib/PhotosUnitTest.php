@@ -414,4 +414,34 @@ class PhotosUnitTest
 		$response->assertStatus(200);
 		$response->assertSee($result);
 	}
+
+	/**
+	 * Import a picture.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $path
+	 * @param string   $delete_imported
+	 * @param string   $album_id
+	 * @param string   $result
+	 *
+	 * @return string
+	 */
+	public function import(
+		TestCase &$testCase,
+		string $path,
+		string $delete_imported = '0',
+		string $album_id = '0',
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Import::server', [
+			'function' => 'Import::server',
+			'albumID' => $album_id,
+			'path' => $path,
+			'delete_imported' => $delete_imported,
+		]);
+		$response->assertStatus(200);
+		$response->assertSee('');
+
+		return $response->streamedContent();
+	}
 }

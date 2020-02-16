@@ -79,16 +79,35 @@ class Extractor
 			if (Configs::hasExiftool() == true) {
 				// reader with Exiftool adapter
 				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-			} elseif (strpos($type, 'video') !== 0) {
+			} else {
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
 			}
 		} else {
-			// It's a video -> use FFProbe
-			$reader = Reader::factory(Reader::TYPE_FFPROBE);
+			// Let's try to use FFmpeg; if not available, let's try Exiftool
+			if (Configs::hasFFmpeg() == true) {
+				// It's a video -> use FFProbe
+				$reader = Reader::factory(Reader::TYPE_FFPROBE);
+			} elseif (Configs::hasExiftool() == true) {
+				// reader with Exiftool adapter
+				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
+			} else {
+				// Use Php native tools to extract at least MimeType and Filesize
+				// For all other properties, it will not return anything
+				$reader = Reader::factory(Reader::TYPE_NATIVE);
+				Logs::notice(__METHOD__, __LINE__, 'FFmpeg and Exiftool not being available; Extraction of metadata limited to mime type and file size.');
+			}
 		}
 
-		$exif = $reader->read($filename);
+		try {
+			// this can throw an exception in the case of Exiftool adapter!
+			$exif = $reader->read($filename);
+		} catch (\Exception $e) {
+			// Use Php native tools
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			$reader = Reader::factory(Reader::TYPE_NATIVE);
+			$exif = $reader->read($filename);
+		}
 		$metadata = $this->bare();
 		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : '';
 		$metadata['width'] = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;

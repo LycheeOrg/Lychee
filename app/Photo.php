@@ -273,6 +273,9 @@ class Photo extends Model
 		// if this is a video
 		if (strpos($this->type, 'video') === 0) {
 			$photoUrl = $this->thumbUrl;
+
+			// We need to format the framerate (stored as focal) -> max 2 decimal digits
+			$photo['focal'] = round($photo['focal'], 2);
 		} else {
 			$photoUrl = $this->url;
 		}
