@@ -4,6 +4,7 @@ namespace App\Metadata;
 
 use App\Configs;
 use App\Logs;
+use App\ModelFunctions\Geodecoder;
 use PHPExif\Reader\Reader;
 
 class Extractor
@@ -36,6 +37,7 @@ class Extractor
 			'longitude' => null,
 			'altitude' => null,
 			'imgDirection' => null,
+			'location' => null,
 			'size' => 0,
 			'livePhotoContentID' => null,
 			'livePhotoStillImageTime' => null,
@@ -167,6 +169,8 @@ class Extractor
 			}
 		}
 
+		// Decode location data
+		$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
 		return $metadata;
 	}
 }

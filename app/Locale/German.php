@@ -190,6 +190,7 @@ final class German implements LangInterface
 			'PHOTO_LONGITUDE' => 'Länge',
 			'PHOTO_ALTITUDE' => 'Höhe',
 			'PHOTO_IMGDIRECTION' => 'Richtung',
+			'PHOTO_LOCATION' => 'Ort',
 			'PHOTO_IMAGE' => 'Bild',
 			'PHOTO_VIDEO' => 'Video',
 			'PHOTO_SIZE' => 'Größe',

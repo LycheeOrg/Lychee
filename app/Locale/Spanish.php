@@ -189,6 +189,7 @@ final class Spanish implements LangInterface
 			'PHOTO_LONGITUDE' => 'Longitud',
 			'PHOTO_ALTITUDE' => 'Altitud',
 			'PHOTO_IMGDIRECTION' => 'Dirección',
+			'PHOTO_LOCATION' => 'Location',
 			'PHOTO_IMAGE' => 'Imagen',
 			'PHOTO_VIDEO' => 'Vídeo',
 			'PHOTO_SIZE' => 'Tamaño',

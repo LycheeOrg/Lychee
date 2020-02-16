@@ -189,6 +189,7 @@ final class French implements LangInterface
 			'PHOTO_LONGITUDE' => 'Longitude',
 			'PHOTO_ALTITUDE' => 'Altitude',
 			'PHOTO_IMGDIRECTION' => 'Direction',
+			'PHOTO_LOCATION' => 'Location',
 			'PHOTO_IMAGE' => 'Image',
 			'PHOTO_VIDEO' => 'Video',
 			'PHOTO_SIZE' => 'Dimension',

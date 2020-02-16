@@ -189,6 +189,7 @@ final class Greek implements LangInterface
 			'PHOTO_LONGITUDE' => 'Γεωγραφικό μήκος',
 			'PHOTO_ALTITUDE' => 'Υψόμετρο',
 			'PHOTO_IMGDIRECTION' => 'Κατεύθυνση',
+			'PHOTO_LOCATION' => 'Location',
 			'PHOTO_IMAGE' => 'Εικόνα',
 			'PHOTO_VIDEO' => 'Video',
 			'PHOTO_SIZE' => 'Μέγεθος',

@@ -5,8 +5,12 @@ namespace App\Console\Commands;
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
+use App\Configs;
+use App\Locale\Lang;
+use Storage;
 use Geocoder\Query\ReverseQuery;
 use Illuminate\Console\Command;
+use Illuminate\Cache\ArrayStore;
 
 class add_geo_data_to_tags extends Command
 {
@@ -61,7 +65,7 @@ class add_geo_data_to_tags extends Command
 		;
 
 		if (count($photos) == 0) {
-			$this->line('No videos require processing');
+			$this->line('No photos or videos require processing.');
 
 			return 0;
 		}
@@ -76,7 +80,12 @@ class add_geo_data_to_tags extends Command
 		]);
 
 		$httpAdapter = new \Http\Adapter\Guzzle6\Client($httpClient);
-		$psr6Cache = new \Cache\Adapter\PHPArray\ArrayCachePool();
+
+		// Use filesystem adapter to cache data
+		$filesystemAdapter = new \League\Flysystem\Adapter\Local(Storage::path(''));
+		$filesystem = new \League\Flysystem\Filesystem($filesystemAdapter);
+		$psr6Cache = new \Cache\Adapter\Filesystem\FilesystemCachePool($filesystem);
+
 		$provider = new \Geocoder\Provider\Nominatim\Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', 'lychee laravel');
 		$formatter = new \Geocoder\Formatter\StringFormatter();
 
@@ -85,11 +94,11 @@ class add_geo_data_to_tags extends Command
 			$psr6Cache // PSR-6 compatible cache
 		);
 
-		$geocoder = new \Geocoder\StatefulGeocoder($cachedProvider, 'en');
+		$geocoder = new \Geocoder\StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
 
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
-			$existing_tags = explode(',', $photo->tags);
+			//$existing_tags = explode(',', $photo->tags);
 
 			try {
 				$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($photo->latitude, $photo->longitude));
@@ -102,27 +111,10 @@ class add_geo_data_to_tags extends Command
 				$this->line('Location (' . $photo->latitude . ', ' . $photo->longitude . ') could not be decoded.');
 				continue;
 			}
-			$result = $result_list->first();
-
-			$tags = [];
-			$tags[] = trim($formatter->format($result, '%S %n'));
-			$tags[] = trim($formatter->format($result, '%D'));
-			$tags[] = trim($formatter->format($result, '%L'));
-			$tags[] = trim($formatter->format($result, '%A1'));
-			$tags[] = trim($formatter->format($result, '%A2'));
-			$tags[] = trim($formatter->format($result, '%A3'));
-			$tags[] = trim($formatter->format($result, '%A4'));
-			$tags[] = trim($formatter->format($result, '%A5'));
-
-			// Country code seems to be more reliable
-			$country_code = trim($formatter->format($result, '%c'));
-			$data_ISO3166 = (new \League\ISO3166\ISO3166())->alpha2($country_code);
-
-			if (isset($data_ISO3166['name'])) {
-				$tags[] = $data_ISO3166['name'];
-			}
+			//$result = $result_list->first();
+			$photo->location = $result_list->first()->getDisplayName();
 			// remove empty entries
-			$tags = array_filter($tags);
+			/*$tags = array_filter($tags);
 
 			// Only add new tag if its not yet in the list of tags
 			foreach ($tags as $new_tag) {
@@ -131,7 +123,7 @@ class add_geo_data_to_tags extends Command
 				}
 			}
 
-			$photo->tags = implode(',', array_filter($existing_tags));
+			$photo->tags = implode(',', array_filter($existing_tags));*/
 			$photo->save();
 		}
 	}

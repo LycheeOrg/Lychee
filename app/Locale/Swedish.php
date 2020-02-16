@@ -189,6 +189,7 @@ final class Swedish implements LangInterface
 			'PHOTO_LONGITUDE' => 'Longitude',
 			'PHOTO_ALTITUDE' => 'Altitude',
 			'PHOTO_IMGDIRECTION' => 'Direction',
+			'PHOTO_LOCATION' => 'Location',
 			'PHOTO_IMAGE' => 'Fotografi',
 			'PHOTO_VIDEO' => 'Video',
 			'PHOTO_SIZE' => 'Storlek',

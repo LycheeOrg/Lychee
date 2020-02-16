@@ -190,6 +190,7 @@ final class Czech implements LangInterface
 			'PHOTO_LONGITUDE' => 'Zeměpisná délka',
 			'PHOTO_ALTITUDE' => 'Nadmořská výška',
 			'PHOTO_IMGDIRECTION' => 'Směr',
+			'PHOTO_LOCATION' => 'Location',
 			'PHOTO_IMAGE' => 'Fotografie',
 			'PHOTO_VIDEO' => 'Video',
 			'PHOTO_SIZE' => 'Velikost',

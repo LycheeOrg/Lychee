@@ -190,6 +190,7 @@ final class Italian implements LangInterface
 			'PHOTO_LATITUDE' => 'Latitude',
 			'PHOTO_LONGITUDE' => 'Longitude',
 			'PHOTO_ALTITUDE' => 'Altitude',
+			'PHOTO_LOCATION' => 'Location',
 			'PHOTO_IMGDIRECTION' => 'Direction',
 			'PHOTO_IMAGE' => 'Immagine',
 			'PHOTO_VIDEO' => 'Video',

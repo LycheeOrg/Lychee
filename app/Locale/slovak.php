@@ -190,6 +190,7 @@ final class Slovak implements LangInterface
 			'PHOTO_LONGITUDE' => 'Zemepisná dĺžka',
 			'PHOTO_ALTITUDE' => 'Nadmorská výška',
 			'PHOTO_IMGDIRECTION' => 'Smer',
+			'PHOTO_LOCATION' => 'Location',
 			'PHOTO_IMAGE' => 'Obrázok',
 			'PHOTO_VIDEO' => 'Video',
 			'PHOTO_SIZE' => 'Veľkosť',

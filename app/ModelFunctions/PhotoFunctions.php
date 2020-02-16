@@ -364,6 +364,7 @@ class PhotoFunctions
 		$photo->longitude = $info['longitude'];
 		$photo->altitude = $info['altitude'];
 		$photo->imgDirection = $info['imgDirection'];
+		$photo->location = $info['location'];
 		$photo->livePhotoContentID = $info['livePhotoContentID'];
 		$photo->public = $public;
 		$photo->star = $star;
