@@ -3,6 +3,7 @@ Lychee-front/bower_components/
 Lychee-front/package-lock.json
 
 uploads/big/*
+uploads/cache/*
 uploads/import/*
 uploads/medium/*
 uploads/raw/*
