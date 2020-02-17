@@ -48,6 +48,10 @@ Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeO
 
 Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild Lychee. [Build &#187;](https://github.com/LycheeOrg/Lychee/wiki/Build)
 
+### Docker
+
+An official Docker image can be found at [LycheeOrg/Lychee-Laravel-Docker](https://github.com/LycheeOrg/Lychee-Laravel-Docker) or on Docker Hub as [bigrob8181/lychee-laravel](https://hub.docker.com/r/bigrob8181/lychee-laravel).
+
 ### Keyboard Shortcuts
 
 These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://github.com/LycheeOrg/Lychee/wiki/Keyboard%20Shortcuts)
@@ -63,14 +67,7 @@ Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Gr
 ### Imagick
 
 Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in [the settings](https://github.com/LycheeOrg/Lychee/wiki/Settings).
-<!--
-### Docker
 
-Browse the [Docker Hub Registry](https://hub.docker.com/r/) for various automated Lychee-Docker builds.
-Various docker builds include :
-- [LinuxServer.io build](https://hub.docker.com/r/linuxserver/lychee/)
-- [ARMHF based Linuxserver.io build](https://hub.docker.com/r/lsioarmhf/lychee/)
--->
 ## Troubleshooting
 
 Take a look at the [WIKI](https://github.com/LycheeOrg/Lychee-Laravel/wiki/) and the old Lychee [FAQ](https://github.com/LycheeOrg/Lychee/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue here on GitHub!
