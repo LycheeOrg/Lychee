@@ -17,7 +17,7 @@
 ![Lychee](https://camo.githubusercontent.com/b9010f02c634219795950e034f511f4cf4af5c60/68747470733a2f2f732e656c6563746572696f75732e636f6d2f696d616765732f6c79636865652f312e6a706567)
 ![Lychee](https://camo.githubusercontent.com/5484591f0b15b6ba27d4845b292cc5d3a988b3b9/68747470733a2f2f732e656c6563746572696f75732e636f6d2f696d616765732f6c79636865652f322e6a706567)
 
-Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [Website](https://LycheeOrg.github.io).
+Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
 
 ## Installation
 
@@ -36,17 +36,17 @@ See detailed instructions on the [Installation](https://github.com/LycheeOrg/Lyc
 
 You can use Lychee right after the installation. Here are some advanced features to get the most out of it.
 -->
-<!-- ### Settings
+### Settings
 
-Sign in and click the gear in the top left corner to change your settings. If you want to edit them manually: MySQL details are stored in `data/config.php`. Other options and hidden settings are stored directly in the database. [Settings &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings) -->
+Sign in and click the gear in the top left corner to change your settings. [Settings &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings)
 
 ### Update
 
-Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeOrg/Lychee/wiki/Update)
+Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Update)
 
 ### Build
 
-Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild Lychee. [Build &#187;](https://github.com/LycheeOrg/Lychee/wiki/Build)
+Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Build)
 
 ### Docker
 
@@ -54,20 +54,20 @@ An official Docker image can be found at [LycheeOrg/Lychee-Laravel-Docker](https
 
 ### Keyboard Shortcuts
 
-These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://github.com/LycheeOrg/Lychee/wiki/Keyboard%20Shortcuts)
+These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Keyboard-Shortcuts)
 
 ### Dropbox import
 
-In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/apps/create). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings](https://github.com/LycheeOrg/Lychee/wiki/Settings) of Lychee.
+In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/apps/create). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings) of Lychee.
 
 ### Twitter Cards
 
-Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Graph](http://opengraphprotocol.org) for shared images ([not albums](https://github.com/electerious/Lychee/issues/384)). In order to use Twitter Cards you need to request an approval for your domain. Simply share an image with Lychee, copy its link and paste it in [Twitters Card Validator](https://dev.twitter.com/docs/cards/validation/validator).
+Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Graph](http://opengraphprotocol.org) for shared images (not albums). In order to use Twitter Cards you need to request an approval for your domain. Simply share an image with Lychee, copy its link and paste it in [Twitters Card Validator](https://dev.twitter.com/docs/cards/validation/validator).
 
 ### Imagick
 
-Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in [the settings](https://github.com/LycheeOrg/Lychee/wiki/Settings).
+Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in the [settings](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings).
 
 ## Troubleshooting
 
-Take a look at the [WIKI](https://github.com/LycheeOrg/Lychee-Laravel/wiki/) and the old Lychee [FAQ](https://github.com/LycheeOrg/Lychee/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue here on GitHub!
+Take a look at the [Wiki](https://github.com/LycheeOrg/Lychee-Laravel/wiki/), particularly the [FAQ](https://github.com/LycheeOrg/Lychee-Laravel/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee-Laravel/issues) on GitHub!
