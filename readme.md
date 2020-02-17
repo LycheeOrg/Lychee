@@ -21,7 +21,6 @@ Lychee is a free photo-management tool, which runs on your server or web-space. 
 
 ## Installation
 
-
 To run Lychee, everything you need is a web-server with PHP 7.3 or later and a MySQL-Database. Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
 
 1. Clone this repo to your server and set the web root to `lychee-laravel/public`
@@ -31,26 +30,26 @@ To run Lychee, everything you need is a web-server with PHP 7.3 or later and a M
 5. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the new framework.
 
 See detailed instructions on the [Installation](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Install) wiki page.
-<!--
-## How to use
 
-You can use Lychee right after the installation. Here are some advanced features to get the most out of it.
--->
-### Settings
+### Docker
 
-Sign in and click the gear in the top left corner to change your settings. [Settings &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings)
+Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Laravel-Docker](https://github.com/LycheeOrg/Lychee-Laravel-Docker) or on Docker Hub as [bigrob8181/lychee-laravel](https://hub.docker.com/r/bigrob8181/lychee-laravel).
 
 ### Update
 
 Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Update)
 
+### Settings
+
+Sign in and click the gear in the top left corner to change your settings. [Settings &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings)
+
 ### Build
 
 Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Build)
 
-### Docker
+## Advanced Features
 
-An official Docker image can be found at [LycheeOrg/Lychee-Laravel-Docker](https://github.com/LycheeOrg/Lychee-Laravel-Docker) or on Docker Hub as [bigrob8181/lychee-laravel](https://hub.docker.com/r/bigrob8181/lychee-laravel).
+Lychee is ready to use straight after installation, but some features require a little more configuration.
 
 ### Keyboard Shortcuts
 
