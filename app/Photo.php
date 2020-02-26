@@ -179,8 +179,10 @@ class Photo extends Model
 	 */
 	public function isDuplicate(string $checksum, $photoID = null)
 	{
-		$sql = $this->where('checksum', '=', $checksum)
-			  ->orWhere('livePhotoChecksum', '=', $checksum);
+		$sql = $this->where(function ($q) use ($checksum) {
+			$q->where('checksum', '=', $checksum)
+				->orWhere('livePhotoChecksum', '=', $checksum);
+		});
 		if (isset($photoID)) {
 			$sql = $sql->where('id', '<>', $photoID);
 		}
