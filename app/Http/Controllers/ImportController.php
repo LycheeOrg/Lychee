@@ -234,7 +234,9 @@ class ImportController extends Controller
 			// result, and strip the  surrounding '"' characters since this
 			// isn't a complete JSON string yet.
 			echo substr(json_encode($status . "\n"), 1, -1);
-			if( ob_get_level() > 0 ) ob_flush();
+			if (ob_get_level() > 0) {
+				ob_flush();
+			}
 			flush();
 		} else {
 			echo $status . PHP_EOL;
