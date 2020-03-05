@@ -1,5 +1,6 @@
 <?php
 
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 
 class GenerateInstalledLog extends Migration
@@ -25,6 +26,6 @@ class GenerateInstalledLog extends Migration
 	{
 		// If we reverted the above change, it would make the laravel installation vulnerable.
 		// A malicious user could access ./install.php and read the content of .env !!
-		echo 'We do not delete ' . base_path('installed.log') . " as this would leave your installation vulnerable.\n";
+		Logs::warning(__FUNCTION__, __LINE__, 'We do not delete ' . base_path('installed.log') . " as this would leave your installation vulnerable.");
 	}
 }

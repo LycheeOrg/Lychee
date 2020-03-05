@@ -18,7 +18,6 @@ class AccessDBDenied
 	 */
 	public function check($request, Exception $exception)
 	{
-		// dd($exception);
 		// encryption key does not exist, we need to run the installation
 		return $exception instanceof QueryException && (strpos($exception->getMessage(), 'Access denied') !== false);
 	}

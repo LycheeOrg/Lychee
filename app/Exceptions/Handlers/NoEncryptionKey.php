@@ -27,6 +27,7 @@ class NoEncryptionKey
 	 */
 	public function go()
 	{
+		touch(base_path('.NO_SECURE_KEY'));
 		return ToInstall::go();
 	}
 }

@@ -19,8 +19,10 @@ class EnvController extends Controller
 			$env = file_get_contents(base_path('.env'));
 			$exists = true;
 		} else {
+			// @codeCoverageIgnoreStart
 			$env = file_get_contents(base_path('.env.example'));
 			$exists = false;
+			// @codeCoverageIgnoreEnd
 		}
 
 		if ($request->has('envConfig')) {

@@ -21,6 +21,16 @@ class InstalledCheck
 	 */
 	public function handle($request, Closure $next)
 	{
+		// this should not happen but you never know.
+		// if the key is not provided AND
+		//	 the database (config table exists) is set
+		//   or installed.log exists
+		// this will generate an infinite loop. We do not want that.
+		if (file_exists(base_path('.NO_SECURE_KEY')))
+		{
+			return $next($request);
+		}
+
 		// base safety
 		if (file_exists(base_path('installed.log'))) {
 			return ToHome::go();
