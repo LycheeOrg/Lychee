@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Install;
 
-use App\Http\Controllers\Controller;
-
 use App\ControllerFunctions\Install\DefaultConfig;
 use App\ControllerFunctions\Install\RequirementsChecker;
+use App\Http\Controllers\Controller;
 
 final class RequirementsController extends Controller
 {
@@ -18,11 +17,9 @@ final class RequirementsController extends Controller
 	 */
 	protected $config;
 
-
-
 	/**
-	 * @param  RequirementsChecker  $checker
-	 * @param  Config  $config
+	 * @param RequirementsChecker $checker
+	 * @param Config              $config
 	 */
 	public function __construct(RequirementsChecker $checker, DefaultConfig $config)
 	{
@@ -30,11 +27,9 @@ final class RequirementsController extends Controller
 		$this->config = $config;
 	}
 
-
-
 	/**
 	 * Display the requirements page.
-	 * 
+	 *
 	 * @return View
 	 */
 	public function view()
@@ -45,15 +40,13 @@ final class RequirementsController extends Controller
 		$requirements = $this->requirements->check(
 			$this->config->get_requirements()
 		);
+
 		return view('install.requirements', [
 			'title' => 'Lychee-installer',
 			'step' => 1,
 			'phpSupportInfo' => $phpSupportInfo,
 			'requirements' => $requirements['requirements'],
-			'errors' => $requirements['errors'] ?? null
+			'errors' => $requirements['errors'] ?? null,
 		]);
 	}
-
-
-
 }

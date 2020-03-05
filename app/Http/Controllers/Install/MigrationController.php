@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 
 class MigrationController extends Controller
 {
-
 	/**
 	 * @var ApplyMigration
 	 */
@@ -26,11 +25,11 @@ class MigrationController extends Controller
 		$output = [];
 
 		$error = $this->applyMigration->migrate($output);
-		$output[] = "";
+		$output[] = '';
 		if (!$error) {
 			$error = $this->applyMigration->keyGenerate($output);
 		}
-		$output[] = "";
+		$output[] = '';
 		if (!$error) {
 			$this->installed($output);
 		}
@@ -40,11 +39,9 @@ class MigrationController extends Controller
 			'title' => 'Lychee-installer',
 			'step' => 4,
 			'lines' => $output,
-			'errors' => $error]
+			'errors' => $error, ]
 		);
 	}
-
-
 
 	/**
 	 * @param array $output

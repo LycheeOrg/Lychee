@@ -4,15 +4,14 @@
 
 namespace App\Http\Middleware;
 
+use App\Redirections\ToHome;
 use Closure;
 use Illuminate\Http\Request;
-use App\Redirections\ToHome;
 use Illuminate\Support\Facades\Schema;
 
 class InstalledCheck
 {
-
-    /**
+	/**
 	 * Handle an incoming request.
 	 *
 	 * @param Request $request
@@ -30,11 +29,9 @@ class InstalledCheck
 		// This is the second safety:
 		// Assume you do a "git pull" but forget to do the migration,
 		// the installed.log will not be created!!!
-		if (Schema::hasTable('configs'))
-        {
-            return ToHome::go();
-        }
-
+		if (Schema::hasTable('configs')) {
+			return ToHome::go();
+		}
 
 		return $next($request);
 	}

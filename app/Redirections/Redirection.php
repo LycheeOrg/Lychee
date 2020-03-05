@@ -2,7 +2,7 @@
 
 namespace App\Redirections;
 
-interface Redirection {
-
-    static public function go();
+interface Redirection
+{
+	public static function go();
 }

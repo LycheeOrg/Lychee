@@ -18,8 +18,8 @@ if (env('APP_ENV') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::get('install/',          				'WelcomeController@view')->name('install-welcome');
-Route::get('install/req',       				'RequirementsController@view')->name('install-req');
-Route::get('install/perm',      				'PermissionsController@view')->name('install-perm');
-Route::match(['get', 'post'], 'install/env',	'EnvController@view')->name('install-env');
-Route::get('install/migrate',   				'MigrationController@view')->name('install-migrate');
+Route::get('install/', 'WelcomeController@view')->name('install-welcome');
+Route::get('install/req', 'RequirementsController@view')->name('install-req');
+Route::get('install/perm', 'PermissionsController@view')->name('install-perm');
+Route::match(['get', 'post'], 'install/env', 'EnvController@view')->name('install-env');
+Route::get('install/migrate', 'MigrationController@view')->name('install-migrate');

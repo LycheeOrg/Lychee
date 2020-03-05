@@ -2,11 +2,11 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\Handlers\AccessDBDenied;
+use App\Exceptions\Handlers\InvalidPayload;
+use App\Exceptions\Handlers\NoEncryptionKey;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use App\Exceptions\Handlers\NoEncryptionKey;
-use App\Exceptions\Handlers\InvalidPayload;
-use App\Exceptions\Handlers\AccessDBDenied;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -59,9 +59,8 @@ class Handler extends ExceptionHandler
 		$checks[] = new InvalidPayload();
 		$checks[] = new AccessDBDenied();
 
-		foreach ($checks as $check){
-			if ($check->check($request, $exception))
-			{
+		foreach ($checks as $check) {
+			if ($check->check($request, $exception)) {
 				return $check->go();
 			}
 		}
@@ -71,6 +70,5 @@ class Handler extends ExceptionHandler
 
 	private function redirect_install()
 	{
-
 	}
 }

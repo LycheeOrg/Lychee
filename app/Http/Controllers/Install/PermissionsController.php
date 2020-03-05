@@ -1,12 +1,10 @@
 <?php
 
-
 namespace App\Http\Controllers\Install;
-
-use App\Http\Controllers\Controller;
 
 use App\ControllerFunctions\Install\DefaultConfig;
 use App\ControllerFunctions\Install\PermissionsChecker;
+use App\Http\Controllers\Controller;
 
 final class PermissionsController extends Controller
 {
@@ -19,11 +17,9 @@ final class PermissionsController extends Controller
 	 */
 	protected $config;
 
-
-
 	/**
-	 * @param  PermissionsChecker  $checker
-	 * @param  Config  $config
+	 * @param PermissionsChecker $checker
+	 * @param Config             $config
 	 */
 	public function __construct(PermissionsChecker $checker, DefaultConfig $config)
 	{
@@ -31,12 +27,11 @@ final class PermissionsController extends Controller
 		$this->config = $config;
 	}
 
-
-
 	/**
 	 * @return View
 	 */
-	public function view(){
+	public function view()
+	{
 		$permissions = $this->permissions->check(
 			$this->config->get_permissions()
 		);
@@ -45,10 +40,7 @@ final class PermissionsController extends Controller
 			'title' => 'Lychee-installer',
 			'step' => 2,
 			'permissions' => $permissions['permissions'],
-			'errors' => $permissions['errors']
-			]);
+			'errors' => $permissions['errors'],
+		]);
 	}
-
-
-
 }

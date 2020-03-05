@@ -36,9 +36,7 @@ class RequirementsChecker
 
 					if ($this->checkExec()) {
 						$results['requirements'][$type]['Php exec() available'] = true;
-					}
-					else
-					{
+					} else {
 						$results['requirements'][$type]['Php exec() not available (optional)'] = false;
 					}
 

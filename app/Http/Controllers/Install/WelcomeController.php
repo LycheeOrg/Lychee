@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Install;
 
 use App\Http\Controllers\Controller;
 
-
 final class WelcomeController extends Controller
 {
-
 	/**
 	 * @return View
 	 */
@@ -16,9 +14,9 @@ final class WelcomeController extends Controller
 		// Show separator
 		return view('install.welcome', [
 			'title' => 'Lychee-installer',
-			'step' => 0
+			'step' => 0,
 		]);
-		
+
 		return 'Welcome';
 	}
 }

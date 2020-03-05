@@ -6,8 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 
 class ApplyMigration
 {
-
-    /**
+	/**
 	 * Arrayify a string and append it to $output.
 	 *
 	 * @param $string
@@ -25,8 +24,8 @@ class ApplyMigration
 		}
 
 		return $output;
-    }
-    
+	}
+
 	/**
 	 * @return bool
 	 */
@@ -52,7 +51,6 @@ class ApplyMigration
 	 */
 	public function keyGenerate(array &$output)
 	{
-
 		Artisan::call('key:generate', ['--force' => true]);
 		$this->str_to_array(Artisan::output(), $output);
 

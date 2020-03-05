@@ -67,7 +67,7 @@ class PermissionsChecker
 	{
 		array_push($this->results['permissions'], [
 			'folder' => $folder,
-			'permission' => $this->map_perm_set($permission,$isSet),
+			'permission' => $this->map_perm_set($permission, $isSet),
 			'isSet' => $isSet,
 		]);
 
@@ -78,9 +78,10 @@ class PermissionsChecker
 	}
 
 	/**
-	 *  map
+	 *  map.
 	 */
-	private function map_perm_set($permissions, $areSet) {
+	private function map_perm_set($permissions, $areSet)
+	{
 		$array_permission = array_reverse(explode('|', $permissions));
 		$ret = [];
 		$i = 0;
@@ -91,7 +92,7 @@ class PermissionsChecker
 			$ret[$i++] = [$perm, $areSet & 1];
 			$areSet >>= 1;
 		}
-		
+
 		return $ret;
 	}
 }

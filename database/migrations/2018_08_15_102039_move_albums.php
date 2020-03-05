@@ -32,10 +32,10 @@ class MoveAlbums extends Migration
 					$album->save();
 				}
 			} else {
-				Logs::notice(__FUNCTION__,__LINE__,env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_albums does not exist!");
+				Logs::notice(__FUNCTION__, __LINE__, env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums does not exist!');
 			}
 		} else {
-			Logs::notice(__FUNCTION__,__LINE__,"albums is not empty.");
+			Logs::notice(__FUNCTION__, __LINE__, 'albums is not empty.');
 		}
 	}
 

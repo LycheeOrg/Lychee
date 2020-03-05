@@ -33,7 +33,7 @@ class EnvController extends Controller
 			'title' => 'Lychee-installer',
 			'step' => 3,
 			'env' => $env,
-			'exists' => $exists
+			'exists' => $exists,
 		]);
 	}
 }

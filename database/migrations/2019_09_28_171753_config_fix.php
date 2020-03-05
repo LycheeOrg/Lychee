@@ -65,7 +65,7 @@ class ConfigFix extends Migration
 		try {
 			Configs::whereNotIn('key', $keys)->delete();
 		} catch (Exception $e) {
-			Logs::warning(__FUNCTION__,__LINE__,"Something weird happened.");
+			Logs::warning(__FUNCTION__, __LINE__, 'Something weird happened.');
 		}
 	}
 
@@ -574,6 +574,6 @@ class ConfigFix extends Migration
 	 */
 	public function down()
 	{
-		Logs::warning(__FUNCTION__,__LINE__,"There is no going back! HUE HUE HUE");
+		Logs::warning(__FUNCTION__, __LINE__, 'There is no going back! HUE HUE HUE');
 	}
 }

@@ -41,7 +41,7 @@ class Kernel extends HttpKernel
 		'install' => [
 			\App\Http\Middleware\InstalledCheck::class,
 		],
-		
+
 		'api' => [
 			'throttle:60,1',
 			'bindings',
