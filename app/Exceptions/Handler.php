@@ -3,8 +3,10 @@
 namespace App\Exceptions;
 
 use Exception;
-use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Exceptions\Handlers\NoEncryptionKey;
+use App\Exceptions\Handlers\InvalidPayload;
+use App\Exceptions\Handlers\AccessDBDenied;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -52,10 +54,23 @@ class Handler extends ExceptionHandler
 	 */
 	public function render($request, Throwable $exception)
 	{
-		if ($exception instanceof DecryptException && $exception->getMessage() === 'The payload is invalid.') {
-			return response()->json(['error' => 'Session timed out'], 400);
+		$checks = [];
+		$checks[] = new NoEncryptionKey();
+		$checks[] = new InvalidPayload();
+		$checks[] = new AccessDBDenied();
+
+		foreach ($checks as $check){
+			if ($check->check($request, $exception))
+			{
+				return $check->go();
+			}
 		}
 
 		return parent::render($request, $exception);
+	}
+
+	private function redirect_install()
+	{
+
 	}
 }

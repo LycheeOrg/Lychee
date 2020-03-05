@@ -1,6 +1,7 @@
 <?php
 
 use App\Album;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -14,6 +15,8 @@ class MoveAlbums extends Migration
 	 */
 	public function up()
 	{
+		$output = new \Symfony\Component\Console\Output\ConsoleOutput(2);
+
 		if (count(Album::all()) == 0) {
 			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')->select('*')->get();
@@ -29,10 +32,10 @@ class MoveAlbums extends Migration
 					$album->save();
 				}
 			} else {
-				echo env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_albums does not exist!\n";
+				Logs::notice(__FUNCTION__,__LINE__,env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_albums does not exist!");
 			}
 		} else {
-			echo "albums is not empty.\n";
+			Logs::notice(__FUNCTION__,__LINE__,"albums is not empty.");
 		}
 	}
 

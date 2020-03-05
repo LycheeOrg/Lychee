@@ -18,7 +18,7 @@ if (env('APP_ENV') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::get('/', 'IndexController@show')->name('home');
+Route::get('/', 'IndexController@show')->name('home')->middleware('installed');
 Route::get('/phpinfo', 'IndexController@phpinfo')->middleware('admin');
 Route::get('/gallery', 'IndexController@gallery')->name('gallery');
 

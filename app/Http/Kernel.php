@@ -38,6 +38,10 @@ class Kernel extends HttpKernel
 			\Illuminate\Routing\Middleware\SubstituteBindings::class,
 		],
 
+		'install' => [
+			\App\Http\Middleware\InstalledCheck::class,
+		],
+		
 		'api' => [
 			'throttle:60,1',
 			'bindings',
@@ -65,5 +69,6 @@ class Kernel extends HttpKernel
 		'read' => \App\Http\Middleware\ReadCheck::class,
 		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'upload' => \App\Http\Middleware\UploadCheck::class,
+		'installed' => \App\Http\Middleware\DBExists::class,
 	];
 }

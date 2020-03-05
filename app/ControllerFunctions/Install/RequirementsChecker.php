@@ -1,6 +1,6 @@
 <?php
 
-namespace Installer\Helpers;
+namespace App\ControllerFunctions\Install;
 
 class RequirementsChecker
 {
@@ -36,6 +36,10 @@ class RequirementsChecker
 
 					if ($this->checkExec()) {
 						$results['requirements'][$type]['Php exec() available'] = true;
+					}
+					else
+					{
+						$results['requirements'][$type]['Php exec() not available (optional)'] = false;
 					}
 
 					break;

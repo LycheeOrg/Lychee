@@ -1,6 +1,7 @@
 <?php
 
 use App\Photo;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -49,10 +50,10 @@ class MovePhotos extends Migration
 					$photo->save();
 				}
 			} else {
-				echo env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_photos does not exist!\n";
+				Logs::notice(__FUNCTION__,__LINE__,env('DB_OLD_LYCHEE_PREFIX', '') . "lychee_photos does not exist!");
 			}
 		} else {
-			echo "photos is not empty.\n";
+			Logs::notice(__FUNCTION__,__LINE__,"photos is not empty.");
 		}
 	}
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace Installer;
+namespace App\ControllerFunctions\Install;
 
-class Config
+class DefaultConfig
 {
 	private $config
 		= [

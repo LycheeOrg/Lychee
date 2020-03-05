@@ -1,6 +1,6 @@
 <?php
 
-namespace Installer\Helpers;
+namespace App\ControllerFunctions\Install;
 
 class PermissionsChecker
 {
@@ -50,7 +50,7 @@ class PermissionsChecker
 		foreach (explode('|', $permissions) as $permission) {
 			preg_match('/(!*)(.*)/', $permission, $f);
 			$return <<= 1;
-			$return |= !(($f[2]($folder) xor ($f[1] == '!')));
+			$return |= !(($f[2](base_path($folder)) xor ($f[1] == '!')));
 		}
 
 		return $return;
@@ -67,7 +67,7 @@ class PermissionsChecker
 	{
 		array_push($this->results['permissions'], [
 			'folder' => $folder,
-			'permission' => $permission,
+			'permission' => $this->map_perm_set($permission,$isSet),
 			'isSet' => $isSet,
 		]);
 
@@ -75,5 +75,23 @@ class PermissionsChecker
 		if ($isSet > 0) {
 			$this->results['errors'] = true;
 		}
+	}
+
+	/**
+	 *  map
+	 */
+	private function map_perm_set($permissions, $areSet) {
+		$array_permission = array_reverse(explode('|', $permissions));
+		$ret = [];
+		$i = 0;
+		foreach ($array_permission as $perm) {
+			$perm = str_replace('file_', '', $perm);
+			$perm = str_replace('!', 'not', $perm);
+			$perm = str_replace('is_', ' ', $perm);
+			$ret[$i++] = [$perm, $areSet & 1];
+			$areSet >>= 1;
+		}
+		
+		return $ret;
 	}
 }

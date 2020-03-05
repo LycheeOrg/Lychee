@@ -416,6 +416,7 @@ return [
 			'self' => true,
 		],
 		'form-action' => [
+			'self' => true,
 		],
 		'frame-ancestors' => [
 		],

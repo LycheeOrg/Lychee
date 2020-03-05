@@ -2,6 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 use App\Photo;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -40,8 +41,7 @@ class PhotosFix extends Migration
 	public function up()
 	{
 		if (!Schema::hasTable('photos')) {
-			//        Schema::dropIfExists('photos');
-			echo "no table photos found.\n";
+			Logs::warning(__FUNCTION__,__LINE__,"no table photos found.");
 
 			return;
 		}
@@ -57,6 +57,6 @@ class PhotosFix extends Migration
 	 */
 	public function down()
 	{
-		echo "There is no going back! HUE HUE HUE\n";
+		Logs::warning(__FUNCTION__,__LINE__,"There is no going back! HUE HUE HUE");
 	}
 }

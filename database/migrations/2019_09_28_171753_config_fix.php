@@ -2,6 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -64,7 +65,7 @@ class ConfigFix extends Migration
 		try {
 			Configs::whereNotIn('key', $keys)->delete();
 		} catch (Exception $e) {
-			echo "Something weird happened.\n";
+			Logs::warning(__FUNCTION__,__LINE__,"Something weird happened.");
 		}
 	}
 
@@ -573,6 +574,6 @@ class ConfigFix extends Migration
 	 */
 	public function down()
 	{
-		echo "There is no going back! HUE HUE HUE\n";
+		Logs::warning(__FUNCTION__,__LINE__,"There is no going back! HUE HUE HUE");
 	}
 }
