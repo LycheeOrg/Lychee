@@ -25,7 +25,6 @@ class CreateConfigsTable extends Migration
 	public function up()
 	{
 		if (!Schema::hasTable('configs')) {
-			//        Schema::dropIfExists('configs');
 			Schema::create('configs', function (Blueprint $table) {
 				$table->increments('id');
 				$table->string('key', 50);
@@ -60,8 +59,6 @@ class CreateConfigsTable extends Migration
 				['key' => 'Mod_Frame', 'value' => '1'],
 				['key' => 'Mod_Frame_refresh', 'value' => '30000'],
 			]);
-		} else {
-			echo "Table configs already exists\n";
 		}
 	}
 

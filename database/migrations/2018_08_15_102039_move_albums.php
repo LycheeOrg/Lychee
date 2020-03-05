@@ -15,14 +15,12 @@ class MoveAlbums extends Migration
 	 */
 	public function up()
 	{
-		$output = new \Symfony\Component\Console\Output\ConsoleOutput(2);
-
 		if (count(Album::all()) == 0) {
 			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')->select('*')->get();
 				foreach ($results as $result) {
 					$album = new Album();
-					$album->id = $result->id;
+					$album->id = $result->id; // IN CASE OF DOWNGRADE !!!
 					$album->title = $result->title;
 					$album->description = $result->description;
 					$album->public = $result->public;

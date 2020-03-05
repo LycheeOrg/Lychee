@@ -23,8 +23,6 @@ class CreateUsersTable extends Migration
 				$table->rememberToken();
 				$table->timestamps();
 			});
-		} else {
-			echo "Table users already exists\n";
 		}
 	}
 

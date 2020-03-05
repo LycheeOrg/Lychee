@@ -2,6 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -15,12 +16,8 @@ class ConfigHasFFmpeg extends Migration
 	 */
 	public function up()
 	{
-		if (!defined('BOOL')) {
-			define('BOOL', '0|1');
-		}
-		if (!defined('TERNARY')) {
-			define('TERNARY', '0|1|2');
-		}
+		defined('BOOL') or define('BOOL', '0|1');
+		defined('TERNARY') or define('TERNARY', '0|1|2');
 
 		// Let's run the check for ffmpeg right here
 		$has_ffmpeg = 2; // not set
@@ -47,7 +44,7 @@ class ConfigHasFFmpeg extends Migration
 				],
 			]);
 		} else {
-			echo "Table configs does not exists\n";
+			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exists');
 		}
 	}
 

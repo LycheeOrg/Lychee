@@ -1,6 +1,7 @@
 <?php
 
 use App\Configs;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
@@ -20,7 +21,7 @@ class FrameRefreshInSec extends Migration
 						'value' => Configs::get_value('Mod_Frame_refresh') / 1000,
 					]);
 		} else {
-			echo "Table configs does not exist\n";
+			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exists');
 		}
 	}
 

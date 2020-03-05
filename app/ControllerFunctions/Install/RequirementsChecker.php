@@ -28,16 +28,20 @@ class RequirementsChecker
 					foreach ($requirements[$type] as $requirement) {
 						$results['requirements'][$type][$requirement] = true;
 						if (!extension_loaded($requirement)) {
+							// @codeCoverageIgnoreStart
 							$results['requirements'][$type][$requirement]
 								= false;
 							$results['errors'] = true;
+							// @codeCoverageIgnoreEnd
 						}
 					}
 
 					if ($this->checkExec()) {
 						$results['requirements'][$type]['Php exec() available'] = true;
 					} else {
+						// @codeCoverageIgnoreStart
 						$results['requirements'][$type]['Php exec() not available (optional)'] = false;
+						// @codeCoverageIgnoreEnd
 					}
 
 					break;
@@ -49,9 +53,11 @@ class RequirementsChecker
 							$results['requirements'][$type][$requirement]
 								= true;
 							if (!in_array($requirement, apache_get_modules())) {
+								// @codeCoverageIgnoreStart
 								$results['requirements'][$type][$requirement]
 									= false;
 								$results['errors'] = true;
+								// @codeCoverageIgnoreEnd
 							}
 						}
 					}

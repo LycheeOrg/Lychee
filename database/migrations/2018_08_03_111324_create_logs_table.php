@@ -25,19 +25,15 @@ class CreateLogsTable extends Migration
 	 */
 	public function up()
 	{
-		if (!Schema::hasTable('logs')) {
-			//        Schema::dropIfExists('logs');
-			Schema::create('logs', function (Blueprint $table) {
-				$table->bigIncrements('id');
-				$table->string('type', 11);
-				$table->string('function', 100);
-				$table->integer('line');
-				$table->text('text');
-				$table->timestamps();
-			});
-		} else {
-			echo "Table logs already exists\n";
-		}
+		Schema::dropIfExists('logs');
+		Schema::create('logs', function (Blueprint $table) {
+			$table->bigIncrements('id');
+			$table->string('type', 11);
+			$table->string('function', 100);
+			$table->integer('line');
+			$table->text('text');
+			$table->timestamps();
+		});
 	}
 
 	/**

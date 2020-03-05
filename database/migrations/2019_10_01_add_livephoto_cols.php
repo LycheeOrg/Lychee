@@ -1,5 +1,6 @@
 <?php
 
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -26,7 +27,7 @@ class LivephotoCols extends Migration
 				$table->string('livePhotoChecksum', 40)->default(null)->after('checksum')->nullable();
 			});
 		} else {
-			echo "Table photos does not exists\n";
+			Logs::warning(__METHOD__, __LINE__, 'Table photos does not exists');
 		}
 	}
 

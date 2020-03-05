@@ -41,7 +41,9 @@ class Handler extends ExceptionHandler
 	 */
 	public function report(Throwable $exception)
 	{
+		// @codeCoverageIgnoreStart
 		parent::report($exception);
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -65,10 +67,8 @@ class Handler extends ExceptionHandler
 			}
 		}
 
+		// @codeCoverageIgnoreStart
 		return parent::render($request, $exception);
-	}
-
-	private function redirect_install()
-	{
+		// @codeCoverageIgnoreEnd
 	}
 }

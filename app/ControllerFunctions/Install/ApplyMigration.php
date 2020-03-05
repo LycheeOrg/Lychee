@@ -39,7 +39,9 @@ class ApplyMigration
 		 */
 		foreach ($output as $line) {
 			if (strpos($line, 'QueryException') !== false) {
+				// @codeCoverageIgnoreStart
 				return true;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
@@ -54,12 +56,13 @@ class ApplyMigration
 		try {
 			Artisan::call('key:generate', ['--force' => true]);
 			$this->str_to_array(Artisan::output(), $output);
-		}
-		catch (\Exception $e)
-		{
+		} catch (\Exception $e) {
+			// @codeCoverageIgnoreStart
 			$output[] = $e->getMessage();
 			$output[] = 'We could not generate the encryption key.';
+
 			return true;
+			// @codeCoverageIgnoreEnd
 		}
 
 		// key is generated, we can safely remove that file (in theory)

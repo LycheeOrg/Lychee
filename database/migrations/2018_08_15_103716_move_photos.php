@@ -22,7 +22,7 @@ class MovePhotos extends Migration
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->get();
 				foreach ($results as $result) {
 					$photo = new Photo();
-					$photo->id = $result->id;
+					$photo->id = $result->id; // IN CASE OF DOWNGRADE
 					$photo->title = $result->title;
 					$photo->description = $result->description;
 					$photo->url = $result->url;
@@ -42,7 +42,7 @@ class MovePhotos extends Migration
 					$photo->takestamp = ($result->takestamp == 0 || $result->takestamp == null) ? null : date('Y-m-d H:i:s', $result->takestamp);
 					$photo->star = $result->star;
 					$photo->thumbUrl = $result->thumbUrl;
-					$photo->album_id = ($result->album == 0) ? null : $result->album;
+					$photo->album_id = ($result->album == 0) ? null : $result->album; // IN CASE OF DOWNGRADE
 					$photo->checksum = $result->checksum;
 					$photo->medium = $result->medium;
 					$photo->small = $result->small;

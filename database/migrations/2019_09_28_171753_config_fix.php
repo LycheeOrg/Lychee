@@ -123,12 +123,12 @@ class ConfigFix extends Migration
 	 */
 	public function up()
 	{
-		define('INT', 'int');
-		define('STRING', 'string');
-		define('STRING_REQ', 'string_required');
-		define('BOOL', '0|1');
-		define('TERNARY', '0|1|2');
-		define('DISABLED', '');
+		defined('INT') or define('INT', 'int');
+		defined('STRING') or define('STRING', 'string');
+		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
+		defined('BOOL') or define('BOOL', '0|1');
+		defined('TERNARY') or define('TERNARY', '0|1|2');
+		defined('DISABLED') or define('DISABLED', '');
 
 		$default_values = [
 			[

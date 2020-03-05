@@ -16,6 +16,7 @@ class DefaultConfig
 			|
 			*/
 			'core' => ['minPhpVersion' => '7.3.0'],
+
 			'requirements' => [
 				'php' => [
 					'openssl',

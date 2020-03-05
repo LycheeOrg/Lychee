@@ -26,8 +26,7 @@ class InstalledCheck
 		//	 the database (config table exists) is set
 		//   or installed.log exists
 		// this will generate an infinite loop. We do not want that.
-		if (file_exists(base_path('.NO_SECURE_KEY')))
-		{
+		if (file_exists(base_path('.NO_SECURE_KEY'))) {
 			return $next($request);
 		}
 

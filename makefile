@@ -8,7 +8,6 @@ dist: clean
 	@mkdir Lychee-v$(VERSION)
 	@mkdir Lychee-v$(VERSION)/public
 	@mkdir Lychee-v$(VERSION)/public/dist
-	@mkdir Lychee-v$(VERSION)/public/docs
 	@mkdir Lychee-v$(VERSION)/public/img
 	@mkdir Lychee-v$(VERSION)/public/Lychee-front
 	@mkdir Lychee-v$(VERSION)/public/uploads
@@ -19,7 +18,6 @@ dist: clean
 	@mkdir Lychee-v$(VERSION)/public/uploads/import
 	@mkdir Lychee-v$(VERSION)/public/sym
 	@cp -r public/dist                      Lychee-v$(VERSION)/public
-	@cp -r public/docs/*                    Lychee-v$(VERSION)/public/docs
 	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
 	@cp -r public/Lychee-front/images       Lychee-v$(VERSION)/public/Lychee-front/images
 	@cp -r public/Lychee-front/scripts      Lychee-v$(VERSION)/public/Lychee-front/scripts
@@ -41,7 +39,6 @@ dist: clean
 	@cp -r public/.htaccess                 Lychee-v$(VERSION)/public
 	@cp -r public/.gitignore                Lychee-v$(VERSION)/public
 	@cp -r public/.user.ini                 Lychee-v$(VERSION)/public
-	@cp -r public/CODE_OF_CONDUCT.md        Lychee-v$(VERSION)/public
 	@cp -r public/favicon.ico               Lychee-v$(VERSION)/public
 	@cp -r public/index.php                 Lychee-v$(VERSION)/public
 	@cp -r public/robots.txt                Lychee-v$(VERSION)/public
@@ -82,7 +79,7 @@ clean:
 
 test:
 	@if [ -x "vendor/bin/phpunit" ]; then \
-		./vendor/bin/phpunit --verbose; \
+		./vendor/bin/phpunit --verbose --stop-on-failure; \
 	else \
 		echo ""; \
 		echo "Please install phpunit:"; \

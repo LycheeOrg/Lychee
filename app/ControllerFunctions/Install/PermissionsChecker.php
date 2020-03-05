@@ -73,7 +73,9 @@ class PermissionsChecker
 
 		// set error if $isSet is positive
 		if ($isSet > 0) {
+			// @codeCoverageIgnoreStart
 			$this->results['errors'] = true;
+			// @codeCoverageIgnoreEnd
 		}
 	}
 
