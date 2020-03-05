@@ -23,8 +23,11 @@ class InvalidPayload
 	/**
 	 * @return \Illuminate\Http\Response
 	 */
+	// @codeCoverageIgnoreStart
 	public function go()
 	{
 		return response()->json(['error' => 'Session timed out'], 400);
 	}
+
+	// @codeCoverageIgnoreEnd
 }

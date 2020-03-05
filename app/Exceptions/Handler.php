@@ -63,7 +63,9 @@ class Handler extends ExceptionHandler
 
 		foreach ($checks as $check) {
 			if ($check->check($request, $exception)) {
+				// @codeCoverageIgnoreStart
 				return $check->go();
+				// @codeCoverageIgnoreEnd
 			}
 		}
 

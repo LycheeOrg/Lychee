@@ -56,14 +56,14 @@ class ApplyMigration
 		try {
 			Artisan::call('key:generate', ['--force' => true]);
 			$this->str_to_array(Artisan::output(), $output);
-		} catch (\Exception $e) {
 			// @codeCoverageIgnoreStart
+		} catch (\Exception $e) {
 			$output[] = $e->getMessage();
 			$output[] = 'We could not generate the encryption key.';
 
 			return true;
-			// @codeCoverageIgnoreEnd
 		}
+		// @codeCoverageIgnoreEnd
 
 		// key is generated, we can safely remove that file (in theory)
 		@unlink(base_path('.NO_SECURE_KEY'));

@@ -25,10 +25,13 @@ class NoEncryptionKey
 	/**
 	 * @return \Illuminate\Http\Response
 	 */
+	// @codeCoverageIgnoreStart
 	public function go()
 	{
 		touch(base_path('.NO_SECURE_KEY'));
 
 		return ToInstall::go();
 	}
+
+	// @codeCoverageIgnoreEnd
 }

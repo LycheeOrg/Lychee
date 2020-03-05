@@ -25,8 +25,11 @@ class AccessDBDenied
 	/**
 	 * @return \Illuminate\Http\Response
 	 */
+	// @codeCoverageIgnoreStart
 	public function go()
 	{
 		return ToInstall::go();
 	}
+
+	// @codeCoverageIgnoreEnd
 }

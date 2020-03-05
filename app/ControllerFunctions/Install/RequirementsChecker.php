@@ -49,17 +49,17 @@ class RequirementsChecker
 				case 'apache':
 					foreach ($requirements[$type] as $requirement) {
 						// if function doesn't exist we can't check apache modules
+						// @codeCoverageIgnoreStart
 						if (function_exists('apache_get_modules')) {
 							$results['requirements'][$type][$requirement]
 								= true;
 							if (!in_array($requirement, apache_get_modules())) {
-								// @codeCoverageIgnoreStart
 								$results['requirements'][$type][$requirement]
 									= false;
 								$results['errors'] = true;
-								// @codeCoverageIgnoreEnd
 							}
 						}
+						// @codeCoverageIgnoreEnd
 					}
 					break;
 			}
@@ -81,7 +81,9 @@ class RequirementsChecker
 		$currentPhpVersion = $this->getPhpVersionInfo();
 		$supported = false;
 		if ($minPhpVersion == null) {
+			// @codeCoverageIgnoreStart
 			$minVersionPhp = $this->getMinPhpVersion();
+			// @codeCoverageIgnoreEnd
 		}
 		if (version_compare($currentPhpVersion['version'], $minVersionPhp)
 			>= 0
@@ -132,8 +134,11 @@ class RequirementsChecker
 	 *
 	 * @return string _minPhpVersion
 	 */
+	// @codeCoverageIgnoreStart
 	protected function getMinPhpVersion()
 	{
 		return $this->_minPhpVersion;
 	}
+
+	// @codeCoverageIgnoreEnd
 }
