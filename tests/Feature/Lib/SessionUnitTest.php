@@ -3,7 +3,7 @@
 namespace Tests\Feature\Lib;
 
 use App\ModelFunctions\SessionFunctions;
-use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class SessionUnitTest
@@ -27,7 +27,7 @@ class SessionUnitTest
 			'password' => $password,
 		]);
 		$response->assertOk();
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -43,7 +43,7 @@ class SessionUnitTest
 		$response = $testCase->post('/api/Session::init', []);
 		$response->assertStatus(200);
 		if ($result != 'true') {
-			$response->assertSee($result);
+			$response->assertSee($result, false);
 		}
 
 		return $response;
@@ -80,7 +80,7 @@ class SessionUnitTest
 			'password' => $password,
 		]);
 		$response->assertOk();
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -108,7 +108,7 @@ class SessionUnitTest
 			'oldPassword' => $oldPassword,
 		]);
 		$response->assertOk();
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**

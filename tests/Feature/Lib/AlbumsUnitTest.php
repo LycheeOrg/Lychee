@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Lib;
 
-use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class AlbumsUnitTest
@@ -31,7 +31,7 @@ class AlbumsUnitTest
 		if ($result == 'true') {
 			$response->assertDontSee('false');
 		} else {
-			$response->assertSee($result);
+			$response->assertSee($result, false);
 		}
 
 		return $response->getContent();
@@ -52,7 +52,7 @@ class AlbumsUnitTest
 		$response = $testCase->post('/api/Albums::get', []);
 		$response->assertOk();
 		if ($result != 'true') {
-			$response->assertSee($result);
+			$response->assertSee($result, false);
 		}
 
 		return $response;
@@ -78,7 +78,7 @@ class AlbumsUnitTest
 			['albumID' => $id, 'password' => $password]);
 		$response->assertOk();
 		if ($result != 'true') {
-			$response->assertSee($result);
+			$response->assertSee($result, false);
 		}
 
 		return $response;
@@ -113,7 +113,7 @@ class AlbumsUnitTest
 	{
 		$response = $testCase->post('/api/Albums::get', []);
 		$response->assertOk();
-		$response->assertSee($id);
+		$response->assertSee($id, false);
 	}
 
 	/**
@@ -127,7 +127,7 @@ class AlbumsUnitTest
 	{
 		$response = $testCase->post('/api/Albums::get', []);
 		$response->assertOk();
-		$response->assertDontSee($id);
+		$response->assertDontSee($id, false);
 	}
 
 	/**
@@ -147,7 +147,7 @@ class AlbumsUnitTest
 		$response = $testCase->post('/api/Album::setTitle',
 			['albumIDs' => $id, 'title' => $title]);
 		$response->assertOk();
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -167,7 +167,7 @@ class AlbumsUnitTest
 		$response = $testCase->post('/api/Album::setDescription',
 			['albumID' => $id, 'description' => $description]);
 		$response->assertOk();
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -189,7 +189,7 @@ class AlbumsUnitTest
 			'license' => $license,
 		]);
 		$response->assertOk();
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -256,6 +256,6 @@ class AlbumsUnitTest
 	) {
 		$response = $testCase->post('/api/Album::delete', ['albumIDs' => $id]);
 		$response->assertOk();
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 }
