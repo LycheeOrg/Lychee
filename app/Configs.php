@@ -197,7 +197,7 @@ class Configs extends Model
 		// first() may return null, fixup 'Creating default object from empty value' error
 		// we also log a warning
 		if ($config == null) {
-			Logs::warning(__FUNCTION__, __LINE__, 'key ' . $key . ' not found!');
+			Logs::warning(__METHOD__, __LINE__, 'key ' . $key . ' not found!');
 
 			return true;
 		}
