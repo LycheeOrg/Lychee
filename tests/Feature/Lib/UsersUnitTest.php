@@ -2,7 +2,7 @@
 
 namespace Tests\Feature\Lib;
 
-use Illuminate\Foundation\Testing\TestResponse;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class UsersUnitTest
@@ -22,7 +22,7 @@ class UsersUnitTest
 		$response = $testCase->post('/api/User::List', []);
 		$response->assertStatus(200);
 		if ($result != 'true') {
-			$response->assertSee($result);
+			$response->assertSee($result, false);
 		}
 
 		return $response;
@@ -41,7 +41,7 @@ class UsersUnitTest
 		$response = $testCase->post('/php/index.php', []);
 		$response->assertStatus(200);
 		if ($result != 'true') {
-			$response->assertSee($result);
+			$response->assertSee($result, false);
 		}
 
 		return $response;
@@ -72,7 +72,7 @@ class UsersUnitTest
 			'lock' => $lock,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -91,7 +91,7 @@ class UsersUnitTest
 			'id' => $id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -122,6 +122,6 @@ class UsersUnitTest
 			'lock' => $lock,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 }

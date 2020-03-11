@@ -2,8 +2,8 @@
 
 namespace Tests\Feature\Lib;
 
-use Illuminate\Foundation\Testing\TestResponse;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class PhotosUnitTest
@@ -56,7 +56,7 @@ class PhotosUnitTest
 				'0' => '1',
 			]);
 		$response->assertStatus(200);
-		$response->assertSee('"Error: missing files"');
+		$response->assertSee('"Error: missing files"', false);
 	}
 
 	/**
@@ -78,7 +78,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus(200);
 		if ($result != 'true') {
-			$response->assertSee($result);
+			$response->assertSee($result, false);
 		}
 
 		return $response;
@@ -96,7 +96,7 @@ class PhotosUnitTest
 			'albumID' => '0',
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($id);
+		$response->assertSee($id, false);
 	}
 
 	/**
@@ -111,7 +111,7 @@ class PhotosUnitTest
 			'albumID' => '0',
 		]);
 		$response->assertStatus(200);
-		$response->assertDontSee($id);
+		$response->assertDontSee($id, false);
 	}
 
 	/**
@@ -126,7 +126,7 @@ class PhotosUnitTest
 			'albumID' => 'r',
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($id);
+		$response->assertSee($id, false);
 	}
 
 	/**
@@ -141,7 +141,7 @@ class PhotosUnitTest
 			'albumID' => 'r',
 		]);
 		$response->assertStatus(200);
-		$response->assertDontSee($id);
+		$response->assertDontSee($id, false);
 	}
 
 	/**
@@ -156,7 +156,7 @@ class PhotosUnitTest
 			'albumID' => 's',
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($id);
+		$response->assertSee($id, false);
 	}
 
 	/**
@@ -171,7 +171,7 @@ class PhotosUnitTest
 			'albumID' => 's',
 		]);
 		$response->assertStatus(200);
-		$response->assertDontSee($id);
+		$response->assertDontSee($id, false);
 	}
 
 	/**
@@ -186,7 +186,7 @@ class PhotosUnitTest
 			'albumID' => 'f',
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($id);
+		$response->assertSee($id, false);
 	}
 
 	/**
@@ -201,7 +201,7 @@ class PhotosUnitTest
 			'albumID' => 'f',
 		]);
 		$response->assertStatus(200);
-		$response->assertDontSee($id);
+		$response->assertDontSee($id, false);
 	}
 
 	/**
@@ -226,7 +226,7 @@ class PhotosUnitTest
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -251,7 +251,7 @@ class PhotosUnitTest
 			'photoID' => $id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -270,7 +270,7 @@ class PhotosUnitTest
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -292,7 +292,7 @@ class PhotosUnitTest
 			'tags' => $tags,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -311,7 +311,7 @@ class PhotosUnitTest
 			'photoID' => $id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -333,7 +333,7 @@ class PhotosUnitTest
 			'license' => $license,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -355,7 +355,7 @@ class PhotosUnitTest
 			'albumID' => $album_id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -374,7 +374,7 @@ class PhotosUnitTest
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**
@@ -412,7 +412,7 @@ class PhotosUnitTest
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($result);
+		$response->assertSee($result, false);
 	}
 
 	/**

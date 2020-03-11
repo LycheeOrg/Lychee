@@ -14,8 +14,7 @@
         "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.2",
         "graham-campbell/markdown": "^11.1",
-        "laravel/framework": "^6.0",
-        "laravel/tinker": "^1.0",
+        "laravel/framework": "^7.0",
         "lychee-org/php-exif": "dev-master",
         "maennchen/zipstream-php": "^1.2.0",
         "php-ffmpeg/php-ffmpeg": "^0.14.0"
@@ -25,13 +24,10 @@
         "barryvdh/laravel-ide-helper": "^2.6",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "fzaninotto/faker": "^1.8",
         "itsgoingd/clockwork": "^3.1",
-        "laravel/homestead": "^8.6",
-        "mockery/mockery": "^1.2",
-        "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^8.3",
-        "wnx/laravel-stats": "^2.0"
+        "laravel/homestead": "^10.0",
+        "nunomaduro/collision": "^4.1",
+        "phpunit/phpunit": "^8.5"
     },
     "autoload": {
         "classmap": [
