@@ -21,7 +21,7 @@ class FrameRefreshInSec extends Migration
 						'value' => Configs::get_value('Mod_Frame_refresh') / 1000,
 					]);
 		} else {
-			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exists');
+			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exist');
 		}
 	}
 

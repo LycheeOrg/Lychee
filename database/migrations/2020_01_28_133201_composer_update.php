@@ -28,7 +28,7 @@ class ComposerUpdate extends Migration
 				],
 			]);
 		} else {
-			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exists');
+			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exist');
 		}
 	}
 

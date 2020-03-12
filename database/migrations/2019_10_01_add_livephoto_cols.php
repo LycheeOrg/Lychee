@@ -27,7 +27,7 @@ class LivephotoCols extends Migration
 				$table->string('livePhotoChecksum', 40)->default(null)->after('checksum')->nullable();
 			});
 		} else {
-			Logs::warning(__METHOD__, __LINE__, 'Table photos does not exists');
+			Logs::warning(__METHOD__, __LINE__, 'Table photos does not exist');
 		}
 	}
 

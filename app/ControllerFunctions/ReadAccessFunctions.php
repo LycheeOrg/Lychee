@@ -25,7 +25,7 @@ class ReadAccessFunctions
 
 	/**
 	 * Check if a (public) user has access to an album
-	 * if 0 : album does not exists
+	 * if 0 : album does not exist
 	 * if 1 : access is granted
 	 * if 2 : album is private
 	 * if 3 : album is password protected and require user input.
