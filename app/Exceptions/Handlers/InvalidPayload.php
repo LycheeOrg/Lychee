@@ -2,20 +2,21 @@
 
 namespace App\Exceptions\Handlers;
 
-use Exception;
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Http\Response;
+use Throwable;
 
 class InvalidPayload
 {
 	/**
 	 * Render an exception into an HTTP response.
 	 *
-	 * @param \Illuminate\Http\Request $request
-	 * @param Exception                $exception
+	 * @param Illuminate\Http\Request $request
+	 * @param Throwable               $exception
 	 *
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
-	public function check($request, Exception $exception)
+	public function check($request, Throwable $exception)
 	{
 		return $exception instanceof DecryptException && $exception->getMessage() === 'The payload is invalid.';
 	}
