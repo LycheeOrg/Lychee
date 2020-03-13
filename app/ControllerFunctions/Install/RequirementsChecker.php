@@ -1,6 +1,6 @@
 <?php
 
-namespace Installer\Helpers;
+namespace App\ControllerFunctions\Install;
 
 class RequirementsChecker
 {
@@ -28,14 +28,20 @@ class RequirementsChecker
 					foreach ($requirements[$type] as $requirement) {
 						$results['requirements'][$type][$requirement] = true;
 						if (!extension_loaded($requirement)) {
+							// @codeCoverageIgnoreStart
 							$results['requirements'][$type][$requirement]
 								= false;
 							$results['errors'] = true;
+							// @codeCoverageIgnoreEnd
 						}
 					}
 
 					if ($this->checkExec()) {
 						$results['requirements'][$type]['Php exec() available'] = true;
+					} else {
+						// @codeCoverageIgnoreStart
+						$results['requirements'][$type]['Php exec() not available (optional)'] = false;
+						// @codeCoverageIgnoreEnd
 					}
 
 					break;
@@ -43,6 +49,7 @@ class RequirementsChecker
 				case 'apache':
 					foreach ($requirements[$type] as $requirement) {
 						// if function doesn't exist we can't check apache modules
+						// @codeCoverageIgnoreStart
 						if (function_exists('apache_get_modules')) {
 							$results['requirements'][$type][$requirement]
 								= true;
@@ -52,6 +59,7 @@ class RequirementsChecker
 								$results['errors'] = true;
 							}
 						}
+						// @codeCoverageIgnoreEnd
 					}
 					break;
 			}
@@ -73,7 +81,9 @@ class RequirementsChecker
 		$currentPhpVersion = $this->getPhpVersionInfo();
 		$supported = false;
 		if ($minPhpVersion == null) {
+			// @codeCoverageIgnoreStart
 			$minVersionPhp = $this->getMinPhpVersion();
+			// @codeCoverageIgnoreEnd
 		}
 		if (version_compare($currentPhpVersion['version'], $minVersionPhp)
 			>= 0
@@ -124,8 +134,11 @@ class RequirementsChecker
 	 *
 	 * @return string _minPhpVersion
 	 */
+	// @codeCoverageIgnoreStart
 	protected function getMinPhpVersion()
 	{
 		return $this->_minPhpVersion;
 	}
+
+	// @codeCoverageIgnoreEnd
 }

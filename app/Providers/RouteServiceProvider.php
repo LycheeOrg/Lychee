@@ -15,6 +15,7 @@ class RouteServiceProvider extends ServiceProvider
 	 * @var string
 	 */
 	protected $namespace = 'App\Http\Controllers';
+	protected $install_namespace = 'App\Http\Controllers\Install';
 
 	/**
 	 * Define your route model bindings, pattern filters, etc.
@@ -34,7 +35,8 @@ class RouteServiceProvider extends ServiceProvider
 	public function map()
 	{
 		$this->mapApiRoutes();
-
+		$this->mapInstallRoutes();
+		$this->mapAdminRoutes();
 		$this->mapWebRoutes();
 	}
 
@@ -50,6 +52,34 @@ class RouteServiceProvider extends ServiceProvider
 		Route::middleware('web')
 			 ->namespace($this->namespace)
 			 ->group(base_path('routes/web.php'));
+	}
+
+	/**
+	 * Define the "web" routes for the application.
+	 *
+	 * These routes all receive session state, CSRF protection, etc.
+	 *
+	 * @return void
+	 */
+	protected function mapAdminRoutes()
+	{
+		Route::middleware('web-admin')
+			 ->namespace($this->namespace)
+			 ->group(base_path('routes/admin.php'));
+	}
+
+	/**
+	 * Define the "web" routes for the application.
+	 *
+	 * These routes all receive session state, CSRF protection, etc.
+	 *
+	 * @return void
+	 */
+	protected function mapInstallRoutes()
+	{
+		Route::middleware('install')
+			 ->namespace($this->install_namespace)
+			 ->group(base_path('routes/install.php'));
 	}
 
 	/**

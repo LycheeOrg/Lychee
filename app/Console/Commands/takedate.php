@@ -82,7 +82,7 @@ class takedate extends Command
 					$this->line($i . ': Could not get Takestamp data/nothing to update for ' . $photo->title . '.');
 				}
 			} else {
-				$this->line($i . ': File does not exists for ' . $photo->title . '.');
+				$this->line($i . ': File does not exist for ' . $photo->title . '.');
 			}
 			$i++;
 		}

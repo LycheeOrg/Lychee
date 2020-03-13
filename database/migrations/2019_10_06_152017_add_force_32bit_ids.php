@@ -1,6 +1,7 @@
 <?php
 
 use App\Configs;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
@@ -24,7 +25,7 @@ class AddForce32BitIds extends Migration
 				],
 			]);
 		} else {
-			echo "Table configs does not exist\n";
+			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exist');
 		}
 	}
 

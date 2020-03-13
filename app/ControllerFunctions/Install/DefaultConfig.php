@@ -1,8 +1,8 @@
 <?php
 
-namespace Installer;
+namespace App\ControllerFunctions\Install;
 
-class Config
+class DefaultConfig
 {
 	private $config
 		= [
@@ -16,6 +16,7 @@ class Config
 			|
 			*/
 			'core' => ['minPhpVersion' => '7.3.0'],
+
 			'requirements' => [
 				'php' => [
 					'openssl',
