@@ -37,7 +37,7 @@ class LocationDecoding extends Migration
 				'key' => 'location_decoding_caching_type',
 				'value' => 'Harddisk',
 				'cat' => 'Mod Map',
-				'type_range' => 'None|Memory|Harddisk|MongoDB',
+				'type_range' => 'None|Memory|Harddisk',
 				'confidentiality' => '0',
 			]);
 			DB::table('configs')->insert([

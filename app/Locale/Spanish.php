@@ -36,6 +36,7 @@ final class Spanish implements LangInterface
 			'SET_LICENSE' => 'Establecer Licencia',
 			'SET_OVERLAY_TYPE' => 'Establecer Superposición',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
+			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Álbumes inteligentes',
 			'SHARED_ALBUMS' => 'Álbumes compartidos',
@@ -341,6 +342,10 @@ final class Spanish implements LangInterface
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
+			'LOCATION_DECODING' => 'Decode GPS data into location name',
+			'LOCATION_DECODING_CACHING_TYPE' => 'Caching mode of location decoding (harddisk recommended)',
+			'LOCATION_SHOW' => 'Show location name',
+			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
 			'LAYOUT_TYPE' => 'Diseño de fotos:',
 			'LAYOUT_SQUARES' => 'Miniaturas cuadradas',
 			'LAYOUT_JUSTIFIED' => 'Con aspecto justificado',

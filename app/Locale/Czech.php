@@ -37,6 +37,7 @@ final class Czech implements LangInterface
 			'SET_OVERLAY_TYPE' => 'Nastavit překrytí',
 			'SET_MAP_PROVIDER' => 'Nastavit providera OpenStreetMap',
 			'SAVE_RISK' => 'Uložit změny, rizika jsou mi známa!',
+			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Chytrá alba',
 			'SHARED_ALBUMS' => 'Sdílená alba',
@@ -349,6 +350,10 @@ final class Czech implements LangInterface
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (bez HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'Universita v Erlangenu, Německo (pouze HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Včetně fotografií v subalbech:',
+			'LOCATION_DECODING' => 'Decode GPS data into location name',
+			'LOCATION_DECODING_CACHING_TYPE' => 'Caching mode of location decoding (harddisk recommended)',
+			'LOCATION_SHOW' => 'Show location name',
+			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
 			'LAYOUT_TYPE' => 'Vzhled fotografií:',
 			'LAYOUT_SQUARES' => 'Čtvercové náhledy',
 			'LAYOUT_JUSTIFIED' => 'V poměru stran, zarovnáno',

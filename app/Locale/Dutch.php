@@ -36,6 +36,7 @@ final class Dutch implements LangInterface
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
+			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Slimme albums',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -341,6 +342,10 @@ final class Dutch implements LangInterface
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
+			'LOCATION_DECODING' => 'Decode GPS data into location name',
+			'LOCATION_DECODING_CACHING_TYPE' => 'Caching mode of location decoding (harddisk recommended)',
+			'LOCATION_SHOW' => 'Show location name',
+			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

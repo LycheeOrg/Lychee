@@ -36,6 +36,7 @@ final class English implements LangInterface
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
+			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Smart albums',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -334,6 +335,10 @@ final class English implements LangInterface
 			'OVERLAY_DATE' => 'Photo date taken',
 			'MAP_DISPLAY_TEXT' => 'Enable maps (provided by OpenStreetMap):',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Enable maps for public albums (provided by OpenStreetMap):',
+			'LOCATION_DECODING' => 'Decode GPS data into location name',
+			'LOCATION_DECODING_CACHING_TYPE' => 'Caching mode of location decoding (harddisk recommended)',
+			'LOCATION_SHOW' => 'Show location name',
+			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
 			'MAP_PROVIDER' => 'Provider of OpenStreetMap tiles:',
 			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
 			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (no HiDPI)',
@@ -341,6 +346,7 @@ final class English implements LangInterface
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
+
 			'LAYOUT_TYPE' => 'Layout of photos:',
 			'LAYOUT_SQUARES' => 'Square thumbnails',
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',

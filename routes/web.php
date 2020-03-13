@@ -81,6 +81,10 @@ Route::post('/api/Settings::setMapDisplay', 'SettingsController@setMapDisplay')-
 Route::post('/api/Settings::setMapDisplayPublic', 'SettingsController@setMapDisplayPublic')->middleware('admin');
 Route::post('/api/Settings::setMapProvider', 'SettingsController@setMapProvider')->middleware('admin');
 Route::post('/api/Settings::setMapIncludeSubalbums', 'SettingsController@setMapIncludeSubalbums')->middleware('admin');
+Route::post('/api/Settings::setLocationDecoding', 'SettingsController@setLocationDecoding')->middleware('admin');
+Route::post('/api/Settings::setLocationDecodingCachingType', 'SettingsController@setLocationDecodingCachingType')->middleware('admin');
+Route::post('/api/Settings::setLocationShow', 'SettingsController@setLocationShow')->middleware('admin');
+Route::post('/api/Settings::setLocationShowPublic', 'SettingsController@setLocationShowPublic')->middleware('admin');
 Route::post('/api/Settings::setCSS', 'SettingsController@setCSS')->middleware('admin');
 Route::post('/api/Settings::getAll', 'SettingsController@getAll')->middleware('admin');
 Route::post('/api/Settings::saveAll', 'SettingsController@saveAll')->middleware('admin');

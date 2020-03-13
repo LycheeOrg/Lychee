@@ -36,6 +36,8 @@ final class German implements LangInterface
 			'SET_LICENSE' => 'Lizenz anwenden',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
 			'SET_MAP_PROVIDER' => 'Speichere Provider für OpenStreetMap Karten',
+			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Speichere Caching Modus',
+
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 
 			'SMART_ALBUMS' => 'Intelligente Alben',
@@ -342,6 +344,10 @@ final class German implements LangInterface
 			'OVERLAY_DATE' => 'Erstellungsdatum des Fotos',
 			'MAP_DISPLAY_TEXT' => 'Kartenfunktionalitäten aktivieren (OpenStreetMap):',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Kartenfunktionalität für öffentliche Alben aktivieren (OpenStreetMap):',
+			'LOCATION_DECODING' => 'Ortsnamen mittels GPS Daten bestimmen',
+			'LOCATION_DECODING_CACHING_TYPE' => 'Caching von Ortsnamen (Harddisk empfohlen)',
+			'LOCATION_SHOW' => 'Zeige Ortsnamen',
+			'LOCATION_SHOW_PUBLIC' => 'Zeige Ortsnamen für öffentliche Alben',
 			'MAP_PROVIDER' => 'Provider für OpenStreetMap Karten:',
 			'MAP_PROVIDER_WIKIMEDIA' => 'Wikimedia',
 			'MAP_PROVIDER_OSM_ORG' => 'OpenStreetMap.org (kein HiDPI)',
@@ -349,6 +355,7 @@ final class German implements LangInterface
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (kein HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'Universtät Erlangen, Deutschland (nur HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Fotos von Unterordnern für Karten berücksichtigen:',
+
 			'LAYOUT_TYPE' => 'Layout des Fotos:',
 			'LAYOUT_SQUARES' => 'Quadratische Miniaturansichten',
 			'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',

@@ -404,6 +404,74 @@ class SettingsController extends Controller
 	}
 
 	/**
+	 * Enable decoding of GPS data into location names.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setLocationDecoding(Request $request)
+	{
+		$request->validate([
+			'location_decoding' => 'required|string',
+		]);
+
+		return (Configs::set('location_decoding',
+				$request['location_decoding'])) ? 'true' : 'false';
+	}
+
+	/**
+	 * Set caching mode for GPS data decoding.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setLocationDecodingCachingType(Request $request)
+	{
+		$request->validate([
+			'location_decoding_caching_type' => 'required|string',
+		]);
+
+		return (Configs::set('location_decoding_caching_type',
+				$request['location_decoding_caching_type'])) ? 'true' : 'false';
+	}
+
+	/**
+	 * Enable display of location name.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setLocationShow(Request $request)
+	{
+		$request->validate([
+			'location_show' => 'required|string',
+		]);
+
+		return (Configs::set('location_show',
+				$request['location_show'])) ? 'true' : 'false';
+	}
+
+	/**
+	 * Enable display of location name for public albums.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setLocationShowPublic(Request $request)
+	{
+		$request->validate([
+			'location_show_public' => 'required|string',
+		]);
+
+		return (Configs::set('location_show_public',
+				$request['location_show_public'])) ? 'true' : 'false';
+	}
+
+	/**
 	 * take the css input text and put it into dist/user.css
 	 * this allow admins to actually personalize the look of their installation.
 	 *

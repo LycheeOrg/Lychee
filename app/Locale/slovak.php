@@ -37,6 +37,7 @@ final class Slovak implements LangInterface
 			'SET_OVERLAY_TYPE' => 'Nastaviť typ overlay',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'SAVE_RISK' => 'Zmeny uložiť, riziko je známe!',
+			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',
 			'SHARED_ALBUMS' => 'Zdieľané albumy',
@@ -349,6 +350,10 @@ final class Slovak implements LangInterface
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
+			'LOCATION_DECODING' => 'Decode GPS data into location name',
+			'LOCATION_DECODING_CACHING_TYPE' => 'Caching mode of location decoding (harddisk recommended)',
+			'LOCATION_SHOW' => 'Show location name',
+			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
 			'LAYOUT_TYPE' => 'Rozmiestnenie obrázkov:',
 			'LAYOUT_SQUARES' => 'Štvorcové náhľady',
 			'LAYOUT_JUSTIFIED' => 'Zachovaný pomer strán, zarovnané',
