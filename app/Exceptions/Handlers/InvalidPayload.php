@@ -18,7 +18,9 @@ class InvalidPayload
 	 */
 	public function check($request, Throwable $exception)
 	{
-		return $exception instanceof DecryptException && $exception->getMessage() === 'The payload is invalid.';
+		return $exception instanceof DecryptException;
+		//  && $exception->getMessage() === 'The payload is invalid.';
+		//  && $exception->getMessage() === 'The MAC is invalid.';
 	}
 
 	/**

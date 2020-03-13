@@ -108,6 +108,6 @@ class ChangeIdType extends Migration
 	 */
 	public function down()
 	{
-		Logs::warning(__FUNCTION__, __LINE__, 'There is no going back for ' . __CLASS__ . '!');
+		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '!');
 	}
 }

@@ -4,6 +4,7 @@
 
 namespace Tests\Feature;
 
+use App\Configs;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -16,6 +17,11 @@ class InstallTest extends TestCase
 	 */
 	public function test_install()
 	{
+		/*
+		 * Get previous config
+		 */
+		$configs = Configs::get();
+
 		touch(base_path('.NO_SECURE_KEY'));
 		$response = $this->get('install/');
 		$response->assertStatus(200);
@@ -99,5 +105,8 @@ class InstallTest extends TestCase
 		 */
 		$response = $this->get('/');
 		$response->assertStatus(200);
+
+		Configs::set('username', $configs['username']);
+		Configs::set('password', $configs['password']);
 	}
 }

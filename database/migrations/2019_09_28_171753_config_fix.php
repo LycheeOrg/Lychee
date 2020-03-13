@@ -483,21 +483,21 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'SL_enable',
-				'value' => '1',
+				'value' => '0',
 				'cat' => 'Symbolic Link',
 				'type_range' => BOOL,
 				'confidentiality' => '3',
 			],
 			[
 				'key' => 'SL_for_admin',
-				'value' => '1',
+				'value' => '0',
 				'cat' => 'Symbolic Link',
 				'type_range' => BOOL,
 				'confidentiality' => '3',
 			],
 			[
 				'key' => 'SL_life_time_days',
-				'value' => '1',
+				'value' => '7',
 				'cat' => 'Symbolic Link',
 				'type_range' => INT,
 				'confidentiality' => '3',
@@ -574,6 +574,6 @@ class ConfigFix extends Migration
 	 */
 	public function down()
 	{
-		Logs::warning(__FUNCTION__, __LINE__, 'There is no going back! HUE HUE HUE');
+		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}
 }
