@@ -1,6 +1,7 @@
 <?php
 
 use App\Album;
+use App\Logs;
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -107,6 +108,6 @@ class ChangeIdType extends Migration
 	 */
 	public function down()
 	{
-		echo 'There is no going back for ' . __CLASS__ . "!\n";
+		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '!');
 	}
 }

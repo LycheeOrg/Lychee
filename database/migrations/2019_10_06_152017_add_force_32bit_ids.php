@@ -1,6 +1,7 @@
 <?php
 
 use App\Configs;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
@@ -13,18 +14,20 @@ class AddForce32BitIds extends Migration
 	 */
 	public function up()
 	{
+		defined('BOOL') or define('BOOL', '0|1');
+
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				[
 					'key' => 'force_32bit_ids',
 					'value' => '0',
 					'cat' => 'config',
-					'type_range' => '0|1',
+					'type_range' => BOOL,
 					'confidentiality' => '0',
 				],
 			]);
 		} else {
-			echo "Table configs does not exist\n";
+			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exist');
 		}
 	}
 

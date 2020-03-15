@@ -2,6 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 
@@ -14,9 +15,7 @@ class ConfigCheckUpdateEvery extends Migration
 	 */
 	public function up()
 	{
-		if (!defined('INT')) {
-			define('INT', 'int');
-		}
+		defined('INT') or define('INT', 'int');
 
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
@@ -29,7 +28,7 @@ class ConfigCheckUpdateEvery extends Migration
 				],
 			]);
 		} else {
-			echo "Table configs does not exists\n";
+			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exist');
 		}
 	}
 

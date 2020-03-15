@@ -45,8 +45,6 @@ class CreateAlbumsTable extends Migration
 				$table->string('license', 20)->default('none');
 				$table->timestamps();
 			});
-		} else {
-			echo "Table albums already exists\n";
 		}
 	}
 

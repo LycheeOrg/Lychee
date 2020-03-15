@@ -22,7 +22,7 @@ class AddFullPhotoPerAlbum extends Migration
 
 			Album::where('id', '>', 1)
 				->update([
-					'full_photo' => intval(Configs::get_value('full_photo', 1)),
+					'full_photo' => intval(Configs::get_value('full_photo', '1')),
 				]);
 		}
 	}

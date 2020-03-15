@@ -50,7 +50,7 @@ class CreatePhotosTable extends Migration
 				$table->text('tags');
 				$table->boolean('public');
 				$table->integer('owner_id')->default(0);
-				$table->string('type', 15)->default('');
+				$table->string('type', 30)->default('');
 				$table->integer('width')->nullable();
 				$table->integer('height')->nullable();
 				$table->string('size', 20)->default('');
@@ -75,8 +75,6 @@ class CreatePhotosTable extends Migration
 				$table->string('license', 20)->default('none');
 				$table->timestamps();
 			});
-		} else {
-			echo "Table photos already exists\n";
 		}
 	}
 

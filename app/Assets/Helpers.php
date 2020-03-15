@@ -16,9 +16,11 @@ class Helpers
 	public static function cacheBusting(string $filePath): string
 	{
 		if (File::exists($filePath)) {
+			// @codeCoverageIgnoreStart
 			$unixTimeStamp = File::lastModified($filePath);
 
 			return "{$filePath}?{$unixTimeStamp}";
+			// @codeCoverageIgnoreEnd
 		}
 
 		return $filePath;

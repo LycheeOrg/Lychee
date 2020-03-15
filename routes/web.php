@@ -18,7 +18,7 @@ if (env('APP_ENV') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::get('/', 'IndexController@show')->name('home');
+Route::get('/', 'IndexController@show')->name('home')->middleware('installed');
 Route::get('/phpinfo', 'IndexController@phpinfo')->middleware('admin');
 Route::get('/gallery', 'IndexController@gallery')->name('gallery');
 
@@ -71,25 +71,6 @@ Route::post('/api/Sharing::Add', 'SharingController@add')->middleware('upload');
 Route::post('/api/Sharing::Delete', 'SharingController@delete')->middleware('upload');
 
 Route::post('/api/Settings::setLogin', 'SettingsController@setLogin');
-Route::post('/api/Settings::setSorting', 'SettingsController@setSorting')->middleware('admin');
-Route::post('/api/Settings::setLang', 'SettingsController@setLang')->middleware('admin');
-Route::post('/api/Settings::setLayout', 'SettingsController@setLayout')->middleware('admin');
-Route::post('/api/Settings::setPublicSearch', 'SettingsController@setPublicSearch')->middleware('admin');
-Route::post('/api/Settings::setImageOverlay', 'SettingsController@setImageOverlay')->middleware('admin');
-Route::post('/api/Settings::setDefaultLicense', 'SettingsController@setDefaultLicense')->middleware('admin');
-Route::post('/api/Settings::setMapDisplay', 'SettingsController@setMapDisplay')->middleware('admin');
-Route::post('/api/Settings::setMapDisplayPublic', 'SettingsController@setMapDisplayPublic')->middleware('admin');
-Route::post('/api/Settings::setMapProvider', 'SettingsController@setMapProvider')->middleware('admin');
-Route::post('/api/Settings::setMapIncludeSubalbums', 'SettingsController@setMapIncludeSubalbums')->middleware('admin');
-Route::post('/api/Settings::setLocationDecoding', 'SettingsController@setLocationDecoding')->middleware('admin');
-Route::post('/api/Settings::setLocationDecodingCachingType', 'SettingsController@setLocationDecodingCachingType')->middleware('admin');
-Route::post('/api/Settings::setLocationShow', 'SettingsController@setLocationShow')->middleware('admin');
-Route::post('/api/Settings::setLocationShowPublic', 'SettingsController@setLocationShowPublic')->middleware('admin');
-Route::post('/api/Settings::setCSS', 'SettingsController@setCSS')->middleware('admin');
-Route::post('/api/Settings::getAll', 'SettingsController@getAll')->middleware('admin');
-Route::post('/api/Settings::saveAll', 'SettingsController@saveAll')->middleware('admin');
-Route::post('/api/Settings::setOverlayType', 'SettingsController@setImageOverlayType')->middleware('admin');
-Route::post('/api/Settings::setDropboxKey', 'SettingsController@setDropboxKey')->middleware('admin');
 
 Route::post('/api/Import::url', 'ImportController@url')->middleware('upload');
 Route::post('/api/Import::server', 'ImportController@server')->middleware('admin');
@@ -104,6 +85,7 @@ Route::post('/api/Logs::clearNoise', 'LogController@clearNoise')->middleware('ad
 Route::post('/api/Diagnostics', 'DiagnosticsController@get');
 
 Route::get('/Logs', 'LogController@display')->middleware('admin');
+Route::get('/LogsFile', 'LogController@display');
 Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 Route::get('/Diagnostics', 'DiagnosticsController@show');
 

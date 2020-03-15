@@ -2,9 +2,12 @@
 
 namespace App\Exceptions;
 
+use App\Exceptions\Handlers\AccessDBDenied;
+use App\Exceptions\Handlers\InvalidPayload;
+use App\Exceptions\Handlers\NoEncryptionKey;
 use Exception;
-use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -30,31 +33,44 @@ class Handler extends ExceptionHandler
 	/**
 	 * Report or log an exception.
 	 *
-	 * @param Exception $exception
+	 * @param Throwable $exception
 	 *
 	 * @return void
 	 *
-	 * @throws Exception
+	 * @throws Throwable
 	 */
-	public function report(Exception $exception)
+	public function report(Throwable $exception)
 	{
+		// @codeCoverageIgnoreStart
 		parent::report($exception);
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
 	 * Render an exception into an HTTP response.
 	 *
 	 * @param \Illuminate\Http\Request $request
-	 * @param Exception                $exception
+	 * @param Throwable                $exception
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function render($request, Exception $exception)
+	public function render($request, Throwable $exception)
 	{
-		if ($exception instanceof DecryptException && $exception->getMessage() === 'The payload is invalid.') {
-			return response()->json(['error' => 'Session timed out'], 400);
+		$checks = [];
+		$checks[] = new NoEncryptionKey();
+		$checks[] = new InvalidPayload();
+		$checks[] = new AccessDBDenied();
+
+		foreach ($checks as $check) {
+			if ($check->check($request, $exception)) {
+				// @codeCoverageIgnoreStart
+				return $check->go();
+				// @codeCoverageIgnoreEnd
+			}
 		}
 
+		// @codeCoverageIgnoreStart
 		return parent::render($request, $exception);
+		// @codeCoverageIgnoreEnd
 	}
 }

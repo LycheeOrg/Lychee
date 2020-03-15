@@ -40,7 +40,8 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		if (config('app.debug', false)) {
+		if (config('app.db_log_sql', false)) {
+			// @codeCoverageIgnoreStart
 			/* @noinspection PhpUndefinedClassInspection */
 			DB::listen(function ($query) {
 				/* @noinspection PhpUndefinedClassInspection */
@@ -50,6 +51,7 @@ class AppServiceProvider extends ServiceProvider
 					$query->time
 				);
 			});
+			// @codeCoverageIgnoreEnd
 		}
 	}
 

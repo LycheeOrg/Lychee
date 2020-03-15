@@ -2,6 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
+use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -64,7 +65,7 @@ class ConfigFix extends Migration
 		try {
 			Configs::whereNotIn('key', $keys)->delete();
 		} catch (Exception $e) {
-			echo "Something weird happened.\n";
+			Logs::warning(__FUNCTION__, __LINE__, 'Something weird happened.');
 		}
 	}
 
@@ -122,12 +123,12 @@ class ConfigFix extends Migration
 	 */
 	public function up()
 	{
-		define('INT', 'int');
-		define('STRING', 'string');
-		define('STRING_REQ', 'string_required');
-		define('BOOL', '0|1');
-		define('TERNARY', '0|1|2');
-		define('DISABLED', '');
+		defined('INT') or define('INT', 'int');
+		defined('STRING') or define('STRING', 'string');
+		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
+		defined('BOOL') or define('BOOL', '0|1');
+		defined('TERNARY') or define('TERNARY', '0|1|2');
+		defined('DISABLED') or define('DISABLED', '');
 
 		$default_values = [
 			[
@@ -482,21 +483,21 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'SL_enable',
-				'value' => '1',
+				'value' => '0',
 				'cat' => 'Symbolic Link',
 				'type_range' => BOOL,
 				'confidentiality' => '3',
 			],
 			[
 				'key' => 'SL_for_admin',
-				'value' => '1',
+				'value' => '0',
 				'cat' => 'Symbolic Link',
 				'type_range' => BOOL,
 				'confidentiality' => '3',
 			],
 			[
 				'key' => 'SL_life_time_days',
-				'value' => '1',
+				'value' => '7',
 				'cat' => 'Symbolic Link',
 				'type_range' => INT,
 				'confidentiality' => '3',
@@ -573,6 +574,6 @@ class ConfigFix extends Migration
 	 */
 	public function down()
 	{
-		echo "There is no going back! HUE HUE HUE\n";
+		Logs::warning(__METHOD__, __LINE__, 'There is no going back for ' . __CLASS__ . '! HUE HUE HUE');
 	}
 }

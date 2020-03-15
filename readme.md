@@ -17,10 +17,9 @@
 ![Lychee](https://camo.githubusercontent.com/b9010f02c634219795950e034f511f4cf4af5c60/68747470733a2f2f732e656c6563746572696f75732e636f6d2f696d616765732f6c79636865652f312e6a706567)
 ![Lychee](https://camo.githubusercontent.com/5484591f0b15b6ba27d4845b292cc5d3a988b3b9/68747470733a2f2f732e656c6563746572696f75732e636f6d2f696d616765732f6c79636865652f322e6a706567)
 
-Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [Website](https://LycheeOrg.github.io).
+Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
 
 ## Installation
-
 
 To run Lychee, everything you need is a web-server with PHP 7.3 or later and a MySQL-Database. Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
 
@@ -31,46 +30,43 @@ To run Lychee, everything you need is a web-server with PHP 7.3 or later and a M
 5. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the new framework.
 
 See detailed instructions on the [Installation](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Install) wiki page.
-<!--
-## How to use
 
-You can use Lychee right after the installation. Here are some advanced features to get the most out of it.
--->
-<!-- ### Settings
+### Docker
 
-Sign in and click the gear in the top left corner to change your settings. If you want to edit them manually: MySQL details are stored in `data/config.php`. Other options and hidden settings are stored directly in the database. [Settings &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings) -->
+Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Laravel-Docker](https://github.com/LycheeOrg/Lychee-Laravel-Docker) or on Docker Hub as [bigrob8181/lychee-laravel](https://hub.docker.com/r/bigrob8181/lychee-laravel).
 
 ### Update
 
-Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeOrg/Lychee/wiki/Update)
+Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Update)
+
+### Settings
+
+Sign in and click the gear in the top left corner to change your settings. [Settings &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings)
 
 ### Build
 
-Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild Lychee. [Build &#187;](https://github.com/LycheeOrg/Lychee/wiki/Build)
+Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Build)
+
+## Advanced Features
+
+Lychee is ready to use straight after installation, but some features require a little more configuration.
 
 ### Keyboard Shortcuts
 
-These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://github.com/LycheeOrg/Lychee/wiki/Keyboard%20Shortcuts)
+These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Keyboard-Shortcuts)
 
 ### Dropbox import
 
-In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/apps/create). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings](https://github.com/LycheeOrg/Lychee/wiki/Settings) of Lychee.
+In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/apps/create). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings) of Lychee.
 
 ### Twitter Cards
 
-Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Graph](http://opengraphprotocol.org) for shared images ([not albums](https://github.com/electerious/Lychee/issues/384)). In order to use Twitter Cards you need to request an approval for your domain. Simply share an image with Lychee, copy its link and paste it in [Twitters Card Validator](https://dev.twitter.com/docs/cards/validation/validator).
+Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Graph](http://opengraphprotocol.org) for shared images (not albums). In order to use Twitter Cards you need to request an approval for your domain. Simply share an image with Lychee, copy its link and paste it in [Twitters Card Validator](https://dev.twitter.com/docs/cards/validation/validator).
 
 ### Imagick
 
-Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in [the settings](https://github.com/LycheeOrg/Lychee/wiki/Settings).
-<!--
-### Docker
+Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in the [settings](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings).
 
-Browse the [Docker Hub Registry](https://hub.docker.com/r/) for various automated Lychee-Docker builds.
-Various docker builds include :
-- [LinuxServer.io build](https://hub.docker.com/r/linuxserver/lychee/)
-- [ARMHF based Linuxserver.io build](https://hub.docker.com/r/lsioarmhf/lychee/)
--->
 ## Troubleshooting
 
-Take a look at the [WIKI](https://github.com/LycheeOrg/Lychee-Laravel/wiki/) and the old Lychee [FAQ](https://github.com/LycheeOrg/Lychee/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue here on GitHub!
+Take a look at the [Wiki](https://github.com/LycheeOrg/Lychee-Laravel/wiki/), particularly the [FAQ](https://github.com/LycheeOrg/Lychee-Laravel/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee-Laravel/issues) on GitHub!
