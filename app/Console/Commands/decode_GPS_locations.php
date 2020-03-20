@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Configs;
 use App\Metadata\Extractor;
 use App\Metadata\Geodecoder;
 use App\ModelFunctions\PhotoFunctions;
