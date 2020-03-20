@@ -421,23 +421,6 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Set caching mode for GPS data decoding.
-	 *
-	 * @param Request $request
-	 *
-	 * @return string
-	 */
-	public function setLocationDecodingCachingType(Request $request)
-	{
-		$request->validate([
-			'location_decoding_caching_type' => 'required|string',
-		]);
-
-		return (Configs::set('location_decoding_caching_type',
-				$request['location_decoding_caching_type'])) ? 'true' : 'false';
-	}
-
-	/**
 	 * Enable display of location name.
 	 *
 	 * @param Request $request

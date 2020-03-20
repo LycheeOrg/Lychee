@@ -29,7 +29,6 @@ Route::post('/api/Settings::setMapDisplayPublic', 'SettingsController@setMapDisp
 Route::post('/api/Settings::setMapProvider', 'SettingsController@setMapProvider');
 Route::post('/api/Settings::setMapIncludeSubalbums', 'SettingsController@setMapIncludeSubalbums');
 Route::post('/api/Settings::setLocationDecoding', 'SettingsController@setLocationDecoding');
-Route::post('/api/Settings::setLocationDecodingCachingType', 'SettingsController@setLocationDecodingCachingType');
 Route::post('/api/Settings::setLocationShow', 'SettingsController@setLocationShow');
 Route::post('/api/Settings::setLocationShowPublic', 'SettingsController@setLocationShowPublic');
 Route::post('/api/Settings::setCSS', 'SettingsController@setCSS');
