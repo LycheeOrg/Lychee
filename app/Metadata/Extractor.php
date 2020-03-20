@@ -4,7 +4,6 @@ namespace App\Metadata;
 
 use App\Configs;
 use App\Logs;
-use App\ModelFunctions\Geodecoder;
 use PHPExif\Reader\Reader;
 
 class Extractor

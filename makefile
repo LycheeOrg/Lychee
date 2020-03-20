@@ -16,7 +16,6 @@ dist: clean
 	@mkdir Lychee-v$(VERSION)/public/uploads/big
 	@mkdir Lychee-v$(VERSION)/public/uploads/thumb
 	@mkdir Lychee-v$(VERSION)/public/uploads/import
-	@mkdir Lychee-v$(VERSION)/public/uploads/cache
 	@mkdir Lychee-v$(VERSION)/public/sym
 	@cp -r public/dist                      Lychee-v$(VERSION)/public
 	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
@@ -63,7 +62,6 @@ dist: clean
 	@touch Lychee-v$(VERSION)/public/uploads/medium/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/thumb/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/import/index.html
-	@touch Lychee-v$(VERSION)/public/uploads/cache/index.html
 	@touch Lychee-v$(VERSION)/public/sym/index.html
 	@zip -r Lychee-v$(VERSION).zip Lychee-v$(VERSION)
 

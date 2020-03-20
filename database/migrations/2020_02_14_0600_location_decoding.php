@@ -15,9 +15,9 @@ class LocationDecoding extends Migration
 	 */
 	public function up()
 	{
-		if (!defined('BOOL')) {
-			define('BOOL', '0|1');
-		}
+		defined('BOOL') or define('BOOL', '0|1');
+		defined('INT') or define('INT', 'int');
+
 		if (Schema::hasTable('configs')) {
 			DB::table('configs')->insert([
 				'key' => 'location_decoding',
@@ -30,14 +30,7 @@ class LocationDecoding extends Migration
 				'key' => 'location_decoding_timeout',
 				'value' => 30,
 				'cat' => 'Mod Map',
-				'type_range' => 'int',
-				'confidentiality' => '0',
-			]);
-			DB::table('configs')->insert([
-				'key' => 'location_decoding_caching_type',
-				'value' => 'Harddisk',
-				'cat' => 'Mod Map',
-				'type_range' => 'None|Memory|Harddisk',
+				'type_range' => INT,
 				'confidentiality' => '0',
 			]);
 			DB::table('configs')->insert([
@@ -76,7 +69,6 @@ class LocationDecoding extends Migration
 		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
 			Configs::where('key', '=', 'location_decoding')->delete();
 			Configs::where('key', '=', 'location_decoding_timeout')->delete();
-			Configs::where('key', '=', 'location_decoding_caching_type')->delete();
 			Configs::where('key', '=', 'location_show')->delete();
 			Configs::where('key', '=', 'location_show_public')->delete();
 		}

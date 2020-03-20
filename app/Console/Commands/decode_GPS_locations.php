@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Configs;
 use App\Metadata\Extractor;
-use App\ModelFunctions\Geodecoder;
+use App\Metadata\Geodecoder;
 use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
