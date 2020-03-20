@@ -68,8 +68,6 @@ class decode_GPS_locations extends Command
 		}
 
 		$cachedProvider = Geodecoder::getGeocoderProvider();
-		$this->line('Using ' . Configs::get_value('location_decoding_caching_type') . ' for chaching.');
-
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
 
