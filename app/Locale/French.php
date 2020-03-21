@@ -36,7 +36,6 @@ final class French implements LangInterface
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
-			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Smart albums',
 			'SHARED_ALBUMS' => 'Shared albums',

@@ -37,7 +37,6 @@ final class Slovak implements LangInterface
 			'SET_OVERLAY_TYPE' => 'Nastaviť typ overlay',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
 			'SAVE_RISK' => 'Zmeny uložiť, riziko je známe!',
-			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Inteligentné albumy',
 			'SHARED_ALBUMS' => 'Zdieľané albumy',

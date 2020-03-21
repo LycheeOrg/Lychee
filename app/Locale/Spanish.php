@@ -36,7 +36,6 @@ final class Spanish implements LangInterface
 			'SET_LICENSE' => 'Establecer Licencia',
 			'SET_OVERLAY_TYPE' => 'Establecer Superposición',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
-			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Álbumes inteligentes',
 			'SHARED_ALBUMS' => 'Álbumes compartidos',

@@ -36,7 +36,6 @@ final class German implements LangInterface
 			'SET_LICENSE' => 'Lizenz anwenden',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
 			'SET_MAP_PROVIDER' => 'Speichere Provider für OpenStreetMap Karten',
-			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Speichere Caching Modus',
 
 			'SAVE_RISK' => 'Änderungen speichern, ich kenne das Risiko!',
 

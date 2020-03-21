@@ -37,7 +37,6 @@ final class Czech implements LangInterface
 			'SET_OVERLAY_TYPE' => 'Nastavit překrytí',
 			'SET_MAP_PROVIDER' => 'Nastavit providera OpenStreetMap',
 			'SAVE_RISK' => 'Uložit změny, rizika jsou mi známa!',
-			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Chytrá alba',
 			'SHARED_ALBUMS' => 'Sdílená alba',

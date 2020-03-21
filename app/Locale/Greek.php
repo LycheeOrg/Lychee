@@ -36,7 +36,6 @@ final class Greek implements LangInterface
 			'SET_LICENSE' => 'Ορισμός Άδειας',
 			'SET_OVERLAY_TYPE' => 'Ορισμός Τύπου Overlay',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
-			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Έξυπνα λευκώματα',
 			'SHARED_ALBUMS' => 'Κοινόχρηστα λευκώματα',

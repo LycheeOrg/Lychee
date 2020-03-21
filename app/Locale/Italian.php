@@ -36,7 +36,6 @@ final class Italian implements LangInterface
 			'SET_LICENSE' => 'Imposta Licenza',
 			'SET_OVERLAY_TYPE' => 'Imposta Filigrana',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
-			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Album smart',
 			'SHARED_ALBUMS' => 'Album condivisi',
