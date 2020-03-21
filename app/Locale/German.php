@@ -345,7 +345,6 @@ final class German implements LangInterface
 			'MAP_DISPLAY_TEXT' => 'Kartenfunktionalitäten aktivieren (OpenStreetMap):',
 			'MAP_DISPLAY_PUBLIC_TEXT' => 'Kartenfunktionalität für öffentliche Alben aktivieren (OpenStreetMap):',
 			'LOCATION_DECODING' => 'Ortsnamen mittels GPS Daten bestimmen',
-			'LOCATION_DECODING_CACHING_TYPE' => 'Caching von Ortsnamen (Harddisk empfohlen)',
 			'LOCATION_SHOW' => 'Zeige Ortsnamen',
 			'LOCATION_SHOW_PUBLIC' => 'Zeige Ortsnamen für öffentliche Alben',
 			'MAP_PROVIDER' => 'Provider für OpenStreetMap Karten:',

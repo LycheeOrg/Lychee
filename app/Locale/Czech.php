@@ -351,7 +351,6 @@ final class Czech implements LangInterface
 			'MAP_PROVIDER_RRZE' => 'Universita v Erlangenu, Německo (pouze HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Včetně fotografií v subalbech:',
 			'LOCATION_DECODING' => 'Decode GPS data into location name',
-			'LOCATION_DECODING_CACHING_TYPE' => 'Caching mode of location decoding (harddisk recommended)',
 			'LOCATION_SHOW' => 'Show location name',
 			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
 			'LAYOUT_TYPE' => 'Vzhled fotografií:',

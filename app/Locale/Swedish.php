@@ -36,7 +36,6 @@ final class Swedish implements LangInterface
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
 			'SET_MAP_PROVIDER' => 'Set OpenStreetMap tiles provider',
-			'SET_LOCATION_DECODING_CACHING_TYPE' => 'Set location decoder caching',
 
 			'SMART_ALBUMS' => 'Smarta album',
 			'SHARED_ALBUMS' => 'Shared albums',
@@ -343,7 +342,6 @@ final class Swedish implements LangInterface
 			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
 			'LOCATION_DECODING' => 'Decode GPS data into location name',
-			'LOCATION_DECODING_CACHING_TYPE' => 'Caching mode of location decoding (harddisk recommended)',
 			'LOCATION_SHOW' => 'Show location name',
 			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
 			'LAYOUT_TYPE' => 'Layout of photos:',
