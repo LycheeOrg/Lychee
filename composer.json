@@ -19,7 +19,6 @@
         "laravel/framework": "^7.0",
         "lychee-org/php-exif": "dev-master",
         "maennchen/zipstream-php": "^1.2.0",
-        "nyholm/psr7": "^1.2",
         "php-ffmpeg/php-ffmpeg": "^0.14.0",
         "php-http/guzzle6-adapter": "^2.0",
         "spatie/guzzle-rate-limiter-middleware": "^1.0",
