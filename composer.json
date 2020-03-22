@@ -21,6 +21,7 @@
         "maennchen/zipstream-php": "^1.2.0",
         "php-ffmpeg/php-ffmpeg": "^0.14.0",
         "php-http/guzzle6-adapter": "^2.0",
+        "php-http/message": "^1.8",
         "spatie/guzzle-rate-limiter-middleware": "^1.0",
         "symfony/cache": "^5.0"
     },
