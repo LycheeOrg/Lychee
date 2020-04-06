@@ -18,7 +18,7 @@ use Spatie\GuzzleRateLimiterMiddleware\Store;
 class Geodecoder
 {
 	/**
-	 * Get http provider with or without caching.
+	 * Get http provider with caching.
 	 *
 	 * @return mixed Geocoder Provider
 	 */
@@ -33,9 +33,6 @@ class Geodecoder
 		]);
 
 		$httpAdapter = new \Http\Adapter\Guzzle6\Client($httpClient);
-
-		$cachedProvider = null;
-		// $caching_type = Configs::get_value('location_decoding_caching_type');
 
 		$provider = new Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', config('app.name'));
 
@@ -63,7 +60,7 @@ class Geodecoder
 	}
 
 	/**
-	 * Decode GPS coordinates into location.
+	 * Wrapper to decode GPS coordinates into location.
 	 *
 	 * @return string location
 	 */
