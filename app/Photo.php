@@ -38,6 +38,7 @@ use Storage;
  * @property float|null  $longitude
  * @property float|null  $altitude
  * @property float|null  imgDirection
+ * @property string|null location
  * @property Carbon|null $takestamp
  * @property int         $star
  * @property string      $thumbUrl
@@ -75,6 +76,7 @@ use Storage;
  * @method static Builder|Photo whereHeight($value)
  * @method static Builder|Photo whereId($value)
  * @method static Builder|Photo whereImgDirection($value)
+ * @method static Builder|Photo whereLocation($value)
  * @method static Builder|Photo whereIso($value)
  * @method static Builder|Photo whereLatitude($value)
  * @method static Builder|Photo whereLens($value)
@@ -221,6 +223,7 @@ class Photo extends Model
 		$photo['longitude'] = $this->longitude;
 		$photo['altitude'] = $this->altitude;
 		$photo['imgDirection'] = $this->imgDirection;
+		$photo['location'] = $this->location;
 		$photo['livePhotoContentID'] = $this->livePhotoContentID;
 
 		$photo['sysdate'] = $this->created_at->format('d F Y');

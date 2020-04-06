@@ -13,11 +13,17 @@
         "bepsvpt/secure-headers": "^5.5",
         "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.2",
+        "geocoder-php/cache-provider": "^4.1",
+        "geocoder-php/nominatim-provider": "^5.1",
         "graham-campbell/markdown": "^11.1",
         "laravel/framework": "^7.0",
         "lychee-org/php-exif": "dev-master",
         "maennchen/zipstream-php": "^1.2.0",
-        "php-ffmpeg/php-ffmpeg": "^0.14.0"
+        "php-ffmpeg/php-ffmpeg": "^0.14.0",
+        "php-http/guzzle6-adapter": "^2.0",
+        "php-http/message": "^1.8",
+        "spatie/guzzle-rate-limiter-middleware": "^1.0",
+        "symfony/cache": "^5.0"
     },
     "require-dev": {
         "ext-imagick": "*",

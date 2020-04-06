@@ -36,6 +36,7 @@ class Extractor
 			'longitude' => null,
 			'altitude' => null,
 			'imgDirection' => null,
+			'location' => null,
 			'size' => 0,
 			'livePhotoContentID' => null,
 			'livePhotoStillImageTime' => null,
@@ -185,6 +186,9 @@ class Extractor
 				$metadata['size'] = round($metadata['size'], 1) . ' KB';
 			}
 		}
+
+		// Decode location data
+		$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
 
 		return $metadata;
 	}

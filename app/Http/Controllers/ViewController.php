@@ -65,8 +65,8 @@ class ViewController extends Controller
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 
-		$url = env('APP_URL') . $request->server->get('REQUEST_URI');
-		$picture = env('APP_URL') . '/uploads/' . $dir . '/' . $photo->url;
+		$url = config('app.url') . $request->server->get('REQUEST_URI');
+		$picture = config('app.url') . '/uploads/' . $dir . '/' . $photo->url;
 
 		return view('view', [
 			'url' => $url,

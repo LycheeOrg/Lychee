@@ -504,6 +504,7 @@ class PhotoController extends Controller
 			$duplicate->longitude = $photo->longitude;
 			$duplicate->altitude = $photo->altitude;
 			$duplicate->imgDirection = $photo->imgDirection;
+			$duplicate->location = $photo->location;
 			$duplicate->takestamp = $photo->takestamp;
 			$duplicate->star = $photo->star;
 			$duplicate->thumbUrl = $photo->thumbUrl;

@@ -34,9 +34,11 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject25 = _taggedTemplateLiteral(["<div class='empty'>", "</div>"], ["<div class='empty'>", "</div>"]),
     _templateObject26 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject27 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject28 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "], ["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "]),
-    _templateObject30 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
+    _templateObject28 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
+    _templateObject29 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
+    _templateObject30 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject31 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "], ["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "]),
+    _templateObject32 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -1323,6 +1325,10 @@ sidebar.bind = function () {
 		if (visible.photo()) photo.setLicense(photo.getID());else if (visible.album()) album.setLicense(album.getID());
 	});
 
+	sidebar.dom('.attr_location').off(eventName).on(eventName, function () {
+		sidebar.triggerSearch($(this).text());
+	});
+
 	return true;
 };
 
@@ -1516,7 +1522,7 @@ sidebar.createStructure.photo = function (data) {
 			type: sidebar.types.DEFAULT,
 			rows: [{ title: lychee.locale['PHOTO_LATITUDE'], kind: 'latitude', value: data.latitude ? DecimalToDegreeMinutesSeconds(data.latitude, true) : '' }, { title: lychee.locale['PHOTO_LONGITUDE'], kind: 'longitude', value: data.longitude ? DecimalToDegreeMinutesSeconds(data.longitude, false) : '' },
 			// No point in displaying sub-mm precision; 10cm is more than enough.
-			{ title: lychee.locale['PHOTO_ALTITUDE'], kind: 'altitude', value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + 'm' : '' }]
+			{ title: lychee.locale['PHOTO_ALTITUDE'], kind: 'altitude', value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + 'm' : '' }, { title: lychee.locale['PHOTO_LOCATION'], kind: 'location', value: data.location ? data.location : '' }]
 		};
 		if (data.imgDirection) {
 			// No point in display sub-degree precision.
@@ -1720,13 +1726,25 @@ sidebar.render = function (structure) {
 			var _has_latitude = false;
 			var _has_longitude = false;
 
-			section.rows.forEach(function (row) {
+			section.rows.forEach(function (row, index, object) {
 				if (row.kind == 'latitude' && row.value !== '') {
 					_has_latitude = true;
 				}
 
 				if (row.kind == 'longitude' && row.value !== '') {
 					_has_longitude = true;
+				}
+
+				// Do not show location is not enabled
+				if (row.kind == 'location' && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
+					object.splice(index, 1);
+				} else {
+					// Explode location string into an array to keep street, city etc separate
+					if (!(row.value === '' || row.value == null)) {
+						section.rows[index].value = row.value.split(',').map(function (item) {
+							return item.trim();
+						});
+					}
 				}
 			});
 
@@ -1743,12 +1761,26 @@ sidebar.render = function (structure) {
 			if (!(value === '' || value == null) || row.editable === true) {
 
 				// Wrap span-element around value for easier selecting on change
-				value = lychee.html(_templateObject28, row.kind, value);
+				if (Array.isArray(row.value)) {
+					value = '';
+					row.value.forEach(function (v) {
+						if (v === '' || v == null) {
+							return;
+						}
+						// Add separator if needed
+						if (!(value === '')) {
+							value += lychee.html(_templateObject28, row.kind);
+						}
+						value += lychee.html(_templateObject29, row.kind, v);
+					});
+				} else {
+					value = lychee.html(_templateObject30, row.kind, value);
+				}
 
 				// Add edit-icon to the value when editable
 				if (row.editable === true) value += ' ' + build.editIcon('edit_' + row.kind);
 
-				_html += lychee.html(_templateObject29, row.title, value);
+				_html += lychee.html(_templateObject31, row.title, value);
 			}
 		});
 
@@ -1765,7 +1797,7 @@ sidebar.render = function (structure) {
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon('edit_tags');
 
-		_html += lychee.html(_templateObject30, section.title, section.title.toLowerCase(), section.value, editable);
+		_html += lychee.html(_templateObject32, section.title, section.title.toLowerCase(), section.value, editable);
 
 		return _html;
 	};
@@ -2481,6 +2513,9 @@ lychee.locale = {
 	'MAP_DISPLAY_TEXT': 'Enable maps (provided by OpenStreetMap):',
 	'MAP_DISPLAY_PUBLIC_TEXT': 'Enable maps for public albums (provided by OpenStreetMap):',
 	'MAP_INCLUDE_SUBALBUMS_TEXT': 'Include photos of subalbums on map:',
+	'LOCATION_DECODING': 'Decode GPS data into location name',
+	'LOCATION_SHOW': 'Show location name',
+	'LOCATION_SHOW_PUBLIC': 'Show location name for public mode',
 
 	'VIEW_NO_RESULT': 'No results',
 	'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',

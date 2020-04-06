@@ -211,7 +211,8 @@ class SearchController extends Controller
 				function (Builder $query) use ($escaped_term) {
 					$query->where('title', 'like', '%' . $escaped_term . '%')
 						->orWhere('description', 'like', '%' . $escaped_term . '%')
-						->orWhere('tags', 'like', '%' . $escaped_term . '%');
+						->orWhere('tags', 'like', '%' . $escaped_term . '%')
+						->orWhere('location', 'like', '%' . $escaped_term . '%');
 				});
 		}
 		$photos = $query->get();

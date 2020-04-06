@@ -190,6 +190,7 @@ final class Italian implements LangInterface
 			'PHOTO_LATITUDE' => 'Latitude',
 			'PHOTO_LONGITUDE' => 'Longitude',
 			'PHOTO_ALTITUDE' => 'Altitude',
+			'PHOTO_LOCATION' => 'Location',
 			'PHOTO_IMGDIRECTION' => 'Direction',
 			'PHOTO_IMAGE' => 'Immagine',
 			'PHOTO_VIDEO' => 'Video',
@@ -351,6 +352,9 @@ final class Italian implements LangInterface
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (no HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'University of Erlangen, Germany (only HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Include photos of subalbums on map:',
+			'LOCATION_DECODING' => 'Decode GPS data into location name',
+			'LOCATION_SHOW' => 'Show location name',
+			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',
