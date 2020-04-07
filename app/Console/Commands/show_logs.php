@@ -42,16 +42,15 @@ class show_logs extends Command
 		$n = (int) $this->argument('n');
 		$order = $this->argument('order');
 
-		if ($action == 'clean')
-		{
+		if ($action == 'clean') {
 			Logs::truncate();
 			$this->line($this->yellow('Log table has been emptied.'));
-			return ;
+
+			return;
 		}
 		// we are in the show part but in the case where 'show' has not be defined.
 		// as a results arguments are shifted: n <- action, order <- n.
-		else if ($action != 'show')
-		{
+		elseif ($action != 'show') {
 			$n = (int) $this->argument('action');
 			$order = $this->argument('n');
 		}
