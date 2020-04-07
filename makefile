@@ -49,6 +49,7 @@ dist: clean
 	@cp -r artisan                          Lychee-v$(VERSION)
 	@cp -r composer.json                    Lychee-v$(VERSION)
 	@cp -r composer.lock                    Lychee-v$(VERSION)
+	@cp -r composer-cache                   Lychee-v$(VERSION)
 	@cp -r LICENSE                          Lychee-v$(VERSION)
 	@cp -r phpunit.xml                      Lychee-v$(VERSION)
 	@cp -r readme.md                        Lychee-v$(VERSION)
