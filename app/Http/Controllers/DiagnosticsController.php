@@ -261,8 +261,7 @@ class DiagnosticsController extends Controller
 		$settings = Configs::get();
 
 		// Load json (we need to add a try case here
-		$json
-			= @file_get_contents(base_path('public/Lychee-front/package.json'));
+		$json = @file_get_contents(base_path('public/Lychee-front/package.json'));
 		if ($json == false) {
 			// @codeCoverageIgnoreStart
 			$json = ['version' => '-'];
@@ -344,6 +343,25 @@ class DiagnosticsController extends Controller
 			. floatval(phpversion());
 		$infos[] = str_pad($dbtype . ' Version:', $this->pad_length) . $dbver;
 		$infos[] = '';
+		$infos[] = str_pad('Imagick:', $this->pad_length) . $imagick;
+		$infos[] = str_pad('Imagick Active:', $this->pad_length)
+			. $settings['imagick'];
+		$infos[] = str_pad('Imagick Version:', $this->pad_length)
+			. $imagickVersion;
+		$infos[] = str_pad('GD Version:', $this->pad_length)
+			. $gdVersion['GD Version'];
+
+		return $infos;
+	}
+
+	/**
+	 * get space used by Lychee.
+	 *
+	 * @return array
+	 */
+	public function get_space(array $infos)
+	{
+		$infos[] = '';
 		$infos[] = str_pad('Lychee total space:', $this->pad_length)
 			. $this->diskUsage->get_lychee_space();
 		$infos[] = str_pad('Upload folder space:', $this->pad_length)
@@ -353,14 +371,6 @@ class DiagnosticsController extends Controller
 		$infos[] = str_pad('System free space:', $this->pad_length)
 			. $this->diskUsage->get_free_space() . ' ('
 			. $this->diskUsage->get_free_percent() . ')';
-		$infos[] = '';
-		$infos[] = str_pad('Imagick:', $this->pad_length) . $imagick;
-		$infos[] = str_pad('Imagick Active:', $this->pad_length)
-			. $settings['imagick'];
-		$infos[] = str_pad('Imagick Version:', $this->pad_length)
-			. $imagickVersion;
-		$infos[] = str_pad('GD Version:', $this->pad_length)
-			. $gdVersion['GD Version'];
 
 		return $infos;
 	}
@@ -401,6 +411,7 @@ class DiagnosticsController extends Controller
 		$configs = ['You must be logged to see this.'];
 		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
+			$infos = $this->get_space($infos);
 			$configs = $this->get_config();
 		}
 
@@ -445,6 +456,7 @@ class DiagnosticsController extends Controller
 		$configs = ['You must be logged to see this.'];
 		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
+			$infos = $this->get_space($infos);
 			$configs = $this->get_config();
 		}
 
