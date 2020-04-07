@@ -207,6 +207,7 @@ final class French implements LangInterface
 			'PHOTO_CAPTURED' => 'Date d\'enregistrement',
 			'PHOTO_MAKE' => 'Prendre une photo',
 			'PHOTO_TYPE' => 'Type',
+			'PHOTO_LENS' => 'Objectif',
 			'PHOTO_SHUTTER' => 'Durée d\'exposition',
 			'PHOTO_APERTURE' => 'Ouverture',
 			'PHOTO_FOCAL' => 'Distance focale',

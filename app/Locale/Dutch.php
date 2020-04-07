@@ -207,6 +207,7 @@ final class Dutch implements LangInterface
 			'PHOTO_CAPTURED' => 'Gefotografeerd',
 			'PHOTO_MAKE' => 'Fabricant',
 			'PHOTO_TYPE' => 'Type/Model',
+			'PHOTO_LENS' => 'Lens',
 			'PHOTO_SHUTTER' => 'Sluitertijd',
 			'PHOTO_APERTURE' => 'Diafragma',
 			'PHOTO_FOCAL' => 'Brandpuntafstand',

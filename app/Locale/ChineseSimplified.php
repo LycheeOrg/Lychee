@@ -207,6 +207,7 @@ final class ChineseSimplified implements LangInterface
 			'PHOTO_CAPTURED' => '拍摄时间',
 			'PHOTO_MAKE' => '设备',
 			'PHOTO_TYPE' => '类型/型号',
+			'PHOTO_LENS' => 'Lens',
 			'PHOTO_SHUTTER' => '快门速度',
 			'PHOTO_APERTURE' => '光圈',
 			'PHOTO_FOCAL' => '焦距',

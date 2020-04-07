@@ -207,6 +207,7 @@ final class English implements LangInterface
 			'PHOTO_CAPTURED' => 'Captured',
 			'PHOTO_MAKE' => 'Make',
 			'PHOTO_TYPE' => 'Type/Model',
+			'PHOTO_LENS' => 'Lens',
 			'PHOTO_SHUTTER' => 'Shutter Speed',
 			'PHOTO_APERTURE' => 'Aperture',
 			'PHOTO_FOCAL' => 'Focal Length',

@@ -207,6 +207,7 @@ final class Spanish implements LangInterface
 			'PHOTO_CAPTURED' => 'Capturado',
 			'PHOTO_MAKE' => 'Hacer',
 			'PHOTO_TYPE' => 'Tipo / Modelo',
+			'PHOTO_LENS' => 'Lens',
 			'PHOTO_SHUTTER' => 'Velocidad de obturación',
 			'PHOTO_APERTURE' => 'Abertura',
 			'PHOTO_FOCAL' => 'Longitud focal',
