@@ -20,7 +20,7 @@ if (env('APP_ENV') === 'dev') {
 
 Route::get('/', 'IndexController@show')->name('home')->middleware('installed');
 Route::get('/phpinfo', 'IndexController@phpinfo')->middleware('admin');
-Route::get('/gallery', 'IndexController@gallery')->name('gallery');
+Route::get('/gallery', 'IndexController@gallery')->name('gallery')->middleware('installed');
 
 Route::get('/view', 'ViewController@view');
 Route::get('/demo', 'DemoController@js');
