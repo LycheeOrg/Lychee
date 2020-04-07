@@ -39,7 +39,6 @@ dist: clean
 	@cp -r tests                            Lychee-v$(VERSION)
 	@cp -r vendor                           Lychee-v$(VERSION) 2> /dev/null || true
 	@cp -r public/.htaccess                 Lychee-v$(VERSION)/public
-	@cp -r public/.gitignore                Lychee-v$(VERSION)/public
 	@cp -r public/.user.ini                 Lychee-v$(VERSION)/public
 	@cp -r public/favicon.ico               Lychee-v$(VERSION)/public
 	@cp -r public/index.php                 Lychee-v$(VERSION)/public
