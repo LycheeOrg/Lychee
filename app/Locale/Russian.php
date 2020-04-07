@@ -281,7 +281,7 @@ final class Russian implements LangInterface
 			'LOGIN_TITLE' => 'Введите логин и пароль для входа:',
 			'LOGIN_USERNAME' => 'Новый логин',
 			'LOGIN_PASSWORD' => 'Новый пароль',
-			'LOGIN_PASSWORD_СONFIRM' => 'Повторите пароль',
+			'LOGIN_PASSWORD_CONFIRM' => 'Повторите пароль',
 			'LOGIN_CREATE' => 'Создать',
 
 			'PASSWORD_TITLE' => 'Введите текущий пароль:',
