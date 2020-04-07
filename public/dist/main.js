@@ -2936,7 +2936,9 @@ $(document).ready(function () {
 	lychee.imageview.on(eventName, '.arrow_wrapper--previous', photo.previous).on(eventName, '.arrow_wrapper--next', photo.next).on('click', 'img, #livephoto', photo.update_display_overlay);
 
 	// Keyboard
-	Mousetrap.bind(['left'], function () {
+	Mousetrap.bind(['l'], function () {
+		lychee.loginDialog();return false;
+	}).bind(['left'], function () {
 		if (visible.photo()) {
 			$('#imageview a#previous').click();return false;
 		}
@@ -3825,6 +3827,9 @@ lychee.setMode = function (mode) {
 	}
 
 	if (mode === 'logged_in') {
+		// we are logged in, we do not need that short cut anymore. :)
+		Mousetrap.unbind(['l']);
+
 		// The code searches by class, so remove the other instance.
 		$('.header__search, .header__clear', '.header__toolbar--public').remove();
 		return;

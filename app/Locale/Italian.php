@@ -209,6 +209,7 @@ final class Italian implements LangInterface
 			'PHOTO_CAPTURED' => 'Scattata',
 			'PHOTO_MAKE' => 'Produttore',
 			'PHOTO_TYPE' => 'Tipo/Modello',
+			'PHOTO_LENS' => 'Lens',
 			'PHOTO_SHUTTER' => 'Tempo di Esposizione',
 			'PHOTO_APERTURE' => 'Apertura',
 			'PHOTO_FOCAL' => 'Lunghezza Focale',

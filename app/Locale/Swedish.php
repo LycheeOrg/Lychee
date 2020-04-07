@@ -207,6 +207,7 @@ final class Swedish implements LangInterface
 			'PHOTO_CAPTURED' => 'Digitaliserad',
 			'PHOTO_MAKE' => 'Tillverkare',
 			'PHOTO_TYPE' => 'Typ/Modell',
+			'PHOTO_LENS' => 'Lens',
 			'PHOTO_SHUTTER' => 'Slutartid',
 			'PHOTO_APERTURE' => 'Bländartal',
 			'PHOTO_FOCAL' => 'Brännvidd',

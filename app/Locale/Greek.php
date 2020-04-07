@@ -207,6 +207,7 @@ final class Greek implements LangInterface
 			'PHOTO_CAPTURED' => 'Φωτογραφήθηκε',
 			'PHOTO_MAKE' => 'Έτος Κατασκευής',
 			'PHOTO_TYPE' => 'Τύπος/Μοντέλο',
+			'PHOTO_LENS' => 'Lens',
 			'PHOTO_SHUTTER' => 'Ταχύτητα Κλείστρου',
 			'PHOTO_APERTURE' => 'Διάφραγμα',
 			'PHOTO_FOCAL' => 'Εστιακό μήκος',
