@@ -15,10 +15,12 @@ dist: clean
 	@mkdir Lychee-v$(VERSION)/public/uploads/medium
 	@mkdir Lychee-v$(VERSION)/public/uploads/big
 	@mkdir Lychee-v$(VERSION)/public/uploads/thumb
+	@mkdir Lychee-v$(VERSION)/public/uploads/raw
 	@mkdir Lychee-v$(VERSION)/public/uploads/import
 	@mkdir Lychee-v$(VERSION)/public/sym
 	@cp -r public/dist                      Lychee-v$(VERSION)/public
 	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
+	@cp -r public/Lychee-front/deps         Lychee-v$(VERSION)/public/Lychee-front/deps
 	@cp -r public/Lychee-front/images       Lychee-v$(VERSION)/public/Lychee-front/images
 	@cp -r public/Lychee-front/scripts      Lychee-v$(VERSION)/public/Lychee-front/scripts
 	@cp -r public/Lychee-front/styles       Lychee-v$(VERSION)/public/Lychee-front/styles
@@ -52,15 +54,17 @@ dist: clean
 	@cp -r readme.md                        Lychee-v$(VERSION)
 	@cp -r server.php                       Lychee-v$(VERSION)
 	@cp -r version.md                       Lychee-v$(VERSION)
-	@rm Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
-	@rm Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
-	@rm Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
+	@rm -r Lychee-v$(VERSION)/storage/framework/cache/data/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
 	@touch Lychee-v$(VERSION)/storage/logs/laravel.log
 	@touch Lychee-v$(VERSION)/public/dist/user.css
 	@touch Lychee-v$(VERSION)/public/uploads/big/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/small/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/medium/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/thumb/index.html
+	@touch Lychee-v$(VERSION)/public/uploads/raw/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/import/index.html
 	@touch Lychee-v$(VERSION)/public/sym/index.html
 	@zip -r Lychee-v$(VERSION).zip Lychee-v$(VERSION)
