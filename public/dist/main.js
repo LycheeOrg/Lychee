@@ -667,7 +667,9 @@ album.isSmartID = function (id) {
 
 album.getParent = function () {
 
-	if (album.json == null || album.isSmartID(album.json.id) === true || !album.json.parent_id || album.json.parent_id === 0) return '';
+	if (album.json == null || album.isSmartID(album.json.id) === true || !album.json.parent_id || album.json.parent_id === 0) {
+		return '';
+	}
 	return album.json.parent_id;
 };
 
@@ -677,7 +679,9 @@ album.getID = function () {
 
 	// this is a Lambda
 	var isID = function isID(_id) {
-		if (_id === '0' || _id === 'f' || _id === 's' || _id === 'r') return true;
+		if (_id === '0' || _id === 'f' || _id === 's' || _id === 'r') {
+			return true;
+		}
 		return $.isNumeric(_id);
 	};
 
@@ -917,7 +921,9 @@ album.setTitle = function (albumIDs) {
 	var msg = '';
 
 	if (!albumIDs) return false;
-	if (!(albumIDs instanceof Array)) albumIDs = [albumIDs];
+	if (!(albumIDs instanceof Array)) {
+		albumIDs = [albumIDs];
+	}
 
 	if (albumIDs.length === 1) {
 
@@ -970,7 +976,9 @@ album.setTitle = function (albumIDs) {
 
 		api.post('Album::setTitle', params, function (_data) {
 
-			if (_data !== true) lychee.error(null, params, _data);
+			if (_data !== true) {
+				lychee.error(null, params, _data);
+			}
 		});
 	};
 
@@ -1015,7 +1023,9 @@ album.setDescription = function (albumID) {
 
 		api.post('Album::setDescription', params, function (_data) {
 
-			if (_data !== true) lychee.error(null, params, _data);
+			if (_data !== true) {
+				lychee.error(null, params, _data);
+			}
 		});
 	};
 
@@ -5080,7 +5090,9 @@ multiselect.show = function (e) {
 	$('body').append(build.multiselect(multiselect.position.top, multiselect.position.left));
 
 	$(document).on('mousemove', multiselect.resize).on('mouseup', function (_e) {
-		if (_e.which === 1) multiselect.getSelection(_e);
+		if (_e.which === 1) {
+			multiselect.getSelection(_e);
+		};
 	});
 };
 
@@ -5722,7 +5734,9 @@ _photo.setTitle = function (photoIDs) {
 
 		api.post('Photo::setTitle', params, function (_data) {
 
-			if (_data !== true) lychee.error(null, params, _data);
+			if (_data !== true) {
+				lychee.error(null, params, _data);
+			}
 		});
 	};
 
@@ -6004,7 +6018,9 @@ _photo.setDescription = function (photoID) {
 		};
 
 		api.post('Photo::setDescription', params, function (_data) {
-			if (_data !== true) lychee.error(null, params, _data);
+			if (_data !== true) {
+				lychee.error(null, params, _data);
+			}
 		});
 	};
 
@@ -6566,6 +6582,8 @@ settings.createConfig = function () {
 
 				// Configuration successful
 				window.location.reload();
+
+				return false;
 			}
 		});
 	};
@@ -7724,6 +7742,8 @@ swipe.move = function (e) {
 		'MozTransform': 'translate(' + swipe.offsetX + 'px, ' + swipe.offsetY + 'px)',
 		'transform': 'translate(' + swipe.offsetX + 'px, ' + swipe.offsetY + 'px)'
 	});
+
+	return false;
 };
 
 swipe.stop = function (e, left, right) {
