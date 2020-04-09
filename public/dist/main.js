@@ -367,7 +367,7 @@ function gup(b) {
  * @description This module communicates with Lychee's API
  */
 
-api = {
+var api = {
 
 	path: 'php/index.php',
 	onError: null
@@ -508,7 +508,7 @@ api.post_raw = function (fn, params, callback) {
 		error: error
 	});
 };
-csrf = {};
+var csrf = {};
 
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
 	if (settings.url !== lychee.updatePath) {
@@ -570,8 +570,8 @@ csrf.bind = function () {
 
 			this.swipeStart(e, e.pageX, e.pageY);
 
-			this.el.on('mousemove', function (e) {
-				self.mouseMove(e);
+			this.el.on('mousemove', function (_e) {
+				self.mouseMove(_e);
 			});
 			this.el.on('mouseup', function () {
 				self.mouseUp();
@@ -644,16 +644,18 @@ csrf.bind = function () {
 	};
 
 	$.fn.swipe = function () {
-		var swipe = new Swipe(this);
+		// let swipe = new Swipe(this);
+		new Swipe(this);
 
 		return this;
 	};
 })(jQuery);
+
 /**
  * @description Takes care of every action an album can handle and execute.
  */
 
-album = {
+var album = {
 
 	json: null
 };
@@ -673,12 +675,13 @@ album.getID = function () {
 
 	var id = null;
 
-	var isID = function isID(id) {
-		if (id === '0' || id === 'f' || id === 's' || id === 'r') return true;
-		return $.isNumeric(id);
+	// this is a Lambda
+	var isID = function isID(_id) {
+		if (_id === '0' || _id === 'f' || _id === 's' || _id === 'r') return true;
+		return $.isNumeric(_id);
 	};
 
-	if (photo.json) id = photo.json.album;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
+	if (_photo.json) id = _photo.json.album;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
 
 	// Search
 	if (isID(id) === false) id = $('.album:hover, .album.active').attr('data-id');
@@ -834,9 +837,9 @@ album.load = function (albumID) {
 
 				params.password = password.value;
 
-				api.post('Album::get', params, function (data) {
+				api.post('Album::get', params, function (_data) {
 					albums.refresh();
-					processData(data);
+					processData(_data);
 				});
 			});
 		} else {
@@ -875,20 +878,20 @@ album.add = function () {
 		} else if (visible.album()) {
 			params.parent_id = album.json.id;
 		} else if (visible.photo()) {
-			params.parent_id = photo.json.album;
+			params.parent_id = _photo.json.album;
 		}
 
-		api.post('Album::add', params, function (data) {
+		api.post('Album::add', params, function (_data) {
 
-			if (data !== false && isNumber(data)) {
+			if (_data !== false && isNumber(_data)) {
 				if (IDs != null && callback != null) {
-					callback(IDs, data, false); // we do not confirm
+					callback(IDs, _data, false); // we do not confirm
 				} else {
 					albums.refresh();
-					lychee.goto(data);
+					lychee.goto(_data);
 				}
 			} else {
-				lychee.error(null, params, data);
+				lychee.error(null, params, _data);
 			}
 		});
 	};
@@ -914,7 +917,7 @@ album.setTitle = function (albumIDs) {
 	var msg = '';
 
 	if (!albumIDs) return false;
-	if (!albumIDs instanceof Array) albumIDs = [albumIDs];
+	if (!(albumIDs instanceof Array)) albumIDs = [albumIDs];
 
 	if (albumIDs.length === 1) {
 
@@ -965,9 +968,9 @@ album.setTitle = function (albumIDs) {
 			title: newTitle
 		};
 
-		api.post('Album::setTitle', params, function (data) {
+		api.post('Album::setTitle', params, function (_data) {
 
-			if (data !== true) lychee.error(null, params, data);
+			if (_data !== true) lychee.error(null, params, _data);
 		});
 	};
 
@@ -1010,9 +1013,9 @@ album.setDescription = function (albumID) {
 			description: description
 		};
 
-		api.post('Album::setDescription', params, function (data) {
+		api.post('Album::setDescription', params, function (_data) {
 
-			if (data !== true) lychee.error(null, params, data);
+			if (_data !== true) lychee.error(null, params, _data);
 		});
 	};
 
@@ -1049,10 +1052,10 @@ album.setLicense = function (albumID) {
 			license: license
 		};
 
-		api.post('Album::setLicense', params, function (data) {
+		api.post('Album::setLicense', params, function (_data) {
 
-			if (data !== true) {
-				lychee.error(null, params, data);
+			if (_data !== true) {
+				lychee.error(null, params, _data);
 			} else {
 				if (visible.album()) {
 					album.json.license = params.license;
@@ -1497,7 +1500,7 @@ album.refresh = function () {
  * @description Takes care of every action albums can handle and execute.
  */
 
-albums = {
+var albums = {
 
 	json: null
 
@@ -1513,7 +1516,7 @@ albums.load = function () {
 
 		api.post('Albums::get', {}, function (data) {
 
-			var waitTime = 0;
+			var waitTime = void 0;
 
 			// Smart Albums
 			if (data.smartalbums != null) albums._createSmartAlbums(data.smartalbums);
@@ -1703,7 +1706,7 @@ albums.refresh = function () {
  * @description This module is used to generate HTML-Code.
  */
 
-build = {};
+var build = {};
 
 build.iconic = function (icon) {
 	var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -1967,9 +1970,9 @@ build.imageview = function (data, visibleControls, autoplay) {
 		} else {
 
 			if (data.medium !== '') {
-				medium_dims = data.medium_dim.split("x");
-				medium_width = medium_dims[0];
-				medium_height = medium_dims[1];
+				var medium_dims = data.medium_dim.split("x");
+				var medium_width = medium_dims[0];
+				var medium_height = medium_dims[1];
 				// It's a live photo
 				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px'></div>";
 			} else {
@@ -2090,7 +2093,7 @@ build.user = function (user) {
  * @description This module is used for the context menu.
  */
 
-contextMenu = {};
+var contextMenu = {};
 
 contextMenu.add = function (e) {
 
@@ -2179,9 +2182,8 @@ contextMenu.buildList = function (lists, exclude, action) {
 
 
 	var find = function find(excl, id) {
-		var i = void 0;
-		for (i = 0; i < excl.length; i++) {
-			if (parseInt(excl[i], 10) === parseInt(id, 10)) return true;
+		for (var _i = 0; _i < excl.length; _i++) {
+			if (parseInt(excl[_i], 10) === parseInt(id, 10)) return true;
 		}
 		return false;
 	};
@@ -2287,19 +2289,19 @@ contextMenu.photo = function (photoID, e) {
 	// in order to keep the selection
 
 	var items = [{ title: build.iconic('star') + lychee.locale['STAR'], fn: function fn() {
-			return photo.setStar([photoID]);
+			return _photo.setStar([photoID]);
 		} }, { title: build.iconic('tag') + lychee.locale['TAGS'], fn: function fn() {
-			return photo.editTags([photoID]);
+			return _photo.editTags([photoID]);
 		} }, {}, { title: build.iconic('pencil') + lychee.locale['RENAME'], fn: function fn() {
-			return photo.setTitle([photoID]);
+			return _photo.setTitle([photoID]);
 		} }, { title: build.iconic('layers') + lychee.locale['COPY_TO'], fn: function fn() {
-			basicContext.close();contextMenu.move([photoID], e, photo.copyTo, 'UNSORTED');
+			basicContext.close();contextMenu.move([photoID], e, _photo.copyTo, 'UNSORTED');
 		} }, { title: build.iconic('folder') + lychee.locale['MOVE'], fn: function fn() {
-			basicContext.close();contextMenu.move([photoID], e, photo.setAlbum, 'UNSORTED');
+			basicContext.close();contextMenu.move([photoID], e, _photo.setAlbum, 'UNSORTED');
 		} }, { title: build.iconic('trash') + lychee.locale['DELETE'], fn: function fn() {
-			return photo.delete([photoID]);
+			return _photo.delete([photoID]);
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], fn: function fn() {
-			return photo.getArchive([photoID]);
+			return _photo.getArchive([photoID]);
 		} }];
 
 	$('.photo[data-id="' + photoID + '"]').addClass('active');
@@ -2351,19 +2353,19 @@ contextMenu.photoMulti = function (photoIDs, e) {
 	multiselect.stopResize();
 
 	var items = [{ title: build.iconic('star') + lychee.locale['STAR_ALL'], fn: function fn() {
-			return photo.setStar(photoIDs);
+			return _photo.setStar(photoIDs);
 		} }, { title: build.iconic('tag') + lychee.locale['TAGS_ALL'], fn: function fn() {
-			return photo.editTags(photoIDs);
+			return _photo.editTags(photoIDs);
 		} }, {}, { title: build.iconic('pencil') + lychee.locale['RENAME_ALL'], fn: function fn() {
-			return photo.setTitle(photoIDs);
+			return _photo.setTitle(photoIDs);
 		} }, { title: build.iconic('layers') + lychee.locale['COPY_ALL_TO'], fn: function fn() {
-			basicContext.close();contextMenu.move(photoIDs, e, photo.copyTo, 'UNSORTED');
+			basicContext.close();contextMenu.move(photoIDs, e, _photo.copyTo, 'UNSORTED');
 		} }, { title: build.iconic('folder') + lychee.locale['MOVE_ALL'], fn: function fn() {
-			basicContext.close();contextMenu.move(photoIDs, e, photo.setAlbum, 'UNSORTED');
+			basicContext.close();contextMenu.move(photoIDs, e, _photo.setAlbum, 'UNSORTED');
 		} }, { title: build.iconic('trash') + lychee.locale['DELETE_ALL'], fn: function fn() {
-			return photo.delete(photoIDs);
+			return _photo.delete(photoIDs);
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_ALL'], fn: function fn() {
-			return photo.getArchive(photoIDs, 'FULL');
+			return _photo.getArchive(photoIDs, 'FULL');
 		} }];
 
 	if (!lychee.api_V2) {
@@ -2376,7 +2378,7 @@ contextMenu.photoMulti = function (photoIDs, e) {
 contextMenu.photoTitle = function (albumID, photoID, e) {
 
 	var items = [{ title: build.iconic('pencil') + lychee.locale['RENAME'], fn: function fn() {
-			return photo.setTitle([photoID]);
+			return _photo.setTitle([photoID]);
 		} }];
 
 	var data = album.json;
@@ -2404,13 +2406,13 @@ contextMenu.photoMore = function (photoID, e) {
 	// a) We are allowed to upload to the album
 	// b) the photo is explicitly marked as downloadable (v4-only)
 	// c) or, the album is explicitly marked as downloadable
-	var showDownload = album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1');
-	var showFull = photo.json.url && photo.json.url !== '';
+	var showDownload = album.isUploadable() || (_photo.json.hasOwnProperty('downloadable') ? _photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1');
+	var showFull = _photo.json.url && _photo.json.url !== '';
 
 	var items = [{ title: build.iconic('fullscreen-enter') + lychee.locale['FULL_PHOTO'], visible: !!showFull, fn: function fn() {
-			return window.open(photo.getDirectLink());
+			return window.open(_photo.getDirectLink());
 		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], visible: !!showDownload, fn: function fn() {
-			return photo.getArchive([photoID]);
+			return _photo.getArchive([photoID]);
 		} }];
 
 	basicContext.show(items, e.originalEvent);
@@ -2419,8 +2421,7 @@ contextMenu.photoMore = function (photoID, e) {
 contextMenu.getSubIDs = function (albums, albumID) {
 
 	var ids = [parseInt(albumID, 10)];
-	var a = void 0,
-	    id = void 0;
+	var a = void 0;
 
 	for (a = 0; a < albums.length; a++) {
 		if (parseInt(albums[a].parent_id, 10) === parseInt(albumID, 10)) {
@@ -2444,7 +2445,7 @@ contextMenu.move = function (IDs, e, callback) {
 
 	api.post('Albums::get', {}, function (data) {
 
-		addItems = function addItems(albums) {
+		var addItems = function addItems(albums) {
 
 			// Disable all children
 			// It's not possible to move us into them
@@ -2460,7 +2461,7 @@ contextMenu.move = function (IDs, e, callback) {
 			if (visible.album()) {
 				// For merging, don't exclude the parent.
 				// For photo copy, don't exclude the current album.
-				if (callback !== album.merge && callback !== photo.copyTo) {
+				if (callback !== album.merge && callback !== _photo.copyTo) {
 					exclude.push(album.getID().toString());
 				}
 				if (IDs.length === 1 && IDs[0] === album.getID() && album.getParent() && callback === album.setAlbum) {
@@ -2468,7 +2469,7 @@ contextMenu.move = function (IDs, e, callback) {
 					exclude.push(album.getParent().toString());
 				}
 			} else if (visible.photo()) {
-				exclude.push(photo.json.album.toString());
+				exclude.push(_photo.json.album.toString());
 			}
 			items = items.concat(contextMenu.buildList(albums, exclude.concat(IDs), function (a) {
 				return callback(IDs, a.id);
@@ -2513,22 +2514,22 @@ contextMenu.move = function (IDs, e, callback) {
 contextMenu.sharePhoto = function (photoID, e) {
 
 	// v4+ only
-	if (photo.json.hasOwnProperty('share_button_visible') && photo.json.share_button_visible !== '1') {
+	if (_photo.json.hasOwnProperty('share_button_visible') && _photo.json.share_button_visible !== '1') {
 		return;
 	}
 
 	var iconClass = 'ionicons';
 
 	var items = [{ title: build.iconic('twitter', iconClass) + 'Twitter', fn: function fn() {
-			return photo.share(photoID, 'twitter');
+			return _photo.share(photoID, 'twitter');
 		} }, { title: build.iconic('facebook', iconClass) + 'Facebook', fn: function fn() {
-			return photo.share(photoID, 'facebook');
+			return _photo.share(photoID, 'facebook');
 		} }, { title: build.iconic('envelope-closed') + 'Mail', fn: function fn() {
-			return photo.share(photoID, 'mail');
+			return _photo.share(photoID, 'mail');
 		} }, { title: build.iconic('dropbox', iconClass) + 'Dropbox', visible: lychee.admin === true, fn: function fn() {
-			return photo.share(photoID, 'dropbox');
+			return _photo.share(photoID, 'dropbox');
 		} }, { title: build.iconic('link-intact') + lychee.locale['DIRECT_LINKS'], fn: function fn() {
-			return photo.showDirectLinks(photoID);
+			return _photo.showDirectLinks(photoID);
 		} }];
 
 	basicContext.show(items, e.originalEvent);
@@ -2572,7 +2573,7 @@ contextMenu.close = function () {
  * @description This module takes care of the header.
  */
 
-header = {
+var header = {
 
 	_dom: $('.header')
 
@@ -2593,14 +2594,14 @@ header.bind = function () {
 
 		if ($(this).hasClass('header__title--editable') === false) return false;
 
-		if (visible.photo()) contextMenu.photoTitle(album.getID(), photo.getID(), e);else contextMenu.albumTitle(album.getID(), e);
+		if (visible.photo()) contextMenu.photoTitle(album.getID(), _photo.getID(), e);else contextMenu.albumTitle(album.getID(), e);
 	});
 
 	header.dom('#button_visibility').on(eventName, function (e) {
-		photo.setPublic(photo.getID(), e);
+		_photo.setPublic(_photo.getID(), e);
 	});
 	header.dom('#button_share').on(eventName, function (e) {
-		contextMenu.sharePhoto(photo.getID(), e);
+		contextMenu.sharePhoto(_photo.getID(), e);
 	});
 
 	header.dom('#button_visibility_album').on(eventName, function (e) {
@@ -2612,8 +2613,8 @@ header.bind = function () {
 
 	header.dom('#button_signin').on(eventName, lychee.loginDialog);
 	header.dom('#button_settings').on(eventName, leftMenu.open);
-	header.dom('#button_info_album').on(eventName, sidebar.toggle);
-	header.dom('#button_info').on(eventName, sidebar.toggle);
+	header.dom('#button_info_album').on(eventName, _sidebar.toggle);
+	header.dom('#button_info').on(eventName, _sidebar.toggle);
 	header.dom('.button--map-albums').on(eventName, function () {
 		lychee.gotoMap();
 	});
@@ -2625,13 +2626,13 @@ header.bind = function () {
 	});
 	header.dom('.button_add').on(eventName, contextMenu.add);
 	header.dom('#button_more').on(eventName, function (e) {
-		contextMenu.photoMore(photo.getID(), e);
+		contextMenu.photoMore(_photo.getID(), e);
 	});
 	header.dom('#button_move_album').on(eventName, function (e) {
 		contextMenu.move([album.getID()], e, album.setAlbum, 'ROOT', album.getParent() != '');
 	});
 	header.dom('#button_move').on(eventName, function (e) {
-		contextMenu.move([photo.getID()], e, photo.setAlbum);
+		contextMenu.move([_photo.getID()], e, _photo.setAlbum);
 	});
 	header.dom('.header__hostedwith').on(eventName, function () {
 		window.open(lychee.website);
@@ -2640,13 +2641,13 @@ header.bind = function () {
 		album.delete([album.getID()]);
 	});
 	header.dom('#button_trash').on(eventName, function () {
-		photo.delete([photo.getID()]);
+		_photo.delete([_photo.getID()]);
 	});
 	header.dom('#button_archive').on(eventName, function () {
 		album.getArchive([album.getID()]);
 	});
 	header.dom('#button_star').on(eventName, function () {
-		photo.setStar([photo.getID()]);
+		_photo.setStar([_photo.getID()]);
 	});
 	header.dom('#button_back_home').on(eventName, function () {
 		if (!album.json.parent_id) {
@@ -2700,7 +2701,7 @@ header.show = function () {
 	lychee.imageview.removeClass('full');
 	header.dom().removeClass('header--hidden');
 
-	photo.updateSizeLivePhotoDuringAnimation();
+	_photo.updateSizeLivePhotoDuringAnimation();
 
 	return true;
 };
@@ -2708,7 +2709,7 @@ header.show = function () {
 header.hideIfLivePhotoNotPlaying = function () {
 
 	// Hides the header, if current live photo is not playing
-	if (photo.isLivePhotoPlaying() == true) return false;
+	if (_photo.isLivePhotoPlaying() == true) return false;
 	return header.hide();
 };
 
@@ -2719,7 +2720,7 @@ header.hide = function () {
 		lychee.imageview.addClass('full');
 		header.dom().addClass('header--hidden');
 
-		photo.updateSizeLivePhotoDuringAnimation();
+		_photo.updateSizeLivePhotoDuringAnimation();
 
 		return true;
 	}
@@ -2845,7 +2846,7 @@ header.setMode = function (mode) {
 				$('#button_trash, #button_move, #button_visibility, #button_star').hide();
 			}
 
-			if (photo.json && photo.json.hasOwnProperty('share_button_visible') && photo.json.share_button_visible !== '1') {
+			if (_photo.json && _photo.json.hasOwnProperty('share_button_visible') && _photo.json.share_button_visible !== '1') {
 				$('#button_share').hide();
 			} else {
 				$('#button_share').show();
@@ -2853,7 +2854,7 @@ header.setMode = function (mode) {
 
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$('#button_more').show();
-			if (!(album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(photo.json.url && photo.json.url !== '')) {
+			if (!(album.isUploadable() || (_photo.json.hasOwnProperty('downloadable') ? _photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(_photo.json.url && _photo.json.url !== '')) {
 				$('#button_more').hide();
 			}
 
@@ -2933,7 +2934,7 @@ $(document).ready(function () {
 	header.bind();
 
 	// Image View
-	lychee.imageview.on(eventName, '.arrow_wrapper--previous', photo.previous).on(eventName, '.arrow_wrapper--next', photo.next).on('click', 'img, #livephoto', photo.update_display_overlay);
+	lychee.imageview.on(eventName, '.arrow_wrapper--previous', _photo.previous).on(eventName, '.arrow_wrapper--next', _photo.next).on('click', 'img, #livephoto', _photo.update_display_overlay);
 
 	// Keyboard
 	Mousetrap.bind(['l'], function () {
@@ -2965,29 +2966,29 @@ $(document).ready(function () {
 			if (visible.album()) {
 				album.setTitle(album.getID());return false;
 			} else if (visible.photo()) {
-				photo.setTitle([photo.getID()]);return false;
+				_photo.setTitle([_photo.getID()]);return false;
 			}
 		}
 	}).bind(['d'], function () {
 		if (album.isUploadable()) {
 			if (visible.photo()) {
-				photo.setDescription(photo.getID());return false;
+				_photo.setDescription(_photo.getID());return false;
 			} else if (visible.album()) {
 				album.setDescription(album.getID());return false;
 			}
 		}
 	}).bind(['t'], function () {
 		if (visible.photo() && album.isUploadable()) {
-			photo.editTags([photo.getID()]);return false;
+			_photo.editTags([_photo.getID()]);return false;
 		}
 	}).bind(['i'], function () {
 		if (!visible.multiselect()) {
-			sidebar.toggle();return false;
+			_sidebar.toggle();return false;
 		}
 	}).bind(['command+backspace', 'ctrl+backspace'], function () {
 		if (album.isUploadable()) {
 			if (visible.photo() && basicModal.visible() === false) {
-				photo.delete([photo.getID()]);return false;
+				_photo.delete([_photo.getID()]);return false;
 			} else if (visible.album() && basicModal.visible() === false) {
 				album.delete([album.getID()]);return false;
 			}
@@ -3000,7 +3001,7 @@ $(document).ready(function () {
 		}
 	}).bind(['o'], function () {
 		if (visible.photo()) {
-			photo.update_overlay_type();return false;
+			_photo.update_overlay_type();return false;
 		}
 	}).bind(['f'], function () {
 		if (visible.album() || visible.photo()) {
@@ -3034,7 +3035,7 @@ $(document).ready(function () {
 		}).swipe().on('swipeMove', function (e) {
 			if (visible.photo()) swipe.move(e.swipe);
 		}).swipe().on('swipeEnd', function (e) {
-			if (visible.photo()) swipe.stop(e.swipe, photo.previous, photo.next);
+			if (visible.photo()) swipe.stop(e.swipe, _photo.previous, _photo.next);
 		});
 	}
 
@@ -3123,7 +3124,7 @@ $(document).ready(function () {
  * @description This module is used for the context menu.
  */
 
-leftMenu = {
+var leftMenu = {
 
 	_dom: $('.leftMenu')
 
@@ -3225,7 +3226,7 @@ leftMenu.Sharing = function () {
  * @description This module is used to show and hide the loading bar.
  */
 
-loadingBar = {
+var loadingBar = {
 
 	status: null,
 	_dom: $('#loading')
@@ -3344,7 +3345,7 @@ loadingBar.hide = function (force) {
  * @description This module provides the basic functions of Lychee.
  */
 
-lychee = {
+var lychee = {
 
 	title: document.title,
 	version: '',
@@ -3581,9 +3582,9 @@ lychee.login = function (data) {
 		password: password
 	};
 
-	api.post('Session::login', params, function (data) {
+	api.post('Session::login', params, function (_data) {
 
-		if (data === true) {
+		if (_data === true) {
 
 			window.location.reload();
 		} else {
@@ -3677,11 +3678,11 @@ lychee.load = function () {
 			albumID = photoID;
 
 			// Trash data
-			photo.json = null;
+			_photo.json = null;
 
 			// Show Album -> it's below the map
 			if (visible.photo()) view.photo.hide();
-			if (visible.sidebar()) sidebar.toggle();
+			if (visible.sidebar()) _sidebar.toggle();
 			if (album.json && albumID === album.json.id) {
 				view.album.title();
 			}
@@ -3690,7 +3691,7 @@ lychee.load = function () {
 		} else if (albumID == 'search') {
 
 			// Search has been triggered
-			search_string = decodeURIComponent(photoID);
+			var search_string = decodeURIComponent(photoID);
 
 			if (search_string.trim() === "") {
 				// do nothing on "only space" search strings
@@ -3711,14 +3712,14 @@ lychee.load = function () {
 			// Show photo
 
 			// Trash data
-			photo.json = null;
+			_photo.json = null;
 
 			// Show Photo
 			if (lychee.content.html() === '' || album.json == null || header.dom('.header__search').length && header.dom('.header__search').val().length !== 0) {
 				lychee.content.hide();
 				album.load(albumID, true);
 			}
-			photo.load(photoID, albumID, autoplay);
+			_photo.load(photoID, albumID, autoplay);
 			lychee.footer_hide();
 		}
 	} else if (albumID) {
@@ -3734,11 +3735,11 @@ lychee.load = function () {
 			}
 
 			// Trash data
-			photo.json = null;
+			_photo.json = null;
 
 			// Show Album -> it's below the map
 			if (visible.photo()) view.photo.hide();
-			if (visible.sidebar()) sidebar.toggle();
+			if (visible.sidebar()) _sidebar.toggle();
 			mapview.open();
 			lychee.footer_hide();
 		} else if (albumID == 'search') {
@@ -3747,12 +3748,12 @@ lychee.load = function () {
 
 			$('.no_content').remove();
 			// Trash data
-			photo.json = null;
+			_photo.json = null;
 
 			// Show Album
 			if (visible.photo()) view.photo.hide();
 			if (visible.mapview()) mapview.close();
-			if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) sidebar.toggle();
+			if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) _sidebar.toggle();
 			if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
 			lychee.footer_show();
 		}
@@ -3767,10 +3768,10 @@ lychee.load = function () {
 
 		// Trash data
 		album.json = null;
-		photo.json = null;
+		_photo.json = null;
 
 		// Hide sidebar
-		if (visible.sidebar()) sidebar.toggle();
+		if (visible.sidebar()) _sidebar.toggle();
 
 		// Show Albums
 		if (visible.photo()) view.photo.hide();
@@ -4077,9 +4078,9 @@ lychee.adjustContentHeight = function () {
 };
 
 lychee.getBaseUrl = function () {
-	if (location.href.indexOf('index.html') > 0) {
+	if (location.href.includes('index.html')) {
 		return location.href.replace('index.html' + location.hash, '');
-	} else if (location.href.indexOf('gallery#') > 0) {
+	} else if (location.href.includes('gallery#')) {
 		return location.href.replace('gallery' + location.hash, '');
 	} else {
 		return location.href.replace(location.hash, '');
@@ -4542,7 +4543,7 @@ lychee.locale = {
  * @description This module takes care of the map view of a full album and its sub-albums.
  */
 
-map_provider_layer_attribution = {
+var map_provider_layer_attribution = {
 	'Wikimedia': {
 		layer: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
 		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
@@ -4565,7 +4566,7 @@ map_provider_layer_attribution = {
 	}
 };
 
-mapview = {
+var mapview = {
 	map: null,
 	photoLayer: null,
 	min_lat: null,
@@ -4688,7 +4689,7 @@ mapview.open = function () {
 	});
 
 	// Adjusts zoom and position of map to show all images
-	updateZoom = function updateZoom() {
+	var updateZoom = function updateZoom() {
 		if (mapview.min_lat && mapview.min_lng && mapview.max_lat && mapview.max_lng) {
 			var dist_lat = mapview.max_lat - mapview.min_lat;
 			var dist_lng = mapview.max_lng - mapview.min_lng;
@@ -4699,12 +4700,12 @@ mapview.open = function () {
 	};
 
 	// Adds photos to the map
-	addPhotosToMap = function addPhotosToMap(album) {
+	var addPhotosToMap = function addPhotosToMap(album) {
 
 		// check if empty
 		if (!album.photos) return;
 
-		photos = [];
+		var photos = [];
 
 		album.photos.forEach(function (element, index) {
 			if (element.latitude || element.longitude) {
@@ -4747,7 +4748,7 @@ mapview.open = function () {
 	// Call backend, retrieve information of photos and display them
 	// This function is called recursively to retrieve data for sub-albums
 	// Possible enhancement could be to only have a single ajax call
-	getAlbumData = function getAlbumData(_albumID) {
+	var getAlbumData = function getAlbumData(_albumID) {
 		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 		if (_albumID !== '' && _albumID !== null) {
@@ -4765,9 +4766,9 @@ mapview.open = function () {
 
 						_params.password = password.value;
 
-						api.post('Album::getPositionData', _params, function (data) {
-							addPhotosToMap(data);
-							mapview.title(_albumID, data.title);
+						api.post('Album::getPositionData', _params, function (_data) {
+							addPhotosToMap(_data);
+							mapview.title(_albumID, _data.title);
 						});
 					});
 				} else {
@@ -4790,9 +4791,9 @@ mapview.open = function () {
 
 						_params2.password = password.value;
 
-						api.post('Albums::getPositionData', _params2, function (data) {
-							addPhotosToMap(data);
-							mapview.title(_albumID, data.title);
+						api.post('Albums::getPositionData', _params2, function (_data) {
+							addPhotosToMap(_data);
+							mapview.title(_albumID, _data.title);
 						});
 					});
 				} else {
@@ -4854,7 +4855,7 @@ var isSelectKeyPressed = function isSelectKeyPressed(e) {
 	return e.metaKey || e.ctrlKey;
 };
 
-multiselect = {
+var multiselect = {
 
 	ids: [],
 	albumsSelected: 0,
@@ -5042,7 +5043,7 @@ multiselect.photoContextMenu = function (e, photoObj) {
 		contextMenu.photo(id, e);
 	} else if (visible.photo()) {
 		// should not happen... but you never know...
-		contextMenu.photo(photo.getID(), e);
+		contextMenu.photo(_photo.getID(), e);
 	} else {
 		lychee.error('Could not find what you want.');
 	}
@@ -5065,7 +5066,7 @@ multiselect.show = function (e) {
 	if (visible.search()) return false;
 	if (visible.multiselect()) $('#multiselect').remove();
 
-	sidebar.setSelectable(false);
+	_sidebar.setSelectable(false);
 
 	if (!isSelectKeyPressed(e) && !e.shiftKey) {
 		multiselect.clearSelection();
@@ -5078,8 +5079,8 @@ multiselect.show = function (e) {
 
 	$('body').append(build.multiselect(multiselect.position.top, multiselect.position.left));
 
-	$(document).on('mousemove', multiselect.resize).on('mouseup', function (e) {
-		if (e.which === 1) multiselect.getSelection(e);
+	$(document).on('mousemove', multiselect.resize).on('mouseup', function (_e) {
+		if (_e.which === 1) multiselect.getSelection(_e);
 	});
 };
 
@@ -5191,7 +5192,7 @@ multiselect.deselect = function (id) {
 
 multiselect.hide = function () {
 
-	sidebar.setSelectable(true);
+	_sidebar.setSelectable(true);
 
 	multiselect.stopResize();
 
@@ -5208,7 +5209,7 @@ multiselect.hide = function () {
 
 multiselect.close = function () {
 
-	sidebar.setSelectable(true);
+	_sidebar.setSelectable(true);
 
 	multiselect.stopResize();
 
@@ -5230,7 +5231,7 @@ multiselect.selectAll = function () {
 	if (!visible.albums() && !visible.album) return false;
 	if (visible.multiselect()) $('#multiselect').remove();
 
-	sidebar.setSelectable(false);
+	_sidebar.setSelectable(false);
 
 	multiselect.clearSelection();
 
@@ -5250,7 +5251,7 @@ multiselect.selectAll = function () {
  * @description Controls the access to password-protected albums and photos.
  */
 
-password = {
+var password = {
 
 	value: ''
 
@@ -5267,9 +5268,9 @@ password.getDialog = function (albumID, callback) {
 			password: passwd
 		};
 
-		api.post('Album::getPublic', params, function (data) {
+		api.post('Album::getPublic', params, function (_data) {
 
-			if (data === true) {
+			if (_data === true) {
 				basicModal.close();
 				password.value = passwd;
 				callback();
@@ -5306,7 +5307,7 @@ password.getDialog = function (albumID, callback) {
  * @description Takes care of every action a photo can handle and execute.
  */
 
-photo = {
+var _photo = {
 
 	json: null,
 	cache: null,
@@ -5315,23 +5316,23 @@ photo = {
 
 };
 
-photo.getID = function () {
+_photo.getID = function () {
 
 	var id = null;
 
-	if (photo.json) id = photo.json.id;else id = $('.photo:hover, .photo.active').attr('data-id');
+	if (_photo.json) id = _photo.json.id;else id = $('.photo:hover, .photo.active').attr('data-id');
 
 	if ($.isNumeric(id) === true) return id;else return false;
 };
 
-photo.load = function (photoID, albumID, autoplay) {
+_photo.load = function (photoID, albumID, autoplay) {
 
 	var checkContent = function checkContent() {
-		if (album.json != null && album.json.photos) photo.load(photoID, albumID, autoplay);else setTimeout(checkContent, 100);
+		if (album.json != null && album.json.photos) _photo.load(photoID, albumID, autoplay);else setTimeout(checkContent, 100);
 	};
 
 	var checkPasswd = function checkPasswd() {
-		if (password.value !== '') photo.load(photoID, albumID, autoplay);else setTimeout(checkPasswd, 200);
+		if (password.value !== '') _photo.load(photoID, albumID, autoplay);else setTimeout(checkPasswd, 200);
 	};
 
 	// we need to check the album.json.photos because otherwise the script is too fast and this raise an error.
@@ -5358,9 +5359,9 @@ photo.load = function (photoID, albumID, autoplay) {
 			return false;
 		}
 
-		photo.json = data;
-		photo.json.original_album = photo.json.album;
-		photo.json.album = albumID;
+		_photo.json = data;
+		_photo.json.original_album = _photo.json.album;
+		_photo.json.album = albumID;
 
 		if (!visible.photo()) view.photo.show();
 		view.photo.init(autoplay);
@@ -5372,35 +5373,35 @@ photo.load = function (photoID, albumID, autoplay) {
 	});
 };
 
-photo.hasExif = function () {
-	var exifHash = photo.json.make + photo.json.model + photo.json.shutter + photo.json.aperture + photo.json.focal + photo.json.iso;
+_photo.hasExif = function () {
+	var exifHash = _photo.json.make + _photo.json.model + _photo.json.shutter + _photo.json.aperture + _photo.json.focal + _photo.json.iso;
 
 	return exifHash !== '';
 };
 
-photo.hasTakedate = function () {
-	return photo.json.takedate && photo.json.takedate !== '';
+_photo.hasTakedate = function () {
+	return _photo.json.takedate && _photo.json.takedate !== '';
 };
 
-photo.hasDesc = function () {
-	return photo.json.description && photo.json.description !== '';
+_photo.hasDesc = function () {
+	return _photo.json.description && _photo.json.description !== '';
 };
 
-photo.isLivePhoto = function () {
-	if (!photo.json) return false; // In case it's called, but not initialized
-	return photo.json.livePhotoUrl && photo.json.livePhotoUrl !== '';
+_photo.isLivePhoto = function () {
+	if (!_photo.json) return false; // In case it's called, but not initialized
+	return _photo.json.livePhotoUrl && _photo.json.livePhotoUrl !== '';
 };
 
-photo.isLivePhotoInitizalized = function () {
-	return photo.LivePhotosObject !== null;
+_photo.isLivePhotoInitizalized = function () {
+	return _photo.LivePhotosObject !== null;
 };
 
-photo.isLivePhotoPlaying = function () {
-	if (photo.isLivePhotoInitizalized() === false) return false;
-	return photo.LivePhotosObject.isPlaying;
+_photo.isLivePhotoPlaying = function () {
+	if (_photo.isLivePhotoInitizalized() === false) return false;
+	return _photo.LivePhotosObject.isPlaying;
 };
 
-photo.update_overlay_type = function () {
+_photo.update_overlay_type = function () {
 	// Only run if the overlay is showing
 	if (!lychee.image_overlay) {
 		return false;
@@ -5412,30 +5413,30 @@ photo.update_overlay_type = function () {
 		var j = (i + 1) % types.length;
 		var cont = true;
 		while (i !== j && cont) {
-			if (types[j] === 'desc' && photo.hasDesc()) cont = false;else if (types[j] === 'takedate' && photo.hasTakedate()) cont = false;else if (types[j] === 'exif' && photo.hasExif()) cont = false;else j = (j + 1) % types.length;
+			if (types[j] === 'desc' && _photo.hasDesc()) cont = false;else if (types[j] === 'takedate' && _photo.hasTakedate()) cont = false;else if (types[j] === 'exif' && _photo.hasExif()) cont = false;else j = (j + 1) % types.length;
 		}
 
 		if (i !== j) {
 			lychee.image_overlay_type = types[j];
 			$('#image_overlay').remove();
-			lychee.imageview.append(build.overlay_image(photo.json));
+			lychee.imageview.append(build.overlay_image(_photo.json));
 		} else {
 			// console.log('no other data found, displaying ' + types[j]);
 		}
 	}
 };
 
-photo.update_display_overlay = function () {
+_photo.update_display_overlay = function () {
 	lychee.image_overlay = !lychee.image_overlay;
 	if (!lychee.image_overlay) {
 		$('#image_overlay').remove();
 	} else {
-		lychee.imageview.append(build.overlay_image(photo.json));
+		lychee.imageview.append(build.overlay_image(_photo.json));
 	}
 };
 
 // Preload the next and previous photos for better response time
-photo.preloadNextPrev = function (photoID) {
+_photo.preloadNextPrev = function (photoID) {
 	if (album.json && album.json.photos && album.getByID(photoID)) {
 
 		var previousPhotoID = album.getByID(photoID).previousPhoto;
@@ -5468,7 +5469,7 @@ photo.preloadNextPrev = function (photoID) {
 			}
 
 			if (href !== '') {
-				if (photo.supportsPrefetch === null) {
+				if (_photo.supportsPrefetch === null) {
 					// Copied from https://www.smashingmagazine.com/2016/02/preload-what-is-it-good-for/
 					var DOMTokenListSupports = function DOMTokenListSupports(tokenList, token) {
 						if (!tokenList || !tokenList.supports) {
@@ -5484,10 +5485,10 @@ photo.preloadNextPrev = function (photoID) {
 							}
 						}
 					};
-					photo.supportsPrefetch = DOMTokenListSupports(document.createElement('link').relList, 'prefetch');
+					_photo.supportsPrefetch = DOMTokenListSupports(document.createElement('link').relList, 'prefetch');
 				}
 
-				if (photo.supportsPrefetch) {
+				if (_photo.supportsPrefetch) {
 					$('head').append(lychee.html(_templateObject47, href));
 				} else {
 					// According to https://caniuse.com/#feat=link-rel-prefetch,
@@ -5506,12 +5507,12 @@ photo.preloadNextPrev = function (photoID) {
 	}
 };
 
-photo.parse = function () {
+_photo.parse = function () {
 
-	if (!photo.json.title) photo.json.title = lychee.locale['UNTITLED'];
+	if (!_photo.json.title) _photo.json.title = lychee.locale['UNTITLED'];
 };
 
-photo.updateSizeLivePhotoDuringAnimation = function () {
+_photo.updateSizeLivePhotoDuringAnimation = function () {
 	var animationDuraction = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 300;
 	var pauseBetweenUpdated = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
 
@@ -5519,8 +5520,8 @@ photo.updateSizeLivePhotoDuringAnimation = function () {
 	// during CSS animations
 	//
 	var interval = setInterval(function () {
-		if (photo.isLivePhotoInitizalized()) {
-			photo.LivePhotosObject.updateSize();
+		if (_photo.isLivePhotoInitizalized()) {
+			_photo.LivePhotosObject.updateSize();
 		}
 	}, pauseBetweenUpdated);
 
@@ -5529,9 +5530,9 @@ photo.updateSizeLivePhotoDuringAnimation = function () {
 	}, animationDuraction);
 };
 
-photo.previous = function (animate) {
+_photo.previous = function (animate) {
 
-	if (photo.getID() !== false && album.json && album.getByID(photo.getID()) && album.getByID(photo.getID()).previousPhoto !== '') {
+	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).previousPhoto !== '') {
 
 		var delay = 0;
 
@@ -5548,16 +5549,16 @@ photo.previous = function (animate) {
 		}
 
 		setTimeout(function () {
-			if (photo.getID() === false) return false;
-			photo.LivePhotosObject = null;
-			lychee.goto(album.getID() + '/' + album.getByID(photo.getID()).previousPhoto, false);
+			if (_photo.getID() === false) return false;
+			_photo.LivePhotosObject = null;
+			lychee.goto(album.getID() + '/' + album.getByID(_photo.getID()).previousPhoto, false);
 		}, delay);
 	}
 };
 
-photo.next = function (animate) {
+_photo.next = function (animate) {
 
-	if (photo.getID() !== false && album.json && album.getByID(photo.getID()) && album.getByID(photo.getID()).nextPhoto !== '') {
+	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).nextPhoto !== '') {
 
 		var delay = 0;
 
@@ -5574,14 +5575,14 @@ photo.next = function (animate) {
 		}
 
 		setTimeout(function () {
-			if (photo.getID() === false) return false;
-			photo.LivePhotosObject = null;
-			lychee.goto(album.getID() + '/' + album.getByID(photo.getID()).nextPhoto, false);
+			if (_photo.getID() === false) return false;
+			_photo.LivePhotosObject = null;
+			lychee.goto(album.getID() + '/' + album.getByID(_photo.getID()).nextPhoto, false);
 		}, delay);
 	}
 };
 
-photo.delete = function (photoIDs) {
+_photo.delete = function (photoIDs) {
 
 	var action = {};
 	var cancel = {};
@@ -5594,7 +5595,7 @@ photo.delete = function (photoIDs) {
 	if (photoIDs.length === 1) {
 
 		// Get title if only one photo is selected
-		if (visible.photo()) photoTitle = photo.json.title;else photoTitle = album.getByID(photoIDs).title;
+		if (visible.photo()) photoTitle = _photo.json.title;else photoTitle = album.getByID(photoIDs).title;
 
 		// Fallback for photos without a title
 		if (photoTitle === '') photoTitle = lychee.locale['UNTITLED'];
@@ -5633,9 +5634,9 @@ photo.delete = function (photoIDs) {
 		// next photo is not the current one. Also try the previous one.
 		// Show album otherwise.
 		if (visible.photo()) {
-			if (nextPhoto !== '' && nextPhoto !== photo.getID()) {
+			if (nextPhoto !== '' && nextPhoto !== _photo.getID()) {
 				lychee.goto(album.getID() + '/' + nextPhoto);
-			} else if (previousPhoto !== '' && previousPhoto !== photo.getID()) {
+			} else if (previousPhoto !== '' && previousPhoto !== _photo.getID()) {
 				lychee.goto(album.getID() + '/' + previousPhoto);
 			} else {
 				lychee.goto(album.getID());
@@ -5684,7 +5685,7 @@ photo.delete = function (photoIDs) {
 	});
 };
 
-photo.setTitle = function (photoIDs) {
+_photo.setTitle = function (photoIDs) {
 
 	var oldTitle = '';
 	var msg = '';
@@ -5695,7 +5696,7 @@ photo.setTitle = function (photoIDs) {
 	if (photoIDs.length === 1) {
 
 		// Get old title if only one photo is selected
-		if (photo.json) oldTitle = photo.json.title;else if (album.json) oldTitle = album.getByID(photoIDs).title;
+		if (_photo.json) oldTitle = _photo.json.title;else if (album.json) oldTitle = album.getByID(photoIDs).title;
 	}
 
 	var action = function action(data) {
@@ -5705,7 +5706,7 @@ photo.setTitle = function (photoIDs) {
 		var newTitle = data.title;
 
 		if (visible.photo()) {
-			photo.json.title = newTitle === '' ? 'Untitled' : newTitle;
+			_photo.json.title = newTitle === '' ? 'Untitled' : newTitle;
 			view.photo.title();
 		}
 
@@ -5719,9 +5720,9 @@ photo.setTitle = function (photoIDs) {
 			title: newTitle
 		};
 
-		api.post('Photo::setTitle', params, function (data) {
+		api.post('Photo::setTitle', params, function (_data) {
 
-			if (data !== true) lychee.error(null, params, data);
+			if (_data !== true) lychee.error(null, params, _data);
 		});
 	};
 
@@ -5744,7 +5745,7 @@ photo.setTitle = function (photoIDs) {
 	});
 };
 
-photo.copyTo = function (photoIDs, albumID) {
+_photo.copyTo = function (photoIDs, albumID) {
 
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
@@ -5765,13 +5766,13 @@ photo.copyTo = function (photoIDs, albumID) {
 				// Lychee v3 does not support the albumID argument to
 				// Photo::duplicate so we need to do it manually, which is
 				// imperfect, as it moves the source photos, not the duplicates.
-				photo.setAlbum(photoIDs, albumID);
+				_photo.setAlbum(photoIDs, albumID);
 			}
 		}
 	});
 };
 
-photo.setAlbum = function (photoIDs, albumID) {
+_photo.setAlbum = function (photoIDs, albumID) {
 
 	var nextPhoto = '';
 	var previousPhoto = '';
@@ -5805,9 +5806,9 @@ photo.setAlbum = function (photoIDs, albumID) {
 	// next photo is not the current one. Also try the previous one.
 	// Show album otherwise.
 	if (visible.photo()) {
-		if (nextPhoto !== '' && nextPhoto !== photo.getID()) {
+		if (nextPhoto !== '' && nextPhoto !== _photo.getID()) {
 			lychee.goto(album.getID() + '/' + nextPhoto);
-		} else if (previousPhoto !== '' && previousPhoto !== photo.getID()) {
+		} else if (previousPhoto !== '' && previousPhoto !== _photo.getID()) {
 			lychee.goto(album.getID() + '/' + previousPhoto);
 		} else {
 			lychee.goto(album.getID());
@@ -5842,12 +5843,12 @@ photo.setAlbum = function (photoIDs, albumID) {
 	});
 };
 
-photo.setStar = function (photoIDs) {
+_photo.setStar = function (photoIDs) {
 
 	if (!photoIDs) return false;
 
 	if (visible.photo()) {
-		photo.json.star = photo.json.star === '0' ? '1' : '0';
+		_photo.json.star = _photo.json.star === '0' ? '1' : '0';
 		view.photo.star();
 	}
 
@@ -5868,13 +5869,13 @@ photo.setStar = function (photoIDs) {
 	});
 };
 
-photo.setPublic = function (photoID, e) {
+_photo.setPublic = function (photoID, e) {
 
 	var msg_switch = lychee.html(_templateObject52, lychee.locale['PHOTO_PUBLIC'], lychee.locale['PHOTO_PUBLIC_EXPL']);
 
 	var msg_choices = lychee.html(_templateObject53, build.iconic('check'), lychee.locale['PHOTO_FULL'], lychee.locale['PHOTO_FULL_EXPL'], build.iconic('check'), lychee.locale['PHOTO_HIDDEN'], lychee.locale['PHOTO_HIDDEN_EXPL'], build.iconic('check'), lychee.locale['PHOTO_DOWNLOADABLE'], lychee.locale['PHOTO_DOWNLOADABLE_EXPL'], build.iconic('check'), lychee.locale['PHOTO_SHARE_BUTTON_VISIBLE'], lychee.locale['PHOTO_SHARE_BUTTON_VISIBLE_EXPL'], build.iconic('check'), lychee.locale['PHOTO_PASSWORD_PROT'], lychee.locale['PHOTO_PASSWORD_PROT_EXPL']);
 
-	if (photo.json.public === '2') {
+	if (_photo.json.public === '2') {
 		// Public album. We can't actually change anything but we will
 		// display the current settings.
 
@@ -5917,9 +5918,9 @@ photo.setPublic = function (photoID, e) {
 
 			var newPublic = $('.basicModal .switch input[name="public"]:checked').length === 1 ? '1' : '0';
 
-			if (newPublic !== photo.json.public) {
+			if (newPublic !== _photo.json.public) {
 				if (visible.photo()) {
-					photo.json.public = newPublic;
+					_photo.json.public = newPublic;
 					view.photo.public();
 				}
 
@@ -5974,7 +5975,7 @@ photo.setPublic = function (photoID, e) {
 			}
 		});
 
-		if (photo.json.public === '1') {
+		if (_photo.json.public === '1') {
 			$('.basicModal .switch input[name="public"]').click();
 		}
 	}
@@ -5982,9 +5983,9 @@ photo.setPublic = function (photoID, e) {
 	return true;
 };
 
-photo.setDescription = function (photoID) {
+_photo.setDescription = function (photoID) {
 
-	var oldDescription = photo.json.description;
+	var oldDescription = _photo.json.description;
 
 	var action = function action(data) {
 
@@ -5993,7 +5994,7 @@ photo.setDescription = function (photoID) {
 		var description = data.description;
 
 		if (visible.photo()) {
-			photo.json.description = description;
+			_photo.json.description = description;
 			view.photo.description();
 		}
 
@@ -6002,8 +6003,8 @@ photo.setDescription = function (photoID) {
 			description: description
 		};
 
-		api.post('Photo::setDescription', params, function (data) {
-			if (data !== true) lychee.error(null, params, data);
+		api.post('Photo::setDescription', params, function (_data) {
+			if (_data !== true) lychee.error(null, params, _data);
 		});
 	};
 
@@ -6022,7 +6023,7 @@ photo.setDescription = function (photoID) {
 	});
 };
 
-photo.editTags = function (photoIDs) {
+_photo.editTags = function (photoIDs) {
 
 	var oldTags = '';
 	var msg = '';
@@ -6031,7 +6032,7 @@ photo.editTags = function (photoIDs) {
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
 	// Get tags
-	if (visible.photo()) oldTags = photo.json.tags;else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.album() && photoIDs.length > 1) {
+	if (visible.photo()) oldTags = _photo.json.tags;else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.album() && photoIDs.length > 1) {
 		var same = true;
 		photoIDs.forEach(function (id) {
 			same = album.getByID(id).tags === album.getByID(photoIDs[0]).tags && same === true;
@@ -6045,7 +6046,7 @@ photo.editTags = function (photoIDs) {
 	var action = function action(data) {
 
 		basicModal.close();
-		photo.setTags(photoIDs, data.tags);
+		_photo.setTags(photoIDs, data.tags);
 	};
 
 	var input = lychee.html(_templateObject57, oldTags);
@@ -6067,7 +6068,7 @@ photo.editTags = function (photoIDs) {
 	});
 };
 
-photo.setTags = function (photoIDs, tags) {
+_photo.setTags = function (photoIDs, tags) {
 
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
@@ -6077,7 +6078,7 @@ photo.setTags = function (photoIDs, tags) {
 	tags = tags.replace(/,$|^,|(\ ){0,}$/g, '');
 
 	if (visible.photo()) {
-		photo.json.tags = tags;
+		_photo.json.tags = tags;
 		view.photo.tags();
 	}
 
@@ -6096,50 +6097,50 @@ photo.setTags = function (photoIDs, tags) {
 	});
 };
 
-photo.deleteTag = function (photoID, index) {
+_photo.deleteTag = function (photoID, index) {
 
 	var tags = void 0;
 
 	// Remove
-	tags = photo.json.tags.split(',');
+	tags = _photo.json.tags.split(',');
 	tags.splice(index, 1);
 
 	// Save
-	photo.json.tags = tags.toString();
-	photo.setTags([photoID], photo.json.tags);
+	_photo.json.tags = tags.toString();
+	_photo.setTags([photoID], _photo.json.tags);
 };
 
-photo.share = function (photoID, service) {
+_photo.share = function (photoID, service) {
 
-	if (photo.json.hasOwnProperty('share_button_visible') && photo.json.share_button_visible !== '1') {
+	if (_photo.json.hasOwnProperty('share_button_visible') && _photo.json.share_button_visible !== '1') {
 		return;
 	}
 
-	var url = photo.getViewLink(photoID);
+	var url = _photo.getViewLink(photoID);
 
 	switch (service) {
 		case 'twitter':
 			window.open("https://twitter.com/share?url=" + encodeURI(url));
 			break;
 		case 'facebook':
-			window.open("https://www.facebook.com/sharer.php?u=" + encodeURI(url) + "&t=" + encodeURI(photo.json.title));
+			window.open("https://www.facebook.com/sharer.php?u=" + encodeURI(url) + "&t=" + encodeURI(_photo.json.title));
 			break;
 		case 'mail':
-			location.href = "mailto:?subject=" + encodeURI(photo.json.title) + "&body=" + encodeURI(url);
+			location.href = "mailto:?subject=" + encodeURI(_photo.json.title) + "&body=" + encodeURI(url);
 			break;
 		case 'dropbox':
 			lychee.loadDropbox(function () {
-				var filename = photo.json.title + '.' + photo.getDirectLink().split('.').pop();
-				Dropbox.save(photo.getDirectLink(), filename);
+				var filename = _photo.json.title + '.' + _photo.getDirectLink().split('.').pop();
+				Dropbox.save(_photo.getDirectLink(), filename);
 			});
 			break;
 	}
 };
 
-photo.setLicense = function (photoID) {
+_photo.setLicense = function (photoID) {
 
 	var callback = function callback() {
-		$('select#license').val(photo.json.license === '' ? 'none' : photo.json.license);
+		$('select#license').val(_photo.json.license === '' ? 'none' : _photo.json.license);
 		return false;
 	};
 
@@ -6153,13 +6154,13 @@ photo.setLicense = function (photoID) {
 			license: license
 		};
 
-		api.post('Photo::setLicense', params, function (data) {
+		api.post('Photo::setLicense', params, function (_data) {
 
-			if (data !== true) {
-				lychee.error(null, params, data);
+			if (_data !== true) {
+				lychee.error(null, params, _data);
 			} else {
 				// update the photo JSON and reload the license in the sidebar
-				photo.json.license = params.license;
+				_photo.json.license = params.license;
 				view.photo.license();
 			}
 		});
@@ -6183,7 +6184,7 @@ photo.setLicense = function (photoID) {
 	});
 };
 
-photo.getArchive = function (photoIDs) {
+_photo.getArchive = function (photoIDs) {
 	var kind = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
 
@@ -6192,8 +6193,8 @@ photo.getArchive = function (photoIDs) {
 
 		var myPhoto = void 0;
 
-		if (photo.json && photo.json.id === photoIDs[0]) {
-			myPhoto = photo.json;
+		if (_photo.json && _photo.json.id === photoIDs[0]) {
+			myPhoto = _photo.json;
 		} else {
 			myPhoto = album.getByID(photoIDs[0]);
 		}
@@ -6246,7 +6247,7 @@ photo.getArchive = function (photoIDs) {
 		$('.downloads .basicModal__button').on(lychee.getEventName(), function () {
 			kind = this.id;
 			basicModal.close();
-			photo.getArchive(photoIDs, kind);
+			_photo.getArchive(photoIDs, kind);
 		});
 
 		return true;
@@ -6267,16 +6268,16 @@ photo.getArchive = function (photoIDs) {
 	}
 };
 
-photo.getDirectLink = function () {
+_photo.getDirectLink = function () {
 
 	var url = '';
 
-	if (photo.json && photo.json.url && photo.json.url !== '') url = photo.json.url;
+	if (_photo.json && _photo.json.url && _photo.json.url !== '') url = _photo.json.url;
 
 	return url;
 };
 
-photo.getViewLink = function (photoID) {
+_photo.getViewLink = function (photoID) {
 
 	var url = 'view.php?p=' + photoID;
 	if (lychee.api_V2) {
@@ -6286,8 +6287,8 @@ photo.getViewLink = function (photoID) {
 	return lychee.getBaseUrl() + url;
 };
 
-photo.showDirectLinks = function (photoID) {
-	if (!photo.json || photo.json.id != photoID) {
+_photo.showDirectLinks = function (photoID) {
+	if (!_photo.json || _photo.json.id != photoID) {
 		return;
 	}
 
@@ -6295,36 +6296,36 @@ photo.showDirectLinks = function (photoID) {
 		return lychee.html(_templateObject62, label, url, lychee.locale['URL_COPY_TO_CLIPBOARD'], build.iconic('copy', 'ionicons'));
 	};
 
-	var msg = lychee.html(_templateObject63, buildLine(lychee.locale['PHOTO_VIEW'], photo.getViewLink(photoID)), lychee.locale['PHOTO_DIRECT_LINKS_TO_IMAGES']);
+	var msg = lychee.html(_templateObject63, buildLine(lychee.locale['PHOTO_VIEW'], _photo.getViewLink(photoID)), lychee.locale['PHOTO_DIRECT_LINKS_TO_IMAGES']);
 
-	if (photo.json.url) {
-		msg += buildLine(lychee.locale['PHOTO_FULL'] + " (" + photo.json.width + "x" + photo.json.height + ")", lychee.getBaseUrl() + photo.json.url);
+	if (_photo.json.url) {
+		msg += buildLine(lychee.locale['PHOTO_FULL'] + " (" + _photo.json.width + "x" + _photo.json.height + ")", lychee.getBaseUrl() + _photo.json.url);
 	}
-	if (photo.json.hasOwnProperty('medium2x') && photo.json.medium2x !== '') {
-		msg += buildLine(lychee.locale['PHOTO_MEDIUM_HIDPI'] + " (" + photo.json.medium2x_dim + ")", lychee.getBaseUrl() + photo.json.medium2x);
+	if (_photo.json.hasOwnProperty('medium2x') && _photo.json.medium2x !== '') {
+		msg += buildLine(lychee.locale['PHOTO_MEDIUM_HIDPI'] + " (" + _photo.json.medium2x_dim + ")", lychee.getBaseUrl() + _photo.json.medium2x);
 	}
-	if (photo.json.medium !== '') {
-		msg += buildLine(lychee.locale['PHOTO_MEDIUM'] + " " + (photo.json.hasOwnProperty('medium_dim') ? '(' + photo.json.medium_dim + ')' : ''), lychee.getBaseUrl() + photo.json.medium);
+	if (_photo.json.medium !== '') {
+		msg += buildLine(lychee.locale['PHOTO_MEDIUM'] + " " + (_photo.json.hasOwnProperty('medium_dim') ? '(' + _photo.json.medium_dim + ')' : ''), lychee.getBaseUrl() + _photo.json.medium);
 	}
-	if (photo.json.hasOwnProperty('small2x') && photo.json.small2x !== '') {
-		msg += buildLine(lychee.locale['PHOTO_SMALL_HIDPI'] + " (" + photo.json.small2x_dim + ")", lychee.getBaseUrl() + photo.json.small2x);
+	if (_photo.json.hasOwnProperty('small2x') && _photo.json.small2x !== '') {
+		msg += buildLine(lychee.locale['PHOTO_SMALL_HIDPI'] + " (" + _photo.json.small2x_dim + ")", lychee.getBaseUrl() + _photo.json.small2x);
 	}
-	if (photo.json.small !== '') {
-		msg += buildLine(lychee.locale['PHOTO_SMALL'] + " " + (photo.json.hasOwnProperty('small_dim') ? '(' + photo.json.small_dim + ')' : ''), lychee.getBaseUrl() + photo.json.small);
+	if (_photo.json.small !== '') {
+		msg += buildLine(lychee.locale['PHOTO_SMALL'] + " " + (_photo.json.hasOwnProperty('small_dim') ? '(' + _photo.json.small_dim + ')' : ''), lychee.getBaseUrl() + _photo.json.small);
 	}
-	if (photo.json.hasOwnProperty('thumb2x') && photo.json.thumb2x !== '') {
-		msg += buildLine(lychee.locale['PHOTO_THUMB_HIDPI'] + " (400x400)", lychee.getBaseUrl() + photo.json.thumb2x);
+	if (_photo.json.hasOwnProperty('thumb2x') && _photo.json.thumb2x !== '') {
+		msg += buildLine(lychee.locale['PHOTO_THUMB_HIDPI'] + " (400x400)", lychee.getBaseUrl() + _photo.json.thumb2x);
 	} else if (!lychee.api_V2) {
-		var _lychee$retinize4 = lychee.retinize(photo.json.thumbUrl),
+		var _lychee$retinize4 = lychee.retinize(_photo.json.thumbUrl),
 		    thumb2x = _lychee$retinize4.path;
 
 		msg += buildLine(lychee.locale['PHOTO_THUMB_HIDPI'] + " (400x400)", lychee.getBaseUrl() + thumb2x);
 	}
-	if (photo.json.thumbUrl !== '') {
-		msg += buildLine(" " + lychee.locale['PHOTO_THUMB'] + " (200x200)", lychee.getBaseUrl() + photo.json.thumbUrl);
+	if (_photo.json.thumbUrl !== '') {
+		msg += buildLine(" " + lychee.locale['PHOTO_THUMB'] + " (200x200)", lychee.getBaseUrl() + _photo.json.thumbUrl);
 	}
-	if (photo.json.livePhotoUrl !== '') {
-		msg += buildLine(" " + lychee.locale['PHOTO_LIVE_VIDEO'] + " ", lychee.getBaseUrl() + photo.json.livePhotoUrl);
+	if (_photo.json.livePhotoUrl !== '') {
+		msg += buildLine(" " + lychee.locale['PHOTO_LIVE_VIDEO'] + " ", lychee.getBaseUrl() + _photo.json.livePhotoUrl);
 	}
 
 	msg += lychee.html(_templateObject64);
@@ -6353,7 +6354,7 @@ photo.showDirectLinks = function (photoID) {
  * @description Searches through your photos and albums.
  */
 
-search = {
+var search = {
 
 	hash: null
 
@@ -6422,7 +6423,7 @@ search.find = function (term) {
 
 					setTimeout(function () {
 						if (visible.photo()) view.photo.hide();
-						if (visible.sidebar()) sidebar.toggle();
+						if (visible.sidebar()) _sidebar.toggle();
 						if (visible.mapview()) mapview.close();
 
 						header.setMode('albums');
@@ -6453,7 +6454,7 @@ search.reset = function () {
 		// Trash data
 		albums.json = null;
 		album.json = null;
-		photo.json = null;
+		_photo.json = null;
 		search.hash = null;
 
 		lychee.animate('.divider', 'fadeOut');
@@ -6465,15 +6466,10 @@ search.reset = function () {
  * @description Lets you change settings.
  */
 
-settings = {};
+var settings = {};
 
 settings.open = function () {
-	if (lychee.api_V2) {
-		// we may do something else here later
-		view.settings.init();
-	} else {
-		view.settings.init();
-	}
+	view.settings.init();
 };
 
 settings.createConfig = function () {
@@ -6502,12 +6498,12 @@ settings.createConfig = function () {
 			dbTablePrefix: dbTablePrefix
 		};
 
-		api.post('Config::create', params, function (data) {
+		api.post('Config::create', params, function (_data) {
 
-			if (data !== true) {
+			if (_data !== true) {
 
 				// Connection failed
-				if (data === 'Warning: Connection failed!') {
+				if (_data === 'Warning: Connection failed!') {
 
 					basicModal.show({
 						body: '<p>' + lychee.locale['ERROR_DB_1'] + '</p>',
@@ -6523,7 +6519,7 @@ settings.createConfig = function () {
 				}
 
 				// Creation failed
-				if (data === 'Warning: Creation failed!') {
+				if (_data === 'Warning: Creation failed!') {
 
 					basicModal.show({
 						body: '<p>' + lychee.locale['ERROR_DB_2'] + '</p>',
@@ -6539,7 +6535,7 @@ settings.createConfig = function () {
 				}
 
 				// Could not create file
-				if (data === 'Warning: Could not create file!') {
+				if (_data === 'Warning: Could not create file!') {
 
 					basicModal.show({
 						body: "<p>" + lychee.locale['ERROR_CONFIG_FILE'] + "</p>",
@@ -6617,9 +6613,9 @@ settings.createLogin = function () {
 			password: password
 		};
 
-		api.post('Settings::setLogin', params, function (data) {
+		api.post('Settings::setLogin', params, function (_data) {
 
-			if (data !== true) {
+			if (_data !== true) {
 
 				basicModal.show({
 					body: '<p>' + lychee.locale['ERROR_LOGIN'] + '</p>',
@@ -7026,7 +7022,7 @@ settings.save_enter = function (e) {
 	}
 };
 
-sharing = {
+var sharing = {
 	json: null
 };
 
@@ -7103,7 +7099,7 @@ sharing.list = function () {
  * @description This module takes care of the sidebar.
  */
 
-sidebar = {
+var _sidebar = {
 
 	_dom: $('.sidebar'),
 	types: {
@@ -7114,14 +7110,14 @@ sidebar = {
 
 };
 
-sidebar.dom = function (selector) {
+_sidebar.dom = function (selector) {
 
-	if (selector == null || selector === '') return sidebar._dom;
+	if (selector == null || selector === '') return _sidebar._dom;
 
-	return sidebar._dom.find(selector);
+	return _sidebar._dom.find(selector);
 };
 
-sidebar.bind = function () {
+_sidebar.bind = function () {
 
 	// This function should be called after building and appending
 	// the sidebars content to the DOM.
@@ -7131,38 +7127,38 @@ sidebar.bind = function () {
 	// Event Name
 	var eventName = lychee.getEventName();
 
-	sidebar.dom('#edit_title').off(eventName).on(eventName, function () {
-		if (visible.photo()) photo.setTitle([photo.getID()]);else if (visible.album()) album.setTitle([album.getID()]);
+	_sidebar.dom('#edit_title').off(eventName).on(eventName, function () {
+		if (visible.photo()) _photo.setTitle([_photo.getID()]);else if (visible.album()) album.setTitle([album.getID()]);
 	});
 
-	sidebar.dom('#edit_description').off(eventName).on(eventName, function () {
-		if (visible.photo()) photo.setDescription(photo.getID());else if (visible.album()) album.setDescription(album.getID());
+	_sidebar.dom('#edit_description').off(eventName).on(eventName, function () {
+		if (visible.photo()) _photo.setDescription(_photo.getID());else if (visible.album()) album.setDescription(album.getID());
 	});
 
-	sidebar.dom('#edit_tags').off(eventName).on(eventName, function () {
-		photo.editTags([photo.getID()]);
+	_sidebar.dom('#edit_tags').off(eventName).on(eventName, function () {
+		_photo.editTags([_photo.getID()]);
 	});
 
-	sidebar.dom('#tags .tag').off(eventName).on(eventName, function () {
-		sidebar.triggerSearch($(this).text());
+	_sidebar.dom('#tags .tag').off(eventName).on(eventName, function () {
+		_sidebar.triggerSearch($(this).text());
 	});
 
-	sidebar.dom('#tags .tag span').off(eventName).on(eventName, function () {
-		photo.deleteTag(photo.getID(), $(this).data('index'));
+	_sidebar.dom('#tags .tag span').off(eventName).on(eventName, function () {
+		_photo.deleteTag(_photo.getID(), $(this).data('index'));
 	});
 
-	sidebar.dom('#edit_license').off(eventName).on(eventName, function () {
-		if (visible.photo()) photo.setLicense(photo.getID());else if (visible.album()) album.setLicense(album.getID());
+	_sidebar.dom('#edit_license').off(eventName).on(eventName, function () {
+		if (visible.photo()) _photo.setLicense(_photo.getID());else if (visible.album()) album.setLicense(album.getID());
 	});
 
-	sidebar.dom('.attr_location').off(eventName).on(eventName, function () {
-		sidebar.triggerSearch($(this).text());
+	_sidebar.dom('.attr_location').off(eventName).on(eventName, function () {
+		_sidebar.triggerSearch($(this).text());
 	});
 
 	return true;
 };
 
-sidebar.triggerSearch = function (search_string) {
+_sidebar.triggerSearch = function (search_string) {
 
 	// If public search is diabled -> do nothing
 	if (lychee.publicMode === true && !lychee.public_search) {
@@ -7175,7 +7171,7 @@ sidebar.triggerSearch = function (search_string) {
 	lychee.goto('search/' + encodeURIComponent(search_string));
 };
 
-sidebar.toggle = function () {
+_sidebar.toggle = function () {
 
 	if (visible.sidebar() || visible.sidebarbutton()) {
 
@@ -7183,8 +7179,8 @@ sidebar.toggle = function () {
 		lychee.content.toggleClass('content--sidebar');
 		lychee.imageview.toggleClass('image--sidebar');
 		if (typeof view !== 'undefined') view.album.content.justify();
-		sidebar.dom().toggleClass('active');
-		photo.updateSizeLivePhotoDuringAnimation();
+		_sidebar.dom().toggleClass('active');
+		_photo.updateSizeLivePhotoDuringAnimation();
 
 		return true;
 	}
@@ -7192,7 +7188,7 @@ sidebar.toggle = function () {
 	return false;
 };
 
-sidebar.setSelectable = function () {
+_sidebar.setSelectable = function () {
 	var selectable = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 
@@ -7200,10 +7196,10 @@ sidebar.setSelectable = function () {
 	// Selection needs to be deactivated to prevent an unwanted selection
 	// while using multiselect.
 
-	if (selectable === true) sidebar.dom().removeClass('notSelectable');else sidebar.dom().addClass('notSelectable');
+	if (selectable === true) _sidebar.dom().removeClass('notSelectable');else _sidebar.dom().addClass('notSelectable');
 };
 
-sidebar.changeAttr = function (attr) {
+_sidebar.changeAttr = function (attr) {
 	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '-';
 	var dangerouslySetInnerHTML = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
@@ -7217,16 +7213,16 @@ sidebar.changeAttr = function (attr) {
 	if (dangerouslySetInnerHTML === false) value = lychee.escapeHTML(value);
 
 	// Set new value
-	sidebar.dom('.attr_' + attr).html(value);
+	_sidebar.dom('.attr_' + attr).html(value);
 
 	return true;
 };
 
-sidebar.hideAttr = function (attr) {
-	sidebar.dom('.attr_' + attr).closest('tr').hide();
+_sidebar.hideAttr = function (attr) {
+	_sidebar.dom('.attr_' + attr).closest('tr').hide();
 };
 
-sidebar.secondsToHMS = function (d) {
+_sidebar.secondsToHMS = function (d) {
 	d = Number(d);
 	var h = Math.floor(d / 3600);
 	var m = Math.floor(d % 3600 / 60);
@@ -7235,7 +7231,7 @@ sidebar.secondsToHMS = function (d) {
 	return (h > 0 ? h.toString() + 'h' : '') + (m > 0 ? m.toString() + 'm' : '') + (s > 0 || h == 0 && m == 0 ? s.toString() + 's' : '');
 };
 
-sidebar.createStructure.photo = function (data) {
+_sidebar.createStructure.photo = function (data) {
 
 	if (data == null || data === '') return false;
 
@@ -7245,6 +7241,7 @@ sidebar.createStructure.photo = function (data) {
 	var structure = {};
 	var _public = '';
 	var isVideo = data.type && data.type.indexOf('video') > -1;
+	var license = void 0;
 
 	// Set the license string for a photo
 	switch (data.license) {
@@ -7282,13 +7279,13 @@ sidebar.createStructure.photo = function (data) {
 
 	structure.basics = {
 		title: lychee.locale['PHOTO_BASICS'],
-		type: sidebar.types.DEFAULT,
+		type: _sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['PHOTO_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['PHOTO_UPLOADED'], kind: 'uploaded', value: data.sysdate }, { title: lychee.locale['PHOTO_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
 	};
 
 	structure.image = {
 		title: lychee.locale[isVideo ? 'PHOTO_VIDEO' : 'PHOTO_IMAGE'],
-		type: sidebar.types.DEFAULT,
+		type: _sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['PHOTO_SIZE'], kind: 'size', value: data.size }, { title: lychee.locale['PHOTO_FORMAT'], kind: 'type', value: data.type }, { title: lychee.locale['PHOTO_RESOLUTION'], kind: 'resolution', value: data.width + ' x ' + data.height }]
 	};
 
@@ -7303,7 +7300,7 @@ sidebar.createStructure.photo = function (data) {
 		// the decimal point) in "focal".
 		if (data.aperture != '') {
 			structure.image.rows.push({ title: lychee.locale['PHOTO_DURATION'],
-				kind: 'duration', value: sidebar.secondsToHMS(data.aperture) });
+				kind: 'duration', value: _sidebar.secondsToHMS(data.aperture) });
 		}
 		if (data.focal != '') {
 			structure.image.rows.push({ title: lychee.locale['PHOTO_FPS'],
@@ -7316,7 +7313,7 @@ sidebar.createStructure.photo = function (data) {
 
 	structure.tags = {
 		title: lychee.locale['PHOTO_TAGS'],
-		type: sidebar.types.TAGS,
+		type: _sidebar.types.TAGS,
 		value: build.tags(data.tags),
 		editable: editable
 
@@ -7325,7 +7322,7 @@ sidebar.createStructure.photo = function (data) {
 
 		structure.exif = {
 			title: lychee.locale['PHOTO_CAMERA'],
-			type: sidebar.types.DEFAULT,
+			type: _sidebar.types.DEFAULT,
 			rows: isVideo ? [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }] : [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }, { title: lychee.locale['PHOTO_LENS'], kind: 'lens', value: data.lens }, { title: lychee.locale['PHOTO_SHUTTER'], kind: 'shutter', value: data.shutter }, { title: lychee.locale['PHOTO_APERTURE'], kind: 'aperture', value: data.aperture }, { title: lychee.locale['PHOTO_FOCAL'], kind: 'focal', value: data.focal }, { title: lychee.locale['PHOTO_ISO'], kind: 'iso', value: data.iso }]
 		};
 	} else {
@@ -7335,13 +7332,13 @@ sidebar.createStructure.photo = function (data) {
 
 	structure.sharing = {
 		title: lychee.locale['PHOTO_SHARING'],
-		type: sidebar.types.DEFAULT,
+		type: _sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['PHOTO_SHR_PLUBLIC'], kind: 'public', value: _public }]
 	};
 
 	structure.license = {
 		title: lychee.locale['PHOTO_REUSE'],
-		type: sidebar.types.DEFAULT,
+		type: _sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['PHOTO_LICENSE'], kind: 'license', value: license, editable: editable }]
 	};
 
@@ -7349,7 +7346,7 @@ sidebar.createStructure.photo = function (data) {
 
 		structure.location = {
 			title: lychee.locale['PHOTO_LOCATION'],
-			type: sidebar.types.DEFAULT,
+			type: _sidebar.types.DEFAULT,
 			rows: [{ title: lychee.locale['PHOTO_LATITUDE'], kind: 'latitude', value: data.latitude ? DecimalToDegreeMinutesSeconds(data.latitude, true) : '' }, { title: lychee.locale['PHOTO_LONGITUDE'], kind: 'longitude', value: data.longitude ? DecimalToDegreeMinutesSeconds(data.longitude, false) : '' },
 			// No point in displaying sub-mm precision; 10cm is more than enough.
 			{ title: lychee.locale['PHOTO_ALTITUDE'], kind: 'altitude', value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + 'm' : '' }, { title: lychee.locale['PHOTO_LOCATION'], kind: 'location', value: data.location ? data.location : '' }]
@@ -7368,7 +7365,7 @@ sidebar.createStructure.photo = function (data) {
 	return structure;
 };
 
-sidebar.createStructure.album = function (data) {
+_sidebar.createStructure.album = function (data) {
 
 	if (data == null || data === '') return false;
 
@@ -7471,11 +7468,11 @@ sidebar.createStructure.album = function (data) {
 
 	structure.basics = {
 		title: lychee.locale['ALBUM_BASICS'],
-		type: sidebar.types.DEFAULT,
+		type: _sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['ALBUM_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['ALBUM_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
 	};
 
-	videoCount = 0;
+	var videoCount = 0;
 	$.each(data.photos, function () {
 		if (this.type && this.type.indexOf('video') > -1) {
 			videoCount++;
@@ -7483,7 +7480,7 @@ sidebar.createStructure.album = function (data) {
 	});
 	structure.album = {
 		title: lychee.locale['ALBUM_ALBUM'],
-		type: sidebar.types.DEFAULT,
+		type: _sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }]
 	};
 	if (data.albums && data.albums.length > 0) {
@@ -7504,7 +7501,7 @@ sidebar.createStructure.album = function (data) {
 
 	structure.share = {
 		title: lychee.locale['ALBUM_SHARING'],
-		type: sidebar.types.DEFAULT,
+		type: _sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_SHARE_BUTTON_VISIBLE'], kind: 'share_button_visible', value: share_button_visible }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
 	};
 
@@ -7514,7 +7511,7 @@ sidebar.createStructure.album = function (data) {
 
 	structure.license = {
 		title: lychee.locale['ALBUM_REUSE'],
-		type: sidebar.types.DEFAULT,
+		type: _sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['ALBUM_LICENSE'], kind: 'license', value: license, editable: editable }]
 	};
 
@@ -7524,7 +7521,7 @@ sidebar.createStructure.album = function (data) {
 	return structure;
 };
 
-sidebar.has_location = function (structure) {
+_sidebar.has_location = function (structure) {
 
 	if (structure == null || structure === '' || structure === false) return false;
 
@@ -7540,7 +7537,7 @@ sidebar.has_location = function (structure) {
 	return _has_location;
 };
 
-sidebar.render = function (structure) {
+_sidebar.render = function (structure) {
 
 	if (structure == null || structure === '' || structure === false) return false;
 
@@ -7598,7 +7595,7 @@ sidebar.render = function (structure) {
 							return;
 						}
 						// Add separator if needed
-						if (!(value === '')) {
+						if (value !== '') {
 							value += lychee.html(_templateObject66, row.kind);
 						}
 						value += lychee.html(_templateObject67, row.kind, v);
@@ -7634,7 +7631,7 @@ sidebar.render = function (structure) {
 
 	structure.forEach(function (section) {
 
-		if (section.type === sidebar.types.DEFAULT) html += renderDefault(section);else if (section.type === sidebar.types.TAGS) html += renderTags(section);
+		if (section.type === _sidebar.types.DEFAULT) html += renderDefault(section);else if (section.type === _sidebar.types.TAGS) html += renderTags(section);
 	});
 
 	return html;
@@ -7645,11 +7642,11 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	var degrees = 0;
 	var minutes = 0;
 	var seconds = 0;
-	var direction = 'X';
+	var direction = void 0;
 
 	//decimal must be integer or float no larger than 180;
 	//type must be Boolean
-	if (Math.abs(decimal) > 180 || !(typeof type === "boolean")) {
+	if (Math.abs(decimal) > 180 || typeof type !== "boolean") {
 		return false;
 	}
 
@@ -7683,13 +7680,13 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	seconds = Math.floor(seconds - minutes * 60);
 
 	return degrees + '° ' + minutes + '\' ' + seconds + '\" ' + direction;
-};
+}
 
 /**
  * @description Swipes and moves an object.
  */
 
-swipe = {
+var swipe = {
 
 	obj: null,
 	tolerance_X: 150,
@@ -7710,7 +7707,9 @@ swipe.start = function (obj, tolerance_X, tolerance_Y) {
 
 swipe.move = function (e) {
 
-	if (swipe.obj === null) return false;
+	if (swipe.obj === null) {
+		return false;
+	}
 
 	if (Math.abs(e.x) > Math.abs(e.y)) {
 		swipe.offsetX = -1 * e.x;
@@ -7730,7 +7729,9 @@ swipe.move = function (e) {
 swipe.stop = function (e, left, right) {
 
 	// Only execute once
-	if (swipe.obj == null) return false;
+	if (swipe.obj == null) {
+		return false;
+	}
 
 	if (e.y <= -swipe.tolerance_Y) {
 
@@ -7762,7 +7763,7 @@ swipe.stop = function (e, left, right) {
  * @description Takes care of every action an album can handle and execute.
  */
 
-upload = {};
+var upload = {};
 
 upload.show = function (title, files, callback) {
 
@@ -7801,7 +7802,7 @@ upload.start = {
 		var error = false;
 		var warning = false;
 
-		var process = function process(files, file) {
+		var process = function process(_files, file) {
 
 			var formData = new FormData();
 			var xhr = new XMLHttpRequest();
@@ -7906,9 +7907,9 @@ upload.start = {
 				}
 
 				// Check if there are file which are not finished
-				for (var i = 0; i < files.length; i++) {
+				for (var i = 0; i < _files.length; i++) {
 
-					if (files[i].ready === false) {
+					if (_files[i].ready === false) {
 						wait = true;
 						break;
 					}
@@ -8005,11 +8006,11 @@ upload.start = {
 						albumID: albumID
 					};
 
-					api.post('Import::url', params, function (data) {
+					api.post('Import::url', params, function (_data) {
 
 						// Same code as in import.dropbox()
 
-						if (data !== true) {
+						if (_data !== true) {
 
 							$('.basicModal .rows .row p.notice').html(lychee.locale['UPLOAD_IMPORT_WARN_ERR']).show();
 
@@ -8019,7 +8020,7 @@ upload.start = {
 							$('.basicModal #basicModal__action.hidden').show();
 
 							// Log error
-							lychee.error(null, params, data);
+							lychee.error(null, params, _data);
 						} else {
 
 							basicModal.close();
@@ -8076,12 +8077,12 @@ upload.start = {
 				};
 
 				if (lychee.api_V2 === false) {
-					api.post('Import::server', params, function (data) {
+					api.post('Import::server', params, function (_data) {
 
 						albums.refresh();
 						upload.notify(lychee.locale['UPLOAD_IMPORT_COMPLETE']);
 
-						if (data === 'Notice: Import only contained albums!') {
+						if (_data === 'Notice: Import only contained albums!') {
 
 							// No error, but the folder only contained albums
 
@@ -8091,7 +8092,7 @@ upload.start = {
 							basicModal.close();
 
 							return true;
-						} else if (data === 'Warning: Folder empty or no readable files to process!') {
+						} else if (_data === 'Warning: Folder empty or no readable files to process!') {
 
 							// Error because the import could not start
 
@@ -8100,9 +8101,9 @@ upload.start = {
 							$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_FAILED']).addClass('error');
 
 							// Log error
-							lychee.error(lychee.locale['UPLOAD_IMPORT_SERVER_EMPT'], params, data);
+							lychee.error(lychee.locale['UPLOAD_IMPORT_SERVER_EMPT'], params, _data);
 						} else {
-							if (data !== true) {
+							if (_data !== true) {
 
 								// Maybe an error, maybe just some skipped photos
 
@@ -8111,7 +8112,7 @@ upload.start = {
 								$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_FINISHED']).addClass('warning');
 
 								// Log error
-								lychee.error(null, params, data);
+								lychee.error(null, params, _data);
 							} else {
 
 								// No error, everything worked fine
@@ -8202,9 +8203,9 @@ upload.start = {
 						}); // forEach (resp)
 					}; // processIncremental
 
-					api.post('Import::server', params, function (data) {
-						// data is already JSON-parsed.
-						processIncremental(data);
+					api.post('Import::server', params, function (_data) {
+						// _data is already JSON-parsed.
+						processIncremental(_data);
 
 						albums.refresh();
 
@@ -8368,7 +8369,7 @@ upload.start = {
 
 };
 
-users = {
+var users = {
 	json: null
 };
 
@@ -8457,7 +8458,7 @@ users.list = function () {
  * @description Responsible to reflect data changes to the UI.
  */
 
-view = {};
+var view = {};
 
 view.albums = {
 
@@ -8532,7 +8533,7 @@ view.albums = {
 
 			if (lychee.api_V2) {
 				var current_owner = '';
-				var i = 0;
+				var i = void 0;
 				// Shared
 				if (albums.json.shared_albums && albums.json.shared_albums.length !== 0) {
 
@@ -8630,7 +8631,7 @@ view.album = {
 					lychee.setTitle(lychee.locale['UNSORTED'], true);
 					break;
 				default:
-					if (album.json.init) sidebar.changeAttr('title', album.json.title);
+					if (album.json.init) _sidebar.changeAttr('title', album.json.title);
 					lychee.setTitle(album.json.title, true);
 					break;
 			}
@@ -8731,21 +8732,21 @@ view.album = {
 				// Only when search is not active
 				if (album.json) {
 					if (visible.sidebar()) {
-						videoCount = 0;
+						var videoCount = 0;
 						$.each(album.json.photos, function () {
 							if (this.type && this.type.indexOf('video') > -1) {
 								videoCount++;
 							}
 						});
 						if (album.json.photos.length - videoCount > 0) {
-							sidebar.changeAttr('images', album.json.photos.length - videoCount);
+							_sidebar.changeAttr('images', album.json.photos.length - videoCount);
 						} else {
-							sidebar.hideAttr('images');
+							_sidebar.hideAttr('images');
 						}
 						if (videoCount > 0) {
-							sidebar.changeAttr('videos', videoCount);
+							_sidebar.changeAttr('videos', videoCount);
 						} else {
-							sidebar.hideAttr('videos');
+							_sidebar.hideAttr('videos');
 						}
 					}
 					if (album.json.photos.length <= 0) {
@@ -8771,9 +8772,9 @@ view.album = {
 					}
 					if (visible.sidebar()) {
 						if (album.json.albums.length > 0) {
-							sidebar.changeAttr('subalbums', album.json.albums.length);
+							_sidebar.changeAttr('subalbums', album.json.albums.length);
 						} else {
-							sidebar.hideAttr('subalbums');
+							_sidebar.hideAttr('subalbums');
 						}
 					}
 				}
@@ -8872,21 +8873,12 @@ view.album = {
 
 	description: function description() {
 
-		sidebar.changeAttr('description', album.json.description);
+		_sidebar.changeAttr('description', album.json.description);
 	},
 
-	license: function (_license) {
-		function license() {
-			return _license.apply(this, arguments);
-		}
+	license: function license() {
 
-		license.toString = function () {
-			return _license.toString();
-		};
-
-		return license;
-	}(function () {
-
+		var license = void 0;
 		switch (album.json.license) {
 			case 'none':
 				license = ''; // none is displayed as - thus is empty.
@@ -8900,8 +8892,8 @@ view.album = {
 				break;
 		}
 
-		sidebar.changeAttr('license', license);
-	}),
+		_sidebar.changeAttr('license', license);
+	},
 
 	public: function _public() {
 
@@ -8917,54 +8909,44 @@ view.album = {
 
 			$('.photo .iconic-share').remove();
 
-			if (album.json.init) sidebar.changeAttr('public', lychee.locale['ALBUM_SHR_YES']);
+			if (album.json.init) _sidebar.changeAttr('public', lychee.locale['ALBUM_SHR_YES']);
 		} else {
 
-			if (album.json.init) sidebar.changeAttr('public', lychee.locale['ALBUM_SHR_NO']);
+			if (album.json.init) _sidebar.changeAttr('public', lychee.locale['ALBUM_SHR_NO']);
 		}
 	},
 
 	hidden: function hidden() {
 
-		if (album.json.visible === '1') sidebar.changeAttr('hidden', lychee.locale['ALBUM_SHR_NO']);else sidebar.changeAttr('hidden', lychee.locale['ALBUM_SHR_YES']);
+		if (album.json.visible === '1') _sidebar.changeAttr('hidden', lychee.locale['ALBUM_SHR_NO']);else _sidebar.changeAttr('hidden', lychee.locale['ALBUM_SHR_YES']);
 	},
 
 	downloadable: function downloadable() {
 
-		if (album.json.downloadable === '1') sidebar.changeAttr('downloadable', lychee.locale['ALBUM_SHR_YES']);else sidebar.changeAttr('downloadable', lychee.locale['ALBUM_SHR_NO']);
+		if (album.json.downloadable === '1') _sidebar.changeAttr('downloadable', lychee.locale['ALBUM_SHR_YES']);else _sidebar.changeAttr('downloadable', lychee.locale['ALBUM_SHR_NO']);
 	},
 
 	shareButtonVisible: function shareButtonVisible() {
 
-		if (album.json.share_button_visible === '1') sidebar.changeAttr('share_button_visible', lychee.locale['ALBUM_SHR_YES']);else sidebar.changeAttr('share_button_visible', lychee.locale['ALBUM_SHR_NO']);
+		if (album.json.share_button_visible === '1') _sidebar.changeAttr('share_button_visible', lychee.locale['ALBUM_SHR_YES']);else _sidebar.changeAttr('share_button_visible', lychee.locale['ALBUM_SHR_NO']);
 	},
 
 	password: function password() {
 
-		if (album.json.password === '1') sidebar.changeAttr('password', lychee.locale['ALBUM_SHR_YES']);else sidebar.changeAttr('password', lychee.locale['ALBUM_SHR_NO']);
+		if (album.json.password === '1') _sidebar.changeAttr('password', lychee.locale['ALBUM_SHR_YES']);else _sidebar.changeAttr('password', lychee.locale['ALBUM_SHR_NO']);
 	},
 
-	sidebar: function (_sidebar) {
-		function sidebar() {
-			return _sidebar.apply(this, arguments);
-		}
-
-		sidebar.toString = function () {
-			return _sidebar.toString();
-		};
-
-		return sidebar;
-	}(function () {
+	sidebar: function sidebar() {
 
 		if ((visible.album() || !album.json.init) && !visible.photo()) {
 
-			var structure = sidebar.createStructure.album(album.json);
-			var _html2 = sidebar.render(structure);
+			var structure = _sidebar.createStructure.album(album.json);
+			var html = _sidebar.render(structure);
 
-			sidebar.dom('.sidebar__wrapper').html(_html2);
-			sidebar.bind();
+			_sidebar.dom('.sidebar__wrapper').html(html);
+			_sidebar.bind();
 		}
-	})
+	}
 
 };
 
@@ -8974,7 +8956,7 @@ view.photo = {
 
 		multiselect.clearSelection();
 
-		photo.parse();
+		_photo.parse();
 
 		view.photo.sidebar();
 		view.photo.title();
@@ -8982,7 +8964,7 @@ view.photo = {
 		view.photo.public();
 		view.photo.photo(autoplay);
 
-		photo.json.init = 1;
+		_photo.json.init = 1;
 	},
 
 	show: function show() {
@@ -9004,7 +8986,7 @@ view.photo = {
 		$(document).bind('mousemove', function () {
 			clearTimeout(timeout);
 			// For live Photos: header animtion only if LivePhoto is not playing
-			if (!photo.isLivePhotoPlaying()) {
+			if (!_photo.isLivePhotoPlaying()) {
 				header.show();
 				timeout = setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
 			}
@@ -9042,13 +9024,13 @@ view.photo = {
 
 	title: function title() {
 
-		if (photo.json.init) sidebar.changeAttr('title', photo.json.title);
-		lychee.setTitle(photo.json.title, true);
+		if (_photo.json.init) _sidebar.changeAttr('title', _photo.json.title);
+		lychee.setTitle(_photo.json.title, true);
 	},
 
 	description: function description() {
 
-		if (photo.json.init) sidebar.changeAttr('description', photo.json.description);
+		if (_photo.json.init) _sidebar.changeAttr('description', _photo.json.description);
 	},
 
 	license: function license() {
@@ -9063,17 +9045,17 @@ view.photo = {
 				license = lychee.locale['PHOTO_RESERVED'];
 				break;
 			default:
-				license = photo.json.license;
+				license = _photo.json.license;
 				break;
 		}
 
 		// Update the sidebar if the photo is visible
-		if (photo.json.init) sidebar.changeAttr('license', license);
+		if (_photo.json.init) _sidebar.changeAttr('license', license);
 	},
 
 	star: function star() {
 
-		if (photo.json.star === '1') {
+		if (_photo.json.star === '1') {
 
 			// Starred
 			$('#button_star').addClass('active').attr('title', lychee.locale['UNSTAR_PHOTO']);
@@ -9088,57 +9070,47 @@ view.photo = {
 
 		$('#button_visibility').removeClass('active--hidden active--not-hidden');
 
-		if (photo.json.public === '1' || photo.json.public === '2') {
+		if (_photo.json.public === '1' || _photo.json.public === '2') {
 
 			// Photo public
-			if (photo.json.public === '1') {
+			if (_photo.json.public === '1') {
 				$('#button_visibility').addClass('active--hidden');
 			} else {
 				$('#button_visibility').addClass('active--not-hidden');
 			}
 
-			if (photo.json.init) sidebar.changeAttr('public', lychee.locale['PHOTO_SHR_YES']);
+			if (_photo.json.init) _sidebar.changeAttr('public', lychee.locale['PHOTO_SHR_YES']);
 		} else {
 
 			// Photo private
-			if (photo.json.init) sidebar.changeAttr('public', 'No');
+			if (_photo.json.init) _sidebar.changeAttr('public', 'No');
 		}
 	},
 
 	tags: function tags() {
 
-		sidebar.changeAttr('tags', build.tags(photo.json.tags), true);
-		sidebar.bind();
+		_sidebar.changeAttr('tags', build.tags(_photo.json.tags), true);
+		_sidebar.bind();
 	},
 
-	photo: function (_photo) {
-		function photo(_x34) {
-			return _photo.apply(this, arguments);
-		}
+	photo: function photo(autoplay) {
 
-		photo.toString = function () {
-			return _photo.toString();
-		};
-
-		return photo;
-	}(function (autoplay) {
-
-		var ret = build.imageview(photo.json, visible.header(), autoplay);
+		var ret = build.imageview(_photo.json, visible.header(), autoplay);
 		lychee.imageview.html(ret.html);
 
 		// Init Live Photo if needed
-		if (photo.isLivePhoto()) {
+		if (_photo.isLivePhoto()) {
 			// Package gives warning that function will be remove and
 			// shoud be replaced by LivePhotosKit.augementElementAsPlayer
 			// But, LivePhotosKit.augementElementAsPlayer is not yet available
-			photo.LivePhotosObject = LivePhotosKit.Player(document.getElementById('livephoto'));
+			_photo.LivePhotosObject = LivePhotosKit.Player(document.getElementById('livephoto'));
 		}
 
 		view.photo.onresize();
 
 		var $nextArrow = lychee.imageview.find('a#next');
 		var $previousArrow = lychee.imageview.find('a#previous');
-		var photoID = photo.getID();
+		var photoID = _photo.getID();
 		var hasNext = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).nextPhoto != null && album.getByID(photoID).nextPhoto !== '';
 		var hasPrevious = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).previousPhoto != null && album.getByID(photoID).previousPhoto !== '';
 
@@ -9154,10 +9126,10 @@ view.photo = {
 				// Don't preload next/prev until the requested image is
 				// fully loaded.
 				img.on('load', function () {
-					photo.preloadNextPrev(photo.getID());
+					_photo.preloadNextPrev(_photo.getID());
 				});
 			} else {
-				photo.preloadNextPrev(photo.getID());
+				_photo.preloadNextPrev(_photo.getID());
 			}
 		}
 
@@ -9194,26 +9166,16 @@ view.photo = {
 			}
 			$previousArrow.css('background-image', lychee.html(_templateObject75, _thumbUrl));
 		}
-	}),
+	},
 
-	sidebar: function (_sidebar2) {
-		function sidebar() {
-			return _sidebar2.apply(this, arguments);
-		}
+	sidebar: function sidebar() {
 
-		sidebar.toString = function () {
-			return _sidebar2.toString();
-		};
+		var structure = _sidebar.createStructure.photo(_photo.json);
+		var html = _sidebar.render(structure);
+		var has_location = _photo.json.latitude && _photo.json.longitude ? true : false;
 
-		return sidebar;
-	}(function () {
-
-		var structure = sidebar.createStructure.photo(photo.json);
-		var html = sidebar.render(structure);
-		var has_location = photo.json.latitude && photo.json.longitude ? true : false;
-
-		sidebar.dom('.sidebar__wrapper').html(html);
-		sidebar.bind();
+		_sidebar.dom('.sidebar__wrapper').html(html);
+		_sidebar.bind();
 
 		if (has_location && lychee.map_display) {
 			// Leaflet seaches for icon in same directoy as js file -> paths needs
@@ -9225,15 +9187,16 @@ view.photo = {
 				shadowUrl: 'img/marker-shadow.png'
 			});
 
-			var mymap = L.map('leaflet_map_single_photo').setView([photo.json.latitude, photo.json.longitude], 13);
+			var mymap = L.map('leaflet_map_single_photo').setView([_photo.json.latitude, _photo.json.longitude], 13);
 
 			L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
 				attribution: map_provider_layer_attribution[lychee.map_provider].attribution
 			}).addTo(mymap);
 
-			if (!photo.json.imgDirection || photo.json.imgDirection === '') {
+			if (!_photo.json.imgDirection || _photo.json.imgDirection === '') {
 				// Add Marker to map, direction is not set
-				var marker = L.marker([photo.json.latitude, photo.json.longitude]).addTo(mymap);
+				// var marker = 
+				L.marker([_photo.json.latitude, _photo.json.longitude]).addTo(mymap);
 			} else {
 				// Add Marker, direction has been set
 				var viewDirectionIcon = L.icon({
@@ -9242,19 +9205,19 @@ view.photo = {
 					iconSize: [100, 58], // size of the icon
 					iconAnchor: [50, 49] // point of the icon which will correspond to marker's location
 				});
-				var marker = L.marker([photo.json.latitude, photo.json.longitude], { icon: viewDirectionIcon }).addTo(mymap);
-				marker.setRotationAngle(photo.json.imgDirection);
+				var marker = L.marker([_photo.json.latitude, _photo.json.longitude], { icon: viewDirectionIcon }).addTo(mymap);
+				marker.setRotationAngle(_photo.json.imgDirection);
 			}
 		}
-	}),
+	},
 
 	onresize: function onresize() {
-		if (!photo.json || photo.json.medium === '' || !photo.json.medium2x || photo.json.medium2x === '') return;
+		if (!_photo.json || _photo.json.medium === '' || !_photo.json.medium2x || _photo.json.medium2x === '') return;
 
 		// Calculate the width of the image in the current window without
 		// borders and set 'sizes' to it.
-		var imgWidth = parseInt(photo.json.medium_dim);
-		var imgHeight = photo.json.medium_dim.substr(photo.json.medium_dim.lastIndexOf('x') + 1);
+		var imgWidth = parseInt(_photo.json.medium_dim);
+		var imgHeight = _photo.json.medium_dim.substr(_photo.json.medium_dim.lastIndexOf('x') + 1);
 		var containerWidth = $(window).outerWidth();
 		var containerHeight = $(window).outerHeight();
 
@@ -9747,7 +9710,7 @@ view.diagnostics = {
 	bind: function bind() {
 		$("#Update_Lychee").on('click', function () {
 			api.post('Update::Apply', [], function (data) {
-				html = view.preify(data, '');
+				var html = view.preify(data, '');
 				$("#Update_Lychee").remove();
 				$(html).prependTo(".logs_diagnostics_view");
 			});
@@ -9825,7 +9788,7 @@ view.update = {
 
 			// code duplicate
 			api.post('Update::Apply', [], function (data) {
-				html = view.preify(data, 'logs_diagnostics_view');
+				var html = view.preify(data, 'logs_diagnostics_view');
 				lychee.content.html(html);
 			});
 		}
@@ -9833,7 +9796,7 @@ view.update = {
 };
 
 view.preify = function (data, css) {
-	html = '<pre class="' + css + '">';
+	var html = '<pre class="' + css + '">';
 	if (Array.isArray(data)) {
 		for (var i = 0; i < data.length; i++) {
 			html += '    ' + data[i] + '\n';
@@ -9850,7 +9813,7 @@ view.preify = function (data, css) {
  * @description This module is used to check if elements are visible or not.
  */
 
-visible = {};
+var visible = {};
 
 visible.albums = function () {
 	if (header.dom('.header__toolbar--public').hasClass('header__toolbar--visible')) return true;
@@ -9879,7 +9842,7 @@ visible.search = function () {
 };
 
 visible.sidebar = function () {
-	if (sidebar.dom().hasClass('active') === true) return true;
+	if (_sidebar.dom().hasClass('active') === true) return true;
 	return false;
 };
 
@@ -10122,7 +10085,7 @@ visible.leftMenu = function () {
 
 		var elem = dom();
 
-		if (elem == null || elem.length === 0) return false;else return true;
+		return !(elem == null || elem.length === 0);
 	};
 
 	var close = function close() {

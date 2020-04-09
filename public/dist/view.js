@@ -56,7 +56,7 @@ function gup(b) {
  * @description This module communicates with Lychee's API
  */
 
-api = {
+var api = {
 
 	path: 'php/index.php',
 	onError: null
@@ -197,7 +197,7 @@ api.post_raw = function (fn, params, callback) {
 		error: error
 	});
 };
-csrf = {};
+var csrf = {};
 
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
 	if (settings.url !== lychee.updatePath) {
@@ -483,7 +483,7 @@ var error = function error(errorThrown, params, data) {
  * @description This module is used to generate HTML-Code.
  */
 
-build = {};
+var build = {};
 
 build.iconic = function (icon) {
 	var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
@@ -747,9 +747,9 @@ build.imageview = function (data, visibleControls, autoplay) {
 		} else {
 
 			if (data.medium !== '') {
-				medium_dims = data.medium_dim.split("x");
-				medium_width = medium_dims[0];
-				medium_height = medium_dims[1];
+				var medium_dims = data.medium_dim.split("x");
+				var medium_width = medium_dims[0];
+				var medium_height = medium_dims[1];
 				// It's a live photo
 				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px'></div>";
 			} else {
@@ -870,7 +870,7 @@ build.user = function (user) {
  * @description This module takes care of the header.
  */
 
-header = {
+var header = {
 
 	_dom: $('.header')
 
@@ -1211,7 +1211,7 @@ header.applyTranslations = function () {
  * @description This module is used to check if elements are visible or not.
  */
 
-visible = {};
+var visible = {};
 
 visible.albums = function () {
 	if (header.dom('.header__toolbar--public').hasClass('header__toolbar--visible')) return true;
@@ -1273,7 +1273,7 @@ visible.leftMenu = function () {
  * @description This module takes care of the sidebar.
  */
 
-sidebar = {
+var sidebar = {
 
 	_dom: $('.sidebar'),
 	types: {
@@ -1415,6 +1415,7 @@ sidebar.createStructure.photo = function (data) {
 	var structure = {};
 	var _public = '';
 	var isVideo = data.type && data.type.indexOf('video') > -1;
+	var license = void 0;
 
 	// Set the license string for a photo
 	switch (data.license) {
@@ -1645,7 +1646,7 @@ sidebar.createStructure.album = function (data) {
 		rows: [{ title: lychee.locale['ALBUM_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['ALBUM_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
 	};
 
-	videoCount = 0;
+	var videoCount = 0;
 	$.each(data.photos, function () {
 		if (this.type && this.type.indexOf('video') > -1) {
 			videoCount++;
@@ -1768,7 +1769,7 @@ sidebar.render = function (structure) {
 							return;
 						}
 						// Add separator if needed
-						if (!(value === '')) {
+						if (value !== '') {
 							value += lychee.html(_templateObject28, row.kind);
 						}
 						value += lychee.html(_templateObject29, row.kind, v);
@@ -1815,11 +1816,11 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	var degrees = 0;
 	var minutes = 0;
 	var seconds = 0;
-	var direction = 'X';
+	var direction = void 0;
 
 	//decimal must be integer or float no larger than 180;
 	//type must be Boolean
-	if (Math.abs(decimal) > 180 || !(typeof type === "boolean")) {
+	if (Math.abs(decimal) > 180 || typeof type !== "boolean") {
 		return false;
 	}
 
@@ -1853,13 +1854,13 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	seconds = Math.floor(seconds - minutes * 60);
 
 	return degrees + '° ' + minutes + '\' ' + seconds + '\" ' + direction;
-};
+}
 
 /**
  * @description This module takes care of the map view of a full album and its sub-albums.
  */
 
-map_provider_layer_attribution = {
+var map_provider_layer_attribution = {
 	'Wikimedia': {
 		layer: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
 		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
@@ -1882,7 +1883,7 @@ map_provider_layer_attribution = {
 	}
 };
 
-mapview = {
+var mapview = {
 	map: null,
 	photoLayer: null,
 	min_lat: null,
@@ -2005,7 +2006,7 @@ mapview.open = function () {
 	});
 
 	// Adjusts zoom and position of map to show all images
-	updateZoom = function updateZoom() {
+	var updateZoom = function updateZoom() {
 		if (mapview.min_lat && mapview.min_lng && mapview.max_lat && mapview.max_lng) {
 			var dist_lat = mapview.max_lat - mapview.min_lat;
 			var dist_lng = mapview.max_lng - mapview.min_lng;
@@ -2016,12 +2017,12 @@ mapview.open = function () {
 	};
 
 	// Adds photos to the map
-	addPhotosToMap = function addPhotosToMap(album) {
+	var addPhotosToMap = function addPhotosToMap(album) {
 
 		// check if empty
 		if (!album.photos) return;
 
-		photos = [];
+		var photos = [];
 
 		album.photos.forEach(function (element, index) {
 			if (element.latitude || element.longitude) {
@@ -2064,7 +2065,7 @@ mapview.open = function () {
 	// Call backend, retrieve information of photos and display them
 	// This function is called recursively to retrieve data for sub-albums
 	// Possible enhancement could be to only have a single ajax call
-	getAlbumData = function getAlbumData(_albumID) {
+	var getAlbumData = function getAlbumData(_albumID) {
 		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 		if (_albumID !== '' && _albumID !== null) {
@@ -2082,9 +2083,9 @@ mapview.open = function () {
 
 						_params.password = password.value;
 
-						api.post('Album::getPositionData', _params, function (data) {
-							addPhotosToMap(data);
-							mapview.title(_albumID, data.title);
+						api.post('Album::getPositionData', _params, function (_data) {
+							addPhotosToMap(_data);
+							mapview.title(_albumID, _data.title);
 						});
 					});
 				} else {
@@ -2107,9 +2108,9 @@ mapview.open = function () {
 
 						_params2.password = password.value;
 
-						api.post('Albums::getPositionData', _params2, function (data) {
-							addPhotosToMap(data);
-							mapview.title(_albumID, data.title);
+						api.post('Albums::getPositionData', _params2, function (_data) {
+							addPhotosToMap(_data);
+							mapview.title(_albumID, _data.title);
 						});
 					});
 				} else {
@@ -2780,7 +2781,7 @@ lychee.locale = {
 
 		var elem = dom();
 
-		if (elem == null || elem.length === 0) return false;else return true;
+		return !(elem == null || elem.length === 0);
 	};
 
 	var close = function close() {
