@@ -16,7 +16,5 @@ final class WelcomeController extends Controller
 			'title' => 'Lychee-installer',
 			'step' => 0,
 		]);
-
-		return 'Welcome';
 	}
 }

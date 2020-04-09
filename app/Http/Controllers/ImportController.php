@@ -389,10 +389,13 @@ class ImportController extends Controller
 				$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
 				// this actually should not fail.
 				if ($album === false) {
-					$this->status_update('Problem: ' . $basename($dir) . ': Could not create album');
+					// @codeCoverageIgnoreStart
+
+					$this->status_update('Problem: ' . basename($dir) . ': Could not create album');
 					Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
 					continue;
 				}
+				// @codeCoverageIgnoreEnd
 			}
 			$newAlbumID = $album->id;
 			$this->server_exec($dir . '/', $newAlbumID, $delete_imported, $force_skip_duplicates, $ignore_list);
