@@ -85,7 +85,6 @@ Route::post('/api/Logs::clearNoise', 'LogController@clearNoise')->middleware('ad
 Route::post('/api/Diagnostics', 'DiagnosticsController@get');
 
 Route::get('/Logs', 'LogController@display')->middleware('admin');
-Route::get('/LogsFile', 'LogController@display');
 Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 Route::get('/Diagnostics', 'DiagnosticsController@show');
 
