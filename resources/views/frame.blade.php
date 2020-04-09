@@ -10,10 +10,10 @@
 
 
 @section('content')
-    <img id="background" src=""/>
+    <img id="background" alt="image background" src=""/>
     <canvas id="background_canvas"></canvas>
     <div id="noise"></div>
     <div class="image_container">
-        <img id="picture" src=""/>
+        <img id="picture" alt="image contained" src=""/>
     </div>
 @endsection

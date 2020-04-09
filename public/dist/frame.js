@@ -21,7 +21,7 @@ function gup(b) {
  * @description This module communicates with Lychee's API
  */
 
-api = {
+var api = {
 
 	path: 'php/index.php',
 	onError: null
@@ -162,7 +162,7 @@ api.post_raw = function (fn, params, callback) {
 		error: error
 	});
 };
-csrf = {};
+var csrf = {};
 
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
 	if (settings.url !== lychee.updatePath) {
@@ -290,7 +290,8 @@ frame.refreshPicture = function () {
 
 		$('#background').attr('src', data.thumbUrl);
 
-		srcset = '';
+		var srcset = '';
+		var src = '';
 		this.frame.photo = null;
 		if (data.medium != '') {
 			src = data.medium;

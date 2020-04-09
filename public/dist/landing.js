@@ -15,7 +15,7 @@ function gup(b) {
 
 	if (c === null) return '';else return c[1];
 }
-landing = {
+var landing = {
 	galleryGrid: null,
 	loaderPerc: null,
 	load_wrap: null
@@ -131,23 +131,22 @@ $(document).ready(function () {
 		paddingTop: ($(window).height() - 50) / 2 + "px"
 	});
 
-	var winHeeigh = $(window).height();
-
 	$('.sub-menu').hide();
 
-	$('#menu a').each(function () {
+	// $('#menu a').each(function() {
 
-		var $this = $(this);
-		var href = $(this).attr("href");
-		var text = $(this).html();
+	// 	var $this = $(this);
+	// 	var href = $(this).attr("href");
+	// 	var text = $(this).html();
 
-		// if ( $this.html() == "Store" || $this.closest("ul").hasClass("sub-menu") ) {
-		//
-		// } else {
-		// 	$("#mobile_menu_wrap").prepend('<a class="animate" href="' + href + '">' + text + '</a>');
-		// }
+	// 	// if ( $this.html() == "Store" || $this.closest("ul").hasClass("sub-menu") ) {
+	// 	//
+	// 	// } else {
+	// 	// 	$("#mobile_menu_wrap").prepend('<a class="animate" href="' + href + '">' + text + '</a>');
+	// 	// }
 
-	});
+
+	// });
 
 	// $('.sub-menu a').each(function() {
 	//
