@@ -82,7 +82,7 @@ class Sync extends Command
 		Session::put('UserID', $owner_id);
 
 		try {
-			$ret = $import_controller->server_exec($directory, $album_id, $delete_imported, $force_skip_duplicates);
+			$import_controller->server_exec($directory, $album_id, $delete_imported, $force_skip_duplicates);
 		} catch (Exception $e) {
 			$this->error($e);
 		}
