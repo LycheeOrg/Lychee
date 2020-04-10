@@ -10,7 +10,7 @@ use App\Photo;
 use Illuminate\Console\Command;
 use Storage;
 
-class exif_lens extends Command
+class ExifLens extends Command
 {
 	/**
 	 * The name and signature of the console command.

@@ -2,11 +2,20 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Commands\Utilities\Colorize;
 use App\Configs;
 use Illuminate\Console\Command;
 
-class reset_admin extends Command
+class ResetAdmin extends Command
 {
+
+	/**
+	 * Add color to the command line output
+	 * 
+	 * @var Colorize
+	 */
+	private $col;
+
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -26,9 +35,11 @@ class reset_admin extends Command
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(Colorize $colorize)
 	{
 		parent::__construct();
+
+		$this->col = $colorize;
 	}
 
 	/**
@@ -39,5 +50,6 @@ class reset_admin extends Command
 	public function handle()
 	{
 		Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['value' => '']);
+		$this->line($this->col->yellow('Admin username and password reset.'));
 	}
 }

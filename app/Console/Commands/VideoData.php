@@ -9,7 +9,7 @@ use App\Photo;
 use Illuminate\Console\Command;
 use Storage;
 
-class video_data extends Command
+class VideoData extends Command
 {
 	/**
 	 * The name and signature of the console command.

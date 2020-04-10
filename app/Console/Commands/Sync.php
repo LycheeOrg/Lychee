@@ -10,7 +10,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Session;
 
-class sync extends Command
+class Sync extends Command
 {
 	/**
 	 * The name and signature of the console command.

@@ -8,7 +8,7 @@ use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
 
-class decode_GPS_locations extends Command
+class DecodeGpsLocations extends Command
 {
 	/**
 	 * The name and signature of the console command.

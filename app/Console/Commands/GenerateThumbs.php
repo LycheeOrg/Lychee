@@ -7,7 +7,7 @@ use App\ModelFunctions\PhotoFunctions;
 use App\Photo;
 use Illuminate\Console\Command;
 
-class generate_thumbs extends Command
+class GenerateThumbs extends Command
 {
 	/**
 	 * @var array
