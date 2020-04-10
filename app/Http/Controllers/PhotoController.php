@@ -580,11 +580,11 @@ class PhotoController extends Controller
 		// determine the file based on given size
 		switch ($request['kind']) {
 			case 'FULL':
-				$url = Storage::path($prefix_path . $photo->url);
+				$path = $prefix_path . $photo->url;
 				$kind = '';
 				break;
 			case 'LIVEPHOTOVIDEO':
-				$url = Storage::path($prefix_path . $photo->livePhotoUrl);
+				$path = $prefix_path . $photo->livePhotoUrl;
 				$kind = '';
 				break;
 			case 'MEDIUM2X':
@@ -595,14 +595,14 @@ class PhotoController extends Controller
 				}
 				$fileName2x = explode('.', $fileName);
 				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-				$url = Storage::path('medium/' . $fileName2x);
+				$path = 'medium/' . $fileName2x;
 				$kind = '-' . $photo->medium2x;
 				break;
 			case 'MEDIUM':
 				if (strpos($photo->type, 'video') !== 0) {
-					$url = Storage::path('medium/' . $photo->url);
+					$path = 'medium/' . $photo->url;
 				} else {
-					$url = Storage::path('medium/' . $photo->thumbUrl);
+					$path = 'medium/' . $photo->thumbUrl;
 				}
 				$kind = '-' . $photo->medium;
 				break;
@@ -614,25 +614,25 @@ class PhotoController extends Controller
 				}
 				$fileName2x = explode('.', $fileName);
 				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-				$url = Storage::path('small/' . $fileName2x);
+				$path = 'small/' . $fileName2x;
 				$kind = '-' . $photo->small2x;
 				break;
 			case 'SMALL':
 				if (strpos($photo->type, 'video') !== 0) {
-					$url = Storage::path('small/' . $photo->url);
+					$path = 'small/' . $photo->url;
 				} else {
-					$url = Storage::path('small/' . $photo->thumbUrl);
+					$path = 'small/' . $photo->thumbUrl;
 				}
 				$kind = '-' . $photo->small;
 				break;
 			case 'THUMB2X':
 				$fileName2x = explode('.', $photo->thumbUrl);
 				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-				$url = Storage::path('thumb/' . $fileName2x);
+				$path = 'thumb/' . $fileName2x;
 				$kind = '-400x400';
 				break;
 			case 'THUMB':
-				$url = Storage::path('thumb/' . $photo->thumbUrl);
+				$path = 'thumb/' . $photo->thumbUrl;
 				$kind = '-200x200';
 				break;
 			default:
@@ -642,9 +642,9 @@ class PhotoController extends Controller
 				return null;
 		}
 
+		$fullpath = Storage::path($path);
 		// Check the file actually exists
-		// TODO: USE STORAGE FACADE HERE
-		if (!file_exists($url)) {
+		if (!Storage::exists($path)) {
 			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $url . ' (' . $title . ')');
 
 			return null;
@@ -653,10 +653,10 @@ class PhotoController extends Controller
 		// Get extension of image
 		$extension = '';
 		if ($photo->type != 'raw') {
-			$extension = Helpers::getExtension($url, false);
+			$extension = Helpers::getExtension($fullpath, false);
 		}
 
-		return [$title, $kind, $extension, $url];
+		return [$title, $kind, $extension, $fullpath];
 	}
 
 	/**
