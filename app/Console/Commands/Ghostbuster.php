@@ -71,37 +71,39 @@ class Ghostbuster extends Command
 			}
 			$c = Photo::where('url', '=', $url)->count();
 
-			$photoName = explode('.', $url);
+			if ($c == 0) {
+				$photoName = explode('.', $url);
 
-			$to_delete = [];
-			$to_delete[] = 'thumb/' . $photoName[0] . '.jpeg';
-			$to_delete[] = 'thumb/' . $photoName[0] . '@2x.jpeg';
+				$to_delete = [];
+				$to_delete[] = 'thumb/' . $photoName[0] . '.jpeg';
+				$to_delete[] = 'thumb/' . $photoName[0] . '@2x.jpeg';
 
-			// for videos
-			$to_delete[] = 'small/' . $photoName[0] . '.jpeg';
-			$to_delete[] = 'small/' . $photoName[0] . '@2x.jpeg';
-			$to_delete[] = 'medium/' . $photoName[0] . '.jpeg';
-			$to_delete[] = 'medium/' . $photoName[0] . '@2x.jpeg';
+				// for videos
+				$to_delete[] = 'small/' . $photoName[0] . '.jpeg';
+				$to_delete[] = 'small/' . $photoName[0] . '@2x.jpeg';
+				$to_delete[] = 'medium/' . $photoName[0] . '.jpeg';
+				$to_delete[] = 'medium/' . $photoName[0] . '@2x.jpeg';
 
-			// for normal pictures
-			$to_delete[] = 'small/' . $url;
-			$to_delete[] = 'small/' . $photoName[0] . '@2x.' . $photoName[1];
-			$to_delete[] = 'medium/' . $url;
-			$to_delete[] = 'medium/' . $photoName[0] . '@2x.' . $photoName[1];
-			$to_delete[] = 'big/' . $url;
+				// for normal pictures
+				$to_delete[] = 'small/' . $url;
+				$to_delete[] = 'small/' . $photoName[0] . '@2x.' . $photoName[1];
+				$to_delete[] = 'medium/' . $url;
+				$to_delete[] = 'medium/' . $photoName[0] . '@2x.' . $photoName[1];
+				$to_delete[] = 'big/' . $url;
 
-			foreach ($to_delete as $del) {
-				if (Storage::exists($del)) {
-					if ($dryrun) {
-						$total++;
-						$this->line(str_pad($del, 50) . $this->col->red(' will be removed') . '.');
-					} else {
-						Storage::delete($del);
-						$this->line($this->col->red('removed file: ') . $del);
+				foreach ($to_delete as $del) {
+					if (Storage::exists($del)) {
+						if ($dryrun) {
+							$total++;
+							$this->line(str_pad($del, 50) . $this->col->red(' will be removed') . '.');
+						} else {
+							Storage::delete($del);
+							$this->line($this->col->red('removed file: ') . $del);
+						}
 					}
 				}
+				$this->line('');
 			}
-			$this->line('');
 		}
 
 		if ($total == 0) {
