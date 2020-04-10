@@ -8,10 +8,9 @@ use Illuminate\Console\Command;
 
 class ShowLogs extends Command
 {
-
 	/**
-	 * Add color to the command line output
-	 * 
+	 * Add color to the command line output.
+	 *
 	 * @var Colorize
 	 */
 	private $col;
@@ -79,7 +78,7 @@ class ShowLogs extends Command
 			foreach ($logs->reverse() as $log) {
 				$this->line($this->col->magenta($log->created_at)
 					. ' -- '
-					.$this->color_type(str_pad($log->type, 7))
+					. $this->color_type(str_pad($log->type, 7))
 					. ' -- '
 					. $this->col->blue($log->function)
 					. ' -- '
@@ -102,6 +101,4 @@ class ShowLogs extends Command
 				return $type;
 		}
 	}
-
-
 }

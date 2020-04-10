@@ -2,16 +2,15 @@
 
 namespace App\Console\Commands;
 
-use App\Console\Commands\Utilities\Colorize;
 use App\Configs;
+use App\Console\Commands\Utilities\Colorize;
 use Illuminate\Console\Command;
 
 class ResetAdmin extends Command
 {
-
 	/**
-	 * Add color to the command line output
-	 * 
+	 * Add color to the command line output.
+	 *
 	 * @var Colorize
 	 */
 	private $col;
