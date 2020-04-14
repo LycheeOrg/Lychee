@@ -411,7 +411,6 @@ class DiagnosticsController extends Controller
 		$configs = ['You must be logged to see this.'];
 		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
-			// $infos = $this->get_space($infos);
 			$configs = $this->get_config();
 		}
 
@@ -456,7 +455,6 @@ class DiagnosticsController extends Controller
 		$configs = ['You must be logged to see this.'];
 		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
-			// $infos = $this->get_space($infos);
 			$configs = $this->get_config();
 		}
 
