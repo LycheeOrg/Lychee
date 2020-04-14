@@ -29,6 +29,7 @@ final class English implements LangInterface
 			'SET_DROPBOX' => 'Set Dropbox',
 			'ABOUT_LYCHEE' => 'About Lychee',
 			'DIAGNOSTICS' => 'Diagnostics',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Show Logs',
 			'SIGN_OUT' => 'Sign Out',
 			'UPDATE_AVAILABLE' => 'Update available!',

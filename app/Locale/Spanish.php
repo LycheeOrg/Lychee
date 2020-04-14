@@ -29,6 +29,7 @@ final class Spanish implements LangInterface
 			'SET_DROPBOX' => 'Establecer Dropbox',
 			'ABOUT_LYCHEE' => 'Acerca de Lychee',
 			'DIAGNOSTICS' => 'Diagnóstico',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Mostrar Registros',
 			'SIGN_OUT' => 'Cerrar Sesión',
 			'UPDATE_AVAILABLE' => '¡Actualización disponible!',

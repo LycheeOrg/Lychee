@@ -348,8 +348,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject79 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class=\"setting_line\">\n\t\t\t\t<p>\n\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject80 = _taggedTemplateLiteral(["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"], ["\n\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t</div>\n\t\t\t"]),
     _templateObject81 = _taggedTemplateLiteral(["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"], ["<div class=\"clear_logs_update\"><a id=\"Clean_Noise\" class=\"basicModal__button\">", "</a></div>"]),
-    _templateObject82 = _taggedTemplateLiteral(["<a id=\"Check_Update_Lychee\" class=\"basicModal__button\">", "</a>"], ["<a id=\"Check_Update_Lychee\" class=\"basicModal__button\">", "</a>"]),
-    _templateObject83 = _taggedTemplateLiteral(["<a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a>"], ["<a id=\"Update_Lychee\" class=\"basicModal__button\">", "</a>"]);
+    _templateObject82 = _taggedTemplateLiteral(["<a id=\"", "Update_Lychee\" class=\"basicModal__button\">", "</a>"], ["<a id=\"", "Update_Lychee\" class=\"basicModal__button\">", "</a>"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -3034,8 +3033,23 @@ $(document).ready(function () {
 
 		// Fullscreen on mobile
 		.on('touchend', '#imageview #image', function (e) {
-			if (swipe.obj == null || swipe.offsetX >= -5 && swipe.offsetX <= 5) {
-				if (visible.header()) header.hide(e);else header.show();
+
+			// prevent triggering event 'mousemove'
+			e.preventDefault();
+
+			if (typeof swipe.obj === 'undefined' || Math.abs(swipe.offsetX) <= 5 && Math.abs(swipe.offsetY) <= 5) {
+				// Toogle header only if we're not moving to next/previous photo;
+				// In this case, swipe.preventNextHeaderToggle is set to true
+				if (typeof swipe.preventNextHeaderToggle === 'undefined' || !swipe.preventNextHeaderToggle) {
+					if (visible.header()) {
+						header.hide(e);
+					} else {
+						header.show();
+					}
+				}
+
+				// For next 'touchend', behave again as normal and toogle header
+				swipe.preventNextHeaderToggle = false;
 			}
 		});
 		$('#imageview')
@@ -4162,6 +4176,7 @@ lychee.locale = {
 	'SET_DROPBOX': 'Set Dropbox',
 	'ABOUT_LYCHEE': 'About Lychee',
 	'DIAGNOSTICS': 'Diagnostics',
+	'DIAGNOSTICS_GET_SIZE': 'Request space usage',
 	'LOGS': 'Show Logs',
 	'CLEAN_LOGS': 'Clean Noise',
 	'SIGN_OUT': 'Sign Out',
@@ -7710,7 +7725,8 @@ var swipe = {
 	tolerance_X: 150,
 	tolerance_Y: 250,
 	offsetX: 0,
-	offsetY: 0
+	offsetY: 0,
+	preventNextHeaderToggle: false
 
 };
 
@@ -7743,7 +7759,7 @@ swipe.move = function (e) {
 		'transform': 'translate(' + swipe.offsetX + 'px, ' + swipe.offsetY + 'px)'
 	});
 
-	return false;
+	return;
 };
 
 swipe.stop = function (e, left, right) {
@@ -7762,9 +7778,19 @@ swipe.stop = function (e, left, right) {
 	} else if (e.x <= -swipe.tolerance_X) {
 
 		left(true);
+
+		// 'touchend' will be called after 'swipeEnd'
+		// in case of moving to next image, we want to skip
+		// the toggling of the header
+		swipe.preventNextHeaderToggle = true;
 	} else if (e.x >= swipe.tolerance_X) {
 
 		right(true);
+
+		// 'touchend' will be called after 'swipeEnd'
+		// in case of moving to next image, we want to skip
+		// the toggling of the header
+		swipe.preventNextHeaderToggle = true;
 	} else {
 
 		swipe.obj.css({
@@ -7777,6 +7803,8 @@ swipe.stop = function (e, left, right) {
 	swipe.obj = null;
 	swipe.offsetX = 0;
 	swipe.offsetY = 0;
+
+	return;
 };
 
 /**
@@ -8145,6 +8173,8 @@ upload.start = {
 
 						// Show close button
 						$('.basicModal #basicModal__action.hidden').show();
+
+						return;
 					});
 				} else {
 					// Variables holding state across the invocations of
@@ -9215,7 +9245,6 @@ view.photo = {
 
 			if (!_photo.json.imgDirection || _photo.json.imgDirection === '') {
 				// Add Marker to map, direction is not set
-				// var marker = 
 				L.marker([_photo.json.latitude, _photo.json.longitude]).addTo(mymap);
 			} else {
 				// Add Marker, direction has been set
@@ -9713,35 +9742,29 @@ view.diagnostics = {
 
 	clearContent: function clearContent(update) {
 		var html = '';
-		if (update > 0) {
-			html += '<div class="clear_logs_update">';
-			html += lychee.html(_templateObject82, lychee.locale['CHECK_FOR_UPDATE']);
-		}
+
 		if (update === 2) {
-			html += lychee.html(_templateObject83, lychee.locale['UPDATE_AVAILABLE']);
+			html += view.diagnostics.button('', lychee.locale['UPDATE_AVAILABLE']);
+		} else if (update > 0) {
+			html += view.diagnostics.button('Check_', lychee.locale['CHECK_FOR_UPDATE']);
 		}
-		if (update > 0) {
-			html += '</div>';
-		}
+
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);
 	},
 
-	bind: function bind() {
-		$("#Update_Lychee").on('click', function () {
-			api.post('Update::Apply', [], function (data) {
-				var html = view.preify(data, '');
-				$("#Update_Lychee").remove();
-				$(html).prependTo(".logs_diagnostics_view");
-			});
-		});
+	button: function button(type, locale) {
+		var html = '';
+		html += '<div class="clear_logs_update">';
+		html += lychee.html(_templateObject82, type, locale);
+		html += '</div>';
 
-		$("#Check_Update_Lychee").on('click', function () {
-			api.post('Update::Check', [], function (data) {
-				loadingBar.show('success', data);
-				$("#Check_Update_Lychee").remove();
-			});
-		});
+		return html;
+	},
+
+	bind: function bind() {
+		$("#Update_Lychee").on('click', view.diagnostics.call_apply_update);
+		$("#Check_Update_Lychee").on('click', view.diagnostics.call_check_update);
 	},
 
 	content: {
@@ -9749,37 +9772,83 @@ view.diagnostics = {
 			view.diagnostics.clearContent(false);
 
 			if (lychee.api_V2) {
-				api.post('Diagnostics', {}, function (data) {
-					view.diagnostics.clearContent(data.update);
-					var html = '';
-					var i = void 0;
-					html += '<pre>\n\n\n\n';
-					html += '    Diagnostics\n' + '    -----------\n';
-					for (i = 0; i < data.errors.length; i++) {
-						html += '    ' + data.errors[i] + '\n';
-					}
-					html += '\n' + '    System Information\n' + '    ------------------\n';
-					for (i = 0; i < data.infos.length; i++) {
-						html += '    ' + data.infos[i] + '\n';
-					}
-					html += '\n' + '    Config Information\n' + '    ------------------\n';
-					for (i = 0; i < data.configs.length; i++) {
-						html += '    ' + data.configs[i] + '\n';
-					}
-					html += '</pre>';
-
-					$(".logs_diagnostics_view").html(html);
-
-					view.diagnostics.bind();
-				});
+				view.diagnostics.content.v_2();
 			} else {
-				api.post_raw('Diagnostics', {}, function (data) {
-					$(".logs_diagnostics_view").html(data);
-				});
+				view.diagnostics.content.v_1();
 			}
-		}
-	}
+		},
 
+		v_1: function v_1() {
+			api.post_raw('Diagnostics', {}, function (data) {
+				$(".logs_diagnostics_view").html(data);
+			});
+		},
+
+		v_2: function v_2() {
+			api.post('Diagnostics', {}, function (data) {
+				view.diagnostics.clearContent(data.update);
+				var html = '';
+
+				html += view.diagnostics.content.block('error', 'Diagnostics', data.errors);
+				html += view.diagnostics.content.block('sys', 'System Information', data.infos);
+				html += '<a id="Get_Size_Lychee" class="basicModal__button button_left">';
+				html += '<svg class="iconic"><use xlink:href="#reload"></use></svg>';
+				html += lychee.html(_templateObject29, lychee.locale['DIAGNOSTICS_GET_SIZE']);
+				html += '</a>';
+				html += view.diagnostics.content.block('conf', 'Config Information', data.configs);
+
+				$(".logs_diagnostics_view").html(html);
+
+				view.diagnostics.bind();
+
+				$("#Get_Size_Lychee").on('click', view.diagnostics.call_get_size);
+			});
+		},
+
+		print_array: function print_array(arr) {
+			var html = '';
+			var i = void 0;
+
+			for (i = 0; i < arr.length; i++) {
+				html += '    ' + arr[i] + '\n';
+			}
+			return html;
+		},
+
+		block: function block(id, title, arr) {
+			var html = '';
+			html += '<pre id="content_diag_' + id + '">\n\n\n\n';
+			html += '    ' + title + '\n';
+			html += '    '.padEnd(title.length, '-') + '\n';
+			html += view.diagnostics.content.print_array(arr);
+			html += '</pre>\n';
+			return html;
+		}
+
+	},
+
+	call_check_update: function call_check_update() {
+		api.post('Update::Check', [], function (data) {
+			loadingBar.show('success', data);
+			$("#Check_Update_Lychee").remove();
+		});
+	},
+
+	call_apply_update: function call_apply_update() {
+		api.post('Update::Apply', [], function (data) {
+			var html = view.preify(data, '');
+			$("#Update_Lychee").remove();
+			$(html).prependTo(".logs_diagnostics_view");
+		});
+	},
+
+	call_get_size: function call_get_size() {
+		api.post('Diagnostics::getSize', [], function (data) {
+			var html = view.preify(data, '');
+			$("#Get_Size_Lychee").remove();
+			$(html).appendTo("#content_diag_sys");
+		});
+	}
 };
 
 view.update = {

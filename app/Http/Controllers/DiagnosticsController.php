@@ -411,7 +411,6 @@ class DiagnosticsController extends Controller
 		$configs = ['You must be logged to see this.'];
 		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
-			$infos = $this->get_space($infos);
 			$configs = $this->get_config();
 		}
 
@@ -456,7 +455,6 @@ class DiagnosticsController extends Controller
 		$configs = ['You must be logged to see this.'];
 		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
-			$infos = $this->get_space($infos);
 			$configs = $this->get_config();
 		}
 
@@ -466,5 +464,21 @@ class DiagnosticsController extends Controller
 			'infos' => $infos,
 			'configs' => $configs,
 		]);
+	}
+
+	/**
+	 * Return the size used by Lychee.
+	 * We now separate this from the initial get() call as this is quite time consuming.
+	 *
+	 * @return array
+	 */
+	public function get_size()
+	{
+		$infos = ['You must be logged to see this.'];
+		if ($this->sessionFunctions->is_admin()) {
+			$infos = $this->get_space([]);
+		}
+
+		return $infos;
 	}
 }

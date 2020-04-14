@@ -29,6 +29,7 @@ final class Russian implements LangInterface
 			'SET_DROPBOX' => 'Подключить Dropbox',
 			'ABOUT_LYCHEE' => 'О Lychee',
 			'DIAGNOSTICS' => 'Диагностика',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Логи',
 			'SIGN_OUT' => 'Выход',
 			'UPDATE_AVAILABLE' => 'Доступно обновление!',

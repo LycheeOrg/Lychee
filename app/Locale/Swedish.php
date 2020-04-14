@@ -29,6 +29,7 @@ final class Swedish implements LangInterface
 			'SET_DROPBOX' => 'Ställ in Dropbox',
 			'ABOUT_LYCHEE' => 'Om Lychee',
 			'DIAGNOSTICS' => 'Diagnostik',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Visa logfilen',
 			'SIGN_OUT' => 'Logga ut',
 			'UPDATE_AVAILABLE' => 'En uppdatering finns!',

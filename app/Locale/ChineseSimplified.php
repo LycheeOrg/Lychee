@@ -29,6 +29,7 @@ final class ChineseSimplified implements LangInterface
 			'SET_DROPBOX' => '设置 Dropbox',
 			'ABOUT_LYCHEE' => '关于 Lychee',
 			'DIAGNOSTICS' => '诊断',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => '查看日志',
 			'SIGN_OUT' => '注销登录',
 			'UPDATE_AVAILABLE' => '可用更新！',

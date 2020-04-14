@@ -29,6 +29,7 @@ final class Dutch implements LangInterface
 			'SET_DROPBOX' => 'Set Dropbox',
 			'ABOUT_LYCHEE' => 'Over Lychee',
 			'DIAGNOSTICS' => 'Diagnostics',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Laat logs zien',
 			'SIGN_OUT' => 'Log uit',
 			'UPDATE_AVAILABLE' => 'Update beschikbaar!',

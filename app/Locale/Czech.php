@@ -29,6 +29,7 @@ final class Czech implements LangInterface
 			'SET_DROPBOX' => 'Nastavit Dropbox',
 			'ABOUT_LYCHEE' => 'O Lychee',
 			'DIAGNOSTICS' => 'Diagnostika',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Protokoly',
 			'SIGN_OUT' => 'Odhlásit se',
 			'UPDATE_AVAILABLE' => 'Update je k dispozici!',

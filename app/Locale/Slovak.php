@@ -29,6 +29,7 @@ final class Slovak implements LangInterface
 			'SET_DROPBOX' => 'Dropbox nastaviť',
 			'ABOUT_LYCHEE' => 'O Lychee',
 			'DIAGNOSTICS' => 'Diagnostika',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Protokoly',
 			'SIGN_OUT' => 'Odhlásiť',
 			'UPDATE_AVAILABLE' => 'Update je k dispozícii!',

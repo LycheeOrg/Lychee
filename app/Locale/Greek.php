@@ -29,6 +29,7 @@ final class Greek implements LangInterface
 			'SET_DROPBOX' => 'Ορίστε λογαριασμό Dropbox',
 			'ABOUT_LYCHEE' => 'Περί Lychee',
 			'DIAGNOSTICS' => 'Διαγνωστικά',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Εμφάνιση Καταγραφών',
 			'SIGN_OUT' => 'Αποσύνδεση',
 			'UPDATE_AVAILABLE' => 'Διαθέσιμη Ενημέρωση!',

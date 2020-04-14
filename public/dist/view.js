@@ -2180,6 +2180,7 @@ lychee.locale = {
 	'SET_DROPBOX': 'Set Dropbox',
 	'ABOUT_LYCHEE': 'About Lychee',
 	'DIAGNOSTICS': 'Diagnostics',
+	'DIAGNOSTICS_GET_SIZE': 'Request space usage',
 	'LOGS': 'Show Logs',
 	'CLEAN_LOGS': 'Clean Noise',
 	'SIGN_OUT': 'Sign Out',
