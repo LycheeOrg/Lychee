@@ -29,6 +29,7 @@ final class Italian implements LangInterface
 			'SET_DROPBOX' => 'Imposta Dropbox',
 			'ABOUT_LYCHEE' => 'Informazioni su Lychee',
 			'DIAGNOSTICS' => 'Diagnostica',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Visualizza Log',
 			'SIGN_OUT' => 'Esci',
 			'UPDATE_AVAILABLE' => 'Aggiornamento disponibile!',

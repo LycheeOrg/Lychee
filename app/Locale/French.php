@@ -29,6 +29,7 @@ final class French implements LangInterface
 			'SET_DROPBOX' => 'Paramétrer Dropbox',
 			'ABOUT_LYCHEE' => 'À propos de Lychee',
 			'DIAGNOSTICS' => 'Diagnostics',
+			'DIAGNOSTICS_GET_SIZE' => 'Calculer l\'espace',
 			'LOGS' => 'Afficher les logs',
 			'SIGN_OUT' => 'Se déconnecter',
 			'UPDATE_AVAILABLE' => 'Une mise à jour est disponible !',

@@ -83,6 +83,7 @@ Route::post('/api/User::Create', 'UserController@create')->middleware('admin');
 Route::post('/api/Logs', 'LogController@display')->middleware('admin');
 Route::post('/api/Logs::clearNoise', 'LogController@clearNoise')->middleware('admin');
 Route::post('/api/Diagnostics', 'DiagnosticsController@get');
+Route::post('/api/Diagnostics::getSize', 'DiagnosticsController@get_size');
 
 Route::get('/Logs', 'LogController@display')->middleware('admin');
 Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');

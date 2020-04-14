@@ -29,6 +29,7 @@ final class German implements LangInterface
 			'SET_DROPBOX' => 'Dropbox einrichten',
 			'ABOUT_LYCHEE' => 'Über Lychee',
 			'DIAGNOSTICS' => 'Diagnose',
+			'DIAGNOSTICS_GET_SIZE' => 'Request space usage',
 			'LOGS' => 'Logs anzeigen',
 			'SIGN_OUT' => 'Abmelden',
 			'UPDATE_AVAILABLE' => 'Update verfügbar!',
