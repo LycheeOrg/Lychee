@@ -2,11 +2,19 @@
 
 namespace App\Console\Commands;
 
+use App\Console\Commands\Utilities\Colorize;
 use App\Logs;
 use Illuminate\Console\Command;
 
-class show_logs extends Command
+class ShowLogs extends Command
 {
+	/**
+	 * Add color to the command line output.
+	 *
+	 * @var Colorize
+	 */
+	private $col;
+
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -26,9 +34,11 @@ class show_logs extends Command
 	 *
 	 * @return void
 	 */
-	public function __construct()
+	public function __construct(Colorize $colorize)
 	{
 		parent::__construct();
+
+		$this->col = $colorize;
 	}
 
 	/**
@@ -62,11 +72,18 @@ class show_logs extends Command
 		$order = ($order == 'ASC' || $order == 'DESC') ? $order : 'DESC';
 
 		if (Logs::count() == 0) {
-			$this->line($this->green('Everything looks fine, Lychee has not reported any problems!'));
+			$this->line($this->col->green('Everything looks fine, Lychee has not reported any problems!'));
 		} else {
 			$logs = Logs::orderBy('id', $order)->limit($n)->get();
 			foreach ($logs->reverse() as $log) {
-				$this->line($this->magenta($log->created_at) . ' -- ' . $this->color_type(str_pad($log->type, 7)) . ' -- ' . $this->blue($log->function) . ' -- ' . $this->green($log->line) . ' -- ' . $log->text);
+				$this->line($this->col->magenta($log->created_at)
+					. ' -- '
+					. $this->color_type(str_pad($log->type, 7))
+					. ' -- '
+					. $this->col->blue($log->function)
+					. ' -- '
+					. $this->col->green($log->line)
+					. ' -- ' . $log->text);
 			}
 		}
 	}
@@ -75,43 +92,13 @@ class show_logs extends Command
 	{
 		switch ($type) {
 			case 'error  ':
-				return $this->red($type);
+				return $this->col->red($type);
 			case 'warning':
-				return $this->yellow($type);
+				return $this->col->yellow($type);
 			case 'notice ':
-				return $this->cyan($type);
+				return $this->col->cyan($type);
 			default:
 				return $type;
 		}
-	}
-
-	private function red($string)
-	{
-		return '<fg=red>' . $string . '</>';
-	}
-
-	private function magenta($string)
-	{
-		return '<fg=magenta>' . $string . '</>';
-	}
-
-	private function green($string)
-	{
-		return '<fg=green>' . $string . '</>';
-	}
-
-	private function yellow($string)
-	{
-		return '<fg=yellow>' . $string . '</>';
-	}
-
-	private function cyan($string)
-	{
-		return '<fg=cyan>' . $string . '</>';
-	}
-
-	private function blue($string)
-	{
-		return '<fg=blue>' . $string . '</>';
 	}
 }

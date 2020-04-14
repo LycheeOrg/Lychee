@@ -10,7 +10,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Session;
 
-class sync extends Command
+class Sync extends Command
 {
 	/**
 	 * The name and signature of the console command.
@@ -82,7 +82,7 @@ class sync extends Command
 		Session::put('UserID', $owner_id);
 
 		try {
-			$ret = $import_controller->server_exec($directory, $album_id, $delete_imported, $force_skip_duplicates);
+			$import_controller->server_exec($directory, $album_id, $delete_imported, $force_skip_duplicates);
 		} catch (Exception $e) {
 			$this->error($e);
 		}

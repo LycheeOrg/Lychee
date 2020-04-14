@@ -8,7 +8,7 @@ use App\Photo;
 use Illuminate\Console\Command;
 use Storage;
 
-class takedate extends Command
+class Takedate extends Command
 {
 	/**
 	 * The name and signature of the console command.
