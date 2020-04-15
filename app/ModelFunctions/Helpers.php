@@ -37,6 +37,29 @@ class Helpers
 	}
 
 	/**
+	 * Return the 32bit truncated version of a number seen as string.
+	 *
+	 * @param string $id
+	 * @param int    $prevShortId
+	 *
+	 * @return string updated ID
+	 */
+	public static function trancateIf32(string $id, int $prevShortId = 0)
+	{
+		if (PHP_INT_MAX > 2147483647) {
+			return $id;
+		}
+
+		// Chop off the last four digits.
+		$shortId = intval(substr($id, 0, -4));
+		if ($shortId <= $prevShortId) {
+			$shortId = $prevShortId + 1;
+		}
+
+		return $shortId;
+	}
+
+	/**
 	 * Returns the extension of the filename (path or URI) or an empty string.
 	 *
 	 * @param $filename

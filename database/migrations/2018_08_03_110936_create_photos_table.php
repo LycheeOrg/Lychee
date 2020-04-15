@@ -40,42 +40,45 @@ class CreatePhotosTable extends Migration
 	 */
 	public function up()
 	{
-		if (!Schema::hasTable('photos')) {
-			//        Schema::dropIfExists('photos');
-			Schema::create('photos', function (Blueprint $table) {
-				$table->bigIncrements('id');
-				$table->string('title', 100);
-				$table->text('description')->nullable();
-				$table->string('url', 100);
-				$table->text('tags');
-				$table->boolean('public');
-				$table->integer('owner_id')->default(0);
-				$table->string('type', 30)->default('');
-				$table->integer('width')->nullable();
-				$table->integer('height')->nullable();
-				$table->string('size', 20)->default('');
-				$table->string('iso', 15)->default('');
-				$table->string('aperture', 20)->default('');
-				$table->string('make', 50)->default('');
-				$table->string('model', 50)->default('');
-				$table->string('lens', 100)->default('');
-				$table->string('shutter', 30)->default('');
-				$table->string('focal', 20)->default('');
-				$table->decimal('latitude', 10, 8)->nullable();
-				$table->decimal('longitude', 11, 8)->nullable();
-				$table->decimal('altitude', 10, 4)->nullable();
-				$table->timestamp('takestamp')->nullable();
-				$table->boolean('star')->default(false);
-				$table->string('thumbUrl', 37)->default('');
-				$table->bigInteger('album_id')->unsigned()->nullable()->default(null)->index();
-				$table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
-				$table->string('checksum', 40)->default('');
-				$table->boolean('medium')->default(false);
-				$table->boolean('small')->default(false);
-				$table->string('license', 20)->default('none');
-				$table->timestamps();
-			});
-		}
+		Schema::dropIfExists('photos');
+		Schema::create('photos', function (Blueprint $table) {
+			$table->bigIncrements('id');
+			$table->string('title', 100);
+			$table->text('description')->nullable();
+			$table->string('url', 100);
+			$table->text('tags');
+			$table->boolean('public');
+			$table->integer('owner_id')->default(0);
+			$table->string('type', 30)->default('');
+			$table->integer('width')->nullable();
+			$table->integer('height')->nullable();
+			$table->string('size', 20)->default('');
+			$table->string('iso', 15)->default('');
+			$table->string('aperture', 20)->default('');
+			$table->string('make', 50)->default('');
+			$table->string('model', 50)->default('');
+			$table->string('lens', 100)->default('');
+			$table->string('shutter', 30)->default('');
+			$table->string('focal', 20)->default('');
+			$table->decimal('latitude', 10, 8)->nullable();
+			$table->decimal('longitude', 11, 8)->nullable();
+			$table->decimal('altitude', 10, 4)->nullable();
+			$table->timestamp('takestamp')->nullable();
+			$table->boolean('star')->default(false);
+			$table->string('thumbUrl', 37)->default('');
+			$table->bigInteger('album_id')->unsigned()->nullable()->default(null)->index();
+			$table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
+			$table->string('checksum', 40)->default('');
+			$table->boolean('medium')->default(false);
+			$table->boolean('small')->default(false);
+			$table->string('license', 20)->default('none');
+			$table->timestamps();
+			$table->string('medium', 20)->default('');
+			$table->string('medium2x', 20)->default('');
+			$table->string('small', 20)->default('');
+			$table->string('small2x', 20)->default('');
+			$table->boolean('thumb2x')->default(false);
+		});
 	}
 
 	/**
@@ -85,8 +88,6 @@ class CreatePhotosTable extends Migration
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Schema::dropIfExists('photos');
-		}
+		Schema::dropIfExists('photos');
 	}
 }

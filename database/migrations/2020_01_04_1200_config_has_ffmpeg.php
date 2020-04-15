@@ -2,10 +2,8 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
-use App\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class ConfigHasFFmpeg extends Migration
 {
@@ -33,19 +31,15 @@ class ConfigHasFFmpeg extends Migration
 			// let's do nothing
 		}
 
-		if (Schema::hasTable('configs')) {
-			DB::table('configs')->insert([
-				[
-					'key' => 'has_ffmpeg',
-					'value' => $has_ffmpeg,
-					'confidentiality' => 2,
-					'cat' => 'Image Processing',
-					'type_range' => TERNARY,
-				],
-			]);
-		} else {
-			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exist');
-		}
+		DB::table('configs')->insert([
+			[
+				'key' => 'has_ffmpeg',
+				'value' => $has_ffmpeg,
+				'confidentiality' => 2,
+				'cat' => 'Image Processing',
+				'type_range' => TERNARY,
+			],
+		]);
 	}
 
 	/**
@@ -55,8 +49,6 @@ class ConfigHasFFmpeg extends Migration
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'has_ffmpeg')->delete();
-		}
+		Configs::where('key', '=', 'has_ffmpeg')->delete();
 	}
 }
