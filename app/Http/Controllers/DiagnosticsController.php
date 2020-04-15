@@ -111,55 +111,25 @@ class DiagnosticsController extends Controller
 		}
 
 		// Extensions
-		if (!extension_loaded('session')) {
-			$errors[] = 'Error: PHP session extension not activated';
-		}
-		if (!extension_loaded('exif')) {
-			$errors[] = 'Error: PHP exif extension not activated';
-		}
-		if (!extension_loaded('mbstring')) {
-			$errors[] = 'Error: PHP mbstring extension not activated';
-		}
-		if (!extension_loaded('gd')) {
-			$errors[] = 'Error: PHP gd extension not activated';
-		}
-		if (!extension_loaded('PDO')) {
-			$errors[] = 'Error: PHP PDO extension not activated';
+		$extensions = ['session', 'exif', 'mbstring', 'gd', 'PDO', 'json', 'zip'];
+
+		foreach ($extensions as $extension) {
+			if (!extension_loaded($extension)) {
+				$errors[] = 'Error: PHP ' . $extension . ' extension not activated';
+			}
 		}
 		if (!extension_loaded('mysqli') && !DB::getDriverName() == 'pgsql') {
 			$errors[] = 'Error: PHP mysqli extension not activated';
 		}
-		if (!extension_loaded('json')) {
-			$errors[] = 'Error: PHP json extension not activated';
-		}
-		if (!extension_loaded('zip')) {
-			$errors[] = 'Error: PHP zip extension not activated';
-		}
 
 		// Permissions
-		if (Helpers::hasPermissions(Storage::path('big')) === false) {
-			$errors[]
-				= 'Error: \'uploads/big\' is missing or has insufficient read/write privileges';
-		}
-		if (Helpers::hasPermissions(Storage::path('medium')) === false) {
-			$errors[]
-				= 'Error: \'uploads/medium\' is missing or has insufficient read/write privileges';
-		}
-		if (Helpers::hasPermissions(Storage::path('small')) === false) {
-			$errors[]
-				= 'Error: \'uploads/small\' is missing or has insufficient read/write privileges';
-		}
-		if (Helpers::hasPermissions(Storage::path('thumb')) === false) {
-			$errors[]
-				= 'Error: \'uploads/thumb\' is missing or has insufficient read/write privileges';
-		}
-		if (Helpers::hasPermissions(Storage::path('import')) === false) {
-			$errors[]
-				= 'Error: \'uploads/import\' is missing or has insufficient read/write privileges';
-		}
-		if (Helpers::hasPermissions(Storage::path('')) === false) {
-			$errors[]
-				= 'Error: \'uploads/\' is missing or has insufficient read/write privileges';
+		$paths = ['big', 'medium', 'small', 'thumb', 'import', ''];
+
+		foreach ($paths as $path) {
+			if (Helpers::hasPermissions(Storage::path($path)) === false) {
+				$errors[]
+					= 'Error: \'uploads/' . $path . '\' is missing or has insufficient read/write privileges';
+			}
 		}
 		if (Helpers::hasPermissions(Storage::disk('dist')->path('user.css'))
 			=== false

@@ -695,7 +695,7 @@ class PhotoController extends Controller
 			$response = new BinaryFileResponse($url);
 			$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
 		} else {
-			$response = new StreamedResponse(function () use ($request, $photoIDs, &$extract_names) {
+			$response = new StreamedResponse(function () use ($request, $photoIDs) {
 				$options = new \ZipStream\Option\Archive();
 				$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 				$zip = new ZipStream(null, $options);

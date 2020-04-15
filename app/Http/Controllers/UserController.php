@@ -17,9 +17,7 @@ class UserController extends Controller
 
 	public function list()
 	{
-		$users = User::all();
-
-		return $users;
+		return User::all();
 	}
 
 	/**

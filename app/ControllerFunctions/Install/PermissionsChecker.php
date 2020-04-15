@@ -50,7 +50,7 @@ class PermissionsChecker
 		foreach (explode('|', $permissions) as $permission) {
 			preg_match('/(!*)(.*)/', $permission, $f);
 			$return <<= 1;
-			$return |= !(($f[2](base_path($folder)) xor ($f[1] == '!')));
+			$return |= !($f[2](base_path($folder)) xor ($f[1] == '!'));
 		}
 
 		return $return;

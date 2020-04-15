@@ -32,15 +32,15 @@ final class PermissionsController extends Controller
 	 */
 	public function view()
 	{
-		$permissions = $this->permissions->check(
+		$perms = $this->permissions->check(
 			$this->config->get_permissions()
 		);
-		// return $permissions;
+
 		return view('install.permissions', [
 			'title' => 'Lychee-installer',
 			'step' => 2,
-			'permissions' => $permissions['permissions'],
-			'errors' => $permissions['errors'],
+			'permissions' => $perms['permissions'],
+			'errors' => $perms['errors'],
 		]);
 	}
 }

@@ -62,6 +62,11 @@ class RequirementsChecker
 						// @codeCoverageIgnoreEnd
 					}
 					break;
+
+				// @codeCoverageIgnoreStart
+				default:
+				break;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
@@ -90,14 +95,13 @@ class RequirementsChecker
 		) {
 			$supported = true;
 		}
-		$phpStatus = [
+
+		return [
 			'full' => $currentPhpVersion['full'],
 			'current' => $currentPhpVersion['version'],
 			'minimum' => $minVersionPhp,
 			'supported' => $supported,
 		];
-
-		return $phpStatus;
 	}
 
 	/**

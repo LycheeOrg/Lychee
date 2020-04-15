@@ -15,7 +15,7 @@ class Extractor
 	 */
 	public function bare()
 	{
-		$metadata = [
+		return [
 			'type' => '',
 			'width' => 0,
 			'height' => 0,
@@ -42,8 +42,6 @@ class Extractor
 			'livePhotoStillImageTime' => null,
 			'MicroVideoOffset' => null,
 		];
-
-		return $metadata;
 	}
 
 	/**
@@ -75,7 +73,7 @@ class Extractor
 
 		if (strpos($type, 'video') !== 0) {
 			// It's a photo
-			if (Configs::hasExiftool() == true) {
+			if (Configs::hasExiftool()) {
 				// reader with Exiftool adapter
 				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
 			} else {
@@ -84,10 +82,10 @@ class Extractor
 			}
 		} else {
 			// Let's try to use FFmpeg; if not available, let's try Exiftool
-			if (Configs::hasFFmpeg() == true) {
+			if (Configs::hasFFmpeg()) {
 				// It's a video -> use FFProbe
 				$reader = Reader::factory(Reader::TYPE_FFPROBE);
-			} elseif (Configs::hasExiftool() == true) {
+			} elseif (Configs::hasExiftool()) {
 				// reader with Exiftool adapter
 				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
 			} else {
@@ -159,7 +157,7 @@ class Extractor
 			$metadata['position'] = implode(', ', $fields);
 		}
 
-		if ((strpos($type, 'video') !== 0)) {
+		if (strpos($type, 'video') !== 0) {
 			$metadata['aperture'] = ($exif->getAperture() !== false) ? $exif->getAperture() : '';
 			$metadata['focal'] = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : '';
 			if ($metadata['focal'] !== '') {

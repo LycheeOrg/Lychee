@@ -265,23 +265,6 @@ class SettingsController extends Controller
 			'image_overlay_type' => 'required|string',
 		]);
 
-		// in theory this code is not needed anymore as the check is done within the set
-		//        $overlays = ['exif', 'desc', 'takedate'];
-		//        $found = false;
-//		$i = 0;
-//		while (!$found && $i < count($overlays)) {
-//			if ($overlays[$i] === $request['image_overlay_type']) {
-//				$found = true;
-//			}
-//			$i++;
-//		}
-//		if (!$found) {
-//			Logs::error(__METHOD__, __LINE__,
-//				'Could not find the submitted overlay type');
-//
-//			return Response::error('Could not find the submitted overlay type');
-//		}
-
 		return (Configs::set('image_overlay_type',
 			$request['image_overlay_type'])) ? 'true' : 'false';
 	}
