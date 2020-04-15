@@ -68,6 +68,7 @@ class PhotoFunctions
 		'.mp4',
 		'.mpg',
 		'.webm',
+		'.webp',
 		'.mov',
 		'.m4v',
 		'.avi',
