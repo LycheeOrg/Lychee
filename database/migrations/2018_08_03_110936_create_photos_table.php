@@ -69,8 +69,6 @@ class CreatePhotosTable extends Migration
 			$table->bigInteger('album_id')->unsigned()->nullable()->default(null)->index();
 			$table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
 			$table->string('checksum', 40)->default('');
-			$table->boolean('medium')->default(false);
-			$table->boolean('small')->default(false);
 			$table->string('license', 20)->default('none');
 			$table->timestamps();
 			$table->string('medium', 20)->default('');

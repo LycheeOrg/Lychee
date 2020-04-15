@@ -1,5 +1,6 @@
 <?php
 
+use App\Album;
 use App\Logs;
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
