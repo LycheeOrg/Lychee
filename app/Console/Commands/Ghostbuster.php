@@ -93,8 +93,8 @@ class Ghostbuster extends Command
 
 				foreach ($to_delete as $del) {
 					if (Storage::exists($del)) {
+						$total++;
 						if ($dryrun) {
-							$total++;
 							$this->line(str_pad($del, 50) . $this->col->red(' will be removed') . '.');
 						} else {
 							Storage::delete($del);
@@ -109,8 +109,13 @@ class Ghostbuster extends Command
 		if ($total == 0) {
 			$this->line($this->col->green('No pictures found to be deleted'));
 		}
-		if ($dryrun) {
+		if ($total > 0 && $dryrun) {
+			$this->line($total . ' pictures will be deleted.');
+			$this->line('');
 			$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster 0') . "' to effectively remove the files.");
+		}
+		if ($total > 0 && !$dryrun) {
+			$this->line($total . ' pictures have been deleted.');
 		}
 
 		$sym_dir = Storage::drive('symbolic')->path('');
