@@ -122,7 +122,7 @@ class Ghostbuster extends Command
 		$syms = array_slice(scandir($sym_dir), 3);
 
 		foreach ($syms as $sym) {
-			$link_path = $sym_dir . '/' . $sym;
+			$link_path = $sym_dir . $sym;
 			if (!file_exists(readlink($link_path))) {
 				unlink($link_path);
 				$this->line($this->col->red('removed symbolic link: ') . $link_path);
