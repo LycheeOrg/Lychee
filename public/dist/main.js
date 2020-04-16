@@ -3829,7 +3829,11 @@ lychee.getUpdate = function () {
 
 lychee.setTitle = function (title, editable) {
 
-	document.title = lychee.title + ' - ' + title;
+	if (lychee.title === title) {
+		document.title = lychee.title + ' - ' + lychee.locale['ALBUMS'];
+	} else {
+		document.title = lychee.title + ' - ' + title;
+	}
 
 	header.setEditable(editable);
 	header.setTitle(title);
@@ -9483,7 +9487,9 @@ view.settings = {
 
 			$(".settings_view").append(msg);
 
-			api.get('dist/user.css', function (data) {
+			var css_addr = $($("link")[1]).attr('href');
+
+			api.get(css_addr, function (data) {
 				$("#css").html(data);
 			});
 
