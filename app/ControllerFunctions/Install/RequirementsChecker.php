@@ -65,7 +65,7 @@ class RequirementsChecker
 
 				// @codeCoverageIgnoreStart
 				default:
-				break;
+					break;
 				// @codeCoverageIgnoreEnd
 			}
 		}
