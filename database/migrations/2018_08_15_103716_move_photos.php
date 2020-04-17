@@ -2,6 +2,7 @@
 
 use App\Album;
 use App\Logs;
+use App\ModelFunctions\Helpers;
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
