@@ -442,7 +442,7 @@ class AlbumController extends Controller
 			'CC-BY-SA',
 			'CC-BY-ND',
 			'CC-BY-NC-ND',
-			'CC-BY-SA',
+			'CC-BY-NC-SA',
 		];
 		$found = false;
 		$i = 0;
