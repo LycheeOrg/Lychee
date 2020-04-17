@@ -34,7 +34,7 @@ See detailed instructions on the [Installation](https://github.com/LycheeOrg/Lyc
 
 ### Docker
 
-Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Laravel-Docker](https://github.com/LycheeOrg/Lychee-Laravel-Docker) or on Docker Hub as [bigrob8181/lychee-laravel](https://hub.docker.com/r/bigrob8181/lychee-laravel).
+Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Laravel-Docker](https://github.com/LycheeOrg/Lychee-Laravel-Docker) or on Docker Hub as [lycheeorg/lychee-laravel](https://hub.docker.com/r/lycheeorg/lychee-laravel).
 
 ### Update
 
