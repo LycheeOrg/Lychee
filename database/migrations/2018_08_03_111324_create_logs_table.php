@@ -43,8 +43,6 @@ class CreateLogsTable extends Migration
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Schema::dropIfExists('logs');
-		}
+		Schema::dropIfExists('logs');
 	}
 }

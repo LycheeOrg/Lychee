@@ -14,6 +14,7 @@ class CreateSymLinksTable extends Migration
 	 */
 	public function up()
 	{
+		Schema::dropIfExists('sym_links');
 		Schema::create('sym_links', function (Blueprint $table) {
 			$table->bigIncrements('id');
 			$table->bigInteger('photo_id')->nullable();

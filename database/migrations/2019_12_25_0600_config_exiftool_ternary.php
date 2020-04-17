@@ -2,9 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 use App\Configs;
-use App\Logs;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
 
 class ConfigExiftoolTernary extends Migration
 {
@@ -31,16 +29,12 @@ class ConfigExiftoolTernary extends Migration
 			// let's do nothing
 		}
 
-		if (Schema::hasTable('configs')) {
-			Configs::where('key', '=', 'has_exiftool')
-			  ->update(
-				[
-					'value' => $has_exiftool,
-					'type_range' => TERNARY,
-				]);
-		} else {
-			Logs::warning(__METHOD__, __LINE__, 'Table configs does not exist');
-		}
+		Configs::where('key', '=', 'has_exiftool')
+			->update(
+			[
+				'value' => $has_exiftool,
+				'type_range' => TERNARY,
+			]);
 	}
 
 	/**
@@ -52,13 +46,11 @@ class ConfigExiftoolTernary extends Migration
 	{
 		defined('BOOL') or define('BOOL', '0|1');
 
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'has_exiftool')
-				->update(
-				[
-					'value' => null,
-					'type_range' => BOOL,
-				]);
-		}
+		Configs::where('key', '=', 'has_exiftool')
+			->update(
+			[
+				'value' => null,
+				'type_range' => BOOL,
+			]);
 	}
 }

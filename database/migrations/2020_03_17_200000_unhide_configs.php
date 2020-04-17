@@ -13,12 +13,8 @@ class UnhideConfigs extends Migration
 	 */
 	public function up()
 	{
-		if (Configs::where('key', 'SL_enable')->exists()) {
-			Configs::where('key', 'SL_enable')->update(['confidentiality' => '2']);
-		}
-		if (Configs::where('key', 'SL_for_admin')->exists()) {
-			Configs::where('key', 'SL_for_admin')->update(['confidentiality' => '2']);
-		}
+		Configs::where('key', 'SL_enable')->update(['confidentiality' => '2']);
+		Configs::where('key', 'SL_for_admin')->update(['confidentiality' => '2']);
 	}
 
 	/**
@@ -28,13 +24,7 @@ class UnhideConfigs extends Migration
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			if (Configs::where('key', 'SL_enable')->exists()) {
-				Configs::where('key', 'SL_enable')->update(['confidentiality' => '0']);
-			}
-			if (Configs::where('key', 'SL_for_admin')->exists()) {
-				Configs::where('key', 'SL_for_admin')->update(['confidentiality' => '0']);
-			}
-		}
+		Configs::where('key', 'SL_enable')->update(['confidentiality' => '0']);
+		Configs::where('key', 'SL_for_admin')->update(['confidentiality' => '0']);
 	}
 }

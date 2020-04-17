@@ -40,12 +40,6 @@ class PhotosFix extends Migration
 	 */
 	public function up()
 	{
-		if (!Schema::hasTable('photos')) {
-			Logs::warning(__FUNCTION__, __LINE__, 'no table photos found.');
-
-			return;
-		}
-
 		$this->fix_thumbs();
 		$this->image_direction();
 	}

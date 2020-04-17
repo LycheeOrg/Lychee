@@ -14,18 +14,17 @@ class CreatePageContentsTable extends Migration
 	 */
 	public function up()
 	{
-		if (!Schema::hasTable('page_contents')) {
-			Schema::create('page_contents', function (Blueprint $table) {
-				$table->increments('id');
-				$table->integer('page_id')->unsigned();
-				$table->foreign('page_id')->references('id')->on('pages')->onDelete('cascade');
-				$table->text('content');
-				$table->string('class', 150);
-				$table->enum('type', ['div', 'img']);
-				$table->integer('order')->default(0);
-				$table->timestamps();
-			});
-		}
+		Schema::dropIfExists('page_contents');
+		Schema::create('page_contents', function (Blueprint $table) {
+			$table->increments('id');
+			$table->integer('page_id')->unsigned();
+			$table->foreign('page_id')->references('id')->on('pages')->onDelete('cascade');
+			$table->text('content');
+			$table->string('class', 150);
+			$table->enum('type', ['div', 'img']);
+			$table->integer('order')->default(0);
+			$table->timestamps();
+		});
 	}
 
 	/**
@@ -35,8 +34,6 @@ class CreatePageContentsTable extends Migration
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Schema::dropIfExists('page_contents');
-		}
+		Schema::dropIfExists('page_contents');
 	}
 }

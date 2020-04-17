@@ -18,45 +18,38 @@ class LocationDecoding extends Migration
 		defined('BOOL') or define('BOOL', '0|1');
 		defined('INT') or define('INT', 'int');
 
-		if (Schema::hasTable('configs')) {
-			DB::table('configs')->insert([
-				'key' => 'location_decoding',
-				'value' => '0',
-				'cat' => 'Mod Map',
-				'type_range' => BOOL,
-				'confidentiality' => '0',
-			]);
-			DB::table('configs')->insert([
-				'key' => 'location_decoding_timeout',
-				'value' => 30,
-				'cat' => 'Mod Map',
-				'type_range' => INT,
-				'confidentiality' => '0',
-			]);
-			DB::table('configs')->insert([
-				'key' => 'location_show',
-				'value' => '1',
-				'cat' => 'Mod Map',
-				'type_range' => BOOL,
-				'confidentiality' => '0',
-			]);
-			DB::table('configs')->insert([
-				'key' => 'location_show_public',
-				'value' => '0',
-				'cat' => 'Mod Map',
-				'type_range' => BOOL,
-				'confidentiality' => '0',
-			]);
-		} else {
-			echo "Table configs does not exists\n";
-		}
-		if (Schema::hasTable('photos')) {
-			Schema::table('photos', function ($table) {
-				$table->string('location')->default(null)->after('imgDirection')->nullable();
-			});
-		} else {
-			echo "Table photos does not exists\n";
-		}
+		DB::table('configs')->insert([
+			'key' => 'location_decoding',
+			'value' => '0',
+			'cat' => 'Mod Map',
+			'type_range' => BOOL,
+			'confidentiality' => '0',
+		]);
+		DB::table('configs')->insert([
+			'key' => 'location_decoding_timeout',
+			'value' => 30,
+			'cat' => 'Mod Map',
+			'type_range' => INT,
+			'confidentiality' => '0',
+		]);
+		DB::table('configs')->insert([
+			'key' => 'location_show',
+			'value' => '1',
+			'cat' => 'Mod Map',
+			'type_range' => BOOL,
+			'confidentiality' => '0',
+		]);
+		DB::table('configs')->insert([
+			'key' => 'location_show_public',
+			'value' => '0',
+			'cat' => 'Mod Map',
+			'type_range' => BOOL,
+			'confidentiality' => '0',
+		]);
+
+		Schema::table('photos', function ($table) {
+			$table->string('location')->default(null)->after('imgDirection')->nullable();
+		});
 	}
 
 	/**
@@ -66,16 +59,12 @@ class LocationDecoding extends Migration
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			Configs::where('key', '=', 'location_decoding')->delete();
-			Configs::where('key', '=', 'location_decoding_timeout')->delete();
-			Configs::where('key', '=', 'location_show')->delete();
-			Configs::where('key', '=', 'location_show_public')->delete();
-		}
-		if (Schema::hasTable('photos')) {
-			Schema::table('photos', function (Blueprint $table) {
-				$table->dropColumn('location');
-			});
-		}
+		Configs::where('key', '=', 'location_decoding')->delete();
+		Configs::where('key', '=', 'location_decoding_timeout')->delete();
+		Configs::where('key', '=', 'location_show')->delete();
+		Configs::where('key', '=', 'location_show_public')->delete();
+		Schema::table('photos', function (Blueprint $table) {
+			$table->dropColumn('location');
+		});
 	}
 }

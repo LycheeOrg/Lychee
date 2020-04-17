@@ -17,9 +17,7 @@ class LogController extends Controller
 	 */
 	public function list($order = 'DESC')
 	{
-		$logs = Logs::orderBy('id', $order)->get();
-
-		return $logs;
+		return Logs::orderBy('id', $order)->get();
 	}
 
 	/**

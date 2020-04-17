@@ -14,31 +14,25 @@ class AddShareButtonVisibleOption extends Migration
 	 */
 	public function up()
 	{
-		if (Schema::hasTable('albums') && !Schema::hasColumn('albums', 'share_button_visible')) {
-			Schema::table('albums', function (Blueprint $table) {
-				$table->boolean('share_button_visible')->after('downloadable')->default(false);
-			});
+		defined('BOOL') or define('BOOL', '0|1');
 
-			Album::where('id', '>', 1)
-				->where('public', '=', 1)
-				->update([
-					'share_button_visible' => true,
-				]);
-		}
+		Schema::table('albums', function (Blueprint $table) {
+			$table->boolean('share_button_visible')->after('downloadable')->default(false);
+		});
 
-		if (!DB::table('configs')->where('key', 'share_button_visible')->exists()) {
-			if (!defined('BOOL')) {
-				define('BOOL', '0|1');
-			}
-
-			DB::table('configs')->insert([
-				'key' => 'share_button_visible',
-				'value' => '0',
-				'cat' => 'config',
-				'type_range' => BOOL,
-				'confidentiality' => '0',
+		Album::where('id', '>', 1)
+			->where('public', '=', 1)
+			->update([
+				'share_button_visible' => true,
 			]);
-		}
+
+		DB::table('configs')->insert([
+			'key' => 'share_button_visible',
+			'value' => '0',
+			'cat' => 'config',
+			'type_range' => BOOL,
+			'confidentiality' => '0',
+		]);
 	}
 
 	/**
@@ -48,14 +42,10 @@ class AddShareButtonVisibleOption extends Migration
 	 */
 	public function down()
 	{
-		if (Schema::hasTable('albums')) {
-			Schema::table('albums', function (Blueprint $table) {
-				$table->dropColumn('share_button_visible');
-			});
-		}
+		Schema::table('albums', function (Blueprint $table) {
+			$table->dropColumn('share_button_visible');
+		});
 
-		if (DB::table('configs')->where('key', 'share_button_visible')->exists()) {
-			DB::table('configs')->where('key', 'share_button_visible')->delete();
-		}
+		DB::table('configs')->where('key', 'share_button_visible')->delete();
 	}
 }

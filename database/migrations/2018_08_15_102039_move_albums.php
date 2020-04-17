@@ -2,6 +2,7 @@
 
 use App\Album;
 use App\Logs;
+use App\ModelFunctions\Helpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -17,10 +18,12 @@ class MoveAlbums extends Migration
 	{
 		if (count(Album::all()) == 0) {
 			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')) {
-				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')->select('*')->get();
+				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_albums')->select('*')->orderBy('id', 'asc')->get();
+				$id = 0;
 				foreach ($results as $result) {
 					$album = new Album();
-					$album->id = $result->id; // IN CASE OF DOWNGRADE !!!
+					$id = Helpers::trancateIf32($result->id, $id);
+					$album->id = $id;
 					$album->title = $result->title;
 					$album->description = $result->description;
 					$album->public = $result->public;
@@ -44,10 +47,8 @@ class MoveAlbums extends Migration
 	 */
 	public function down()
 	{
-		if (env('DB_DROP_CLEAR_TABLES_ON_ROLLBACK', false)) {
-			if (Schema::hasTable('lychee_albums')) {
-				DB::table('albums')->delete();
-			}
+		if (Schema::hasTable('lychee_albums')) {
+			Album::truncate();
 		}
 	}
 }

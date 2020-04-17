@@ -193,6 +193,9 @@ class ImportController extends Controller
 				case 't':
 					$this->memLimit *= 1024 * 1024 * 1024 * 1024;
 					break;
+				default:
+					$this->memLimit *= 1;
+					break;
 				// @codeCoverageIgnoreEnd
 			}
 		}
@@ -333,13 +336,13 @@ class ImportController extends Controller
 				$ignore_file = false;
 
 				foreach ($ignore_list as $value_ignore) {
-					if ($this->check_file_matches_pattern(basename($file), $value_ignore) == true) {
+					if ($this->check_file_matches_pattern(basename($file), $value_ignore)) {
 						$ignore_file = true;
 						break;
 					}
 				}
 
-				if ($ignore_file == true) {
+				if ($ignore_file) {
 					$filesTotal--;
 					continue;
 				}
@@ -403,9 +406,10 @@ class ImportController extends Controller
 	}
 
 	/**
-	 * @param array $my_array
+	 * @param string $pattern
+	 * @param string $filename
 	 *
-	 * @return string
+	 * @return bool
 	 */
 	private function check_file_matches_pattern(string $pattern, string $filename)
 	{
