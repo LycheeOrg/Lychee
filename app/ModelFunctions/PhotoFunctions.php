@@ -90,66 +90,6 @@ class PhotoFunctions
 	}
 
 	/**
-	 * @param Photo $photo
-	 *
-	 * @return string Path of the video frame
-	 */
-	public function extractVideoFrame(Photo $photo): string
-	{
-		if ($photo->aperture === '') {
-			return '';
-		}
-
-		$ffmpeg = FFMpeg\FFMpeg::create();
-		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
-		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
-
-		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
-		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
-		$frame->save($tmp);
-
-		return $tmp;
-	}
-
-	/**
-	 * Create thumbnail for a picture.
-	 *
-	 * @param Photo $photo
-	 * @param string Path of the video frame
-	 *
-	 * @return bool returns true when successful
-	 */
-	public function createThumb(Photo $photo, string $frame_tmp = '')
-	{
-		Logs::notice(__METHOD__, __LINE__, 'Photo URL is ' . $photo->url);
-
-		$src = ($frame_tmp === '') ? Storage::path('big/' . $photo->url) : $frame_tmp;
-		$photoName = explode('.', $photo->url);
-		$this->imageHandler->crop(
-			$src,
-			Storage::path('thumb/' . $photoName[0] . '.jpeg'),
-			200,
-			200
-		);
-
-		if (Configs::get_value('thumb_2x') === '1' &&
-			$photo->width >= 400 && $photo->height >= 400) {
-			// Retina thumbs
-			$this->imageHandler->crop(
-				$src,
-				Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'),
-				400,
-				400
-			);
-			$photo->thumb2x = 1;
-		} else {
-			$photo->thumb2x = 0;
-		}
-
-		return true;
-	}
-
-	/**
 	 * Returns 'photo' if it is a photo
 	 * Returns 'video' if it is a video
 	 * Returns 'raw' if it is an accepted file (we only check extensions)
@@ -284,7 +224,6 @@ class PhotoFunctions
 		$photo->checksum = $checksum;
 		$exists = $photo->isDuplicate($checksum);
 
-		// double check that
 		if ($exists !== false) {
 			$photo_name = $exists->url;
 			$path = Storage::path($path_prefix . $exists->url);
@@ -383,6 +322,8 @@ class PhotoFunctions
 		$photo->livePhotoContentID = $info['livePhotoContentID'];
 		$photo->public = $public;
 		$photo->star = $star;
+
+		$photo = $this->altitude_fix($photo);
 
 		$GoogleMicroVideoOffset = $info['MicroVideoOffset'];
 
@@ -522,6 +463,66 @@ class PhotoFunctions
 		if (Configs::get_value('small_2x') === '1') {
 			$this->resizePhoto($photo, 'small2x', $smallMaxWidth * 2, $smallMaxHeight * 2, $frame_tmp);
 		}
+	}
+
+	/**
+	 * @param Photo $photo
+	 *
+	 * @return string Path of the video frame
+	 */
+	public function extractVideoFrame(Photo $photo): string
+	{
+		if ($photo->aperture === '') {
+			return '';
+		}
+
+		$ffmpeg = FFMpeg\FFMpeg::create();
+		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
+		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
+
+		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
+		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
+		$frame->save($tmp);
+
+		return $tmp;
+	}
+
+	/**
+	 * Create thumbnail for a picture.
+	 *
+	 * @param Photo $photo
+	 * @param string Path of the video frame
+	 *
+	 * @return bool returns true when successful
+	 */
+	public function createThumb(Photo $photo, string $frame_tmp = '')
+	{
+		Logs::notice(__METHOD__, __LINE__, 'Photo URL is ' . $photo->url);
+
+		$src = ($frame_tmp === '') ? Storage::path('big/' . $photo->url) : $frame_tmp;
+		$photoName = explode('.', $photo->url);
+		$this->imageHandler->crop(
+			$src,
+			Storage::path('thumb/' . $photoName[0] . '.jpeg'),
+			200,
+			200
+		);
+
+		if (Configs::get_value('thumb_2x') === '1' &&
+			$photo->width >= 400 && $photo->height >= 400) {
+			// Retina thumbs
+			$this->imageHandler->crop(
+				$src,
+				Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'),
+				400,
+				400
+			);
+			$photo->thumb2x = 1;
+		} else {
+			$photo->thumb2x = 0;
+		}
+
+		return true;
 	}
 
 	/**
@@ -715,6 +716,30 @@ class PhotoFunctions
 
 		// return the ID.
 		return $photo->id;
+	}
+
+	/**
+	 * Given the information of a photo, makes sure the altitude is in the correct range.
+	 *
+	 * @param Photo $photo
+	 *
+	 * @return Photo
+	 */
+	private function altitude_fix(Photo $photo)
+	{
+		$altitude = $photo->altitude;
+		// max value of dec(10,4) is 999' 999.9999
+		if ($altitude > 999999.9999) {
+			// we are out of the bound
+			// we assume this is a bug due to DJI firmware not updated
+			// we signal the user and erase the value before adding it the database.
+			$photo->altitude = null;
+			Logs::warning(__METHOD__, __LINE__, 'altitude set to 0, previous value was out of bounds:' . $altitude . ' for picture ' . $photo->title);
+			Logs::warning(__METHOD__, __LINE__, $photo->url);
+			Logs::warning(__METHOD__, __LINE__, 'Manually parse the file with exiftool and edit the database to set the correct value.');
+		}
+
+		return	$photo;
 	}
 
 	/**
