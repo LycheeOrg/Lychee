@@ -1,19 +1,19 @@
-<p align="center"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee-Laravel/master/Banner.png" width="400px" alt="@LycheeOrg"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></p>
 
 <p align="center">
-<a href="https://travis-ci.com/LycheeOrg/Lychee-Laravel"><img src="https://travis-ci.com/LycheeOrg/Lychee-Laravel.svg?branch=master" alt="Build Status"></a>
-<a href="https://codecov.io/gh/LycheeOrg/Lychee-Laravel"><img src="https://codecov.io/gh/LycheeOrg/Lychee-Laravel/branch/master/graph/badge.svg" alt="Code Coverage"></a>
-<a href="https://github.com/LycheeOrg/Lychee-Laravel/releases"><img alt="GitHub release" src="https://img.shields.io/github/release-pre/LycheeOrg/Lychee-Laravel.svg"></a>
-<a href="https://github.com/LycheeOrg/Lychee-Laravel/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/LycheeOrg/Lychee-Laravel.svg"></a>
+<a href="https://travis-ci.com/LycheeOrg/Lychee"><img src="https://travis-ci.com/LycheeOrg/Lychee.svg?branch=master" alt="Build Status"></a>
+<a href="https://codecov.io/gh/LycheeOrg/Lychee"><img src="https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg" alt="Code Coverage"></a>
+<a href="https://github.com/LycheeOrg/Lychee/releases"><img alt="GitHub release" src="https://img.shields.io/github/release-pre/LycheeOrg/Lychee.svg"></a>
+<a href="https://github.com/LycheeOrg/Lychee/blob/master/LICENSE"><img alt="GitHub" src="https://img.shields.io/github/license/LycheeOrg/Lychee.svg"></a>
 <a href="https://gitter.im/LycheeOrg/Lobby"><img src="https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter" alt="Gitter"></a>
 <a href="https://bestpractices.coreinfrastructure.org/projects/2855"><img alt="CII Best Practices Summary" src="https://img.shields.io/cii/summary/2855.svg"></a>
-<a href="https://sonarcloud.io/dashboard?id=LycheeOrg_Lychee-Laravel"><img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee-Laravel&metric=alert_status"></a>
+<a href="https://sonarcloud.io/dashboard?id=LycheeOrg_Lychee"><img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee&metric=alert_status"></a>
 </p>
 
 
 #### Help, I'm lost!
 
-I was using the version 3, how do I upgrade to version 4? See [Upgrade &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Upgrade-from-version-3)
+I was using the version 3, how do I upgrade to version 4? See [Upgrade &#187;](https://github.com/LycheeOrg/Lychee/wiki/Upgrade-from-version-3)
 
 #### A great looking and easy-to-use photo-management-system.
 
@@ -28,13 +28,13 @@ Lychee is a free photo-management tool, which runs on your server or web-space. 
 
 To run Lychee, everything you need is a web-server with PHP 7.3 or later and a MySQL-Database. Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
 
-1. Clone this repo to your server and set the web root to `lychee-laravel/public`
+1. Clone this repo to your server and set the web root to `lychee/public`
 2. Run `composer install --no-dev` to install dependencies
 3. Copy `.env.example` as `.env` and edit it to match your parameters
 4. Generate your secret key with `php artisan key:generate`
-5. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the new framework.
+5. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the latest framework.
 
-See detailed instructions on the [Installation](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Install) wiki page.
+See detailed instructions on the [Installation](https://github.com/LycheeOrg/Lychee/wiki/Install) wiki page.
 
 ### Docker
 
@@ -42,15 +42,15 @@ Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Larave
 
 ### Update
 
-Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Update)
+Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeOrg/Lychee/wiki/Update)
 
 ### Settings
 
-Sign in and click the gear in the top left corner to change your settings. [Settings &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings)
+Sign in and click the gear in the top left corner to change your settings. [Settings &#187;](https://github.com/LycheeOrg/Lychee/wiki/Settings)
 
 ### Build
 
-Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Build)
+Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://github.com/LycheeOrg/Lychee/wiki/Build)
 
 ## Advanced Features
 
@@ -58,11 +58,11 @@ Lychee is ready to use straight after installation, but some features require a 
 
 ### Keyboard Shortcuts
 
-These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Keyboard-Shortcuts)
+These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://github.com/LycheeOrg/Lychee/wiki/Keyboard-Shortcuts)
 
 ### Dropbox import
 
-In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/apps/create). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings) of Lychee.
+In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/apps/create). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings](https://github.com/LycheeOrg/Lychee/wiki/Settings) of Lychee.
 
 ### Twitter Cards
 
@@ -70,8 +70,8 @@ Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Gr
 
 ### Imagick
 
-Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in the [settings](https://github.com/LycheeOrg/Lychee-Laravel/wiki/Settings).
+Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in the [settings](https://github.com/LycheeOrg/Lychee/wiki/Settings).
 
 ## Troubleshooting
 
-Take a look at the [Wiki](https://github.com/LycheeOrg/Lychee-Laravel/wiki/), particularly the [FAQ](https://github.com/LycheeOrg/Lychee-Laravel/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee-Laravel/issues) on GitHub!
+Take a look at the [Wiki](https://github.com/LycheeOrg/Lychee/wiki/), particularly the [FAQ](https://github.com/LycheeOrg/Lychee/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub!
