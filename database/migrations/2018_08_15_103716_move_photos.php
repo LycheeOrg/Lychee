@@ -33,6 +33,7 @@ class MovePhotos extends Migration
 						$album = $album_id;
 					}
 					$photo->id = $id;
+					$photo->album_id = $album;
 					$photo->title = $result->title;
 					$photo->description = $result->description;
 					$photo->url = $result->url;
@@ -63,8 +64,6 @@ class MovePhotos extends Migration
 							$photo->thumb2x = 1;
 						}
 					}
-
-					$photo->album_id = $album;
 					$photo->checksum = $result->checksum;
 					if (Storage::exists('medium/' . $photo->url)) {
 						list($width, $height) = getimagesize(Storage::path('medium/' . $photo->url));
