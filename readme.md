@@ -15,6 +15,8 @@
 
 I was using the version 3, how do I upgrade to version 4? See [Upgrade &#187;](https://github.com/LycheeOrg/Lychee/wiki/Upgrade-from-version-3)
 
+To find out what's changed, see the [changelog &#187;](https://github.com/LycheeOrg/Lychee/wiki/Changelog)
+
 #### A great looking and easy-to-use photo-management-system.
 
 *Since the 1st of April 2018 this project has moved to it's own Organisation (https://github.com/LycheeOrg) where people are able to submit their fixes to it. We, the Organisation owners, want to thank electerious (Tobias Reich) for the opportunity to make this project live on.*
