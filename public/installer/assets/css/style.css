@@ -4117,6 +4117,10 @@ input[type=text] {
 	width: 110px;
 }
 
+code.folder {
+	background-color: #e0e0e0;
+}
+
 span.perm ~ span.perm {
 	padding-right: 0;
 }
