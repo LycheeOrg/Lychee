@@ -36,7 +36,6 @@ dist: clean
 	@cp -r resources                        Lychee-v$(VERSION)
 	@cp -r routes                           Lychee-v$(VERSION)
 	@cp -r storage                          Lychee-v$(VERSION)
-	@cp -r tests                            Lychee-v$(VERSION)
 	@cp -r vendor                           Lychee-v$(VERSION) 2> /dev/null || true
 	@cp -r public/.htaccess                 Lychee-v$(VERSION)/public
 	@cp -r public/.user.ini                 Lychee-v$(VERSION)/public
@@ -54,6 +53,7 @@ dist: clean
 	@cp -r readme.md                        Lychee-v$(VERSION)
 	@cp -r server.php                       Lychee-v$(VERSION)
 	@cp -r version.md                       Lychee-v$(VERSION)
+	@rm -r Lychee-v$(VERSION)/vendor/php-ffmpeg/php-ffmpeg/tests/
 	@rm -r Lychee-v$(VERSION)/storage/framework/cache/data/* 2> /dev/null || true
 	@rm    Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
 	@rm    Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
