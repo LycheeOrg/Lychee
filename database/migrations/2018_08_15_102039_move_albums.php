@@ -48,7 +48,9 @@ class MoveAlbums extends Migration
 	public function down()
 	{
 		if (Schema::hasTable('lychee_albums')) {
+			Schema::disableForeignKeyConstraints();
 			Album::truncate();
+			Schema::enableForeignKeyConstraints();
 		}
 	}
 }

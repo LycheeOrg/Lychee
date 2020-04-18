@@ -194,7 +194,6 @@ class ImportController extends Controller
 					$this->memLimit *= 1024 * 1024 * 1024 * 1024;
 					break;
 				default:
-					$this->memLimit *= 1;
 					break;
 				// @codeCoverageIgnoreEnd
 			}
