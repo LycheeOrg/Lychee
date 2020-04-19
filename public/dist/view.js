@@ -1088,7 +1088,7 @@ header.setMode = function (mode) {
 
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
-			if (!album.json || album.json.photos === false || !album.isUploadable() && album.json.downloadable === '0') {
+			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && album.json.downloadable === '0') {
 				$('#button_archive').hide();
 			} else {
 				$('#button_archive').show();
