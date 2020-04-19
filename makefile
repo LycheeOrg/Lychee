@@ -3,7 +3,11 @@ FILES=$(wildcard *)
 
 .PHONY: dist clean
 
-dist-gen: clean
+composer:
+	rm -r vendor
+	composer install --prefer-dist --no-dev
+
+dist-gen: clean composer
 	@echo "packaging..."
 	@mkdir Lychee-v$(VERSION)
 	@mkdir Lychee-v$(VERSION)/public
@@ -20,15 +24,8 @@ dist-gen: clean
 	@mkdir Lychee-v$(VERSION)/public/sym
 	@cp -r public/dist                      Lychee-v$(VERSION)/public
 	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
-	@cp -r public/Lychee-front/deps         Lychee-v$(VERSION)/public/Lychee-front/deps
-	@cp -r public/Lychee-front/images       Lychee-v$(VERSION)/public/Lychee-front/images
-	@cp -r public/Lychee-front/scripts      Lychee-v$(VERSION)/public/Lychee-front/scripts
-	@cp -r public/Lychee-front/styles       Lychee-v$(VERSION)/public/Lychee-front/styles
 	@cp -r public/Lychee-front/API.md       Lychee-v$(VERSION)/public/Lychee-front
-	@cp -r public/Lychee-front/gulpfile.js  Lychee-v$(VERSION)/public/Lychee-front
 	@cp -r public/Lychee-front/LICENSE      Lychee-v$(VERSION)/public/Lychee-front
-	@cp -r public/Lychee-front/package.json Lychee-v$(VERSION)/public/Lychee-front
-	@cp -r public/Lychee-front/README.md    Lychee-v$(VERSION)/public/Lychee-front
 	@cp -r app                              Lychee-v$(VERSION)
 	@cp -r bootstrap                        Lychee-v$(VERSION)
 	@cp -r config                           Lychee-v$(VERSION)
