@@ -6,3 +6,5 @@ public/dist/**/* binary
 public/dist/*.js binary
 public/dist/*.css binary
 CHANGELOG.md export-ignore
+tests/ export-ignore
+docs/ export-ignore

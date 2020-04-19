@@ -1,9 +1,13 @@
 VERSION=`cat version.md`
 FILES=$(wildcard *)
 
-.PHONY: dist
+.PHONY: dist clean
 
-dist: clean
+composer:
+	rm -r vendor
+	composer install --prefer-dist --no-dev
+
+dist-gen: clean composer
 	@echo "packaging..."
 	@mkdir Lychee-v$(VERSION)
 	@mkdir Lychee-v$(VERSION)/public
@@ -20,15 +24,7 @@ dist: clean
 	@mkdir Lychee-v$(VERSION)/public/sym
 	@cp -r public/dist                      Lychee-v$(VERSION)/public
 	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
-	@cp -r public/Lychee-front/deps         Lychee-v$(VERSION)/public/Lychee-front/deps
-	@cp -r public/Lychee-front/images       Lychee-v$(VERSION)/public/Lychee-front/images
-	@cp -r public/Lychee-front/scripts      Lychee-v$(VERSION)/public/Lychee-front/scripts
-	@cp -r public/Lychee-front/styles       Lychee-v$(VERSION)/public/Lychee-front/styles
-	@cp -r public/Lychee-front/API.md       Lychee-v$(VERSION)/public/Lychee-front
-	@cp -r public/Lychee-front/gulpfile.js  Lychee-v$(VERSION)/public/Lychee-front
 	@cp -r public/Lychee-front/LICENSE      Lychee-v$(VERSION)/public/Lychee-front
-	@cp -r public/Lychee-front/package.json Lychee-v$(VERSION)/public/Lychee-front
-	@cp -r public/Lychee-front/README.md    Lychee-v$(VERSION)/public/Lychee-front
 	@cp -r app                              Lychee-v$(VERSION)
 	@cp -r bootstrap                        Lychee-v$(VERSION)
 	@cp -r config                           Lychee-v$(VERSION)
@@ -53,11 +49,6 @@ dist: clean
 	@cp -r readme.md                        Lychee-v$(VERSION)
 	@cp -r server.php                       Lychee-v$(VERSION)
 	@cp -r version.md                       Lychee-v$(VERSION)
-	@rm -r Lychee-v$(VERSION)/vendor/php-ffmpeg/php-ffmpeg/tests/
-	@rm -r Lychee-v$(VERSION)/storage/framework/cache/data/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
 	@touch Lychee-v$(VERSION)/storage/logs/laravel.log
 	@touch Lychee-v$(VERSION)/public/dist/user.css
 	@touch Lychee-v$(VERSION)/public/uploads/big/index.html
@@ -67,6 +58,14 @@ dist: clean
 	@touch Lychee-v$(VERSION)/public/uploads/raw/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/import/index.html
 	@touch Lychee-v$(VERSION)/public/sym/index.html
+
+dist: dist-gen	
+	find Lychee-v$(VERSION) -wholename '*/[Tt]ests/*' -delete
+	find Lychee-v$(VERSION) -wholename '*/[Tt]est/*' -delete
+	@rm -r Lychee-v$(VERSION)/storage/framework/cache/data/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
 	@zip -r Lychee-v$(VERSION).zip Lychee-v$(VERSION)
 
 contrib_add:
