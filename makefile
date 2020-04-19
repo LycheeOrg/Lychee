@@ -1,9 +1,9 @@
 VERSION=`cat version.md`
 FILES=$(wildcard *)
 
-.PHONY: dist
+.PHONY: dist clean
 
-dist: clean
+dist-gen: clean
 	@echo "packaging..."
 	@mkdir Lychee-v$(VERSION)
 	@mkdir Lychee-v$(VERSION)/public
@@ -53,11 +53,6 @@ dist: clean
 	@cp -r readme.md                        Lychee-v$(VERSION)
 	@cp -r server.php                       Lychee-v$(VERSION)
 	@cp -r version.md                       Lychee-v$(VERSION)
-	@rm -r Lychee-v$(VERSION)/vendor/php-ffmpeg/php-ffmpeg/tests/
-	@rm -r Lychee-v$(VERSION)/storage/framework/cache/data/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
 	@touch Lychee-v$(VERSION)/storage/logs/laravel.log
 	@touch Lychee-v$(VERSION)/public/dist/user.css
 	@touch Lychee-v$(VERSION)/public/uploads/big/index.html
@@ -67,6 +62,14 @@ dist: clean
 	@touch Lychee-v$(VERSION)/public/uploads/raw/index.html
 	@touch Lychee-v$(VERSION)/public/uploads/import/index.html
 	@touch Lychee-v$(VERSION)/public/sym/index.html
+
+dist: dist-gen	
+	find Lychee-v$(VERSION) -wholename '*/[Tt]ests/*' -delete
+	find Lychee-v$(VERSION) -wholename '*/[Tt]est/*' -delete
+	@rm -r Lychee-v$(VERSION)/storage/framework/cache/data/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
+	@rm    Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
 	@zip -r Lychee-v$(VERSION).zip Lychee-v$(VERSION)
 
 contrib_add:
