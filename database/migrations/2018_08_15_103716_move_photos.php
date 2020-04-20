@@ -72,7 +72,7 @@ class MovePhotos extends Migration
 					} else {
 						$photo->medium = '';
 					}
-					if (Storage::exists('medium/' . $photo->url)) {
+					if (Storage::exists('small/' . $photo->url)) {
 						list($width, $height) = getimagesize(Storage::path('small/' . $photo->url));
 						$result->small = $width . 'x' . $height;
 					} else {
