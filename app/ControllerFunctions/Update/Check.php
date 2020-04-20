@@ -49,7 +49,7 @@ class Check
 		if (!$this->gitHubFunctions->is_usable()) {
 			throw new GitNotAvailable();
 		}
-		// @codeCoverageIgnoreFalse
+		// @codeCoverageIgnoreEnd
 
 		return true;
 	}

@@ -60,9 +60,11 @@ class UpdateController extends Controller
 	{
 		try {
 			$this->checkUpdate->canUpdate();
+			// @codeCoverageIgnoreStart
 		} catch (Exception $e) {
 			return Response::error($e->getMessage());
 		}
+		// @codeCoverageIgnoreEnd
 
 		// @codeCoverageIgnoreStart
 		return $this->applyUpdate->run();
