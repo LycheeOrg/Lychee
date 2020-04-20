@@ -1,13 +1,13 @@
 <?php
 
-namespace App\ControllerFunctions;
+namespace App\ControllerFunctions\Update;
 
 use App\Configs;
 use App\Logs;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 
-class ApplyUpdateFunctions
+class Apply
 {
 	/**
 	 * If we are in a production environment we actually require a double check..

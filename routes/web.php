@@ -89,8 +89,8 @@ Route::get('/Logs', 'LogController@display')->middleware('admin');
 Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 Route::get('/Diagnostics', 'DiagnosticsController@show');
 
-Route::get('/Update', 'UpdateController@do')->middleware('admin');
-Route::post('/api/Update::Apply', 'UpdateController@do')->middleware('admin');
+Route::get('/Update', 'UpdateController@apply')->middleware('admin');
+Route::post('/api/Update::Apply', 'UpdateController@apply')->middleware('admin');
 Route::post('/api/Update::Check', 'UpdateController@check')->middleware('admin');
 
 // unused

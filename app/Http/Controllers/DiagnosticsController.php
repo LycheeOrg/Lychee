@@ -7,10 +7,9 @@
 namespace App\Http\Controllers;
 
 use App\Configs;
-use App\Exceptions\NotInCacheException;
-use App\Exceptions\NotMasterException;
+use App\ControllerFunctions\Update\Check as CheckUpdate;
 use App\Metadata\DiskUsage;
-use App\Metadata\GitHubFunctions;
+use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
@@ -28,9 +27,9 @@ class DiagnosticsController extends Controller
 	private $configFunctions;
 
 	/**
-	 * @var GitHubFunctions
+	 * @var LycheeVersion
 	 */
-	private $gitHubFunctions;
+	private $lycheeVersion;
 
 	/**
 	 * @var SessionFunctions
@@ -43,28 +42,37 @@ class DiagnosticsController extends Controller
 	private $diskUsage;
 
 	/**
-	 * padding for alignment.
-	 *
-	 * @var int
+	 * @var CheckUpdate
 	 */
-	private $pad_length = 27;
+	private $checkUpdate;
 
 	/**
 	 * @param ConfigFunctions  $configFunctions
-	 * @param GitHubFunctions  $gitHubFunctions
+	 * @param LycheeVersion    $lycheeVersion
 	 * @param SessionFunctions $sessionFunctions
 	 * @param DiskUsage        $diskUsage
+	 * @param CheckUpdate      $checkUpdate
 	 */
 	public function __construct(
 		ConfigFunctions $configFunctions,
-		GitHubFunctions $gitHubFunctions,
+		LycheeVersion $lycheeVersion,
 		SessionFunctions $sessionFunctions,
-		DiskUsage $diskUsage
+		DiskUsage $diskUsage,
+		CheckUpdate $checkUpdate
 	) {
 		$this->configFunctions = $configFunctions;
-		$this->gitHubFunctions = $gitHubFunctions;
+		$this->lycheeVersion = $lycheeVersion;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->diskUsage = $diskUsage;
+		$this->checkUpdate = $checkUpdate;
+	}
+
+	/**
+	 * Return the padded string to $pad_length.
+	 */
+	private function line(string $key, string $value)
+	{
+		return sprintf('%-27s %s', $key, $value);
 	}
 
 	/**
@@ -174,6 +182,11 @@ class DiagnosticsController extends Controller
 			}
 		}
 
+		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
+		if ($this->lycheeVersion->isRelease && $version_num < $versions['Lychee']) {
+			$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
+		}
+
 		/*
 		 * Sanity check over all the variables
 		 */
@@ -230,18 +243,7 @@ class DiagnosticsController extends Controller
 		// Load settings
 		$settings = Configs::get();
 
-		// Load json (we need to add a try case here
-		$json = @file_get_contents(base_path('public/Lychee-front/package.json'));
-		if ($json == false) {
-			// @codeCoverageIgnoreStart
-			$json = ['version' => '-'];
-		// @codeCoverageIgnoreEnd
-		} else {
-			$json = json_decode($json, true);
-		}
-
-		// Load Git info
-		$git_info = $this->gitHubFunctions->get_info();
+		$versions = $this->lycheeVersion->get();
 
 		// About Imagick version
 		$imagick = extension_loaded('imagick');
@@ -301,25 +303,20 @@ class DiagnosticsController extends Controller
 		}
 		// @codeCoverageIgnoreEnd
 
+		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
+
 		// Output system information
-		$infos[] = str_pad('Lychee-front Version:', $this->pad_length)
-			. $json['version'];
-		$infos[] = str_pad('Lychee Version (git):', $this->pad_length)
-			. $git_info;
-		$infos[] = str_pad('DB Version:', $this->pad_length)
-			. $settings['version'];
-		$infos[] = str_pad('System:', $this->pad_length) . PHP_OS;
-		$infos[] = str_pad('PHP Version:', $this->pad_length)
-			. floatval(phpversion());
-		$infos[] = str_pad($dbtype . ' Version:', $this->pad_length) . $dbver;
+		$infos[] = $this->line('Lychee-front Version:', $this->lycheeVersion->format($versions['LycheeFront']));
+		$infos[] = $this->line('Lychee Version (' . $versions['channel'] . '):', $this->lycheeVersion->format($versions['Lychee']));
+		$infos[] = $this->line('DB Version:', $version_num);
+		$infos[] = $this->line('System:', PHP_OS);
+		$infos[] = $this->line('PHP Version:', floatval(phpversion()));
+		$infos[] = $this->line($dbtype . ' Version:', $dbver);
 		$infos[] = '';
-		$infos[] = str_pad('Imagick:', $this->pad_length) . $imagick;
-		$infos[] = str_pad('Imagick Active:', $this->pad_length)
-			. $settings['imagick'];
-		$infos[] = str_pad('Imagick Version:', $this->pad_length)
-			. $imagickVersion;
-		$infos[] = str_pad('GD Version:', $this->pad_length)
-			. $gdVersion['GD Version'];
+		$infos[] = $this->line('Imagick:', $imagick);
+		$infos[] = $this->line('Imagick Active:', $settings['imagick']);
+		$infos[] = $this->line('Imagick Version:', $imagickVersion);
+		$infos[] = $this->line('GD Version:', $gdVersion['GD Version']);
 
 		return $infos;
 	}
@@ -332,15 +329,11 @@ class DiagnosticsController extends Controller
 	public function get_space(array $infos)
 	{
 		$infos[] = '';
-		$infos[] = str_pad('Lychee total space:', $this->pad_length)
-			. $this->diskUsage->get_lychee_space();
-		$infos[] = str_pad('Upload folder space:', $this->pad_length)
-			. $this->diskUsage->get_lychee_upload_space();
-		$infos[] = str_pad('System total space:', $this->pad_length)
-			. $this->diskUsage->get_total_space();
-		$infos[] = str_pad('System free space:', $this->pad_length)
-			. $this->diskUsage->get_free_space() . ' ('
-			. $this->diskUsage->get_free_percent() . ')';
+		$infos[] = $this->line('Lychee total space:', $this->diskUsage->get_lychee_space());
+		$infos[] = $this->line('Upload folder space:', $this->diskUsage->get_lychee_upload_space());
+		$infos[] = $this->line('System total space:', $this->diskUsage->get_total_space());
+		$infos[] = $this->line('System free space:', $this->diskUsage->get_free_space() . ' ('
+			. $this->diskUsage->get_free_percent() . ')');
 
 		return $infos;
 	}
@@ -360,8 +353,7 @@ class DiagnosticsController extends Controller
 		$settings = $this->configFunctions->min_info();
 		foreach ($settings as $key => $value) {
 			if (!is_array($value)) {
-				$configs[] = str_pad($key . ':', $this->pad_length - 1) . ' '
-					. $value;
+				$configs[] = $this->line($key . ':', $value);
 			}
 		}
 
@@ -384,24 +376,7 @@ class DiagnosticsController extends Controller
 			$configs = $this->get_config();
 		}
 
-		$update = true;
-		$update &= Configs::get_value('allow_online_git_pull', '0') == '1';
-		$update &= function_exists('exec');
-		$update &= $this->gitHubFunctions->is_usable();
-
-		if ($update) {
-			try {
-				if (!$this->gitHubFunctions->is_up_to_date()) {
-					$update = 2;
-				} else {
-					$update = 1;
-				}
-			} catch (NotInCacheException $e) {
-				$update = 1;
-			} catch (NotMasterException $e) {
-				$update = 0;
-			}
-		}
+		$update = $this->checkUpdate->getCode();
 
 		// @codeCoverageIgnoreEnd
 
