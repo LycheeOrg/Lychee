@@ -65,14 +65,14 @@ class LycheeVersion
 	{
 		$json_lychee_front = @file_get_contents(base_path('public/dist/version.md'));
 		// safety net in case the file does not exist...
-		if ($json_lychee_front == false) {
+		if (!$json_lychee_front) {
 			// @codeCoverageIgnoreStart
 			$json_lychee_front = ['version' => '-', 'commit' => '-'];
 		// @codeCoverageIgnoreEnd
 		} else {
 			$json_lychee_front = json_decode($json_lychee_front, true);
 		}
-		// dd($json_lychee_front);
+
 		return $json_lychee_front;
 	}
 
@@ -84,12 +84,14 @@ class LycheeVersion
 	private function getLycheeVersion()
 	{
 		if ($this->isRelease) {
+			// @codeCoverageIgnoreStart
 			return ['version' => @file_get_contents(base_path('version.md'))];
+			// @codeCoverageIgnoreEnd
 		}
 
 		$commit = $this->gitHubFunctions->get_current_commit();
 		$branch = $this->gitHubFunctions->get_current_branch();
-		if ($commit == false && $branch == false) {
+		if (!$commit && !$branch) {
 			return ['version' => 'No git data found.'];
 		}
 

@@ -65,6 +65,6 @@ class UpdateController extends Controller
 		}
 
 		// @codeCoverageIgnoreStart
-		return $this->applyUpdate->apply();
+		return $this->applyUpdate->run();
 	}
 }

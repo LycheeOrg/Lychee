@@ -47,6 +47,11 @@ class DiagnosticsController extends Controller
 	private $checkUpdate;
 
 	/**
+	 * @var array
+	 */
+	private $versions;
+
+	/**
 	 * @param ConfigFunctions  $configFunctions
 	 * @param LycheeVersion    $lycheeVersion
 	 * @param SessionFunctions $sessionFunctions
@@ -65,6 +70,8 @@ class DiagnosticsController extends Controller
 		$this->sessionFunctions = $sessionFunctions;
 		$this->diskUsage = $diskUsage;
 		$this->checkUpdate = $checkUpdate;
+
+		$this->versions = $this->lycheeVersion->get();
 	}
 
 	/**
@@ -183,7 +190,7 @@ class DiagnosticsController extends Controller
 		}
 
 		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
-		if ($this->lycheeVersion->isRelease && $version_num < $versions['Lychee']) {
+		if ($this->lycheeVersion->isRelease && $version_num < $this->versions['Lychee']) {
 			$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
 		}
 
@@ -242,8 +249,6 @@ class DiagnosticsController extends Controller
 
 		// Load settings
 		$settings = Configs::get();
-
-		$versions = $this->lycheeVersion->get();
 
 		// About Imagick version
 		$imagick = extension_loaded('imagick');
@@ -306,8 +311,8 @@ class DiagnosticsController extends Controller
 		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
 
 		// Output system information
-		$infos[] = $this->line('Lychee-front Version:', $this->lycheeVersion->format($versions['LycheeFront']));
-		$infos[] = $this->line('Lychee Version (' . $versions['channel'] . '):', $this->lycheeVersion->format($versions['Lychee']));
+		$infos[] = $this->line('Lychee-front Version:', $this->lycheeVersion->format($this->versions['LycheeFront']));
+		$infos[] = $this->line('Lychee Version (' . $this->versions['channel'] . '):', $this->lycheeVersion->format($this->versions['Lychee']));
 		$infos[] = $this->line('DB Version:', $version_num);
 		$infos[] = $this->line('System:', PHP_OS);
 		$infos[] = $this->line('PHP Version:', floatval(phpversion()));

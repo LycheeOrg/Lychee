@@ -111,7 +111,7 @@ class Apply
 	 *
 	 * @return array
 	 */
-	public function apply()
+	public function run()
 	{
 		$output = [];
 		if ($this->check_prod_env_allow_migration($output)) {
