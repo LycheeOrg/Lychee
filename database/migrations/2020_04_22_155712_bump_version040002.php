@@ -1,7 +1,7 @@
 <?php
 
 use App\Configs;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Migrations\Migration;
 
 class BumpVersion040002 extends Migration
 {
