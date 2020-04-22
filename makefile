@@ -44,7 +44,6 @@ dist-gen: clean composer
 	@cp -r composer.lock                    Lychee-v$(VERSION)
 	@cp -r composer-cache                   Lychee-v$(VERSION)
 	@cp -r LICENSE                          Lychee-v$(VERSION)
-	@cp -r phpunit.xml                      Lychee-v$(VERSION)
 	@cp -r readme.md                        Lychee-v$(VERSION)
 	@cp -r server.php                       Lychee-v$(VERSION)
 	@cp -r version.md                       Lychee-v$(VERSION)
