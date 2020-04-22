@@ -22,6 +22,7 @@ dist-gen: clean composer
 	@mkdir Lychee-v$(VERSION)/public/uploads/import
 	@mkdir Lychee-v$(VERSION)/public/sym
 	@cp -r public/dist                      Lychee-v$(VERSION)/public
+	@cp -r public/installer                 Lychee-v$(VERSION)/public
 	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
 	@cp -r app                              Lychee-v$(VERSION)
 	@cp -r bootstrap                        Lychee-v$(VERSION)
