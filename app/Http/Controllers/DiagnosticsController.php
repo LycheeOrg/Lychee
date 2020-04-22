@@ -75,7 +75,7 @@ class DiagnosticsController extends Controller
 	}
 
 	/**
-	 * Return the padded string to $pad_length.
+	 * Return the padded string to 27.
 	 */
 	private function line(string $key, string $value)
 	{

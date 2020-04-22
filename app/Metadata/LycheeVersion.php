@@ -63,7 +63,7 @@ class LycheeVersion
 	 */
 	private function getLycheeFrontVersion()
 	{
-		$json_lychee_front = @file_get_contents(base_path('public/dist/version.md'));
+		$json_lychee_front = @file_get_contents(base_path('public/dist/version.json'));
 		// safety net in case the file does not exist...
 		if (!$json_lychee_front) {
 			// @codeCoverageIgnoreStart
