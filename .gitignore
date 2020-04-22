@@ -47,3 +47,4 @@ clover.xml
 *.swp
 installed.log
 .DS_Store
+.NO_SECURE_KEY

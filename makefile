@@ -13,7 +13,6 @@ dist-gen: clean composer
 	@mkdir Lychee-v$(VERSION)/public
 	@mkdir Lychee-v$(VERSION)/public/dist
 	@mkdir Lychee-v$(VERSION)/public/img
-	@mkdir Lychee-v$(VERSION)/public/Lychee-front
 	@mkdir Lychee-v$(VERSION)/public/uploads
 	@mkdir Lychee-v$(VERSION)/public/uploads/small
 	@mkdir Lychee-v$(VERSION)/public/uploads/medium
@@ -23,13 +22,14 @@ dist-gen: clean composer
 	@mkdir Lychee-v$(VERSION)/public/uploads/import
 	@mkdir Lychee-v$(VERSION)/public/sym
 	@cp -r public/dist                      Lychee-v$(VERSION)/public
+	@cp -r public/installer                 Lychee-v$(VERSION)/public
 	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
-	@cp -r public/Lychee-front/LICENSE      Lychee-v$(VERSION)/public/Lychee-front
 	@cp -r app                              Lychee-v$(VERSION)
 	@cp -r bootstrap                        Lychee-v$(VERSION)
 	@cp -r config                           Lychee-v$(VERSION)
 	@cp -r database                         Lychee-v$(VERSION)
 	@cp -r resources                        Lychee-v$(VERSION)
+	@cp -r index.html                       Lychee-v$(VERSION)
 	@cp -r routes                           Lychee-v$(VERSION)
 	@cp -r storage                          Lychee-v$(VERSION)
 	@cp -r vendor                           Lychee-v$(VERSION) 2> /dev/null || true
@@ -45,7 +45,6 @@ dist-gen: clean composer
 	@cp -r composer.lock                    Lychee-v$(VERSION)
 	@cp -r composer-cache                   Lychee-v$(VERSION)
 	@cp -r LICENSE                          Lychee-v$(VERSION)
-	@cp -r phpunit.xml                      Lychee-v$(VERSION)
 	@cp -r readme.md                        Lychee-v$(VERSION)
 	@cp -r server.php                       Lychee-v$(VERSION)
 	@cp -r version.md                       Lychee-v$(VERSION)
