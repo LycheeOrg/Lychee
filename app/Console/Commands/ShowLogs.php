@@ -54,7 +54,7 @@ class ShowLogs extends Command
 
 		if ($action == 'clean') {
 			Logs::truncate();
-			$this->line($this->yellow('Log table has been emptied.'));
+			$this->line($this->col->yellow('Log table has been emptied.'));
 
 			return;
 		}
