@@ -208,25 +208,6 @@ class GitHubFunctions
 	}
 
 	/**
-	 * Return a string like 'commit number (branch)' or 'no git data found'.
-	 *
-	 * @return string
-	 */
-	public function get_info()
-	{
-		$branch = $this->get_current_branch();
-		$head = $this->get_current_commit();
-		if ($head == false || $branch == false) {
-			// when going through CI, .git exists...
-			// @codeCoverageIgnoreStart
-			return 'No git data found. Probably installed from release or could not read .git';
-			// @codeCoverageIgnoreEnd
-		}
-
-		return sprintf('%s (%s)', $head, $branch) . $this->get_behind_text();
-	}
-
-	/**
 	 * Check if the repo is up to date, throw an exception if fails.
 	 *
 	 * @param bool $cached

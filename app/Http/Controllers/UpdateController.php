@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Configs;
-use App\ControllerFunctions\ApplyUpdateFunctions;
-use App\Exceptions\NotInCacheException;
-use App\Exceptions\NotMasterException;
-use App\Metadata\GitHubFunctions;
-use App\Metadata\GitRequest;
+use App\ControllerFunctions\Update\Apply as ApplyUpdate;
+use App\ControllerFunctions\Update\Check as CheckUpdate;
 use App\Response;
 use Exception;
 
@@ -17,46 +13,26 @@ use Exception;
 class UpdateController extends Controller
 {
 	/**
-	 * @var GitHubFunctions
+	 * @var ApplyUpdate
 	 */
-	private $gitHubFunctions;
+	private $applyUpdate;
 
 	/**
-	 * @var ApplyUpdateFunctions
+	 * @var CheckUpdate
 	 */
-	private $applyUpdateFunctions;
+	private $checkUpdate;
 
 	/**
-	 * @var GitRequest
-	 */
-	private $gitRequest;
-
-	/**
-	 * @param GitHubFunctions      $gitHubFunctions
-	 * @param ApplyUpdateFunctions $applyUpdateFunctions
-	 * @param GitRequest           $gitRequest
+	 * @param GitHubFunctions $gitHubFunctions
+	 * @param ApplyUpdate     $apply
+	 * @param GitRequest      $gitRequest
 	 */
 	public function __construct(
-		GitHubFunctions $gitHubFunctions,
-		ApplyUpdateFunctions $applyUpdateFunctions,
-		GitRequest $gitRequest
+		ApplyUpdate $applyUpdate,
+		CheckUpdate $checkUpdate
 	) {
-		$this->gitHubFunctions = $gitHubFunctions;
-		$this->applyUpdateFunctions = $applyUpdateFunctions;
-		$this->gitRequest = $gitRequest;
-	}
-
-	/**
-	 * @return bool
-	 *
-	 * @throws NotMasterException
-	 * @throws NotInCacheException
-	 */
-	private function forget_and_check()
-	{
-		$this->gitRequest->clear_cache();
-
-		return $this->gitHubFunctions->is_up_to_date(false);
+		$this->applyUpdate = $applyUpdate;
+		$this->checkUpdate = $checkUpdate;
 	}
 
 	/**
@@ -68,18 +44,9 @@ class UpdateController extends Controller
 	public function check()
 	{
 		try {
-			$up_to_date = $this->forget_and_check();
+			return Response::json($this->checkUpdate->getText());
 		} catch (Exception $e) {
 			return Response::error($e->getMessage()); // Not master
-		}
-
-		// when going through the CI, we are always up to date...
-		if (!$up_to_date) {
-			// @codeCoverageIgnoreStart
-			return Response::json($this->gitHubFunctions->get_behind_text());
-		// @codeCoverageIgnoreEnd
-		} else {
-			return Response::json('Already up to date');
 		}
 	}
 
@@ -89,22 +56,17 @@ class UpdateController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function do()
+	public function apply()
 	{
-		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
-			return Response::error('Online updates are not allowed.');
+		try {
+			$this->checkUpdate->canUpdate();
+			// @codeCoverageIgnoreStart
+		} catch (Exception $e) {
+			return Response::error($e->getMessage());
 		}
-
-		// When going with the CI, .git is always executable and exec is also available
-		// @codeCoverageIgnoreStart
-		if (!function_exists('exec')) {
-			return Response::error('exec is not available');
-		}
-		if (!$this->gitHubFunctions->is_usable()) {
-			return Response::error('../.git (and subdirectories) are not executable, check the permissions');
-		}
+		// @codeCoverageIgnoreEnd
 
 		// @codeCoverageIgnoreStart
-		return $this->applyUpdateFunctions->apply();
+		return $this->applyUpdate->run();
 	}
 }

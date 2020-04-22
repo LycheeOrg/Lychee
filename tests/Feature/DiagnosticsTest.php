@@ -25,6 +25,9 @@ class DiagnosticsTest extends TestCase
 		$response = $this->post('/api/Diagnostics');
 		$response->assertStatus(200); // code 200 something too
 
+		$response = $this->post('/api/Diagnostics::getSize');
+		$response->assertStatus(200); // code 200 something too
+
 		$session_tests->logout($this);
 	}
 }

@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Configs;
+use App\Photo;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
@@ -229,9 +230,10 @@ class PhotosTest extends TestCase
 		$response = $albums_tests->get($this, 'r', '', 'true');
 		$content = $response->getContent();
 		$array_content = json_decode($content);
-		$this->assertEquals(1, count($array_content->photos));
+		$num_recent = Photo::recent()->count();
+		$this->assertEquals(Photo::recent()->count(), count($array_content->photos));
 
-		$id = $array_content->photos[0]->id;
+		$id = $array_content->photos[$num_recent - 1]->id;
 		$photos_tests->delete($this, $id, 'true');
 
 		// set back to initial value
