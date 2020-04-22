@@ -61,16 +61,15 @@ class Ghostbuster extends Command
 		$this->line('');
 		$dryrun = (bool) $this->argument('dryrun');
 
-		$files = Storage::allFiles('big');
+		$path = Storage::path('big');
+		$files = array_slice(scandir($path), 2);
 		$total = 0;
 
-		foreach ($files as $file) {
-			$url = substr($file, 4);
+		foreach ($files as $url) {
 			if ($url == 'index.html') {
 				continue;
 			}
 			$c = Photo::where('url', '=', $url)->count();
-
 			if ($c == 0) {
 				$photoName = explode('.', $url);
 
@@ -92,19 +91,32 @@ class Ghostbuster extends Command
 				$to_delete[] = 'big/' . $url;
 
 				foreach ($to_delete as $del) {
+					$delete = 0;
 					if (Storage::exists($del)) {
+						$delete = 1;
+					} elseif (file_exists($path . '/' . $del)) {
+						// symbolic link...
+						$delete = 2;
+					}
+
+					if ($delete > 0) {
 						$total++;
 						if ($dryrun) {
 							$this->line(str_pad($del, 50) . $this->col->red(' will be removed') . '.');
 						} else {
-							Storage::delete($del);
+							if ($delete == 1) {
+								Storage::delete($del);
+							} else {
+								// symbolic link
+								unlink($path . '/' . $del);
+							}
 							$this->line($this->col->red('removed file: ') . $del);
 						}
 					}
 				}
-				$this->line('');
 			}
 		}
+		$this->line('');
 
 		if ($total == 0) {
 			$this->line($this->col->green('No pictures found to be deleted'));
