@@ -3,7 +3,9 @@
 namespace App\Exceptions\Handlers;
 
 use App\Redirections\ToInstall;
+use Exception;
 use Illuminate\Http\Response;
+use Illuminate\View\View;
 use RuntimeException;
 use Throwable;
 
@@ -15,7 +17,7 @@ class NoEncryptionKey
 	 * @param Illuminate\Http\Request $request
 	 * @param Throwable               $exception
 	 *
-	 * @return Response
+	 * @return bool
 	 */
 	public function check($request, Throwable $exception)
 	{
@@ -24,14 +26,18 @@ class NoEncryptionKey
 	}
 
 	/**
-	 * @return Response
+	 * @return Response or View
 	 */
 	// @codeCoverageIgnoreStart
 	public function go()
 	{
-		touch(base_path('.NO_SECURE_KEY'));
+		try {
+			touch(base_path('.NO_SECURE_KEY'));
 
-		return ToInstall::go();
+			return ToInstall::go();
+		} catch (Exception $e) {
+			return response()->view('error.error', ['code' => '500', 'message' => 'WRITE ACCESS REQUIRED on ' . base_path() . '<br>in order to create <code>.NO_SECURE_KEY</code>, <code>.env</code>, <code>installed.log</code> files']);
+		}
 	}
 
 	// @codeCoverageIgnoreEnd

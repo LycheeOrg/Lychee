@@ -15,7 +15,7 @@ class AccessDBDenied
 	 * @param Illuminate\Http\Request $request
 	 * @param Throwable               $exception
 	 *
-	 * @return Response
+	 * @return bool
 	 */
 	public function check($request, Throwable $exception)
 	{
