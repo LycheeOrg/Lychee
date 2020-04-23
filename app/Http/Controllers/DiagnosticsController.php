@@ -142,21 +142,17 @@ class DiagnosticsController extends Controller
 		$paths = ['big', 'medium', 'small', 'thumb', 'import', ''];
 
 		foreach ($paths as $path) {
-			if (Helpers::hasPermissions(Storage::path($path)) === false) {
-				$errors[]
-					= 'Error: \'uploads/' . $path . '\' is missing or has insufficient read/write privileges';
+			$p = Storage::path($path);
+			if (Helpers::hasPermissions($p) === false) {
+				$errors[] = "Error: '" . $p . "' is missing or has insufficient read/write privileges";
 			}
 		}
-		if (Helpers::hasPermissions(Storage::disk('dist')->path('user.css'))
-			=== false
-		) {
-			$errors[]
-				= 'Warning: \'dist/user.css\' does not exist or has insufficient read/write privileges.';
-			if (Helpers::hasPermissions(Storage::disk('dist')->path(''))
-				=== false
-			) {
-				$errors[]
-					= 'Warning: \'dist/\' has insufficient read/write privileges.';
+		$p = Storage::disk('dist')->path('user.css');
+		if (Helpers::hasPermissions($p) === false) {
+			$errors[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
+			$p = Storage::disk('dist')->path('');
+			if (Helpers::hasPermissions($p) === false) {
+				$errors[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
 			}
 		}
 
@@ -190,13 +186,8 @@ class DiagnosticsController extends Controller
 			}
 		}
 
-		if (isset($settings['version'])) {
-			$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
-			if ($this->lycheeVersion->isRelease && $version_num < $this->versions['Lychee']) {
-				$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
-			}
-		} else {
-			$errors[] = 'Error: Version number not found in database. Please apply the migrations.';
+		if ($this->lycheeVersion->isRelease && $this->versions['DB']['version'] < $this->versions['Lychee']['version']) {
+			$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
 		}
 
 		/*
@@ -313,11 +304,9 @@ class DiagnosticsController extends Controller
 		}
 		// @codeCoverageIgnoreEnd
 
-		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
-
 		// Output system information
 		$infos[] = $this->line('Lychee Version (' . $this->versions['channel'] . '):', $this->lycheeVersion->format($this->versions['Lychee']));
-		$infos[] = $this->line('DB Version:', $version_num);
+		$infos[] = $this->line('DB Version:', $this->versions['DB']['version']);
 		$infos[] = '';
 		$infos[] = $this->line('composer install:', $this->versions['composer']);
 		$infos[] = $this->line('APP_ENV:', Config::get('app.env')); // check if production

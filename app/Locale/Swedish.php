@@ -33,6 +33,7 @@ final class Swedish implements LangInterface
 			'LOGS' => 'Visa logfilen',
 			'SIGN_OUT' => 'Logga ut',
 			'UPDATE_AVAILABLE' => 'En uppdatering finns!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',

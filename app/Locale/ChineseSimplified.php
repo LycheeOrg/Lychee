@@ -33,6 +33,7 @@ final class ChineseSimplified implements LangInterface
 			'LOGS' => '查看日志',
 			'SIGN_OUT' => '注销登录',
 			'UPDATE_AVAILABLE' => '可用更新！',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',

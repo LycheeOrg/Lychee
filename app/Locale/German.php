@@ -33,6 +33,7 @@ final class German implements LangInterface
 			'LOGS' => 'Logs anzeigen',
 			'SIGN_OUT' => 'Abmelden',
 			'UPDATE_AVAILABLE' => 'Update verfügbar!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Standard-Lizenz für neue Uploads:',
 			'SET_LICENSE' => 'Lizenz anwenden',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',

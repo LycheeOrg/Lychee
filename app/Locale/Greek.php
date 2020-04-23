@@ -33,6 +33,7 @@ final class Greek implements LangInterface
 			'LOGS' => 'Εμφάνιση Καταγραφών',
 			'SIGN_OUT' => 'Αποσύνδεση',
 			'UPDATE_AVAILABLE' => 'Διαθέσιμη Ενημέρωση!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Προεπιλεγμένη άδεια για τις νέες μεταφορτώσεις:',
 			'SET_LICENSE' => 'Ορισμός Άδειας',
 			'SET_OVERLAY_TYPE' => 'Ορισμός Τύπου Overlay',

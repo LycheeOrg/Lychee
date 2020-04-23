@@ -33,6 +33,7 @@ final class Dutch implements LangInterface
 			'LOGS' => 'Laat logs zien',
 			'SIGN_OUT' => 'Log uit',
 			'UPDATE_AVAILABLE' => 'Update beschikbaar!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',

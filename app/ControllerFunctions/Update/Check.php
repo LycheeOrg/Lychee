@@ -11,6 +11,7 @@ use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
+use App\Metadata\LycheeVersion;
 use Exception;
 
 class Check
@@ -26,14 +27,21 @@ class Check
 	private $gitRequest;
 
 	/**
+	 * @var LycheeVersion
+	 */
+	private $lycheeVersion;
+
+	/**
 	 * @param GitHubFunctions $gitHubFunctions
 	 */
 	public function __construct(
 		GitHubFunctions $gitHubFunctions,
-		GitRequest $gitRequest
+		GitRequest $gitRequest,
+		LycheeVersion $lycheeVersion
 	) {
 		$this->gitHubFunctions = $gitHubFunctions;
 		$this->gitRequest = $gitRequest;
+		$this->lycheeVersion = $lycheeVersion;
 	}
 
 	/**
@@ -44,6 +52,10 @@ class Check
 	 */
 	public function canUpdate()
 	{
+		if ($this->lycheeVersion->isRelease) {
+			return true;
+		}
+
 		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
 			throw new NoOnlineUpdateException();
 		}
@@ -117,22 +129,29 @@ class Check
 	 * 1 - Not in cache
 	 * 1 - Up to date
 	 * 2 - Not up to date.
+	 * 3 - Require migration.
 	 */
 	public function getCode()
 	{
-		$update = $this->canUpdateBool();
+		if ($this->lycheeVersion->isRelease) {
+			$versions = $this->lycheeVersion->get();
 
-		if ($update) {
-			try {
-				if (!$this->gitHubFunctions->is_up_to_date()) {
-					return 2;
-				} else {
+			return 3 * intval($versions['DB']['version'] < $versions['Lychee']['version']);
+		} else {
+			$update = $this->canUpdateBool();
+
+			if ($update) {
+				try {
+					if (!$this->gitHubFunctions->is_up_to_date()) {
+						return 2;
+					} else {
+						return 1;
+					}
+				} catch (NotInCacheException $e) {
 					return 1;
+				} catch (NotMasterException $e) {
+					return 0;
 				}
-			} catch (NotInCacheException $e) {
-				return 1;
-			} catch (NotMasterException $e) {
-				return 0;
 			}
 		}
 

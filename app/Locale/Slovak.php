@@ -33,6 +33,7 @@ final class Slovak implements LangInterface
 			'LOGS' => 'Protokoly',
 			'SIGN_OUT' => 'Odhlásiť',
 			'UPDATE_AVAILABLE' => 'Update je k dispozícii!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Predvolená licencia pre nové',
 			'SET_LICENSE' => 'Použiť licenciu',
 			'SET_OVERLAY_TYPE' => 'Nastaviť typ overlay',

@@ -9,6 +9,7 @@ use App\Image;
 use App\Image\ImageHandler;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
+use App\Metadata\LycheeVersion;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\PhotoFunctions;
@@ -31,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
 			GitHubFunctions::class => GitHubFunctions::class,
 			ApplyUpdateFunctions::class => ApplyUpdateFunctions::class,
 			ReadAccessFunctions::class => ReadAccessFunctions::class,
+			LycheeVersion::class => LycheeVersion::class,
 		];
 
 	/**

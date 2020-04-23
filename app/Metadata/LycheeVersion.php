@@ -2,6 +2,8 @@
 
 namespace App\Metadata;
 
+use App\Configs;
+
 class LycheeVersion
 {
 	/**
@@ -62,6 +64,7 @@ class LycheeVersion
 		$versions = [];
 		$versions['channel'] = $this->isRelease ? 'release' : 'git';
 		$versions['composer'] = $this->phpUnit ? 'dev' : '--no-dev';
+		$versions['DB'] = $this->getDBVersion();
 		$versions['Lychee'] = $this->getLycheeVersion();
 
 		return $versions;
@@ -77,6 +80,26 @@ class LycheeVersion
 		$ret .= $info['additional'] ?? '';
 
 		return $ret;
+	}
+
+	/**
+	 * @param string $version in the shape of xxyyzz
+	 *
+	 * @return string xx.yy.zz
+	 */
+	public function format_version(string $version)
+	{
+		return implode('.', array_map('intval', str_split($version, 2)));
+	}
+
+	/**
+	 * Return the info about the database.
+	 *
+	 * @return array
+	 */
+	private function getDBVersion()
+	{
+		return ['version' => $this->format_version(Configs::get_value('version', '040000'))];
 	}
 
 	/**

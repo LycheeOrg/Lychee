@@ -33,6 +33,7 @@ final class French implements LangInterface
 			'LOGS' => 'Afficher les logs',
 			'SIGN_OUT' => 'Se déconnecter',
 			'UPDATE_AVAILABLE' => 'Une mise à jour est disponible !',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',
