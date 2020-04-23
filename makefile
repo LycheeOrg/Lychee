@@ -112,4 +112,4 @@ release_major:
 	php gen_release major
 	git add database
 	git add version.md
-	git commit -m "bump to version $(cat version.md)"
+	git commit -m "bump to version $(shell cat version.md)"
