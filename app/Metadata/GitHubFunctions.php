@@ -74,11 +74,11 @@ class GitHubFunctions
 
 		// @codeCoverageIgnoreStart
 		$head_file = base_path('.git/HEAD');
-		$branch = file_get_contents($head_file);
+		$branch_ = file_get_contents($head_file);
 		//separate out by the "/" in the string
-		$branch = explode('/', $branch, 3)[2];
+		$branch_ = explode('/', $branch_, 3)[2];
 
-		return trim($branch);
+		return trim($branch_);
 		// @codeCoverageIgnoreEnd
 	}
 
@@ -90,9 +90,9 @@ class GitHubFunctions
 	public function get_current_commit()
 	{
 		$file = base_path('.git/refs/heads/' . $this->branch);
-		$head = file_get_contents($file);
+		$head_ = file_get_contents($file);
 
-		return $this->trim($head);
+		return $this->trim($head_);
 	}
 
 	/**
@@ -106,9 +106,7 @@ class GitHubFunctions
 	 */
 	private function get_commits(bool $cached = true)
 	{
-		$commits = $this->gitRequest->get_json($cached);
-
-		return $commits;
+		return $this->gitRequest->get_json($cached);
 	}
 
 	/**
