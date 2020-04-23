@@ -13,6 +13,7 @@ use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
+use Config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -180,7 +181,7 @@ class DiagnosticsController extends Controller
 
 		$keys_checked = [
 			'username', 'password', 'sorting_Photos', 'sorting_Albums',
-			'imagick', 'skip_duplicates', 'check_for_updates',
+			'imagick', 'skip_duplicates', 'check_for_updates', 'version',
 		];
 
 		foreach ($keys_checked as $key) {
@@ -189,9 +190,13 @@ class DiagnosticsController extends Controller
 			}
 		}
 
-		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
-		if ($this->lycheeVersion->isRelease && $version_num < $this->versions['Lychee']) {
-			$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
+		if (isset($settings['version'])) {
+			$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
+			if ($this->lycheeVersion->isRelease && $version_num < $this->versions['Lychee']) {
+				$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
+			}
+		} else {
+			$errors[] = 'Error: Version number not found in database. Please apply the migrations.';
 		}
 
 		/*
@@ -311,9 +316,13 @@ class DiagnosticsController extends Controller
 		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
 
 		// Output system information
-		$infos[] = $this->line('Lychee-front Version:', $this->lycheeVersion->format($this->versions['LycheeFront']));
 		$infos[] = $this->line('Lychee Version (' . $this->versions['channel'] . '):', $this->lycheeVersion->format($this->versions['Lychee']));
 		$infos[] = $this->line('DB Version:', $version_num);
+		$infos[] = '';
+		$infos[] = $this->line('composer install:', $this->versions['composer']);
+		$infos[] = $this->line('APP_ENV:', Config::get('app.env')); // check if production
+		$infos[] = $this->line('APP_DEBUG:', Config::get('app.debug') ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
+		$infos[] = '';
 		$infos[] = $this->line('System:', PHP_OS);
 		$infos[] = $this->line('PHP Version:', floatval(phpversion()));
 		$infos[] = $this->line($dbtype . ' Version:', $dbver);

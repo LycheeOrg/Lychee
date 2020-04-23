@@ -14,10 +14,24 @@ class LycheeVersion
 	 */
 	public $isRelease;
 
+	/**
+	 * true if phpunit is present in vendor/bin/
+	 * We use this to dertermine if composer install or composer install --no-dev was used.
+	 *
+	 * @var bool
+	 */
+	public $phpUnit;
+
+	/**
+	 * Base constructor.
+	 *
+	 * @param GitHubFunctions
+	 */
 	public function __construct(GitHubFunctions $githubFunctions)
 	{
 		$this->gitHubFunctions = $githubFunctions;
 		$this->isRelease = $this->fetchReleaseInfo();
+		$this->phpUnit = $this->fetchComposerInfo();
 	}
 
 	/**
@@ -30,6 +44,15 @@ class LycheeVersion
 	}
 
 	/**
+	 * Returns true if we are using the release channel
+	 * Returns false if we are using the git channel.
+	 */
+	private function fetchComposerInfo()
+	{
+		return file_exists(base_path('vendor/bin/phpunit'));
+	}
+
+	/**
 	 * Return asked information.
 	 *
 	 * @return array
@@ -38,7 +61,7 @@ class LycheeVersion
 	{
 		$versions = [];
 		$versions['channel'] = $this->isRelease ? 'release' : 'git';
-		$versions['LycheeFront'] = $this->getLycheeFrontVersion();
+		$versions['composer'] = $this->phpUnit ? 'dev' : '--no-dev';
 		$versions['Lychee'] = $this->getLycheeVersion();
 
 		return $versions;
@@ -57,26 +80,6 @@ class LycheeVersion
 	}
 
 	/**
-	 * Return the information with respect to LycheeFront.
-	 *
-	 * @return array
-	 */
-	private function getLycheeFrontVersion()
-	{
-		$json_lychee_front = @file_get_contents(base_path('public/dist/version.json'));
-		// safety net in case the file does not exist...
-		if (!$json_lychee_front) {
-			// @codeCoverageIgnoreStart
-			$json_lychee_front = ['version' => '-', 'commit' => '-'];
-		// @codeCoverageIgnoreEnd
-		} else {
-			$json_lychee_front = json_decode($json_lychee_front, true);
-		}
-
-		return $json_lychee_front;
-	}
-
-	/**
 	 * Return the information with respect to Lychee.
 	 *
 	 * @return array
@@ -85,7 +88,7 @@ class LycheeVersion
 	{
 		if ($this->isRelease) {
 			// @codeCoverageIgnoreStart
-			return ['version' => @file_get_contents(base_path('version.md'))];
+			return ['version' => rtrim(@file_get_contents(base_path('version.md')))];
 			// @codeCoverageIgnoreEnd
 		}
 
