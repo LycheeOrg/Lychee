@@ -2,6 +2,7 @@
 
 namespace App\ModelFunctions;
 
+use App\Exceptions\NotInCacheException;
 use App\Logs;
 use Cache;
 use Psr\SimpleCache\InvalidArgumentException;
@@ -133,7 +134,11 @@ class JsonRequestFunctions
 	public function get_json(bool $cached = false)
 	{
 		if ($cached) {
-			return $this->json ?? false;
+			if (!$this->json) {
+				throw new NotInCacheException();
+			}
+
+			return $this->json;
 		}
 
 		return $this->get();

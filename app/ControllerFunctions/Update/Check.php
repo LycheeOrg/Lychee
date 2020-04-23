@@ -3,9 +3,10 @@
 namespace App\ControllerFunctions\Update;
 
 use App\Configs;
-use App\Exceptions\ExecNotAvailable;
-use App\Exceptions\GitNotAvailable;
-use App\Exceptions\NoOnlineUpdate;
+use App\Exceptions\ExecNotAvailableException;
+use App\Exceptions\GitNotAvailableException;
+use App\Exceptions\GitNotExecutableException;
+use App\Exceptions\NoOnlineUpdateException;
 use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
 use App\Metadata\GitHubFunctions;
@@ -35,19 +36,29 @@ class Check
 		$this->gitRequest = $gitRequest;
 	}
 
+	/**
+	 * @throws NoOnlineUpdateException
+	 * @throws GitNotAvailableException
+	 * @throws ExecNotAvailableException
+	 * @throws GitNotExecutableException
+	 */
 	public function canUpdate()
 	{
 		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
-			throw new NoOnlineUpdate();
+			throw new NoOnlineUpdateException();
 		}
 
 		// When going with the CI, .git is always executable and exec is also available
 		// @codeCoverageIgnoreStart
 		if (!function_exists('exec')) {
-			throw new ExecNotAvailable();
+			throw new ExecNotAvailableException();
 		}
-		if (!$this->gitHubFunctions->is_usable()) {
-			throw new GitNotAvailable();
+		if (exec('command -v git') == '') {
+			throw new GitNotAvailableException();
+		}
+
+		if (!$this->gitHubFunctions->has_permissions()) {
+			throw new GitNotExecutableException();
 		}
 		// @codeCoverageIgnoreEnd
 
@@ -124,5 +135,7 @@ class Check
 				return 0;
 			}
 		}
+
+		return 0;
 	}
 }

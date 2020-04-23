@@ -375,12 +375,11 @@ class DiagnosticsController extends Controller
 	}
 
 	/**
-	 * This function return the Diagnostic data as an JSON array.
-	 * should be used for AJAX request.
+	 * Return the requested information.
 	 *
 	 * @return array
 	 */
-	public function get()
+	private function get_data()
 	{
 		$errors = $this->get_errors();
 		$infos = ['You must be logged to see this.'];
@@ -390,16 +389,25 @@ class DiagnosticsController extends Controller
 			$configs = $this->get_config();
 		}
 
-		$update = $this->checkUpdate->getCode();
-
-		// @codeCoverageIgnoreEnd
-
 		return [
 			'errors' => $errors,
 			'infos' => $infos,
 			'configs' => $configs,
-			'update' => $update,
 		];
+	}
+
+	/**
+	 * This function return the Diagnostic data as an JSON array.
+	 * should be used for AJAX request.
+	 *
+	 * @return array
+	 */
+	public function get()
+	{
+		$ret = $this->get_data();
+		$ret['update'] = $this->checkUpdate->getCode();
+
+		return $ret;
 	}
 
 	/**
@@ -409,20 +417,7 @@ class DiagnosticsController extends Controller
 	 */
 	public function show()
 	{
-		$errors = $this->get_errors();
-		$infos = ['You must be logged to see this.'];
-		$configs = ['You must be logged to see this.'];
-		if ($this->sessionFunctions->is_admin()) {
-			$infos = $this->get_info();
-			$configs = $this->get_config();
-		}
-
-		// Show separator
-		return view('diagnostics', [
-			'errors' => $errors,
-			'infos' => $infos,
-			'configs' => $configs,
-		]);
+		return view('diagnostics', $this->get_data());
 	}
 
 	/**

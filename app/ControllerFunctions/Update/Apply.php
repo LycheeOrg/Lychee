@@ -44,8 +44,6 @@ class Apply
 	{
 		if (Configs::get_value('apply_composer_update', '0') == '1') {
 			// @codeCoverageIgnoreStart
-			// we cannot code cov this part as phpunit is only available in dev mode.
-
 			Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
 
 			// Composer\Factory::getHomeDir() method
