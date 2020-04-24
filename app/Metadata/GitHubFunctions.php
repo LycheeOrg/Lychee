@@ -43,7 +43,11 @@ class GitHubFunctions
 		} catch (Exception $e) {
 			$this->branch = false;
 			$this->head = false;
-			Logs::notice(__METHOD__, __LINE__, $e->getMessage());
+			try {
+				Logs::notice(__METHOD__, __LINE__, $e->getMessage());
+			} catch (Exception $e) {
+				// Composer stuff.
+			}
 		}
 	}
 
@@ -77,9 +81,9 @@ class GitHubFunctions
 		$branch_ = file_get_contents($head_file);
 		//separate out by the "/" in the string
 		$branch_ = explode('/', $branch_, 3);
-		if (count($branch_) < 2) {
-			return 'master';
-		}
+		// if (count($branch_) < 2) {
+		// return 'master';
+		// }
 
 		return trim($branch_[2]);
 		// @codeCoverageIgnoreEnd
