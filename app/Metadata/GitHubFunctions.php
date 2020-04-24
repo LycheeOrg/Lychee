@@ -81,10 +81,7 @@ class GitHubFunctions
 		$branch_ = file_get_contents($head_file);
 		//separate out by the "/" in the string
 		$branch_ = explode('/', $branch_, 3);
-		// if (count($branch_) < 2)
-		// {
-		// 	return trim($branch_);
-		// }
+
 		return trim($branch_[2]);
 		// @codeCoverageIgnoreEnd
 	}

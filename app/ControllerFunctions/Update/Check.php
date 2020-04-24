@@ -54,7 +54,9 @@ class Check
 	{
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
 		if ($this->lycheeVersion->isRelease) {
+			// @codeCoverageIgnoreStart
 			return true;
+			// @codeCoverageIgnoreEnd
 		}
 
 		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
@@ -135,23 +137,29 @@ class Check
 	public function getCode()
 	{
 		if ($this->lycheeVersion->isRelease) {
+			// @codeCoverageIgnoreStart
 			$versions = $this->lycheeVersion->get();
 
 			return 3 * intval($versions['DB']['version'] < $versions['Lychee']['version']);
+		// @codeCoverageIgnoreEnd
 		} else {
 			$update = $this->canUpdateBool();
 
 			if ($update) {
 				try {
+					// @codeCoverageIgnoreStart
 					if (!$this->gitHubFunctions->is_up_to_date()) {
 						return 2;
 					} else {
 						return 1;
 					}
+					// @codeCoverageIgnoreEnd
 				} catch (NotInCacheException $e) {
 					return 1;
 				} catch (NotMasterException $e) {
+					// @codeCoverageIgnoreEnd
 					return 0;
+					// @codeCoverageIgnoreEnd
 				}
 			}
 		}
