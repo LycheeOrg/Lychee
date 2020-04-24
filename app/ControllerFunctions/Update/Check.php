@@ -52,6 +52,7 @@ class Check
 	 */
 	public function canUpdate()
 	{
+		// we bypass this because we don't care about the other conditions as they don't apply to the release
 		if ($this->lycheeVersion->isRelease) {
 			return true;
 		}

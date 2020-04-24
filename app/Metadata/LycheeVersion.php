@@ -115,8 +115,8 @@ class LycheeVersion
 			// @codeCoverageIgnoreEnd
 		}
 
-		$commit = $this->gitHubFunctions->get_current_commit();
-		$branch = $this->gitHubFunctions->get_current_branch();
+		$branch = $this->gitHubFunctions->branch;
+		$commit = $this->gitHubFunctions->head;
 		if (!$commit && !$branch) {
 			return ['version' => 'No git data found.'];
 		}
