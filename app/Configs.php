@@ -7,6 +7,7 @@ use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\QueryException;
 
 /**
  * App\Configs.
@@ -159,7 +160,7 @@ class Configs extends Model
 			 */
 			try {
 				self::get();
-			} catch (Exception $e) {
+			} catch (QueryException $e) {
 				return $default;
 			}
 		}

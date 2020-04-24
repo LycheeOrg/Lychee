@@ -76,9 +76,12 @@ class GitHubFunctions
 		$head_file = base_path('.git/HEAD');
 		$branch_ = file_get_contents($head_file);
 		//separate out by the "/" in the string
-		$branch_ = explode('/', $branch_, 3)[2];
+		$branch_ = explode('/', $branch_, 3);
+		if (count($branch_) < 2) {
+			return 'master';
+		}
 
-		return trim($branch_);
+		return trim($branch_[2]);
 		// @codeCoverageIgnoreEnd
 	}
 
