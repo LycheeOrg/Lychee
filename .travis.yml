@@ -56,7 +56,7 @@ before_script:
   # create db for postgresql
   - sh -c "if [ '$SQL' = 'postgresql' ] ; then psql -c 'create database homestead_test;' -U postgres ; fi"
   # create db for mariadb
-  - sh -c "if [ '$SQL' = 'mariadb' ] ; then mysql -e 'create database homestead_test;' fi"
+  - sh -c "if [ '$SQL' = 'mariadb' ] ; then mysql -e 'create database homestead_test;' ; fi"
   # composer stuff
   - composer self-update
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
