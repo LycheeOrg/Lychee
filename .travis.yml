@@ -9,18 +9,17 @@ php:
   - '7.3'
   - '7.4'
 #  - nightly
+
 env:
-  global:
-    - TRAVIS_COMPOSER_DEV=yes
+  - - TRAVIS_COMPOSER_DEV=yes
     - TRAVIS_COMPOSER_DEV=no
-  matrix:
-    - SQL=mariadb
+  - - SQL=mariadb
     - SQL=postgresql
     - SQL=sqlite
 
-matrix:
-  allow_failures:
-    - php: 7.4snapshot
+# matrix:
+#   allow_failures:
+#     - php: 7.4snapshot
 
 cache:
   directories:
@@ -59,7 +58,7 @@ before_script:
 script:
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run ; fi"
   # - sh -c "if [ '$DB' = 'mariadb' ] ; then cp .env.mariadb.travis .env ; fi"
-  - cp .env.$DB.travis .env
+  - cp .env.${DB}.travis .env
   # - sh -c "if [ '$DB' = 'postgresql' ] ; then cp .env.postgresql.travis .env ; fi"
   # - sh -c "if [ '$DB' = 'sqlite' ] ; then cp .env.sqlite.travis .env ; fi"
   # test mariadb
