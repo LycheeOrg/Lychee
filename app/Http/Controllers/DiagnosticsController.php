@@ -371,11 +371,12 @@ class DiagnosticsController extends Controller
 	private function get_data()
 	{
 		$errors = $this->get_errors();
-		$infos = ['You must be logged to see this.'];
-		$configs = ['You must be logged to see this.'];
 		if ($this->sessionFunctions->is_admin()) {
 			$infos = $this->get_info();
 			$configs = $this->get_config();
+		} else {
+			$infos = ['You must be logged to see this.'];
+			$configs = ['You must be logged to see this.'];
 		}
 
 		return [

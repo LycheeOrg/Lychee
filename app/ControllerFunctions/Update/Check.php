@@ -141,26 +141,26 @@ class Check
 			$versions = $this->lycheeVersion->get();
 
 			return 3 * intval($versions['DB']['version'] < $versions['Lychee']['version']);
-		// @codeCoverageIgnoreEnd
-		} else {
-			$update = $this->canUpdateBool();
+			// @codeCoverageIgnoreEnd
+		}
 
-			if ($update) {
-				try {
-					// @codeCoverageIgnoreStart
-					if (!$this->gitHubFunctions->is_up_to_date()) {
-						return 2;
-					} else {
-						return 1;
-					}
-					// @codeCoverageIgnoreEnd
-				} catch (NotInCacheException $e) {
+		$update = $this->canUpdateBool();
+
+		if ($update) {
+			try {
+				// @codeCoverageIgnoreStart
+				if (!$this->gitHubFunctions->is_up_to_date()) {
+					return 2;
+				} else {
 					return 1;
-				} catch (NotMasterException $e) {
-					// @codeCoverageIgnoreEnd
-					return 0;
-					// @codeCoverageIgnoreEnd
 				}
+				// @codeCoverageIgnoreEnd
+			} catch (NotInCacheException $e) {
+				return 1;
+			} catch (NotMasterException $e) {
+				// @codeCoverageIgnoreEnd
+				return 0;
+				// @codeCoverageIgnoreEnd
 			}
 		}
 
