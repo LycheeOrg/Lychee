@@ -10,8 +10,13 @@ php:
   - '7.4'
 #  - nightly
 env:
-  - TRAVIS_COMPOSER_DEV=yes
-  - TRAVIS_COMPOSER_DEV=no
+  global:
+    - TRAVIS_COMPOSER_DEV=yes
+    - TRAVIS_COMPOSER_DEV=no
+  matrix:
+    - SQL=mariadb
+    - SQL=postgresql
+    - SQL=sqlite
 
 matrix:
   allow_failures:
@@ -53,18 +58,28 @@ before_script:
 
 script:
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run ; fi"
+  # - sh -c "if [ '$DB' = 'mariadb' ] ; then cp .env.mariadb.travis .env ; fi"
+  - cp .env.$DB.travis .env
+  # - sh -c "if [ '$DB' = 'postgresql' ] ; then cp .env.postgresql.travis .env ; fi"
+  # - sh -c "if [ '$DB' = 'sqlite' ] ; then cp .env.sqlite.travis .env ; fi"
   # test mariadb
-  - cp .env.mariadb.travis .env
+  # - cp .env.mariadb.travis .env
   - php artisan key:generate
   - php artisan migrate
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose; fi"
   - php artisan migrate:rollback
-  # test postgresql
-  - cp .env.postgresql.travis .env
-  - php artisan key:generate
-  - php artisan migrate
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
-  - php artisan migrate:rollback
+  # # test postgresql
+  # - cp .env.postgresql.travis .env
+  # - php artisan key:generate
+  # - php artisan migrate
+  # - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
+  # - php artisan migrate:rollback
+  # # test SQLite
+  # - cp .env.sqlite.travis .env
+  # - php artisan key:generate
+  # - php artisan migrate
+  # - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
+  # - php artisan migrate:rollback
 
 after_success:
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash codecov.sh ; fi"
