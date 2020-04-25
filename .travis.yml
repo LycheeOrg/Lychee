@@ -17,12 +17,12 @@ env:
     - TRAVIS_COMPOSER_DEV=yes
     - TRAVIS_COMPOSER_DEV=no
   matrix:
-    - SQL=mariadb EXIFTOOL=yes
-    - SQL=postgresql EXIFTOOL=yes
-    - SQL=sqlite EXIFTOOL=yes
     - SQL=mariadb EXIFTOOL=no
     - SQL=postgresql EXIFTOOL=no
     - SQL=sqlite EXIFTOOL=no
+    - SQL=mariadb EXIFTOOL=yes
+    - SQL=postgresql EXIFTOOL=yes
+    - SQL=sqlite EXIFTOOL=yes
 
 # matrix:
 #   allow_failures:
@@ -60,7 +60,7 @@ before_script:
   # create db for postgresql
   - sh -c "if [ '$SQL' = 'postgresql' ] ; then psql -c 'create database homestead_test;' -U postgres ; fi"
   # create db for SQLite
-  - sh -c "if [ '$SQL' = 'sqlite' ] ; then database/database.sqlite ; fi"
+  - sh -c "if [ '$SQL' = 'sqlite' ] ; then touch database/database.sqlite ; fi"
   # composer stuff
   - composer self-update
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
