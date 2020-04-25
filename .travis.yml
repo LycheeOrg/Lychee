@@ -65,8 +65,8 @@ before_script:
   - composer self-update
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then composer install --no-interaction --no-dev ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; find vendor -wholename '*/[Tt]ests/*' -delete ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; find vendor -wholename '*/[Tt]est/*' -delete ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then find vendor -wholename '*/[Tt]ests/*' -delete ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then find vendor -wholename '*/[Tt]est/*' -delete ; fi"
 
 
 script:
