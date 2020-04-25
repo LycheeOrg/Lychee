@@ -33,6 +33,7 @@ final class Spanish implements LangInterface
 			'LOGS' => 'Mostrar Registros',
 			'SIGN_OUT' => 'Cerrar Sesión',
 			'UPDATE_AVAILABLE' => '¡Actualización disponible!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Licencia predeterminada para nuevas cargas:',
 			'SET_LICENSE' => 'Establecer Licencia',
 			'SET_OVERLAY_TYPE' => 'Establecer Superposición',

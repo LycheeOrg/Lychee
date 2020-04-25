@@ -33,6 +33,7 @@ final class Italian implements LangInterface
 			'LOGS' => 'Visualizza Log',
 			'SIGN_OUT' => 'Esci',
 			'UPDATE_AVAILABLE' => 'Aggiornamento disponibile!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Licenza predefinita per i nuovi caricamenti:',
 			'SET_LICENSE' => 'Imposta Licenza',
 			'SET_OVERLAY_TYPE' => 'Imposta Filigrana',

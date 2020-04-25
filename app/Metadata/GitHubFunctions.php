@@ -2,6 +2,7 @@
 
 namespace App\Metadata;
 
+use App;
 use App\Configs;
 use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
@@ -13,13 +14,41 @@ use Exception;
 
 class GitHubFunctions
 {
-	private $head = false;
-	private $branch = false;
+	/**
+	 * @var string
+	 */
+	public $head;
+
+	/**
+	 * @var string
+	 */
+	public $branch;
+
+	/**
+	 * @var GitRequest
+	 */
 	private $gitRequest;
 
+	/**
+	 * Base constructor.
+	 *
+	 * @param GitRequest $gitRequest
+	 */
 	public function __construct(GitRequest $gitRequest)
 	{
 		$this->gitRequest = $gitRequest;
+		try {
+			$this->branch = $this->get_current_branch();
+			$this->head = $this->get_current_commit();
+		} catch (Exception $e) {
+			$this->branch = false;
+			$this->head = false;
+			try {
+				Logs::notice(__METHOD__, __LINE__, $e->getMessage());
+			} catch (Exception $e) {
+				// Composer stuff.
+			}
+		}
 	}
 
 	/**
@@ -35,18 +64,6 @@ class GitHubFunctions
 	}
 
 	/**
-	 * Simple check of whether CI is running or not.
-	 *
-	 * @param $branch
-	 *
-	 * @return bool
-	 */
-	public function is_CI($branch)
-	{
-		return substr($branch, 0, 4) != 'ref:';
-	}
-
-	/**
 	 * look at .git/HEAD and return the current branch.
 	 * Return false if the file is not readable.
 	 * Return master if it is CI.
@@ -55,28 +72,18 @@ class GitHubFunctions
 	 */
 	public function get_current_branch()
 	{
-		if ($this->branch == false) {
-			$this->branch = @file_get_contents(base_path('.git/HEAD'));
-			// @codeCoverageIgnoreStart
-			if ($this->branch != false) {
-				// this is to handle CI where it actually checks a commit instead of a branch
-				if ($this->is_CI($this->branch)) {
-					// this is CI
-					$this->branch = 'master';
-				} else {
-					// not CI
-					$this->branch = explode('/', $this->branch,
-						3)[2]; //separate out by the "/" in the string
-				}
-				$this->branch = trim($this->branch);
-			} else {
-				Logs::notice(__METHOD__, __LINE__,
-					'Could not access: ' . base_path('.git/HEAD'));
-			}
-			// @codeCoverageIgnoreEnd
+		if (App::runningUnitTests()) {
+			return 'master';
 		}
 
-		return $this->branch;
+		// @codeCoverageIgnoreStart
+		$head_file = base_path('.git/HEAD');
+		$branch_ = file_get_contents($head_file);
+		//separate out by the "/" in the string
+		$branch_ = explode('/', $branch_, 3);
+
+		return trim($branch_[2]);
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -86,21 +93,10 @@ class GitHubFunctions
 	 */
 	public function get_current_commit()
 	{
-		if ($this->head == false && $this->get_current_branch() != false) {
-			$this->head = @file_get_contents(base_path('.git/refs/heads/'
-				. $this->branch));
-			if ($this->head != false) {
-				$this->head = $this->trim($this->head);
-			} else {
-				// @codeCoverageIgnoreStart
-				Logs::notice(__METHOD__, __LINE__,
-					'Could not access: ' . base_path('.git/refs/heads/'
-						. $this->branch));
-				// @codeCoverageIgnoreEnd
-			}
-		}
+		$file = base_path('.git/refs/heads/' . $this->branch);
+		$head_ = file_get_contents($file);
 
-		return $this->head;
+		return $this->trim($head_);
 	}
 
 	/**
@@ -109,8 +105,10 @@ class GitHubFunctions
 	 * @param bool $cached
 	 *
 	 * @return bool|array
+	 *
+	 * @throws NotInCacheException
 	 */
-	public function get_commits(bool $cached = true)
+	private function get_commits(bool $cached = true)
 	{
 		return $this->gitRequest->get_json($cached);
 	}
@@ -131,24 +129,17 @@ class GitHubFunctions
 	 */
 	public function count_behind(bool $cached = true)
 	{
-		$branch = $this->get_current_branch();
-		if ($branch != 'master') {
+		if ($this->branch != 'master') {
 			// @codeCoverageIgnoreStart
 			throw new NotMasterException();
 			// @codeCoverageIgnoreEnd
 		}
 
-		$head = $this->get_current_commit();
-
 		$commits = $this->get_commits($cached);
-
-		if ($commits == false) {
-			throw new NotInCacheException();
-		}
 
 		$i = 0;
 		while ($i < count($commits)) {
-			if ($this->trim($commits[$i]->sha) == $head) {
+			if ($this->trim($commits[$i]->sha) == $this->head) {
 				break;
 			}
 			$i++;
@@ -164,10 +155,13 @@ class GitHubFunctions
 	 */
 	public function get_github_head()
 	{
-		$commits = $this->get_commits();
+		try {
+			$commits = $this->get_commits();
 
-		return ($commits != false) ? ' (' . $this->trim($commits[0]->sha) . ')'
-			: '';
+			return ' (' . $this->trim($commits[0]->sha) . ')';
+		} catch (Exception $e) {
+			return '';
+		}
 	}
 
 	/**
@@ -179,13 +173,6 @@ class GitHubFunctions
 	 */
 	public function get_behind_text()
 	{
-		$branch = $this->get_current_branch();
-		if ($branch != 'master') {
-			// @codeCoverageIgnoreStart
-			return ' - Branch is not master, cannot compare.';
-			// @codeCoverageIgnoreEnd
-		}
-
 		try {
 			$count = $this->count_behind(); // NotInCache or NotMaster
 		} catch (Exception $e) {
@@ -200,7 +187,7 @@ class GitHubFunctions
 		// @codeCoverageIgnoreStart
 		if ($count != false) {
 			return sprintf(' - %s commits behind master %s (%s)', $count,
-				$this->get_github_head(), $last_update);
+				$this->head, $last_update);
 		}
 
 		return ' - Probably more than 30 commits behind master';
@@ -234,14 +221,13 @@ class GitHubFunctions
 	 *
 	 * @return bool
 	 */
-	public function is_usable()
+	public function has_permissions()
 	{
-		$usable = Helpers::hasFullPermissions(base_path('.git'));
-		$branch = $this->get_current_branch();
-		$usable &= Helpers::hasPermissions(base_path('.git/refs/heads/'
-			. $branch));
-
-		return $usable;
+		if (!$this->branch) {
+			return false;
+		} else {
+			return Helpers::hasFullPermissions(base_path('.git')) && Helpers::hasPermissions(base_path('.git/refs/heads/' . $this->branch));
+		}
 	}
 
 	/**

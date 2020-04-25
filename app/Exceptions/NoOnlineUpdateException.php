@@ -5,12 +5,12 @@ namespace App\Exceptions;
 use Exception;
 use Throwable;
 
-class ExecNotAvailable extends Exception
+class NoOnlineUpdateException extends Exception
 {
 	public function __construct(
 		$code = 0,
 		Throwable $previous = null
 	) {
-		parent::__construct('exec is not available.', $code, $previous);
+		parent::__construct('Online updates are not allowed.', $code, $previous);
 	}
 }

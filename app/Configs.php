@@ -170,7 +170,7 @@ class Configs extends Model
 			 * For some reason the $default is not returned above...
 			 */
 			try {
-				Logs::error(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
+				Logs::notice(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
 			} catch (Exception $e) {
 				// yeah we do nothing because we cannot do anything in that case ...  :p
 			}

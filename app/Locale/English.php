@@ -33,6 +33,7 @@ final class English implements LangInterface
 			'LOGS' => 'Show Logs',
 			'SIGN_OUT' => 'Sign Out',
 			'UPDATE_AVAILABLE' => 'Update available!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Default license for new uploads:',
 			'SET_LICENSE' => 'Set License',
 			'SET_OVERLAY_TYPE' => 'Set Overlay',

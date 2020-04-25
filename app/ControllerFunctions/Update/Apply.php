@@ -4,11 +4,26 @@ namespace App\ControllerFunctions\Update;
 
 use App\Configs;
 use App\Logs;
+use App\Metadata\LycheeVersion;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Config;
 
 class Apply
 {
+	/**
+	 * @var LycheeVersion
+	 */
+	private $lycheeVersion;
+
+	/**
+	 * @param LycheeVersion $lycheeVersion
+	 */
+	public function __construct(
+		LycheeVersion $lycheeVersion
+	) {
+		$this->lycheeVersion = $lycheeVersion;
+	}
+
 	/**
 	 * If we are in a production environment we actually require a double check..
 	 *
@@ -44,8 +59,6 @@ class Apply
 	{
 		if (Configs::get_value('apply_composer_update', '0') == '1') {
 			// @codeCoverageIgnoreStart
-			// we cannot code cov this part as phpunit is only available in dev mode.
-
 			Logs::warning(__METHOD__, __LINE__, 'Composer is called on update.');
 
 			// Composer\Factory::getHomeDir() method
@@ -115,9 +128,9 @@ class Apply
 	{
 		$output = [];
 		if ($this->check_prod_env_allow_migration($output)) {
-			$this->git_pull($output);
+			$this->lycheeVersion->isRelease or $this->git_pull($output);
 			$this->artisan($output);
-			$this->call_composer($output);
+			$this->lycheeVersion->isRelease or $this->call_composer($output);
 		}
 
 		return $output;

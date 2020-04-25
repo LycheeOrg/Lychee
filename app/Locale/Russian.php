@@ -33,6 +33,7 @@ final class Russian implements LangInterface
 			'LOGS' => 'Логи',
 			'SIGN_OUT' => 'Выход',
 			'UPDATE_AVAILABLE' => 'Доступно обновление!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Лицензия для новых загрузок:',
 			'SET_LICENSE' => 'Установить лицензию',
 			'SET_OVERLAY_TYPE' => 'Установить оверлей',

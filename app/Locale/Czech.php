@@ -33,6 +33,7 @@ final class Czech implements LangInterface
 			'LOGS' => 'Protokoly',
 			'SIGN_OUT' => 'Odhlásit se',
 			'UPDATE_AVAILABLE' => 'Update je k dispozici!',
+			'MIGRATION_AVAILABLE' => 'Migration available!',
 			'DEFAULT_LICENSE' => 'Výchozí licence pro nové uploady:',
 			'SET_LICENSE' => 'Nastavit licenci',
 			'SET_OVERLAY_TYPE' => 'Nastavit překrytí',

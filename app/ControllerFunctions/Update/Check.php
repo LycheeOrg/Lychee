@@ -3,13 +3,15 @@
 namespace App\ControllerFunctions\Update;
 
 use App\Configs;
-use App\Exceptions\ExecNotAvailable;
-use App\Exceptions\GitNotAvailable;
-use App\Exceptions\NoOnlineUpdate;
+use App\Exceptions\ExecNotAvailableException;
+use App\Exceptions\GitNotAvailableException;
+use App\Exceptions\GitNotExecutableException;
+use App\Exceptions\NoOnlineUpdateException;
 use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
+use App\Metadata\LycheeVersion;
 use Exception;
 
 class Check
@@ -25,29 +27,53 @@ class Check
 	private $gitRequest;
 
 	/**
+	 * @var LycheeVersion
+	 */
+	private $lycheeVersion;
+
+	/**
 	 * @param GitHubFunctions $gitHubFunctions
 	 */
 	public function __construct(
 		GitHubFunctions $gitHubFunctions,
-		GitRequest $gitRequest
+		GitRequest $gitRequest,
+		LycheeVersion $lycheeVersion
 	) {
 		$this->gitHubFunctions = $gitHubFunctions;
 		$this->gitRequest = $gitRequest;
+		$this->lycheeVersion = $lycheeVersion;
 	}
 
+	/**
+	 * @throws NoOnlineUpdateException
+	 * @throws GitNotAvailableException
+	 * @throws ExecNotAvailableException
+	 * @throws GitNotExecutableException
+	 */
 	public function canUpdate()
 	{
+		// we bypass this because we don't care about the other conditions as they don't apply to the release
+		if ($this->lycheeVersion->isRelease) {
+			// @codeCoverageIgnoreStart
+			return true;
+			// @codeCoverageIgnoreEnd
+		}
+
 		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
-			throw new NoOnlineUpdate();
+			throw new NoOnlineUpdateException();
 		}
 
 		// When going with the CI, .git is always executable and exec is also available
 		// @codeCoverageIgnoreStart
 		if (!function_exists('exec')) {
-			throw new ExecNotAvailable();
+			throw new ExecNotAvailableException();
 		}
-		if (!$this->gitHubFunctions->is_usable()) {
-			throw new GitNotAvailable();
+		if (exec('command -v git') == '') {
+			throw new GitNotAvailableException();
+		}
+
+		if (!$this->gitHubFunctions->has_permissions()) {
+			throw new GitNotExecutableException();
 		}
 		// @codeCoverageIgnoreEnd
 
@@ -106,23 +132,38 @@ class Check
 	 * 1 - Not in cache
 	 * 1 - Up to date
 	 * 2 - Not up to date.
+	 * 3 - Require migration.
 	 */
 	public function getCode()
 	{
+		if ($this->lycheeVersion->isRelease) {
+			// @codeCoverageIgnoreStart
+			$versions = $this->lycheeVersion->get();
+
+			return 3 * intval($versions['DB']['version'] < $versions['Lychee']['version']);
+			// @codeCoverageIgnoreEnd
+		}
+
 		$update = $this->canUpdateBool();
 
 		if ($update) {
 			try {
+				// @codeCoverageIgnoreStart
 				if (!$this->gitHubFunctions->is_up_to_date()) {
 					return 2;
 				} else {
 					return 1;
 				}
+				// @codeCoverageIgnoreEnd
 			} catch (NotInCacheException $e) {
 				return 1;
 			} catch (NotMasterException $e) {
+				// @codeCoverageIgnoreEnd
 				return 0;
+				// @codeCoverageIgnoreEnd
 			}
 		}
+
+		return 0;
 	}
 }

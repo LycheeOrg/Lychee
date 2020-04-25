@@ -13,6 +13,7 @@ use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
+use Config;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -141,21 +142,17 @@ class DiagnosticsController extends Controller
 		$paths = ['big', 'medium', 'small', 'thumb', 'import', ''];
 
 		foreach ($paths as $path) {
-			if (Helpers::hasPermissions(Storage::path($path)) === false) {
-				$errors[]
-					= 'Error: \'uploads/' . $path . '\' is missing or has insufficient read/write privileges';
+			$p = Storage::path($path);
+			if (Helpers::hasPermissions($p) === false) {
+				$errors[] = "Error: '" . $p . "' is missing or has insufficient read/write privileges";
 			}
 		}
-		if (Helpers::hasPermissions(Storage::disk('dist')->path('user.css'))
-			=== false
-		) {
-			$errors[]
-				= 'Warning: \'dist/user.css\' does not exist or has insufficient read/write privileges.';
-			if (Helpers::hasPermissions(Storage::disk('dist')->path(''))
-				=== false
-			) {
-				$errors[]
-					= 'Warning: \'dist/\' has insufficient read/write privileges.';
+		$p = Storage::disk('dist')->path('user.css');
+		if (Helpers::hasPermissions($p) === false) {
+			$errors[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
+			$p = Storage::disk('dist')->path('');
+			if (Helpers::hasPermissions($p) === false) {
+				$errors[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
 			}
 		}
 
@@ -180,7 +177,7 @@ class DiagnosticsController extends Controller
 
 		$keys_checked = [
 			'username', 'password', 'sorting_Photos', 'sorting_Albums',
-			'imagick', 'skip_duplicates', 'check_for_updates',
+			'imagick', 'skip_duplicates', 'check_for_updates', 'version',
 		];
 
 		foreach ($keys_checked as $key) {
@@ -189,8 +186,7 @@ class DiagnosticsController extends Controller
 			}
 		}
 
-		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
-		if ($this->lycheeVersion->isRelease && $version_num < $this->versions['Lychee']) {
+		if ($this->lycheeVersion->isRelease && $this->versions['DB']['version'] < $this->versions['Lychee']['version']) {
 			$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
 		}
 
@@ -308,12 +304,14 @@ class DiagnosticsController extends Controller
 		}
 		// @codeCoverageIgnoreEnd
 
-		$version_num = implode('.', array_map('intval', str_split($settings['version'], 2)));
-
 		// Output system information
-		$infos[] = $this->line('Lychee-front Version:', $this->lycheeVersion->format($this->versions['LycheeFront']));
 		$infos[] = $this->line('Lychee Version (' . $this->versions['channel'] . '):', $this->lycheeVersion->format($this->versions['Lychee']));
-		$infos[] = $this->line('DB Version:', $version_num);
+		$infos[] = $this->line('DB Version:', $this->versions['DB']['version']);
+		$infos[] = '';
+		$infos[] = $this->line('composer install:', $this->versions['composer']);
+		$infos[] = $this->line('APP_ENV:', Config::get('app.env')); // check if production
+		$infos[] = $this->line('APP_DEBUG:', Config::get('app.debug') ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
+		$infos[] = '';
 		$infos[] = $this->line('System:', PHP_OS);
 		$infos[] = $this->line('PHP Version:', floatval(phpversion()));
 		$infos[] = $this->line($dbtype . ' Version:', $dbver);
@@ -366,6 +364,29 @@ class DiagnosticsController extends Controller
 	}
 
 	/**
+	 * Return the requested information.
+	 *
+	 * @return array
+	 */
+	private function get_data()
+	{
+		$errors = $this->get_errors();
+		if ($this->sessionFunctions->is_admin()) {
+			$infos = $this->get_info();
+			$configs = $this->get_config();
+		} else {
+			$infos = ['You must be logged to see this.'];
+			$configs = ['You must be logged to see this.'];
+		}
+
+		return [
+			'errors' => $errors,
+			'infos' => $infos,
+			'configs' => $configs,
+		];
+	}
+
+	/**
 	 * This function return the Diagnostic data as an JSON array.
 	 * should be used for AJAX request.
 	 *
@@ -373,24 +394,10 @@ class DiagnosticsController extends Controller
 	 */
 	public function get()
 	{
-		$errors = $this->get_errors();
-		$infos = ['You must be logged to see this.'];
-		$configs = ['You must be logged to see this.'];
-		if ($this->sessionFunctions->is_admin()) {
-			$infos = $this->get_info();
-			$configs = $this->get_config();
-		}
+		$ret = $this->get_data();
+		$ret['update'] = $this->checkUpdate->getCode();
 
-		$update = $this->checkUpdate->getCode();
-
-		// @codeCoverageIgnoreEnd
-
-		return [
-			'errors' => $errors,
-			'infos' => $infos,
-			'configs' => $configs,
-			'update' => $update,
-		];
+		return $ret;
 	}
 
 	/**
@@ -400,20 +407,7 @@ class DiagnosticsController extends Controller
 	 */
 	public function show()
 	{
-		$errors = $this->get_errors();
-		$infos = ['You must be logged to see this.'];
-		$configs = ['You must be logged to see this.'];
-		if ($this->sessionFunctions->is_admin()) {
-			$infos = $this->get_info();
-			$configs = $this->get_config();
-		}
-
-		// Show separator
-		return view('diagnostics', [
-			'errors' => $errors,
-			'infos' => $infos,
-			'configs' => $configs,
-		]);
+		return view('diagnostics', $this->get_data());
 	}
 
 	/**
