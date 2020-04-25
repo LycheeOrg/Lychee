@@ -35,7 +35,11 @@ class LivephotoCols extends Migration
 	{
 		Schema::table('photos', function (Blueprint $table) {
 			$table->dropColumn('livePhotoContentID');
+		});
+		Schema::table('photos', function (Blueprint $table) {
 			$table->dropColumn('livePhotoUrl');
+		});
+		Schema::table('photos', function (Blueprint $table) {
 			$table->dropColumn('livePhotoChecksum');
 		});
 	}
