@@ -5,6 +5,9 @@ dist: bionic
 
 language: php
 
+git:
+  depth: 3
+
 php:
   - '7.3'
   - '7.4'
@@ -14,10 +17,12 @@ env:
     - TRAVIS_COMPOSER_DEV=yes
     - TRAVIS_COMPOSER_DEV=no
   matrix:
-    - - SQL=mariadb
-      - SQL=postgresql
-      - SQL=sqlite
-    - EXIFTOOL=yes
+    - SQL=mariadb EXIFTOOL=yes
+    - SQL=postgresql EXIFTOOL=yes
+    - SQL=sqlite EXIFTOOL=yes
+    - SQL=mariadb EXIFTOOL=no
+    - SQL=postgresql EXIFTOOL=no
+    - SQL=sqlite EXIFTOOL=no
 
 # matrix:
 #   allow_failures:
