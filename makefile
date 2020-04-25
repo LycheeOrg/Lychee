@@ -101,3 +101,15 @@ formatting:
 		echo "  composer install"; \
 		echo ""; \
 	fi
+
+release_minor:
+	php gen_release
+	git add database
+	git add version.md
+	git commit -m "bump to version $(shell cat version.md)"
+
+release_major:
+	php gen_release major
+	git add database
+	git add version.md
+	git commit -m "bump to version $(shell cat version.md)"
