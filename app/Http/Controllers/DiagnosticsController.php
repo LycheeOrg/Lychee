@@ -14,7 +14,7 @@ use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
 use Config;
-use Exception;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Imagick;
@@ -134,8 +134,22 @@ class DiagnosticsController extends Controller
 				$errors[] = 'Error: PHP ' . $extension . ' extension not activated';
 			}
 		}
-		if (!extension_loaded('mysqli') && !DB::getDriverName() == 'pgsql') {
-			$errors[] = 'Error: PHP mysqli extension not activated';
+
+		$db_possibilities = [
+			['mysql', 'mysqli'],
+			['mysql', 'pdo_mysql'],
+			['pgsql', 'pgsql'],
+			['pgsql', 'pdo_pgsql'],
+			['sqlite', 'sqlite3'],
+		];
+		try {
+			foreach ($db_possibilities as $db_possibility) {
+				if (DB::getDriverName() == $db_possibility[0] && !extension_loaded($db_possibility[1])) {
+					$errors[] = 'Error: PHP ' . $db_possibility[1] . ' extension not activated';
+				}
+			}
+		} catch (QueryException $e) {
+			$errors[] = 'Error: ' . $e->getMessage();
 		}
 
 		// Permissions
@@ -281,32 +295,35 @@ class DiagnosticsController extends Controller
 
 		// About SQL version
 		// @codeCoverageIgnoreStart
-		switch (DB::getDriverName()) {
-			case 'mysql':
-				$results = DB::select(DB::raw('select version()'));
-				$dbver = $results[0]->{'version()'};
-				$dbtype = 'MySQL';
-				break;
-			case 'sqlite':
-				$results = DB::select(DB::raw('select sqlite_version()'));
-				$dbver = $results[0]->{'sqlite_version()'};
-				$dbtype = 'SQLite';
-				break;
-			case 'pgsql':
-				$results = DB::select(DB::raw('select version()'));
-				$dbver = $results[0]->{'version'};
-				$dbtype = 'PostgreSQL';
-				break;
-			default:
-				try {
+		try {
+			switch (DB::getDriverName()) {
+				case 'mysql':
+					$dbtype = 'MySQL';
 					$results = DB::select(DB::raw('select version()'));
 					$dbver = $results[0]->{'version()'};
-				} catch (Exception $e) {
-					$dbver = 'unknown';
-				}
-				$dbtype = DB::getDriverName();
-				break;
+					break;
+				case 'sqlite':
+					$dbtype = 'SQLite';
+					$results = DB::select(DB::raw('select sqlite_version()'));
+					$dbver = $results[0]->{'sqlite_version()'};
+					break;
+				case 'pgsql':
+					$dbtype = 'PostgreSQL';
+					$results = DB::select(DB::raw('select version()'));
+					$dbver = $results[0]->{'version'};
+					break;
+				default:
+					$dbtype = DB::getDriverName();
+					$results = DB::select(DB::raw('select version()'));
+					$dbver = $results[0]->{'version()'};
+					break;
+			}
+		} catch (QueryException $e) {
+			$errors[] = 'Error: ' . $e->getMessage();
+			$dbtype = 'Unknown SQL';
+			$dbver = 'unknown';
 		}
+
 		// @codeCoverageIgnoreEnd
 
 		// Output system information
@@ -322,7 +339,7 @@ class DiagnosticsController extends Controller
 		$infos[] = $this->line($dbtype . ' Version:', $dbver);
 		$infos[] = '';
 		$infos[] = $this->line('Imagick:', $imagick);
-		$infos[] = $this->line('Imagick Active:', $settings['imagick']);
+		$infos[] = $this->line('Imagick Active:', $settings['imagick'] ?? 'key not found in settings');
 		$infos[] = $this->line('Imagick Version:', $imagickVersion);
 		$infos[] = $this->line('GD Version:', $gdVersion['GD Version']);
 
@@ -357,12 +374,16 @@ class DiagnosticsController extends Controller
 		// Declare
 		$configs = [];
 
-		// Load settings
-		$settings = $this->configFunctions->min_info();
-		foreach ($settings as $key => $value) {
-			if (!is_array($value)) {
-				$configs[] = $this->line($key . ':', $value);
+		try {
+			// Load settings
+			$settings = $this->configFunctions->min_info();
+			foreach ($settings as $key => $value) {
+				if (!is_array($value)) {
+					$configs[] = $this->line($key . ':', $value);
+				}
 			}
+		} catch (QueryException $e) {
+			$configs[] = 'Error: ' . $e->getMessage();
 		}
 
 		return $configs;
