@@ -259,13 +259,19 @@ class Configs extends Model
 
 		// value not yet set -> let's see if exiftool is available
 		if ($has_exiftool == 2) {
-			$path = exec('command -v exiftool');
-			if ($path == '') {
+			try {
+				$path = exec('command -v exiftool');
+				if ($path == '') {
+					self::set('has_exiftool', 0);
+					$has_exiftool = false;
+				} else {
+					self::set('has_exiftool', 1);
+					$has_exiftool = true;
+				}
+			} catch (Exception $e) {
 				self::set('has_exiftool', 0);
 				$has_exiftool = false;
-			} else {
-				self::set('has_exiftool', 1);
-				$has_exiftool = true;
+				Logs::warning(__METHOD__, __LINE__, 'exec is disabled, set has_exiftool to 0.');
 			}
 		} elseif ($has_exiftool == 1) {
 			$has_exiftool = true;
@@ -290,13 +296,19 @@ class Configs extends Model
 
 		// value not yet set -> let's see if ffmpeg is available
 		if ($has_ffmpeg == 2) {
-			$path = exec('command -v ffmpeg');
-			if ($path == '') {
+			try {
+				$path = exec('command -v ffmpeg');
+				if ($path == '') {
+					self::set('has_ffmpeg', 0);
+					$has_ffmpeg = false;
+				} else {
+					self::set('has_ffmpeg', 1);
+					$has_ffmpeg = true;
+				}
+			} catch (Exception $e) {
 				self::set('has_ffmpeg', 0);
 				$has_ffmpeg = false;
-			} else {
-				self::set('has_ffmpeg', 1);
-				$has_ffmpeg = true;
+				Logs::warning(__METHOD__, __LINE__, 'exec is disabled, set_ffmpeg to 0.');
 			}
 		} elseif ($has_ffmpeg == 1) {
 			$has_ffmpeg = true;

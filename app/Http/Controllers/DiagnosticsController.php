@@ -227,6 +227,11 @@ class DiagnosticsController extends Controller
 			}
 		}
 
+		if (!function_exists('exec')) {
+			$errors[]
+				= 'Warning: exec function has been disabled. You may experience some error 500, please report them to us.';
+		}
+
 		// @codeCoverageIgnoreEnd
 
 		return $errors;
