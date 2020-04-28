@@ -271,7 +271,7 @@ class Configs extends Model
 			} catch (Exception $e) {
 				self::set('has_exiftool', 0);
 				$has_exiftool = false;
-				Logs::warning(__METHOD__, __LINE__, 'exec is disabled, set has_exiftool to 0.');
+				Logs::warning(__METHOD__, __LINE__, 'exec is disabled, has_exiftool has been set to 0.');
 			}
 		} elseif ($has_exiftool == 1) {
 			$has_exiftool = true;
@@ -308,7 +308,7 @@ class Configs extends Model
 			} catch (Exception $e) {
 				self::set('has_ffmpeg', 0);
 				$has_ffmpeg = false;
-				Logs::warning(__METHOD__, __LINE__, 'exec is disabled, set_ffmpeg to 0.');
+				Logs::warning(__METHOD__, __LINE__, 'exec is disabled, set_ffmpeg has been set to 0.');
 			}
 		} elseif ($has_ffmpeg == 1) {
 			$has_ffmpeg = true;

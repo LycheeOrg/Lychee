@@ -145,7 +145,7 @@ class DiagnosticsController extends Controller
 		try {
 			foreach ($db_possibilities as $db_possibility) {
 				if (DB::getDriverName() == $db_possibility[0] && !extension_loaded($db_possibility[1])) {
-					$errors[] = 'Error: PHP ' . $db_possibility[1] . ' extension not activated';
+					$errors[] = 'Error: ' . $db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated';
 				}
 			}
 		} catch (QueryException $e) {
