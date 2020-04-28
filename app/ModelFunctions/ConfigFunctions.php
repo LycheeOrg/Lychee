@@ -4,6 +4,7 @@ namespace App\ModelFunctions;
 
 use App\Configs;
 use App\Locale\Lang;
+use Illuminate\Database\QueryException;
 
 class ConfigFunctions
 {
@@ -83,13 +84,17 @@ class ConfigFunctions
 	 */
 	public function sanity(array &$return)
 	{
-		$configs = Configs::all(['key', 'value', 'type_range']);
+		try {
+			$configs = Configs::all(['key', 'value', 'type_range']);
 
-		foreach ($configs as $config) {
-			$message = $config->sanity($config->value);
-			if ($message != '') {
-				$return[] = $message;
+			foreach ($configs as $config) {
+				$message = $config->sanity($config->value);
+				if ($message != '') {
+					$return[] = $message;
+				}
 			}
+		} catch (QueryException $e) {
+			$return[] = 'Error: ' . $e->getMessage();
 		}
 	}
 }

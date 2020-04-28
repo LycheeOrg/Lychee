@@ -308,7 +308,7 @@ class ConfigFix extends Migration
 			],
 			[
 				'key' => 'landing_page_enable',
-				'value' => '1',
+				'value' => '0',
 				'cat' => 'Mod Welcome',
 				'type_range' => BOOL,
 				'confidentiality' => '0',
