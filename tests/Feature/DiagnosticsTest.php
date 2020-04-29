@@ -16,6 +16,9 @@ class DiagnosticsTest extends TestCase
 	 */
 	public function test_diagnostics()
 	{
+		$response = $this->get('/Diagnostics');
+		$response->assertStatus(200); // code 200 something
+
 		$session_tests = new SessionUnitTest();
 		$session_tests->log_as_id(0);
 

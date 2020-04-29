@@ -45,9 +45,11 @@ class UpdateController extends Controller
 	{
 		try {
 			return Response::json($this->checkUpdate->getText());
+			// @codeCoverageIgnoreStart
 		} catch (Exception $e) {
 			return Response::error($e->getMessage()); // Not master
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
