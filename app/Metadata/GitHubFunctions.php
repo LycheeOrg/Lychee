@@ -40,6 +40,8 @@ class GitHubFunctions
 		try {
 			$this->branch = $this->get_current_branch();
 			$this->head = $this->get_current_commit();
+			// @codeCoverageIgnoreStart
+		// when testing on master branch this is not covered.
 		} catch (Exception $e) {
 			$this->branch = false;
 			$this->head = false;
@@ -49,6 +51,7 @@ class GitHubFunctions
 				// Composer stuff.
 			}
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -142,7 +145,10 @@ class GitHubFunctions
 			if ($this->trim($commits[$i]->sha) == $this->head) {
 				break;
 			}
+			// @codeCoverageIgnoreStart
+			// when testing on master branch this is not covered: we are up to date.
 			$i++;
+			// @codeCoverageIgnoreEnd
 		}
 
 		return ($i == count($commits)) ? false : $i;
@@ -153,6 +159,7 @@ class GitHubFunctions
 	 *
 	 * @return string
 	 */
+	// @codeCoverageIgnoreStart
 	public function get_github_head()
 	{
 		try {
@@ -163,6 +170,8 @@ class GitHubFunctions
 			return '';
 		}
 	}
+
+	// @codeCoverageIgnoreEnd
 
 	/**
 	 * Return a string indicating whether we are up to date (used in Diagnostics).
@@ -187,7 +196,7 @@ class GitHubFunctions
 		// @codeCoverageIgnoreStart
 		if ($count != false) {
 			return sprintf(' - %s commits behind master %s (%s)', $count,
-				$this->head, $last_update);
+				$this->get_github_head(), $last_update);
 		}
 
 		return ' - Probably more than 30 commits behind master';
@@ -224,7 +233,9 @@ class GitHubFunctions
 	public function has_permissions()
 	{
 		if (!$this->branch) {
+			// @codeCoverageIgnoreStart
 			return false;
+		// @codeCoverageIgnoreEnd
 		} else {
 			return Helpers::hasFullPermissions(base_path('.git')) && Helpers::hasPermissions(base_path('.git/refs/heads/' . $this->branch));
 		}

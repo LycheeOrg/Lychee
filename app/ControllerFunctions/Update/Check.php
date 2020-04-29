@@ -89,9 +89,11 @@ class Check
 	{
 		try {
 			return $this->canUpdate();
+			// @codeCoverageIgnoreStart
 		} catch (Exception $e) {
 			return false;
 		}
+		// @codeCoverageIgnoreEnd
 	}
 
 	/**
@@ -120,7 +122,9 @@ class Check
 		$up_to_date = $this->forget_and_check();
 
 		if (!$up_to_date) {
+			// @codeCoverageIgnoreStart
 			return $this->gitHubFunctions->get_behind_text();
+		// @codeCoverageIgnoreEnd
 		} else {
 			return 'Already up to date';
 		}
@@ -157,13 +161,13 @@ class Check
 				// @codeCoverageIgnoreEnd
 			} catch (NotInCacheException $e) {
 				return 1;
+				// @codeCoverageIgnoreEnd
 			} catch (NotMasterException $e) {
-				// @codeCoverageIgnoreEnd
 				return 0;
-				// @codeCoverageIgnoreEnd
 			}
 		}
 
 		return 0;
+		// @codeCoverageIgnoreEnd
 	}
 }
