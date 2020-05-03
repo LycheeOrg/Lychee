@@ -381,6 +381,13 @@ class PhotoFunctions
 						$photo->height = $rotation['height'];
 					} else {
 						$photo->orientation = $info['orientation'];
+
+						if ($photo->orientation >= 5) {
+							$tempWidth = $photo->width;
+							$tempHeight = $photo->height;
+							$photo->width = $tempWidth;
+							$photo->height = $tempHeight;
+						}
 					}
 				}
 
