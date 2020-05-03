@@ -379,6 +379,8 @@ class PhotoFunctions
 					if ($rotation !== [false, false]) {
 						$photo->width = $rotation['width'];
 						$photo->height = $rotation['height'];
+					} else {
+						$photo->orientation = $info['orientation'];
 					}
 				}
 
