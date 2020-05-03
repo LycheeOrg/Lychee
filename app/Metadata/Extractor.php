@@ -30,6 +30,7 @@ class Extractor
 			'focal' => '',
 			'takestamp' => null,
 			'lens' => '',
+			'orientation' => 1,
 			'tags' => '',
 			'position' => '',
 			'latitude' => null,
@@ -118,6 +119,7 @@ class Extractor
 		$metadata['shutter'] = ($exif->getExposure() !== false) ? $exif->getExposure() : '';
 		$metadata['takestamp'] = ($exif->getCreationDate() !== false) ? $exif->getCreationDate()->format('Y-m-d H:i:s') : null;
 		$metadata['lens'] = ($exif->getLens() !== false) ? $exif->getLens() : '';
+		$metadata['orientation'] = ($exif->getOrientation() !== false) ? $exif->getOrientation() : '';
 		$metadata['tags'] = ($exif->getKeywords() !== false) ? (is_array($exif->getKeywords()) ? implode(',', $exif->getKeywords()) : $exif->getKeywords()) : '';
 		$metadata['latitude'] = ($exif->getLatitude() !== false) ? $exif->getLatitude() : null;
 		$metadata['longitude'] = ($exif->getLongitude() !== false) ? $exif->getLongitude() : null;

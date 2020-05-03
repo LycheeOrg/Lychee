@@ -311,6 +311,7 @@ class PhotoFunctions
 		$photo->make = $info['make'];
 		$photo->model = $info['model'];
 		$photo->lens = $info['lens'];
+		$photo->orientation = $info['orientation'];
 		$photo->shutter = $info['shutter'];
 		$photo->focal = $info['focal'];
 		$photo->takestamp = $info['takestamp'];
@@ -481,7 +482,7 @@ class PhotoFunctions
 		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
 
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
-		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
+		Nnotice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
 		$frame->save($tmp);
 
 		return $tmp;

@@ -498,6 +498,7 @@ class PhotoController extends Controller
 			$duplicate->make = $photo->make;
 			$duplicate->model = $photo->model;
 			$duplicate->lens = $photo->lens;
+			$duplicate->orientation = $photo->orientation;
 			$duplicate->shutter = $photo->shutter;
 			$duplicate->focal = $photo->focal;
 			$duplicate->latitude = $photo->latitude;

@@ -75,6 +75,7 @@ class PhotosTest extends TestCase
 			'id' => $id,
 			'iso' => '1250',
 			'lens' => 'EF16-35mm f/2.8L USM',
+			'orientation' => 1,
 			'license' => 'reserved',
 			'make' => 'Canon',
 			'model' => 'Canon EOS R',

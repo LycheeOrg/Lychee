@@ -32,6 +32,7 @@ use Storage;
  * @property string      $make
  * @property string      $model
  * @property string      $lens
+ * @property int|null 	 $orientation
  * @property string      $shutter
  * @property string      $focal
  * @property float|null  $latitude
@@ -80,6 +81,7 @@ use Storage;
  * @method static Builder|Photo whereIso($value)
  * @method static Builder|Photo whereLatitude($value)
  * @method static Builder|Photo whereLens($value)
+ * @method static Builder|Photo whereOrientation($value)
  * @method static Builder|Photo whereLicense($value)
  * @method static Builder|Photo wherelivePhotoChecksum($value)
  * @method static Builder|Photo wherelivePhotoContentID($value)
@@ -219,6 +221,7 @@ class Photo extends Model
 		$photo['shutter'] = $this->shutter;
 		$photo['focal'] = $this->focal;
 		$photo['lens'] = $this->lens;
+		$photo['orientation'] = $this->orientation;
 		$photo['latitude'] = $this->latitude;
 		$photo['longitude'] = $this->longitude;
 		$photo['altitude'] = $this->altitude;
