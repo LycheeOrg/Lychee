@@ -6,7 +6,7 @@
 
 set -e +o pipefail
 
-VERSION="8a28df4"
+VERSION="tbd"
 
 url="https://codecov.io"
 env="$CODECOV_ENV"
@@ -126,6 +126,11 @@ cat << EOF
                  -X network       Disable uploading the file network
                  -X gcovout       Disable gcov output
 
+    -N           The commit SHA of the parent for which you are uploading coverage. If not present,
+                 the parent will be determined using the API of your repository provider.
+                 When using the repository provider's API, the parent is determined via finding
+                 the closest ancestor to the commit.
+
     -R root dir  Used when not in git/hg project to identify project root directory
     -y conf file Used to specify the location of the .codecov.yml config file
     -F flag      Flag the upload to group coverage metrics
@@ -236,9 +241,12 @@ parse_yaml() {
 
 if [ $# != 0 ];
 then
-  while getopts "a:A:b:B:cC:dD:e:f:F:g:G:hJ:k:Kn:p:P:r:R:y:s:S:t:T:u:U:vx:X:Z" o
+  while getopts "a:A:b:B:cC:dD:e:f:F:g:G:hJ:k:Kn:p:P:r:R:y:s:S:t:T:u:U:vx:X:ZN:" o
   do
     case "$o" in
+      "N")
+        parent=$OPTARG
+        ;;
       "a")
         gcov_arg=$OPTARG
         ;;
@@ -486,11 +494,27 @@ then
     branch="$TRAVIS_BRANCH"
   fi
 
-  language=$(printenv | grep "TRAVIS_.*_VERSION" | head -1)
+  language=$(compgen -A variable | grep "^TRAVIS_.*_VERSION$" | head -1)
   if [ "$language" != "" ];
   then
-    env="$env,${language%=*}"
+    env="$env,${!language}"
   fi
+
+elif [ "$CODEBUILD_CI" = "true" ];
+then
+  say "$e==>$x AWS Codebuild detected."
+  # https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
+  service="codebuild"
+  commit="$CODEBUILD_RESOLVED_SOURCE_VERSION"
+  build="$CODEBUILD_BUILD_ID"
+  branch="$(echo $CODEBUILD_WEBHOOK_HEAD_REF | sed 's/^refs\/heads\///')"
+  if [ "${CODEBUILD_SOURCE_VERSION/pr}" = "$CODEBUILD_SOURCE_VERSION" ] ; then
+    pr="false"
+  else
+    pr="$(echo $CODEBUILD_SOURCE_VERSION | sed 's/^pr\///')"
+  fi
+  job="$CODEBUILD_BUILD_ID"
+  slug="$(echo $CODEBUILD_SOURCE_REPO_URL | sed 's/^.*github.com\///' | sed 's/^.*bitbucket.org\///' | sed 's/\.git$//')"
 
 elif [ "$DOCKER_REPO" != "" ];
 then
@@ -660,7 +684,7 @@ then
   branch="$HEROKU_TEST_RUN_BRANCH"
   build="$HEROKU_TEST_RUN_ID"
 
-elif [ "$CI" = "True" ] && [ "$APPVEYOR" = "True" ];
+elif [[ "$CI" = "true" || "$CI" = "True" ]] && [[ "$APPVEYOR" = "true" || "$APPVEYOR" = "True" ]];
 then
   say "$e==>$x Appveyor CI detected."
   # http://www.appveyor.com/docs/environment-variables
@@ -671,7 +695,7 @@ then
   job="$APPVEYOR_ACCOUNT_NAME%2F$APPVEYOR_PROJECT_SLUG%2F$APPVEYOR_BUILD_VERSION"
   slug="$APPVEYOR_REPO_NAME"
   commit="$APPVEYOR_REPO_COMMIT"
-
+  build_url=$(urlencode "${APPVEYOR_URL}/project/${APPVEYOR_REPO_NAME}/builds/$APPVEYOR_BUILD_ID/job/${APPVEYOR_JOB_ID}")
 elif [ "$CI" = "true" ] && [ "$WERCKER_GIT_BRANCH" != "" ];
 then
   say "$e==>$x Wercker CI detected."
@@ -734,20 +758,45 @@ then
   build="${CI_BUILD_ID:-$CI_JOB_ID}"
   remote_addr="${CI_BUILD_REPO:-$CI_REPOSITORY_URL}"
   commit="${CI_BUILD_REF:-$CI_COMMIT_SHA}"
+  slug="${CI_PROJECT_PATH}"
+
+elif [ "$GITHUB_ACTION" != "" ];
+then
+  say "$e==>$x GitHub Actions detected."
+
+  # https://github.com/features/actions
+  service="github-actions"
+
+  # https://help.github.com/en/articles/virtual-environments-for-github-actions#environment-variables
+  branch="${GITHUB_REF#refs/heads/}"
+  if [  "$GITHUB_HEAD_REF" != "" ];
+  then
+    # PR refs are in the format: refs/pull/7/merge
+    pr="${GITHUB_REF#refs/pull/}"
+    pr="${pr%/merge}"
+    branch="${GITHUB_HEAD_REF}"
+  fi
+  commit="${GITHUB_SHA}"
+  slug="${GITHUB_REPOSITORY}"
+  build="${GITHUB_RUN_ID}"
+  build_url=$(urlencode "http://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}")
 
 elif [ "$SYSTEM_TEAMFOUNDATIONSERVERURI" != "" ];
 then
   say "$e==>$x Azure Pipelines detected."
   # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=vsts
+  # https://docs.microsoft.com/en-us/azure/devops/pipelines/build/variables?view=azure-devops&viewFallbackFrom=vsts&tabs=yaml
   service="azure_pipelines"
   commit="$BUILD_SOURCEVERSION"
   build="$BUILD_BUILDNUMBER"
-  if [  -z "$PULL_REQUEST_NUMBER"];
+  if [  -z "$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER" ];
   then
-    pr="$PULL_REQUEST_ID"
+    pr="$SYSTEM_PULLREQUEST_PULLREQUESTID"
   else
-    pr="$PULL_REQUEST_NUMBER"
+    pr="$SYSTEM_PULLREQUEST_PULLREQUESTNUMBER"
   fi
+  project="${SYSTEM_TEAMPROJECT}"
+  server_uri="${SYSTEM_TEAMFOUNDATIONSERVERURI}"
   job="${BUILD_BUILDID}"
   branch="$BUILD_SOURCEBRANCHNAME"
   build_url=$(urlencode "${SYSTEM_TEAMFOUNDATIONSERVERURI}${SYSTEM_TEAMPROJECT}/_build/results?buildId=${BUILD_BUILDID}")
@@ -761,6 +810,37 @@ then
   slug="$BITBUCKET_REPO_OWNER/$BITBUCKET_REPO_SLUG"
   job="$BITBUCKET_BUILD_NUMBER"
   pr="$BITBUCKET_PR_ID"
+  commit="$BITBUCKET_COMMIT"
+  # See https://jira.atlassian.com/browse/BCLOUD-19393
+  if [ "${#commit}" = 12 ];
+  then
+    commit=$(git rev-parse "$BITBUCKET_COMMIT")
+  fi
+elif [ "$CI" = "true" ] && [ "$BUDDY" = "true" ];
+then
+  say "$e==>$x Buddy CI detected."
+  # https://buddy.works/docs/pipelines/environment-variables
+  service="buddy"
+  branch="$BUDDY_EXECUTION_BRANCH"
+  build="$BUDDY_EXECUTION_ID"
+  build_url=$(urlencode "$BUDDY_EXECUTION_URL")
+  commit="$BUDDY_EXECUTION_REVISION"
+  pr="$BUDDY_EXECUTION_PULL_REQUEST_NO"
+  tag="$BUDDY_EXECUTION_TAG"
+  slug="$BUDDY_REPO_SLUG"
+
+elif [ "$CIRRUS_CI" != "" ];
+then
+  say "$e==>$x Cirrus CI detected."
+  # https://cirrus-ci.org/guide/writing-tasks/#environment-variables
+  service="cirrus-ci"
+  slug="$CIRRUS_REPO_FULL_NAME"
+  branch="$CIRRUS_BRANCH"
+  pr="$CIRRUS_PR"
+  commit="$CIRRUS_CHANGE_IN_REPO"
+  build="$CIRRUS_TASK_ID"
+  job="$CIRRUS_TASK_NAME"
+
 else
   say "${r}x>${x} No CI provider detected."
   say "    Testing inside Docker? ${b}http://docs.codecov.io/docs/testing-with-docker${x}"
@@ -857,7 +937,11 @@ yaml=$(echo "$yaml" | head -1)
 if [ "$yaml" != "" ];
 then
   say "    ${e}Yaml found at:${x} $yaml"
-  config=$(parse_yaml "$git_root/$yaml" || echo '')
+  if [[ "$yaml" != /* ]]; then
+    # relative path for yaml file given, assume relative to the repo root
+    yaml="$git_root/$yaml"
+  fi
+  config=$(parse_yaml "$yaml" || echo '')
 
   # TODO validate the yaml here
 
@@ -901,6 +985,16 @@ query="branch=$branch\
        &flags=$flags\
        &pr=$([ "$pr_o" = "" ] && echo "${pr##\#}" || echo "${pr_o##\#}")\
        &job=$job"
+
+if [ ! -z "$project" ] && [ ! -z "$server_uri" ];
+then
+  query=$(echo "$query&project=$project&server_uri=$server_uri" | tr -d ' ')
+fi
+
+if [ "$parent" != "" ];
+then
+  query=$(echo "parent=$parent&$query" | tr -d ' ')
+fi
 
 if [ "$ft_search" = "1" ];
 then
@@ -947,10 +1041,10 @@ then
     if [ "$ft_gcov" = "1" ];
     then
       say "    ${e}->${x} Running $gcov_exe for Obj-C"
-      if [ "$ft_gcovout" = "1" ];
+      if [ "$ft_gcovout" = "0" ];
       then
         # suppress gcov output
-        bash -c "find $ddp -type f -name '*.gcda' $gcov_include $gcov_ignore -exec $gcov_exe -p $gcov_arg {} +" || true 2>/dev/null
+        bash -c "find $ddp -type f -name '*.gcda' $gcov_include $gcov_ignore -exec $gcov_exe -p $gcov_arg {} +" >/dev/null 2>&1 || true
       else
         bash -c "find $ddp -type f -name '*.gcda' $gcov_include $gcov_ignore -exec $gcov_exe -p $gcov_arg {} +" || true
       fi
@@ -978,7 +1072,13 @@ then
   if [ "$ft_gcov" = "1" ];
   then
     say "${e}==>${x} Running gcov in $proj_root ${e}(disable via -X gcov)${x}"
-    bash -c "find $proj_root -type f -name '*.gcno' $gcov_include $gcov_ignore -execdir $gcov_exe -pb $gcov_arg {} +" || true
+    if [ "$ft_gcovout" = "0" ];
+    then
+      # suppress gcov output
+      bash -c "find $proj_root -type f -name '*.gcno' $gcov_include $gcov_ignore -execdir $gcov_exe -pb $gcov_arg {} \;" >/dev/null 2>&1 || true
+    else
+      bash -c "find $proj_root -type f -name '*.gcno' $gcov_include $gcov_ignore -execdir $gcov_exe -pb $gcov_arg {} \;" || true
+    fi
   else
     say "${e}==>${x} gcov disabled"
   fi
@@ -1428,7 +1528,7 @@ then
       || echo ''
   fi
 
-  if echo "$network" | grep -m1 '\(.cpp\|.h\|.cxx\|.c\|.hpp\|.m\)$' 1>/dev/null;
+  if echo "$network" | grep -m1 '\(.cpp\|.h\|.cxx\|.c\|.hpp\|.m\|.swift\)$' 1>/dev/null;
   then
     # skip brackets
     find "$git_root" -type f \
@@ -1440,6 +1540,7 @@ then
            -or -name '*.m' \
            -or -name '*.c' \
            -or -name '*.hpp' \
+           -or -name '*.swift' \
          \) -exec \
       grep -nIHE \
            -e $empty_line \
@@ -1460,6 +1561,7 @@ then
            -or -name '*.m' \
            -or -name '*.c' \
            -or -name '*.hpp' \
+           -or -name '*.swift' \
          \) -exec \
       grep -nIH '// LCOV_EXCL' \
            {} \; \
@@ -1503,6 +1605,8 @@ else
   say "    ${e}url:${x} $url"
   say "    ${e}query:${x} $query"
 
+  # Full query without token (to display on terminal output)
+  queryNoToken=$(echo "package=bash-$VERSION&token=secret&$query" | tr -d ' ')
   # now add token to query
   query=$(echo "package=bash-$VERSION&token=$token&$query" | tr -d ' ')
 
@@ -1513,7 +1617,7 @@ else
     do
       i=$[$i+1]
       say "    ${e}->${x} Pinging Codecov"
-      say "$url/upload/v4?$query"
+      say "$url/upload/v4?$queryNoToken"
       res=$(curl $curl_s -X POST $curlargs $cacert \
             -H 'X-Reduced-Redundancy: false' \
             -H 'X-Content-Type: application/x-gzip' \
@@ -1524,12 +1628,16 @@ else
       then
         s3target=$(echo "$res" | sed -n 2p)
         say "    ${e}->${x} Uploading"
+
+
         s3=$(curl $curl_s -fiX PUT $curlawsargs \
-                  --data-binary @$upload_file.gz \
-                  -H 'Content-Type: application/x-gzip' \
-                  -H 'Content-Encoding: gzip' \
-                  -H 'x-amz-acl: public-read' \
-                  "$s3target" || true)
+            --data-binary @$upload_file.gz \
+            -H 'Content-Type: application/x-gzip' \
+            -H 'Content-Encoding: gzip' \
+             -H 'x-amz-acl: public-read' \
+            "$s3target" || true)
+
+
         if [ "$s3" != "" ];
         then
           say "    ${g}->${x} View reports at ${b}$(echo "$res" | sed -n 1p)${x}"

@@ -95,7 +95,7 @@ script:
   # - php artisan migrate:rollback
 
 after_success:
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash codecov.sh ; fi"
+  - bash codecov.sh
 
 notifications:
   webhooks:
