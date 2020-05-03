@@ -9,11 +9,11 @@
 
     @if($infos['copyright_enable'] == '1')
         <p class="home_copyright">
-            {{ $locale['FOOTER_COPYRIGHT'] }} {{ $infos['owner'] }} &copy; {{ $infos['copyright_year'] }}</p>
+            {{ $locale['FOOTER_COPYRIGHT'] }} {!! $infos['owner'] !!} &copy; {{ $infos['copyright_year'] }}</p>
     @endif
 
     @if($infos['additional_footer_text'] != '')
-        <p class="personal_text">{{ $infos['additional_footer_text'] }}</p>
+        <p class="personal_text">{!! $infos['additional_footer_text'] !!}</p>
     @endif
 
 
