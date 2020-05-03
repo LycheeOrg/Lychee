@@ -18,7 +18,7 @@ class MoveSettings extends Migration
 		if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')) {
 			if (Configs::where('key', '=', 'check_for_updates')->count() == 0) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings')->select('*')->orderBy('key', 'asc')->get();
-				$id = 0;
+
 				foreach ($results as $result) {
 					/*
 					+---------------------+--------------------------------------------------------------+
@@ -56,9 +56,7 @@ class MoveSettings extends Migration
 						$order_by = explode(' ', $result->value);
 						Configs::where('key', '=', $result->key . '_col')->update(['value' => $order_by[2] ?? 'id']);
 						Configs::where('key', '=', $result->key . '_order')->update(['value' => $order_by[3] ?? 'DESC']);
-					} elseif (in_array($result->key, ['checkForUpdates', 'hide_version_number', 'identifier', 'php_script_limit', 'plugins', 'public_search', 'useExiftool', 'version'])) {
-						continue;
-					} else {
+					} elseif (!in_array($result->key, ['checkForUpdates', 'hide_version_number', 'identifier', 'php_script_limit', 'plugins', 'public_search', 'useExiftool', 'version'])) {
 						Configs::where('key', '=', $result->key)->update(['value' => $result->value]);
 						Logs::notice(__FUNCTION__, __LINE__, env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings does not exist!');
 					}
