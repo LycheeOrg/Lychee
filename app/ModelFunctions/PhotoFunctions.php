@@ -484,7 +484,7 @@ class PhotoFunctions
 		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
 
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
-		Nnotice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
+		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
 		$frame->save($tmp);
 
 		return $tmp;
