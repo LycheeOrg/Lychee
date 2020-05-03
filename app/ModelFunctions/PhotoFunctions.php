@@ -385,8 +385,8 @@ class PhotoFunctions
 						if ($photo->orientation >= 5) {
 							$tempWidth = $photo->width;
 							$tempHeight = $photo->height;
-							$photo->width = $tempWidth;
-							$photo->height = $tempHeight;
+							$photo->width = $tempHeight;
+							$photo->height = $tempWidth;
 						}
 					}
 				}
