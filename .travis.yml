@@ -29,7 +29,7 @@ env:
 
 cache:
   directories:
-    - $HOME/.composer/cache
+    - $HOME/.composer/cache/files
     - $HOME/.php-cs-fixer
     - $HOME/.local
 services:
