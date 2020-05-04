@@ -390,6 +390,7 @@ return [
 				'https://a.osm.rrze.fau.de/osmhd/',
 				'https://b.osm.rrze.fau.de/osmhd/',
 				'https://c.osm.rrze.fau.de/osmhd/',
+				env('LYCHEE_UPLOADS_URL', 'https://lycheeorg.github.io/'),
 				'data:',
 				'blob:',
 			],
