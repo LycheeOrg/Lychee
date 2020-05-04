@@ -13,15 +13,19 @@ php:
   - '7.4'
 #  - nightly
 env:
-  - TRAVIS_COMPOSER_DEV=yes
-  - TRAVIS_COMPOSER_DEV=no
   matrix:
-    - SQL=mariadb EXIFTOOL=no
-    - SQL=postgresql EXIFTOOL=no
-    - SQL=sqlite EXIFTOOL=no
-    - SQL=mariadb EXIFTOOL=yes
-    - SQL=postgresql EXIFTOOL=yes
-    - SQL=sqlite EXIFTOOL=yes
+    - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+    - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+    - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+    - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+    - SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+    - SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+    - SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+    - SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+    - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+    - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+    - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+    - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
 
 cache:
   directories:
