@@ -13,9 +13,8 @@ php:
   - '7.4'
 #  - nightly
 env:
-  global:
-    - TRAVIS_COMPOSER_DEV=yes
-    - TRAVIS_COMPOSER_DEV=no
+  - TRAVIS_COMPOSER_DEV=yes
+  - TRAVIS_COMPOSER_DEV=no
   matrix:
     - SQL=mariadb EXIFTOOL=no
     - SQL=postgresql EXIFTOOL=no
@@ -23,10 +22,6 @@ env:
     - SQL=mariadb EXIFTOOL=yes
     - SQL=postgresql EXIFTOOL=yes
     - SQL=sqlite EXIFTOOL=yes
-
-# matrix:
-#   allow_failures:
-#     - php: 7.4snapshot
 
 cache:
   directories:
