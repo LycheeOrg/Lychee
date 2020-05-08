@@ -372,7 +372,9 @@ class PhotoFunctions
 			// (2) There is a partner and we're uploading a photo
 			if (($livePhotoPartner === false) || !(in_array($photo->type, $this->validVideoTypes, true))) {
 				// Set orientation based on EXIF data
-				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
+				// but do not rotate if the image shall not be modified
+				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== ''
+						&& Configs::get_value('import_via_symlink', '0') === '0') {
 					$rotation = $this->imageHandler->autoRotate($path, $info);
 
 					if ($rotation !== [false, false]) {

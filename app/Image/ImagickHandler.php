@@ -13,6 +13,59 @@ class ImagickHandler implements ImageHandlerInterface
 	private $compressionQuality;
 
 	/**
+	 * Rotates a given image based on the given orientation.
+	 * @param \Imagick $image The image reference to rotate.
+	 * @return array A dictionary of width and height of the rotated image.
+	 */
+	private function autoRotateInternal(\Imagick &$image): array
+	{
+		try {
+			$orientation = $image->getImageOrientation();
+
+			switch ($orientation) {
+					case \Imagick::ORIENTATION_TOPLEFT:
+						// nothing to do
+						break;
+					case \Imagick::ORIENTATION_TOPRIGHT:
+						$image->flopImage();
+						break;
+					case \Imagick::ORIENTATION_BOTTOMRIGHT:
+						$image->rotateImage(new \ImagickPixel(), 180);
+						break;
+					case \Imagick::ORIENTATION_BOTTOMLEFT:
+						$image->flopImage();
+						$image->rotateImage(new \ImagickPixel(), 180);
+						break;
+					case \Imagick::ORIENTATION_LEFTTOP:
+						$image->flopImage();
+						$image->rotateImage(new \ImagickPixel(), -90);
+						break;
+					case \Imagick::ORIENTATION_RIGHTTOP:
+						$image->rotateImage(new \ImagickPixel(), 90);
+						break;
+					case \Imagick::ORIENTATION_RIGHTBOTTOM:
+						$image->flopImage();
+						$image->rotateImage(new \ImagickPixel(), 90);
+						break;
+					case \Imagick::ORIENTATION_LEFTBOTTOM:
+						$image->rotateImage(new \ImagickPixel(), -90);
+						break;
+			}
+
+			$image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+
+			return [
+				'width' => $image->getImageWidth(),
+				'height' => $image->getImageHeight(),
+			];
+		} catch (ImagickException $exception) {
+			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+
+			return [false, false];
+		}
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function __construct(int $compressionQuality)
@@ -39,6 +92,11 @@ class ImagickHandler implements ImageHandlerInterface
 
 			$profiles = $image->getImageProfiles('icc', true);
 
+			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
+
+			// the image may need to be rotated prior saving
+			$this->autoRotateInternal($image);
+
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
@@ -46,7 +104,6 @@ class ImagickHandler implements ImageHandlerInterface
 				$image->profileImage('icc', $profiles['icc']);
 			}
 
-			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
 			$image->writeImage($destination);
 			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
 			$resWidth = $image->getImageWidth();
@@ -78,6 +135,11 @@ class ImagickHandler implements ImageHandlerInterface
 
 			$profiles = $image->getImageProfiles('icc', true);
 
+			$image->cropThumbnailImage($newWidth, $newHeight);
+
+			// the image may need to be rotated prior saving
+			$this->autoRotateInternal($image);
+
 			// Remove metadata to save some bytes
 			$image->stripImage();
 
@@ -85,7 +147,6 @@ class ImagickHandler implements ImageHandlerInterface
 				$image->profileImage('icc', $profiles['icc']);
 			}
 
-			$image->cropThumbnailImage($newWidth, $newHeight);
 			$image->writeImage($destination);
 			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
 			$image->clear();
@@ -108,48 +169,13 @@ class ImagickHandler implements ImageHandlerInterface
 			$image = new \Imagick();
 			$image->readImage($path);
 
-			$orientation = $image->getImageOrientation();
+			$rotate = $image->getImageOrientation() !== \Imagick::ORIENTATION_TOPLEFT;
 
-			$rotate = true;
-			switch ($orientation) {
-					case \Imagick::ORIENTATION_TOPLEFT:
-						$rotate = false;
-						break;
-					case \Imagick::ORIENTATION_TOPRIGHT:
-						$image->flopImage();
-						break;
-					case \Imagick::ORIENTATION_BOTTOMRIGHT:
-						$image->rotateImage(new \ImagickPixel(), 180);
-						break;
-					case \Imagick::ORIENTATION_BOTTOMLEFT:
-						$image->flopImage();
-						$image->rotateImage(new \ImagickPixel(), 180);
-						break;
-					case \Imagick::ORIENTATION_LEFTTOP:
-						$image->flopImage();
-						$image->rotateImage(new \ImagickPixel(), -90);
-						break;
-					case \Imagick::ORIENTATION_RIGHTTOP:
-						$image->rotateImage(new \ImagickPixel(), 90);
-						break;
-					case \Imagick::ORIENTATION_RIGHTBOTTOM:
-						$image->flopImage();
-						$image->rotateImage(new \ImagickPixel(), 90);
-						break;
-					case \Imagick::ORIENTATION_LEFTBOTTOM:
-						$image->rotateImage(new \ImagickPixel(), -90);
-						break;
-				}
+			$dimensions = $this->autoRotateInternal($image);
 
-			if ($rotate) { // we only write if there is a need. Fixes #111
-				$image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+			if ($rotate) {
 				$image->writeImage($path);
 			}
-
-			$dimensions = [
-				'width' => $image->getImageWidth(),
-				'height' => $image->getImageHeight(),
-			];
 
 			$image->clear();
 			$image->destroy();
