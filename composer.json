@@ -22,6 +22,7 @@
         "php-ffmpeg/php-ffmpeg": "^0.14.0",
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/message": "^1.8",
+        "piwik/device-detector": "^3.12",
         "spatie/guzzle-rate-limiter-middleware": "^1.0",
         "symfony/cache": "^5.0"
     },

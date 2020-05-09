@@ -11,9 +11,13 @@ use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\User;
+use Cache;
+use DeviceDetector\DeviceDetector;
+use DeviceDetector\Parser\Device\DeviceParserAbstract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
+
 
 class SessionController extends Controller
 {
@@ -59,6 +63,9 @@ class SessionController extends Controller
 		$return['api_V2'] = true;               // we are using api_V2
 		$return['sub_albums'] = true;           // Lychee-laravel does have sub albums
 
+
+
+
 		// Check if login credentials exist and login if they don't
 		if ($this->sessionFunctions->noLogin() === true || $logged_in === true) {
 			// we the the UserID (it is set to 0 if there is no login/password = admin)
@@ -98,6 +105,37 @@ class SessionController extends Controller
 				$return['config']['version'] = '';
 			}
 			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
+		}
+
+		// UI behaviour needs to be slightly modified if client is a TV
+		$return['config']['header_auto_hide'] = true;
+		$return['config']['history_update_for_photos'] = true;
+		$return['config']['enable_esc_for_exit'] = true;
+
+		// Determine type of browser
+		DeviceParserAbstract::setVersionTruncation(DeviceParserAbstract::VERSION_TRUNCATION_NONE);
+		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+		if (!empty($userAgent)) {
+			$dd = new DeviceDetector($userAgent);
+
+			// Use cache since lib uses quite some regex
+			// TODO
+			//$psr6Cache = new \app('cache.store');
+			//$dd->setCache( new \DeviceDetector\Cache\PSR6Bridge($psr6Cache));
+
+			// Bot detection will completely be skipped (bots will be detected as regular devices then)
+			$dd->skipBotDetection();
+
+			// Parse the user agent
+			$dd->parse();
+
+
+			if($dd->isTV()) {
+				$return['config']['header_auto_hide'] = false;
+				$return['config']['history_update_for_photos'] = false;
+				$return['config']['enable_esc_for_exit'] = false;
+			}
 		}
 
 		// we also return the local

@@ -28,11 +28,11 @@
             <svg class="iconic"><use xlink:href="#account-login"></use></svg>
         </a>
 
-        <a class="header__title" tabindex="2"></a>
+        <a class="header__title"></a>
 
-        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" tabindex="3">
+        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" tabindex="2">
         <a class="header__clear header__clear_public">&times;</a>
-        <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}" tabindex="4">
+        <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}" tabindex="3">
             <svg class="iconic"><use xlink:href="#map"></use></svg>
         </a>
 {{--        <a class="header__hostedwith">{{ $locale['HOSTED_WITH_LYCHEE'] }}</a>--}}
@@ -44,15 +44,15 @@
             <svg class="iconic"><use xlink:href="#cog"></use></svg>
         </a>
 
-        <a class="header__title" tabindex="2"></a>
+        <a class="header__title"></a>
 
-        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" tabindex="3">
+        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" tabindex="2">
         <a class="header__clear">&times;</a>
         <a class="header__divider"></a>
-        <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}" tabindex="4">
+        <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}" tabindex="3">
             <svg class="iconic"><use xlink:href="#map"></use></svg>
         </a>
-        <a class="button button_add" title="{{ $locale['ADD'] }}" tabindex="5">
+        <a class="button button_add" title="{{ $locale['ADD'] }}" tabindex="4">
             <svg class="iconic"><use xlink:href="#plus"></use></svg>
         </a>
 
@@ -63,37 +63,37 @@
             <svg class="iconic"><use xlink:href="#chevron-left"></use></svg>
         </a>
 
-        <a class="header__title" tabindex="2"></a>
+        <a class="header__title"></a>
 
-        <a class="button button--eye" id="button_visibility_album" title="{{ $locale['VISIBILITY_ALBUM'] }}" tabindex="3">
+        <a class="button button--eye" id="button_visibility_album" title="{{ $locale['VISIBILITY_ALBUM'] }}" tabindex="2">
             <svg class="iconic iconic--eye"><use xlink:href="#eye"></use></svg>
         </a>
-        <a class="button button--share" id="button_share_album" title="{{ $locale['SHARE_ALBUM'] }}" tabindex="4">
+        <a class="button button--share" id="button_share_album" title="{{ $locale['SHARE_ALBUM'] }}" tabindex="3">
             <svg class="iconic ionicons"><use xlink:href="#share-ion"></use></svg>
         </a>
-        <a class="button" id="button_archive" title="{{ $locale['DOWNLOAD_ALBUM'] }}" tabindex="5">
+        <a class="button" id="button_archive" title="{{ $locale['DOWNLOAD_ALBUM'] }}" tabindex="4">
             <svg class="iconic"><use xlink:href="#cloud-download"></use></svg>
         </a>
-        <a class="button button--info" id="button_info_album" title="{{ $locale['ABOUT_ALBUM'] }}" tabindex="6">
+        <a class="button button--info" id="button_info_album" title="{{ $locale['ABOUT_ALBUM'] }}" tabindex="5">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>
-        <a class="button button--map" id="button_map_album" title="{{ $locale['DISPLAY_FULL_MAP'] }}" tabindex="7">
+        <a class="button button--map" id="button_map_album" title="{{ $locale['DISPLAY_FULL_MAP'] }}" tabindex="6">
             <svg class="iconic"><use xlink:href="#map"></use></svg>
         </a>
-        <a class="button" id="button_move_album" title="{{ $locale['MOVE_ALBUM'] }}" tabindex="8">
+        <a class="button" id="button_move_album" title="{{ $locale['MOVE_ALBUM'] }}" tabindex="7">
             <svg class="iconic"><use xlink:href="#folder"></use></svg>
         </a>
-        <a class="button" id="button_trash_album" title="{{ $locale['DELETE_ALBUM'] }}" tabindex="9">
+        <a class="button" id="button_trash_album" title="{{ $locale['DELETE_ALBUM'] }}" tabindex="8">
             <svg class="iconic"><use xlink:href="#trash"></use></svg>
         </a>
-        <a class="button" id="button_fs_album_enter" title="{{ $locale['FULLSCREEN_ENTER'] }}" tabindex="10">
+        <a class="button" id="button_fs_album_enter" title="{{ $locale['FULLSCREEN_ENTER'] }}" tabindex="9">
             <svg class="iconic"><use xlink:href="#fullscreen-enter"></use></svg>
         </a>
-        <a class="button" id="button_fs_album_exit" title="{{ $locale['FULLSCREEN_EXIT'] }}" tabindex="11">
+        <a class="button" id="button_fs_album_exit" title="{{ $locale['FULLSCREEN_EXIT'] }}" tabindex="10">
             <svg class="iconic"><use xlink:href="#fullscreen-exit"></use></svg>
         </a>
         <a class="header__divider"></a>
-        <a class="button button_add" title="{{ $locale['ADD'] }}" tabindex="12">
+        <a class="button button_add" title="{{ $locale['ADD'] }}" tabindex="11">
             <svg class="iconic"><use xlink:href="#plus"></use></svg>
         </a>
 
@@ -104,37 +104,37 @@
             <svg class="iconic"><use xlink:href="#chevron-left"></use></svg>
         </a>
 
-        <a class="header__title" tabindex="2"></a>
+        <a class="header__title"></a>
 
-        <a class="button button--star" id="button_star" title="{{ $locale['STAR_PHOTO'] }}" tabindex="3">
+        <a class="button button--star" id="button_star" title="{{ $locale['STAR_PHOTO'] }}" tabindex="2">
             <svg class="iconic"><use xlink:href="#star"></use></svg>
         </a>
-        <a class="button button--eye" id="button_visibility" title="{{ $locale['VISIBILITY_PHOTO'] }}" tabindex="4">
+        <a class="button button--eye" id="button_visibility" title="{{ $locale['VISIBILITY_PHOTO'] }}" tabindex="3">
             <svg class="iconic"><use xlink:href="#eye"></use></svg>
         </a>
-        <a class="button button--share" id="button_share" title="{{ $locale['SHARE_PHOTO'] }}" tabindex="5">
+        <a class="button button--share" id="button_share" title="{{ $locale['SHARE_PHOTO'] }}" tabindex="4">
             <svg class="iconic ionicons"><use xlink:href="#share-ion"></use></svg>
         </a>
-        <a class="button button--info" id="button_info" title="{{ $locale['ABOUT_PHOTO'] }}" tabindex="6">
+        <a class="button button--info" id="button_info" title="{{ $locale['ABOUT_PHOTO'] }}" tabindex="5">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>
-        <a class="button button--map" id="button_map" title="{{ $locale['DISPLAY_FULL_MAP'] }}" tabindex="7">
+        <a class="button button--map" id="button_map" title="{{ $locale['DISPLAY_FULL_MAP'] }}" tabindex="6">
             <svg class="iconic"><use xlink:href="#map"></use></svg>
         </a>
-        <a class="button" id="button_move" title="{{ $locale['MOVE'] }}" tabindex="8">
+        <a class="button" id="button_move" title="{{ $locale['MOVE'] }}" tabindex="7">
             <svg class="iconic"><use xlink:href="#folder"></use></svg>
         </a>
-        <a class="button" id="button_trash" title="{{ $locale['DELETE'] }}" tabindex="9">
+        <a class="button" id="button_trash" title="{{ $locale['DELETE'] }}" tabindex="8">
             <svg class="iconic"><use xlink:href="#trash"></use></svg>
         </a>
-        <a class="button" id="button_fs_enter" title="{{ $locale['FULLSCREEN_ENTER'] }}" tabindex="10">
+        <a class="button" id="button_fs_enter" title="{{ $locale['FULLSCREEN_ENTER'] }}">
             <svg class="iconic"><use xlink:href="#fullscreen-enter"></use></svg>
         </a>
-        <a class="button" id="button_fs_exit" title="{{ $locale['FULLSCREEN_EXIT'] }}" tabindex="11">
+        <a class="button" id="button_fs_exit" title="{{ $locale['FULLSCREEN_EXIT'] }}" tabindex="9">
             <svg class="iconic"><use xlink:href="#fullscreen-exit"></use></svg>
         </a>
         <a class="header__divider"></a>
-        <a class="button" id="button_more" title="{{ $locale['MORE'] }}" tabindex="12">
+        <a class="button" id="button_more" title="{{ $locale['MORE'] }}" tabindex="10">
             <svg class="iconic"><use xlink:href="#ellipses"></use></svg>
         </a>
 
@@ -146,7 +146,7 @@
             <svg class="iconic"><use xlink:href="#chevron-left"></use></svg>
         </a>
 
-        <a class="header__title" tabindex="2"></a>
+        <a class="header__title"></a>
 
     </div>
 
