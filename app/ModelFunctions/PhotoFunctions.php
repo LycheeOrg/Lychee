@@ -323,8 +323,6 @@ class PhotoFunctions
 		$photo->public = $public;
 		$photo->star = $star;
 
-		$photo = $this->altitude_fix($photo);
-
 		$GoogleMicroVideoOffset = $info['MicroVideoOffset'];
 
 		if ($albumID !== null) {
@@ -716,30 +714,6 @@ class PhotoFunctions
 
 		// return the ID.
 		return $photo->id;
-	}
-
-	/**
-	 * Given the information of a photo, makes sure the altitude is in the correct range.
-	 *
-	 * @param Photo $photo
-	 *
-	 * @return Photo
-	 */
-	private function altitude_fix(Photo $photo)
-	{
-		$altitude = $photo->altitude;
-		// max value of dec(10,4) is 999' 999.9999
-		if ($altitude > 999999.9999) {
-			// we are out of the bound
-			// we assume this is a bug due to DJI firmware not updated
-			// we signal the user and erase the value before adding it the database.
-			$photo->altitude = null;
-			Logs::warning(__METHOD__, __LINE__, 'altitude set to 0, previous value was out of bounds:' . $altitude . ' for picture ' . $photo->title);
-			Logs::warning(__METHOD__, __LINE__, $photo->url);
-			Logs::warning(__METHOD__, __LINE__, 'Manually parse the file with exiftool and edit the database to set the correct value.');
-		}
-
-		return	$photo;
 	}
 
 	/**
