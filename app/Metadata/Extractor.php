@@ -139,6 +139,18 @@ class Extractor
 			}
 		}
 
+		// We need to make sure, latitude is between -90/90 and longitude is between -180/180
+		// We set values to null in case we're out of bounds
+		if ($metadata['latitude'] !== null || $metadata['longitude'] !== null) {
+		    $latitude = $metadata['latitude'];
+		    $longitude = $metadata['longitude'];
+		    if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+				$metadata['latitude'] = null;
+				$metadata['longitude'] = null;
+				Logs::notice(__METHOD__, __LINE__, 'Latitude/Longitude (' . $latitude . '/' . $longitude . ') out of bounds (needs to be between -90/90 and -180/180)');
+		    }
+		}
+		
 		// Position
 		$fields = [];
 		if ($exif->getCity() !== false) {
