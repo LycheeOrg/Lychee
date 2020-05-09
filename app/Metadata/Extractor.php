@@ -138,40 +138,39 @@ class Extractor
 				Logs::notice(__METHOD__, __LINE__, 'Takestamp (' . $takestamp->format('Y-m-d H:i:s') . ') out of bounds (needs to be between 1970-01-01 00:00:01 and 2038-01-19 03:14:07)');
 			}
 		}
-		
+
 		// We need to make sure, latitude is between -90/90 and longitude is between -180/180
 		// We set values to null in case we're out of bounds
 		if ($metadata['latitude'] !== null || $metadata['longitude'] !== null) {
-		    $latitude = $metadata['latitude'];
-		    $longitude = $metadata['longitude'];
-		    if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+			$latitude = $metadata['latitude'];
+			$longitude = $metadata['longitude'];
+			if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
 				$metadata['latitude'] = null;
 				$metadata['longitude'] = null;
 				Logs::notice(__METHOD__, __LINE__, 'Latitude/Longitude (' . $latitude . '/' . $longitude . ') out of bounds (needs to be between -90/90 and -180/180)');
-		    }
-		}
-			
-		// We need to make sure, altitude is between -999999.9999 and 999999.9999
-		// We set values to null in case we're out of bounds
-		if ($metadata['altitude'] !== null ) {
-		    $altitude = $metadata['altitude'];
-		    if ($altitude < -999999.9999 || $imgDirection > 999999.9999) {
-				$metadata['altitude'] = null;
-				Logs::notice(__METHOD__, __LINE__, 'Altitude (' . $altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
-		    }
-		}
-		
-		// We need to make sure, imgDirection is between 0 and 360
-		// We set values to null in case we're out of bounds
-		if ($metadata['imgDirection'] !== null ) {
-		    $imgDirection = $metadata['imgDirection'];
-		    if ($imgDirection < 0 || $imgDirection > 360) {
-				$metadata['imgDirection'] = null;
-				Logs::notice(__METHOD__, __LINE__, 'GPSImgDirection (' . $imgDirection . ') out of bounds (needs to be between 0 and 360)');
-		    }
+			}
 		}
 
-		
+		// We need to make sure, altitude is between -999999.9999 and 999999.9999
+		// We set values to null in case we're out of bounds
+		if ($metadata['altitude'] !== null) {
+			$altitude = $metadata['altitude'];
+			if ($altitude < -999999.9999 || $imgDirection > 999999.9999) {
+				$metadata['altitude'] = null;
+				Logs::notice(__METHOD__, __LINE__, 'Altitude (' . $altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
+			}
+		}
+
+		// We need to make sure, imgDirection is between 0 and 360
+		// We set values to null in case we're out of bounds
+		if ($metadata['imgDirection'] !== null) {
+			$imgDirection = $metadata['imgDirection'];
+			if ($imgDirection < 0 || $imgDirection > 360) {
+				$metadata['imgDirection'] = null;
+				Logs::notice(__METHOD__, __LINE__, 'GPSImgDirection (' . $imgDirection . ') out of bounds (needs to be between 0 and 360)');
+			}
+		}
+
 		// Position
 		$fields = [];
 		if ($exif->getCity() !== false) {
