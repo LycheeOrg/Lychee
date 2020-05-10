@@ -155,7 +155,7 @@ class Extractor
 		// We set values to null in case we're out of bounds
 		if ($metadata['altitude'] !== null) {
 			$altitude = $metadata['altitude'];
-			if ($altitude < -999999.9999 || $imgDirection > 999999.9999) {
+			if ($altitude < -999999.9999 || $altitude > 999999.9999) {
 				$metadata['altitude'] = null;
 				Logs::notice(__METHOD__, __LINE__, 'Altitude (' . $altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
 			}
