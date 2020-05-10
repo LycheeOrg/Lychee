@@ -15,9 +15,11 @@ class GdHandler implements ImageHandlerInterface
 
 	/**
 	 * Rotates a given image resource based on the given orientation.
-	 * @param resource $image The image reference to rotate.
-	 * @param int $orientation The orientation of the original image.
-	 * @return array A dictionary of width and height of the rotated image.
+	 *
+	 * @param resource $image       the image reference to rotate
+	 * @param int      $orientation the orientation of the original image
+	 *
+	 * @return array a dictionary of width and height of the rotated image
 	 */
 	private function autoRotateInternal(&$image, int $orientation): array
 	{
@@ -53,6 +55,9 @@ class GdHandler implements ImageHandlerInterface
 
 			case 8:
 				$image = imagerotate($image, 90, 0);
+				break;
+
+			default:
 				break;
 		}
 

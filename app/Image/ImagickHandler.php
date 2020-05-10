@@ -14,8 +14,10 @@ class ImagickHandler implements ImageHandlerInterface
 
 	/**
 	 * Rotates a given image based on the given orientation.
-	 * @param \Imagick $image The image reference to rotate.
-	 * @return array A dictionary of width and height of the rotated image.
+	 *
+	 * @param \Imagick $image the image reference to rotate
+	 *
+	 * @return array a dictionary of width and height of the rotated image
 	 */
 	private function autoRotateInternal(\Imagick &$image): array
 	{
