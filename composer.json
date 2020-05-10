@@ -2,7 +2,10 @@
     "name": "lycheeorg/lychee-laravel",
     "description": "A great looking and easy-to-use photo-management-system you can run on your server, to manage and share photos.",
     "homepage": "https://lycheeorg.github.io/",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -51,8 +54,7 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": [
-            ]
+            "dont-discover": []
         }
     },
     "scripts": {
@@ -65,10 +67,14 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover",
-            "@make_user_css"
+            "@make_user_css",
+            "@create_sqlite_default_db"
         ],
         "make_user_css": [
             "touch public/dist/user.css"
+        ],
+        "create_sqlite_default_db": [
+            "touch database/database.sqlite"
         ]
     },
     "config": {
