@@ -14,7 +14,6 @@ php:
 #  - nightly
 env:
   matrix:
-    fast_finish: true
     - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
     - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
     - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
