@@ -13,4 +13,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-capable" content="yes">
 
+@include('feed::links')
+
 @yield('head-meta')
