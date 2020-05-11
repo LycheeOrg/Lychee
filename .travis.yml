@@ -61,10 +61,10 @@ before_script:
 script:
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then cp .env.${SQL}.travis .env ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then make dist ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then make cd ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then cp ../.env.${SQL}.travis .env ; fi"
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then make dist-clean ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then cd Lychee ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then cp ../.env.${SQL}.travis .env ; fi"
   - php artisan key:generate
   - php artisan migrate
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose; fi"
