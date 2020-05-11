@@ -22,7 +22,7 @@ env:
     # - SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
     # - SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
     # - SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
-    # - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+    - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
     - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
     # - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
     # - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
