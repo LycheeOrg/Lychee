@@ -8,6 +8,6 @@ function displaySimpleError($title, $code, $message)
 		'$code' => $code,
 		'$message' => $message,
 	];
-
+	http_response_code($code);
 	echo strtr($error_display, $replacing);
 }
