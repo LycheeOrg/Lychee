@@ -29,7 +29,8 @@ dist-gen: clean composer
 	@cp -r config                           Lychee-v$(VERSION)
 	@cp -r database                         Lychee-v$(VERSION)
 	@cp -r resources                        Lychee-v$(VERSION)
-	@cp -r index.html                       Lychee-v$(VERSION)
+	@cp -r index.php                        Lychee-v$(VERSION)
+	@cp -r simple_error_template.html       Lychee-v$(VERSION)
 	@cp -r routes                           Lychee-v$(VERSION)
 	@cp -r storage                          Lychee-v$(VERSION)
 	@cp -r vendor                           Lychee-v$(VERSION) 2> /dev/null || true
@@ -66,6 +67,9 @@ dist: dist-gen
 	@rm    Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
 	@rm    Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
 	@zip -r Lychee-v$(VERSION).zip Lychee-v$(VERSION)
+
+cd:
+	cd Lychee-v$(VERSION)
 
 contrib_add:
 	@echo "npx all-contributors-cli add <user> <bug|code|design|doc|question|tool|test|translation>"

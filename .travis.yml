@@ -14,6 +14,7 @@ php:
 #  - nightly
 env:
   matrix:
+    fast_finish: true
     - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
     - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
     - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
@@ -26,6 +27,7 @@ env:
     - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
     - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
     - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+    - MAKEFILE=yes EXIFTOOL=no
 
 cache:
   directories:
@@ -46,14 +48,9 @@ addons:
       - php-gd
 
 before_script:
-  - echo ${TRAVIS_COMPOSER_DEV}
-  - echo ${SQL}
   - printf "\n" | pecl install imagick
   # Install ExifTool
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then wget http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-11.77.tar.gz ; fi"
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then tar -zxvf Image-ExifTool-11.77.tar.gz ; fi"
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then cd Image-ExifTool-11.77 && perl Makefile.PL && make test && sudo make install ; fi"
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then cd .. && rm -rf Image-ExifTool-11.77 ; fi"
+  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then ./setup_exiftool.sh ; fi"
   # create db for mariadb
   - sh -c "if [ '$SQL' = 'mariadb' ] ; then mysql -e 'create database homestead_test;' ; fi"
   # create db for postgresql
@@ -62,15 +59,14 @@ before_script:
   - sh -c "if [ '$SQL' = 'sqlite' ] ; then touch database/database.sqlite ; fi"
   # composer stuff
   - composer self-update
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then composer install --no-interaction --no-dev ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then find vendor -wholename '*/[Tt]ests/*' -delete ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then find vendor -wholename '*/[Tt]est/*' -delete ; fi"
-
 
 script:
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; cp .env.${SQL}.travis .env ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then make dist ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then make cd ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; cp ../.env.${SQL}.travis .env ; fi"
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run ; fi"
-  - cp .env.${SQL}.travis .env
   - php artisan key:generate
   - php artisan migrate
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose; fi"
