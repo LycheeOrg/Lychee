@@ -4,7 +4,7 @@ FILES=$(wildcard *)
 .PHONY: dist clean
 
 composer:
-	rm -r vendor
+	rm -r vendor  2> /dev/null || true
 	composer install --prefer-dist --no-dev
 
 dist-gen: clean composer
