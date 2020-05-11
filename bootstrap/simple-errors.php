@@ -1,13 +1,13 @@
 <?php
 
-function displaySimpleError($tite, $code, $message)
+function displaySimpleError($title, $code, $message)
 {
 	$error_display = file_get_contents(__DIR__ . '/../simple_error_template.html');
-	$replacing = array(
-		'$tite' => $title,
+	$replacing = [
+		'$title' => $title,
 		'$code' => $code,
-		'$message' => $message
-	  );
-	  
+		'$message' => $message,
+	];
+
 	echo strtr($error_display, $replacing);
 }
