@@ -1,71 +1,71 @@
-VERSION=`cat version.md`
-FILES=$(wildcard *)
-
-.PHONY: dist clean
+.PHONY: dist-gen dist-clean dist clean 
 
 composer:
-	rm -r vendor
+	rm -r vendor  2> /dev/null || true
 	composer install --prefer-dist --no-dev
 
 dist-gen: clean composer
 	@echo "packaging..."
-	@mkdir Lychee-v$(VERSION)
-	@mkdir Lychee-v$(VERSION)/public
-	@mkdir Lychee-v$(VERSION)/public/dist
-	@mkdir Lychee-v$(VERSION)/public/img
-	@mkdir Lychee-v$(VERSION)/public/uploads
-	@mkdir Lychee-v$(VERSION)/public/uploads/small
-	@mkdir Lychee-v$(VERSION)/public/uploads/medium
-	@mkdir Lychee-v$(VERSION)/public/uploads/big
-	@mkdir Lychee-v$(VERSION)/public/uploads/thumb
-	@mkdir Lychee-v$(VERSION)/public/uploads/raw
-	@mkdir Lychee-v$(VERSION)/public/uploads/import
-	@mkdir Lychee-v$(VERSION)/public/sym
-	@cp -r public/dist                      Lychee-v$(VERSION)/public
-	@cp -r public/installer                 Lychee-v$(VERSION)/public
-	@cp -r public/img/*                     Lychee-v$(VERSION)/public/img
-	@cp -r app                              Lychee-v$(VERSION)
-	@cp -r bootstrap                        Lychee-v$(VERSION)
-	@cp -r config                           Lychee-v$(VERSION)
-	@cp -r database                         Lychee-v$(VERSION)
-	@cp -r resources                        Lychee-v$(VERSION)
-	@cp -r index.html                       Lychee-v$(VERSION)
-	@cp -r routes                           Lychee-v$(VERSION)
-	@cp -r storage                          Lychee-v$(VERSION)
-	@cp -r vendor                           Lychee-v$(VERSION) 2> /dev/null || true
-	@cp -r public/.htaccess                 Lychee-v$(VERSION)/public
-	@cp -r public/.user.ini                 Lychee-v$(VERSION)/public
-	@cp -r public/favicon.ico               Lychee-v$(VERSION)/public
-	@cp -r public/index.php                 Lychee-v$(VERSION)/public
-	@cp -r public/robots.txt                Lychee-v$(VERSION)/public
-	@cp -r public/web.config                Lychee-v$(VERSION)/public
-	@cp -r .env.example                     Lychee-v$(VERSION)
-	@cp -r artisan                          Lychee-v$(VERSION)
-	@cp -r composer.json                    Lychee-v$(VERSION)
-	@cp -r composer.lock                    Lychee-v$(VERSION)
-	@cp -r composer-cache                   Lychee-v$(VERSION)
-	@cp -r LICENSE                          Lychee-v$(VERSION)
-	@cp -r readme.md                        Lychee-v$(VERSION)
-	@cp -r server.php                       Lychee-v$(VERSION)
-	@cp -r version.md                       Lychee-v$(VERSION)
-	@touch Lychee-v$(VERSION)/storage/logs/laravel.log
-	@touch Lychee-v$(VERSION)/public/dist/user.css
-	@touch Lychee-v$(VERSION)/public/uploads/big/index.html
-	@touch Lychee-v$(VERSION)/public/uploads/small/index.html
-	@touch Lychee-v$(VERSION)/public/uploads/medium/index.html
-	@touch Lychee-v$(VERSION)/public/uploads/thumb/index.html
-	@touch Lychee-v$(VERSION)/public/uploads/raw/index.html
-	@touch Lychee-v$(VERSION)/public/uploads/import/index.html
-	@touch Lychee-v$(VERSION)/public/sym/index.html
+	@mkdir Lychee
+	@mkdir Lychee/public
+	@mkdir Lychee/public/dist
+	@mkdir Lychee/public/img
+	@mkdir Lychee/public/uploads
+	@mkdir Lychee/public/uploads/small
+	@mkdir Lychee/public/uploads/medium
+	@mkdir Lychee/public/uploads/big
+	@mkdir Lychee/public/uploads/thumb
+	@mkdir Lychee/public/uploads/raw
+	@mkdir Lychee/public/uploads/import
+	@mkdir Lychee/public/sym
+	@cp -r public/dist                      Lychee/public
+	@cp -r public/installer                 Lychee/public
+	@cp -r public/img/*                     Lychee/public/img
+	@cp -r app                              Lychee
+	@cp -r bootstrap                        Lychee
+	@cp -r config                           Lychee
+	@cp -r database                         Lychee
+	@cp -r resources                        Lychee
+	@cp -r index.php                        Lychee
+	@cp -r simple_error_template.html       Lychee
+	@cp -r routes                           Lychee
+	@cp -r storage                          Lychee
+	@cp -r vendor                           Lychee 2> /dev/null || true
+	@cp -r public/.htaccess                 Lychee/public
+	@cp -r public/.user.ini                 Lychee/public
+	@cp -r public/favicon.ico               Lychee/public
+	@cp -r public/index.php                 Lychee/public
+	@cp -r public/robots.txt                Lychee/public
+	@cp -r public/web.config                Lychee/public
+	@cp -r .env.example                     Lychee
+	@cp -r artisan                          Lychee
+	@cp -r composer.json                    Lychee
+	@cp -r composer.lock                    Lychee
+	@cp -r composer-cache                   Lychee
+	@cp -r LICENSE                          Lychee
+	@cp -r readme.md                        Lychee
+	@cp -r server.php                       Lychee
+	@cp -r version.md                       Lychee
+	@touch Lychee/storage/logs/laravel.log
+	@touch Lychee/public/dist/user.css
+	@touch Lychee/public/uploads/big/index.html
+	@touch Lychee/public/uploads/small/index.html
+	@touch Lychee/public/uploads/medium/index.html
+	@touch Lychee/public/uploads/thumb/index.html
+	@touch Lychee/public/uploads/raw/index.html
+	@touch Lychee/public/uploads/import/index.html
+	@touch Lychee/public/sym/index.html
 
-dist: dist-gen	
-	find Lychee-v$(VERSION) -wholename '*/[Tt]ests/*' -delete
-	find Lychee-v$(VERSION) -wholename '*/[Tt]est/*' -delete
-	@rm -r Lychee-v$(VERSION)/storage/framework/cache/data/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/framework/sessions/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/framework/views/* 2> /dev/null || true
-	@rm    Lychee-v$(VERSION)/storage/logs/* 2> /dev/null || true
-	@zip -r Lychee-v$(VERSION).zip Lychee-v$(VERSION)
+dist-clean: dist-gen
+	find Lychee -wholename '*/[Tt]ests/*' -delete
+	find Lychee -wholename '*/[Tt]est/*' -delete
+	@rm -r Lychee/storage/framework/cache/data/* 2> /dev/null || true
+	@rm    Lychee/storage/framework/sessions/* 2> /dev/null || true
+	@rm    Lychee/storage/framework/views/* 2> /dev/null || true
+	@rm    Lychee/storage/logs/* 2> /dev/null || true
+
+dist: dist-clean
+	@zip -r Lychee.zip Lychee
 
 contrib_add:
 	@echo "npx all-contributors-cli add <user> <bug|code|design|doc|question|tool|test|translation>"
@@ -77,7 +77,7 @@ contrib_check:
 	npx all-contributors-cli check
 
 clean:
-	@rm -r Lychee-v* 2> /dev/null || true
+	@rm -r Lychee 2> /dev/null || true
 
 test:
 	@if [ -x "vendor/bin/phpunit" ]; then \
