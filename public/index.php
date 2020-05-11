@@ -14,38 +14,20 @@ define('LARAVEL_START', microtime(true));
  |
  | In the case where Composer and the nice error handler from Laravel is
  | not provided we still may need to display erros. This gives us access
- | to a simple pretty error page via the function 
+ | to a simple pretty error page via the function
  | displaySimpleError($tite, $code, $message) instead of a plain white
  | blank one with error XXX in the top left corner.
  */
 require_once __DIR__ . '/../bootstrap/simple-errors.php';
 
-
 /*
  |--------------------------------------------------------------------------
- | Catch error where composer is loading properly.
+ | Initialize before loading composer
  |--------------------------------------------------------------------------
  |
- | Try-catch does not work on require. As a result we use the
- | register_shutdown_function to handle such errors.
- |
- | Here we assume this will only fail if the file is not present as the 
- | most probable error source. We set up a kind reminder that composer
- | needs to be run in order to have Lychee working.
- | 
- | As there is no way to unregister such function in php we use the global
- | variable $composer_not_found to disable this behavior at later steps of
- | the execution.
+ | Include a small error handler in the case of composer is not found.
  */
-function onComposerNotFoundDie()
-{
-	global $composer_not_found;
-    if($composer_not_found){
-		displaySimpleError('vendor/autoload.php not found', 500,'<code>../vendor/autoload.php</code> not found.<br>Please do: <code>composer install --no-dev --prefer-dist</code>');
-	}
-}
-register_shutdown_function('onComposerNotFoundDie');
-$composer_not_found = true;
+require __DIR__ . '/../bootstrap/initialize.php';
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +41,7 @@ $composer_not_found = true;
 |
 */
 
+$composer_not_found = true;
 require __DIR__ . '/../vendor/autoload.php';
 
 // we disable the onComposerNotFoundDie() handler.
