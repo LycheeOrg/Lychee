@@ -26,7 +26,6 @@ env:
     - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
     - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
     - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
-    - MAKEFILE=yes EXIFTOOL=no
 
 cache:
   directories:
@@ -61,10 +60,10 @@ before_script:
 
 script:
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; cp .env.${SQL}.travis .env ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then cp .env.${SQL}.travis .env ; fi"
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then make dist ; fi"
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then make cd ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; cp ../.env.${SQL}.travis .env ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then cp ../.env.${SQL}.travis .env ; fi"
   - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run ; fi"
   - php artisan key:generate
   - php artisan migrate
