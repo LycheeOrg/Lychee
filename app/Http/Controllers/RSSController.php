@@ -44,13 +44,13 @@ class RSSController extends Controller
 		}
 
 		$photos = Photo::with('album', 'owner')
-		->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('rss_recent_days', '7')))
-		->toDateTimeString())
-		->where(function ($q) {
-			$q->whereIn('album_id',
-				$this->albumFunctions->getPublicAlbums())
-				->orWhere('public', '=', '1');
-		})->get();
+			->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('rss_recent_days', '7')))
+			->toDateTimeString())
+			->where(function ($q) {
+				$q->whereIn('album_id',
+					$this->albumFunctions->getPublicAlbums())
+					->orWhere('public', '=', '1');
+			})->get();
 
 		$photos = $photos->map(function ($photo_model) {
 			$photo = $photo_model->prepareData();
