@@ -43,8 +43,6 @@ class RSSController extends Controller
 			abort(404);
 		}
 
-		$collection = collect([]);
-
 		$photos = Photo::with('album', 'owner')
 		->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('rss_recent_days', '7')))
 		->toDateTimeString())
