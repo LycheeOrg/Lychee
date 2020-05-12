@@ -39,10 +39,14 @@ class RSSController extends Controller
 	 */
 	public function getRSS()
 	{
+		if (Configs::get_value('rss_enable', '0') != '1') {
+			abort(404);
+		}
+
 		$collection = collect([]);
 
 		$photos = Photo::with('album', 'owner')
-		->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))
+		->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('rss_recent_days', '7')))
 		->toDateTimeString())
 		->where(function ($q) {
 			$q->whereIn('album_id',
