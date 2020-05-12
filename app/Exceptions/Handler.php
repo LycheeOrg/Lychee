@@ -5,6 +5,7 @@ namespace App\Exceptions;
 use App\Exceptions\Handlers\AccessDBDenied;
 use App\Exceptions\Handlers\InvalidPayload;
 use App\Exceptions\Handlers\NoEncryptionKey;
+use App\Exceptions\Handlers\ApplyComposer;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
@@ -60,6 +61,7 @@ class Handler extends ExceptionHandler
 		$checks[] = new NoEncryptionKey();
 		$checks[] = new InvalidPayload();
 		$checks[] = new AccessDBDenied();
+		$checks[] = new ApplyComposer();
 
 		foreach ($checks as $check) {
 			if ($check->check($request, $exception)) {
