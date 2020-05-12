@@ -11,12 +11,12 @@ return [
 			 * You can also pass an argument to that method:
 			 * ['App\Model@getAllFeedItems', 'argument']
 			 */
-			'items' => '',
+			'items' => 'App\Http\Controllers\RSSController@getRSS',
 
 			/*
 			 * The feed will be available on this url.
 			 */
-			'url' => '',
+			'url' => '/rss',
 
 			'title' => 'Latest pictures',
 			'description' => 'Latest added pictures.',

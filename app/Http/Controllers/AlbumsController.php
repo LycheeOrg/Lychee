@@ -12,7 +12,6 @@ use App\Photo;
 use App\Response;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
-use Spatie\Feed\FeedItem;
 
 class AlbumsController extends Controller
 {
@@ -96,33 +95,5 @@ class AlbumsController extends Controller
 		$return['photos'] = $this->albumFunctions->photosLocationData($query, $full_photo);
 
 		return $return;
-	}
-
-	public function getRSS()
-	{
-		return [];
-		$photo = Photo::where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))->toDateTimeString())
-		->where(function ($q) {
-			$q->whereIn('album_id',
-				$this->albumFunctions->getPublicAlbums())
-				->orWhere('public', '=', '1');
-		})->all();
-
-		if ($photo->album_id != null) {
-			$album = $photo->album;
-			if (!$album->full_photo_visible()) {
-				$photo->downgrade($return);
-			}
-			$return['downloadable'] = $album->is_downloadable() ? '1' : '0';
-			$return['share_button_visible'] = $album->is_share_button_visible() ? '1' : '0';
-		} else { // Unsorted
-			if (Configs::get_value('full_photo', '1') != '1') {
-				$photo->downgrade($return);
-			}
-			$return['downloadable'] = Configs::get_value('downloadable', '0');
-			$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
-		}
-
-		FeedItem::create();
 	}
 }
