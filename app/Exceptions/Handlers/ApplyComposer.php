@@ -22,11 +22,6 @@ class ApplyComposer
 	 */
 	public function check($request, Throwable $exception)
 	{
-        // echo get_class($exception);
-        // echo $exception instanceof ErrorException;
-        // echo '|';
-        // echo (strpos($exception->getFile(), 'laravel/framework/src/Illuminate/Routing/Router.php') !== false);
-        // dd($exception);
 		return $exception instanceof ErrorException && (strpos($exception->getFile(), 'laravel/framework/src/Illuminate/Routing/Router.php') !== false);
 	}
 
