@@ -125,5 +125,5 @@ class PanicAttack {
 		// $this->message = $last_error['message'];
 		// $this->displaySimpleError();
 	}
-};
+}
 
