@@ -14,11 +14,11 @@ define('LARAVEL_START', microtime(true));
  |
  | In the case where Composer and the nice error handler from Laravel is
  | not provided we still may need to display erros. This gives us access
- | to a simple pretty error page via the function
- | displaySimpleError($tite, $code, $message) instead of a plain white
- | blank one with error XXX in the top left corner.
+ | to a simple pretty error page via the function displaySimpleError()
+ | instead of a plain white blank one with error XXX in the top left
+ | corner.
  */
-require_once __DIR__ . '/../bootstrap/simple-errors.php';
+require_once __DIR__ . '/../bootstrap/PanicAttack.php';
 
 /*
  |--------------------------------------------------------------------------
@@ -40,12 +40,7 @@ require __DIR__ . '/../bootstrap/initialize.php';
 | loading any of our classes later on. It feels great to relax.
 |
 */
-
-$composer_not_found = true;
 require __DIR__ . '/../vendor/autoload.php';
-
-// we disable the onComposerNotFoundDie() handler.
-$composer_not_found = false;
 
 /*
 |--------------------------------------------------------------------------

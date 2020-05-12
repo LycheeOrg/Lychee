@@ -50,7 +50,9 @@ class RSSController extends Controller
 				$q->whereIn('album_id',
 					$this->albumFunctions->getPublicAlbums())
 					->orWhere('public', '=', '1');
-			})->get();
+			})
+			->limit(Configs::get_Value('rss_max_items', '100'))
+			->get();
 
 		$photos = $photos->map(function ($photo_model) {
 			$photo = $photo_model->prepareData();

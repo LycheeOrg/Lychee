@@ -13,34 +13,30 @@
  | protocol.
  */
 if (function_exists('apache_get_modules') && !in_array('mod_rewrite', apache_get_modules())) {
-	displaySimpleError('mod_rewrite is not enabled', 503, 'You are using apache but <code>mod_rewrite</code> is not enabled.<br>
-	Please do: <code>a2enmod rewrite</code>');
-	exit;
+	$oups = new PanicAttack();
+	$oups->apacheRewrite();
 }
+
+
 
 /*
  |--------------------------------------------------------------------------
- | Catch error where composer is loading properly.
+ | Catch error (worse case scenario)
  |--------------------------------------------------------------------------
  |
  | Try-catch does not work on require. As a result we use the
  | register_shutdown_function to handle such errors.
  |
- | Here we assume this will only fail if the file is not present as the
- | most probable error source. We set up a kind reminder that composer
- | needs to be run in order to have Lychee working.
- |
- | As there is no way to unregister such function in php we use the global
- | variable $composer_not_found to disable this behavior at later steps of
- | the execution.
  */
-function onComposerNotFoundDie()
+function panicHelp()
 {
-	global $composer_not_found;
-	if ($composer_not_found) {
-		displaySimpleError('vendor/autoload.php not found', 503, '<code>../vendor/autoload.php</code> not found.<br>
-		Please do: <code>composer install --no-dev --prefer-dist</code>');
+	$last_error = error_get_last();
+	if ($last_error && $last_error['type']==E_ERROR)
+	{
+		$oups = new PanicAttack();
+		$message = substr($last_error['message'], 0, 200);
+		$oups->handle($message);
 	}
 }
-register_shutdown_function('onComposerNotFoundDie');
+register_shutdown_function('panicHelp');
 

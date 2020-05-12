@@ -30,6 +30,13 @@ class Rss extends Migration
 				'cat' => 'Mod RSS',
 				'type_range' => INT,
 			],
+			[
+				'key' => 'rss_max_items',
+				'value' => '100',
+				'confidentiality' => 0,
+				'cat' => 'Mod RSS',
+				'type_range' => INT,
+			],
 		]);
 	}
 
@@ -42,5 +49,6 @@ class Rss extends Migration
 	{
 		Configs::where('key', '=', 'rss_enable')->delete();
 		Configs::where('key', '=', 'rss_recent_days')->delete();
+		Configs::where('key', '=', 'rss_max_items')->delete();
 	}
 }
