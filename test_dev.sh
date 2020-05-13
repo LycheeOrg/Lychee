@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -e
+set -o pipefail
 
 composer install --prefer-dist --no-interaction
 cp .env.${SQL}.travis .env
