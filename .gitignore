@@ -48,3 +48,4 @@ clover.xml
 installed.log
 .DS_Store
 .NO_SECURE_KEY
+.NO_AUTO_COMPOSER_MIGRATE

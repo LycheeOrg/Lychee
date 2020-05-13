@@ -67,14 +67,10 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover",
-            "@make_user_css",
-            "@create_sqlite_default_db"
+            "@install_files"
         ],
-        "make_user_css": [
-            "touch public/dist/user.css"
-        ],
-        "create_sqlite_default_db": [
-            "touch database/database.sqlite"
+        "install_files": [
+            "sh install_files.sh"
         ]
     },
     "config": {
