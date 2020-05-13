@@ -1,19 +1,7 @@
 #!/bin/sh
 NO_COLOR="\033[0m"
-RED="\033[38;5;009m"
 GREEN="\033[38;5;010m"
-YELLOW="\033[38;5;011m"
 ORANGE="\033[38;5;214m"
-LIGHTPURPLE="\033[38;5;177m"
-PURPLE="\033[38;5;135m"
-CYAN="\033[38;5;014m"
-LIGHTBLUE="\033[38;5;39m"
-BLUE="\033[38;5;75m"
-DARKBLUE="\033[38;5;33m"
-LIGHTGRAY="\033[38;5;252m"
-DARKGRAY="\033[38;5;242m"
-BRIGHTRED="\033[91m"
-BOLD="\033[1m"
 
 echo "\n${GREEN}post merge hook start${NO_COLOR}\n"
 
@@ -21,14 +9,17 @@ echo "\n${GREEN}post merge hook start${NO_COLOR}\n"
 # If yes this means we are in dev mode.
 PHPUNIT="vendor/bin/php-cs-fixer"
 
-if [ -x "$PHPUNIT" ]; then
-    echo "\n${ORANGE}Dev mode detected${NO_COLOR}\n"
-    composer install --no-suggest
+if [ -x ".NO_AUTO_COMPOSER_MIGRATE" ]; then
+    if [ -x "$PHPUNIT" ]; then
+        echo "\n${ORANGE}Dev mode detected${NO_COLOR}\n"
+        composer install --no-suggest
+    else
+        echo "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
+        composer install --no-dev --prefer-dist --no-suggest
+    fi
+    php artisan migrate
 else
-    echo "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
-    composer install --no-dev --prefer-dist --no-suggest
+    echo "\n${ORANGE}composer and database migraion skipped as per requested.${NO_COLOR}\n"
 fi
-php artisan migrate
 
-
-echo "\n${RED}post merge hook finish${NO_COLOR}\n"
+echo "\n${GREEN}post merge hook finish${NO_COLOR}\n"
