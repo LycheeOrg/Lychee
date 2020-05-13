@@ -18,6 +18,8 @@ if (env('APP_ENV') === 'dev') {
 	URL::forceScheme('https');
 }
 
+Route::feeds();
+
 Route::get('/', 'IndexController@show')->name('home')->middleware('installed');
 Route::get('/phpinfo', 'IndexController@phpinfo')->middleware('admin');
 Route::get('/gallery', 'IndexController@gallery')->name('gallery')->middleware('installed');
@@ -98,4 +100,5 @@ Route::post('/api/Logs::clear', 'LogController@clear')->middleware('admin');
 
 Route::post('/api/search', 'SearchController@search');
 
+// This route NEEDS to be the last one as it will catch anything else.
 Route::get('/{page}', 'PageController@page');

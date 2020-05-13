@@ -26,6 +26,7 @@
         "php-http/guzzle6-adapter": "^2.0",
         "php-http/message": "^1.8",
         "spatie/guzzle-rate-limiter-middleware": "^1.0",
+        "spatie/laravel-feed": "^2.6",
         "symfony/cache": "^5.0"
     },
     "require-dev": {
