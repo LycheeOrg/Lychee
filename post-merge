@@ -7,7 +7,7 @@ echo "\n${GREEN}post merge hook start${NO_COLOR}\n"
 
 # we check if vendor/bin/phpunit is present.
 # If yes this means we are in dev mode.
-PHPUNIT="vendor/bin/php-cs-fixer"
+PHPUNIT="vendor/bin/phpunit"
 
 if [ -x ".NO_AUTO_COMPOSER_MIGRATE" ]; then
     if [ -x "$PHPUNIT" ]; then
@@ -19,7 +19,7 @@ if [ -x ".NO_AUTO_COMPOSER_MIGRATE" ]; then
     fi
     php artisan migrate
 else
-    echo "\n${ORANGE}composer and database migraion skipped as per requested.${NO_COLOR}\n"
+    echo "\n${ORANGE}composer and database migration skipped as per requested.${NO_COLOR}\n"
 fi
 
 echo "\n${GREEN}post merge hook finish${NO_COLOR}\n"
