@@ -22,10 +22,10 @@ echo "\n${GREEN}post merge hook start${NO_COLOR}\n"
 PHPUNIT="vendor/bin/php-cs-fixer"
 
 if [ -x "$PHPUNIT" ]; then
-    echo "Dev mode detected"
+    echo "\n${ORANGE}Dev mode detected${NO_COLOR}\n"
     composer install --no-suggest
 else
-    echo "Dist mode detected"
+    echo "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
     composer install --no-dev --prefer-dist --no-suggest
 fi
 php artisan migrate
