@@ -14,6 +14,57 @@ class GdHandler implements ImageHandlerInterface
 	private $compressionQuality;
 
 	/**
+	 * Rotates a given image resource based on the given orientation.
+	 *
+	 * @param resource $image       the image reference to rotate
+	 * @param int      $orientation the orientation of the original image
+	 *
+	 * @return array a dictionary of width and height of the rotated image
+	 */
+	private function autoRotateInternal(&$image, int $orientation): array
+	{
+		switch ($orientation) {
+			case 1:
+				// nothing to do
+				break;
+			case 2:
+				imageflip($image, IMG_FLIP_HORIZONTAL);
+				break;
+
+			case 3:
+				$image = imagerotate($image, -180, 0);
+				break;
+
+			case 4:
+				imageflip($image, IMG_FLIP_VERTICAL);
+				break;
+
+			case 5:
+				$image = imagerotate($image, -90, 0);
+				imageflip($image, IMG_FLIP_HORIZONTAL);
+				break;
+
+			case 6:
+				$image = imagerotate($image, -90, 0);
+				break;
+
+			case 7:
+				$image = imagerotate($image, 90, 0);
+				imageflip($image, IMG_FLIP_HORIZONTAL);
+				break;
+
+			case 8:
+				$image = imagerotate($image, 90, 0);
+				break;
+
+			default:
+				break;
+		}
+
+		return ['width' => imagesx($image), 'height' => imagesy($image)];
+	}
+
+	/**
 	 * {@inheritdoc}
 	 */
 	public function __construct(int $compressionQuality)
@@ -54,6 +105,11 @@ class GdHandler implements ImageHandlerInterface
 
 		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
+		// the image may need to be rotated prior saving
+		$exif = exif_read_data($source);
+		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
+		$dimensions = $this->autoRotateInternal($image, $orientation);
+
 		switch ($mime) {
 			case IMAGETYPE_JPEG:
 			case IMAGETYPE_JPEG2000:
@@ -71,8 +127,8 @@ class GdHandler implements ImageHandlerInterface
 		imagedestroy($image);
 		imagedestroy($sourceImg);
 
-		$resWidth = $newWidth;
-		$resHeight = $newHeight;
+		$resWidth = $dimensions['width'];
+		$resHeight = $dimensions['height'];
 
 		return true;
 	}
@@ -106,6 +162,12 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		$this->fastImageCopyResampled($image, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
+
+		// the image may need to be rotated prior saving
+		$exif = exif_read_data($source);
+		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
+		$this->autoRotateInternal($image, $orientation);
+
 		imagejpeg($image, $destination, $this->compressionQuality);
 
 		imagedestroy($image);
@@ -121,51 +183,18 @@ class GdHandler implements ImageHandlerInterface
 	{
 		$image = imagecreatefromjpeg($path);
 
-		$rotate = true;
-		switch ($info['orientation']) {
-			case 1:
-				$rotate = false;
-				break;
-			case 2:
-				imageflip($image, IMG_FLIP_HORIZONTAL);
-				break;
+		$orientation = isset($info['orientation']) && $info['orientation'] !== '' ? $info['orientation'] : 1;
+		$rotate = $orientation !== 1;
 
-			case 3:
-				$image = imagerotate($image, -180, 0);
-				break;
+		$dimensions = $this->autoRotateInternal($image, $orientation);
 
-			case 4:
-				imageflip($image, IMG_FLIP_VERTICAL);
-				break;
-
-			case 5:
-				$image = imagerotate($image, -90, 0);
-				imageflip($image, IMG_FLIP_HORIZONTAL);
-				break;
-
-			case 6:
-				$image = imagerotate($image, -90, 0);
-				break;
-
-			case 7:
-				$image = imagerotate($image, 90, 0);
-				imageflip($image, IMG_FLIP_HORIZONTAL);
-				break;
-
-			case 8:
-				$image = imagerotate($image, 90, 0);
-				break;
-		}
-
-		if ($rotate) { // we only rotate if there is a need. Fixes #111
+		if ($rotate) {
 			imagejpeg($image, $path, 100);
 		}
 
 		imagedestroy($image);
 
-		list($width, $height) = getimagesize($path);
-
-		return ['width' => $width, 'height' => $height];
+		return $dimensions;
 	}
 
 	/**
