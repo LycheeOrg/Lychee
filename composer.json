@@ -35,7 +35,7 @@
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^2.16",
         "itsgoingd/clockwork": "^3.1",
-        "laravel/homestead": "^10.0",
+        "laravel/homestead": "^10.8",
         "nunomaduro/collision": "^4.1",
         "phpunit/phpunit": "^8.5"
     },
