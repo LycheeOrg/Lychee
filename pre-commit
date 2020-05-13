@@ -17,12 +17,6 @@ BOLD="\033[1m"
 
 echo "\n${GREEN}pre commit hook start${NO_COLOR}\n"
 
-CURRENT_DIRECTORY=`pwd`
-GIT_HOOKS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-PROJECT_DIRECTORY="$GIT_HOOKS_DIR/../.."
-
-cd $PROJECT_DIRECTORY;
 PHP_CS_FIXER="vendor/bin/php-cs-fixer"
 
 if [ -x "$PHP_CS_FIXER" ]; then
@@ -38,5 +32,4 @@ else
     echo ""
 fi
 
-cd $CURRENT_DIRECTORY;
 echo "\n${RED}pre commit hook finish${NO_COLOR}\n"
