@@ -15,7 +15,7 @@ DARKGRAY="\033[38;5;242m"
 BRIGHTRED="\033[91m"
 BOLD="\033[1m"
 
-echo -e $GREEN"pre commit hook start"$NO_COLOR
+echo -e "\n${GREEN}pre commit hook start${NO_COLOR}\n"
 
 CURRENT_DIRECTORY=`pwd`
 GIT_HOOKS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
