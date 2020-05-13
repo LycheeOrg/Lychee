@@ -15,7 +15,7 @@ DARKGRAY="\033[38;5;242m"
 BRIGHTRED="\033[91m"
 BOLD="\033[1m"
 
-echo "${GREEN}post merge hook start${NO_COLOR}"
+echo -e "\n${GREEN}post merge hook start${NO_COLOR}\n"
 
 # we check if vendor/bin/phpunit is present.
 # If yes this means we are in dev mode.
@@ -31,4 +31,4 @@ fi
 php artisan migrate
 
 
-echo "${RED}post merge hook finish${NO_COLOR}"
+echo -e "\n${RED}post merge hook finish${NO_COLOR}\n"
