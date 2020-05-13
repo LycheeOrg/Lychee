@@ -1,3 +1,18 @@
 #!/bin/sh
-composer install --no-dev --no-suggest
+echo "post merge hook start"
+
+# we check if vendor/bin/phpunit is present.
+# If yes this means we are in dev mode.
+PHPUNIT="vendor/bin/php-cs-fixer"
+
+if [ -x "$PHPUNIT" ]; then
+    echo "Dev mode detected"
+    composer install --no-suggest
+else
+    echo "Dist mode detected"
+    composer install --no-dev --prefer-dist --no-suggest
+fi
 php artisan migrate
+
+
+echo "post merge hook start"

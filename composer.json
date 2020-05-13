@@ -68,13 +68,18 @@
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover",
             "@make_user_css",
-            "@create_sqlite_default_db"
+            "@create_sqlite_default_db",
+            "@setup_git_hooks"
         ],
         "make_user_css": [
             "touch public/dist/user.css"
         ],
         "create_sqlite_default_db": [
             "touch database/database.sqlite"
+        ],
+        "setup_git_hooks": [
+            "cp pre-commit .git/hooks/",
+            "cp post-merge .git/hooks/"
         ]
     },
     "config": {
