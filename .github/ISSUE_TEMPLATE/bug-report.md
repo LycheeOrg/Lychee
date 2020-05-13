@@ -23,6 +23,6 @@ assignees: ''
 *If applicable, add screenshots to help explain your problem.*
 
 ### Output of the diagnostics  [REQUIRED]
-*(Settings => Diagnostics or https://example.com/Diagnostics )*
+*(Settings => Diagnostics or https://example.com/Diagnostics or `php artisan lychee:diagnostics`)*
 
 ### Browser and system
