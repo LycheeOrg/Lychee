@@ -2,12 +2,10 @@
 
 namespace App\Exceptions\Handlers;
 
-use App\Redirections\ToInstall;
-use Exception;
 use ErrorException;
+use Exception;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
-use RuntimeException;
 use Throwable;
 
 class ApplyComposer
@@ -31,6 +29,6 @@ class ApplyComposer
 	// @codeCoverageIgnoreStart
 	public function go()
 	{
-        return response()->view('error.error', ['code' => '500', 'message' => 'Missing dependency, please do: <code>composer install --no-dev</code><br>(or use the release channel.)']);
+		return response()->view('error.error', ['code' => '500', 'message' => 'Missing dependency, please do: <code>composer install --no-dev</code><br>(or use the release channel.)']);
 	}
 }

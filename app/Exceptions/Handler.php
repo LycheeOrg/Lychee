@@ -3,9 +3,9 @@
 namespace App\Exceptions;
 
 use App\Exceptions\Handlers\AccessDBDenied;
+use App\Exceptions\Handlers\ApplyComposer;
 use App\Exceptions\Handlers\InvalidPayload;
 use App\Exceptions\Handlers\NoEncryptionKey;
-use App\Exceptions\Handlers\ApplyComposer;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
