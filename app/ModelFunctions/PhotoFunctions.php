@@ -121,12 +121,12 @@ class PhotoFunctions
 
 				$type = @exif_imagetype($file['tmp_name']);
 				if (!in_array($type, $this->validTypes, true)) {
-					Logs::error(__METHOD__, __LINE__, 'Photo type not supported: '.$file['name']);
+					Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $file['name']);
 
 					return 'Photo type not supported!';
 				}
 				// we have maybe a raw file
-				Logs::error(__METHOD__, __LINE__, 'Photo format not supported: '.$file['name']);
+				Logs::error(__METHOD__, __LINE__, 'Photo format not supported: ' . $file['name']);
 
 				return 'Photo format not supported!';
 			}
