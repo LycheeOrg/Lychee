@@ -12,11 +12,12 @@ php:
   - '7.3'
   - '7.4'
 #  - nightly
+env: 
+  - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+  - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
 
 jobs:
   include:
-    - env: SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
-    - env: SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
     - env: SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
       if: branch = master
     - env: SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
