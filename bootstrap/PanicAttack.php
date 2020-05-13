@@ -1,34 +1,33 @@
 <?php
 
-class PanicAttack {
-
-	private string $title = '';
-	private int $code = 0;
-	private string $message = '';
+class PanicAttack
+{
+	private $title = '';
+	private $code = 0;
+	private $message = '';
 
 	/**
 	 * Check if all the elements of the array are in a string.
-	 * 
+	 *
 	 * @param string $haystack string to check against
-	 * @param array $needles array of needles to check
-	 * 
-	 * @return bool 
+	 * @param array  $needles  array of needles to check
+	 *
+	 * @return bool
 	 */
 	private function contains(string $haystack, array $needles)
 	{
-		foreach ($needles as $needle)
-		{
-			if (strpos($haystack, $needle) === false)
-			{
+		foreach ($needles as $needle) {
+			if (strpos($haystack, $needle) === false) {
 				return false;
 			}
 		}
+
 		return true;
 	}
-	
+
 	/**
 	 * Display errors as nice page.
-	 * 
+	 *
 	 * This function is an EXIT.
 	 */
 	private function displaySimpleError()
@@ -45,7 +44,7 @@ class PanicAttack {
 	}
 
 	/**
-	 * Called from ../index.php
+	 * Called from ../index.php.
 	 */
 	public function root()
 	{
@@ -57,7 +56,7 @@ class PanicAttack {
 	}
 
 	/**
-	 * Called from bootstrap/initialize.php if apache rewrite is not enabled. 
+	 * Called from bootstrap/initialize.php if apache rewrite is not enabled.
 	 */
 	public function apacheRewrite()
 	{
@@ -65,9 +64,9 @@ class PanicAttack {
 		$this->code = 503;
 		$this->message = 'You are using apache but <code>mod_rewrite</code> is not enabled.<br>
 		Please do: <code>a2enmod rewrite</code>';
-		$this->displaySimpleError();	
+		$this->displaySimpleError();
 	}
-	
+
 	/*
 	 |--------------------------------------------------------------------------
 	 | Catch error where composer is loading properly.
@@ -100,20 +99,17 @@ class PanicAttack {
 	}
 
 	/**
-	 *  dispatcher
+	 *  dispatcher.
 	 */
 	public function handle(string $error_message)
 	{
-
 		$handling = [
 			'composerVendorNotFound' => ['require', 'Failed opening required', 'vendor/autoload.php'],
 			'checkAccessRightsViews' => ['file_put_contents', 'storage/framework/views', 'Permission denied'],
 		];
 
-		foreach ($handling as $fun => $needles) 
-		{
-			if ($this->contains($error_message, $needles))
-			{
+		foreach ($handling as $fun => $needles) {
+			if ($this->contains($error_message, $needles)) {
 				$this->$fun();
 			}
 		}
