@@ -12,29 +12,30 @@ php:
   - '7.3'
   - '7.4'
 #  - nightly
-env:
-  matrix:
-    - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
-    - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
-    - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+
+jobs:
+  include:
+    - env: SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+    - env: SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+    - env: SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
       if: branch = master
-    - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+    - env: SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
       if: branch = master
-    - SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+    - env: SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
       if: branch = master
-    - SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+    - env: SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
       if: branch = master
-    - SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+    - env: SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
       if: branch = master
-    - SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+    - env: SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
       if: branch = master
-    - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+    - env: SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
       if: branch = master
-    - SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+    - env: SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
       if: branch = master
-    - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+    - env: SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
       if: branch = master
-    - SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+    - env: SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
       if: branch = master
 
 cache:
