@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 NO_COLOR="\033[0m"
 RED="\033[38;5;009m"
 GREEN="\033[38;5;010m"
@@ -15,7 +15,7 @@ DARKGRAY="\033[38;5;242m"
 BRIGHTRED="\033[91m"
 BOLD="\033[1m"
 
-echo -e "\n${GREEN}pre commit hook start${NO_COLOR}\n"
+echo "\n${GREEN}pre commit hook start${NO_COLOR}\n"
 
 CURRENT_DIRECTORY=`pwd`
 GIT_HOOKS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -39,4 +39,4 @@ else
 fi
 
 cd $CURRENT_DIRECTORY;
-echo -e "\n${RED}pre commit hook finish${NO_COLOR}\n"
+echo "\n${RED}pre commit hook finish${NO_COLOR}\n"
