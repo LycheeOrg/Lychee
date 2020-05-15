@@ -19,7 +19,9 @@ else
         echo "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
         composer install --no-dev --prefer-dist --no-suggest
     fi
-    php artisan migrate
+    if [ -f ".env" ]; then
+        php artisan migrate
+    fi
 fi
 
 echo "\n${GREEN}post merge hook finish${NO_COLOR}\n"

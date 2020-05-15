@@ -18,33 +18,36 @@ dist-gen: clean composer
 	@mkdir Lychee/public/uploads/raw
 	@mkdir Lychee/public/uploads/import
 	@mkdir Lychee/public/sym
-	@cp -r public/dist                      Lychee/public
-	@cp -r public/installer                 Lychee/public
-	@cp -r public/img/*                     Lychee/public/img
 	@cp -r app                              Lychee
 	@cp -r bootstrap                        Lychee
 	@cp -r config                           Lychee
+	@cp -r composer-cache                   Lychee
 	@cp -r database                         Lychee
-	@cp -r resources                        Lychee
-	@cp -r index.php                        Lychee
-	@cp -r simple_error_template.html       Lychee
-	@cp -r routes                           Lychee
-	@cp -r storage                          Lychee
-	@cp -r vendor                           Lychee 2> /dev/null || true
+	@cp -r public/dist                      Lychee/public
+	@cp -r public/installer                 Lychee/public
+	@cp -r public/img/*                     Lychee/public/img
 	@cp -r public/.htaccess                 Lychee/public
 	@cp -r public/.user.ini                 Lychee/public
 	@cp -r public/favicon.ico               Lychee/public
 	@cp -r public/index.php                 Lychee/public
 	@cp -r public/robots.txt                Lychee/public
 	@cp -r public/web.config                Lychee/public
+	@cp -r resources                        Lychee
+	@cp -r routes                           Lychee
+	@cp -r storage                          Lychee
+	@cp -r vendor                           Lychee 2> /dev/null || true
 	@cp -r .env.example                     Lychee
 	@cp -r artisan                          Lychee
 	@cp -r composer.json                    Lychee
 	@cp -r composer.lock                    Lychee
-	@cp -r composer-cache                   Lychee
+	@cp -r index.php                        Lychee
+	@cp -r install_Files.sh                 Lychee
 	@cp -r LICENSE                          Lychee
+	@cp -r post-merge                       Lychee
+	@cp -r pre-commit                       Lychee
 	@cp -r readme.md                        Lychee
 	@cp -r server.php                       Lychee
+	@cp -r simple_error_template.html       Lychee
 	@cp -r version.md                       Lychee
 	@touch Lychee/storage/logs/laravel.log
 	@touch Lychee/public/dist/user.css
