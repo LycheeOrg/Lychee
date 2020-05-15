@@ -20,7 +20,7 @@ else
         composer install --no-dev --prefer-dist --no-suggest
     fi
     if [ -f ".env" ]; then
-        php artisan migrate
+        php artisan migrate --force
     fi
 fi
 
