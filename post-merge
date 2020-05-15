@@ -14,12 +14,15 @@ if [ -f ".NO_AUTO_COMPOSER_MIGRATE" ]; then
 else
     if [ -x "$PHPUNIT" ]; then
         echo "\n${ORANGE}Dev mode detected${NO_COLOR}\n"
+        echo "composer install --no-suggest"
         composer install --no-suggest
     else
         echo "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
+        echo "composer install --no-dev --prefer-dist --no-suggest"
         composer install --no-dev --prefer-dist --no-suggest
     fi
     if [ -f ".env" ]; then
+        echo "php artisan migrate --force"
         php artisan migrate --force
     fi
 fi
