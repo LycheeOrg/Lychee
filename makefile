@@ -41,7 +41,7 @@ dist-gen: clean composer
 	@cp -r composer.json                    Lychee
 	@cp -r composer.lock                    Lychee
 	@cp -r index.php                        Lychee
-	@cp -r install_Files.sh                 Lychee
+	@cp -r install_files.sh                 Lychee
 	@cp -r LICENSE                          Lychee
 	@cp -r post-merge                       Lychee
 	@cp -r pre-commit                       Lychee
