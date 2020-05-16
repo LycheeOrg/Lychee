@@ -20,10 +20,10 @@ class AlbumTest extends TestCase
 		$albums_tests = new AlbumsUnitTest();
 		$albums_tests->add($this, '0', 'test_album', 'false');
 
-		$albums_tests->get($this, 'r', '', 'true');
-		$albums_tests->get($this, 's', '', 'true');
-		$albums_tests->get($this, 'f', '', 'true');
-		$albums_tests->get($this, '0', '', 'true');
+		$albums_tests->get($this, 'recent', '', 'true');
+		$albums_tests->get($this, 'starred', '', 'true');
+		$albums_tests->get($this, 'public', '', 'true');
+		$albums_tests->get($this, 'unsorted', '', 'true');
 	}
 
 	public function test_add_read_logged()
@@ -33,10 +33,10 @@ class AlbumTest extends TestCase
 
 		$session_tests->log_as_id(0);
 
-		$albums_tests->get($this, 'r', '', 'true');
-		$albums_tests->get($this, 's', '', 'true');
-		$albums_tests->get($this, 'f', '', 'true');
-		$albums_tests->get($this, '0', '', 'true');
+		$albums_tests->get($this, 'recent', '', 'true');
+		$albums_tests->get($this, 'starred', '', 'true');
+		$albums_tests->get($this, 'public', '', 'true');
+		$albums_tests->get($this, 'unsorted', '', 'true');
 
 		$albumID = $albums_tests->add($this, '0', 'test_album', 'true');
 		$albums_tests->see_in_albums($this, $albumID);

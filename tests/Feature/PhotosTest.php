@@ -227,7 +227,7 @@ class PhotosTest extends TestCase
 		// check if the file is still there (without symlinks the photo would have been deleted)
 		$this->assertEquals(true, file_exists('public/uploads/import/night.jpg'));
 
-		$response = $albums_tests->get($this, 'r', '', 'true');
+		$response = $albums_tests->get($this, 'recent', '', 'true');
 		$content = $response->getContent();
 		$array_content = json_decode($content);
 		$num_recent = Photo::recent()->count();

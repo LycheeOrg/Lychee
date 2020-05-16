@@ -19,6 +19,13 @@ use Storage;
 
 class AlbumFunctions
 {
+	protected $smart_albums = [
+		'starred' => '',
+		'public' => '',
+		'recent' => '',
+		'unsorted' => '',
+		'random' => '',
+	];
 	/**
 	 * @var readAccessFunctions
 	 */
@@ -57,11 +64,7 @@ class AlbumFunctions
 	 */
 	public function is_smart_album($albumID)
 	{
-		if ($albumID === 'f' || $albumID === 's' || $albumID === 'r' || $albumID === '0') {
-			return true;
-		}
-
-		return false;
+		return array_key_exists($albumID, $this->smart_albums);
 	}
 
 	/**
@@ -121,6 +124,88 @@ class AlbumFunctions
 		} while ($retry);
 
 		return $album;
+	}
+
+	public function getStarred(array &$return)
+	{
+		if ($this->sessionFunctions->is_logged_in()) {
+			$UserId = $this->sessionFunctions->id();
+			$user = User::find($UserId);
+
+			if ($UserId == 0 || $user->upload) {
+				$return['public'] = '0';
+				$return['downloadable'] = '1';
+
+				return Photo::select_stars(Photo::OwnedBy($UserId));
+			}
+		}
+		$return['public'] = '1';
+		$return['downloadable'] = Configs::get_value('downloadable', '0');
+		$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
+
+		return Photo::select_stars(Photo::whereIn('album_id', $this->getPublicAlbums()));
+	}
+
+	public function getPublic(array &$return)
+	{
+		$UserId = $this->sessionFunctions->id();
+		$return['public'] = '0';
+		$return['downloadable'] = '1';
+		$return['share_button_visible'] = '0';
+
+		return Photo::select_public(Photo::OwnedBy($UserId));
+	}
+
+	public function getRecent(array &$return)
+	{
+		if ($this->sessionFunctions->is_logged_in()) {
+			$UserId = $this->sessionFunctions->id();
+			$user = User::find($UserId);
+
+			if ($UserId == 0 || $user->upload) {
+				$return['public'] = '0';
+				$return['downloadable'] = '1';
+
+				return Photo::select_recent(Photo::OwnedBy($UserId));
+			}
+		}
+		$return['public'] = '1';
+		$return['downloadable'] = Configs::get_value('downloadable', '0');
+		$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
+
+		return Photo::select_recent(Photo::whereIn('album_id', $this->getPublicAlbums()));
+	}
+
+	public function getUnsorted(array &$return)
+	{
+		$UserId = $this->sessionFunctions->id();
+		$return['public'] = '0';
+		$return['downloadable'] = '1';
+		$return['share_button_visible'] = '0';
+
+		return Photo::select_unsorted(Photo::OwnedBy($UserId));
+	}
+
+	public function getAlbum(array &$return, $albumID)
+	{
+		$album = Album::with('children')->find($albumID);
+		$return = $album->prepareData();
+		// we just require is_logged_in for this one.
+		$username = null;
+		if ($this->sessionFunctions->is_logged_in()) {
+			$return['owner'] = $username = $album->owner->username;
+		}
+
+		$full_photo = $album->full_photo_visible();
+		// To speed things up, we limit subalbum data to at most one
+		// level down.
+		$return['albums'] = $this->get_albums($album, $username, 1);
+		foreach ($return['albums'] as &$alb) {
+			unset($alb['thumbIDs']);
+		}
+		unset($return['thumbIDs']);
+
+		return Photo::set_order(Photo::where('album_id', '=', $albumID));
 	}
 
 	/**
@@ -424,12 +509,11 @@ class AlbumFunctions
 		/**
 		 * Initialize return var.
 		 */
-		$return = [
-			'unsorted' => null,
-			'public' => null,
-			'starred' => null,
-			'recent' => null,
-		];
+		$return = [];
+
+		foreach ($this->smart_albums as $album => $method) {
+			$return[$album] = null;
+		}
 
 		if ($this->sessionFunctions->is_logged_in()) {
 			$UserId = $this->sessionFunctions->id();

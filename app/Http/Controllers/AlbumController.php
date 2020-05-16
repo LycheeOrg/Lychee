@@ -82,77 +82,23 @@ class AlbumController extends Controller
 		$return['albums'] = [];
 		// Get photos
 		// Get album information
-		$UserId = $this->sessionFunctions->id();
 		$full_photo = Configs::get_value('full_photo', '1') == '1';
 
 		switch ($request['albumID']) {
-			case 'f':
-				if ($this->sessionFunctions->is_logged_in()) {
-					$user = User::find($UserId);
-
-					if ($UserId == 0 || $user->upload) {
-						$return['public'] = '0';
-						$return['downloadable'] = '1';
-						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
-						break;
-					}
-				}
-				$return['public'] = '1';
-				$return['downloadable'] = Configs::get_value('downloadable', '0');
-				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
-				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+			case 'starred':
+				$photos_sql = $this->albumFunctions->getStarred($return);
 				break;
-			case 's':
-				$return['public'] = '0';
-				$return['downloadable'] = '1';
-				$return['share_button_visible'] = '0';
-				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
+			case 'public':
+				$photos_sql = $this->albumFunctions->getPublic($return);
 				break;
-			case 'r':
-				if ($this->sessionFunctions->is_logged_in()) {
-					$user = User::find($UserId);
-
-					if ($UserId == 0 || $user->upload) {
-						$return['public'] = '0';
-						$return['downloadable'] = '1';
-						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
-						break;
-					}
-				}
-				$return['public'] = '1';
-				$return['downloadable'] = Configs::get_value('downloadable', '0');
-				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
-				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+			case 'recent':
+				$photos_sql = $this->albumFunctions->getRecent($return);
 				break;
-			case '0':
-				$return['public'] = '0';
-				$return['downloadable'] = '1';
-				$return['share_button_visible'] = '0';
-				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
+			case 'unsorted':
+				$photos_sql = $this->albumFunctions->getUnsorted($return);
 				break;
 			default:
-				$album = Album::with('children')->find($request['albumID']);
-				if ($album === null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-					return 'false';
-				}
-				$return = $album->prepareData();
-				// we just require is_logged_in for this one.
-				$username = null;
-				if ($this->sessionFunctions->is_logged_in()) {
-					$return['owner'] = $username = $album->owner->username;
-				}
-
-				$full_photo = $album->full_photo_visible();
-				// To speed things up, we limit subalbum data to at most one
-				// level down.
-				$return['albums'] = $this->albumFunctions->get_albums($album, $username, 1);
-				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
-				foreach ($return['albums'] as &$alb) {
-					unset($alb['thumbIDs']);
-				}
-				unset($return['thumbIDs']);
+				$photos_sql = $this->albumFunctions->getAlbum($return, $request['albumID']);
 				break;
 		}
 
