@@ -330,6 +330,7 @@ return [
 
 		'script-src' => [
 			'allow' => [
+				'https://www.dropbox.com/static/api/1/dropins.js',
 				// 'url',
 			],
 			'hashes' => [
