@@ -52,7 +52,7 @@ Sign in and click the gear in the top left corner to change your settings. [Sett
 
 ### Build
 
-Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://github.com/LycheeOrg/Lychee/wiki/Build)
+Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://lycheeorg.github.io/docs/node.html)
 
 ## Advanced Features
 
