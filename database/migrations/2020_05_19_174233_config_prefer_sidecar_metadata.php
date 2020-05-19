@@ -16,8 +16,8 @@ class AddSidecarSetting extends Migration
 
 		DB::table('configs')->insert([
 			[
-				'key' => 'use_xmp_sidecar',
-				'value' => 1,
+				'key' => 'prefer_sidecar_metadata',
+				'value' => 0,
 				'confidentiality' => 2,
 				'cat' => 'Image Processing',
 				'type_range' => BOOL,
@@ -32,6 +32,6 @@ class AddSidecarSetting extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'use_xmp_sidecar')->delete();
+		Configs::where('key', '=', 'prefer_sidecar_metadata')->delete();
 	}
 }

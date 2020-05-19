@@ -320,6 +320,14 @@ class Configs extends Model
 	}
 
 	/**
+	 * @return bool returns the sidecare metadata preference setting
+	 */
+	public static function preferSidecarMetadata()
+	{
+		return intval(self::get_value('prefer_sidecar_metadata')) === 1;
+	}
+
+	/**
 	 * Define scopes.
 	 */
 
