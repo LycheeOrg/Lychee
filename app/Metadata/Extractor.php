@@ -98,7 +98,14 @@ class Extractor
 
 		try {
 			// this can throw an exception in the case of Exiftool adapter!
-			$exif = $reader->read($filename);
+
+			// Get the 'real' file in case we are importing via symlinks
+			$realFile = readlink($filename) ?: $filename;
+			if (file_exists("$realFile.xmp")) {
+				$exif = $reader->read("$realFile.xmp");
+			} else {
+				$exif = $reader->read($filename);
+			}
 		} catch (\Exception $e) {
 			// Use Php native tools
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
