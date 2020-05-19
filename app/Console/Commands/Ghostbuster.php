@@ -123,8 +123,8 @@ class Ghostbuster extends Command
 						if ($dryrun) {
 							$this->line(str_pad($photo->url, 50) . $this->col->red(' photo will be removed') . '.');
 						} else {
-							// Laravel apparently doesn't thing dead symlinks 'exist', so manually remove the original here.
-							unlink("$path/$url");
+							// Laravel apparently doesn't think dead symlinks 'exist', so manually remove the original here.
+							unlink($path . '/' . $url);
 
 							$photo->predelete();
 							$photo->delete();
