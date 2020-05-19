@@ -69,8 +69,11 @@ class Ghostbuster extends Command
 			if ($url == 'index.html') {
 				continue;
 			}
-			$c = Photo::where('url', '=', $url)->count();
-			if ($c == 0) {
+
+			$isDeadSymlink = is_link("$path/$url") && !file_exists(readlink("$path/$url"));
+
+			$photos = Photo::where('url', '=', $url)->get();
+			if (count($photos) === 0 || $isDeadSymlink) {
 				$photoName = explode('.', $url);
 
 				$to_delete = [];
@@ -102,7 +105,7 @@ class Ghostbuster extends Command
 					if ($delete > 0) {
 						$total++;
 						if ($dryrun) {
-							$this->line(str_pad($del, 50) . $this->col->red(' will be removed') . '.');
+							$this->line(str_pad($del, 50) . $this->col->red(' file will be removed') . '.');
 						} else {
 							if ($delete == 1) {
 								Storage::delete($del);
@@ -111,6 +114,22 @@ class Ghostbuster extends Command
 								unlink($path . '/' . $del);
 							}
 							$this->line($this->col->red('removed file: ') . $del);
+						}
+					}
+				}
+
+				if ($isDeadSymlink) {
+					foreach ($photos as $photo) {
+						if ($dryrun) {
+							$this->line(str_pad($photo->url, 50) . $this->col->red(' photo will be removed') . '.');
+						} else {
+							// Laravel apparently doesn't thing dead symlinks 'exist', so manually remove the original here.
+							unlink("$path/$url");
+
+							$photo->predelete();
+							$photo->delete();
+
+							$this->line($this->col->red('removed photo: ') . $photo->url);
 						}
 					}
 				}
