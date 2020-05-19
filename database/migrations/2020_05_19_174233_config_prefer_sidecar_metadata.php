@@ -3,7 +3,7 @@
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-class AddSidecarSetting extends Migration
+class ConfigPreferSidecarMetadata extends Migration
 {
 	/**
 	 * Run the migrations.
