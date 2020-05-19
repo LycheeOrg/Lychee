@@ -98,14 +98,15 @@ class Extractor
 
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
-		$realFile = readlink($filename) ?: $filename;
-		if (file_exists("$realFile.xmp")) {
-			$sidecarData = $reader->read("$realFile.xmp")->getData();
-		}
 
 		try {
 			// this can throw an exception in the case of Exiftool adapter!
 			$exif = $reader->read($filename);
+
+			$realFile = readlink($filename) ?: $filename;
+			if (Configs::hasExiftool() && file_exists("$realFile.xmp")) {
+				$sidecarData = $reader->read("$realFile.xmp")->getData();
+			}
 		} catch (\Exception $e) {
 			// Use Php native tools
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
