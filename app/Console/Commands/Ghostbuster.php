@@ -70,7 +70,7 @@ class Ghostbuster extends Command
 				continue;
 			}
 
-			$isDeadSymlink = is_link("$path/$url") && !file_exists(readlink("$path/$url"));
+			$isDeadSymlink = is_link($path . '/' . $url) && !file_exists(readlink($path . '/' . $url));
 
 			$photos = Photo::where('url', '=', $url)->get();
 			if (count($photos) === 0 || $isDeadSymlink) {
