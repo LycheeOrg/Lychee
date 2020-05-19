@@ -3,7 +3,7 @@
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-class ConfigPreferSidecarMetadata extends Migration
+class ConfigPreferAvailableXmpMetadata extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -16,7 +16,7 @@ class ConfigPreferSidecarMetadata extends Migration
 
 		DB::table('configs')->insert([
 			[
-				'key' => 'prefer_sidecar_metadata',
+				'key' => 'prefer_available_xmp_metadata',
 				'value' => 0,
 				'confidentiality' => 2,
 				'cat' => 'Image Processing',
@@ -32,6 +32,6 @@ class ConfigPreferSidecarMetadata extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'prefer_sidecar_metadata')->delete();
+		Configs::where('key', '=', 'prefer_available_xmp_metadata')->delete();
 	}
 }

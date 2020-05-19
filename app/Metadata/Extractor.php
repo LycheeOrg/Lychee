@@ -104,8 +104,8 @@ class Extractor
 			$exif = $reader->read($filename);
 
 			$realFile = readlink($filename) ?: $filename;
-			if (Configs::hasExiftool() && file_exists("$realFile.xmp")) {
-				$sidecarData = $reader->read("$realFile.xmp")->getData();
+			if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
+				$sidecarData = $reader->read($realFile . '.xmp')->getData();
 			}
 		} catch (\Exception $e) {
 			// Use Php native tools
@@ -114,7 +114,7 @@ class Extractor
 			$exif = $reader->read($filename);
 		}
 
-		if (Configs::preferSidecarMetadata()) {
+		if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
 			$exif->setData(array_merge($exif->getData(), $sidecarData));
 		} else {
 			$exif->setData(array_merge($sidecarData, $exif->getData()));
