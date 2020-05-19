@@ -285,7 +285,7 @@ class PhotoFunctions
 		$info = $this->metadataExtractor->extract($path, $mimeType);
 		if ($kind == 'raw') {
 			$info['type'] = 'raw';
-		} 
+		}
 
 		// Use title of file if IPTC title missing
 		if ($info['title'] === '') {
@@ -295,7 +295,6 @@ class PhotoFunctions
 				$info['title'] = substr(basename($file['name'], $extension), 0, 98);
 			}
 		}
-
 
 		$photo->title = $info['title'];
 		$photo->url = $photo_name;
