@@ -278,6 +278,9 @@ class Photo extends Model
 
 			// We need to format the framerate (stored as focal) -> max 2 decimal digits
 			$photo['focal'] = round($photo['focal'], 2);
+		} elseif ($this->type == 'raw') {
+			// It's a raw file -> we also use jpeg as extension
+			$photoUrl = $this->thumbUrl;
 		} else {
 			$photoUrl = $this->url;
 		}
@@ -488,7 +491,7 @@ class Photo extends Model
 			}
 		}
 
-		if (strpos($this->type, 'video') === 0) {
+		if ((strpos($this->type, 'video') === 0) || ($this->type == 'raw')) {
 			$photoName = $this->thumbUrl;
 		} else {
 			$photoName = $this->url;

@@ -394,8 +394,16 @@ class PhotoFunctions
 					}
 				}
 
-				// Create Thumb
 				if ($kind == 'raw') {
+					try {
+						$frame_tmp = $this->createJpgFromRaw($photo);
+					} catch (Exception $exception) {
+						Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+					}
+				}
+
+				// Create Thumb
+				if ($kind == 'raw' && $frame_tmp == '') {
 					$photo->thumbUrl = '';
 					$photo->thumb2x = 0;
 				} elseif (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
@@ -444,10 +452,11 @@ class PhotoFunctions
 	 */
 	public function createSmallerImages(Photo $photo, string $frame_tmp = '')
 	{
-		if ($frame_tmp === '') {
+		if ($frame_tmp === '' || $photo->type == 'raw') {
+			// Create medium file for normal photos and for raws
 			$mediumMaxWidth = intval(Configs::get_value('medium_max_width'));
 			$mediumMaxHeight = intval(Configs::get_value('medium_max_height'));
-			$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight);
+			$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight, $frame_tmp);
 
 			if (Configs::get_value('medium_2x') === '1') {
 				$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
@@ -461,6 +470,37 @@ class PhotoFunctions
 		if (Configs::get_value('small_2x') === '1') {
 			$this->resizePhoto($photo, 'small2x', $smallMaxWidth * 2, $smallMaxHeight * 2, $frame_tmp);
 		}
+	}
+
+	/**
+	 * @param Photo $photo
+	 *
+	 * @return string Path of the jpg file
+	 */
+	public function createJpgFromRaw(Photo $photo): string
+	{
+		// we need imagick to do the job
+		if (!Configs::hasImagick()) {
+			return '';
+		}
+
+		$filename = $photo->url;
+		$url = Storage::path('raw/' . $filename);
+
+		$tmp_file = tempnam(sys_get_temp_dir(), 'lychee');
+		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to ' . $tmp_file);
+
+		$resWidth = $resHeight = 0;
+		$resWidth = $resHeight = 0;
+		$width = $photo->width;
+		$height = $photo->height;
+		if (!$this->imageHandler->scale($url, $tmp_file, $width, $height, $resWidth, $resHeight)) {
+			Logs::error(__METHOD__, __LINE__, 'Failed to create JPG from raw file ' . $url . $filename);
+
+			return '';
+		}
+
+		return $tmp_file;
 	}
 
 	/**
