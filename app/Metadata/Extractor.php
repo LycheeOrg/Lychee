@@ -103,6 +103,8 @@ class Extractor
 			// this can throw an exception in the case of Exiftool adapter!
 			$exif = $reader->read($filename);
 
+			// if readlink($filename) == False then $realFile = $filename.
+			// if readlink($filename) != False then $realFile = readlink($filename)
 			$realFile = readlink($filename) ?: $filename;
 			if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
 				$sidecarData = $reader->read($realFile . '.xmp')->getData();
