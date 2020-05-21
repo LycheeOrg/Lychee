@@ -47,7 +47,7 @@ class MovePhotos extends Migration
 					$photo->iso = $result->iso;
 					$photo->aperture = $result->aperture;
 					$photo->make = $result->make;
-					$photo->lens = $result->lens;
+					$photo->lens = $result->lens ?? '';
 					$photo->model = $result->model;
 					$photo->shutter = $result->shutter;
 					$photo->focal = $result->focal;
@@ -78,7 +78,7 @@ class MovePhotos extends Migration
 					} else {
 						$result->small = '';
 					}
-					$photo->license = $result->license;
+					$photo->license = $result->license ?? 'none';
 					$photo->save();
 				}
 			} else {
