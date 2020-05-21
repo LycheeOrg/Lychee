@@ -27,7 +27,7 @@ class Ghostbuster extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:ghostbuster {dryrun=1 : Dry Run default is True}';
+	protected $signature = 'lychee:ghostbuster {removeDeadSymLinks=0 : Remove Photos with dead symlinks} {dryrun=1 : Dry Run default is True}';
 
 	/**
 	 * The console command description.
@@ -59,7 +59,17 @@ class Ghostbuster extends Command
 	public function handle()
 	{
 		$this->line('');
+		$removeDeadSymLinks = (bool) $this->argument('removeDeadSymLinks');
 		$dryrun = (bool) $this->argument('dryrun');
+		if ($removeDeadSymLinks) {
+			$this->line('Also parsing database for pictures where the url does not point to an existing file.');
+			$this->line($this->col->yellow('This may modify the database.'));
+			$this->line('');
+		}
+		if (!$dryrun) {
+			$this->line($this->col->red("This is not a drill! Let's delete those files!"));
+			$this->line('');
+		}
 
 		$path = Storage::path('big');
 		$files = array_slice(scandir($path), 2);
@@ -71,9 +81,9 @@ class Ghostbuster extends Command
 			}
 
 			$isDeadSymlink = is_link($path . '/' . $url) && !file_exists(readlink($path . '/' . $url));
-
 			$photos = Photo::where('url', '=', $url)->get();
-			if (count($photos) === 0 || $isDeadSymlink) {
+
+			if (count($photos) === 0 || ($isDeadSymlink && $removeDeadSymLinks)) {
 				$photoName = explode('.', $url);
 
 				$to_delete = [];
@@ -118,7 +128,7 @@ class Ghostbuster extends Command
 					}
 				}
 
-				if ($isDeadSymlink) {
+				if ($isDeadSymlink && $removeDeadSymLinks) {
 					foreach ($photos as $photo) {
 						if ($dryrun) {
 							$this->line(str_pad($photo->url, 50) . $this->col->red(' photo will be removed') . '.');
@@ -143,7 +153,7 @@ class Ghostbuster extends Command
 		if ($total > 0 && $dryrun) {
 			$this->line($total . ' pictures will be deleted.');
 			$this->line('');
-			$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster 0') . "' to effectively remove the files.");
+			$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster ' . ($removeDeadSymLinks ? '1' : '0') . ' 0') . "' to effectively remove the files.");
 		}
 		if ($total > 0 && !$dryrun) {
 			$this->line($total . ' pictures have been deleted.');
