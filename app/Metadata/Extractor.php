@@ -4,6 +4,8 @@ namespace App\Metadata;
 
 use App\Configs;
 use App\Logs;
+use App\ModelFunctions\Helpers;
+use App\ModelFunctions\PhotoFunctions;
 use PHPExif\Reader\Reader;
 
 class Extractor
@@ -71,11 +73,18 @@ class Extractor
 	{
 		$reader = null;
 
-		if (strpos($type, 'video') !== 0) {
+		// Get kind of file (photo, video, raw)
+		$extension = Helpers::getExtension($filename, false);
+		$kind = PhotoFunctions::file_type($filename, $extension);
+
+		if ($kind !== 'video') {
 			// It's a photo
 			if (Configs::hasExiftool()) {
 				// reader with Exiftool adapter
 				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
+			} elseif (Configs::hasImagick() && $kind === 'raw') {
+				// Use imagick as exif reader for raw files (broader support)
+				$reader = Reader::factory(Reader::TYPE_IMAGICK);
 			} else {
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);

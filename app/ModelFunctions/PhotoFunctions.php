@@ -100,7 +100,7 @@ class PhotoFunctions
 	 *
 	 * @return string
 	 */
-	private function file_type($file, string $extension)
+	public static function file_type($file, string $extension)
 	{
 		// check raw files
 		if (in_array(strtolower($extension), explode('|', Configs::get_value('raw_formats', '')), true)) {
