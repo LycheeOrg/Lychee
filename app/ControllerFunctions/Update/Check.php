@@ -161,7 +161,7 @@ class Check
 				// @codeCoverageIgnoreEnd
 			} catch (NotInCacheException $e) {
 				return 1;
-				// @codeCoverageIgnoreEnd
+				// @codeCoverageIgnoreStart
 			} catch (NotMasterException $e) {
 				return 0;
 			}
