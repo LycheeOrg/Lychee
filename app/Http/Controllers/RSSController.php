@@ -74,7 +74,6 @@ class RSSController extends Controller
 				$id = 'view?p=' . $photo_model->id;
 			}
 
-<<<<<<< HEAD
 			$photo['url'] = $photo['url'] ?: $photo['medium2x'] ?: $photo['medium'];
 			// TODO: this will need to be fixed for s3 and when the upload folder is NOT the Lychee folder.
 			if (App::runningUnitTests()) {
@@ -84,10 +83,6 @@ class RSSController extends Controller
 			}
 			$length = File::size($path);
 			$mime_type = File::mimeType($path);
-=======
-			$length = \File::size($photo['url']);
-			$mime_type = \File::mimeType($photo['url']);
->>>>>>> Add support for `enclosure` in the feed.
 
 			return FeedItem::create([
 				'id' => url('/' . $id),
