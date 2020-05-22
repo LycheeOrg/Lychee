@@ -71,12 +71,17 @@ class RSSController extends Controller
 				$id = 'view?p=' . $photo_model->id;
 			}
 
+			$length = \File::size($photo['url']);
+			$mime_type = \File::mimeType($photo['url']);
+
 			return FeedItem::create([
 				'id' => url('/' . $id),
 				'title' => $photo_model->title,
 				'summary' => $photo_model->description,
 				'updated' => $photo_model->created_at,
 				'link' => $photo['url'],
+				'enclosureLength' => $length,
+				'enclosureMime' => $mime_type,
 				'author' => $photo_model->owner->username, ]);
 		});
 
