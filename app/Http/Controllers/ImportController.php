@@ -67,7 +67,7 @@ class ImportController extends Controller
 	 *
 	 * @return bool returns true when photo import was successful
 	 */
-	private function photo($path, $delete_imported, $albumID = 0, $force_skip_duplicates = false)
+	private function photo($path, $delete_imported, $albumID = 0, $force_skip_duplicates = false, $resync_metadata = false)
 	{
 		// No need to validate photo type and extension in this function.
 		// $photo->add will take care of it.
@@ -78,7 +78,7 @@ class ImportController extends Controller
 		$nameFile['type'] = $mime;
 		$nameFile['tmp_name'] = $path;
 
-		if ($this->photoFunctions->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates) === false) {
+		if ($this->photoFunctions->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates, $resync_metadata) === false) {
 			// @codeCoverageIgnoreStart
 			return false;
 			// @codeCoverageIgnoreEnd
@@ -254,7 +254,7 @@ class ImportController extends Controller
 	 *
 	 * @throws ImagickException
 	 */
-	public function server_exec(string $path, $albumID, $delete_imported, $force_skip_duplicates = false, $ignore_list = null)
+	public function server_exec(string $path, $albumID, $delete_imported, $force_skip_duplicates = false, $ignore_list = null, $resync_metadata = false)
 	{
 		// Parse path
 		$origPath = $path;
@@ -364,7 +364,7 @@ class ImportController extends Controller
 			$extension = Helpers::getExtension($file, true);
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
 				// Photo or Video
-				if ($this->photo($file, $delete_imported, $albumID, $force_skip_duplicates) === false) {
+				if ($this->photo($file, $delete_imported, $albumID, $force_skip_duplicates, $resync_metadata) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					continue;
@@ -400,7 +400,7 @@ class ImportController extends Controller
 				// @codeCoverageIgnoreEnd
 			}
 			$newAlbumID = $album->id;
-			$this->server_exec($dir . '/', $newAlbumID, $delete_imported, $force_skip_duplicates, $ignore_list);
+			$this->server_exec($dir . '/', $newAlbumID, $delete_imported, $force_skip_duplicates, $ignore_list, $resync_metadata);
 		}
 	}
 
