@@ -5,7 +5,6 @@ namespace App\Metadata;
 use App\Configs;
 use App\Logs;
 use App\ModelFunctions\Helpers;
-use App\ModelFunctions\PhotoFunctions;
 use PHPExif\Reader\Reader;
 
 class Extractor
