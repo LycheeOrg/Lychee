@@ -493,7 +493,7 @@ class PhotoFunctions
 
 		// test if Imagaick supports the filetype
 		if (!in_array($ext, \Imagick::queryformats())) {
-			Logs::notice(__METHOD__, __LINE__, 'Filetype ' . $basename . ' not supported by Imagick.');
+			Logs::notice(__METHOD__, __LINE__, 'Filetype ' . $ext . ' not supported by Imagick.');
 
 			return '';
 		}
