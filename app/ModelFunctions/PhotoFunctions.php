@@ -100,10 +100,11 @@ class PhotoFunctions
 	 *
 	 * @return string
 	 */
-	public static function file_type($file, string $extension)
+	public function file_type($file, string $extension)
 	{
 		// check raw files
-		if (in_array(strtolower($extension), explode('|', Configs::get_value('raw_formats', '')), true)) {
+		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
+		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
 			return 'raw';
 		}
 
@@ -459,7 +460,7 @@ class PhotoFunctions
 			$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight, $frame_tmp);
 
 			if (Configs::get_value('medium_2x') === '1') {
-				$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
+				$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2, $frame_tmp);
 			}
 		}
 

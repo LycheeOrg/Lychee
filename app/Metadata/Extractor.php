@@ -75,14 +75,19 @@ class Extractor
 
 		// Get kind of file (photo, video, raw)
 		$extension = Helpers::getExtension($filename, false);
-		$kind = PhotoFunctions::file_type($filename, $extension);
 
-		if ($kind !== 'video') {
+		// check raw files
+		$is_raw = false;
+		if (in_array(strtolower($extension), explode('|', Configs::get_value('raw_formats', '')), true)) {
+			$is_raw = true;
+		}
+
+		if (strpos($type, 'video') !== 0) {
 			// It's a photo
 			if (Configs::hasExiftool()) {
 				// reader with Exiftool adapter
 				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
-			} elseif (Configs::hasImagick() && $kind === 'raw') {
+			} elseif (Configs::hasImagick() && $is_raw) {
 				// Use imagick as exif reader for raw files (broader support)
 				$reader = Reader::factory(Reader::TYPE_IMAGICK);
 			} else {
