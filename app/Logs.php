@@ -62,9 +62,11 @@ class Logs extends Model
 		]);
 		try {
 			$log->save();
+			// @codeCoverageIgnoreStart
 		} catch (Exception $e) {
 			return false;
 		}
+		// @codeCoverageIgnoreEnd
 
 		return true;
 	}
