@@ -808,23 +808,20 @@ class PhotoFunctions
 	 */
 	private function getFileMetadata($file, $path, $kind, $mimeType, $extension)
 	{
+		$info = $this->metadataExtractor->extract($path, $mimeType);
 		if ($kind == 'raw') {
-			$info = $this->metadataExtractor->bare();
-			$this->metadataExtractor->size($info, $path);
-			$this->metadataExtractor->validate($info);
 			$info['type'] = 'raw';
-		} else {
-			$info = $this->metadataExtractor->extract($path, $mimeType);
 		}
 
 		// Use title of file if IPTC title missing
-		if ($kind == 'raw') {
-			$info['title'] = substr(basename($file['name']), 0, 98);
-		} elseif ($info['title'] === '') {
-			$info['title'] = substr(basename($file['name'], $extension), 0, 98);
+		if ($info['title'] === '') {
+			if ($kind == 'raw') {
+				$info['title'] = substr(basename($file['name']), 0, 98);
+			} elseif ($info['title'] === '') {
+				$info['title'] = substr(basename($file['name'], $extension), 0, 98);
+			}
 		}
 
 		return $info;
 	}
 }
-
