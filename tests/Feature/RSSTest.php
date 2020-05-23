@@ -21,7 +21,7 @@ class RSSTest extends TestCase
 		$this->assertEquals(Configs::get_value('rss_enable'), '0');
 
 		// check redirection
-		$response = $this->get('/rss');
+		$response = $this->get('/feed');
 		$response->assertStatus(404);
 
 		Configs::set('Mod_Frame', $init_config_value);
@@ -39,7 +39,7 @@ class RSSTest extends TestCase
 		$this->assertEquals(Configs::get_value('rss_enable'), '1');
 
 		// check redirection
-		$response = $this->get('/rss');
+		$response = $this->get('/feed');
 		$response->assertStatus(200);
 
 		// now we start adding some stuff
@@ -74,7 +74,7 @@ class RSSTest extends TestCase
 		$albums_tests->set_public($this, $albumID, 1, 1, 1, 1, 1, 'true');
 
 		// try to get the RSS feed.
-		$response = $this->get('/rss');
+		$response = $this->get('/feed');
 		$response->assertStatus(200);
 
 		$albums_tests->delete($this, $albumID);
