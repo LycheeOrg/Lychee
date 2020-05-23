@@ -107,7 +107,9 @@ class Extractor
 			// if readlink($filename) != False then $realFile = readlink($filename)
 			$realFile = readlink($filename) ?: $filename;
 			if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
-				$sidecarData = $reader->read($realFile . '.xmp')->getData();
+				// Don't use the same reader as the file in case it's a video
+				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
+				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
 			}
 		} catch (\Exception $e) {
 			// Use Php native tools
