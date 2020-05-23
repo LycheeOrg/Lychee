@@ -56,11 +56,12 @@ addons:
       - php-mbstring
       - php-json
       - php-gd
+    update: true
 
 before_script:
   - printf "\n" | pecl install imagick
   # Install ExifTool
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then bash setup_exiftool.sh ; fi"
+  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then sudo apt-get -y install libimage-exiftool-perl ; fi"
   # create db for mariadb
   - sh -c "if [ '$SQL' = 'mariadb' ] ; then mysql -e 'create database homestead_test;' ; fi"
   # create db for postgresql
