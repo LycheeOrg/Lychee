@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-wget http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-11.77.tar.gz
+wget https://exiftool.org/Image-ExifTool-11.99.tar.gz
 tar -zxvf Image-ExifTool-11.77.tar.gz
-cd Image-ExifTool-11.77
+cd Image-ExifTool-11.99
 perl Makefile.PL
 make test
 sudo make install
 cd ..
-rm -rf Image-ExifTool-11.77
+rm -rf Image-ExifTool-11.99
