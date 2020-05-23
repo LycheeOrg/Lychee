@@ -492,7 +492,8 @@ class PhotoFunctions
 		$ext = pathinfo($filename)['extension'];
 
 		// test if Imagaick supports the filetype
-		if (!in_array($ext, \Imagick::queryformats())) {
+		// Query return file extensions as all upper case
+		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
 			Logs::notice(__METHOD__, __LINE__, 'Filetype ' . $ext . ' not supported by Imagick.');
 
 			return '';
