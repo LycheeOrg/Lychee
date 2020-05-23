@@ -313,7 +313,10 @@ return [
 	 * Note: custom-csp does not support report-only.
 	 */
 
-	'custom-csp' => null,
+	/*
+	 * There is no easy way to
+	 */
+	'custom-csp' => ((bool) env('DEBUGBAR_ENABLED', (bool) env('APP_DEBUG', false))) ? '' : null,
 
 	'csp' => [
 		'report-only' => false,
