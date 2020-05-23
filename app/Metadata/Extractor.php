@@ -110,6 +110,9 @@ class Extractor
 				// Don't use the same reader as the file in case it's a video
 				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
 				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
+
+				// We don't want to overwrite the media's type with the mimetype of the sidecar file
+				unset($sidecarData['type']);
 			}
 		} catch (\Exception $e) {
 			// Use Php native tools
