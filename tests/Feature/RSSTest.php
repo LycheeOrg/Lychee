@@ -63,7 +63,7 @@ class RSSTest extends TestCase
 		$photos_tests->set_public($this, $photoID);
 
 		// try to get the RSS feed.
-		$response = $this->get('/rss');
+		$response = $this->get('/feed');
 		$response->assertStatus(200);
 
 		// set picture to private
