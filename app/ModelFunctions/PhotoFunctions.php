@@ -482,13 +482,23 @@ class PhotoFunctions
 	{
 		// we need imagick to do the job
 		if (!Configs::hasImagick()) {
+			Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to failed: Imagick not installed.');
+
 			return '';
 		}
 
 		$filename = $photo->url;
 		$url = Storage::path('raw/' . $filename);
+		$ext = pathinfo($filename)['extension'];
 
-		$tmp_file = tempnam(sys_get_temp_dir(), 'lychee');
+		// test if Imagaick supports the filetype
+		if (!in_array($ext, \Imagick::queryformats())) {
+			Logs::notice(__METHOD__, __LINE__, 'Filetype ' . $ext . ' not supported by Imagick.');
+
+			return '';
+		}
+
+		$tmp_file = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to ' . $tmp_file);
 
 		$resWidth = $resHeight = 0;
