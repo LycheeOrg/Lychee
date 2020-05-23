@@ -338,7 +338,7 @@ class Photo extends Model
 		$photo['url'] = Storage::url($path_prefix . $this->url);
 
 		if ($this->livePhotoUrl !== '' && $this->livePhotoUrl !== null) {
-			$photo['livePhotoUrl'] = Storage::url($path_prefix . $this->livePhotoUrl);
+			$photo['livePhotoUrl'] = Storage::url('big/' . $this->livePhotoUrl);
 		} else {
 			$photo['livePhotoUrl'] = null;
 		}
@@ -504,10 +504,10 @@ class Photo extends Model
 			// TODO: USE STORAGE FOR DELETE
 			// check first if livePhotoUrl is available
 			if ($this->livePhotoUrl !== null) {
-				if (!Storage::exists($path_prefix . $this->livePhotoUrl)) {
+				if (!Storage::exists('big/' . $this->livePhotoUrl)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->livePhotoUrl));
 					$error = true;
-				} elseif (!Storage::delete($path_prefix . $this->livePhotoUrl)) {
+				} elseif (!Storage::delete('big/' . $this->livePhotoUrl)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($path_prefix . $this->livePhotoUrl));
 					$error = true;
 				}
