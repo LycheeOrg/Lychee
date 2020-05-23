@@ -71,6 +71,8 @@ class RSSController extends Controller
 				$id = 'view?p=' . $photo_model->id;
 			}
 
+			$photo['url'] = $photo['url'] ?: $photo['medium2x'] ?: $photo['medium'];
+
 			$length = \File::size($photo['url']);
 			$mime_type = \File::mimeType($photo['url']);
 
