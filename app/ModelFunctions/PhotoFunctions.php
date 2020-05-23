@@ -218,9 +218,11 @@ class PhotoFunctions
 		// Calculate checksum
 		$checksum = sha1_file($tmp_name);
 		if ($checksum === false) {
+			// @codeCoverageIgnoreStart
 			Logs::error(__METHOD__, __LINE__, 'Could not calculate checksum for photo');
 
 			return Response::error('Could not calculate checksum for photo!');
+			// @codeCoverageIgnoreEnd
 		}
 		$photo->checksum = $checksum;
 		$exists = $photo->isDuplicate($checksum);
@@ -256,9 +258,11 @@ class PhotoFunctions
 						// @codeCoverageIgnoreEnd
 					}
 				} elseif (!@copy($tmp_name, $path)) {
+					// @codeCoverageIgnoreStart
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
 
 					return Response::error('Could not copy photo to uploads!');
+				// @codeCoverageIgnoreEnd
 				} elseif ($delete_imported) {
 					@unlink($tmp_name);
 				}
