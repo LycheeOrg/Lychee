@@ -505,10 +505,10 @@ class Photo extends Model
 			// check first if livePhotoUrl is available
 			if ($this->livePhotoUrl !== null) {
 				if (!Storage::exists('big/' . $this->livePhotoUrl)) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->livePhotoUrl));
+					Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path('big/' . $this->livePhotoUrl));
 					$error = true;
 				} elseif (!Storage::delete('big/' . $this->livePhotoUrl)) {
-					Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($path_prefix . $this->livePhotoUrl));
+					Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path('big/' . $this->livePhotoUrl));
 					$error = true;
 				}
 			}
