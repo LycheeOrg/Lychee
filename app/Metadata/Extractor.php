@@ -109,15 +109,34 @@ class Extractor
 			}
 		}
 
+		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
+		$sidecarData = [];
+
 		try {
 			// this can throw an exception in the case of Exiftool adapter!
 			$exif = $reader->read($filename);
+
+			// if readlink($filename) == False then $realFile = $filename.
+			// if readlink($filename) != False then $realFile = readlink($filename)
+			$realFile = readlink($filename) ?: $filename;
+			if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
+				// Don't use the same reader as the file in case it's a video
+				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
+				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
+			}
 		} catch (\Exception $e) {
 			// Use Php native tools
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			$reader = Reader::factory(Reader::TYPE_NATIVE);
 			$exif = $reader->read($filename);
 		}
+
+		if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
+			$exif->setData(array_merge($exif->getData(), $sidecarData));
+		} else {
+			$exif->setData(array_merge($sidecarData, $exif->getData()));
+		}
+
 		$metadata = $this->bare();
 		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : '';
 		$metadata['width'] = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;

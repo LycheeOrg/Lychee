@@ -32,14 +32,18 @@ class SymLinkFunctions
 	public function find(Photo $photo)
 	{
 		if (Storage::getDefaultDriver() == 's3') {
+			// @codeCoverageIgnoreStart
 			return null;
+			// @codeCoverageIgnoreEnd
 		}
 		if (Configs::get_value('SL_enable', '0') === '0') {
 			return null;
 		}
 
 		if ($this->sessionFunctions->is_admin() && Configs::get_value('SL_for_admin', '0') === '0') {
+			// @codeCoverageIgnoreStart
 			return null;
+			// @codeCoverageIgnoreEnd
 		}
 
 		$sym = null;
