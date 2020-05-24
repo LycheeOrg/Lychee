@@ -313,7 +313,10 @@ return [
 	 * Note: custom-csp does not support report-only.
 	 */
 
-	'custom-csp' => null,
+	/*
+	 * There is no easy way to use CSP with debug bar at the moment so we disable CSP if debug bar is enabled.
+	 */
+	'custom-csp' => ((bool) env('DEBUGBAR_ENABLED', false)) ? '' : null,
 
 	'csp' => [
 		'report-only' => false,

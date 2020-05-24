@@ -7908,8 +7908,18 @@ upload.start = {
 					return !isNaN(parseFloat(n)) && isFinite(n);
 				};
 
+				data = xhr.responseText;
+
+				if (typeof data === 'string' && data.search('phpdebugbar') !== -1) {
+					// get rid of phpdebugbar thingy
+					var n = data.search("<link rel='stylesheet' type='text/css'");
+					if (n > 0) {
+						data = data.slice(0, n);
+					}
+				}
+
 				try {
-					data = JSON.parse(xhr.responseText);
+					data = JSON.parse(data);
 				} catch (e) {
 					data = '';
 				}
@@ -8422,7 +8432,6 @@ upload.start = {
 	}
 
 };
-
 var users = {
 	json: null
 };

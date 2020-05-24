@@ -31,10 +31,11 @@
     },
     "require-dev": {
         "ext-imagick": "*",
+        "barryvdh/laravel-debugbar": "^3.3",
         "barryvdh/laravel-ide-helper": "^2.6",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "itsgoingd/clockwork": "^3.1",
+        "itsgoingd/clockwork": "^4.1",
         "laravel/homestead": "^10.8",
         "nunomaduro/collision": "^4.1",
         "phpunit/phpunit": "^8.5"
