@@ -3,21 +3,24 @@
 namespace App\SmartAlbums;
 
 use App\Configs;
+use App\ModelFunctions\SessionFunctions;
+use App\Photo;
 
 class StarredAlbum extends SmartAlbum
 {
-	public function __construct()
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	public function __construct(SessionFunctions $sessionFunctions)
 	{
+		$this->sessionFunctions = $sessionFunctions;
 	}
 
-	public function is_full_photo_visible()
+	public function get_photos()
 	{
-		return false;
-	}
-
-	public function is_downloadable()
-	{
-		return Configs::get_value('downloadable', '0') == '1';
+		return Photo::select_stars(Photo::OwnedBy($this->sessionFunctions->id()));
 	}
 
 	public function is_share_button_visible()
@@ -34,10 +37,5 @@ class StarredAlbum extends SmartAlbum
 	public function str_max_takestamp()
 	{
 		return '';
-	}
-
-	public function get_license()
-	{
-		return 'none';
 	}
 }

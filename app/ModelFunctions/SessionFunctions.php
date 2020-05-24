@@ -6,6 +6,7 @@ namespace App\ModelFunctions;
 
 use App;
 use App\Configs;
+use App\Exceptions\NotLoggedInException;
 use App\Exceptions\RequestAdminDataException;
 use App\Exceptions\UserNotFoundException;
 use App\Logs;
@@ -63,6 +64,10 @@ class SessionFunctions
 	 */
 	public function id()
 	{
+		if (!Session::get('login')) {
+			throw new NotLoggedInException();
+		}
+
 		return Session::get('UserID');
 	}
 
@@ -83,12 +88,12 @@ class SessionFunctions
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $id . ')');
 				throw new UserNotFoundException($id);
 			}
-		} else {
-			Logs::error(__METHOD__, __LINE__, 'Trying to get a User from Admin ID.');
-			throw new RequestAdminDataException();
+
+			return $this->user_data;
 		}
 
-		return $this->user_data;
+		Logs::error(__METHOD__, __LINE__, 'Trying to get a User from Admin ID.');
+		throw new RequestAdminDataException();
 	}
 
 	/**

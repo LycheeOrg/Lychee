@@ -12,6 +12,10 @@ use App\Logs;
 use App\ModelRessources\AlbumRessources;
 use App\Photo;
 use App\Response;
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -392,7 +396,6 @@ class AlbumFunctions
 		$return = [];
 
 		if ($albums != null) {
-			// For each album
 			/*
 			 * @var Album
 			 */
@@ -519,31 +522,36 @@ class AlbumFunctions
 		 */
 		$return = [];
 
+		$unsorted = new UnsortedAlbum($this->sessionFunctions);
+		$starred = new StarredAlbum($this->sessionFunctions);
+		$public = new PublicAlbum($this->sessionFunctions);
+		$recent = new RecentAlbum($this->sessionFunctions);
+
 		if ($this->sessionFunctions->is_logged_in()) {
 			$UserId = $this->sessionFunctions->id();
 			if ($this->sessionFunctions->can_upload()) {
 				/**
 				 * Unsorted.
 				 */
-				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId))->limit(3);
+				$photos_sql = $unsorted->get_photos()->limit(3);
 				$this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
 
 				/**
 				 * Starred.
 				 */
-				$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId))->limit(3);
+				$photos_sql = $starred->get_photos()->limit(3);
 				$this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 
 				/**
 				 * Public.
 				 */
-				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId))->limit(3);
+				$photos_sql = $public->get_photos()->limit(3);
 				$this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
 
 				/**
 				 * Recent.
 				 */
-				$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId))->limit(3);
+				$photos_sql = $recent->get_photos()->limit(3);
 				$this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
 
 				return $return;

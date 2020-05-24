@@ -3,6 +3,7 @@
 namespace App\SmartAlbums;
 
 use App\Album;
+use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use Illuminate\Support\Carbon;
 
@@ -68,7 +69,7 @@ class SmartAlbum extends Album
 
 	public function is_downloadable()
 	{
-		return false;
+		return Configs::get_value('downloadable', '0') == '1';
 	}
 
 	public function is_share_button_visible()
