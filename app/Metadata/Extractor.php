@@ -111,7 +111,7 @@ class Extractor
 
 		// if readlink($filename) == False then $realFile = $filename.
 		// if readlink($filename) != False then $realFile = readlink($filename)
-		$realFile = readlink($filename) ?: $filename;
+		$realFile = is_link($filename) && readlink($filename) ? readlink($filename) : $filename;
 		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
 			try {
 				// Don't use the same reader as the file in case it's a video
