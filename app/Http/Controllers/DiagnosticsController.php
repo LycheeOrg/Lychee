@@ -6,19 +6,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Assets\Helpers;
 use App\Configs;
 use App\ControllerFunctions\Update\Check as CheckUpdate;
 use App\Metadata\DiskUsage;
 use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
-use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
 use Config;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Imagick;
-use Storage;
 
 class DiagnosticsController extends Controller
 {
@@ -179,7 +179,8 @@ class DiagnosticsController extends Controller
 			if (!$gdVersion['PNG Support']) {
 				$errors[] = 'Error: PHP gd extension without png support';
 			}
-			if (!$gdVersion['GIF Read Support']
+			if (
+				!$gdVersion['GIF Read Support']
 				|| !$gdVersion['GIF Create Support']
 			) {
 				$errors[] = 'Error: PHP gd extension without full gif support';
@@ -219,7 +220,8 @@ class DiagnosticsController extends Controller
 		}
 
 		// Check php.ini Settings
-		if (ini_get('max_execution_time') < 200
+		if (
+			ini_get('max_execution_time') < 200
 			&& ini_set('upload_max_filesize', '20M') === false
 		) {
 			$errors[]
@@ -274,7 +276,8 @@ class DiagnosticsController extends Controller
 			$imagick = '-';
 			// @codeCoverageIgnoreEnd
 		}
-		if (!isset($imagickVersion, $imagickVersion['versionNumber'])
+		if (
+			!isset($imagickVersion, $imagickVersion['versionNumber'])
 			|| $imagickVersion === ''
 		) {
 			// @codeCoverageIgnoreStart

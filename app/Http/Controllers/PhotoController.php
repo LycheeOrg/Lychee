@@ -5,18 +5,19 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Assets\Helpers;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\Helpers;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
+use App\ModelRessources\AlbumRessources;
 use App\Photo;
 use App\Response;
 use Illuminate\Http\Request;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -125,8 +126,10 @@ class PhotoController extends Controller
 	{
 		// here we need to refine.
 
-		$photo = Photo::whereIn('album_id',
-			$this->albumFunctions->getPublicAlbums())
+		$photo = Photo::whereIn(
+			'album_id',
+			$this->albumFunctions->getPublicAlbums()
+		)
 			->where('star', '=', 1)
 			->inRandomOrder()
 			->first();
@@ -331,8 +334,11 @@ class PhotoController extends Controller
 			// just to be sure to handle ownership changes in the process.
 			$album = Album::find($albumID);
 			if ($album === null) {
-				Logs::error(__METHOD__, __LINE__,
-					'Could not find specified album');
+				Logs::error(
+					__METHOD__,
+					__LINE__,
+					'Could not find specified album'
+				);
 
 				return 'false';
 			}
@@ -353,16 +359,22 @@ class PhotoController extends Controller
 			if ($oldAlbumID !== null) {
 				$oldAlbum = Album::find($oldAlbumID);
 				if ($oldAlbum === null) {
-					Logs::error(__METHOD__, __LINE__,
-						'Could not find an album');
+					Logs::error(
+						__METHOD__,
+						__LINE__,
+						'Could not find an album'
+					);
 					$no_error = false;
 				}
-				$no_error &= $oldAlbum->update_takestamps([$photo->takestamp],
-					false);
+				$no_error &= AlbumRessources::update_takestamps(
+					$oldAlbum,
+					[$photo->takestamp],
+					false
+				);
 			}
 		}
 		if ($album !== null) {
-			$no_error &= $album->update_takestamps($takestamp, true);
+			$no_error &= AlbumRessources::update_takestamps($album, $takestamp, true);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -411,8 +423,11 @@ class PhotoController extends Controller
 			$i++;
 		}
 		if (!$found) {
-			Logs::error(__METHOD__, __LINE__,
-				'wrong kind of license: ' . $request['license']);
+			Logs::error(
+				__METHOD__,
+				__LINE__,
+				'wrong kind of license: ' . $request['license']
+			);
 
 			return Response::error('wrong kind of license!');
 		}
@@ -455,8 +470,11 @@ class PhotoController extends Controller
 
 		// TODO: ideally we would like to avoid duplicates here...
 		for ($i = 0; $i < count($albums); $i++) {
-			$no_error &= $albums[$i]->update_takestamps([$takestamp[$i]],
-				false);
+			$no_error &= AlbumRessources::update_takestamps(
+				$albums[$i],
+				[$takestamp[$i]],
+				false
+			);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -636,8 +654,11 @@ class PhotoController extends Controller
 				$kind = '-200x200';
 				break;
 			default:
-				Logs::error(__METHOD__, __LINE__,
-					'Invalid kind ' . $request['kind']);
+				Logs::error(
+					__METHOD__,
+					__LINE__,
+					'Invalid kind ' . $request['kind']
+				);
 
 				return null;
 		}
@@ -645,7 +666,7 @@ class PhotoController extends Controller
 		$fullpath = Storage::path($path);
 		// Check the file actually exists
 		if (!Storage::exists($path)) {
-			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $url . ' (' . $title . ')');
+			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $fullpath . ' (' . $title . ')');
 
 			return null;
 		}

@@ -1,10 +1,11 @@
 <?php
 
+namespace App\ModelRessources;
+
 use App\Album;
 use App\Assets\Helpers;
 use App\Photo;
-
-namespace App\ModelRessources;
+use Illuminate\Support\Facades\Hash;
 
 class AlbumRessources
 {
@@ -37,20 +38,20 @@ class AlbumRessources
 			'title' => $album->title,
 			'public' => strval($album->public),
 			'full_photo' => Helpers::str_of_bool($album->is_full_photo_visible()),
-			'visible' => strval($visible_hidden),
+			'visible' => strval($album->visible_hidden),
 			'parent_id' => $album->str_parent_id(),
 			'description' => strval($album->description),
 
-			'downloadable' => Helpers::str_of_bool($is_downloadable()),
-			'share_button_visible' => Helpers::str_of_bool($is_share_button_visible()),
+			'downloadable' => Helpers::str_of_bool($album->is_downloadable()),
+			'share_button_visible' => Helpers::str_of_bool($album->is_share_button_visible()),
 
 			// Parse date
-			'sysdate' => $created_at->format('F Y'),
-			'min_takestamp' => $album->str_min_takestanp(),
-			'max_takestamp' => $album->str_max_takestanp(),
+			'sysdate' => $album->created_at->format('F Y'),
+			'min_takestamp' => $album->str_min_takestamp(),
+			'max_takestamp' => $album->str_max_takestamp(),
 
 			// Parse password
-			'password' => Helpers::str_of_bool($password != ''),
+			'password' => Helpers::str_of_bool($album->password != ''),
 			'license' => $album->get_license(),
 
 			'thumbs' => [],
@@ -88,7 +89,7 @@ class AlbumRessources
 	 */
 	public static function update_min_max_takestamp(Album $album)
 	{
-		$album_list = self::get_all_sub_albums([$album->id]);
+		$album_list = self::get_all_sub_albums($album, [$album->id]);
 
 		$min = Photo::whereIn('album_id', $album_list)->min('takestamp');
 		$max = Photo::whereIn('album_id', $album_list)->max('takestamp');
@@ -134,13 +135,15 @@ class AlbumRessources
 
 		if ($adding) {
 			// Adding is easy: essentially a single operation per takestamp.
-			if ($album->min_takestamp === null
+			if (
+				$album->min_takestamp === null
 				|| $album->min_takestamp > $minTS
 			) {
 				$album->min_takestamp = $minTS;
 				$changed = true;
 			}
-			if ($album->max_takestamp === null
+			if (
+				$album->max_takestamp === null
 				|| $album->max_takestamp < $maxTS
 			) {
 				$album->max_takestamp = $maxTS;
@@ -164,7 +167,7 @@ class AlbumRessources
 				}
 				$changed = true;
 			}
-			if ($max_takestamp == $maxTS) {
+			if ($album->max_takestamp == $maxTS) {
 				$max_photos = Photo::where('album_id', '=', $album->id)
 					->whereNotNull('takestamp')->max('takestamp');
 				$max_albums = Album::where('parent_id', '=', $album->id)
@@ -187,8 +190,11 @@ class AlbumRessources
 			// up the album tree to give the parent albums a chance to
 			// update their takestamps as well.
 			if ($album->parent_id !== null) {
-				$no_error &= self::update_takestamps($album->parent,[$minTS, $maxTS],
-					$adding);
+				$no_error &= self::update_takestamps(
+					$album->parent,
+					[$minTS, $maxTS],
+					$adding
+				);
 			}
 		}
 
@@ -209,4 +215,3 @@ class AlbumRessources
 		}
 	}
 }
-

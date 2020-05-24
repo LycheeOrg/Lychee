@@ -63,20 +63,20 @@ use Illuminate\Support\Carbon;
 class Album extends Model
 {
 	protected $dates
-		= [
-			'created_at',
-			'updated_at',
-			'min_takestamp',
-			'max_takestamp',
-		];
+	= [
+		'created_at',
+		'updated_at',
+		'min_takestamp',
+		'max_takestamp',
+	];
 
 	protected $casts
-		= [
-			'public' => 'int',
-			'visible_hidden' => 'int',
-			'downloadable' => 'int',
-			'share_button_visible' => 'int',
-		];
+	= [
+		'public' => 'int',
+		'visible_hidden' => 'int',
+		'downloadable' => 'int',
+		'share_button_visible' => 'int',
+	];
 
 	/**
 	 * Return the relationship between Photos and their Album.
@@ -126,8 +126,12 @@ class Album extends Model
 	 */
 	public function shared_with()
 	{
-		return $this->belongsToMany('App\User', 'user_album', 'album_id',
-			'user_id');
+		return $this->belongsToMany(
+			'App\User',
+			'user_album',
+			'album_id',
+			'user_id'
+		);
 	}
 
 	/**
@@ -163,7 +167,7 @@ class Album extends Model
 	 *
 	 * @return string
 	 */
-	public function str_min_takestanp()
+	public function str_min_takestamp()
 	{
 		if ($this->min_takestamp == null) {
 			return  '';
@@ -177,7 +181,7 @@ class Album extends Model
 	 *
 	 * @return string
 	 */
-	public function str_max_takestanp()
+	public function str_max_takestamp()
 	{
 		if ($this->max_takestamp == null) {
 			return  '';

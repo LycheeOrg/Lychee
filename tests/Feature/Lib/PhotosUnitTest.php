@@ -18,11 +18,13 @@ class PhotosUnitTest
 	 */
 	public function upload(TestCase &$testcase, UploadedFile &$file)
 	{
-		$response = $testcase->post('/api/Photo::add',
+		$response = $testcase->post(
+			'/api/Photo::add',
 			[
 				'albumID' => '0',
 				'0' => $file,
-			]);
+			]
+		);
 		$response->assertStatus(200);
 		$response->assertDontSee('Error');
 
@@ -36,10 +38,12 @@ class PhotosUnitTest
 	 */
 	public function wrong_upload(TestCase &$testcase)
 	{
-		$response = $testcase->post('/api/Photo::add',
+		$response = $testcase->post(
+			'/api/Photo::add',
 			[
 				'albumID' => '0',
-			]);
+			]
+		);
 		$response->assertStatus(302);
 	}
 
@@ -50,11 +54,13 @@ class PhotosUnitTest
 	 */
 	public function wrong_upload2(TestCase &$testcase)
 	{
-		$response = $testcase->post('/api/Photo::add',
+		$response = $testcase->post(
+			'/api/Photo::add',
 			[
 				'albumID' => '0',
 				'0' => '1',
-			]);
+			]
+		);
 		$response->assertStatus(200);
 		$response->assertSee('"Error: missing files"', false);
 	}

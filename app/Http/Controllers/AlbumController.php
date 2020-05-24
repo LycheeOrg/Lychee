@@ -5,17 +5,18 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Assets\Helpers;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
+use App\ModelRessources\AlbumRessources;
 use App\Photo;
 use App\Response;
 use App\User;
 use Illuminate\Http\Request;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -84,6 +85,7 @@ class AlbumController extends Controller
 		// Get album information
 		$full_photo = Configs::get_value('full_photo', '1') == '1';
 
+		// change this for smartalbum
 		switch ($request['albumID']) {
 			case 'starred':
 				$photos_sql = $this->albumFunctions->getStarred($return);
@@ -102,6 +104,7 @@ class AlbumController extends Controller
 				break;
 		}
 
+		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
 		$return['photos'] = $this->albumFunctions->photos($photos_sql, $full_photo);
 
 		$return['id'] = $request['albumID'];
@@ -450,7 +453,7 @@ class AlbumController extends Controller
 			$no_error &= $album->delete();
 
 			if ($parentAlbum !== null) {
-				$no_error &= $parentAlbum->update_takestamps([$minTS, $maxTS], false);
+				$no_error &= AlbumRessources::update_takestamps($parentAlbum, [$minTS, $maxTS], false);
 			}
 		}
 
@@ -524,10 +527,10 @@ class AlbumController extends Controller
 			$no_error &= $album_t->delete();
 
 			if ($parentAlbum !== null) {
-				$no_error &= $parentAlbum->update_takestamps(array_slice($takestamps, -2), false);
+				$no_error &= AlbumRessources::update_takestamps($parentAlbum, array_slice($takestamps, -2), false);
 			}
 		}
-		$no_error &= $album->update_takestamps($takestamps, true);
+		$no_error &= AlbumRessources::update_takestamps($album, $takestamps, true);
 
 		return $no_error ? 'true' : 'false';
 	}
@@ -588,11 +591,11 @@ class AlbumController extends Controller
 
 					$no_error = false;
 				}
-				$no_error &= $oldParentAlbum->update_takestamps([$album->min_takestamp, $album->max_takestamp], false);
+				$no_error &= AlbumRessources::update_takestamps($oldParentAlbum, [$album->min_takestamp, $album->max_takestamp], false);
 			}
 		}
 		if ($album_master !== null) {
-			$no_error &= $album_master->update_takestamps($takestamps, true);
+			$no_error &= AlbumRessources::update_takestamps($album_master, $takestamps, true);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -723,13 +726,17 @@ class AlbumController extends Controller
 
 				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album) use (&$zip, $badChars, &$compress_album) {
 					if ($album !== null) {
-						if (!$this->sessionFunctions->is_current_user($album->owner_id) &&
-						!$album->is_downloadable()) {
+						if (
+							!$this->sessionFunctions->is_current_user($album->owner_id) &&
+							!$album->is_downloadable()
+						) {
 							return;
 						}
 					} else {
-						if (!$this->sessionFunctions->is_logged_in() &&
-						Configs::get_value('downloadable', '0') === '0') {
+						if (
+							!$this->sessionFunctions->is_logged_in() &&
+							Configs::get_value('downloadable', '0') === '0'
+						) {
 							return;
 						}
 					}
@@ -764,8 +771,10 @@ class AlbumController extends Controller
 						// For photos in public smart albums, skip the ones
 						// that are not downloadable based on their actual
 						// parent album.
-						if ($album === null && !$this->sessionFunctions->is_logged_in() &&
-						$photo->album_id !== null && !$photo->album->is_downloadable()) {
+						if (
+							$album === null && !$this->sessionFunctions->is_logged_in() &&
+							$photo->album_id !== null && !$photo->album->is_downloadable()
+						) {
 							continue;
 						}
 

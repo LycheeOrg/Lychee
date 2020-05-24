@@ -5,16 +5,18 @@
 namespace App\ModelFunctions;
 
 use App\Album;
+use App\Assets\Helpers;
 use App\Configs;
 use App\Image\ImageHandlerInterface;
 use App\Logs;
 use App\Metadata\Extractor;
+use App\ModelRessources\AlbumRessources;
 use App\Photo;
 use App\Response;
 use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class PhotoFunctions
 {
@@ -113,8 +115,11 @@ class PhotoFunctions
 				// let's check for the mimetype
 				// maybe we don't have a photo
 				if (!function_exists('exif_imagetype')) {
-					Logs::error(__METHOD__, __LINE__,
-						'EXIF library not loaded. Make sure exif is enabled in php.ini');
+					Logs::error(
+						__METHOD__,
+						__LINE__,
+						'EXIF library not loaded. Make sure exif is enabled in php.ini'
+					);
 
 					return 'EXIF library not loaded on the server!';
 				}
@@ -148,40 +153,43 @@ class PhotoFunctions
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0, $delete_imported = false, $force_skip_duplicates = false)
+	public function add(array $file, int $albumID_in = 0, bool $delete_imported = false, bool $force_skip_duplicates = false)
 	{
 		// Check permissions
-		if (Helpers::hasPermissions(Storage::path('')) === false ||
+		// TODO: extract this test.
+		if (
+			Helpers::hasPermissions(Storage::path('')) === false ||
 			Helpers::hasPermissions(Storage::path('big/')) === false ||
 			Helpers::hasPermissions(Storage::path('medium/')) === false ||
 			Helpers::hasPermissions(Storage::path('small/')) === false ||
 			Helpers::hasPermissions(Storage::path('thumb/')) === false ||
 			Helpers::hasPermissions(Storage::path('import/')) === false
-	) {
+		) {
 			Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
 
 			return Response::error('An upload-folder is missing or not readable and writable!');
 		}
 
 		switch ($albumID_in) {
-			// s for public (share)
-			case 's':
+				// s for public (share)
+			case 'public':
 				$public = 1;
 				$star = 0;
 				$albumID = null;
 				break;
 
-			// f for starred (fav)
-			case 'f':
+				// f for starred (fav)
+			case 'starred':
 				$star = 1;
 				$public = 0;
 				$albumID = null;
 				break;
 
-			// r for recent
-			// 0 for unsorted
+				// r for recent
+				// 0 for unsorted
+			case 'unsorted':
 			case '0':
-			case 'r':
+			case 'recent':
 				$public = 0;
 				$star = 0;
 				$albumID = null;
@@ -289,6 +297,7 @@ class PhotoFunctions
 		if ($kind == 'raw') {
 			$info = $this->metadataExtractor->bare();
 			$this->metadataExtractor->size($info, $path);
+			// where is this defined ??
 			$this->metadataExtractor->validate($info);
 			$info['type'] = 'raw';
 		} else {
@@ -375,8 +384,10 @@ class PhotoFunctions
 			if (($livePhotoPartner === false) || !(in_array($photo->type, $this->validVideoTypes, true))) {
 				// Set orientation based on EXIF data
 				// but do not rotate if the image shall not be modified
-				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== ''
-						&& Configs::get_value('import_via_symlink', '0') === '0') {
+				if (
+					$photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== ''
+					&& Configs::get_value('import_via_symlink', '0') === '0'
+				) {
 					$rotation = $this->imageHandler->autoRotate($path, $info);
 
 					if ($rotation !== [false, false]) {
@@ -512,8 +523,10 @@ class PhotoFunctions
 			200
 		);
 
-		if (Configs::get_value('thumb_2x') === '1' &&
-			$photo->width >= 400 && $photo->height >= 400) {
+		if (
+			Configs::get_value('thumb_2x') === '1' &&
+			$photo->width >= 400 && $photo->height >= 400
+		) {
 			// Retina thumbs
 			$this->imageHandler->crop(
 				$src,
@@ -711,7 +724,7 @@ class PhotoFunctions
 
 				return Response::error('Could not find specified album');
 			}
-			if (!$album->update_takestamps([$photo->takestamp], true)) {
+			if (!AlbumRessources::update_takestamps($album, [$photo->takestamp], true)) {
 				Logs::error(__METHOD__, __LINE__, 'Could not update album takestamps');
 
 				return Response::error('Could not update album takestamps');

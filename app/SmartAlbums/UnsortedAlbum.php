@@ -2,6 +2,6 @@
 
 namespace App\SmartAlbums;
 
-class RecentAlbum
+class UnsortedAlbum extends SmartAlbum
 {
 }

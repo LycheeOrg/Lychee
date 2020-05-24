@@ -5,9 +5,11 @@
 namespace App\ModelFunctions;
 
 use App\Album;
+use App\Assets\Helpers;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
+use App\ModelRessources\AlbumRessources;
 use App\Photo;
 use App\Response;
 use App\User;
@@ -15,7 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Database\QueryException;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class AlbumFunctions
 {
@@ -186,17 +188,17 @@ class AlbumFunctions
 		return Photo::select_unsorted(Photo::OwnedBy($UserId));
 	}
 
-	public function getAlbum(array &$return, $albumID)
+	public function getAlbum(array &$return, int $albumID)
 	{
 		$album = Album::with('children')->find($albumID);
-		$return = $album->prepareData();
+		$return = AlbumRessources::toArray($album);
 		// we just require is_logged_in for this one.
 		$username = null;
 		if ($this->sessionFunctions->is_logged_in()) {
 			$return['owner'] = $username = $album->owner->username;
 		}
-
-		$full_photo = $album->full_photo_visible();
+		// TODO: Need to be moved
+		$return['full_photo'] = $album->is_full_photo_visible();
 		// To speed things up, we limit subalbum data to at most one
 		// level down.
 		$return['albums'] = $this->get_albums($album, $username, 1);
@@ -275,10 +277,10 @@ class AlbumFunctions
 		$return_photos = [];
 		$photo_counter = 0;
 		$photos = $photos_sql->select('album_id', 'id', 'latitude', 'longitude', 'small', 'small2x', 'takestamp', 'thumb2x', 'thumbUrl', 'title', 'type', 'url')
-						 ->whereNotNull('latitude')
-						 ->whereNotNull('longitude')
-						 ->with('album')
-						 ->get();
+			->whereNotNull('latitude')
+			->whereNotNull('longitude')
+			->with('album')
+			->get();
 
 		/*
 		 * @var Photo
@@ -310,6 +312,9 @@ class AlbumFunctions
 		$previousPhotoID = '';
 		$return_photos = [];
 		$photo_counter = 0;
+		/**
+		 * @var Collection[Photo]
+		 */
 		$photos = $photos_sql->with('album')
 			->get();
 
@@ -332,9 +337,6 @@ class AlbumFunctions
 			array_multisort($values, Configs::get_value('sorting_Photos_order') === 'ASC' ? SORT_ASC : SORT_DESC, SORT_NATURAL | SORT_FLAG_CASE, $keys, SORT_ASC, $photos);
 		}
 
-		/*
-		 * @var Photo
-		 */
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->prepareData();
@@ -393,7 +395,7 @@ class AlbumFunctions
 			 */
 			foreach ($albums as $album_model) {
 				// Turn data from the database into a front-end friendly format
-				$album = $album_model->prepareData();
+				$album = AlbumRessources::toArray($album_model);
 				$username = null;
 				if ($this->sessionFunctions->is_logged_in()) {
 					$album['owner'] = $username = $album_model->owner->username;
@@ -420,6 +422,9 @@ class AlbumFunctions
 	 */
 	public function genSmartAlbumsThumbs(array &$return, Builder $photos_sql, string $kind)
 	{
+		/**
+		 * @var P
+		 */
 		$photos = $photos_sql->get();
 		$i = 0;
 
@@ -548,8 +553,10 @@ class AlbumFunctions
 			}
 		}
 
-		if (Configs::get_value('public_starred', '0') === '1' ||
-			Configs::get_value('public_recent', '0') === '1') {
+		if (
+			Configs::get_value('public_starred', '0') === '1' ||
+			Configs::get_value('public_recent', '0') === '1'
+		) {
 			$publicAlbums = $this->getPublicAlbums($toplevel);
 
 			if (Configs::get_value('public_starred', '0') === '1') {
@@ -588,6 +595,7 @@ class AlbumFunctions
 	{
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		if ($sortingCol !== 'title' && $sortingCol !== 'description') {
+			// is this more efficient ?? What is the cost ?
 			$albums = $album->children()->orderBy($sortingCol, Configs::get_value('sorting_Albums_order'))->get();
 		} else {
 			$albums = $album->children->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, (Configs::get_value('sorting_Albums_order') === 'DESC'));
@@ -599,7 +607,7 @@ class AlbumFunctions
 			// We do list albums that need a password, but we limit what we
 			// return about them.
 			if ($haveAccess === 1 || $haveAccess === 3) {
-				$subAlbumData = $subAlbum->prepareData();
+				$subAlbumData = AlbumRessources::toArray($subAlbum);
 				if ($username !== null) {
 					$subAlbumData['owner'] = $username;
 				}
@@ -791,8 +799,10 @@ class AlbumFunctions
 						->orWhere(
 							function (Builder $query) {
 								$query->where('public', '=', true)->where('visible_hidden', '=', true);
-							});
-				})
+							}
+						);
+				}
+			)
 			->orderBy('owner_id', 'ASC');
 	}
 }

@@ -2,6 +2,8 @@
 
 namespace App\Assets;
 
+use App\Configs;
+use Exception;
 use Illuminate\Support\Facades\File;
 
 class Helpers
@@ -35,7 +37,8 @@ class Helpers
 	{
 		// Generate id based on the current microtime
 
-		if (PHP_INT_MAX == 2147483647
+		if (
+			PHP_INT_MAX == 2147483647
 			|| Configs::get_value('force_32bit_ids', '0') === '1'
 		) {
 			// For 32-bit installations, we can only afford to store the
@@ -117,7 +120,8 @@ class Helpers
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
-		if (file_exists($path) === true && is_readable($path) === true
+		if (
+			file_exists($path) === true && is_readable($path) === true
 			&& is_writeable($path) === true
 		) {
 			return true;
@@ -137,7 +141,8 @@ class Helpers
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
-		if (file_exists($path) === true && is_readable($path) === true
+		if (
+			file_exists($path) === true && is_readable($path) === true
 			&& is_executable($path) === true
 			&& is_writeable($path) === true
 		) {
@@ -172,4 +177,3 @@ class Helpers
 		return $b ? '1' : '0';
 	}
 }
-
