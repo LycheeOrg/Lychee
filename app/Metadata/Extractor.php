@@ -96,24 +96,9 @@ class Extractor
 			}
 		}
 
-		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
-		$sidecarData = [];
-
 		try {
 			// this can throw an exception in the case of Exiftool adapter!
 			$exif = $reader->read($filename);
-
-			// if readlink($filename) == False then $realFile = $filename.
-			// if readlink($filename) != False then $realFile = readlink($filename)
-			$realFile = readlink($filename) ?: $filename;
-			if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
-				// Don't use the same reader as the file in case it's a video
-				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
-				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
-
-				// We don't want to overwrite the media's type with the mimetype of the sidecar file
-				unset($sidecarData['type']);
-			}
 		} catch (\Exception $e) {
 			// Use Php native tools
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
@@ -121,10 +106,27 @@ class Extractor
 			$exif = $reader->read($filename);
 		}
 
-		if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
-			$exif->setData(array_merge($exif->getData(), $sidecarData));
-		} else {
-			$exif->setData(array_merge($sidecarData, $exif->getData()));
+		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
+		$sidecarData = [];
+
+		$realFile = is_link($filename) && readlink($filename) ? readlink($filename) : $filename;
+		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
+			try {
+				// Don't use the same reader as the file in case it's a video
+				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
+				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
+
+				// We don't want to overwrite the media's type with the mimetype of the sidecar file
+				unset($sidecarData['MimeType']);
+
+				if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
+					$exif->setData(array_merge($exif->getData(), $sidecarData));
+				} else {
+					$exif->setData(array_merge($sidecarData, $exif->getData()));
+				}
+			} catch (\Exception $e) {
+				Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			}
 		}
 
 		$metadata = $this->bare();
