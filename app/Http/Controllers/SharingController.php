@@ -41,10 +41,17 @@ class SharingController extends Controller
 				->join('albums', 'album_id', 'albums.id')
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
-				->get();
+				->get()
+				->each(function (&$s) {
+					$album = Album::find($s->album_id);
+					$s->title = $album->getFullPath();
+				});
 
-			$albums = Album::select(['id', 'title'])->orderBy('title', 'ASC')
-				->get();
+			$albums = Album::select(['id', 'title', 'parent_id'])->orderBy('title', 'ASC')
+				->get()->each(function (&$album) {
+					$album->title = $album->getFullPath();
+				});
+
 			$users = User::select(['id', 'username'])
 				->orderBy('username', 'ASC')->get();
 		} else {
@@ -56,10 +63,17 @@ class SharingController extends Controller
 				->where('albums.owner_id', '=', $UserId)
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
-				->get();
+				->get()
+				->each(function (&$s) {
+					$album = Album::find($s->album_id);
+					$s->title = $album->getFullPath();
+				});
 
-			$albums = Album::select(['id', 'title'])
-				->where('owner_id', '=', $UserId)->orderBy('title', 'ASC')->get();
+			$albums = Album::select(['id', 'title', 'parent_id'])
+				->where('owner_id', '=', $UserId)->orderBy('title', 'ASC')->get()->each(function ($album) {
+					$album->title = $album->getFullPath();
+				});
+
 			$users = User::select(['id', 'username'])
 				->orderBy('username', 'ASC')->get();
 		}
