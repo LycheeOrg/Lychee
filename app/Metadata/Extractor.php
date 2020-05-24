@@ -119,7 +119,7 @@ class Extractor
 				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
-				unset($sidecarData['type']);
+				unset($sidecarData['MimeType']);
 
 				if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
 					$exif->setData(array_merge($exif->getData(), $sidecarData));
