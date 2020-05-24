@@ -109,8 +109,6 @@ class Extractor
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
-		// if readlink($filename) == False then $realFile = $filename.
-		// if readlink($filename) != False then $realFile = readlink($filename)
 		$realFile = is_link($filename) && readlink($filename) ? readlink($filename) : $filename;
 		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
 			try {
