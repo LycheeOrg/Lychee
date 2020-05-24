@@ -3,7 +3,7 @@
 namespace App\Assets;
 
 use App\Configs;
-use Exception;
+use App\Exceptions\DivideByZeroException;
 use Illuminate\Support\Facades\File;
 
 class Helpers
@@ -161,12 +161,12 @@ class Helpers
 	 *
 	 * @return mixed
 	 *
-	 * @throws Exception
+	 * @throws DivideByZeroException
 	 */
 	public static function gcd($a, $b)
 	{
 		if ($b == 0) {
-			throw new Exception('gcd: Modulo by zero error.');
+			throw new DivideByZeroException();
 		}
 
 		return ($a % $b) ? Helpers::gcd($b, $a % $b) : $b;

@@ -12,8 +12,8 @@ use App\Photo;
 use File;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Feed\FeedItem;
-use Storage;
 
 class RSSController extends Controller
 {
@@ -48,10 +48,12 @@ class RSSController extends Controller
 
 		$photos = Photo::with('album', 'owner')
 			->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('rss_recent_days', '7')))
-			->toDateTimeString())
+				->toDateTimeString())
 			->where(function ($q) {
-				$q->whereIn('album_id',
-					$this->albumFunctions->getPublicAlbums())
+				$q->whereIn(
+					'album_id',
+					$this->albumFunctions->getPublicAlbums()
+				)
 					->orWhere('public', '=', '1');
 			})
 			->limit(Configs::get_Value('rss_max_items', '100'))
@@ -63,7 +65,7 @@ class RSSController extends Controller
 			$id = null;
 			if ($photo_model->album_id != null) {
 				$album = $photo_model->album;
-				if (!$album->full_photo_visible()) {
+				if (!$album->is_full_photo_visible()) {
 					$photo_model->downgrade($photo);
 				}
 				$id = '#' . $photo_model->album_id . '/' . $photo_model->id;
@@ -92,7 +94,8 @@ class RSSController extends Controller
 				'link' => $photo['url'],
 				'enclosureLength' => $length,
 				'enclosureMime' => $mime_type,
-				'author' => $photo_model->owner->username, ]);
+				'author' => $photo_model->owner->username,
+			]);
 		});
 
 		return $photos;

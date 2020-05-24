@@ -82,9 +82,6 @@ class AlbumController extends Controller
 		$return = [];
 		$return['albums'] = [];
 		// Get photos
-		// Get album information
-		$full_photo = Configs::get_value('full_photo', '1') == '1';
-
 		// change this for smartalbum
 		switch ($request['albumID']) {
 			case 'starred':
