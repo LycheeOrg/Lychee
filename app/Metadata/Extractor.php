@@ -112,7 +112,7 @@ class Extractor
 				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
 
 				// We don't want to overwrite the media's type with the mimetype of the sidecar file
-				unset($sidecarData['type']);
+				unset($sidecarData['MimeType']);
 			}
 		} catch (\Exception $e) {
 			// Use Php native tools
