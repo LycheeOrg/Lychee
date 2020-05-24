@@ -2,29 +2,31 @@
 
 namespace App\SmartAlbums;
 
+use App\Album;
+use App\ModelFunctions\AlbumFunctions;
 use Illuminate\Support\Carbon;
 
-class SmartAlbum
+class SmartAlbum extends Album
 {
 	/**
 	 * @var int
 	 */
-	public $id;
+	public $id = '';
 
 	/**
 	 * @var string
 	 */
-	public $title;
+	public $title = '';
 
 	/**
 	 * @var string
 	 */
-	public $description;
+	public $description = '';
 
 	/**
 	 * @var bool
 	 */
-	public $public;
+	public $public = '';
 
 	/**
 	 * @var bool
@@ -42,6 +44,17 @@ class SmartAlbum
 	 * @var string
 	 */
 	public $password = '';
+
+	/**
+	 * @var AlbumFunctions
+	 */
+	protected $albumFunctions;
+
+	public function __construct(AlbumFunctions $albumFunctions)
+	{
+		parent::__construct();
+		$this->albumFunctions = $albumFunctions;
+	}
 
 	public function is_full_photo_visible()
 	{

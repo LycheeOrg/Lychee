@@ -9,9 +9,9 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
-use File;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Feed\FeedItem;
 

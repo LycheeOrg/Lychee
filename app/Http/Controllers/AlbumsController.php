@@ -9,7 +9,6 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
-use App\Response;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -51,9 +50,6 @@ class AlbumsController extends Controller
 		];
 
 		$toplevel = $this->albumFunctions->getToplevelAlbums();
-		if ($toplevel === null) {
-			return Response::error('I could not find you.');
-		}
 
 		$return['smartalbums'] = $this->albumFunctions->getSmartAlbums($toplevel);
 		$return['albums'] = $this->albumFunctions->prepare_albums($toplevel['albums']);
@@ -76,20 +72,21 @@ class AlbumsController extends Controller
 		$albumIDs = $this->albumFunctions->getPublicAlbums();
 
 		$query = Photo::with('album')->where(
-				function (Builder $query) use ($albumIDs) {
-					$query->whereIn('album_id', $albumIDs);
-					// Add the 'Unsorted' album.
-					if ($this->sessionFunctions->is_logged_in()) {
-						$id = $this->sessionFunctions->id();
-						$user = User::find($id);
-						if ($id == 0 || $user->upload) {
-							$query->orWhere('album_id', '=', null);
-							if ($id !== 0) {
-								$query->where('owner_id', '=', $id);
-							}
+			function (Builder $query) use ($albumIDs) {
+				$query->whereIn('album_id', $albumIDs);
+				// Add the 'Unsorted' album.
+				if ($this->sessionFunctions->is_logged_in()) {
+					$id = $this->sessionFunctions->id();
+					$user = User::find($id);
+					if ($this->sessionFunctions->can_upload()) {
+						$query->orWhere('album_id', '=', null);
+						if ($id !== 0) {
+							$query->where('owner_id', '=', $id);
 						}
 					}
-				});
+				}
+			}
+		);
 
 		$full_photo = Configs::get_value('full_photo', '1') == '1';
 		$return['photos'] = $this->albumFunctions->photosLocationData($query, $full_photo);

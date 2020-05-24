@@ -4,6 +4,7 @@ namespace App\ControllerFunctions;
 
 use App\Album;
 use App\Configs;
+use App\Exceptions\AlbumDoesNotExistsException;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\User;
@@ -45,16 +46,18 @@ class ReadAccessFunctions
 				'unsorted',
 			])) {
 				if ($this->sessionFunctions->is_logged_in()) {
-					$id = $this->sessionFunctions->id();
-
-					$user = User::find($id);
-					if ($id == 0 || $user->upload) {
+					if ($this->sessionFunctions->is_admin()) {
+						return 1;
+					}
+					$user = $this->sessionFunctions->getUserData();
+					if ($user->upload) {
 						return 1; // access granted
 					}
 				}
 
 				if (($album === 'r' && Configs::get_value('public_recent', '0') === '1') ||
-					($album === 'f' && Configs::get_value('public_starred', '0') === '1')) {
+					($album === 'f' && Configs::get_value('public_starred', '0') === '1')
+				) {
 					return 1; // access granted
 				} else {
 					return 2; // Warning: Album private!
@@ -62,7 +65,7 @@ class ReadAccessFunctions
 			} else {
 				$album = Album::find($album);
 				if ($album == null) {
-					return 0;  // Does not exist
+					throw new AlbumDoesNotExistsException();
 				}
 			}
 		}
@@ -72,15 +75,19 @@ class ReadAccessFunctions
 		}
 
 		// Check if the album is shared with us
-		if ($this->sessionFunctions->is_logged_in() &&
+		if (
+			$this->sessionFunctions->is_logged_in() &&
 			$album->shared_with->map(function ($user) {
 				return $user->id;
-			})->contains($this->sessionFunctions->id())) {
+			})->contains($this->sessionFunctions->id())
+		) {
 			return 1; // access granted
 		}
 
-		if ($album->public != 1 ||
-			($obeyHidden && $album->visible_hidden !== 1)) {
+		if (
+			$album->public != 1 ||
+			($obeyHidden && $album->visible_hidden !== 1)
+		) {
 			return 2;  // Warning: Album private!
 		}
 

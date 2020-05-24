@@ -15,8 +15,8 @@ use App\Response;
 use App\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AlbumFunctions
@@ -26,7 +26,6 @@ class AlbumFunctions
 		'public' => '',
 		'recent' => '',
 		'unsorted' => '',
-		'random' => '',
 	];
 	/**
 	 * @var readAccessFunctions
@@ -44,17 +43,23 @@ class AlbumFunctions
 	private $symLinkFunctions;
 
 	/**
+	 * @var AlbumRessources
+	 */
+	private $albumRessources;
+
+	/**
 	 * AlbumFunctions constructor.
 	 *
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, SymLinkFunctions $symLinkFunctions)
+	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, SymLinkFunctions $symLinkFunctions, AlbumRessources $albumRessources)
 	{
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
+		$this->albumRessources = $albumRessources;
 	}
 
 	/**
@@ -132,9 +137,8 @@ class AlbumFunctions
 	{
 		if ($this->sessionFunctions->is_logged_in()) {
 			$UserId = $this->sessionFunctions->id();
-			$user = User::find($UserId);
 
-			if ($UserId == 0 || $user->upload) {
+			if ($this->sessionFunctions->can_upload()) {
 				$return['public'] = '0';
 				$return['downloadable'] = '1';
 
@@ -162,9 +166,8 @@ class AlbumFunctions
 	{
 		if ($this->sessionFunctions->is_logged_in()) {
 			$UserId = $this->sessionFunctions->id();
-			$user = User::find($UserId);
 
-			if ($UserId == 0 || $user->upload) {
+			if ($this->sessionFunctions->can_upload()) {
 				$return['public'] = '0';
 				$return['downloadable'] = '1';
 
@@ -191,7 +194,7 @@ class AlbumFunctions
 	public function getAlbum(array &$return, int $albumID)
 	{
 		$album = Album::with('children')->find($albumID);
-		$return = AlbumRessources::toArray($album);
+		$return = $this->albumRessources->toArray($album);
 		// we just require is_logged_in for this one.
 		$username = null;
 		if ($this->sessionFunctions->is_logged_in()) {
@@ -395,7 +398,7 @@ class AlbumFunctions
 			 */
 			foreach ($albums as $album_model) {
 				// Turn data from the database into a front-end friendly format
-				$album = AlbumRessources::toArray($album_model);
+				$album = $this->albumRessources->toArray($album_model);
 				$username = null;
 				if ($this->sessionFunctions->is_logged_in()) {
 					$album['owner'] = $username = $album_model->owner->username;
@@ -423,7 +426,7 @@ class AlbumFunctions
 	public function genSmartAlbumsThumbs(array &$return, Builder $photos_sql, string $kind)
 	{
 		/**
-		 * @var P
+		 * @var Collection[Photo]
 		 */
 		$photos = $photos_sql->get();
 		$i = 0;
@@ -516,15 +519,9 @@ class AlbumFunctions
 		 */
 		$return = [];
 
-		foreach ($this->smart_albums as $album => $method) {
-			$return[$album] = null;
-		}
-
 		if ($this->sessionFunctions->is_logged_in()) {
 			$UserId = $this->sessionFunctions->id();
-
-			$user = User::find($UserId);
-			if ($UserId == 0 || $user->upload) {
+			if ($this->sessionFunctions->can_upload()) {
 				/**
 				 * Unsorted.
 				 */
@@ -607,7 +604,7 @@ class AlbumFunctions
 			// We do list albums that need a password, but we limit what we
 			// return about them.
 			if ($haveAccess === 1 || $haveAccess === 3) {
-				$subAlbumData = AlbumRessources::toArray($subAlbum);
+				$subAlbumData = $this->albumRessources->toArray($subAlbum);
 				if ($username !== null) {
 					$subAlbumData['owner'] = $username;
 				}
@@ -698,6 +695,19 @@ class AlbumFunctions
 		}
 	}
 
+	private function customSort($query, $sortingCol, $sortingOrder)
+	{
+		if ($sortingCol !== 'title' && $sortingCol !== 'description') {
+			return $query
+				->orderBy($sortingCol, $sortingOrder)
+				->get();
+		} else {
+			return $query
+				->get()
+				->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC');
+		}
+	}
+
 	/**
 	 * Returns an array of top-level albums and shared albums visible to
 	 * the current user.
@@ -716,60 +726,43 @@ class AlbumFunctions
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
-		$customSort = function ($query) use ($sortingCol, $sortingOrder) {
-			if ($sortingCol !== 'title' && $sortingCol !== 'description') {
-				return $query
-					->orderBy($sortingCol, $sortingOrder)
-					->get();
-			} else {
-				return $query
-					->get()
-					->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC');
-			}
-		};
-
 		if ($this->sessionFunctions->is_logged_in()) {
+			$sql = Album::with([
+				'owner',
+				'children',
+			])->where('parent_id', '=', null);
 			$id = $this->sessionFunctions->id();
-			$user = User::find($id);
+			if ($id > 0) {
+				$shared = $this->get_shared_album($id);
 
-			if ($id == 0) {
-				$return['albums'] = $customSort(Album::with([
-					'owner',
-					'children',
-				])
-					->where('owner_id', '=', 0)
-					->where('parent_id', '=', null));
-
-				$return['shared_albums'] = $customSort(Album::with([
-					'owner',
-					'children',
-				])
-					->where('owner_id', '<>', 0)
-					->where('parent_id', '=', null)
-					->orderBy('owner_id', 'ASC'));
-			} else {
-				if ($user == null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $this->sessionFunctions->id() . ')');
-
-					return null;
-				} else {
-					$return['albums'] = $customSort(Album::with([
-						'owner',
-						'children',
-					])
-						->where('owner_id', '=', $user->id)
-						->where('parent_id', '=', null));
-					$return['shared_albums'] = $customSort($this->get_albums_user($user->id));
-				}
+				$sql = $sql->where(function ($query) use ($id, $shared) {
+					$query = $query->where('owner_id', '=', $id);
+					$query = $query->orWhereIn('id', $shared);
+					$query = $query->orWhere(
+						$query->where('public', '=', true)->where('visible_hidden', '=', true)
+					);
+				});
 			}
+			$sql = $sql->orderBy('owner_id', 'ASC');
+			$albumCollection = $this->customSort($sql, $sortingCol, $sortingOrder);
+			list($return['albums'], $return['shared_albums']) = $albumCollection->partition(function ($album) use ($id) {
+				return $album->owner_id == $id;
+			});
 		} else {
-			$return['albums'] = $customSort(Album::with('children')
+			$return['albums'] = $this->customSort(Album::with('children')
 				->where('public', '=', '1')
 				->where('visible_hidden', '=', '1')
-				->where('parent_id', '=', null));
+				->where('parent_id', '=', null), $sortingCol, $sortingOrder);
 		}
 
 		return $return;
+	}
+
+	private function get_shared_album($id)
+	{
+		return DB::select('album_id')
+			->from('user_album')
+			->where('user_id', '=', $id)->get();
 	}
 
 	/**
@@ -790,11 +783,7 @@ class AlbumFunctions
 			->where(
 				function (Builder $query) use ($id) {
 					// album is shared with user
-					$query->whereIn('id', function (QBuilder $query) use ($id) {
-						$query->select('album_id')
-							->from('user_album')
-							->where('user_id', '=', $id);
-					})
+					$query->whereIn('id', $this->get_shared_album($id))
 						// or album is visible to user
 						->orWhere(
 							function (Builder $query) {

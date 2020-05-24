@@ -4,11 +4,23 @@ namespace App\ModelRessources;
 
 use App\Album;
 use App\Assets\Helpers;
+use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AlbumRessources
 {
+	/**
+	 * @var SymLinkFunctions
+	 */
+	private $symLinkFunctions;
+
+	public function __construct(SymLinkFunctions $symLinkFunctions)
+	{
+		$this->symLinkFunctions = $symLinkFunctions;
+	}
+
 	/**
 	 * Recursively go through each sub album and build a list of them.
 	 *
@@ -26,14 +38,51 @@ class AlbumRessources
 		return $return;
 	}
 
+	public function getThumbs(Album $album, array &$return)
+	{
+		$photos = $album->get_photos();
+		$return['thumbs'] = [];
+		$return['thumbs2x'] = [];
+		$return['types'] = [];
+		$return['num'] = strval($photos->count());
+
+		/*
+		 * @var Photo
+		 */
+		$i = 0;
+		foreach ($photos as $photo) {
+			if ($i < 3) {
+				$sym = $this->symLinkFunctions->find($photo);
+				if ($sym !== null) {
+					$return['thumbs'][$i] = $sym->get('thumbUrl');
+					// default is '' so if thumb2x does not exist we just reply '' which is the behaviour we want
+					$return['thumbs2x'][$i] = $sym->get('thumb2x');
+				} else {
+					$return['thumbs'][$i] = Storage::url('thumb/' . $photo->thumbUrl);
+					if ($photo->thumb2x == '1') {
+						$thumbUrl2x = explode('.', $photo->thumbUrl);
+						$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+						$return['thumbs2x'][$i] = Storage::url('thumb/' . $thumbUrl2x);
+					} else {
+						$return['thumbs2x'][$i] = '';
+					}
+				}
+				$return['types'][$i] = $photo->type;
+				$i++;
+			} else {
+				break;
+			}
+		}
+	}
+
 	/**
 	 * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
 	 *
 	 * @return array
 	 */
-	public static function toArray(Album $album)
+	public function toArray(Album $album)
 	{
-		$album = [
+		$return = [
 			'id' => strval($album->id),
 			'title' => $album->title,
 			'public' => strval($album->public),
@@ -66,7 +115,7 @@ class AlbumRessources
 		// to the front end.
 		$album['thumbIDs'] = [];
 
-		return $album;
+		return $return;
 	}
 
 	/**
@@ -76,7 +125,7 @@ class AlbumRessources
 	 *
 	 * @return bool returns when album is public
 	 */
-	public static function checkPassword(Album $album, string $password)
+	public function checkPassword(Album $album, string $password)
 	{
 		// album password is empty or input is correct.
 		return $album->password == '' || Hash::check($password, $album->password);
@@ -87,7 +136,7 @@ class AlbumRessources
 	 * This is expensive and not normally necessary so we only use it
 	 * during migration.
 	 */
-	public static function update_min_max_takestamp(Album $album)
+	public function update_min_max_takestamp(Album $album)
 	{
 		$album_list = self::get_all_sub_albums($album, [$album->id]);
 
@@ -108,7 +157,7 @@ class AlbumRessources
 	 *
 	 * @return bool: true if successful
 	 */
-	public static function update_takestamps(Album $album, array $takestamps, bool $adding)
+	public function update_takestamps(Album $album, array $takestamps, bool $adding)
 	{
 		// Begin by calculating min and max takestamps from the array.
 		// The array may contain null values, which is why we can't use the
@@ -206,7 +255,7 @@ class AlbumRessources
 	 * This is expensive and not normally necessary so we only use it
 	 * during migration.
 	 */
-	public static function reset_takestamp()
+	public function reset_takestamp()
 	{
 		$albums = Album::get();
 		foreach ($albums as $_album) {

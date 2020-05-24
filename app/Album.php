@@ -89,6 +89,14 @@ class Album extends Model
 	}
 
 	/**
+	 * Return the list of photos.
+	 */
+	public function get_photos()
+	{
+		return $this->photos();
+	}
+
+	/**
 	 * Return the relationship between an album and its owner.
 	 *
 	 * @return BelongsTo

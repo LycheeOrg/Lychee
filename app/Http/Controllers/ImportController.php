@@ -15,8 +15,8 @@ use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use ImagickException;
-use Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ImportController extends Controller
