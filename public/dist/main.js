@@ -7887,7 +7887,7 @@ upload.start = {
 
 				albums.refresh();
 
-				if (album.getID() === false) lychee.goto('0');else album.load(albumID);
+				if (album.getID() === false) lychee.goto('unsorted');else album.load(albumID);
 			};
 
 			formData.append('function', 'Photo::add');

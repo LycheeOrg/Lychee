@@ -96,7 +96,7 @@ class PhotoController extends Controller
 		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
 			if ($photo->album_id != null) {
 				$album = $photo->album;
-				if (!$album->full_photo_visible()) {
+				if (!$album->is_full_photo_visible()) {
 					$photo->downgrade($return);
 				}
 				$return['downloadable'] = $album->is_downloadable() ? '1' : '0';
@@ -140,7 +140,7 @@ class PhotoController extends Controller
 
 		$return = $photo->prepareData();
 		$this->symLinkFunctions->getUrl($photo, $return);
-		if ($photo->album_id !== null && !$photo->album->full_photo_visible()) {
+		if ($photo->album_id !== null && !$photo->album->is_full_photo_visible()) {
 			$photo->downgrade($return);
 		}
 

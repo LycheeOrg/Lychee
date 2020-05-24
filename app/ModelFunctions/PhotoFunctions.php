@@ -146,14 +146,14 @@ class PhotoFunctions
 	 * Add new photo(s) to the database.
 	 * Exits on error.
 	 *
-	 * @param array $file
-	 * @param int   $albumID_in
-	 * @param bool  $delete_imported
-	 * @param bool  $force_skip_duplicates
+	 * @param array      $file
+	 * @param int|string $albumID_in
+	 * @param bool       $delete_imported
+	 * @param bool       $force_skip_duplicates
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, int $albumID_in = 0, bool $delete_imported = false, bool $force_skip_duplicates = false)
+	public function add(array $file, $albumID_in = 0, bool $delete_imported = false, bool $force_skip_duplicates = false)
 	{
 		// Check permissions
 		// TODO: extract this test.
