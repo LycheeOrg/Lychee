@@ -535,11 +535,36 @@ class PhotoFunctions
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
 		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
-		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
-
-		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
+		$tmp = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
-		$frame->save($tmp);
+
+		try {
+			$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
+			$frame->save($tmp);
+		} catch (\Exception $e) {
+			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot from video ' . $tmp);
+		}
+
+		// check if the image has data
+		$success = file_exists($tmp) ? (filesize($tmp) > 0) : false;
+
+		if (!$success) {
+			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot from video ' . $tmp);
+			try {
+				$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0));
+				$frame->save($tmp);
+				$success = file_exists($tmp) ? (filesize($tmp) > 0) : false;
+				if (!$success) {
+					Logs::notice(__METHOD__, __LINE__, 'Fallback failed to extract snapshot from video ' . $tmp);
+				} else {
+					Logs::notice(__METHOD__, __LINE__, 'Fallback successful - snapshot from video ' . $tmp . ' at t=0 created.');
+				}
+			} catch (\Exception $e) {
+				Logs::notice(__METHOD__, __LINE__, 'Fallback failed to extract snapshot from video ' . $tmp);
+
+				return '';
+			}
+		}
 
 		return $tmp;
 	}
