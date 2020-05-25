@@ -85,16 +85,20 @@ class AlbumController extends Controller
 		// change this for smartalbum
 		switch ($request['albumID']) {
 			case 'starred':
-				$photos_sql = $this->albumFunctions->getStarred($return);
+				abort(404);
+				// $photos_sql = $this->albumFunctions->getStarred($return);
 				break;
 			case 'public':
-				$photos_sql = $this->albumFunctions->getPublic($return);
+				abort(404);
+				// $photos_sql = $this->albumFunctions->getPublic($return);
 				break;
 			case 'recent':
-				$photos_sql = $this->albumFunctions->getRecent($return);
+				abort(404);
+				// $photos_sql = $this->albumFunctions->getRecent($return);
 				break;
 			case 'unsorted':
-				$photos_sql = $this->albumFunctions->getUnsorted($return);
+				abort(404);
+				// $photos_sql = $this->albumFunctions->getUnsorted($return);
 				break;
 			default:
 				$photos_sql = $this->albumFunctions->getAlbum($return, $request['albumID']);
@@ -171,14 +175,14 @@ class AlbumController extends Controller
 
 				$full_photo = $album->full_photo_visible();
 
-				$album_list = [];
+				$album_list = collect();
 				if ($request['includeSubAlbums']) {
 					// Get all subalbums of the current album
-					$this->albumFunctions->get_sub_albums($album_list, $album);
+					$album_list = $album_list->concat($this->albumFunctions->get_sub_albums($album));
 				}
 
 				// Add current albumID to array
-				$album_list[] = $request['albumID'];
+				$album_list->push($request['albumID']);
 
 				$photos_sql = Photo::whereIn('album_id', $album_list);
 

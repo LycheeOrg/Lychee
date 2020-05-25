@@ -21,23 +21,6 @@ class AlbumRessources
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
-	/**
-	 * Recursively go through each sub album and build a list of them.
-	 *
-	 * @param array $return
-	 *
-	 * @return array
-	 */
-	private function get_all_sub_albums(Album $album, $return = [])
-	{
-		foreach ($album->children as $_album) {
-			$return[] = $_album->id;
-			$return = self::get_all_sub_albums($_album, $return);
-		}
-
-		return $return;
-	}
-
 	public function getThumbs(Album $album, array &$return)
 	{
 		$photos = $album->get_photos();
@@ -132,16 +115,33 @@ class AlbumRessources
 	}
 
 	/**
+	 * Recursively go through each sub album and build a list of them.
+	 *
+	 * @param Album      $album
+	 * @param Collection $return
+	 *
+	 * @return Collection
+	 */
+	private static function get_all_sub_albums_id(Album $album)
+	{
+		return $album->children->reduce(function ($collect, $_album) {
+			return $collect
+				->concat([$_album->id])
+				->concat(self::get_all_sub_albums_id($_album));
+		}, collect());
+	}
+
+	/**
 	 * Go through each sub album and update the minimum and maximum takestamp of the pictures.
 	 * This is expensive and not normally necessary so we only use it
 	 * during migration.
 	 */
 	public function update_min_max_takestamp(Album $album)
 	{
-		$album_list = self::get_all_sub_albums($album, [$album->id]);
+		$album_list = self::get_all_sub_albums_id($album, [$album->id]);
 
-		$min = Photo::whereIn('album_id', $album_list)->min('takestamp');
-		$max = Photo::whereIn('album_id', $album_list)->max('takestamp');
+		$min = Photo::whereIn('album_id', $album_list->all())->min('takestamp');
+		$max = Photo::whereIn('album_id', $album_list->all())->max('takestamp');
 		$album->min_takestamp = $min;
 		$album->max_takestamp = $max;
 	}

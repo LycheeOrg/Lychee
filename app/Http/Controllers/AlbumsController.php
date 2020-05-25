@@ -49,6 +49,8 @@ class AlbumsController extends Controller
 			'shared_albums' => null,
 		];
 
+		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
+		//
 		$toplevel = $this->albumFunctions->getToplevelAlbums();
 
 		$return['smartalbums'] = $this->albumFunctions->getSmartAlbums($toplevel);

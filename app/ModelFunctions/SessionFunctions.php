@@ -72,19 +72,15 @@ class SessionFunctions
 	}
 
 	/**
-	 * Return User object.
+	 * Return User object given a positive ID.
 	 */
-	public function getUserData(): User
+	private function accessUserData(): User
 	{
-		if ($this->user_data != null) {
-			return $this->user_data;
-		}
-
 		$id = $this->id();
 		if ($id > 0) {
-			$this->user_data = User::find($this->id);
+			$this->user_data = User::find($id);
 
-			if ($this->user_data == null) {
+			if (!$this->user_data) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $id . ')');
 				throw new UserNotFoundException($id);
 			}
@@ -94,6 +90,14 @@ class SessionFunctions
 
 		Logs::error(__METHOD__, __LINE__, 'Trying to get a User from Admin ID.');
 		throw new RequestAdminDataException();
+	}
+
+	/**
+	 * Return User object and cache the result.
+	 */
+	public function getUserData(): User
+	{
+		return $this->user_data ?? $this->accessUserData();
 	}
 
 	/**

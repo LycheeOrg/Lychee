@@ -31,45 +31,13 @@ class ReadAccessFunctions
 	 * if 2 : album is private
 	 * if 3 : album is password protected and require user input.
 	 *
-	 * @param mixed $album: Album object or Album id
+	 * @param Album $album
 	 * @param bool obeyHidden
 	 *
 	 * @return int
 	 */
-	public function album($album, bool $obeyHidden = false)
+	public function album($album, bool $obeyHidden = false): int
 	{
-		if (!is_object($album)) {
-			if (in_array($album, [
-				'starred',
-				'public',
-				'recent',
-				'unsorted',
-			])) {
-				if ($this->sessionFunctions->is_logged_in()) {
-					if ($this->sessionFunctions->is_admin()) {
-						return 1;
-					}
-					$user = $this->sessionFunctions->getUserData();
-					if ($user->upload) {
-						return 1; // access granted
-					}
-				}
-
-				if (($album === 'r' && Configs::get_value('public_recent', '0') === '1') ||
-					($album === 'f' && Configs::get_value('public_starred', '0') === '1')
-				) {
-					return 1; // access granted
-				} else {
-					return 2; // Warning: Album private!
-				}
-			} else {
-				$album = Album::find($album);
-				if ($album == null) {
-					throw new AlbumDoesNotExistsException();
-				}
-			}
-		}
-
 		if ($this->sessionFunctions->is_current_user($album->owner_id)) {
 			return 1; // access granted
 		}
@@ -103,6 +71,48 @@ class ReadAccessFunctions
 	}
 
 	/**
+	 * Check if a (public) user has access to an album
+	 * if 0 : album does not exist
+	 * if 1 : access is granted
+	 * if 2 : album is private
+	 * if 3 : album is password protected and require user input.
+	 *
+	 * @param int|string $album: Album object or Album id
+	 * @param bool obeyHidden
+	 *
+	 * @return int
+	 */
+	public function albumID($album, bool $obeyHidden = false): int
+	{
+		if (in_array($album, [
+			'starred',
+			'public',
+			'recent',
+			'unsorted',
+		])) {
+			if ($this->sessionFunctions->is_logged_in()) {
+				if ($this->sessionFunctions->can_upload()) {
+					return 1;
+				}
+			}
+			if (($album === 'recent' && Configs::get_value('public_recent', '0') === '1') ||
+				($album === 'starred' && Configs::get_value('public_starred', '0') === '1')
+			) {
+				return 1; // access granted
+			} else {
+				return 2; // Warning: Album private!
+			}
+		}
+
+		$album = Album::find($album);
+		if ($album == null) {
+			throw new AlbumDoesNotExistsException();
+		}
+
+		return $this->album($album, $obeyHidden);
+	}
+
+	/**
 	 * Check if a (public) user has access to a picture.
 	 *
 	 * @param Photo $photo
@@ -117,7 +127,7 @@ class ReadAccessFunctions
 		if ($photo->public === 1) {
 			return true;
 		}
-		if ($this->album($photo->album_id) === 1) {
+		if ($this->albumID($photo->album_id) === 1) {
 			return true;
 		}
 
