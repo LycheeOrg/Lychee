@@ -510,7 +510,10 @@ class PhotoFunctions
 		$resWidth = $resHeight = 0;
 		$width = $photo->width;
 		$height = $photo->height;
-		if (!$this->imageHandler->scale($url, $tmp_file, $width, $height, $resWidth, $resHeight)) {
+
+		try {
+			$this->imageHandler->scale($url, $tmp_file, $width, $height, $resWidth, $resHeight);
+		} catch (\Exception $e) {
 			Logs::error(__METHOD__, __LINE__, 'Failed to create JPG from raw file ' . $url . $filename);
 
 			return '';

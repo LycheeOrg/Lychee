@@ -77,7 +77,8 @@ class Extractor
 
 		// check raw files
 		$is_raw = false;
-		if (in_array(strtolower($extension), explode('|', Configs::get_value('raw_formats', '')), true)) {
+		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
+		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
 			$is_raw = true;
 		}
 
@@ -122,7 +123,17 @@ class Extractor
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
-		$realFile = is_link($filename) && readlink($filename) ? readlink($filename) : $filename;
+		// readlink fails if it's not a link -> we need to separate it
+		$realFile = $filename;
+		if (is_link($filename)) {
+			try {
+				// if readlink($filename) == False then $realFile = $filename.
+				// if readlink($filename) != False then $realFile = readlink($filename)
+				$realFile = readlink($filename) ?: $filename;
+			} catch (\Exception $e) {
+				Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			}
+		}
 		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
 			try {
 				// Don't use the same reader as the file in case it's a video
