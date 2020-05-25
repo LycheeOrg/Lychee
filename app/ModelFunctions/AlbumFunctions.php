@@ -528,34 +528,32 @@ class AlbumFunctions
 		$public = new PublicAlbum($this->sessionFunctions);
 		$recent = new RecentAlbum($this->sessionFunctions);
 
-		if ($this->sessionFunctions->is_logged_in()) {
-			if ($this->sessionFunctions->can_upload()) {
-				/**
-				 * Unsorted.
-				 */
-				$photos_sql = $unsorted->get_photos()->limit(3);
-				$this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
+		if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload()) {
+			/**
+			 * Unsorted.
+			 */
+			$photos_sql = $unsorted->get_photos()->limit(3);
+			$this->genSmartAlbumsThumbs($return, $photos_sql, 'unsorted');
 
-				/**
-				 * Starred.
-				 */
-				$photos_sql = $starred->get_photos()->limit(3);
-				$this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
+			/**
+			 * Starred.
+			 */
+			$photos_sql = $starred->get_photos()->limit(3);
+			$this->genSmartAlbumsThumbs($return, $photos_sql, 'starred');
 
-				/**
-				 * Public.
-				 */
-				$photos_sql = $public->get_photos()->limit(3);
-				$this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
+			/**
+			 * Public.
+			 */
+			$photos_sql = $public->get_photos()->limit(3);
+			$this->genSmartAlbumsThumbs($return, $photos_sql, 'public');
 
-				/**
-				 * Recent.
-				 */
-				$photos_sql = $recent->get_photos()->limit(3);
-				$this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
+			/**
+			 * Recent.
+			 */
+			$photos_sql = $recent->get_photos()->limit(3);
+			$this->genSmartAlbumsThumbs($return, $photos_sql, 'recent');
 
-				return $return;
-			}
+			return $return;
 		}
 
 		if (

@@ -90,10 +90,8 @@ class ReadAccessFunctions
 			'recent',
 			'unsorted',
 		])) {
-			if ($this->sessionFunctions->is_logged_in()) {
-				if ($this->sessionFunctions->can_upload()) {
-					return 1;
-				}
+			if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload()) {
+				return 1;
 			}
 			if (($album === 'recent' && Configs::get_value('public_recent', '0') === '1') ||
 				($album === 'starred' && Configs::get_value('public_starred', '0') === '1')

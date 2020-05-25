@@ -9,7 +9,6 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
-use App\User;
 use Illuminate\Database\Eloquent\Builder;
 
 class AlbumsController extends Controller
@@ -77,14 +76,12 @@ class AlbumsController extends Controller
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);
 				// Add the 'Unsorted' album.
-				if ($this->sessionFunctions->is_logged_in()) {
+				if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload()) {
+					$query->orWhere('album_id', '=', null);
+
 					$id = $this->sessionFunctions->id();
-					$user = User::find($id);
-					if ($this->sessionFunctions->can_upload()) {
-						$query->orWhere('album_id', '=', null);
-						if ($id !== 0) {
-							$query->where('owner_id', '=', $id);
-						}
+					if ($id !== 0) {
+						$query->where('owner_id', '=', $id);
 					}
 				}
 			}
