@@ -36,20 +36,19 @@ class SharingController extends Controller
 		if ($UserId == 0) {
 			$shared = DB::table('user_album')
 				->select('user_album.id', 'user_id', 'album_id', 'username',
-					'title')
+					'title', 'parent_id')
 				->join('users', 'user_id', 'users.id')
 				->join('albums', 'album_id', 'albums.id')
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
 				->get()
 				->each(function (&$s) {
-					$album = Album::find($s->album_id);
-					$s->title = $album->getFullPath();
+					$s->title = Album::getFullPath($s);
 				});
 
 			$albums = Album::select(['id', 'title', 'parent_id'])->orderBy('title', 'ASC')
 				->get()->each(function (&$album) {
-					$album->title = $album->getFullPath();
+					$album->title = Album::getFullPath($album);
 				});
 
 			$users = User::select(['id', 'username'])
@@ -65,13 +64,12 @@ class SharingController extends Controller
 				->orderBy('username', 'ASC')
 				->get()
 				->each(function (&$s) {
-					$album = Album::find($s->album_id);
-					$s->title = $album->getFullPath();
+					$s->title = Album::getFullPath($s);
 				});
 
 			$albums = Album::select(['id', 'title', 'parent_id'])
 				->where('owner_id', '=', $UserId)->orderBy('title', 'ASC')->get()->each(function ($album) {
-					$album->title = $album->getFullPath();
+					$album->title = Album::getFullPath($album);
 				});
 
 			$users = User::select(['id', 'username'])

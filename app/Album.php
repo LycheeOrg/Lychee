@@ -414,10 +414,10 @@ class Album extends Model
 	 *
 	 * @return string
 	 */
-	public function getFullPath()
+	public static function getFullPath($album)
 	{
-		$title = [$this->title];
-		$parentId = $this->parent_id;
+		$title = [$album->title];
+		$parentId = $album->parent_id;
 		while ($parentId) {
 			$parent = Album::find($parentId);
 			array_unshift($title, $parent->title);
