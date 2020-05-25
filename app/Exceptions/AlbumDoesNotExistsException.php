@@ -13,4 +13,9 @@ class AlbumDoesNotExistsException extends Exception
 	) {
 		parent::__construct('Album does not exist.', $code, $previous);
 	}
+
+	public function render($request)
+	{
+		return 'false';
+	}
 }

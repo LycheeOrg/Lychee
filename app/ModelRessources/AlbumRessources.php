@@ -157,7 +157,7 @@ class AlbumRessources
 	 *
 	 * @return bool: true if successful
 	 */
-	public function update_takestamps(Album $album, array $takestamps, bool $adding)
+	public static function update_takestamps(Album $album, array $takestamps, bool $adding)
 	{
 		// Begin by calculating min and max takestamps from the array.
 		// The array may contain null values, which is why we can't use the
@@ -255,7 +255,7 @@ class AlbumRessources
 	 * This is expensive and not normally necessary so we only use it
 	 * during migration.
 	 */
-	public function reset_takestamp()
+	public static function reset_takestamp()
 	{
 		$albums = Album::get();
 		foreach ($albums as $_album) {
