@@ -151,10 +151,11 @@ class PhotoFunctions
 	 * @param int|string $albumID_in
 	 * @param bool       $delete_imported
 	 * @param bool       $force_skip_duplicates
+	 * @param bool       $resync_metadata
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0, bool $delete_imported = false, bool $force_skip_duplicates = false)
+	public function add(array $file, $albumID_in = 0, bool $delete_imported = false, bool $force_skip_duplicates = false, $resync_metadata = false)
 	{
 		// Check permissions
 		// TODO: extract this test.
@@ -172,24 +173,20 @@ class PhotoFunctions
 		}
 
 		switch ($albumID_in) {
-				// s for public (share)
 			case 'public':
 				$public = 1;
 				$star = 0;
 				$albumID = null;
 				break;
 
-				// f for starred (fav)
 			case 'starred':
 				$star = 1;
 				$public = 0;
 				$albumID = null;
 				break;
 
-				// r for recent
-				// 0 for unsorted
 			case 'unsorted':
-			case '0':
+			case '0': // root
 			case 'recent':
 				$public = 0;
 				$star = 0;
@@ -233,23 +230,23 @@ class PhotoFunctions
 			// @codeCoverageIgnoreEnd
 		}
 		$photo->checksum = $checksum;
-		$exists = $photo->isDuplicate($checksum);
+		$existing = $photo->isDuplicate($checksum);
+		$exists = $existing !== false;
 
 		if ($exists !== false) {
-			$photo_name = $exists->url;
-			$path = Storage::path($path_prefix . $exists->url);
-			$photo->thumbUrl = $exists->thumbUrl;
-			$photo->thumb2x = $exists->thumb2x;
-			$photo->medium = $exists->medium;
-			$photo->medium2x = $exists->medium2x;
-			$photo->small = $exists->small;
-			$photo->small2x = $exists->small2x;
-			$photo->livePhotoUrl = $exists->livePhotoUrl;
-			$photo->livePhotoChecksum = $exists->livePhotoChecksum;
-			$photo->checksum = $exists->checksum;
-			$photo->type = $exists->type;
+			$photo_name = $existing->url;
+			$path = Storage::path($path_prefix . $existing->url);
+			$photo->thumbUrl = $existing->thumbUrl;
+			$photo->thumb2x = $existing->thumb2x;
+			$photo->medium = $existing->medium;
+			$photo->medium2x = $existing->medium2x;
+			$photo->small = $existing->small;
+			$photo->small2x = $existing->small2x;
+			$photo->livePhotoUrl = $existing->livePhotoUrl;
+			$photo->livePhotoChecksum = $existing->livePhotoChecksum;
+			$photo->checksum = $existing->checksum;
+			$photo->type = $existing->type;
 			$mimeType = $photo->type;
-			$exists = true;
 		}
 
 		if ($exists === false) {
@@ -289,25 +286,33 @@ class PhotoFunctions
 			}
 			// Check if the user wants to skip duplicates
 			if ($force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
+				$metadataChanged = false;
+
+				// Before we skip entirely, check if there is a sidecar file and if the metadata needs to be updated (from a sidecar)
+				if ($resync_metadata === true) {
+					$info = $this->getFileMetadata($file, $path, $kind, $mimeType, $extension);
+					foreach ($info as $key => $value) {
+						if ($existing->$key !== null && $value !== $existing->$key) {
+							$metadataChanged = true;
+							$existing->$key = $value;
+						}
+					}
+				}
+
+				if ($metadataChanged === true) {
+					Logs::notice(__METHOD__, __LINE__, 'Updating metdata of existing photo.');
+					$existing->save();
+
+					return Response::warning('This photo has been skipped because it\'s already in your library, but its metadata has been updated.');
+				}
+
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
 				return Response::warning('This photo has been skipped because it\'s already in your library.');
 			}
 		}
 
-		$info = $this->metadataExtractor->extract($path, $mimeType);
-		if ($kind == 'raw') {
-			$info['type'] = 'raw';
-		}
-
-		// Use title of file if IPTC title missing
-		if ($info['title'] === '') {
-			if ($kind == 'raw') {
-				$info['title'] = substr(basename($file['name']), 0, 98);
-			} else {
-				$info['title'] = substr(basename($file['name'], $extension), 0, 98);
-			}
-		}
+		$info = $this->getFileMetadata($file, $path, $kind, $mimeType, $extension);
 
 		$photo->title = $info['title'];
 		$photo->url = $photo_name;
@@ -876,5 +881,35 @@ class PhotoFunctions
 	public function getValidExtensions(): array
 	{
 		return $this->validExtensions;
+	}
+
+	/**
+	 * Central function for retrieving the metadata since this has to be called in more than one place.
+	 *
+	 * @param array  $file
+	 * @param string $path
+	 * @param string $kind
+	 * @param string $mimeType
+	 * @param string $extension
+	 *
+	 * @return array
+	 */
+	private function getFileMetadata($file, $path, $kind, $mimeType, $extension): array
+	{
+		$info = $this->metadataExtractor->extract($path, $mimeType);
+		if ($kind == 'raw') {
+			$info['type'] = 'raw';
+		}
+
+		// Use title of file if IPTC title missing
+		if ($info['title'] === '') {
+			if ($kind == 'raw') {
+				$info['title'] = substr(basename($file['name']), 0, 98);
+			} elseif ($info['title'] === '') {
+				$info['title'] = substr(basename($file['name'], $extension), 0, 98);
+			}
+		}
+
+		return $info;
 	}
 }
