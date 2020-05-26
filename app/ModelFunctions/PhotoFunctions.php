@@ -314,6 +314,7 @@ class PhotoFunctions
 
 		$info = $this->getFileMetadata($file, $path, $kind, $mimeType, $extension);
 
+		// TODO: move this elsewhere
 		$photo->title = $info['title'];
 		$photo->url = $photo_name;
 		$photo->description = $info['description'];
