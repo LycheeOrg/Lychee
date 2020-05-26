@@ -9,6 +9,7 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
+use File;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\Feed\FeedItem;
@@ -40,8 +41,8 @@ class RSSController extends Controller
 	{
 		$enclosure = new \stdClass();
 
-		$enclosure->length = \File::size(public_path($photo['url']));
-		$enclosure->mime_type = \File::mimeType(public_path($photo['url']));
+		$enclosure->length = File::size(public_path($photo['url']));
+		$enclosure->mime_type = File::mimeType(public_path($photo['url']));
 		$enclosure->url = url('/' . $photo['url']);
 
 		return $enclosure;
@@ -67,7 +68,7 @@ class RSSController extends Controller
 			->limit(Configs::get_Value('rss_max_items', '100'))
 			->get();
 
-		$photos = $photos->map(function ($photo_model) {
+		$photos = $photos->map(function (Photo $photo_model) {
 			$enclosure = null;
 			$photo = $photo_model->prepareData();
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
