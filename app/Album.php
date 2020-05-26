@@ -267,4 +267,22 @@ class Album extends Model
 
 		return $no_error;
 	}
+
+	/**
+	 * Return the full path of the album consisting of all its parents' titles.
+	 *
+	 * @return string
+	 */
+	public static function getFullPath($album)
+	{
+		$title = [$album->title];
+		$parentId = $album->parent_id;
+		while ($parentId) {
+			$parent = Album::find($parentId);
+			array_unshift($title, $parent->title);
+			$parentId = $parent->parent_id;
+		}
+
+		return implode('/', $title);
+	}
 }
