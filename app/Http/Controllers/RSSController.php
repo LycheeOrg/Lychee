@@ -9,6 +9,7 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
+use File;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\Feed\FeedItem;
@@ -67,8 +68,12 @@ class RSSController extends Controller
 			->limit(Configs::get_Value('rss_max_items', '100'))
 			->get();
 
+<<<<<<< HEAD
 		$photos = $photos->map(function ($photo_model) {
 			$enclosure = null;
+=======
+		$photos = $photos->map(function (Photo $photo_model) {
+>>>>>>> 4056cef112da22283b3fbc9ee827807b11e5f143
 			$photo = $photo_model->prepareData();
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
 			$id = null;
@@ -89,13 +94,21 @@ class RSSController extends Controller
 			}
 
 			$photo['url'] = $photo['url'] ?: $photo['medium2x'] ?: $photo['medium'];
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4056cef112da22283b3fbc9ee827807b11e5f143
 			// TODO: this will need to be fixed for s3 and when the upload folder is NOT the Lychee folder.
 			if (App::runningUnitTests()) {
 				$path = Storage::path('../' . $photo['url']);
 			} else {
 				$path = Storage::path($photo['url']);
 			}
+<<<<<<< HEAD
+=======
+			$length = File::size($path);
+			$mime_type = File::mimeType($path);
+>>>>>>> 4056cef112da22283b3fbc9ee827807b11e5f143
 
 			return FeedItem::create([
 				'id' => url('/' . $id),
@@ -103,7 +116,12 @@ class RSSController extends Controller
 				'summary' => $photo_model->description,
 				'updated' => $photo_model->created_at,
 				'link' => $photo['url'],
+<<<<<<< HEAD
 				'enclosure' => $enclosure,
+=======
+				'enclosureLength' => $length,
+				'enclosureMime' => $mime_type,
+>>>>>>> 4056cef112da22283b3fbc9ee827807b11e5f143
 				'author' => $photo_model->owner->username, ]);
 		});
 
