@@ -100,10 +100,11 @@ class PhotoFunctions
 	 *
 	 * @return string
 	 */
-	private function file_type($file, string $extension)
+	public function file_type($file, string $extension)
 	{
 		// check raw files
-		if (in_array(strtolower($extension), explode('|', Configs::get_value('raw_formats', '')), true)) {
+		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
+		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
 			return 'raw';
 		}
 
@@ -113,8 +114,11 @@ class PhotoFunctions
 				// let's check for the mimetype
 				// maybe we don't have a photo
 				if (!function_exists('exif_imagetype')) {
-					Logs::error(__METHOD__, __LINE__,
-						'EXIF library not loaded. Make sure exif is enabled in php.ini');
+					Logs::error(
+						__METHOD__,
+						__LINE__,
+						'EXIF library not loaded. Make sure exif is enabled in php.ini'
+					);
 
 					return 'EXIF library not loaded on the server!';
 				}
@@ -152,35 +156,36 @@ class PhotoFunctions
 	public function add(array $file, $albumID_in = 0, $delete_imported = false, $force_skip_duplicates = false, $resync_metadata = false)
 	{
 		// Check permissions
-		if (Helpers::hasPermissions(Storage::path('')) === false ||
+		if (
+			Helpers::hasPermissions(Storage::path('')) === false ||
 			Helpers::hasPermissions(Storage::path('big/')) === false ||
 			Helpers::hasPermissions(Storage::path('medium/')) === false ||
 			Helpers::hasPermissions(Storage::path('small/')) === false ||
 			Helpers::hasPermissions(Storage::path('thumb/')) === false ||
 			Helpers::hasPermissions(Storage::path('import/')) === false
-	) {
+		) {
 			Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
 
 			return Response::error('An upload-folder is missing or not readable and writable!');
 		}
 
 		switch ($albumID_in) {
-			// s for public (share)
+				// s for public (share)
 			case 's':
 				$public = 1;
 				$star = 0;
 				$albumID = null;
 				break;
 
-			// f for starred (fav)
+				// f for starred (fav)
 			case 'f':
 				$star = 1;
 				$public = 0;
 				$albumID = null;
 				break;
 
-			// r for recent
-			// 0 for unsorted
+				// r for recent
+				// 0 for unsorted
 			case '0':
 			case 'r':
 				$public = 0;
@@ -382,8 +387,10 @@ class PhotoFunctions
 			if (($livePhotoPartner === false) || !(in_array($photo->type, $this->validVideoTypes, true))) {
 				// Set orientation based on EXIF data
 				// but do not rotate if the image shall not be modified
-				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== ''
-						&& Configs::get_value('import_via_symlink', '0') === '0') {
+				if (
+					$photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== ''
+					&& Configs::get_value('import_via_symlink', '0') === '0'
+				) {
 					$rotation = $this->imageHandler->autoRotate($path, $info);
 
 					if ($rotation !== [false, false]) {
@@ -407,8 +414,16 @@ class PhotoFunctions
 					}
 				}
 
-				// Create Thumb
 				if ($kind == 'raw') {
+					try {
+						$frame_tmp = $this->createJpgFromRaw($photo);
+					} catch (Exception $exception) {
+						Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+					}
+				}
+
+				// Create Thumb
+				if ($kind == 'raw' && $frame_tmp == '') {
 					$photo->thumbUrl = '';
 					$photo->thumb2x = 0;
 				} elseif (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
@@ -457,13 +472,14 @@ class PhotoFunctions
 	 */
 	public function createSmallerImages(Photo $photo, string $frame_tmp = '')
 	{
-		if ($frame_tmp === '') {
+		if ($frame_tmp === '' || $photo->type == 'raw') {
+			// Create medium file for normal photos and for raws
 			$mediumMaxWidth = intval(Configs::get_value('medium_max_width'));
 			$mediumMaxHeight = intval(Configs::get_value('medium_max_height'));
-			$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight);
+			$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight, $frame_tmp);
 
 			if (Configs::get_value('medium_2x') === '1') {
-				$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
+				$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2, $frame_tmp);
 			}
 		}
 
@@ -479,6 +495,51 @@ class PhotoFunctions
 	/**
 	 * @param Photo $photo
 	 *
+	 * @return string Path of the jpg file
+	 */
+	public function createJpgFromRaw(Photo $photo): string
+	{
+		// we need imagick to do the job
+		if (!Configs::hasImagick()) {
+			Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to failed: Imagick not installed.');
+
+			return '';
+		}
+
+		$filename = $photo->url;
+		$url = Storage::path('raw/' . $filename);
+		$ext = pathinfo($filename)['extension'];
+
+		// test if Imagaick supports the filetype
+		// Query return file extensions as all upper case
+		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
+			Logs::notice(__METHOD__, __LINE__, 'Filetype ' . $ext . ' not supported by Imagick.');
+
+			return '';
+		}
+
+		$tmp_file = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
+		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to ' . $tmp_file);
+
+		$resWidth = $resHeight = 0;
+		$resWidth = $resHeight = 0;
+		$width = $photo->width;
+		$height = $photo->height;
+
+		try {
+			$this->imageHandler->scale($url, $tmp_file, $width, $height, $resWidth, $resHeight);
+		} catch (\Exception $e) {
+			Logs::error(__METHOD__, __LINE__, 'Failed to create JPG from raw file ' . $url . $filename);
+
+			return '';
+		}
+
+		return $tmp_file;
+	}
+
+	/**
+	 * @param Photo $photo
+	 *
 	 * @return string Path of the video frame
 	 */
 	public function extractVideoFrame(Photo $photo): string
@@ -489,11 +550,36 @@ class PhotoFunctions
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
 		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
-		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
-
-		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
+		$tmp = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
-		$frame->save($tmp);
+
+		try {
+			$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
+			$frame->save($tmp);
+		} catch (\Exception $e) {
+			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot from video ' . $tmp);
+		}
+
+		// check if the image has data
+		$success = file_exists($tmp) ? (filesize($tmp) > 0) : false;
+
+		if (!$success) {
+			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot from video ' . $tmp);
+			try {
+				$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0));
+				$frame->save($tmp);
+				$success = file_exists($tmp) ? (filesize($tmp) > 0) : false;
+				if (!$success) {
+					Logs::notice(__METHOD__, __LINE__, 'Fallback failed to extract snapshot from video ' . $tmp);
+				} else {
+					Logs::notice(__METHOD__, __LINE__, 'Fallback successful - snapshot from video ' . $tmp . ' at t=0 created.');
+				}
+			} catch (\Exception $e) {
+				Logs::notice(__METHOD__, __LINE__, 'Fallback failed to extract snapshot from video ' . $tmp);
+
+				return '';
+			}
+		}
 
 		return $tmp;
 	}
@@ -519,8 +605,10 @@ class PhotoFunctions
 			200
 		);
 
-		if (Configs::get_value('thumb_2x') === '1' &&
-			$photo->width >= 400 && $photo->height >= 400) {
+		if (
+			Configs::get_value('thumb_2x') === '1' &&
+			$photo->width >= 400 && $photo->height >= 400
+		) {
 			// Retina thumbs
 			$this->imageHandler->crop(
 				$src,

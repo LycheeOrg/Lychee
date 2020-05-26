@@ -362,7 +362,9 @@ class ImportController extends Controller
 				continue;
 			}
 			$extension = Helpers::getExtension($file, true);
-			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
+			$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
+			$is_raw = in_array(strtolower($extension), explode('|', $raw_formats), true);
+			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true) || $is_raw) {
 				// Photo or Video
 				if ($this->photo($file, $delete_imported, $albumID, $force_skip_duplicates, $resync_metadata) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
@@ -370,7 +372,7 @@ class ImportController extends Controller
 					continue;
 				}
 			} else {
-				$this->status_update('Problem: ' . $file . ': Unsupported file type');
+				$this->status_update('Problem: Unsupported file type (' . $file . ')');
 				Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
 				continue;
 			}
