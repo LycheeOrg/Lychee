@@ -70,7 +70,6 @@ class RSSController extends Controller
 			->get();
 
 		$photos = $photos->map(function (Photo $photo_model) {
-			$enclosure = null;
 			$photo = $photo_model->prepareData();
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
 			$id = null;
