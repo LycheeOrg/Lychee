@@ -338,7 +338,7 @@ class AlbumFunctions
 				if ($this->readAccessFunctions->album($album) === 1) {
 					$children = $this->get_children($album, $username);
 				}
-				DebugBar::error($children);
+				// DebugBar::error($children);
 
 				$album_array = AlbumCast::toArray($album);
 				$album_array['owner'] = $username;
