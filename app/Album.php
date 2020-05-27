@@ -79,6 +79,13 @@ class Album extends Model
 	];
 
 	/**
+	 * Define if a content is accessible or not.
+	 *
+	 * @Var bool
+	 */
+	public $content_accessible = true;
+
+	/**
 	 * Return the relationship between Photos and their Album.
 	 *
 	 * @return HasMany

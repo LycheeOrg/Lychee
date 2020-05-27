@@ -11,18 +11,19 @@ use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
+use App\ModelFunctions\PhotoActions\Thumb as Thumb;
 use App\Photo;
 use App\Response;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use Debugbar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 class AlbumFunctions
 {
@@ -62,6 +63,7 @@ class AlbumFunctions
 	}
 
 	/**
+	 * TODO: MOVE somewhere else
 	 * given an albumID return if the said album is "smart".
 	 *
 	 * @param $albumID
@@ -132,70 +134,63 @@ class AlbumFunctions
 		return $album;
 	}
 
-	// public function getAlbum(array &$return, int $albumID)
-	// {
-	// 	$album = Album::with('children')->find($albumID);
-	// 	$return = AlbumCast::toArray($album);
-	// 	// we just require is_logged_in for this one.
-	// 	$username = null;
-	// 	if ($this->sessionFunctions->is_logged_in()) {
-	// 		$return['owner'] = $username = $album->owner->username;
-	// 	}
-	// 	// To speed things up, we limit subalbum data to at most one
-	// 	// level down.
-	// 	$return['albums'] = $this->get_children($album, $username, 1);
-	// 	foreach ($return['albums'] as &$alb) {
-	// 		unset($alb['thumbIDs']);
-	// 	}
-	// 	unset($return['thumbIDs']);
-
-	// 	return Photo::set_order(Photo::where('album_id', '=', $albumID));
-	// }
-
-	/**
-	 * get the thumbs of an album.
-	 *
-	 * @param array $return
-	 * @param array $album_list
-	 */
-	public function gen_thumbs(array &$return, $album_list_id = [])
+	public function get_thumbs_album($album, array $previousThumbsId): BaseCollection
 	{
-		$childThumbIDs = [];
-
-		// As an optimization, we start by extracting the thumbs from the
-		// children of this album (which had their thumbs calculated already).
-		if (isset($return['albums'])) {
-			foreach ($return['albums'] as &$album) {
-				$childThumbIDs = array_merge($childThumbIDs, $album['thumbIDs']);
-				// ! does this works ?
-				unset($album['thumbIDs']);
-			}
-		}
-
-		$photos = Photo::whereIn('album_id', $album_list_id)
-			->orWhereIn('id', $childThumbIDs)
+		DebugBar::notice('get_thumbs_album');
+		$photos = Photo::where('album_id', $album->id)
+			->orWhereIn('id', $previousThumbsId)
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sorting_Photos_col'), Configs::get_value('sorting_Photos_order'))
 			->orderBy('id', 'ASC')
 			->limit(3)
 			->get();
-		// We do not attempt natural sorting here because for large albums
-		// it can be many times slower than the SQL sort (since we can't
-		// use the "limit" clause).
 
-		// For each thumb
-		$k = 0;
-		foreach ($photos as $photo) {
-			$ret = PhotoCast::toThumb($photo, $this->symLinkFunctions);
-			$return['thumbs'][$k] = $ret['thumbs'];
-			$return['types'][$k] = $ret['types'];
-			$return['thumbs2x'][$k] = $ret['thumbs2x'];
-			$return['thumbIDs'][$k] = $ret['thumbIDs'];
-			$k++;
-		}
+		DebugBar::notice($photos);
+
+		return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
+	}
+
+	public function get_thumbs_reduction(Album $album, BaseCollection $previous): BaseCollection
+	{
+		DebugBar::warning('previous');
+		DebugBar::warning($previous);
+		$previousThumbIDs = $previous->filter(fn ($e) => !$e->isEmpty())
+			->map(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbIDs))->all();
+		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
+		DebugBar::notice('get_thumbs_reduction');
+
+		return new Collection([$thumbs, $previous]);
+	}
+
+	public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
+	{
+		DebugBar::notice('get_thumbs - before reduce');
+		// DebugBar::notice($children);
+		$reduced = $children->reduce(function ($collection, $child) {
+			// DebugBar::info($child);
+			$reduced_child = $this->get_thumbs($child[0], $child[1]);
+
+			return $collection->concat($reduced_child);
+		}, new Collection());
+		DebugBar::notice('get_thumbs');
+
+		return $this->get_thumbs_reduction($album, $reduced);
+	}
+
+	public function set_thumbs(array &$return, BaseCollection $thumbs)
+	{
+		$return['thumbs'] = [];
+		$return['types'] = [];
+		$return['thumbs2x'] = [];
+
+		$thumbs[0]->each(function ($thumb, $key) use (&$return) {
+			$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
+		});
 	}
 
 	/**
+	 * TODO: MOVE somewhere else.
+	 *
 	 * take a $photo_sql query and return an array containing their pictures.
 	 *
 	 * @param Builder $photos_sql
@@ -303,7 +298,6 @@ class AlbumFunctions
 
 	/**
 	 * ? Only used in AlbumsController
-	 * TODO: Get rid of full recursion throught the tree of albums
 	 * Given a list of albums, generate an array to be returned.
 	 *
 	 * @param Collection[Album] $albums
@@ -318,20 +312,26 @@ class AlbumFunctions
 			/*
 			 * @var Album
 			 */
-			foreach ($albums as $album_model) {
+			foreach ($albums as $album) {
 				// Turn data from the database into a front-end friendly format
-				$album_array = AlbumCast::toArray($album_model);
 				$username = null;
+				$children = new Collection();
+
 				if ($this->sessionFunctions->is_logged_in()) {
-					$album_array['owner'] = $username = $album_model->owner->username;
+					$username = $album->owner->username;
 				}
 
-				if ($this->readAccessFunctions->album($album_model) === 1) {
-					$album_array['albums'] = $this->get_children($album_model, $username);
-					// dd($album_array['albums']);
-					// $this->gen_thumbs($album_array, [$album_model->id]);
+				if ($this->readAccessFunctions->album($album) === 1) {
+					$children = $this->get_children($album, $username);
 				}
-				// unset($album_array['thumbIDs']);
+				DebugBar::error($children);
+
+				$album_array = AlbumCast::toArray($album);
+				$album_array['owner'] = $username;
+				$album_array['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]));
+
+				$thumbs = $this->get_thumbs($album, $children);
+				$this->set_thumbs($album_array, $thumbs);
 
 				// Add to return
 				$return[] = $album_array;
@@ -340,54 +340,6 @@ class AlbumFunctions
 
 		return $return;
 	}
-
-	/**
-	 * @param $return
-	 * @param $photos_sql
-	 * @param $kind
-	 */
-	// public function genSmartAlbumsThumbs(array &$return, Builder $photos_sql, string $kind)
-	// {
-	// 	/**
-	// 	 * @var Collection[Photo]
-	// 	 */
-	// 	$photos = $photos_sql->get();
-	// 	$i = 0;
-
-	// 	$return[$kind] = [
-	// 		'thumbs' => [],
-	// 		'thumbs2x' => [],
-	// 		'types' => [],
-	// 		'num' => strval($photos_sql->count()),
-	// 	];
-
-	// 	/*
-	// 	 * @var Photo
-	// 	 */
-	// 	foreach ($photos as $photo) {
-	// 		if ($i < 3) {
-	// 			$sym = $this->symLinkFunctions->find($photo);
-	// 			if ($sym !== null) {
-	// 				$return[$kind]['thumbs'][$i] = $sym->get('thumbUrl');
-	// 				// default is '' so if thumb2x does not exist we just reply '' which is the behaviour we want
-	// 				$return[$kind]['thumbs2x'][$i] = $sym->get('thumb2x');
-	// 			} else {
-	// 				$return[$kind]['thumbs'][$i] = Storage::url('thumb/' . $photo->thumbUrl);
-	// 				if ($photo->thumb2x == '1') {
-	// 					$thumbUrl2x = explode('.', $photo->thumbUrl);
-	// 					$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-	// 					$return[$kind]['thumbs2x'][$i] = Storage::url('thumb/' . $thumbUrl2x);
-	// 				} else {
-	// 					$return[$kind]['thumbs2x'][$i] = '';
-	// 				}
-	// 			}
-	// 			$return[$kind]['types'][$i] = $photo->type;
-	// 			$i++;
-	// 		} else {
-	// 			break;
-	// 		}
-	// 	}
-	// }
 
 	/**
 	 * @param $toplevel optional return from getToplevelAlbums()
@@ -434,7 +386,7 @@ class AlbumFunctions
 	/**
 	 * @param $toplevel optional return from getToplevelAlbums()
 	 *
-	 * @return array|false returns an array of smart albums or false on failure
+	 * @return array returns an array of smart albums or false on failure
 	 */
 	public function getSmartAlbums($toplevel = null)
 	{
@@ -458,21 +410,10 @@ class AlbumFunctions
 			) {
 				$return[$smartAlbum->get_title()] = [];
 				AlbumCast::getThumbs($return[$smartAlbum->get_title()], $smartAlbum, $this->symLinkFunctions);
-				// $photos = $smartAlbum->get_photos()->limit(3)->get();
-
-				// $return[$kind] = [
-				// 	'thumbs' => [],
-				// 	'thumbs2x' => [],
-				// 	'types' => [],
-				// 	'num' => strval($photos_sql->count()),
-				// ];
-				// foreach ($photos as $photo) {
-
-				// $this->genSmartAlbumsThumbs($return, $photos_sql, $smartAlbum->get_title());
 			}
 		}
 
-		return $return ?? null;
+		return $return;
 	}
 
 	/**
@@ -484,7 +425,6 @@ class AlbumFunctions
 		if ($query == null) {
 			return new Collection();
 		}
-		// dd($query);
 		if (!in_array($sortingCol, ['title', 'description'])) {
 			return $query
 				->orderBy($sortingCol, $sortingOrder)
@@ -522,51 +462,16 @@ class AlbumFunctions
 				if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
 					if ($haveAccess === 1) {
 						$collected = $this->get_sub_albums($_album, $includePassProtected);
+					} else {
+						$_album->content_accessible = false;
 					}
-
+					// when we generate the thumbs, we need to know whether that content is visible or not.
 					return new Collection([$_album, $collected]);
 				}
 
 				return new Collection();
 			}
-		);
-
-		// we have all the accessible children.
-
-		// dd($children);
-		// $retSubAlbums = new Collection();
-		// foreach ($children as $subAlbum) {
-		// 	$haveAccess = $this->readAccessFunctions->album($subAlbum, true);
-
-		// 	// We do list albums that need a password, but we limit what we
-		// 	// return about them.
-		// 	if ($haveAccess === 1 || $haveAccess === 3) {
-		// 		// do we need that ?
-		// 		$subAlbumData = AlbumCast::toArray($subAlbum);
-		// 		if ($username !== null) {
-		// 			$subAlbumData['owner'] = $username;
-		// 		}
-
-		// 		if ($haveAccess === 1) {
-		// 			if ($recursionLimit !== 1) {
-		// 				$subAlbumData['albums'] = $this->get_children($subAlbum, $username, $recursionLimit > 0 ? $recursionLimit - 1 : 0)->all();
-		// 				$this->gen_thumbs($subAlbumData, [$subAlbum->id]);
-		// 			} else {
-		// 				// We will not return the 'albums' data about lower
-		// 				// levels.  We still need to descend all the way down
-		// 				// to get accurate thumbs info though.
-		// 				$subretSubAlbums = new Collection([$subAlbum->id]);
-		// 				$this->get_sub_albums_id($subAlbum);
-		// 				$this->gen_thumbs($subAlbumData, $subretSubAlbums);
-		// 				$subAlbumData['has_albums'] = count($subretSubAlbums) > 1 ? '1' : '0';
-		// 			}
-		// 		}
-
-		// 		$retSubAlbums[] = $subAlbumData;
-		// 	}
-		// }
-
-		// return $retSubAlbums;
+		)->filter(fn ($a) => !empty($a));
 	}
 
 	/**
@@ -700,34 +605,4 @@ class AlbumFunctions
 			->from('user_album')
 			->where('user_id', '=', $id)->get();
 	}
-
-	// /**
-	//  * Given a user, retrieve all the shared albums it can see.
-	//  *
-	//  * @param $id
-	//  *
-	//  * @return Builder
-	//  */
-	// public function get_children_user($id)
-	// {
-	// 	return Album::with([
-	// 		'owner',
-	// 		'children',
-	// 	])
-	// 		->where('owner_id', '<>', $id)
-	// 		->where('parent_id', '=', null)
-	// 		->where(
-	// 			function (Builder $query) use ($id) {
-	// 				// album is shared with user
-	// 				$query->whereIn('id', $this->get_shared_album($id))
-	// 					// or album is visible to user
-	// 					->orWhere(
-	// 						function (Builder $query) {
-	// 							$query->where('public', '=', true)->where('visible_hidden', '=', true);
-	// 						}
-	// 					);
-	// 			}
-	// 		)
-	// 		->orderBy('owner_id', 'ASC');
-	// }
 }

@@ -107,16 +107,14 @@ class AlbumController extends Controller
 				break;
 		}
 
-		$return = AlbumCast::toArray($album);
+		$children = $this->albumFunctions->get_children($album, 0, true);
 
-		$return['albums'] = $this
-			->albumFunctions
-			->get_children($album, $album->owner->username)
-			->map(
-				function ($elem) {
-					return $elem[0];
-				}
-			);
+		$return = AlbumCast::toArray($album);
+		$return['owner'] = $album->owner->username;
+		$return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]));
+
+		// $thumbs = $this->albumFunctions->get_thumbs($album, $children);
+		// $this->albumFunctions->set_thumbs($return, $thumbs);
 
 		// dd($children);
 		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';

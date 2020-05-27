@@ -176,4 +176,16 @@ class Helpers
 	{
 		return $b ? '1' : '0';
 	}
+
+	/**
+	 * Given a Url generate the @2x correcponding url.
+	 * This is used for thumbs, small and medium.
+	 */
+	public static function ex2x($url)
+	{
+		$thumbUrl2x = explode('.', $url);
+		$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+
+		return $thumbUrl2x;
+	}
 }

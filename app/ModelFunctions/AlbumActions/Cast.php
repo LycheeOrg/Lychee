@@ -93,9 +93,10 @@ class Cast
 		foreach ($photos as $photo) {
 			if ($k < 3) {
 				$ret = PhotoCast::toThumb($photo, $symLinkFunctions);
-				$return['thumbs'][$k] = $ret['thumbs'];
-				$return['types'][$k] = $ret['types'];
-				$return['thumbs2x'][$k] = $ret['thumbs2x'];
+				$ret->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
+				// $return['thumbs'][$k] = $ret->thumb;
+				// $return['types'][$k] = $ret->type;
+				// $return['thumbs2x'][$k] = $ret->thumb2x;
 				$k++;
 			} else {
 				break;

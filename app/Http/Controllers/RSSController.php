@@ -52,7 +52,7 @@ class RSSController extends Controller
 			->where(function ($q) {
 				$q->whereIn(
 					'album_id',
-					$this->albumFunctions->getPublicAlbums()
+					$this->albumFunctions->getPublicAlbumsId()
 				)
 					->orWhere('public', '=', '1');
 			})
