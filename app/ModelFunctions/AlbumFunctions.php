@@ -155,7 +155,14 @@ class AlbumFunctions
 		DebugBar::warning('previous');
 		DebugBar::warning($previous);
 		$previousThumbIDs = $previous->filter(fn ($e) => !$e->isEmpty())
-			->map(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbIDs))->all();
+			->map(
+				function ($e) {
+					DebugBar::notice('lambda');
+					DebugBar::notice($e);
+
+					return $e;
+				}
+			)->map(fn ($e) => $e->map(fn (Thumb $t) => $t->thumbID))->all();
 		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
 		DebugBar::notice('get_thumbs_reduction');
 
