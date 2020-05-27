@@ -10,7 +10,7 @@ use App\Configs;
 use App\Image\ImageHandlerInterface;
 use App\Logs;
 use App\Metadata\Extractor;
-use App\ModelRessources\AlbumRessources;
+use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\Photo;
 use App\Response;
 use Exception;
@@ -172,30 +172,24 @@ class PhotoFunctions
 			return Response::error('An upload-folder is missing or not readable and writable!');
 		}
 
+		$public = 0;
+		$star = 0;
+		$albumID = null;
+
 		switch ($albumID_in) {
 			case 'public':
 				$public = 1;
-				$star = 0;
-				$albumID = null;
 				break;
 
 			case 'starred':
 				$star = 1;
-				$public = 0;
-				$albumID = null;
 				break;
 
 			case 'unsorted':
 			case '0': // root
 			case 'recent':
-				$public = 0;
-				$star = 0;
-				$albumID = null;
 				break;
-
 			default:
-				$star = 0;
-				$public = 0;
 				$albumID = $albumID_in;
 				break;
 		}
@@ -807,7 +801,7 @@ class PhotoFunctions
 
 				return Response::error('Could not find specified album');
 			}
-			if (!AlbumRessources::update_takestamps($album, [$photo->takestamp], true)) {
+			if (!AlbumUpdate::update_takestamps($album, [$photo->takestamp], true)) {
 				Logs::error(__METHOD__, __LINE__, 'Could not update album takestamps');
 
 				return Response::error('Could not update album takestamps');

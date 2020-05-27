@@ -2,23 +2,23 @@
 
 namespace App\SmartAlbums;
 
-use App\ModelFunctions\SessionFunctions;
 use App\Photo;
+use Illuminate\Database\Eloquent\Builder;
 
 class UnsortedAlbum extends SmartAlbum
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	public $sessionFunctions;
-
-	public function __construct(SessionFunctions $sessionFunctions)
+	public function get_title()
 	{
-		$this->sessionFunctions = $sessionFunctions;
+		return 'unsorted';
 	}
 
-	public function get_photos()
+	public function get_photos(): Builder
 	{
 		return Photo::select_unsorted(Photo::OwnedBy($this->sessionFunctions->id()));
+	}
+
+	public function is_public()
+	{
+		return false;
 	}
 }

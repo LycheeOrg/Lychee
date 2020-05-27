@@ -2,23 +2,23 @@
 
 namespace App\SmartAlbums;
 
-use App\ModelFunctions\SessionFunctions;
 use App\Photo;
+use Illuminate\Database\Eloquent\Builder;
 
 class RecentAlbum extends SmartAlbum
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	public function __construct(SessionFunctions $sessionFunctions)
+	public function get_title()
 	{
-		$this->sessionFunctions = $sessionFunctions;
+		return 'recent';
 	}
 
-	public function get_photos()
+	public function get_photos(): Builder
 	{
 		return Photo::select_recent(Photo::OwnedBy($this->sessionFunctions->id()));
+	}
+
+	public function is_public()
+	{
+		return false;
 	}
 }

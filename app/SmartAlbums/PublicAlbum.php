@@ -2,23 +2,24 @@
 
 namespace App\SmartAlbums;
 
-use App\ModelFunctions\SessionFunctions;
+use App\Configs;
 use App\Photo;
+use Illuminate\Database\Eloquent\Builder;
 
 class PublicAlbum extends SmartAlbum
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	public function __construct(SessionFunctions $sessionFunctions)
+	public function get_title()
 	{
-		$this->sessionFunctions = $sessionFunctions;
+		return 'public';
 	}
 
-	public function get_photos()
+	public function get_photos(): Builder
 	{
 		return Photo::select_public(Photo::OwnedBy($this->sessionFunctions->id()));
+	}
+
+	public function is_public()
+	{
+		return Configs::get_value('public_recent', '0') === '1';
 	}
 }

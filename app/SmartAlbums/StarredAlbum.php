@@ -3,39 +3,30 @@
 namespace App\SmartAlbums;
 
 use App\Configs;
-use App\ModelFunctions\SessionFunctions;
 use App\Photo;
+use Illuminate\Database\Eloquent\Builder;
 
 class StarredAlbum extends SmartAlbum
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	public function __construct(SessionFunctions $sessionFunctions)
+	public function get_title()
 	{
-		$this->sessionFunctions = $sessionFunctions;
+		return 'starred';
 	}
 
-	public function get_photos()
+	public function get_photos(): Builder
 	{
-		return Photo::select_stars(Photo::OwnedBy($this->sessionFunctions->id()));
+		$sql = Photo::stars()->where(function ($query) {
+			$query = $query->whereIn('album_id', $this->albumIds);
+			if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->id() > 0) {
+				$query = $query->orWhere('owner_id', '=', $this->sessionFunctions->id());
+			}
+		});
+
+		return Photo::set_order($sql);
 	}
 
-	public function is_share_button_visible()
+	public function is_public()
 	{
-		return Configs::get_value('share_button_visible', '0') == '1';
-	}
-
-	// Parse date
-	public function str_min_takestamp()
-	{
-		return '';
-	}
-
-	public function str_max_takestamp()
-	{
-		return '';
+		return Configs::get_value('public_starred', '0') === '1';
 	}
 }

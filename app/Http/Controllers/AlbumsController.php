@@ -52,9 +52,10 @@ class AlbumsController extends Controller
 		//
 		$toplevel = $this->albumFunctions->getToplevelAlbums();
 
-		$return['smartalbums'] = $this->albumFunctions->getSmartAlbums($toplevel);
 		$return['albums'] = $this->albumFunctions->prepare_albums($toplevel['albums']);
 		$return['shared_albums'] = $this->albumFunctions->prepare_albums($toplevel['shared_albums']);
+
+		$return['smartalbums'] = $this->albumFunctions->getSmartAlbums($toplevel);
 
 		return $return;
 	}
@@ -70,7 +71,7 @@ class AlbumsController extends Controller
 		// Initialize return var
 		$return = [];
 
-		$albumIDs = $this->albumFunctions->getPublicAlbums();
+		$albumIDs = $this->albumFunctions->getPublicAlbumsId();
 
 		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {

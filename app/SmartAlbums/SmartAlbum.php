@@ -5,7 +5,9 @@ namespace App\SmartAlbums;
 use App\Album;
 use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\SessionFunctions;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Collection;
 
 class SmartAlbum extends Album
 {
@@ -51,10 +53,44 @@ class SmartAlbum extends Album
 	 */
 	protected $albumFunctions;
 
-	public function __construct(AlbumFunctions $albumFunctions)
+	/**
+	 * @var Collection[int]
+	 */
+	protected $albumIds = null;
+
+	/**
+	 * @var SessionFunctions
+	 */
+	protected $sessionFunctions;
+
+	/**
+	 * Constructor use DDI.
+	 *
+	 * @param AlbumFunctions   $albumFunctions
+	 * @param SessionFunctions $albumFunctions
+	 */
+	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
 	{
 		parent::__construct();
 		$this->albumFunctions = $albumFunctions;
+		$this->sessionFunctions = $sessionFunctions;
+		$this->albumIds = new Collection();
+		$this->created_at = new Carbon();
+	}
+
+	public function get_title()
+	{
+		return 'undefined';
+	}
+
+	/**
+	 * Set a restriction on the available albums.
+	 *
+	 * @return void
+	 */
+	public function setAlbumIDs(Collection $albumIds): void
+	{
+		$this->albumIds = $albumIds;
 	}
 
 	public function is_full_photo_visible()
@@ -74,7 +110,7 @@ class SmartAlbum extends Album
 
 	public function is_share_button_visible()
 	{
-		return false;
+		return Configs::get_value('share_button_visible', '0');
 	}
 
 	// Parse date
@@ -91,6 +127,16 @@ class SmartAlbum extends Album
 	public function get_license()
 	{
 		return 'none';
+	}
+
+	public function is_public()
+	{
+		return false;
+	}
+
+	public function children()
+	{
+		return null;
 	}
 
 	// 'thumbs' => [],

@@ -9,11 +9,16 @@ use App\Assets\Helpers;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
+use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
+use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
-use App\ModelRessources\AlbumRessources;
 use App\Photo;
 use App\Response;
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\RecentAlbum;
+use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -83,30 +88,42 @@ class AlbumController extends Controller
 		$return['albums'] = [];
 		// Get photos
 		// change this for smartalbum
+		$album = null;
 		switch ($request['albumID']) {
 			case 'starred':
-				abort(404);
-				// $photos_sql = $this->albumFunctions->getStarred($return);
+				$album = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
 			case 'public':
-				abort(404);
-				// $photos_sql = $this->albumFunctions->getPublic($return);
+				$album = new PublicAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
 			case 'recent':
-				abort(404);
-				// $photos_sql = $this->albumFunctions->getRecent($return);
+				$album = new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
 			case 'unsorted':
-				abort(404);
-				// $photos_sql = $this->albumFunctions->getUnsorted($return);
+				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
 			default:
-				$photos_sql = $this->albumFunctions->getAlbum($return, $request['albumID']);
+				$album = Album::find($request['albumID']);
 				break;
 		}
 
+		$return = AlbumCast::toArray($album);
+
+		$return['albums'] = $this
+			->albumFunctions
+			->get_children($album, $album->owner->username)
+			->map(
+				function ($elem) {
+					return $elem[0];
+				}
+			);
+
+		// dd($children);
 		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
-		$return['photos'] = $this->albumFunctions->photos($photos_sql, $full_photo);
+
+		$photos_query = $album->get_photos();
+
+		$return['photos'] = $this->albumFunctions->photos($photos_query, $full_photo);
 
 		$return['id'] = $request['albumID'];
 		$return['num'] = strval(count($return['photos']));
@@ -146,7 +163,7 @@ class AlbumController extends Controller
 						break;
 					}
 				}
-				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
 				break;
 			case 's':
 				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
@@ -160,7 +177,7 @@ class AlbumController extends Controller
 						break;
 					}
 				}
-				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
 				break;
 			case '0':
 				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
@@ -454,7 +471,7 @@ class AlbumController extends Controller
 			$no_error &= $album->delete();
 
 			if ($parentAlbum !== null) {
-				$no_error &= AlbumRessources::update_takestamps($parentAlbum, [$minTS, $maxTS], false);
+				$no_error &= AlbumUpdate::update_takestamps($parentAlbum, [$minTS, $maxTS], false);
 			}
 		}
 
@@ -528,10 +545,10 @@ class AlbumController extends Controller
 			$no_error &= $album_t->delete();
 
 			if ($parentAlbum !== null) {
-				$no_error &= AlbumRessources::update_takestamps($parentAlbum, array_slice($takestamps, -2), false);
+				$no_error &= AlbumUpdate::update_takestamps($parentAlbum, array_slice($takestamps, -2), false);
 			}
 		}
-		$no_error &= AlbumRessources::update_takestamps($album, $takestamps, true);
+		$no_error &= AlbumUpdate::update_takestamps($album, $takestamps, true);
 
 		return $no_error ? 'true' : 'false';
 	}
@@ -592,11 +609,11 @@ class AlbumController extends Controller
 
 					$no_error = false;
 				}
-				$no_error &= AlbumRessources::update_takestamps($oldParentAlbum, [$album->min_takestamp, $album->max_takestamp], false);
+				$no_error &= AlbumUpdate::update_takestamps($oldParentAlbum, [$album->min_takestamp, $album->max_takestamp], false);
 			}
 		}
 		if ($album_master !== null) {
-			$no_error &= AlbumRessources::update_takestamps($album_master, $takestamps, true);
+			$no_error &= AlbumUpdate::update_takestamps($album_master, $takestamps, true);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -691,7 +708,7 @@ class AlbumController extends Controller
 								break;
 							}
 						}
-						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
 						break;
 					case 's':
 						$dir = 'Public';
@@ -707,7 +724,7 @@ class AlbumController extends Controller
 								break;
 							}
 						}
-						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
+						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
 						break;
 					case '0':
 						$dir = 'Unsorted';
