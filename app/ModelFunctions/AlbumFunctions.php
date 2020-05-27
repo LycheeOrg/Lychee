@@ -136,7 +136,7 @@ class AlbumFunctions
 
 	public function get_thumbs_album($album, array $previousThumbsId): BaseCollection
 	{
-		DebugBar::notice('get_thumbs_album');
+		// DebugBar::notice('get_thumbs_album');
 		$photos = Photo::where('album_id', $album->id)
 			->orWhereIn('id', $previousThumbsId)
 			->orderBy('star', 'DESC')
@@ -145,41 +145,39 @@ class AlbumFunctions
 			->limit(3)
 			->get();
 
-		DebugBar::notice($photos);
-
 		return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
 	}
 
 	public function get_thumbs_reduction(Album $album, BaseCollection $previous): BaseCollection
 	{
-		DebugBar::warning('previous');
-		DebugBar::warning($previous);
+		// DebugBar::warning('previous');
+		// DebugBar::warning($previous);
 		$previousThumbIDs = $previous->filter(fn ($e) => !$e->isEmpty())
-			->map(
-				function ($e) {
-					DebugBar::notice('lambda');
-					DebugBar::notice($e);
-
-					return $e;
-				}
-			)->map(fn ($e) => $e->map(fn (Thumb $t) => $t->thumbID))->all();
+			// ->map(
+			// 	function ($e) {
+			// 		DebugBar::notice('lambda');
+			// 		DebugBar::notice($e);
+			// 		return $e;
+			// 	}
+			// )
+			->map(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))->all();
 		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
-		DebugBar::notice('get_thumbs_reduction');
+		// DebugBar::notice('get_thumbs_reduction');
 
 		return new Collection([$thumbs, $previous]);
 	}
 
 	public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
 	{
-		DebugBar::notice('get_thumbs - before reduce');
+		// DebugBar::notice('get_thumbs - before reduce');
 		// DebugBar::notice($children);
 		$reduced = $children->reduce(function ($collection, $child) {
 			// DebugBar::info($child);
 			$reduced_child = $this->get_thumbs($child[0], $child[1]);
 
-			return $collection->concat($reduced_child);
+			return $collection->push($reduced_child);
 		}, new Collection());
-		DebugBar::notice('get_thumbs');
+		// DebugBar::notice('get_thumbs');
 
 		return $this->get_thumbs_reduction($album, $reduced);
 	}
@@ -191,7 +189,16 @@ class AlbumFunctions
 		$return['thumbs2x'] = [];
 
 		$thumbs[0]->each(function ($thumb, $key) use (&$return) {
+			// DebugBar::notice($thumb);
 			$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
+		});
+	}
+
+	public function set_thumbs_children(array &$return, BaseCollection $thumbs)
+	{
+		// DebugBar::error($return);
+		$thumbs->each(function ($thumb, $key) use (&$return) {
+			$this->set_thumbs($return[$key], $thumb);
 		});
 	}
 

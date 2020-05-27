@@ -111,16 +111,15 @@ class AlbumController extends Controller
 
 		$return = AlbumCast::toArray($album);
 		$return['owner'] = $album->owner->username;
-		$return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]));
 
+		// take care of sub albums
+		$return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]))->all();
 		$thumbs = $this->albumFunctions->get_thumbs($album, $children);
-		// $this->albumFunctions->set_thumbs($return, $thumbs);
+		$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
 
-		// dd($children);
+		// take care of photos
 		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
-
 		$photos_query = $album->get_photos();
-
 		$return['photos'] = $this->albumFunctions->photos($photos_query, $full_photo);
 
 		$return['id'] = $request['albumID'];
