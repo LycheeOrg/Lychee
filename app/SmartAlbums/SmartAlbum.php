@@ -93,6 +93,19 @@ class SmartAlbum extends Album
 		$this->albumIds = $albumIds;
 	}
 
+	public function filter($query)
+	{
+		if (!$this->sessionFunctions->is_admin()) {
+			$query = $query->whereIn('album_id', $this->albumIds);
+		}
+
+		if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->id() > 0) {
+			$query = $query->orWhere('owner_id', '=', $this->sessionFunctions->id());
+		}
+
+		return $query;
+	}
+
 	public function is_full_photo_visible()
 	{
 		return false;

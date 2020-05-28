@@ -136,7 +136,6 @@ class AlbumFunctions
 
 	public function get_thumbs_album($album, array $previousThumbsId): BaseCollection
 	{
-		// DebugBar::notice('get_thumbs_album');
 		$photos = Photo::where('album_id', $album->id)
 			->orWhereIn('id', $previousThumbsId)
 			->orderBy('star', 'DESC')
@@ -150,34 +149,20 @@ class AlbumFunctions
 
 	public function get_thumbs_reduction(Album $album, BaseCollection $previous): BaseCollection
 	{
-		// DebugBar::warning('previous');
-		// DebugBar::warning($previous);
 		$previousThumbIDs = $previous->filter(fn ($e) => !$e->isEmpty())
-			// ->map(
-			// 	function ($e) {
-			// 		DebugBar::notice('lambda');
-			// 		DebugBar::notice($e);
-			// 		return $e;
-			// 	}
-			// )
 			->map(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))->all();
 		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
-		// DebugBar::notice('get_thumbs_reduction');
 
 		return new Collection([$thumbs, $previous]);
 	}
 
 	public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
 	{
-		// DebugBar::notice('get_thumbs - before reduce');
-		// DebugBar::notice($children);
 		$reduced = $children->reduce(function ($collection, $child) {
-			// DebugBar::info($child);
 			$reduced_child = $this->get_thumbs($child[0], $child[1]);
 
 			return $collection->push($reduced_child);
 		}, new Collection());
-		// DebugBar::notice('get_thumbs');
 
 		return $this->get_thumbs_reduction($album, $reduced);
 	}
@@ -189,14 +174,12 @@ class AlbumFunctions
 		$return['thumbs2x'] = [];
 
 		$thumbs[0]->each(function ($thumb, $key) use (&$return) {
-			// DebugBar::notice($thumb);
 			$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
 		});
 	}
 
 	public function set_thumbs_children(array &$return, BaseCollection $thumbs)
 	{
-		// DebugBar::error($return);
 		$thumbs->each(function ($thumb, $key) use (&$return) {
 			$this->set_thumbs($return[$key], $thumb);
 		});
@@ -371,26 +354,16 @@ class AlbumFunctions
 		}
 
 		$albumIDs = new Collection();
-		if ($toplevel['albums'] !== null) {
-			/*
-			 * @var Album
-			 */
-			foreach ($toplevel['albums'] as $album) {
-				if ($this->readAccessFunctions->album($album) === 1) {
-					$albumIDs = $albumIDs->concat([$album->id]);
-					$albumIDs = $albumIDs->concat($this->get_sub_albums_id($album));
-				}
-			}
-		}
-		if ($toplevel['shared_albums'] !== null) {
-			/*
-			 * @var Album
-			 */
-			foreach ($toplevel['shared_albums'] as $album) {
-				if ($this->readAccessFunctions->album($album) === 1) {
-					$albumIDs = $albumIDs->concat([$album->id]);
-					$albumIDs = $albumIDs->concat($this->get_sub_albums_id($album));
-				}
+		$kinds = ['albums', 'shared_albums'];
+
+		foreach ($kinds as $kind) {
+			if ($toplevel[$kind] !== null) {
+				$toplevel[$kind]->each(function ($album) use (&$albumIDs) {
+					if ($this->readAccessFunctions->album($album) === 1) {
+						$albumIDs->push($album->id);
+						$albumIDs = $albumIDs->concat($this->get_sub_albums_id($album));
+					}
+				});
 			}
 		}
 
@@ -411,18 +384,21 @@ class AlbumFunctions
 		/**
 		 * @var Collection[SmartAlbum]
 		 */
+		$publicAlbums = null;
 		$smartAlbums = [];
 		$smartAlbums[] = new UnsortedAlbum($this, $this->sessionFunctions);
 		$smartAlbums[] = new StarredAlbum($this, $this->sessionFunctions);
 		$smartAlbums[] = new PublicAlbum($this, $this->sessionFunctions);
 		$smartAlbums[] = new RecentAlbum($this, $this->sessionFunctions);
 
+		$can_see_smart = $this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload();
+
 		foreach ($smartAlbums as $smartAlbum) {
-			if (
-				($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload())
-				|| $smartAlbum->is_public()
-			) {
+			if ($can_see_smart || $smartAlbum->is_public()) {
+				$publicAlbums ??= $this->getPublicAlbumsId($toplevel);
+				$smartAlbum->setAlbumIDs($publicAlbums);
 				$return[$smartAlbum->get_title()] = [];
+
 				AlbumCast::getThumbs($return[$smartAlbum->get_title()], $smartAlbum, $this->symLinkFunctions);
 			}
 		}

@@ -15,16 +15,7 @@ class StarredAlbum extends SmartAlbum
 
 	public function get_photos(): Builder
 	{
-		$sql = Photo::stars()->where(function ($query) {
-			if (!$this->sessionFunctions->is_admin()) {
-				$query = $query->whereIn('album_id', $this->albumIds);
-			}
-			if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->id() > 0) {
-				$query = $query->orWhere('owner_id', '=', $this->sessionFunctions->id());
-			}
-		});
-
-		return Photo::set_order($sql);
+		return Photo::stars()->where(fn ($q) => $this->filter($q));
 	}
 
 	public function is_public()

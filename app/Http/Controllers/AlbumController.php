@@ -89,6 +89,7 @@ class AlbumController extends Controller
 		// Get photos
 		// change this for smartalbum
 		$album = null;
+		$smart = true;
 		switch ($request['albumID']) {
 			case 'starred':
 				$album = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
@@ -104,18 +105,23 @@ class AlbumController extends Controller
 				break;
 			default:
 				$album = Album::find($request['albumID']);
+				$smart = false;
 				break;
 		}
-
-		$children = $this->albumFunctions->get_children($album, 0, true);
 
 		$return = AlbumCast::toArray($album);
 		$return['owner'] = $album->owner->username;
 
-		// take care of sub albums
-		$return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]))->all();
-		$thumbs = $this->albumFunctions->get_thumbs($album, $children);
-		$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
+		if ($smart) {
+			$publicAlbums = $this->albumFunctions->getPublicAlbumsId();
+			$album->setAlbumIDs($publicAlbums);
+		} else {
+			// take care of sub albums
+			$children = $this->albumFunctions->get_children($album, 0, true);
+			$return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]))->all();
+			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
+			$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
+		}
 
 		// take care of photos
 		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
@@ -274,15 +280,11 @@ class AlbumController extends Controller
 
 		$albums = Album::whereIn('id', explode(',', $request['albumIDs']))->get();
 
-		if ($albums == null) {
-			return 'false';
-		}
-
 		$no_error = false;
-		foreach ($albums as $album) {
+		$albums->each(function ($album) use (&$no_error, $request) {
 			$album->title = $request['title'];
 			$no_error |= $album->save();
-		}
+		});
 
 		return $no_error ? 'true' : 'false';
 	}
