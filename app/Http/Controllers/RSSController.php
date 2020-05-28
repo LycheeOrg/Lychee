@@ -4,7 +4,6 @@
 
 namespace App\Http\Controllers;
 
-use App;
 use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -13,7 +12,6 @@ use File;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Spatie\Feed\FeedItem;
-use Storage;
 
 class RSSController extends Controller
 {
@@ -37,6 +35,18 @@ class RSSController extends Controller
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
+	public function make_enclosure($photo)
+	{
+		$enclosure = new \stdClass();
+
+		$path = public_path($photo['url']);
+		$enclosure->length = File::size($path);
+		$enclosure->mime_type = File::mimeType($path);
+		$enclosure->url = url('/' . $photo['url']);
+
+		return $enclosure;
+	}
+
 	/**
 	 * @return Collection
 	 */
@@ -48,10 +58,12 @@ class RSSController extends Controller
 
 		$photos = Photo::with('album', 'owner')
 			->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('rss_recent_days', '7')))
-			->toDateTimeString())
+				->toDateTimeString())
 			->where(function ($q) {
-				$q->whereIn('album_id',
-					$this->albumFunctions->getPublicAlbums())
+				$q->whereIn(
+					'album_id',
+					$this->albumFunctions->getPublicAlbums()
+				)
 					->orWhere('public', '=', '1');
 			})
 			->limit(Configs::get_Value('rss_max_items', '100'))
@@ -76,13 +88,7 @@ class RSSController extends Controller
 
 			$photo['url'] = $photo['url'] ?: $photo['medium2x'] ?: $photo['medium'];
 			// TODO: this will need to be fixed for s3 and when the upload folder is NOT the Lychee folder.
-			if (App::runningUnitTests()) {
-				$path = Storage::path('../' . $photo['url']);
-			} else {
-				$path = Storage::path($photo['url']);
-			}
-			$length = File::size($path);
-			$mime_type = File::mimeType($path);
+			$enclosure = $this->make_enclosure($photo);
 
 			return FeedItem::create([
 				'id' => url('/' . $id),
@@ -90,9 +96,9 @@ class RSSController extends Controller
 				'summary' => $photo_model->description,
 				'updated' => $photo_model->created_at,
 				'link' => $photo['url'],
-				'enclosureLength' => $length,
-				'enclosureMime' => $mime_type,
-				'author' => $photo_model->owner->username, ]);
+				'enclosure' => $enclosure,
+				'author' => $photo_model->owner->username,
+			]);
 		});
 
 		return $photos;
