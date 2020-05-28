@@ -184,8 +184,7 @@ class Helpers
 	public static function ex2x($url)
 	{
 		$thumbUrl2x = explode('.', $url);
-		$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 
-		return $thumbUrl2x;
+		return $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 	}
 }

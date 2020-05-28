@@ -10,7 +10,6 @@ use App\Configs;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
-use App\Response;
 
 class Cast
 {
@@ -21,7 +20,7 @@ class Cast
 	 */
 	public static function toArray(Album $album): array
 	{
-		$return = [
+		return [
 			'id' => strval($album->id),
 			'title' => $album->title,
 			'public' => strval($album->public),
@@ -46,15 +45,6 @@ class Cast
 			'thumbs2x' => [],
 			'types' => [],
 		];
-
-		// TODO: FIXME
-		// $album['owner'] will be set by the caller as needed.
-
-		// For server use only; will be unset before sending the response
-		// to the front end.
-		// $return['thumbIDs'] = [];
-
-		return $return;
 	}
 
 	/**
@@ -94,9 +84,6 @@ class Cast
 			if ($k < 3) {
 				$ret = PhotoCast::toThumb($photo, $symLinkFunctions);
 				$ret->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
-				// $return['thumbs'][$k] = $ret->thumb;
-				// $return['types'][$k] = $ret->type;
-				// $return['thumbs2x'][$k] = $ret->thumb2x;
 				$k++;
 			} else {
 				break;

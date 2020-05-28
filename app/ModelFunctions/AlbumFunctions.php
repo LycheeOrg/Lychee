@@ -18,7 +18,6 @@ use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
-use Debugbar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
@@ -321,7 +320,6 @@ class AlbumFunctions
 				if ($this->readAccessFunctions->album($album) === 1) {
 					$children = $this->get_children($album, $username);
 				}
-				// DebugBar::error($children);
 
 				$album_array = AlbumCast::toArray($album);
 				$album_array['owner'] = $username;
