@@ -12,25 +12,36 @@ php:
   - '7.3'
   - '7.4'
 #  - nightly
-env:
-  global:
-    - TRAVIS_COMPOSER_DEV=yes
-    - TRAVIS_COMPOSER_DEV=no
-  matrix:
-    - SQL=mariadb EXIFTOOL=no
-    - SQL=postgresql EXIFTOOL=no
-    - SQL=sqlite EXIFTOOL=no
-    - SQL=mariadb EXIFTOOL=yes
-    - SQL=postgresql EXIFTOOL=yes
-    - SQL=sqlite EXIFTOOL=yes
+env: 
+  - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+  - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
 
-# matrix:
-#   allow_failures:
-#     - php: 7.4snapshot
+jobs:
+  include:
+    - env: SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+      if: branch = master
+    - env: SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+      if: branch = master
+    - env: SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+      if: branch = master
+    - env: SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+      if: branch = master
+    - env: SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+      if: branch = master
+    - env: SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+      if: branch = master
+    - env: SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+      if: branch = master
+    - env: SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+      if: branch = master
+    - env: SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+      if: branch = master
+    - env: SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+      if: branch = master
 
 cache:
   directories:
-    - $HOME/.composer/cache
+    - $HOME/.composer/cache/files
     - $HOME/.php-cs-fixer
     - $HOME/.local
 services:
@@ -45,16 +56,12 @@ addons:
       - php-mbstring
       - php-json
       - php-gd
+    update: true
 
 before_script:
-  - echo ${TRAVIS_COMPOSER_DEV}
-  - echo ${SQL}
   - printf "\n" | pecl install imagick
   # Install ExifTool
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then wget http://www.sno.phy.queensu.ca/~phil/exiftool/Image-ExifTool-11.77.tar.gz ; fi"
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then tar -zxvf Image-ExifTool-11.77.tar.gz ; fi"
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then cd Image-ExifTool-11.77 && perl Makefile.PL && make test && sudo make install ; fi"
-  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then cd .. && rm -rf Image-ExifTool-11.77 ; fi"
+  - sh -c "if [ '$EXIFTOOL' = 'yes' ] ; then sudo apt-get -y install libimage-exiftool-perl ; fi"
   # create db for mariadb
   - sh -c "if [ '$SQL' = 'mariadb' ] ; then mysql -e 'create database homestead_test;' ; fi"
   # create db for postgresql
@@ -63,39 +70,13 @@ before_script:
   - sh -c "if [ '$SQL' = 'sqlite' ] ; then touch database/database.sqlite ; fi"
   # composer stuff
   - composer self-update
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then composer install --no-interaction ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then composer install --no-interaction --no-dev ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then find vendor -wholename '*/[Tt]ests/*' -delete ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then find vendor -wholename '*/[Tt]est/*' -delete ; fi"
-
 
 script:
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run ; fi"
-  # - sh -c "if [ '$SQL' = 'mariadb' ] ; then cp .env.mariadb.travis .env ; fi"
-  - cp .env.${SQL}.travis .env
-  # - sh -c "if [ '$SQL' = 'postgresql' ] ; then cp .env.postgresql.travis .env ; fi"
-  # - sh -c "if [ '$SQL' = 'sqlite' ] ; then cp .env.sqlite.travis .env ; fi"
-  # test mariadb
-  # - cp .env.mariadb.travis .env
-  - php artisan key:generate
-  - php artisan migrate
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose; fi"
-  - php artisan migrate:rollback
-  # # test postgresql
-  # - cp .env.postgresql.travis .env
-  # - php artisan key:generate
-  # - php artisan migrate
-  # - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
-  # - php artisan migrate:rollback
-  # # test SQLite
-  # - cp .env.sqlite.travis .env
-  # - php artisan key:generate
-  # - php artisan migrate
-  # - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then vendor/bin/phpunit --verbose ; fi"
-  # - php artisan migrate:rollback
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash test_dev.sh ; fi"
+  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then bash test_dist.sh ; fi"
 
 after_success:
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash codecov.sh ; fi"
+  - bash codecov.sh
 
 notifications:
   webhooks:

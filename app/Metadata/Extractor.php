@@ -4,6 +4,7 @@ namespace App\Metadata;
 
 use App\Configs;
 use App\Logs;
+use App\ModelFunctions\Helpers;
 use PHPExif\Reader\Reader;
 
 class Extractor
@@ -71,11 +72,24 @@ class Extractor
 	{
 		$reader = null;
 
+		// Get kind of file (photo, video, raw)
+		$extension = Helpers::getExtension($filename, false);
+
+		// check raw files
+		$is_raw = false;
+		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
+		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
+			$is_raw = true;
+		}
+
 		if (strpos($type, 'video') !== 0) {
 			// It's a photo
 			if (Configs::hasExiftool()) {
 				// reader with Exiftool adapter
 				$reader = Reader::factory(Reader::TYPE_EXIFTOOL);
+			} elseif (Configs::hasImagick() && $is_raw) {
+				// Use imagick as exif reader for raw files (broader support)
+				$reader = Reader::factory(Reader::TYPE_IMAGICK);
 			} else {
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
@@ -105,6 +119,40 @@ class Extractor
 			$reader = Reader::factory(Reader::TYPE_NATIVE);
 			$exif = $reader->read($filename);
 		}
+
+		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
+		$sidecarData = [];
+
+		// readlink fails if it's not a link -> we need to separate it
+		$realFile = $filename;
+		if (is_link($filename)) {
+			try {
+				// if readlink($filename) == False then $realFile = $filename.
+				// if readlink($filename) != False then $realFile = readlink($filename)
+				$realFile = readlink($filename) ?: $filename;
+			} catch (\Exception $e) {
+				Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			}
+		}
+		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
+			try {
+				// Don't use the same reader as the file in case it's a video
+				$sidecarReader = Reader::factory(Reader::TYPE_EXIFTOOL);
+				$sidecarData = $sidecarReader->read($realFile . '.xmp')->getData();
+
+				// We don't want to overwrite the media's type with the mimetype of the sidecar file
+				unset($sidecarData['MimeType']);
+
+				if (Configs::get_value('prefer_available_xmp_metadata', '0') == '1') {
+					$exif->setData(array_merge($exif->getData(), $sidecarData));
+				} else {
+					$exif->setData(array_merge($sidecarData, $exif->getData()));
+				}
+			} catch (\Exception $e) {
+				Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			}
+		}
+
 		$metadata = $this->bare();
 		$metadata['type'] = ($exif->getMimeType() !== false) ? $exif->getMimeType() : '';
 		$metadata['width'] = ($exif->getWidth() !== false) ? $exif->getWidth() : 0;
@@ -136,6 +184,38 @@ class Extractor
 			if ($takestamp < $min_date || $takestamp > $max_date) {
 				$metadata['takestamp'] = null;
 				Logs::notice(__METHOD__, __LINE__, 'Takestamp (' . $takestamp->format('Y-m-d H:i:s') . ') out of bounds (needs to be between 1970-01-01 00:00:01 and 2038-01-19 03:14:07)');
+			}
+		}
+
+		// We need to make sure, latitude is between -90/90 and longitude is between -180/180
+		// We set values to null in case we're out of bounds
+		if ($metadata['latitude'] !== null || $metadata['longitude'] !== null) {
+			$latitude = $metadata['latitude'];
+			$longitude = $metadata['longitude'];
+			if ($latitude < -90 || $latitude > 90 || $longitude < -180 || $longitude > 180) {
+				$metadata['latitude'] = null;
+				$metadata['longitude'] = null;
+				Logs::notice(__METHOD__, __LINE__, 'Latitude/Longitude (' . $latitude . '/' . $longitude . ') out of bounds (needs to be between -90/90 and -180/180)');
+			}
+		}
+
+		// We need to make sure, altitude is between -999999.9999 and 999999.9999
+		// We set values to null in case we're out of bounds
+		if ($metadata['altitude'] !== null) {
+			$altitude = $metadata['altitude'];
+			if ($altitude < -999999.9999 || $altitude > 999999.9999) {
+				$metadata['altitude'] = null;
+				Logs::notice(__METHOD__, __LINE__, 'Altitude (' . $altitude . ') out of bounds for database (needs to be between -999999.9999 and 999999.9999)');
+			}
+		}
+
+		// We need to make sure, imgDirection is between 0 and 360
+		// We set values to null in case we're out of bounds
+		if ($metadata['imgDirection'] !== null) {
+			$imgDirection = $metadata['imgDirection'];
+			if ($imgDirection < 0 || $imgDirection > 360) {
+				$metadata['imgDirection'] = null;
+				Logs::notice(__METHOD__, __LINE__, 'GPSImgDirection (' . $imgDirection . ') out of bounds (needs to be between 0 and 360)');
 			}
 		}
 

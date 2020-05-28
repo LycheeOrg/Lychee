@@ -2,7 +2,10 @@
     "name": "lycheeorg/lychee-laravel",
     "description": "A great looking and easy-to-use photo-management-system you can run on your server, to manage and share photos.",
     "homepage": "https://lycheeorg.github.io/",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -24,15 +27,17 @@
         "php-http/message": "^1.8",
         "piwik/device-detector": "^3.12",
         "spatie/guzzle-rate-limiter-middleware": "^1.0",
+        "spatie/laravel-feed": "^2.6",
         "symfony/cache": "^5.0"
     },
     "require-dev": {
         "ext-imagick": "*",
+        "barryvdh/laravel-debugbar": "^3.3",
         "barryvdh/laravel-ide-helper": "^2.6",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "itsgoingd/clockwork": "^3.1",
-        "laravel/homestead": "^10.0",
+        "itsgoingd/clockwork": "^4.1",
+        "laravel/homestead": "^10.8",
         "nunomaduro/collision": "^4.1",
         "phpunit/phpunit": "^8.5"
     },
@@ -52,8 +57,7 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": [
-            ]
+            "dont-discover": []
         }
     },
     "scripts": {
@@ -66,10 +70,10 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover",
-            "@make_user_css"
+            "@install_files"
         ],
-        "make_user_css": [
-            "touch public/dist/user.css"
+        "install_files": [
+            "sh install_files.sh"
         ]
     },
     "config": {

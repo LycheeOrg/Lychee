@@ -313,7 +313,10 @@ return [
 	 * Note: custom-csp does not support report-only.
 	 */
 
-	'custom-csp' => null,
+	/*
+	 * There is no easy way to use CSP with debug bar at the moment so we disable CSP if debug bar is enabled.
+	 */
+	'custom-csp' => ((bool) env('DEBUGBAR_ENABLED', false)) ? '' : null,
 
 	'csp' => [
 		'report-only' => false,
@@ -330,6 +333,7 @@ return [
 
 		'script-src' => [
 			'allow' => [
+				'https://www.dropbox.com/static/api/1/dropins.js',
 				// 'url',
 			],
 			'hashes' => [
@@ -390,6 +394,7 @@ return [
 				'https://a.osm.rrze.fau.de/osmhd/',
 				'https://b.osm.rrze.fau.de/osmhd/',
 				'https://c.osm.rrze.fau.de/osmhd/',
+				env('LYCHEE_UPLOADS_URL', 'https://lycheeorg.github.io/'),
 				'data:',
 				'blob:',
 			],

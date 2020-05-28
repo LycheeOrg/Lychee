@@ -1,0 +1,30 @@
+#!/bin/sh
+NO_COLOR="\033[0m"
+GREEN="\033[38;5;010m"
+ORANGE="\033[38;5;214m"
+
+echo "\n${GREEN}post merge hook start${NO_COLOR}\n"
+
+# we check if vendor/bin/phpunit is present.
+# If yes this means we are in dev mode.
+PHPUNIT="vendor/bin/phpunit"
+
+if [ -f ".NO_AUTO_COMPOSER_MIGRATE" ]; then
+    echo "\n${ORANGE}composer and database migration skipped as per requested.${NO_COLOR}\n"
+else
+    if [ -x "$PHPUNIT" ]; then
+        echo "\n${ORANGE}Dev mode detected${NO_COLOR}\n"
+        echo "composer install --no-suggest"
+        composer install --no-suggest
+    else
+        echo "\n${ORANGE}--no-dev mode detected${NO_COLOR}\n"
+        echo "composer install --no-dev --prefer-dist --no-suggest"
+        composer install --no-dev --prefer-dist --no-suggest
+    fi
+    if [ -f ".env" ]; then
+        echo "php artisan migrate --force"
+        php artisan migrate --force
+    fi
+fi
+
+echo "\n${GREEN}post merge hook finish${NO_COLOR}\n"

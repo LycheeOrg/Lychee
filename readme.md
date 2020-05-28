@@ -13,9 +13,9 @@
 
 #### Help, I'm lost!
 
-I was using the version 3, how do I upgrade to version 4? See [Upgrade &#187;](https://github.com/LycheeOrg/Lychee/wiki/Upgrade-from-version-3)
+I was using the version 3, how do I upgrade to version 4? See [Upgrade &#187;](https://lycheeorg.github.io/docs/upgrade.html)
 
-To find out what's changed, see the [changelog &#187;](https://github.com/LycheeOrg/Lychee/wiki/Changelog)
+To find out what's changed, see the [changelog &#187;](https://lycheeorg.github.io/docs/releases.html).
 
 #### A great looking and easy-to-use photo-management-system.
 
@@ -36,23 +36,23 @@ To run Lychee, everything you need is a web-server with PHP 7.3 or later and a M
 4. Generate your secret key with `php artisan key:generate`
 5. Migrate your database with `php artisan migrate` to create a new database or migrate an existing Lychee installation to the latest framework.
 
-See detailed instructions on the [Installation](https://github.com/LycheeOrg/Lychee/wiki/Install) wiki page.
+See detailed instructions on the [Installation](https://lycheeorg.github.io/docs/installation.html) page of our documentation.
 
 ### Docker
 
-Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Laravel-Docker](https://github.com/LycheeOrg/Lychee-Laravel-Docker) or on Docker Hub as [lycheeorg/lychee-laravel](https://hub.docker.com/r/lycheeorg/lychee-laravel).
+Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Docker](https://github.com/LycheeOrg/Lychee-Docker) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
 
 ### Update
 
-Updating is as easy as it should be.  [Update &#187;](https://github.com/LycheeOrg/Lychee/wiki/Update)
+Updating is as easy as it should be.  [Update &#187;](https://lycheeorg.github.io/docs/update.html)
 
 ### Settings
 
-Sign in and click the gear in the top left corner to change your settings. [Settings &#187;](https://github.com/LycheeOrg/Lychee/wiki/Settings)
+Sign in and click the gear in the top left corner to change your settings. [Settings &#187;][1]
 
 ### Build
 
-Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://github.com/LycheeOrg/Lychee/wiki/Build)
+Lychee is ready to use, right out of the box. If you want to contribute and edit CSS or JS files, you need to rebuild [Lychee-front](https://github.com/LycheeOrg/Lychee-front). [Build &#187;](https://lycheeorg.github.io/docs/node.html)
 
 ## Advanced Features
 
@@ -60,11 +60,11 @@ Lychee is ready to use straight after installation, but some features require a 
 
 ### Keyboard Shortcuts
 
-These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://github.com/LycheeOrg/Lychee/wiki/Keyboard-Shortcuts)
+These shortcuts will help you to use Lychee even faster. [Keyboard Shortcuts &#187;](https://lycheeorg.github.io/docs/keyboard.html)
 
 ### Dropbox import
 
-In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/apps/create). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings](https://github.com/LycheeOrg/Lychee/wiki/Settings) of Lychee.
+In order to use the Dropbox import from your server, you need a valid drop-ins app key from [their website](https://www.dropbox.com/developers/apps/create). Lychee will ask you for this key, the first time you try to use the import. Want to change your code? Take a look at [the settings][1] of Lychee.
 
 ### Twitter Cards
 
@@ -72,8 +72,10 @@ Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Gr
 
 ### Imagick
 
-Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in the [settings](https://github.com/LycheeOrg/Lychee/wiki/Settings).
+Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in the [settings][1].
 
 ## Troubleshooting
 
-Take a look at the [Wiki](https://github.com/LycheeOrg/Lychee/wiki/), particularly the [FAQ](https://github.com/LycheeOrg/Lychee/wiki/FAQ) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub!
+Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub!
+
+[1]: https://lycheeorg.github.io/docs/settings.html

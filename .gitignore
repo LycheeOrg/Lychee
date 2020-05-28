@@ -37,7 +37,7 @@ yarn-error.log
 public/dist/user.css
 aliases
 
-Lychee-v*
+Lychee/*
 .phpunit*
 _ide*
 
@@ -48,3 +48,4 @@ clover.xml
 installed.log
 .DS_Store
 .NO_SECURE_KEY
+.NO_AUTO_COMPOSER_MIGRATE

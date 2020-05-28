@@ -28,7 +28,7 @@ class MoveAlbums extends Migration
 					$album->description = $result->description;
 					$album->public = $result->public;
 					$album->visible_hidden = $result->visible;
-					$album->license = $result->license;
+					$album->license = $result->license ?? 'none';
 					$album->created_at = date('Y-m-d H:i:s', $result->sysstamp);
 					$album->save();
 				}

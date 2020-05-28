@@ -132,6 +132,7 @@ class Apply
 			$this->artisan($output);
 			$this->lycheeVersion->isRelease or $this->call_composer($output);
 		}
+		$output = preg_replace('/\033[[][0-9]*;*[0-9]*;*[0-9]*m/', '', $output);
 
 		return $output;
 	}

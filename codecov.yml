@@ -1,0 +1,50 @@
+{
+    "codecov": {
+        "require_ci_to_pass": true
+    }, 
+    "comment": {
+        "behavior": "default", 
+        "require_base": false, 
+        "require_changes": true, 
+        "require_head": true
+    }, 
+    "coverage": {
+        "precision": 2, 
+        "range": [
+            50.0, 
+            100.0
+        ], 
+        "round": "down", 
+        "status": {
+            "changes": false, 
+            "patch": {
+                "default": {}
+            }, 
+            "project": {
+                "default": {}
+            }
+        }
+    }, 
+    "ignore": [
+        "^app/Console/.*",
+        "^app/Exceptions/.*",
+        "^app/Http/Controllers/Auth/.*",
+        "^app/Http/Middleware/LoginCheck.*",
+        "^app/Http/Middleware/VerifyCsrfToken.*",
+        "^app/Http/Middleware/RedirectIfAuthenticated.*",
+        "^app/Providers/BroadcastServiceProvider.*"
+    ], 
+    "parsers": {
+        "gcov": {
+            "branch_detection": {
+                "conditional": true, 
+                "loop": true, 
+                "macro": false, 
+                "method": false
+            }
+        }, 
+        "javascript": {
+            "enable_partials": false
+        }
+    }
+}

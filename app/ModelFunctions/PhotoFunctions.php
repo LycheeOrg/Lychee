@@ -100,10 +100,11 @@ class PhotoFunctions
 	 *
 	 * @return string
 	 */
-	private function file_type($file, string $extension)
+	public function file_type($file, string $extension)
 	{
 		// check raw files
-		if (in_array(strtolower($extension), explode('|', Configs::get_value('raw_formats', '')), true)) {
+		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
+		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
 			return 'raw';
 		}
 
@@ -113,20 +114,23 @@ class PhotoFunctions
 				// let's check for the mimetype
 				// maybe we don't have a photo
 				if (!function_exists('exif_imagetype')) {
-					Logs::error(__METHOD__, __LINE__,
-						'EXIF library not loaded. Make sure exif is enabled in php.ini');
+					Logs::error(
+						__METHOD__,
+						__LINE__,
+						'EXIF library not loaded. Make sure exif is enabled in php.ini'
+					);
 
 					return 'EXIF library not loaded on the server!';
 				}
 
 				$type = @exif_imagetype($file['tmp_name']);
 				if (!in_array($type, $this->validTypes, true)) {
-					Logs::error(__METHOD__, __LINE__, 'Photo type not supported');
+					Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $file['name']);
 
 					return 'Photo type not supported!';
 				}
 				// we have maybe a raw file
-				Logs::error(__METHOD__, __LINE__, 'Photo format not supported');
+				Logs::error(__METHOD__, __LINE__, 'Photo format not supported: ' . $file['name']);
 
 				return 'Photo format not supported!';
 			}
@@ -145,41 +149,43 @@ class PhotoFunctions
 	 * @param int   $albumID_in
 	 * @param bool  $delete_imported
 	 * @param bool  $force_skip_duplicates
+	 * @param bool  $resync_metadata
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0, $delete_imported = false, $force_skip_duplicates = false)
+	public function add(array $file, $albumID_in = 0, $delete_imported = false, $force_skip_duplicates = false, $resync_metadata = false)
 	{
 		// Check permissions
-		if (Helpers::hasPermissions(Storage::path('')) === false ||
+		if (
+			Helpers::hasPermissions(Storage::path('')) === false ||
 			Helpers::hasPermissions(Storage::path('big/')) === false ||
 			Helpers::hasPermissions(Storage::path('medium/')) === false ||
 			Helpers::hasPermissions(Storage::path('small/')) === false ||
 			Helpers::hasPermissions(Storage::path('thumb/')) === false ||
 			Helpers::hasPermissions(Storage::path('import/')) === false
-	) {
+		) {
 			Logs::error(__METHOD__, __LINE__, 'An upload-folder is missing or not readable and writable');
 
 			return Response::error('An upload-folder is missing or not readable and writable!');
 		}
 
 		switch ($albumID_in) {
-			// s for public (share)
+				// s for public (share)
 			case 's':
 				$public = 1;
 				$star = 0;
 				$albumID = null;
 				break;
 
-			// f for starred (fav)
+				// f for starred (fav)
 			case 'f':
 				$star = 1;
 				$public = 0;
 				$albumID = null;
 				break;
 
-			// r for recent
-			// 0 for unsorted
+				// r for recent
+				// 0 for unsorted
 			case '0':
 			case 'r':
 				$public = 0;
@@ -217,28 +223,30 @@ class PhotoFunctions
 		// Calculate checksum
 		$checksum = sha1_file($tmp_name);
 		if ($checksum === false) {
+			// @codeCoverageIgnoreStart
 			Logs::error(__METHOD__, __LINE__, 'Could not calculate checksum for photo');
 
 			return Response::error('Could not calculate checksum for photo!');
+			// @codeCoverageIgnoreEnd
 		}
 		$photo->checksum = $checksum;
-		$exists = $photo->isDuplicate($checksum);
+		$existing = $photo->isDuplicate($checksum);
+		$exists = $existing !== false;
 
 		if ($exists !== false) {
-			$photo_name = $exists->url;
-			$path = Storage::path($path_prefix . $exists->url);
-			$photo->thumbUrl = $exists->thumbUrl;
-			$photo->thumb2x = $exists->thumb2x;
-			$photo->medium = $exists->medium;
-			$photo->medium2x = $exists->medium2x;
-			$photo->small = $exists->small;
-			$photo->small2x = $exists->small2x;
-			$photo->livePhotoUrl = $exists->livePhotoUrl;
-			$photo->livePhotoChecksum = $exists->livePhotoChecksum;
-			$photo->checksum = $exists->checksum;
-			$photo->type = $exists->type;
+			$photo_name = $existing->url;
+			$path = Storage::path($path_prefix . $existing->url);
+			$photo->thumbUrl = $existing->thumbUrl;
+			$photo->thumb2x = $existing->thumb2x;
+			$photo->medium = $existing->medium;
+			$photo->medium2x = $existing->medium2x;
+			$photo->small = $existing->small;
+			$photo->small2x = $existing->small2x;
+			$photo->livePhotoUrl = $existing->livePhotoUrl;
+			$photo->livePhotoChecksum = $existing->livePhotoChecksum;
+			$photo->checksum = $existing->checksum;
+			$photo->type = $existing->type;
 			$mimeType = $photo->type;
-			$exists = true;
 		}
 
 		if ($exists === false) {
@@ -255,9 +263,11 @@ class PhotoFunctions
 						// @codeCoverageIgnoreEnd
 					}
 				} elseif (!@copy($tmp_name, $path)) {
+					// @codeCoverageIgnoreStart
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
 
 					return Response::error('Could not copy photo to uploads!');
+				// @codeCoverageIgnoreEnd
 				} elseif ($delete_imported) {
 					@unlink($tmp_name);
 				}
@@ -276,27 +286,33 @@ class PhotoFunctions
 			}
 			// Check if the user wants to skip duplicates
 			if ($force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
+				$metadataChanged = false;
+
+				// Before we skip entirely, check if there is a sidecar file and if the metadata needs to be updated (from a sidecar)
+				if ($resync_metadata === true) {
+					$info = $this->getFileMetadata($file, $path, $kind, $mimeType, $extension);
+					foreach ($info as $key => $value) {
+						if ($existing->$key !== null && $value !== $existing->$key) {
+							$metadataChanged = true;
+							$existing->$key = $value;
+						}
+					}
+				}
+
+				if ($metadataChanged === true) {
+					Logs::notice(__METHOD__, __LINE__, 'Updating metdata of existing photo.');
+					$existing->save();
+
+					return Response::warning('This photo has been skipped because it\'s already in your library, but its metadata has been updated.');
+				}
+
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
 				return Response::warning('This photo has been skipped because it\'s already in your library.');
 			}
 		}
 
-		if ($kind == 'raw') {
-			$info = $this->metadataExtractor->bare();
-			$this->metadataExtractor->size($info, $path);
-			$this->metadataExtractor->validate($info);
-			$info['type'] = 'raw';
-		} else {
-			$info = $this->metadataExtractor->extract($path, $mimeType);
-		}
-
-		// Use title of file if IPTC title missing
-		if ($kind == 'raw') {
-			$info['title'] = substr(basename($file['name']), 0, 98);
-		} elseif ($info['title'] === '') {
-			$info['title'] = substr(basename($file['name'], $extension), 0, 98);
-		}
+		$info = $this->getFileMetadata($file, $path, $kind, $mimeType, $extension);
 
 		$photo->title = $info['title'];
 		$photo->url = $photo_name;
@@ -322,8 +338,6 @@ class PhotoFunctions
 		$photo->livePhotoContentID = $info['livePhotoContentID'];
 		$photo->public = $public;
 		$photo->star = $star;
-
-		$photo = $this->altitude_fix($photo);
 
 		$GoogleMicroVideoOffset = $info['MicroVideoOffset'];
 
@@ -372,7 +386,11 @@ class PhotoFunctions
 			// (2) There is a partner and we're uploading a photo
 			if (($livePhotoPartner === false) || !(in_array($photo->type, $this->validVideoTypes, true))) {
 				// Set orientation based on EXIF data
-				if ($photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== '') {
+				// but do not rotate if the image shall not be modified
+				if (
+					$photo->type === 'image/jpeg' && isset($info['orientation']) && $info['orientation'] !== ''
+					&& Configs::get_value('import_via_symlink', '0') === '0'
+				) {
 					$rotation = $this->imageHandler->autoRotate($path, $info);
 
 					if ($rotation !== [false, false]) {
@@ -396,8 +414,16 @@ class PhotoFunctions
 					}
 				}
 
-				// Create Thumb
 				if ($kind == 'raw') {
+					try {
+						$frame_tmp = $this->createJpgFromRaw($photo);
+					} catch (Exception $exception) {
+						Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+					}
+				}
+
+				// Create Thumb
+				if ($kind == 'raw' && $frame_tmp == '') {
 					$photo->thumbUrl = '';
 					$photo->thumb2x = 0;
 				} elseif (!in_array($photo->type, $this->validVideoTypes, true) || $frame_tmp !== '') {
@@ -446,13 +472,14 @@ class PhotoFunctions
 	 */
 	public function createSmallerImages(Photo $photo, string $frame_tmp = '')
 	{
-		if ($frame_tmp === '') {
+		if ($frame_tmp === '' || $photo->type == 'raw') {
+			// Create medium file for normal photos and for raws
 			$mediumMaxWidth = intval(Configs::get_value('medium_max_width'));
 			$mediumMaxHeight = intval(Configs::get_value('medium_max_height'));
-			$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight);
+			$this->resizePhoto($photo, 'medium', $mediumMaxWidth, $mediumMaxHeight, $frame_tmp);
 
 			if (Configs::get_value('medium_2x') === '1') {
-				$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2);
+				$this->resizePhoto($photo, 'medium2x', $mediumMaxWidth * 2, $mediumMaxHeight * 2, $frame_tmp);
 			}
 		}
 
@@ -468,6 +495,51 @@ class PhotoFunctions
 	/**
 	 * @param Photo $photo
 	 *
+	 * @return string Path of the jpg file
+	 */
+	public function createJpgFromRaw(Photo $photo): string
+	{
+		// we need imagick to do the job
+		if (!Configs::hasImagick()) {
+			Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to failed: Imagick not installed.');
+
+			return '';
+		}
+
+		$filename = $photo->url;
+		$url = Storage::path('raw/' . $filename);
+		$ext = pathinfo($filename)['extension'];
+
+		// test if Imagaick supports the filetype
+		// Query return file extensions as all upper case
+		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
+			Logs::notice(__METHOD__, __LINE__, 'Filetype ' . $ext . ' not supported by Imagick.');
+
+			return '';
+		}
+
+		$tmp_file = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
+		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to ' . $tmp_file);
+
+		$resWidth = $resHeight = 0;
+		$resWidth = $resHeight = 0;
+		$width = $photo->width;
+		$height = $photo->height;
+
+		try {
+			$this->imageHandler->scale($url, $tmp_file, $width, $height, $resWidth, $resHeight);
+		} catch (\Exception $e) {
+			Logs::error(__METHOD__, __LINE__, 'Failed to create JPG from raw file ' . $url . $filename);
+
+			return '';
+		}
+
+		return $tmp_file;
+	}
+
+	/**
+	 * @param Photo $photo
+	 *
 	 * @return string Path of the video frame
 	 */
 	public function extractVideoFrame(Photo $photo): string
@@ -478,11 +550,36 @@ class PhotoFunctions
 
 		$ffmpeg = FFMpeg\FFMpeg::create();
 		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
-		$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
-
-		$tmp = tempnam(sys_get_temp_dir(), 'lychee');
+		$tmp = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
-		$frame->save($tmp);
+
+		try {
+			$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
+			$frame->save($tmp);
+		} catch (\Exception $e) {
+			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot from video ' . $tmp);
+		}
+
+		// check if the image has data
+		$success = file_exists($tmp) ? (filesize($tmp) > 0) : false;
+
+		if (!$success) {
+			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot from video ' . $tmp);
+			try {
+				$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0));
+				$frame->save($tmp);
+				$success = file_exists($tmp) ? (filesize($tmp) > 0) : false;
+				if (!$success) {
+					Logs::notice(__METHOD__, __LINE__, 'Fallback failed to extract snapshot from video ' . $tmp);
+				} else {
+					Logs::notice(__METHOD__, __LINE__, 'Fallback successful - snapshot from video ' . $tmp . ' at t=0 created.');
+				}
+			} catch (\Exception $e) {
+				Logs::notice(__METHOD__, __LINE__, 'Fallback failed to extract snapshot from video ' . $tmp);
+
+				return '';
+			}
+		}
 
 		return $tmp;
 	}
@@ -508,8 +605,10 @@ class PhotoFunctions
 			200
 		);
 
-		if (Configs::get_value('thumb_2x') === '1' &&
-			$photo->width >= 400 && $photo->height >= 400) {
+		if (
+			Configs::get_value('thumb_2x') === '1' &&
+			$photo->width >= 400 && $photo->height >= 400
+		) {
 			// Retina thumbs
 			$this->imageHandler->crop(
 				$src,
@@ -719,30 +818,6 @@ class PhotoFunctions
 	}
 
 	/**
-	 * Given the information of a photo, makes sure the altitude is in the correct range.
-	 *
-	 * @param Photo $photo
-	 *
-	 * @return Photo
-	 */
-	private function altitude_fix(Photo $photo)
-	{
-		$altitude = $photo->altitude;
-		// max value of dec(10,4) is 999' 999.9999
-		if ($altitude > 999999.9999) {
-			// we are out of the bound
-			// we assume this is a bug due to DJI firmware not updated
-			// we signal the user and erase the value before adding it the database.
-			$photo->altitude = null;
-			Logs::warning(__METHOD__, __LINE__, 'altitude set to 0, previous value was out of bounds:' . $altitude . ' for picture ' . $photo->title);
-			Logs::warning(__METHOD__, __LINE__, $photo->url);
-			Logs::warning(__METHOD__, __LINE__, 'Manually parse the file with exiftool and edit the database to set the correct value.');
-		}
-
-		return	$photo;
-	}
-
-	/**
 	 * Validates whether $type is a valid image type.
 	 *
 	 * @param int $type
@@ -806,5 +881,35 @@ class PhotoFunctions
 	public function getValidExtensions(): array
 	{
 		return $this->validExtensions;
+	}
+
+	/**
+	 * Central function for retrieving the metadata since this has to be called in more than one place.
+	 *
+	 * @param array  $file
+	 * @param string $path
+	 * @param string $kind
+	 * @param string $mimeType
+	 * @param string $extension
+	 *
+	 * @return void
+	 */
+	private function getFileMetadata($file, $path, $kind, $mimeType, $extension)
+	{
+		$info = $this->metadataExtractor->extract($path, $mimeType);
+		if ($kind == 'raw') {
+			$info['type'] = 'raw';
+		}
+
+		// Use title of file if IPTC title missing
+		if ($info['title'] === '') {
+			if ($kind == 'raw') {
+				$info['title'] = substr(basename($file['name']), 0, 98);
+			} elseif ($info['title'] === '') {
+				$info['title'] = substr(basename($file['name'], $extension), 0, 98);
+			}
+		}
+
+		return $info;
 	}
 }
