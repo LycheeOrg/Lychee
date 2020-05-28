@@ -17,7 +17,9 @@
                 <description><![CDATA[{!! $item->summary !!}]]></description>
                 <author><![CDATA[{{ $item->author }}]]></author>
                 <guid>{{ url($item->id) }}</guid>
-                <enclosure url="{{ url($item->link)}}" type="{{ $item->enclosureMime }}" length="{{ $item->enclosureLength  }}" />
+                @if(isset($item->enclosure))
+                    <enclosure url="{{ $item->enclosure->url }}" length="{{ $item->enclosure->length }}" type="{{ $item->enclosure->mime_type }}" />
+                @endif
                 <pubDate>{{ $item->updated->toRssString() }}</pubDate>
             </item>
         @endforeach
