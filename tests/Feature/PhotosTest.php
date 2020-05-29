@@ -175,7 +175,6 @@ class PhotosTest extends TestCase
 	public function test_true_negative()
 	{
 		$photos_tests = new PhotosUnitTest();
-		$albums_tests = new AlbumsUnitTest();
 		$session_tests = new SessionUnitTest();
 
 		$session_tests->log_as_id(0);

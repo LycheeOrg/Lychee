@@ -143,13 +143,26 @@ class AlbumFunctions
 			->limit(3)
 			->get();
 
-		return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
+		// php7.4: return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
+		return $photos->map(function ($photo) {
+			return PhotoCast::toThumb($photo, $this->symLinkFunctions);
+		});
 	}
 
 	public function get_thumbs_reduction(Album $album, BaseCollection $previous): BaseCollection
 	{
-		$previousThumbIDs = $previous->filter(fn ($e) => !$e->isEmpty())
-			->map(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))->all();
+		// php7.4: $previousThumbIDs = $previous
+		// php7.4:	->filter(fn ($e) => !$e->isEmpty())
+		// php7.4:	->map(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))
+		// php7.4:	->all();
+		$previousThumbIDs = $previous
+			->filter(function ($e) {
+				return  !$e->isEmpty();
+			})->map(function ($e) {
+				return $e[0]->map(function (Thumb $t) {
+					return $t->thumbID;
+				});
+			})->all();
 		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
 
 		return new Collection([$thumbs, $previous]);
@@ -323,7 +336,10 @@ class AlbumFunctions
 
 				$album_array = AlbumCast::toArray($album);
 				$album_array['owner'] = $username;
-				$album_array['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]));
+				// php7.4: $album_array['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]));
+				$album_array['albums'] = $children->map(function ($e) {
+					return AlbumCast::toArray($e[0]);
+				});
 
 				$thumbs = $this->get_thumbs($album, $children);
 				$this->set_thumbs($album_array, $thumbs);
@@ -346,7 +362,7 @@ class AlbumFunctions
 		/*
 		 * @var Collection[Album]
 		 */
-		$toplevel ??= $this->getToplevelAlbums();
+		$toplevel = $toplevel ?? $this->getToplevelAlbums();
 		if ($toplevel === null) {
 			return null;
 		}
@@ -392,7 +408,7 @@ class AlbumFunctions
 
 		foreach ($smartAlbums as $smartAlbum) {
 			if ($can_see_smart || $smartAlbum->is_public()) {
-				$publicAlbums ??= $this->getPublicAlbumsId($toplevel);
+				$publicAlbums = $publicAlbums ?? $this->getPublicAlbumsId($toplevel);
 				$smartAlbum->setAlbumIDs($publicAlbums);
 				$return[$smartAlbum->get_title()] = [];
 
@@ -458,7 +474,10 @@ class AlbumFunctions
 
 				return new Collection();
 			}
-		)->filter(fn ($a) => !empty($a));
+		)->filter(function ($a) {
+			return !empty($a);
+		});
+		// php7.4: )->filter(fn ($a) => !empty($a));
 	}
 
 	/**

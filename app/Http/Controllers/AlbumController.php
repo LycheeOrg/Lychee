@@ -118,7 +118,11 @@ class AlbumController extends Controller
 		} else {
 			// take care of sub albums
 			$children = $this->albumFunctions->get_children($album, 0, true);
-			$return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]))->all();
+			// php7.4: $return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]))->all();
+			$return['albums'] = $children
+				->map(function ($e) {
+					return AlbumCast::toArray($e[0]);
+				})->all();
 			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
 			$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
 		}
