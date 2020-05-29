@@ -99,7 +99,6 @@ class PhotosTest extends TestCase
 		/**
 		 * Actually try to display the picture.
 		 */
-		// TODO: FIX ME.
 		$response = $this->post('/api/Photo::getRandom', []);
 		$response->assertStatus(200);
 
