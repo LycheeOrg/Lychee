@@ -7,7 +7,7 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 
 class SmartAlbum extends Album
 {
@@ -74,7 +74,7 @@ class SmartAlbum extends Album
 		parent::__construct();
 		$this->albumFunctions = $albumFunctions;
 		$this->sessionFunctions = $sessionFunctions;
-		$this->albumIds = new Collection();
+		$this->albumIds = new BaseCollection();
 		$this->created_at = new Carbon();
 	}
 
@@ -86,9 +86,11 @@ class SmartAlbum extends Album
 	/**
 	 * Set a restriction on the available albums.
 	 *
+	 * @param Collection[int] $albumIds
+	 *
 	 * @return void
 	 */
-	public function setAlbumIDs(Collection $albumIds): void
+	public function setAlbumIDs(BaseCollection $albumIds): void
 	{
 		$this->albumIds = $albumIds;
 	}
@@ -96,7 +98,8 @@ class SmartAlbum extends Album
 	public function filter($query)
 	{
 		if (!$this->sessionFunctions->is_admin()) {
-			$query = $query->whereIn('album_id', $this->albumIds);
+			$query = $query->whereIn('album_id', $this->albumIds)
+				->orWhere('public', '=', 1);
 		}
 
 		if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->id() > 0) {

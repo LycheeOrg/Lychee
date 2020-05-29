@@ -341,7 +341,7 @@ class AlbumFunctions
 	 *
 	 * @return Collection[int] of all recursive albums ID accessible by the current user from the top level
 	 */
-	public function getPublicAlbumsId($toplevel = null)
+	public function getPublicAlbumsId($toplevel = null): BaseCollection
 	{
 		/*
 		 * @var Collection[Album]
@@ -350,7 +350,6 @@ class AlbumFunctions
 		if ($toplevel === null) {
 			return null;
 		}
-
 		$albumIDs = new Collection();
 		$kinds = ['albums', 'shared_albums'];
 

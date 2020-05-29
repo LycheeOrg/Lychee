@@ -8,14 +8,16 @@ use App\Album;
 use App\Assets\Helpers;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
+use App\Exceptions\AlbumDoesNotExistsException;
 use App\Logs;
+use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
-use App\ModelRessources\AlbumRessources;
 use App\Photo;
 use App\Response;
+use App\SmartAlbums\StarredAlbum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -125,14 +127,9 @@ class PhotoController extends Controller
 	public function getRandom()
 	{
 		// here we need to refine.
-
-		$photo = Photo::whereIn(
-			'album_id',
-			$this->albumFunctions->getPublicAlbums()
-		)
-			->where('star', '=', 1)
-			->inRandomOrder()
-			->first();
+		$starred = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
+		$starred->setAlbumIDs($this->albumFunctions->getPublicAlbumsId());
+		$photo = $starred->get_photos()->inRandomOrder()->first();
 
 		if ($photo == null) {
 			return Response::error('no pictures found!');
@@ -339,8 +336,7 @@ class PhotoController extends Controller
 					__LINE__,
 					'Could not find specified album'
 				);
-
-				return 'false';
+				throw new AlbumDoesNotExistsException();
 			}
 		}
 
@@ -366,7 +362,7 @@ class PhotoController extends Controller
 					);
 					$no_error = false;
 				}
-				$no_error &= AlbumRessources::update_takestamps(
+				$no_error &= AlbumUpdate::update_takestamps(
 					$oldAlbum,
 					[$photo->takestamp],
 					false
@@ -374,7 +370,7 @@ class PhotoController extends Controller
 			}
 		}
 		if ($album !== null) {
-			$no_error &= AlbumRessources::update_takestamps($album, $takestamp, true);
+			$no_error &= AlbumUpdate::update_takestamps($album, $takestamp, true);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -470,7 +466,7 @@ class PhotoController extends Controller
 
 		// TODO: ideally we would like to avoid duplicates here...
 		for ($i = 0; $i < count($albums); $i++) {
-			$no_error &= AlbumRessources::update_takestamps(
+			$no_error &= AlbumUpdate::update_takestamps(
 				$albums[$i],
 				[$takestamp[$i]],
 				false
