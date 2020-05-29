@@ -6,7 +6,6 @@ use App\Album;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Metadata\GitHubFunctions;
-use App\Metadata\GitRequest;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\ConfigFunctions;
@@ -85,11 +84,6 @@ class DemoController extends Controller
 
 		$functions = [];
 
-		// $githubFunctions = new GitHubFunctions(new GitRequest());
-		// $readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
-		// $symLinkFunctions = new SymLinkFunctions($sessionFunctions);
-		// $albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions, $symLinkFunctions);
-
 		/**
 		 * Session::init.
 		 */
@@ -136,7 +130,6 @@ class DemoController extends Controller
 			// Get photos
 			// Get album information
 			$return_album_json = AlbumCast::toArray($album);
-			$username = null;
 			if ($this->sessionFunctions->is_logged_in()) {
 				$return_album_json['owner'] = $username = $album->owner->username;
 			}
