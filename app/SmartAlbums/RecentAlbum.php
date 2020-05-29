@@ -15,7 +15,10 @@ class RecentAlbum extends SmartAlbum
 
 	public function get_photos(): Builder
 	{
-		return Photo::recent()->where(fn ($q) => $this->filter($q));
+		// php7.4: return Photo::recent()->where(fn ($q) => $this->filter($q));
+		return Photo::recent()->where(function ($q) {
+			return $this->filter($q);
+		});
 	}
 
 	public function is_public()

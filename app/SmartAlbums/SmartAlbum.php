@@ -154,8 +154,4 @@ class SmartAlbum extends Album
 	{
 		return null;
 	}
-
-	// 'thumbs' => [],
-	// 'thumbs2x' => [],
-	// 'types' => [],
 }
