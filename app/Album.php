@@ -4,7 +4,6 @@
 
 namespace App;
 
-use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,26 +16,26 @@ use Illuminate\Support\Carbon;
 /**
  * App\Album.
  *
- * @property int         $id
- * @property string      $title
- * @property int         $owner_id
- * @property int|null    $parent_id
- * @property string      $description
- * @property Carbon|null $min_takestamp
- * @property Carbon|null $max_takestamp
- * @property int         $public
- * @property int         $full_photo
- * @property int         $visible_hidden
- * @property int         $downloadable
- * @property int         $share_button_visible
- * @property string|null $password
- * @property string      $license
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property Album[]     $children
- * @property User        $owner
- * @property Album       $parent
- * @property Photo[]     $photos
+ * @property int               $id
+ * @property string            $title
+ * @property int               $owner_id
+ * @property int|null          $parent_id
+ * @property string            $description
+ * @property Carbon|null       $min_takestamp
+ * @property Carbon|null       $max_takestamp
+ * @property int               $public
+ * @property int               $full_photo
+ * @property int               $visible_hidden
+ * @property int               $downloadable
+ * @property int               $share_button_visible
+ * @property string|null       $password
+ * @property string            $license
+ * @property Carbon|null       $created_at
+ * @property Carbon|null       $updated_at
+ * @property Collection[Album] $children
+ * @property User              $owner
+ * @property Album             $parent
+ * @property Collection[Photo] $photos
  *
  * @method static Builder|Album newModelQuery()
  * @method static Builder|Album newQuery()
