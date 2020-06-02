@@ -197,7 +197,7 @@ class AlbumController extends Controller
 					return 'false';
 				}
 
-				$full_photo = $album->full_photo_visible();
+				$full_photo = $album->is_full_photo_visible();
 
 				$album_list = collect();
 				if ($request['includeSubAlbums']) {
