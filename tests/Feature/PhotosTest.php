@@ -151,16 +151,16 @@ class PhotosTest extends TestCase
 		$init_config_value = Configs::get_value('gen_demo_js');
 
 		// set to 0
-		// Configs::set('gen_demo_js', '1');
-		// $this->assertEquals(Configs::get_value('gen_demo_js'), '1');
+		Configs::set('gen_demo_js', '1');
+		$this->assertEquals(Configs::get_value('gen_demo_js'), '1');
 
 		// check redirection
-		// $response = $this->get('/demo');
-		// $response->assertStatus(200);
-		// $response->assertViewIs('demo');
+		$response = $this->get('/demo');
+		$response->assertStatus(200);
+		$response->assertViewIs('demo');
 
 		// set back to initial value
-		// Configs::set('gen_demo_js', $init_config_value);
+		Configs::set('gen_demo_js', $init_config_value);
 
 		$albums_tests->delete($this, $albumID);
 
