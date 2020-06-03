@@ -47,8 +47,8 @@ class GeoDataTest extends TestCase
 			[
 				'id' => $id,
 				'title' => 'mongolia',
-				'width' => 1280,
-				'height' => 850,
+				'width' => '1280',
+				'height' => '850',
 				'type' => 'image/jpeg',
 				'size' => '196.6 KB',
 				'iso' => '200',
