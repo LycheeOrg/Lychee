@@ -93,7 +93,7 @@ class GeoDataTest extends TestCase
 		// set to 0
 		Configs::set('map_display', '0');
 		$this->assertEquals(Configs::get_value('map_display'), '0');
-		$response = $albums_tests->AlbumsGetPositionDataFull($this, 200); // we need to fix this
+		$albums_tests->AlbumsGetPositionDataFull($this, 200); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
@@ -119,6 +119,7 @@ class GeoDataTest extends TestCase
 		$this->assertEquals($id, $array_content->photos[0]->id);
 
 		$photos_tests->delete($this, $id, 'true');
+		$albums_tests->delete($this, $albumID);
 
 		// reset
 		Configs::set('map_display', $map_display_value);

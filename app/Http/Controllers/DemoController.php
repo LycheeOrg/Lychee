@@ -131,7 +131,7 @@ class DemoController extends Controller
 			// Get album information
 			$return_album_json = AlbumCast::toArray($album);
 			if ($this->sessionFunctions->is_logged_in()) {
-				$return_album_json['owner'] = $username = $album->owner->username;
+				$return_album_json['owner'] = $album->owner->username;
 			}
 
 			$children = $this->albumFunctions->get_children($album, 0, true);
