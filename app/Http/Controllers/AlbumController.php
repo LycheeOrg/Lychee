@@ -157,8 +157,7 @@ class AlbumController extends Controller
 		$return = [];
 		// Get photos
 		// Get album information
-		// $UserId = $this->sessionFunctions->id();
-		// $full_photo = Configs::get_value('full_photo', '1') == '1';
+		$smart = true;
 
 		switch ($request['albumID']) {
 			case 'starred':
@@ -173,7 +172,6 @@ class AlbumController extends Controller
 			case 'unsorted':
 				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
-				$smart = false;
 			default:
 				$album = Album::find($request['albumID']);
 				$smart = false;
@@ -197,7 +195,7 @@ class AlbumController extends Controller
 			$photos_sql = Photo::whereIn('album_id', $album_list);
 		}
 
-		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
+		$full_photo = $album->is_full_photo_visible();
 
 		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
 		$return['id'] = $request['albumID'];
