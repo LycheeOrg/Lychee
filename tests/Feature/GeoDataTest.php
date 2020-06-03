@@ -61,7 +61,6 @@ class GeoDataTest extends TestCase
 				'latitude' => '46.89839200',
 				'longitude' => '102.76863098',
 				'altitude' => '1633.0000',
-				'description' => '',
 				'license' => 'none',
 				'medium' => '',
 				'medium_dim' => '',
