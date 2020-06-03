@@ -157,64 +157,49 @@ class AlbumController extends Controller
 		$return = [];
 		// Get photos
 		// Get album information
-		$UserId = $this->sessionFunctions->id();
-		$full_photo = Configs::get_value('full_photo', '1') == '1';
+		// $UserId = $this->sessionFunctions->id();
+		// $full_photo = Configs::get_value('full_photo', '1') == '1';
 
 		switch ($request['albumID']) {
-			case 'f':
-				if ($this->sessionFunctions->is_logged_in()) {
-					$user = User::find($UserId);
-
-					if ($UserId == 0 || $user->upload) {
-						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
-						break;
-					}
-				}
-				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
+			case 'starred':
+				$album = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
-			case 's':
-				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
+			case 'public':
+				$album = new PublicAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
-			case 'r':
-				if ($this->sessionFunctions->is_logged_in()) {
-					$user = User::find($UserId);
-
-					if ($UserId == 0 || $user->upload) {
-						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
-						break;
-					}
-				}
-				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
+			case 'recent':
+				$album = new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
-			case '0':
-				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
+			case 'unsorted':
+				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
 				break;
+				$smart = false;
 			default:
-				$album = Album::with('children')->find($request['albumID']);
-				if ($album === null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-					return 'false';
-				}
-
-				$full_photo = $album->is_full_photo_visible();
-
-				$album_list = collect();
-				if ($request['includeSubAlbums']) {
-					// Get all subalbums of the current album
-					$album_list = $album_list->concat($this->albumFunctions->get_sub_albums($album));
-				}
-
-				// Add current albumID to array
-				$album_list->push($request['albumID']);
-
-				$photos_sql = Photo::whereIn('album_id', $album_list);
-
+				$album = Album::find($request['albumID']);
+				$smart = false;
 				break;
 		}
 
-		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
+		if ($smart) {
+			$publicAlbums = $this->albumFunctions->getPublicAlbumsId();
+			$album->setAlbumIDs($publicAlbums);
+			$photos_sql = $album->get_photos();
+		} else {
+			// take care of sub albums
+			$album_list = collect();
+			if ($request['includeSubAlbums']) {
+				// Get all subalbums of the current album
+				$album_list = $album_list->concat($this->albumFunctions->get_sub_albums($album));
+			}
 
+			// Add current albumID to array
+			$album_list->push($request['albumID']);
+			$photos_sql = Photo::whereIn('album_id', $album_list);
+		}
+
+		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
+
+		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
 		$return['id'] = $request['albumID'];
 
 		return $return;
@@ -235,13 +220,10 @@ class AlbumController extends Controller
 		]);
 
 		switch ($request['albumID']) {
-			case 'f':
-				return 'false';
-			case 's':
-				return 'false';
-			case 'r':
-				return 'false';
-			case '0':
+			case 'starred':
+			case 'public':
+			case 'recent':
+			case 'unsorted':
 				return 'false';
 			default:
 				$album = Album::find($request['albumID']);
@@ -395,6 +377,9 @@ class AlbumController extends Controller
 			'license' => 'required|string',
 		]);
 
+		/**
+		 * @var Album|null
+		 */
 		$album = Album::find($request['albumID']);
 
 		if ($album == null) {
@@ -661,16 +646,16 @@ class AlbumController extends Controller
 
 		if (count($albumIDs) === 1) {
 			switch ($albumIDs[0]) {
-				case 'f':
+				case 'starred':
 					$zipTitle = 'Starred';
 					break;
-				case 's':
+				case 'public':
 					$zipTitle = 'Public';
 					break;
-				case 'r':
+				case 'recent':
 					$zipTitle = 'Recent';
 					break;
-				case '0':
+				case 'unsorted':
 					$zipTitle = 'Unsorted';
 					break;
 				default:
@@ -701,7 +686,7 @@ class AlbumController extends Controller
 			foreach ($albumIDs as $albumID) {
 				$album = null;
 				switch ($albumID) {
-					case 'f':
+					case 'starred':
 						$dir = 'Starred';
 						if ($this->sessionFunctions->is_logged_in()) {
 							$user = User::find($UserId);
@@ -713,11 +698,11 @@ class AlbumController extends Controller
 						}
 						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
 						break;
-					case 's':
+					case 'public':
 						$dir = 'Public';
 						$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 						break;
-					case 'r':
+					case 'recent':
 						$dir = 'Recent';
 						if ($this->sessionFunctions->is_logged_in()) {
 							$user = User::find($UserId);
@@ -729,7 +714,7 @@ class AlbumController extends Controller
 						}
 						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
 						break;
-					case '0':
+					case 'unsorted':
 						$dir = 'Unsorted';
 						$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 						break;
