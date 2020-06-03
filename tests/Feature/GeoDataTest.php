@@ -58,8 +58,6 @@ class GeoDataTest extends TestCase
 				'shutter' => '1/640 s',
 				'focal' => '44 mm',
 				'lens' => '',
-				'latitude' => '46.89839200',
-				'longitude' => '102.76863098',
 				'altitude' => '1633.0000',
 				'license' => 'none',
 				'medium' => '',
