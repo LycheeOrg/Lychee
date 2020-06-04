@@ -67,6 +67,8 @@ Route::post('/api/Photo::setLicense', 'PhotoController@setLicense')->middleware(
 Route::get('/api/Photo::getArchive', 'PhotoController@getArchive')->middleware('read');
 Route::get('/api/Photo::clearSymLink', 'PhotoController@clearSymLink')->middleware('admin');
 
+Route::post('/api/PhotoEditor::rotate', 'PhotoEditorController@rotate')->middleware('upload');
+
 Route::post('/api/Sharing::List', 'SharingController@listSharing')->middleware('upload');
 Route::post('/api/Sharing::ListUser', 'SharingController@getUserList')->middleware('upload');
 Route::post('/api/Sharing::Add', 'SharingController@add')->middleware('upload');
