@@ -4,9 +4,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Configs;
 use App\Logs;
 use App\Photo;
-use App\Configs;
 use Illuminate\Http\Request;
 use Storage;
 
@@ -25,8 +25,9 @@ class PhotoEditorController extends Controller
 	 */
 	public function rotate(Request $request)
 	{
-		if ( !Configs::get_value('editor_enabled', '0') )
+		if (!Configs::get_value('editor_enabled', '0')) {
 			return 'false';
+		}
 
 		$request->validate([
 			'photoID' => 'string|required',
@@ -43,28 +44,27 @@ class PhotoEditorController extends Controller
 			return false;
 		}
 
-		$img_types = array( 'big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x' );
-		foreach ( $img_types as $img_type ) {
-
+		$img_types = ['big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x'];
+		foreach ($img_types as $img_type) {
 			$pathType = strtoupper($img_type);
-			if ( substr($pathType, 5)  !== "THUMB" ) {
-				$filename =  $photo->url;
+			if (substr($pathType, 5) !== 'THUMB') {
+				$filename = $photo->url;
 			} else {
-				$filename =  $photo->thumbUrl;
+				$filename = $photo->thumbUrl;
 			}
 			if (($split = strpos($pathType, '2')) !== false) {
 				$pathType = substr($pathType, 0, $split);
 			}
 			$uploadFolder = Storage::path(strtolower($pathType) . '/');
 
-			$img_path = $uploadFolder .  $photo->url;
+			$img_path = $uploadFolder . $photo->url;
 
 			if (strpos($img_type, '2x') > 0) {
 				$filename = preg_replace('/^(.*)\.(.*)$/', '\1@2x.\2', $filename);
 			}
 
 			$img_path = $uploadFolder . $filename;
-			if ( file_exists( $img_path ) ) {
+			if (file_exists($img_path)) {
 				$image = new \Imagick();
 				$image->readImage($img_path);
 
@@ -79,6 +79,7 @@ class PhotoEditorController extends Controller
 				$image->destroy();
 			}
 		}
+
 		return 'true';
 	}
 }
