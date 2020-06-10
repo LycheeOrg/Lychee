@@ -420,6 +420,9 @@ final class Czech implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Čtvercový náhled HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Zobrazení foto Lychee:',
+
+			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
+			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
 		];
 
 		return $locale;

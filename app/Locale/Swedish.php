@@ -413,6 +413,9 @@ final class Swedish implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
+
+			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
+			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
 		];
 
 		return $locale;

@@ -2657,6 +2657,12 @@ header.bind = function () {
 	header.dom('#button_star').on(eventName, function () {
 		_photo.setStar([_photo.getID()]);
 	});
+	header.dom('#button_rotate_ccwise').on(eventName, function () {
+		photoeditor.rotate(_photo.getID(), -1);
+	});
+	header.dom('#button_rotate_cwise').on(eventName, function () {
+		photoeditor.rotate(_photo.getID(), 1);
+	});
 	header.dom('#button_back_home').on(eventName, function () {
 		if (!album.json.parent_id) {
 			lychee.goto();
@@ -3547,6 +3553,8 @@ lychee.init = function () {
 			lychee.share_button_visible = data.config.share_button_visible && data.config.share_button_visible === '1' || false;
 			lychee.delete_imported = data.config.delete_imported && data.config.delete_imported === '1';
 
+			lychee.editor_enabled = data.config.editor_enabled && data.config.editor_enabled === '1' || false;
+
 			lychee.upload = !lychee.api_V2;
 			lychee.admin = !lychee.api_V2;
 
@@ -3860,9 +3868,16 @@ lychee.setMode = function (mode) {
 
 		// The code searches by class, so remove the other instance.
 		$('.header__search, .header__clear', '.header__toolbar--public').remove();
+
+		if (!lychee.editor_enabled) {
+			$('#button_rotate_cwise').remove();
+			$('#button_rotate_ccwise').remove();
+		}
 		return;
 	} else {
 		$('.header__search, .header__clear', '.header__toolbar--albums').remove();
+		$('#button_rotate_cwise').remove();
+		$('#button_rotate_ccwise').remove();
 	}
 
 	$('#button_settings, .header__divider, .leftMenu').remove();
@@ -6381,6 +6396,69 @@ _photo.showDirectLinks = function (photoID) {
 	$('.directLinks .basicModal__button').on(lychee.getEventName(), function () {
 		if (lychee.clipboardCopy($(this).prev().val())) {
 			loadingBar.show('success', lychee.locale['URL_COPIED_TO_CLIPBOARD']);
+		}
+	});
+};
+
+/**
+ * @description Takes care of every action a photoeditor can handle and execute.
+ */
+
+photoeditor = {};
+
+photoeditor.rotate = function (photoID, direction) {
+
+	var swapDims = function swapDims(d) {
+		var p = d.indexOf('x');
+		if (p !== -1) {
+			return d.substr(0, p) + "x" + d.substr(p + 1);
+		}
+		return d;
+	};
+
+	if (!photoID) return false;
+	if (!direction) return false;
+
+	var params = {
+		photoID: photoID,
+		direction: direction
+	};
+
+	api.post('PhotoEditor::rotate', params, function (data) {
+
+		if (data !== true) {
+			lychee.error(null, params, data);
+		} else {
+			var mr = "?" + Math.random();
+			var sel_big = 'img#image';
+			var sel_thumb = 'div[data-id=' + photoID + '] > span > img';
+			var sel_div = 'div[data-id=' + photoID + ']';
+			$(sel_big).prop('src', $(sel_big).attr('src') + mr);
+			$(sel_big).prop('srcset', $(sel_big).attr('src'));
+			$(sel_thumb).prop('src', $(sel_thumb).attr('src') + mr);
+			$(sel_thumb).prop('srcset', $(sel_thumb).attr('src'));
+			var arrayLength = album.json.photos.length;
+			for (var i = 0; i < arrayLength; i++) {
+				if (album.json.photos[i].id === photoID) {
+					var w = album.json.photos[i].width;
+					var h = album.json.photos[i].height;
+					album.json.photos[i].height = w;
+					album.json.photos[i].width = h;
+					album.json.photos[i].small += mr;
+					album.json.photos[i].small_dim = swapDims(album.json.photos[i].small_dim);
+					album.json.photos[i].small2x += mr;
+					album.json.photos[i].small2x_dim = swapDims(album.json.photos[i].small2x_dim);
+					album.json.photos[i].medium += mr;
+					album.json.photos[i].medium_dim = swapDims(album.json.photos[i].medium_dim);
+					album.json.photos[i].medium2x += mr;
+					album.json.photos[i].medium2x_dim = swapDims(album.json.photos[i].medium2x_dim);
+					album.json.photos[i].thumb2x += mr;
+					album.json.photos[i].thumbUrl += mr;
+					album.json.photos[i].url += mr;
+					view.album.content.justify();
+					break;
+				}
+			}
 		}
 	});
 };
