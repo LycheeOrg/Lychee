@@ -60,7 +60,7 @@ class PhotoEditorController extends Controller
 		if (is_link(Storage::path('big/') . $photo->url)) {
 			Logs::error(__METHOD__, __LINE__, 'Synlinked images cannot be rotated');
 
-			return false;
+			return 'false';
 		}
 
 		// We must rotate all the various formats
