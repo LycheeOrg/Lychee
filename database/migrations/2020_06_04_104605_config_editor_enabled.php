@@ -16,8 +16,8 @@ class ConfigEditorEnabled extends Migration
 		DB::table('configs')->insert([
 			[
 				'key' => 'editor_enabled',
-				'value' => 1,
-				'confidentiality' => 2,
+				'value' => '1',
+				'confidentiality' => '2',
 				'cat' => 'Image Processing',
 				'type_range' => BOOL,
 			],

@@ -17,8 +17,8 @@ class ConfigPreferAvailableXmpMetadata extends Migration
 		DB::table('configs')->insert([
 			[
 				'key' => 'prefer_available_xmp_metadata',
-				'value' => 0,
-				'confidentiality' => 2,
+				'value' => '0',
+				'confidentiality' => '2',
 				'cat' => 'Image Processing',
 				'type_range' => BOOL,
 			],
