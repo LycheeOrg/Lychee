@@ -25,6 +25,7 @@ class PhotoEditorController extends Controller
 	 */
 	public function rotate(Request $request)
 	{
+		// Safety check...
 		if (!Configs::get_value('editor_enabled', '0')) {
 			return 'false';
 		}
@@ -44,11 +45,22 @@ class PhotoEditorController extends Controller
 			return false;
 		}
 
+		// We must rotate all the various formats
 		$img_types = ['big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x'];
+		$save_photo = false;
 		foreach ($img_types as $img_type) {
+			// Build path to stored image
 			$pathType = strtoupper($img_type);
-			if (substr($pathType, 5) !== 'THUMB') {
+			if (substr($pathType, 0, 5) !== 'THUMB') {
+				// Rotate image sizes
 				$filename = $photo->url;
+				if (!is_null($photo->{$img_type})) {
+					$x_pos = strpos($photo->{$img_type}, 'x');
+					$old_w = substr($photo->{$img_type}, 0, $x_pos);
+					$old_h = substr($photo->{$img_type}, $x_pos + 1);
+					$photo->{$img_type} = $old_h . 'x' . $old_w;
+					$save_photo = true;
+				}
 			} else {
 				$filename = $photo->thumbUrl;
 			}
@@ -56,13 +68,12 @@ class PhotoEditorController extends Controller
 				$pathType = substr($pathType, 0, $split);
 			}
 			$uploadFolder = Storage::path(strtolower($pathType) . '/');
-
 			$img_path = $uploadFolder . $photo->url;
-
 			if (strpos($img_type, '2x') > 0) {
 				$filename = preg_replace('/^(.*)\.(.*)$/', '\1@2x.\2', $filename);
 			}
 
+			// Rotate the image
 			$img_path = $uploadFolder . $filename;
 			if (file_exists($img_path)) {
 				$image = new \Imagick();
@@ -73,11 +84,19 @@ class PhotoEditorController extends Controller
 				} elseif ($direction == -1) {
 					$image->rotateImage(new \ImagickPixel(), -90);
 				}
-
+				$save_photo = true;
 				$image->writeImage();
 				$image->clear();
 				$image->destroy();
 			}
+		}
+		if ($save_photo) {
+			// rotate image width and height and save to the database
+			$old_w = $photo->width;
+			$old_h = $photo->height;
+			$photo->width = $old_h;
+			$photo->height = $old_w;
+			$photo->save();
 		}
 
 		return 'true';
