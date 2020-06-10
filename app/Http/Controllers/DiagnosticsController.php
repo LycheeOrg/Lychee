@@ -142,14 +142,17 @@ class DiagnosticsController extends Controller
 			['pgsql', 'pdo_pgsql'],
 			['sqlite', 'sqlite3'],
 		];
-		try {
-			foreach ($db_possibilities as $db_possibility) {
-				if (DB::getDriverName() == $db_possibility[0] && !extension_loaded($db_possibility[1])) {
+		$found = false;
+		foreach ($db_possibilities as $db_possibility) {
+			if (config('database.default') == $db_possibility[0]) {
+				$found = true;
+				if (!extension_loaded($db_possibility[1])) {
 					$errors[] = 'Error: ' . $db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated';
 				}
 			}
-		} catch (QueryException $e) {
-			$errors[] = 'Error: ' . $e->getMessage();
+		}
+		if (!$found) {
+			$errors[] = 'Error: could not find the database solution for ' . config('database.default');
 		}
 
 		// Permissions
@@ -179,7 +182,8 @@ class DiagnosticsController extends Controller
 			if (!$gdVersion['PNG Support']) {
 				$errors[] = 'Error: PHP gd extension without png support';
 			}
-			if (!$gdVersion['GIF Read Support']
+			if (
+				!$gdVersion['GIF Read Support']
 				|| !$gdVersion['GIF Create Support']
 			) {
 				$errors[] = 'Error: PHP gd extension without full gif support';
@@ -219,7 +223,8 @@ class DiagnosticsController extends Controller
 		}
 
 		// Check php.ini Settings
-		if (ini_get('max_execution_time') < 200
+		if (
+			ini_get('max_execution_time') < 200
 			&& ini_set('upload_max_filesize', '20M') === false
 		) {
 			$errors[]
@@ -274,7 +279,8 @@ class DiagnosticsController extends Controller
 			$imagick = '-';
 			// @codeCoverageIgnoreEnd
 		}
-		if (!isset($imagickVersion, $imagickVersion['versionNumber'])
+		if (
+			!isset($imagickVersion, $imagickVersion['versionNumber'])
 			|| $imagickVersion === ''
 		) {
 			// @codeCoverageIgnoreStart
