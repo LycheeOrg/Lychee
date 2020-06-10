@@ -30,6 +30,10 @@ class PhotoEditorController extends Controller
 			return 'false';
 		}
 
+		if (!Configs::hasImagick()) {
+			return 'false';
+		}
+
 		$request->validate([
 			'photoID' => 'string|required',
 			'direction' => 'integer|required',
@@ -45,13 +49,29 @@ class PhotoEditorController extends Controller
 			return false;
 		}
 
+		// direction is valid?
+		if (($direction != 1) && ($direction != -1)) {
+			Logs::error(__METHOD__, __LINE__, 'Direction must be 1 or -1');
+
+			return false;
+		}
+
+		// Abort on symlinks to avoid messing with originals linked
+		if (is_link(Storage::path('big/') . $photo->url)) {
+			Logs::error(__METHOD__, __LINE__, 'Synlinked images cannot be rotated');
+
+			return false;
+		}
+
 		// We must rotate all the various formats
 		$img_types = ['big', 'medium', 'medium2x', 'small', 'small2x', 'thumb', 'thumb2x'];
 		$save_photo = false;
 		foreach ($img_types as $img_type) {
+			// This will be FALSE if not 2x, or the position of the '2' char otherwise
+			$image_2x = strpos($img_type, '2');
+
 			// Build path to stored image
-			$pathType = strtoupper($img_type);
-			if (substr($pathType, 0, 5) !== 'THUMB') {
+			if (substr($img_type, 0, 5) !== 'thumb') {
 				// Rotate image sizes
 				$filename = $photo->url;
 				if (!is_null($photo->{$img_type})) {
@@ -64,14 +84,12 @@ class PhotoEditorController extends Controller
 			} else {
 				$filename = $photo->thumbUrl;
 			}
-			if (($split = strpos($pathType, '2')) !== false) {
-				$pathType = substr($pathType, 0, $split);
-			}
-			$uploadFolder = Storage::path(strtolower($pathType) . '/');
-			$img_path = $uploadFolder . $photo->url;
-			if (strpos($img_type, '2x') > 0) {
+			if ($image_2x !== false) {
+				$img_type = substr($img_type, 0, $image_2x);
 				$filename = preg_replace('/^(.*)\.(.*)$/', '\1@2x.\2', $filename);
 			}
+			$uploadFolder = Storage::path($img_type . '/');
+			$img_path = $uploadFolder . $photo->url;
 
 			// Rotate the image
 			$img_path = $uploadFolder . $filename;
@@ -81,7 +99,7 @@ class PhotoEditorController extends Controller
 
 				if ($direction == 1) {
 					$image->rotateImage(new \ImagickPixel(), 90);
-				} elseif ($direction == -1) {
+				} else {
 					$image->rotateImage(new \ImagickPixel(), -90);
 				}
 				$save_photo = true;
