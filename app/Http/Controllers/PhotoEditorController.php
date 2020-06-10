@@ -31,7 +31,9 @@ class PhotoEditorController extends Controller
 		}
 
 		if (!Configs::hasImagick()) {
+			// @codeCoverageIgnoreStart
 			return 'false';
+			// @codeCoverageIgnoreEnd
 		}
 
 		$request->validate([
@@ -58,9 +60,11 @@ class PhotoEditorController extends Controller
 
 		// Abort on symlinks to avoid messing with originals linked
 		if (is_link(Storage::path('big/') . $photo->url)) {
+			// @codeCoverageIgnoreStart
 			Logs::error(__METHOD__, __LINE__, 'Synlinked images cannot be rotated');
 
 			return 'false';
+			// @codeCoverageIgnoreEnd
 		}
 
 		// We must rotate all the various formats
