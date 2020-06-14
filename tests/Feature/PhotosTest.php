@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Configs;
 use App\Photo;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection as BaseCollection;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
@@ -224,6 +225,8 @@ class PhotosTest extends TestCase
 		Configs::set('import_via_symlink', '1');
 		$this->assertEquals(Configs::get_value('import_via_symlink'), '1');
 
+		$num_before_import = Photo::recent()->count();
+
 		// upload the photo
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
 		$streamed_response = $photos_tests->import($this, base_path('public/uploads/import/'));
@@ -234,11 +237,12 @@ class PhotosTest extends TestCase
 		$response = $albums_tests->get($this, 'recent', '', 'true');
 		$content = $response->getContent();
 		$array_content = json_decode($content);
-		$num_recent = Photo::recent()->count();
-		$this->assertEquals(Photo::recent()->count(), count($array_content->photos));
+		$photos = new BaseCollection($array_content->photos);
+		$this->assertEquals(Photo::recent()->count(), $photos->count());
+		$ids = $photos->skip($num_before_import)->implode('id', ',');
+		$photos_tests->delete($this, $ids, 'true');
 
-		$id = $array_content->photos[$num_recent - 1]->id;
-		$photos_tests->delete($this, $id, 'true');
+		$this->assertEquals($num_before_import, Photo::recent()->count());
 
 		// set back to initial value
 		Configs::set('import_via_symlink', $init_config_value);

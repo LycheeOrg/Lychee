@@ -54,22 +54,20 @@ class Cast
 	{
 		$photo_counter = count($return_photos);
 
-		if ($photo_counter > 0 && Configs::get_value('photos_wraparound', '1') === '1') {
+		if ($photo_counter > 1 && Configs::get_value('photos_wraparound', '1') === '1') {
 			// Enable next and previous for the first and last photo
 			$lastElement = end($return_photos);
 			$lastElementId = $lastElement['id'];
 			$firstElement = reset($return_photos);
 			$firstElementId = $firstElement['id'];
 
-			if ($lastElementId !== $firstElementId) {
-				$return_photos[$photo_counter - 1]['nextPhoto'] = $firstElementId;
-				$return_photos[0]['previousPhoto'] = $lastElementId;
-			}
+			$return_photos[$photo_counter - 1]['nextPhoto'] = $firstElementId;
+			$return_photos[0]['previousPhoto'] = $lastElementId;
 		}
 	}
 
 	/**
-	 * Given an Album, return the thumbs with respect to it's direct pictures (no recursion).
+	 * Given an Album, return the thumbs of its 3 first pictures (excluding subalbums).
 	 */
 	public static function getThumbs(array &$return, Album $album, SymLinkFunctions $symLinkFunctions): void
 	{

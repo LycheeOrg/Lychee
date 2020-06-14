@@ -78,13 +78,6 @@ class Album extends Model
 	];
 
 	/**
-	 * Define if a content is accessible or not.
-	 *
-	 * @Var bool
-	 */
-	public $content_accessible = true;
-
-	/**
 	 * Return the relationship between Photos and their Album.
 	 *
 	 * @return HasMany
@@ -169,11 +162,7 @@ class Album extends Model
 	 */
 	public function str_parent_id()
 	{
-		if ($this->parent_id !== null) {
-			return strval($this->parent_id);
-		}
-
-		return null;
+		return $this->parent_id == null ? '' : strval($this->parent_id);
 	}
 
 	/**
@@ -183,11 +172,7 @@ class Album extends Model
 	 */
 	public function str_min_takestamp()
 	{
-		if ($this->min_takestamp == null) {
-			return  '';
-		}
-
-		return $this->min_takestamp->format('M Y');
+		return $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
 	}
 
 	/**
@@ -197,11 +182,7 @@ class Album extends Model
 	 */
 	public function str_max_takestamp()
 	{
-		if ($this->max_takestamp == null) {
-			return  '';
-		}
-
-		return $this->max_takestamp->format('M Y');
+		return $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
 	}
 
 	/**
@@ -233,7 +214,7 @@ class Album extends Model
 	}
 
 	/**
-	 * Return the Album license or the default one.a1.
+	 * Return the Album license or the default one.
 	 *
 	 * @return string
 	 */

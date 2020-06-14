@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 class Cast
 {
 	/**
-	 * Returns album-attributes into a front-end friendly format. Note that some attributes remain unchanged.
+	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
 	 *
 	 * @return array
 	 */

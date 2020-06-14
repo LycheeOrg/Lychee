@@ -96,7 +96,7 @@ class AlbumFunctions
 		if ($parent !== null) {
 			$album->parent_id = $parent->id;
 
-			// Admin can add retSubAlbums to other users' albums.  Make sure that
+			// Admin can add subalbums to other users' albums.  Make sure that
 			// the ownership stays with that user.
 			$album->owner_id = $parent->owner_id;
 		} else {
@@ -133,10 +133,10 @@ class AlbumFunctions
 		return $album;
 	}
 
-	public function get_thumbs_album($album, array $previousThumbsId): BaseCollection
+	private function get_thumbs_album($album, array $previousThumbIDs): BaseCollection
 	{
 		$photos = Photo::where('album_id', $album->id)
-			->orWhereIn('id', $previousThumbsId)
+			->orWhereIn('id', $previousThumbIDs)
 			->orderBy('star', 'DESC')
 			->orderBy(Configs::get_value('sorting_Photos_col'), Configs::get_value('sorting_Photos_order'))
 			->orderBy('id', 'ASC')
@@ -149,7 +149,7 @@ class AlbumFunctions
 		});
 	}
 
-	public function get_thumbs_reduction(Album $album, BaseCollection $previous): BaseCollection
+	private function get_thumbs_reduction(Album $album, BaseCollection $previous): BaseCollection
 	{
 		// php7.4: $previousThumbIDs = $previous
 		// php7.4:	->filter(fn ($e) => !$e->isEmpty())
@@ -420,7 +420,7 @@ class AlbumFunctions
 	}
 
 	/**
-	 * Given a query, depending of the sort collumn, we do it in the query or on the collection.
+	 * Given a query, depending on the sort column, we do it in the query or on the collection.
 	 * This is to be able to use natural order sorting on title and descriptions.
 	 */
 	private function customSort($query, $sortingCol, $sortingOrder)
@@ -447,7 +447,7 @@ class AlbumFunctions
 	 *
 	 * @param Album $album
 	 * @param $username : speed optimization to avoid an extra query,
-	 * taking advantage of the fact that retSubAlbums inherit parent's owner
+	 * taking advantage of the fact that subalbums inherit parent's owner
 	 * @param $recursionLimit : 0 means infinity
 	 *
 	 * @return Collection
@@ -505,11 +505,10 @@ class AlbumFunctions
 	 *
 	 * Recursively go through each sub album and build a list of them.
 	 * Unlike AlbumActions\UpdateTakestamps::get_all_sub_albums_id(),
-	 * this function follows access checks and skips hidden retSubAlbums.
-	 * The optional third argument, if true, will result in password-protected
+	 * this function follows access checks and skips hidden subalbums.
+	 * The optional second argument, if true, will result in password-protected
 	 * albums being included (but not their content).
 	 *
-	 * @param array $return
 	 * @param Album $parentAlbum
 	 * @param bool  $includePassProtected
 	 *
@@ -531,15 +530,14 @@ class AlbumFunctions
 	/**
 	 * ! Memory intensive.
 	 *
-	 * Same as above but only with the ID
+	 * Same as above but returns with the album IDs
 	 *
 	 * Recursively go through each sub album and build a list of them.
 	 * Unlike Album::get_all_sub_albums(), this function follows access
-	 * checks and skips hidden retSubAlbums.  The optional third argument, if
+	 * checks and skips hidden subalbums.  The optional second argument, if
 	 * true, will result in password-protected albums being included (but not
 	 * their content).
 	 *
-	 * @param array $return
 	 * @param Album $parentAlbum
 	 * @param bool  $includePassProtected
 	 *

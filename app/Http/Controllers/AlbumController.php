@@ -21,6 +21,7 @@ use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -237,7 +238,7 @@ class AlbumController extends Controller
 					if ($this->sessionFunctions->has_visible_album($album->id)) {
 						return 'true';
 					}
-					if ($album->checkPassword($request['password'])) {
+					if ($album->password == '' || Hash::check($request['password'], $album->password)) {
 						$this->sessionFunctions->add_visible_album($album->id);
 
 						return 'true';
@@ -264,10 +265,10 @@ class AlbumController extends Controller
 
 		$albums = Album::whereIn('id', explode(',', $request['albumIDs']))->get();
 
-		$no_error = false;
+		$no_error = true;
 		$albums->each(function ($album) use (&$no_error, $request) {
 			$album->title = $request['title'];
-			$no_error |= $album->save();
+			$no_error &= $album->save();
 		});
 
 		return $no_error ? 'true' : 'false';
@@ -730,17 +731,11 @@ class AlbumController extends Controller
 
 				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album) use (&$zip, $badChars, &$compress_album) {
 					if ($album !== null) {
-						if (
-							!$this->sessionFunctions->is_current_user($album->owner_id) &&
-							!$album->is_downloadable()
-						) {
+						if (!$this->sessionFunctions->is_current_user($album->owner_id) && !$album->is_downloadable()) {
 							return;
 						}
 					} else {
-						if (
-							!$this->sessionFunctions->is_logged_in() &&
-							Configs::get_value('downloadable', '0') === '0'
-						) {
+						if (!$this->sessionFunctions->is_logged_in() && Configs::get_value('downloadable', '0') === '0') {
 							return;
 						}
 					}

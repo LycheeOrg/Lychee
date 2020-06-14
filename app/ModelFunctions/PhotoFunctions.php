@@ -155,7 +155,7 @@ class PhotoFunctions
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0, bool $delete_imported = false, bool $force_skip_duplicates = false, $resync_metadata = false)
+	public function add(array $file, $albumID_in = 0, bool $delete_imported = false, bool $force_skip_duplicates = false, bool $resync_metadata = false)
 	{
 		// Check permissions
 		// TODO: extract this test.

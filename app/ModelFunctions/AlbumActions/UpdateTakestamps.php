@@ -31,22 +31,19 @@ class UpdateTakestamps
 
 	/**
 	 * Go through each sub album and update the minimum and maximum takestamp of the pictures.
-	 * This is expensive and not normally necessary so we only use it
-	 * during migration.
+	 * This is expensive and not normally necessary so we only use it during migration.
 	 */
 	public function update_min_max_takestamp(Album $album)
 	{
 		$album_list = self::get_all_sub_albums_id($album, [$album->id]);
 
-		$min = Photo::whereIn('album_id', $album_list)->min('takestamp');
-		$max = Photo::whereIn('album_id', $album_list)->max('takestamp');
-		$album->min_takestamp = $min;
-		$album->max_takestamp = $max;
+		$album->min_takestamp = Photo::whereIn('album_id', $album_list)->min('takestamp');
+		$album->max_takestamp = Photo::whereIn('album_id', $album_list)->max('takestamp');
 	}
 
 	/**
 	 * Update album's min_takestamp and max_takestamp based on changes made
-	 * to the album content.  If needed, recursively updates parent album(s).
+	 * to the album content.  If needed, recursively update parent album(s).
 	 *
 	 * @param array $takestamps : an array with the takestamps of changed
 	 *                          elements; for albums needs to include both min and max takestamps
@@ -73,6 +70,8 @@ class UpdateTakestamps
 				}
 			}
 		}
+		// If either minTS or maxTS is null, both should be null
+		// so we don't need to update anything.
 		if ($minTS === null || $maxTS === null) {
 			return true;
 		}
