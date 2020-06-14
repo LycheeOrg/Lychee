@@ -54,7 +54,7 @@ class PhotosTest extends TestCase
 		$photos_tests->set_star($this, $id);
 		$photos_tests->set_tag($this, $id, 'night');
 		$photos_tests->set_public($this, $id);
-		$photos_tests->set_license($this, $id, 'WTFPL', '"Error: wrong kind of license!"');
+		$photos_tests->set_license($this, $id, 'WTFPL', '"Error: License not recognised!"');
 		$photos_tests->set_license($this, $id, 'CC0');
 		$photos_tests->set_license($this, $id, 'CC-BY');
 		$photos_tests->set_license($this, $id, 'CC-BY-ND');
