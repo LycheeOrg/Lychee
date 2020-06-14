@@ -407,9 +407,9 @@ class AlbumController extends Controller
 			$i++;
 		}
 		if (!$found) {
-			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: ' . $request['license']);
+			Logs::error(__METHOD__, __LINE__, 'License not recognised: ' . $request['license']);
 
-			return Response::error('wrong kind of license!');
+			return Response::error('License not recognised!');
 		}
 
 		$album->license = $request['license'];
