@@ -149,34 +149,26 @@ class AlbumFunctions
 		});
 	}
 
-	private function get_thumbs_reduction(Album $album, BaseCollection $previous): BaseCollection
-	{
-		// php7.4: $previousThumbIDs = $previous
-		// php7.4:	->filter(fn ($e) => !$e->isEmpty())
-		// php7.4:	->map(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))
-		// php7.4:	->all();
-		$previousThumbIDs = $previous
-			->filter(function ($e) {
-				return  !$e->isEmpty();
-			})->map(function ($e) {
-				return $e[0]->map(function (Thumb $t) {
-					return $t->thumbID;
-				});
-			})->all();
-		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
-
-		return new Collection([$thumbs, $previous]);
-	}
-
 	public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
 	{
 		$reduced = $children->reduce(function ($collection, $child) {
 			$reduced_child = $this->get_thumbs($child[0], $child[1]);
 
 			return $collection->push($reduced_child);
-		}, new Collection());
+		}, new BaseCollection());
 
-		return $this->get_thumbs_reduction($album, $reduced);
+		// php7.4: $previousThumbIDs = $previous
+		// php7.4:	->flatMap(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))
+		// php7.4:	->all();
+		$previousThumbIDs = $reduced
+			->flatMap(function ($e) {
+				return $e[0]->map(function (Thumb $t) {
+					return $t->thumbID;
+				});
+			})->all();
+		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
+
+		return new Collection([$thumbs, $reduced]);
 	}
 
 	public function set_thumbs(array &$return, BaseCollection $thumbs)
@@ -185,15 +177,15 @@ class AlbumFunctions
 		$return['types'] = [];
 		$return['thumbs2x'] = [];
 
-		$thumbs[0]->each(function ($thumb, $key) use (&$return) {
+		$thumbs[0]->each(function (Thumb $thumb, $key) use (&$return) {
 			$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
 		});
 	}
 
 	public function set_thumbs_children(array &$return, BaseCollection $thumbs)
 	{
-		$thumbs->each(function ($thumb, $key) use (&$return) {
-			$this->set_thumbs($return[$key], $thumb);
+		$thumbs->each(function (BaseCollection $subthumb, $key) use (&$return) {
+			$this->set_thumbs($return[$key], $subthumb);
 		});
 	}
 
@@ -398,11 +390,11 @@ class AlbumFunctions
 		 * @var Collection[SmartAlbum]
 		 */
 		$publicAlbums = null;
-		$smartAlbums = [];
-		$smartAlbums[] = new UnsortedAlbum($this, $this->sessionFunctions);
-		$smartAlbums[] = new StarredAlbum($this, $this->sessionFunctions);
-		$smartAlbums[] = new PublicAlbum($this, $this->sessionFunctions);
-		$smartAlbums[] = new RecentAlbum($this, $this->sessionFunctions);
+		$smartAlbums = new BaseCollection();
+		$smartAlbums->push(new UnsortedAlbum($this, $this->sessionFunctions));
+		$smartAlbums->push(new StarredAlbum($this, $this->sessionFunctions));
+		$smartAlbums->push(new PublicAlbum($this, $this->sessionFunctions));
+		$smartAlbums->push(new RecentAlbum($this, $this->sessionFunctions));
 
 		$can_see_smart = $this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload();
 
@@ -474,10 +466,10 @@ class AlbumFunctions
 
 				return new Collection();
 			}
-		)->filter(function ($a) {
-			return !empty($a);
+		)->reject(function ($a) {
+			return $a->isEmpty();
 		});
-		// php7.4: )->filter(fn ($a) => !empty($a));
+		// php7.4: )->reject(fn ($a) => $a->isEmpty());
 	}
 
 	/**
@@ -522,9 +514,22 @@ class AlbumFunctions
 				if ($haveAccess === 1) {
 					$collected = $this->get_sub_albums($_album, $includePassProtected);
 				}
-				$collect = $collect->concat([$_album, $collected]);
+				$collect = $collect->push(new BaseCollection([$_album, $collected]));
 			}
-		}, new Collection());
+
+			return $collect;
+		}, new BaseCollection())->reject(function ($e) {
+			return $e->isEmpty();
+		});
+	}
+
+	public function flatMap_id(BaseCollection $subAlbums): BaseCollection
+	{
+		return $subAlbums->reduce(function ($collect, $e) {
+			$collect->push($e[0]->id);
+
+			return $collect->concat($this->flatMap_id($e[1]));
+		}, new BaseCollection());
 	}
 
 	/**
@@ -543,11 +548,9 @@ class AlbumFunctions
 	 *
 	 * @return Collection[int]
 	 */
-	public function get_sub_albums_id(Album $album, $includePassProtected = false): Collection
+	public function get_sub_albums_id(Album $album, $includePassProtected = false): BaseCollection
 	{
-		return $this->get_sub_albums($album, $includePassProtected)->map(function ($album) {
-			return $album->id;
-		});
+		return $this->flatMap_id($this->get_sub_albums($album, $includePassProtected));
 	}
 
 	/**
