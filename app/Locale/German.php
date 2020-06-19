@@ -422,6 +422,9 @@ final class German implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Quadratische Miniaturansicht HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video des Live-Photos',
 			'PHOTO_VIEW' => 'Lychee Foto Ansicht:',
+
+			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
+			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
 		];
 
 		return $locale;

@@ -450,4 +450,21 @@ class PhotosUnitTest
 
 		return $response->streamedContent();
 	}
+
+	public function rotate(
+		TestCase &$testCase,
+		string $id,
+		$direction,
+		string $result = 'true',
+		int $code = 200
+	) {
+		$response = $testCase->post('/api/PhotoEditor::rotate', [
+			'photoID' => $id,
+			'direction' => $direction,
+		]);
+		$response->assertStatus($code);
+		if ($code == 200) {
+			$response->assertSee($result, false);
+		}
+	}
 }

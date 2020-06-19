@@ -24,18 +24,15 @@ class MovePhotos extends Migration
 			if (Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')) {
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->orderBy('id', 'asc')->orderBy('album', 'asc')->get();
 				$id = 0;
-				$album_id = 0;
 				foreach ($results as $result) {
 					$photo = new Photo();
 					$id = Helpers::trancateIf32($result->id, $id);
-					if ($result->album == 0) {
-						$album = null;
-					} else {
-						$album_id = Helpers::trancateIf32($result->album, $album_id);
-						$album = $album_id;
-					}
 					$photo->id = $id;
-					$photo->album_id = $album;
+					if ($result->album == 0) {
+						$photo->album_id = null;
+					} else {
+						$photo->album_id = Helpers::trancateIf32($result->album, 0);
+					}
 					$photo->title = $result->title;
 					$photo->description = $result->description;
 					$photo->url = $result->url;

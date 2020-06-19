@@ -419,6 +419,9 @@ final class Italian implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Square thumb HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Photo View:',
+
+			'PHOTO_EDIT_ROTATECWISE' => 'Ruota in senso orario',
+			'PHOTO_EDIT_ROTATECCWISE' => 'Ruota in senso anti-orario',
 		];
 
 		return $locale;

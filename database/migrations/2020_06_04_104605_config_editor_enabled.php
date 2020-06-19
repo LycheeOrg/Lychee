@@ -2,9 +2,8 @@
 
 use App\Configs;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 
-class ConfigPreferAvailableXmpMetadata extends Migration
+class ConfigEditorEnabled extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -14,11 +13,10 @@ class ConfigPreferAvailableXmpMetadata extends Migration
 	public function up()
 	{
 		defined('BOOL') or define('BOOL', '0|1');
-
 		DB::table('configs')->insert([
 			[
-				'key' => 'prefer_available_xmp_metadata',
-				'value' => '0',
+				'key' => 'editor_enabled',
+				'value' => '1',
 				'confidentiality' => '2',
 				'cat' => 'Image Processing',
 				'type_range' => BOOL,
@@ -33,6 +31,6 @@ class ConfigPreferAvailableXmpMetadata extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('key', '=', 'prefer_available_xmp_metadata')->delete();
+		Configs::where('key', '=', 'editor_enabled')->delete();
 	}
 }

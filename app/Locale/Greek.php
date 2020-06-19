@@ -413,6 +413,9 @@ final class Greek implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Τετράγωνη Μικρογραφία HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Lychee Προβολή Φωτογραφιών:',
+
+			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
+			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
 		];
 
 		return $locale;
