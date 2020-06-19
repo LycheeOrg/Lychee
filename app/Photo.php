@@ -4,7 +4,8 @@
 
 namespace App;
 
-use App\Assets\Helpers;
+use App\ModelFunctions\Helpers;
+use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -164,8 +165,8 @@ class Photo extends Model
 		// Todo: We need to search for pairs (Video + Photo)
 		// Photo+Photo or Video+Video does not work
 		$sql = $this->where('livePhotoContentID', '=', $livePhotoContentID)
-			->where('album_id', '=', $albumID)
-			->whereNull('livePhotoUrl');
+					->where('album_id', '=', $albumID)
+					->whereNull('livePhotoUrl');
 
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
@@ -581,6 +582,46 @@ class Photo extends Model
 	}
 
 	/**
+	 * @param $query
+	 *
+	 * @return mixed
+	 */
+	public static function select_stars(Builder $query)
+	{
+		return self::set_order($query->where('star', '=', 1));
+	}
+
+	/**
+	 * @param $query
+	 *
+	 * @return mixed
+	 */
+	public static function select_public(Builder $query)
+	{
+		return self::set_order($query->where('public', '=', 1));
+	}
+
+	/**
+	 * @param $query
+	 *
+	 * @return mixed
+	 */
+	public static function select_recent(Builder $query)
+	{
+		return self::set_order($query->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))->toDateTimeString()));
+	}
+
+	/**
+	 * @param $query
+	 *
+	 * @return mixed
+	 */
+	public static function select_unsorted(Builder $query)
+	{
+		return self::set_order($query->where('album_id', '=', null));
+	}
+
+	/**
 	 * Define scopes which we can directly use e.g. Photo::stars()->all().
 	 */
 
@@ -591,7 +632,7 @@ class Photo extends Model
 	 */
 	public function scopeStars($query)
 	{
-		return $query->where('star', '=', 1);
+		return self::select_stars($query);
 	}
 
 	/**
@@ -601,7 +642,7 @@ class Photo extends Model
 	 */
 	public function scopePublic($query)
 	{
-		return $query->where('public', '=', 1);
+		return self::select_public($query);
 	}
 
 	/**
@@ -611,7 +652,7 @@ class Photo extends Model
 	 */
 	public function scopeRecent($query)
 	{
-		return $query->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))->toDateTimeString());
+		return self::select_recent($query);
 	}
 
 	/**
@@ -621,7 +662,7 @@ class Photo extends Model
 	 */
 	public function scopeUnsorted($query)
 	{
-		return $query->where('album_id', '=', null);
+		return self::select_unsorted($query);
 	}
 
 	/**

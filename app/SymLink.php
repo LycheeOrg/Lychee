@@ -2,13 +2,13 @@
 
 namespace App;
 
-use App\Assets\Helpers;
+use App\ModelFunctions\Helpers;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
+use Storage;
 
 /**
  * App\SymLink.

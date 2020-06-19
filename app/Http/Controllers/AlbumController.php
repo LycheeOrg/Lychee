@@ -5,24 +5,17 @@
 namespace App\Http\Controllers;
 
 use App\Album;
-use App\Assets\Helpers;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Logs;
-use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
-use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
-use App\SmartAlbums\PublicAlbum;
-use App\SmartAlbums\RecentAlbum;
-use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\UnsortedAlbum;
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -88,50 +81,82 @@ class AlbumController extends Controller
 		$return = [];
 		$return['albums'] = [];
 		// Get photos
-		// change this for smartalbum
-		$album = null;
-		$smart = true;
+		// Get album information
+		$UserId = $this->sessionFunctions->id();
+		$full_photo = Configs::get_value('full_photo', '1') == '1';
+
 		switch ($request['albumID']) {
-			case 'starred':
-				$album = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
+			case 'f':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$return['public'] = '0';
+						$return['downloadable'] = '1';
+						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$return['public'] = '1';
+				$return['downloadable'] = Configs::get_value('downloadable', '0');
+				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
-			case 'public':
-				$album = new PublicAlbum($this->albumFunctions, $this->sessionFunctions);
+			case 's':
+				$return['public'] = '0';
+				$return['downloadable'] = '1';
+				$return['share_button_visible'] = '0';
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
-			case 'recent':
-				$album = new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
+			case 'r':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$return['public'] = '0';
+						$return['downloadable'] = '1';
+						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$return['public'] = '1';
+				$return['downloadable'] = Configs::get_value('downloadable', '0');
+				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
-			case 'unsorted':
-				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
+			case '0':
+				$return['public'] = '0';
+				$return['downloadable'] = '1';
+				$return['share_button_visible'] = '0';
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
-				$album = Album::find($request['albumID']);
-				$smart = false;
+				$album = Album::with('children')->find($request['albumID']);
+				if ($album === null) {
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
+					return 'false';
+				}
+				$return = $album->prepareData();
+				// we just require is_logged_in for this one.
+				$username = null;
+				if ($this->sessionFunctions->is_logged_in()) {
+					$return['owner'] = $username = $album->owner->username;
+				}
+
+				$full_photo = $album->full_photo_visible();
+				// To speed things up, we limit subalbum data to at most one
+				// level down.
+				$return['albums'] = $this->albumFunctions->get_albums($album, $username, 1);
+				$photos_sql = Photo::set_order(Photo::where('album_id', '=', $request['albumID']));
+				foreach ($return['albums'] as &$alb) {
+					unset($alb['thumbIDs']);
+				}
+				unset($return['thumbIDs']);
 				break;
 		}
 
-		$return = AlbumCast::toArray($album);
-		$return['owner'] = $album->owner->username;
-
-		if ($smart) {
-			$publicAlbums = $this->albumFunctions->getPublicAlbumsId();
-			$album->setAlbumIDs($publicAlbums);
-		} else {
-			// take care of sub albums
-			$children = $this->albumFunctions->get_children($album, 0, true);
-			// php7.4: $return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]))->all();
-			$return['albums'] = $children
-				->map(function ($e) {
-					return AlbumCast::toArray($e[0]);
-				})->all();
-			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
-			$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
-		}
-
-		// take care of photos
-		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
-		$photos_query = $album->get_photos();
-		$return['photos'] = $this->albumFunctions->photos($photos_query, $full_photo);
+		$return['photos'] = $this->albumFunctions->photos($photos_sql, $full_photo);
 
 		$return['id'] = $request['albumID'];
 		$return['num'] = strval(count($return['photos']));
@@ -158,47 +183,64 @@ class AlbumController extends Controller
 		$return = [];
 		// Get photos
 		// Get album information
-		$smart = true;
+		$UserId = $this->sessionFunctions->id();
+		$full_photo = Configs::get_value('full_photo', '1') == '1';
 
 		switch ($request['albumID']) {
-			case 'starred':
-				$album = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
+			case 'f':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
-			case 'public':
-				$album = new PublicAlbum($this->albumFunctions, $this->sessionFunctions);
+			case 's':
+				$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 				break;
-			case 'recent':
-				$album = new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
+			case 'r':
+				if ($this->sessionFunctions->is_logged_in()) {
+					$user = User::find($UserId);
+
+					if ($UserId == 0 || $user->upload) {
+						$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
+						break;
+					}
+				}
+				$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 				break;
-			case 'unsorted':
-				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
+			case '0':
+				$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 				break;
 			default:
-				$album = Album::find($request['albumID']);
-				$smart = false;
+				$album = Album::with('children')->find($request['albumID']);
+				if ($album === null) {
+					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
+					return 'false';
+				}
+
+				$full_photo = $album->full_photo_visible();
+
+				$album_list = [];
+				if ($request['includeSubAlbums']) {
+					// Get all subalbums of the current album
+					$this->albumFunctions->get_sub_albums($album_list, $album);
+				}
+
+				// Add current albumID to array
+				$album_list[] = $request['albumID'];
+
+				$photos_sql = Photo::whereIn('album_id', $album_list);
+
 				break;
 		}
 
-		if ($smart) {
-			$publicAlbums = $this->albumFunctions->getPublicAlbumsId();
-			$album->setAlbumIDs($publicAlbums);
-			$photos_sql = $album->get_photos();
-		} else {
-			// take care of sub albums
-			$album_list = collect();
-			if ($request['includeSubAlbums']) {
-				// Get all subalbums of the current album
-				$album_list = $album_list->concat($this->albumFunctions->get_sub_albums($album));
-			}
-
-			// Add current albumID to array
-			$album_list->push($request['albumID']);
-			$photos_sql = Photo::whereIn('album_id', $album_list);
-		}
-
-		$full_photo = $album->is_full_photo_visible();
-
 		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
+
 		$return['id'] = $request['albumID'];
 
 		return $return;
@@ -219,10 +261,13 @@ class AlbumController extends Controller
 		]);
 
 		switch ($request['albumID']) {
-			case 'starred':
-			case 'public':
-			case 'recent':
-			case 'unsorted':
+			case 'f':
+				return 'false';
+			case 's':
+				return 'false';
+			case 'r':
+				return 'false';
+			case '0':
 				return 'false';
 			default:
 				$album = Album::find($request['albumID']);
@@ -238,7 +283,7 @@ class AlbumController extends Controller
 					if ($this->sessionFunctions->has_visible_album($album->id)) {
 						return 'true';
 					}
-					if ($album->password == '' || Hash::check($request['password'], $album->password)) {
+					if ($album->checkPassword($request['password'])) {
 						$this->sessionFunctions->add_visible_album($album->id);
 
 						return 'true';
@@ -265,11 +310,15 @@ class AlbumController extends Controller
 
 		$albums = Album::whereIn('id', explode(',', $request['albumIDs']))->get();
 
-		$no_error = true;
-		$albums->each(function ($album) use (&$no_error, $request) {
+		if ($albums == null) {
+			return 'false';
+		}
+
+		$no_error = false;
+		foreach ($albums as $album) {
 			$album->title = $request['title'];
-			$no_error &= $album->save();
-		});
+			$no_error |= $album->save();
+		}
 
 		return $no_error ? 'true' : 'false';
 	}
@@ -376,9 +425,6 @@ class AlbumController extends Controller
 			'license' => 'required|string',
 		]);
 
-		/**
-		 * @var Album|null
-		 */
 		$album = Album::find($request['albumID']);
 
 		if ($album == null) {
@@ -407,9 +453,9 @@ class AlbumController extends Controller
 			$i++;
 		}
 		if (!$found) {
-			Logs::error(__METHOD__, __LINE__, 'License not recognised: ' . $request['license']);
+			Logs::error(__METHOD__, __LINE__, 'wrong kind of license: ' . $request['license']);
 
-			return Response::error('License not recognised!');
+			return Response::error('wrong kind of license!');
 		}
 
 		$album->license = $request['license'];
@@ -458,7 +504,7 @@ class AlbumController extends Controller
 			$no_error &= $album->delete();
 
 			if ($parentAlbum !== null) {
-				$no_error &= AlbumUpdate::update_takestamps($parentAlbum, [$minTS, $maxTS], false);
+				$no_error &= $parentAlbum->update_takestamps([$minTS, $maxTS], false);
 			}
 		}
 
@@ -532,10 +578,10 @@ class AlbumController extends Controller
 			$no_error &= $album_t->delete();
 
 			if ($parentAlbum !== null) {
-				$no_error &= AlbumUpdate::update_takestamps($parentAlbum, array_slice($takestamps, -2), false);
+				$no_error &= $parentAlbum->update_takestamps(array_slice($takestamps, -2), false);
 			}
 		}
-		$no_error &= AlbumUpdate::update_takestamps($album, $takestamps, true);
+		$no_error &= $album->update_takestamps($takestamps, true);
 
 		return $no_error ? 'true' : 'false';
 	}
@@ -596,11 +642,11 @@ class AlbumController extends Controller
 
 					$no_error = false;
 				}
-				$no_error &= AlbumUpdate::update_takestamps($oldParentAlbum, [$album->min_takestamp, $album->max_takestamp], false);
+				$no_error &= $oldParentAlbum->update_takestamps([$album->min_takestamp, $album->max_takestamp], false);
 			}
 		}
 		if ($album_master !== null) {
-			$no_error &= AlbumUpdate::update_takestamps($album_master, $takestamps, true);
+			$no_error &= $album_master->update_takestamps($takestamps, true);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -645,16 +691,16 @@ class AlbumController extends Controller
 
 		if (count($albumIDs) === 1) {
 			switch ($albumIDs[0]) {
-				case 'starred':
+				case 'f':
 					$zipTitle = 'Starred';
 					break;
-				case 'public':
+				case 's':
 					$zipTitle = 'Public';
 					break;
-				case 'recent':
+				case 'r':
 					$zipTitle = 'Recent';
 					break;
-				case 'unsorted':
+				case '0':
 					$zipTitle = 'Unsorted';
 					break;
 				default:
@@ -685,7 +731,7 @@ class AlbumController extends Controller
 			foreach ($albumIDs as $albumID) {
 				$album = null;
 				switch ($albumID) {
-					case 'starred':
+					case 'f':
 						$dir = 'Starred';
 						if ($this->sessionFunctions->is_logged_in()) {
 							$user = User::find($UserId);
@@ -695,13 +741,13 @@ class AlbumController extends Controller
 								break;
 							}
 						}
-						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
+						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 						break;
-					case 'public':
+					case 's':
 						$dir = 'Public';
 						$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
 						break;
-					case 'recent':
+					case 'r':
 						$dir = 'Recent';
 						if ($this->sessionFunctions->is_logged_in()) {
 							$user = User::find($UserId);
@@ -711,9 +757,9 @@ class AlbumController extends Controller
 								break;
 							}
 						}
-						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
+						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbums()));
 						break;
-					case 'unsorted':
+					case '0':
 						$dir = 'Unsorted';
 						$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
 						break;
@@ -731,11 +777,13 @@ class AlbumController extends Controller
 
 				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album) use (&$zip, $badChars, &$compress_album) {
 					if ($album !== null) {
-						if (!$this->sessionFunctions->is_current_user($album->owner_id) && !$album->is_downloadable()) {
+						if (!$this->sessionFunctions->is_current_user($album->owner_id) &&
+						!$album->is_downloadable()) {
 							return;
 						}
 					} else {
-						if (!$this->sessionFunctions->is_logged_in() && Configs::get_value('downloadable', '0') === '0') {
+						if (!$this->sessionFunctions->is_logged_in() &&
+						Configs::get_value('downloadable', '0') === '0') {
 							return;
 						}
 					}
@@ -770,10 +818,8 @@ class AlbumController extends Controller
 						// For photos in public smart albums, skip the ones
 						// that are not downloadable based on their actual
 						// parent album.
-						if (
-							$album === null && !$this->sessionFunctions->is_logged_in() &&
-							$photo->album_id !== null && !$photo->album->is_downloadable()
-						) {
+						if ($album === null && !$this->sessionFunctions->is_logged_in() &&
+						$photo->album_id !== null && !$photo->album->is_downloadable()) {
 							continue;
 						}
 

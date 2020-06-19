@@ -55,7 +55,10 @@ class UploadCheck
 		}
 
 		$user_id = $this->sessionFunctions->id();
-		$user = $this->sessionFunctions->getUserData();
+		$user = User::find($user_id);
+		if ($user == null) {
+			return response('false');
+		}
 
 		// is not admin and does not have upload rights
 		if (!$user->upload) {

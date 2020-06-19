@@ -8,9 +8,9 @@ use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
+use File;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
 use Spatie\Feed\FeedItem;
 
 class RSSController extends Controller
@@ -62,7 +62,7 @@ class RSSController extends Controller
 			->where(function ($q) {
 				$q->whereIn(
 					'album_id',
-					$this->albumFunctions->getPublicAlbumsId()
+					$this->albumFunctions->getPublicAlbums()
 				)
 					->orWhere('public', '=', '1');
 			})
@@ -75,7 +75,7 @@ class RSSController extends Controller
 			$id = null;
 			if ($photo_model->album_id != null) {
 				$album = $photo_model->album;
-				if (!$album->is_full_photo_visible()) {
+				if (!$album->full_photo_visible()) {
 					$photo_model->downgrade($photo);
 				}
 				$id = '#' . $photo_model->album_id . '/' . $photo_model->id;
@@ -86,7 +86,7 @@ class RSSController extends Controller
 				$id = 'view?p=' . $photo_model->id;
 			}
 
-			$photo['url'] = $photo['url'] ?: ($photo['medium2x'] ?: $photo['medium']);
+			$photo['url'] = $photo['url'] ?: $photo['medium2x'] ?: $photo['medium'];
 			// TODO: this will need to be fixed for s3 and when the upload folder is NOT the Lychee folder.
 			$enclosure = $this->make_enclosure($photo);
 

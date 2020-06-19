@@ -6,19 +6,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Assets\Helpers;
 use App\Configs;
 use App\ControllerFunctions\Update\Check as CheckUpdate;
 use App\Metadata\DiskUsage;
 use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
+use App\ModelFunctions\Helpers;
 use App\ModelFunctions\SessionFunctions;
 use Config;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Imagick;
+use Storage;
 
 class DiagnosticsController extends Controller
 {

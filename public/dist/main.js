@@ -660,7 +660,7 @@ var album = {
 
 album.isSmartID = function (id) {
 
-	return id === 'unsorted' || id === 'starred' || id === 'public' || id === 'recent';
+	return id === '0' || id === 'f' || id === 's' || id === 'r';
 };
 
 album.getParent = function () {
@@ -677,7 +677,7 @@ album.getID = function () {
 
 	// this is a Lambda
 	var isID = function isID(_id) {
-		if (album.isSmartID(_id)) {
+		if (_id === '0' || _id === 'f' || _id === 's' || _id === 'r') {
 			return true;
 		}
 		return $.isNumeric(_id);
@@ -1572,7 +1572,7 @@ albums._createSmartAlbums = function (data) {
 
 	if (data.unsorted) {
 		data.unsorted = {
-			id: 'unsorted',
+			id: 0,
 			title: lychee.locale['UNSORTED'],
 			sysdate: data.unsorted.num + ' ' + lychee.locale['NUM_PHOTOS'],
 			unsorted: '1',
@@ -1584,7 +1584,7 @@ albums._createSmartAlbums = function (data) {
 
 	if (data.starred) {
 		data.starred = {
-			id: 'starred',
+			id: 'f',
 			title: lychee.locale['STARRED'],
 			sysdate: data.starred.num + ' ' + lychee.locale['NUM_PHOTOS'],
 			star: '1',
@@ -1596,7 +1596,7 @@ albums._createSmartAlbums = function (data) {
 
 	if (data.public) {
 		data.public = {
-			id: 'public',
+			id: 's',
 			title: lychee.locale['PUBLIC'],
 			sysdate: data.public.num + ' ' + lychee.locale['NUM_PHOTOS'],
 			public: '1',
@@ -1609,7 +1609,7 @@ albums._createSmartAlbums = function (data) {
 
 	if (data.recent) {
 		data.recent = {
-			id: 'recent',
+			id: 'r',
 			title: lychee.locale['RECENT'],
 			sysdate: data.recent.num + ' ' + lychee.locale['NUM_PHOTOS'],
 			recent: '1',
@@ -3784,7 +3784,7 @@ lychee.load = function () {
 			// Show Album
 			if (visible.photo()) view.photo.hide();
 			if (visible.mapview()) mapview.close();
-			if (visible.sidebar() && album.isSmartID($albumID)) _sidebar.toggle();
+			if (visible.sidebar() && (albumID === '0' || albumID === 'f' || albumID === 's' || albumID === 'r')) _sidebar.toggle();
 			if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
 			lychee.footer_show();
 		}
@@ -4176,6 +4176,7 @@ lychee.clipboardCopy = function (text) {
 	// ? Promise.resolve()
 	// : Promise.reject(new DOMException('The request is not allowed', 'NotAllowedError'))
 };
+
 lychee.locale = {
 
 	'USERNAME': 'username',
@@ -7964,7 +7965,7 @@ upload.start = {
 
 				albums.refresh();
 
-				if (album.getID() === false) lychee.goto('unsorted');else album.load(albumID);
+				if (album.getID() === false) lychee.goto('0');else album.load(albumID);
 			};
 
 			formData.append('function', 'Photo::add');
@@ -8758,16 +8759,16 @@ view.album = {
 		if ((visible.album() || !album.json.init) && !visible.photo()) {
 
 			switch (album.getID()) {
-				case 'starred':
+				case 'f':
 					lychee.setTitle(lychee.locale['STARRED'], true);
 					break;
-				case 'public':
+				case 's':
 					lychee.setTitle(lychee.locale['PUBLIC'], true);
 					break;
-				case 'recent':
+				case 'r':
 					lychee.setTitle(lychee.locale['RECENT'], true);
 					break;
-				case 'unsorted':
+				case '0':
 					lychee.setTitle(lychee.locale['UNSORTED'], true);
 					break;
 				default:

@@ -20,10 +20,10 @@ class AlbumTest extends TestCase
 		$albums_tests = new AlbumsUnitTest();
 		$albums_tests->add($this, '0', 'test_album', 'false');
 
-		$albums_tests->get($this, 'recent', '', 'true');
-		$albums_tests->get($this, 'starred', '', 'true');
-		$albums_tests->get($this, 'public', '', 'true');
-		$albums_tests->get($this, 'unsorted', '', 'true');
+		$albums_tests->get($this, 'r', '', 'true');
+		$albums_tests->get($this, 's', '', 'true');
+		$albums_tests->get($this, 'f', '', 'true');
+		$albums_tests->get($this, '0', '', 'true');
 	}
 
 	public function test_add_read_logged()
@@ -33,10 +33,10 @@ class AlbumTest extends TestCase
 
 		$session_tests->log_as_id(0);
 
-		$albums_tests->get($this, 'recent', '', 'true');
-		$albums_tests->get($this, 'starred', '', 'true');
-		$albums_tests->get($this, 'public', '', 'true');
-		$albums_tests->get($this, 'unsorted', '', 'true');
+		$albums_tests->get($this, 'r', '', 'true');
+		$albums_tests->get($this, 's', '', 'true');
+		$albums_tests->get($this, 'f', '', 'true');
+		$albums_tests->get($this, '0', '', 'true');
 
 		$albumID = $albums_tests->add($this, '0', 'test_album', 'true');
 		$albums_tests->see_in_albums($this, $albumID);
@@ -55,7 +55,7 @@ class AlbumTest extends TestCase
 
 		$albums_tests->set_title($this, $albumID, 'NEW_TEST');
 		$albums_tests->set_description($this, $albumID, 'new description');
-		$albums_tests->set_license($this, $albumID, 'WTFPL', '"Error: License not recognised!');
+		$albums_tests->set_license($this, $albumID, 'WTFPL', '"Error: wrong kind of license!"');
 		$albums_tests->set_license($this, $albumID, 'reserved');
 
 		/**

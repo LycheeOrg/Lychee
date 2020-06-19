@@ -102,7 +102,7 @@ class Apply
 	 */
 	private function git_pull(array &$output)
 	{
-		$command = 'git pull --rebase ' . Config::get('urls.git.pull') . ' master 2>&1';
+		$command = 'git pull ' . Config::get('urls.git.pull') . ' master 2>&1';
 		exec($command, $output);
 	}
 

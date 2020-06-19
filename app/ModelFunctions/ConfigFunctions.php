@@ -15,20 +15,19 @@ class ConfigFunctions
 	 */
 	public function get_pages_infos()
 	{
-		$infos = [
-			'owner' => Configs::get_value('landing_owner'),
-			'title' => Configs::get_value('landing_title'),
-			'subtitle' => Configs::get_value('landing_subtitle'),
-			'facebook' => Configs::get_value('landing_facebook'),
-			'flickr' => Configs::get_value('landing_flickr'),
-			'twitter' => Configs::get_value('landing_twitter'),
-			'instagram' => Configs::get_value('landing_instagram'),
-			'youtube' => Configs::get_value('landing_youtube'),
-			'background' => Configs::get_value('landing_background'),
-			'copyright_enable' => Configs::get_value('site_copyright_enable'),
-			'copyright_year' => Configs::get_value('site_copyright_begin'),
-			'additional_footer_text' => Configs::get_value('additional_footer_text'),
-		];
+		$infos = [];
+		$infos['owner'] = Configs::get_value('landing_owner');
+		$infos['title'] = Configs::get_value('landing_title');
+		$infos['subtitle'] = Configs::get_value('landing_subtitle');
+		$infos['facebook'] = Configs::get_value('landing_facebook');
+		$infos['flickr'] = Configs::get_value('landing_flickr');
+		$infos['twitter'] = Configs::get_value('landing_twitter');
+		$infos['instagram'] = Configs::get_value('landing_instagram');
+		$infos['youtube'] = Configs::get_value('landing_youtube');
+		$infos['background'] = Configs::get_value('landing_background');
+		$infos['copyright_enable'] = Configs::get_value('site_copyright_enable');
+		$infos['copyright_year'] = Configs::get_value('site_copyright_begin');
+		$infos['additional_footer_text'] = Configs::get_value('additional_footer_text');
 		if (Configs::get_value('site_copyright_begin') != Configs::get_value('site_copyright_end')) {
 			$infos['copyright_year'] = Configs::get_value('site_copyright_begin') . '-' . Configs::get_value('site_copyright_end');
 		}
