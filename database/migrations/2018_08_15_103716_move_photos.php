@@ -1,12 +1,13 @@
 <?php
 
-use App\Album;
+use App\Assets\Helpers;
 use App\Logs;
-use App\ModelFunctions\Helpers;
+use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class MovePhotos extends Migration
 {
@@ -85,7 +86,7 @@ class MovePhotos extends Migration
 			Logs::notice(__FUNCTION__, __LINE__, 'photos is not empty.');
 		}
 
-		Album::reset_takestamp();
+		AlbumUpdate::reset_takestamp();
 	}
 
 	/**

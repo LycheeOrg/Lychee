@@ -167,13 +167,13 @@ class UsersTest extends TestCase
 		$sessions_test->init($this, 'true');
 
 		// 19
-		$album_tests->get($this, 's', '', 'true');
+		$album_tests->get($this, 'public', '', 'true');
 
 		// 20
-		$album_tests->get($this, 'f', '', 'true');
+		$album_tests->get($this, 'starred', '', 'true');
 
 		// 21
-		$album_tests->get($this, '0', '', 'true');
+		$album_tests->get($this, 'unsorted', '', 'true');
 
 		// 22
 		$sessions_test->set_new($this, 'test_abcde', 'testing2', '"Error: Old username or password entered incorrectly!"');
