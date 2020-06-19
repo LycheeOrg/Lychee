@@ -3,11 +3,11 @@
 namespace App\Metadata;
 
 use App;
+use App\Assets\Helpers;
 use App\Configs;
 use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
 use App\Logs;
-use App\ModelFunctions\Helpers;
 use App\ModelFunctions\JsonRequestFunctions;
 use Config;
 use Exception;
@@ -41,7 +41,7 @@ class GitHubFunctions
 			$this->branch = $this->get_current_branch();
 			$this->head = $this->get_current_commit();
 			// @codeCoverageIgnoreStart
-		// when testing on master branch this is not covered.
+			// when testing on master branch this is not covered.
 		} catch (Exception $e) {
 			$this->branch = false;
 			$this->head = false;
@@ -195,8 +195,12 @@ class GitHubFunctions
 		}
 		// @codeCoverageIgnoreStart
 		if ($count != false) {
-			return sprintf(' - %s commits behind master %s (%s)', $count,
-				$this->get_github_head(), $last_update);
+			return sprintf(
+				' - %s commits behind master %s (%s)',
+				$count,
+				$this->get_github_head(),
+				$last_update
+			);
 		}
 
 		return ' - Probably more than 30 commits behind master';
@@ -257,7 +261,7 @@ class GitHubFunctions
 				$return['update_json'] = $json->lychee->version;
 				$return['update_available']
 					= ((intval(Configs::get_value('version', '40000')))
-					< $return['update_json']);
+						< $return['update_json']);
 			}
 		}
 	}

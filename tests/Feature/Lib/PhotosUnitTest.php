@@ -99,7 +99,7 @@ class PhotosUnitTest
 	public function see_in_unsorted(TestCase &$testCase, string $id)
 	{
 		$response = $testCase->post('/api/Album::get', [
-			'albumID' => '0',
+			'albumID' => 'unsorted',
 		]);
 		$response->assertStatus(200);
 		$response->assertSee($id, false);
@@ -114,7 +114,7 @@ class PhotosUnitTest
 	public function dont_see_in_unsorted(TestCase &$testCase, string $id)
 	{
 		$response = $testCase->post('/api/Album::get', [
-			'albumID' => '0',
+			'albumID' => 'unsorted',
 		]);
 		$response->assertStatus(200);
 		$response->assertDontSee($id, false);
@@ -129,7 +129,7 @@ class PhotosUnitTest
 	public function see_in_recent(TestCase &$testCase, string $id)
 	{
 		$response = $testCase->post('/api/Album::get', [
-			'albumID' => 'r',
+			'albumID' => 'recent',
 		]);
 		$response->assertStatus(200);
 		$response->assertSee($id, false);
@@ -144,7 +144,7 @@ class PhotosUnitTest
 	public function dont_see_in_recent(TestCase &$testCase, string $id)
 	{
 		$response = $testCase->post('/api/Album::get', [
-			'albumID' => 'r',
+			'albumID' => 'recent',
 		]);
 		$response->assertStatus(200);
 		$response->assertDontSee($id, false);
@@ -159,7 +159,7 @@ class PhotosUnitTest
 	public function see_in_shared(TestCase &$testCase, string $id)
 	{
 		$response = $testCase->post('/api/Album::get', [
-			'albumID' => 's',
+			'albumID' => 'public',
 		]);
 		$response->assertStatus(200);
 		$response->assertSee($id, false);
@@ -174,7 +174,7 @@ class PhotosUnitTest
 	public function dont_see_in_shared(TestCase &$testCase, string $id)
 	{
 		$response = $testCase->post('/api/Album::get', [
-			'albumID' => 's',
+			'albumID' => 'public',
 		]);
 		$response->assertStatus(200);
 		$response->assertDontSee($id, false);
@@ -189,7 +189,7 @@ class PhotosUnitTest
 	public function see_in_favorite(TestCase &$testCase, string $id)
 	{
 		$response = $testCase->post('/api/Album::get', [
-			'albumID' => 'f',
+			'albumID' => 'starred',
 		]);
 		$response->assertStatus(200);
 		$response->assertSee($id, false);
@@ -204,7 +204,7 @@ class PhotosUnitTest
 	public function dont_see_in_favorite(TestCase &$testCase, string $id)
 	{
 		$response = $testCase->post('/api/Album::get', [
-			'albumID' => 'f',
+			'albumID' => 'starred',
 		]);
 		$response->assertStatus(200);
 		$response->assertDontSee($id, false);
