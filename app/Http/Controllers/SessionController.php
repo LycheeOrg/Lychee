@@ -15,7 +15,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
-
 class SessionController extends Controller
 {
 	/**
@@ -59,9 +58,6 @@ class SessionController extends Controller
 
 		$return['api_V2'] = true;               // we are using api_V2
 		$return['sub_albums'] = true;           // Lychee-laravel does have sub albums
-
-
-
 
 		// Check if login credentials exist and login if they don't
 		if ($this->sessionFunctions->noLogin() === true || $logged_in === true) {
@@ -119,7 +115,7 @@ class SessionController extends Controller
 		$return['config']['enable_close_tab_on_esc'] = false;
 		$return['config']['enable_tabindex'] = false;
 
-		if(\App\Assets\Helpers::isTV()) {
+		if (\App\Assets\Helpers::isTV()) {
 			$return['config']['header_auto_hide'] = false;
 			$return['config']['active_focus_on_page_load'] = true;
 			$return['config']['enable_button_visibility'] = false;
@@ -134,7 +130,6 @@ class SessionController extends Controller
 			$return['config']['enable_close_tab_on_esc'] = true;
 			$return['config']['enable_tabindex'] = true;
 		}
-
 
 		// we also return the local
 		$return['locale'] = Lang::get_lang(Configs::get_value('lang'));

@@ -30,7 +30,7 @@ class Helpers
 	}
 
 	/**
-	 * checks if client is a TV
+	 * checks if client is a TV.
 	 *
 	 * @return bool
 	 */
@@ -54,10 +54,9 @@ class Helpers
 			// Parse the user agent
 			$dd->parse();
 
-
 			return $dd->isTV();
 		}
+
 		return false;
 	}
-
 }
