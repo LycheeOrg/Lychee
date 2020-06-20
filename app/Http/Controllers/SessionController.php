@@ -11,9 +11,6 @@ use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\User;
-use Cache;
-use DeviceDetector\DeviceDetector;
-use DeviceDetector\Parser\Device\DeviceParserAbstract;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
@@ -109,34 +106,35 @@ class SessionController extends Controller
 
 		// UI behaviour needs to be slightly modified if client is a TV
 		$return['config']['header_auto_hide'] = true;
-		$return['config']['history_update_for_photos'] = true;
-		$return['config']['enable_esc_for_exit'] = true;
+		$return['config']['active_focus_on_page_load'] = false;
+		$return['config']['enable_button_visibility'] = true;
+		$return['config']['enable_button_share'] = true;
+		$return['config']['enable_button_archive'] = true;
+		$return['config']['enable_button_move'] = true;
+		$return['config']['enable_button_trash'] = true;
+		$return['config']['enable_button_fullscreen'] = true;
+		$return['config']['enable_button_download'] = true;
+		$return['config']['enable_button_add'] = true;
+		$return['config']['enable_button_more'] = true;
+		$return['config']['enable_close_tab_on_esc'] = false;
+		$return['config']['enable_tabindex'] = false;
 
-		// Determine type of browser
-		DeviceParserAbstract::setVersionTruncation(DeviceParserAbstract::VERSION_TRUNCATION_NONE);
-		$userAgent = $_SERVER['HTTP_USER_AGENT'];
-
-		if (!empty($userAgent)) {
-			$dd = new DeviceDetector($userAgent);
-
-			// Use cache since lib uses quite some regex
-			// TODO
-			//$psr6Cache = new \app('cache.store');
-			//$dd->setCache( new \DeviceDetector\Cache\PSR6Bridge($psr6Cache));
-
-			// Bot detection will completely be skipped (bots will be detected as regular devices then)
-			$dd->skipBotDetection();
-
-			// Parse the user agent
-			$dd->parse();
-
-
-			if($dd->isTV()) {
-				$return['config']['header_auto_hide'] = false;
-				$return['config']['history_update_for_photos'] = false;
-				$return['config']['enable_esc_for_exit'] = false;
-			}
+		if(\App\Assets\Helpers::isTV()) {
+			$return['config']['header_auto_hide'] = false;
+			$return['config']['active_focus_on_page_load'] = true;
+			$return['config']['enable_button_visibility'] = false;
+			$return['config']['enable_button_share'] = false;
+			$return['config']['enable_button_archive'] = false;
+			$return['config']['enable_button_move'] = false;
+			$return['config']['enable_button_trash'] = false;
+			$return['config']['enable_button_fullscreen'] = false;
+			$return['config']['enable_button_download'] = false;
+			$return['config']['enable_button_add'] = false;
+			$return['config']['enable_button_more'] = false;
+			$return['config']['enable_close_tab_on_esc'] = true;
+			$return['config']['enable_tabindex'] = true;
 		}
+
 
 		// we also return the local
 		$return['locale'] = Lang::get_lang(Configs::get_value('lang'));

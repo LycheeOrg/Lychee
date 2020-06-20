@@ -18,6 +18,6 @@
 
 
     @if($page_config['show_hosted_by'])
-        <p class="hosted_by"><a rel="noopener noreferrer" target="_blank" href="https://LycheeOrg.github.io">{{ $locale['HOSTED_WITH_LYCHEE'] }}</a></p>
+        <p class="hosted_by"><a rel="noopener noreferrer" target="_blank" href="https://LycheeOrg.github.io" tabindex="-1">{{ $locale['HOSTED_WITH_LYCHEE'] }}</a></p>
     @endif
 </div>

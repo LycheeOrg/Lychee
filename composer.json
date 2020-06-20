@@ -28,7 +28,7 @@
         "piwik/device-detector": "^3.12",
         "spatie/guzzle-rate-limiter-middleware": "^1.0",
         "spatie/laravel-feed": "^2.6",
-        "symfony/cache": "^5.0"
+        "symfony/cache": "^5.1"
     },
     "require-dev": {
         "ext-imagick": "*",
