@@ -413,6 +413,9 @@ final class Spanish implements LangInterface
 			'PHOTO_THUMB_HIDPI' => 'Cuadrado de Miniatura HiDPI',
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Vista de Foto de Lychee',
+
+			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
+			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
 		];
 
 		return $locale;

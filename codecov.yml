@@ -1,30 +1,28 @@
 {
     "codecov": {
         "require_ci_to_pass": true
-    }, 
+    },
     "comment": {
-        "behavior": "default", 
-        "require_base": false, 
-        "require_changes": true, 
+        "behavior": "default",
+        "require_base": false,
+        "require_changes": true,
         "require_head": true
-    }, 
+    },
     "coverage": {
-        "precision": 2, 
-        "range": [
-            50.0, 
-            100.0
-        ], 
-        "round": "down", 
+        "precision": 2,
+        "round": "down",
         "status": {
-            "changes": false, 
+            "changes": false,
             "patch": {
                 "default": {}
-            }, 
+            },
             "project": {
-                "default": {}
+                "default": {
+                    "target": 50%
+                }
             }
         }
-    }, 
+    },
     "ignore": [
         "^app/Console/.*",
         "^app/Exceptions/.*",
@@ -33,16 +31,16 @@
         "^app/Http/Middleware/VerifyCsrfToken.*",
         "^app/Http/Middleware/RedirectIfAuthenticated.*",
         "^app/Providers/BroadcastServiceProvider.*"
-    ], 
+    ],
     "parsers": {
         "gcov": {
             "branch_detection": {
-                "conditional": true, 
-                "loop": true, 
-                "macro": false, 
+                "conditional": true,
+                "loop": true,
+                "macro": false,
                 "method": false
             }
-        }, 
+        },
         "javascript": {
             "enable_partials": false
         }
