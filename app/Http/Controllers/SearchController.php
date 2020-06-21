@@ -134,30 +134,7 @@ class SearchController extends Controller
 		 * from the top level.  This includes password-protected albums
 		 * (since they are visible) but not their content.
 		 */
-		// $toplevel = $this->albumsFunctions->getToplevelAlbums();
-		// $children = $this->albumsFunctions->get_children($toplevel);
 		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
-		// if ($toplevel === null) {
-		// 	return Response::error('I could not find you.');
-		// }
-
-		// $albumIDs = [];
-		// if ($toplevel['albums'] !== null) {
-		// 	foreach ($toplevel['albums'] as $album) {
-		// 		$albumIDs[] = $album->id;
-		// 		if ($this->readAccessFunctions->album($album) === 1) {
-		// 			$this->albumFunctions->get_sub_albums($albumIDs, $album, true);
-		// 		}
-		// 	}
-		// }
-		// if ($toplevel['shared_albums'] !== null) {
-		// 	foreach ($toplevel['shared_albums'] as $album) {
-		// 		$albumIDs[] = $album->id;
-		// 		if ($this->readAccessFunctions->album($album) === 1) {
-		// 			$this->albumFunctions->get_sub_albums($albumIDs, $album, true);
-		// 		}
-		// 	}
-		// }
 
 		$query = Album::with([
 			'owner',
