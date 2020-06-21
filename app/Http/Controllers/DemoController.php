@@ -8,9 +8,10 @@ use App\ControllerFunctions\ReadAccessFunctions;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\ConfigFunctions;
+use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SessionFunctions;
-use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use Response;
 
@@ -27,14 +28,14 @@ class DemoController extends Controller
 	private $albumFunctions;
 
 	/**
+	 * @var AlbumsFunctions
+	 */
+	private $albumsFunctions;
+
+	/**
 	 * @var SessionFunctions
 	 */
 	private $sessionFunctions;
-
-	/**
-	 * @var readAccessFunctions
-	 */
-	private $readAccessFunctions;
 
 	/**
 	 * @var GitHubFunctions
@@ -42,29 +43,24 @@ class DemoController extends Controller
 	private $gitHubFunctions;
 
 	/**
-	 * @var SymLinkFunctions
-	 */
-	private $symLinkFunctions;
-
-	/**
+	 * @param ConfigFunctions     $configFunctions
 	 * @param AlbumFunctions      $albumFunctions
+	 * @param AlbumsFunctions     $albumsFunctions
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 */
 	public function __construct(
 		ConfigFunctions $configFunctions,
 		AlbumFunctions $albumFunctions,
+		AlbumsFunctions $albumsFunctions,
 		SessionFunctions $sessionFunctions,
-		ReadAccessFunctions $readAccessFunctions,
-		GitHubFunctions $gitHubFunctions,
-		SymLinkFunctions $symLinkFunctions
+		GitHubFunctions $gitHubFunctions
 	) {
 		$this->configFunctions = $configFunctions;
 		$this->albumFunctions = $albumFunctions;
+		$this->albumsFunctions = $albumsFunctions;
 		$this->sessionFunctions = $sessionFunctions;
-		$this->readAccessFunctions = $readAccessFunctions;
 		$this->gitHubFunctions = $gitHubFunctions;
-		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
 	/**
@@ -98,7 +94,7 @@ class DemoController extends Controller
 		/**
 		 * Albums::get.
 		 */
-		$albums_controller = new AlbumsController($this->albumFunctions, $this->sessionFunctions);
+		$albums_controller = new AlbumsController($this->albumFunctions, $this->albumsFunctions, $this->sessionFunctions);
 
 		$return_albums = [];
 		$return_albums['name'] = 'Albums::get';
@@ -119,8 +115,7 @@ class DemoController extends Controller
 		/**
 		 * @var Collection[Album]
 		 */
-		$albums = Album::with('children')
-			->where('public', '=', '1')
+		$albums = Album::where('public', '=', '1')
 			->where('visible_hidden', '=', '1')
 			->get();
 		foreach ($albums as $album) {
@@ -130,22 +125,19 @@ class DemoController extends Controller
 			// Get photos
 			// Get album information
 			$return_album_json = AlbumCast::toArray($album);
-			if ($this->sessionFunctions->is_logged_in()) {
-				$return_album_json['owner'] = $album->owner->username;
-			}
 
 			$children = $this->albumFunctions->get_children($album, 0, true);
 			$return_album_json['albums'] = $children
 				->map(function ($e) {
 					return AlbumCast::toArray($e[0]);
-				})->all();
+				})->values()->all();
 			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
 			$this->albumFunctions->set_thumbs_children($return_album_json['albums'], $thumbs[1]);
 
 			// take care of photos
 			$full_photo = $return_album_json['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
 			$photos_query = $album->get_photos();
-			$return_album_json['photos'] = $this->albumFunctions->photos($photos_query, $full_photo);
+			$return_album_json['photos'] = $this->albumFunctions->photos($photos_query, $full_photo, $album->get_license());
 
 			$return_album_json['num'] = strval(count($return_album_json['photos']));
 
@@ -172,12 +164,12 @@ class DemoController extends Controller
 		$return_photo_list['kind'] = 'photoID';
 		$return_photo_list['array'] = [];
 
-		$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->get();
 		foreach ($albums as $album) {
 			/** @var Photo $photo */
 			foreach ($album->photos as $photo) {
 				$return_photo = [];
-				$return_photo_json = $photo->prepareData();
+				$return_photo_json = PhotoCast::toArray($photo);
+				PhotoCast::urls($return_photo_json, $photo);
 				$return_photo_json['original_album'] = $return_photo_json['album'];
 				$return_photo_json['album'] = $album->id;
 				$return_photo['id'] = $photo->id;

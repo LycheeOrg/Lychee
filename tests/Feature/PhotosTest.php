@@ -74,7 +74,6 @@ class PhotosTest extends TestCase
 		 */
 		$response->assertJson([
 			'aperture' => 'f/2.8',
-			'cameraDate' => '1',
 			'description' => 'A night photography',
 			'focal' => '16 mm',
 			'height' => 4480,
@@ -129,8 +128,8 @@ class PhotosTest extends TestCase
 		$photos_tests->delete($this, $ids[0], 'true');
 		$photos_tests->get($this, $id[0], 'false');
 
-		//		$photos_tests->dont_see_in_recent($this, $ids[0]);
-		//		$photos_tests->dont_see_in_unsorted($this, $ids[1]);
+		$photos_tests->dont_see_in_recent($this, $ids[0]);
+		$photos_tests->dont_see_in_unsorted($this, $ids[1]);
 
 		$albums_tests->set_public($this, $albumID, 1, 1, 1, 1, 1, 'true');
 

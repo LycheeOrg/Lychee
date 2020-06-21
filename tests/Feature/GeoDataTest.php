@@ -65,8 +65,6 @@ class GeoDataTest extends TestCase
 				'medium2x' => '',
 				'medium2x_dim' => '',
 				'small_dim' => '542x360',
-				'small2x_dim' => '1084x720',
-				'cameraDate' => '1',
 				'takedate' => '17 August 2011 at 16:39',
 				'public' => '0',
 				'downloadable' => '1',

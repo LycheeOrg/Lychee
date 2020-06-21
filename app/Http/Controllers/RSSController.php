@@ -5,7 +5,8 @@
 namespace App\Http\Controllers;
 
 use App\Configs;
-use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\AlbumsFunctions;
+use App\ModelFunctions\PhotoActions\Cast;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use Illuminate\Support\Carbon;
@@ -16,9 +17,9 @@ use Spatie\Feed\FeedItem;
 class RSSController extends Controller
 {
 	/**
-	 * @var AlbumFunctions
+	 * @var AlbumsFunctions
 	 */
-	private $albumFunctions;
+	private $albumsFunctions;
 
 	/**
 	 * @var SymLinkFunctions
@@ -26,12 +27,14 @@ class RSSController extends Controller
 	private $symLinkFunctions;
 
 	/**
-	 * @param AlbumFunctions   $albumFunctions
+	 * @param AlbumsFunctions  $albumsFunctions
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions)
-	{
-		$this->albumFunctions = $albumFunctions;
+	public function __construct(
+		AlbumsFunctions $albumsFunctions,
+		SymLinkFunctions $symLinkFunctions
+	) {
+		$this->albumsFunctions = $albumsFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
@@ -62,7 +65,7 @@ class RSSController extends Controller
 			->where(function ($q) {
 				$q->whereIn(
 					'album_id',
-					$this->albumFunctions->getPublicAlbumsId()
+					$this->albumsFunctions->getPublicAlbumsId()
 				)
 					->orWhere('public', '=', '1');
 			})
@@ -70,7 +73,9 @@ class RSSController extends Controller
 			->get();
 
 		$photos = $photos->map(function (Photo $photo_model) {
-			$photo = $photo_model->prepareData();
+			$photo = Cast::toArray($photo_model);
+			Cast::urls($photo, $photo_model);
+
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
 			$id = null;
 			if ($photo_model->album_id != null) {

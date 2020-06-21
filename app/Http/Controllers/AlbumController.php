@@ -12,6 +12,7 @@ use App\Logs;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
@@ -35,6 +36,11 @@ class AlbumController extends Controller
 	private $albumFunctions;
 
 	/**
+	 * @var AlbumsFunctions
+	 */
+	private $albumsFunctions;
+
+	/**
 	 * @var SessionFunctions
 	 */
 	private $sessionFunctions;
@@ -46,12 +52,18 @@ class AlbumController extends Controller
 
 	/**
 	 * @param AlbumFunctions      $albumFunctions
+	 * @param AlbumsFunctions     $albumsFunctions
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions)
-	{
+	public function __construct(
+		AlbumFunctions $albumFunctions,
+		AlbumsFunctions $albumsFunctions,
+		SessionFunctions $sessionFunctions,
+		ReadAccessFunctions $readAccessFunctions
+	) {
 		$this->albumFunctions = $albumFunctions;
+		$this->albumsFunctions = $albumsFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 	}
@@ -114,7 +126,7 @@ class AlbumController extends Controller
 		$return['owner'] = $album->owner->username;
 
 		if ($smart) {
-			$publicAlbums = $this->albumFunctions->getPublicAlbumsId();
+			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
 		} else {
 			// take care of sub albums
@@ -123,7 +135,7 @@ class AlbumController extends Controller
 			$return['albums'] = $children
 				->map(function ($e) {
 					return AlbumCast::toArray($e[0]);
-				})->all();
+				})->values()->all();
 			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
 			$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
 		}
@@ -131,7 +143,7 @@ class AlbumController extends Controller
 		// take care of photos
 		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
 		$photos_query = $album->get_photos();
-		$return['photos'] = $this->albumFunctions->photos($photos_query, $full_photo);
+		$return['photos'] = $this->albumFunctions->photos($photos_query, $full_photo, $album->get_license());
 
 		$return['id'] = $request['albumID'];
 		$return['num'] = strval(count($return['photos']));
@@ -180,7 +192,7 @@ class AlbumController extends Controller
 		}
 
 		if ($smart) {
-			$publicAlbums = $this->albumFunctions->getPublicAlbumsId();
+			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
 			$photos_sql = $album->get_photos();
 		} else {
@@ -695,7 +707,7 @@ class AlbumController extends Controller
 								break;
 							}
 						}
-						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
+						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumsFunctions->getPublicAlbumsId()));
 						break;
 					case 'public':
 						$dir = 'Public';
@@ -711,7 +723,7 @@ class AlbumController extends Controller
 								break;
 							}
 						}
-						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumFunctions->getPublicAlbumsId()));
+						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumsFunctions->getPublicAlbumsId()));
 						break;
 					case 'unsorted':
 						$dir = 'Unsorted';

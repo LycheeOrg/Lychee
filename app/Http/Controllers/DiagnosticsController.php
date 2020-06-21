@@ -342,6 +342,8 @@ class DiagnosticsController extends Controller
 		$infos[] = '';
 		$infos[] = $this->line('System:', PHP_OS);
 		$infos[] = $this->line('PHP Version:', floatval(phpversion()));
+		$infos[] = $this->line('Max uploaded file size:', ini_get('upload_max_filesize'));
+		$infos[] = $this->line('Max post size:', ini_get('post_max_size'));
 		$infos[] = $this->line($dbtype . ' Version:', $dbver);
 		$infos[] = '';
 		$infos[] = $this->line('Imagick:', $imagick);

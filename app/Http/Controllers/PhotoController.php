@@ -7,11 +7,12 @@ namespace App\Http\Controllers;
 use App\Album;
 use App\Assets\Helpers;
 use App\Configs;
-use App\ControllerFunctions\ReadAccessFunctions;
 use App\Exceptions\AlbumDoesNotExistsException;
 use App\Logs;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\AlbumsFunctions;
+use App\ModelFunctions\PhotoActions\Cast;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -39,11 +40,14 @@ class PhotoController extends Controller
 	private $sessionFunctions;
 
 	/**
-	 * @var ReadAccessFunctions
+	 * @var AlbumFunction
 	 */
-	private $readAccessFunctions;
-
 	private $albumFunctions;
+
+	/**
+	 * @var AlbumsFunction
+	 */
+	private $albumsFunctions;
 
 	/**
 	 * @var SymLinkFunctions
@@ -51,23 +55,23 @@ class PhotoController extends Controller
 	private $symLinkFunctions;
 
 	/**
-	 * @param PhotoFunctions      $photoFunctions
-	 * @param AlbumFunctions      $albumFunctions
-	 * @param SessionFunctions    $sessionFunctions
-	 * @param ReadAccessFunctions $readAccessFunctions
-	 * @param SymLinkFunctions    $symLinkFunctions
+	 * @param PhotoFunctions   $photoFunctions
+	 * @param AlbumFunctions   $albumFunctions
+	 * @param AlbumsFunctions  $albumsFunctions
+	 * @param SessionFunctions $sessionFunctions
+	 * @param SymLinkFunctions $symLinkFunctions
 	 */
 	public function __construct(
 		PhotoFunctions $photoFunctions,
 		AlbumFunctions $albumFunctions,
+		AlbumsFunctions $albumsFunctions,
 		SessionFunctions $sessionFunctions,
-		ReadAccessFunctions $readAccessFunctions,
 		SymLinkFunctions $symLinkFunctions
 	) {
 		$this->photoFunctions = $photoFunctions;
 		$this->albumFunctions = $albumFunctions;
+		$this->albumsFunctions = $albumsFunctions;
 		$this->sessionFunctions = $sessionFunctions;
-		$this->readAccessFunctions = $readAccessFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
@@ -93,7 +97,10 @@ class PhotoController extends Controller
 			return 'false';
 		}
 
-		$return = $photo->prepareData();
+		$return = Cast::toArray($photo);
+		Cast::urls($return, $photo);
+		$return['public'] = $photo->get_public();
+
 		$this->symLinkFunctions->getUrl($photo, $return);
 		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
 			if ($photo->album_id != null) {
@@ -128,14 +135,15 @@ class PhotoController extends Controller
 	{
 		// here we need to refine.
 		$starred = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
-		$starred->setAlbumIDs($this->albumFunctions->getPublicAlbumsId());
+		$starred->setAlbumIDs($this->albumsFunctions->getPublicAlbumsId());
 		$photo = $starred->get_photos()->inRandomOrder()->first();
 
 		if ($photo == null) {
 			return Response::error('no pictures found!');
 		}
 
-		$return = $photo->prepareData();
+		$return = Cast::toArray($photo);
+		Cast::urls($return, $photo);
 		$this->symLinkFunctions->getUrl($photo, $return);
 		if ($photo->album_id !== null && !$photo->album->is_full_photo_visible()) {
 			$photo->downgrade($return);
