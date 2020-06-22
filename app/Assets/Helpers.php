@@ -2,11 +2,11 @@
 
 namespace App\Assets;
 
+use App\Configs;
+use App\Exceptions\DivideByZeroException;
 use Cache;
 use DeviceDetector\DeviceDetector;
 use DeviceDetector\Parser\Device\DeviceParserAbstract;
-use App\Configs;
-use App\Exceptions\DivideByZeroException;
 use Illuminate\Support\Facades\File;
 
 class Helpers
@@ -32,32 +32,37 @@ class Helpers
 	}
 
 	/**
-	* checks if client is a TV.
-	*
-	* @return bool
-	*/
-	 public static function isTV(): bool
-	 {
-		 // Determine type of browser
-		 DeviceParserAbstract::setVersionTruncation(DeviceParserAbstract::VERSION_TRUNCATION_NONE);
-		 $userAgent = $_SERVER['HTTP_USER_AGENT'];
+	 * checks if client is a TV.
+	 *
+	 * @return bool
+	 */
+	public static function isTV(): bool
+	{
+		// Determine type of browser
+		DeviceParserAbstract::setVersionTruncation(DeviceParserAbstract::VERSION_TRUNCATION_NONE);
+		$userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-		 if (!empty($userAgent)) {
-			 $dd = new DeviceDetector($userAgent);
+		if (!empty($userAgent)) {
+			$dd = new DeviceDetector($userAgent);
 
-			 // Use cache since lib uses quite some regex
-			 // TODO -> not yet working
-			 //$psr6Cache = new app('cache.store');
-			 //$dd->setCache( new \DeviceDetector\Cache\PSR6Bridge($psr6Cache));
+			// Use cache since lib uses quite some regex
+			// TODO -> not yet working
+			//$psr6Cache = new app('cache.store');
+			//$dd->setCache( new \DeviceDetector\Cache\PSR6Bridge($psr6Cache));
 
-			 // Bot detection will completely be skipped (bots will be detected as regular devices then)
-			 $dd->skipBotDetection();
+			// Bot detection will completely be skipped (bots will be detected as regular devices then)
+			$dd->skipBotDetection();
 
-			 // Parse the user agent
-			 $dd->parse();
+			// Parse the user agent
+			$dd->parse();
 
-			 return $dd->isTV();
+			return $dd->isTV();
+		}
+
+		return false;
 	}
+
+	/*
 	 * Generate an id from current microtime.
 	 *
 	 * @return string generated ID
@@ -158,7 +163,6 @@ class Helpers
 
 		return false;
 	}
-
 
 	/**
 	 * Check if $path has readable and writable permissions.
