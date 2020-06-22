@@ -16,7 +16,6 @@ use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use App\Response;
 use App\User;
-use Debugbar;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
@@ -153,7 +152,6 @@ class SearchController extends Controller
 		if ($albums != null) {
 			$i = 0;
 			foreach ($albums as $album_model) {
-				Debugbar::warning($album_model);
 				$album = AlbumCast::toArray($album_model);
 
 				if ($this->sessionFunctions->is_logged_in()) {
