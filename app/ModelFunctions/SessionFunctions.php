@@ -6,6 +6,9 @@ namespace App\ModelFunctions;
 
 use App;
 use App\Configs;
+use App\Exceptions\NotLoggedInException;
+use App\Exceptions\RequestAdminDataException;
+use App\Exceptions\UserNotFoundException;
 use App\Logs;
 use App\User;
 use Illuminate\Support\Facades\Hash;
@@ -13,6 +16,8 @@ use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
+	private $user_data = null;
+
 	public function log_as_id($id)
 	{
 		if (App::runningUnitTests()) {
@@ -46,6 +51,11 @@ class SessionFunctions
 		return Session::get('login') && Session::get('UserID') === 0;
 	}
 
+	public function can_upload(): bool
+	{
+		return $this->id() == 0 || $this->getUserData()->upload;
+	}
+
 	/**
 	 * Return the current ID of the user
 	 * what happens when UserID is not set? :p.
@@ -54,7 +64,40 @@ class SessionFunctions
 	 */
 	public function id()
 	{
+		if (!Session::get('login')) {
+			throw new NotLoggedInException();
+		}
+
 		return Session::get('UserID');
+	}
+
+	/**
+	 * Return User object given a positive ID.
+	 */
+	private function accessUserData(): User
+	{
+		$id = $this->id();
+		if ($id > 0) {
+			$this->user_data = User::find($id);
+
+			if (!$this->user_data) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $id . ')');
+				throw new UserNotFoundException($id);
+			}
+
+			return $this->user_data;
+		}
+
+		Logs::error(__METHOD__, __LINE__, 'Trying to get a User from Admin ID.');
+		throw new RequestAdminDataException();
+	}
+
+	/**
+	 * Return User object and cache the result.
+	 */
+	public function getUserData(): User
+	{
+		return $this->user_data ?? $this->accessUserData();
 	}
 
 	/**
@@ -80,8 +123,10 @@ class SessionFunctions
 		$configs = Configs::get();
 
 		// Check if login credentials exist and login if they don't
-		if (isset($configs['username']) && $configs['username'] === '' &&
-			isset($configs['password']) && $configs['password'] === '') {
+		if (
+			isset($configs['username']) && $configs['username'] === '' &&
+			isset($configs['password']) && $configs['password'] === ''
+		) {
 			Session::put('login', true);
 			Session::put('UserID', 0);
 
@@ -110,6 +155,7 @@ class SessionFunctions
 			Session::put('login', true);
 			Session::put('UserID', $user->id);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
+			$this->user_data = $user;
 
 			return true;
 		}
@@ -189,6 +235,7 @@ class SessionFunctions
 	 */
 	public function logout()
 	{
+		$this->user_data = null;
 		Session::flush();
 	}
 }

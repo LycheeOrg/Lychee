@@ -6,16 +6,63 @@ use App\Album;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Metadata\GitHubFunctions;
-use App\Metadata\GitRequest;
+use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\ConfigFunctions;
+use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SessionFunctions;
-use App\ModelFunctions\SymLinkFunctions;
 use App\Photo;
 use Response;
 
 class DemoController extends Controller
 {
+	/**
+	 * @var ConfigFunctions
+	 */
+	private $configFunctions;
+
+	/**
+	 * @var AlbumFunctions
+	 */
+	private $albumFunctions;
+
+	/**
+	 * @var AlbumsFunctions
+	 */
+	private $albumsFunctions;
+
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	/**
+	 * @var GitHubFunctions
+	 */
+	private $gitHubFunctions;
+
+	/**
+	 * @param ConfigFunctions     $configFunctions
+	 * @param AlbumFunctions      $albumFunctions
+	 * @param AlbumsFunctions     $albumsFunctions
+	 * @param SessionFunctions    $sessionFunctions
+	 * @param ReadAccessFunctions $readAccessFunctions
+	 */
+	public function __construct(
+		ConfigFunctions $configFunctions,
+		AlbumFunctions $albumFunctions,
+		AlbumsFunctions $albumsFunctions,
+		SessionFunctions $sessionFunctions,
+		GitHubFunctions $gitHubFunctions
+	) {
+		$this->configFunctions = $configFunctions;
+		$this->albumFunctions = $albumFunctions;
+		$this->albumsFunctions = $albumsFunctions;
+		$this->sessionFunctions = $sessionFunctions;
+		$this->gitHubFunctions = $gitHubFunctions;
+	}
+
 	/**
 	 * This function returns what are the possible return output to simulate
 	 * the server interaction in the case of the demo server here:
@@ -33,17 +80,10 @@ class DemoController extends Controller
 
 		$functions = [];
 
-		$configFunctions = new ConfigFunctions();
-		$sessionFunctions = new SessionFunctions();
-		$githubFunctions = new GitHubFunctions(new GitRequest());
-		$readAccessFunctions = new ReadAccessFunctions($sessionFunctions);
-		$symLinkFunctions = new SymLinkFunctions($sessionFunctions);
-		$albumFunctions = new AlbumFunctions($sessionFunctions, $readAccessFunctions, $symLinkFunctions);
-
 		/**
 		 * Session::init.
 		 */
-		$session_init = new SessionController($configFunctions, $sessionFunctions, $githubFunctions);
+		$session_init = new SessionController($this->configFunctions, $this->sessionFunctions, $this->gitHubFunctions);
 		$return_session = [];
 		$return_session['name'] = 'Session::init()';
 		$return_session['type'] = 'string';
@@ -54,7 +94,7 @@ class DemoController extends Controller
 		/**
 		 * Albums::get.
 		 */
-		$albums_controller = new AlbumsController($albumFunctions, $sessionFunctions);
+		$albums_controller = new AlbumsController($this->albumFunctions, $this->albumsFunctions, $this->sessionFunctions);
 
 		$return_albums = [];
 		$return_albums['name'] = 'Albums::get';
@@ -72,8 +112,10 @@ class DemoController extends Controller
 		$return_album_list['kind'] = 'albumID';
 		$return_album_list['array'] = [];
 
-		$albums = Album::with('children')
-			->where('public', '=', '1')
+		/**
+		 * @var Collection[Album]
+		 */
+		$albums = Album::where('public', '=', '1')
 			->where('visible_hidden', '=', '1')
 			->get();
 		foreach ($albums as $album) {
@@ -82,65 +124,27 @@ class DemoController extends Controller
 			 */
 			// Get photos
 			// Get album information
-			$return_album_json = $album->prepareData();
-			$username = null;
-			if ($sessionFunctions->is_logged_in()) {
-				$return_album_json['owner'] = $username = $album->owner->username;
-			}
-			$full_photo = $album->full_photo_visible();
-			$return_album_json['albums'] = $albumFunctions->get_albums($album, $username, 1);
-			$photos_sql = Photo::set_order(Photo::where('album_id', '=', $album->id));
-			foreach ($return_album_json['albums'] as &$alb) {
-				unset($alb['thumbIDs']);
-			}
-			unset($return_album_json['thumbIDs']);
+			$return_album_json = AlbumCast::toArray($album);
 
-			$previousPhotoID = '';
-			$return_album_json['photos'] = [];
-			$photo_counter = 0;
-			/** @var Photo[] $photos */
-			$photos = $photos_sql->with('album')->get();
-			foreach ($photos as $photo_model) {
-				// Turn data from the database into a front-end friendly format
-				$photo = $photo_model->prepareData();
-				$symLinkFunctions->getUrl($photo_model, $photo);
-				if (!$sessionFunctions->is_current_user($photo_model->owner_id) && !$full_photo) {
-					$photo_model->downgrade($photo);
-				}
+			$children = $this->albumFunctions->get_children($album, 0, true);
+			$return_album_json['albums'] = $children
+				->map(function ($e) {
+					return AlbumCast::toArray($e[0]);
+				})->values()->all();
+			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
+			$this->albumFunctions->set_thumbs_children($return_album_json['albums'], $thumbs[1]);
 
-				// Set previous and next photoID for navigation purposes
-				$photo['previousPhoto'] = $previousPhotoID;
-				$photo['nextPhoto'] = '';
+			// take care of photos
+			$full_photo = $return_album_json['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
+			$photos_query = $album->get_photos();
+			$return_album_json['photos'] = $this->albumFunctions->photos($photos_query, $full_photo, $album->get_license());
 
-				// Set current photoID as nextPhoto of previous photo
-				if ($previousPhotoID !== '') {
-					$return_album_json['photos'][$photo_counter - 1]['nextPhoto'] = $photo['id'];
-				}
-				$previousPhotoID = $photo['id'];
+			$return_album_json['num'] = strval(count($return_album_json['photos']));
 
-				// Add to $return_album_json
-				$return_album_json['photos'][$photo_counter] = $photo;
-
-				$photo_counter++;
-			}
-
-			if (count($return_album_json['photos']) === 0) {
-				// Album empty
+			// finalize the loop
+			if ($return_album_json['num'] === '0') {
 				$return_album_json['photos'] = false;
-			} elseif (Configs::get_value('photos_wraparound', '1') === '1') {
-				// Enable next and previous for the first and last photo
-				$lastElement = end($return_album_json['photos']);
-				$lastElementId = $lastElement['id'];
-				$firstElement = reset($return_album_json['photos']);
-				$firstElementId = $firstElement['id'];
-
-				if ($lastElementId !== $firstElementId) {
-					$return_album_json['photos'][$photo_counter - 1]['nextPhoto'] = $firstElementId;
-					$return_album_json['photos'][0]['previousPhoto'] = $lastElementId;
-				}
 			}
-			$return_album_json['id'] = $album->id;
-			$return_album_json['num'] = count($return_album_json['photos']);
 
 			$return_album = [];
 			$return_album['id'] = $album->id;
@@ -160,12 +164,12 @@ class DemoController extends Controller
 		$return_photo_list['kind'] = 'photoID';
 		$return_photo_list['array'] = [];
 
-		$albums = Album::where('public', '=', '1')->where('visible_hidden', '=', '1')->get();
 		foreach ($albums as $album) {
 			/** @var Photo $photo */
 			foreach ($album->photos as $photo) {
 				$return_photo = [];
-				$return_photo_json = $photo->prepareData();
+				$return_photo_json = PhotoCast::toArray($photo);
+				PhotoCast::urls($return_photo_json, $photo);
 				$return_photo_json['original_album'] = $return_photo_json['album'];
 				$return_photo_json['album'] = $album->id;
 				$return_photo['id'] = $photo->id;

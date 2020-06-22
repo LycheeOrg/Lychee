@@ -4,8 +4,8 @@
 
 namespace App;
 
-use App\ModelFunctions\Helpers;
-use Eloquent;
+use App\Assets\Helpers;
+use App\ModelFunctions\PhotoActions\Cast;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -165,8 +165,8 @@ class Photo extends Model
 		// Todo: We need to search for pairs (Video + Photo)
 		// Photo+Photo or Video+Video does not work
 		$sql = $this->where('livePhotoContentID', '=', $livePhotoContentID)
-					->where('album_id', '=', $albumID)
-					->whereNull('livePhotoUrl');
+			->where('album_id', '=', $albumID)
+			->whereNull('livePhotoUrl');
 
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
@@ -193,175 +193,7 @@ class Photo extends Model
 	}
 
 	/**
-	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
-	 *
-	 * @return array returns photo-attributes in a normalized structure
-	 */
-	public function prepareData()
-	{
-		// Init
-		$photo = [];
-
-		// Set unchanged attributes
-		$photo['id'] = strval($this->id);
-		$photo['title'] = $this->title;
-		$photo['tags'] = $this->tags;
-		$photo['star'] = $this->star == 1 ? '1' : '0';
-		$photo['album'] = $this->album_id !== null ? strval($this->album_id) : null;
-		$photo['width'] = strval($this->width);
-		$photo['height'] = strval($this->height);
-		$photo['type'] = $this->type;
-		$photo['size'] = $this->size;
-		$photo['iso'] = $this->iso;
-		$photo['aperture'] = $this->aperture;
-		$photo['make'] = $this->make;
-		$photo['model'] = $this->model;
-		$photo['shutter'] = $this->shutter;
-		$photo['focal'] = $this->focal;
-		$photo['lens'] = $this->lens;
-		$photo['latitude'] = $this->latitude;
-		$photo['longitude'] = $this->longitude;
-		$photo['altitude'] = $this->altitude;
-		$photo['imgDirection'] = $this->imgDirection;
-		$photo['location'] = $this->location;
-		$photo['livePhotoContentID'] = $this->livePhotoContentID;
-
-		$photo['sysdate'] = $this->created_at->format('d F Y');
-		$photo['description'] = $this->description == null ? '' : $this->description;
-		$photo['license'] = Configs::get_value('default_license'); // default
-
-		// shutter speed needs to be processed. It is stored as a string `a/b s`
-		if ($photo['shutter'] != '' && substr($photo['shutter'], 0, 2) != '1/') {
-			preg_match('/(\d+)\/(\d+) s/', $photo['shutter'], $matches);
-			if ($matches) {
-				$a = intval($matches[1]);
-				$b = intval($matches[2]);
-				if ($b != 0) {
-					try {
-						$gcd = Helpers::gcd($a, $b);
-						$a = $a / $gcd;
-						$b = $b / $gcd;
-					} catch (Exception $e) {
-						// this should not happen as we covered the case $b = 0;
-					}
-					if ($a == 1) {
-						$photo['shutter'] = '1/' . $b . ' s';
-					} else {
-						$photo['shutter'] = ($a / $b) . ' s';
-					}
-				}
-			}
-		}
-
-		if ($photo['shutter'] == '1/1 s') {
-			$photo['shutter'] = '1 s';
-		}
-
-		// check if license is none
-		if ($this->license == 'none') {
-			// check if it has an album
-			if ($this->album_id != 0) {
-				// this does not include sub albums setting. Do we want this ?
-				// this will need to be changed if we want to add license backtracking
-				$l = $this->album->license;
-				if ($l != 'none') {
-					$photo['license'] = $l;
-				}
-			}
-		} else {
-			$photo['license'] = $this->license;
-		}
-
-		// if this is a video
-		if (strpos($this->type, 'video') === 0) {
-			$photoUrl = $this->thumbUrl;
-
-			// We need to format the framerate (stored as focal) -> max 2 decimal digits
-			$photo['focal'] = round($photo['focal'], 2);
-		} elseif ($this->type == 'raw') {
-			// It's a raw file -> we also use jpeg as extension
-			$photoUrl = $this->thumbUrl;
-		} else {
-			$photoUrl = $this->url;
-		}
-		$photoUrl2x = '';
-		if ($photoUrl !== '') {
-			$photoUrl2x = explode('.', $photoUrl);
-			$photoUrl2x = $photoUrl2x[0] . '@2x.' . $photoUrl2x[1];
-		}
-
-		// Parse medium
-		if ($this->medium != '') {
-			$photo['medium'] = Storage::url('medium/' . $photoUrl);
-			$photo['medium_dim'] = $this->medium;
-		} else {
-			$photo['medium'] = '';
-			$photo['medium_dim'] = '';
-		}
-
-		if ($this->medium2x != '') {
-			$photo['medium2x'] = Storage::url('medium/' . $photoUrl2x);
-			$photo['medium2x_dim'] = $this->medium2x;
-		} else {
-			$photo['medium2x'] = '';
-			$photo['medium2x_dim'] = '';
-		}
-
-		if ($this->small != '') {
-			$photo['small'] = Storage::url('small/' . $photoUrl);
-			$photo['small_dim'] = $this->small;
-		} else {
-			$photo['small'] = '';
-			$photo['small_dim'] = '';
-		}
-
-		if ($this->small2x != '') {
-			$photo['small2x'] = Storage::url('small/' . $photoUrl2x);
-			$photo['small2x_dim'] = $this->small2x;
-		} else {
-			$photo['small2x'] = '';
-			$photo['small2x_dim'] = '';
-		}
-
-		// Parse paths
-		$photo['thumbUrl'] = Storage::url('thumb/' . $this->thumbUrl);
-
-		if ($this->thumb2x == '1') {
-			$thumbUrl2x = explode('.', $this->thumbUrl);
-			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-			$photo['thumb2x'] = Storage::url('thumb/' . $thumbUrl2x);
-		} else {
-			$photo['thumb2x'] = '';
-		}
-
-		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
-		$photo['url'] = Storage::url($path_prefix . $this->url);
-
-		if ($this->livePhotoUrl !== '' && $this->livePhotoUrl !== null) {
-			$photo['livePhotoUrl'] = Storage::url('big/' . $this->livePhotoUrl);
-		} else {
-			$photo['livePhotoUrl'] = null;
-		}
-
-		// Use takestamp as sysdate when possible
-		if (isset($this->takestamp) && $this->takestamp != null) {
-			// Use takestamp
-			$photo['cameraDate'] = '1';
-			$photo['sysdate'] = $this->created_at->format('d F Y');
-			$photo['takedate'] = $this->takestamp->format('d F Y \a\t H:i');
-		} else {
-			// Use sysstamp from the id
-			$photo['cameraDate'] = '0';
-			$photo['sysdate'] = $this->created_at->format('d F Y');
-			$photo['takedate'] = '';
-		}
-
-		$photo['public'] = $this->get_public();
-
-		return $photo;
-	}
-
-	/**
+	 * ! how is this different than Cast::to_array ?
 	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
 	 *
 	 * @return array returns photo-attributes in a normalized structure
@@ -428,6 +260,7 @@ class Photo extends Model
 	}
 
 	/**
+	 * TODO: Move me
 	 * Downgrade the quality of the pictures.
 	 *
 	 * @param array $return
@@ -445,6 +278,43 @@ class Photo extends Model
 	}
 
 	/**
+	 * Retun the shutter speed as a proper string.
+	 */
+	public function get_shutter_str()
+	{
+		$shutter = $this->shutter;
+		// shutter speed needs to be processed. It is stored as a string `a/b s`
+		if ($shutter != '' && substr($shutter, 0, 2) != '1/') {
+			preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
+			if ($matches) {
+				$a = intval($matches[1]);
+				$b = intval($matches[2]);
+				if ($b != 0) {
+					try {
+						$gcd = Helpers::gcd($a, $b);
+						$a = $a / $gcd;
+						$b = $b / $gcd;
+					} catch (Exception $e) {
+						// this should not happen as we covered the case $b = 0;
+					}
+					if ($a == 1) {
+						$shutter = '1/' . $b . ' s';
+					} else {
+						$shutter = ($a / $b) . ' s';
+					}
+				}
+			}
+		}
+
+		if ($shutter == '1/1 s') {
+			$shutter = '1 s';
+		}
+
+		return $shutter;
+	}
+
+	/**
+	 * TODO: [get rid of/move] me.
 	 * Get the public value of a picture
 	 * if 0 : picture is private
 	 * if 1 : picture is public alone
@@ -582,46 +452,6 @@ class Photo extends Model
 	}
 
 	/**
-	 * @param $query
-	 *
-	 * @return mixed
-	 */
-	public static function select_stars(Builder $query)
-	{
-		return self::set_order($query->where('star', '=', 1));
-	}
-
-	/**
-	 * @param $query
-	 *
-	 * @return mixed
-	 */
-	public static function select_public(Builder $query)
-	{
-		return self::set_order($query->where('public', '=', 1));
-	}
-
-	/**
-	 * @param $query
-	 *
-	 * @return mixed
-	 */
-	public static function select_recent(Builder $query)
-	{
-		return self::set_order($query->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))->toDateTimeString()));
-	}
-
-	/**
-	 * @param $query
-	 *
-	 * @return mixed
-	 */
-	public static function select_unsorted(Builder $query)
-	{
-		return self::set_order($query->where('album_id', '=', null));
-	}
-
-	/**
 	 * Define scopes which we can directly use e.g. Photo::stars()->all().
 	 */
 
@@ -632,7 +462,7 @@ class Photo extends Model
 	 */
 	public function scopeStars($query)
 	{
-		return self::select_stars($query);
+		return $query->where('star', '=', 1);
 	}
 
 	/**
@@ -642,7 +472,7 @@ class Photo extends Model
 	 */
 	public function scopePublic($query)
 	{
-		return self::select_public($query);
+		return $query->where('public', '=', 1);
 	}
 
 	/**
@@ -652,7 +482,7 @@ class Photo extends Model
 	 */
 	public function scopeRecent($query)
 	{
-		return self::select_recent($query);
+		return $query->where('created_at', '>=', Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))->toDateTimeString());
 	}
 
 	/**
@@ -662,7 +492,7 @@ class Photo extends Model
 	 */
 	public function scopeUnsorted($query)
 	{
-		return self::select_unsorted($query);
+		return $query->where('album_id', '=', null);
 	}
 
 	/**

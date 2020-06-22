@@ -5,16 +5,18 @@
 namespace App\ModelFunctions;
 
 use App\Album;
+use App\Assets\Helpers;
 use App\Configs;
 use App\Image\ImageHandlerInterface;
 use App\Logs;
 use App\Metadata\Extractor;
+use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\Photo;
 use App\Response;
 use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class PhotoFunctions
 {
@@ -145,17 +147,18 @@ class PhotoFunctions
 	 * Add new photo(s) to the database.
 	 * Exits on error.
 	 *
-	 * @param array $file
-	 * @param int   $albumID_in
-	 * @param bool  $delete_imported
-	 * @param bool  $force_skip_duplicates
-	 * @param bool  $resync_metadata
+	 * @param array      $file
+	 * @param int|string $albumID_in
+	 * @param bool       $delete_imported
+	 * @param bool       $force_skip_duplicates
+	 * @param bool       $resync_metadata
 	 *
 	 * @return string|false ID of the added photo
 	 */
-	public function add(array $file, $albumID_in = 0, $delete_imported = false, $force_skip_duplicates = false, $resync_metadata = false)
+	public function add(array $file, $albumID_in = 0, bool $delete_imported = false, bool $force_skip_duplicates = false, bool $resync_metadata = false)
 	{
 		// Check permissions
+		// TODO: extract this test.
 		if (
 			Helpers::hasPermissions(Storage::path('')) === false ||
 			Helpers::hasPermissions(Storage::path('big/')) === false ||
@@ -169,33 +172,24 @@ class PhotoFunctions
 			return Response::error('An upload-folder is missing or not readable and writable!');
 		}
 
+		$public = 0;
+		$star = 0;
+		$albumID = null;
+
 		switch ($albumID_in) {
-				// s for public (share)
-			case 's':
+			case 'public':
 				$public = 1;
-				$star = 0;
-				$albumID = null;
 				break;
 
-				// f for starred (fav)
-			case 'f':
+			case 'starred':
 				$star = 1;
-				$public = 0;
-				$albumID = null;
 				break;
 
-				// r for recent
-				// 0 for unsorted
-			case '0':
-			case 'r':
-				$public = 0;
-				$star = 0;
-				$albumID = null;
+			case 'unsorted':
+			case '0': // root
+			case 'recent':
 				break;
-
 			default:
-				$star = 0;
-				$public = 0;
 				$albumID = $albumID_in;
 				break;
 		}
@@ -314,6 +308,7 @@ class PhotoFunctions
 
 		$info = $this->getFileMetadata($file, $path, $kind, $mimeType, $extension);
 
+		// TODO: move this elsewhere
 		$photo->title = $info['title'];
 		$photo->url = $photo_name;
 		$photo->description = $info['description'];
@@ -806,7 +801,7 @@ class PhotoFunctions
 
 				return Response::error('Could not find specified album');
 			}
-			if (!$album->update_takestamps([$photo->takestamp], true)) {
+			if (!AlbumUpdate::update_takestamps($album, [$photo->takestamp], true)) {
 				Logs::error(__METHOD__, __LINE__, 'Could not update album takestamps');
 
 				return Response::error('Could not update album takestamps');
@@ -892,9 +887,9 @@ class PhotoFunctions
 	 * @param string $mimeType
 	 * @param string $extension
 	 *
-	 * @return void
+	 * @return array
 	 */
-	private function getFileMetadata($file, $path, $kind, $mimeType, $extension)
+	private function getFileMetadata($file, $path, $kind, $mimeType, $extension): array
 	{
 		$info = $this->metadataExtractor->extract($path, $mimeType);
 		if ($kind == 'raw') {

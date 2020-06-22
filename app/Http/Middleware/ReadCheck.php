@@ -40,7 +40,7 @@ class ReadCheck
 			$albumIDs[] = $request['albumID'];
 		}
 		foreach ($albumIDs as $albumID) {
-			$sess = $this->readAccessFunctions->album($albumID);
+			$sess = $this->readAccessFunctions->albumID($albumID);
 			if ($sess === 0) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
 
