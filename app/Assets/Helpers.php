@@ -46,9 +46,7 @@ class Helpers
 			$dd = new DeviceDetector($userAgent);
 
 			// Use cache since lib uses quite some regex
-			// TODO -> not yet working
-			//$psr6Cache = new app('cache.store');
-			//$dd->setCache( new \DeviceDetector\Cache\PSR6Bridge($psr6Cache));
+			$dd->setCache( new \DeviceDetector\Cache\PSR16Bridge(app('cache.store')));
 
 			// Bot detection will completely be skipped (bots will be detected as regular devices then)
 			$dd->skipBotDetection();
