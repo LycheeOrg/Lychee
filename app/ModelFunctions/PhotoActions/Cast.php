@@ -45,8 +45,6 @@ class Cast
 			'livePhotoContentID' => $photo->livePhotoContentID,
 
 			'sysdate' => $photo->created_at->format('d F Y'),
-
-			// Use takestamp as sysdate when possible
 			'takedate' => isset($photo->takestamp) ? $photo->takestamp->format('d F Y \a\t H:i') : '',
 			'license' => $photo->license,
 		];
