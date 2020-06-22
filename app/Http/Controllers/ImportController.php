@@ -7,16 +7,16 @@
 namespace App\Http\Controllers;
 
 use App\Album;
+use App\Assets\Helpers;
 use App\Configs;
 use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\Helpers;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use ImagickException;
-use Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ImportController extends Controller
@@ -180,7 +180,7 @@ class ImportController extends Controller
 		// more complicated...
 		if (sscanf(ini_get('memory_limit'), '%d%c', $this->memLimit, $memExt) === 2) {
 			switch (strtolower($memExt)) {
-				// @codeCoverageIgnoreStart
+					// @codeCoverageIgnoreStart
 				case 'k':
 					$this->memLimit *= 1024;
 					break;
@@ -195,7 +195,7 @@ class ImportController extends Controller
 					break;
 				default:
 					break;
-				// @codeCoverageIgnoreEnd
+					// @codeCoverageIgnoreEnd
 			}
 		}
 		// We set the warning threshold at 90% of the limit.
@@ -274,10 +274,12 @@ class ImportController extends Controller
 		}
 
 		// Skip folders of Lychee
-		if ($path === Storage::path('big') ||
+		if (
+			$path === Storage::path('big') ||
 			$path === Storage::path('medium') ||
 			$path === Storage::path('small') ||
-			$path === Storage::path('thumb')) {
+			$path === Storage::path('thumb')
+		) {
 			$this->status_update('Problem: ' . $origPath . ': Given path is reserved');
 			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee (' . $origPath . ')');
 

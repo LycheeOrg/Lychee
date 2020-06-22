@@ -5,7 +5,7 @@ namespace App\ModelFunctions;
 use App\Configs;
 use App\Photo;
 use App\SymLink;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class SymLinkFunctions
 {

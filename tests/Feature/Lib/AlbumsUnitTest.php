@@ -74,8 +74,10 @@ class AlbumsUnitTest
 		string $password = '',
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::get',
-			['albumID' => $id, 'password' => $password]);
+		$response = $testCase->post(
+			'/api/Album::get',
+			['albumID' => $id, 'password' => $password]
+		);
 		$response->assertOk();
 		if ($result != 'true') {
 			$response->assertSee($result, false);
@@ -96,8 +98,10 @@ class AlbumsUnitTest
 		string $password = '',
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::getPublic',
-			['albumID' => $id, 'password' => $password]);
+		$response = $testCase->post(
+			'/api/Album::getPublic',
+			['albumID' => $id, 'password' => $password]
+		);
 		$response->assertOk();
 		$response->assertSeeText($result);
 	}
@@ -144,8 +148,10 @@ class AlbumsUnitTest
 		string $title,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::setTitle',
-			['albumIDs' => $id, 'title' => $title]);
+		$response = $testCase->post(
+			'/api/Album::setTitle',
+			['albumIDs' => $id, 'title' => $title]
+		);
 		$response->assertOk();
 		$response->assertSee($result, false);
 	}
@@ -164,8 +170,10 @@ class AlbumsUnitTest
 		string $description,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::setDescription',
-			['albumID' => $id, 'description' => $description]);
+		$response = $testCase->post(
+			'/api/Album::setDescription',
+			['albumID' => $id, 'description' => $description]
+		);
 		$response->assertOk();
 		$response->assertSee($result, false);
 	}
@@ -257,5 +265,40 @@ class AlbumsUnitTest
 		$response = $testCase->post('/api/Album::delete', ['albumIDs' => $id]);
 		$response->assertOk();
 		$response->assertSee($result, false);
+	}
+
+	/**
+	 * Test position data (Albums).
+	 */
+	public function AlbumsGetPositionDataFull(
+		TestCase &$testCase,
+		int $code = 200,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Albums::getPositionData', []);
+		$response->assertStatus($code);
+		if ($result != 'true') {
+			$response->assertSee($result, false);
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Test position data (Album).
+	 */
+	public function AlbumGetPositionDataFull(
+		TestCase &$testCase,
+		string $id,
+		int $code = 200,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Album::getPositionData', ['albumID' => $id, 'includeSubAlbums' => 'false']);
+		$response->assertStatus($code);
+		if ($result != 'true') {
+			$response->assertSee($result, false);
+		}
+
+		return $response;
 	}
 }

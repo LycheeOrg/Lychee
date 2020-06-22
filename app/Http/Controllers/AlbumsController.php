@@ -7,10 +7,9 @@ namespace App\Http\Controllers;
 use App\Album;
 use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
-use App\Response;
-use App\User;
 use Illuminate\Database\Eloquent\Builder;
 
 class AlbumsController extends Controller
@@ -21,17 +20,27 @@ class AlbumsController extends Controller
 	private $albumFunctions;
 
 	/**
+	 * @var AlbumsFunctions
+	 */
+	private $albumsFunctions;
+
+	/**
 	 * @var SessionFunctions
 	 */
 	private $sessionFunctions;
 
 	/**
 	 * @param AlbumFunctions   $albumFunctions
+	 * @param AlbumsFunctions  $albumsFunctions
 	 * @param SessionFunctions $sessionFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
-	{
+	public function __construct(
+		AlbumFunctions $albumFunctions,
+		AlbumsFunctions $albumsFunctions,
+		SessionFunctions $sessionFunctions
+	) {
 		$this->albumFunctions = $albumFunctions;
+		$this->albumsFunctions = $albumsFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 	}
 
@@ -50,14 +59,15 @@ class AlbumsController extends Controller
 			'shared_albums' => null,
 		];
 
-		$toplevel = $this->albumFunctions->getToplevelAlbums();
-		if ($toplevel === null) {
-			return Response::error('I could not find you.');
-		}
+		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
+		//
+		$toplevel = $this->albumsFunctions->getToplevelAlbums();
+		$children = $this->albumsFunctions->get_children($toplevel);
 
-		$return['smartalbums'] = $this->albumFunctions->getSmartAlbums($toplevel);
-		$return['albums'] = $this->albumFunctions->prepare_albums($toplevel['albums']);
-		$return['shared_albums'] = $this->albumFunctions->prepare_albums($toplevel['shared_albums']);
+		$return['albums'] = $this->albumsFunctions->prepare_albums($toplevel['albums'], $children['albums']);
+		$return['shared_albums'] = $this->albumsFunctions->prepare_albums($toplevel['shared_albums'], $children['shared_albums']);
+
+		$return['smartalbums'] = $this->albumsFunctions->getSmartAlbums($toplevel, $children);
 
 		return $return;
 	}
@@ -73,23 +83,22 @@ class AlbumsController extends Controller
 		// Initialize return var
 		$return = [];
 
-		$albumIDs = $this->albumFunctions->getPublicAlbums();
+		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
 
 		$query = Photo::with('album')->where(
-				function (Builder $query) use ($albumIDs) {
-					$query->whereIn('album_id', $albumIDs);
-					// Add the 'Unsorted' album.
-					if ($this->sessionFunctions->is_logged_in()) {
-						$id = $this->sessionFunctions->id();
-						$user = User::find($id);
-						if ($id == 0 || $user->upload) {
-							$query->orWhere('album_id', '=', null);
-							if ($id !== 0) {
-								$query->where('owner_id', '=', $id);
-							}
-						}
+			function (Builder $query) use ($albumIDs) {
+				$query->whereIn('album_id', $albumIDs);
+				// Add the 'Unsorted' album.
+				if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload()) {
+					$query->orWhere('album_id', '=', null);
+
+					$id = $this->sessionFunctions->id();
+					if ($id !== 0) {
+						$query->where('owner_id', '=', $id);
 					}
-				});
+				}
+			}
+		);
 
 		$full_photo = Configs::get_value('full_photo', '1') == '1';
 		$return['photos'] = $this->albumFunctions->photosLocationData($query, $full_photo);
