@@ -238,9 +238,10 @@ class AlbumFunctions
 		/**
 		 * @var Collection[Photo]
 		 */
-		$photos = $photos_sql->get();
-
 		$sortingCol = Configs::get_value('sorting_Photos_col');
+		$sortingOrder = Configs::get_value('sorting_Photos_order');
+		$photos = $this->customSort($photos_sql, $sortingCol, $sortingOrder);
+
 		if ($sortingCol === 'title' || $sortingCol === 'description') {
 			// The result is supposed to be sorted by the user-specified
 			// column as the primary key and by 'id' as the secondary key.
@@ -254,14 +255,14 @@ class AlbumFunctions
 			// TODO: use collections.
 			// * see if this works
 			// $photos = $photos
-			// 	->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, Configs::get_value('sorting_Photos_order') === 'ASC' ? SORT_ASC : SORT_DESC)
+			// 	->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'ASC' ? SORT_ASC : SORT_DESC)
 			// 	->sortBy('id', SORT_ASC);
 			$photos = $photos->all();
 			// Primary sorting key.
 			$values = array_column($photos, $sortingCol);
 			// Secondary sorting key -- just preserves current order.
 			$keys = array_keys($photos);
-			array_multisort($values, Configs::get_value('sorting_Photos_order') === 'ASC' ? SORT_ASC : SORT_DESC, SORT_NATURAL | SORT_FLAG_CASE, $keys, SORT_ASC, $photos);
+			array_multisort($values, $sortingOrder === 'ASC' ? SORT_ASC : SORT_DESC, SORT_NATURAL | SORT_FLAG_CASE, $keys, SORT_ASC, $photos);
 		}
 
 		foreach ($photos as $photo_model) {
