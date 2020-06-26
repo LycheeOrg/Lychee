@@ -32,12 +32,14 @@ class Helpers
 	}
 
 	/**
-	 * checks if client is a TV.
+	 * return device type as string
+	 * ('TV', 'Mobile', 'Desktop', 'Other').
 	 *
 	 * @return bool
 	 */
-	public static function isTV(): bool
+	public static function getDeviceType(): bool
 	{
+		return true;
 		// Determine type of browser
 		DeviceParserAbstract::setVersionTruncation(DeviceParserAbstract::VERSION_TRUNCATION_NONE);
 		$userAgent = $_SERVER['HTTP_USER_AGENT'];
@@ -46,7 +48,7 @@ class Helpers
 			$dd = new DeviceDetector($userAgent);
 
 			// Use cache since lib uses quite some regex
-			$dd->setCache( new \DeviceDetector\Cache\PSR16Bridge(app('cache.store')));
+			$dd->setCache(new \DeviceDetector\Cache\PSR16Bridge(app('cache.store')));
 
 			// Bot detection will completely be skipped (bots will be detected as regular devices then)
 			$dd->skipBotDetection();
@@ -54,10 +56,18 @@ class Helpers
 			// Parse the user agent
 			$dd->parse();
 
-			return $dd->isTV();
+			if ($dd->isDesktop()) {
+				return 'Desktop';
+			} elseif ($dd->isMobile()) {
+				return 'Mobile';
+			} elseif ($dd->isTV()) {
+				return 'TV';
+			} else {
+				return 'Other';
+			}
 		}
 
-		return false;
+		return 'Other';
 	}
 
 	/*

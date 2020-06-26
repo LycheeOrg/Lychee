@@ -100,6 +100,7 @@ class SessionController extends Controller
 			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
 		}
 
+		$deviceType = \App\Assets\Helpers::getDeviceType();
 		// UI behaviour needs to be slightly modified if client is a TV
 		$return['config']['header_auto_hide'] = true;
 		$return['config']['active_focus_on_page_load'] = false;
@@ -112,10 +113,12 @@ class SessionController extends Controller
 		$return['config']['enable_button_download'] = true;
 		$return['config']['enable_button_add'] = true;
 		$return['config']['enable_button_more'] = true;
+		$return['config']['enable_button_rotate'] = true;
 		$return['config']['enable_close_tab_on_esc'] = false;
 		$return['config']['enable_tabindex'] = false;
+		$return['config']['device_type'] = $deviceType;
 
-		if (\App\Assets\Helpers::isTV()) {
+		if ($deviceType == 'TV') {
 			$return['config']['header_auto_hide'] = false;
 			$return['config']['active_focus_on_page_load'] = true;
 			$return['config']['enable_button_visibility'] = false;
@@ -127,6 +130,7 @@ class SessionController extends Controller
 			$return['config']['enable_button_download'] = false;
 			$return['config']['enable_button_add'] = false;
 			$return['config']['enable_button_more'] = false;
+			$return['config']['enable_button_rotate'] = false;
 			$return['config']['enable_close_tab_on_esc'] = true;
 			$return['config']['enable_tabindex'] = true;
 		}
