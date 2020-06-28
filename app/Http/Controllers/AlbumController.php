@@ -122,20 +122,17 @@ class AlbumController extends Controller
 				break;
 		}
 
-		$return = AlbumCast::toArray($album);
-		$return['owner'] = $album->owner->username;
-
 		if ($smart) {
+			$return = AlbumCast::toArray($album);
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
 		} else {
 			// take care of sub albums
 			$children = $this->albumFunctions->get_children($album, 0, true);
-			// php7.4: $return['albums'] = $children->map(fn ($e) => AlbumCast::toArray($e[0]))->all();
-			$return['albums'] = $children
-				->map(function ($e) {
-					return AlbumCast::toArray($e[0]);
-				})->values()->all();
+
+			$return = AlbumCast::toArrayWith($album, $children);
+			$return['owner'] = $album->owner->username;
+
 			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
 			$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
 		}
