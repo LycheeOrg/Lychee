@@ -145,6 +145,10 @@ class AlbumsFunctions
 			}
 		}
 
+		if (empty($return)) {
+			return null;
+		}
+
 		return $return;
 	}
 
@@ -215,13 +219,12 @@ class AlbumsFunctions
 
 			if ($id > 0) {
 				$shared = $this->get_shared_album($id);
-
 				$sql = $sql->where(function ($query) use ($id, $shared) {
 					$query = $query->where('owner_id', '=', $id);
 					$query = $query->orWhereIn('id', $shared);
-					$query = $query->orWhere(
-						$query->where('public', '=', true)->where('visible_hidden', '=', true)
-					);
+					$query = $query->orWhere(function ($_query) {
+						$_query->where('public', '=', true)->where('visible_hidden', '=', true);
+					});
 				});
 			}
 
