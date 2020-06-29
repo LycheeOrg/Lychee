@@ -9,7 +9,7 @@ use App\Assets\Helpers;
 use App\Configs;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SymLinkFunctions;
-use App\Photo;
+use Illuminate\Support\Collection as BaseCollection;
 
 class Cast
 {
@@ -45,6 +45,19 @@ class Cast
 			'thumbs2x' => [],
 			'types' => [],
 		];
+	}
+
+	public static function toArrayWith(Album $album, BaseCollection $children)
+	{
+		$album_array = self::toArray($album);
+
+		// php7.4: $album_array['albums'] = $children[$key]->map(fn ($e) => AlbumCast::toArrayWith($e[0], $e[1]));
+		$album_array['albums'] = $children->map(function ($e) {
+			return self::toArrayWith($e[0], $e[1]);
+		})->values();
+		// we need values because we need to reset the keys for when logged in.
+
+		return $album_array;
 	}
 
 	/**

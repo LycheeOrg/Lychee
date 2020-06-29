@@ -66,19 +66,15 @@ class AlbumsFunctions
 	{
 		$return = [];
 		foreach ($albums->keys() as $key) {
-			$album_array = AlbumCast::toArray($albums[$key]);
+			$album_array = AlbumCast::toArrayWith($albums[$key], $children[$key]);
 
 			if ($this->sessionFunctions->is_logged_in()) {
 				$album_array['owner'] = $albums[$key]->owner->username;
 			}
 
-			// php7.4: $album_array['albums'] = $children[$key]->map(fn ($e) => AlbumCast::toArray($e[0]));
-			$album_array['albums'] = $children[$key]->map(function ($e) {
-				return AlbumCast::toArray($e[0]);
-			});
-
 			$thumbs = $this->albumFunctions->get_thumbs($albums[$key], $children[$key]);
 			$this->albumFunctions->set_thumbs($album_array, $thumbs);
+			$this->albumFunctions->set_thumbs_children($album_array['albums'], $thumbs[1]);
 
 			// Add to return
 			$return[] = $album_array;
