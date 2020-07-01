@@ -42,6 +42,14 @@ See detailed instructions on the [Installation](https://lycheeorg.github.io/docs
 
 Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Docker](https://github.com/LycheeOrg/Lychee-Docker) or on Docker Hub as [lycheeorg/lychee](https://hub.docker.com/r/lycheeorg/lychee).
 
+### Cloudron
+
+Cloudron is a complete solution for running apps on your server and keeping them up-to-date and secure.
+
+[![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?com.electerious.lychee.cloudronapp)
+
+The source code for the package can be found [here](https://git.cloudron.io/cloudron/lychee-app).
+
 ### Update
 
 Updating is as easy as it should be.  [Update &#187;](https://lycheeorg.github.io/docs/update.html)
