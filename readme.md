@@ -46,7 +46,7 @@ Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Docker
 
 Cloudron is a complete solution for running apps on your server and keeping them up-to-date and secure.
 
-[![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/button.html?com.electerious.lychee.cloudronapp)
+[![Install](https://cloudron.io/img/button.svg)](https://cloudron.io/store/com.electerious.lychee.cloudronapp.html)
 
 The source code for the package can be found [here](https://git.cloudron.io/cloudron/lychee-app).
 
