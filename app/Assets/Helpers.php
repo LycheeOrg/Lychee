@@ -35,11 +35,10 @@ class Helpers
 	 * return device type as string
 	 * ('TV', 'Mobile', 'Desktop', 'Other').
 	 *
-	 * @return bool
+	 * @return string
 	 */
-	public static function getDeviceType(): bool
+	public static function getDeviceType(): string
 	{
-		return true;
 		// Determine type of browser
 		DeviceParserAbstract::setVersionTruncation(DeviceParserAbstract::VERSION_TRUNCATION_NONE);
 		$userAgent = $_SERVER['HTTP_USER_AGENT'];
