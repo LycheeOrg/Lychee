@@ -117,6 +117,7 @@ class SessionController extends Controller
 		$return['config']['enable_close_tab_on_esc'] = false;
 		$return['config']['enable_tabindex'] = false;
 		$return['config']['enable_contextmenu_header'] = true;
+		$return['config']['hide_content_during_imgview'] = false;
 		$return['config']['device_type'] = $deviceType;
 
 		if ($deviceType == 'TV') {
@@ -134,6 +135,7 @@ class SessionController extends Controller
 			$return['config']['enable_button_rotate'] = false;
 			$return['config']['enable_close_tab_on_esc'] = true;
 			$return['config']['enable_contextmenu_header'] = false;
+			$return['config']['hide_content_during_imgview'] = true;
 			$return['config']['enable_tabindex'] = true;
 		}
 
