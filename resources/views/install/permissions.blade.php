@@ -5,6 +5,13 @@
 @endsection
 
 @section('content')
+    @if ($windows)
+    <p class="alert alert-warning text-center">
+        <strong>You are using Windows, we cannot guarantee that the executable permission are properly set.<br>
+            All the <code>executable</code> checks have been overridden with <code>true</code>.
+        </strong>
+    </p>
+    @endif
 
     <ul class="list">
     @foreach ($permissions as $permission)
