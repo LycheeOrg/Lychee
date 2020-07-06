@@ -81,7 +81,7 @@ class Sync extends Command
 		$import_controller->disableMemCheck();
 
 		Session::put('UserID', $owner_id);
-
+		Session::put('login', true);
 		try {
 			$import_controller->server_exec($directory, $album_id, $delete_imported, $force_skip_duplicates, null, $resync_metadata);
 		} catch (Exception $e) {
