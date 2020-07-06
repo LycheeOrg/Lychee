@@ -214,10 +214,10 @@ class AlbumsFunctions
 			$id = $this->sessionFunctions->id();
 
 			if ($id > 0) {
-				$shared = $this->get_shared_album($id);
-				$sql = $sql->where(function ($query) use ($id, $shared) {
+				$sql = $sql->where(function ($query) use ($id) {
 					$query = $query->where('owner_id', '=', $id);
-					$query = $query->orWhereIn('id', $shared);
+					$query = $query->orWhereIn('id', DB::table('user_album')->select('album_id')
+						->where('user_id', '=', $id));
 					$query = $query->orWhere(function ($_query) {
 						$_query->where('public', '=', true)->where('visible_hidden', '=', true);
 					});
@@ -238,11 +238,5 @@ class AlbumsFunctions
 		}
 
 		return $return;
-	}
-
-	private function get_shared_album($id)
-	{
-		return DB::table('user_album')->select('album_id')
-			->where('user_id', '=', $id)->get();
 	}
 }
