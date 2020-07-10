@@ -102,6 +102,7 @@ class ConfigFunctions
 	public function get_config_device(string $device)
 	{
 		if ($device == 'television') {
+			// @codeCoverageIgnoreStart
 			return [
 				'header_auto_hide' => false,
 				'active_focus_on_page_load' => true,
@@ -121,6 +122,7 @@ class ConfigFunctions
 				'enable_tabindex' => true,
 				'device_type' => $device,
 			];
+			// @codeCoverageIgnoreEnd
 		}
 
 		return [
