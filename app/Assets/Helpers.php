@@ -42,7 +42,7 @@ class Helpers
 	{
 		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
 
-		return $result->device->toString();
+		return $result->getType();
 	}
 
 	/*

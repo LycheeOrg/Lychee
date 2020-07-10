@@ -6,7 +6,7 @@
 @section('head-css')
 <link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/main.css') }}">
 <link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/user.css') }}">
-@if (App\Assets\Helpers::getDeviceType()=="TV")
+@if (App\Assets\Helpers::getDeviceType()=="television")
 <link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/TV.css') }}">
 @endif
 @endsection
