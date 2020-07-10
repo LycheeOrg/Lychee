@@ -66,19 +66,15 @@ class AlbumsFunctions
 	{
 		$return = [];
 		foreach ($albums->keys() as $key) {
-			$album_array = AlbumCast::toArray($albums[$key]);
+			$album_array = AlbumCast::toArrayWith($albums[$key], $children[$key]);
 
 			if ($this->sessionFunctions->is_logged_in()) {
 				$album_array['owner'] = $albums[$key]->owner->username;
 			}
 
-			// php7.4: $album_array['albums'] = $children[$key]->map(fn ($e) => AlbumCast::toArray($e[0]));
-			$album_array['albums'] = $children[$key]->map(function ($e) {
-				return AlbumCast::toArray($e[0]);
-			});
-
 			$thumbs = $this->albumFunctions->get_thumbs($albums[$key], $children[$key]);
 			$this->albumFunctions->set_thumbs($album_array, $thumbs);
+			$this->albumFunctions->set_thumbs_children($album_array['albums'], $thumbs[1]);
 
 			// Add to return
 			$return[] = $album_array;
@@ -143,6 +139,10 @@ class AlbumsFunctions
 
 				AlbumCast::getThumbs($return[$smartAlbum->get_title()], $smartAlbum, $this->symLinkFunctions);
 			}
+		}
+
+		if (empty($return)) {
+			return null;
 		}
 
 		return $return;
@@ -214,14 +214,13 @@ class AlbumsFunctions
 			$id = $this->sessionFunctions->id();
 
 			if ($id > 0) {
-				$shared = $this->get_shared_album($id);
-
-				$sql = $sql->where(function ($query) use ($id, $shared) {
+				$sql = $sql->where(function ($query) use ($id) {
 					$query = $query->where('owner_id', '=', $id);
-					$query = $query->orWhereIn('id', $shared);
-					$query = $query->orWhere(
-						$query->where('public', '=', true)->where('visible_hidden', '=', true)
-					);
+					$query = $query->orWhereIn('id', DB::table('user_album')->select('album_id')
+						->where('user_id', '=', $id));
+					$query = $query->orWhere(function ($_query) {
+						$_query->where('public', '=', true)->where('visible_hidden', '=', true);
+					});
 				});
 			}
 
@@ -239,11 +238,5 @@ class AlbumsFunctions
 		}
 
 		return $return;
-	}
-
-	private function get_shared_album($id)
-	{
-		return DB::table('user_album')->select('album_id')
-			->where('user_id', '=', $id)->get();
 	}
 }
