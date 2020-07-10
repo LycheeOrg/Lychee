@@ -4,10 +4,8 @@ namespace App\Assets;
 
 use App\Configs;
 use App\Exceptions\DivideByZeroException;
-use Cache;
-use DeviceDetector\DeviceDetector;
-use DeviceDetector\Parser\Device\DeviceParserAbstract;
 use Illuminate\Support\Facades\File;
+use WhichBrowser\Parser as BrowserParser;
 
 class Helpers
 {
@@ -32,41 +30,19 @@ class Helpers
 	}
 
 	/**
-	 * return device type as string
-	 * ('TV', 'Mobile', 'Desktop', 'Other').
+	 * return device type as string:
+	 * desktop, mobile, pda, dect, tablet, gaming, ereader,
+	 * media, headset, watch, emulator, television, monitor,
+	 * camera, printer, signage, whiteboard, devboard, inflight,
+	 * appliance, gps, car, pos, bot, projector.
 	 *
 	 * @return string
 	 */
 	public static function getDeviceType(): string
 	{
-		// Determine type of browser
-		DeviceParserAbstract::setVersionTruncation(DeviceParserAbstract::VERSION_TRUNCATION_NONE);
-		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
 
-		if (!empty($userAgent)) {
-			$dd = new DeviceDetector($userAgent);
-
-			// Use cache since lib uses quite some regex
-			$dd->setCache(new \DeviceDetector\Cache\PSR16Bridge(app('cache.store')));
-
-			// Bot detection will completely be skipped (bots will be detected as regular devices then)
-			$dd->skipBotDetection();
-
-			// Parse the user agent
-			$dd->parse();
-
-			if ($dd->isDesktop()) {
-				return 'Desktop';
-			} elseif ($dd->isMobile()) {
-				return 'Mobile';
-			} elseif ($dd->isTV()) {
-				return 'TV';
-			} else {
-				return 'Other';
-			}
-		}
-
-		return 'Other';
+		return $result->device->toString();
 	}
 
 	/*
@@ -213,6 +189,10 @@ class Helpers
 		return ($a % $b) ? Helpers::gcd($b, $a % $b) : $b;
 	}
 
+	/**
+	 * Properly convert a boolean to a string
+	 * the default php function returns '' in case of false, this is not the behavior we want.
+	 */
 	public static function str_of_bool(bool $b)
 	{
 		return $b ? '1' : '0';
