@@ -133,7 +133,9 @@ class GdHandler implements ImageHandlerInterface
 		$resHeight = $dimensions['height'];
 
 		// Optimize image
-		if (Configs::get_value('lossless_optimization')) ImageOptimizer::optimize($destination);
+		if (Configs::get_value('lossless_optimization')) {
+			ImageOptimizer::optimize($destination);
+		}
 
 		return true;
 	}
@@ -179,7 +181,9 @@ class GdHandler implements ImageHandlerInterface
 		imagedestroy($sourceImg);
 
 		// Optimize image
-		if (Configs::get_value('lossless_optimization')) ImageOptimizer::optimize($destination);
+		if (Configs::get_value('lossless_optimization')) {
+			ImageOptimizer::optimize($destination);
+		}
 
 		return true;
 	}
