@@ -4,7 +4,9 @@
 
 namespace App\Image;
 
+use App\Configs;
 use App\Logs;
+use ImageOptimizer;
 
 class GdHandler implements ImageHandlerInterface
 {
@@ -130,6 +132,9 @@ class GdHandler implements ImageHandlerInterface
 		$resWidth = $dimensions['width'];
 		$resHeight = $dimensions['height'];
 
+		// Optimize image
+		if (Configs::get_value('lossless_optimization')) ImageOptimizer::optimize($destination);
+
 		return true;
 	}
 
@@ -172,6 +177,9 @@ class GdHandler implements ImageHandlerInterface
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
+
+		// Optimize image
+		if (Configs::get_value('lossless_optimization')) ImageOptimizer::optimize($destination);
 
 		return true;
 	}

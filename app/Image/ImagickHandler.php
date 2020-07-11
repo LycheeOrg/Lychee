@@ -2,7 +2,9 @@
 
 namespace App\Image;
 
+use App\Configs;
 use App\Logs;
+use ImageOptimizer;
 use ImagickException;
 
 class ImagickHandler implements ImageHandlerInterface
@@ -112,6 +114,10 @@ class ImagickHandler implements ImageHandlerInterface
 			$resHeight = $image->getImageHeight();
 			$image->clear();
 			$image->destroy();
+
+			// Optimize image
+			if (Configs::get_value('lossless_optimization')) ImageOptimizer::optimize($destination);
+
 		} catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 
@@ -153,6 +159,10 @@ class ImagickHandler implements ImageHandlerInterface
 			Logs::notice(__METHOD__, __LINE__, 'Saving thumb to ' . $destination);
 			$image->clear();
 			$image->destroy();
+
+			// Optimize image
+			if (Configs::get_value('lossless_optimization')) ImageOptimizer::optimize($destination);
+
 		} catch (ImagickException $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 
