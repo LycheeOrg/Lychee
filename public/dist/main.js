@@ -2888,8 +2888,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e7);
 			} else {
 				var _e8 = $('.button_add', '.header__toolbar--albums');
-				_e8.hide();
-				tabindex.makeUnfocusable(_e8);
+				_e8.remove();
 			}
 
 			return true;
@@ -2963,38 +2962,31 @@ header.setMode = function (mode) {
 			// Remove buttons if needed
 			if (!lychee.enable_button_visibility) {
 				var _e15 = $('#button_visibility_album', '.header__toolbar--album');
-				_e15.hide();
-				tabindex.makeUnfocusable(_e15);
+				_e15.remove();
 			}
 			if (!lychee.enable_button_share) {
 				var _e16 = $('#button_share_album', '.header__toolbar--album');
-				_e16.hide();
-				tabindex.makeUnfocusable(_e16);
+				_e16.remove();
 			}
 			if (!lychee.enable_button_archive) {
 				var _e17 = $('#button_archive', '.header__toolbar--album');
-				_e17.hide();
-				tabindex.makeUnfocusable(_e17);
+				_e17.remove();
 			}
 			if (!lychee.enable_button_move) {
 				var _e18 = $('#button_move_album', '.header__toolbar--album');
-				_e18.hide();
-				tabindex.makeUnfocusable(_e18);
+				_e18.remove();
 			}
 			if (!lychee.enable_button_trash) {
 				var _e19 = $('#button_trash_album', '.header__toolbar--album');
-				_e19.hide();
-				tabindex.makeUnfocusable(_e19);
+				_e19.remove();
 			}
 			if (!lychee.enable_button_fullscreen) {
 				var _e20 = $('#button_fs_album_enter', '.header__toolbar--album');
-				_e20.hide();
-				tabindex.makeUnfocusable(_e20);
+				_e20.remove();
 			}
 			if (!lychee.enable_button_add) {
 				var _e21 = $('.button_add', '.header__toolbar--album');
-				_e21.hide();
-				tabindex.makeUnfocusable(_e21);
+				_e21.remove();
 			}
 
 			return true;
@@ -3050,42 +3042,34 @@ header.setMode = function (mode) {
 			// Remove buttons if needed
 			if (!lychee.enable_button_visibility) {
 				var _e29 = $('#button_visibility', '.header__toolbar--photo');
-				_e29.hide();
-				tabindex.makeUnfocusable(_e29);
+				_e29.remove();
 			}
 			if (!lychee.enable_button_share) {
 				var _e30 = $('#button_share', '.header__toolbar--photo');
-				_e30.hide();
-				tabindex.makeUnfocusable(_e30);
+				_e30.remove();
 			}
 			if (!lychee.enable_button_move) {
 				var _e31 = $('#button_move', '.header__toolbar--photo');
-				_e31.hide();
-				tabindex.makeUnfocusable(_e31);
+				_e31.remove();
 			}
 			if (!lychee.enable_button_trash) {
 				var _e32 = $('#button_trash', '.header__toolbar--photo');
-				_e32.hide();
-				tabindex.makeUnfocusable(_e32);
+				_e32.remove();
 			}
 			if (!lychee.enable_button_fullscreen) {
 				var _e33 = $('#button_fs_enter', '.header__toolbar--photo');
-				_e33.hide();
-				tabindex.makeUnfocusable(_e33);
+				_e33.remove();
 			}
 			if (!lychee.enable_button_more) {
 				var _e34 = $('#button_more', '.header__toolbar--photo');
-				_e34.hide();
-				tabindex.makeUnfocusable(_e34);
+				_e34.remove();
 			}
 			if (!lychee.enable_button_rotate) {
 				var _e35 = $('#button_rotate_cwise', '.header__toolbar--photo');
-				_e35.hide();
-				tabindex.makeUnfocusable(_e35);
+				_e35.remove();
 
 				_e35 = $('#button_rotate_ccwise', '.header__toolbar--photo');
-				_e35.hide();
-				tabindex.makeUnfocusable(_e35);
+				_e35.remove();
 			}
 			return true;
 		case 'map':
@@ -3849,22 +3833,22 @@ lychee.init = function () {
 			lychee.share_button_visible = data.config.share_button_visible && data.config.share_button_visible === '1' || false;
 			lychee.delete_imported = data.config.delete_imported && data.config.delete_imported === '1';
 
-			lychee.header_auto_hide = data.config_device.header_auto_hide || true;
-			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load || false;
-			lychee.enable_button_visibility = data.config_device.enable_button_visibility || true;
-			lychee.enable_button_share = data.config_device.enable_button_share || true;
-			lychee.enable_button_archive = data.config_device.enable_button_archive || true;
-			lychee.enable_button_move = data.config_device.enable_button_move || true;
-			lychee.enable_button_trash = data.config_device.enable_button_trash || true;
-			lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen || true;
-			lychee.enable_button_download = data.config_device.enable_button_download || true;
-			lychee.enable_button_add = data.config_device.enable_button_add || true;
-			lychee.enable_button_more = data.config_device.enable_button_more || true;
-			lychee.enable_button_rotate = data.config_device.enable_button_rotate || true;
-			lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc || false;
-			lychee.enable_tabindex = data.config_device.enable_tabindex || false;
-			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header || true;
-			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview || false;
+			lychee.header_auto_hide = data.config_device.header_auto_hide;
+			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
+			lychee.enable_button_visibility = data.config_device.enable_button_visibility;
+			lychee.enable_button_share = data.config_device.enable_button_share;
+			lychee.enable_button_archive = data.config_device.enable_button_archive;
+			lychee.enable_button_move = data.config_device.enable_button_move;
+			lychee.enable_button_trash = data.config_device.enable_button_trash;
+			lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen;
+			lychee.enable_button_download = data.config_device.enable_button_download;
+			lychee.enable_button_add = data.config_device.enable_button_add;
+			lychee.enable_button_more = data.config_device.enable_button_more;
+			lychee.enable_button_rotate = data.config_device.enable_button_rotate;
+			lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc;
+			lychee.enable_tabindex = data.config_device.enable_tabindex;
+			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
+			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
 			lychee.device_type = data.config_device.device_type || 'desktop'; // we set default as Desktop
 
 			lychee.editor_enabled = data.config.editor_enabled && data.config.editor_enabled === '1' || false;
@@ -3906,22 +3890,22 @@ lychee.init = function () {
 			lychee.location_show = data.config.location_show && data.config.location_show === '1' || false;
 			lychee.location_show_public = data.config.location_show_public && data.config.location_show_public === '1' || false;
 
-			lychee.header_auto_hide = data.config_device.header_auto_hide || true;
-			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load || false;
-			lychee.enable_button_visibility = data.config_device.enable_button_visibility || true;
-			lychee.enable_button_share = data.config_device.enable_button_share || true;
-			lychee.enable_button_archive = data.config_device.enable_button_archive || true;
-			lychee.enable_button_move = data.config_device.enable_button_move || true;
-			lychee.enable_button_trash = data.config_device.enable_button_trash || true;
-			lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen || true;
-			lychee.enable_button_download = data.config_device.enable_button_download || true;
-			lychee.enable_button_add = data.config_device.enable_button_add || true;
-			lychee.enable_button_more = data.config_device.enable_button_more || true;
-			lychee.enable_button_rotate = data.config_device.enable_button_rotate || true;
-			lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc || false;
-			lychee.enable_tabindex = data.config_device.enable_tabindex || false;
-			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header || true;
-			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview || false;
+			lychee.header_auto_hide = data.config_device.header_auto_hide;
+			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
+			lychee.enable_button_visibility = data.config_device.enable_button_visibility;
+			lychee.enable_button_share = data.config_device.enable_button_share;
+			lychee.enable_button_archive = data.config_device.enable_button_archive;
+			lychee.enable_button_move = data.config_device.enable_button_move;
+			lychee.enable_button_trash = data.config_device.enable_button_trash;
+			lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen;
+			lychee.enable_button_download = data.config_device.enable_button_download;
+			lychee.enable_button_add = data.config_device.enable_button_add;
+			lychee.enable_button_more = data.config_device.enable_button_more;
+			lychee.enable_button_rotate = data.config_device.enable_button_rotate;
+			lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc;
+			lychee.enable_tabindex = data.config_device.enable_tabindex;
+			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
+			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
 			lychee.device_type = data.config_device.device_type || 'desktop'; // we set default as Desktop
 
 			// console.log(lychee.full_photo);
@@ -4542,6 +4526,7 @@ lychee.clipboardCopy = function (text) {
 	// ? Promise.resolve()
 	// : Promise.reject(new DOMException('The request is not allowed', 'NotAllowedError'))
 };
+
 lychee.locale = {
 
 	'USERNAME': 'username',

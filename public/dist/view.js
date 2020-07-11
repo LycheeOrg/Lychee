@@ -1117,8 +1117,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e6);
 			} else {
 				var _e7 = $('.button_add', '.header__toolbar--albums');
-				_e7.hide();
-				tabindex.makeUnfocusable(_e7);
+				_e7.remove();
 			}
 
 			return true;
@@ -1192,38 +1191,31 @@ header.setMode = function (mode) {
 			// Remove buttons if needed
 			if (!lychee.enable_button_visibility) {
 				var _e14 = $('#button_visibility_album', '.header__toolbar--album');
-				_e14.hide();
-				tabindex.makeUnfocusable(_e14);
+				_e14.remove();
 			}
 			if (!lychee.enable_button_share) {
 				var _e15 = $('#button_share_album', '.header__toolbar--album');
-				_e15.hide();
-				tabindex.makeUnfocusable(_e15);
+				_e15.remove();
 			}
 			if (!lychee.enable_button_archive) {
 				var _e16 = $('#button_archive', '.header__toolbar--album');
-				_e16.hide();
-				tabindex.makeUnfocusable(_e16);
+				_e16.remove();
 			}
 			if (!lychee.enable_button_move) {
 				var _e17 = $('#button_move_album', '.header__toolbar--album');
-				_e17.hide();
-				tabindex.makeUnfocusable(_e17);
+				_e17.remove();
 			}
 			if (!lychee.enable_button_trash) {
 				var _e18 = $('#button_trash_album', '.header__toolbar--album');
-				_e18.hide();
-				tabindex.makeUnfocusable(_e18);
+				_e18.remove();
 			}
 			if (!lychee.enable_button_fullscreen) {
 				var _e19 = $('#button_fs_album_enter', '.header__toolbar--album');
-				_e19.hide();
-				tabindex.makeUnfocusable(_e19);
+				_e19.remove();
 			}
 			if (!lychee.enable_button_add) {
 				var _e20 = $('.button_add', '.header__toolbar--album');
-				_e20.hide();
-				tabindex.makeUnfocusable(_e20);
+				_e20.remove();
 			}
 
 			return true;
@@ -1279,42 +1271,34 @@ header.setMode = function (mode) {
 			// Remove buttons if needed
 			if (!lychee.enable_button_visibility) {
 				var _e28 = $('#button_visibility', '.header__toolbar--photo');
-				_e28.hide();
-				tabindex.makeUnfocusable(_e28);
+				_e28.remove();
 			}
 			if (!lychee.enable_button_share) {
 				var _e29 = $('#button_share', '.header__toolbar--photo');
-				_e29.hide();
-				tabindex.makeUnfocusable(_e29);
+				_e29.remove();
 			}
 			if (!lychee.enable_button_move) {
 				var _e30 = $('#button_move', '.header__toolbar--photo');
-				_e30.hide();
-				tabindex.makeUnfocusable(_e30);
+				_e30.remove();
 			}
 			if (!lychee.enable_button_trash) {
 				var _e31 = $('#button_trash', '.header__toolbar--photo');
-				_e31.hide();
-				tabindex.makeUnfocusable(_e31);
+				_e31.remove();
 			}
 			if (!lychee.enable_button_fullscreen) {
 				var _e32 = $('#button_fs_enter', '.header__toolbar--photo');
-				_e32.hide();
-				tabindex.makeUnfocusable(_e32);
+				_e32.remove();
 			}
 			if (!lychee.enable_button_more) {
 				var _e33 = $('#button_more', '.header__toolbar--photo');
-				_e33.hide();
-				tabindex.makeUnfocusable(_e33);
+				_e33.remove();
 			}
 			if (!lychee.enable_button_rotate) {
 				var _e34 = $('#button_rotate_cwise', '.header__toolbar--photo');
-				_e34.hide();
-				tabindex.makeUnfocusable(_e34);
+				_e34.remove();
 
 				_e34 = $('#button_rotate_ccwise', '.header__toolbar--photo');
-				_e34.hide();
-				tabindex.makeUnfocusable(_e34);
+				_e34.remove();
 			}
 			return true;
 		case 'map':
