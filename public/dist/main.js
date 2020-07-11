@@ -282,18 +282,18 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject14 = _taggedTemplateLiteral(["<div class='divider'><h1>", "</h1></div>"], ["<div class='divider'><h1>", "</h1></div>"]),
     _templateObject15 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
     _templateObject16 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
-    _templateObject17 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject17 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject18 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject19 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
-    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
+    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject21 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject22 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
     _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject25 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject26 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
-    _templateObject27 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' ", "><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' ", "><source src='", "'>Your browser does not support the video tag.</video>"]),
-    _templateObject28 = _taggedTemplateLiteral(["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big'>"], ["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big'>"]),
+    _templateObject27 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autobuffer ", " data-tabindex='", "'><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autobuffer ", " data-tabindex='", "'><source src='", "'>Your browser does not support the video tag.</video>"]),
+    _templateObject28 = _taggedTemplateLiteral(["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big' data-tabindex='", "'>"], ["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big' data-tabindex='", "'>"]),
     _templateObject29 = _taggedTemplateLiteral(["", ""], ["", ""]),
     _templateObject30 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
     _templateObject31 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
@@ -306,12 +306,12 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject38 = _taggedTemplateLiteral(["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"], ["<div class=\"users_view_line\">\n\t\t\t<p id=\"UserData", "\">\n\t\t\t<input name=\"id\" type=\"hidden\" value=\"", "\" />\n\t\t\t<input class=\"text\" name=\"username\" type=\"text\" value=\"$", "\" placeholder=\"username\" />\n\t\t\t<input class=\"text\" name=\"password\" type=\"text\" placeholder=\"new password\" />\n\t\t\t<span class=\"choice\" title=\"Allow uploads\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"upload\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t<span class=\"choice\" title=\"Restricted account\">\n\t\t\t<label>\n\t\t\t<input type=\"checkbox\" name=\"lock\" />\n\t\t\t<span class=\"checkbox\"><svg class=\"iconic \"><use xlink:href=\"#check\"></use></svg></span>\n\t\t\t</label>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<a id=\"UserUpdate", "\"  class=\"basicModal__button basicModal__button_OK\">Save</a>\n\t\t\t<a id=\"UserDelete", "\"  class=\"basicModal__button basicModal__button_DEL\">Delete</a>\n\t\t</div>\n\t\t"]),
     _templateObject39 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
     _templateObject40 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
-    _templateObject41 = _taggedTemplateLiteral(["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" >&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" >&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
-    _templateObject42 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\">", "", "</a>"]),
-    _templateObject43 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_logs\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_logs\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\">", "", "</a>"]),
-    _templateObject44 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_update\">", "", "</a>\n\t\t"], ["\n\t\t<a class=\"linkMenu\" id=\"button_update\">", "", "</a>\n\t\t"]),
+    _templateObject41 = _taggedTemplateLiteral(["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
+    _templateObject42 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"]),
+    _templateObject43 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"]),
+    _templateObject44 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_update\"  data-tabindex=\"-1\">", "", "</a>\n\t\t"], ["\n\t\t<a class=\"linkMenu\" id=\"button_update\"  data-tabindex=\"-1\">", "", "</a>\n\t\t"]),
     _templateObject45 = _taggedTemplateLiteral(["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p><a target='_blank' href='", "'>Lychee</a> ", "</p>\n\t\t\t  "], ["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p><a target='_blank' href='", "'>Lychee</a> ", "</p>\n\t\t\t  "]),
-    _templateObject46 = _taggedTemplateLiteral(["\n\t\t\t<form>\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "'>", "</a><span></p>\n\t\t\t</form>\n\t\t\t"], ["\n\t\t\t<form>\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "'>", "</a><span></p>\n\t\t\t</form>\n\t\t\t"]),
+    _templateObject46 = _taggedTemplateLiteral(["\n\t\t\t<form>\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off' data-tabindex='", "'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "' data-tabindex='", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "' data-tabindex='-1'>", "</a><span></p>\n\t\t\t</form>\n\t\t\t"], ["\n\t\t\t<form>\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off' data-tabindex='", "'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "' data-tabindex='", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "' data-tabindex='-1'>", "</a><span></p>\n\t\t\t</form>\n\t\t\t"]),
     _templateObject47 = _taggedTemplateLiteral(["<link data-prefetch rel=\"prefetch\" href=\"", "\">"], ["<link data-prefetch rel=\"prefetch\" href=\"", "\">"]),
     _templateObject48 = _taggedTemplateLiteral(["<p>", " '", "' ", "</p>"], ["<p>", " '", "' ", "</p>"]),
     _templateObject49 = _taggedTemplateLiteral(["<p>", " ", " ", "</p>"], ["<p>", " ", " ", "</p>"]),
@@ -829,6 +829,20 @@ album.load = function (albumID) {
 				lychee.animate(lychee.content, 'contentZoomIn');
 				header.setMode('album');
 			}
+
+			tabindex.makeFocusable(lychee.content);
+			if (lychee.active_focus_on_page_load) {
+				// Put focus on first element - either album or photo
+				var _first_album = $(".album:first");
+				if (_first_album.length !== 0) {
+					_first_album.focus();
+				} else {
+					first_photo = $(".photo:first");
+					if (first_photo.length !== 0) {
+						first_photo.focus();
+					}
+				}
+			}
 		}, waitTime);
 	};
 
@@ -846,6 +860,21 @@ album.load = function (albumID) {
 			});
 		} else {
 			processData(data);
+
+			tabindex.makeFocusable(lychee.content);
+
+			if (lychee.active_focus_on_page_load) {
+				// Put focus on first element - either album or photo
+				first_album = $(".album:first");
+				if (first_album.length !== 0) {
+					first_album.focus();
+				} else {
+					first_photo = $(".photo:first");
+					if (first_photo.length !== 0) {
+						first_photo.focus();
+					}
+				}
+			}
 		}
 	});
 };
@@ -1543,6 +1572,22 @@ albums.load = function () {
 				header.setMode('albums');
 				view.albums.init();
 				lychee.animate(lychee.content, 'contentZoomIn');
+
+				tabindex.makeFocusable(lychee.content);
+
+				if (lychee.active_focus_on_page_load) {
+					// Put focus on first element - either album or photo
+					var _first_album2 = $(".album:first");
+					if (_first_album2.length !== 0) {
+						_first_album2.focus();
+					} else {
+						first_photo = $(".photo:first");
+						if (first_photo.length !== 0) {
+							first_photo.focus();
+						}
+					}
+				}
+
 				setTimeout(function () {
 					lychee.footer_show();
 				}, 300);
@@ -1554,6 +1599,21 @@ albums.load = function () {
 			header.setMode('albums');
 			view.albums.init();
 			lychee.animate(lychee.content, 'contentZoomIn');
+
+			tabindex.makeFocusable(lychee.content);
+
+			if (lychee.active_focus_on_page_load) {
+				// Put focus on first element - either album or photo
+				first_album = $(".album:first");
+				if (first_album.length !== 0) {
+					first_album.focus();
+				} else {
+					first_photo = $(".photo:first");
+					if (first_photo.length !== 0) {
+						first_photo.focus();
+					}
+				}
+			}
 		}, 300);
 	}
 };
@@ -1803,7 +1863,7 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject17, disabled ? "disabled" : "", data.id, build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject17, disabled ? "disabled" : "", data.id, tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
 
 	if (album.isUploadable() && !disabled) {
 
@@ -1832,12 +1892,12 @@ build.photo = function (data) {
 	var isLivePhoto = data.livePhotoUrl !== '' && data.livePhotoUrl !== null;
 
 	if (data.thumbUrl === 'uploads/thumb/' && isLivePhoto) {
-		thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	}
 	if (data.thumbUrl === 'uploads/thumb/' && isVideo) {
-		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	} else if (data.thumbUrl === 'uploads/thumb/' && isRaw) {
-		thumbnail = "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		thumbnail = "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	} else if (lychee.layout === '0') {
 
 		if (data.hasOwnProperty('thumb2x')) {
@@ -1854,7 +1914,7 @@ build.photo = function (data) {
 		}
 
 		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
-		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 		thumbnail += "</span>";
 	} else {
 
@@ -1864,7 +1924,7 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else if (data.medium !== '') {
 			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
@@ -1872,12 +1932,12 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else if (!isVideo) {
 			// Fallback for images with no small or medium.
 			thumbnail = "<span class=\"thumbimg" + (isLivePhoto ? ' livephoto' : '') + "\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else {
 			// Fallback for videos with no small (the case of no thumb is
@@ -1897,12 +1957,12 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg video\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		}
 	}
 
-	html += lychee.html(_templateObject20, disabled ? "disabled" : "", data.album, data.id, thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject20, disabled ? "disabled" : "", data.album, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
 
 	if (data.cameraDate === '1') html += lychee.html(_templateObject21, build.iconic('camera-slr'), data.takedate);else html += lychee.html(_templateObject22, data.sysdate);
 
@@ -1945,9 +2005,9 @@ build.imageview = function (data, visibleControls, autoplay) {
 	var thumb = '';
 
 	if (data.type.indexOf('video') > -1) {
-		html += lychee.html(_templateObject27, visibleControls === true ? '' : 'full', autoplay ? 'autoplay' : '', data.url);
+		html += lychee.html(_templateObject27, visibleControls === true ? '' : 'full', autoplay ? 'autoplay' : '', tabindex.get_next_tab_index(), data.url);
 	} else if (data.type.indexOf('raw') > -1 && data.medium === '') {
-		html += lychee.html(_templateObject28, visibleControls === true ? '' : 'full');
+		html += lychee.html(_templateObject28, visibleControls === true ? '' : 'full', tabindex.get_next_tab_index());
 	} else {
 		var img = '';
 
@@ -1971,9 +2031,9 @@ build.imageview = function (data, visibleControls, autoplay) {
 				if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
 					medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 				}
-				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
+				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
 			} else {
-				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
+				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
 			}
 		} else {
 
@@ -1982,10 +2042,10 @@ build.imageview = function (data, visibleControls, autoplay) {
 				var medium_width = medium_dims[0];
 				var medium_height = medium_dims[1];
 				// It's a live photo
-				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px'></div>";
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px' data-tabindex='" + tabindex.get_next_tab_index() + "'></div>";
 			} else {
 				// It's a live photo
-				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.url + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + data.width + "px; height: " + data.height + "px'></div>";
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.url + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + data.width + "px; height: " + data.height + "px' data-tabindex='" + tabindex.get_next_tab_index() + "'></div>";
 			}
 		}
 
@@ -2602,6 +2662,8 @@ header.bind = function () {
 
 		if ($(this).hasClass('header__title--editable') === false) return false;
 
+		if (lychee.enable_contextmenu_header === false) return false;
+
 		if (visible.photo()) contextMenu.photoTitle(album.getID(), _photo.getID(), e);else contextMenu.albumTitle(album.getID(), e);
 	});
 
@@ -2715,6 +2777,8 @@ header.show = function () {
 	lychee.imageview.removeClass('full');
 	header.dom().removeClass('header--hidden');
 
+	tabindex.restoreSettings(header.dom());
+
 	_photo.updateSizeLivePhotoDuringAnimation();
 
 	return true;
@@ -2730,6 +2794,9 @@ header.hideIfLivePhotoNotPlaying = function () {
 header.hide = function () {
 
 	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.visible() === false) {
+
+		tabindex.saveSettings(header.dom());
+		tabindex.makeUnfocusable(header.dom());
 
 		lychee.imageview.addClass('full');
 		header.dom().addClass('header--hidden');
@@ -2765,19 +2832,34 @@ header.setMode = function (mode) {
 			header.dom().removeClass('header--view');
 			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--public').addClass('header__toolbar--visible');
+			tabindex.makeFocusable(header.dom('.header__toolbar--public'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map'));
+
 			if (lychee.public_search) {
-				$('.header__search, .header__clear', '.header__toolbar--public').show();
+				var e = $('.header__search, .header__clear', '.header__toolbar--public');
+				e.show();
+				tabindex.makeFocusable(e);
 			} else {
-				$('.header__search, .header__clear', '.header__toolbar--public').hide();
+				var _e2 = $('.header__search, .header__clear', '.header__toolbar--public');
+				_e2.hide();
+				tabindex.makeUnfocusable(_e2);
 			}
 
 			// Set icon in Public mode
 			if (lychee.map_display_public) {
-				$('.button--map-albums', '.header__toolbar--public').show();
+				var _e3 = $('.button--map-albums', '.header__toolbar--public');
+				_e3.show();
+				tabindex.makeFocusable(_e3);
 			} else {
-				$('.button--map-albums', '.header__toolbar--public').hide();
+				var _e4 = $('.button--map-albums', '.header__toolbar--public');
+				_e4.hide();
+				tabindex.makeUnfocusable(_e4);
 			}
 
+			// Set focus on login button
+			if (lychee.active_focus_on_page_load) {
+				$('#button_signin').focus();
+			}
 			return true;
 
 		case 'albums':
@@ -2786,11 +2868,27 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--albums').addClass('header__toolbar--visible');
 
+			tabindex.makeFocusable(header.dom('.header__toolbar--albums'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map'));
+
 			// If map is disabled, we should hide the icon
 			if (lychee.map_display) {
-				$('.button--map-albums', '.header__toolbar--albums').show();
+				var _e5 = $('.button--map-albums', '.header__toolbar--albums');
+				_e5.show();
+				tabindex.makeFocusable(_e5);
 			} else {
-				$('.button--map-albums', '.header__toolbar--albums').hide();
+				var _e6 = $('.button--map-albums', '.header__toolbar--albums');
+				_e6.hide();
+				tabindex.makeUnfocusable(_e6);
+			}
+
+			if (lychee.enable_button_add) {
+				var _e7 = $('.button_add', '.header__toolbar--albums');
+				_e7.show();
+				tabindex.makeFocusable(_e7);
+			} else {
+				var _e8 = $('.button_add', '.header__toolbar--albums');
+				_e8.remove();
 			}
 
 			return true;
@@ -2803,40 +2901,92 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
 
+			tabindex.makeFocusable(header.dom('.header__toolbar--album'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map'));
+
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
 			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && album.json.downloadable === '0') {
-				$('#button_archive').hide();
+				var _e9 = $('#button_archive');
+				_e9.hide();
+				tabindex.makeUnfocusable(_e9);
 			} else {
-				$('#button_archive').show();
+				var _e10 = $('#button_archive');
+				_e10.show();
+				tabindex.makeFocusable(_e10);
 			}
 
 			if (album.json && album.json.hasOwnProperty('share_button_visible') && album.json.share_button_visible !== '1') {
-				$('#button_share_album').hide();
+				var _e11 = $('#button_share_album');
+				_e11.hide();
+				tabindex.makeUnfocusable(_e11);
 			} else {
-				$('#button_share_album').show();
+				var _e12 = $('#button_share_album');
+				_e12.show();
+				tabindex.makeFocusable(_e12);
 			}
 
 			// If map is disabled, we should hide the icon
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
-				$('#button_map_album').show();
+				var _e13 = $('#button_map_album');
+				_e13.show();
+				tabindex.makeFocusable(_e13);
 			} else {
-				$('#button_map_album').hide();
+				var _e14 = $('#button_map_album');
+				_e14.hide();
+				tabindex.makeUnfocusable(_e14);
 			}
 
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
 				$('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album').hide();
 				$('.button_add, .header__divider', '.header__toolbar--album').show();
+				tabindex.makeFocusable($('.button_add, .header__divider', '.header__toolbar--album').show());
+				tabindex.makeUnfocusable($('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album'));
 			} else if (albumID === '0') {
 				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
 				$('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album').show();
+				tabindex.makeFocusable($('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album'));
+				tabindex.makeUnfocusable($('#button_info_album, #button_visibility_album, #button_move_album'));
 			} else {
 				$('#button_info_album, #button_visibility_album').show();
+				tabindex.makeFocusable($('#button_info_album, #button_visibility_album'));
 				if (album.isUploadable()) {
 					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
+					tabindex.makeFocusable($('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album'));
 				} else {
 					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').hide();
+					tabindex.makeUnfocusable($('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album'));
 				}
+			}
+
+			// Remove buttons if needed
+			if (!lychee.enable_button_visibility) {
+				var _e15 = $('#button_visibility_album', '.header__toolbar--album');
+				_e15.remove();
+			}
+			if (!lychee.enable_button_share) {
+				var _e16 = $('#button_share_album', '.header__toolbar--album');
+				_e16.remove();
+			}
+			if (!lychee.enable_button_archive) {
+				var _e17 = $('#button_archive', '.header__toolbar--album');
+				_e17.remove();
+			}
+			if (!lychee.enable_button_move) {
+				var _e18 = $('#button_move_album', '.header__toolbar--album');
+				_e18.remove();
+			}
+			if (!lychee.enable_button_trash) {
+				var _e19 = $('#button_trash_album', '.header__toolbar--album');
+				_e19.remove();
+			}
+			if (!lychee.enable_button_fullscreen) {
+				var _e20 = $('#button_fs_album_enter', '.header__toolbar--album');
+				_e20.remove();
+			}
+			if (!lychee.enable_button_add) {
+				var _e21 = $('.button_add', '.header__toolbar--album');
+				_e21.remove();
 			}
 
 			return true;
@@ -2847,31 +2997,80 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
 
+			tabindex.makeFocusable(header.dom('.header__toolbar--photo'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map'));
 			// If map is disabled, we should hide the icon
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
-				$('#button_map').show();
+				var _e22 = $('#button_map');
+				_e22.show();
+				tabindex.makeFocusable(_e22);
 			} else {
-				$('#button_map').hide();
+				var _e23 = $('#button_map');
+				_e23.hide();
+				tabindex.makeUnfocusable(_e23);
 			}
 
 			if (album.isUploadable()) {
-				$('#button_trash, #button_move, #button_visibility, #button_star').show();
+				var _e24 = $('#button_trash, #button_move, #button_visibility, #button_star');
+				_e24.show();
+				tabindex.makeFocusable(_e24);
 			} else {
-				$('#button_trash, #button_move, #button_visibility, #button_star').hide();
+				var _e25 = $('#button_trash, #button_move, #button_visibility, #button_star');
+				_e25.hide();
+				tabindex.makeUnfocusable(_e25);
 			}
 
 			if (_photo.json && _photo.json.hasOwnProperty('share_button_visible') && _photo.json.share_button_visible !== '1') {
-				$('#button_share').hide();
+				var _e26 = $('#button_share');
+				_e26.hide();
+				tabindex.makeUnfocusable(_e26);
 			} else {
-				$('#button_share').show();
+				var _e27 = $('#button_share');
+				_e27.show();
+				tabindex.makeFocusable(_e27);
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$('#button_more').show();
+			tabindex.makeFocusable($('#button_more'));
 			if (!(album.isUploadable() || (_photo.json.hasOwnProperty('downloadable') ? _photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(_photo.json.url && _photo.json.url !== '')) {
-				$('#button_more').hide();
+				var _e28 = $('#button_more');
+				_e28.hide();
+				tabindex.makeUnfocusable(_e28);
 			}
 
+			// Remove buttons if needed
+			if (!lychee.enable_button_visibility) {
+				var _e29 = $('#button_visibility', '.header__toolbar--photo');
+				_e29.remove();
+			}
+			if (!lychee.enable_button_share) {
+				var _e30 = $('#button_share', '.header__toolbar--photo');
+				_e30.remove();
+			}
+			if (!lychee.enable_button_move) {
+				var _e31 = $('#button_move', '.header__toolbar--photo');
+				_e31.remove();
+			}
+			if (!lychee.enable_button_trash) {
+				var _e32 = $('#button_trash', '.header__toolbar--photo');
+				_e32.remove();
+			}
+			if (!lychee.enable_button_fullscreen) {
+				var _e33 = $('#button_fs_enter', '.header__toolbar--photo');
+				_e33.remove();
+			}
+			if (!lychee.enable_button_more) {
+				var _e34 = $('#button_more', '.header__toolbar--photo');
+				_e34.remove();
+			}
+			if (!lychee.enable_button_rotate) {
+				var _e35 = $('#button_rotate_cwise', '.header__toolbar--photo');
+				_e35.remove();
+
+				_e35 = $('#button_rotate_ccwise', '.header__toolbar--photo');
+				_e35.remove();
+			}
 			return true;
 		case 'map':
 
@@ -2879,6 +3078,8 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--map').addClass('header__toolbar--visible');
 
+			tabindex.makeFocusable(header.dom('.header__toolbar--map'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo'));
 			return true;
 
 	}
@@ -2948,19 +3149,31 @@ $(document).ready(function () {
 	header.bind();
 
 	// Image View
-	lychee.imageview.on(eventName, '.arrow_wrapper--previous', _photo.previous).on(eventName, '.arrow_wrapper--next', _photo.next).on('click', 'img, #livephoto', _photo.update_display_overlay);
+	lychee.imageview.on(eventName, '.arrow_wrapper--previous', _photo.previous).on(eventName, '.arrow_wrapper--next', _photo.next).on(eventName, 'img, #livephoto', _photo.update_display_overlay);
 
 	// Keyboard
+
+	Mousetrap.addKeycodes({
+		18: 'ContextMenu',
+		179: 'play_pause',
+		227: 'rewind',
+		228: 'forward'
+	});
+
 	Mousetrap.bind(['l'], function () {
 		lychee.loginDialog();return false;
 	}).bind(['left'], function () {
-		if (visible.photo()) {
-			$('#imageview a#previous').click();return false;
+		if (visible.photo() && (!visible.header() || $('img#image').is(':focus') || $('img#livephoto').is(':focus') || $(':focus').length === 0)) {
+			$('#imageview a#previous').click();
+			return false;
 		}
+		return true;
 	}).bind(['right'], function () {
-		if (visible.photo()) {
-			$('#imageview a#next').click();return false;
+		if (visible.photo() && (!visible.header() || $('img#image').is(':focus') || $('img#livephoto').is(':focus') || $(':focus').length === 0)) {
+			$('#imageview a#next').click();
+			return false;
 		}
+		return true;
 	}).bind(['u'], function () {
 		if (!visible.photo() && album.isUploadable()) {
 			$('#upload_files').click();return false;
@@ -2995,7 +3208,7 @@ $(document).ready(function () {
 		if (visible.photo() && album.isUploadable()) {
 			_photo.editTags([_photo.getID()]);return false;
 		}
-	}).bind(['i'], function () {
+	}).bind(['i', 'ContextMenu'], function () {
 		if (!visible.multiselect()) {
 			_sidebar.toggle();return false;
 		}
@@ -3023,50 +3236,87 @@ $(document).ready(function () {
 		}
 	});
 
-	Mousetrap.bindGlobal('enter', function () {
-		if (basicModal.visible() === true) basicModal.action();
+	Mousetrap.bind(['play_pause'], function () {
+		// If it's a video, we toggle play/pause
+		var video = $("video");
+
+		if (video.length !== 0) {
+			if (video[0].paused) {
+				video[0].play();
+			} else {
+				video[0].pause();
+			}
+		}
 	});
 
-	Mousetrap.bindGlobal(['esc', 'command+up'], function () {
-		if (basicModal.visible() === true) basicModal.cancel();else if (visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParent());else if (visible.albums() && search.hash !== null) search.reset();else if (visible.mapview()) mapview.close();
+	Mousetrap.bindGlobal('enter', function () {
+		if (basicModal.visible() === true) {
+
+			// check if any of the input fields is focussed
+			// apply action, other do nothing
+			if ($('.signIn > input').is(':focus')) {
+				basicModal.action();
+				return false;
+			}
+		} else if (visible.photo() && !lychee.header_auto_hide && ($('img#image').is(':focus') || $('img#livephoto').is(':focus') || $(':focus').length === 0)) {
+			if (visible.header()) {
+				header.hide();
+			} else {
+				header.show();
+			}
+			return false;
+		}
+		$(':focus').each(function () {
+			$(this).click();
+		});
 		return false;
 	});
 
-	if (eventName === 'touchend') {
+	// Prevent 'esc keyup' event to trigger 'go back in history'
+	// and 'alt keyup' to show a webapp context menu for Fire TV
+	Mousetrap.bindGlobal(['esc', 'ContextMenu'], function () {
+		return false;
+	}, 'keyup');
 
-		$(document)
+	Mousetrap.bindGlobal(['esc', 'command+up'], function () {
+		if (basicModal.visible() === true) basicModal.cancel();else if (visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParent());else if (visible.albums() && search.hash !== null) search.reset();else if (visible.mapview()) mapview.close();else if (visible.albums() && lychee.enable_close_tab_on_esc) {
+			window.open("", "_self").close();
+		}
+		return false;
+	});
 
-		// Fullscreen on mobile
-		.on('touchend', '#imageview #image', function (e) {
+	$(document)
 
-			// prevent triggering event 'mousemove'
-			e.preventDefault();
+	// Fullscreen on mobile
+	.on('touchend', '#imageview #image', function (e) {
 
-			if (typeof swipe.obj === 'undefined' || Math.abs(swipe.offsetX) <= 5 && Math.abs(swipe.offsetY) <= 5) {
-				// Toogle header only if we're not moving to next/previous photo;
-				// In this case, swipe.preventNextHeaderToggle is set to true
-				if (typeof swipe.preventNextHeaderToggle === 'undefined' || !swipe.preventNextHeaderToggle) {
-					if (visible.header()) {
-						header.hide(e);
-					} else {
-						header.show();
-					}
+		// prevent triggering event 'mousemove'
+		e.preventDefault();
+
+		if (typeof swipe.obj === 'undefined' || Math.abs(swipe.offsetX) <= 5 && Math.abs(swipe.offsetY) <= 5) {
+			// Toggle header only if we're not moving to next/previous photo;
+			// In this case, swipe.preventNextHeaderToggle is set to true
+			if (typeof swipe.preventNextHeaderToggle === 'undefined' || !swipe.preventNextHeaderToggle) {
+				if (visible.header()) {
+					header.hide(e);
+				} else {
+					header.show();
 				}
-
-				// For next 'touchend', behave again as normal and toogle header
-				swipe.preventNextHeaderToggle = false;
 			}
-		});
-		$('#imageview')
-		// Swipe on mobile
-		.swipe().on('swipeStart', function () {
-			if (visible.photo()) swipe.start($('#imageview #image, #imageview #livephoto'));
-		}).swipe().on('swipeMove', function (e) {
-			if (visible.photo()) swipe.move(e.swipe);
-		}).swipe().on('swipeEnd', function (e) {
-			if (visible.photo()) swipe.stop(e.swipe, _photo.previous, _photo.next);
-		});
-	}
+
+			// For next 'touchend', behave again as normal and toggle header
+			swipe.preventNextHeaderToggle = false;
+		}
+	});
+	$('#imageview')
+	// Swipe on mobile
+	.swipe().on('swipeStart', function () {
+		if (visible.photo()) swipe.start($('#imageview #image, #imageview #livephoto'));
+	}).swipe().on('swipeMove', function (e) {
+		if (visible.photo()) swipe.move(e.swipe);
+	}).swipe().on('swipeEnd', function (e) {
+		if (visible.photo()) swipe.stop(e.swipe, _photo.previous, _photo.next);
+	});
 
 	// Document
 	$(document)
@@ -3185,6 +3435,12 @@ leftMenu.open = function () {
 	header.dom('.header__title').addClass('leftMenu__open');
 	loadingBar.dom().addClass('leftMenu__open');
 
+	// Make background unfocusable
+	tabindex.makeUnfocusable(header.dom());
+	tabindex.makeUnfocusable(lychee.content);
+	tabindex.makeFocusable(leftMenu._dom);
+	$('#button_signout').focus();
+
 	multiselect.unbind();
 };
 
@@ -3196,6 +3452,10 @@ leftMenu.close = function () {
 	$('.content').removeClass('leftMenu__open');
 	header.dom('.header__title').removeClass('leftMenu__open');
 	loadingBar.dom().removeClass('leftMenu__open');
+
+	tabindex.makeFocusable(header.dom());
+	tabindex.makeFocusable(lychee.content);
+	tabindex.makeUnfocusable(leftMenu._dom);
 
 	multiselect.bind();
 	lychee.load();
@@ -3413,6 +3673,25 @@ var lychee = {
 	landing_page_enabled: false, // is landing page enabled ?
 	delete_imported: false,
 
+	// this is device specific config, in this case default is Desktop.
+	header_auto_hide: true,
+	active_focus_on_page_load: false,
+	enable_button_visibility: true,
+	enable_button_share: true,
+	enable_button_archive: true,
+	enable_button_move: true,
+	enable_button_trash: true,
+	enable_button_fullscreen: true,
+	enable_button_download: true,
+	enable_button_add: true,
+	enable_button_more: true,
+	enable_button_rotate: true,
+	enable_close_tab_on_esc: false,
+	enable_tabindex: false,
+	enable_contextmenu_header: true,
+	hide_content_during_imageview: false,
+	device_type: 'desktop',
+
 	checkForUpdates: '1',
 	update_json: 0,
 	update_available: false,
@@ -3431,6 +3710,7 @@ var lychee = {
 	footer: $('#footer'),
 
 	locale: {}
+
 };
 
 lychee.diagnostics = function () {
@@ -3553,6 +3833,24 @@ lychee.init = function () {
 			lychee.share_button_visible = data.config.share_button_visible && data.config.share_button_visible === '1' || false;
 			lychee.delete_imported = data.config.delete_imported && data.config.delete_imported === '1';
 
+			lychee.header_auto_hide = data.config_device.header_auto_hide;
+			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
+			lychee.enable_button_visibility = data.config_device.enable_button_visibility;
+			lychee.enable_button_share = data.config_device.enable_button_share;
+			lychee.enable_button_archive = data.config_device.enable_button_archive;
+			lychee.enable_button_move = data.config_device.enable_button_move;
+			lychee.enable_button_trash = data.config_device.enable_button_trash;
+			lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen;
+			lychee.enable_button_download = data.config_device.enable_button_download;
+			lychee.enable_button_add = data.config_device.enable_button_add;
+			lychee.enable_button_more = data.config_device.enable_button_more;
+			lychee.enable_button_rotate = data.config_device.enable_button_rotate;
+			lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc;
+			lychee.enable_tabindex = data.config_device.enable_tabindex;
+			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
+			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
+			lychee.device_type = data.config_device.device_type || 'desktop'; // we set default as Desktop
+
 			lychee.editor_enabled = data.config.editor_enabled && data.config.editor_enabled === '1' || false;
 
 			lychee.upload = !lychee.api_V2;
@@ -3592,6 +3890,24 @@ lychee.init = function () {
 			lychee.location_show = data.config.location_show && data.config.location_show === '1' || false;
 			lychee.location_show_public = data.config.location_show_public && data.config.location_show_public === '1' || false;
 
+			lychee.header_auto_hide = data.config_device.header_auto_hide;
+			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
+			lychee.enable_button_visibility = data.config_device.enable_button_visibility;
+			lychee.enable_button_share = data.config_device.enable_button_share;
+			lychee.enable_button_archive = data.config_device.enable_button_archive;
+			lychee.enable_button_move = data.config_device.enable_button_move;
+			lychee.enable_button_trash = data.config_device.enable_button_trash;
+			lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen;
+			lychee.enable_button_download = data.config_device.enable_button_download;
+			lychee.enable_button_add = data.config_device.enable_button_add;
+			lychee.enable_button_more = data.config_device.enable_button_more;
+			lychee.enable_button_rotate = data.config_device.enable_button_rotate;
+			lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc;
+			lychee.enable_tabindex = data.config_device.enable_tabindex;
+			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
+			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
+			lychee.device_type = data.config_device.device_type || 'desktop'; // we set default as Desktop
+
 			// console.log(lychee.full_photo);
 			lychee.setMode('public');
 		} else {
@@ -3628,23 +3944,32 @@ lychee.login = function (data) {
 
 lychee.loginDialog = function () {
 
-	var msg = lychee.html(_templateObject46, lychee.locale['USERNAME'], lychee.locale['PASSWORD'], lychee.version, lychee.updateURL, lychee.locale['UPDATE_AVAILABLE']);
+	// Make background make unfocusable
+	tabindex.makeUnfocusable(header.dom());
+	tabindex.makeUnfocusable(lychee.content);
+	tabindex.makeUnfocusable(lychee.imageview);
+
+	var msg = lychee.html(_templateObject46, lychee.locale['USERNAME'], tabindex.get_next_tab_index(), lychee.locale['PASSWORD'], tabindex.get_next_tab_index(), lychee.version, lychee.updateURL, lychee.locale['UPDATE_AVAILABLE']);
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			action: {
 				title: lychee.locale['SIGN_IN'],
-				fn: lychee.login
+				fn: lychee.login,
+				attributes: [["data-tabindex", tabindex.get_next_tab_index()]]
 			},
 			cancel: {
 				title: lychee.locale['CANCEL'],
-				fn: basicModal.close
+				fn: basicModal.close,
+				attributes: [["data-tabindex", tabindex.get_next_tab_index()]]
 			}
 		}
 	});
 
 	if (lychee.checkForUpdates === '1') lychee.getUpdate();
+
+	tabindex.makeFocusable(basicModal.dom());
 };
 
 lychee.logout = function () {
@@ -3690,6 +4015,7 @@ lychee.load = function () {
 
 	contextMenu.close();
 	multiselect.close();
+	tabindex.reset();
 
 	if (hash[0] != null) albumID = hash[0];
 	if (hash[1] != null) photoID = hash[1];
@@ -3751,6 +4077,16 @@ lychee.load = function () {
 				album.load(albumID, true);
 			}
 			_photo.load(photoID, albumID, autoplay);
+
+			// Make imageview focussable
+			tabindex.makeFocusable(lychee.imageview);
+
+			// Make thumbnails unfocusable and store which element had focus
+			tabindex.makeUnfocusable(lychee.content, true);
+
+			// hide contentview if requested
+			if (lychee.hide_content_during_imgview) lychee.content.hide();
+
 			lychee.footer_hide();
 		}
 	} else if (albumID) {
@@ -3782,10 +4118,19 @@ lychee.load = function () {
 			_photo.json = null;
 
 			// Show Album
-			if (visible.photo()) view.photo.hide();
+			if (visible.photo()) {
+				view.photo.hide();
+				tabindex.makeUnfocusable(lychee.imageview);
+			}
 			if (visible.mapview()) mapview.close();
 			if (visible.sidebar() && album.isSmartID($albumID)) _sidebar.toggle();
-			if (album.json && albumID === album.json.id) view.album.title();else album.load(albumID);
+			if (album.json && albumID === album.json.id) {
+				view.album.title();
+				lychee.content.show();
+				tabindex.makeFocusable(lychee.content, true);
+			} else {
+				album.load(albumID);
+			}
 			lychee.footer_show();
 		}
 	} else {
@@ -3805,7 +4150,10 @@ lychee.load = function () {
 		if (visible.sidebar()) _sidebar.toggle();
 
 		// Show Albums
-		if (visible.photo()) view.photo.hide();
+		if (visible.photo()) {
+			view.photo.hide();
+			tabindex.makeUnfocusable(lychee.imageview);
+		}
 		if (visible.mapview()) mapview.close();
 		lychee.content.show();
 		lychee.footer_show();
@@ -3970,8 +4318,10 @@ lychee.loadDropbox = function (callback) {
 
 lychee.getEventName = function () {
 
-	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && 'ontouchend' in document.documentElement;
-	return touchendSupport === true ? 'touchend' : 'click';
+	if (lychee.device_type === 'mobile') {
+		return 'touchend';
+	}
+	return 'click';
 };
 
 lychee.escapeHTML = function () {
@@ -4176,6 +4526,7 @@ lychee.clipboardCopy = function (text) {
 	// ? Promise.resolve()
 	// : Promise.reject(new DOMException('The request is not allowed', 'NotAllowedError'))
 };
+
 lychee.locale = {
 
 	'USERNAME': 'username',
@@ -4870,6 +5221,9 @@ mapview.close = function () {
 	lychee.animate($('#mapview'), 'fadeOut');
 	$('#mapview').hide();
 	header.setMode('album');
+
+	// Make album focussable
+	tabindex.makeFocusable(lychee.content);
 };
 
 mapview.goto = function (elem) {
@@ -5412,9 +5766,12 @@ _photo.load = function (photoID, albumID, autoplay) {
 		view.photo.init(autoplay);
 		lychee.imageview.show();
 
-		setTimeout(function () {
-			lychee.content.show();
-		}, 300);
+		if (!lychee.hide_content_during_imgview) {
+			setTimeout(function () {
+				lychee.content.show();
+				tabindex.makeUnfocusable(lychee.content);
+			}, 300);
+		}
 	});
 };
 
@@ -6257,7 +6614,7 @@ _photo.getArchive = function (photoIDs) {
 		if (myPhoto.url) {
 			msg += buildButton('FULL', lychee.locale['PHOTO_FULL'] + " (" + myPhoto.width + "x" + myPhoto.height + ", " + myPhoto.size + ")");
 		}
-		if (myPhoto.livePhotoUrl !== '') {
+		if (myPhoto.livePhotoUrl !== null) {
 			msg += buildButton('LIVEPHOTOVIDEO', "" + lychee.locale['PHOTO_LIVE_VIDEO']);
 		}
 		if (myPhoto.hasOwnProperty('medium2x') && myPhoto.medium2x !== '') {
@@ -7889,6 +8246,106 @@ swipe.stop = function (e, left, right) {
 };
 
 /**
+ * @description Helper class to manage tabindex
+ */
+
+var tabindex = {
+
+	offset_for_header: 100,
+	next_tab_index: 100
+
+};
+
+tabindex.saveSettings = function (elem) {
+	// Todo: Make shorter notation
+	// Get all elements which have a tabindex
+	var tmp = $(elem).find("[tabindex]");
+
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
+	tmp.each(function (i, e) {
+		// TODO: shorter notation
+		a = $(e).attr("tabindex");
+		$(this).data("tabindex-saved", a);
+	});
+};
+
+tabindex.restoreSettings = function (elem) {
+
+	if (!lychee.enable_tabindex) return;
+
+	// Todo: Make shorter noation
+	// Get all elements which have a tabindex
+	var tmp = $(elem).find("[tabindex]");
+
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
+	tmp.each(function (i, e) {
+		// TODO: shorter notation
+		a = $(e).data("tabindex-saved");
+		$(e).attr("tabindex", a);
+	});
+};
+
+tabindex.makeUnfocusable = function (elem) {
+	var saveFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+
+	// Todo: Make shorter noation
+	// Get all elements which have a tabindex
+	var tmp = $(elem).find("[tabindex]");
+
+	// iterate over all elements and set tabindex to -1 (i.e. make is not focussable)
+	tmp.each(function (i, e) {
+		$(e).attr("tabindex", "-1");
+		// Save which element had focus before we make it unfocusable
+		if (saveFocusElement && $(e).is(":focus")) {
+			$(e).data("tabindex-focus", true);
+			// Remove focus
+			$(e).blur();
+		}
+	});
+
+	// Disable input fields
+	$(elem).find("input").attr("disabled", "disabled");
+};
+
+tabindex.makeFocusable = function (elem) {
+	var restoreFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+
+	if (!lychee.enable_tabindex) return;
+
+	// Todo: Make shorter noation
+	// Get all elements which have a tabindex
+	var tmp = $(elem).find("[data-tabindex]");
+
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
+	tmp.each(function (i, e) {
+		$(e).attr("tabindex", $(e).data("tabindex"));
+		// restore focus elemente if wanted
+		if (restoreFocusElement) {
+			if ($(e).data("tabindex-focus") && lychee.active_focus_on_page_load) {
+				$(e).focus();
+				$(e).removeData("tabindex-focus");
+			}
+		}
+	});
+
+	// Enable input fields
+	$(elem).find("input").removeAttr("disabled");
+};
+
+tabindex.get_next_tab_index = function () {
+
+	tabindex.next_tab_index = tabindex.next_tab_index + 1;
+
+	return tabindex.next_tab_index - 1;
+};
+
+tabindex.reset = function () {
+
+	tabindex.next_tab_index = tabindex.offset_for_header;
+};
+/**
  * @description Takes care of every action an album can handle and execute.
  */
 
@@ -9126,14 +9583,16 @@ view.photo = {
 		$(document).bind('mousemove', function () {
 			clearTimeout(timeout);
 			// For live Photos: header animtion only if LivePhoto is not playing
-			if (!_photo.isLivePhotoPlaying()) {
+			if (!_photo.isLivePhotoPlaying() && lychee.header_auto_hide) {
 				header.show();
 				timeout = setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
 			}
 		});
 
 		// we also put this timeout to enable it by default when you directly click on a picture.
-		setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
+		if (lychee.header_auto_hide) {
+			setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
+		}
 
 		lychee.animate(lychee.imageview, 'fadeIn');
 	},
@@ -9237,6 +9696,7 @@ view.photo = {
 
 		var ret = build.imageview(_photo.json, visible.header(), autoplay);
 		lychee.imageview.html(ret.html);
+		tabindex.makeFocusable(lychee.imageview);
 
 		// Init Live Photo if needed
 		if (_photo.isLivePhoto()) {

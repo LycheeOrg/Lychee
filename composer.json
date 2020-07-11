@@ -27,7 +27,8 @@
         "php-http/message": "^1.8",
         "spatie/guzzle-rate-limiter-middleware": "^1.0",
         "spatie/laravel-feed": "^2.6",
-        "symfony/cache": "^5.0"
+        "symfony/cache": "^5.1",
+        "whichbrowser/parser": "^2.0"
     },
     "require-dev": {
         "ext-imagick": "*",
