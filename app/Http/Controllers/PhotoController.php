@@ -407,8 +407,8 @@ class PhotoController extends Controller
 			return 'false';
 		}
 
-	  $licenses = Helpers::get_all_licenses();
-		
+		$licenses = Helpers::get_all_licenses();
+
 		$found = false;
 		$i = 0;
 		while (!$found && $i < count($licenses)) {

@@ -1,6 +1,5 @@
 <?php
 
-use App\Configs;
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
 

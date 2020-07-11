@@ -210,7 +210,7 @@ class Helpers
 	}
 
 	/**
-	 * Returns the available licenses
+	 * Returns the available licenses.
 	 */
 	public static function get_all_licenses()
 	{
