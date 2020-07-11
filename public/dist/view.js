@@ -11,18 +11,18 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject2 = _taggedTemplateLiteral(["<div class='divider'><h1>", "</h1></div>"], ["<div class='divider'><h1>", "</h1></div>"]),
     _templateObject3 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
     _templateObject4 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
-    _templateObject5 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject5 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject6 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject7 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
-    _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
+    _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject9 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject10 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
     _templateObject11 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject12 = _taggedTemplateLiteral(["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject13 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject14 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
-    _templateObject15 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' ", "><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' ", "><source src='", "'>Your browser does not support the video tag.</video>"]),
-    _templateObject16 = _taggedTemplateLiteral(["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big'>"], ["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big'>"]),
+    _templateObject15 = _taggedTemplateLiteral(["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autobuffer ", " data-tabindex='", "'><source src='", "'>Your browser does not support the video tag.</video>"], ["<video width=\"auto\" height=\"auto\" id='image' controls class='", "' autobuffer ", " data-tabindex='", "'><source src='", "'>Your browser does not support the video tag.</video>"]),
+    _templateObject16 = _taggedTemplateLiteral(["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big' data-tabindex='", "'>"], ["<img id='image' class='", "' src='img/placeholder.png' draggable='false' alt='big' data-tabindex='", "'>"]),
     _templateObject17 = _taggedTemplateLiteral(["", ""], ["", ""]),
     _templateObject18 = _taggedTemplateLiteral(["<div class='no_content fadeIn'>", ""], ["<div class='no_content fadeIn'>", ""]),
     _templateObject19 = _taggedTemplateLiteral(["<p>", "</p>"], ["<p>", "</p>"]),
@@ -572,7 +572,7 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.id, build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.id, tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
 
 	if (album.isUploadable() && !disabled) {
 
@@ -601,12 +601,12 @@ build.photo = function (data) {
 	var isLivePhoto = data.livePhotoUrl !== '' && data.livePhotoUrl !== null;
 
 	if (data.thumbUrl === 'uploads/thumb/' && isLivePhoto) {
-		thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	}
 	if (data.thumbUrl === 'uploads/thumb/' && isVideo) {
-		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	} else if (data.thumbUrl === 'uploads/thumb/' && isRaw) {
-		thumbnail = "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+		thumbnail = "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	} else if (lychee.layout === '0') {
 
 		if (data.hasOwnProperty('thumb2x')) {
@@ -623,7 +623,7 @@ build.photo = function (data) {
 		}
 
 		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
-		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 		thumbnail += "</span>";
 	} else {
 
@@ -633,7 +633,7 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else if (data.medium !== '') {
 			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
@@ -641,12 +641,12 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else if (!isVideo) {
 			// Fallback for images with no small or medium.
 			thumbnail = "<span class=\"thumbimg" + (isLivePhoto ? ' livephoto' : '') + "\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else {
 			// Fallback for videos with no small (the case of no thumb is
@@ -666,12 +666,12 @@ build.photo = function (data) {
 			}
 
 			thumbnail = "<span class=\"thumbimg video\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false'>";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		}
 	}
 
-	html += lychee.html(_templateObject8, disabled ? "disabled" : "", data.album, data.id, thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject8, disabled ? "disabled" : "", data.album, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
 
 	if (data.cameraDate === '1') html += lychee.html(_templateObject9, build.iconic('camera-slr'), data.takedate);else html += lychee.html(_templateObject10, data.sysdate);
 
@@ -714,9 +714,9 @@ build.imageview = function (data, visibleControls, autoplay) {
 	var thumb = '';
 
 	if (data.type.indexOf('video') > -1) {
-		html += lychee.html(_templateObject15, visibleControls === true ? '' : 'full', autoplay ? 'autoplay' : '', data.url);
+		html += lychee.html(_templateObject15, visibleControls === true ? '' : 'full', autoplay ? 'autoplay' : '', tabindex.get_next_tab_index(), data.url);
 	} else if (data.type.indexOf('raw') > -1 && data.medium === '') {
-		html += lychee.html(_templateObject16, visibleControls === true ? '' : 'full');
+		html += lychee.html(_templateObject16, visibleControls === true ? '' : 'full', tabindex.get_next_tab_index());
 	} else {
 		var img = '';
 
@@ -740,9 +740,9 @@ build.imageview = function (data, visibleControls, autoplay) {
 				if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
 					medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 				}
-				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + "  draggable='false' alt='medium'>";
+				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
 			} else {
-				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big'>";
+				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
 			}
 		} else {
 
@@ -751,10 +751,10 @@ build.imageview = function (data, visibleControls, autoplay) {
 				var medium_width = medium_dims[0];
 				var medium_height = medium_dims[1];
 				// It's a live photo
-				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px'></div>";
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px' data-tabindex='" + tabindex.get_next_tab_index() + "'></div>";
 			} else {
 				// It's a live photo
-				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.url + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + data.width + "px; height: " + data.height + "px'></div>";
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.url + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + data.width + "px; height: " + data.height + "px' data-tabindex='" + tabindex.get_next_tab_index() + "'></div>";
 			}
 		}
 
@@ -891,6 +891,8 @@ header.bind = function () {
 
 		if ($(this).hasClass('header__title--editable') === false) return false;
 
+		if (lychee.enable_contextmenu_header === false) return false;
+
 		if (visible.photo()) contextMenu.photoTitle(album.getID(), photo.getID(), e);else contextMenu.albumTitle(album.getID(), e);
 	});
 
@@ -1004,6 +1006,8 @@ header.show = function () {
 	lychee.imageview.removeClass('full');
 	header.dom().removeClass('header--hidden');
 
+	tabindex.restoreSettings(header.dom());
+
 	photo.updateSizeLivePhotoDuringAnimation();
 
 	return true;
@@ -1019,6 +1023,9 @@ header.hideIfLivePhotoNotPlaying = function () {
 header.hide = function () {
 
 	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.visible() === false) {
+
+		tabindex.saveSettings(header.dom());
+		tabindex.makeUnfocusable(header.dom());
 
 		lychee.imageview.addClass('full');
 		header.dom().addClass('header--hidden');
@@ -1054,19 +1061,34 @@ header.setMode = function (mode) {
 			header.dom().removeClass('header--view');
 			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--public').addClass('header__toolbar--visible');
+			tabindex.makeFocusable(header.dom('.header__toolbar--public'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map'));
+
 			if (lychee.public_search) {
-				$('.header__search, .header__clear', '.header__toolbar--public').show();
+				var e = $('.header__search, .header__clear', '.header__toolbar--public');
+				e.show();
+				tabindex.makeFocusable(e);
 			} else {
-				$('.header__search, .header__clear', '.header__toolbar--public').hide();
+				var _e = $('.header__search, .header__clear', '.header__toolbar--public');
+				_e.hide();
+				tabindex.makeUnfocusable(_e);
 			}
 
 			// Set icon in Public mode
 			if (lychee.map_display_public) {
-				$('.button--map-albums', '.header__toolbar--public').show();
+				var _e2 = $('.button--map-albums', '.header__toolbar--public');
+				_e2.show();
+				tabindex.makeFocusable(_e2);
 			} else {
-				$('.button--map-albums', '.header__toolbar--public').hide();
+				var _e3 = $('.button--map-albums', '.header__toolbar--public');
+				_e3.hide();
+				tabindex.makeUnfocusable(_e3);
 			}
 
+			// Set focus on login button
+			if (lychee.active_focus_on_page_load) {
+				$('#button_signin').focus();
+			}
 			return true;
 
 		case 'albums':
@@ -1075,11 +1097,27 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--albums').addClass('header__toolbar--visible');
 
+			tabindex.makeFocusable(header.dom('.header__toolbar--albums'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map'));
+
 			// If map is disabled, we should hide the icon
 			if (lychee.map_display) {
-				$('.button--map-albums', '.header__toolbar--albums').show();
+				var _e4 = $('.button--map-albums', '.header__toolbar--albums');
+				_e4.show();
+				tabindex.makeFocusable(_e4);
 			} else {
-				$('.button--map-albums', '.header__toolbar--albums').hide();
+				var _e5 = $('.button--map-albums', '.header__toolbar--albums');
+				_e5.hide();
+				tabindex.makeUnfocusable(_e5);
+			}
+
+			if (lychee.enable_button_add) {
+				var _e6 = $('.button_add', '.header__toolbar--albums');
+				_e6.show();
+				tabindex.makeFocusable(_e6);
+			} else {
+				var _e7 = $('.button_add', '.header__toolbar--albums');
+				_e7.remove();
 			}
 
 			return true;
@@ -1092,40 +1130,92 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
 
+			tabindex.makeFocusable(header.dom('.header__toolbar--album'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map'));
+
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
 			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && album.json.downloadable === '0') {
-				$('#button_archive').hide();
+				var _e8 = $('#button_archive');
+				_e8.hide();
+				tabindex.makeUnfocusable(_e8);
 			} else {
-				$('#button_archive').show();
+				var _e9 = $('#button_archive');
+				_e9.show();
+				tabindex.makeFocusable(_e9);
 			}
 
 			if (album.json && album.json.hasOwnProperty('share_button_visible') && album.json.share_button_visible !== '1') {
-				$('#button_share_album').hide();
+				var _e10 = $('#button_share_album');
+				_e10.hide();
+				tabindex.makeUnfocusable(_e10);
 			} else {
-				$('#button_share_album').show();
+				var _e11 = $('#button_share_album');
+				_e11.show();
+				tabindex.makeFocusable(_e11);
 			}
 
 			// If map is disabled, we should hide the icon
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
-				$('#button_map_album').show();
+				var _e12 = $('#button_map_album');
+				_e12.show();
+				tabindex.makeFocusable(_e12);
 			} else {
-				$('#button_map_album').hide();
+				var _e13 = $('#button_map_album');
+				_e13.hide();
+				tabindex.makeUnfocusable(_e13);
 			}
 
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
 				$('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album').hide();
 				$('.button_add, .header__divider', '.header__toolbar--album').show();
+				tabindex.makeFocusable($('.button_add, .header__divider', '.header__toolbar--album').show());
+				tabindex.makeUnfocusable($('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album'));
 			} else if (albumID === '0') {
 				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
 				$('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album').show();
+				tabindex.makeFocusable($('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album'));
+				tabindex.makeUnfocusable($('#button_info_album, #button_visibility_album, #button_move_album'));
 			} else {
 				$('#button_info_album, #button_visibility_album').show();
+				tabindex.makeFocusable($('#button_info_album, #button_visibility_album'));
 				if (album.isUploadable()) {
 					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
+					tabindex.makeFocusable($('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album'));
 				} else {
 					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').hide();
+					tabindex.makeUnfocusable($('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album'));
 				}
+			}
+
+			// Remove buttons if needed
+			if (!lychee.enable_button_visibility) {
+				var _e14 = $('#button_visibility_album', '.header__toolbar--album');
+				_e14.remove();
+			}
+			if (!lychee.enable_button_share) {
+				var _e15 = $('#button_share_album', '.header__toolbar--album');
+				_e15.remove();
+			}
+			if (!lychee.enable_button_archive) {
+				var _e16 = $('#button_archive', '.header__toolbar--album');
+				_e16.remove();
+			}
+			if (!lychee.enable_button_move) {
+				var _e17 = $('#button_move_album', '.header__toolbar--album');
+				_e17.remove();
+			}
+			if (!lychee.enable_button_trash) {
+				var _e18 = $('#button_trash_album', '.header__toolbar--album');
+				_e18.remove();
+			}
+			if (!lychee.enable_button_fullscreen) {
+				var _e19 = $('#button_fs_album_enter', '.header__toolbar--album');
+				_e19.remove();
+			}
+			if (!lychee.enable_button_add) {
+				var _e20 = $('.button_add', '.header__toolbar--album');
+				_e20.remove();
 			}
 
 			return true;
@@ -1136,31 +1226,80 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
 
+			tabindex.makeFocusable(header.dom('.header__toolbar--photo'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map'));
 			// If map is disabled, we should hide the icon
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
-				$('#button_map').show();
+				var _e21 = $('#button_map');
+				_e21.show();
+				tabindex.makeFocusable(_e21);
 			} else {
-				$('#button_map').hide();
+				var _e22 = $('#button_map');
+				_e22.hide();
+				tabindex.makeUnfocusable(_e22);
 			}
 
 			if (album.isUploadable()) {
-				$('#button_trash, #button_move, #button_visibility, #button_star').show();
+				var _e23 = $('#button_trash, #button_move, #button_visibility, #button_star');
+				_e23.show();
+				tabindex.makeFocusable(_e23);
 			} else {
-				$('#button_trash, #button_move, #button_visibility, #button_star').hide();
+				var _e24 = $('#button_trash, #button_move, #button_visibility, #button_star');
+				_e24.hide();
+				tabindex.makeUnfocusable(_e24);
 			}
 
 			if (photo.json && photo.json.hasOwnProperty('share_button_visible') && photo.json.share_button_visible !== '1') {
-				$('#button_share').hide();
+				var _e25 = $('#button_share');
+				_e25.hide();
+				tabindex.makeUnfocusable(_e25);
 			} else {
-				$('#button_share').show();
+				var _e26 = $('#button_share');
+				_e26.show();
+				tabindex.makeFocusable(_e26);
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$('#button_more').show();
+			tabindex.makeFocusable($('#button_more'));
 			if (!(album.isUploadable() || (photo.json.hasOwnProperty('downloadable') ? photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(photo.json.url && photo.json.url !== '')) {
-				$('#button_more').hide();
+				var _e27 = $('#button_more');
+				_e27.hide();
+				tabindex.makeUnfocusable(_e27);
 			}
 
+			// Remove buttons if needed
+			if (!lychee.enable_button_visibility) {
+				var _e28 = $('#button_visibility', '.header__toolbar--photo');
+				_e28.remove();
+			}
+			if (!lychee.enable_button_share) {
+				var _e29 = $('#button_share', '.header__toolbar--photo');
+				_e29.remove();
+			}
+			if (!lychee.enable_button_move) {
+				var _e30 = $('#button_move', '.header__toolbar--photo');
+				_e30.remove();
+			}
+			if (!lychee.enable_button_trash) {
+				var _e31 = $('#button_trash', '.header__toolbar--photo');
+				_e31.remove();
+			}
+			if (!lychee.enable_button_fullscreen) {
+				var _e32 = $('#button_fs_enter', '.header__toolbar--photo');
+				_e32.remove();
+			}
+			if (!lychee.enable_button_more) {
+				var _e33 = $('#button_more', '.header__toolbar--photo');
+				_e33.remove();
+			}
+			if (!lychee.enable_button_rotate) {
+				var _e34 = $('#button_rotate_cwise', '.header__toolbar--photo');
+				_e34.remove();
+
+				_e34 = $('#button_rotate_ccwise', '.header__toolbar--photo');
+				_e34.remove();
+			}
 			return true;
 		case 'map':
 
@@ -1168,6 +1307,8 @@ header.setMode = function (mode) {
 			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
 			header.dom('.header__toolbar--map').addClass('header__toolbar--visible');
 
+			tabindex.makeFocusable(header.dom('.header__toolbar--map'));
+			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo'));
 			return true;
 
 	}
@@ -2150,6 +2291,9 @@ mapview.close = function () {
 	lychee.animate($('#mapview'), 'fadeOut');
 	$('#mapview').hide();
 	header.setMode('album');
+
+	// Make album focussable
+	tabindex.makeFocusable(lychee.content);
 };
 
 mapview.goto = function (elem) {
