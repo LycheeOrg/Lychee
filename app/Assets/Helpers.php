@@ -214,7 +214,7 @@ class Helpers
 	 */
 	public static function get_all_licenses()
 	{
-		$licenses = [
+		return [
 			'none',
 			'reserved',
 			'CC0',
@@ -244,7 +244,5 @@ class Helpers
 			'CC-BY-SA-3.0',
 			'CC-BY-SA-4.0',
 		];
-
-		return $licenses;
 	}
 }
