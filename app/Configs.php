@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Assets\Helpers;
 use App\Locale\Lang;
 use Eloquent;
 use Exception;
@@ -66,6 +67,7 @@ class Configs extends Model
 			define('BOOL', '0|1');
 			define('TERNARY', '0|1|2');
 			define('DISABLED', '');
+			define('LICENSE', 'license');
 		}
 
 		$message = '';
@@ -94,6 +96,12 @@ class Configs extends Model
 							$val_range[$this->type_range]) . ', got ' . ($value ? $value : 'NULL');
 				}
 				break;
+				case LICENSE:
+					if (!in_array($value, Helpers::get_all_licenses())) {
+						$message = 'Error: Wrong property for ' . $this->key
+							. ' in database, expected a valide license, got ' . ($value ? $value : 'NULL');
+					}
+					break;
 			default:
 				$values = explode('|', $this->type_range);
 				if (!in_array($value, $values)) {
