@@ -17,8 +17,6 @@ if (function_exists('apache_get_modules') && !in_array('mod_rewrite', apache_get
 	$oups->apacheRewrite();
 }
 
-
-
 /*
  |--------------------------------------------------------------------------
  | Catch error (worse case scenario)
@@ -31,12 +29,10 @@ if (function_exists('apache_get_modules') && !in_array('mod_rewrite', apache_get
 function panicHelp()
 {
 	$last_error = error_get_last();
-	if ($last_error && $last_error['type']==E_ERROR)
-	{
+	if ($last_error && ($last_error['type'] == E_ERROR || $last_error['type'] == E_COMPILE_ERROR)) {
 		$oups = new PanicAttack();
 		$message = substr($last_error['message'], 0, 200);
 		$oups->handle($message);
 	}
 }
 register_shutdown_function('panicHelp');
-
