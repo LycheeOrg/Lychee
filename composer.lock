@@ -1576,22 +1576,22 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "da0831af9dd6843307e1a7b81bf5c0d07542e706"
+                "reference": "3c8be195465ea37e8b7ca5a67b089883cdc590d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/da0831af9dd6843307e1a7b81bf5c0d07542e706",
-                "reference": "da0831af9dd6843307e1a7b81bf5c0d07542e706",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/3c8be195465ea37e8b7ca5a67b089883cdc590d2",
+                "reference": "3c8be195465ea37e8b7ca5a67b089883cdc590d2",
                 "shasum": ""
             },
             "require": {
-                "neitanod/forceutf8": "^2.0",
+                "neitanod/forceutf8": "^2.0.4",
                 "php": ">=7.2",
                 "php-ffmpeg/php-ffmpeg": "^0.14.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^2.16",
-                "jakub-onderka/php-parallel-lint": "^1.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpmd/phpmd": "^2.7",
                 "phpunit/phpunit": ">=8.4",
                 "sebastian/phpcpd": "^4.1",
@@ -1599,6 +1599,7 @@
             },
             "suggest": {
                 "FFmpeg": "Use FFmpeg/FFprobe as adapter",
+                "ImageMagick": "Use ImageMagick as adapter",
                 "ext-exif": "Use exif PHP extension as adapter",
                 "lib-exiftool": "Use perl lib exiftool as adapter"
             },
@@ -1622,14 +1623,16 @@
             "description": "Object-Oriented EXIF parsing",
             "keywords": [
                 "IPTC",
+                "ImageMagick",
                 "exif",
                 "exiftool",
                 "ffmpeg",
                 "ffprobe",
+                "imagick",
                 "jpeg",
                 "tiff"
             ],
-            "time": "2020-05-24T20:32:49+00:00"
+            "time": "2020-07-12T12:12:50+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -8127,6 +8130,5 @@
     },
     "platform-dev": {
         "ext-imagick": "*"
-    },
-    "plugin-api-version": "1.1.0"
+    }
 }
