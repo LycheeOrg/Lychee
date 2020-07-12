@@ -14,7 +14,7 @@ class UpdateLicences extends Migration
 	private function update_fields(array &$default_values)
 	{
 		foreach ($default_values as $value) {
-			$config = Configs::updateOrCreate(['key' => $value['key']],
+			Configs::updateOrCreate(['key' => $value['key']],
 				[
 					'cat' => $value['cat'],
 					'type_range' => $value['type_range'],
