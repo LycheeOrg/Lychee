@@ -1,18 +1,13 @@
 <?php
 
 use App\Configs;
-use App\Logs;
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
 
 class UpdateLicences extends Migration
 {
-
 	/**
-	 * Update the fields
+	 * Update the fields.
 	 *
 	 * @param array $default_values
 	 */
@@ -35,7 +30,6 @@ class UpdateLicences extends Migration
 	 */
 	public function up()
 	{
-
 		defined('LICENSE') or define('LICENSE', 'license');
 
 		$default_values = [
