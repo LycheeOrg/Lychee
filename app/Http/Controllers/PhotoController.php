@@ -407,17 +407,8 @@ class PhotoController extends Controller
 			return 'false';
 		}
 
-		$licenses = [
-			'none',
-			'reserved',
-			'CC0',
-			'CC-BY',
-			'CC-BY-ND',
-			'CC-BY-SA',
-			'CC-BY-NC',
-			'CC-BY-NC-ND',
-			'CC-BY-NC-SA',
-		];
+		$licenses = Helpers::get_all_licenses();
+
 		$found = false;
 		$i = 0;
 		while (!$found && $i < count($licenses)) {

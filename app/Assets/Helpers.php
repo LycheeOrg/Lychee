@@ -208,4 +208,46 @@ class Helpers
 
 		return $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 	}
+
+	/**
+	 * Returns the available licenses.
+	 */
+	public static function get_all_licenses()
+	{
+		return [
+			'none',
+			'reserved',
+			'CC0',
+			'CC-BY-1.0',
+			'CC-BY-2.0',
+			'CC-BY-2.5',
+			'CC-BY-3.0',
+			'CC-BY-4.0',
+			'CC-BY-NC-1.0',
+			'CC-BY-NC-2.0',
+			'CC-BY-NC-2.5',
+			'CC-BY-NC-3.0',
+			'CC-BY-NC-4.0',
+			'CC-BY-NC-ND-1.0',
+			'CC-BY-NC-ND-2.0',
+			'CC-BY-NC-ND-2.5',
+			'CC-BY-NC-ND-3.0',
+			'CC-BY-NC-ND-4.0',
+			'CC-BY-NC-SA-1.0',
+			'CC-BY-NC-SA-2.0',
+			'CC-BY-NC-SA-2.5',
+			'CC-BY-NC-SA-3.0',
+			'CC-BY-NC-SA-4.0',
+			'CC-BY-ND-1.0',
+			'CC-BY-ND-2.0',
+			'CC-BY-ND-2.5',
+			'CC-BY-ND-3.0',
+			'CC-BY-ND-4.0',
+			'CC-BY-SA-1.0',
+			'CC-BY-SA-2.0',
+			'CC-BY-SA-2.5',
+			'CC-BY-SA-3.0',
+			'CC-BY-SA-4.0',
+		];
+	}
 }
