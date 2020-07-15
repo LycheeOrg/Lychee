@@ -37,18 +37,18 @@ class ConfigFunctions
 	}
 
 	/**
-	 * Returns the public settings of Lychee.
+	 * Returns the public settings of Lychee (served to diagnostics).
 	 *
 	 * @return array
 	 */
 	public function min_info()
 	{
 		// Execute query
-		return Configs::info()->pluck('value', 'key')->all();
+		return Configs::info()->orderBy('id', 'ASC')->get()->pluck('value', 'key');
 	}
 
 	/**
-	 * Returns the public settings of Lychee.
+	 * Returns the public settings of Lychee (served to the user).
 	 *
 	 * @return array
 	 */

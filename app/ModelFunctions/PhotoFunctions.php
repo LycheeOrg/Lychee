@@ -17,6 +17,7 @@ use Exception;
 use FFMpeg;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Storage;
+use ImageOptimizer;
 
 class PhotoFunctions
 {
@@ -558,7 +559,12 @@ class PhotoFunctions
 		// check if the image has data
 		$success = file_exists($tmp) ? (filesize($tmp) > 0) : false;
 
-		if (!$success) {
+		if ($success) {
+			// Optimize image
+			if (Configs::get_value('lossless_optimization')) {
+				ImageOptimizer::optimize($tmp);
+			}
+		} else {
 			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot from video ' . $tmp);
 			try {
 				$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0));
