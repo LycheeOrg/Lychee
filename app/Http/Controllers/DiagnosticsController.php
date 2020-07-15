@@ -6,8 +6,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Assets\Helpers;
 use App\Configs;
+use App\ControllerFunctions\Diagnostics\BasicPermissionCheck;
+use App\ControllerFunctions\Diagnostics\ConfigSanityCheck;
+use App\ControllerFunctions\Diagnostics\DBSupportCheck;
+use App\ControllerFunctions\Diagnostics\GDSupportCheck;
+use App\ControllerFunctions\Diagnostics\ImageOptCheck;
+use App\ControllerFunctions\Diagnostics\IniSettingsCheck;
+use App\ControllerFunctions\Diagnostics\LycheeDBVersionCheck;
+use App\ControllerFunctions\Diagnostics\PHPVersionCheck;
 use App\ControllerFunctions\Update\Check as CheckUpdate;
 use App\Metadata\DiskUsage;
 use App\Metadata\LycheeVersion;
@@ -16,7 +23,6 @@ use App\ModelFunctions\SessionFunctions;
 use Config;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 use Imagick;
 
@@ -76,11 +82,11 @@ class DiagnosticsController extends Controller
 	}
 
 	/**
-	 * Return the padded string to 27.
+	 * Return the padded string to 32.
 	 */
 	private function line(string $key, string $value)
 	{
-		return sprintf('%-27s %s', $key, $value);
+		return sprintf('%-32s %s', $key, $value);
 	}
 
 	/**
@@ -93,164 +99,21 @@ class DiagnosticsController extends Controller
 		// Declare
 		$errors = [];
 
-		// PHP Version
-
-		// As we cannot test this as those are just raising warnings which we cannot check via Travis.
-		// I hereby solemnly  declare this code as covered !
 		// @codeCoverageIgnoreStart
 
-		$php_error = 7.2;
-		$php_warning = 7.3;
-		$php_latest = 7.4;
+		$checks = [];
+		$checks[] = new PHPVersionCheck();
+		$checks[] = new DBSupportCheck();
+		$checks[] = new GDSupportCheck();
+		$checks[] = new LycheeDBVersionCheck($this->lycheeVersion, $this->versions);
+		$checks[] = new BasicPermissionCheck();
+		$checks[] = new IniSettingsCheck();
+		$checks[] = new ConfigSanityCheck($this->configFunctions);
+		$checks[] = new ImageOptCheck();
 
-		// 30 Nov 2019	 => 7.2 = DEPRECATED = ERROR
-		// 28 Nov 2019	 => 7.4 = RELEASED   => 7.3 = WARNING
-		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
-		// 28 Nov 2021	 => 7.4 = DEPRECATED = ERROR
-
-		if (floatval(phpversion()) < $php_latest) {
-			$errors[] = 'Info: Latest version of PHP is ' . $php_latest;
+		foreach ($checks as $check) {
+			$check->check($errors);
 		}
-
-		if (floatval(phpversion()) < $php_error) {
-			$errors += ['Error: Upgrade to PHP ' . $php_error . ' or higher'];
-		}
-
-		if (floatval(phpversion()) < $php_warning) {
-			$errors += ['Warning: Upgrade to PHP ' . $php_latest . ' or higher'];
-		}
-
-		// 32 or 64 bits ?
-		if (PHP_INT_MAX == 2147483647) {
-			$errors[]
-				= 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
-		}
-
-		// Extensions
-		$extensions = ['session', 'exif', 'mbstring', 'gd', 'PDO', 'json', 'zip'];
-
-		foreach ($extensions as $extension) {
-			if (!extension_loaded($extension)) {
-				$errors[] = 'Error: PHP ' . $extension . ' extension not activated';
-			}
-		}
-
-		$db_possibilities = [
-			['mysql', 'mysqli'],
-			['mysql', 'pdo_mysql'],
-			['pgsql', 'pgsql'],
-			['pgsql', 'pdo_pgsql'],
-			['sqlite', 'sqlite3'],
-		];
-		$found = false;
-		foreach ($db_possibilities as $db_possibility) {
-			if (config('database.default') == $db_possibility[0]) {
-				$found = true;
-				if (!extension_loaded($db_possibility[1])) {
-					$errors[] = 'Error: ' . $db_possibility[0] . ' db driver selected and PHP ' . $db_possibility[1] . ' extension not activated';
-				}
-			}
-		}
-		if (!$found) {
-			$errors[] = 'Error: could not find the database solution for ' . config('database.default');
-		}
-
-		// Permissions
-		$paths = ['big', 'medium', 'small', 'thumb', 'import', ''];
-
-		foreach ($paths as $path) {
-			$p = Storage::path($path);
-			if (Helpers::hasPermissions($p) === false) {
-				$errors[] = "Error: '" . $p . "' is missing or has insufficient read/write privileges";
-			}
-		}
-		$p = Storage::disk('dist')->path('user.css');
-		if (Helpers::hasPermissions($p) === false) {
-			$errors[] = "Warning: '" . $p . "' does not exist or has insufficient read/write privileges.";
-			$p = Storage::disk('dist')->path('');
-			if (Helpers::hasPermissions($p) === false) {
-				$errors[] = "Warning: '" . $p . "' has insufficient read/write privileges.";
-			}
-		}
-
-		// About GD
-		if (function_exists('gd_info')) {
-			$gdVersion = gd_info();
-			if (!$gdVersion['JPEG Support']) {
-				$errors[] = 'Error: PHP gd extension without jpeg support';
-			}
-			if (!$gdVersion['PNG Support']) {
-				$errors[] = 'Error: PHP gd extension without png support';
-			}
-			if (
-				!$gdVersion['GIF Read Support']
-				|| !$gdVersion['GIF Create Support']
-			) {
-				$errors[] = 'Error: PHP gd extension without full gif support';
-			}
-		}
-
-		// Load settings
-		$settings = Configs::get();
-
-		$keys_checked = [
-			'username', 'password', 'sorting_Photos', 'sorting_Albums',
-			'imagick', 'skip_duplicates', 'check_for_updates', 'version',
-		];
-
-		foreach ($keys_checked as $key) {
-			if (!isset($settings[$key])) {
-				$errors[] = 'Error: ' . $key . ' not set in database';
-			}
-		}
-
-		if ($this->lycheeVersion->isRelease && $this->versions['DB']['version'] < $this->versions['Lychee']['version']) {
-			$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
-		}
-
-		/*
-		 * Sanity check over all the variables
-		 */
-		$this->configFunctions->sanity($errors);
-
-		// Check dropboxKey
-		if (!isset($settings['dropbox_key'])) {
-			$errors[]
-				= 'Warning: Dropbox import not working. No property for dropbox_key.';
-		} elseif ($settings['dropbox_key'] == '') {
-			$errors[]
-				= 'Warning: Dropbox import not working. dropbox_key is empty.';
-		}
-
-		// Check php.ini Settings
-		if (
-			ini_get('max_execution_time') < 200
-			&& ini_set('upload_max_filesize', '20M') === false
-		) {
-			$errors[]
-				= 'Warning: You may experience problems when uploading a large amount of photos. Take a look in the FAQ for details.';
-		}
-		if (empty(ini_get('allow_url_fopen'))) {
-			$errors[]
-				= 'Warning: You may experience problems with the Dropbox- and URL-Import. Edit your php.ini and set allow_url_fopen to 1.';
-		}
-
-		// Check imagick
-		if (!extension_loaded('imagick')) {
-			$errors[]
-				= 'Warning: Pictures that are rotated lose their metadata! Please install Imagick to avoid that.';
-		} else {
-			if (!isset($settings['imagick'])) {
-				$errors[]
-					= 'Warning: Pictures that are rotated lose their metadata! Please enable Imagick in settings to avoid that.';
-			}
-		}
-
-		if (!function_exists('exec')) {
-			$errors[]
-				= 'Warning: exec function has been disabled. You may experience some error 500, please report them to us.';
-		}
-
 		// @codeCoverageIgnoreEnd
 
 		return $errors;
@@ -262,7 +125,7 @@ class DiagnosticsController extends Controller
 	 *
 	 * @return array
 	 */
-	public function get_info()
+	public function get_info(): array
 	{
 		// Declare
 		$infos = [];

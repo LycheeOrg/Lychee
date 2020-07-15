@@ -123,7 +123,7 @@ class GdHandler implements ImageHandlerInterface
 			case IMAGETYPE_GIF:
 				imagegif($image, $destination);
 				break;
-			// createImage above already checked for any invalid values
+				// createImage above already checked for any invalid values
 		}
 
 		imagedestroy($image);
@@ -133,7 +133,7 @@ class GdHandler implements ImageHandlerInterface
 		$resHeight = $dimensions['height'];
 
 		// Optimize image
-		if (Configs::get_value('lossless_optimization')) {
+		if (Configs::get_value('lossless_optimization', '0') == '1') {
 			ImageOptimizer::optimize($destination);
 		}
 

@@ -4,8 +4,9 @@ namespace App\Image;
 
 use App\Configs;
 use App\Logs;
-use ImageOptimizer;
+use Imagick;
 use ImagickException;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class ImagickHandler implements ImageHandlerInterface
 {
@@ -21,39 +22,39 @@ class ImagickHandler implements ImageHandlerInterface
 	 *
 	 * @return array a dictionary of width and height of the rotated image
 	 */
-	private function autoRotateInternal(\Imagick &$image): array
+	private function autoRotateInternal(Imagick &$image): array
 	{
 		try {
 			$orientation = $image->getImageOrientation();
 
 			switch ($orientation) {
-					case \Imagick::ORIENTATION_TOPLEFT:
-						// nothing to do
-						break;
-					case \Imagick::ORIENTATION_TOPRIGHT:
-						$image->flopImage();
-						break;
-					case \Imagick::ORIENTATION_BOTTOMRIGHT:
-						$image->rotateImage(new \ImagickPixel(), 180);
-						break;
-					case \Imagick::ORIENTATION_BOTTOMLEFT:
-						$image->flopImage();
-						$image->rotateImage(new \ImagickPixel(), 180);
-						break;
-					case \Imagick::ORIENTATION_LEFTTOP:
-						$image->flopImage();
-						$image->rotateImage(new \ImagickPixel(), -90);
-						break;
-					case \Imagick::ORIENTATION_RIGHTTOP:
-						$image->rotateImage(new \ImagickPixel(), 90);
-						break;
-					case \Imagick::ORIENTATION_RIGHTBOTTOM:
-						$image->flopImage();
-						$image->rotateImage(new \ImagickPixel(), 90);
-						break;
-					case \Imagick::ORIENTATION_LEFTBOTTOM:
-						$image->rotateImage(new \ImagickPixel(), -90);
-						break;
+				case \Imagick::ORIENTATION_TOPLEFT:
+					// nothing to do
+					break;
+				case \Imagick::ORIENTATION_TOPRIGHT:
+					$image->flopImage();
+					break;
+				case \Imagick::ORIENTATION_BOTTOMRIGHT:
+					$image->rotateImage(new \ImagickPixel(), 180);
+					break;
+				case \Imagick::ORIENTATION_BOTTOMLEFT:
+					$image->flopImage();
+					$image->rotateImage(new \ImagickPixel(), 180);
+					break;
+				case \Imagick::ORIENTATION_LEFTTOP:
+					$image->flopImage();
+					$image->rotateImage(new \ImagickPixel(), -90);
+					break;
+				case \Imagick::ORIENTATION_RIGHTTOP:
+					$image->rotateImage(new \ImagickPixel(), 90);
+					break;
+				case \Imagick::ORIENTATION_RIGHTBOTTOM:
+					$image->flopImage();
+					$image->rotateImage(new \ImagickPixel(), 90);
+					break;
+				case \Imagick::ORIENTATION_LEFTBOTTOM:
+					$image->rotateImage(new \ImagickPixel(), -90);
+					break;
 			}
 
 			$image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
@@ -116,7 +117,7 @@ class ImagickHandler implements ImageHandlerInterface
 			$image->destroy();
 
 			// Optimize image
-			if (Configs::get_value('lossless_optimization')) {
+			if (Configs::get_value('lossless_optimization', '0') == '1') {
 				ImageOptimizer::optimize($destination);
 			}
 		} catch (ImagickException $exception) {
