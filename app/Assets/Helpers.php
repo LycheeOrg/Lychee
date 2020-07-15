@@ -5,6 +5,7 @@ namespace App\Assets;
 use App\Configs;
 use App\Exceptions\DivideByZeroException;
 use Illuminate\Support\Facades\File;
+use WhichBrowser\Parser as BrowserParser;
 
 class Helpers
 {
@@ -29,6 +30,22 @@ class Helpers
 	}
 
 	/**
+	 * return device type as string:
+	 * desktop, mobile, pda, dect, tablet, gaming, ereader,
+	 * media, headset, watch, emulator, television, monitor,
+	 * camera, printer, signage, whiteboard, devboard, inflight,
+	 * appliance, gps, car, pos, bot, projector.
+	 *
+	 * @return string
+	 */
+	public static function getDeviceType(): string
+	{
+		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
+
+		return $result->getType();
+	}
+
+	/*
 	 * Generate an id from current microtime.
 	 *
 	 * @return string generated ID
@@ -172,6 +189,10 @@ class Helpers
 		return ($a % $b) ? Helpers::gcd($b, $a % $b) : $b;
 	}
 
+	/**
+	 * Properly convert a boolean to a string
+	 * the default php function returns '' in case of false, this is not the behavior we want.
+	 */
 	public static function str_of_bool(bool $b)
 	{
 		return $b ? '1' : '0';
@@ -186,5 +207,47 @@ class Helpers
 		$thumbUrl2x = explode('.', $url);
 
 		return $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+	}
+
+	/**
+	 * Returns the available licenses.
+	 */
+	public static function get_all_licenses()
+	{
+		return [
+			'none',
+			'reserved',
+			'CC0',
+			'CC-BY-1.0',
+			'CC-BY-2.0',
+			'CC-BY-2.5',
+			'CC-BY-3.0',
+			'CC-BY-4.0',
+			'CC-BY-NC-1.0',
+			'CC-BY-NC-2.0',
+			'CC-BY-NC-2.5',
+			'CC-BY-NC-3.0',
+			'CC-BY-NC-4.0',
+			'CC-BY-NC-ND-1.0',
+			'CC-BY-NC-ND-2.0',
+			'CC-BY-NC-ND-2.5',
+			'CC-BY-NC-ND-3.0',
+			'CC-BY-NC-ND-4.0',
+			'CC-BY-NC-SA-1.0',
+			'CC-BY-NC-SA-2.0',
+			'CC-BY-NC-SA-2.5',
+			'CC-BY-NC-SA-3.0',
+			'CC-BY-NC-SA-4.0',
+			'CC-BY-ND-1.0',
+			'CC-BY-ND-2.0',
+			'CC-BY-ND-2.5',
+			'CC-BY-ND-3.0',
+			'CC-BY-ND-4.0',
+			'CC-BY-SA-1.0',
+			'CC-BY-SA-2.0',
+			'CC-BY-SA-2.5',
+			'CC-BY-SA-3.0',
+			'CC-BY-SA-4.0',
+		];
 	}
 }

@@ -1,0 +1,43 @@
+.basicModal__button:focus {
+		background: #2293EC;
+		color: #FFFFFF;
+		cursor: pointer;
+		outline-style: none;
+}
+
+.basicModal__button#basicModal__action:focus {
+		color: #FFFFFF;
+}
+
+.content .photo:focus {
+			outline-style: solid;
+			outline-color: #FFFFFF;
+			outline-width: 10px;
+}
+
+.content .album:focus {
+			outline-width: 0;
+}
+
+.header .button:focus {
+				outline-width: 0;
+				background-color: #FFFFFF;
+}
+
+.header__title:focus {
+				outline-width: 0;
+				background-color: #FFFFFF;
+				color: #000000;
+}
+
+.header .button:focus .iconic {
+				fill: #000000;
+}
+
+#imageview {
+	background-color: #000000;
+}
+#imageview #image,
+#imageview #livephoto {
+	outline-width: 0;
+}

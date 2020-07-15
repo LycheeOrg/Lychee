@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Assets\Helpers;
 use App\Configs;
 use App\Locale\Lang;
 use App\Logs;
@@ -283,17 +284,7 @@ class SettingsController extends Controller
 		]);
 
 		// add this to the list
-		$licenses = [
-			'none',
-			'reserved',
-			'CC0',
-			'CC-BY',
-			'CC-BY-ND',
-			'CC-BY-SA',
-			'CC-BY-NC',
-			'CC-BY-NC-ND',
-			'CC-BY-NC-SA',
-		];
+		$licenses = Helpers::get_all_licenses();
 		$i = 0;
 		while ($i < count($licenses)) {
 			if ($licenses[$i] === $request['license']) {
