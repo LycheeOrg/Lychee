@@ -6,7 +6,7 @@ use App\Logs;
 use Psr\Log\AbstractLogger;
 
 // Class for FFMpeg to convert files to mov format
-class LogFunctions implements AbstractLogger
+class LogFunctions extends AbstractLogger
 {
 	/**
 	 * We check if a message is understandable as a string.
