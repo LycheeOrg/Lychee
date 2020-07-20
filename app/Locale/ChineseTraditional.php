@@ -394,7 +394,7 @@ final class ChineseTraditional implements LangInterface
 			'UPLOAD_IMPORT_PATH_RESERVED' => '給定的路徑是Lychee的保留路徑！',
 			'UPLOAD_IMPORT_UNREADABLE' => '無法讀取文件！',
 			'UPLOAD_IMPORT_FAILED' => '無法導入文件！',
-			'UPLOAD_IMPORT_UNSUPPORTED' => '不支持的文件類型！',
+			'UPLOAD_IMPORT_UNSUPPORTED' => '不支援的文件類型！',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => '無法創建相簿！',
 
 			'ABOUT_SUBTITLE' => 'Lychee自主託管的照片管理程序',
