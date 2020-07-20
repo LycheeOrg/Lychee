@@ -33,7 +33,7 @@ final class ChineseTraditional implements LangInterface
 			'LOGS' => '查看日誌',
 			'SIGN_OUT' => '登出',
 			'UPDATE_AVAILABLE' => '可用更新！',
-			'MIGRATION_AVAILABLE' => 'Migration available!',
+			'MIGRATION_AVAILABLE' => '可進行轉移!',
 			'DEFAULT_LICENSE' => '新上傳的默認許可證:',
 			'SET_LICENSE' => '設置許可證',
 			'SET_OVERLAY_TYPE' => '設置疊加',
@@ -414,8 +414,8 @@ final class ChineseTraditional implements LangInterface
 			'PHOTO_LIVE_VIDEO' => '實時照片的視頻部分',
 			'PHOTO_VIEW' => 'Lychee照片瀏覽：',
 
-			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
-			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
+			'PHOTO_EDIT_ROTATECWISE' => '順時針旋轉',
+			'PHOTO_EDIT_ROTATECCWISE' => '逆時針旋轉',
 		];
 
 		return $locale;
