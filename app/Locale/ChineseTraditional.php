@@ -400,7 +400,7 @@ final class ChineseTraditional implements LangInterface
 			'ABOUT_SUBTITLE' => 'Lychee自主託管的照片管理程序',
 			'ABOUT_DESCRIPTION' => '是一個免費的照片管理工具，可在您的伺服器或網站空間上運行。安裝僅需幾秒鐘。<br>上傳，管理和分享照片(例如從本機應用程序)。<br>Lychee提供您所需的一切，所有照片均安全存儲。',
 			'FOOTER_COPYRIGHT' => '本網站的照片均受版權所有',
-			'HOSTED_WITH_LYCHEE' => 'Hosted with Lychee',
+			'HOSTED_WITH_LYCHEE' => '使用Lychee託管照片',
 
 			'URL_COPY_TO_CLIPBOARD' => '複製到剪貼板',
 			'URL_COPIED_TO_CLIPBOARD' => '複製到剪貼板的URL！',
