@@ -16,6 +16,7 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 
 		// 30 Nov 2019	 => 7.2 = DEPRECATED = ERROR
 		// 28 Nov 2019	 => 7.4 = RELEASED   => 7.3 = WARNING
+		// 26 Nov 2020   => 8.0 = RELEASED   => 7.4 = WARNING
 		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
 		// 28 Nov 2021	 => 7.4 = DEPRECATED = ERROR
 
@@ -24,17 +25,16 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 		}
 
 		if (floatval(phpversion()) < $php_error) {
-			$errors += ['Error: Upgrade to PHP ' . $php_error . ' or higher'];
+			$errors[] = 'Error: Upgrade to PHP ' . $php_warning . ' or higher';
 		}
 
 		if (floatval(phpversion()) < $php_warning) {
-			$errors += ['Warning: Upgrade to PHP ' . $php_latest . ' or higher'];
+			$errors[] = 'Warning: Upgrade to PHP ' . $php_latest . ' or higher';
 		}
 
 		// 32 or 64 bits ?
 		if (PHP_INT_MAX == 2147483647) {
-			$errors[]
-				= 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
+			$errors[] = 'Warning: Using 32 bit PHP, recommended upgrade to 64 bit';
 		}
 
 		// Extensions
