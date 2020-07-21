@@ -31,8 +31,8 @@ Route::get('/gallery', 'IndexController@gallery')->name('gallery')->middleware('
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/redirect/{albumid}/{photoid}', 'RedirectController@photo');
-Route::get('/redirect/{albumid}', 'RedirectController@album');
+Route::get('/r/{albumid}/{photoid}', 'RedirectController@photo');
+Route::get('/r/{albumid}', 'RedirectController@album');
 
 Route::get('/view', 'ViewController@view');
 Route::get('/demo', 'DemoController@js');
