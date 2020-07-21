@@ -24,6 +24,16 @@ Route::get('/', 'IndexController@show')->name('home')->middleware('installed');
 Route::get('/phpinfo', 'IndexController@phpinfo')->middleware('admin');
 Route::get('/gallery', 'IndexController@gallery')->name('gallery')->middleware('installed');
 
+/*
+ * TODO see to add better redirection functionality later.
+ * This is to prevent instagram from taking control our # in url when sharing an album
+ * and not consider it as an hash-tag.
+ *
+ * Other ideas, redirection by album name, photo title...
+ */
+Route::get('/r/{albumid}/{photoid}', 'RedirectController@photo');
+Route::get('/r/{albumid}', 'RedirectController@album');
+
 Route::get('/view', 'ViewController@view');
 Route::get('/demo', 'DemoController@js');
 Route::get('/frame', 'FrameController@init')->name('frame');
