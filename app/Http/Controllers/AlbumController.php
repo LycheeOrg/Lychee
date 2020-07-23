@@ -578,7 +578,7 @@ class AlbumController extends Controller
 
 				// just to be sure to handle ownership changes in the process.
 				$album->owner_id = $album_master->owner_id;
-				$no_error &= $this->albumFunctions->setContentsOwner($album->id, $album_master->owner_id);
+				$no_error &= $this->albumFunctions->setContentsOwner([$album->id], $album_master->owner_id);
 			} else {
 				$album->parent_id = null;
 			}

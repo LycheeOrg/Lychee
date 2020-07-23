@@ -38,6 +38,34 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * Move albums.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $ids
+	 * @param string   $result
+	 *
+	 * @return string
+	 */
+	public function move(
+		TestCase &$testCase,
+		string $ids,
+		string $to,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Album::move', [
+			'albumIDs' => $to . ',' . $ids,
+		]);
+		$response->assertStatus(200);
+		if ($result == 'true') {
+			$response->assertDontSee('false');
+		} else {
+			$response->assertSee($result, false);
+		}
+
+		return $response->getContent();
+	}
+
+	/**
 	 * Get all albums.
 	 *
 	 * @param TestCase $testCase

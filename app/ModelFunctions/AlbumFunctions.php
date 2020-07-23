@@ -376,7 +376,9 @@ class AlbumFunctions
 		Album::whereIn('parent_id', $albumIDs)->update(['owner_id' => $ownerId]);
 
 		$childrenIDs = Album::select('id')->whereIn('parent_id', $albumIDs)->get();
-		$this->setContentsOwner($childrenIDs, $ownerId);
+		if (!$childrenIDs->isEmpty()) {
+			$this->setContentsOwner($childrenIDs, $ownerId);
+		}
 
 		return true;
 	}
