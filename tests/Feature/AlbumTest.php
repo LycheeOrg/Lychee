@@ -40,10 +40,15 @@ class AlbumTest extends TestCase
 
 		$albumID = $albums_tests->add($this, '0', 'test_album', 'true');
 		$albumID2 = $albums_tests->add($this, '0', 'test_album2', 'true');
+		$albumID3 = $albums_tests->add($this, '0', 'test_album3', 'true');
 		$albums_tests->see_in_albums($this, $albumID);
 		$albums_tests->see_in_albums($this, $albumID2);
+		$albums_tests->see_in_albums($this, $albumID3);
 
+		$albums_tests->move($this, $albumID3, $albumID2);
 		$albums_tests->move($this, $albumID2, $albumID);
+		$albums_tests->move($this, $albumID3, '0');
+
 		/*
 		 * try to get a non existing album
 		 */
