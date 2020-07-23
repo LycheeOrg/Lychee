@@ -124,13 +124,11 @@ class DemoController extends Controller
 			 */
 			// Get photos
 			// Get album information
-			$return_album_json = AlbumCast::toArray($album);
 
 			$children = $this->albumFunctions->get_children($album, 0, true);
-			$return_album_json['albums'] = $children
-				->map(function ($e) {
-					return AlbumCast::toArray($e[0]);
-				})->values()->all();
+			$return_album_json = AlbumCast::toArrayWith($album, $children);
+			$return_album_json['owner'] = $album->owner->username;
+
 			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
 			$this->albumFunctions->set_thumbs_children($return_album_json['albums'], $thumbs[1]);
 
