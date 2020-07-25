@@ -33,7 +33,7 @@ class UpdateTakestamps
 	 * Go through each sub album and update the minimum and maximum takestamp of the pictures.
 	 * This is expensive and not normally necessary so we only use it during migration.
 	 */
-	public function update_min_max_takestamp(Album $album)
+	public static function update_min_max_takestamp(Album $album)
 	{
 		$album_list = self::get_all_sub_albums_id($album, [$album->id]);
 
