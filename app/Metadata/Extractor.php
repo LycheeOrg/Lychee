@@ -64,11 +64,11 @@ class Extractor
 	 * Extracts metadata from an image file.
 	 *
 	 * @param string $filename
-	 * @param  string mime type
+	 * @param  string file kind
 	 *
 	 * @return array
 	 */
-	public function extract(string $filename, string $type): array
+	public function extract(string $filename, string $kind): array
 	{
 		$reader = null;
 
@@ -82,7 +82,7 @@ class Extractor
 			$is_raw = true;
 		}
 
-		if (strpos($type, 'video') !== 0) {
+		if ($kind !== 'video') {
 			// It's a photo
 			if (Configs::hasExiftool()) {
 				// reader with Exiftool adapter
@@ -164,7 +164,6 @@ class Extractor
 		$metadata['make'] = ($exif->getMake() !== false) ? $exif->getMake() : '';
 		$metadata['model'] = ($exif->getCamera() !== false) ? $exif->getCamera() : '';
 		$metadata['shutter'] = ($exif->getExposure() !== false) ? $exif->getExposure() : '';
-		$metadata['takestamp'] = ($exif->getCreationDate() !== false) ? $exif->getCreationDate()->format('Y-m-d H:i:s') : null;
 		$metadata['lens'] = ($exif->getLens() !== false) ? $exif->getLens() : '';
 		$metadata['tags'] = ($exif->getKeywords() !== false) ? (is_array($exif->getKeywords()) ? implode(',', $exif->getKeywords()) : $exif->getKeywords()) : '';
 		$metadata['latitude'] = ($exif->getLatitude() !== false) ? $exif->getLatitude() : null;
@@ -175,16 +174,52 @@ class Extractor
 		$metadata['livePhotoContentID'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
 
-		// We need to make sure, takestamp is between '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC.
-		// We set value to null in case we're out of bounds
-		if ($metadata['takestamp'] !== null) {
+		$takestamp = $exif->getCreationDate();
+		if ($takestamp !== false) {
+			// Some videos use local time while others use UTC and it's
+			// often impossible to tell.  We rely here on a simple
+			// filetype-based heuristics and, if needed, convert a UTC
+			// timestamp to the local time of the Lychee server so that
+			// it's displayed to users as local time.
+			//
+			// Other possible approaches would include deriving local time from
+			// the file name or from other objects in the same album, as well
+			// as extracting the time zone from the location data if present.
+			if ($kind === 'video') {
+				$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
+				if (!in_array(strtolower($extension), explode('|', $locals), true)) {
+					// This is a video format where we expect the takestamp
+					// to be provided in UTC .
+					if ($takestamp->getTimezone()->getName() === date_default_timezone_get()) {
+						// Most likely the time zone info was missing so the
+						// system default was used instead, which is wrong,
+						// because the takestamp is in UTC.  We recreate it as
+						// UTC timestamp and _then_ change the time zone to local.
+						$takestamp = new \DateTime($takestamp->format('Y-m-d H:i:s'), new \DateTimeZone('UTC'));
+						$takestamp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+					} elseif ($takestamp->getTimezone()->getName() === 'Z') {
+						// This one is correctly in Zulu (UTC).  We just need
+						// to change the time zone to local.
+						$takestamp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+					} else {
+						// In the remaining cases a time zone was extracted
+						// from the files so we don't mess with it.
+					}
+				}
+			}
+
+			// We need to make sure that the takestamp is between '1970-01-01 00:00:01' UTC and '2038-01-19 03:14:07' UTC.
+			// We set the value to null in case we're out of bounds
 			$min_date = new \DateTime('1970-01-01 00:00:01', new \DateTimeZone('UTC'));
 			$max_date = new \DateTime('2038-01-19 03:14:07', new \DateTimeZone('UTC'));
-			$takestamp = new \DateTime($metadata['takestamp']);
 			if ($takestamp < $min_date || $takestamp > $max_date) {
 				$metadata['takestamp'] = null;
 				Logs::notice(__METHOD__, __LINE__, 'Takestamp (' . $takestamp->format('Y-m-d H:i:s') . ') out of bounds (needs to be between 1970-01-01 00:00:01 and 2038-01-19 03:14:07)');
+			} else {
+				$metadata['takestamp'] = $takestamp->format('Y-m-d H:i:s');
 			}
+		} else {
+			$metadata['takestamp'] = null;
 		}
 
 		// We need to make sure, latitude is between -90/90 and longitude is between -180/180
@@ -237,7 +272,7 @@ class Extractor
 			$metadata['position'] = implode(', ', $fields);
 		}
 
-		if (strpos($type, 'video') !== 0) {
+		if ($kind !== 'video') {
 			$metadata['aperture'] = ($exif->getAperture() !== false) ? $exif->getAperture() : '';
 			$metadata['focal'] = ($exif->getFocalLength() !== false) ? $exif->getFocalLength() : '';
 			if ($metadata['focal'] !== '') {
