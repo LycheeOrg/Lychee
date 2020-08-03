@@ -176,11 +176,12 @@ class Extractor
 
 		$takestamp = $exif->getCreationDate();
 		if ($takestamp !== false) {
-			// Some videos use local time while others use UTC and it's
-			// often impossible to tell.  We rely here on a simple
-			// filetype-based heuristics and, if needed, convert a UTC
-			// timestamp to the local time of the Lychee server so that
-			// it's displayed to users as local time.
+			// Some videos store creation time in local time while others use
+			// UTC and it's often impossible to tell, especially since the
+			// metadata extractors are not consistent either.  We rely here on
+			// a simple filetype-based heuristics and, for a timestamp we
+			// suspect to be in UTC, we covert it to the local time of the
+			// Lychee server so that it's displayed to users as local time.
 			//
 			// Other possible approaches would include deriving local time from
 			// the file name or from other objects in the same album, as well
@@ -189,12 +190,14 @@ class Extractor
 				$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
 				if (!in_array(strtolower($extension), explode('|', $locals), true)) {
 					// This is a video format where we expect the takestamp
-					// to be provided in UTC .
+					// to be provided in UTC.
 					if ($takestamp->getTimezone()->getName() === date_default_timezone_get()) {
 						// Most likely the time zone info was missing so the
 						// system default was used instead, which is wrong,
-						// because the takestamp is in UTC.  We recreate it as
-						// UTC timestamp and _then_ change the time zone to local.
+						// because the takestamp is actually in UTC.  This will
+						// trigger, e.g., for mp4 files with the Exiftool
+						// extractor.  We recreate the takestamp as a UTC
+						// timestamp and _then_ change the time zone to local.
 						$takestamp = new \DateTime($takestamp->format('Y-m-d H:i:s'), new \DateTimeZone('UTC'));
 						$takestamp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 					} elseif ($takestamp->getTimezone()->getName() === 'Z') {
@@ -202,8 +205,13 @@ class Extractor
 						// to change the time zone to local.
 						$takestamp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 					} else {
-						// In the remaining cases a time zone was extracted
-						// from the files so we don't mess with it.
+						// In the remaining case the time zone information was
+						// extracted and the takestamp is assumed to be in local
+						// time, so we don't need to do anything.
+						//
+						// The only known example are the mov files from Apple
+						// devices; the time zone will be formatted as "+01:00"
+						// so neither of the two conditions above should trigger.
 					}
 				}
 			}
