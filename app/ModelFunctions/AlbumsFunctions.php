@@ -11,6 +11,7 @@ use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
@@ -126,10 +127,17 @@ class AlbumsFunctions
 		 */
 		$publicAlbums = null;
 		$smartAlbums = new BaseCollection();
+
+		// TODO #48 album by tags - here we need to push tag albums
+
 		$smartAlbums->push(new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new StarredAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new PublicAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new RecentAlbum($this->albumFunctions, $this->sessionFunctions));
+
+		foreach ($this->getTagAlbums() as $tagAlbum) {
+			$smartAlbums->push($tagAlbum);
+		}
 
 		$can_see_smart = $this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload();
 
@@ -171,7 +179,7 @@ class AlbumsFunctions
 		 */
 		$toplevel = $toplevel ?? $this->getToplevelAlbums();
 		if ($toplevel === null) {
-			return null;
+			return new BaseCollection();
 		}
 		$children = $children ?? $this->get_children($toplevel, $includePassProtected);
 
@@ -192,6 +200,15 @@ class AlbumsFunctions
 		}
 
 		return $albumIDs;
+	}
+
+
+	public function getTagAlbums(): array
+	{
+		$return = array(new TagAlbum($this->albumFunctions, $this->sessionFunctions));
+
+		// TODO #48 album by tags - implement me
+		return $return;
 	}
 
 	/**
