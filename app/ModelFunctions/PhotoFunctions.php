@@ -51,10 +51,12 @@ class PhotoFunctions
 	public $validVideoTypes = [
 		'video/mp4',
 		'video/mpeg',
+		'image/x-tga', // mpg
 		'video/ogg',
 		'video/webm',
 		'video/quicktime',
 		'video/x-ms-asf', // wmv file
+		'video/x-ms-wmv', // wmv file
 		'video/x-msvideo', // Avi
 		'video/x-m4v', // Avi
 	];
@@ -111,37 +113,35 @@ class PhotoFunctions
 			return 'raw';
 		}
 
-		if (!in_array(strtolower($extension), $this->validExtensions, true)) {
+		if (in_array(strtolower($extension), $this->validExtensions, true)) {
 			$mimeType = $file['type'];
-			if (!in_array($mimeType, $this->validVideoTypes, true)) {
-				// let's check for the mimetype
-				// maybe we don't have a photo
-				if (!function_exists('exif_imagetype')) {
-					Logs::error(
-						__METHOD__,
-						__LINE__,
-						'EXIF library not loaded. Make sure exif is enabled in php.ini'
-					);
-
-					return 'EXIF library not loaded on the server!';
-				}
-
-				$type = @exif_imagetype($file['tmp_name']);
-				if (!in_array($type, $this->validTypes, true)) {
-					Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $file['name']);
-
-					return 'Photo type not supported!';
-				}
-				// we have maybe a raw file
-				Logs::error(__METHOD__, __LINE__, 'Photo format not supported: ' . $file['name']);
-
-				return 'Photo format not supported!';
+			if (in_array($mimeType, $this->validVideoTypes, true)) {
+				return 'video';
 			}
-			// we have a video
-			return 'video';
+
+			return 'photo';
 		}
-		// we have a normal photo
-		return 'photo';
+
+		// let's check for the mimetype
+		// maybe we don't have a photo
+		if (!function_exists('exif_imagetype')) {
+			Logs::error(
+				__METHOD__,
+				__LINE__,
+				'EXIF library not loaded. Make sure exif is enabled in php.ini'
+			);
+
+			return 'EXIF library not loaded on the server!';
+		}
+
+		$type = @exif_imagetype($file['tmp_name']);
+		if (in_array($type, $this->validTypes, true)) {
+			return 'photo';
+		}
+
+		Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $file['name']);
+
+		return 'Photo type not supported!';
 	}
 
 	/**
@@ -285,7 +285,7 @@ class PhotoFunctions
 
 				// Before we skip entirely, check if there is a sidecar file and if the metadata needs to be updated (from a sidecar)
 				if ($resync_metadata === true) {
-					$info = $this->getFileMetadata($file, $path, $kind, $mimeType, $extension);
+					$info = $this->getFileMetadata($file, $path, $kind, $extension);
 					foreach ($info as $key => $value) {
 						if ($existing->$key !== null && $value !== $existing->$key) {
 							$metadataChanged = true;
@@ -307,7 +307,7 @@ class PhotoFunctions
 			}
 		}
 
-		$info = $this->getFileMetadata($file, $path, $kind, $mimeType, $extension);
+		$info = $this->getFileMetadata($file, $path, $kind, $extension);
 
 		// TODO: move this elsewhere
 		$photo->title = $info['title'];
@@ -540,7 +540,7 @@ class PhotoFunctions
 	 */
 	public function extractVideoFrame(Photo $photo): string
 	{
-		if ($photo->aperture === '') {
+		if ($photo->aperture === '' || !Configs::hasFFmpeg()) {
 			return '';
 		}
 
@@ -890,14 +890,13 @@ class PhotoFunctions
 	 * @param array  $file
 	 * @param string $path
 	 * @param string $kind
-	 * @param string $mimeType
 	 * @param string $extension
 	 *
 	 * @return array
 	 */
-	private function getFileMetadata($file, $path, $kind, $mimeType, $extension): array
+	private function getFileMetadata($file, $path, $kind, $extension): array
 	{
-		$info = $this->metadataExtractor->extract($path, $mimeType);
+		$info = $this->metadataExtractor->extract($path, $kind);
 		if ($kind == 'raw') {
 			$info['type'] = 'raw';
 		}
