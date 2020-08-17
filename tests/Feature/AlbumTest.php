@@ -18,7 +18,7 @@ class AlbumTest extends TestCase
 	public function test_add_not_logged()
 	{
 		$albums_tests = new AlbumsUnitTest();
-		$albums_tests->add($this, '0', 'test_album', 'false');
+		$albums_tests->add($this, '0', 'test_album', [],'false');
 
 		$albums_tests->get($this, 'recent', '', 'true');
 		$albums_tests->get($this, 'starred', '', 'true');
@@ -38,13 +38,27 @@ class AlbumTest extends TestCase
 		$albums_tests->get($this, 'public', '', 'true');
 		$albums_tests->get($this, 'unsorted', '', 'true');
 
-		$albumID = $albums_tests->add($this, '0', 'test_album', 'true');
-		$albumID2 = $albums_tests->add($this, '0', 'test_album2', 'true');
-		$albumID3 = $albums_tests->add($this, '0', 'test_album3', 'true');
+		$albumID = $albums_tests->add($this, '0', 'test_album', [],'true');
+		$albumID2 = $albums_tests->add($this, '0', 'test_album2', [],'true');
+		$albumID3 = $albums_tests->add($this, '0', 'test_album3', [],'true');
+		$albumTagID1 = $albums_tests->add($this, '0', 'test_tag_album1', ['test'],'true');
+
+		$albums_tests->set_tags($this, $albumTagID1, ['test', 'coolnewtag', 'secondnewtag'] , 'true');
+		$response = $albums_tests->get($this, $albumTagID1, '', 'true');
+		$response->assertJson([
+			'id' => $albumTagID1,
+			'description' => '',
+			'title' => 'test_tag_album1',
+			'albums' => [],
+			'tags' => ['test', 'coolnewtag', 'secondnewtag']
+		]);
+
 		$albums_tests->see_in_albums($this, $albumID);
 		$albums_tests->see_in_albums($this, $albumID2);
 		$albums_tests->see_in_albums($this, $albumID3);
+		$albums_tests->see_in_albums($this, $albumTagID1);
 
+		$albums_tests->move($this, $albumTagID1, $albumID3);
 		$albums_tests->move($this, $albumID3, $albumID2);
 		$albums_tests->move($this, $albumID2, $albumID);
 		$albums_tests->move($this, $albumID3, '0');

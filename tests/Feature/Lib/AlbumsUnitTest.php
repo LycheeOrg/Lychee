@@ -7,13 +7,15 @@ use Tests\TestCase;
 
 class AlbumsUnitTest
 {
+
 	/**
 	 * Add an album.
 	 *
 	 * @param TestCase $testCase
-	 * @param string   $parent_id
-	 * @param string   $title
-	 * @param string   $result
+	 * @param string $parent_id
+	 * @param string $title
+	 * @param array $tags
+	 * @param string $result
 	 *
 	 * @return string
 	 */
@@ -21,12 +23,18 @@ class AlbumsUnitTest
 		TestCase &$testCase,
 		string $parent_id,
 		string $title,
+		array $tags = [],
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::add', [
+
+		$params = [
 			'title' => $title,
 			'parent_id' => $parent_id,
-		]);
+		];
+		if (!empty($tags)) {
+			$params['tags'] = $tags;
+		}
+		$response = $testCase->post('/api/Album::add', $params);
 		$response->assertStatus(200);
 		if ($result == 'true') {
 			$response->assertDontSee('false');
@@ -255,6 +263,26 @@ class AlbumsUnitTest
 			'visible' => $visible,
 			'downloadable' => $downloadable,
 			'share_button_visible' => $share_button_visible,
+		]);
+		$response->assertOk();
+		$response->assertSee($result);
+	}
+
+	/**
+	 * @param TestCase $testCase
+	 * @param string $id
+	 * @param array $tags
+	 * @param string $result
+	 */
+	public function set_tags(
+		TestCase &$testCase,
+		string $id,
+		array $tags,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Album::setTags', [
+			'albumID' => $id,
+			'tags' => $tags
 		]);
 		$response->assertOk();
 		$response->assertSee($result);

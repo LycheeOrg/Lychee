@@ -11,7 +11,6 @@ use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
@@ -132,7 +131,6 @@ class AlbumsFunctions
 		 */
 		$publicAlbums = null;
 		$smartAlbums = new BaseCollection();
-
 		$smartAlbums->push(new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new StarredAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new PublicAlbum($this->albumFunctions, $this->sessionFunctions));
@@ -173,17 +171,17 @@ class AlbumsFunctions
 	 */
 	public function getPublicAlbumsId($toplevel = null, $children = null, $includePassProtected = false): BaseCollection
 	{
+		$albumIDs = new BaseCollection();
 		/*
 		 * @var Collection[Album]
 		 */
 		$toplevel = $toplevel ?? $this->getToplevelAlbums();
 		if ($toplevel === null) {
-			return new BaseCollection();
+			return $albumIDs;
 		}
 		$children = $children ?? $this->get_children($toplevel, $includePassProtected);
 
 		$kinds = ['albums', 'shared_albums'];
-		$albumIDs = new BaseCollection();
 
 		foreach ($kinds as $kind) {
 			$toplevel[$kind]->each(function ($album) use (&$albumIDs, $includePassProtected) {
