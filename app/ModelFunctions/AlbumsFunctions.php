@@ -83,6 +83,11 @@ class AlbumsFunctions
 			$return[] = $album_array;
 		}
 
+		// TODO #48 album by tags - here we need to push tag albums
+		foreach ($this->getTagAlbums() as $tagAlbum) {
+			$return->push($tagAlbum);
+		}
+
 		return $return;
 	}
 
@@ -128,16 +133,10 @@ class AlbumsFunctions
 		$publicAlbums = null;
 		$smartAlbums = new BaseCollection();
 
-		// TODO #48 album by tags - here we need to push tag albums
-
 		$smartAlbums->push(new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new StarredAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new PublicAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new RecentAlbum($this->albumFunctions, $this->sessionFunctions));
-
-		foreach ($this->getTagAlbums() as $tagAlbum) {
-			$smartAlbums->push($tagAlbum);
-		}
 
 		$can_see_smart = $this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload();
 
@@ -202,10 +201,9 @@ class AlbumsFunctions
 		return $albumIDs;
 	}
 
-
 	public function getTagAlbums(): array
 	{
-		$return = array(new TagAlbum($this->albumFunctions, $this->sessionFunctions));
+		$return = [new TagAlbum($this->albumFunctions, $this->sessionFunctions, 'testing01')];
 
 		// TODO #48 album by tags - implement me
 		return $return;
