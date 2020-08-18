@@ -72,9 +72,11 @@ class AlbumsFunctions
 				$album_array['owner'] = $albums[$key]->owner->username;
 			}
 
-			$thumbs = $this->albumFunctions->get_thumbs($albums[$key], $children[$key]);
-			$this->albumFunctions->set_thumbs($album_array, $thumbs);
-			$this->albumFunctions->set_thumbs_children($album_array['albums'], $thumbs[1]);
+			if ($this->readAccessFunctions->album($albums[$key]) === 1) {
+				$thumbs = $this->albumFunctions->get_thumbs($albums[$key], $children[$key]);
+				$this->albumFunctions->set_thumbs($album_array, $thumbs);
+				$this->albumFunctions->set_thumbs_children($album_array['albums'], $thumbs[1]);
+			}
 
 			// Add to return
 			$return[] = $album_array;
@@ -88,17 +90,17 @@ class AlbumsFunctions
 	 *
 	 * @return array
 	 */
-	public function get_children(array $albums_list)
+	public function get_children(array $albums_list, $includePassProtected = false)
 	{
 		$return = [];
 		foreach ($albums_list as $kind => $albums) {
 			$return[$kind] = new BaseCollection();
 
-			$albums->each(function ($album, $key) use ($return, $kind) {
+			$albums->each(function ($album, $key) use ($return, $kind, $includePassProtected) {
 				$children = new Collection();
 
 				if ($this->readAccessFunctions->album($album) === 1) {
-					$children = $this->albumFunctions->get_children($album);
+					$children = $this->albumFunctions->get_children($album, 0, $includePassProtected);
 				}
 
 				$return[$kind]->put($key, $children);
@@ -162,7 +164,7 @@ class AlbumsFunctions
 	 *
 	 * @return Collection[int] of all recursive albums ID accessible by the current user from the top level
 	 */
-	public function getPublicAlbumsId($toplevel = null, $children = null): BaseCollection
+	public function getPublicAlbumsId($toplevel = null, $children = null, $includePassProtected = false): BaseCollection
 	{
 		/*
 		 * @var Collection[Album]
@@ -171,14 +173,18 @@ class AlbumsFunctions
 		if ($toplevel === null) {
 			return null;
 		}
-		$children = $children ?? $this->get_children($toplevel);
+		$children = $children ?? $this->get_children($toplevel, $includePassProtected);
 
 		$kinds = ['albums', 'shared_albums'];
 		$albumIDs = new BaseCollection();
 
 		foreach ($kinds as $kind) {
-			$toplevel[$kind]->each(function ($album) use (&$albumIDs) {
-				$albumIDs->push($album->id);
+			$toplevel[$kind]->each(function ($album) use (&$albumIDs, $includePassProtected) {
+				$haveAccess = $this->readAccessFunctions->album($album, true);
+
+				if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
+					$albumIDs->push($album->id);
+				}
 			});
 			$children[$kind]->each(function ($child) use (&$albumIDs) {
 				$albumIDs = $albumIDs->concat($this->flatMap_id($child));

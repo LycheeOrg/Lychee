@@ -147,6 +147,10 @@ class AlbumFunctions
 	public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
 	{
 		$reduced = $children->reduce(function ($collection, $child) {
+			if (isset($child[0]->content_accessible) && $child[0]->content_accessible === false) {
+				return $collection;
+			}
+
 			$reduced_child = $this->get_thumbs($child[0], $child[1]);
 
 			return $collection->push($reduced_child);
@@ -348,9 +352,11 @@ class AlbumFunctions
 					if ($haveAccess === 1) {
 						$collected = $this->get_sub_albums($_album, $includePassProtected);
 					} else {
+						// when we generate the thumbs, we need to know whether that content is visible or not.
 						$_album->content_accessible = false;
+						$collected = new Collection();
 					}
-					// when we generate the thumbs, we need to know whether that content is visible or not.
+
 					return new Collection([$_album, $collected]);
 				}
 
@@ -405,6 +411,10 @@ class AlbumFunctions
 			if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
 				if ($haveAccess === 1) {
 					$collected = $this->get_sub_albums($_album, $includePassProtected);
+				} else {
+					// when we generate the thumbs, we need to know whether that content is visible or not.
+					$_album->content_accessible = false;
+					$collected = new BaseCollection();
 				}
 				$collect = $collect->push(new BaseCollection([$_album, $collected]));
 			}

@@ -133,7 +133,8 @@ class SearchController extends Controller
 		 * from the top level.  This includes password-protected albums
 		 * (since they are visible) but not their content.
 		 */
-		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
+		$toplevel = $this->albumsFunctions->getToplevelAlbums();
+		$albumIDs = $this->albumsFunctions->getPublicAlbumsId($toplevel, null, true);
 
 		$query = Album::with([
 			'owner',
@@ -180,10 +181,11 @@ class SearchController extends Controller
 		/*
 		 * Photos.
 		 *
-		 * Begin by reusing the previously built list of albums.  We need to
-		 * eliminate password-protected albums and subalbums from it though,
-		 * since we can't access them.
+		 * We again begin by building a list of all albums and subalbums
+		 * accessible from the top level, only this time without
+		 * password-protected ones.
 		 */
+		$albumIDs = $this->albumsFunctions->getPublicAlbumsId($toplevel);
 		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);
