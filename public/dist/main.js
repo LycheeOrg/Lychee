@@ -266,6 +266,8 @@ if (L.MarkerClusterGroup) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='Untitled'></p>"], ["<p>", " <input class='text' name='title' type='text' maxlength='50' placeholder='Title' value='Untitled'></p>"]),
     _templateObject2 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='50' placeholder='$", "' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='50' placeholder='$", "' value='$", "'>"]),
     _templateObject3 = _taggedTemplateLiteral(["<p>", " ", "</p>"], ["<p>", " ", "</p>"]),
@@ -1678,6 +1680,24 @@ albums._createSmartAlbums = function (data) {
 			types: data.recent.types
 		};
 	}
+
+	Object.entries(data).forEach(function (_ref) {
+		var _ref2 = _slicedToArray(_ref, 2),
+		    albumName = _ref2[0],
+		    albumData = _ref2[1];
+
+		if (albumName.startsWith('tag-')) {
+			data[albumName] = {
+				id: albumName,
+				title: albumName,
+				sysdate: albumData.num + ' ' + lychee.locale['NUM_PHOTOS'],
+				tag: '1',
+				thumbs: albumData.thumbs,
+				thumbs2x: albumData.thumbs2x ? albumData.thumbs2x : null,
+				types: albumData.types
+			};
+		}
+	});
 };
 
 albums.isShared = function (albumID) {
@@ -9114,6 +9134,17 @@ view.albums = {
 					albums.parse(albums.json.smartalbums.recent);
 					smartData += build.album(albums.json.smartalbums.recent);
 				}
+
+				Object.entries(albums.json.smartalbums).forEach(function (_ref3) {
+					var _ref4 = _slicedToArray(_ref3, 2),
+					    albumName = _ref4[0],
+					    albumData = _ref4[1];
+
+					if (albumName.startsWith('tag-')) {
+						albums.parse(albumData);
+						smartData += build.album(albumData);
+					}
+				});
 			}
 
 			// Albums
