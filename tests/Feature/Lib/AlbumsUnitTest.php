@@ -280,7 +280,7 @@ class AlbumsUnitTest
 		array $tags,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::setTags', [
+		$response = $testCase->post('/api/Album::setShowTags', [
 			'albumID' => $id,
 			'tags' => $tags
 		]);
