@@ -82,10 +82,6 @@ class AlbumsFunctions
 			$return[] = $album_array;
 		}
 
-		// TODO #48 album by tags - here we need to push tag albums
-		foreach ($this->getTagAlbums() as $tagAlbum) {
-			$return->push($tagAlbum);
-		}
 
 		return $return;
 	}
@@ -135,6 +131,11 @@ class AlbumsFunctions
 		$smartAlbums->push(new StarredAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new PublicAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new RecentAlbum($this->albumFunctions, $this->sessionFunctions));
+
+		// TODO #48 album by tags - here we need to push tag albums
+		foreach ($this->getTagAlbums() as $tagAlbum) {
+			$smartAlbums->push($tagAlbum);
+		}
 
 		$can_see_smart = $this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload();
 
@@ -199,14 +200,6 @@ class AlbumsFunctions
 		return $albumIDs;
 	}
 
-	public function getTagAlbums(): array
-	{
-		$return = [new TagAlbum($this->albumFunctions, $this->sessionFunctions, 'testing01')];
-
-		// TODO #48 album by tags - implement me
-		return $return;
-	}
-
 	/**
 	 * Returns an array of top-level albums and shared albums visible to
 	 * the current user.
@@ -232,6 +225,8 @@ class AlbumsFunctions
 
 			$id = $this->sessionFunctions->id();
 
+
+
 			if ($id > 0) {
 				$sql = $sql->where(function ($query) use ($id) {
 					$query = $query->where('owner_id', '=', $id);
@@ -256,6 +251,14 @@ class AlbumsFunctions
 				->where('parent_id', '=', null), $sortingCol, $sortingOrder);
 		}
 
+		return $return;
+	}
+
+	public function getTagAlbums(): array
+	{
+		$return = [new TagAlbum($this->albumFunctions, $this->sessionFunctions, 'testing01')];
+
+		// TODO #48 album by tags - implement me
 		return $return;
 	}
 }
