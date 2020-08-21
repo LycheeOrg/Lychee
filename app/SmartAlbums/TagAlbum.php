@@ -1,10 +1,11 @@
 <?php
 
-namespace App;
+namespace App\SmartAlbums;
 
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
-use App\SmartAlbums\SmartAlbum;
+use App\Photo;
+use Illuminate\Database\Eloquent\Builder;
 
 class TagAlbum extends SmartAlbum
 {
@@ -28,15 +29,21 @@ class TagAlbum extends SmartAlbum
 		return $this->title;
 	}
 
-	public function get_photos()
+	public function get_photos(): Builder
 	{
-		return Photo::whereTags($this->tags)->where(function ($q) {
+		$sql = Photo::query();
+		$tags = explode(',', $this->showtags);
+		foreach ($tags as $tag) {
+			$sql = $sql->where('tags', 'like', '%' . trim($tag) . '%');
+		}
+
+		return $sql->where(function ($q) {
 			return $this->filter($q);
 		});
 	}
 
 	public function is_public()
 	{
-		return true;
+		return $this->public;
 	}
 }

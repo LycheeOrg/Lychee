@@ -11,6 +11,7 @@ use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
@@ -81,7 +82,6 @@ class AlbumsFunctions
 			// Add to return
 			$return[] = $album_array;
 		}
-
 
 		return $return;
 	}
@@ -224,8 +224,6 @@ class AlbumsFunctions
 			])->where('parent_id', '=', null);
 
 			$id = $this->sessionFunctions->id();
-
-
 
 			if ($id > 0) {
 				$sql = $sql->where(function ($query) use ($id) {
