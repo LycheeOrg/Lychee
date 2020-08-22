@@ -66,7 +66,25 @@ class AlbumFunctions
 	 */
 	public function is_smart_album($albumID)
 	{
-		return array_key_exists($albumID, $this->smart_albums);
+		if (array_key_exists($albumID, $this->smart_albums)) {
+			return true;
+		}
+		$album = Album::find($albumID);
+
+		return $album->smart;
+	}
+
+	public function createTagAlbum(string $title, array $show_tags, int $user_id): Album
+	{
+		$album = $this->album_factory($title);
+
+		$album->parent_id = null;
+		$album->owner_id = $user_id;
+
+		$album->smart = true;
+		$album->showtags = $show_tags;
+
+		return $this->store_album($album);
 	}
 
 	/**
@@ -74,20 +92,43 @@ class AlbumFunctions
 	 *
 	 * @param string $title
 	 * @param int    $parent_id
+	 * @param array  $tags
 	 * @param int    $user_id
 	 *
 	 * @return Album|string
 	 */
 	public function create(string $title, int $parent_id, int $user_id): Album
 	{
-		$parent = Album::find($parent_id);
-		// we get the parent if it exists.
+		$album = $this->album_factory($title);
 
+		$this->set_parent($album, $parent_id, $user_id);
+
+		return $this->store_album($album);
+	}
+
+	private function album_factory(string $title): Album
+	{
 		$album = new Album();
 		$album->id = Helpers::generateID();
 		$album->title = $title;
 		$album->description = '';
 
+		return $album;
+	}
+
+	/**
+	 * Setups parent album on album structure.
+	 *
+	 * @param Album $album
+	 * @param int   $parent_id
+	 * @param int   $user_id
+	 *
+	 * @return Album
+	 */
+	private function set_parent(Album $album, int $parent_id, int $user_id): Album
+	{
+		$parent = Album::find($parent_id);
+		// we get the parent if it exists.
 		if ($parent !== null) {
 			$album->parent_id = $parent->id;
 
@@ -99,6 +140,18 @@ class AlbumFunctions
 			$album->owner_id = $user_id;
 		}
 
+		return $album;
+	}
+
+	/**
+	 * Method that stores new album to the database.
+	 *
+	 * @param $album
+	 *
+	 * @return Album|string
+	 */
+	private function store_album($album): Album
+	{
 		do {
 			$retry = false;
 
