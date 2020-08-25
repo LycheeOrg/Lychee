@@ -13,6 +13,7 @@ use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
 use App\SmartAlbums\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
@@ -132,7 +133,6 @@ class AlbumsFunctions
 		$smartAlbums->push(new PublicAlbum($this->albumFunctions, $this->sessionFunctions));
 		$smartAlbums->push(new RecentAlbum($this->albumFunctions, $this->sessionFunctions));
 
-		// TODO #48 album by tags - here we need to push tag albums
 		foreach ($this->getTagAlbums() as $tagAlbum) {
 			$smartAlbums->push($tagAlbum);
 		}
@@ -218,6 +218,23 @@ class AlbumsFunctions
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
+		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', false);
+		$albumCollection = $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder);
+
+		if ($this->sessionFunctions->is_logged_in()) {
+			$id = $this->sessionFunctions->id();
+			list($return['albums'], $return['shared_albums']) = $albumCollection->partition(function ($album) use ($id) {
+				return $album->owner_id == $id;
+			});
+		} else {
+			$return['albums'] = $albumCollection;
+		}
+
+		return $return;
+	}
+
+	private function createTopleveAlbumsQuery(): Builder
+	{
 		if ($this->sessionFunctions->is_logged_in()) {
 			$sql = Album::with([
 				'owner',
@@ -236,27 +253,22 @@ class AlbumsFunctions
 				});
 			}
 
-			$sql = $sql->orderBy('owner_id', 'ASC');
-
-			$albumCollection = $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder);
-
-			list($return['albums'], $return['shared_albums']) = $albumCollection->partition(function ($album) use ($id) {
-				return $album->owner_id == $id;
-			});
-		} else {
-			$return['albums'] = $this->albumFunctions->customSort(Album::where('public', '=', '1')
-				->where('visible_hidden', '=', '1')
-				->where('parent_id', '=', null), $sortingCol, $sortingOrder);
+			return $sql->orderBy('owner_id', 'ASC');
 		}
 
-		return $return;
+		return Album::where('public', '=', '1')
+			->where('visible_hidden', '=', '1')
+			->where('parent_id', '=', null);
 	}
 
-	public function getTagAlbums(): array
-	{
-		$return = [new TagAlbum($this->albumFunctions, $this->sessionFunctions, 'testing01')];
 
-		// TODO #48 album by tags - implement me
-		return $return;
+	public function getTagAlbums(): Collection
+	{
+
+		$sortingCol = Configs::get_value('sorting_Albums_col');
+		$sortingOrder = Configs::get_value('sorting_Albums_order');
+
+		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', true);
+		return $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder);
 	}
 }
