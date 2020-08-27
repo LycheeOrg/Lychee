@@ -98,12 +98,13 @@ class AlbumController extends Controller
 	{
 		$request->validate([
 			'title' => 'string|required|max:100',
-			'tags' => 'string',
-			'parent_id' => 'int|nullable',
+			'tags' => 'string'
 		]);
 
 		$album = new Album();
 		$album->id = Helpers::generateID();
+
+		$album = $this->albumFunctions->createTagAlbum($request['title'], $request['tags'], $this->sessionFunctions->id());
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}

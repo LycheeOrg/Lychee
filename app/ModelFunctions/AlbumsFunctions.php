@@ -269,6 +269,9 @@ class AlbumsFunctions
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
 		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', true);
-		return $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder);
+		return $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder)
+			->map(function (Album $album) {
+				// TODO (#48) map Album to Tag album here
+			});
 	}
 }

@@ -74,7 +74,15 @@ class AlbumFunctions
 		return $album->smart;
 	}
 
-	public function createTagAlbum(string $title, array $show_tags, int $user_id): Album
+	/**
+	 * Create a new smart album based on tags
+	 *
+	 * @param string $title
+	 * @param string $show_tags
+	 * @param int $user_id
+	 * @return Album
+	 */
+	public function createTagAlbum(string $title, string $show_tags, int $user_id): Album
 	{
 		$album = $this->album_factory($title);
 
