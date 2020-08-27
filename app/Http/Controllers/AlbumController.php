@@ -384,6 +384,36 @@ class AlbumController extends Controller
 	}
 
 	/**
+	 * Change show tags of the tag album
+	 *
+	 * @param Request $request
+	 * @return bool|string
+	 */
+	public function setShowTags(Request $request)
+	{
+		$request->validate([
+			'albumID' => 'integer|required',
+			'show_tags' => 'string|required|max:1000|min:1',
+		]);
+
+		$album = Album::find($request['albumID']);
+
+		if ($album === null) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+			return 'false';
+		}
+
+		if (!$this->albumsFunctions::isTagAlbum($album)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not change show tags on non tag album');
+			return 'false';
+		}
+
+		$album->showtags = $request['show_tags'];
+
+		return ($album->save()) ? 'true' : 'false';
+	}
+
+	/**
 	 * Set the license of the Album.
 	 *
 	 * @param Request $request
@@ -425,36 +455,6 @@ class AlbumController extends Controller
 		}
 
 		$album->license = $request['license'];
-
-		return $album->save() ? 'true' : 'false';
-	}
-
-	/**
-	 * Sets tags of photos, that will be shown in this album.
-	 *
-	 * @param Request $request
-	 *
-	 * @return bool|string
-	 */
-	public function setShowTags(Request $request)
-	{
-		$request->validate([
-			'albumID' => 'required|string',
-			'tags' => 'required|array',
-		]);
-
-		/**
-		 * @var Album|null
-		 */
-		$album = Album::find($request['albumID']);
-
-		if ($album == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-			return 'false';
-		}
-
-		$album->tags = $request['tags'];
 
 		return $album->save() ? 'true' : 'false';
 	}

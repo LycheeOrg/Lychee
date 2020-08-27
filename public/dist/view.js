@@ -1463,6 +1463,10 @@ sidebar.bind = function () {
 		if (visible.photo()) photo.setDescription(photo.getID());else if (visible.album()) album.setDescription(album.getID());
 	});
 
+	sidebar.dom('#edit_showtags').off(eventName).on(eventName, function () {
+		album.setShowTags(album.getID());
+	});
+
 	sidebar.dom('#edit_tags').off(eventName).on(eventName, function () {
 		photo.editTags([photo.getID()]);
 	});
@@ -1693,7 +1697,9 @@ sidebar.createStructure.photo = function (data) {
 	return structure;
 };
 
-sidebar.createStructure.album = function (data) {
+sidebar.createStructure.album = function (album) {
+
+	data = album.json;
 
 	if (data == null || data === '') return false;
 
@@ -1799,6 +1805,10 @@ sidebar.createStructure.album = function (data) {
 		type: sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['ALBUM_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['ALBUM_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
 	};
+
+	if (album.isTagAlbum()) {
+		structure.basics.rows.push({ title: lychee.locale['ALBUM_SHOW_TAGS'], kind: 'showtags', value: data.show_tags, editable: editable });
+	}
 
 	var videoCount = 0;
 	$.each(data.photos, function () {
@@ -2443,8 +2453,11 @@ lychee.locale = {
 	'ALBUMS_NEW_TITLE_2': 'selected albums:',
 	'ALBUM_SET_TITLE': 'Set Title',
 	'ALBUM_DESCRIPTION': 'Description',
+	'ALBUM_SHOW_TAGS': 'Tags to show',
 	'ALBUM_NEW_DESCRIPTION': 'Enter a new description for this album:',
 	'ALBUM_SET_DESCRIPTION': 'Set Description',
+	'ALBUM_NEW_SHOWTAGS': 'Enter tags of photos that will be visible in this album:',
+	'ALBUM_SET_SHOWTAGS': 'Set tags to show',
 	'ALBUM_ALBUM': 'Album',
 	'ALBUM_CREATED': 'Created',
 	'ALBUM_IMAGES': 'Images',
