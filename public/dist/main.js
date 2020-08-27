@@ -791,7 +791,7 @@ album.add = function () {
 			parent_id: 0
 		};
 
-		if (visible.albums()) {
+		if (visible.albums() || album.isSmartID(album.json.id)) {
 			params.parent_id = 0;
 		} else if (visible.album()) {
 			params.parent_id = album.json.id;
@@ -3260,7 +3260,7 @@ $(document).ready(function () {
 
 			// check if any of the input fields is focussed
 			// apply action, other do nothing
-			if ($('.signIn > input').is(':focus')) {
+			if ($('.basicModal__content input').is(':focus')) {
 				basicModal.action();
 				return false;
 			}
@@ -3272,10 +3272,16 @@ $(document).ready(function () {
 			}
 			return false;
 		}
+		var clicked = false;
 		$(':focus').each(function () {
-			$(this).click();
+			if (!$(this).is('input')) {
+				$(this).click();
+				clicked = true;
+			}
 		});
-		return false;
+		if (clicked) {
+			return false;
+		}
 	});
 
 	// Prevent 'esc keyup' event to trigger 'go back in history'
@@ -8280,6 +8286,9 @@ var tabindex = {
 };
 
 tabindex.saveSettings = function (elem) {
+
+	if (!lychee.enable_tabindex) return;
+
 	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
 	var tmp = $(elem).find("[tabindex]");
@@ -8311,6 +8320,8 @@ tabindex.restoreSettings = function (elem) {
 tabindex.makeUnfocusable = function (elem) {
 	var saveFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+
+	if (!lychee.enable_tabindex) return;
 
 	// Todo: Make shorter noation
 	// Get all elements which have a tabindex

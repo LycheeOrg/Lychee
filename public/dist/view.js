@@ -2753,6 +2753,9 @@ var tabindex = {
 };
 
 tabindex.saveSettings = function (elem) {
+
+	if (!lychee.enable_tabindex) return;
+
 	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
 	var tmp = $(elem).find("[tabindex]");
@@ -2784,6 +2787,8 @@ tabindex.restoreSettings = function (elem) {
 tabindex.makeUnfocusable = function (elem) {
 	var saveFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+
+	if (!lychee.enable_tabindex) return;
 
 	// Todo: Make shorter noation
 	// Get all elements which have a tabindex
