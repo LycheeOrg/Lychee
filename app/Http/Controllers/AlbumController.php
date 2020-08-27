@@ -214,8 +214,7 @@ class AlbumController extends Controller
 				return new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
 
 			case 'unsorted':
-				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
+				return new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
 			default:
 				$album = Album::find($request['albumID']);
 				if (AlbumsFunctions::isTagAlbum($album)) {

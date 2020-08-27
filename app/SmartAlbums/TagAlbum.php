@@ -9,20 +9,6 @@ use Illuminate\Database\Eloquent\Builder;
 
 class TagAlbum extends SmartAlbum
 {
-	public $tags = [];
-
-	/**
-	 * TagAlbum constructor.
-	 *
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param SessionFunctions $sessionFunctions
-	 * @param $title
-	 */
-	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
-	{
-		parent::__construct($albumFunctions, $sessionFunctions);
-	}
-
 	public function get_title()
 	{
 		return $this->title;
