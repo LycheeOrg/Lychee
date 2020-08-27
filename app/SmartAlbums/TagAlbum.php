@@ -18,15 +18,14 @@ class TagAlbum extends SmartAlbum
 	 * @param SessionFunctions $sessionFunctions
 	 * @param $title
 	 */
-	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions, $title)
+	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
 	{
 		parent::__construct($albumFunctions, $sessionFunctions);
-		$this->title = 'tag-' . $title;
 	}
 
 	public function get_title()
 	{
-		return $this->title;
+		return 'tag-' . $this->title;
 	}
 
 	public function get_photos(): Builder
