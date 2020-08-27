@@ -1701,7 +1701,7 @@ sidebar.createStructure.photo = function (data) {
 
 sidebar.createStructure.album = function (album) {
 
-	data = album.json;
+	var data = album.json;
 
 	if (data == null || data === '') return false;
 
