@@ -8,6 +8,7 @@ use App\Album;
 use App\Assets\Helpers;
 use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -23,7 +24,7 @@ class Cast
 	 */
 	public static function toArray(Album $album): array
 	{
-		return [
+		$return = [
 			'id' => strval($album->id),
 			'title' => $album->title,
 			'public' => strval($album->public),
@@ -48,6 +49,13 @@ class Cast
 			'thumbs2x' => [],
 			'types' => [],
 		];
+
+		if (AlbumsFunctions::isTagAlbum($album)) {
+			$return['tag_album'] = '1';
+			$return['show_tags'] = $album->showtags;
+		}
+
+		return $return;
 	}
 
 	public static function toTagAlbum(Album $album, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions): TagAlbum

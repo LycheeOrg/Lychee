@@ -25,7 +25,7 @@ class TagAlbum extends SmartAlbum
 
 	public function get_title()
 	{
-		return 'tag-' . $this->title;
+		return $this->title;
 	}
 
 	public function get_photos(): Builder

@@ -123,31 +123,12 @@ class AlbumController extends Controller
 		$return['albums'] = [];
 		// Get photos
 		// change this for smartalbum
-		$album = null;
-		$smart = true;
-		switch ($request['albumID']) {
-			case 'starred':
-				$album = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
-			case 'public':
-				$album = new PublicAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
-			case 'recent':
-				$album = new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
-			case 'unsorted':
-				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
-			default:
-				$album = Album::find($request['albumID']);
-				$smart = false;
-				break;
-		}
+		$album = $this->getAlbum($request);
 
-		if ($smart) {
-			$return = AlbumCast::toArray($album);
+		if ($album->smart) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
+			$return = AlbumCast::toArray($album);
 		} else {
 			// take care of sub albums
 			$children = $this->albumFunctions->get_children($album, 0, true);
@@ -189,28 +170,10 @@ class AlbumController extends Controller
 		$return = [];
 		// Get photos
 		// Get album information
-		$smart = true;
 
-		switch ($request['albumID']) {
-			case 'starred':
-				$album = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
-			case 'public':
-				$album = new PublicAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
-			case 'recent':
-				$album = new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
-			case 'unsorted':
-				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
-				break;
-			default:
-				$album = Album::find($request['albumID']);
-				$smart = false;
-				break;
-		}
+		$album = $this->getAlbum($request);
 
-		if ($smart) {
+		if ($album->smart) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
 			$photos_sql = $album->get_photos();
@@ -233,6 +196,33 @@ class AlbumController extends Controller
 		$return['id'] = $request['albumID'];
 
 		return $return;
+	}
+
+	/**
+	 * @param Request $request
+	 * @return Album|SmartAlbum
+	 */
+	public function getAlbum(Request $request): Album {
+		switch ($request['albumID']) {
+			case 'starred':
+				return new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
+
+			case 'public':
+				return new PublicAlbum($this->albumFunctions, $this->sessionFunctions);
+
+			case 'recent':
+				return new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
+
+			case 'unsorted':
+				$album = new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
+				break;
+			default:
+				$album = Album::find($request['albumID']);
+				if (AlbumsFunctions::isTagAlbum($album)) {
+					$album = AlbumCast::toTagAlbum($album, $this->albumFunctions, $this->sessionFunctions);
+				}
+				return $album;
+		}
 	}
 
 	/**

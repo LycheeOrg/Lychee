@@ -576,7 +576,7 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 
-		html += lychee.html(_templateObject6, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' ? 'badge--visible' : '', data.visible === '1' ? 'badge--not--hidden' : 'badge--hidden', build.iconic('eye'), data.unsorted === '1' ? 'badge--visible' : '', build.iconic('list'), data.recent === '1' ? 'badge--visible badge--list' : '', build.iconic('clock'), data.password === '1' ? 'badge--visible' : '', build.iconic('lock-locked'), data.tag === '1' ? 'badge--tag' : '', build.iconic('tag'));
+		html += lychee.html(_templateObject6, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' ? 'badge--visible' : '', data.visible === '1' ? 'badge--not--hidden' : 'badge--hidden', build.iconic('eye'), data.unsorted === '1' ? 'badge--visible' : '', build.iconic('list'), data.recent === '1' ? 'badge--visible badge--list' : '', build.iconic('clock'), data.password === '1' ? 'badge--visible' : '', build.iconic('lock-locked'), data.tag_album === '1' ? 'badge--tag' : '', build.iconic('tag'));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.hasOwnProperty('has_albums') && data.has_albums === '1') {
@@ -1166,11 +1166,18 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e13);
 			}
 
-			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
-				$('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album').hide();
-				$('.button_add, .header__divider', '.header__toolbar--album').show();
-				tabindex.makeFocusable($('.button_add, .header__divider', '.header__toolbar--album').show());
-				tabindex.makeUnfocusable($('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album'));
+			if (albumID === 'starred' || albumID === 'unsorted' || albumID === 'public' || albumID === 'recent' || album.isTagAlbum()) {
+				$('#button_trash_album, #button_visibility_album, #button_move_album').hide();
+				$('.button_add, .header__divider', '.header__toolbar--album').hide();
+				tabindex.makeUnfocusable($('.button_add, .header__divider', '.header__toolbar--album'));
+				tabindex.makeUnfocusable($('#button_trash_album, #button_visibility_album, #button_move_album'));
+				if (album.isTagAlbum()) {
+					$('#button_info_album').show();
+					tabindex.makeFocusable($('#button_info_album'));
+				} else {
+					$('#button_info_album').hide();
+					tabindex.makeUnfocusable($('#button_info_album'));
+				}
 			} else if (albumID === '0') {
 				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
 				$('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album').show();

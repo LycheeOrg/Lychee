@@ -76,6 +76,7 @@ class SmartAlbum extends Album
 		$this->sessionFunctions = $sessionFunctions;
 		$this->albumIds = new BaseCollection();
 		$this->created_at = new Carbon();
+		$this->smart = true;
 	}
 
 	public function get_title()

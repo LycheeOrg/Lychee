@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
+use WhichBrowser\Model\Primitive\Base;
 
 class AlbumsFunctions
 {
@@ -143,8 +144,7 @@ class AlbumsFunctions
 			if ($can_see_smart || $smartAlbum->is_public()) {
 				$publicAlbums = $publicAlbums ?? $this->getPublicAlbumsId($toplevel, $children);
 				$smartAlbum->setAlbumIDs($publicAlbums);
-				$return[$smartAlbum->get_title()] = [];
-
+				$return[$smartAlbum->get_title()] = AlbumCast::toArray($smartAlbum);
 				AlbumCast::getThumbs($return[$smartAlbum->get_title()], $smartAlbum, $this->symLinkFunctions);
 			}
 		}
@@ -264,7 +264,6 @@ class AlbumsFunctions
 
 	public function getTagAlbums(): Collection
 	{
-
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
@@ -273,5 +272,10 @@ class AlbumsFunctions
 									->map(function (Album $album) {
 										return AlbumCast::toTagAlbum($album, $this->albumFunctions, $this->sessionFunctions);
 									});
+	}
+
+	public static function isTagAlbum(Album $album): bool
+	{
+		return $album->smart && !empty($album->showtags);
 	}
 }
