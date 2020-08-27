@@ -1167,16 +1167,18 @@ header.setMode = function (mode) {
 			}
 
 			if (albumID === 'starred' || albumID === 'unsorted' || albumID === 'public' || albumID === 'recent' || album.isTagAlbum()) {
-				$('#button_trash_album, #button_visibility_album, #button_move_album').hide();
+				$('#button_visibility_album').show();
+				tabindex.makeFocusable($('#button_visibility_album'));
+				$('#button_move_album').hide();
+				tabindex.makeUnfocusable($('#button_move_album'));
 				$('.button_add, .header__divider', '.header__toolbar--album').hide();
 				tabindex.makeUnfocusable($('.button_add, .header__divider', '.header__toolbar--album'));
-				tabindex.makeUnfocusable($('#button_trash_album, #button_visibility_album, #button_move_album'));
 				if (album.isTagAlbum()) {
-					$('#button_info_album').show();
-					tabindex.makeFocusable($('#button_info_album'));
+					$('#button_info_album #button_trash_album').show();
+					tabindex.makeFocusable($('#button_info_album, #button_trash_album'));
 				} else {
-					$('#button_info_album').hide();
-					tabindex.makeUnfocusable($('#button_info_album'));
+					$('#button_info_album #button_trash_album').hide();
+					tabindex.makeUnfocusable($('#button_info_album, #button_trash_album'));
 				}
 			} else if (albumID === '0') {
 				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
