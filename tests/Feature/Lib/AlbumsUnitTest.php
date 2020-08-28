@@ -22,17 +22,47 @@ class AlbumsUnitTest
 		TestCase &$testCase,
 		string $parent_id,
 		string $title,
-		array $tags = [],
 		string $result = 'true'
 	) {
 		$params = [
 			'title' => $title,
 			'parent_id' => $parent_id,
 		];
-		if (!empty($tags)) {
-			$params['tags'] = $tags;
-		}
+
 		$response = $testCase->post('/api/Album::add', $params);
+		$response->assertStatus(200);
+		if ($result == 'true') {
+			$response->assertDontSee('false');
+		} else {
+			$response->assertSee($result, false);
+		}
+
+		return $response->getContent();
+	}
+
+	/**
+	 * Add an album.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $parent_id
+	 * @param string   $title
+	 * @param array    $tags
+	 * @param string   $result
+	 *
+	 * @return string
+	 */
+	public function addByTags(
+		TestCase &$testCase,
+		string $title,
+		string $tags,
+		string $result = 'true'
+	) {
+		$params = [
+			'title' => $title,
+			'tags' => $tags,
+		];
+
+		$response = $testCase->post('/api/Album::addByTags', $params);
 		$response->assertStatus(200);
 		if ($result == 'true') {
 			$response->assertDontSee('false');
@@ -275,14 +305,16 @@ class AlbumsUnitTest
 	public function set_tags(
 		TestCase &$testCase,
 		string $id,
-		array $tags,
+		string $tags,
 		string $result = 'true'
 	) {
 		$response = $testCase->post('/api/Album::setShowTags', [
 			'albumID' => $id,
-			'tags' => $tags,
+			'show_tags' => $tags
 		]);
+
 		$response->assertOk();
+		print $response->getContent();
 		$response->assertSee($result);
 	}
 

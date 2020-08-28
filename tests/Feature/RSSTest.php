@@ -51,7 +51,7 @@ class RSSTest extends TestCase
 		$session_tests->log_as_id(0);
 
 		// create an album
-		$albumID = $albums_tests->add($this, '0', 'test_album', [], 'true');
+		$albumID = $albums_tests->add($this, '0', 'test_album', 'true');
 
 		// upload a picture
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
