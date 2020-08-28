@@ -45,7 +45,7 @@ class AlbumTest extends TestCase
 
 		$albums_tests->set_tags($this, $albumTagID1, 'test, coolnewtag, secondnewtag', 'true');
 		$response = $albums_tests->get($this, $albumTagID1, '', 'true');
-		$response->assertSee("test, coolnewtag, secondnewtag");
+		$response->assertSee('test, coolnewtag, secondnewtag');
 
 		$albums_tests->see_in_albums($this, $albumID);
 		$albums_tests->see_in_albums($this, $albumID2);

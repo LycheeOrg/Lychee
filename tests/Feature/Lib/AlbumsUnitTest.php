@@ -310,7 +310,7 @@ class AlbumsUnitTest
 	) {
 		$response = $testCase->post('/api/Album::setShowTags', [
 			'albumID' => $id,
-			'show_tags' => $tags
+			'show_tags' => $tags,
 		]);
 
 		$response->assertOk();
