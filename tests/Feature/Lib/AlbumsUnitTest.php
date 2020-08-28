@@ -314,7 +314,6 @@ class AlbumsUnitTest
 		]);
 
 		$response->assertOk();
-		print $response->getContent();
 		$response->assertSee($result);
 	}
 
