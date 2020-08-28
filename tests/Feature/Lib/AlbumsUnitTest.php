@@ -7,15 +7,14 @@ use Tests\TestCase;
 
 class AlbumsUnitTest
 {
-
 	/**
 	 * Add an album.
 	 *
 	 * @param TestCase $testCase
-	 * @param string $parent_id
-	 * @param string $title
-	 * @param array $tags
-	 * @param string $result
+	 * @param string   $parent_id
+	 * @param string   $title
+	 * @param array    $tags
+	 * @param string   $result
 	 *
 	 * @return string
 	 */
@@ -26,7 +25,6 @@ class AlbumsUnitTest
 		array $tags = [],
 		string $result = 'true'
 	) {
-
 		$params = [
 			'title' => $title,
 			'parent_id' => $parent_id,
@@ -270,9 +268,9 @@ class AlbumsUnitTest
 
 	/**
 	 * @param TestCase $testCase
-	 * @param string $id
-	 * @param array $tags
-	 * @param string $result
+	 * @param string   $id
+	 * @param array    $tags
+	 * @param string   $result
 	 */
 	public function set_tags(
 		TestCase &$testCase,
@@ -282,7 +280,7 @@ class AlbumsUnitTest
 	) {
 		$response = $testCase->post('/api/Album::setShowTags', [
 			'albumID' => $id,
-			'tags' => $tags
+			'tags' => $tags,
 		]);
 		$response->assertOk();
 		$response->assertSee($result);

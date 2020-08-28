@@ -60,7 +60,6 @@ class Cast
 
 	public static function toTagAlbum(Album $album, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions): TagAlbum
 	{
-
 		$tag_album = new TagAlbum($albumFunctions, $sessionFunctions);
 		$tag_album->id = $album->id;
 		$tag_album->title = $album->title;

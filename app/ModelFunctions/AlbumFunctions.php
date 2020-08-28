@@ -75,11 +75,12 @@ class AlbumFunctions
 	}
 
 	/**
-	 * Create a new smart album based on tags
+	 * Create a new smart album based on tags.
 	 *
 	 * @param string $title
 	 * @param string $show_tags
-	 * @param int $user_id
+	 * @param int    $user_id
+	 *
 	 * @return Album
 	 */
 	public function createTagAlbum(string $title, string $show_tags, int $user_id): Album

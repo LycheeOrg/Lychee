@@ -11,13 +11,11 @@ use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\RecentAlbum;
 use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\TagAlbum;
 use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
-use WhichBrowser\Model\Primitive\Base;
 
 class AlbumsFunctions
 {
@@ -261,13 +259,13 @@ class AlbumsFunctions
 			->where('parent_id', '=', null);
 	}
 
-
 	public function getTagAlbums(): Collection
 	{
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
 		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', true);
+
 		return $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder)
 									->map(function (Album $album) {
 										return AlbumCast::toTagAlbum($album, $this->albumFunctions, $this->sessionFunctions);

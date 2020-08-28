@@ -98,7 +98,7 @@ class AlbumController extends Controller
 	{
 		$request->validate([
 			'title' => 'string|required|max:100',
-			'tags' => 'string'
+			'tags' => 'string',
 		]);
 
 		$album = new Album();
@@ -200,9 +200,11 @@ class AlbumController extends Controller
 
 	/**
 	 * @param Request $request
+	 *
 	 * @return Album|SmartAlbum
 	 */
-	public function getAlbum(Request $request): Album {
+	public function getAlbum(Request $request): Album
+	{
 		switch ($request['albumID']) {
 			case 'starred':
 				return new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
@@ -220,6 +222,7 @@ class AlbumController extends Controller
 				if (AlbumsFunctions::isTagAlbum($album)) {
 					$album = AlbumCast::toTagAlbum($album, $this->albumFunctions, $this->sessionFunctions);
 				}
+
 				return $album;
 		}
 	}
@@ -383,9 +386,10 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Change show tags of the tag album
+	 * Change show tags of the tag album.
 	 *
 	 * @param Request $request
+	 *
 	 * @return bool|string
 	 */
 	public function setShowTags(Request $request)
@@ -399,11 +403,13 @@ class AlbumController extends Controller
 
 		if ($album === null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
 			return 'false';
 		}
 
 		if (!$this->albumsFunctions::isTagAlbum($album)) {
 			Logs::error(__METHOD__, __LINE__, 'Could not change show tags on non tag album');
+
 			return 'false';
 		}
 

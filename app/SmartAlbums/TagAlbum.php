@@ -2,8 +2,6 @@
 
 namespace App\SmartAlbums;
 
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use Illuminate\Database\Eloquent\Builder;
 
