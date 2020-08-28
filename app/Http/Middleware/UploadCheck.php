@@ -104,7 +104,7 @@ class UploadCheck
 
 		// Remove smart albums (they get a pass).
 		for ($i = 0; $i < count($albumIDs);) {
-			if ($this->albumFunctions->is_smart_album($albumIDs[$i])) {
+			if ($this->albumFunctions->is_smart_album($albumIDs[$i]) || $albumIDs[$i] === '0') {
 				array_splice($albumIDs, $i, 1);
 			} else {
 				$i++;
