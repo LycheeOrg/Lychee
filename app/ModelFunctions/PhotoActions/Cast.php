@@ -25,6 +25,7 @@ class Cast
 			'description' => $photo->description == null ? '' : $photo->description,
 			'tags' => $photo->tags,
 			'star' => Helpers::str_of_bool($photo->star),
+			'public' => $photo->get_public(),
 			'album' => $photo->album_id !== null ? strval($photo->album_id) : null,
 			'width' => strval($photo->width),
 			'height' => strval($photo->height),

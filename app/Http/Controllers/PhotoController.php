@@ -99,7 +99,6 @@ class PhotoController extends Controller
 
 		$return = Cast::toArray($photo);
 		Cast::urls($return, $photo);
-		$return['public'] = $photo->get_public();
 
 		$this->symLinkFunctions->getUrl($photo, $return);
 		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
