@@ -7,10 +7,7 @@ namespace App\ModelFunctions\AlbumActions;
 use App\Album;
 use App\Assets\Helpers;
 use App\Configs;
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
-use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\SmartAlbums\TagAlbum;
 use Illuminate\Support\Collection as BaseCollection;
@@ -50,7 +47,7 @@ class Cast
 			'types' => [],
 		];
 
-		if (AlbumsFunctions::isTagAlbum($album)) {
+		if ($album->smart && !empty($album->showtags)) {
 			$return['tag_album'] = '1';
 			$return['show_tags'] = $album->showtags;
 		}
@@ -58,9 +55,9 @@ class Cast
 		return $return;
 	}
 
-	public static function toTagAlbum(Album $album, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions): TagAlbum
+	public static function toTagAlbum(Album $album): TagAlbum
 	{
-		$tag_album = new TagAlbum($albumFunctions, $sessionFunctions);
+		$tag_album = resolve(TagAlbum::class);
 		$tag_album->id = $album->id;
 		$tag_album->title = $album->title;
 		$tag_album->owner_id = $album->owner_id;

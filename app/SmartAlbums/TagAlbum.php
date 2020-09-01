@@ -14,7 +14,9 @@ class TagAlbum extends SmartAlbum
 
 	public function get_photos(): Builder
 	{
+		// /!\ this may reveal private picture.
 		$sql = Photo::query();
+
 		$tags = explode(',', $this->showtags);
 		foreach ($tags as $tag) {
 			$sql = $sql->where('tags', 'like', '%' . trim($tag) . '%');

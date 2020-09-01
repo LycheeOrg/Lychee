@@ -486,4 +486,9 @@ class AlbumFunctions
 			return $e->isEmpty();
 		});
 	}
+
+	public static function is_tag_album(Album $album): bool
+	{
+		return $album->smart && !empty($album->showtags);
+	}
 }

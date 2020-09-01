@@ -16,10 +16,7 @@ use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
-use App\SmartAlbums\PublicAlbum;
-use App\SmartAlbums\RecentAlbum;
-use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\UnsortedAlbum;
+use App\SmartAlbums\SmartFactory;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -51,6 +48,11 @@ class AlbumController extends Controller
 	private $readAccessFunctions;
 
 	/**
+	 * @var SmartFactory
+	 */
+	private $smartFactory;
+
+	/**
 	 * @param AlbumFunctions      $albumFunctions
 	 * @param AlbumsFunctions     $albumsFunctions
 	 * @param SessionFunctions    $sessionFunctions
@@ -60,12 +62,14 @@ class AlbumController extends Controller
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
 		SessionFunctions $sessionFunctions,
-		ReadAccessFunctions $readAccessFunctions
+		ReadAccessFunctions $readAccessFunctions,
+		SmartFactory $smartFactory
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
+		$this->smartFactory = $smartFactory;
 	}
 
 	/**
@@ -123,7 +127,7 @@ class AlbumController extends Controller
 		$return['albums'] = [];
 		// Get photos
 		// change this for smartalbum
-		$album = $this->getAlbum($request);
+		$album = $this->getAlbum($request['albumID']);
 
 		if ($album->smart) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
@@ -171,7 +175,7 @@ class AlbumController extends Controller
 		// Get photos
 		// Get album information
 
-		$album = $this->getAlbum($request);
+		$album = $this->getAlbum($request['albumID']);
 
 		if ($album->smart) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
@@ -199,31 +203,23 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * @param Request $request
+	 * @param string $albumID
 	 *
 	 * @return Album|SmartAlbum
 	 */
-	public function getAlbum(Request $request): Album
+	public function getAlbum(string $albumID): Album
 	{
-		switch ($request['albumID']) {
-			case 'starred':
-				return new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
+		// TODO: improve here.
+		if (in_array($albumID, $this->smartFactory::$base_smarts)) {
+			return $this->smartFactory->make($albumID);
+		} else {
+			$album = Album::find($albumID);
 
-			case 'public':
-				return new PublicAlbum($this->albumFunctions, $this->sessionFunctions);
+			if ($this->albumFunctions->is_tag_album($album)) {
+				$album = AlbumCast::toTagAlbum($album);
+			}
 
-			case 'recent':
-				return new RecentAlbum($this->albumFunctions, $this->sessionFunctions);
-
-			case 'unsorted':
-				return new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions);
-			default:
-				$album = Album::find($request['albumID']);
-				if (AlbumsFunctions::isTagAlbum($album)) {
-					$album = AlbumCast::toTagAlbum($album, $this->albumFunctions, $this->sessionFunctions);
-				}
-
-				return $album;
+			return $album;
 		}
 	}
 
@@ -407,7 +403,7 @@ class AlbumController extends Controller
 			return 'false';
 		}
 
-		if (!$this->albumsFunctions::isTagAlbum($album)) {
+		if (!$this->albumFunctions->is_tag_album($album)) {
 			Logs::error(__METHOD__, __LINE__, 'Could not change show tags on non tag album');
 
 			return 'false';

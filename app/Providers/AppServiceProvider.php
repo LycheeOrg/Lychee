@@ -11,10 +11,12 @@ use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
 use App\ModelFunctions\AlbumFunctions;
+use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
+use App\SmartAlbums\SmartFactory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -26,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
 		SymLinkFunctions::class => SymLinkFunctions::class,
 		PhotoFunctions::class => PhotoFunctions::class,
 		AlbumFunctions::class => AlbumFunctions::class,
+		AlbumsFunctions::class => AlbumsFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,
@@ -33,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
 		LycheeVersion::class => LycheeVersion::class,
 		CheckUpdate::class => CheckUpdate::class,
 		ApplyUpdate::class => ApplyUpdate::class,
+		SmartFactory::class => SmartFactory::class,
 	];
 
 	/**

@@ -8,10 +8,7 @@ use App\Album;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
-use App\SmartAlbums\PublicAlbum;
-use App\SmartAlbums\RecentAlbum;
-use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\UnsortedAlbum;
+use App\SmartAlbums\SmartFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
@@ -40,18 +37,24 @@ class AlbumsFunctions
 	private $symLinkFunctions;
 
 	/**
+	 * @var SmartFactory
+	 */
+	private $smartFactory;
+
+	/**
 	 * AlbumFunctions constructor.
 	 *
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions)
+	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory)
 	{
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->albumFunctions = $albumFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
+		$this->smartFactory = $smartFactory;
 	}
 
 	/**
@@ -127,10 +130,9 @@ class AlbumsFunctions
 		 */
 		$publicAlbums = null;
 		$smartAlbums = new BaseCollection();
-		$smartAlbums->push(new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions));
-		$smartAlbums->push(new StarredAlbum($this->albumFunctions, $this->sessionFunctions));
-		$smartAlbums->push(new PublicAlbum($this->albumFunctions, $this->sessionFunctions));
-		$smartAlbums->push(new RecentAlbum($this->albumFunctions, $this->sessionFunctions));
+		foreach ($this->smartFactory::$base_smarts as $smart_kind) {
+			$smartAlbums->push($this->smartFactory->make($smart_kind));
+		}
 
 		foreach ($this->getTagAlbums() as $tagAlbum) {
 			$smartAlbums->push($tagAlbum);
@@ -267,13 +269,8 @@ class AlbumsFunctions
 		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', true);
 
 		return $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder)
-									->map(function (Album $album) {
-										return AlbumCast::toTagAlbum($album, $this->albumFunctions, $this->sessionFunctions);
-									});
-	}
-
-	public static function isTagAlbum(Album $album): bool
-	{
-		return $album->smart && !empty($album->showtags);
+			->map(function (Album $album) {
+				return AlbumCast::toTagAlbum($album);
+			});
 	}
 }
