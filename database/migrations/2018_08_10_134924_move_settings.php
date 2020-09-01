@@ -58,8 +58,7 @@ class MoveSettings extends Migration
 						Configs::where('key', '=', $result->key . '_col')->update(['value' => $order_by[2] ?? 'id']);
 						Configs::where('key', '=', $result->key . '_order')->update(['value' => $order_by[3] ?? 'DESC']);
 					} elseif (!in_array($result->key, ['checkForUpdates', 'hide_version_number', 'identifier', 'php_script_limit', 'plugins', 'public_search', 'useExiftool', 'version'])) {
-						Configs::where('key', '=', $result->key)->update(['value' => $result->value]);
-						Logs::notice(__FUNCTION__, __LINE__, env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_settings does not exist!');
+						Configs::where('key', '=', $result->key)->update(['value' => $result->value ?? '']);
 					}
 				}
 			} else {
