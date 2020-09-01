@@ -98,8 +98,7 @@ class SmartAlbum extends Album
 	public function filter($query)
 	{
 		if (!$this->sessionFunctions->is_admin()) {
-			$query = $query->whereIn('album_id', $this->albumIds)
-				->orWhere('public', '=', 1);
+			$query = $query->whereIn('album_id', $this->albumIds);
 		}
 
 		if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->id() > 0) {
