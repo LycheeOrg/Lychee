@@ -1169,7 +1169,7 @@ header.setMode = function (mode) {
 			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
 				$('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album').hide();
 				$('.button_add, .header__divider', '.header__toolbar--album').show();
-				tabindex.makeFocusable($('.button_add, .header__divider', '.header__toolbar--album').show());
+				tabindex.makeFocusable($('.button_add, .header__divider', '.header__toolbar--album'));
 				tabindex.makeUnfocusable($('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album'));
 			} else if (albumID === '0') {
 				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
@@ -2719,6 +2719,111 @@ lychee.locale = {
 	'PHOTO_VIEW': 'Lychee Photo View:'
 };
 
+/**
+ * @description Helper class to manage tabindex
+ */
+
+var tabindex = {
+
+	offset_for_header: 100,
+	next_tab_index: 100
+
+};
+
+tabindex.saveSettings = function (elem) {
+
+	if (!lychee.enable_tabindex) return;
+
+	// Todo: Make shorter notation
+	// Get all elements which have a tabindex
+	var tmp = $(elem).find("[tabindex]");
+
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
+	tmp.each(function (i, e) {
+		// TODO: shorter notation
+		a = $(e).attr("tabindex");
+		$(this).data("tabindex-saved", a);
+	});
+};
+
+tabindex.restoreSettings = function (elem) {
+
+	if (!lychee.enable_tabindex) return;
+
+	// Todo: Make shorter noation
+	// Get all elements which have a tabindex
+	var tmp = $(elem).find("[tabindex]");
+
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
+	tmp.each(function (i, e) {
+		// TODO: shorter notation
+		a = $(e).data("tabindex-saved");
+		$(e).attr("tabindex", a);
+	});
+};
+
+tabindex.makeUnfocusable = function (elem) {
+	var saveFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+
+	if (!lychee.enable_tabindex) return;
+
+	// Todo: Make shorter noation
+	// Get all elements which have a tabindex
+	var tmp = $(elem).find("[tabindex]");
+
+	// iterate over all elements and set tabindex to -1 (i.e. make is not focussable)
+	tmp.each(function (i, e) {
+		$(e).attr("tabindex", "-1");
+		// Save which element had focus before we make it unfocusable
+		if (saveFocusElement && $(e).is(":focus")) {
+			$(e).data("tabindex-focus", true);
+			// Remove focus
+			$(e).blur();
+		}
+	});
+
+	// Disable input fields
+	$(elem).find("input").attr("disabled", "disabled");
+};
+
+tabindex.makeFocusable = function (elem) {
+	var restoreFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
+
+	if (!lychee.enable_tabindex) return;
+
+	// Todo: Make shorter noation
+	// Get all elements which have a tabindex
+	var tmp = $(elem).find("[data-tabindex]");
+
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
+	tmp.each(function (i, e) {
+		$(e).attr("tabindex", $(e).data("tabindex"));
+		// restore focus elemente if wanted
+		if (restoreFocusElement) {
+			if ($(e).data("tabindex-focus") && lychee.active_focus_on_page_load) {
+				$(e).focus();
+				$(e).removeData("tabindex-focus");
+			}
+		}
+	});
+
+	// Enable input fields
+	$(elem).find("input").removeAttr("disabled");
+};
+
+tabindex.get_next_tab_index = function () {
+
+	tabindex.next_tab_index = tabindex.next_tab_index + 1;
+
+	return tabindex.next_tab_index - 1;
+};
+
+tabindex.reset = function () {
+
+	tabindex.next_tab_index = tabindex.offset_for_header;
+};
 (function (window, factory) {
 	var basicContext = factory(window, window.document);
 	window.basicContext = basicContext;
