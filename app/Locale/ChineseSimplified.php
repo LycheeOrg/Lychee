@@ -98,6 +98,7 @@ final class ChineseSimplified implements LangInterface
 			'IMPORT_DROPBOX' => '从 Dropbox 导入',
 			'IMPORT_SERVER' => '从服务器导入',
 			'NEW_ALBUM' => '新建相册',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => '输入相册标题：',
 			'UNTITLED' => '未命名',
@@ -108,6 +109,7 @@ final class ChineseSimplified implements LangInterface
 			'NUM_PHOTOS' => '照片',
 
 			'CREATE_ALBUM' => '创建相册',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => '星标相片',
 			'STAR' => '星标',
@@ -130,8 +132,11 @@ final class ChineseSimplified implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => '已选择的所有相册：',
 			'ALBUM_SET_TITLE' => '设置标题',
 			'ALBUM_DESCRIPTION' => '描述',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => '输入新的相册描述：',
 			'ALBUM_SET_DESCRIPTION' => '设置描述',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => '相册',
 			'ALBUM_CREATED' => '创建时间',
 			'ALBUM_IMAGES' => '图片信息',

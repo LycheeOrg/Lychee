@@ -98,6 +98,7 @@ final class English implements LangInterface
 			'IMPORT_DROPBOX' => 'Import from Dropbox',
 			'IMPORT_SERVER' => 'Import from Server',
 			'NEW_ALBUM' => 'New Album',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Enter a title for the new album:',
 			'UNTITLED' => 'Untilted',
@@ -108,6 +109,7 @@ final class English implements LangInterface
 			'NUM_PHOTOS' => 'Photos',
 
 			'CREATE_ALBUM' => 'Create Album',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Star Photo',
 			'STAR' => 'Star',
@@ -130,8 +132,11 @@ final class English implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'selected albums:',
 			'ALBUM_SET_TITLE' => 'Set Title',
 			'ALBUM_DESCRIPTION' => 'Description',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Enter a new description for this album:',
 			'ALBUM_SET_DESCRIPTION' => 'Set Description',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Created',
 			'ALBUM_IMAGES' => 'Images',

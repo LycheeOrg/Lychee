@@ -99,6 +99,7 @@ final class Czech implements LangInterface
 			'IMPORT_DROPBOX' => 'Importovat z Dropboxu',
 			'IMPORT_SERVER' => 'Importovat ze serveru',
 			'NEW_ALBUM' => 'Nové album',
+			'NEW_TAG_ALBUM' => 'Nové tag album',
 
 			'TITLE_NEW_ALBUM' => 'Zadejte název nového alba:',
 			'UNTITLED' => 'Bezejmanné',
@@ -109,6 +110,7 @@ final class Czech implements LangInterface
 			'NUM_PHOTOS' => 'fotografií',
 
 			'CREATE_ALBUM' => 'Vytvořit album',
+			'CREATE_TAG_ALBUM' => 'Vytvořit Tag album',
 
 			'STAR_PHOTO' => 'Označit jako oblíbené',
 			'STAR' => 'Označit jako oblíbené',
@@ -131,8 +133,11 @@ final class Czech implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'vybraná alba:',
 			'ALBUM_SET_TITLE' => 'Uložit název',
 			'ALBUM_DESCRIPTION' => 'Popis',
+			'ALBUM_SHOW_TAGS' => 'Zobrazené tagy',
 			'ALBUM_NEW_DESCRIPTION' => 'Zadat nový popis pro album:',
 			'ALBUM_SET_DESCRIPTION' => 'Uložit popis',
+			'ALBUM_NEW_SHOWTAGS' => 'Zadejte tagy fotografií, které budou viditelné v albu:',
+			'ALBUM_SET_SHOWTAGS' => 'Tagy k zobrazení',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Vytvořeno',
 			'ALBUM_IMAGES' => 'Obrázky',
@@ -149,8 +154,8 @@ final class Czech implements LangInterface
 			'ALBUM_HIDDEN_EXPL' => 'Pouze pro návštěvníky s přímým odkazem alba.',
 			'ALBUM_DOWNLOADABLE' => 'Stažitelné',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Album mouhou stáhnout pouze jeho návštěvníci.',
-			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
-			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Display social media sharing links.',
+			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Tlačítko sdílet je viditelné',
+			'ALBUM_SHARE_BUTTON_VISIBLE_EXPL' => 'Zobrazit odkazy pro sdílení na socíálních sítích.',
 			'ALBUM_PASSWORD' => 'Heslo',
 			'ALBUM_PASSWORD_PROT' => 'Chráněné heslem',
 			'ALBUM_PASSWORD_PROT_EXPL' => 'Přístup do alba pouze s platným heslem.',
@@ -351,9 +356,9 @@ final class Czech implements LangInterface
 			'MAP_PROVIDER_OSM_FR' => 'OpenStreetMap.fr (bez HiDPI)',
 			'MAP_PROVIDER_RRZE' => 'Universita v Erlangenu, Německo (pouze HiDPI)',
 			'MAP_INCLUDE_SUBALBUMS_TEXT' => 'Včetně fotografií v subalbech:',
-			'LOCATION_DECODING' => 'Decode GPS data into location name',
-			'LOCATION_SHOW' => 'Show location name',
-			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
+			'LOCATION_DECODING' => 'Přeložít GPS data na název místa',
+			'LOCATION_SHOW' => 'Zobrazit název místa',
+			'LOCATION_SHOW_PUBLIC' => 'Zobrazit název místa v public módu',
 			'LAYOUT_TYPE' => 'Vzhled fotografií:',
 			'LAYOUT_SQUARES' => 'Čtvercové náhledy',
 			'LAYOUT_JUSTIFIED' => 'V poměru stran, zarovnáno',
@@ -421,8 +426,8 @@ final class Czech implements LangInterface
 			'PHOTO_LIVE_VIDEO' => 'Video part of live-photo',
 			'PHOTO_VIEW' => 'Zobrazení foto Lychee:',
 
-			'PHOTO_EDIT_ROTATECWISE' => 'Rotate clockwise',
-			'PHOTO_EDIT_ROTATECCWISE' => 'Rotate counter-clockwise',
+			'PHOTO_EDIT_ROTATECWISE' => 'Otočit doprava',
+			'PHOTO_EDIT_ROTATECCWISE' => 'Otočit doleva',
 		];
 
 		return $locale;

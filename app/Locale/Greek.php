@@ -98,6 +98,7 @@ final class Greek implements LangInterface
 			'IMPORT_DROPBOX' => 'Εισαγωγή από Dropbox',
 			'IMPORT_SERVER' => 'Εισαγωγή από Εξυπηρετητή',
 			'NEW_ALBUM' => 'Νέο Λεύκωμα',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Εισάγετε έναν τίτλο για το νέο λεύκωμα:',
 			'UNTITLED' => 'Χωρίς Τίτλο',
@@ -108,6 +109,7 @@ final class Greek implements LangInterface
 			'NUM_PHOTOS' => 'Φωτογραφίες',
 
 			'CREATE_ALBUM' => 'Δημιουργία Λευκώματος',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Βάλτε Αστέρι στη Φωτογραφία',
 			'STAR' => 'Βάλτε Αστέρι',
@@ -130,8 +132,11 @@ final class Greek implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'τα επιλεγμένα λευκώματα:',
 			'ALBUM_SET_TITLE' => 'Ορίστε Τίτλο',
 			'ALBUM_DESCRIPTION' => 'Περιγραφή',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Εισάγετε μία νέα περιγραφή για αυτό το λεύκωμα:',
 			'ALBUM_SET_DESCRIPTION' => 'Ορίστε Περιγραφή',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Λεύκωμα',
 			'ALBUM_CREATED' => 'Δημιουργήθηκε',
 			'ALBUM_IMAGES' => 'Εικόνες',
