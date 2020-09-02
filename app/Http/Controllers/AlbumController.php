@@ -218,7 +218,7 @@ class AlbumController extends Controller
 		if (in_array($albumId, $this->smartFactory::$base_smarts)) {
 			return $this->smartFactory->make($albumId);
 		} else {
-			AlbumCast::toTagAlbum(Album::find($albumId));
+			return AlbumCast::toTagAlbum(Album::find($albumId));
 		}
 	}
 
