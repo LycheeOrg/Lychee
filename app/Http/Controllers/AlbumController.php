@@ -105,9 +105,6 @@ class AlbumController extends Controller
 			'tags' => 'string',
 		]);
 
-		$album = new Album();
-		$album->id = Helpers::generateID();
-
 		$album = $this->albumFunctions->createTagAlbum($request['title'], $request['tags'], $this->sessionFunctions->id());
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
@@ -207,19 +204,21 @@ class AlbumController extends Controller
 	 *
 	 * @return Album|SmartAlbum
 	 */
-	public function getAlbum(string $albumID): Album
+	public function getAlbum(string $albumId): Album
 	{
-		// TODO: improve here.
-		if (in_array($albumID, $this->smartFactory::$base_smarts)) {
-			return $this->smartFactory->make($albumID);
+		if ($this->albumFunctions->is_smart_album($albumId)) {
+			return $this->getSmartAlbum($albumId);
 		} else {
-			$album = Album::find($albumID);
+			return Album::find($albumId);
+		}
+	}
 
-			if ($this->albumFunctions->is_tag_album($album)) {
-				$album = AlbumCast::toTagAlbum($album);
-			}
-
-			return $album;
+	private function getSmartAlbum($albumId)
+	{
+		if (in_array($albumId, $this->smartFactory::$base_smarts)) {
+			return $this->smartFactory->make($albumId);
+		} else {
+			AlbumCast::toTagAlbum(Album::find($albumId));
 		}
 	}
 
