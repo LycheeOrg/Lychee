@@ -576,7 +576,7 @@ album.getID = function () {
 };
 
 album.isTagAlbum = function () {
-	return album.json['tag_album'] === '1';
+	return album.json.tag_album === '1';
 };
 
 album.getByID = function (photoID) {
@@ -830,9 +830,6 @@ album.add = function () {
 };
 
 album.addByTags = function () {
-	var IDs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
-	var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
 
 	var action = function action(data) {
 
@@ -849,12 +846,8 @@ album.addByTags = function () {
 				return !isNaN(parseInt(n, 10)) && isFinite(n);
 			};
 			if (_data !== false && isNumber(_data)) {
-				if (IDs != null && callback != null) {
-					callback(IDs, _data, false); // we do not confirm
-				} else {
-					albums.refresh();
-					lychee.goto(_data);
-				}
+				albums.refresh();
+				lychee.goto(_data);
 			} else {
 				lychee.error(null, params, _data);
 			}
@@ -2936,25 +2929,23 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e14);
 			}
 
-			if (albumID === 'starred' || albumID === 'unsorted' || albumID === 'public' || albumID === 'recent' || album.isTagAlbum()) {
-				$('#button_visibility_album').show();
-				tabindex.makeFocusable($('#button_visibility_album'));
-				$('#button_move_album').hide();
-				tabindex.makeUnfocusable($('#button_move_album'));
-				$('.button_add, .header__divider', '.header__toolbar--album').hide();
-				tabindex.makeUnfocusable($('.button_add, .header__divider', '.header__toolbar--album'));
-				if (album.isTagAlbum()) {
-					$('#button_info_album #button_trash_album').show();
-					tabindex.makeFocusable($('#button_info_album, #button_trash_album'));
-				} else {
-					$('#button_info_album #button_trash_album').hide();
-					tabindex.makeUnfocusable($('#button_info_album, #button_trash_album'));
-				}
-			} else if (albumID === '0') {
+			if (albumID === 'starred' || albumID === 'public' || albumID === 'recent') {
+				$('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album').hide();
+				$('.button_add, .header__divider', '.header__toolbar--album').show();
+				tabindex.makeFocusable($('.button_add, .header__divider', '.header__toolbar--album'));
+				tabindex.makeUnfocusable($('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album'));
+			} else if (albumID === 'unsorted') {
 				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
 				$('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album').show();
 				tabindex.makeFocusable($('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album'));
 				tabindex.makeUnfocusable($('#button_info_album, #button_visibility_album, #button_move_album'));
+			} else if (album.isTagAlbum()) {
+				$('#button_visibility_album, #button_info_album, #button_trash_album').show();
+				$('#button_move_album').hide();
+				$('.button_add, .header__divider', '.header__toolbar--album').hide();
+				tabindex.makeFocusable($('#button_visibility_album, #button_info_album, #button_trash_album'));
+				tabindex.makeUnfocusable($('#button_move_album'));
+				tabindex.makeUnfocusable($('.button_add, .header__divider', '.header__toolbar--album'));
 			} else {
 				$('#button_info_album, #button_visibility_album').show();
 				tabindex.makeFocusable($('#button_info_album, #button_visibility_album'));
