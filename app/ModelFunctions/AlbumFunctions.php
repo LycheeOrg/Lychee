@@ -101,7 +101,6 @@ class AlbumFunctions
 	 *
 	 * @param string $title
 	 * @param int    $parent_id
-	 * @param array  $tags
 	 * @param int    $user_id
 	 *
 	 * @return Album|string
