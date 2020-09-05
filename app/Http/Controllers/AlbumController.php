@@ -17,7 +17,6 @@ use App\ModelFunctions\SessionFunctions;
 use App\Photo;
 use App\Response;
 use App\SmartAlbums\SmartFactory;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -717,63 +716,23 @@ class AlbumController extends Controller
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 			$zip = new ZipStream(null, $options);
 
-			$UserId = $this->sessionFunctions->id();
-
 			$dirs = [];
 			foreach ($albumIDs as $albumID) {
-				$album = null;
-				switch ($albumID) {
-					case 'starred':
-						$dir = 'Starred';
-						if ($this->sessionFunctions->is_logged_in()) {
-							$user = User::find($UserId);
+				$album = $this->getAlbum($albumID);
+				$dir = $album->title;
+				if ($album->smart) {
+					$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
+					$album->setAlbumIDs($publicAlbums);
+				}
+				$photos_sql = $album->get_photos();
 
-							if ($UserId == 0 || $user->upload) {
-								$photos_sql = Photo::select_stars(Photo::OwnedBy($UserId));
-								break;
+				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album, $albumID) use (&$zip, $badChars, &$compress_album) {
+					if (!$album->is_downloadable()) {
+						if ($this->albumFunctions->is_smart_album($albumID)) {
+							if (!$this->sessionFunctions->is_logged_in()) {
+								return;
 							}
-						}
-						$photos_sql = Photo::select_stars(Photo::whereIn('album_id', $this->albumsFunctions->getPublicAlbumsId()));
-						break;
-					case 'public':
-						$dir = 'Public';
-						$photos_sql = Photo::select_public(Photo::OwnedBy($UserId));
-						break;
-					case 'recent':
-						$dir = 'Recent';
-						if ($this->sessionFunctions->is_logged_in()) {
-							$user = User::find($UserId);
-
-							if ($UserId == 0 || $user->upload) {
-								$photos_sql = Photo::select_recent(Photo::OwnedBy($UserId));
-								break;
-							}
-						}
-						$photos_sql = Photo::select_recent(Photo::whereIn('album_id', $this->albumsFunctions->getPublicAlbumsId()));
-						break;
-					case 'unsorted':
-						$dir = 'Unsorted';
-						$photos_sql = Photo::select_unsorted(Photo::OwnedBy($UserId));
-						break;
-					default:
-						$album = Album::find($albumID);
-						if ($album === null) {
-							Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-							return 'false';
-						}
-						$dir = $album->title;
-						$photos_sql = Photo::set_order(Photo::where('album_id', '=', $albumID));
-						break;
-				} // switch (albumID)
-
-				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album) use (&$zip, $badChars, &$compress_album) {
-					if ($album !== null) {
-						if (!$this->sessionFunctions->is_current_user($album->owner_id) && !$album->is_downloadable()) {
-							return;
-						}
-					} else {
-						if (!$this->sessionFunctions->is_logged_in() && Configs::get_value('downloadable', '0') === '0') {
+						} elseif (!$this->sessionFunctions->is_current_user($album->owner_id)) {
 							return;
 						}
 					}
@@ -809,7 +768,7 @@ class AlbumController extends Controller
 						// that are not downloadable based on their actual
 						// parent album.
 						if (
-							$album === null && !$this->sessionFunctions->is_logged_in() &&
+							$this->albumFunctions->is_smart_album($albumID) && !$this->sessionFunctions->is_logged_in() &&
 							$photo->album_id !== null && !$photo->album->is_downloadable()
 						) {
 							continue;
@@ -859,18 +818,18 @@ class AlbumController extends Controller
 					} // foreach ($photos)
 
 					// Recursively compress subalbums
-					if ($album !== null) {
+					if (!$album->smart) {
 						$subDirs = [];
 						foreach ($album->children as $subAlbum) {
 							if ($this->readAccessFunctions->album($subAlbum, true) === 1) {
 								$subSql = Photo::set_order(Photo::where('album_id', '=', $subAlbum->id));
-								$compress_album($subSql, $subAlbum->title, $subDirs, $dir, $subAlbum);
+								$compress_album($subSql, $subAlbum->title, $subDirs, $dir, $subAlbum, $subAlbum->id);
 							}
 						}
 					}
 				}; // $compress_album
 
-				$compress_album($photos_sql, $dir, $dirs, '', $album);
+				$compress_album($photos_sql, $dir, $dirs, '', $album, $albumID);
 			} // foreach ($albumIDs)
 
 			// finish the zip stream
