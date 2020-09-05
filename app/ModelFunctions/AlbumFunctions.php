@@ -66,12 +66,7 @@ class AlbumFunctions
 	 */
 	public function is_smart_album($albumID)
 	{
-		if (array_key_exists($albumID, $this->smart_albums)) {
-			return true;
-		}
-		$album = Album::find($albumID);
-
-		return $album->smart;
+		return array_key_exists($albumID, $this->smart_albums);
 	}
 
 	/**

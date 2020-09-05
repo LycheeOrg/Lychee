@@ -207,18 +207,14 @@ class AlbumController extends Controller
 	public function getAlbum(string $albumId): Album
 	{
 		if ($this->albumFunctions->is_smart_album($albumId)) {
-			return $this->getSmartAlbum($albumId);
-		} else {
-			return Album::find($albumId);
-		}
-	}
-
-	private function getSmartAlbum($albumId)
-	{
-		if (in_array($albumId, $this->smartFactory::$base_smarts)) {
 			return $this->smartFactory->make($albumId);
 		} else {
-			return AlbumCast::toTagAlbum(Album::find($albumId));
+			$album = Album::find($albumId);
+			if ($album->smart) {
+				return AlbumCast::toTagAlbum($album);
+			} else {
+				return $album;
+			}
 		}
 	}
 
