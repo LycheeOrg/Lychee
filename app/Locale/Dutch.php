@@ -98,6 +98,7 @@ final class Dutch implements LangInterface
 			'IMPORT_DROPBOX' => 'Importeer van Dropbox',
 			'IMPORT_SERVER' => 'Importeer van Server',
 			'NEW_ALBUM' => 'Nieuw Album',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Voer een titel voor het album in:',
 			'UNTITLED' => 'Ongetiteld',
@@ -108,6 +109,7 @@ final class Dutch implements LangInterface
 			'NUM_PHOTOS' => 'Foto\'s',
 
 			'CREATE_ALBUM' => 'Maak Album',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Markeer met ster',
 			'STAR' => 'Ster',
@@ -130,8 +132,11 @@ final class Dutch implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'albums een nieuwe titel:',
 			'ALBUM_SET_TITLE' => 'Sla Titel op',
 			'ALBUM_DESCRIPTION' => 'Onderwerk',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Geef een nieuwe omschrijving in:',
 			'ALBUM_SET_DESCRIPTION' => 'Sla Omschrijving op',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Aangemaakt',
 			'ALBUM_IMAGES' => 'Afbeeldingen',

@@ -98,6 +98,7 @@ final class French implements LangInterface
 			'IMPORT_DROPBOX' => 'Importer depuis Dropbox',
 			'IMPORT_SERVER' => 'Importer depuis le serveur',
 			'NEW_ALBUM' => 'Nouvel Album',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Entrez le titre du nouvel album :',
 			'UNTITLED' => 'Sans-titre',
@@ -108,6 +109,7 @@ final class French implements LangInterface
 			'NUM_PHOTOS' => 'Photos',
 
 			'CREATE_ALBUM' => 'Créer un album',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Mettre en Favoris',
 			'STAR' => 'Favori',
@@ -130,8 +132,11 @@ final class French implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'albums sélectionnés :',
 			'ALBUM_SET_TITLE' => 'Enregistrer le titre',
 			'ALBUM_DESCRIPTION' => 'Description',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Entrez une nouvelle description pour cet album :',
 			'ALBUM_SET_DESCRIPTION' => 'Choisir une description',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Créé',
 			'ALBUM_IMAGES' => 'Images',

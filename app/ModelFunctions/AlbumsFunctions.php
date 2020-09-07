@@ -8,10 +8,8 @@ use App\Album;
 use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
-use App\SmartAlbums\PublicAlbum;
-use App\SmartAlbums\RecentAlbum;
-use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\UnsortedAlbum;
+use App\SmartAlbums\SmartFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
@@ -39,18 +37,24 @@ class AlbumsFunctions
 	private $symLinkFunctions;
 
 	/**
+	 * @var SmartFactory
+	 */
+	private $smartFactory;
+
+	/**
 	 * AlbumFunctions constructor.
 	 *
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions)
+	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory)
 	{
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->albumFunctions = $albumFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
+		$this->smartFactory = $smartFactory;
 	}
 
 	/**
@@ -126,10 +130,13 @@ class AlbumsFunctions
 		 */
 		$publicAlbums = null;
 		$smartAlbums = new BaseCollection();
-		$smartAlbums->push(new UnsortedAlbum($this->albumFunctions, $this->sessionFunctions));
-		$smartAlbums->push(new StarredAlbum($this->albumFunctions, $this->sessionFunctions));
-		$smartAlbums->push(new PublicAlbum($this->albumFunctions, $this->sessionFunctions));
-		$smartAlbums->push(new RecentAlbum($this->albumFunctions, $this->sessionFunctions));
+		foreach ($this->smartFactory::$base_smarts as $smart_kind) {
+			$smartAlbums->push($this->smartFactory->make($smart_kind));
+		}
+
+		foreach ($this->getTagAlbums() as $tagAlbum) {
+			$smartAlbums->push($tagAlbum);
+		}
 
 		$can_see_smart = $this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload();
 
@@ -137,8 +144,7 @@ class AlbumsFunctions
 			if ($can_see_smart || $smartAlbum->is_public()) {
 				$publicAlbums = $publicAlbums ?? $this->getPublicAlbumsId($toplevel, $children);
 				$smartAlbum->setAlbumIDs($publicAlbums);
-				$return[$smartAlbum->get_title()] = [];
-
+				$return[$smartAlbum->get_title()] = AlbumCast::toArray($smartAlbum);
 				AlbumCast::getThumbs($return[$smartAlbum->get_title()], $smartAlbum, $this->symLinkFunctions);
 			}
 		}
@@ -166,17 +172,17 @@ class AlbumsFunctions
 	 */
 	public function getPublicAlbumsId($toplevel = null, $children = null, $includePassProtected = false): BaseCollection
 	{
+		$albumIDs = new BaseCollection();
 		/*
 		 * @var Collection[Album]
 		 */
 		$toplevel = $toplevel ?? $this->getToplevelAlbums();
 		if ($toplevel === null) {
-			return null;
+			return $albumIDs;
 		}
 		$children = $children ?? $this->get_children($toplevel, $includePassProtected);
 
 		$kinds = ['albums', 'shared_albums'];
-		$albumIDs = new BaseCollection();
 
 		foreach ($kinds as $kind) {
 			$toplevel[$kind]->each(function ($album) use (&$albumIDs, $includePassProtected) {
@@ -212,6 +218,23 @@ class AlbumsFunctions
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
+		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', false);
+		$albumCollection = $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder);
+
+		if ($this->sessionFunctions->is_logged_in()) {
+			$id = $this->sessionFunctions->id();
+			list($return['albums'], $return['shared_albums']) = $albumCollection->partition(function ($album) use ($id) {
+				return $album->owner_id == $id;
+			});
+		} else {
+			$return['albums'] = $albumCollection;
+		}
+
+		return $return;
+	}
+
+	private function createTopleveAlbumsQuery(): Builder
+	{
 		if ($this->sessionFunctions->is_logged_in()) {
 			$sql = Album::with([
 				'owner',
@@ -230,19 +253,24 @@ class AlbumsFunctions
 				});
 			}
 
-			$sql = $sql->orderBy('owner_id', 'ASC');
-
-			$albumCollection = $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder);
-
-			list($return['albums'], $return['shared_albums']) = $albumCollection->partition(function ($album) use ($id) {
-				return $album->owner_id == $id;
-			});
-		} else {
-			$return['albums'] = $this->albumFunctions->customSort(Album::where('public', '=', '1')
-				->where('visible_hidden', '=', '1')
-				->where('parent_id', '=', null), $sortingCol, $sortingOrder);
+			return $sql->orderBy('owner_id', 'ASC');
 		}
 
-		return $return;
+		return Album::where('public', '=', '1')
+			->where('visible_hidden', '=', '1')
+			->where('parent_id', '=', null);
+	}
+
+	public function getTagAlbums(): Collection
+	{
+		$sortingCol = Configs::get_value('sorting_Albums_col');
+		$sortingOrder = Configs::get_value('sorting_Albums_order');
+
+		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', true);
+
+		return $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder)
+			->map(function (Album $album) {
+				return AlbumCast::toTagAlbum($album);
+			});
 	}
 }

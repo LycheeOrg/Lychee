@@ -9,6 +9,7 @@ use App\Assets\Helpers;
 use App\Configs;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SymLinkFunctions;
+use App\SmartAlbums\TagAlbum;
 use Illuminate\Support\Collection as BaseCollection;
 
 class Cast
@@ -20,7 +21,7 @@ class Cast
 	 */
 	public static function toArray(Album $album): array
 	{
-		return [
+		$return = [
 			'id' => strval($album->id),
 			'title' => $album->title,
 			'public' => strval($album->public),
@@ -45,6 +46,38 @@ class Cast
 			'thumbs2x' => [],
 			'types' => [],
 		];
+
+		if ($album->smart && !empty($album->showtags)) {
+			$return['tag_album'] = '1';
+			$return['show_tags'] = $album->showtags;
+		}
+
+		return $return;
+	}
+
+	public static function toTagAlbum(Album $album): TagAlbum
+	{
+		$tag_album = resolve(TagAlbum::class);
+		$tag_album->id = $album->id;
+		$tag_album->title = $album->title;
+		$tag_album->owner_id = $album->owner_id;
+		$tag_album->parent_id = $album->parent_id;
+		$tag_album->description = $album->description;
+		$tag_album->min_takestamp = $album->min_takestamp;
+		$tag_album->max_takestamp = $album->max_takestamp;
+		$tag_album->public = $album->public;
+		$tag_album->full_photo = $album->full_photo;
+		$tag_album->visible_hidden = $album->visible_hidden;
+		$tag_album->downloadable = $album->downloadable;
+		$tag_album->password = $album->password;
+		$tag_album->license = $album->license;
+		$tag_album->created_at = $album->created_at;
+		$tag_album->updated_at = $album->updated_at;
+		$tag_album->share_button_visible = $album->share_button_visible;
+		$tag_album->smart = $album->smart;
+		$tag_album->showtags = $album->showtags;
+
+		return $tag_album;
 	}
 
 	public static function toArrayWith(Album $album, BaseCollection $children)

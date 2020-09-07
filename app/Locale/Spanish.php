@@ -98,6 +98,7 @@ final class Spanish implements LangInterface
 			'IMPORT_DROPBOX' => 'Importar desde Dropbox',
 			'IMPORT_SERVER' => 'Importar desde Servidor',
 			'NEW_ALBUM' => 'Nuevo Álbum',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Ingrese un título para el nuevo álbum:',
 			'UNTITLED' => 'Sin Título',
@@ -108,6 +109,7 @@ final class Spanish implements LangInterface
 			'NUM_PHOTOS' => 'Fotos',
 
 			'CREATE_ALBUM' => 'Crear Álbum',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Destacar Photo',
 			'STAR' => 'Destacar',
@@ -130,8 +132,11 @@ final class Spanish implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'álbumes seleccionados:',
 			'ALBUM_SET_TITLE' => 'Establecer Título',
 			'ALBUM_DESCRIPTION' => 'Descripción',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Ingrese una nueva descripción para este álbum:',
 			'ALBUM_SET_DESCRIPTION' => 'Establecer Descripción',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Álbum',
 			'ALBUM_CREATED' => 'Creado',
 			'ALBUM_IMAGES' => 'Imágenes',

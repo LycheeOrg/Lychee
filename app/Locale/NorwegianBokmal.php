@@ -98,6 +98,7 @@ final class NorwegianBokmal implements LangInterface
 			'IMPORT_DROPBOX' => 'Importer fra Dropbox',
 			'IMPORT_SERVER' => 'Importer fra Serveren',
 			'NEW_ALBUM' => 'Nytt Album',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Legg inn en tittel for det nye albumet:',
 			'UNTITLED' => 'Uten Tittel',
@@ -108,6 +109,7 @@ final class NorwegianBokmal implements LangInterface
 			'NUM_PHOTOS' => 'Bilder',
 
 			'CREATE_ALBUM' => 'Lag Album',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Stjernemerk Bilde',
 			'STAR' => 'Stjernemerk',
@@ -130,8 +132,11 @@ final class NorwegianBokmal implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'valgte album:',
 			'ALBUM_SET_TITLE' => 'Lagre Tittel',
 			'ALBUM_DESCRIPTION' => 'Beskrivelse',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Legg inn en ny beskrivelse for Albumet:',
 			'ALBUM_SET_DESCRIPTION' => 'Lagre Beskrivelsen',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Laget',
 			'ALBUM_IMAGES' => 'Bilder',

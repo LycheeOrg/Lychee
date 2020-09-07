@@ -30,6 +30,8 @@ use Illuminate\Support\Carbon;
  * @property int               $share_button_visible
  * @property string|null       $password
  * @property string            $license
+ * @property bool              $smart
+ * @property text              $showtags
  * @property Carbon|null       $created_at
  * @property Carbon|null       $updated_at
  * @property Collection[Album] $children
@@ -55,6 +57,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Album whereTitle($value)
  * @method static Builder|Album whereUpdatedAt($value)
  * @method static Builder|Album whereVisibleHidden($value)
+ * @method static Builder|Album whereSmart($value)
  * @mixin Eloquent
  *
  * @property Collection|User[] $shared_with

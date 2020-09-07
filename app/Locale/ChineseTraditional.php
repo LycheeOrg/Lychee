@@ -98,6 +98,7 @@ final class ChineseTraditional implements LangInterface
 			'IMPORT_DROPBOX' => '從Dropbox導入',
 			'IMPORT_SERVER' => '從伺服器導入',
 			'NEW_ALBUM' => '創建新相簿',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => '輸入相簿標題：',
 			'UNTITLED' => '未命名',
@@ -108,6 +109,7 @@ final class ChineseTraditional implements LangInterface
 			'NUM_PHOTOS' => '照片',
 
 			'CREATE_ALBUM' => '創建相簿',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => '加入我的最愛',
 			'STAR' => '我的最愛',
@@ -130,8 +132,11 @@ final class ChineseTraditional implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => '已選擇的所有相簿：',
 			'ALBUM_SET_TITLE' => '設定標題',
 			'ALBUM_DESCRIPTION' => '描述',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => '輸入新的相簿描述：',
 			'ALBUM_SET_DESCRIPTION' => '編輯描述',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => '相簿',
 			'ALBUM_CREATED' => '創建時間',
 			'ALBUM_IMAGES' => '圖片資訊',

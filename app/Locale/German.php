@@ -100,6 +100,7 @@ final class German implements LangInterface
 			'IMPORT_DROPBOX' => 'Aus Dropbox importieren',
 			'IMPORT_SERVER' => 'Von Server importieren',
 			'NEW_ALBUM' => 'Neues Album',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Geben Sie einen Titel für das neue Album ein:',
 			'UNTITLED' => 'Unbenannt',
@@ -110,6 +111,7 @@ final class German implements LangInterface
 			'NUM_PHOTOS' => 'Fotos',
 
 			'CREATE_ALBUM' => 'Album erstellen',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Foto als Favorit markieren',
 			'STAR' => 'Als Favorit markieren',
@@ -132,8 +134,11 @@ final class German implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'ausgewählten Alben ein:',
 			'ALBUM_SET_TITLE' => 'Titel speichern',
 			'ALBUM_DESCRIPTION' => 'Beschreibung',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Geben Sie eine neue Beschreibung für dieses Album ein:',
 			'ALBUM_SET_DESCRIPTION' => 'Beschreibung speichern',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Erstellt',
 			'ALBUM_IMAGES' => 'Bilder',

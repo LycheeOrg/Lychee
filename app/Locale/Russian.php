@@ -98,6 +98,7 @@ final class Russian implements LangInterface
 			'IMPORT_DROPBOX' => 'Импортировать из Dropbox',
 			'IMPORT_SERVER' => 'Импортировать с сервера',
 			'NEW_ALBUM' => 'Создать альбом',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Название нового альбома:',
 			'UNTITLED' => 'Безымянный',
@@ -108,6 +109,7 @@ final class Russian implements LangInterface
 			'NUM_PHOTOS' => 'фотографий',
 
 			'CREATE_ALBUM' => 'Создать альбом',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Отметить фото',
 			'STAR' => 'Отметить',
@@ -130,8 +132,11 @@ final class Russian implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'выбранных альбомов:',
 			'ALBUM_SET_TITLE' => 'Сохранить заголовок',
 			'ALBUM_DESCRIPTION' => 'Описание',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Введите описание этого альбома:',
 			'ALBUM_SET_DESCRIPTION' => 'Сохранить описание',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Альбом',
 			'ALBUM_CREATED' => 'Создано',
 			'ALBUM_IMAGES' => 'Фотографий',

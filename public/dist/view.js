@@ -12,7 +12,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject3 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
     _templateObject4 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
     _templateObject5 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
-    _templateObject6 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject6 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject7 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
     _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject9 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
@@ -576,7 +576,7 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 
-		html += lychee.html(_templateObject6, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' ? 'badge--visible' : '', data.visible === '1' ? 'badge--not--hidden' : 'badge--hidden', build.iconic('eye'), data.unsorted === '1' ? 'badge--visible' : '', build.iconic('list'), data.recent === '1' ? 'badge--visible badge--list' : '', build.iconic('clock'), data.password === '1' ? 'badge--visible' : '', build.iconic('lock-locked'));
+		html += lychee.html(_templateObject6, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' ? 'badge--visible' : '', data.visible === '1' ? 'badge--not--hidden' : 'badge--hidden', build.iconic('eye'), data.unsorted === '1' ? 'badge--visible' : '', build.iconic('list'), data.recent === '1' ? 'badge--visible badge--list' : '', build.iconic('clock'), data.password === '1' ? 'badge--visible' : '', build.iconic('lock-locked'), data.tag_album === '1' ? 'badge--tag' : '', build.iconic('tag'));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.hasOwnProperty('has_albums') && data.has_albums === '1') {
@@ -1166,19 +1166,33 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e13);
 			}
 
-			if (albumID === 's' || albumID === 'f' || albumID === 'r') {
+			if (albumID === 'starred' || albumID === 'public' || albumID === 'recent') {
 				$('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album').hide();
 				$('.button_add, .header__divider', '.header__toolbar--album').show();
 				tabindex.makeFocusable($('.button_add, .header__divider', '.header__toolbar--album'));
 				tabindex.makeUnfocusable($('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album'));
-			} else if (albumID === '0') {
+			} else if (albumID === 'unsorted') {
 				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
 				$('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album').show();
 				tabindex.makeFocusable($('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album'));
 				tabindex.makeUnfocusable($('#button_info_album, #button_visibility_album, #button_move_album'));
+			} else if (album.isTagAlbum()) {
+				$('#button_info_album').show();
+				$('#button_move_album').hide();
+				$('.button_add, .header__divider', '.header__toolbar--album').hide();
+				tabindex.makeFocusable($('#button_info_album'));
+				tabindex.makeUnfocusable($('#button_move_album'));
+				tabindex.makeUnfocusable($('.button_add, .header__divider', '.header__toolbar--album'));
+				if (album.isUploadable()) {
+					$('#button_visibility_album, #button_trash_album').show();
+					tabindex.makeFocusable($('#button_visibility_album, #button_trash_album'));
+				} else {
+					$('#button_visibility_album, #button_trash_album').hide();
+					tabindex.makeUnfocusable($('#button_visibility_album, #button_trash_album'));
+				}
 			} else {
-				$('#button_info_album, #button_visibility_album').show();
-				tabindex.makeFocusable($('#button_info_album, #button_visibility_album'));
+				$('#button_info_album').show();
+				tabindex.makeFocusable($('#button_info_album'));
 				if (album.isUploadable()) {
 					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
 					tabindex.makeFocusable($('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album'));
@@ -1456,6 +1470,10 @@ sidebar.bind = function () {
 		if (visible.photo()) photo.setDescription(photo.getID());else if (visible.album()) album.setDescription(album.getID());
 	});
 
+	sidebar.dom('#edit_showtags').off(eventName).on(eventName, function () {
+		album.setShowTags(album.getID());
+	});
+
 	sidebar.dom('#edit_tags').off(eventName).on(eventName, function () {
 		photo.editTags([photo.getID()]);
 	});
@@ -1686,7 +1704,9 @@ sidebar.createStructure.photo = function (data) {
 	return structure;
 };
 
-sidebar.createStructure.album = function (data) {
+sidebar.createStructure.album = function (album) {
+
+	var data = album.json;
 
 	if (data == null || data === '') return false;
 
@@ -1792,6 +1812,10 @@ sidebar.createStructure.album = function (data) {
 		type: sidebar.types.DEFAULT,
 		rows: [{ title: lychee.locale['ALBUM_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['ALBUM_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
 	};
+
+	if (album.isTagAlbum()) {
+		structure.basics.rows.push({ title: lychee.locale['ALBUM_SHOW_TAGS'], kind: 'showtags', value: data.show_tags, editable: editable });
+	}
 
 	var videoCount = 0;
 	$.each(data.photos, function () {
@@ -2402,6 +2426,7 @@ lychee.locale = {
 	'IMPORT_DROPBOX': 'Import from Dropbox',
 	'IMPORT_SERVER': 'Import from Server',
 	'NEW_ALBUM': 'New Album',
+	'NEW_TAG_ALBUM': 'New Tag Album',
 
 	'TITLE_NEW_ALBUM': 'Enter a title for the new album:',
 	'UNTITLED': 'Untilted',
@@ -2412,6 +2437,7 @@ lychee.locale = {
 	'NUM_PHOTOS': 'Photos',
 
 	'CREATE_ALBUM': 'Create Album',
+	'CREATE_TAG_ALBUM': 'Create Tag Album',
 
 	'STAR_PHOTO': 'Star Photo',
 	'STAR': 'Star',
@@ -2434,8 +2460,11 @@ lychee.locale = {
 	'ALBUMS_NEW_TITLE_2': 'selected albums:',
 	'ALBUM_SET_TITLE': 'Set Title',
 	'ALBUM_DESCRIPTION': 'Description',
+	'ALBUM_SHOW_TAGS': 'Tags to show',
 	'ALBUM_NEW_DESCRIPTION': 'Enter a new description for this album:',
 	'ALBUM_SET_DESCRIPTION': 'Set Description',
+	'ALBUM_NEW_SHOWTAGS': 'Enter tags of photos that will be visible in this album:',
+	'ALBUM_SET_SHOWTAGS': 'Set tags to show',
 	'ALBUM_ALBUM': 'Album',
 	'ALBUM_CREATED': 'Created',
 	'ALBUM_IMAGES': 'Images',

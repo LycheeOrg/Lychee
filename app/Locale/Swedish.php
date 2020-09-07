@@ -98,6 +98,7 @@ final class Swedish implements LangInterface
 			'IMPORT_DROPBOX' => 'Importera från Dropbox',
 			'IMPORT_SERVER' => 'Importera från server',
 			'NEW_ALBUM' => 'Nytt album',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Skriv en titel för det nya albumet:',
 			'UNTITLED' => 'Saknar titel',
@@ -108,6 +109,7 @@ final class Swedish implements LangInterface
 			'NUM_PHOTOS' => 'Fotografier',
 
 			'CREATE_ALBUM' => 'Skapa album',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Stjärnmärk fotografi',
 			'STAR' => 'Stjärnmärk',
@@ -130,8 +132,11 @@ final class Swedish implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'valda album:',
 			'ALBUM_SET_TITLE' => 'Spara titel',
 			'ALBUM_DESCRIPTION' => 'Beskrivning',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Ny beskrivning för detta album:',
 			'ALBUM_SET_DESCRIPTION' => 'Spara beskrivningen',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Skapad',
 			'ALBUM_IMAGES' => 'Fotografier',

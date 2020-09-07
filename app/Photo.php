@@ -505,4 +505,14 @@ class Photo extends Model
 	{
 		return $id == 0 ? $query : $query->where('owner_id', '=', $id);
 	}
+
+	public function withTags($tags)
+	{
+		$sql = $this;
+		foreach ($tags as $tag) {
+			$sql = $sql->where('tags', 'like', '%' . $tag . '%');
+		}
+
+		return ($sql->count() == 0) ? false : $sql->first();
+	}
 }

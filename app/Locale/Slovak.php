@@ -99,6 +99,7 @@ final class Slovak implements LangInterface
 			'IMPORT_DROPBOX' => 'Importovať z Dropbox',
 			'IMPORT_SERVER' => 'Importovať zo servera',
 			'NEW_ALBUM' => 'Nový album',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Zadajte názov pre nový album:',
 			'UNTITLED' => 'Bez názvu',
@@ -109,6 +110,7 @@ final class Slovak implements LangInterface
 			'NUM_PHOTOS' => 'obrázkov',
 
 			'CREATE_ALBUM' => 'Album vytvoriť',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Obrázok označiť ako obľúbený',
 			'STAR' => 'označiť ako obľúbené',
@@ -131,8 +133,11 @@ final class Slovak implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'vybrané albumy:',
 			'ALBUM_SET_TITLE' => 'Názov uložiť',
 			'ALBUM_DESCRIPTION' => 'Popis',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Zadajte nový popis pre tento album:',
 			'ALBUM_SET_DESCRIPTION' => 'Popis uložiť',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Vytvorené',
 			'ALBUM_IMAGES' => 'Obrázky',

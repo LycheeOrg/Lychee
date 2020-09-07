@@ -100,6 +100,7 @@ final class Italian implements LangInterface
 			'IMPORT_DROPBOX' => 'Importa da Dropbox',
 			'IMPORT_SERVER' => 'Importa da Server',
 			'NEW_ALBUM' => 'Nuovo Album',
+			'NEW_TAG_ALBUM' => 'New Tag Album',
 
 			'TITLE_NEW_ALBUM' => 'Inserire un titolo per il nuovo album:',
 			'UNTITLED' => 'Senza Titolo',
@@ -110,6 +111,7 @@ final class Italian implements LangInterface
 			'NUM_PHOTOS' => 'Foto',
 
 			'CREATE_ALBUM' => 'Crea Album',
+			'CREATE_TAG_ALBUM' => 'Create Tag Album',
 
 			'STAR_PHOTO' => 'Contrassegna la Foto come Speciale',
 			'STAR' => 'Contrassegna come Speciale',
@@ -132,8 +134,11 @@ final class Italian implements LangInterface
 			'ALBUMS_NEW_TITLE_2' => 'gli album selezionati:',
 			'ALBUM_SET_TITLE' => 'Imposta Titolo',
 			'ALBUM_DESCRIPTION' => 'Descrizione',
+			'ALBUM_SHOW_TAGS' => 'Tags to show',
 			'ALBUM_NEW_DESCRIPTION' => 'Inserire una nuova descrizione per questo album:',
 			'ALBUM_SET_DESCRIPTION' => 'Imposta Descrizione',
+			'ALBUM_NEW_SHOWTAGS' => 'Enter tags of photos that will be visible in this album:',
+			'ALBUM_SET_SHOWTAGS' => 'Set tags to show',
 			'ALBUM_ALBUM' => 'Album',
 			'ALBUM_CREATED' => 'Creato',
 			'ALBUM_IMAGES' => 'Immagini',

@@ -43,6 +43,8 @@ _ide*
 
 .php_cs.cache
 
+*.log
+package-lock.json
 clover.xml
 *.swp
 installed.log

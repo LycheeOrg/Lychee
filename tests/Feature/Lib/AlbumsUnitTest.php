@@ -13,6 +13,7 @@ class AlbumsUnitTest
 	 * @param TestCase $testCase
 	 * @param string   $parent_id
 	 * @param string   $title
+	 * @param array    $tags
 	 * @param string   $result
 	 *
 	 * @return string
@@ -23,10 +24,45 @@ class AlbumsUnitTest
 		string $title,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::add', [
+		$params = [
 			'title' => $title,
 			'parent_id' => $parent_id,
-		]);
+		];
+
+		$response = $testCase->post('/api/Album::add', $params);
+		$response->assertStatus(200);
+		if ($result == 'true') {
+			$response->assertDontSee('false');
+		} else {
+			$response->assertSee($result, false);
+		}
+
+		return $response->getContent();
+	}
+
+	/**
+	 * Add an album.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $parent_id
+	 * @param string   $title
+	 * @param array    $tags
+	 * @param string   $result
+	 *
+	 * @return string
+	 */
+	public function addByTags(
+		TestCase &$testCase,
+		string $title,
+		string $tags,
+		string $result = 'true'
+	) {
+		$params = [
+			'title' => $title,
+			'tags' => $tags,
+		];
+
+		$response = $testCase->post('/api/Album::addByTags', $params);
 		$response->assertStatus(200);
 		if ($result == 'true') {
 			$response->assertDontSee('false');
@@ -256,6 +292,27 @@ class AlbumsUnitTest
 			'downloadable' => $downloadable,
 			'share_button_visible' => $share_button_visible,
 		]);
+		$response->assertOk();
+		$response->assertSee($result);
+	}
+
+	/**
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param array    $tags
+	 * @param string   $result
+	 */
+	public function set_tags(
+		TestCase &$testCase,
+		string $id,
+		string $tags,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Album::setShowTags', [
+			'albumID' => $id,
+			'show_tags' => $tags,
+		]);
+
 		$response->assertOk();
 		$response->assertSee($result);
 	}
