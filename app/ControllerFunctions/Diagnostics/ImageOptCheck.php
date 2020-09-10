@@ -36,7 +36,7 @@ class ImageOptCheck implements DiagnosticCheckInterface
 		foreach ($tools as $tool) {
 			$path = exec('command -v ' . $binaryPath . $tool->binaryName());
 			if ($path == '') {
-				$errors[] = 'Warning: Image optimizer enabled but ' . $binaryPath . $tool->binaryName() . ' not found!';
+				$errors[] = 'Warning: lossless_optimization set to 1 but ' . $binaryPath . $tool->binaryName() . ' not found!';
 			}
 		}
 	}

@@ -16,7 +16,7 @@ class ConfigLosslessOptimization extends Migration
 		DB::table('configs')->insert([
 			[
 				'key' => 'lossless_optimization',
-				'value' => '1',
+				'value' => '0',
 				'confidentiality' => '2',
 				'cat' => 'Image Processing',
 				'type_range' => BOOL,
