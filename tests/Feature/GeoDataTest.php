@@ -57,7 +57,6 @@ class GeoDataTest extends TestCase
 				'model' => 'NIKON D5000',
 				'shutter' => '1/640 s',
 				'focal' => '44 mm',
-				'lens' => '',
 				'altitude' => '1633.0000',
 				'license' => 'none',
 				'medium' => '',
