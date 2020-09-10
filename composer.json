@@ -42,6 +42,9 @@
         "nunomaduro/collision": "^4.1",
         "phpunit/phpunit": "^8.5"
     },
+    "conflict": {
+        "doctrine/dbal": "2.10.3"
+    },
     "autoload": {
         "classmap": [
             "database/seeds",

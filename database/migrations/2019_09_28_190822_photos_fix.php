@@ -1,6 +1,7 @@
 <?php
 
 /** @noinspection PhpUndefinedClassInspection */
+
 use App\Logs;
 use App\Photo;
 use Illuminate\Database\Migrations\Migration;
@@ -15,7 +16,7 @@ class PhotosFix extends Migration
 		Photo::where('thumbUrl', '=', '')
 			->where('thumb2x', '=', '1')
 			->update([
-				'thumb2x' => 0,
+				'thumb2x' => '0',
 			]);
 		Schema::table('photos', function (Blueprint $table) {
 			$table->boolean('thumb2x')->default(false)->change();
