@@ -13,13 +13,13 @@
         "ext-exif": "*",
         "ext-gd": "*",
         "ext-json": "*",
-        "bepsvpt/secure-headers": "^5.5",
+        "bepsvpt/secure-headers": "^6.3",
         "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.2",
         "geocoder-php/cache-provider": "^4.1",
         "geocoder-php/nominatim-provider": "^5.1",
-        "graham-campbell/markdown": "^11.1",
-        "laravel/framework": "^7.0",
+        "graham-campbell/markdown": "^13.1",
+        "laravel/framework": "^8.0",
         "lychee-org/php-exif": "dev-master",
         "maennchen/zipstream-php": "^1.2.0",
         "php-ffmpeg/php-ffmpeg": "^0.14.0",
@@ -39,8 +39,8 @@
         "friendsofphp/php-cs-fixer": "^2.16",
         "itsgoingd/clockwork": "^4.1",
         "laravel/homestead": "^10.8",
-        "nunomaduro/collision": "^4.1",
-        "phpunit/phpunit": "^8.5"
+        "nunomaduro/collision": "^5.0",
+        "phpunit/phpunit": "^9"
     },
     "conflict": {
         "doctrine/dbal": "2.10.3"
