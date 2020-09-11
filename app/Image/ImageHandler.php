@@ -2,7 +2,7 @@
 
 namespace App\Image;
 
-use App\Configs;
+use App\Models\Configs;
 
 class ImageHandler implements ImageHandlerInterface
 {

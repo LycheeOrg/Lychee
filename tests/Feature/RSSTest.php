@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Configs;
+use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
@@ -55,8 +55,13 @@ class RSSTest extends TestCase
 
 		// upload a picture
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
-		$file = new UploadedFile('public/uploads/import/night.jpg', 'night.jpg',
-			'image/jpg', null, true);
+		$file = new UploadedFile(
+			'public/uploads/import/night.jpg',
+			'night.jpg',
+			'image/jpg',
+			null,
+			true
+		);
 		$photoID = $photos_tests->upload($this, $file);
 
 		// set it to public

@@ -4,8 +4,8 @@
 
 namespace App\Metadata;
 
-use App\Configs;
-use App\Logs;
+use App\Models\Configs;
+use App\Models\Logs;
 use Cache;
 use Geocoder\Provider\Cache\ProviderCache;
 use Geocoder\Provider\Nominatim\Nominatim;

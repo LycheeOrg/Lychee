@@ -87,7 +87,7 @@ class Album extends Model
 	 */
 	public function photos()
 	{
-		return $this->hasMany('App\Photo', 'album_id', 'id');
+		return $this->hasMany('App\Models\Photo', 'album_id', 'id');
 	}
 
 	/**
@@ -105,7 +105,7 @@ class Album extends Model
 	 */
 	public function owner()
 	{
-		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
+		return $this->belongsTo('App\Models\User', 'owner_id', 'id')->withDefault([
 			'id' => 0,
 			'username' => 'Admin',
 		]);
@@ -118,7 +118,7 @@ class Album extends Model
 	 */
 	public function children()
 	{
-		return $this->hasMany('App\Album', 'parent_id', 'id');
+		return $this->hasMany('App\Models\Album', 'parent_id', 'id');
 	}
 
 	/**
@@ -128,7 +128,7 @@ class Album extends Model
 	 */
 	public function parent()
 	{
-		return $this->belongsTo('App\Album', 'parent_id', 'id');
+		return $this->belongsTo('App\Models\Album', 'parent_id', 'id');
 	}
 
 	/**

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Configs;
+use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\PhotosUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;

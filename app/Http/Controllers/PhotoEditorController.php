@@ -4,9 +4,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Configs;
-use App\Logs;
-use App\Photo;
+use App\Models\Configs;
+use App\Models\Logs;
+use App\Models\Photo;
 use Illuminate\Http\Request;
 use Storage;
 

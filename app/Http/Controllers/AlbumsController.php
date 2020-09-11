@@ -4,12 +4,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
-use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\SessionFunctions;
-use App\Photo;
+use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 
 class AlbumsController extends Controller

@@ -5,13 +5,13 @@
 namespace App\Http\Controllers;
 
 use App\Assets\Helpers;
-use App\Configs;
 use App\Locale\Lang;
-use App\Logs;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
-use App\User;
+use App\Models\Configs;
+use App\Models\Logs;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;

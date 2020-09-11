@@ -6,7 +6,7 @@ namespace App\Console\Commands;
 
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
-use App\Photo;
+use App\Models\Photo;
 use Illuminate\Console\Command;
 use Storage;
 

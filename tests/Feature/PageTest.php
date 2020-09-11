@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Page;
-use App\PageContent;
+use App\Models\Page;
+use App\Models\PageContent;
 use Tests\TestCase;
 
 class PageTest extends TestCase

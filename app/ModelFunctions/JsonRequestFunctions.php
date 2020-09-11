@@ -3,7 +3,7 @@
 namespace App\ModelFunctions;
 
 use App\Exceptions\NotInCacheException;
-use App\Logs;
+use App\Models\Logs;
 use Cache;
 use Psr\SimpleCache\InvalidArgumentException;
 
@@ -36,8 +36,11 @@ class JsonRequestFunctions
 			Cache::set($this->url, $this->raw, now()->addDays($this->ttl));
 			Cache::set($this->url . '_age', now(), now()->addDays($this->ttl));
 		} catch (InvalidArgumentException $e) {
-			Logs::error(__METHOD__, __LINE__,
-				'Could not set in the cache');
+			Logs::error(
+				__METHOD__,
+				__LINE__,
+				'Could not set in the cache'
+			);
 		}
 	}
 
@@ -129,7 +132,7 @@ class JsonRequestFunctions
 	 *
 	 * @param bool $cached
 	 *
-	 * @return false|array
+	 * @return false|json
 	 */
 	public function get_json(bool $cached = false)
 	{

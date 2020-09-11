@@ -2,7 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-namespace App;
+namespace App\Models;
 
 use App\Assets\Helpers;
 use App\ModelFunctions\PhotoActions\Cast;
@@ -134,7 +134,7 @@ class Photo extends Model
 	 */
 	public function album()
 	{
-		return $this->belongsTo('App\Album', 'album_id', 'id')->withDefault(['public' => '1']);
+		return $this->belongsTo('App\Models\Album', 'album_id', 'id')->withDefault(['public' => '1']);
 	}
 
 	/**
@@ -144,7 +144,7 @@ class Photo extends Model
 	 */
 	public function owner()
 	{
-		return $this->belongsTo('App\User', 'owner_id', 'id')->withDefault([
+		return $this->belongsTo('App\Models\User', 'owner_id', 'id')->withDefault([
 			'id' => 0,
 			'username' => 'Admin',
 		]);

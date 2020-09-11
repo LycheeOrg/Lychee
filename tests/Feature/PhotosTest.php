@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Configs;
-use App\Photo;
+use App\Models\Configs;
+use App\Models\Photo;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
 use Tests\Feature\Lib\AlbumsUnitTest;

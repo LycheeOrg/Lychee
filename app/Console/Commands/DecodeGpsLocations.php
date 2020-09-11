@@ -2,10 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Metadata\Extractor;
 use App\Metadata\Geodecoder;
-use App\ModelFunctions\PhotoFunctions;
-use App\Photo;
+use App\Models\Photo;
 use Illuminate\Console\Command;
 
 class DecodeGpsLocations extends Command
@@ -25,28 +23,13 @@ class DecodeGpsLocations extends Command
 	protected $description = 'Decodes the GPS location data and adds street, city, country, etc. to the tags';
 
 	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
-	/**
-	 * @var Extractor
-	 */
-	private $metadataExtractor;
-
-	/**
 	 * Create a new command instance.
-	 *
-	 * @param PhotoFunctions $photoFunctions
 	 *
 	 * @return void
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
+	public function __construct()
 	{
 		parent::__construct();
-
-		$this->photoFunctions = $photoFunctions;
-		$this->metadataExtractor = $metadataExtractor;
 	}
 
 	/**
@@ -57,8 +40,7 @@ class DecodeGpsLocations extends Command
 	public function handle()
 	{
 		$photos = Photo::whereNotNull('latitude')->whereNotNull('longitude')->whereNull('location')
-			->get()
-		;
+			->get();
 
 		if (count($photos) == 0) {
 			$this->line('No photos or videos require processing.');

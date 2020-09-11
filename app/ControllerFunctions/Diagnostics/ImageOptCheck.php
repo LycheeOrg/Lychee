@@ -2,7 +2,7 @@
 
 namespace App\ControllerFunctions\Diagnostics;
 
-use App\Configs;
+use App\Models\Configs;
 use Spatie\ImageOptimizer\Optimizers\Cwebp;
 use Spatie\ImageOptimizer\Optimizers\Gifsicle;
 use Spatie\ImageOptimizer\Optimizers\Jpegoptim;

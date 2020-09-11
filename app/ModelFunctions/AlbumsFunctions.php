@@ -4,10 +4,10 @@
 
 namespace App\ModelFunctions;
 
-use App\Album;
-use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
+use App\Models\Album;
+use App\Models\Configs;
 use App\SmartAlbums\SmartFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;

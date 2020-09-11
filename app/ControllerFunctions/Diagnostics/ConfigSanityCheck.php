@@ -2,8 +2,8 @@
 
 namespace App\ControllerFunctions\Diagnostics;
 
-use App\Configs;
 use App\ModelFunctions\ConfigFunctions;
+use App\Models\Configs;
 
 class ConfigSanityCheck implements DiagnosticCheckInterface
 {

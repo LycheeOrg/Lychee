@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Logs;
+use App\Models\Logs;
+use App\Models\User;
 use App\Response;
-use App\User;
 use Exception;
 use Illuminate\Http\Request;
 

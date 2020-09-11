@@ -4,9 +4,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
 use App\ModelFunctions\SessionFunctions;
-use App\User;
+use App\Models\Album;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -35,8 +35,14 @@ class SharingController extends Controller
 		$UserId = $this->sessionFunctions->id();
 		if ($UserId == 0) {
 			$shared = DB::table('user_album')
-				->select('user_album.id', 'user_id', 'album_id', 'username',
-					'title', 'parent_id')
+				->select(
+					'user_album.id',
+					'user_id',
+					'album_id',
+					'username',
+					'title',
+					'parent_id'
+				)
 				->join('users', 'user_id', 'users.id')
 				->join('albums', 'album_id', 'albums.id')
 				->orderBy('title', 'ASC')
@@ -55,8 +61,13 @@ class SharingController extends Controller
 				->orderBy('username', 'ASC')->get();
 		} else {
 			$shared = DB::table('user_album')
-				->select('user_album.id', 'user_id', 'album_id', 'username',
-					'title')
+				->select(
+					'user_album.id',
+					'user_id',
+					'album_id',
+					'username',
+					'title'
+				)
 				->join('users', 'user_id', 'users.id')
 				->join('albums', 'album_id', 'albums.id')
 				->where('albums.owner_id', '=', $UserId)

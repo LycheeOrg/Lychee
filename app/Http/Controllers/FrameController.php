@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Configs;
 use App\Locale\Lang;
 use App\ModelFunctions\ConfigFunctions;
+use App\Models\Configs;
 use App\Response;
 
 class FrameController extends Controller

@@ -3,9 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\ImportController;
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\PhotoFunctions;
-use App\ModelFunctions\SessionFunctions;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Session;
@@ -27,36 +24,13 @@ class Sync extends Command
 	protected $description = 'Sync a directory to lychee';
 
 	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
-
-	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
 	 * Create a new command instance.
-	 *
-	 * @param PhotoFunctions   $photoFunctions
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param SessionFunctions $sessionFunctions
 	 *
 	 * @return void
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
+	public function __construct()
 	{
 		parent::__construct();
-
-		$this->photoFunctions = $photoFunctions;
-		$this->albumFunctions = $albumFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 	}
 
 	/**
@@ -73,7 +47,7 @@ class Sync extends Command
 		$resync_metadata = $this->option('resync_metadata');
 		$delete_imported = false; // we want to sync -> do not delete imported files
 		$force_skip_duplicates = true;
-		$import_controller = new ImportController($this->photoFunctions, $this->albumFunctions, $this->sessionFunctions);
+		$import_controller = resolve(ImportController::class);
 
 		// Enable CLI formatting of status
 		$import_controller->enableCLIStatus();

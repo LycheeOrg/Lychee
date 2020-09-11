@@ -1,7 +1,7 @@
 <?php
 
-use App\Configs;
-use App\Logs;
+use App\Models\Configs;
+use App\Models\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

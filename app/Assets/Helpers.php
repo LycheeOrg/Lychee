@@ -2,8 +2,8 @@
 
 namespace App\Assets;
 
-use App\Configs;
 use App\Exceptions\DivideByZeroException;
+use App\Models\Configs;
 use Illuminate\Support\Facades\File;
 use WhichBrowser\Parser as BrowserParser;
 

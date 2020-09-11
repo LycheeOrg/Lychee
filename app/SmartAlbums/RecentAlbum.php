@@ -2,8 +2,8 @@
 
 namespace App\SmartAlbums;
 
-use App\Configs;
-use App\Photo;
+use App\Models\Configs;
+use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 
 class RecentAlbum extends SmartAlbum

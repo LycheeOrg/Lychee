@@ -2,10 +2,10 @@
 
 namespace App\SmartAlbums;
 
-use App\Album;
-use App\Configs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
+use App\Models\Album;
+use App\Models\Configs;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
 

@@ -2,8 +2,8 @@
 
 namespace App\Metadata;
 
-use App\Configs;
 use App\ModelFunctions\JsonRequestFunctions;
+use App\Models\Configs;
 use Config;
 
 class GitRequest extends JsonRequestFunctions
@@ -14,7 +14,9 @@ class GitRequest extends JsonRequestFunctions
 	 */
 	public function __construct()
 	{
-		parent::__construct(Config::get('urls.update.git'),
-			intval(Configs::get_value('update_check_every_days', '3'), 10));
+		parent::__construct(
+			Config::get('urls.update.git'),
+			intval(Configs::get_value('update_check_every_days', '3'), 10)
+		);
 	}
 }

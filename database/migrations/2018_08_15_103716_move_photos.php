@@ -1,9 +1,9 @@
 <?php
 
 use App\Assets\Helpers;
-use App\Logs;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
-use App\Photo;
+use App\Models\Logs;
+use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

@@ -2,7 +2,7 @@
 
 namespace App\Metadata;
 
-use App\Configs;
+use App\Models\Configs;
 
 class LycheeVersion
 {

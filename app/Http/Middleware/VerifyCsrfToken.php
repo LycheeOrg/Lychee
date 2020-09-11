@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Configs;
+use App\Models\Configs;
 use Closure;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 use Illuminate\Session\TokenMismatchException;

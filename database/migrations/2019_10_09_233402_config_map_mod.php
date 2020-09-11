@@ -1,6 +1,6 @@
 <?php
 
-use App\Configs;
+use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
 class ConfigMapMod extends Migration

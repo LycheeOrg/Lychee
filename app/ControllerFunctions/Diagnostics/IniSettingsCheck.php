@@ -2,7 +2,7 @@
 
 namespace App\ControllerFunctions\Diagnostics;
 
-use App\Configs;
+use App\Models\Configs;
 
 class IniSettingsCheck implements DiagnosticCheckInterface
 {
