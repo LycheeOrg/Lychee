@@ -2,7 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-namespace App;
+namespace App\Models;
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
