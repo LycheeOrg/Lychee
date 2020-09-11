@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Http\Controllers\Install;
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
+
 /*
 |--------------------------------------------------------------------------
 | Install Routes
@@ -18,8 +23,8 @@ if (env('APP_ENV') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::get('install/', 'WelcomeController@view')->name('install-welcome');
-Route::get('install/req', 'RequirementsController@view')->name('install-req');
-Route::get('install/perm', 'PermissionsController@view')->name('install-perm');
-Route::match(['get', 'post'], 'install/env', 'EnvController@view')->name('install-env');
-Route::get('install/migrate', 'MigrationController@view')->name('install-migrate');
+Route::get('install/', [WelcomeController::class, 'view'])->name('install-welcome');
+Route::get('install/req', [RequirementsController::class, 'view'])->name('install-req');
+Route::get('install/perm', [PermissionsController::class, 'view'])->name('install-perm');
+Route::match(['get', 'post'], 'install/env', [EnvController::class, 'view'])->name('install-env');
+Route::get('install/migrate', [MigrationController::class, 'view'])->name('install-migrate');
