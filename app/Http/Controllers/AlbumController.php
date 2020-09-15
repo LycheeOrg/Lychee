@@ -252,7 +252,20 @@ class AlbumController extends Controller
 						return 'true';
 					}
 					if ($album->password == '' || Hash::check($request['password'], $album->password)) {
-						$this->sessionFunctions->add_visible_album($album->id);
+						// We add all the albums that the password unlocks so
+						// that the user is not repeatedly asked to enter the
+						// password as they browse through the hierarchy.  This
+						// should be safe as the list of such albums is not
+						// exposed to the user and is considered as the last
+						// access check criteria.
+						$albums = Album::get();
+						$albumIDs = [];
+						foreach ($albums as $album) {
+							if ($album->password !== '' && Hash::check($request['password'], $album->password)) {
+								$albumIDs[] = $album->id;
+							}
+						}
+						$this->sessionFunctions->add_visible_albums($albumIDs);
 
 						return 'true';
 					}
