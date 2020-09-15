@@ -251,7 +251,7 @@ class AlbumController extends Controller
 					if ($this->sessionFunctions->has_visible_album($album->id)) {
 						return 'true';
 					}
-					if ($album->password == '' || Hash::check($request['password'], $album->password)) {
+					if (Hash::check($request['password'], $album->password)) {
 						// We add all the albums that the password unlocks so
 						// that the user is not repeatedly asked to enter the
 						// password as they browse through the hierarchy.  This
