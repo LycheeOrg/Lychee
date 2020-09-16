@@ -258,10 +258,10 @@ class AlbumController extends Controller
 						// should be safe as the list of such albums is not
 						// exposed to the user and is considered as the last
 						// access check criteria.
-						$albums = Album::get();
+						$albums = Album::whereNotNull('password')->get();
 						$albumIDs = [];
 						foreach ($albums as $album) {
-							if ($album->password !== '' && Hash::check($request['password'], $album->password)) {
+							if (Hash::check($request['password'], $album->password)) {
 								$albumIDs[] = $album->id;
 							}
 						}
