@@ -211,9 +211,9 @@ class SessionFunctions
 	/**
 	 * Add new album to the visible_albums session variable.
 	 *
-	 * @param $albumID
+	 * @param $albumIDs
 	 */
-	public function add_visible_album($albumID)
+	public function add_visible_albums($albumIDs)
 	{
 		if (Session::has('visible_albums')) {
 			$visible_albums = Session::get('visible_albums');
@@ -222,8 +222,10 @@ class SessionFunctions
 		}
 
 		$visible_albums = explode('|', $visible_albums);
-		if (!in_array($albumID, $visible_albums)) {
-			$visible_albums[] = $albumID;
+		foreach ($albumIDs as $albumID) {
+			if (!in_array($albumID, $visible_albums)) {
+				$visible_albums[] = $albumID;
+			}
 		}
 
 		$visible_albums = implode('|', $visible_albums);
