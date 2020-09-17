@@ -7,6 +7,10 @@
         "require_base": false,
         "require_changes": true,
         "require_head": true
+
+    },
+    "github_checks": {
+        "annotations": false
     },
     "coverage": {
         "precision": 2,
