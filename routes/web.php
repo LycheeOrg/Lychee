@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,9 +25,9 @@ if (env('APP_ENV') === 'dev') {
 
 Route::feeds();
 
-Route::get('/', 'IndexController@show')->name('home')->middleware('installed');
-Route::get('/phpinfo', 'IndexController@phpinfo')->middleware('admin');
-Route::get('/gallery', 'IndexController@gallery')->name('gallery')->middleware('installed');
+Route::get('/', [IndexController::class, 'show'])->name('home')->middleware('installed');
+Route::get('/phpinfo', [IndexController::class, 'phpinfo'])->middleware('admin');
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware('installed');
 
 /*
  * TODO see to add better redirection functionality later.
@@ -31,88 +36,88 @@ Route::get('/gallery', 'IndexController@gallery')->name('gallery')->middleware('
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumid}/{photoid}', 'RedirectController@photo');
-Route::get('/r/{albumid}', 'RedirectController@album');
+Route::get('/r/{albumid}/{photoid}', [RedirectController::class, 'photo']);
+Route::get('/r/{albumid}', [RedirectController::class, 'album']);
 
-Route::get('/view', 'ViewController@view');
-Route::get('/demo', 'DemoController@js');
-Route::get('/frame', 'FrameController@init')->name('frame');
+Route::get('/view', [ViewController::class, 'view']);
+Route::get('/demo', [DemoController::class, 'js']);
+Route::get('/frame', [FrameController::class, 'init'])->name('frame');
 
-Route::post('/php/index.php', 'SessionController@init'); // entry point if options are not initialized
+Route::post('/php/index.php', [SessionController::class, 'init']); // entry point if options are not initialized
 
-Route::post('/api/Session::init', 'SessionController@init');
-Route::post('/api/Session::login', 'SessionController@login');
-Route::post('/api/Session::logout', 'SessionController@logout');
+Route::post('/api/Session::init', [SessionController::class, 'init']);
+Route::post('/api/Session::login', [SessionController::class, 'login']);
+Route::post('/api/Session::logout', [SessionController::class, 'logout']);
 
-Route::post('/api/Albums::get', 'AlbumsController@get');
-Route::post('/api/Albums::getPositionData', 'AlbumsController@getPositionData');
+Route::post('/api/Albums::get', [AlbumsController::class, 'get']);
+Route::post('/api/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
 
-Route::post('/api/Album::get', 'AlbumController@get')->middleware('read');
-Route::post('/api/Album::getPositionData', 'AlbumController@getPositionData')->middleware('read');
-Route::post('/api/Album::getPublic', 'AlbumController@getPublic');
-Route::post('/api/Album::add', 'AlbumController@add')->middleware('upload');
-Route::post('/api/Album::addByTags', 'AlbumController@addByTags')->middleware('upload');
-Route::post('/api/Album::setTitle', 'AlbumController@setTitle')->middleware('upload');
-Route::post('/api/Album::setDescription', 'AlbumController@setDescription')->middleware('upload');
-Route::post('/api/Album::setShowTags', 'AlbumController@setShowTags')->middleware('upload');
-Route::post('/api/Album::setPublic', 'AlbumController@setPublic')->middleware('upload');
-Route::post('/api/Album::delete', 'AlbumController@delete')->middleware('upload');
-Route::post('/api/Album::merge', 'AlbumController@merge')->middleware('upload');
-Route::post('/api/Album::move', 'AlbumController@move')->middleware('upload');
-Route::post('/api/Album::setLicense', 'AlbumController@setLicense')->middleware('upload');
-Route::get('/api/Album::getArchive', 'AlbumController@getArchive')->middleware('read');
+Route::post('/api/Album::get', [AlbumController::class, 'get'])->middleware('read');
+Route::post('/api/Album::getPositionData', [AlbumController::class, 'getPositionData'])->middleware('read');
+Route::post('/api/Album::getPublic', [AlbumController::class, 'getPublic']);
+Route::post('/api/Album::add', [AlbumController::class, 'add'])->middleware('upload');
+Route::post('/api/Album::addByTags', [AlbumController::class, 'addByTags'])->middleware('upload');
+Route::post('/api/Album::setTitle', [AlbumController::class, 'setTitle'])->middleware('upload');
+Route::post('/api/Album::setDescription', [AlbumController::class, 'setDescription'])->middleware('upload');
+Route::post('/api/Album::setShowTags', [AlbumController::class, 'setShowTags'])->middleware('upload');
+Route::post('/api/Album::setPublic', [AlbumController::class, 'setPublic'])->middleware('upload');
+Route::post('/api/Album::delete', [AlbumController::class, 'delete'])->middleware('upload');
+Route::post('/api/Album::merge', [AlbumController::class, 'merge'])->middleware('upload');
+Route::post('/api/Album::move', [AlbumController::class, 'move'])->middleware('upload');
+Route::post('/api/Album::setLicense', [AlbumController::class, 'setLicense'])->middleware('upload');
+Route::get('/api/Album::getArchive', [AlbumController::class, 'getArchive'])->middleware('read');
 
-Route::post('/api/Frame::getSettings', 'FrameController@getSettings');
+Route::post('/api/Frame::getSettings', [FrameController::class, 'getSettings']);
 
-Route::post('/api/Photo::get', 'PhotoController@get')->middleware('read');
-Route::post('/api/Photo::getRandom', 'PhotoController@getRandom');
-Route::post('/api/Photo::setTitle', 'PhotoController@setTitle')->middleware('upload');
-Route::post('/api/Photo::setDescription', 'PhotoController@setDescription')->middleware('upload');
-Route::post('/api/Photo::setStar', 'PhotoController@setStar')->middleware('upload');
-Route::post('/api/Photo::setPublic', 'PhotoController@setPublic')->middleware('upload');
-Route::post('/api/Photo::setAlbum', 'PhotoController@setAlbum')->middleware('upload');
-Route::post('/api/Photo::setTags', 'PhotoController@setTags')->middleware('upload');
-Route::post('/api/Photo::add', 'PhotoController@add')->middleware('upload');
-Route::post('/api/Photo::delete', 'PhotoController@delete')->middleware('upload');
-Route::post('/api/Photo::duplicate', 'PhotoController@duplicate')->middleware('upload');
-Route::post('/api/Photo::setLicense', 'PhotoController@setLicense')->middleware('upload');
-Route::get('/api/Photo::getArchive', 'PhotoController@getArchive')->middleware('read');
-Route::get('/api/Photo::clearSymLink', 'PhotoController@clearSymLink')->middleware('admin');
+Route::post('/api/Photo::get', [PhotoController::class, 'get'])->middleware('read');
+Route::post('/api/Photo::getRandom', [PhotoController::class, 'getRandom']);
+Route::post('/api/Photo::setTitle', [PhotoController::class, 'setTitle'])->middleware('upload');
+Route::post('/api/Photo::setDescription', [PhotoController::class, 'setDescription'])->middleware('upload');
+Route::post('/api/Photo::setStar', [PhotoController::class, 'setStar'])->middleware('upload');
+Route::post('/api/Photo::setPublic', [PhotoController::class, 'setPublic'])->middleware('upload');
+Route::post('/api/Photo::setAlbum', [PhotoController::class, 'setAlbum'])->middleware('upload');
+Route::post('/api/Photo::setTags', [PhotoController::class, 'setTags'])->middleware('upload');
+Route::post('/api/Photo::add', [PhotoController::class, 'add'])->middleware('upload');
+Route::post('/api/Photo::delete', [PhotoController::class, 'delete'])->middleware('upload');
+Route::post('/api/Photo::duplicate', [PhotoController::class, 'duplicate'])->middleware('upload');
+Route::post('/api/Photo::setLicense', [PhotoController::class, 'setLicense'])->middleware('upload');
+Route::get('/api/Photo::getArchive', [PhotoController::class, 'getArchive'])->middleware('read');
+Route::get('/api/Photo::clearSymLink', [PhotoController::class, 'clearSymLink'])->middleware('admin');
 
-Route::post('/api/PhotoEditor::rotate', 'PhotoEditorController@rotate')->middleware('upload');
+Route::post('/api/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate'])->middleware('upload');
 
-Route::post('/api/Sharing::List', 'SharingController@listSharing')->middleware('upload');
-Route::post('/api/Sharing::ListUser', 'SharingController@getUserList')->middleware('upload');
-Route::post('/api/Sharing::Add', 'SharingController@add')->middleware('upload');
-Route::post('/api/Sharing::Delete', 'SharingController@delete')->middleware('upload');
+Route::post('/api/Sharing::List', [SharingController::class, 'listSharing'])->middleware('upload');
+Route::post('/api/Sharing::ListUser', [SharingController::class, 'getUserList'])->middleware('upload');
+Route::post('/api/Sharing::Add', [SharingController::class, 'add'])->middleware('upload');
+Route::post('/api/Sharing::Delete', [SharingController::class, 'delete'])->middleware('upload');
 
-Route::post('/api/Settings::setLogin', 'SettingsController@setLogin');
+Route::post('/api/Settings::setLogin', [SettingsController::class, 'setLogin']);
 
-Route::post('/api/Import::url', 'ImportController@url')->middleware('upload');
-Route::post('/api/Import::server', 'ImportController@server')->middleware('admin');
+Route::post('/api/Import::url', [ImportController::class, 'url'])->middleware('upload');
+Route::post('/api/Import::server', [ImportController::class, 'server'])->middleware('admin');
 
-Route::post('/api/User::List', 'UserController@list')->middleware('upload');
-Route::post('/api/User::Save', 'UserController@save')->middleware('admin');
-Route::post('/api/User::Delete', 'UserController@delete')->middleware('admin');
-Route::post('/api/User::Create', 'UserController@create')->middleware('admin');
+Route::post('/api/User::List', [UserController::class, 'list'])->middleware('upload');
+Route::post('/api/User::Save', [UserController::class, 'save'])->middleware('admin');
+Route::post('/api/User::Delete', [UserController::class, 'delete'])->middleware('admin');
+Route::post('/api/User::Create', [UserController::class, 'create'])->middleware('admin');
 
-Route::post('/api/Logs', 'LogController@display')->middleware('admin');
-Route::post('/api/Logs::clearNoise', 'LogController@clearNoise')->middleware('admin');
-Route::post('/api/Diagnostics', 'DiagnosticsController@get');
-Route::post('/api/Diagnostics::getSize', 'DiagnosticsController@get_size');
+Route::post('/api/Logs', [LogController::class, 'display'])->middleware('admin');
+Route::post('/api/Logs::clearNoise', [LogController::class, 'clearNoise'])->middleware('admin');
+Route::post('/api/Diagnostics', [DiagnosticsController::class, 'get']);
+Route::post('/api/Diagnostics::getSize', [DiagnosticsController::class, 'get_size']);
 
-Route::get('/Logs', 'LogController@display')->middleware('admin');
-Route::get('/api/Logs::clear', 'LogController@clear')->middleware('admin');
-Route::get('/Diagnostics', 'DiagnosticsController@show');
+Route::get('/Logs', [LogController::class, 'display'])->middleware('admin');
+Route::get('/api/Logs::clear', [LogController::class, 'clear'])->middleware('admin');
+Route::get('/Diagnostics', [DiagnosticsController::class, 'show']);
 
-Route::get('/Update', 'UpdateController@apply')->middleware('admin');
-Route::post('/api/Update::Apply', 'UpdateController@apply')->middleware('admin');
-Route::post('/api/Update::Check', 'UpdateController@check')->middleware('admin');
+Route::get('/Update', [UpdateController::class, 'apply'])->middleware('admin');
+Route::post('/api/Update::Apply', [UpdateController::class, 'apply'])->middleware('admin');
+Route::post('/api/Update::Check', [UpdateController::class, 'check'])->middleware('admin');
 
 // unused
-Route::post('/api/Logs::clear', 'LogController@clear')->middleware('admin');
+Route::post('/api/Logs::clear', [LogController::class, 'clear'])->middleware('admin');
 
-Route::post('/api/search', 'SearchController@search');
+Route::post('/api/search', [SearchController::class, 'search']);
 
 // This route NEEDS to be the last one as it will catch anything else.
-Route::get('/{page}', 'PageController@page');
+Route::get('/{page}', [PageController::class, 'page']);

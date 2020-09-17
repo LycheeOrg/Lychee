@@ -1,6 +1,6 @@
 <?php
 
-use App\Logs;
+use App\Models\Logs;
 use Illuminate\Database\Migrations\Migration;
 
 class GenerateInstalledLog extends Migration

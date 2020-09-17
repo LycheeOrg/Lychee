@@ -3,41 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
-use App\ControllerFunctions\Update\Check as CheckUpdate;
 use App\Http\Controllers\DiagnosticsController;
-use App\Metadata\DiskUsage;
-use App\Metadata\LycheeVersion;
-use App\ModelFunctions\ConfigFunctions;
-use App\ModelFunctions\SessionFunctions;
 use Illuminate\Console\Command;
 
 class Diagnostics extends Command
 {
-	/**
-	 * @var ConfigFunctions
-	 */
-	private $configFunctions;
-
-	/**
-	 * @var LycheeVersion
-	 */
-	private $lycheeVersion;
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @var DiskUsage
-	 */
-	private $diskUsage;
-
-	/**
-	 * @var CheckUpdate
-	 */
-	private $checkUpdate;
-
 	/**
 	 * Add color to the command line output.
 	 *
@@ -65,20 +35,10 @@ class Diagnostics extends Command
 	 * @return void
 	 */
 	public function __construct(
-		ConfigFunctions $configFunctions,
-		LycheeVersion $lycheeVersion,
-		SessionFunctions $sessionFunctions,
-		DiskUsage $diskUsage,
-		CheckUpdate $checkUpdate,
 		Colorize $colorize
 	) {
 		parent::__construct();
 
-		$this->configFunctions = $configFunctions;
-		$this->lycheeVersion = $lycheeVersion;
-		$this->sessionFunctions = $sessionFunctions;
-		$this->diskUsage = $diskUsage;
-		$this->checkUpdate = $checkUpdate;
 		$this->col = $colorize;
 	}
 
@@ -104,7 +64,7 @@ class Diagnostics extends Command
 	 */
 	public function handle()
 	{
-		$ctrl = new DiagnosticsController($this->configFunctions, $this->lycheeVersion, $this->sessionFunctions, $this->diskUsage, $this->checkUpdate);
+		$ctrl = resolve(DiagnosticsController::class);
 
 		$this->line('');
 		$this->line('');

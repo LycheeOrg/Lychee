@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Configs;
+use App\Models\Configs;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 

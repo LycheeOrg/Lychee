@@ -4,17 +4,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
 use App\Assets\Helpers;
-use App\Configs;
 use App\ControllerFunctions\ReadAccessFunctions;
-use App\Logs;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\SessionFunctions;
-use App\Photo;
+use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Logs;
+use App\Models\Photo;
 use App\Response;
 use App\SmartAlbums\SmartFactory;
 use Illuminate\Http\Request;

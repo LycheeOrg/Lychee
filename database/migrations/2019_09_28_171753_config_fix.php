@@ -1,8 +1,9 @@
 <?php
 
 /** @noinspection PhpUndefinedClassInspection */
-use App\Configs;
-use App\Logs;
+
+use App\Models\Configs;
+use App\Models\Logs;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -103,12 +104,14 @@ class ConfigFix extends Migration
 	{
 		foreach ($default_values as $value) {
 			$c = Configs::where('key', $value['key'])->count();
-			$config = Configs::updateOrCreate(['key' => $value['key']],
+			$config = Configs::updateOrCreate(
+				['key' => $value['key']],
 				[
 					'cat' => $value['cat'],
 					'type_range' => $value['type_range'],
 					'confidentiality' => $value['confidentiality'],
-				]);
+				]
+			);
 			if ($c == 0) {
 				$config->value = $value['value'];
 				$config->save();

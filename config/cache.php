@@ -12,9 +12,8 @@ return [
 	| using this caching library. This connection is used when another is
 	| not explicitly specified when executing a given caching function.
 	|
-
 	| Supported: "apc", "array", "database", "file",
-	|			"memcached", "redis", "dynamodb"
+	|            "memcached", "redis", "dynamodb"
 	|
 	*/
 
@@ -32,7 +31,6 @@ return [
 	*/
 
 	'stores' => [
-
 		'apc' => [
 			'driver' => 'apc',
 		],
@@ -85,7 +83,6 @@ return [
 			'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
 			'endpoint' => env('DYNAMODB_ENDPOINT'),
 		],
-
 	],
 
 	/*

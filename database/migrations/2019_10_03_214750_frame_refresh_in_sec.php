@@ -1,6 +1,6 @@
 <?php
 
-use App\Configs;
+use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
 class FrameRefreshInSec extends Migration
@@ -16,7 +16,8 @@ class FrameRefreshInSec extends Migration
 			->update(
 				[
 					'value' => Configs::get_value('Mod_Frame_refresh') / 1000,
-				]);
+				]
+			);
 	}
 
 	/**
@@ -30,6 +31,7 @@ class FrameRefreshInSec extends Migration
 			->update(
 				[
 					'value' => Configs::get_value('Mod_Frame_refresh') * 1000,
-				]);
+				]
+			);
 	}
 }

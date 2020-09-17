@@ -1,7 +1,8 @@
 <?php
 
 /** @noinspection PhpUndefinedClassInspection */
-use App\Configs;
+
+use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
 class ConfigExiftoolTernary extends Migration
@@ -31,10 +32,11 @@ class ConfigExiftoolTernary extends Migration
 
 		Configs::where('key', '=', 'has_exiftool')
 			->update(
-			[
-				'value' => $has_exiftool,
-				'type_range' => TERNARY,
-			]);
+				[
+					'value' => $has_exiftool,
+					'type_range' => TERNARY,
+				]
+			);
 	}
 
 	/**
@@ -48,9 +50,10 @@ class ConfigExiftoolTernary extends Migration
 
 		Configs::where('key', '=', 'has_exiftool')
 			->update(
-			[
-				'value' => null,
-				'type_range' => BOOL,
-			]);
+				[
+					'value' => null,
+					'type_range' => BOOL,
+				]
+			);
 	}
 }

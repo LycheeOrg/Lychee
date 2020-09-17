@@ -2,9 +2,9 @@
 
 namespace App\ModelFunctions;
 
-use App\Configs;
-use App\Photo;
-use App\SymLink;
+use App\Models\Configs;
+use App\Models\Photo;
+use App\Models\SymLink;
 use Illuminate\Support\Facades\Storage;
 
 class SymLinkFunctions

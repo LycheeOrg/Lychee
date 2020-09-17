@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use App\Assets\Helpers;
 use App\Locale\Lang;
@@ -92,16 +92,18 @@ class Configs extends Model
 			case TERNARY:
 				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
 					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected ' . implode(' or ',
-							$val_range[$this->type_range]) . ', got ' . ($value ? $value : 'NULL');
+						. ' in database, expected ' . implode(
+							' or ',
+							$val_range[$this->type_range]
+						) . ', got ' . ($value ? $value : 'NULL');
 				}
 				break;
-				case LICENSE:
-					if (!in_array($value, Helpers::get_all_licenses())) {
-						$message = 'Error: Wrong property for ' . $this->key
-							. ' in database, expected a valide license, got ' . ($value ? $value : 'NULL');
-					}
-					break;
+			case LICENSE:
+				if (!in_array($value, Helpers::get_all_licenses())) {
+					$message = 'Error: Wrong property for ' . $this->key
+						. ' in database, expected a valide license, got ' . ($value ? $value : 'NULL');
+				}
+				break;
 			default:
 				$values = explode('|', $this->type_range);
 				if (!in_array($value, $values)) {

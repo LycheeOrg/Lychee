@@ -3,18 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
-use App\ModelFunctions\PhotoFunctions;
-use App\Photo;
+use App\Models\Photo;
 use Illuminate\Console\Command;
 use Storage;
 
 class Ghostbuster extends Command
 {
-	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
 	/**
 	 * Add color to the command line output.
 	 *
@@ -39,15 +33,14 @@ class Ghostbuster extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param PhotoFunctions $photoFunctions
+	 * @param Colorize $colorize
 	 *
 	 * @return void
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, Colorize $colorize)
+	public function __construct(Colorize $colorize)
 	{
 		parent::__construct();
 
-		$this->photoFunctions = $photoFunctions;
 		$this->col = $colorize;
 	}
 

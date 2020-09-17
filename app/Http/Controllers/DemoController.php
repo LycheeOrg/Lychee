@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
-use App\Configs;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
-use App\Photo;
+use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Photo;
 use Response;
 
 class DemoController extends Controller

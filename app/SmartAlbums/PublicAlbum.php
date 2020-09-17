@@ -2,7 +2,7 @@
 
 namespace App\SmartAlbums;
 
-use App\Photo;
+use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 
 class PublicAlbum extends SmartAlbum

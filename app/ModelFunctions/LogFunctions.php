@@ -2,7 +2,7 @@
 
 namespace App\ModelFunctions;
 
-use App\Logs;
+use App\Models\Logs;
 use Psr\Log\AbstractLogger;
 
 // Class for FFMpeg to convert files to mov format

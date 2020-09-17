@@ -4,7 +4,7 @@
 
 namespace Tests\Feature;
 
-use App\Logs;
+use App\Models\Logs;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 

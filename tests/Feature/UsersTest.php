@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
-use App\Configs;
 use App\ModelFunctions\SessionFunctions;
+use App\Models\Configs;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\Feature\Lib\UsersUnitTest;

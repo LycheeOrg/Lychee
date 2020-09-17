@@ -2,10 +2,10 @@
 
 namespace App\Console\Commands;
 
-use App\Logs;
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
-use App\Photo;
+use App\Models\Logs;
+use App\Models\Photo;
 use Illuminate\Console\Command;
 use Storage;
 
@@ -70,8 +70,7 @@ class VideoData extends Command
 		$photos = Photo::where('type', 'like', 'video/%')
 			->where('width', '=', 0)
 			->take($this->argument('count'))
-			->get()
-		;
+			->get();
 
 		if (count($photos) == 0) {
 			$this->line('No videos require processing');

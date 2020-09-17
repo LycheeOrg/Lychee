@@ -4,14 +4,14 @@
 
 namespace App\ModelFunctions;
 
-use App\Album;
 use App\Assets\Helpers;
-use App\Configs;
 use App\Image\ImageHandlerInterface;
-use App\Logs;
 use App\Metadata\Extractor;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
-use App\Photo;
+use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Logs;
+use App\Models\Photo;
 use App\Response;
 use Exception;
 use FFMpeg;

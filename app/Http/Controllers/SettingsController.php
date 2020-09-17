@@ -5,12 +5,12 @@
 namespace App\Http\Controllers;
 
 use App\Assets\Helpers;
-use App\Configs;
 use App\Locale\Lang;
-use App\Logs;
 use App\ModelFunctions\SessionFunctions;
+use App\Models\Configs;
+use App\Models\Logs;
+use App\Models\User;
 use App\Response;
-use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
@@ -64,7 +64,8 @@ class SettingsController extends Controller
 		}
 
 		if ($this->sessionFunctions->is_admin()) {
-			if ($configs['password'] === ''
+			if (
+				$configs['password'] === ''
 				|| Hash::check($oldPassword, $configs['password'])
 			) {
 				Configs::set('username', bcrypt($request['username']));
@@ -81,34 +82,47 @@ class SettingsController extends Controller
 			$user = User::find($id);
 
 			if ($user == null) {
-				Logs::error(__METHOD__, __LINE__,
-					'User (' . $id . ') does not exist!');
+				Logs::error(
+					__METHOD__,
+					__LINE__,
+					'User (' . $id . ') does not exist!'
+				);
 
 				return Response::error('Could not find User.');
 			}
 
 			if ($user->lock) {
-				Logs::notice(__METHOD__, __LINE__,
+				Logs::notice(
+					__METHOD__,
+					__LINE__,
 					'Locked user (' . $user->username
-					. ') tried to change his identity from ' . $request->ip());
+						. ') tried to change his identity from ' . $request->ip()
+				);
 
 				return Response::error('Locked account!');
 			}
 
 			if (User::where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
-				Logs::notice(__METHOD__, __LINE__,
+				Logs::notice(
+					__METHOD__,
+					__LINE__,
 					'User (' . $user->username
-					. ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip());
+						. ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip()
+				);
 
 				return Response::error('Username already exists.');
 			}
 
-			if ($user->username == $oldUsername
+			if (
+				$user->username == $oldUsername
 				&& Hash::check($oldPassword, $user->password)
 			) {
-				Logs::notice(__METHOD__, __LINE__,
+				Logs::notice(
+					__METHOD__,
+					__LINE__,
 					'User (' . $user->username . ') changed his identity for ('
-					. $request['username'] . ') from ' . $request->ip());
+						. $request['username'] . ') from ' . $request->ip()
+				);
 				$user->username = $request['username'];
 				$user->password = bcrypt($request['password']);
 
@@ -168,8 +182,11 @@ class SettingsController extends Controller
 			}
 		}
 
-		Logs::error(__METHOD__, __LINE__,
-			'Could not update settings. Unknown lang.');
+		Logs::error(
+			__METHOD__,
+			__LINE__,
+			'Could not update settings. Unknown lang.'
+		);
 
 		return 'false';
 	}
@@ -266,8 +283,10 @@ class SettingsController extends Controller
 			'image_overlay_type' => 'required|string',
 		]);
 
-		return (Configs::set('image_overlay_type',
-			$request['image_overlay_type'])) ? 'true' : 'false';
+		return (Configs::set(
+			'image_overlay_type',
+			$request['image_overlay_type']
+		)) ? 'true' : 'false';
 	}
 
 	/**
@@ -294,8 +313,11 @@ class SettingsController extends Controller
 			$i++;
 		}
 
-		Logs::error(__METHOD__, __LINE__,
-			'Could not find the submitted license');
+		Logs::error(
+			__METHOD__,
+			__LINE__,
+			'Could not find the submitted license'
+		);
 
 		return 'false';
 	}
@@ -353,8 +375,10 @@ class SettingsController extends Controller
 			'map_provider' => 'required|string',
 		]);
 
-		return (Configs::set('map_provider',
-			$request['map_provider'])) ? 'true' : 'false';
+		return (Configs::set(
+			'map_provider',
+			$request['map_provider']
+		)) ? 'true' : 'false';
 	}
 
 	/**
@@ -390,8 +414,10 @@ class SettingsController extends Controller
 			'location_decoding' => 'required|string',
 		]);
 
-		return (Configs::set('location_decoding',
-				$request['location_decoding'])) ? 'true' : 'false';
+		return (Configs::set(
+			'location_decoding',
+			$request['location_decoding']
+		)) ? 'true' : 'false';
 	}
 
 	/**
@@ -407,8 +433,10 @@ class SettingsController extends Controller
 			'location_show' => 'required|string',
 		]);
 
-		return (Configs::set('location_show',
-				$request['location_show'])) ? 'true' : 'false';
+		return (Configs::set(
+			'location_show',
+			$request['location_show']
+		)) ? 'true' : 'false';
 	}
 
 	/**
@@ -424,8 +452,10 @@ class SettingsController extends Controller
 			'location_show_public' => 'required|string',
 		]);
 
-		return (Configs::set('location_show_public',
-				$request['location_show_public'])) ? 'true' : 'false';
+		return (Configs::set(
+			'location_show_public',
+			$request['location_show_public']
+		)) ? 'true' : 'false';
 	}
 
 	/**
@@ -474,11 +504,9 @@ class SettingsController extends Controller
 	public function saveAll(Request $request)
 	{
 		$no_error = true;
-		foreach (
-			$request->except([
-				'_token', 'function', '/api/Settings::saveAll',
-			]) as $key => $value
-		) {
+		foreach ($request->except([
+			'_token', 'function', '/api/Settings::saveAll',
+		]) as $key => $value) {
 			$value = ($value == null) ? '' : $value;
 			$no_error &= Configs::set($key, $value);
 		}

@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Configs;
 use App\ModelFunctions\PhotoFunctions;
-use App\Photo;
+use App\Models\Configs;
+use App\Models\Photo;
 use Illuminate\Console\Command;
 
 class GenerateThumbs extends Command
@@ -109,8 +109,8 @@ class GenerateThumbs extends Command
 				$photo,
 				$type,
 				$maxWidth,
-				$maxHeight)
-			) {
+				$maxHeight
+			)) {
 				$photo->save();
 				$this->line('   ' . $type . ' (' . $photo->{$type} . ') for ' . $photo->title . ' created.');
 			} else {

@@ -4,11 +4,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
 use App\Assets\Helpers;
-use App\Configs;
 use App\Exceptions\AlbumDoesNotExistsException;
-use App\Logs;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
@@ -16,7 +13,10 @@ use App\ModelFunctions\PhotoActions\Cast;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
-use App\Photo;
+use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Logs;
+use App\Models\Photo;
 use App\Response;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Http\Request;

@@ -6,13 +6,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Album;
 use App\Assets\Helpers;
-use App\Configs;
-use App\Logs;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
+use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Logs;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;

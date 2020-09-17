@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use App\Configs;
 use App\Console\Commands\Utilities\Colorize;
+use App\Models\Configs;
 use Illuminate\Console\Command;
 
 class ResetAdmin extends Command

@@ -4,11 +4,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Configs;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast;
 use App\ModelFunctions\SymLinkFunctions;
-use App\Photo;
+use App\Models\Configs;
+use App\Models\Photo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;

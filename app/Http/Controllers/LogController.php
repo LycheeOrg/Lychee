@@ -4,7 +4,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Logs;
+use App\Models\Logs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -56,8 +56,7 @@ class LogController extends Controller
 	 */
 	public static function clearNoise()
 	{
-		Logs::where('function', '!=', 'App\Http\Controllers\SessionController::login')->
-			where('type', '=', 'notice')->delete();
+		Logs::where('function', '!=', 'App\Http\Controllers\SessionController::login')->where('type', '=', 'notice')->delete();
 
 		return 'Log Noise cleared';
 	}

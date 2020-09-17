@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -75,7 +75,7 @@ class User extends Authenticatable
 	 */
 	public function albums()
 	{
-		return $this->hasMany('App\Album', 'owner_id', 'id');
+		return $this->hasMany('App\Models\Album', 'owner_id', 'id');
 	}
 
 	/**
@@ -85,6 +85,6 @@ class User extends Authenticatable
 	 */
 	public function shared()
 	{
-		return $this->belongsToMany('App\Album', 'user_album', 'user_id', 'album_id');
+		return $this->belongsToMany('App\Models\Album', 'user_album', 'user_id', 'album_id');
 	}
 }

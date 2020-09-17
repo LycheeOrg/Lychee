@@ -5,8 +5,8 @@
 namespace App\Http\Middleware;
 
 use App\ControllerFunctions\ReadAccessFunctions;
-use App\Logs;
-use App\Photo;
+use App\Models\Logs;
+use App\Models\Photo;
 use Closure;
 use Illuminate\Http\Request;
 

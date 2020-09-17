@@ -3,8 +3,8 @@
 namespace App\Metadata;
 
 use App\Assets\Helpers;
-use App\Configs;
-use App\Logs;
+use App\Models\Configs;
+use App\Models\Logs;
 use PHPExif\Reader\Reader;
 
 class Extractor

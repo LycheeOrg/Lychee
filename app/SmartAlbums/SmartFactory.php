@@ -29,6 +29,9 @@ class SmartFactory
 
 			case 'tag':
 				return resolve(TagAlbum::class);
+
+			default:
+				return null;
 		}
 	}
 }

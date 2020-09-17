@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
@@ -48,7 +48,7 @@ class Page extends Model
 	 */
 	public function content()
 	{
-		return $this->hasMany('App\PageContent', 'page_id', 'id')->orderBy('order', 'ASC');
+		return $this->hasMany('App\Models\PageContent', 'page_id', 'id')->orderBy('order', 'ASC');
 	}
 
 	/**

@@ -4,7 +4,7 @@
 
 namespace Tests\Feature;
 
-use App\Configs;
+use App\Models\Configs;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 

@@ -1,7 +1,8 @@
 <?php
 
 /** @noinspection PhpUndefinedClassInspection */
-use App\Configs;
+
+use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
 class UnhideConfigs extends Migration
