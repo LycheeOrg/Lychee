@@ -137,7 +137,7 @@ class Album extends Model
 	public function shared_with()
 	{
 		return $this->belongsToMany(
-			'App\User',
+			'App\Models\User',
 			'user_album',
 			'album_id',
 			'user_id'
