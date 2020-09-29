@@ -68,21 +68,25 @@ class Geodecoder
 	{
 		$geocoder = new StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
 		try {
-		    $result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));
+			$result_list = $geocoder->reverseQuery(ReverseQuery::fromCoordinates($latitude, $longitude));
 
-		    // If no result has been returned -> return null
-		    if ($result_list->isEmpty()) {
-			    Logs::warning(__METHOD__, __LINE__, 'Location (' . $latitude . ', ' . $longitude . ') could not be decoded.');
+			// If no result has been returned -> return null
+			if ($result_list->isEmpty()) {
+				Logs::warning(__METHOD__, __LINE__, 'Location (' . $latitude . ', ' . $longitude . ') could not be decoded.');
     
-			    return null;
-		    }
+				return null;
+			}
     
-		    return $result_list->first()->getDisplayName();
+			return $result_list->first()->getDisplayName();
+			// @codeCoverageIgnoreStart
 		} catch (Exception $exception) {
 			Logs::warning(__METHOD__, __LINE__, 'Decoding of location failed!');
 			Logs::warning(__METHOD__, __LINE__, $exception->getMessage());
+			
 			return null;
 		}
+		// @codeCoverageIgnoreEnd
+		
 		return null;
 	}
 }
