@@ -79,15 +79,13 @@ class Geodecoder
 
 			return $result_list->first()->getDisplayName();
 			// @codeCoverageIgnoreStart
-		} catch (Exception $exception) {
+		} catch (\Exception $exception) {
 			Logs::warning(__METHOD__, __LINE__, 'Decoding of location failed!');
 			Logs::warning(__METHOD__, __LINE__, $exception->getMessage());
 
 			return null;
 		}
 		// @codeCoverageIgnoreEnd
-
-		return null;
 	}
 }
 
