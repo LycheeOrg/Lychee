@@ -73,20 +73,20 @@ class Geodecoder
 			// If no result has been returned -> return null
 			if ($result_list->isEmpty()) {
 				Logs::warning(__METHOD__, __LINE__, 'Location (' . $latitude . ', ' . $longitude . ') could not be decoded.');
-    
+
 				return null;
 			}
-    
+
 			return $result_list->first()->getDisplayName();
 			// @codeCoverageIgnoreStart
 		} catch (Exception $exception) {
 			Logs::warning(__METHOD__, __LINE__, 'Decoding of location failed!');
 			Logs::warning(__METHOD__, __LINE__, $exception->getMessage());
-			
+
 			return null;
 		}
 		// @codeCoverageIgnoreEnd
-		
+
 		return null;
 	}
 }
