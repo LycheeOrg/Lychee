@@ -262,9 +262,7 @@ class PhotoFunctions
 					Logs::error(__METHOD__, __LINE__, 'Could not copy photo to uploads');
 
 					return Response::error('Could not copy photo to uploads!');
-				// @codeCoverageIgnoreEnd
-				} elseif ($delete_imported) {
-					@unlink($tmp_name);
+					// @codeCoverageIgnoreEnd
 				}
 			} else {
 				// TODO: use the storage facade here
@@ -276,9 +274,6 @@ class PhotoFunctions
 			}
 		} else {
 			// Photo already exists
-			if ($delete_imported && !is_uploaded_file($tmp_name)) {
-				@unlink($tmp_name);
-			}
 			// Check if the user wants to skip duplicates
 			if ($force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
 				$metadataChanged = false;
@@ -298,12 +293,18 @@ class PhotoFunctions
 					Logs::notice(__METHOD__, __LINE__, 'Updating metdata of existing photo.');
 					$existing->save();
 
-					return Response::warning('This photo has been skipped because it\'s already in your library, but its metadata has been updated.');
+					$res = Response::warning('This photo has been skipped because it\'s already in your library, but its metadata has been updated.');
+				} else {
+					Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
+
+					$res = Response::warning('This photo has been skipped because it\'s already in your library.');
 				}
 
-				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
+				if ($delete_imported && !is_uploaded_file($tmp_name)) {
+					@unlink($tmp_name);
+				}
 
-				return Response::warning('This photo has been skipped because it\'s already in your library.');
+				return $res;
 			}
 		}
 
@@ -454,10 +455,16 @@ class PhotoFunctions
 		}
 		// In case it's a live photo and we've uploaded the video
 		if ($skip_db_entry_creation === true) {
-			return $livePhotoPartner->id;
+			$res = $livePhotoPartner->id;
+		} else {
+			$res = $this->save($photo, $albumID);
 		}
 
-		return $this->save($photo, $albumID);
+		if ($delete_imported && !is_uploaded_file($tmp_name) && ($exists || Configs::get_value('import_via_symlink', '0') !== '1')) {
+			@unlink($tmp_name);
+		}
+
+		return $res;
 	}
 
 	/**
