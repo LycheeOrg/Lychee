@@ -43,6 +43,7 @@ class PhotoFunctions
 		IMAGETYPE_JPEG,
 		IMAGETYPE_GIF,
 		IMAGETYPE_PNG,
+		IMAGETYPE_WEBP,
 	];
 
 	/**

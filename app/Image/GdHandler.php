@@ -108,7 +108,11 @@ class GdHandler implements ImageHandlerInterface
 		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
 		// the image may need to be rotated prior saving
-		$exif = exif_read_data($source);
+		try {
+			$exif = exif_read_data($source);
+		} catch (\Exception $e) {
+			$exif = [];
+		}
 		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
 		$dimensions = $this->autoRotateInternal($image, $orientation);
 
@@ -122,6 +126,9 @@ class GdHandler implements ImageHandlerInterface
 				break;
 			case IMAGETYPE_GIF:
 				imagegif($image, $destination);
+				break;
+			case IMAGETYPE_WEBP:
+				imagewebp($image, $destination);
 				break;
 				// createImage above already checked for any invalid values
 		}
@@ -171,7 +178,11 @@ class GdHandler implements ImageHandlerInterface
 		$this->fastImageCopyResampled($image, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
 
 		// the image may need to be rotated prior saving
-		$exif = exif_read_data($source);
+		try {
+			$exif = exif_read_data($source);
+		} catch (\Exception $e) {
+			$exif = [];
+		}
 		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
 		$this->autoRotateInternal($image, $orientation);
 
@@ -284,6 +295,9 @@ class GdHandler implements ImageHandlerInterface
 				break;
 			case IMAGETYPE_GIF:
 				return imagecreatefromgif($source);
+				break;
+			case IMAGETYPE_WEBP:
+				return imagecreatefromwebp($source);
 				break;
 			default:
 				Logs::error(__METHOD__, __LINE__, 'Type of photo "' . $mime . '" is not supported');
