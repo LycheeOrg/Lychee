@@ -134,6 +134,8 @@ class VideoData extends Command
 							if (!$this->photoFunctions->createThumb($photo, $frame_tmp)) {
 								Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for video');
 							}
+							$urlBase = explode('.', $photo->url);
+							$photo->thumbUrl = $urlBase[0] . '.jpeg';
 						}
 						if ($photo->small === '' || $photo->small2x === '') {
 							$this->photoFunctions->createSmallerImages($photo, $frame_tmp);
