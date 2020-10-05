@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Metadata\Extractor;
 use App\ModelFunctions\PhotoFunctions;
-use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Storage;
@@ -67,7 +66,7 @@ class VideoData extends Command
 			)
 		);
 
-		$photos = Photo::where('type', 'like', 'video/%')
+		$photos = Photo::whereIn('type', $this->photoFunctions->getValidVideoTypes())
 			->where('width', '=', 0)
 			->take($this->argument('count'))
 			->get();
@@ -87,7 +86,7 @@ class VideoData extends Command
 				if (file_exists($thumb)) {
 					$urlBase = explode('.', $photo->url);
 					$thumbBase = explode('.', $photo->thumbUrl);
-					if ($urlBase !== $thumbBase) {
+					if ($urlBase[0] !== $thumbBase[0]) {
 						$photo->thumbUrl = $urlBase[0] . '.' . $thumbBase[1];
 						rename($thumb, Storage::path('thumb/') . $photo->thumbUrl);
 						$this->line('Renamed thumb to match the video file');
@@ -98,27 +97,37 @@ class VideoData extends Command
 			if (file_exists($url)) {
 				$info = $this->metadataExtractor->extract($url, $photo->type);
 
-				if ($info['width'] !== 0) {
-					$this->line('Extracted metadata');
+				$updated = false;
+				if ($photo->width == 0 && $info['width'] !== 0) {
 					$photo->width = $info['width'];
+					$updated = true;
 				}
-				if ($info['height'] !== 0) {
+				if ($photo->height == 0 && $info['height'] !== 0) {
 					$photo->height = $info['height'];
+					$updated = true;
 				}
-				if ($info['focal'] !== '') {
+				if ($photo->focal == '' && $info['focal'] !== '') {
 					$photo->focal = $info['focal'];
+					$updated = true;
 				}
-				if ($info['aperture'] !== '') {
+				if ($photo->aperture == '' && $info['aperture'] !== '') {
 					$photo->aperture = $info['aperture'];
+					$updated = true;
 				}
-				if ($info['takestamp'] !== null) {
+				if ($photo->takestamp == null && $info['takestamp'] !== null) {
 					$photo->takestamp = $info['takestamp'];
+					$updated = true;
 				}
-				if ($info['latitude'] !== null) {
+				if ($photo->latitude == null && $info['latitude'] !== null) {
 					$photo->latitude = $info['latitude'];
+					$updated = true;
 				}
-				if ($info['longitude'] !== null) {
+				if ($photo->longitude == null && $info['longitude'] !== null) {
 					$photo->longitude = $info['longitude'];
+					$updated = true;
+				}
+				if ($updated) {
+					$this->line('Updated metadata');
 				}
 
 				if ($photo->thumbUrl === '' || $photo->thumb2x === 0 || $photo->small === '' || $photo->small2x === '') {
@@ -126,13 +135,13 @@ class VideoData extends Command
 					try {
 						$frame_tmp = $this->photoFunctions->extractVideoFrame($photo);
 					} catch (\Exception $exception) {
-						Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+						$this->line($exception->getMessage());
 					}
 					if ($frame_tmp !== '') {
 						$this->line('Extracted video frame for thumbnails');
 						if ($photo->thumbUrl === '' || $photo->thumb2x === 0) {
 							if (!$this->photoFunctions->createThumb($photo, $frame_tmp)) {
-								Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for video');
+								$this->line('Could not create thumbnail for video');
 							}
 						}
 						if ($photo->small === '' || $photo->small2x === '') {

@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Metadata\Extractor;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
-use App\ModelFunctions\PhotoFunctions;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Storage;
@@ -26,11 +25,6 @@ class Takedate extends Command
 	protected $description = 'Make sure takedate is correct';
 
 	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
-	/**
 	 * @var Extractor
 	 */
 	private $metadataExtractor;
@@ -38,14 +32,12 @@ class Takedate extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param PhotoFunctions $photoFunctions
-	 * @param Extractor      $metadataExtractor
+	 * @param Extractor $metadataExtractor
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
+	public function __construct(Extractor $metadataExtractor)
 	{
 		parent::__construct();
 
-		$this->photoFunctions = $photoFunctions;
 		$this->metadataExtractor = $metadataExtractor;
 	}
 
@@ -77,8 +69,10 @@ class Takedate extends Command
 					$photo->takestamp = $info['takestamp'];
 					if ($photo->save()) {
 						$this->line($i . ': Takestamp updated for ' . $photo->title);
+						AlbumUpdate::update_takestamps($photo->album, [$photo->takestamp], true);
+					} else {
+						$this->line($i . ': Failed to update takestamp for ' . $photo->title);
 					}
-					AlbumUpdate::update_takestamps($photo->album, [$photo->takestamp], true);
 				} else {
 					$this->line($i . ': Could not get Takestamp data for ' . $photo->title . '.');
 				}
