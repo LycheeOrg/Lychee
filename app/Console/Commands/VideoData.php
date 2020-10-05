@@ -114,10 +114,6 @@ class VideoData extends Command
 					$photo->aperture = $info['aperture'];
 					$updated = true;
 				}
-				if ($photo->takestamp == null && $info['takestamp'] !== null) {
-					$photo->takestamp = $info['takestamp'];
-					$updated = true;
-				}
 				if ($photo->latitude == null && $info['latitude'] !== null) {
 					$photo->latitude = $info['latitude'];
 					$updated = true;
