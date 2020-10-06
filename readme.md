@@ -10,16 +10,21 @@
 <a href="https://sonarcloud.io/dashboard?id=LycheeOrg_Lychee-Laravel"><img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee-Laravel&metric=alert_status"></a>
 </p>
 
-
 #### Help, I'm lost!
+
+Lychee website - [lycheeorg.github.io &#187;](https://lycheeorg.github.io/)
 
 I was using the version 3, how do I upgrade to version 4? See [Upgrade &#187;](https://lycheeorg.github.io/docs/upgrade.html)
 
 To find out what's changed, see the [changelog &#187;](https://lycheeorg.github.io/docs/releases.html).
 
+Lychee Frontend - see this github repository [LycheeOrg/Lychee-front &#187;](https://github.com/LycheeOrg/Lychee-front)
+
+Deploy Lychee on Docker - see this github repository [LycheeOrg/Lychee-Docker &#187;](https://github.com/LycheeOrg/Lychee-Docker)
+
 #### A great looking and easy-to-use photo-management-system.
 
-*Since the 1st of April 2018 this project has moved to it's own Organisation (https://github.com/LycheeOrg) where people are able to submit their fixes to it. We, the Organisation owners, want to thank electerious (Tobias Reich) for the opportunity to make this project live on.*
+_Since the 1st of April 2018 this project has moved to it's own Organisation (https://github.com/LycheeOrg) where people are able to submit their fixes to it. We, the Organisation owners, want to thank electerious (Tobias Reich) for the opportunity to make this project live on._
 
 ![Lychee](https://camo.githubusercontent.com/b9010f02c634219795950e034f511f4cf4af5c60/68747470733a2f2f732e656c6563746572696f75732e636f6d2f696d616765732f6c79636865652f312e6a706567)
 ![Lychee](https://camo.githubusercontent.com/5484591f0b15b6ba27d4845b292cc5d3a988b3b9/68747470733a2f2f732e656c6563746572696f75732e636f6d2f696d616765732f6c79636865652f322e6a706567)
@@ -44,7 +49,7 @@ Alternatively, an official Docker image can be found at [LycheeOrg/Lychee-Docker
 
 ### Update
 
-Updating is as easy as it should be.  [Update &#187;](https://lycheeorg.github.io/docs/update.html)
+Updating is as easy as it should be. [Update &#187;](https://lycheeorg.github.io/docs/update.html)
 
 ### Settings
 
