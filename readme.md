@@ -10,19 +10,19 @@
 <a href="https://sonarcloud.io/dashboard?id=LycheeOrg_Lychee-Laravel"><img alt="Quality Gate Status" src="https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee-Laravel&metric=alert_status"></a>
 </p>
 
-#### Help, I'm lost!
-
-Lychee website - [lycheeorg.github.io &#187;](https://lycheeorg.github.io/)
+## Help, I'm lost!
 
 I was using the version 3, how do I upgrade to version 4? See [Upgrade &#187;](https://lycheeorg.github.io/docs/upgrade.html)
 
 To find out what's changed, see the [changelog &#187;](https://lycheeorg.github.io/docs/releases.html).
 
-Lychee Frontend - see this github repository [LycheeOrg/Lychee-front &#187;](https://github.com/LycheeOrg/Lychee-front)
+## Project Links
 
-Deploy Lychee on Docker - see this github repository [LycheeOrg/Lychee-Docker &#187;](https://github.com/LycheeOrg/Lychee-Docker)
+-   [Website &#187;](https://lycheeorg.github.io/)
+-   [Frontend repository &#187;](https://github.com/LycheeOrg/Lychee-front)
+-   [Docker repository &#187;](https://github.com/LycheeOrg/Lychee-Docker)
 
-#### A great looking and easy-to-use photo-management-system.
+## A great looking and easy-to-use photo-management-system.
 
 _Since the 1st of April 2018 this project has moved to it's own Organisation (https://github.com/LycheeOrg) where people are able to submit their fixes to it. We, the Organisation owners, want to thank electerious (Tobias Reich) for the opportunity to make this project live on._
 
