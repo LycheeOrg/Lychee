@@ -63,7 +63,11 @@ class ExifLens extends Command
 		set_time_limit($timeout);
 
 		// we use lens because this is the one which is most likely to be empty.
-		$photos = Photo::where('lens', '=', '')->whereNotIn('lens', $this->photoFunctions->getValidVideoTypes())->offset($from)->limit($argument)->get();
+		$photos = Photo::where('lens', '=', '')
+			->whereNotIn('type', $this->photoFunctions->getValidVideoTypes())
+			->offset($from)
+			->limit($argument)
+			->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires EXIF updates.');
 
@@ -75,32 +79,45 @@ class ExifLens extends Command
 			$url = Storage::path('big/' . $photo->url);
 			if (file_exists($url)) {
 				$info = $this->metadataExtractor->extract($url, $photo->type);
-				if ($photo->size == '') {
+				$updated = false;
+				if ($photo->size == '' && $info['size'] != '') {
 					$photo->size = $info['size'];
+					$updated = true;
 				}
-				if ($photo->iso == '') {
+				if ($photo->iso == '' && $info['iso'] != '') {
 					$photo->iso = $info['iso'];
+					$updated = true;
 				}
-				if ($photo->aperture == '') {
+				if ($photo->aperture == '' && $info['aperture'] != '') {
 					$photo->aperture = $info['aperture'];
+					$updated = true;
 				}
-				if ($photo->make == '') {
+				if ($photo->make == '' && $info['make'] != '') {
 					$photo->make = $info['make'];
+					$updated = true;
 				}
-				if ($photo->getAttribute('model') == '') {
+				if ($photo->getAttribute('model') == '' && $info['model'] != '') {
 					$photo->setAttribute('model', $info['model']);
+					$updated = true;
 				}
-				if ($photo->lens == '') {
+				if ($photo->lens == '' && $info['lens'] != '') {
 					$photo->lens = $info['lens'];
+					$updated = true;
 				}
-				if ($photo->shutter == '') {
+				if ($photo->shutter == '' && $info['shutter'] != '') {
 					$photo->shutter = $info['shutter'];
+					$updated = true;
 				}
-				if ($photo->focal == '') {
+				if ($photo->focal == '' && $info['focal'] != '') {
 					$photo->focal = $info['focal'];
+					$updated = true;
 				}
-				if ($photo->save()) {
-					$this->line($i . ': EXIF updated for ' . $photo->title);
+				if ($updated) {
+					if ($photo->save()) {
+						$this->line($i . ': EXIF updated for ' . $photo->title);
+					} else {
+						$this->line($i . ': Failed to update EXIF for ' . $photo->title);
+					}
 				} else {
 					$this->line($i . ': Could not get EXIF data/nothing to update for ' . $photo->title . '.');
 				}

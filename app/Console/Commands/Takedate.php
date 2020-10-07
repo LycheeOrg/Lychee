@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Metadata\Extractor;
-use App\ModelFunctions\PhotoFunctions;
+use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Storage;
@@ -25,11 +25,6 @@ class Takedate extends Command
 	protected $description = 'Make sure takedate is correct';
 
 	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
-	/**
 	 * @var Extractor
 	 */
 	private $metadataExtractor;
@@ -37,14 +32,12 @@ class Takedate extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param PhotoFunctions $photoFunctions
-	 * @param Extractor      $metadataExtractor
+	 * @param Extractor $metadataExtractor
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
+	public function __construct(Extractor $metadataExtractor)
 	{
 		parent::__construct();
 
-		$this->photoFunctions = $photoFunctions;
 		$this->metadataExtractor = $metadataExtractor;
 	}
 
@@ -60,8 +53,7 @@ class Takedate extends Command
 		$timeout = $this->argument('tm');
 		set_time_limit($timeout);
 
-		// we use lens because this is the one which is most likely to be empty.
-		$photos = Photo::where('make', '=', '')->whereNotIn('lens', $this->photoFunctions->getValidVideoTypes())->offset($from)->limit($argument)->get();
+		$photos = Photo::whereNull('takestamp')->offset($from)->limit($argument)->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires takedate updates.');
 
@@ -73,13 +65,16 @@ class Takedate extends Command
 			$url = Storage::path('big/' . $photo->url);
 			if (file_exists($url)) {
 				$info = $this->metadataExtractor->extract($url, $photo->type);
-				if ($photo->takestamp == '') {
+				if ($info['takestamp'] != null) {
 					$photo->takestamp = $info['takestamp'];
-				}
-				if ($photo->save()) {
-					$this->line($i . ': Takestamp updated for ' . $photo->title);
+					if ($photo->save()) {
+						$this->line($i . ': Takestamp updated for ' . $photo->title);
+						AlbumUpdate::update_takestamps($photo->album, [$photo->takestamp], true);
+					} else {
+						$this->line($i . ': Failed to update takestamp for ' . $photo->title);
+					}
 				} else {
-					$this->line($i . ': Could not get Takestamp data/nothing to update for ' . $photo->title . '.');
+					$this->line($i . ': Could not get Takestamp data for ' . $photo->title . '.');
 				}
 			} else {
 				$this->line($i . ': File does not exist for ' . $photo->title . '.');
