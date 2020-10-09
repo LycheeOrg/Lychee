@@ -374,7 +374,7 @@ class ImportController extends Controller
 					continue;
 				}
 			} else {
-				$this->status_update('Problem: Unsupported file type (' . $file . ')');
+				$this->status_update('Problem: ' . $file . ': Unsupported file type');
 				Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
 				continue;
 			}
