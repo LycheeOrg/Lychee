@@ -110,7 +110,7 @@ gen_minor:
 	git add database
 	git add version.md
 
-release_minor:
+release_minor: gen_minor
 	git commit -S -m "bump to version $(shell cat version.md)"
 
 release_major:
