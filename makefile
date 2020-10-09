@@ -105,11 +105,13 @@ formatting:
 		echo ""; \
 	fi
 
-release_minor:
+gen_minor:
 	php gen_release
 	git add database
 	git add version.md
-	git commit -m "bump to version $(shell cat version.md)"
+
+release_minor:
+	git commit -S -m "bump to version $(shell cat version.md)"
 
 release_major:
 	php gen_release major
