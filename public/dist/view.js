@@ -1722,6 +1722,7 @@ sidebar.createStructure.album = function (album) {
 	var share_button_visible = '';
 	var password = '';
 	var license = '';
+	var sorting = '';
 
 	// Set value for public
 	switch (data.public) {

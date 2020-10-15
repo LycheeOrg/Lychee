@@ -1238,8 +1238,6 @@ album.setSorting = function (albumID) {
 				lychee.error(null, params, _data);
 			} else {
 				if (visible.album()) {
-					album.json.sorting_col = params.typePhotos;
-					album.json.sorting_order = params.orderPhotos;
 					album.reload();
 				}
 			}
@@ -8061,6 +8059,7 @@ _sidebar.createStructure.album = function (album) {
 	var share_button_visible = '';
 	var password = '';
 	var license = '';
+	var sorting = '';
 
 	// Set value for public
 	switch (data.public) {
@@ -9732,12 +9731,6 @@ view.album = {
 		}
 
 		_sidebar.changeAttr('license', license);
-	},
-
-	sorting: function sorting() {
-
-		_sidebar.changeAttr('sorting_col', album.json.sorting_col);
-		_sidebar.changeAttr('sorting_order', album.json.sorting_order);
 	},
 
 	public: function _public() {

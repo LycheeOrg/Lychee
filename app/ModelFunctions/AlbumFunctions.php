@@ -328,8 +328,6 @@ class AlbumFunctions
 		/**
 		 * @var Collection[Photo]
 		 */
-		// $sortingCol = Configs::get_value('sorting_Photos_col');
-		// $sortingOrder = Configs::get_value('sorting_Photos_order');
 		$photos = $this->customSort($photos_sql, $sortingCol, $sortingOrder);
 
 		if ($sortingCol === 'title' || $sortingCol === 'description') {
