@@ -21,6 +21,7 @@ final class Greek implements LangInterface
 			'SETTINGS' => 'Ρυθμίσεις',
 			'SEARCH' => 'Αναζήτηση ...',
 			'MORE' => 'Περισσότερα',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Χρήστες',
 			'SHARING' => 'Κοινή χρήση',
@@ -176,6 +177,8 @@ final class Greek implements LangInterface
 			'ALBUM_LICENSE_HELP' => 'Χρειάζεστε βοήθεια για την επιλογή άδειας;',
 			'ALBUM_LICENSE_NONE' => 'Καμία',
 			'ALBUM_RESERVED' => 'Με επιφύλαξη παντός δικαιώματος',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'Περί',
 			'PHOTO_BASICS' => 'Βασικές Πληροφορίες',

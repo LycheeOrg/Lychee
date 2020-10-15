@@ -21,6 +21,7 @@ final class Italian implements LangInterface
 			'SETTINGS' => 'Impostazioni',
 			'SEARCH' => 'Cerca...',
 			'MORE' => 'Altro',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Utenti',
 			'SHARING' => 'Condivisione',
@@ -178,6 +179,8 @@ final class Italian implements LangInterface
 			'ALBUM_LICENSE_HELP' => 'Hai bisogno di aiuto per scegliere?',
 			'ALBUM_LICENSE_NONE' => 'Nessuna',
 			'ALBUM_RESERVED' => 'Tutti i Diritti Riservati',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'Informazioni',
 			'PHOTO_BASICS' => 'Base',

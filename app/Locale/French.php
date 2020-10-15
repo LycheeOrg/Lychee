@@ -21,6 +21,9 @@ final class French implements LangInterface
 			'SETTINGS' => 'Settings',
 			'SEARCH' => 'Rechercher ...',
 			'MORE' => 'Plus',
+			'DEFAULT' => 'Valeur par defaut',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'USERS' => 'Users',
 			'SHARING' => 'Sharing',

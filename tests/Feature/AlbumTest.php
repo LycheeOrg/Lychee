@@ -74,6 +74,7 @@ class AlbumTest extends TestCase
 		$albums_tests->set_description($this, $albumID, 'new description');
 		$albums_tests->set_license($this, $albumID, 'WTFPL', '"Error: License not recognised!');
 		$albums_tests->set_license($this, $albumID, 'reserved');
+		$albums_tests->set_sorting($this, $albumID, 'title', 'ASC');
 
 		/**
 		 * Let's see if the info changed.
@@ -84,6 +85,8 @@ class AlbumTest extends TestCase
 			'description' => 'new description',
 			'title' => 'NEW_TEST',
 		]);
+
+		$albums_tests->set_sorting($this, $albumID, '', 'ASC');
 
 		/*
 		 * Flush the session to see if we can access the album

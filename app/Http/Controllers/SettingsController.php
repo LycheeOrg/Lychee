@@ -137,8 +137,7 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Define the default sorting type
-	 * TODO: make it configurable by album.
+	 * Define the default sorting type.
 	 *
 	 * @param Request $request
 	 *

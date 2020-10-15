@@ -21,6 +21,7 @@ final class Slovak implements LangInterface
 			'SETTINGS' => 'Nastavenia',
 			'SEARCH' => 'Hľadaj ...',
 			'MORE' => 'Viac',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Užívatelia',
 			'SHARING' => 'Zdieľanie',
@@ -177,6 +178,8 @@ final class Slovak implements LangInterface
 			'ALBUM_LICENSE_HELP' => 'Potrebujete pomoc pri výbere?',
 			'ALBUM_LICENSE_NONE' => 'Žiadna',
 			'ALBUM_RESERVED' => 'Všetky práva vyhradené',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'O obrázku',
 			'PHOTO_BASICS' => 'Základné informácie',

@@ -21,6 +21,7 @@ final class Russian implements LangInterface
 			'SETTINGS' => 'Параметры',
 			'SEARCH' => 'Search ...',
 			'MORE' => 'More',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Пользователи',
 			'SHARING' => 'Поделиться',
@@ -176,6 +177,8 @@ final class Russian implements LangInterface
 			'ALBUM_LICENSE_HELP' => 'Помочь выбрать?',
 			'ALBUM_LICENSE_NONE' => 'Нет',
 			'ALBUM_RESERVED' => 'Все права защищены',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'Описание',
 			'PHOTO_BASICS' => 'Основное',

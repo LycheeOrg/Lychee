@@ -21,6 +21,7 @@ final class Czech implements LangInterface
 			'SETTINGS' => 'Nastavení',
 			'SEARCH' => 'Hledat ...',
 			'MORE' => 'Rozšířená nastavení',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Uživatelé',
 			'SHARING' => 'Sdílení',
@@ -177,6 +178,8 @@ final class Czech implements LangInterface
 			'ALBUM_LICENSE_HELP' => 'Potřebujete pomoci s výběrem?',
 			'ALBUM_LICENSE_NONE' => 'Žádná',
 			'ALBUM_RESERVED' => 'Všechna práva vyhrazena',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'O fotografii',
 			'PHOTO_BASICS' => 'Základní informace',

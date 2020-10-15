@@ -81,6 +81,9 @@ class DemoController extends Controller
 		$albums = Album::where('public', '=', '1')
 			->where('visible_hidden', '=', '1')
 			->get();
+		/*
+		 * @var Album
+		 */
 		foreach ($albums as $album) {
 			/**
 			 * Copy paste from Album::get().
@@ -98,7 +101,7 @@ class DemoController extends Controller
 			// take care of photos
 			$full_photo = $return_album_json['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
 			$photos_query = $album->get_photos();
-			$return_album_json['photos'] = $this->albumFunctions->photos($photos_query, $full_photo, $album->get_license());
+			$return_album_json['photos'] = $this->albumFunctions->photos($album, $photos_query, $full_photo, $album->get_license());
 
 			$return_album_json['num'] = strval(count($return_album_json['photos']));
 
