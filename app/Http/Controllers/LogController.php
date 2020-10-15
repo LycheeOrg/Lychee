@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -17,7 +18,7 @@ class LogController extends Controller
 	 */
 	public function list($order = 'DESC')
 	{
-		return Logs::orderBy('id', $order)->get();
+		return Logs::orderBy('id', $order)->limit(intval(Configs::get_value('log_max_num_line', 1000)))->get();
 	}
 
 	/**
