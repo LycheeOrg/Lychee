@@ -1490,6 +1490,10 @@ sidebar.bind = function () {
 		if (visible.photo()) photo.setLicense(photo.getID());else if (visible.album()) album.setLicense(album.getID());
 	});
 
+	sidebar.dom('#edit_sorting').off(eventName).on(eventName, function () {
+		album.setSorting(album.getID());
+	});
+
 	sidebar.dom('.attr_location').off(eventName).on(eventName, function () {
 		sidebar.triggerSearch($(this).text());
 	});
@@ -1718,6 +1722,7 @@ sidebar.createStructure.album = function (album) {
 	var share_button_visible = '';
 	var password = '';
 	var license = '';
+	var sorting = '';
 
 	// Set value for public
 	switch (data.public) {
@@ -1807,6 +1812,12 @@ sidebar.createStructure.album = function (album) {
 			break;
 	}
 
+	if (data.sorting_col === '') {
+		sorting = lychee.locale['DEFAULT'];
+	} else {
+		sorting = data.sorting_col + ' ' + data.sorting_order;
+	}
+
 	structure.basics = {
 		title: lychee.locale['ALBUM_BASICS'],
 		type: sidebar.types.DEFAULT,
@@ -1842,6 +1853,10 @@ sidebar.createStructure.album = function (album) {
 	if (videoCount > 0) {
 		structure.album.rows.push({ title: lychee.locale['ALBUM_VIDEOS'],
 			kind: 'videos', value: videoCount });
+	}
+
+	if (data.photos) {
+		structure.album.rows.push({ title: lychee.locale['ALBUM_ORDERING'], kind: 'sorting', value: sorting, editable: editable });
 	}
 
 	structure.share = {
@@ -2367,6 +2382,7 @@ lychee.locale = {
 	'SET_MAP_PROVIDER': 'Set OpenStreetMap tiles provider',
 	'SAVE_RISK': 'Save my modifications, I accept the Risk!',
 	'MORE': 'More',
+	'DEFAULT': 'Default',
 
 	'SMART_ALBUMS': 'Smart albums',
 	'SHARED_ALBUMS': 'Shared albums',
@@ -2504,6 +2520,8 @@ lychee.locale = {
 	'ALBUM_LICENSE_HELP': 'Need help choosing?',
 	'ALBUM_LICENSE_NONE': 'None',
 	'ALBUM_RESERVED': 'All Rights Reserved',
+	'ALBUM_SET_ORDER': 'Set Order',
+	'ALBUM_ORDERING': 'Order by',
 
 	'PHOTO_ABOUT': 'About',
 	'PHOTO_BASICS': 'Basics',

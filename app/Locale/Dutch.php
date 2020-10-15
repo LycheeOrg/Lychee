@@ -21,6 +21,7 @@ final class Dutch implements LangInterface
 			'SETTINGS' => 'Settings',
 			'SEARCH' => 'Search ...',
 			'MORE' => 'More',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Users',
 			'SHARING' => 'Sharing',
@@ -176,6 +177,8 @@ final class Dutch implements LangInterface
 			'ALBUM_LICENSE_HELP' => 'Need help choosing?',
 			'ALBUM_LICENSE_NONE' => 'None',
 			'ALBUM_RESERVED' => 'All Rights Reserved',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'Over',
 			'PHOTO_BASICS' => 'Basics',

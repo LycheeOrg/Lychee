@@ -21,6 +21,7 @@ final class NorwegianBokmal implements LangInterface
 			'SETTINGS' => 'Innstillinger',
 			'SEARCH' => 'Søk ...',
 			'MORE' => 'Mer',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Brukere',
 			'SHARING' => 'Deling',
@@ -176,6 +177,8 @@ final class NorwegianBokmal implements LangInterface
 			'ALBUM_LICENSE_HELP' => 'Trenger du hjelp for å velge?',
 			'ALBUM_LICENSE_NONE' => 'Ingen',
 			'ALBUM_RESERVED' => 'Alle Rettigheter Forbeholdt',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'Om',
 			'PHOTO_BASICS' => 'Grunnleggende',

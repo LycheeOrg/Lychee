@@ -265,6 +265,31 @@ class AlbumsUnitTest
 	}
 
 	/**
+	 * Set sorting.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param string   $typePhotos
+	 * @param string   $orderPhotos
+	 * @param string   $result
+	 */
+	public function set_sorting(
+		TestCase &$testCase,
+		string $id,
+		string $typePhotos,
+		string $orderPhotos,
+		string $result = 'true'
+	) {
+		$response = $testCase->post('/api/Album::setSorting', [
+			'albumID' => $id,
+			'typePhotos' => $typePhotos,
+			'orderPhotos' => $orderPhotos,
+		]);
+		$response->assertOk();
+		$response->assertSee($result, false);
+	}
+
+	/**
 	 * @param TestCase $testCase
 	 * @param string   $id
 	 * @param int      $full_photo

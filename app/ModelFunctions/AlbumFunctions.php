@@ -64,9 +64,29 @@ class AlbumFunctions
 	 *
 	 * @return bool
 	 */
-	public function is_smart_album($albumID)
+	public function is_smart_album($albumID): bool
 	{
 		return array_key_exists($albumID, $this->smart_albums);
+	}
+
+	/**
+	 * given an Album return the sorting column & order for the pictures or the default ones.
+	 *
+	 * @param Album
+	 *
+	 * @return
+	 */
+	private function get_sort(Album $album)
+	{
+		if ($album->sorting_col == '') {
+			$sort_col = Configs::get_value('sorting_Photos_col');
+			$sort_order = Configs::get_value('sorting_Photos_order');
+		} else {
+			$sort_col = $album->sorting_col;
+			$sort_order = $album->sorting_order;
+		}
+
+		return [$sort_col, $sort_order];
 	}
 
 	/**
@@ -109,6 +129,9 @@ class AlbumFunctions
 		return $this->store_album($album);
 	}
 
+	/**
+	 * Simple factory.
+	 */
 	private function album_factory(string $title): Album
 	{
 		$album = new Album();
@@ -184,12 +207,14 @@ class AlbumFunctions
 		return $album;
 	}
 
-	private function get_thumbs_album($album, array $previousThumbIDs): BaseCollection
+	private function get_thumbs_album(Album $album, array $previousThumbIDs): BaseCollection
 	{
+		[$sort_col, $sort_order] = $this->get_sort($album);
+
 		$photos = Photo::where('album_id', $album->id)
 			->orWhereIn('id', $previousThumbIDs)
 			->orderBy('star', 'DESC')
-			->orderBy(Configs::get_value('sorting_Photos_col'), Configs::get_value('sorting_Photos_order'))
+			->orderBy($sort_col, $sort_order)
 			->orderBy('id', 'ASC')
 			->limit(3)
 			->get();
@@ -293,16 +318,16 @@ class AlbumFunctions
 	 *
 	 * @return array
 	 */
-	public function photos($photos_sql, bool $full_photo, string $license = 'none')
+	public function photos(Album $album, $photos_sql, bool $full_photo, string $license = 'none')
 	{
+		[$sortingCol, $sortingOrder] = $this->get_sort($album);
+
 		$previousPhotoID = '';
 		$return_photos = [];
 		$photo_counter = 0;
 		/**
 		 * @var Collection[Photo]
 		 */
-		$sortingCol = Configs::get_value('sorting_Photos_col');
-		$sortingOrder = Configs::get_value('sorting_Photos_order');
 		$photos = $this->customSort($photos_sql, $sortingCol, $sortingOrder);
 
 		if ($sortingCol === 'title' || $sortingCol === 'description') {

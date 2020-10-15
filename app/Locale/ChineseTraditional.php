@@ -21,6 +21,7 @@ final class ChineseTraditional implements LangInterface
 			'SETTINGS' => '設定',
 			'SEARCH' => '搜尋...',
 			'MORE' => '更多',
+			'DEFAULT' => 'Default',
 
 			'USERS' => '使用者',
 			'SHARING' => '分享',
@@ -176,6 +177,8 @@ final class ChineseTraditional implements LangInterface
 			'ALBUM_LICENSE_HELP' => '需要選擇幫助嗎？',
 			'ALBUM_LICENSE_NONE' => '不須',
 			'ALBUM_RESERVED' => '版權所有',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => '關於',
 			'PHOTO_BASICS' => '基本資訊',

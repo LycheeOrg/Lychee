@@ -21,6 +21,7 @@ final class German implements LangInterface
 			'SETTINGS' => 'Einstellungen',
 			'SEARCH' => 'Suchen ...',
 			'MORE' => 'Mehr',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Benutzer',
 			'SHARING' => 'Freigabe',
@@ -178,6 +179,8 @@ final class German implements LangInterface
 			'ALBUM_LICENSE_HELP' => 'Benötigen Sie Hilfe bei der Auswahl?',
 			'ALBUM_LICENSE_NONE' => 'Keine',
 			'ALBUM_RESERVED' => 'Alle Rechte vorbehalten',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'Über',
 			'PHOTO_BASICS' => 'Grundlegende Informationen',

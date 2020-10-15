@@ -42,6 +42,10 @@ class Cast
 			'password' => Helpers::str_of_bool($album->password != ''),
 			'license' => $album->get_license(),
 
+			// Parse Ordering
+			'sorting_col' => $album->sorting_col,
+			'sorting_order' => $album->sorting_order,
+
 			'thumbs' => [],
 			'thumbs2x' => [],
 			'types' => [],

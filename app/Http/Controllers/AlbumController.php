@@ -143,7 +143,7 @@ class AlbumController extends Controller
 		// take care of photos
 		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
 		$photos_query = $album->get_photos();
-		$return['photos'] = $this->albumFunctions->photos($photos_query, $full_photo, $album->get_license());
+		$return['photos'] = $this->albumFunctions->photos($album, $photos_query, $full_photo, $album->get_license());
 
 		$return['id'] = $request['albumID'];
 		$return['num'] = strval(count($return['photos']));
@@ -654,6 +654,38 @@ class AlbumController extends Controller
 		}
 
 		return $no_error ? 'true' : 'false';
+	}
+
+	/**
+	 * Define the default sorting type.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setSorting(Request $request)
+	{
+		$request->validate([
+			'albumID' => 'required|string',
+			'typePhotos' => 'nullable',
+			'orderPhotos' => 'required|string',
+		]);
+
+		/**
+		 * @var Album|null
+		 */
+		$album = Album::find($request['albumID']);
+
+		if ($album == null) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
+
+			return 'false';
+		}
+
+		Album::where('id', '=', $request['albumID'])
+			->update(['sorting_col' => $request['typePhotos'] ?? '', 'sorting_order' => $request['orderPhotos']]);
+
+		return 'true';
 	}
 
 	/**

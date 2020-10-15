@@ -21,6 +21,7 @@ final class Spanish implements LangInterface
 			'SETTINGS' => 'Configuraciones',
 			'SEARCH' => 'Buscar...',
 			'MORE' => 'Más',
+			'DEFAULT' => 'Default',
 
 			'USERS' => 'Usuarios',
 			'SHARING' => 'Compartir',
@@ -176,6 +177,8 @@ final class Spanish implements LangInterface
 			'ALBUM_LICENSE_HELP' => '¿Necesitas ayuda para elegir?',
 			'ALBUM_LICENSE_NONE' => 'Ninguna',
 			'ALBUM_RESERVED' => 'Todos los derechos reservados',
+			'ALBUM_SET_ORDER' => 'Set Order',
+			'ALBUM_ORDERING' => 'Order by',
 
 			'PHOTO_ABOUT' => 'Acerca de',
 			'PHOTO_BASICS' => 'Basico',
