@@ -247,20 +247,6 @@ lychee.getEventName = function () {
 	return touchendSupport === true ? 'touchend' : 'click';
 };
 
-lychee.error = function (errorThrown) {
-	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-	var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
-
-
-	console.error({
-		description: errorThrown,
-		params: params,
-		response: data
-	});
-
-	loadingBar.show('error', errorThrown);
-};
-
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
 
@@ -285,7 +271,9 @@ frame.next = function () {
 
 frame.refreshPicture = function () {
 	api.post('Photo::getRandom', {}, function (data) {
-		if (!data.url && !data.medium) console.log('URL not found');
+		if (!data.url && !data.medium) {
+			console.log('URL not found');
+		}
 		if (!data.thumbUrl) console.log('Thumb not found');
 
 		$('#background').attr('src', data.thumbUrl);
@@ -337,6 +325,21 @@ frame.resize = function () {
 	}
 };
 
+frame.error = function (errorThrown) {
+	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+	var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+
+
+	loadingBar.show('error', errorThrown);
+
+	console.error({
+		description: errorThrown,
+		params: params,
+		response: data
+	});
+	alert(errorThrown);
+};
+
 // Main -------------------------------------------------------------- //
 
 var loadingBar = {
@@ -346,13 +349,13 @@ var loadingBar = {
 
 var imageview = $('#imageview');
 
-$(document).ready(function () {
+$(function () {
 
 	// set CSRF protection (Laravel)
 	csrf.bind();
 
 	// Set API error handler
-	api.onError = lychee.error;
+	api.onError = frame.error;
 
 	$(window).on('resize', function () {
 		frame.resize();

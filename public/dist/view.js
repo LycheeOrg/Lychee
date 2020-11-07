@@ -1703,9 +1703,13 @@ sidebar.createStructure.photo = function (data) {
 	}
 
 	// Construct all parts of the structure
-	structure = [structure.basics, structure.image, structure.tags, structure.exif, structure.location, structure.sharing, structure.license];
+	var structure_ret = [structure.basics, structure.image, structure.tags, structure.exif, structure.location, structure.license];
 
-	return structure;
+	if (!lychee.publicMode) {
+		structure_ret.push(structure.sharing);
+	}
+
+	return structure_ret;
 };
 
 sidebar.createStructure.album = function (album) {
@@ -1876,9 +1880,12 @@ sidebar.createStructure.album = function (album) {
 	};
 
 	// Construct all parts of the structure
-	structure = [structure.basics, structure.album, structure.share, structure.license];
+	var structure_ret = [structure.basics, structure.album, structure.license];
+	if (!lychee.publicMode) {
+		structure_ret.push(structure.share);
+	}
 
-	return structure;
+	return structure_ret;
 };
 
 sidebar.has_location = function (structure) {

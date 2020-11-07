@@ -4177,8 +4177,6 @@ lychee.goto = function () {
 	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 
-	if (url === false) url = '';
-
 	url = '#' + url;
 
 	history.pushState(null, null, url);
@@ -4719,7 +4717,6 @@ lychee.clipboardCopy = function (text) {
 	// ? Promise.resolve()
 	// : Promise.reject(new DOMException('The request is not allowed', 'NotAllowedError'))
 };
-
 lychee.locale = {
 
 	'USERNAME': 'username',
@@ -6418,8 +6415,6 @@ _photo.setAlbum = function (photoIDs, albumID) {
 		} else {
 			lychee.goto(album.getID());
 		}
-	} else if (!visible.albums()) {
-		lychee.goto(album.getID());
 	}
 
 	var params = {
@@ -6438,11 +6433,6 @@ _photo.setAlbum = function (photoIDs, albumID) {
 			// null), we need to reload.
 			if (visible.album()) {
 				album.reload();
-			} else {
-				// We're most likely in photo view.  We still need to
-				// refresh the album but we don't want to reload it
-				// since that would switch the view being displayed.
-				album.refresh();
 			}
 		}
 	});
@@ -8040,9 +8030,13 @@ _sidebar.createStructure.photo = function (data) {
 	}
 
 	// Construct all parts of the structure
-	structure = [structure.basics, structure.image, structure.tags, structure.exif, structure.location, structure.sharing, structure.license];
+	var structure_ret = [structure.basics, structure.image, structure.tags, structure.exif, structure.location, structure.license];
 
-	return structure;
+	if (!lychee.publicMode) {
+		structure_ret.push(structure.sharing);
+	}
+
+	return structure_ret;
 };
 
 _sidebar.createStructure.album = function (album) {
@@ -8213,9 +8207,12 @@ _sidebar.createStructure.album = function (album) {
 	};
 
 	// Construct all parts of the structure
-	structure = [structure.basics, structure.album, structure.share, structure.license];
+	var structure_ret = [structure.basics, structure.album, structure.license];
+	if (!lychee.publicMode) {
+		structure_ret.push(structure.share);
+	}
 
-	return structure;
+	return structure_ret;
 };
 
 _sidebar.has_location = function (structure) {
@@ -10080,6 +10077,7 @@ view.settings = {
 
 		multiselect.clearSelection();
 
+		view.photo.hide();
 		view.settings.title();
 		view.settings.content.init();
 	},
@@ -10354,6 +10352,7 @@ view.users = {
 
 		multiselect.clearSelection();
 
+		view.photo.hide();
 		view.users.title();
 		view.users.content.init();
 	},
@@ -10413,6 +10412,7 @@ view.sharing = {
 
 		multiselect.clearSelection();
 
+		view.photo.hide();
 		view.sharing.title();
 		view.sharing.content.init();
 	},
@@ -10485,6 +10485,7 @@ view.logs = {
 
 		multiselect.clearSelection();
 
+		view.photo.hide();
 		view.logs.title();
 		view.logs.content.init();
 	},
@@ -10524,6 +10525,7 @@ view.diagnostics = {
 
 		multiselect.clearSelection();
 
+		view.photo.hide();
 		view.diagnostics.title('Diagnostics');
 		view.diagnostics.content.init();
 	},
@@ -10651,6 +10653,7 @@ view.update = {
 
 		multiselect.clearSelection();
 
+		view.photo.hide();
 		view.update.title();
 		view.update.content.init();
 	},
