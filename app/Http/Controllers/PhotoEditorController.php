@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers;
 
+use App\ModelFunctions\PhotoFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -12,8 +13,14 @@ use Storage;
 
 class PhotoEditorController extends Controller
 {
-	public function __construct()
+	/**
+	 * @var PhotoFuctions
+	 */
+	private $photoFunctions;
+
+	public function __construct(PhotoFunctions $photoFunctions)
 	{
+		$this->photoFunctions = $photoFunctions;
 	}
 
 	/**
@@ -47,6 +54,12 @@ class PhotoEditorController extends Controller
 		// Photo not found?
 		if ($photo == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
+
+			return 'false';
+		}
+
+		if ($this->photoFunctions->isVideo($photo)) {
+			Logs::error(__METHOD__, __LINE__, 'Trying to rotate a video');
 
 			return 'false';
 		}

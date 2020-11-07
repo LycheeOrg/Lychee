@@ -904,6 +904,14 @@ class PhotoFunctions
 	}
 
 	/**
+	 * Sometimes we just need to know if a Photo is a video.
+	 */
+	public function isVideo(Photo $photo): bool
+	{
+		return $this->isValidVideoType($photo->type);
+	}
+
+	/**
 	 * Central function for retrieving the metadata since this has to be called in more than one place.
 	 *
 	 * @param array  $file
