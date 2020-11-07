@@ -548,7 +548,18 @@ class PhotoFunctions
 	 */
 	public function extractVideoFrame(Photo $photo): string
 	{
-		if ($photo->aperture === '' || !Configs::hasFFmpeg()) {
+		if (!Configs::hasFFmpeg()) {
+			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot: bad config: ' . Configs::hasFFmpeg());
+
+			return '';
+		}
+		if ($photo->aperture === '') {
+			$path = Storage::path('big/' . $photo->url);
+			$info = $this->metadataExtractor->extract($path, 'video');
+			$photo->aperture = $info['aperture'];
+		}
+		// we check again, just to be sure.
+		if ($photo->aperture === '') {
 			return '';
 		}
 
