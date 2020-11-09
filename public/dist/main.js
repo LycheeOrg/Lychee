@@ -698,7 +698,7 @@ album.getID = function () {
 };
 
 album.isTagAlbum = function () {
-	return album.json.tag_album === '1';
+	return album.json && album.json.tag_album && album.json.tag_album === '1';
 };
 
 album.getByID = function (photoID) {
