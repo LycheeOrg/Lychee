@@ -66,7 +66,8 @@ class SharingController extends Controller
 					'user_id',
 					'album_id',
 					'username',
-					'title'
+					'title',
+					'parent_id'
 				)
 				->join('users', 'user_id', 'users.id')
 				->join('albums', 'album_id', 'albums.id')
