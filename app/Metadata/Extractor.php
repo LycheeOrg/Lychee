@@ -309,7 +309,7 @@ class Extractor
 		}
 
 		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr
-		$metadata['location'] = substr(Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']),0,100);
+		$metadata['location'] = substr(Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']), 0, 100);
 
 		return $metadata;
 	}
