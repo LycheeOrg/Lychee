@@ -182,7 +182,8 @@ class AlbumController extends Controller
 			$album_list = collect();
 			if ($request['includeSubAlbums']) {
 				// Get all subalbums of the current album
-				$album_list = $album_list->concat($this->albumFunctions->get_sub_albums($album));
+				$album_list = $this->albumFunctions->get_sub_albums($album);
+				$album_list = $this->albumFunctions->flatMap_id($album_list);
 			}
 
 			// Add current albumID to array
