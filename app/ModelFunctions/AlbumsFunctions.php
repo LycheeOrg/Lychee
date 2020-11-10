@@ -156,15 +156,6 @@ class AlbumsFunctions
 		return $return;
 	}
 
-	private function flatMap_id(BaseCollection $subAlbums): BaseCollection
-	{
-		return $subAlbums->reduce(function ($collect, $e) {
-			$collect->push($e[0]->id);
-
-			return $collect->concat($this->flatMap_id($e[1]));
-		}, new BaseCollection());
-	}
-
 	/**
 	 * @param $toplevel optional return from getToplevelAlbums()
 	 *
@@ -193,7 +184,7 @@ class AlbumsFunctions
 				}
 			});
 			$children[$kind]->each(function ($child) use (&$albumIDs) {
-				$albumIDs = $albumIDs->concat($this->flatMap_id($child));
+				$albumIDs = $albumIDs->concat($this->albumFunctions->flatMap_id($child));
 			});
 		}
 

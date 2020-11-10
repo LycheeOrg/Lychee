@@ -310,6 +310,15 @@ class AlbumFunctions
 		return $return_photos;
 	}
 
+	public function flatMap_id(BaseCollection $subAlbums): BaseCollection
+	{
+		return $subAlbums->reduce(function ($collect, $e) {
+			$collect->push($e[0]->id);
+
+			return $collect->concat($this->flatMap_id($e[1]));
+		}, new BaseCollection());
+	}
+
 	/**
 	 * take a $photo_sql query and return an array containing their pictures.
 	 *
