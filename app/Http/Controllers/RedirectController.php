@@ -11,14 +11,13 @@ use Illuminate\Support\Facades\Hash;
 
 class RedirectController extends Controller
 {
-
         /**
          * @var SessionFunctions
          */
         private $sessionFunctions;
 
         /**
-         * @param SessionFunctions    $sessionFunctions
+         * @param SessionFunctions $sessionFunctions
          */
         public function __construct(
                 SessionFunctions $sessionFunctions
@@ -30,14 +29,14 @@ class RedirectController extends Controller
          * Trivial redirection.
          *
          * @param Request $request
-         * @param string $albumid
-         *
+         * @param string  $albumid
          */
         public function album(Request $request, $albumid)
         {
                 if (!$this->sessionFunctions->has_visible_album($albumid) && $request['password'] != '') {
                         $this->unlockPasswordAlbum($request['password']);
                 }
+
                 return redirect('gallery#' . $albumid);
         }
 
@@ -45,23 +44,23 @@ class RedirectController extends Controller
          * Trivial redirection.
          *
          * @param Request $request
-         * @param string $albumid
-         * @param string $photoid
+         * @param string  $albumid
+         * @param string  $photoid
          */
         public function photo(Request $request, $albumid, $photoid)
         {
                 if (!$this->sessionFunctions->has_visible_album($albumid) && $request['password'] != '') {
                         $this->unlockPasswordAlbum($request['password']);
                 }
+
                 return redirect('gallery#' . $albumid . '/' . $photoid);
         }
 
         /**
-         * Provided an password, add all the albums that the password unlocks
-         *
-         * @param string $password
+         * Provided an password, add all the albums that the password unlocks.
          */
-        private function unlockPasswordAlbum(string $password) {
+        private function unlockPasswordAlbum(string $password)
+        {
                 $albums = Album::whereNotNull('password')->where('password', '!=', '')->get();
                 $albumIDs = [];
                 foreach ($albums as $album) {
