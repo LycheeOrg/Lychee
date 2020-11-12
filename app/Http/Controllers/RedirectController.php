@@ -4,70 +4,54 @@
 
 namespace App\Http\Controllers;
 
-use App\ModelFunctions\SessionFunctions;
-use App\Models\Album;
+use App\ModelFunctions\AlbumsFunctions;
+use App\Models\Configs;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 
 class RedirectController extends Controller
 {
-        /**
-         * @var SessionFunctions
-         */
-        private $sessionFunctions;
+	/**
+	 * @var AlbumsFunctions
+	 */
+	private $albumsFunctions;
 
-        /**
-         * @param SessionFunctions $sessionFunctions
-         */
-        public function __construct(
-                SessionFunctions $sessionFunctions
-        ) {
-                $this->sessionFunctions = $sessionFunctions;
-        }
+	/**
+	 * @param SessionFunctions $sessionFunctions
+	 */
+	public function __construct(
+		AlbumsFunctions $albumsFunctions
+	) {
+		$this->albumsFunctions = $albumsFunctions;
+	}
 
-        /**
-         * Trivial redirection.
-         *
-         * @param Request $request
-         * @param string  $albumid
-         */
-        public function album(Request $request, $albumid)
-        {
-                if (!$this->sessionFunctions->has_visible_album($albumid) && $request['password'] != '') {
-                        $this->unlockPasswordAlbum($request['password']);
-                }
+	/**
+	 * Trivial redirection.
+	 *
+	 * @param Request $request
+	 * @param string  $albumid
+	 */
+	public function album(Request $request, $albumid)
+	{
+		if ($request['password'] != '' && Configs::get_value('unlock_password_photos_with_url_param', '0') === '1') {
+			$this->albumsFunctions->unlockAlbums($request['password']);
+		}
 
-                return redirect('gallery#' . $albumid);
-        }
+		return redirect('gallery#' . $albumid);
+	}
 
-        /**
-         * Trivial redirection.
-         *
-         * @param Request $request
-         * @param string  $albumid
-         * @param string  $photoid
-         */
-        public function photo(Request $request, $albumid, $photoid)
-        {
-                if (!$this->sessionFunctions->has_visible_album($albumid) && $request['password'] != '') {
-                        $this->unlockPasswordAlbum($request['password']);
-                }
+	/**
+	 * Trivial redirection.
+	 *
+	 * @param Request $request
+	 * @param string  $albumid
+	 * @param string  $photoid
+	 */
+	public function photo(Request $request, $albumid, $photoid)
+	{
+		if ($request['password'] != '' && Configs::get_value('unlock_password_photos_with_url_param', '0') === '1') {
+			$this->albumsFunctions->unlockAlbums($request['password']);
+		}
 
-                return redirect('gallery#' . $albumid . '/' . $photoid);
-        }
-
-        /**
-         * Provided an password, add all the albums that the password unlocks.
-         */
-        private function unlockPasswordAlbum(string $password)
-        {
-                $albums = Album::whereNotNull('password')->where('password', '!=', '')->get();
-                $albumIDs = [];
-                foreach ($albums as $album) {
-                        if (Hash::check($password, $album->password)) {
-                                $albumIDs[] = $album->id;
-                        }
-                }
-                $this->sessionFunctions->add_visible_albums($albumIDs);
-        }
+		return redirect('gallery#' . $albumid . '/' . $photoid);
+	}
 }

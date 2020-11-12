@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AlbumsFunctions
 {
@@ -263,5 +264,26 @@ class AlbumsFunctions
 			->map(function (Album $album) {
 				return AlbumCast::toTagAlbum($album);
 			});
+	}
+
+	/**
+	 * Provided an password, add all the albums that the password unlocks.
+	 */
+	public function unlockAlbums(string $password)
+	{
+		// We add all the albums that the password unlocks so
+		// that the user is not repeatedly asked to enter the
+		// password as they browse through the hierarchy.  This
+		// should be safe as the list of such albums is not
+		// exposed to the user and is considered as the last
+		// access check criteria.
+		$albums = Album::whereNotNull('password')->where('password', '!=', '')->get();
+		$albumIDs = [];
+		foreach ($albums as $album) {
+			if (Hash::check($password, $album->password)) {
+				$albumIDs[] = $album->id;
+			}
+		}
+		$this->sessionFunctions->add_visible_albums($albumIDs);
 	}
 }
