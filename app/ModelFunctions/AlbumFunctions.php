@@ -525,7 +525,7 @@ class AlbumFunctions
 	 * Provided an password and an album, check if the album can be
 	 * unlocked. If yes, unlock all albums with the same password.
 	 */
-	public function unlockAlbum(string $albumid, string $password): bool
+	public function unlockAlbum(string $albumid, ?string $password): bool
 	{
 		switch ($albumid) {
 			case 'starred':
@@ -545,6 +545,7 @@ class AlbumFunctions
 					if ($this->sessionFunctions->has_visible_album($album->id)) {
 						return true;
 					}
+					$password ??= '';
 					if (Hash::check($password, $album->password)) {
 						$this->unlockAllAlbums($password);
 
