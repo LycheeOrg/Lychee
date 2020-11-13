@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
 class ConfigPasswordUrlParamForSmartAlbum extends Migration
