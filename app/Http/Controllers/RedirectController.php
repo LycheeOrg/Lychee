@@ -32,8 +32,12 @@ class RedirectController extends Controller
 	 */
 	public function album(Request $request, $albumid)
 	{
-		if ($request['password'] != '' && Configs::get_value('unlock_password_photos_with_url_param', '0') === '1') {
-			$this->albumsFunctions->unlockAlbums($request['password']);
+		if ($request['password'] != '') {
+			if (Configs::get_value('unlock_password_photos_with_url_param', '0') === '1') {
+				$this->albumsFunctions->unlockAllAlbums($request['password']);
+			} else {
+				$this->albumsFunctions->unlockAlbum($albumid, $request['password']);
+			}
 		}
 
 		return redirect('gallery#' . $albumid);
@@ -48,8 +52,12 @@ class RedirectController extends Controller
 	 */
 	public function photo(Request $request, $albumid, $photoid)
 	{
-		if ($request['password'] != '' && Configs::get_value('unlock_password_photos_with_url_param', '0') === '1') {
-			$this->albumsFunctions->unlockAlbums($request['password']);
+		if ($request['password'] != '') {
+			if (Configs::get_value('unlock_password_photos_with_url_param', '0') === '1') {
+				$this->albumsFunctions->unlockAllAlbums($request['password']);
+			} else {
+				$this->albumsFunctions->unlockAlbum($albumid, $request['password']);
+			}
 		}
 
 		return redirect('gallery#' . $albumid . '/' . $photoid);

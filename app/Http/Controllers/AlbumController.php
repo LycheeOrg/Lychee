@@ -18,7 +18,6 @@ use App\Models\Photo;
 use App\Response;
 use App\SmartAlbums\SmartFactory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -232,35 +231,7 @@ class AlbumController extends Controller
 			'password' => 'string|nullable',
 		]);
 
-		switch ($request['albumID']) {
-			case 'starred':
-			case 'public':
-			case 'recent':
-			case 'unsorted':
-				return 'false';
-			default:
-				$album = Album::find($request['albumID']);
-				if ($album === null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-					return 'false';
-				}
-				if ($album->public == 1) {
-					if ($album->password === '') {
-						return 'true';
-					}
-					if ($this->sessionFunctions->has_visible_album($album->id)) {
-						return 'true';
-					}
-					if (Hash::check($request['password'], $album->password)) {
-						$this->albumsFunctions->unlockAlbums($request['password']);
-
-						return 'true';
-					}
-				}
-
-				return 'false';
-		}
+		return $this->albumsFunctions->unlockAlbum($request['albumID'], $request['password']);
 	}
 
 	/**
