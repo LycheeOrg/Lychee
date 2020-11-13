@@ -4,24 +4,24 @@
 
 namespace App\Http\Controllers;
 
-use App\ModelFunctions\AlbumsFunctions;
+use App\ModelFunctions\AlbumFunctions;
 use App\Models\Configs;
 use Illuminate\Http\Request;
 
 class RedirectController extends Controller
 {
 	/**
-	 * @var AlbumsFunctions
+	 * @var AlbumFunctions
 	 */
-	private $albumsFunctions;
+	private $albumFunctions;
 
 	/**
 	 * @param SessionFunctions $sessionFunctions
 	 */
 	public function __construct(
-		AlbumsFunctions $albumsFunctions
+		AlbumFunctions $albumFunctions
 	) {
-		$this->albumsFunctions = $albumsFunctions;
+		$this->albumFunctions = $albumFunctions;
 	}
 
 	/**
@@ -32,11 +32,11 @@ class RedirectController extends Controller
 	 */
 	public function album(Request $request, $albumid)
 	{
-		if ($request['password'] != '') {
-			if (Configs::get_value('unlock_password_photos_with_url_param', '0') === '1') {
-				$this->albumsFunctions->unlockAllAlbums($request['password']);
+		if ($request->filled('password')) {
+			if (Configs::get_value('unlock_password_photos_with_url_param', '0') == '1') {
+				$this->albumFunctions->unlockAllAlbums($request['password']);
 			} else {
-				$this->albumsFunctions->unlockAlbum($albumid, $request['password']);
+				$this->albumFunctions->unlockAlbum($albumid, $request['password']);
 			}
 		}
 
@@ -52,11 +52,11 @@ class RedirectController extends Controller
 	 */
 	public function photo(Request $request, $albumid, $photoid)
 	{
-		if ($request['password'] != '') {
-			if (Configs::get_value('unlock_password_photos_with_url_param', '0') === '1') {
-				$this->albumsFunctions->unlockAllAlbums($request['password']);
+		if ($request->filled('password')) {
+			if (Configs::get_value('unlock_password_photos_with_url_param', '0') == '1') {
+				$this->albumFunctions->unlockAllAlbums($request['password']);
 			} else {
-				$this->albumsFunctions->unlockAlbum($albumid, $request['password']);
+				$this->albumFunctions->unlockAlbum($albumid, $request['password']);
 			}
 		}
 

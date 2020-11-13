@@ -231,7 +231,7 @@ class AlbumController extends Controller
 			'password' => 'string|nullable',
 		]);
 
-		return $this->albumsFunctions->unlockAlbum($request['albumID'], $request['password']);
+		return $this->albumFunctions->unlockAlbum($request['albumID'], $request['password']) ? 'true' : 'false';
 	}
 
 	/**

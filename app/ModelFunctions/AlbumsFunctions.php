@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class AlbumsFunctions
 {
@@ -264,60 +263,5 @@ class AlbumsFunctions
 			->map(function (Album $album) {
 				return AlbumCast::toTagAlbum($album);
 			});
-	}
-
-	/**
-	 * Provided an password and an album, check if the album can be
-	 * unlocked. If yes, unlock all albums with the same password.
-	 */
-	public function unlockAlbum(string $albumid, string $password)
-	{
-		switch ($albumid) {
-			case 'starred':
-			case 'public':
-			case 'recent':
-			case 'unsorted':
-				return 'false';
-			default:
-				$album = Album::find($albumid);
-				if ($album === null) {
-					return 'false';
-				}
-				if ($album->public == 1) {
-					if ($album->password === '') {
-						return 'true';
-					}
-					if ($this->sessionFunctions->has_visible_album($album->id)) {
-						return 'true';
-					}
-					if (Hash::check($password, $album->password)) {
-						$this->unlockAllAlbums($password);
-
-						return 'true';
-					}
-				}
-
-				return 'false';
-		}
-	}
-
-	/**
-	 * Provided an password, add all the albums that the password unlocks.
-	 */
-	public function unlockAllAlbums(string $password)
-	{
-		// We add all the albums that the password unlocks so that the
-		// user is not repeatedly asked to enter the password as they
-		// browse through the hierarchy.  This should be safe as the
-		// list of such albums is not exposed to the user and is
-		// considered as the last access check criteria.
-		$albums = Album::whereNotNull('password')->where('password', '!=', '')->get();
-		$albumIDs = [];
-		foreach ($albums as $album) {
-			if (Hash::check($password, $album->password)) {
-				$albumIDs[] = $album->id;
-			}
-		}
-		$this->sessionFunctions->add_visible_albums($albumIDs);
 	}
 }

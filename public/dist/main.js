@@ -2798,7 +2798,14 @@ contextMenu.shareAlbum = function (albumID, e) {
 		} }, { title: build.iconic('envelope-closed') + 'Mail', fn: function fn() {
 			return album.share('mail');
 		} }, { title: build.iconic('link-intact') + lychee.locale['DIRECT_LINK'], fn: function fn() {
-			if (lychee.clipboardCopy(location.href)) loadingBar.show('success', lychee.locale['URL_COPIED_TO_CLIPBOARD']);
+			var url = window.location.origin + "/r/" + albumID;
+			if (album.json.password === '1') {
+				// Copy the url with prefilled password param
+				url += "?password=";
+			}
+			if (lychee.clipboardCopy(url)) {
+				loadingBar.show('success', lychee.locale['URL_COPIED_TO_CLIPBOARD']);
+			}
 		} }];
 
 	basicContext.show(items, e.originalEvent);
