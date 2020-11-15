@@ -546,7 +546,8 @@ class AlbumFunctions
 					if ($this->sessionFunctions->has_visible_album($album->id)) {
 						return true;
 					}
-					$password ??= '';
+					// $password ??= '';
+					$password = $password ?? '';
 					if (Hash::check($password, $album->password)) {
 						$this->unlockAllAlbums($password);
 
