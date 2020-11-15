@@ -524,8 +524,9 @@ class AlbumFunctions
 	/**
 	 * Provided an password and an album, check if the album can be
 	 * unlocked. If yes, unlock all albums with the same password.
+	 * ?string is not valid php 7.3 ...
 	 */
-	public function unlockAlbum(string $albumid, ?string $password): bool
+	public function unlockAlbum(string $albumid, $password): bool
 	{
 		switch ($albumid) {
 			case 'starred':
