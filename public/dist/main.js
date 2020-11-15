@@ -870,6 +870,18 @@ album.load = function (albumID) {
 		} else {
 			processData(data);
 
+			// save scroll position for this URL
+			if (data !== null && data.albums !== null && data.albums.length > 0) {
+				setTimeout(function () {
+					var urls = JSON.parse(localStorage.getItem('scroll'));
+					var urlWindow = window.location.href;
+
+					if (urls != null && urls[urlWindow]) {
+						$(window).scrollTop(urls[urlWindow]);
+					}
+				}, 500);
+			}
+
 			tabindex.makeFocusable(lychee.content);
 
 			if (lychee.active_focus_on_page_load) {
@@ -3594,11 +3606,38 @@ $(document).ready(function () {
 	// Fullscreen
 	.on('fullscreenchange mozfullscreenchange webkitfullscreenchange msfullscreenchange', lychee.fullscreenUpdate);
 
+	var rememberScrollPage = function rememberScrollPage(scrollPos) {
+
+		// only for albums with subalbums
+		if (album && album.json && album.json.albums && album.json.albums.length > 0) {
+			var urls = JSON.parse(localStorage.getItem('scroll'));
+			if (urls == null || urls.length < 1) {
+				urls = {};
+			}
+
+			var urlWindow = window.location.href;
+			var urlScroll = scrollPos;
+
+			urls[urlWindow] = urlScroll;
+
+			if (urlScroll < 1) {
+				delete urls[urlWindow];
+			}
+
+			localStorage.setItem('scroll', JSON.stringify(urls));
+		}
+	};
+
 	$(window)
 	// resize
 	.on('resize', function () {
 		if (visible.album() || visible.search()) view.album.content.justify();
 		if (visible.photo()) view.photo.onresize();
+	})
+	// remember scroll positions
+	.on('scroll', function () {
+		var topScroll = $(window).scrollTop();
+		rememberScrollPage(topScroll);
 	});
 
 	// Init
