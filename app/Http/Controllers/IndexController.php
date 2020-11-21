@@ -9,6 +9,7 @@ use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Page;
+use App\Metadata\LycheeVersion;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 
@@ -25,13 +26,19 @@ class IndexController extends Controller
 	private $symLinkFunctions;
 
 	/**
+	 * @var LycheeVersion
+	 */
+	private $lycheeVersion;
+
+	/**
 	 * @param ConfigFunctions  $configFunctions
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
-	public function __construct(ConfigFunctions $configFunctions, SymLinkFunctions $symLinkFunctions)
+	public function __construct(ConfigFunctions $configFunctions, SymLinkFunctions $symLinkFunctions, LycheeVersion $lycheeVersion)
 	{
 		$this->configFunctions = $configFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
+		$this->lycheeVersion = $lycheeVersion;
 	}
 
 	/**
@@ -83,6 +90,12 @@ class IndexController extends Controller
 	 */
 	public function gallery()
 	{
+		if ($this->lycheeVersion->getDBVersion()['version'] < $this->lycheeVersion->getFileVersion()['version']) {
+			// @codeCoverageIgnoreStart
+			return view('error.update', ['code' => '503', 'message' => 'Database version is behind, please apply migration.']);
+			// @codeCoverageIgnoreEnd
+		}
+
 		$this->symLinkFunctions->remove_outdated();
 		$infos = $this->configFunctions->get_pages_infos();
 
