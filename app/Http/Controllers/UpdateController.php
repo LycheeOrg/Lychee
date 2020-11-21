@@ -102,7 +102,7 @@ class UpdateController extends Controller
 
 			return '<pre>' . implode('\n', $output) . '</pre>';
 		} else {
-			return view('error.update', ['code' => '403', 'message' => 'Wrong password']);
+			return view('error.update', ['code' => '403', 'message' => 'Incorrect username or password']);
 		}
 	}
 }
