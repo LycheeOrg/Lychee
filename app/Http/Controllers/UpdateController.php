@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\ModelFunctions\SessionFunctions;
 use App\ControllerFunctions\Update\Apply as ApplyUpdate;
 use App\ControllerFunctions\Update\Check as CheckUpdate;
 use App\Metadata\LycheeVersion;
+use App\ModelFunctions\SessionFunctions;
 use App\Response;
-use Illuminate\Http\Request;
 use Exception;
+use Illuminate\Http\Request;
 
 /**
  * Class UpdateController.
@@ -34,7 +34,6 @@ class UpdateController extends Controller
 	 * @var LycheeVersion
 	 */
 	private $lycheeVersion;
-
 
 	/**
 	 * @param GitHubFunctions $gitHubFunctions
@@ -100,7 +99,8 @@ class UpdateController extends Controller
 			$output = [];
 			$this->applyUpdate->artisan($output);
 			$this->applyUpdate->filter($output);
-			return "<pre>" . implode('\n', $output) . "</pre>";
+
+			return '<pre>' . implode('\n', $output) . '</pre>';
 		} else {
 			return view('error.update', ['code' => '403', 'message' => 'Wrong password']);
 		}

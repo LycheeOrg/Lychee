@@ -112,7 +112,6 @@ class LycheeVersion
 		return ['version' => rtrim(@file_get_contents(base_path('version.md')))];
 	}
 
-
 	/**
 	 * Return the information with respect to Lychee.
 	 *

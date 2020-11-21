@@ -67,7 +67,7 @@ class Apply
 			chdir(base_path());
 			exec('composer install --no-dev --no-progress --no-suggest 2>&1', $output);
 			chdir(base_path('public'));
-			// @codeCoverageIgnoreEnd
+		// @codeCoverageIgnoreEnd
 		} else {
 			$output[] = 'Composer update are always dangerous when automated.';
 			$output[] = 'So we did not execute it.';
@@ -118,7 +118,7 @@ class Apply
 	}
 
 	/**
-	 * Clean coloring from the command line
+	 * Clean coloring from the command line.
 	 */
 	public function filter(array &$output)
 	{

@@ -5,11 +5,11 @@
 namespace App\Http\Controllers;
 
 use App\Locale\Lang;
+use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Page;
-use App\Metadata\LycheeVersion;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 
