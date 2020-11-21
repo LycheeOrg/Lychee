@@ -111,10 +111,18 @@ class Apply
 	 *
 	 * @param array $output
 	 */
-	private function artisan(array &$output)
+	public function artisan(array &$output)
 	{
 		Artisan::call('migrate', ['--force' => true]);
 		$this->str_to_array(Artisan::output(), $output);
+	}
+
+	/**
+	 * Clean coloring from the command line.
+	 */
+	public function filter(array &$output)
+	{
+		$output = preg_replace('/\033[[][0-9]*;*[0-9]*;*[0-9]*m/', '', $output);
 	}
 
 	/**
@@ -132,7 +140,7 @@ class Apply
 			$this->artisan($output);
 			$this->lycheeVersion->isRelease or $this->call_composer($output);
 		}
-		$output = preg_replace('/\033[[][0-9]*;*[0-9]*;*[0-9]*m/', '', $output);
+		$this->filter($output);
 
 		return $output;
 	}

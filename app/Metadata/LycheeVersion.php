@@ -97,9 +97,19 @@ class LycheeVersion
 	 *
 	 * @return array
 	 */
-	private function getDBVersion()
+	public function getDBVersion()
 	{
 		return ['version' => $this->format_version(Configs::get_value('version', '040000'))];
+	}
+
+	/**
+	 * Return the info about the version.md file.
+	 *
+	 * @return array
+	 */
+	public function getFileVersion()
+	{
+		return ['version' => rtrim(@file_get_contents(base_path('version.md')))];
 	}
 
 	/**
@@ -111,7 +121,7 @@ class LycheeVersion
 	{
 		if ($this->isRelease) {
 			// @codeCoverageIgnoreStart
-			return ['version' => rtrim(@file_get_contents(base_path('version.md')))];
+			return $this->getFileVersion();
 			// @codeCoverageIgnoreEnd
 		}
 

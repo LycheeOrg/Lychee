@@ -28,6 +28,7 @@ Route::feeds();
 Route::get('/', [IndexController::class, 'show'])->name('home')->middleware('installed');
 Route::get('/phpinfo', [IndexController::class, 'phpinfo'])->middleware('admin');
 Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware('installed');
+Route::match(['get', 'post'], '/migrate', [UpdateController::class, 'force'])->name('migrate');
 
 /*
  * TODO see to add better redirection functionality later.
