@@ -9,7 +9,7 @@ jobs:
 
     runs-on: ${{ matrix.operating-system }}
 
-    service:
+    services:
       postgres:
         image: postgres:10.10
         env:
