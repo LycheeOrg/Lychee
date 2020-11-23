@@ -24,6 +24,7 @@ Upgrade from v3 is straight forward. [Upgrade. &#187;](https://lycheeorg.github.
 
 ![Lychee](https://camo.githubusercontent.com/b9010f02c634219795950e034f511f4cf4af5c60/68747470733a2f2f732e656c6563746572696f75732e636f6d2f696d616765732f6c79636865652f312e6a706567)
 ![Lychee](https://camo.githubusercontent.com/5484591f0b15b6ba27d4845b292cc5d3a988b3b9/68747470733a2f2f732e656c6563746572696f75732e636f6d2f696d616765732f6c79636865652f322e6a706567)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FLycheeOrg%2FLychee.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FLycheeOrg%2FLychee?ref=badge_shield)
 
 Lychee is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely. Read more on our [website](https://LycheeOrg.github.io).
 
@@ -92,3 +93,6 @@ Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particula
 [frontend-shield]: https://img.shields.io/badge/-Lychee--Front-informational.svg?logo=github
 [docker-shield]: https://img.shields.io/badge/-Lychee--Docker-informational.svg?logo=github
 [gitter-shield]: https://img.shields.io/gitter/room/LycheeOrg/Lobby.svg?logo=gitter
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FLycheeOrg%2FLychee.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FLycheeOrg%2FLychee?ref=badge_large)
