@@ -9,6 +9,25 @@ jobs:
 
     runs-on: ${{ matrix.operating-system }}
 
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     strategy:
       matrix:
         operating-system: [ubuntu-20.04]
@@ -82,11 +101,6 @@ jobs:
       - name: setup PostGre Database
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
-          sudo sed -i 's/peer/trust/' /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
-          sudo echo /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
-          sudo cat /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
-          sudo service postgresql start
-          psql -c 'create database homestead_test;' -U postgres
           cp .github/workflows/.env.postgresql .env
 
       - name: setup SQLite Database
