@@ -26,7 +26,7 @@ jobs:
         php-versions: ['7.4']
         sql-versions: ['mysql', 'postgresql', 'sqlite']
 
-    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }} with ${{ matrix.sql-version }}
+    name: PHP ${{ matrix.php-versions }} - ${{ matrix.sql-versions }} - ${{ matrix.operating-system }}
 
     env:
       extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
@@ -84,20 +84,20 @@ jobs:
         run: composer install --prefer-dist --no-interaction --no-suggest
 
       - name: setup MySQL Database
-        if: ${{ matrix.sql-version == 'mysql' }}
+        if: ${{ matrix.sql-versions == 'mysql' }}
         run: |
           sudo /etc/init.d/mysql start
           mysql -uroot -proot -e 'create database homestead_test;'
           cp .github/workflows/.env.mariadb .env
 
       - name: setup PostGre Database
-        if: ${{ matrix.sql-version == 'postgresql' }}
+        if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
           psql -c 'create database homestead_test;' -U postgres
           cp .github/workflows/.env.postgresql .env
 
       - name: setup SQLite Database
-        if: ${{ matrix.sql-version == 'sqlite' }}
+        if: ${{ matrix.sql-versions == 'sqlite' }}
         run: |
           touch database/database.sqlite
           cp .github/workflows/.env.sqlite .env
