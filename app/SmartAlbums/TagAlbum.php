@@ -21,9 +21,7 @@ class TagAlbum extends SmartAlbum
 			$sql = $sql->where('tags', 'like', '%' . trim($tag) . '%');
 		}
 
-		return $sql->where(function ($q) {
-			return $this->filter($q);
-		});
+		return $sql->where(fn ($q) => $this->filter($q));
 	}
 
 	public function is_public()

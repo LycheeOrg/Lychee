@@ -88,10 +88,7 @@ class Cast
 	{
 		$album_array = self::toArray($album);
 
-		// php7.4: $album_array['albums'] = $children[$key]->map(fn ($e) => AlbumCast::toArrayWith($e[0], $e[1]));
-		$album_array['albums'] = $children->map(function ($e) {
-			return self::toArrayWith($e[0], $e[1]);
-		})->values();
+		$album_array['albums'] = $children->map(fn ($e) => self::toArrayWith($e[0], $e[1]))->values();
 		// we need values because we need to reset the keys for when logged in.
 
 		return $album_array;

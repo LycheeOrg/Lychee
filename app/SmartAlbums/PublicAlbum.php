@@ -14,9 +14,6 @@ class PublicAlbum extends SmartAlbum
 
 	public function get_photos(): Builder
 	{
-		// php7.4: return Photo::public()->where(fn ($q) => $this->filter($q));
-		return Photo::public()->where(function ($q) {
-			return $this->filter($q);
-		});
+		return Photo::public()->where(fn ($q) => $this->filter($q));
 	}
 }

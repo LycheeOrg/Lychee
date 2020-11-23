@@ -9,3 +9,4 @@ php artisan key:generate
 php artisan migrate
 vendor/bin/phpunit --verbose
 php artisan migrate:rollback
+rm -fr vendor

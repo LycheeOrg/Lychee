@@ -220,10 +220,7 @@ class AlbumFunctions
 			->limit(3)
 			->get();
 
-		// php7.4: return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
-		return $photos->map(function ($photo) {
-			return PhotoCast::toThumb($photo, $this->symLinkFunctions);
-		});
+		return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
 	}
 
 	public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
@@ -238,15 +235,7 @@ class AlbumFunctions
 			return $collection->push($reduced_child);
 		}, new BaseCollection());
 
-		// php7.4: $previousThumbIDs = $previous
-		// php7.4:	->flatMap(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))
-		// php7.4:	->all();
-		$previousThumbIDs = $reduced
-			->flatMap(function ($e) {
-				return $e[0]->map(function (Thumb $t) {
-					return $t->thumbID;
-				});
-			})->all();
+		$previousThumbIDs = $reduced->flatMap(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))->all();
 		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
 
 		return new Collection([$thumbs, $reduced]);
@@ -453,10 +442,7 @@ class AlbumFunctions
 
 				return new Collection();
 			}
-		)->reject(function ($a) {
-			return $a->isEmpty();
-		});
-		// php7.4: )->reject(fn ($a) => $a->isEmpty());
+		)->reject(fn ($a) => $a->isEmpty());
 	}
 
 	/**
@@ -511,9 +497,7 @@ class AlbumFunctions
 			}
 
 			return $collect;
-		}, new BaseCollection())->reject(function ($e) {
-			return $e->isEmpty();
-		});
+		}, new BaseCollection())->reject(fn ($e) => $e->isEmpty());
 	}
 
 	public static function is_tag_album(Album $album): bool

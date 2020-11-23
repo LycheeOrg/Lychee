@@ -9,34 +9,25 @@ git:
   depth: 3
 
 php:
-  - '7.3'
   - '7.4'
-#  - nightly
+
 env: 
-  - SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
-  - SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+  - SQL=mariadb EXIFTOOL=yes
+  - SQL=mariadb EXIFTOOL=no
 
 jobs:
   include:
-    - env: SQL=mariadb EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+    - env: SQL=mariadb EXIFTOOL=yes
       if: branch = master
-    - env: SQL=mariadb EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+    - env: SQL=mariadb EXIFTOOL=no
       if: branch = master
-    - env: SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
+    - env: SQL=postgresql EXIFTOOL=yes
       if: branch = master
-    - env: SQL=postgresql EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
+    - env: SQL=postgresql EXIFTOOL=no
       if: branch = master
-    - env: SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
+    - env: SQL=sqlite EXIFTOOL=yes
       if: branch = master
-    - env: SQL=postgresql EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
-      if: branch = master
-    - env: SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=yes
-      if: branch = master
-    - env: SQL=sqlite EXIFTOOL=yes TRAVIS_COMPOSER_DEV=no
-      if: branch = master
-    - env: SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=yes
-      if: branch = master
-    - env: SQL=sqlite EXIFTOOL=no TRAVIS_COMPOSER_DEV=no
+    - env: SQL=sqlite EXIFTOOL=no
       if: branch = master
 
 cache:
@@ -72,8 +63,8 @@ before_script:
   - composer self-update
 
 script:
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'yes' ] ; then bash test_dev.sh ; fi"
-  - sh -c "if [ '$TRAVIS_COMPOSER_DEV' = 'no' ] ; then bash test_dist.sh ; fi"
+  - bash test_dev.sh
+  - bash test_dist.sh
 
 after_success:
   - bash codecov.sh
