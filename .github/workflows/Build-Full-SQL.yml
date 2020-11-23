@@ -82,7 +82,7 @@ jobs:
       - name: setup PostGre Database
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
-          sudo sed -i  '/^local all all peer/ s/peer/trust/' /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
+          sudo sed -i 's/peer/trust/' /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
           sudo echo /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
           sudo cat /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
           sudo service postgresql start
