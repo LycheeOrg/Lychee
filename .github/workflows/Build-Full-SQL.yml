@@ -82,8 +82,8 @@ jobs:
       - name: setup PostGre Database
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
-          sudo apt-get install postgresql libpq-dev
           sudo service postgresql start
+          sudo -u postgres createuser --superuser postgres
           psql -c 'create database homestead_test;' -U postgres
           cp .github/workflows/.env.postgresql .env
 
