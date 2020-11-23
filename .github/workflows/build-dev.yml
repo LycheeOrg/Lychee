@@ -1,0 +1,62 @@
+name: Build-Dev
+
+# Run this workflow every time a new commit pushed to your repository
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-20.04
+    name: Tests
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Cache dependencies
+        uses: actions/cache@v1
+        with:
+          path: ~/.composer/cache/files
+          key: dependencies-composer-${{ hashFiles('composer.json') }}
+
+      - name: Setup PHP Action
+        uses: shivammathur/setup-php@2.8.0
+          with:
+          php-version: 7.4
+          extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
+          coverage: xdebug
+          tools: pecl, composer
+      
+      - name: Install imagick
+        run: printf "\n" | pecl install imagick
+      
+      - name: Install Exiftools
+        run: sudo apt-get -y install libimage-exiftool-perl
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-interaction --no-suggest
+
+      # - name: Install NPM dependencies
+      #   run: npm install
+
+      # - name: Compile assets
+      #   run: npm run production
+
+      # - name: Execute tests
+      #   run: vendor/bin/phpunit --verbose
+
+      # - name: Deploy
+      #   if: github.ref == 'refs/heads/master'
+      #   run: curl ${{ secrets.ENVOYER_HOOK }}?sha=${{ github.sha }}
