@@ -1,14 +1,16 @@
-name: Build-Dev
+name: Build-Full-SQL
 
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
   pull_request:
+    branches:
+      - master
 
 jobs:
   tests:
     runs-on: ubuntu-20.04
-    name: Tests
+    name: MySQL
     steps:
       # Checks out a copy of your repository on the ubuntu-latest machine
       - name: Checkout code
@@ -28,9 +30,6 @@ jobs:
           coverage: xdebug
           tools: pecl, composer
       
-      # - name: Install imagick
-      #   run: printf "\n" | pecl install imagick
-      
       - name: Install Exiftools
         run: sudo apt-get -y install libimage-exiftool-perl
 
@@ -47,6 +46,26 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-suggest
+
+      - name: setup Database
+        run: mysql -e 'create database homestead_test;'
+        run: cp .env.mysql.travis .env
+
+
+      - name: Check Syntax
+        run: vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run
+      
+      - name: Generate secure key
+        run: php artisan key:generate
+
+      - name: Migrate Database
+        run: php artisan migrate
+      
+      - name: Apply tests
+        run: vendor/bin/phpunit --verbose
+
+      - name: Make sure we can go backward
+        run: php artisan migrate:rollback
 
       # - name: Install NPM dependencies
       #   run: npm install
