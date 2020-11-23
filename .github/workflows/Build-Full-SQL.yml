@@ -83,7 +83,7 @@ jobs:
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
           sudo service postgresql start
-          psql  --host=localhost --username=postgres -c 'create database homestead_test;'
+          psql  --host=localhost --username=postgres --no-password -c 'create database homestead_test;'
           cp .github/workflows/.env.postgresql .env
 
       - name: setup SQLite Database
