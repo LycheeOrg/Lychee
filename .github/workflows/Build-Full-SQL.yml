@@ -73,8 +73,8 @@ jobs:
       - name: setup Database
         run: |
           sudo /etc/init.d/mysql start
-          mysql -e 'create database homestead_test;'
-          cp .env.mysql.travis .env
+          mysql -uroot -proot -e 'create database homestead_test;'
+          cp .github/workflows/.env.mariadb .env
 
       - name: Check Syntax
         run: vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run
