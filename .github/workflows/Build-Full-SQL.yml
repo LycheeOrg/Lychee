@@ -9,14 +9,37 @@ on:
 
 jobs:
   tests:
-    runs-on: ubuntu-20.04
-    name: MySQL
+
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, ubuntu-20.04]
+        php-versions: ['7.4']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+    env:
+      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
+      key: cache-v1 # can be any string, change to clear the extension cache.
     steps:
       # Checks out a copy of your repository on the ubuntu-latest machine
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Cache dependencies
+      - name: Setup cache environment
+        id: extcache
+        uses: shivammathur/cache-extensions@v1
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: ${{ env.extensions }}
+          key: ${{ env.key }}
+
+      - name: Cache PHP Extensions
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.extcache.outputs.dir }}
+          key: ${{ steps.extcache.outputs.key }}
+          restore-keys: ${{ steps.extcache.outputs.key }}
+
+      - name: Cache Composer Dependencies
         uses: actions/cache@v1
         with:
           path: ~/.composer/cache/files
@@ -25,8 +48,8 @@ jobs:
       - name: Setup PHP Action
         uses: shivammathur/setup-php@2.8.0
         with:
-          php-version: 7.4
-          extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
+          php-version: ${{ matrix.php-versions }}
+          extensions: ${{ env.extensions }}
           coverage: xdebug
           tools: pecl, composer
       
