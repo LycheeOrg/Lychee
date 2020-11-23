@@ -1,4 +1,4 @@
-name: Build-Full-SQL
+name: Build-Dist
 
 # Run this workflow every time a new commit pushed to your repository
 on:
@@ -89,36 +89,33 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-suggest
+        run: composer install --prefer-dist --no-interaction --no-suggest --no-dev
 
-      - name: Check Syntax
-        run: vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run
+      - name: Build Dist
+        run: |
+          make dist-clean
+          cd Lychee
 
       - name: setup MySQL Database
         if: ${{ matrix.sql-versions == 'mysql' }}
         run: |
           sudo service mysql start
           mysql -uroot -proot -e 'create database homestead_test;'
-          cp .github/workflows/.env.mariadb .env
+          cp ../.github/workflows/.env.mariadb .env
 
       - name: setup PostGre Database
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
-          cp .github/workflows/.env.postgresql .env
+          cp ../.github/workflows/.env.postgresql .env
 
       - name: setup SQLite Database
         if: ${{ matrix.sql-versions == 'sqlite' }}
         run: |
           touch database/database.sqlite
-          cp .github/workflows/.env.sqlite .env
+          cp ../.github/workflows/.env.sqlite .env
 
-      - name: Generate secure key & Migrate
+      - name: Generate secure key & Migrate & go backward
         run: |
           php artisan key:generate
           php artisan migrate
-      
-      - name: Apply tests
-        run: vendor/bin/phpunit --verbose
-
-      - name: Make sure we can go backward
-        run: php artisan migrate:rollback
+          php artisan migrate:rollback
