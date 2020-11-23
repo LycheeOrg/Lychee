@@ -83,6 +83,7 @@ jobs:
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
           sudo sed -i  '/^local all all peer/ s/peer/trust/' /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
+          sudo echo /etc/postgresql/$(ls /etc/postgresql)/main/pg_hba.conf
           sudo service postgresql start
           psql -c 'create database homestead_test;' -U postgres
           cp .github/workflows/.env.postgresql .env
