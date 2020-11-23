@@ -17,7 +17,6 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-        env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: github_actions
