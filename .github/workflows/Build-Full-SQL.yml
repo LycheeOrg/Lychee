@@ -48,8 +48,9 @@ jobs:
         run: composer install --prefer-dist --no-interaction --no-suggest
 
       - name: setup Database
-        run: mysql -e 'create database homestead_test;'
-        run: cp .env.mysql.travis .env
+        run: |
+          mysql -e 'create database homestead_test;'
+          cp .env.mysql.travis .env
 
 
       - name: Check Syntax
