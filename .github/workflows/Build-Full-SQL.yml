@@ -82,8 +82,10 @@ jobs:
       - name: setup PostGre Database
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
+          postgresql_v=$(ls /etc/postgresql)
+          sudo sed -i  '/^local all all peer/ s/peer/trust/' /etc/postgresql/$(postgresql_v)/main/pg_hba.conf
           sudo service postgresql start
-          psql  --host=localhost --username=postgres --no-password -c 'create database homestead_test;'
+          psql -c 'create database homestead_test;' -U postgres
           cp .github/workflows/.env.postgresql .env
 
       - name: setup SQLite Database
