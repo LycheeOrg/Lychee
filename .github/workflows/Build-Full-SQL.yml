@@ -120,5 +120,11 @@ jobs:
       - name: Apply tests
         run: vendor/bin/phpunit --verbose
 
+      - name: Codecov
+        uses: codecov/codecov-action@v1.0.15
+        with:
+          # file: ./coverage.xml # optional
+          verbose: true # optional (default = false)
+
       - name: Make sure we can go backward
         run: php artisan migrate:rollback
