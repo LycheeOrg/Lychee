@@ -3,9 +3,6 @@ name: Build-Full-SQL
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
-  pull_request:
-    branches:
-      - master
 
 jobs:
   tests:
@@ -15,12 +12,23 @@ jobs:
       matrix:
         operating-system: [ubuntu-20.04]
         php-versions: ['7.4']
-    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }}
+        sql-versions: ['mysql', 'postgresql', 'sqlite']
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }} with ${{ matrix.sql-version }}
+    service:
+      postgres:
+        image: postgres:10.10
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: db_test
+        ports:
+          - 5432/tcp
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     env:
       extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
       key: cache-v1 # can be any string, change to clear the extension cache.
     steps:
-      # Checks out a copy of your repository on the ubuntu-latest machine
+      # Checks out a copy of your repository on the ubuntu machine
       - name: Checkout code
         uses: actions/checkout@v2
 
@@ -70,11 +78,24 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-suggest
 
-      - name: setup Database
+      - name: setup MySQL Database
+        if: ${{ matrix.sql-version == 'mysql' }}
         run: |
           sudo /etc/init.d/mysql start
           mysql -uroot -proot -e 'create database homestead_test;'
           cp .github/workflows/.env.mariadb .env
+
+      - name: setup PostGre Database
+        if: ${{ matrix.sql-version == 'postgresql' }}
+        run: |
+          psql -c 'create database homestead_test;' -U postgres
+          cp .github/workflows/.env.postgresql .env
+
+      - name: setup SQLite Database
+        if: ${{ matrix.sql-version == 'sqlite' }}
+        run: |
+          touch database/database.sqlite
+          cp .github/workflows/.env.sqlite .env
 
       - name: Check Syntax
         run: vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run
@@ -90,16 +111,3 @@ jobs:
 
       - name: Make sure we can go backward
         run: php artisan migrate:rollback
-
-      # - name: Install NPM dependencies
-      #   run: npm install
-
-      # - name: Compile assets
-      #   run: npm run production
-
-      # - name: Execute tests
-      #   run: vendor/bin/phpunit --verbose
-
-      # - name: Deploy
-      #   if: github.ref == 'refs/heads/master'
-      #   run: curl ${{ secrets.ENVOYER_HOOK }}?sha=${{ github.sha }}
