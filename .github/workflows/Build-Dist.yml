@@ -94,28 +94,28 @@ jobs:
       - name: Build Dist
         run: |
           make dist-clean
-          cd Lychee
 
       - name: setup MySQL Database
         if: ${{ matrix.sql-versions == 'mysql' }}
         run: |
           sudo service mysql start
           mysql -uroot -proot -e 'create database homestead_test;'
-          cp ../.github/workflows/.env.mariadb .env
+          cp .github/workflows/.env.mariadb Lychee/.env
 
       - name: setup PostGre Database
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
-          cp ../.github/workflows/.env.postgresql .env
+          cp .github/workflows/.env.postgresql Lychee/.env
 
       - name: setup SQLite Database
         if: ${{ matrix.sql-versions == 'sqlite' }}
         run: |
           touch database/database.sqlite
-          cp ../.github/workflows/.env.sqlite .env
+          cp .github/workflows/.env.sqlite Lychee/.env
 
       - name: Generate secure key & Migrate & go backward
         run: |
+          cd Lychee
           php artisan key:generate
           php artisan migrate
           php artisan migrate:rollback
