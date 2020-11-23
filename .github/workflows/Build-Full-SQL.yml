@@ -8,12 +8,7 @@ jobs:
   tests:
 
     runs-on: ${{ matrix.operating-system }}
-    strategy:
-      matrix:
-        operating-system: [ubuntu-20.04]
-        php-versions: ['7.4']
-        sql-versions: ['mysql', 'postgresql', 'sqlite']
-    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }} with ${{ matrix.sql-version }}
+
     service:
       postgres:
         image: postgres:10.10
@@ -24,9 +19,19 @@ jobs:
         ports:
           - 5432/tcp
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    strategy:
+      matrix:
+        operating-system: [ubuntu-20.04]
+        php-versions: ['7.4']
+        sql-versions: ['mysql', 'postgresql', 'sqlite']
+
+    name: PHP ${{ matrix.php-versions }} Test on ${{ matrix.operating-system }} with ${{ matrix.sql-version }}
+
     env:
       extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
       key: cache-v1 # can be any string, change to clear the extension cache.
+
     steps:
       # Checks out a copy of your repository on the ubuntu machine
       - name: Checkout code
