@@ -9,17 +9,6 @@ jobs:
 
     runs-on: ${{ matrix.operating-system }}
 
-    services:
-      postgres:
-        image: postgres:10.10
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: db_test
-        ports:
-          - 5432/tcp
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
     strategy:
       matrix:
         operating-system: [ubuntu-20.04]
@@ -86,13 +75,15 @@ jobs:
       - name: setup MySQL Database
         if: ${{ matrix.sql-versions == 'mysql' }}
         run: |
-          sudo /etc/init.d/mysql start
+          sudo service mysql start
           mysql -uroot -proot -e 'create database homestead_test;'
           cp .github/workflows/.env.mariadb .env
 
       - name: setup PostGre Database
         if: ${{ matrix.sql-versions == 'postgresql' }}
         run: |
+          sudo apt-get install postgresql libpq-dev
+          sudo service postgresql start
           psql -c 'create database homestead_test;' -U postgres
           cp .github/workflows/.env.postgresql .env
 
