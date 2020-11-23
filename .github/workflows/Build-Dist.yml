@@ -116,6 +116,7 @@ jobs:
       - name: Generate secure key & Migrate & go backward
         run: |
           cd Lychee
+          pwd
           php artisan key:generate
           php artisan migrate
           php artisan migrate:rollback
