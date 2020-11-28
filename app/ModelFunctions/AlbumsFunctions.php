@@ -260,8 +260,6 @@ class AlbumsFunctions
 		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', true);
 
 		return $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder)
-			->map(function (Album $album) {
-				return AlbumCast::toTagAlbum($album);
-			});
+			->map(fn (Album $album) => AlbumCast::toTagAlbum($album));
 	}
 }

@@ -95,12 +95,15 @@ class UpdateController extends Controller
 			return redirect()->route('home');
 		}
 
-		if ($this->sessionFunctions->is_admin() || $this->sessionFunctions->log_as_admin($request['username'] ?? '', $request['password'] ?? '', $request->ip())) {
+		if (
+			$this->sessionFunctions->is_admin() || $this->sessionFunctions->noLogin() ||
+			$this->sessionFunctions->log_as_admin($request['username'] ?? '', $request['password'] ?? '', $request->ip())
+		) {
 			$output = [];
 			$this->applyUpdate->artisan($output);
 			$this->applyUpdate->filter($output);
 
-			return '<pre>' . implode('\n', $output) . '</pre>';
+			return '<pre>' . implode("\n", $output) . '</pre>';
 		} else {
 			return view('error.update', ['code' => '403', 'message' => 'Incorrect username or password']);
 		}
