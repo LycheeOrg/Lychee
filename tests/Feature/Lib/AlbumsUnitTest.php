@@ -420,7 +420,7 @@ class AlbumsUnitTest
 		int $code = 200,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/Albums/RebuildTakestamps');
+		$response = $testCase->get('/Albums/RebuildTakestamps');
 		$response->assertStatus($code);
 		if ($result != 'true') {
 			$response->assertSee($result, false);
