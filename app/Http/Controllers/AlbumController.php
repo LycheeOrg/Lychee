@@ -863,6 +863,7 @@ class AlbumController extends Controller
 	public function RebuildTakestamps(Request $request)
 	{
 		AlbumUpdate::reset_takestamp();
-		echo 'done';
+
+		return 'true';
 	}
 }
