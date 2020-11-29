@@ -852,4 +852,18 @@ class AlbumController extends Controller
 
 		return $response;
 	}
+
+	/**
+	 * Return the archive of the pictures of the album and its subalbums.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string|StreamedResponse
+	 */
+	public function RebuildTakestamps(Request $request)
+	{
+		AlbumUpdate::reset_takestamp();
+
+		return 'true';
+	}
 }
