@@ -64,6 +64,7 @@ class ViewController extends Controller
 		}
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+		$rss_enable = (Configs::get_value('rss_enable', '0') == '1') ? true : false;
 
 		$url = config('app.url') . $request->server->get('REQUEST_URI');
 		$picture = config('app.url') . '/uploads/' . $dir . '/' . $photo->url;
@@ -73,6 +74,7 @@ class ViewController extends Controller
 			'photo' => $photo,
 			'picture' => $picture,
 			'title' => $title,
+			'rss_enable' => $rss_enable
 		]);
 	}
 }
