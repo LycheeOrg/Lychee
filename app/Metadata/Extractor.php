@@ -114,8 +114,13 @@ class Extractor
 			// this can throw an exception in the case of Exiftool adapter!
 			$exif = $reader->read($filename);
 		} catch (\Exception $e) {
-			// Use Php native tools
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			$exif = false;
+		}
+
+		if ($exif === false) {
+			Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
+			// Use Php native tools
 			$reader = Reader::factory(Reader::TYPE_NATIVE);
 			$exif = $reader->read($filename);
 		}
