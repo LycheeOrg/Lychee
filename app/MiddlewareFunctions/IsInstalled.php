@@ -30,6 +30,8 @@ class IsInstalled
 			if (Schema::hasTable('configs')) {
 				return true;
 			}
+
+			return false;
 		} catch (QueryException $e) {
 			return false;
 		}
