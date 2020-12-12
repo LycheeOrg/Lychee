@@ -4,6 +4,7 @@
 
 namespace App\Http\Middleware;
 
+use App\MiddlewareFunctions\IsInstalled;
 use App\ModelFunctions\SessionFunctions;
 use Closure;
 use Illuminate\Http\Request;
@@ -30,6 +31,10 @@ class AdminCheck
 	 */
 	public function handle($request, Closure $next)
 	{
+		if (!IsInstalled::assert()) {
+			return $next($request);
+		}
+
 		if (!$this->sessionFunctions->is_admin()) {
 			return response('false');
 		}
