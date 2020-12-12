@@ -2810,7 +2810,7 @@ contextMenu.shareAlbum = function (albumID, e) {
 		} }, { title: build.iconic('envelope-closed') + 'Mail', fn: function fn() {
 			return album.share('mail');
 		} }, { title: build.iconic('link-intact') + lychee.locale['DIRECT_LINK'], fn: function fn() {
-			var url = window.location.origin + "/r/" + albumID;
+			var url = lychee.getBaseUrl() + "r/" + albumID;
 			if (album.json.password === '1') {
 				// Copy the url with prefilled password param
 				url += "?password=";
