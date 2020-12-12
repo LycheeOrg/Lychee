@@ -43,7 +43,7 @@ class FrameController extends Controller
 		$infos = $this->configFunctions->get_pages_infos();
 		$title = Configs::get_value('site_title');
 
-		return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos]);
+		return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'rss_enable' => false]);
 	}
 
 	/**
