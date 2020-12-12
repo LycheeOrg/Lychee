@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Assets\Helpers;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
+use App\Legacy\Legacy;
 use App\Locale\Lang;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
@@ -49,13 +50,9 @@ class SettingsController extends Controller
 		$oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
 		$oldUsername = $request->has('oldUsername') ? $request['oldUsername'] : '';
 
-		// LEGACY
-		// $configs = Configs::get();
-		// if ($configs['password'] === '' && $configs['username'] === '') {
-		// 	Configs::set('username', bcrypt($request['username']));
-		// 	Configs::set('password', bcrypt($request['password']));
-		// 	return 'true';
-		// }
+		if (Legacy::SetPassword($request)) {
+			return 'true';
+		}
 
 		// > 4.0.8
 		$adminUser = User::find(0);

@@ -7,11 +7,29 @@ use App\Models\Logs;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
+/**
+ * Stuff we need to delete in the future.
+ */
 class Legacy
 {
 	public static function resetAdmin(): void
 	{
 		Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['value' => '']);
+	}
+
+	public static function SetPassword($request)
+	{
+		$configs = Configs::get();
+		if (Configs::get('version', '040000') < '040008') {
+			if ($configs['password'] === '' && $configs['username'] === '') {
+				Configs::set('username', bcrypt($request['username']));
+				Configs::set('password', bcrypt($request['password']));
+
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public static function noLogin(): bool
