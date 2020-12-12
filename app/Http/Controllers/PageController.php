@@ -50,6 +50,7 @@ class PageController extends Controller
 
 		$infos = $this->configFunctions->get_pages_infos();
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+		$rss_enable = (Configs::get_value('rss_enable', '0') == '1') ? true : false;
 		$menus = Page::menu()->get();
 
 		$contents = $page->content;
@@ -57,7 +58,7 @@ class PageController extends Controller
 		$page_config['show_hosted_by'] = false;
 		$page_config['display_socials'] = false;
 
-		return view('page', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'contents' => $contents, 'page_config' => $page_config]);
+		return view('page', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'contents' => $contents, 'page_config' => $page_config, 'rss_enable' => $rss_enable]);
 	}
 
 	/**

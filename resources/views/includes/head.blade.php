@@ -13,6 +13,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-@include('feed::links')
+@if($rss_enable)
+  @include('feed::links')
+@endif
 
 @yield('head-meta')

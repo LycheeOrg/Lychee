@@ -58,12 +58,13 @@ class IndexController extends Controller
 			$menus = Page::menu()->get();
 
 			$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+			$rss_enable = (Configs::get_value('rss_enable', '0') == '1') ? true : false;
 
 			$page_config = [];
 			$page_config['show_hosted_by'] = false;
 			$page_config['display_socials'] = false;
 
-			return view('landing', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'page_config' => $page_config]);
+			return view('landing', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'menus' => $menus, 'page_config' => $page_config, 'rss_enable' => $rss_enable]);
 		}
 
 		return $this->gallery();
@@ -103,10 +104,11 @@ class IndexController extends Controller
 		$lang['language'] = Configs::get_value('lang');
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
+		$rss_enable = (Configs::get_value('rss_enable', '0') == '1') ? true : false;
 		$page_config = [];
 		$page_config['show_hosted_by'] = true;
 		$page_config['display_socials'] = Configs::get_value('display_social_in_gallery', '0') == '1';
 
-		return view('gallery', ['locale' => $lang, 'title' => $title, 'infos' => $infos,  'page_config' => $page_config]);
+		return view('gallery', ['locale' => $lang, 'title' => $title, 'infos' => $infos,  'page_config' => $page_config, 'rss_enable' => $rss_enable]);
 	}
 }
