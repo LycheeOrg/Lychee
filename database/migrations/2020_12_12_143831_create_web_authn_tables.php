@@ -15,11 +15,7 @@ class CreateWebAuthnTables extends Migration
 	public function up()
 	{
 		Schema::create('web_authn_credentials', function (Blueprint $table) {
-			if ($table->engine === 'mysql') {
-				$table->addColumn('tinyblob', 'id');
-			} else {
-				$table->binary('id');
-			}
+			$table->string('id', 255);
 
 			// Change accordingly for your users table if you need to.
 			$table->unsignedBigInteger('user_id');
@@ -43,12 +39,6 @@ class CreateWebAuthnTables extends Migration
 
 			$table->primary(['id', 'user_id']);
 		});
-
-		Schema::create('web_authn_recoveries', function (Blueprint $table) {
-			$table->string('email')->index();
-			$table->string('token');
-			$table->timestamp('created_at')->nullable();
-		});
 	}
 
 	/**
@@ -59,6 +49,5 @@ class CreateWebAuthnTables extends Migration
 	public function down()
 	{
 		Schema::dropIfExists('web_authn_credentials');
-		Schema::dropIfExists('web_authn_recoveries');
 	}
 }
