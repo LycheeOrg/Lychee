@@ -29,7 +29,7 @@ class AlbumsUnitTest
 			'parent_id' => $parent_id,
 		];
 
-		$response = $testCase->post('/api/Album::add', $params);
+		$response = $testCase->json('POST', '/api/Album::add', $params);
 		$response->assertStatus(200);
 		if ($result == 'true') {
 			$response->assertDontSee('false');
@@ -62,7 +62,7 @@ class AlbumsUnitTest
 			'tags' => $tags,
 		];
 
-		$response = $testCase->post('/api/Album::addByTags', $params);
+		$response = $testCase->json('POST', '/api/Album::addByTags', $params);
 		$response->assertStatus(200);
 		if ($result == 'true') {
 			$response->assertDontSee('false');
@@ -88,7 +88,7 @@ class AlbumsUnitTest
 		string $to,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::move', [
+		$response = $testCase->json('POST', '/api/Album::move', [
 			'albumIDs' => $to . ',' . $ids,
 		]);
 		$response->assertStatus(200);
@@ -113,7 +113,7 @@ class AlbumsUnitTest
 		TestCase &$testCase,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Albums::get', []);
+		$response = $testCase->json('POST', '/api/Albums::get', []);
 		$response->assertOk();
 		if ($result != 'true') {
 			$response->assertSee($result, false);
@@ -138,7 +138,8 @@ class AlbumsUnitTest
 		string $password = '',
 		string $result = 'true'
 	) {
-		$response = $testCase->post(
+		$response = $testCase->json(
+			'POST',
 			'/api/Album::get',
 			['albumID' => $id, 'password' => $password]
 		);
@@ -162,7 +163,8 @@ class AlbumsUnitTest
 		string $password = '',
 		string $result = 'true'
 	) {
-		$response = $testCase->post(
+		$response = $testCase->json(
+			'POST',
 			'/api/Album::getPublic',
 			['albumID' => $id, 'password' => $password]
 		);
@@ -179,7 +181,7 @@ class AlbumsUnitTest
 	 */
 	public function see_in_albums(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Albums::get', []);
+		$response = $testCase->json('POST', '/api/Albums::get', []);
 		$response->assertOk();
 		$response->assertSee($id, false);
 	}
@@ -193,7 +195,7 @@ class AlbumsUnitTest
 	 */
 	public function dont_see_in_albums(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Albums::get', []);
+		$response = $testCase->json('POST', '/api/Albums::get', []);
 		$response->assertOk();
 		$response->assertDontSee($id, false);
 	}
@@ -212,7 +214,8 @@ class AlbumsUnitTest
 		string $title,
 		string $result = 'true'
 	) {
-		$response = $testCase->post(
+		$response = $testCase->json(
+			'POST',
 			'/api/Album::setTitle',
 			['albumIDs' => $id, 'title' => $title]
 		);
@@ -234,7 +237,8 @@ class AlbumsUnitTest
 		string $description,
 		string $result = 'true'
 	) {
-		$response = $testCase->post(
+		$response = $testCase->json(
+			'POST',
 			'/api/Album::setDescription',
 			['albumID' => $id, 'description' => $description]
 		);
@@ -256,7 +260,7 @@ class AlbumsUnitTest
 		string $license,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::setLicense', [
+		$response = $testCase->json('POST', '/api/Album::setLicense', [
 			'albumID' => $id,
 			'license' => $license,
 		]);
@@ -280,7 +284,7 @@ class AlbumsUnitTest
 		string $orderPhotos,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::setSorting', [
+		$response = $testCase->json('POST', '/api/Album::setSorting', [
 			'albumID' => $id,
 			'typePhotos' => $typePhotos,
 			'orderPhotos' => $orderPhotos,
@@ -309,7 +313,7 @@ class AlbumsUnitTest
 		int $share_button_visible = 1,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::setPublic', [
+		$response = $testCase->json('POST', '/api/Album::setPublic', [
 			'full_photo' => $full_photo,
 			'albumID' => $id,
 			'public' => $public,
@@ -333,7 +337,7 @@ class AlbumsUnitTest
 		string $tags,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::setShowTags', [
+		$response = $testCase->json('POST', '/api/Album::setShowTags', [
 			'albumID' => $id,
 			'show_tags' => $tags,
 		]);
@@ -372,7 +376,7 @@ class AlbumsUnitTest
 		string $id,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::delete', ['albumIDs' => $id]);
+		$response = $testCase->json('POST', '/api/Album::delete', ['albumIDs' => $id]);
 		$response->assertOk();
 		$response->assertSee($result, false);
 	}
@@ -385,7 +389,7 @@ class AlbumsUnitTest
 		int $code = 200,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Albums::getPositionData', []);
+		$response = $testCase->json('POST', '/api/Albums::getPositionData', []);
 		$response->assertStatus($code);
 		if ($result != 'true') {
 			$response->assertSee($result, false);
@@ -403,7 +407,7 @@ class AlbumsUnitTest
 		int $code = 200,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Album::getPositionData', ['albumID' => $id, 'includeSubAlbums' => 'false']);
+		$response = $testCase->json('POST', '/api/Album::getPositionData', ['albumID' => $id, 'includeSubAlbums' => 'false']);
 		$response->assertStatus($code);
 		if ($result != 'true') {
 			$response->assertSee($result, false);

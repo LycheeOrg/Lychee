@@ -58,6 +58,7 @@ class SharingController extends Controller
 				});
 
 			$users = User::select(['id', 'username'])
+				->where('id', '>', 0)
 				->orderBy('username', 'ASC')->get();
 		} else {
 			$shared = DB::table('user_album')
@@ -85,6 +86,7 @@ class SharingController extends Controller
 				});
 
 			$users = User::select(['id', 'username'])
+				->where('id', '>', 0)
 				->orderBy('username', 'ASC')->get();
 		}
 
@@ -110,7 +112,7 @@ class SharingController extends Controller
 		$array_albumIDs = explode(',', $request['albumIDs']);
 		sort($array_albumIDs);
 
-		$users = User::select('id', 'username')->all();
+		$users = User::select('id', 'username')->where('id', '>', 0)->get();
 		$shared = DB::table('user_album')
 			->select('user_id', 'album_id')
 			->whereIn('album_id', $array_albumIDs)

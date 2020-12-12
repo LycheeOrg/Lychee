@@ -79,7 +79,7 @@ class PhotosUnitTest
 		string $photo_id,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Photo::get', [
+		$response = $testCase->json('POST', '/api/Photo::get', [
 			'photoID' => $photo_id,
 		]);
 		$response->assertStatus(200);
@@ -98,7 +98,7 @@ class PhotosUnitTest
 	 */
 	public function see_in_unsorted(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Album::get', [
+		$response = $testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
 		$response->assertStatus(200);
@@ -113,7 +113,7 @@ class PhotosUnitTest
 	 */
 	public function dont_see_in_unsorted(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Album::get', [
+		$response = $testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
 		$response->assertStatus(200);
@@ -128,7 +128,7 @@ class PhotosUnitTest
 	 */
 	public function see_in_recent(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Album::get', [
+		$response = $testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'recent',
 		]);
 		$response->assertStatus(200);
@@ -143,7 +143,7 @@ class PhotosUnitTest
 	 */
 	public function dont_see_in_recent(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Album::get', [
+		$response = $testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'recent',
 		]);
 		$response->assertStatus(200);
@@ -158,7 +158,7 @@ class PhotosUnitTest
 	 */
 	public function see_in_shared(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Album::get', [
+		$response = $testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'public',
 		]);
 		$response->assertStatus(200);
@@ -173,7 +173,7 @@ class PhotosUnitTest
 	 */
 	public function dont_see_in_shared(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Album::get', [
+		$response = $testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'public',
 		]);
 		$response->assertStatus(200);
@@ -188,7 +188,7 @@ class PhotosUnitTest
 	 */
 	public function see_in_favorite(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Album::get', [
+		$response = $testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'starred',
 		]);
 		$response->assertStatus(200);
@@ -203,7 +203,7 @@ class PhotosUnitTest
 	 */
 	public function dont_see_in_favorite(TestCase &$testCase, string $id)
 	{
-		$response = $testCase->post('/api/Album::get', [
+		$response = $testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'starred',
 		]);
 		$response->assertStatus(200);
@@ -227,7 +227,7 @@ class PhotosUnitTest
 		/**
 		 * Try to set the title.
 		 */
-		$response = $testCase->post('/api/Photo::setTitle', [
+		$response = $testCase->json('POST', '/api/Photo::setTitle', [
 			'title' => $title,
 			'photoIDs' => $id,
 		]);
@@ -252,7 +252,7 @@ class PhotosUnitTest
 		/**
 		 * Try to set the description.
 		 */
-		$response = $testCase->post('/api/Photo::setDescription', [
+		$response = $testCase->json('POST', '/api/Photo::setDescription', [
 			'description' => $description,
 			'photoID' => $id,
 		]);
@@ -272,7 +272,7 @@ class PhotosUnitTest
 		string $id,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Photo::setStar', [
+		$response = $testCase->json('POST', '/api/Photo::setStar', [
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus(200);
@@ -293,7 +293,7 @@ class PhotosUnitTest
 		string $tags,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Photo::setTags', [
+		$response = $testCase->json('POST', '/api/Photo::setTags', [
 			'photoIDs' => $id,
 			'tags' => $tags,
 		]);
@@ -313,7 +313,7 @@ class PhotosUnitTest
 		string $id,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Photo::setPublic', [
+		$response = $testCase->json('POST', '/api/Photo::setPublic', [
 			'photoID' => $id,
 		]);
 		$response->assertStatus(200);
@@ -334,7 +334,7 @@ class PhotosUnitTest
 		string $license,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Photo::setLicense', [
+		$response = $testCase->json('POST', '/api/Photo::setLicense', [
 			'photoID' => $id,
 			'license' => $license,
 		]);
@@ -356,7 +356,7 @@ class PhotosUnitTest
 		string $id,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Photo::setAlbum', [
+		$response = $testCase->json('POST', '/api/Photo::setAlbum', [
 			'photoIDs' => $id,
 			'albumID' => $album_id,
 		]);
@@ -376,7 +376,7 @@ class PhotosUnitTest
 		string $id,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Photo::duplicate', [
+		$response = $testCase->json('POST', '/api/Photo::duplicate', [
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus(200);
@@ -414,7 +414,7 @@ class PhotosUnitTest
 		string $id,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Photo::delete', [
+		$response = $testCase->json('POST', '/api/Photo::delete', [
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus(200);
@@ -439,7 +439,7 @@ class PhotosUnitTest
 		string $album_id = '0',
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Import::server', [
+		$response = $testCase->json('POST', '/api/Import::server', [
 			'function' => 'Import::server',
 			'albumID' => $album_id,
 			'path' => $path,
@@ -458,7 +458,7 @@ class PhotosUnitTest
 		string $result = 'true',
 		int $code = 200
 	) {
-		$response = $testCase->post('/api/PhotoEditor::rotate', [
+		$response = $testCase->json('POST', '/api/PhotoEditor::rotate', [
 			'photoID' => $id,
 			'direction' => $direction,
 		]);

@@ -8,7 +8,7 @@ use App;
 use App\Exceptions\NotLoggedInException;
 use App\Exceptions\RequestAdminDataException;
 use App\Exceptions\UserNotFoundException;
-use App\Models\Configs;
+use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -120,18 +120,16 @@ class SessionFunctions
 	 */
 	public function noLogin()
 	{
-		$configs = Configs::get();
-
-		// Check if login credentials exist and login if they don't
-		if (
-			isset($configs['username']) && $configs['username'] === '' &&
-			isset($configs['password']) && $configs['password'] === ''
-		) {
+		$adminUser = User::find(0);
+		if ($adminUser->password === '' && $adminUser->username === '') {
 			Session::put('login', true);
 			Session::put('UserID', 0);
+			unset($adminUser);
 
 			return true;
 		}
+
+		return Legacy::noLogin();
 
 		return false;
 	}
@@ -149,7 +147,8 @@ class SessionFunctions
 	 */
 	public function log_as_user(string $username, string $password, string $ip)
 	{
-		$user = User::where('username', '=', $username)->first();
+		// We select the NON ADMIN user
+		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user != null && Hash::check($password, $user->password)) {
 			Session::put('login', true);
@@ -176,15 +175,16 @@ class SessionFunctions
 	 */
 	public function log_as_admin(string $username, string $password, string $ip)
 	{
-		$configs = Configs::get();
-
-		if (Hash::check($username, $configs['username']) && Hash::check($password, $configs['password'])) {
+		$AdminUser = User::find(0);
+		if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
 			Session::put('login', true);
 			Session::put('UserID', 0);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
 			return true;
 		}
+
+		return Legacy::log_as_admin($username, $password, $ip);
 
 		return false;
 	}

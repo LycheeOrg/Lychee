@@ -203,9 +203,11 @@ class UsersTest extends TestCase
 		$users_test->delete($this, $id, 'true');
 		$users_test->delete($this, $id2, 'true');
 
+		// those should fail because we do not touch user of ID 0
+		$users_test->delete($this, '0', 'false', 422);
 		// those should fail because there are no user with id -1
-		$users_test->delete($this, '-1', 'false');
-		$users_test->save($this, '-1', 'toto', 'test', '0', '1', 'false');
+		$users_test->delete($this, '-1', 'false', 422);
+		$users_test->save($this, '-1', 'toto', 'test', '0', '1', 'false', 422);
 
 		// 31
 		$sessions_test->logout($this);

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UserRequests\UserPostIdRequest;
+use App\Http\Requests\UserRequests\UserPostRequest;
 use App\Models\Logs;
 use App\Models\User;
 use App\Response;
@@ -17,7 +19,7 @@ class UserController extends Controller
 
 	public function list()
 	{
-		return User::all();
+		return User::where('id', '>', 0)->get();
 	}
 
 	/**
@@ -28,15 +30,8 @@ class UserController extends Controller
 	 *
 	 * @return string
 	 */
-	public function save(Request $request)
+	public function save(UserPostRequest $request)
 	{
-		$request->validate([
-			'id' => 'required',
-			'username' => 'required|string|max:100',
-			'upload' => 'required',
-			'lock' => 'required',
-		]);
-
 		$user = User::find($request['id']);
 		if ($user === null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified user ' . $request['id']);
@@ -69,12 +64,8 @@ class UserController extends Controller
 	 *
 	 * @throws Exception
 	 */
-	public function delete(Request $request)
+	public function delete(UserPostIdRequest $request)
 	{
-		$request->validate([
-			'id' => 'required',
-		]);
-
 		$user = User::find($request['id']);
 		if ($user === null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find specified user ' . $request['id']);

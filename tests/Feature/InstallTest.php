@@ -4,7 +4,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Configs;
+use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -20,7 +20,7 @@ class InstallTest extends TestCase
 		/*
 		 * Get previous config
 		 */
-		$configs = Configs::get();
+		$admin = User::find(0);
 
 		touch(base_path('.NO_SECURE_KEY'));
 		$response = $this->get('install/');
@@ -37,7 +37,7 @@ class InstallTest extends TestCase
 		/*
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
 		 */
-		$tables = ['sym_links', 'photos', 'configs', 'logs', 'migrations', 'page_contents', 'pages', 'user_album', 'users', 'albums'];
+		$tables = ['sym_links', 'photos', 'configs', 'logs', 'migrations', 'page_contents', 'pages', 'user_album', 'users', 'albums', 'web_authn_credentials'];
 		foreach ($tables as $table) {
 			Schema::dropIfExists($table);
 		}
@@ -106,7 +106,8 @@ class InstallTest extends TestCase
 		$response = $this->get('/');
 		$response->assertStatus(200);
 
-		Configs::set('username', $configs['username']);
-		Configs::set('password', $configs['password']);
+		$admin->save();
+		$admin->id = 0;
+		$admin->save();
 	}
 }

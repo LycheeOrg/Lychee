@@ -5,6 +5,7 @@
 namespace App\Http\Controllers;
 
 use App\Assets\Helpers;
+use App\Http\Requests\UserRequests\UsernamePasswordRequest;
 use App\Locale\Lang;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
@@ -123,13 +124,8 @@ class SessionController extends Controller
 	 *
 	 * @return string
 	 */
-	public function login(Request $request)
+	public function login(UsernamePasswordRequest $request)
 	{
-		$request->validate([
-			'user' => 'required',
-			'password' => 'required',
-		]);
-
 		// No login
 		if ($this->sessionFunctions->noLogin() === true) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
@@ -138,15 +134,15 @@ class SessionController extends Controller
 		}
 
 		// this is probably sensitive to timing attacks...
-		if ($this->sessionFunctions->log_as_admin($request['user'], $request['password'], $request->ip()) === true) {
+		if ($this->sessionFunctions->log_as_admin($request['username'], $request['password'], $request->ip()) === true) {
 			return 'true';
 		}
 
-		if ($this->sessionFunctions->log_as_user($request['user'], $request['password'], $request->ip()) === true) {
+		if ($this->sessionFunctions->log_as_user($request['username'], $request['password'], $request->ip()) === true) {
 			return 'true';
 		}
 
-		Logs::error(__METHOD__, __LINE__, 'User (' . $request['user'] . ') has tried to log in from ' . $request->ip());
+		Logs::error(__METHOD__, __LINE__, 'User (' . $request['username'] . ') has tried to log in from ' . $request->ip());
 
 		return 'false';
 	}

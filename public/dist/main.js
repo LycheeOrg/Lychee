@@ -4175,11 +4175,11 @@ lychee.init = function () {
 
 lychee.login = function (data) {
 
-	var user = data.username;
+	var username = data.username;
 	var password = data.password;
 
 	var params = {
-		user: user,
+		username: username,
 		password: password
 	};
 

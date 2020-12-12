@@ -50,6 +50,16 @@ Route::post('/api/Session::init', [SessionController::class, 'init']);
 Route::post('/api/Session::login', [SessionController::class, 'login']);
 Route::post('/api/Session::logout', [SessionController::class, 'logout']);
 
+Route::post('webauthn/register/options', 'Auth\WebAuthnRegisterController@options')
+	->name('webauthn.register.options');
+Route::post('webauthn/register', 'Auth\WebAuthnRegisterController@register')
+	->name('webauthn.register');
+
+Route::post('webauthn/login/options', 'Auth\WebAuthnLoginController@options')
+	->name('webauthn.login.options');
+Route::post('webauthn/login', 'Auth\WebAuthnLoginController@login')
+	->name('webauthn.login');
+
 Route::post('/api/Albums::get', [AlbumsController::class, 'get']);
 Route::post('/api/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
 

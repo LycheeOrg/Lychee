@@ -22,8 +22,8 @@ class SessionUnitTest
 		string $password,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Session::login', [
-			'user' => $username,
+		$response = $testCase->json('POST', '/api/Session::login', [
+			'username' => $username,
 			'password' => $password,
 		]);
 		$response->assertOk();
@@ -40,7 +40,7 @@ class SessionUnitTest
 		TestCase &$testCase,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Session::init', []);
+		$response = $testCase->json('POST', '/api/Session::init', []);
 		$response->assertStatus(200);
 		if ($result != 'true') {
 			$response->assertSee($result, false);
@@ -56,7 +56,7 @@ class SessionUnitTest
 	 */
 	public function logout(TestCase &$testCase)
 	{
-		$response = $testCase->post('/api/Session::logout');
+		$response = $testCase->json('POST', '/api/Session::logout');
 		$response->assertOk();
 		$response->assertSee('true');
 	}
@@ -75,7 +75,7 @@ class SessionUnitTest
 		string $password,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Settings::setLogin', [
+		$response = $testCase->json('POST', '/api/Settings::setLogin', [
 			'username' => $login,
 			'password' => $password,
 		]);
@@ -101,7 +101,7 @@ class SessionUnitTest
 		string $oldPassword,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/Settings::setLogin', [
+		$response = $testCase->json('POST', '/api/Settings::setLogin', [
 			'username' => $login,
 			'password' => $password,
 			'oldUsername' => $oldUsername,

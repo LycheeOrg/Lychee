@@ -62,7 +62,7 @@ class PhotosRotateTest extends TestCase
 
 		Configs::set('editor_enabled', '1');
 		$photos_tests->rotate($this, '-1', 1, 'false');
-		$photos_tests->rotate($this, $id, 'asdq', 'false', 302);
+		$photos_tests->rotate($this, $id, 'asdq', 'false', 422);
 		$photos_tests->rotate($this, $id, '2', 'false');
 		$photos_tests->rotate($this, $id, 1);
 
