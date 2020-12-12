@@ -10,7 +10,7 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 		// I hereby solemnly  declare this code as covered !
 		// @codeCoverageIgnoreStart
 
-		$php_error = 7.3;
+		$php_error = 7.4;
 		$php_warning = 7.4;
 		$php_latest = 7.4;
 
