@@ -23,9 +23,9 @@ class RequirementsChecker
 		$results = [];
 		foreach ($requirements as $type => $requirement_) {
 			switch ($type) {
-				// check php requirements
+					// check php requirements
 				case 'php':
-					foreach ($requirements[$type] as $requirement) {
+					foreach ($requirement_ as $requirement) {
 						$results['requirements'][$type][$requirement] = true;
 						if (!extension_loaded($requirement)) {
 							// @codeCoverageIgnoreStart
@@ -45,9 +45,9 @@ class RequirementsChecker
 					}
 
 					break;
-				// check apache requirements
+					// check apache requirements
 				case 'apache':
-					foreach ($requirements[$type] as $requirement) {
+					foreach ($requirement_ as $requirement) {
 						// if function doesn't exist we can't check apache modules
 						// @codeCoverageIgnoreStart
 						if (function_exists('apache_get_modules')) {
@@ -63,10 +63,10 @@ class RequirementsChecker
 					}
 					break;
 
-				// @codeCoverageIgnoreStart
+					// @codeCoverageIgnoreStart
 				default:
 					break;
-				// @codeCoverageIgnoreEnd
+					// @codeCoverageIgnoreEnd
 			}
 		}
 
@@ -90,7 +90,8 @@ class RequirementsChecker
 			$minVersionPhp = $this->getMinPhpVersion();
 			// @codeCoverageIgnoreEnd
 		}
-		if (version_compare($currentPhpVersion['version'], $minVersionPhp)
+		if (
+			version_compare($currentPhpVersion['version'], $minVersionPhp)
 			>= 0
 		) {
 			$supported = true;
