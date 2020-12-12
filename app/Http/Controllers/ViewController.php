@@ -74,7 +74,7 @@ class ViewController extends Controller
 			'photo' => $photo,
 			'picture' => $picture,
 			'title' => $title,
-			'rss_enable' => $rss_enable
+			'rss_enable' => $rss_enable,
 		]);
 	}
 }
