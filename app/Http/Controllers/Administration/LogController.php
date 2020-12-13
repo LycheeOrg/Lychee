@@ -2,8 +2,9 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
+use App\Http\Controllers\Controller;
 use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\DB;

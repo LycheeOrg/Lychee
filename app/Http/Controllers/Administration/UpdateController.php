@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
+use App\Http\Controllers\Controller;
 use App\ControllerFunctions\Update\Apply as ApplyUpdate;
 use App\ControllerFunctions\Update\Check as CheckUpdate;
 use App\Metadata\LycheeVersion;

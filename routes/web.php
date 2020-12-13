@@ -28,7 +28,7 @@ Route::feeds();
 Route::get('/', [IndexController::class, 'show'])->name('home')->middleware('installed');
 Route::get('/phpinfo', [IndexController::class, 'phpinfo'])->middleware('admin');
 Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware('installed');
-Route::match(['get', 'post'], '/migrate', [UpdateController::class, 'force'])->name('migrate');
+Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'force'])->name('migrate');
 
 /*
  * TODO see to add better redirection functionality later.
@@ -98,38 +98,38 @@ Route::get('/api/Photo::clearSymLink', [PhotoController::class, 'clearSymLink'])
 
 Route::post('/api/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate'])->middleware('upload');
 
-Route::post('/api/Sharing::List', [SharingController::class, 'listSharing'])->middleware('upload');
-Route::post('/api/Sharing::ListUser', [SharingController::class, 'getUserList'])->middleware('upload');
-Route::post('/api/Sharing::Add', [SharingController::class, 'add'])->middleware('upload');
-Route::post('/api/Sharing::Delete', [SharingController::class, 'delete'])->middleware('upload');
+Route::post('/api/Sharing::List', [Administration\SharingController::class, 'listSharing'])->middleware('upload');
+Route::post('/api/Sharing::ListUser', [Administration\SharingController::class, 'getUserList'])->middleware('upload');
+Route::post('/api/Sharing::Add', [Administration\SharingController::class, 'add'])->middleware('upload');
+Route::post('/api/Sharing::Delete', [Administration\SharingController::class, 'delete'])->middleware('upload');
 
-Route::post('/api/Settings::setLogin', [SettingsController::class, 'setLogin']);
+Route::post('/api/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
 
 Route::post('/api/Import::url', [ImportController::class, 'url'])->middleware('upload');
 Route::post('/api/Import::server', [ImportController::class, 'server'])->middleware('admin');
 
-Route::post('/api/User::List', [UserController::class, 'list'])->middleware('upload');
-Route::post('/api/User::Save', [UserController::class, 'save'])->middleware('admin');
-Route::post('/api/User::Delete', [UserController::class, 'delete'])->middleware('admin');
-Route::post('/api/User::Create', [UserController::class, 'create'])->middleware('admin');
+Route::post('/api/User::List', [Administration\UserController::class, 'list'])->middleware('upload');
+Route::post('/api/User::Save', [Administration\UserController::class, 'save'])->middleware('admin');
+Route::post('/api/User::Delete', [Administration\UserController::class, 'delete'])->middleware('admin');
+Route::post('/api/User::Create', [Administration\UserController::class, 'create'])->middleware('admin');
 
-Route::post('/api/Logs', [LogController::class, 'display'])->middleware('admin');
-Route::post('/api/Logs::clearNoise', [LogController::class, 'clearNoise'])->middleware('admin');
-Route::post('/api/Diagnostics', [DiagnosticsController::class, 'get']);
-Route::post('/api/Diagnostics::getSize', [DiagnosticsController::class, 'get_size']);
+Route::post('/api/Logs', [Administration\LogController::class, 'display'])->middleware('admin');
+Route::post('/api/Logs::clearNoise', [Administration\LogController::class, 'clearNoise'])->middleware('admin');
+Route::post('/api/Diagnostics', [Administration\DiagnosticsController::class, 'get']);
+Route::post('/api/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'get_size']);
 
-Route::get('/Logs', [LogController::class, 'display'])->middleware('admin');
-Route::get('/api/Logs::clear', [LogController::class, 'clear'])->middleware('admin');
-Route::get('/Diagnostics', [DiagnosticsController::class, 'show']);
+Route::get('/Logs', [Administration\LogController::class, 'display'])->middleware('admin');
+Route::get('/api/Logs::clear', [Administration\LogController::class, 'clear'])->middleware('admin');
+Route::get('/Diagnostics', [Administration\DiagnosticsController::class, 'show']);
 
-Route::get('/Update', [UpdateController::class, 'apply'])->middleware('admin');
-Route::post('/api/Update::Apply', [UpdateController::class, 'apply'])->middleware('admin');
-Route::post('/api/Update::Check', [UpdateController::class, 'check'])->middleware('admin');
+Route::get('/Update', [Administration\UpdateController::class, 'apply'])->middleware('admin');
+Route::post('/api/Update::Apply', [Administration\UpdateController::class, 'apply'])->middleware('admin');
+Route::post('/api/Update::Check', [Administration\UpdateController::class, 'check'])->middleware('admin');
 
 Route::get('/Albums/RebuildTakestamps', [AlbumController::class, 'RebuildTakestamps'])->middleware('admin');
 
 // unused
-Route::post('/api/Logs::clear', [LogController::class, 'clear'])->middleware('admin');
+Route::post('/api/Logs::clear', [Administration\LogController::class, 'clear'])->middleware('admin');
 
 Route::post('/api/search', [SearchController::class, 'search']);
 

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 
 class IsInstalled
 {
-	public static function assert(): bool
+	public function assert(): bool
 	{
 		// this should not happen but you never know.
 		// if the key is not provided AND

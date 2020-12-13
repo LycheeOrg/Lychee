@@ -12,6 +12,16 @@ use Illuminate\Http\Request;
 class InstalledCheck
 {
 	/**
+	 * @var IsInstalled
+	 */
+	private $isInstalled;
+
+	public function __construct(IsInstalled $isInstalled)
+	{
+		$this->isInstalled = $isInstalled;
+	}
+
+	/**
 	 * Handle an incoming request.
 	 *
 	 * @param Request $request
@@ -21,7 +31,7 @@ class InstalledCheck
 	 */
 	public function handle($request, Closure $next)
 	{
-		if (IsInstalled::assert()) {
+		if ($this->isInstalled->assert()) {
 			return ToHome::go();
 		}
 

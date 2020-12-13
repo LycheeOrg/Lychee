@@ -2,8 +2,9 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
+use App\Http\Controllers\Controller;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\User;

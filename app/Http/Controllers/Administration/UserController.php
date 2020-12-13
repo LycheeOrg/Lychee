@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UserPostIdRequest;
 use App\Http\Requests\UserRequests\UserPostRequest;
 use App\Models\Logs;

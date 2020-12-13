@@ -4,8 +4,9 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
+use App\Http\Controllers\Controller;
 use App\ControllerFunctions\Diagnostics\BasicPermissionCheck;
 use App\ControllerFunctions\Diagnostics\ConfigSanityCheck;
 use App\ControllerFunctions\Diagnostics\DBSupportCheck;
@@ -148,7 +149,7 @@ class DiagnosticsController extends Controller
 		) {
 			// @codeCoverageIgnoreStart
 			$imagickVersion = '-';
-		// @codeCoverageIgnoreEnd
+			// @codeCoverageIgnoreEnd
 		} else {
 			$imagickVersion = $imagickVersion['versionNumber'];
 		}
