@@ -11,18 +11,20 @@ use App\Exceptions\UserNotFoundException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
-	private $user_data = null;
+	// private $user_data = null;
 
 	public function log_as_id($id)
 	{
 		if (App::runningUnitTests()) {
-			Session::put('login', true);
-			Session::put('UserID', $id);
+			// Session::put('login', true);
+			// Session::put('UserID', $id);
+			Auth::loginUsingId($id);
 		}
 	}
 
@@ -34,11 +36,12 @@ class SessionFunctions
 	 */
 	public function is_logged_in()
 	{
-		if (Session::get('login') === true) {
-			return true;
-		} else {
-			return false;
-		}
+		return Auth::check();
+		// if (Session::get('login') === true) {
+		// 	return true;
+		// } else {
+		// 	return false;
+		// }
 	}
 
 	/**
@@ -48,12 +51,12 @@ class SessionFunctions
 	 */
 	public function is_admin()
 	{
-		return Session::get('login') && Session::get('UserID') === 0;
+		return Auth::check() && Auth::user()->is_admin();
 	}
 
 	public function can_upload(): bool
 	{
-		return $this->id() == 0 || $this->getUserData()->upload;
+		return Auth::check() && Auth::user()->can_upload();
 	}
 
 	/**
@@ -64,40 +67,42 @@ class SessionFunctions
 	 */
 	public function id()
 	{
-		if (!Session::get('login')) {
+		if (!Auth::check()) {
 			throw new NotLoggedInException();
 		}
 
-		return Session::get('UserID');
+		return Auth::id();
+		// Session::get('UserID');
 	}
 
 	/**
 	 * Return User object given a positive ID.
 	 */
-	private function accessUserData(): User
-	{
-		$id = $this->id();
-		if ($id > 0) {
-			$this->user_data = User::find($id);
+	// private function accessUserData(): User
+	// {
+	// 	$id = $this->id();
+	// 	if ($id > 0) {
+	// 		$this->user_data = User::find($id);
 
-			if (!$this->user_data) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $id . ')');
-				throw new UserNotFoundException($id);
-			}
+	// 		if (!$this->user_data) {
+	// 			Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $id . ')');
+	// 			throw new UserNotFoundException($id);
+	// 		}
 
-			return $this->user_data;
-		}
+	// 		return $this->user_data;
+	// 	}
 
-		Logs::error(__METHOD__, __LINE__, 'Trying to get a User from Admin ID.');
-		throw new RequestAdminDataException();
-	}
+	// 	Logs::error(__METHOD__, __LINE__, 'Trying to get a User from Admin ID.');
+	// 	throw new RequestAdminDataException();
+	// }
 
 	/**
 	 * Return User object and cache the result.
 	 */
-	public function getUserData(): User
+	public function getUserData(): ?User
 	{
-		return $this->user_data ?? $this->accessUserData();
+		return Auth::user();
+		// $this->user_data ?? $this->accessUserData();
 	}
 
 	/**
@@ -110,7 +115,7 @@ class SessionFunctions
 	 */
 	public function is_current_user(int $userId)
 	{
-		return Session::get('login') && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
+		return Auth::check() && (Auth::id() === $userId || Auth::id() === 0);
 	}
 
 	/**
@@ -151,10 +156,10 @@ class SessionFunctions
 		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user != null && Hash::check($password, $user->password)) {
-			Session::put('login', true);
-			Session::put('UserID', $user->id);
+			// Session::put('login', true);
+			// Session::put('UserID', $user->id);
+			Auth::login($user);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
-			$this->user_data = $user;
 
 			return true;
 		}
@@ -177,8 +182,9 @@ class SessionFunctions
 	{
 		$AdminUser = User::find(0);
 		if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
-			Session::put('login', true);
-			Session::put('UserID', 0);
+			// Session::put('login', true);
+			// Session::put('UserID', 0);
+			Auth::login($AdminUser);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
 			return true;
@@ -237,7 +243,8 @@ class SessionFunctions
 	 */
 	public function logout()
 	{
-		$this->user_data = null;
+		Auth::logout();
+		// $this->user_data = null;
 		Session::flush();
 	}
 }

@@ -87,4 +87,14 @@ class User extends Authenticatable
 	{
 		return $this->belongsToMany('App\Models\Album', 'user_album', 'user_id', 'album_id');
 	}
+
+	public function is_admin()
+	{
+		return $this->id == 0;
+	}
+
+	public function can_upload()
+	{
+		return $this->id == 0 || $this->upload;
+	}
 }
