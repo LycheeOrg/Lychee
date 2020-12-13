@@ -74,27 +74,6 @@ class SessionFunctions
 	}
 
 	/**
-	 * Return User object given a positive ID.
-	 */
-	// private function accessUserData(): User
-	// {
-	// 	$id = $this->id();
-	// 	if ($id > 0) {
-	// 		$this->user_data = User::find($id);
-
-	// 		if (!$this->user_data) {
-	// 			Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $id . ')');
-	// 			throw new UserNotFoundException($id);
-	// 		}
-
-	// 		return $this->user_data;
-	// 	}
-
-	// 	Logs::error(__METHOD__, __LINE__, 'Trying to get a User from Admin ID.');
-	// 	throw new RequestAdminDataException();
-	// }
-
-	/**
 	 * Return User object and cache the result.
 	 */
 	public function getUserData(): ?User
@@ -125,9 +104,7 @@ class SessionFunctions
 	{
 		$adminUser = User::find(0);
 		if ($adminUser->password === '' && $adminUser->username === '') {
-			Session::put('login', true);
-			Session::put('UserID', 0);
-			unset($adminUser);
+			Auth::login($adminUser);
 
 			return true;
 		}
@@ -154,8 +131,6 @@ class SessionFunctions
 		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user != null && Hash::check($password, $user->password)) {
-			// Session::put('login', true);
-			// Session::put('UserID', $user->id);
 			Auth::login($user);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
@@ -180,8 +155,6 @@ class SessionFunctions
 	{
 		$AdminUser = User::find(0);
 		if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
-			// Session::put('login', true);
-			// Session::put('UserID', 0);
 			Auth::login($AdminUser);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
