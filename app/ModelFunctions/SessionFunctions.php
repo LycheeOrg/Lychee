@@ -6,8 +6,6 @@ namespace App\ModelFunctions;
 
 use App;
 use App\Exceptions\NotLoggedInException;
-use App\Exceptions\RequestAdminDataException;
-use App\Exceptions\UserNotFoundException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
