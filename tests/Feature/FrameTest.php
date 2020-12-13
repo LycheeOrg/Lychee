@@ -7,7 +7,7 @@ use Tests\TestCase;
 
 class FrameTest extends TestCase
 {
-	public function testFrame_0()
+	public function testFrame0()
 	{
 		// save initial value
 		$init_config_value = Configs::get_value('Mod_Frame');
@@ -29,7 +29,7 @@ class FrameTest extends TestCase
 		Configs::set('Mod_Frame', $init_config_value);
 	}
 
-	public function testFrame_1()
+	public function testFrame1()
 	{
 		// save initial value
 		$init_config_value = Configs::get_value('Mod_Frame');

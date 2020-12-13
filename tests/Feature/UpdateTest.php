@@ -15,7 +15,7 @@ class UpdateTest extends TestCase
 		$response->assertSee($result);
 	}
 
-	public function test_do_not_logged()
+	public function testDoNotLogged()
 	{
 		$response = $this->get('/Update', []);
 		$response->assertOk();
@@ -30,7 +30,7 @@ class UpdateTest extends TestCase
 		$response->assertSee('false');
 	}
 
-	public function test_do_logged()
+	public function testDoLogged()
 	{
 		$gitpull = Configs::get_value('allow_online_git_pull', '0');
 

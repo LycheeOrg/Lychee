@@ -12,7 +12,7 @@ class LangTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test_Lang()
+	public function testLang()
 	{
 		$lang_available = Lang::get_lang_available();
 

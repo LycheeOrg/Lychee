@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class RSSTest extends TestCase
 {
-	public function testRSS_0()
+	public function testRSS0()
 	{
 		// save initial value
 		$init_config_value = Configs::get_value('rss_enable');
@@ -27,7 +27,7 @@ class RSSTest extends TestCase
 		Configs::set('Mod_Frame', $init_config_value);
 	}
 
-	public function testRSS_1()
+	public function testRSS1()
 	{
 		// save initial value
 		$init_config_value = Configs::get_value('rss_enable');

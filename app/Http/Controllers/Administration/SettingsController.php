@@ -4,8 +4,8 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\Http\Controllers\Controller;
 use App\Assets\Helpers;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
 use App\Legacy\Legacy;
 use App\Locale\Lang;

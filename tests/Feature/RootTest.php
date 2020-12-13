@@ -13,7 +13,7 @@ class RootTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test_root()
+	public function testRoot()
 	{
 		exec('php index.php 2>&1', $return);
 		$return = implode('', $return);

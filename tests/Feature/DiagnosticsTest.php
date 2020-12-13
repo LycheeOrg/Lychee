@@ -15,7 +15,7 @@ class DiagnosticsTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test_diagnostics()
+	public function testDiagnostics()
 	{
 		$response = $this->get('/Diagnostics');
 		$response->assertStatus(200); // code 200 something

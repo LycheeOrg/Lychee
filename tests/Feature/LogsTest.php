@@ -15,7 +15,7 @@ class LogsTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test_Logs()
+	public function testLogs()
 	{
 		$session_tests = new SessionUnitTest();
 
@@ -35,7 +35,7 @@ class LogsTest extends TestCase
 		$session_tests->logout($this);
 	}
 
-	public function test_api_Logs()
+	public function testApiLogs()
 	{
 		$response = $this->post('/api/Logs');
 		$response->assertStatus(200); // code 200 something
@@ -43,7 +43,7 @@ class LogsTest extends TestCase
 		// we may decide to change for another out there so
 	}
 
-	public function test_clear_Logs()
+	public function testClearLogs()
 	{
 		$response = $this->post('/api/Logs::clearNoise');
 		$response->assertOk();

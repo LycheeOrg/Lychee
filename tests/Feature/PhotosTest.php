@@ -195,7 +195,7 @@ class PhotosTest extends TestCase
 		$session_tests->logout($this);
 	}
 
-	public function test_true_negative()
+	public function testTrueNegative()
 	{
 		$photos_tests = new PhotosUnitTest();
 		$session_tests = new SessionUnitTest();
@@ -213,7 +213,7 @@ class PhotosTest extends TestCase
 		$session_tests->logout($this);
 	}
 
-	public function test_upload_2()
+	public function testUpload2()
 	{
 		// save initial value
 		$init_config_value1 = Configs::get_value('SL_enable');
@@ -233,7 +233,7 @@ class PhotosTest extends TestCase
 		Configs::set('SL_for_admin', $init_config_value2);
 	}
 
-	public function test_import()
+	public function testImport()
 	{
 		$photos_tests = new PhotosUnitTest();
 		$albums_tests = new AlbumsUnitTest();

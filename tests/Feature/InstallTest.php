@@ -15,7 +15,7 @@ class InstallTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test_install()
+	public function testInstall()
 	{
 		/*
 		 * Get previous config

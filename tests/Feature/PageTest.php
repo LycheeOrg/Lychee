@@ -8,14 +8,14 @@ use Tests\TestCase;
 
 class PageTest extends TestCase
 {
-	public function test_no_page()
+	public function testNoPage()
 	{
 		$response = $this->get('/hello');
 
 		$response->assertStatus(404);
 	}
 
-	public function test_page()
+	public function testPage()
 	{
 		$page = new Page();
 		$page->id = 2;

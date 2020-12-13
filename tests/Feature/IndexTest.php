@@ -12,7 +12,7 @@ class IndexTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test_home()
+	public function testHome()
 	{
 		/**
 		 * check if we can actually get a nice answer.
@@ -32,7 +32,7 @@ class IndexTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test_php_info()
+	public function testPhpInfo()
 	{
 		// we don't want a non admin to access this
 		$response = $this->get('/phpinfo');
@@ -41,7 +41,7 @@ class IndexTest extends TestCase
 		$response->assertSeeText('false');
 	}
 
-	public function test_landing_page()
+	public function testLandingPage()
 	{
 		$landing_on_off = Configs::get_value('landing_page_enable', '0');
 		Configs::set('landing_page_enable', 1);

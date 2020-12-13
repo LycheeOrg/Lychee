@@ -11,7 +11,7 @@ class DemoTest extends TestCase
 	 * Check that the demo page is not available
 	 * if not enabled in the advanced config.
 	 */
-	public function testDemo_0()
+	public function testDemo0()
 	{
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');
@@ -33,7 +33,7 @@ class DemoTest extends TestCase
 	 * Check that the demo page is available
 	 * if enabled in the advanced config.
 	 */
-	public function testDemo_1()
+	public function testDemo1()
 	{
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');

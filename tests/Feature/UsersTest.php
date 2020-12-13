@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class UsersTest extends TestCase
 {
-	public function test_set_Login()
+	public function testSetLogin()
 	{
 		/**
 		 * because there is no dependency injection in test cases.
@@ -55,7 +55,7 @@ class UsersTest extends TestCase
 		}
 	}
 
-	public function test_users()
+	public function testUsers()
 	{
 		$sessions_test = new SessionUnitTest();
 		$users_test = new UsersUnitTest();
