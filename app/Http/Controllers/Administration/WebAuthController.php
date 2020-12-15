@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
 use DarkGhostHunter\Larapass\Http\WebAuthnRules;
-use DebugBar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -56,15 +55,14 @@ class WebAuthController extends Controller
 		if ($credential) {
 			$user->addCredential($credential);
 		} else {
-			return 'Something went wrong with your device!';
+			return response()->json('Something went wrong with your device!', 422);
 		}
 	}
 
 	public function GenerateAuthentication(Request $request)
 	{
 		// Find the user to assert, if there is any
-		// $user = User::where('username', $request->input('username'))->first();
-		$user = User::find(0);
+		$user = User::where('id', $request->input('user_id'))->first();
 
 		// Create an assertion for the given user (or a blank one if not found);
 		return WebAuthn::generateAssertion($user);
@@ -99,17 +97,14 @@ class WebAuthController extends Controller
 	{
 		// Verify the incoming assertion.
 		$credential = $request->validate($this->assertionRules());
-		// Debugbar::notice($credential);
-		// $credential['userHandle'] ??= '';
 		$cred = WebAuthn::validateAssertion($credential);
-		// Debugbar::warning($cred);
 
 		// If is valid, login the user of the credentials.
 		if ($cred) {
-			Debugbar::info('------------------ VICTORY ----------------');
 			$user = $this->getUserFromCredentials($credential);
-			Debugbar::info($user);
 			Auth::login($user);
+		} else {
+			return response()->json('Something went wrong with your device!', 422);
 		}
 	}
 }
