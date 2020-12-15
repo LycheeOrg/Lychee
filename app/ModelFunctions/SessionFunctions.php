@@ -15,13 +15,9 @@ use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
-	// private $user_data = null;
-
 	public function log_as_id($id)
 	{
 		if (App::runningUnitTests()) {
-			// Session::put('login', true);
-			// Session::put('UserID', $id);
 			Auth::loginUsingId($id);
 		}
 	}
@@ -35,11 +31,6 @@ class SessionFunctions
 	public function is_logged_in()
 	{
 		return Auth::check();
-		// if (Session::get('login') === true) {
-		// 	return true;
-		// } else {
-		// 	return false;
-		// }
 	}
 
 	/**
@@ -70,7 +61,6 @@ class SessionFunctions
 		}
 
 		return Auth::id();
-		// Session::get('UserID');
 	}
 
 	/**
@@ -79,7 +69,6 @@ class SessionFunctions
 	public function getUserData(): ?User
 	{
 		return Auth::user();
-		// $this->user_data ?? $this->accessUserData();
 	}
 
 	/**
@@ -215,7 +204,5 @@ class SessionFunctions
 	public function logout()
 	{
 		Auth::logout();
-		// $this->user_data = null;
-		Session::flush();
 	}
 }

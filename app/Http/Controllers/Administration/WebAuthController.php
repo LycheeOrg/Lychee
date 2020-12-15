@@ -2,20 +2,64 @@
 
 namespace App\Http\Controllers\Administration;
 
+use App\ControllerFunctions\WebAuth\Delete as DeleteDevices;
+use App\ControllerFunctions\WebAuth\GenerateAuthentication;
+use App\ControllerFunctions\WebAuth\GenerateRegistration;
+use App\ControllerFunctions\WebAuth\Lists as ListDevices;
+use App\ControllerFunctions\WebAuth\VerifyAuthentication;
+use App\ControllerFunctions\WebAuth\VerifyRegistration;
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use DarkGhostHunter\Larapass\Facades\WebAuthn;
 use DarkGhostHunter\Larapass\Http\WebAuthnRules;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class WebAuthController extends Controller
 {
 	use WebAuthnRules;
 
-	public function __construct()
-	{
-		$this->middleware([]);
+	/**
+	 * @var GenerateRegistration
+	 */
+	private $generateRegistration;
+
+	/**
+	 * @var VerifyRegistration
+	 */
+	private $verifyRegistration;
+
+	/**
+	 * @var GenerateAuthentication
+	 */
+	private $generateAuthentication;
+
+	/**
+	 * @var VerifiyAuthentication
+	 */
+	private $verifyAuthentication;
+
+	/**
+	 * @var ListDevices
+	 */
+	private $listDevices;
+
+	/**
+	 * @var DeleteDevices
+	 */
+	private $deleteDevices;
+
+	public function __construct(
+		GenerateRegistration $generateRegistration,
+		VerifyRegistration $verifyRegistration,
+		GenerateAuthentication $generateAuthentication,
+		VerifyAuthentication $verifyAuthentication,
+		ListDevices $listDevices,
+		DeleteDevices $deleteDevices
+	) {
+		$this->generateRegistration = $generateRegistration;
+		$this->verifyRegistration = $verifyRegistration;
+		$this->generateAuthentication = $generateAuthentication;
+		$this->verifyAuthentication = $verifyAuthentication;
+		$this->listDevices = $listDevices;
+		$this->deleteDevices = $deleteDevices;
 	}
 
 	/**
@@ -31,80 +75,39 @@ class WebAuthController extends Controller
 	 */
 	public function GenerateRegistration(Request $request)
 	{
-		/**
-		 * @var User
-		 */
-		$user = Auth::user();
-
-		// Create an attestation for a given user.
-		return WebAuthn::generateAttestation($user);
+		return $this->generateRegistration->do();
 	}
 
 	public function VerifyRegistration(Request $request)
 	{
-		/**
-		 * @var User
-		 */
-		$user = Auth::user();
+		$data = $request->validate($this->attestationRules());
 
-		// okay.
-		$credential = WebAuthn::validateAttestation(
-			$request->validate($this->attestationRules()),
-			$user
-		);
-		if ($credential) {
-			$user->addCredential($credential);
-		} else {
-			return response()->json('Something went wrong with your device!', 422);
-		}
+		return $this->verifyRegistration->do($data);
 	}
 
 	public function GenerateAuthentication(Request $request)
 	{
-		// Find the user to assert, if there is any
-		$user = User::where('id', $request->input('user_id'))->first();
+		$user_id = $request->input('user_id');
 
-		// Create an assertion for the given user (or a blank one if not found);
-		return WebAuthn::generateAssertion($user);
-	}
-
-	/**
-	 * Return the user that should authenticate via WebAuthn.
-	 *
-	 * @param array $credentials
-	 *
-	 * @return \Illuminate\Contracts\Auth\Authenticatable|\DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable|null
-	 */
-	protected function getUserFromCredentials(array $credentials)
-	{
-		// We will try to ask the User Provider for any user for the given credentials.
-		// If there is one, we will then return an array of credentials ID that the
-		// authenticator may use to sign the subsequent challenge by the server.
-		return $this->userProvider()->retrieveByCredentials($credentials);
-	}
-
-	/**
-	 * Get the User Provider for WebAuthn Authenticatable users.
-	 *
-	 * @return \Illuminate\Contracts\Auth\UserProvider
-	 */
-	protected function userProvider()
-	{
-		return Auth::createUserProvider('users');
+		return $this->generateAuthentication->do($user_id);
 	}
 
 	public function VerifyAuthentication(Request $request)
 	{
-		// Verify the incoming assertion.
 		$credential = $request->validate($this->assertionRules());
-		$cred = WebAuthn::validateAssertion($credential);
 
-		// If is valid, login the user of the credentials.
-		if ($cred) {
-			$user = $this->getUserFromCredentials($credential);
-			Auth::login($user);
-		} else {
-			return response()->json('Something went wrong with your device!', 422);
-		}
+		return $this->verifyAuthentication->do($credential);
+	}
+
+	public function List()
+	{
+		return $this->listDevices->do();
+	}
+
+	public function Delete(Request $request)
+	{
+		$id = $request->validate(['id' => 'required|string']);
+
+		return $this->deleteDevices->do($id);
 	}
 }

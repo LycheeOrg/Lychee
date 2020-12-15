@@ -12,6 +12,8 @@ use Throwable;
 
 class Handler extends ExceptionHandler
 {
+	protected $redirectTo = 'home';
+
 	/**
 	 * A list of the exception types that are not reported.
 	 *

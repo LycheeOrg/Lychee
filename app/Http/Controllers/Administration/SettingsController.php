@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -61,7 +62,7 @@ class SettingsController extends Controller
 			$adminUser->username = bcrypt($request['username']);
 			$adminUser->password = bcrypt($request['password']);
 			$adminUser->save();
-			unset($adminUser);
+			Auth::user($adminUser);
 
 			return 'true';
 		}
