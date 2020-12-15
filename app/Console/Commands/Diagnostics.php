@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
-use App\Http\Controllers\DiagnosticsController;
+use App\Http\Controllers\Administration\DiagnosticsController;
 use Illuminate\Console\Command;
 
 class Diagnostics extends Command

@@ -6,7 +6,6 @@ use App\Http\Controllers\ImportController;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 
 class Sync extends Command
 {
