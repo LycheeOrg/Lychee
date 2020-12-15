@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7897480d92d055529989500eccd0d893",
+    "content-hash": "af93a3b61d2ae904d1c629462eea75f9",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -320,12 +320,12 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/DarkGhostHunter/Larapass.git",
+                "url": "https://github.com/LycheeOrg/Larapass.git",
                 "reference": "521305224fb7d9c6ebe178f5b8d778bc1f9b34ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DarkGhostHunter/Larapass/zipball/521305224fb7d9c6ebe178f5b8d778bc1f9b34ea",
+                "url": "https://api.github.com/repos/LycheeOrg/Larapass/zipball/521305224fb7d9c6ebe178f5b8d778bc1f9b34ea",
                 "reference": "521305224fb7d9c6ebe178f5b8d778bc1f9b34ea",
                 "shasum": ""
             },
@@ -355,7 +355,19 @@
                     "DarkGhostHunter\\Larapass\\": "src/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "test": [
+                    "vendor/bin/phpunit"
+                ],
+                "test-coverage": [
+                    "vendor/bin/phpunit --coverage-html coverage"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -373,14 +385,17 @@
                 "laravel",
                 "webauthn"
             ],
+            "support": {
+                "source": "https://github.com/LycheeOrg/Larapass/tree/master"
+            },
             "funding": [
                 {
-                    "url": "https://paypal.me/darkghosthunter",
-                    "type": "custom"
+                    "type": "ko_fi",
+                    "url": "https://ko-fi.com/DarkGhostHunter"
                 },
                 {
-                    "url": "https://ko-fi.com/DarkGhostHunter",
-                    "type": "ko_fi"
+                    "type": "custom",
+                    "url": "https://paypal.me/darkghosthunter"
                 }
             ],
             "time": "2020-11-23T02:43:59+00:00"

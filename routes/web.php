@@ -50,14 +50,13 @@ Route::post('/api/Session::init', [SessionController::class, 'init']);
 Route::post('/api/Session::login', [SessionController::class, 'login']);
 Route::post('/api/Session::logout', [SessionController::class, 'logout']);
 
-Route::post('webauthn/register/options', 'Auth\WebAuthnRegisterController@options')
-	->name('webauthn.register.options');
-Route::post('webauthn/register', 'Auth\WebAuthnRegisterController@register')
+Route::post('webauthn/register/gen', [Administration\WebAuthController::class, 'GenerateRegistration'])
+	->name('webauthn.register.gen');
+Route::post('webauthn/register', [Administration\WebAuthController::class, 'VerifyRegistration'])
 	->name('webauthn.register');
-
-Route::post('webauthn/login/options', 'Auth\WebAuthnLoginController@options')
-	->name('webauthn.login.options');
-Route::post('webauthn/login', 'Auth\WebAuthnLoginController@login')
+Route::post('webauthn/login/gen', [Administration\WebAuthController::class, 'GenerateAuthentication'])
+	->name('webauthn.login.gen');
+Route::post('webauthn/login', [Administration\WebAuthController::class, 'VerifyAuthentication'])
 	->name('webauthn.login');
 
 Route::post('/api/Albums::get', [AlbumsController::class, 'get']);

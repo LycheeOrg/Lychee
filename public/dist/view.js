@@ -2371,6 +2371,7 @@ lychee.locale = {
 
 	'SETTINGS': 'Settings',
 	'USERS': 'Users',
+	'U2F': 'U2F',
 	'SHARING': 'Sharing',
 	'CHANGE_LOGIN': 'Change Login',
 	'CHANGE_SORTING': 'Change Sorting',

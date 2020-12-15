@@ -366,8 +366,7 @@ return [
 				//     'hash-value',
 				// ],
 			],
-			'nonces' => [
-			],
+			'nonces' => [],
 			'schemes' => [
 				// 'https:',
 			],
@@ -405,8 +404,7 @@ return [
 				'blob:',
 			],
 		],
-		'base-uri' => [
-		],
+		'base-uri' => [],
 		'connect-src' => [
 			'allow' => [
 				'http://lycheeorg.github.io/update.json',
@@ -423,22 +421,17 @@ return [
 		'form-action' => [
 			'self' => true,
 		],
-		'frame-ancestors' => [
-		],
-		'frame-src' => [
-		],
-		'manifest-src' => [
-		],
+		'frame-ancestors' => [],
+		'frame-src' => [],
+		'manifest-src' => [],
 		'media-src' => [
 			'self' => true,
 			'allow' => [
 				'blob:',
 			],
 		],
-		'object-src' => [
-		],
-		'worker-src' => [
-		],
+		'object-src' => [],
+		'worker-src' => [],
 		'plugin-types' => [
 			// 'application/x-shockwave-flash',
 		],

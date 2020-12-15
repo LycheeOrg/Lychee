@@ -6,6 +6,10 @@
         "framework",
         "laravel"
     ],
+    "repositories": [{
+        "type": "vcs",
+        "url": "https://github.com/LycheeOrg/Larapass"
+    }],
     "license": "MIT",
     "type": "project",
     "require": {

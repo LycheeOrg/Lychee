@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable;
+use DarkGhostHunter\Larapass\WebAuthnAuthentication;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -41,9 +43,10 @@ use Illuminate\Support\Carbon;
  * @method static Builder|User whereUsername($value)
  * @mixin Eloquent
  */
-class User extends Authenticatable
+class User extends Authenticatable implements WebAuthnAuthenticatable
 {
 	use Notifiable;
+	use WebAuthnAuthentication;
 
 	/**
 	 * The attributes that are mass assignable.
@@ -88,13 +91,23 @@ class User extends Authenticatable
 		return $this->belongsToMany('App\Models\Album', 'user_album', 'user_id', 'album_id');
 	}
 
-	public function is_admin()
+	public function is_admin(): bool
 	{
 		return $this->id == 0;
 	}
 
-	public function can_upload()
+	public function can_upload(): bool
 	{
 		return $this->id == 0 || $this->upload;
+	}
+
+	public function username(): string
+	{
+		return utf8_encode($this->username);
+	}
+
+	public function name(): string
+	{
+		return ($this->id == 0) ? 'Admin' : $this->username;
 	}
 }

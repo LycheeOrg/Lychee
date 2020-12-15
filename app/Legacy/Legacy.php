@@ -6,7 +6,6 @@ use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 
 /**
  * Stuff we need to delete in the future.

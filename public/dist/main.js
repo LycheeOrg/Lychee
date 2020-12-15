@@ -314,7 +314,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject42 = _taggedTemplateLiteral(["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "], ["\n\t\t\t           ", "\n\t\t\t           <img class='cover' width='16' height='16' src='", "'>\n\t\t\t           <div class='title'>$", "</div>\n\t\t\t           "]),
     _templateObject43 = _taggedTemplateLiteral(["$", "", ""], ["$", "", ""]),
     _templateObject44 = _taggedTemplateLiteral(["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"], ["\n\t\t<a id=\"text_settings_close\" class=\"closetxt\" data-tabindex=\"-1\">", "</a>\n\t\t<a id=\"button_settings_close\" class=\"closebtn\" data-tabindex=\"20\">&times;</a>\n\t\t<a class=\"linkMenu\" id=\"button_settings_open\" data-tabindex=\"-1\"><svg class=\"iconic\"><use xlink:href=\"#cog\"></use></svg>", "</a>"]),
-    _templateObject45 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"]),
+    _templateObject45 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_u2f\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_users\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_u2f\" data-tabindex=\"-1\">", "", " </a>\n\t\t<a class=\"linkMenu\" id=\"button_sharing\" data-tabindex=\"-1\">", "", "</a>"]),
     _templateObject46 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"], ["\n\t\t<a class=\"linkMenu\" id=\"button_logs\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_diagnostics\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_about\" data-tabindex=\"-1\">", "", "</a>\n\t\t<a class=\"linkMenu\" id=\"button_signout\" data-tabindex=\"21\">", "", "</a>"]),
     _templateObject47 = _taggedTemplateLiteral(["\n\t\t<a class=\"linkMenu\" id=\"button_update\"  data-tabindex=\"-1\">", "", "</a>\n\t\t"], ["\n\t\t<a class=\"linkMenu\" id=\"button_update\"  data-tabindex=\"-1\">", "", "</a>\n\t\t"]),
     _templateObject48 = _taggedTemplateLiteral(["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p><a target='_blank' href='", "'>Lychee</a> ", "</p>\n\t\t\t  "], ["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p><a target='_blank' href='", "'>Lychee</a> ", "</p>\n\t\t\t  "]),
@@ -3376,6 +3376,8 @@ $(document).ready(function () {
 
 	Mousetrap.bind(['l'], function () {
 		lychee.loginDialog();return false;
+	}).bind(['k'], function () {
+		lychee.login_passwordless();return false;
 	}).bind(['left'], function () {
 		if (visible.photo() && (!visible.header() || $('img#image').is(':focus') || $('img#livephoto').is(':focus') || $(':focus').length === 0)) {
 			$('#imageview a#previous').click();
@@ -3665,7 +3667,7 @@ leftMenu.dom = function (selector) {
 leftMenu.build = function () {
 	var html = lychee.html(_templateObject44, lychee.locale['CLOSE'], lychee.locale['SETTINGS']);
 	if (lychee.api_V2) {
-		html += lychee.html(_templateObject45, build.iconic('person'), lychee.locale['USERS'], build.iconic('cloud'), lychee.locale['SHARING']);
+		html += lychee.html(_templateObject45, build.iconic('person'), lychee.locale['USERS'], build.iconic('key'), lychee.locale['U2F'], build.iconic('cloud'), lychee.locale['SHARING']);
 	}
 	html += lychee.html(_templateObject46, build.iconic('align-left'), lychee.locale['LOGS'], build.iconic('wrench'), lychee.locale['DIAGNOSTICS'], build.iconic('info'), lychee.locale['ABOUT_LYCHEE'], build.iconic('account-logout'), lychee.locale['SIGN_OUT']);
 	if (lychee.api_V2 && lychee.update_available) {
@@ -3723,6 +3725,7 @@ leftMenu.bind = function () {
 
 	if (lychee.api_V2) {
 		leftMenu.dom('#button_users').on(eventName, leftMenu.Users);
+		leftMenu.dom('#button_u2f').on(eventName, leftMenu.u2f);
 		leftMenu.dom('#button_sharing').on(eventName, leftMenu.Sharing);
 		leftMenu.dom('#button_update').on(eventName, leftMenu.Update);
 	}
@@ -3752,6 +3755,10 @@ leftMenu.Update = function () {
 
 leftMenu.Users = function () {
 	users.list();
+};
+
+leftMenu.u2f = function () {
+	view.u2f.init();
 };
 
 leftMenu.Sharing = function () {
@@ -4195,6 +4202,18 @@ lychee.login = function (data) {
 			// Show error and reactive button
 			basicModal.error('password');
 		}
+	});
+};
+
+lychee.login_passwordless = function () {
+	new Larapass({
+		login: 'webauthn/login',
+		loginOptions: 'webauthn/login/gen'
+	}).login({}).then(function (data) {
+		alert('Authentication successful!');
+		// window.location.reload()
+	}).catch(function (error) {
+		return alert('Something went wrong, try again!');
 	});
 };
 
@@ -4791,6 +4810,7 @@ lychee.locale = {
 
 	'SETTINGS': 'Settings',
 	'USERS': 'Users',
+	'U2F': 'U2F',
 	'SHARING': 'Sharing',
 	'CHANGE_LOGIN': 'Change Login',
 	'CHANGE_SORTING': 'Change Sorting',
@@ -9695,6 +9715,10 @@ view.album = {
 				var layoutGeometry = require('justified-layout')(ratio, {
 					containerWidth: containerWidth,
 					containerPadding: 0,
+					boxSpacing: {
+						horizontal: 42,
+						vertical: 150
+					},
 					targetRowHeight: parseFloat($('.photo').css('--lychee-default-height'), 10)
 				});
 				// if (lychee.admin) console.log(layoutGeometry);
@@ -9839,9 +9863,9 @@ view.album = {
 		if ((visible.album() || !album.json.init) && !visible.photo()) {
 
 			var structure = _sidebar.createStructure.album(album);
-			var html = _sidebar.render(structure);
+			var _html2 = _sidebar.render(structure);
 
-			_sidebar.dom('.sidebar__wrapper').html(html);
+			_sidebar.dom('.sidebar__wrapper').html(_html2);
 			_sidebar.bind();
 		}
 	}
@@ -10759,11 +10783,61 @@ view.preify = function (data, css) {
 	return html;
 };
 
-/**
- * @description This module is used to check if elements are visible or not.
- */
+view.u2f = {
+	init: function init() {
 
-var visible = {};
+		multiselect.clearSelection();
+
+		view.photo.hide();
+		view.u2f.title();
+		view.u2f.content.init();
+	},
+
+	title: function title() {
+
+		lychee.setTitle(lychee.locale['U2F'], false);
+	},
+
+	clearContent: function clearContent() {
+		lychee.content.html('<div class="u2f_view"></div>');
+	},
+
+	content: {
+
+		init: function init() {
+
+			view.u2f.clearContent();
+
+			var register = function register(event) {
+				event.preventDefault();
+				larapass = new Larapass({
+					register: 'webauthn/register',
+					registerOptions: 'webauthn/register/gen'
+				});
+				if (Larapass.supportsWebAuthn()) {
+					larapass.register().then(function (response) {
+						return alert('Registration successful!');
+					}).catch(function (response) {
+						return alert('Something went wrong, try again!');
+					});
+				} else {
+					alert('U2F not supported. Sorry.');
+				}
+			};
+
+			html = '<div id="RegisterU2F">' + '<a id="RegisterU2FButton"  class="basicModal__button basicModal__button_CREATE">Register new device.</a>' + '</div>';
+			$(".u2f_view").append(html);
+			// settings.bind('#UserCreate_button', '#UserCreate', users.create);
+			$("#RegisterU2FButton").on('click', register);
+
+			// document.getElementById('register-form').addEventListener('submit', register)
+		}
+	}
+	/**
+  * @description This module is used to check if elements are visible or not.
+  */
+
+};var visible = {};
 
 visible.albums = function () {
 	if (header.dom('.header__toolbar--public').hasClass('header__toolbar--visible')) return true;
