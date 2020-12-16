@@ -321,12 +321,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/Larapass.git",
-                "reference": "521305224fb7d9c6ebe178f5b8d778bc1f9b34ea"
+                "reference": "f8283c7a02cde3704a08b9e53aec32a99d239577"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/Larapass/zipball/521305224fb7d9c6ebe178f5b8d778bc1f9b34ea",
-                "reference": "521305224fb7d9c6ebe178f5b8d778bc1f9b34ea",
+                "url": "https://api.github.com/repos/LycheeOrg/Larapass/zipball/f8283c7a02cde3704a08b9e53aec32a99d239577",
+                "reference": "f8283c7a02cde3704a08b9e53aec32a99d239577",
                 "shasum": ""
             },
             "require": {
@@ -398,7 +398,7 @@
                     "url": "https://paypal.me/darkghosthunter"
                 }
             ],
-            "time": "2020-11-23T02:43:59+00:00"
+            "time": "2020-12-15T16:56:37+00:00"
         },
         {
             "name": "doctrine/cache",
@@ -1648,16 +1648,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v8.18.1",
+            "version": "v8.19.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "31747193c26ba0a9cb7929a912895d3cdefd10cf"
+                "reference": "f5f331cee60f1bbe672503b7eb9ba5b22b2ceacb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/31747193c26ba0a9cb7929a912895d3cdefd10cf",
-                "reference": "31747193c26ba0a9cb7929a912895d3cdefd10cf",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/f5f331cee60f1bbe672503b7eb9ba5b22b2ceacb",
+                "reference": "f5f331cee60f1bbe672503b7eb9ba5b22b2ceacb",
                 "shasum": ""
             },
             "require": {
@@ -1807,7 +1807,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2020-12-08T22:05:12+00:00"
+            "time": "2020-12-15T16:16:31+00:00"
         },
         {
             "name": "league/commonmark",
@@ -2404,16 +2404,16 @@
         },
         {
             "name": "monolog/monolog",
-            "version": "2.1.1",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "f9eee5cec93dfb313a38b6b288741e84e53f02d5"
+                "reference": "1cb1cde8e8dd0f70cc0fe51354a59acad9302084"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/f9eee5cec93dfb313a38b6b288741e84e53f02d5",
-                "reference": "f9eee5cec93dfb313a38b6b288741e84e53f02d5",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1cb1cde8e8dd0f70cc0fe51354a59acad9302084",
+                "reference": "1cb1cde8e8dd0f70cc0fe51354a59acad9302084",
                 "shasum": ""
             },
             "require": {
@@ -2426,16 +2426,17 @@
             "require-dev": {
                 "aws/aws-sdk-php": "^2.4.9 || ^3.0",
                 "doctrine/couchdb": "~1.0@dev",
-                "elasticsearch/elasticsearch": "^6.0",
+                "elasticsearch/elasticsearch": "^7",
                 "graylog2/gelf-php": "^1.4.2",
+                "mongodb/mongodb": "^1.8",
                 "php-amqplib/php-amqplib": "~2.4",
                 "php-console/php-console": "^3.1.3",
-                "php-parallel-lint/php-parallel-lint": "^1.0",
                 "phpspec/prophecy": "^1.6.1",
+                "phpstan/phpstan": "^0.12.59",
                 "phpunit/phpunit": "^8.5",
                 "predis/predis": "^1.1",
                 "rollbar/rollbar": "^1.3",
-                "ruflin/elastica": ">=0.90 <3.0",
+                "ruflin/elastica": ">=0.90 <7.0.1",
                 "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
             "suggest": {
@@ -2455,7 +2456,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.x-dev"
+                    "dev-main": "2.x-dev"
                 }
             },
             "autoload": {
@@ -2471,11 +2472,11 @@
                 {
                     "name": "Jordi Boggiano",
                     "email": "j.boggiano@seld.be",
-                    "homepage": "http://seld.be"
+                    "homepage": "https://seld.be"
                 }
             ],
             "description": "Sends your logs to files, sockets, inboxes, databases and various web services",
-            "homepage": "http://github.com/Seldaek/monolog",
+            "homepage": "https://github.com/Seldaek/monolog",
             "keywords": [
                 "log",
                 "logging",
@@ -2491,7 +2492,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-07-23T08:41:23+00:00"
+            "time": "2020-12-14T13:15:25+00:00"
         },
         {
             "name": "myclabs/php-enum",
@@ -7036,16 +7037,16 @@
         },
         {
             "name": "web-auth/cose-lib",
-            "version": "v3.2.10",
+            "version": "v3.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-auth/cose-lib.git",
-                "reference": "ff5b423608b4e2649925a58cfb7d3df67cb66929"
+                "reference": "27ab1f059d6ffb776ec01bd421ccb4338335e5a2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/web-auth/cose-lib/zipball/ff5b423608b4e2649925a58cfb7d3df67cb66929",
-                "reference": "ff5b423608b4e2649925a58cfb7d3df67cb66929",
+                "url": "https://api.github.com/repos/web-auth/cose-lib/zipball/27ab1f059d6ffb776ec01bd421ccb4338335e5a2",
+                "reference": "27ab1f059d6ffb776ec01bd421ccb4338335e5a2",
                 "shasum": ""
             },
             "require": {
@@ -7104,11 +7105,11 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2020-07-21T21:19:41+00:00"
+            "time": "2020-10-29T08:24:25+00:00"
         },
         {
             "name": "web-auth/metadata-service",
-            "version": "v3.2.10",
+            "version": "v3.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-auth/webauthn-metadata-service.git",
@@ -7173,7 +7174,7 @@
         },
         {
             "name": "web-auth/webauthn-lib",
-            "version": "v3.2.10",
+            "version": "v3.2.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/web-auth/webauthn-lib.git",
@@ -8835,16 +8836,16 @@
         },
         {
             "name": "phar-io/version",
-            "version": "3.0.3",
+            "version": "3.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phar-io/version.git",
-                "reference": "726c026815142e4f8677b7cb7f2249c9ffb7ecae"
+                "reference": "e4782611070e50613683d2b9a57730e9a3ba5451"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phar-io/version/zipball/726c026815142e4f8677b7cb7f2249c9ffb7ecae",
-                "reference": "726c026815142e4f8677b7cb7f2249c9ffb7ecae",
+                "url": "https://api.github.com/repos/phar-io/version/zipball/e4782611070e50613683d2b9a57730e9a3ba5451",
+                "reference": "e4782611070e50613683d2b9a57730e9a3ba5451",
                 "shasum": ""
             },
             "require": {
@@ -8878,7 +8879,7 @@
                 }
             ],
             "description": "Library for handling version information and constraints",
-            "time": "2020-11-30T09:21:21+00:00"
+            "time": "2020-12-13T23:18:30+00:00"
         },
         {
             "name": "php-cs-fixer/diff",
