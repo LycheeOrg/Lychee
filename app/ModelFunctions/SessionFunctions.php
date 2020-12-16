@@ -9,7 +9,6 @@ use App\Exceptions\NotLoggedInException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -18,7 +17,8 @@ class SessionFunctions
 	public function log_as_id($id)
 	{
 		if (App::runningUnitTests()) {
-			Auth::loginUsingId($id);
+			Session::put('login', true);
+			Session::put('UserID', $id);
 		}
 	}
 
@@ -30,7 +30,11 @@ class SessionFunctions
 	 */
 	public function is_logged_in()
 	{
-		return Auth::check();
+		if (Session::get('login') === true) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -40,12 +44,12 @@ class SessionFunctions
 	 */
 	public function is_admin()
 	{
-		return Auth::check() && Auth::user()->is_admin();
+		return Session::get('login') && Session::get('UserID') === 0;
 	}
 
 	public function can_upload(): bool
 	{
-		return Auth::check() && Auth::user()->can_upload();
+		return $this->id() == 0 || $this->user()->upload;
 	}
 
 	/**
@@ -56,19 +60,30 @@ class SessionFunctions
 	 */
 	public function id()
 	{
-		if (!Auth::check()) {
+		if (!Session::get('login')) {
 			throw new NotLoggedInException();
 		}
 
-		return Auth::id();
+		return Session::get('UserID');
+	}
+
+	/**
+	 * Return User object given a positive ID.
+	 */
+	private function accessUserData(): User
+	{
+		$id = $this->id();
+		$this->user_data = User::find($id);
+
+		return $this->user_data;
 	}
 
 	/**
 	 * Return User object and cache the result.
 	 */
-	public function getUserData(): ?User
+	public function user(): User
 	{
-		return Auth::user();
+		return $this->user_data ?? $this->accessUserData();
 	}
 
 	/**
@@ -81,7 +96,16 @@ class SessionFunctions
 	 */
 	public function is_current_user(int $userId)
 	{
-		return Auth::check() && (Auth::id() === $userId || Auth::id() === 0);
+		return Session::get('login') && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
+	}
+
+	/**
+	 * Given a user, login.
+	 */
+	public function login(User $user)
+	{
+		Session::put('login', true);
+		Session::put('UserID', $user->id);
 	}
 
 	/**
@@ -93,7 +117,8 @@ class SessionFunctions
 	{
 		$adminUser = User::find(0);
 		if ($adminUser->password === '' && $adminUser->username === '') {
-			Auth::login($adminUser);
+			Session::put('login', true);
+			Session::put('UserID', 0);
 
 			return true;
 		}
@@ -120,7 +145,8 @@ class SessionFunctions
 		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user != null && Hash::check($password, $user->password)) {
-			Auth::login($user);
+			Session::put('login', true);
+			Session::put('UserID', $user->id);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
 			return true;
@@ -144,7 +170,8 @@ class SessionFunctions
 	{
 		$AdminUser = User::find(0);
 		if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
-			Auth::login($AdminUser);
+			Session::put('login', true);
+			Session::put('UserID', 0);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
 			return true;
@@ -203,6 +230,6 @@ class SessionFunctions
 	 */
 	public function logout()
 	{
-		Auth::logout();
+		Session::flush();
 	}
 }

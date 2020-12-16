@@ -50,12 +50,12 @@ Route::post('/api/Session::init', [SessionController::class, 'init']);
 Route::post('/api/Session::login', [SessionController::class, 'login']);
 Route::post('/api/Session::logout', [SessionController::class, 'logout']);
 
-Route::post('/api/webauthn::register/gen', [Administration\WebAuthController::class, 'GenerateRegistration'])->middleware('auth');
-Route::post('/api/webauthn::register', [Administration\WebAuthController::class, 'VerifyRegistration'])->middleware('auth');
+Route::post('/api/webauthn::register/gen', [Administration\WebAuthController::class, 'GenerateRegistration'])->middleware('login');
+Route::post('/api/webauthn::register', [Administration\WebAuthController::class, 'VerifyRegistration'])->middleware('login');
 Route::post('/api/webauthn::login/gen', [Administration\WebAuthController::class, 'GenerateAuthentication']);
 Route::post('/api/webauthn::login', [Administration\WebAuthController::class, 'VerifyAuthentication']);
-Route::post('/api/webauthn::list', [Administration\WebAuthController::class, 'List'])->middleware('auth');
-Route::post('/api/webauthn::delete', [Administration\WebAuthController::class, 'Delete'])->middleware('auth');
+Route::post('/api/webauthn::list', [Administration\WebAuthController::class, 'List'])->middleware('login');
+Route::post('/api/webauthn::delete', [Administration\WebAuthController::class, 'Delete'])->middleware('login');
 
 Route::post('/api/Albums::get', [AlbumsController::class, 'get']);
 Route::post('/api/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);

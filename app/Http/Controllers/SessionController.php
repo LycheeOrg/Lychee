@@ -14,7 +14,6 @@ use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
@@ -54,7 +53,7 @@ class SessionController extends Controller
 	 */
 	public function init()
 	{
-		$logged_in = Auth::check();
+		$logged_in = $this->sessionFunctions->is_logged_in();
 
 		// Return settings
 		$return = [];
@@ -65,7 +64,7 @@ class SessionController extends Controller
 		// Check if login credentials exist and login if they don't
 		if ($this->sessionFunctions->noLogin() === true || $logged_in === true) {
 			// we the the UserID (it is set to 0 if there is no login/password = admin)
-			$user_id = Auth::id();
+			$user_id = $this->sessionFunctions->id();
 
 			if ($user_id == 0) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
@@ -155,8 +154,7 @@ class SessionController extends Controller
 	 */
 	public function logout()
 	{
-		Auth::logout();
-		// Session::flush();
+		Session::flush();
 
 		return 'true';
 	}

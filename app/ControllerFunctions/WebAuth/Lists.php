@@ -2,12 +2,26 @@
 
 namespace App\ControllerFunctions\WebAuth;
 
-use Illuminate\Support\Facades\Auth;
+use App\ModelFunctions\SessionFunctions;
 
 class Lists
 {
+	/**
+	 * @var SessionFunctions
+	 */
+	private $sessionFunctions;
+
+	/**
+	 * @param SessionFunctions $sessionFunctions
+	 */
+	public function __construct(
+		SessionFunctions $sessionFunctions
+	) {
+		$this->sessionFunctions = $sessionFunctions;
+	}
+
 	public function do()
 	{
-		return Auth::user()->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
+		return $this->sessionFunctions->user()->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
 	}
 }

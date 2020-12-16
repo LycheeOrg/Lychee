@@ -4,8 +4,8 @@ namespace App\Legacy;
 
 use App\Models\Configs;
 use App\Models\Logs;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 /**
  * Stuff we need to delete in the future.
@@ -43,9 +43,8 @@ class Legacy
 				isset($configs['username']) && $configs['username'] === '' &&
 				isset($configs['password']) && $configs['password'] === ''
 			) {
-				// Session::put('login', true);
-				// Session::put('UserID', 0);
-				Auth::loginUsingId(0);
+				Session::put('login', true);
+				Session::put('UserID', 0);
 
 				return true;
 			}
@@ -59,9 +58,8 @@ class Legacy
 		$configs = Configs::get();
 
 		if (Hash::check($username, $configs['username']) && Hash::check($password, $configs['password'])) {
-			// Session::put('login', true);
-			// Session::put('UserID', 0);
-			Auth::loginUsingId(0);
+			Session::put('login', true);
+			Session::put('UserID', 0);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip . ' (legacy)');
 
 			return true;
