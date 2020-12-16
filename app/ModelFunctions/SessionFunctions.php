@@ -124,8 +124,6 @@ class SessionFunctions
 		}
 
 		return Legacy::noLogin();
-
-		return false;
 	}
 
 	/**
@@ -178,8 +176,6 @@ class SessionFunctions
 		}
 
 		return Legacy::log_as_admin($username, $password, $ip);
-
-		return false;
 	}
 
 	/**
