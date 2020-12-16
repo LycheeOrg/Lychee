@@ -21,6 +21,7 @@ class WebAuthTest extends TestCase
 		$sessionFunctions->log_as_id(0);
 
 		$response = $this->post('/api/webauthn::register/gen');
+		$response->dump();
 		$response->assertStatus(200);
 
 		$response = $this->post('/api/webauthn::register', [
