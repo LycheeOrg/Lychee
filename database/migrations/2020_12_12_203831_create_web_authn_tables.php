@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Configs;
 use DarkGhostHunter\Larapass\Eloquent\WebAuthnCredential;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,6 +15,8 @@ class CreateWebAuthnTables extends Migration
 	 */
 	public function up()
 	{
+		defined('STRING') or define('STRING', 'string');
+
 		Schema::create('web_authn_credentials', function (Blueprint $table) {
 			$table->string('id', 255);
 
@@ -36,6 +39,7 @@ class CreateWebAuthnTables extends Migration
 
 			$table->timestamps();
 			$table->softDeletes(WebAuthnCredential::DELETED_AT);
+			Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING]);
 
 			$table->primary(['id', 'user_id']);
 		});
@@ -48,6 +52,9 @@ class CreateWebAuthnTables extends Migration
 	 */
 	public function down()
 	{
+		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
+
+		Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING_REQ]);
 		Schema::dropIfExists('web_authn_credentials');
 	}
 }
