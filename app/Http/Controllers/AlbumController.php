@@ -270,6 +270,7 @@ class AlbumController extends Controller
 		$request->validate([
 			'public' => 'integer|required',
 			'visible' => 'integer|required',
+			'nsfw' => 'integer|required',
 			'downloadable' => 'integer|required',
 			'share_button_visible' => 'integer|required',
 			'full_photo' => 'integer|required',
@@ -287,6 +288,7 @@ class AlbumController extends Controller
 		$album->full_photo = ($request['full_photo'] === '1' ? 1 : 0);
 		$album->public = ($request['public'] === '1' ? 1 : 0);
 		$album->viewable = ($request['visible'] === '1' ? 1 : 0);
+		$album->nsfw = ($request['nsfw'] === '1' ? 1 : 0);
 		$album->downloadable = ($request['downloadable'] === '1' ? 1 : 0);
 		$album->share_button_visible = ($request['share_button_visible'] === '1' ? 1 : 0);
 
