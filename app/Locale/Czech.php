@@ -24,6 +24,7 @@ final class Czech implements LangInterface
 			'DEFAULT' => 'Default',
 
 			'USERS' => 'Uživatelé',
+			'U2F' => 'U2F',
 			'SHARING' => 'Sdílení',
 			'CHANGE_LOGIN' => 'Změnit přihlášení',
 			'CHANGE_SORTING' => 'Změnt řazení',
@@ -282,6 +283,14 @@ final class Czech implements LangInterface
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Nastavení zobrazeni Map bylo aktualizováno',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Nastavení zobrazeni Map pro veřejná alba bylo aktualizováno',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Poskytovatel Map byl aktualizován',
+
+			'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
+			'U2F_NOT_SECURE' => 'Environment not secured. U2F not available.',
+			'U2F_REGISTER_KEY' => 'Register new device.',
+			'U2F_REGISTRATION_SUCCESS' => 'Registration successful!',
+			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
+			'U2F_CREDENTIALS' => 'Credentials',
+			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
 			'DB_INFO_TITLE' => 'Níže zadejte parametry připojení k databázi:',
 			'DB_INFO_HOST' => 'Hostitel (volitelný)',

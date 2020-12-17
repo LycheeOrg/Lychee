@@ -2639,6 +2639,14 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC': 'Map display settings for public albums updated',
 	'SETTINGS_SUCCESS_MAP_PROVIDER': 'Map provider settings updated',
 
+	'U2F_NOT_SUPPORTED': 'U2F not supported. Sorry.',
+	'U2F_NOT_SECURE': 'Environment not secured. U2F not available.',
+	'U2F_REGISTER_KEY': 'Register new device.',
+	'U2F_REGISTRATION_SUCCESS': 'Registration successful!',
+	'U2F_AUTHENTIFICATION_SUCCESS': 'Authentication successful!',
+	'U2F_CREDENTIALS': 'Credentials',
+	'U2F_CREDENTIALS_DELETED': 'Credentials deleted!',
+
 	'SETTINGS_SUCCESS_CSS': 'CSS updated',
 	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
 
@@ -2780,7 +2788,6 @@ lychee.locale = {
 	'PHOTO_LIVE_VIDEO': 'Video part of live-photo',
 	'PHOTO_VIEW': 'Lychee Photo View:'
 };
-
 /**
  * @description Helper class to manage tabindex
  */

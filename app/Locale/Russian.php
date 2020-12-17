@@ -24,6 +24,7 @@ final class Russian implements LangInterface
 			'DEFAULT' => 'Default',
 
 			'USERS' => 'Пользователи',
+			'U2F' => 'U2F',
 			'SHARING' => 'Поделиться',
 			'CHANGE_LOGIN' => 'Изменить логин',
 			'CHANGE_SORTING' => 'Порядок сортировки',
@@ -278,6 +279,14 @@ final class Russian implements LangInterface
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
+
+			'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
+			'U2F_NOT_SECURE' => 'Environment not secured. U2F not available.',
+			'U2F_REGISTER_KEY' => 'Register new device.',
+			'U2F_REGISTRATION_SUCCESS' => 'Registration successful!',
+			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
+			'U2F_CREDENTIALS' => 'Credentials',
+			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
 			'DB_INFO_TITLE' => 'Укажите данные для подключения к базе данных:',
 			'DB_INFO_HOST' => 'Сервер баз данных (не обязательно)',

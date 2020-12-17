@@ -24,6 +24,7 @@ final class German implements LangInterface
 			'DEFAULT' => 'Default',
 
 			'USERS' => 'Benutzer',
+			'U2F' => 'U2F',
 			'SHARING' => 'Freigabe',
 			'CHANGE_LOGIN' => 'Anmeldung ändern',
 			'CHANGE_SORTING' => 'Sortierung ändern',
@@ -283,6 +284,14 @@ final class German implements LangInterface
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Provider für Karten erfolgreich aktualisiert',
 			'SETTINGS_SUCCESS_CSS' => 'CSS aktualisiert',
 			'SETTINGS_SUCCESS_UPDATE' => 'Einstellungen erfolgreich aktualisiert',
+
+			'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
+			'U2F_NOT_SECURE' => 'Environment not secured. U2F not available.',
+			'U2F_REGISTER_KEY' => 'Register new device.',
+			'U2F_REGISTRATION_SUCCESS' => 'Registration successful!',
+			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
+			'U2F_CREDENTIALS' => 'Credentials',
+			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
 			'DB_INFO_TITLE' => 'Geben Sie die Informationen zu Ihrer Datenbankverbindung an:',
 			'DB_INFO_HOST' => 'Name des Datenbankservers (optional)',

@@ -24,6 +24,7 @@ final class Dutch implements LangInterface
 			'DEFAULT' => 'Default',
 
 			'USERS' => 'Users',
+			'U2F' => 'U2F',
 			'SHARING' => 'Sharing',
 			'CHANGE_LOGIN' => 'Verander Login',
 			'CHANGE_SORTING' => 'Verander Sortering',
@@ -278,6 +279,14 @@ final class Dutch implements LangInterface
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Map display settings updated',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
+
+			'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
+			'U2F_NOT_SECURE' => 'Environment not secured. U2F not available.',
+			'U2F_REGISTER_KEY' => 'Register new device.',
+			'U2F_REGISTRATION_SUCCESS' => 'Registration successful!',
+			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
+			'U2F_CREDENTIALS' => 'Credentials',
+			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
 			'DB_INFO_TITLE' => 'Voer je database connectie gegevens hieronder in:',
 			'DB_INFO_HOST' => 'Database Host (optioneel)',

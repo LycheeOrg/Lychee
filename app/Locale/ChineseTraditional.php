@@ -24,6 +24,7 @@ final class ChineseTraditional implements LangInterface
 			'DEFAULT' => '默認',
 
 			'USERS' => '使用者',
+			'U2F' => 'U2F',
 			'SHARING' => '分享',
 			'CHANGE_LOGIN' => '修改登入訊息',
 			'CHANGE_SORTING' => '修改排序',
@@ -278,6 +279,14 @@ final class ChineseTraditional implements LangInterface
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => '地圖顯示設置已更新',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => '公開相簿的地圖顯示設置已更新',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => '地圖提供商設置已更新',
+
+			'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
+			'U2F_NOT_SECURE' => 'Environment not secured. U2F not available.',
+			'U2F_REGISTER_KEY' => 'Register new device.',
+			'U2F_REGISTRATION_SUCCESS' => 'Registration successful!',
+			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
+			'U2F_CREDENTIALS' => 'Credentials',
+			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
 			'DB_INFO_TITLE' => '請輸入數據庫信息',
 			'DB_INFO_HOST' => '數據庫主機（選填）',

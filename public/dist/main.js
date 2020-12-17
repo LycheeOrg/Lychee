@@ -344,7 +344,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject72 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
     _templateObject73 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "], ["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "]),
     _templateObject74 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
-    _templateObject75 = _taggedTemplateLiteral(["<h1>Environment not secured. U2F not available</h1>"], ["<h1>Environment not secured. U2F not available</h1>"]),
+    _templateObject75 = _taggedTemplateLiteral(["<h1>", "</h1>"], ["<h1>", "</h1>"]),
     _templateObject76 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
     _templateObject77 = _taggedTemplateLiteral(["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"], ["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"]),
     _templateObject78 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='delete'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='delete'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t"]),
@@ -4481,7 +4481,7 @@ lychee.setMode = function (mode) {
 
 	if (mode === 'logged_in') {
 		// we are logged in, we do not need that short cut anymore. :)
-		Mousetrap.unbind(['l']);
+		Mousetrap.unbind(['l']).unbind(['k']);
 
 		// The code searches by class, so remove the other instance.
 		$('.header__search, .header__clear', '.header__toolbar--public').remove();
@@ -5068,6 +5068,14 @@ lychee.locale = {
 	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC': 'Map display settings for public albums updated',
 	'SETTINGS_SUCCESS_MAP_PROVIDER': 'Map provider settings updated',
 
+	'U2F_NOT_SUPPORTED': 'U2F not supported. Sorry.',
+	'U2F_NOT_SECURE': 'Environment not secured. U2F not available.',
+	'U2F_REGISTER_KEY': 'Register new device.',
+	'U2F_REGISTRATION_SUCCESS': 'Registration successful!',
+	'U2F_AUTHENTIFICATION_SUCCESS': 'Authentication successful!',
+	'U2F_CREDENTIALS': 'Credentials',
+	'U2F_CREDENTIALS_DELETED': 'Credentials deleted!',
+
 	'SETTINGS_SUCCESS_CSS': 'CSS updated',
 	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
 
@@ -5209,7 +5217,6 @@ lychee.locale = {
 	'PHOTO_LIVE_VIDEO': 'Video part of live-photo',
 	'PHOTO_VIEW': 'Lychee Photo View:'
 };
-
 /**
  * @description This module takes care of the map view of a full album and its sub-albums.
  */
@@ -8655,7 +8662,7 @@ var u2f = {
 
 u2f.is_available = function () {
 	if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-		var msg = lychee.html(_templateObject75);
+		var msg = lychee.html(_templateObject75, lychee.locale['U2F_NOT_SECURE']);
 
 		basicModal.show({
 			body: msg,
@@ -8681,7 +8688,7 @@ u2f.login = function () {
 	}).login({
 		user_id: 0 // for now it is only available to Admin user via a secret key shortcut.
 	}).then(function (data) {
-		loadingBar.show('success', 'Authentication successful!');
+		loadingBar.show('success', lychee.locale['U2F_AUTHENTIFICATION_SUCCESS']);
 		window.location.reload();
 	}).catch(function (error) {
 		return loadingBar.show('error', 'Something went wrong!');
@@ -8697,47 +8704,15 @@ u2f.register = function () {
 	});
 	if (Larapass.supportsWebAuthn()) {
 		larapass.register().then(function (response) {
-			loadingBar.show('success', 'Registration successful!');
+			loadingBar.show('success', lychee.locale['U2F_REGISTRATION_SUCCESS']);
 			u2f.list(); // reload credential list
 		}).catch(function (response) {
 			return loadingBar.show('error', 'Something went wrong!');
 		});
 	} else {
-		loadingBar.show('error', 'U2F not supported. Sorry.');
+		loadingBar.show('error', lychee.locale['U2F_NOT_SUPPORTED']);
 	}
 };
-
-// u2f.tmp = function() {
-//     let msg = lychee.html `
-//     <form>
-//         <p class='signIn'>
-//             <input class='text' name='username' autocomplete='on' type='text' placeholder='$${ lychee.locale['USERNAME'] }' autocapitalize='off' data-tabindex='${tabindex.get_next_tab_index()}'>
-//             <input class='text' name='password' autocomplete='current-password' type='password' placeholder='$${ lychee.locale['PASSWORD'] }' data-tabindex='${tabindex.get_next_tab_index()}'>
-//         </p>
-//         <p class='version'>Lychee ${ lychee.version }<span> &#8211; <a target='_blank' href='${ lychee.updateURL }' data-tabindex='-1'>${ lychee.locale['UPDATE_AVAILABLE'] }</a><span></p>
-//     </form>
-//     `;
-
-//     basicModal.show({
-//         body: msg,
-//         buttons: {
-//             action: {
-//                 title: lychee.locale['SIGN_IN'],
-//                 fn: lychee.login,
-//                 attributes: [
-//                     ["data-tabindex", tabindex.get_next_tab_index()]
-//                 ]
-//             },
-//             cancel: {
-//                 title: lychee.locale['CANCEL'],
-//                 fn: basicModal.close,
-//                 attributes: [
-//                     ["data-tabindex", tabindex.get_next_tab_index()]
-//                 ]
-//             }
-//         }
-//     });
-// }
 
 u2f.delete = function (params) {
 
@@ -8746,7 +8721,7 @@ u2f.delete = function (params) {
 			loadingBar.show('error', data.description);
 			lychee.error(null, params, data);
 		} else {
-			loadingBar.show('success', 'Credential deleted!');
+			loadingBar.show('success', lychee.locale['U2F_CREDENTIALS_DELETED']);
 			u2f.list(); // reload credential list
 		}
 	});
@@ -10922,7 +10897,7 @@ view.u2f = {
 				$(".u2f_view").append('<div class="u2f_view_line" style="margin-bottom: 50px;"><p style="text-align: center">Credentials list is empty!</p></div>');
 			} else {
 
-				html += '<div class="u2f_view_line">' + '<p>' + '<span class="text">Credential</span>' +
+				html += '<div class="u2f_view_line">' + '<p>' + '<span class="text">' + lychee.locale['U2F_CREDENTIALS'] + '</span>' +
 				// '<span class="text_icon" title="Allow uploads">' + build.iconic('data-transfer-upload') + '</span>' +
 				// '<span class="text_icon" title="Restricted account">' + build.iconic('lock-locked') + '</span>' +
 				'</p>' + '</div>';
@@ -10946,7 +10921,7 @@ view.u2f = {
 			if (u2f.json.length === 0) {
 				html += ' style="padding-top: 0px;"';
 			}
-			html += '>' + '<a id="RegisterU2FButton"  class="basicModal__button basicModal__button_CREATE">Register new device.</a>' + '</div>';
+			html += '>' + '<a id="RegisterU2FButton"  class="basicModal__button basicModal__button_CREATE">' + lychee.locale['U2F_REGISTER_KEY'] + '</a>' + '</div>';
 			$(".u2f_view").append(html);
 			$("#RegisterU2FButton").on('click', u2f.register);
 		}
