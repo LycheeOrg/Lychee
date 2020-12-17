@@ -13,7 +13,7 @@ return [
 	*/
 
 	'relaying_party' => [
-		'name' => env('WEBAUTHN_NAME', env('APP_NAME')),
+		'name' => env('WEBAUTHN_NAME', env('APP_NAME', 'Lychee')),
 		'id' => env('WEBAUTHN_ID'),
 		'icon' => env('WEBAUTHN_ICON'),
 	],
@@ -31,7 +31,7 @@ return [
 
 	'bytes' => 16,
 	'timeout' => 60,
-	'cache' => env('WEBAUTHN_CACHE', 'file'),
+	'cache' => env('WEBAUTHN_CACHE'),
 
 	/*
 	|--------------------------------------------------------------------------
