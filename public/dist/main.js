@@ -2349,9 +2349,7 @@ build.user = function (user) {
 };
 
 build.u2f = function (credential) {
-	var html = lychee.html(_templateObject42, credential.id, credential.id, credential.id, credential.id);
-
-	return html;
+	return lychee.html(_templateObject42, credential.id, credential.id, credential.id, credential.id);
 };
 /**
  * @description This module is used for the context menu.
@@ -8680,7 +8678,9 @@ u2f.is_available = function () {
 };
 
 u2f.login = function () {
-	if (!u2f.is_available()) return;
+	if (!u2f.is_available()) {
+		return;
+	}
 
 	new Larapass({
 		login: '/api/webauthn::login',
@@ -8696,9 +8696,11 @@ u2f.login = function () {
 };
 
 u2f.register = function () {
-	if (!u2f.is_available()) return;
+	if (!u2f.is_available()) {
+		return;
+	}
 
-	larapass = new Larapass({
+	var larapass = new Larapass({
 		register: '/api/webauthn::register',
 		registerOptions: '/api/webauthn::register/gen'
 	});
