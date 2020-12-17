@@ -127,7 +127,7 @@ class AlbumTest extends TestCase
 		$session_tests->log_as_id(0);
 
 		$albums_tests->set_description($this, '-1', 'new description', 'false');
-		$albums_tests->set_public($this, '-1', 1, 1, 1, 1, 1, 'false');
+		$albums_tests->set_public($this, '-1', 1, 1, 1, 0, 1, 1, 'false');
 
 		$session_tests->logout($this);
 	}

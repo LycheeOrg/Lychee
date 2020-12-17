@@ -309,6 +309,7 @@ class AlbumsUnitTest
 		int $full_photo = 1,
 		int $public = 1,
 		int $visible = 1,
+		int $nsfw = 0,
 		int $downloadable = 1,
 		int $share_button_visible = 1,
 		string $result = 'true'
@@ -318,6 +319,7 @@ class AlbumsUnitTest
 			'albumID' => $id,
 			'public' => $public,
 			'visible' => $visible,
+			'nsfw' => $nsfw,
 			'downloadable' => $downloadable,
 			'share_button_visible' => $share_button_visible,
 		]);

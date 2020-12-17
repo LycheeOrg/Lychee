@@ -76,7 +76,7 @@ class RSSTest extends TestCase
 
 		// move picture to album
 		$photos_tests->set_album($this, $albumID, $photoID, 'true');
-		$albums_tests->set_public($this, $albumID, 1, 1, 1, 1, 1, 'true');
+		$albums_tests->set_public($this, $albumID, 1, 1, 1, 0, 1, 1, 'true');
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
