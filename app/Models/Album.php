@@ -25,7 +25,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null       $max_takestamp
  * @property int               $public
  * @property int               $full_photo
- * @property int               $visible_hidden
+ * @property int               $viewable
  * @property int               $downloadable
  * @property int               $share_button_visible
  * @property string|null       $password
@@ -75,7 +75,8 @@ class Album extends Model
 	protected $casts
 	= [
 		'public' => 'int',
-		'visible_hidden' => 'int',
+		'nsfw' => 'int',
+		'viewable' => 'int',
 		'downloadable' => 'int',
 		'share_button_visible' => 'int',
 	];

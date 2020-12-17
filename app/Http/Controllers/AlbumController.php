@@ -286,7 +286,7 @@ class AlbumController extends Controller
 		// Convert values
 		$album->full_photo = ($request['full_photo'] === '1' ? 1 : 0);
 		$album->public = ($request['public'] === '1' ? 1 : 0);
-		$album->visible_hidden = ($request['visible'] === '1' ? 1 : 0);
+		$album->viewable = ($request['visible'] === '1' ? 1 : 0);
 		$album->downloadable = ($request['downloadable'] === '1' ? 1 : 0);
 		$album->share_button_visible = ($request['share_button_visible'] === '1' ? 1 : 0);
 

@@ -79,7 +79,7 @@ class DemoController extends Controller
 		 * @var Collection[Album]
 		 */
 		$albums = Album::where('public', '=', '1')
-			->where('visible_hidden', '=', '1')
+			->where('viewable', '=', '1')
 			->get();
 		/*
 		 * @var Album
