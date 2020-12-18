@@ -24,6 +24,7 @@ final class Slovak implements LangInterface
 			'DEFAULT' => 'Default',
 
 			'USERS' => 'Užívatelia',
+			'U2F' => 'U2F',
 			'SHARING' => 'Zdieľanie',
 			'CHANGE_LOGIN' => 'Zmena prihlásenia',
 			'CHANGE_SORTING' => 'Zmena zoraďovania',
@@ -282,6 +283,14 @@ final class Slovak implements LangInterface
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Nastavenie zobrazenia mapy aktualizované',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Map display settings for public albums updated',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Map provider settings updated',
+
+			'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
+			'U2F_NOT_SECURE' => 'Environment not secured. U2F not available.',
+			'U2F_REGISTER_KEY' => 'Register new device.',
+			'U2F_REGISTRATION_SUCCESS' => 'Registration successful!',
+			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
+			'U2F_CREDENTIALS' => 'Credentials',
+			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
 			'DB_INFO_TITLE' => 'Zadajte prístupové údaje k databáze:',
 			'DB_INFO_HOST' => 'Názov databázového servera (voliteľné)',

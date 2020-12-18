@@ -54,26 +54,25 @@ class UploadCheck
 			return $next($request);
 		}
 
-		$user_id = $this->sessionFunctions->id();
-		$user = $this->sessionFunctions->getUserData();
+		$user = $this->sessionFunctions->user();
 
 		// is not admin and does not have upload rights
 		if (!$user->upload) {
 			return response('false');
 		}
 
-		$ret = $this->album_check($request, $user_id);
+		$ret = $this->album_check($request, $user->id);
 		if ($ret === false) {
 			return response('false');
 		}
 
-		$ret = $this->photo_check($request, $user_id);
+		$ret = $this->photo_check($request, $user->id);
 		if ($ret === false) {
 			return response('false');
 		}
 
 		// Only used for /api/Sharing::Delete
-		$ret = $this->share_check($request, $user_id);
+		$ret = $this->share_check($request, $user->id);
 		if ($ret === false) {
 			return response('false');
 		}

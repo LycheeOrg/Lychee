@@ -26,6 +26,7 @@ final class French implements LangInterface
 			'ALBUM_ORDERING' => 'Order by',
 
 			'USERS' => 'Utilisateurs',
+			'U2F' => 'U2F',
 			'SHARING' => 'Partage',
 			'CHANGE_LOGIN' => 'Changer le nom d\'utilisateur',
 			'CHANGE_SORTING' => 'Changer le tri',
@@ -278,6 +279,14 @@ final class French implements LangInterface
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Parametres de la carte mis à jour.',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Parametres de la carte pour les albums publics mis à jour.',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Fournisseur de la Carte mis à jour.',
+
+			'U2F_NOT_SUPPORTED' => 'U2F non suporté. Desolé.',
+			'U2F_NOT_SECURE' => 'Environment non sécurisé. U2F non disponible.',
+			'U2F_REGISTER_KEY' => 'Enregistrer une nouvelle clé.',
+			'U2F_REGISTRATION_SUCCESS' => 'Enregistrement réussi!',
+			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication réussie!',
+			'U2F_CREDENTIALS' => 'Clés',
+			'U2F_CREDENTIALS_DELETED' => 'Clé supprimée!',
 
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
 			'DB_INFO_HOST' => 'Hôte de la base de donnees (facultatif)',

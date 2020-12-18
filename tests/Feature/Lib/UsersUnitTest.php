@@ -19,7 +19,7 @@ class UsersUnitTest
 		TestCase &$testCase,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/User::List', []);
+		$response = $testCase->json('POST', '/api/User::List', []);
 		$response->assertStatus(200);
 		if ($result != 'true') {
 			$response->assertSee($result, false);
@@ -38,7 +38,7 @@ class UsersUnitTest
 		TestCase &$testCase,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/php/index.php', []);
+		$response = $testCase->json('POST', '/php/index.php', []);
 		$response->assertStatus(200);
 		if ($result != 'true') {
 			$response->assertSee($result, false);
@@ -65,7 +65,7 @@ class UsersUnitTest
 		string $lock,
 		string $result = 'true'
 	) {
-		$response = $testCase->post('/api/User::Create', [
+		$response = $testCase->json('POST', '/api/User::Create', [
 			'username' => $username,
 			'password' => $password,
 			'upload' => $upload,
@@ -85,13 +85,16 @@ class UsersUnitTest
 	public function delete(
 		TestCase &$testCase,
 		string $id,
-		string $result = 'true'
+		string $result = 'true',
+		int $code = 200
 	) {
-		$response = $testCase->post('/api/User::Delete', [
+		$response = $testCase->json('POST', '/api/User::Delete', [
 			'id' => $id,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		$response->assertStatus($code);
+		if ($result == 'true') {
+			$response->assertSee($result, false);
+		}
 	}
 
 	/**
@@ -112,16 +115,19 @@ class UsersUnitTest
 		string $password,
 		string $upload,
 		string $lock,
-		string $result = 'true'
+		string $result = 'true',
+		int $code = 200
 	) {
-		$response = $testCase->post('/api/User::Save', [
+		$response = $testCase->json('POST', '/api/User::Save', [
 			'id' => $id,
 			'username' => $username,
 			'password' => $password,
 			'upload' => $upload,
 			'lock' => $lock,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		$response->assertStatus($code);
+		if ($code == 200) {
+			$response->assertSee($result, false);
+		}
 	}
 }

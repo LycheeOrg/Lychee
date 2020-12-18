@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
 use App\ControllerFunctions\Update\Apply as ApplyUpdate;
 use App\ControllerFunctions\Update\Check as CheckUpdate;
+use App\Http\Controllers\Controller;
 use App\Metadata\LycheeVersion;
 use App\ModelFunctions\SessionFunctions;
 use App\Response;

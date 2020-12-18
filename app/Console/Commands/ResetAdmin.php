@@ -3,7 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
+use App\Legacy\Legacy;
 use App\Models\Configs;
+use App\Models\User;
 use Illuminate\Console\Command;
 
 class ResetAdmin extends Command
@@ -48,7 +50,24 @@ class ResetAdmin extends Command
 	 */
 	public function handle()
 	{
-		Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['value' => '']);
+		Legacy::resetAdmin();
+
+		// delete to avoid collisions.
+		User::where('username', '=', '')->delete();
+		User::where('password', '=', '')->delete();
+		User::where('id', '=', 0)->delete();
+
+		// recreate an admin user
+		$user = new User();
+		$user->username = Configs::get_value('username', '');
+		$user->password = Configs::get_value('password', '');
+		$user->save();
+
+		// created user will have a id which is NOT 0.
+		// we want this user to have an ID of 0 as it is the ADMIN ID.
+		$user->id = 0;
+		$user->save();
+
 		$this->line($this->col->yellow('Admin username and password reset.'));
 	}
 }

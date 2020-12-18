@@ -6,6 +6,9 @@ namespace App\Http\Controllers;
 
 use App\Assets\Helpers;
 use App\ControllerFunctions\ReadAccessFunctions;
+use App\Http\Requests\AlbumRequests\AlbumIDRequest;
+use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
+use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
@@ -115,9 +118,8 @@ class AlbumController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function get(Request $request)
+	public function get(AlbumIDRequest $request)
 	{
-		$request->validate(['albumID' => 'string|required']);
 		$return = [];
 		$return['albums'] = [];
 		// Get photos
@@ -162,9 +164,8 @@ class AlbumController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function getPositionData(Request $request)
+	public function getPositionData(AlbumIDRequest $request)
 	{
-		$request->validate(['albumID' => 'string|required']);
 		$request->validate(['includeSubAlbums' => 'string|required']);
 		$return = [];
 		// Get photos
@@ -224,10 +225,9 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function getPublic(Request $request)
+	public function getPublic(AlbumIDRequest $request)
 	{
 		$request->validate([
-			'albumID' => 'string|required',
 			'password' => 'string|nullable',
 		]);
 
@@ -241,10 +241,9 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setTitle(Request $request)
+	public function setTitle(AlbumIDsRequest $request)
 	{
 		$request->validate([
-			'albumIDs' => 'string|required',
 			'title' => 'string|required|max:100',
 		]);
 
@@ -266,10 +265,9 @@ class AlbumController extends Controller
 	 *
 	 * @return bool|string
 	 */
-	public function setPublic(Request $request)
+	public function setPublic(AlbumIDRequestInt $request)
 	{
 		$request->validate([
-			'albumID' => 'integer|required',
 			'public' => 'integer|required',
 			'visible' => 'integer|required',
 			'downloadable' => 'integer|required',
@@ -327,10 +325,9 @@ class AlbumController extends Controller
 	 *
 	 * @return bool|string
 	 */
-	public function setDescription(Request $request)
+	public function setDescription(AlbumIDRequestInt $request)
 	{
 		$request->validate([
-			'albumID' => 'integer|required',
 			'description' => 'string|nullable|max:1000',
 		]);
 
@@ -354,10 +351,9 @@ class AlbumController extends Controller
 	 *
 	 * @return bool|string
 	 */
-	public function setShowTags(Request $request)
+	public function setShowTags(AlbumIDRequestInt $request)
 	{
 		$request->validate([
-			'albumID' => 'integer|required',
 			'show_tags' => 'string|required|max:1000|min:1',
 		]);
 
@@ -387,10 +383,9 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setLicense(Request $request)
+	public function setLicense(AlbumIDRequestInt $request)
 	{
 		$request->validate([
-			'albumID' => 'required|string',
 			'license' => 'required|string',
 		]);
 
@@ -433,12 +428,8 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function delete(Request $request)
+	public function delete(AlbumIDsRequest $request)
 	{
-		$request->validate([
-			'albumIDs' => 'string|required',
-		]);
-
 		$no_error = true;
 		if ($request['albumIDs'] == '0') {
 			$photos = Photo::select_unsorted(Photo::OwnedBy($this->sessionFunctions->id()))->get();
@@ -481,12 +472,8 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function merge(Request $request)
+	public function merge(AlbumIDsRequest $request)
 	{
-		$request->validate([
-			'albumIDs' => 'string|required',
-		]);
-
 		// Convert to array
 		$albumIDs = explode(',', $request['albumIDs']);
 		// Get first albumID
@@ -556,10 +543,8 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function move(Request $request)
+	public function move(AlbumIDsRequest $request)
 	{
-		$request->validate(['albumIDs' => 'string|required']);
-
 		// Convert to array
 		$albumIDs = explode(',', $request['albumIDs']);
 
@@ -622,10 +607,9 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setSorting(Request $request)
+	public function setSorting(AlbumIDRequest $request)
 	{
 		$request->validate([
-			'albumID' => 'required|string',
 			'typePhotos' => 'nullable',
 			'orderPhotos' => 'required|string',
 		]);
@@ -654,7 +638,7 @@ class AlbumController extends Controller
 	 *
 	 * @return string|StreamedResponse
 	 */
-	public function getArchive(Request $request)
+	public function getArchive(AlbumIDsRequest $request)
 	{
 		if (Storage::getDefaultDriver() === 's3') {
 			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
@@ -677,10 +661,6 @@ class AlbumController extends Controller
 				'*',
 			]
 		);
-
-		$request->validate([
-			'albumIDs' => 'required|string',
-		]);
 
 		$albumIDs = explode(',', $request['albumIDs']);
 

@@ -3,9 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\ImportController;
+use App\ModelFunctions\SessionFunctions;
 use Exception;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Session;
 
 class Sync extends Command
 {
@@ -24,12 +24,17 @@ class Sync extends Command
 	protected $description = 'Sync a directory to lychee';
 
 	/**
-	 * Create a new command instance.
-	 *
-	 * @return void
+	 * @var SessionFunctions
 	 */
-	public function __construct()
-	{
+	private $sessionFunctions;
+
+	/**
+	 * @param SessionFunctions $sessionFunctions
+	 */
+	public function __construct(
+		SessionFunctions $sessionFunctions
+	) {
+		$this->sessionFunctions = $sessionFunctions;
 		parent::__construct();
 	}
 
@@ -54,8 +59,8 @@ class Sync extends Command
 		// Disable Memory Check
 		$import_controller->disableMemCheck();
 
-		Session::put('UserID', $owner_id);
-		Session::put('login', true);
+		$this->sessionFunctions->log_as_id($owner_id);
+
 		try {
 			$import_controller->server_exec($directory, $album_id, $delete_imported, $force_skip_duplicates, null, $resync_metadata);
 		} catch (Exception $e) {

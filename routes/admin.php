@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;

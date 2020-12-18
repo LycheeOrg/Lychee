@@ -2,9 +2,12 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Administration;
 
 use App\Assets\Helpers;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequests\UsernamePasswordRequest;
+use App\Legacy\Legacy;
 use App\Locale\Lang;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
@@ -43,36 +46,39 @@ class SettingsController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setLogin(Request $request)
+	public function setLogin(UsernamePasswordRequest $request)
 	{
-		$request->validate([
-			'username' => 'required|string',
-			'password' => 'required|string',
-		]);
+		$oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
+		$oldUsername = $request->has('oldUsername') ? $request['oldUsername'] : '';
 
-		$configs = Configs::get();
-		$oldPassword = $request->has('oldPassword') ? $request['oldPassword']
-			: '';
-		$oldUsername = $request->has('oldUsername') ? $request['oldUsername']
-			: '';
+		if (Legacy::SetPassword($request)) {
+			return 'true';
+		}
 
-		if ($configs['password'] === '' && $configs['username'] === '') {
-			Configs::set('username', bcrypt($request['username']));
-			Configs::set('password', bcrypt($request['password']));
+		// > 4.0.8
+		$adminUser = User::find(0);
+		if ($adminUser->password === '' && $adminUser->username === '') {
+			$adminUser->username = bcrypt($request['username']);
+			$adminUser->password = bcrypt($request['password']);
+			$adminUser->save();
+			$this->sessionFunctions->login($adminUser);
 
 			return 'true';
 		}
 
 		if ($this->sessionFunctions->is_admin()) {
 			if (
-				$configs['password'] === ''
-				|| Hash::check($oldPassword, $configs['password'])
+				$adminUser->password === ''
+				|| Hash::check($oldPassword, $adminUser->password)
 			) {
-				Configs::set('username', bcrypt($request['username']));
-				Configs::set('password', bcrypt($request['password']));
+				$adminUser->username = bcrypt($request['username']);
+				$adminUser->password = bcrypt($request['password']);
+				$adminUser->save();
+				unset($adminUser);
 
 				return 'true';
 			}
+			unset($adminUser);
 
 			return Response::error('Current password entered incorrectly!');
 		} elseif ($this->sessionFunctions->is_logged_in()) {

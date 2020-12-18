@@ -24,6 +24,7 @@ final class NorwegianBokmal implements LangInterface
 			'DEFAULT' => 'Default',
 
 			'USERS' => 'Brukere',
+			'U2F' => 'U2F',
 			'SHARING' => 'Deling',
 			'CHANGE_LOGIN' => 'Endre Bruker',
 			'CHANGE_SORTING' => 'Endre sortering',
@@ -278,6 +279,14 @@ final class NorwegianBokmal implements LangInterface
 			'SETTINGS_SUCCESS_MAP_DISPLAY' => 'Innstillinger for Kartvisning oppdatert',
 			'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC' => 'Innstillinger for Kartvisning for offentlige album oppdatert',
 			'SETTINGS_SUCCESS_MAP_PROVIDER' => 'Innstillinger for kartleverandør oppdatert',
+
+			'U2F_NOT_SUPPORTED' => 'U2F not supported. Sorry.',
+			'U2F_NOT_SECURE' => 'Environment not secured. U2F not available.',
+			'U2F_REGISTER_KEY' => 'Register new device.',
+			'U2F_REGISTRATION_SUCCESS' => 'Registration successful!',
+			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
+			'U2F_CREDENTIALS' => 'Credentials',
+			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
 			'DB_INFO_TITLE' => 'Fyll inn detaljer om databaseforbindelsen under:',
 			'DB_INFO_HOST' => 'Database Adresse (valgfritt)',

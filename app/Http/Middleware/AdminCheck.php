@@ -16,9 +16,15 @@ class AdminCheck
 	 */
 	private $sessionFunctions;
 
-	public function __construct(SessionFunctions $sessionFunctions)
+	/**
+	 * @var IsInstalled
+	 */
+	private $isInstalled;
+
+	public function __construct(SessionFunctions $sessionFunctions, IsInstalled $isInstalled)
 	{
 		$this->sessionFunctions = $sessionFunctions;
+		$this->isInstalled = $isInstalled;
 	}
 
 	/**
@@ -31,7 +37,7 @@ class AdminCheck
 	 */
 	public function handle($request, Closure $next)
 	{
-		if (!IsInstalled::assert()) {
+		if (!$this->isInstalled->assert()) {
 			return $next($request);
 		}
 

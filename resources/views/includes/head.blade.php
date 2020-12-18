@@ -17,4 +17,6 @@
   @include('feed::links')
 @endif
 
+<script src="dist/Larapass.js"></script>
+
 @yield('head-meta')

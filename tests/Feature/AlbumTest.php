@@ -15,7 +15,7 @@ class AlbumTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function test_add_not_logged()
+	public function testAddNotLogged()
 	{
 		$albums_tests = new AlbumsUnitTest();
 		$albums_tests->add($this, '0', 'test_album', 'false');
@@ -26,7 +26,7 @@ class AlbumTest extends TestCase
 		$albums_tests->get($this, 'unsorted', '', 'true');
 	}
 
-	public function test_add_read_logged()
+	public function testAddReadLogged()
 	{
 		$albums_tests = new AlbumsUnitTest();
 		$session_tests = new SessionUnitTest();
@@ -119,7 +119,7 @@ class AlbumTest extends TestCase
 		$session_tests->logout($this);
 	}
 
-	public function test_true_negative()
+	public function testTrueNegative()
 	{
 		$albums_tests = new AlbumsUnitTest();
 		$session_tests = new SessionUnitTest();

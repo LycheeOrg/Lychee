@@ -6,9 +6,7 @@ namespace App\ModelFunctions;
 
 use App;
 use App\Exceptions\NotLoggedInException;
-use App\Exceptions\RequestAdminDataException;
-use App\Exceptions\UserNotFoundException;
-use App\Models\Configs;
+use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -16,8 +14,6 @@ use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
-	private $user_data = null;
-
 	public function log_as_id($id)
 	{
 		if (App::runningUnitTests()) {
@@ -53,7 +49,7 @@ class SessionFunctions
 
 	public function can_upload(): bool
 	{
-		return $this->id() == 0 || $this->getUserData()->upload;
+		return $this->id() == 0 || $this->user()->upload;
 	}
 
 	/**
@@ -77,25 +73,15 @@ class SessionFunctions
 	private function accessUserData(): User
 	{
 		$id = $this->id();
-		if ($id > 0) {
-			$this->user_data = User::find($id);
+		$this->user_data = User::find($id);
 
-			if (!$this->user_data) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified user (' . $id . ')');
-				throw new UserNotFoundException($id);
-			}
-
-			return $this->user_data;
-		}
-
-		Logs::error(__METHOD__, __LINE__, 'Trying to get a User from Admin ID.');
-		throw new RequestAdminDataException();
+		return $this->user_data;
 	}
 
 	/**
 	 * Return User object and cache the result.
 	 */
-	public function getUserData(): User
+	public function user(): User
 	{
 		return $this->user_data ?? $this->accessUserData();
 	}
@@ -114,26 +100,30 @@ class SessionFunctions
 	}
 
 	/**
+	 * Given a user, login.
+	 */
+	public function login(User $user)
+	{
+		Session::put('login', true);
+		Session::put('UserID', $user->id);
+	}
+
+	/**
 	 * Sets the session values when no there is no username and password in the database.
 	 *
 	 * @return bool returns true when no login was found
 	 */
 	public function noLogin()
 	{
-		$configs = Configs::get();
-
-		// Check if login credentials exist and login if they don't
-		if (
-			isset($configs['username']) && $configs['username'] === '' &&
-			isset($configs['password']) && $configs['password'] === ''
-		) {
+		$adminUser = User::find(0);
+		if ($adminUser->password === '' && $adminUser->username === '') {
 			Session::put('login', true);
 			Session::put('UserID', 0);
 
 			return true;
 		}
 
-		return false;
+		return Legacy::noLogin();
 	}
 
 	/**
@@ -149,13 +139,13 @@ class SessionFunctions
 	 */
 	public function log_as_user(string $username, string $password, string $ip)
 	{
-		$user = User::where('username', '=', $username)->first();
+		// We select the NON ADMIN user
+		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user != null && Hash::check($password, $user->password)) {
 			Session::put('login', true);
 			Session::put('UserID', $user->id);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
-			$this->user_data = $user;
 
 			return true;
 		}
@@ -176,9 +166,8 @@ class SessionFunctions
 	 */
 	public function log_as_admin(string $username, string $password, string $ip)
 	{
-		$configs = Configs::get();
-
-		if (Hash::check($username, $configs['username']) && Hash::check($password, $configs['password'])) {
+		$AdminUser = User::find(0);
+		if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
 			Session::put('login', true);
 			Session::put('UserID', 0);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
@@ -186,7 +175,7 @@ class SessionFunctions
 			return true;
 		}
 
-		return false;
+		return Legacy::log_as_admin($username, $password, $ip);
 	}
 
 	/**
@@ -237,7 +226,6 @@ class SessionFunctions
 	 */
 	public function logout()
 	{
-		$this->user_data = null;
 		Session::flush();
 	}
 }
