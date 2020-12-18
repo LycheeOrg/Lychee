@@ -153,6 +153,10 @@ final class Spanish implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Imágenes de resolución completa disponibles',
 			'ALBUM_HIDDEN' => 'Oculto',
 			'ALBUM_HIDDEN_EXPL' => 'Solo las personas con el enlace directo pueden ver este álbum.',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Descargable',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Los visitantes de su Lychee pueden descargar este álbum.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
@@ -369,6 +373,10 @@ final class Spanish implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'Con aspecto justificado',
 			'LAYOUT_UNJUSTIFIED' => 'Con aspecto, injustificado',
 			'SET_LAYOUT' => 'Cambia el diseño',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'No hay resultados',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Sin álbumes públicos',

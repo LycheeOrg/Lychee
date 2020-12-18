@@ -153,6 +153,10 @@ final class Russian implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Full-resolution pictures are available.',
 			'ALBUM_HIDDEN' => 'Скрытый',
 			'ALBUM_HIDDEN_EXPL' => 'Альбом доступен только по прямой ссылке.',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Скачивание разрешено',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Гости фотогалереи могут скачать этот альбом.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
@@ -370,6 +374,10 @@ final class Russian implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'По формату, выровнять',
 			'LAYOUT_UNJUSTIFIED' => 'По формату, не выравнивать',
 			'SET_LAYOUT' => 'Изменить компоновку',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Не найдено',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Нет публичных альбомов',

@@ -153,6 +153,10 @@ final class ChineseSimplified implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Full-resolution pictures are available.',
 			'ALBUM_HIDDEN' => '隐藏',
 			'ALBUM_HIDDEN_EXPL' => '只有使用外链才能查看。',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => '下载',
 			'ALBUM_DOWNLOADABLE_EXPL' => '访客可以下载该相册。',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
@@ -369,6 +373,10 @@ final class ChineseSimplified implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',
 			'LAYOUT_UNJUSTIFIED' => 'With aspect, unjustified',
 			'SET_LAYOUT' => 'Change layout',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => '无结果',
 			'VIEW_NO_PUBLIC_ALBUMS' => '没有公开相册',

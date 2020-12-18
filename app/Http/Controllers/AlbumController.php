@@ -603,6 +603,25 @@ class AlbumController extends Controller
 	}
 
 	/**
+	 * Set if a photo is a favorite.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setNSFW(Request $request)
+	{
+		$request->validate([
+			'albumID' => 'required|string',
+		]);
+
+		$album = Album::where('id', $request['albumID'])->first();
+		$album->nsfw = ($album->nsfw != 1) ? 1 : 0;
+
+		return $album->save() ? 'true' : 'false';
+	}
+
+	/**
 	 * Define the default sorting type.
 	 *
 	 * @param Request $request

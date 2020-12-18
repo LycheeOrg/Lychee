@@ -153,6 +153,10 @@ final class Swedish implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Full-resolution pictures are available.',
 			'ALBUM_HIDDEN' => 'Dold',
 			'ALBUM_HIDDEN_EXPL' => 'Bara personer med korrekt länk kan se detta album.',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Nedladdningsbart',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Besökare till din Lychee kan ladda ner detta album.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
@@ -369,6 +373,10 @@ final class Swedish implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',
 			'LAYOUT_UNJUSTIFIED' => 'With aspect, unjustified',
 			'SET_LAYOUT' => 'Change layout',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Inget resultat',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Inga publika album',

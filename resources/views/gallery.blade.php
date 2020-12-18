@@ -79,8 +79,8 @@
         <a class="button button--eye" id="button_visibility_album" title="{{ $locale['VISIBILITY_ALBUM'] }}" data-tabindex="3">
             <svg class="iconic iconic--eye"><use xlink:href="#eye"></use></svg>
         </a>
-        <a class="button button--nsfw" id="button_nsfw_album" title="{{ $locale['NSFW_ALBUM'] }}" data-tabindex="4">
-            <svg class="iconic"><use xlink:href="#star"></use></svg>
+        <a class="button button--nsfw" id="button_nsfw_album" title="{{ $locale['ALBUM_MARK_NSFW'] }}" data-tabindex="4">
+            <svg class="iconic"><use xlink:href="#warning"></use></svg>
         </a>
         <a class="button button--share" id="button_share_album" title="{{ $locale['SHARE_ALBUM'] }}" data-tabindex="5">
             <svg class="iconic ionicons"><use xlink:href="#share-ion"></use></svg>

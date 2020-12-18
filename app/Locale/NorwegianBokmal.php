@@ -153,6 +153,10 @@ final class NorwegianBokmal implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Fulloppløsningsbilder er tilgjengelig.',
 			'ALBUM_HIDDEN' => 'Skjult',
 			'ALBUM_HIDDEN_EXPL' => 'Bare folk med direkte lenke kan se Albumet',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Nedlastbar',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Besøkede av galleriet ditt kan laste ned Albumet.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Delingsknappen er synlig',
@@ -370,6 +374,10 @@ final class NorwegianBokmal implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'Med aspektratio, justert',
 			'LAYOUT_UNJUSTIFIED' => 'Med aspektratio, ikke justert',
 			'SET_LAYOUT' => 'Lagre oppsett',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Ingen resultater',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Ingen offentlige album',

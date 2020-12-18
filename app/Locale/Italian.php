@@ -155,6 +155,10 @@ final class Italian implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Full-resolution pictures are available.',
 			'ALBUM_HIDDEN' => 'Nascosto',
 			'ALBUM_HIDDEN_EXPL' => 'Solo le persone con il link diretto possono vedere questo album.',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Scaricabile',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'I visitatori del tuo Lychee possono scaricare questo album.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
@@ -375,6 +379,10 @@ final class Italian implements LangInterface
 			'LOCATION_DECODING' => 'Decode GPS data into location name',
 			'LOCATION_SHOW' => 'Show location name',
 			'LOCATION_SHOW_PUBLIC' => 'Show location name for public mode',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Nessun risultato',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Nessun album pubblico',

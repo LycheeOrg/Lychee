@@ -153,6 +153,10 @@ final class French implements LangInterface
 			'ALBUM_PUBLIC_EXPL' => 'L\'Album est visible publiquement avec les restrictions suivantes.',
 			'ALBUM_HIDDEN' => 'Masqué',
 			'ALBUM_FULL' => 'Originaux',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_FULL_EXPL' => 'Les images sont disponibles en complète résolution.',
 			'ALBUM_HIDDEN_EXPL' => 'Seules les personnes avec le lien peuvent voir cet album.',
 			'ALBUM_DOWNLOADABLE' => 'Téléchargeable',
@@ -369,6 +373,10 @@ final class French implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'En proportions, justifiés',
 			'LAYOUT_UNJUSTIFIED' => 'En proportions, non-justifiés',
 			'SET_LAYOUT' => 'Changer l\'affichage',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Aucun résultat',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Aucun album public',

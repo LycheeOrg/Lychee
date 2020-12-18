@@ -155,6 +155,10 @@ final class German implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Original Bilder sind verfügbar.',
 			'ALBUM_HIDDEN' => 'Versteckt',
 			'ALBUM_HIDDEN_EXPL' => 'Nur Personen mit dem direkten Link können dieses Album ansehen.',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Zum Herunterladen',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Besucher können dieses Album herunterladen.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
@@ -378,6 +382,10 @@ final class German implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'Seitenverhältnis beibehalten, Blocksatz',
 			'LAYOUT_UNJUSTIFIED' => 'Seitenverhältnis beibehalten, Flattersatz',
 			'SET_LAYOUT' => 'Ausgerichtetes Layout benutzen:',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Keine Ergebnisse',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Keine öffentlichen Alben',
