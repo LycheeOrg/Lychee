@@ -51,8 +51,11 @@ class VerifyAuthentication
 		// We will try to ask the User Provider for any user for the given credentials.
 		// If there is one, we will then return an array of credentials ID that the
 		// authenticator may use to sign the subsequent challenge by the server.
-		if ($this->isSignedChallenge($credentials) && $id = $this->binaryID($credentials['rawId'])) {
-			return User::getFromCredentialId($id);
+		if ($this->isSignedChallenge($credentials)) {
+			$id = $this->binaryID($credentials['rawId']);
+			if ($id) {
+				return User::getFromCredentialId($id);
+			}
 		}
 
 		return null;

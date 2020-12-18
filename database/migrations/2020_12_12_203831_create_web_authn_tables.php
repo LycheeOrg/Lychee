@@ -54,7 +54,9 @@ class CreateWebAuthnTables extends Migration
 	{
 		defined('STRING_REQ') or define('STRING_REQ', 'string_required');
 
-		Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING_REQ]);
+		if (Schema::hasTable('configs')) {
+			Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['type_range' => STRING_REQ]);
+		}
 		Schema::dropIfExists('web_authn_credentials');
 	}
 }

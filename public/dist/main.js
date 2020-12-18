@@ -873,9 +873,8 @@ album.load = function (albumID) {
 			});
 		} else {
 			processData(data);
-
 			// save scroll position for this URL
-			if (data !== null && data.albums !== null && data.albums.length > 0) {
+			if (data && data.albums && data.albums.length > 0) {
 				setTimeout(function () {
 					var urls = JSON.parse(localStorage.getItem('scroll'));
 					var urlWindow = window.location.href;
@@ -2349,7 +2348,7 @@ build.user = function (user) {
 };
 
 build.u2f = function (credential) {
-	return lychee.html(_templateObject42, credential.id, credential.id, credential.id, credential.id);
+	return lychee.html(_templateObject42, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
 };
 /**
  * @description This module is used for the context menu.
@@ -8719,7 +8718,8 @@ u2f.register = function () {
 u2f.delete = function (params) {
 
 	api.post('webauthn::delete', params, function (data) {
-		if (data !== 'true') {
+		console.log(data);
+		if (!data) {
 			loadingBar.show('error', data.description);
 			lychee.error(null, params, data);
 		} else {
@@ -10896,7 +10896,7 @@ view.u2f = {
 			var html = '';
 
 			if (u2f.json.length === 0) {
-				$(".u2f_view").append('<div class="u2f_view_line" style="margin-bottom: 50px;"><p style="text-align: center">Credentials list is empty!</p></div>');
+				$(".u2f_view").append('<div class="u2f_view_line"><p class="single">Credentials list is empty!</p></div>');
 			} else {
 
 				html += '<div class="u2f_view_line">' + '<p>' + '<span class="text">' + lychee.locale['U2F_CREDENTIALS'] + '</span>' +
@@ -10920,9 +10920,9 @@ view.u2f = {
 
 			html = '<div class="u2f_view_line"';
 
-			if (u2f.json.length === 0) {
-				html += ' style="padding-top: 0px;"';
-			}
+			// if (u2f.json.length === 0) {
+			//     html += ' style="padding-top: 0px;"';
+			// }
 			html += '>' + '<a id="RegisterU2FButton"  class="basicModal__button basicModal__button_CREATE">' + lychee.locale['U2F_REGISTER_KEY'] + '</a>' + '</div>';
 			$(".u2f_view").append(html);
 			$("#RegisterU2FButton").on('click', u2f.register);
