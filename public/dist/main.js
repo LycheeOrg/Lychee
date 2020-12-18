@@ -9801,10 +9801,10 @@ view.album = {
 				var layoutGeometry = require('justified-layout')(ratio, {
 					containerWidth: containerWidth,
 					containerPadding: 0,
-					boxSpacing: {
-						horizontal: 42,
-						vertical: 150
-					},
+					// boxSpacing: {
+					//     horizontal: 42,
+					//     vertical: 150
+					// },
 					targetRowHeight: parseFloat($('.photo').css('--lychee-default-height'), 10)
 				});
 				// if (lychee.admin) console.log(layoutGeometry);
