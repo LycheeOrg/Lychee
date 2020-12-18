@@ -4173,7 +4173,7 @@ lychee.init = function () {
 
 			lychee.upload = !lychee.api_V2;
 			lychee.admin = !lychee.api_V2;
-			lychee.nsfw_visible_saved = nsfw_visible;
+			lychee.nsfw_visible_saved = lychee.nsfw_visible;
 
 			// leftMenu
 			leftMenu.build();
@@ -7749,7 +7749,7 @@ settings.changeNSFWVisible = function () {
 		if (data === true) {
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_NSFW_VISIBLE']);
 			lychee.nsfw_visible = params.nsfw_visible === '1';
-			lychee.nsfw_visible_saved = nsfw_visible;
+			lychee.nsfw_visible_saved = lychee.nsfw_visible;
 		} else lychee.error(null, params, data);
 	});
 };
@@ -7860,7 +7860,6 @@ settings.save_enter = function (e) {
 		});
 	}
 };
-
 var sharing = {
 	json: null
 };
