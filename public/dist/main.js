@@ -289,7 +289,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject17 = _taggedTemplateLiteral(["<div class='divider'><h1>", "</h1></div>"], ["<div class='divider'><h1>", "</h1></div>"]),
     _templateObject18 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
     _templateObject19 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
-    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "' data-nsfw='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "' data-nsfw='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject22 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
     _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
@@ -1357,22 +1357,46 @@ album.setPublic = function (albumID, e) {
 	albums.refresh();
 
 	// Set public
-	if ($('.basicModal .switch input[name="nsfw"]:checked').length === 1) album.json.nsfw = '1';else album.json.nsfw = '0';
+	if ($('.basicModal .switch input[name="nsfw"]:checked').length === 1) {
+		album.json.nsfw = '1';
+	} else {
+		album.json.nsfw = '0';
+	}
 
 	// Set public
-	if ($('.basicModal .switch input[name="public"]:checked').length === 1) album.json.public = '1';else album.json.public = '0';
+	if ($('.basicModal .switch input[name="public"]:checked').length === 1) {
+		album.json.public = '1';
+	} else {
+		album.json.public = '0';
+	}
 
 	// Set full photo
-	if ($('.basicModal .choice input[name="full_photo"]:checked').length === 1) album.json.full_photo = '1';else album.json.full_photo = '0';
+	if ($('.basicModal .choice input[name="full_photo"]:checked').length === 1) {
+		album.json.full_photo = '1';
+	} else {
+		album.json.full_photo = '0';
+	}
 
 	// Set visible
-	if ($('.basicModal .choice input[name="hidden"]:checked').length === 1) album.json.visible = '0';else album.json.visible = '1';
+	if ($('.basicModal .choice input[name="hidden"]:checked').length === 1) {
+		album.json.visible = '0';
+	} else {
+		album.json.visible = '1';
+	}
 
 	// Set downloadable
-	if ($('.basicModal .choice input[name="downloadable"]:checked').length === 1) album.json.downloadable = '1';else album.json.downloadable = '0';
+	if ($('.basicModal .choice input[name="downloadable"]:checked').length === 1) {
+		album.json.downloadable = '1';
+	} else {
+		album.json.downloadable = '0';
+	}
 
 	// Set share_button_visible
-	if ($('.basicModal .choice input[name="share_button_visible"]:checked').length === 1) album.json.share_button_visible = '1';else album.json.share_button_visible = '0';
+	if ($('.basicModal .choice input[name="share_button_visible"]:checked').length === 1) {
+		album.json.share_button_visible = '1';
+	} else {
+		album.json.share_button_visible = '0';
+	}
 
 	// Set password
 	var oldPassword = album.json.password;
@@ -7750,7 +7774,9 @@ settings.changeNSFWVisible = function () {
 			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_NSFW_VISIBLE']);
 			lychee.nsfw_visible = params.nsfw_visible === '1';
 			lychee.nsfw_visible_saved = lychee.nsfw_visible;
-		} else lychee.error(null, params, data);
+		} else {
+			lychee.error(null, params, data);
+		}
 	});
 };
 
