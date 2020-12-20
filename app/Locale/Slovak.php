@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Slovak implements LangInterface
+use App\Contracts\Language;
+
+final class Slovak implements Language
 {
 	public static function code()
 	{

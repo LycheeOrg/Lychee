@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class ChineseSimplified implements LangInterface
+use App\Contracts\Language;
+
+final class ChineseSimplified implements Language
 {
 	public static function code()
 	{

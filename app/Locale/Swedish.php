@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Swedish implements LangInterface
+use App\Contracts\Language;
+
+final class Swedish implements Language
 {
 	public static function code()
 	{

@@ -4,21 +4,20 @@
 
 namespace App\Http\Middleware;
 
-use App\Http\Middleware\Checks\ExistsDB;
-use App\Redirections\ToInstall;
+use App\Http\Middleware\Checks\IsMigrated;
 use Closure;
 use Illuminate\Http\Request;
 
-class DBExists
+class AdminCheck
 {
 	/**
-	 * @var
+	 * @var IsMigrated
 	 */
-	private $existsDB;
+	private $isMigrated;
 
-	public function __construct(ExistsDB $existsDB)
+	public function __construct(IsMigrated $isMigrated)
 	{
-		$this->existsDB = $existsDB;
+		$this->isMigrated = $isMigrated;
 	}
 
 	/**
@@ -31,8 +30,8 @@ class DBExists
 	 */
 	public function handle($request, Closure $next)
 	{
-		if (!$this->existsDB->assert()) {
-			return ToInstall::go();
+		if (!$this->isMigrated->assert()) {
+			return view('error.update', ['code' => '503', 'message' => 'Database version is behind, please apply migration.']);
 		}
 
 		return $next($request);

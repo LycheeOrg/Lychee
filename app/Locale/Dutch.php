@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Dutch implements LangInterface
+use App\Contracts\Language;
+
+final class Dutch implements Language
 {
 	public static function code()
 	{

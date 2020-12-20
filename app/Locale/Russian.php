@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Russian implements LangInterface
+use App\Contracts\Language;
+
+final class Russian implements Language
 {
 	public static function code()
 	{

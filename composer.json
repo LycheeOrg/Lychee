@@ -17,6 +17,7 @@
         "ext-exif": "*",
         "ext-gd": "*",
         "ext-json": "*",
+        "ext-bcmath": "*",
         "bepsvpt/secure-headers": "^6.3",
         "darkghosthunter/larapass": "@dev",
         "doctrine/dbal": "^2.9",

@@ -1,11 +1,12 @@
 <?php
 
-namespace App\MiddlewareFunctions;
+namespace App\Http\Middleware\Checks;
 
+use App\Contracts\MiddlewareCheck;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Schema;
 
-class IsInstalled
+class IsInstalled implements MiddlewareCheck
 {
 	public function assert(): bool
 	{

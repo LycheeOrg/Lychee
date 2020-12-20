@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Greek implements LangInterface
+use App\Contracts\Language;
+
+final class Greek implements Language
 {
 	public static function code()
 	{

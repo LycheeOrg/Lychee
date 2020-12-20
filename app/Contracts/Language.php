@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Locale;
+namespace App\Contracts;
 
-interface LangInterface
+interface Language
 {
 	public static function code();
 

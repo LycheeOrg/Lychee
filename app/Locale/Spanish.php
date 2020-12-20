@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Spanish implements LangInterface
+use App\Contracts\Language;
+
+final class Spanish implements Language
 {
 	public static function code()
 	{

@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Czech implements LangInterface
+use App\Contracts\Language;
+
+final class Czech implements Language
 {
 	public static function code()
 	{

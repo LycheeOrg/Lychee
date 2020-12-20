@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class German implements LangInterface
+use App\Contracts\Language;
+
+final class German implements Language
 {
 	public static function code()
 	{

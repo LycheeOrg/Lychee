@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class NorwegianBokmal implements LangInterface
+use App\Contracts\Language;
+
+final class NorwegianBokmal implements Language
 {
 	public static function code()
 	{
