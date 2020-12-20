@@ -183,8 +183,8 @@ n.Map.include(t),n.Map.addInitHook(e)},window)
 L.Photo = L.FeatureGroup.extend({
 	options: {
 		icon: {
-			iconSize: [40, 40]
-		}
+			iconSize: [40, 40],
+		},
 	},
 
 	initialize: function (photos, options) {
@@ -207,15 +207,26 @@ L.Photo = L.FeatureGroup.extend({
 
 	createMarker: function (photo) {
 		var marker = L.marker(photo, {
-			icon: L.divIcon(L.extend({
-				html: '<img src="' + photo.thumbnail + '" ' + (photo.thumbnail2x!=='' ? 'srcset="' + photo.thumbnail + ' 1x, ' + photo.thumbnail2x + ' 2x"' : '' )+ '></img>​',
-				className: 'leaflet-marker-photo'
-			}, photo, this.options.icon)),
-			title: photo.caption || ''
+			icon: L.divIcon(
+				L.extend(
+					{
+						html:
+							'<img src="' +
+							photo.thumbnail +
+							'" ' +
+							(photo.thumbnail2x !== "" ? 'srcset="' + photo.thumbnail + " 1x, " + photo.thumbnail2x + ' 2x"' : "") +
+							"></img>​",
+						className: "leaflet-marker-photo",
+					},
+					photo,
+					this.options.icon
+				)
+			),
+			title: photo.caption || "",
 		});
 		marker.photo = photo;
 		return marker;
-	}
+	},
 });
 
 L.photo = function (photos, options) {
@@ -223,21 +234,38 @@ L.photo = function (photos, options) {
 };
 
 if (L.MarkerClusterGroup) {
-
 	L.Photo.Cluster = L.MarkerClusterGroup.extend({
 		options: {
 			featureGroup: L.photo,
 			maxClusterRadius: 100,
 			showCoverageOnHover: false,
-			iconCreateFunction: function(cluster) {
-				return new L.DivIcon(L.extend({
-					className: 'leaflet-marker-photo',
-					html: '<img src="' + cluster.getAllChildMarkers()[0].photo.thumbnail + '" ' + (cluster.getAllChildMarkers()[0].photo.thumbnail2x!=='' ? 'srcset="' + cluster.getAllChildMarkers()[0].photo.thumbnail + ' 1x, ' + cluster.getAllChildMarkers()[0].photo.thumbnail2x + ' 2x"' : '' )+ '></img>​<b>' + cluster.getChildCount() + '</b>'
-				}, this.icon));
-		   	},
+			iconCreateFunction: function (cluster) {
+				return new L.DivIcon(
+					L.extend(
+						{
+							className: "leaflet-marker-photo",
+							html:
+								'<img src="' +
+								cluster.getAllChildMarkers()[0].photo.thumbnail +
+								'" ' +
+								(cluster.getAllChildMarkers()[0].photo.thumbnail2x !== ""
+									? 'srcset="' +
+									  cluster.getAllChildMarkers()[0].photo.thumbnail +
+									  " 1x, " +
+									  cluster.getAllChildMarkers()[0].photo.thumbnail2x +
+									  ' 2x"'
+									: "") +
+								"></img>​<b>" +
+								cluster.getChildCount() +
+								"</b>",
+						},
+						this.icon
+					)
+				);
+			},
 			icon: {
-				iconSize: [40, 40]
-			}
+				iconSize: [40, 40],
+			},
 		},
 
 		initialize: function (options) {
@@ -254,14 +282,12 @@ if (L.MarkerClusterGroup) {
 		clear: function () {
 			this._photos.clearLayers();
 			this.clearLayers();
-		}
-
+		},
 	});
 
 	L.photo.cluster = function (options) {
 		return new L.Photo.Cluster(options);
 	};
-
 }
 
 "use strict";
@@ -279,7 +305,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject7 = _taggedTemplateLiteral(["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"], ["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"]),
     _templateObject8 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"], ["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"]),
     _templateObject9 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>"], ["\n\t<div>\n\t\t<p>"]),
-    _templateObject10 = _taggedTemplateLiteral(["\n\t\t\t<form>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='public'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='full_photo'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='hidden'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='downloadable'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='share_button_visible'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='password'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t\t</div>\n\t\t\t</form>\n\t\t"], ["\n\t\t\t<form>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='public'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='full_photo'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='hidden'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='downloadable'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='share_button_visible'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='password'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t\t</div>\n\t\t\t</form>\n\t\t"]),
+    _templateObject10 = _taggedTemplateLiteral(["\n\t\t\t<form>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='nsfw'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='public'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='full_photo'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='hidden'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='downloadable'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='share_button_visible'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='password'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t\t</div>\n\t\t\t</form>\n\t\t"], ["\n\t\t\t<form>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='nsfw'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='public'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='full_photo'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='hidden'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='downloadable'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='share_button_visible'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='password'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t\t</div>\n\t\t\t</form>\n\t\t"]),
     _templateObject11 = _taggedTemplateLiteral(["?albumIDs=", ""], ["?albumIDs=", ""]),
     _templateObject12 = _taggedTemplateLiteral(["<p>", " '$", "' ", " '$", "'?</p>"], ["<p>", " '$", "' ", " '$", "'?</p>"]),
     _templateObject13 = _taggedTemplateLiteral(["<p>", " '$", "'?</p>"], ["<p>", " '$", "'?</p>"]),
@@ -289,8 +315,8 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject17 = _taggedTemplateLiteral(["<div class='divider'><h1>", "</h1></div>"], ["<div class='divider'><h1>", "</h1></div>"]),
     _templateObject18 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
     _templateObject19 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
-    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
-    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject22 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
     _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
@@ -361,33 +387,30 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
 function gup(b) {
-
 	b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 
 	var a = "[\\?&]" + b + "=([^&#]*)";
 	var d = new RegExp(a);
 	var c = d.exec(window.location.href);
 
-	if (c === null) return '';else return c[1];
+	if (c === null) return "";else return c[1];
 }
+
 /**
  * @description This module communicates with Lychee's API
  */
 
 var api = {
-
-	path: 'php/index.php',
+	path: "php/index.php",
 	onError: null
-
 };
 
 api.get_url = function (fn) {
-
-	var api_url = '';
+	var api_url = "";
 
 	if (lychee.api_V2) {
 		// because the api is defined directly by the function called in the route.php
-		api_url = 'api/' + fn;
+		api_url = "api/" + fn;
 	} else {
 		api_url = api.path;
 	}
@@ -396,7 +419,7 @@ api.get_url = function (fn) {
 };
 
 api.isTimeout = function (errorThrown, jqXHR) {
-	if (errorThrown && errorThrown === 'Bad Request' && jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error === 'Session timed out') {
+	if (errorThrown && errorThrown === "Bad Request" && jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error === "Session timed out") {
 		return true;
 	}
 
@@ -406,7 +429,6 @@ api.isTimeout = function (errorThrown, jqXHR) {
 api.post = function (fn, params, callback) {
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
-
 	loadingBar.show();
 
 	params = $.extend({ function: fn }, params);
@@ -414,11 +436,10 @@ api.post = function (fn, params, callback) {
 	var api_url = api.get_url(fn);
 
 	var success = function success(data) {
-
 		setTimeout(loadingBar.hide, 100);
 
 		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
 			api.onError(data.substring(7, data.length), params, data);
 			return false;
 		}
@@ -427,15 +448,14 @@ api.post = function (fn, params, callback) {
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', params, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
 	};
 
 	var ajaxParams = {
-		type: 'POST',
+		type: "POST",
 		url: api_url,
 		data: params,
-		dataType: 'json',
+		dataType: "json",
 		success: success,
 		error: error
 	};
@@ -450,15 +470,13 @@ api.post = function (fn, params, callback) {
 };
 
 api.get = function (url, callback) {
-
 	loadingBar.show();
 
 	var success = function success(data) {
-
 		setTimeout(loadingBar.hide, 100);
 
 		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
 			api.onError(data.substring(7, data.length), params, data);
 			return false;
 		}
@@ -467,15 +485,14 @@ api.get = function (url, callback) {
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', {}, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", {}, errorThrown);
 	};
 
 	$.ajax({
-		type: 'GET',
+		type: "GET",
 		url: url,
 		data: {},
-		dataType: 'text',
+		dataType: "text",
 		success: success,
 		error: error
 	});
@@ -489,11 +506,10 @@ api.post_raw = function (fn, params, callback) {
 	var api_url = api.get_url(fn);
 
 	var success = function success(data) {
-
 		setTimeout(loadingBar.hide, 100);
 
 		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
 			api.onError(data.substring(7, data.length), params, data);
 			return false;
 		}
@@ -502,39 +518,39 @@ api.post_raw = function (fn, params, callback) {
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', params, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
 	};
 
 	$.ajax({
-		type: 'POST',
+		type: "POST",
 		url: api_url,
 		data: params,
-		dataType: 'text',
+		dataType: "text",
 		success: success,
 		error: error
 	});
 };
+
 var csrf = {};
 
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
 	if (settings.url !== lychee.updatePath) {
-		jqxhr.setRequestHeader('X-XSRF-TOKEN', csrf.getCookie('XSRF-TOKEN'));
+		jqxhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
 	}
 };
 
 csrf.escape = function (s) {
-	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1');
+	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
 };
 
 csrf.getCookie = function (name) {
 	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
-	var match = document.cookie.match(RegExp('(?:^|;\\s*)' + csrf.escape(name) + '=([^;^%]*)'));
+	var match = document.cookie.match(RegExp("(?:^|;\\s*)" + csrf.escape(name) + "=([^;^%]*)"));
 	return match ? match[1] : null;
 };
 
 csrf.bind = function () {
-	$(document).on('ajaxSend', csrf.addLaravelCSRF);
+	$(document).on("ajaxSend", csrf.addLaravelCSRF);
 };
 
 (function ($) {
@@ -545,16 +561,16 @@ csrf.bind = function () {
 		this.pos = { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } };
 		this.startTime = null;
 
-		el.on('touchstart', function (e) {
+		el.on("touchstart", function (e) {
 			self.touchStart(e);
 		});
-		el.on('touchmove', function (e) {
+		el.on("touchmove", function (e) {
 			self.touchMove(e);
 		});
-		el.on('touchend', function () {
+		el.on("touchend", function () {
 			self.swipeEnd();
 		});
-		el.on('mousedown', function (e) {
+		el.on("mousedown", function (e) {
 			self.mouseDown(e);
 		});
 	};
@@ -577,10 +593,10 @@ csrf.bind = function () {
 
 			this.swipeStart(e, e.pageX, e.pageY);
 
-			this.el.on('mousemove', function (_e) {
+			this.el.on("mousemove", function (_e) {
 				self.mouseMove(_e);
 			});
-			this.el.on('mouseup', function () {
+			this.el.on("mouseup", function () {
 				self.mouseUp();
 			});
 		},
@@ -592,8 +608,8 @@ csrf.bind = function () {
 		mouseUp: function mouseUp(e) {
 			this.swipeEnd(e);
 
-			this.el.off('mousemove');
-			this.el.off('mouseup');
+			this.el.off("mousemove");
+			this.el.off("mouseup");
 		},
 
 		swipeStart: function swipeStart(e, x, y) {
@@ -604,18 +620,18 @@ csrf.bind = function () {
 
 			this.startTime = new Date().getTime();
 
-			this.trigger('swipeStart', e);
+			this.trigger("swipeStart", e);
 		},
 
 		swipeMove: function swipeMove(e, x, y) {
 			this.pos.end.x = x;
 			this.pos.end.y = y;
 
-			this.trigger('swipeMove', e);
+			this.trigger("swipeMove", e);
 		},
 
 		swipeEnd: function swipeEnd(e) {
-			this.trigger('swipeEnd', e);
+			this.trigger("swipeEnd", e);
 		},
 
 		trigger: function trigger(e, originalEvent) {
@@ -625,7 +641,7 @@ csrf.bind = function () {
 			    x = self.pos.start.x - self.pos.end.x,
 			    y = self.pos.end.y - self.pos.start.y,
 			    radians = Math.atan2(y, x),
-			    direction = 'up',
+			    direction = "up",
 			    distance = Math.round(Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))),
 			    angle = Math.round(radians * 180 / Math.PI),
 			    speed = Math.round(distance / (new Date().getTime() - self.startTime) * 1000);
@@ -635,16 +651,23 @@ csrf.bind = function () {
 			}
 
 			if (angle <= 45 && angle >= 0 || angle <= 360 && angle >= 315) {
-				direction = 'left';
+				direction = "left";
 			} else if (angle >= 135 && angle <= 225) {
-				direction = 'right';
+				direction = "right";
 			} else if (angle > 45 && angle < 135) {
-				direction = 'down';
+				direction = "down";
 			}
 
 			event.originalEvent = originalEvent;
 
-			event.swipe = { x: x, y: y, direction: direction, distance: distance, angle: angle, speed: speed };
+			event.swipe = {
+				x: x,
+				y: y,
+				direction: direction,
+				distance: distance,
+				angle: angle,
+				speed: speed
+			};
 
 			$(self.el).trigger(event);
 		}
@@ -663,25 +686,21 @@ csrf.bind = function () {
  */
 
 var album = {
-
 	json: null
 };
 
 album.isSmartID = function (id) {
-
-	return id === 'unsorted' || id === 'starred' || id === 'public' || id === 'recent';
+	return id === "unsorted" || id === "starred" || id === "public" || id === "recent";
 };
 
 album.getParent = function () {
-
 	if (album.json == null || album.isSmartID(album.json.id) === true || !album.json.parent_id || album.json.parent_id === 0) {
-		return '';
+		return "";
 	}
 	return album.json.parent_id;
 };
 
 album.getID = function () {
-
 	var id = null;
 
 	// this is a Lambda
@@ -695,22 +714,21 @@ album.getID = function () {
 	if (_photo.json) id = _photo.json.album;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
 
 	// Search
-	if (isID(id) === false) id = $('.album:hover, .album.active').attr('data-id');
-	if (isID(id) === false) id = $('.photo:hover, .photo.active').attr('data-album-id');
+	if (isID(id) === false) id = $(".album:hover, .album.active").attr("data-id");
+	if (isID(id) === false) id = $(".photo:hover, .photo.active").attr("data-album-id");
 
 	if (isID(id) === true) return id;else return false;
 };
 
 album.isTagAlbum = function () {
-	return album.json && album.json.tag_album && album.json.tag_album === '1';
+	return album.json && album.json.tag_album && album.json.tag_album === "1";
 };
 
 album.getByID = function (photoID) {
-
 	// Function returns the JSON of a photo
 
 	if (photoID == null || !album.json || !album.json.photos) {
-		lychee.error('Error: Album json not found !');
+		lychee.error("Error: Album json not found !");
 		return undefined;
 	}
 
@@ -722,16 +740,15 @@ album.getByID = function (photoID) {
 		i++;
 	}
 
-	lychee.error('Error: photo ' + photoID + ' not found !');
+	lychee.error("Error: photo " + photoID + " not found !");
 	return undefined;
 };
 
 album.getSubByID = function (albumID) {
-
 	// Function returns the JSON of a subalbum
 
 	if (albumID == null || !album.json || !album.json.albums) {
-		lychee.error('Error: Album json not found!');
+		lychee.error("Error: Album json not found!");
 		return undefined;
 	}
 
@@ -743,22 +760,20 @@ album.getSubByID = function (albumID) {
 		i++;
 	}
 
-	lychee.error('Error: album ' + albumID + ' not found!');
+	lychee.error("Error: album " + albumID + " not found!");
 	return undefined;
 };
 
 // noinspection DuplicatedCode
 album.deleteByID = function (photoID) {
-
 	if (photoID == null || !album.json || !album.json.photos) {
-		lychee.error('Error: Album json not found !');
+		lychee.error("Error: Album json not found !");
 		return false;
 	}
 
 	var deleted = false;
 
 	$.each(album.json.photos, function (i) {
-
 		if (parseInt(album.json.photos[i].id) === parseInt(photoID)) {
 			album.json.photos.splice(i, 1);
 			deleted = true;
@@ -771,16 +786,14 @@ album.deleteByID = function (photoID) {
 
 // noinspection DuplicatedCode
 album.deleteSubByID = function (albumID) {
-
 	if (albumID == null || !album.json || !album.json.albums) {
-		lychee.error('Error: Album json not found !');
+		lychee.error("Error: Album json not found !");
 		return false;
 	}
 
 	var deleted = false;
 
 	$.each(album.json.albums, function (i) {
-
 		if (parseInt(album.json.albums[i].id) === parseInt(albumID)) {
 			album.json.albums.splice(i, 1);
 			deleted = true;
@@ -794,24 +807,21 @@ album.deleteSubByID = function (albumID) {
 album.load = function (albumID) {
 	var refresh = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-
 	var params = {
 		albumID: albumID,
-		password: ''
+		password: ""
 	};
 
 	var processData = function processData(data) {
-
-		if (data === 'Warning: Wrong password!') {
+		if (data === "Warning: Wrong password!") {
 			// User hit Cancel at the password prompt
 			return false;
 		}
 
-		if (data === 'Warning: Album private!') {
-
-			if (document.location.hash.replace('#', '').split('/')[1] !== undefined) {
+		if (data === "Warning: Album private!") {
+			if (document.location.hash.replace("#", "").split("/")[1] !== undefined) {
 				// Display photo only
-				lychee.setMode('view');
+				lychee.setMode("view");
 				lychee.footer_hide();
 			} else {
 				// Album not public
@@ -825,7 +835,7 @@ album.load = function (albumID) {
 		album.json = data;
 
 		if (refresh === false) {
-			lychee.animate('.content', 'contentZoomOut');
+			lychee.animate(".content", "contentZoomOut");
 		}
 		var waitTime = 300;
 
@@ -835,12 +845,11 @@ album.load = function (albumID) {
 		if (!visible.albums() && !visible.photo() && !visible.album()) waitTime = 0;
 
 		setTimeout(function () {
-
 			view.album.init();
 
 			if (refresh === false) {
-				lychee.animate(lychee.content, 'contentZoomIn');
-				header.setMode('album');
+				lychee.animate(lychee.content, "contentZoomIn");
+				header.setMode("album");
 			}
 
 			tabindex.makeFocusable(lychee.content);
@@ -859,14 +868,12 @@ album.load = function (albumID) {
 		}, waitTime);
 	};
 
-	api.post('Album::get', params, function (data) {
-
-		if (data === 'Warning: Wrong password!') {
+	api.post("Album::get", params, function (data) {
+		if (data === "Warning: Wrong password!") {
 			password.getDialog(albumID, function () {
-
 				params.password = password.value;
 
-				api.post('Album::get', params, function (_data) {
+				api.post("Album::get", params, function (_data) {
 					albums.refresh();
 					processData(_data);
 				});
@@ -876,7 +883,7 @@ album.load = function (albumID) {
 			// save scroll position for this URL
 			if (data && data.albums && data.albums.length > 0) {
 				setTimeout(function () {
-					var urls = JSON.parse(localStorage.getItem('scroll'));
+					var urls = JSON.parse(localStorage.getItem("scroll"));
 					var urlWindow = window.location.href;
 
 					if (urls != null && urls[urlWindow]) {
@@ -904,17 +911,14 @@ album.load = function (albumID) {
 };
 
 album.parse = function () {
-
-	if (!album.json.title) album.json.title = lychee.locale['UNTITLED'];
+	if (!album.json.title) album.json.title = lychee.locale["UNTITLED"];
 };
 
 album.add = function () {
 	var IDs = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 	var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-
 	var action = function action(data) {
-
 		// let title = data.title;
 
 		var isNumber = function isNumber(n) {
@@ -936,8 +940,7 @@ album.add = function () {
 			params.parent_id = _photo.json.album;
 		}
 
-		api.post('Album::add', params, function (_data) {
-
+		api.post("Album::add", params, function (_data) {
 			if (_data !== false && isNumber(_data)) {
 				if (IDs != null && callback != null) {
 					callback(IDs, _data, false); // we do not confirm
@@ -952,14 +955,14 @@ album.add = function () {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject, lychee.locale['TITLE_NEW_ALBUM']),
+		body: lychee.html(_templateObject, lychee.locale["TITLE_NEW_ALBUM"]),
 		buttons: {
 			action: {
-				title: lychee.locale['CREATE_ALBUM'],
+				title: lychee.locale["CREATE_ALBUM"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -967,9 +970,7 @@ album.add = function () {
 };
 
 album.addByTags = function () {
-
 	var action = function action(data) {
-
 		basicModal.close();
 
 		var params = {
@@ -977,7 +978,7 @@ album.addByTags = function () {
 			tags: data.tags
 		};
 
-		api.post('Album::addByTags', params, function (_data) {
+		api.post("Album::addByTags", params, function (_data) {
 			var isNumber = function isNumber(n) {
 				return !isNaN(parseInt(n, 10)) && isFinite(n);
 			};
@@ -991,14 +992,14 @@ album.addByTags = function () {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject2, lychee.locale['TITLE_NEW_ALBUM']),
+		body: lychee.html(_templateObject2, lychee.locale["TITLE_NEW_ALBUM"]),
 		buttons: {
 			action: {
-				title: lychee.locale['CREATE_TAG_ALBUM'],
+				title: lychee.locale["CREATE_TAG_ALBUM"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -1006,11 +1007,9 @@ album.addByTags = function () {
 };
 
 album.setShowTags = function (albumID) {
-
 	var oldShowTags = album.json.show_tags;
 
 	var action = function action(data) {
-
 		var show_tags = data.show_tags;
 		basicModal.close();
 
@@ -1023,8 +1022,7 @@ album.setShowTags = function (albumID) {
 			show_tags: show_tags
 		};
 
-		api.post('Album::setShowTags', params, function (_data) {
-
+		api.post("Album::setShowTags", params, function (_data) {
 			if (_data !== true) {
 				lychee.error(null, params, _data);
 			} else {
@@ -1034,14 +1032,14 @@ album.setShowTags = function (albumID) {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject3, lychee.locale['ALBUM_NEW_SHOWTAGS'], oldShowTags),
+		body: lychee.html(_templateObject3, lychee.locale["ALBUM_NEW_SHOWTAGS"], oldShowTags),
 		buttons: {
 			action: {
-				title: lychee.locale['ALBUM_SET_SHOWTAGS'],
+				title: lychee.locale["ALBUM_SET_SHOWTAGS"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -1049,9 +1047,8 @@ album.setShowTags = function (albumID) {
 };
 
 album.setTitle = function (albumIDs) {
-
-	var oldTitle = '';
-	var msg = '';
+	var oldTitle = "";
+	var msg = "";
 
 	if (!albumIDs) return false;
 	if (!(albumIDs instanceof Array)) {
@@ -1059,7 +1056,6 @@ album.setTitle = function (albumIDs) {
 	}
 
 	if (albumIDs.length === 1) {
-
 		// Get old title if only one album is selected
 		if (album.json) {
 			if (parseInt(album.getID()) === parseInt(albumIDs[0])) {
@@ -1070,13 +1066,11 @@ album.setTitle = function (albumIDs) {
 	}
 
 	var action = function action(data) {
-
 		basicModal.close();
 
 		var newTitle = data.title;
 
 		if (visible.album()) {
-
 			if (albumIDs.length === 1 && parseInt(album.getID()) === parseInt(albumIDs[0])) {
 				// Rename only one album
 
@@ -1093,7 +1087,6 @@ album.setTitle = function (albumIDs) {
 				});
 			}
 		} else if (visible.albums()) {
-
 			// Rename all albums
 
 			albumIDs.forEach(function (id) {
@@ -1107,27 +1100,26 @@ album.setTitle = function (albumIDs) {
 			title: newTitle
 		};
 
-		api.post('Album::setTitle', params, function (_data) {
-
+		api.post("Album::setTitle", params, function (_data) {
 			if (_data !== true) {
 				lychee.error(null, params, _data);
 			}
 		});
 	};
 
-	var input = lychee.html(_templateObject4, lychee.locale['ALBUM_TITLE'], oldTitle);
+	var input = lychee.html(_templateObject4, lychee.locale["ALBUM_TITLE"], oldTitle);
 
-	if (albumIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale['ALBUM_NEW_TITLE'], input);else msg = lychee.html(_templateObject6, lychee.locale['ALBUMS_NEW_TITLE_1'], albumIDs.length, lychee.locale['ALBUMS_NEW_TITLE_2'], input);
+	if (albumIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale["ALBUM_NEW_TITLE"], input);else msg = lychee.html(_templateObject6, lychee.locale["ALBUMS_NEW_TITLE_1"], albumIDs.length, lychee.locale["ALBUMS_NEW_TITLE_2"], input);
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			action: {
-				title: lychee.locale['ALBUM_SET_TITLE'],
+				title: lychee.locale["ALBUM_SET_TITLE"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -1135,11 +1127,9 @@ album.setTitle = function (albumIDs) {
 };
 
 album.setDescription = function (albumID) {
-
 	var oldDescription = album.json.description;
 
 	var action = function action(data) {
-
 		var description = data.description;
 
 		basicModal.close();
@@ -1154,8 +1144,7 @@ album.setDescription = function (albumID) {
 			description: description
 		};
 
-		api.post('Album::setDescription', params, function (_data) {
-
+		api.post("Album::setDescription", params, function (_data) {
 			if (_data !== true) {
 				lychee.error(null, params, _data);
 			}
@@ -1163,14 +1152,14 @@ album.setDescription = function (albumID) {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject7, lychee.locale['ALBUM_NEW_DESCRIPTION'], lychee.locale['ALBUM_DESCRIPTION'], oldDescription),
+		body: lychee.html(_templateObject7, lychee.locale["ALBUM_NEW_DESCRIPTION"], lychee.locale["ALBUM_DESCRIPTION"], oldDescription),
 		buttons: {
 			action: {
-				title: lychee.locale['ALBUM_SET_DESCRIPTION'],
+				title: lychee.locale["ALBUM_SET_DESCRIPTION"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -1178,14 +1167,12 @@ album.setDescription = function (albumID) {
 };
 
 album.setLicense = function (albumID) {
-
 	var callback = function callback() {
-		$('select#license').val(album.json.license === '' ? 'none' : album.json.license);
+		$("select#license").val(album.json.license === "" ? "none" : album.json.license);
 		return false;
 	};
 
 	var action = function action(data) {
-
 		var license = data.license;
 
 		basicModal.close();
@@ -1195,8 +1182,7 @@ album.setLicense = function (albumID) {
 			license: license
 		};
 
-		api.post('Album::setLicense', params, function (_data) {
-
+		api.post("Album::setLicense", params, function (_data) {
 			if (_data !== true) {
 				lychee.error(null, params, _data);
 			} else {
@@ -1208,18 +1194,18 @@ album.setLicense = function (albumID) {
 		});
 	};
 
-	var msg = lychee.html(_templateObject8, lychee.locale['ALBUM_LICENSE'], lychee.locale['ALBUM_LICENSE_NONE'], lychee.locale['ALBUM_RESERVED'], lychee.locale['ALBUM_LICENSE_HELP']);
+	var msg = lychee.html(_templateObject8, lychee.locale["ALBUM_LICENSE"], lychee.locale["ALBUM_LICENSE_NONE"], lychee.locale["ALBUM_RESERVED"], lychee.locale["ALBUM_LICENSE_HELP"]);
 
 	basicModal.show({
 		body: msg,
 		callback: callback,
 		buttons: {
 			action: {
-				title: lychee.locale['ALBUM_SET_LICENSE'],
+				title: lychee.locale["ALBUM_SET_LICENSE"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -1227,15 +1213,13 @@ album.setLicense = function (albumID) {
 };
 
 album.setSorting = function (albumID) {
-
 	var callback = function callback() {
-		$('select#sortingCol').val(album.json.sorting_col);
-		$('select#sortingOrder').val(album.json.sorting_order);
+		$("select#sortingCol").val(album.json.sorting_col);
+		$("select#sortingOrder").val(album.json.sorting_order);
 		return false;
 	};
 
 	var action = function action(data) {
-
 		var typePhotos = data.sortingCol;
 		var orderPhotos = data.sortingOrder;
 
@@ -1247,8 +1231,7 @@ album.setSorting = function (albumID) {
 			orderPhotos: orderPhotos
 		};
 
-		api.post('Album::setSorting', params, function (_data) {
-
+		api.post("Album::setSorting", params, function (_data) {
 			if (_data !== true) {
 				lychee.error(null, params, _data);
 			} else {
@@ -1259,18 +1242,18 @@ album.setSorting = function (albumID) {
 		});
 	};
 
-	var msg = lychee.html(_templateObject9) + lychee.locale['SORT_PHOTO_BY_1'] + "\n\t\t<span class=\"select\">\n\t\t\t<select id=\"sortingCol\" name=\"sortingCol\">\n\t\t\t\t<option value=''>-</option>\n\t\t\t\t<option value='id'>" + lychee.locale['SORT_PHOTO_SELECT_1'] + "</option>\n\t\t\t\t<option value='takestamp'>" + lychee.locale['SORT_PHOTO_SELECT_2'] + "</option>\n\t\t\t\t<option value='title'>" + lychee.locale['SORT_PHOTO_SELECT_3'] + "</option>\n\t\t\t\t<option value='description'>" + lychee.locale['SORT_PHOTO_SELECT_4'] + "</option>\n\t\t\t\t<option value='public'>" + lychee.locale['SORT_PHOTO_SELECT_5'] + "</option>\n\t\t\t\t<option value='star'>" + lychee.locale['SORT_PHOTO_SELECT_6'] + "</option>\n\t\t\t\t<option value='type'>" + lychee.locale['SORT_PHOTO_SELECT_7'] + "</option>\n\t\t\t</select>\n\t\t</span>\n\t\t" + lychee.locale['SORT_PHOTO_BY_2'] + "\n\t\t<span class=\"select\">\n\t\t\t<select id=\"sortingOrder\" name=\"sortingOrder\">\n\t\t\t\t<option value='ASC'>" + lychee.locale['SORT_ASCENDING'] + "</option>\n\t\t\t\t<option value='DESC'>" + lychee.locale['SORT_DESCENDING'] + "</option>\n\t\t\t</select>\n\t\t</span>\n\t\t" + lychee.locale['SORT_PHOTO_BY_3'] + "\n\t\t</p>\n\t</div>";
+	var msg = lychee.html(_templateObject9) + lychee.locale["SORT_PHOTO_BY_1"] + "\n\t\t<span class=\"select\">\n\t\t\t<select id=\"sortingCol\" name=\"sortingCol\">\n\t\t\t\t<option value=''>-</option>\n\t\t\t\t<option value='id'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t<option value='takestamp'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t<option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t<option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t<option value='public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t<option value='star'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t<option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t</select>\n\t\t</span>\n\t\t" + lychee.locale["SORT_PHOTO_BY_2"] + "\n\t\t<span class=\"select\">\n\t\t\t<select id=\"sortingOrder\" name=\"sortingOrder\">\n\t\t\t\t<option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t<option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t</select>\n\t\t</span>\n\t\t" + lychee.locale["SORT_PHOTO_BY_3"] + "\n\t\t</p>\n\t</div>";
 
 	basicModal.show({
 		body: msg,
 		callback: callback,
 		buttons: {
 			action: {
-				title: lychee.locale['ALBUM_SET_ORDER'],
+				title: lychee.locale["ALBUM_SET_ORDER"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -1278,71 +1261,74 @@ album.setSorting = function (albumID) {
 };
 
 album.setPublic = function (albumID, e) {
-
-	var password = '';
+	var password = "";
 
 	if (!basicModal.visible()) {
-
-		var msg = lychee.html(_templateObject10, lychee.locale['ALBUM_PUBLIC'], lychee.locale['ALBUM_PUBLIC_EXPL'], build.iconic('check'), lychee.locale['ALBUM_FULL'], lychee.locale['ALBUM_FULL_EXPL'], build.iconic('check'), lychee.locale['ALBUM_HIDDEN'], lychee.locale['ALBUM_HIDDEN_EXPL'], build.iconic('check'), lychee.locale['ALBUM_DOWNLOADABLE'], lychee.locale['ALBUM_DOWNLOADABLE_EXPL'], build.iconic('check'), lychee.locale['ALBUM_SHARE_BUTTON_VISIBLE'], lychee.locale['ALBUM_SHARE_BUTTON_VISIBLE_EXPL'], build.iconic('check'), lychee.locale['ALBUM_PASSWORD_PROT'], lychee.locale['ALBUM_PASSWORD_PROT_EXPL'], lychee.locale['PASSWORD']);
+		var msg = lychee.html(_templateObject10, lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"], lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"]);
 
 		basicModal.show({
 			body: msg,
 			buttons: {
 				action: {
-					title: lychee.locale['ALBUM_SHARING_CONFIRM'],
+					title: lychee.locale["ALBUM_SHARING_CONFIRM"],
 					// Call setPublic function without showing the modal
 					fn: function fn() {
 						return album.setPublic(albumID, e);
 					}
 				},
 				cancel: {
-					title: lychee.locale['CANCEL'],
+					title: lychee.locale["CANCEL"],
 					fn: basicModal.close
 				}
 			}
 		});
 
-		$('.basicModal .switch input[name="public"]').on('click', function () {
-			if ($(this).prop('checked') === true) {
-				$('.basicModal .choice input').attr('disabled', false);
+		$('.basicModal .switch input[name="public"]').on("click", function () {
+			if ($(this).prop("checked") === true) {
+				$(".basicModal .choice input").attr("disabled", false);
 
-				if (album.json.public === '1') {
+				if (album.json.public === "1") {
 					// Initialize options based on album settings.
-					if (album.json.full_photo !== null && album.json.full_photo === '1') $('.basicModal .choice input[name="full_photo"]').prop('checked', true);
-					if (album.json.visible === '0') $('.basicModal .choice input[name="hidden"]').prop('checked', true);
-					if (album.json.downloadable === '1') $('.basicModal .choice input[name="downloadable"]').prop('checked', true);
-					if (album.json.share_button_visible === '1') $('.basicModal .choice input[name="share_button_visible"]').prop('checked', true);
-					if (album.json.password === '1') {
-						$('.basicModal .choice input[name="password"]').prop('checked', true);
+					if (album.json.full_photo !== null && album.json.full_photo === "1") $('.basicModal .choice input[name="full_photo"]').prop("checked", true);
+					if (album.json.visible === "0") $('.basicModal .choice input[name="hidden"]').prop("checked", true);
+					if (album.json.downloadable === "1") $('.basicModal .choice input[name="downloadable"]').prop("checked", true);
+					if (album.json.share_button_visible === "1") $('.basicModal .choice input[name="share_button_visible"]').prop("checked", true);
+					if (album.json.password === "1") {
+						$('.basicModal .choice input[name="password"]').prop("checked", true);
 						$('.basicModal .choice input[name="passwordtext"]').show();
 					}
 				} else {
 					// Initialize options based on global settings.
 					if (lychee.full_photo) {
-						$('.basicModal .choice input[name="full_photo"]').prop('checked', true);
+						$('.basicModal .choice input[name="full_photo"]').prop("checked", true);
 					}
 					if (lychee.downloadable) {
-						$('.basicModal .choice input[name="downloadable"]').prop('checked', true);
+						$('.basicModal .choice input[name="downloadable"]').prop("checked", true);
 					}
 					if (lychee.share_button_visible) {
-						$('.basicModal .choice input[name="share_button_visible"]').prop('checked', true);
+						$('.basicModal .choice input[name="share_button_visible"]').prop("checked", true);
 					}
 				}
 			} else {
-				$('.basicModal .choice input').prop('checked', false).attr('disabled', true);
+				$(".basicModal .choice input").prop("checked", false).attr("disabled", true);
 				$('.basicModal .choice input[name="passwordtext"]').hide();
 			}
 		});
 
-		if (album.json.public === '1') {
-			$('.basicModal .switch input[name="public"]').click();
+		if (album.json.nsfw === "1") {
+			$('.basicModal .switch input[name="nsfw"]').prop("checked", true);
 		} else {
-			$('.basicModal .choice input').attr('disabled', true);
+			$('.basicModal .switch input[name="nsfw"]').prop("checked", false);
 		}
 
-		$('.basicModal .choice input[name="password"]').on('change', function () {
+		if (album.json.public === "1") {
+			$('.basicModal .switch input[name="public"]').click();
+		} else {
+			$(".basicModal .choice input").attr("disabled", true);
+		}
 
-			if ($(this).prop('checked') === true) $('.basicModal .choice input[name="passwordtext"]').show().focus();else $('.basicModal .choice input[name="passwordtext"]').hide();
+		$('.basicModal .choice input[name="password"]').on("change", function () {
+			if ($(this).prop("checked") === true) $('.basicModal .choice input[name="passwordtext"]').show().focus();else $('.basicModal .choice input[name="passwordtext"]').hide();
 		});
 
 		return true;
@@ -1351,28 +1337,55 @@ album.setPublic = function (albumID, e) {
 	albums.refresh();
 
 	// Set public
-	if ($('.basicModal .switch input[name="public"]:checked').length === 1) album.json.public = '1';else album.json.public = '0';
+	if ($('.basicModal .switch input[name="nsfw"]:checked').length === 1) {
+		album.json.nsfw = "1";
+	} else {
+		album.json.nsfw = "0";
+	}
+
+	// Set public
+	if ($('.basicModal .switch input[name="public"]:checked').length === 1) {
+		album.json.public = "1";
+	} else {
+		album.json.public = "0";
+	}
 
 	// Set full photo
-	if ($('.basicModal .choice input[name="full_photo"]:checked').length === 1) album.json.full_photo = '1';else album.json.full_photo = '0';
+	if ($('.basicModal .choice input[name="full_photo"]:checked').length === 1) {
+		album.json.full_photo = "1";
+	} else {
+		album.json.full_photo = "0";
+	}
 
 	// Set visible
-	if ($('.basicModal .choice input[name="hidden"]:checked').length === 1) album.json.visible = '0';else album.json.visible = '1';
+	if ($('.basicModal .choice input[name="hidden"]:checked').length === 1) {
+		album.json.visible = "0";
+	} else {
+		album.json.visible = "1";
+	}
 
 	// Set downloadable
-	if ($('.basicModal .choice input[name="downloadable"]:checked').length === 1) album.json.downloadable = '1';else album.json.downloadable = '0';
+	if ($('.basicModal .choice input[name="downloadable"]:checked').length === 1) {
+		album.json.downloadable = "1";
+	} else {
+		album.json.downloadable = "0";
+	}
 
 	// Set share_button_visible
-	if ($('.basicModal .choice input[name="share_button_visible"]:checked').length === 1) album.json.share_button_visible = '1';else album.json.share_button_visible = '0';
+	if ($('.basicModal .choice input[name="share_button_visible"]:checked').length === 1) {
+		album.json.share_button_visible = "1";
+	} else {
+		album.json.share_button_visible = "0";
+	}
 
 	// Set password
 	var oldPassword = album.json.password;
 	if ($('.basicModal .choice input[name="password"]:checked').length === 1) {
 		password = $('.basicModal .choice input[name="passwordtext"]').val();
-		album.json.password = '1';
+		album.json.password = "1";
 	} else {
-		password = '';
-		album.json.password = '0';
+		password = "";
+		album.json.password = "0";
 	}
 
 	// Modal input has been processed, now it can be closed
@@ -1380,7 +1393,7 @@ album.setPublic = function (albumID, e) {
 
 	// Set data and refresh view
 	if (visible.album()) {
-
+		view.album.nsfw();
 		view.album.public();
 		view.album.hidden();
 		view.album.downloadable();
@@ -1392,6 +1405,7 @@ album.setPublic = function (albumID, e) {
 		albumID: albumID,
 		full_photo: album.json.full_photo,
 		public: album.json.public,
+		nsfw: album.json.nsfw,
 		visible: album.json.visible,
 		downloadable: album.json.downloadable,
 		share_button_visible: album.json.share_button_visible
@@ -1402,44 +1416,57 @@ album.setPublic = function (albumID, e) {
 		params.password = password;
 	}
 
-	api.post('Album::setPublic', params, function (data) {
-
+	api.post("Album::setPublic", params, function (data) {
 		if (data !== true) lychee.error(null, params, data);
 	});
 };
 
-album.share = function (service) {
+album.setNSFW = function (albumID, e) {
+	album.json.nsfw = album.json.nsfw === "0" ? "1" : "0";
 
-	if (album.json.hasOwnProperty('share_button_visible') && album.json.share_button_visible !== '1') {
+	view.album.nsfw();
+
+	var params = {
+		albumID: albumID
+	};
+
+	api.post("Album::setNSFW", params, function (data) {
+		if (data !== true) {
+			lychee.error(null, params, data);
+		}
+	});
+};
+
+album.share = function (service) {
+	if (album.json.hasOwnProperty("share_button_visible") && album.json.share_button_visible !== "1") {
 		return;
 	}
 
 	var url = location.href;
 
 	switch (service) {
-		case 'twitter':
+		case "twitter":
 			window.open("https://twitter.com/share?url=" + encodeURI(url));
 			break;
-		case 'facebook':
+		case "facebook":
 			window.open("https://www.facebook.com/sharer.php?u=" + encodeURI(url) + "&t=" + encodeURI(album.json.title));
 			break;
-		case 'mail':
+		case "mail":
 			location.href = "mailto:?subject=" + encodeURI(album.json.title) + "&body=" + encodeURI(url);
 			break;
 	}
 };
 
 album.getArchive = function (albumIDs) {
-
-	var link = '';
+	var link = "";
 
 	// double check with API_V2 this will not work...
 	if (lychee.api_V2) {
-		location.href = api.get_url('Album::getArchive') + lychee.html(_templateObject11, albumIDs.join());
+		location.href = api.get_url("Album::getArchive") + lychee.html(_templateObject11, albumIDs.join());
 	} else {
 		var url = api.path + "?function=Album::getArchive&albumID=" + albumIDs[0];
 
-		if (location.href.indexOf('index.html') > 0) link = location.href.replace(location.hash, '').replace('index.html', url);else link = location.href.replace(location.hash, '') + url;
+		if (location.href.indexOf("index.html") > 0) link = location.href.replace(location.hash, "").replace("index.html", url);else link = location.href.replace(location.hash, "") + url;
 
 		if (lychee.publicMode === true) link += "&password=" + encodeURIComponent(password.value);
 
@@ -1448,33 +1475,30 @@ album.getArchive = function (albumIDs) {
 };
 
 album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
-
-	var title = '';
-	var sTitle = '';
-	var msg = '';
+	var title = "";
+	var sTitle = "";
+	var msg = "";
 
 	if (!albumIDs) return false;
 	if (albumIDs instanceof Array === false) albumIDs = [albumIDs];
 
 	// Get title of first album
 	if (parseInt(albumID, 10) === 0) {
-		title = lychee.locale['ROOT'];
+		title = lychee.locale["ROOT"];
 	} else if (albums.json) title = albums.getByID(albumID).title;
 
 	// Fallback for first album without a title
-	if (title === '') title = lychee.locale['UNTITLED'];
+	if (title === "") title = lychee.locale["UNTITLED"];
 
 	if (albumIDs.length === 1) {
-
 		// Get title of second album
 		if (albums.json) sTitle = albums.getByID(albumIDs[0]).title;
 
 		// Fallback for second album without a title
-		if (sTitle === '') sTitle = lychee.locale['UNTITLED'];
+		if (sTitle === "") sTitle = lychee.locale["UNTITLED"];
 
 		msg = lychee.html(_templateObject12, lychee.locale[op1], sTitle, lychee.locale[op2], title);
 	} else {
-
 		msg = lychee.html(_templateObject13, lychee.locale[ops], title);
 	}
 
@@ -1482,32 +1506,27 @@ album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
 };
 
 album.delete = function (albumIDs) {
-
 	var action = {};
 	var cancel = {};
-	var msg = '';
+	var msg = "";
 
 	if (!albumIDs) return false;
 	if (albumIDs instanceof Array === false) albumIDs = [albumIDs];
 
 	action.fn = function () {
-
 		basicModal.close();
 
 		var params = {
 			albumIDs: albumIDs.join()
 		};
 
-		api.post('Album::delete', params, function (data) {
-
+		api.post("Album::delete", params, function (data) {
 			if (visible.albums()) {
-
 				albumIDs.forEach(function (id) {
 					view.albums.content.delete(id);
 					albums.deleteByID(id);
 				});
 			} else if (visible.album()) {
-
 				albums.refresh();
 				if (albumIDs.length === 1 && parseInt(album.getID()) === parseInt(albumIDs[0])) {
 					lychee.goto(album.getParent());
@@ -1523,18 +1542,16 @@ album.delete = function (albumIDs) {
 		});
 	};
 
-	if (albumIDs.toString() === '0') {
+	if (albumIDs.toString() === "0") {
+		action.title = lychee.locale["CLEAR_UNSORTED"];
+		cancel.title = lychee.locale["KEEP_UNSORTED"];
 
-		action.title = lychee.locale['CLEAR_UNSORTED'];
-		cancel.title = lychee.locale['KEEP_UNSORTED'];
-
-		msg = "<p>" + lychee.locale['DELETE_UNSORTED_CONFIRM'] + "</p>";
+		msg = "<p>" + lychee.locale["DELETE_UNSORTED_CONFIRM"] + "</p>";
 	} else if (albumIDs.length === 1) {
+		var albumTitle = "";
 
-		var albumTitle = '';
-
-		action.title = lychee.locale['DELETE_ALBUM_QUESTION'];
-		cancel.title = lychee.locale['KEEP_ALBUM'];
+		action.title = lychee.locale["DELETE_ALBUM_QUESTION"];
+		cancel.title = lychee.locale["KEEP_ALBUM"];
 
 		// Get title
 		if (album.json) {
@@ -1545,15 +1562,14 @@ album.delete = function (albumIDs) {
 		if (!albumTitle && albums.json) albumTitle = albums.getByID(albumIDs).title;
 
 		// Fallback for album without a title
-		if (albumTitle === '') albumTitle = lychee.locale['UNTITLED'];
+		if (albumTitle === "") albumTitle = lychee.locale["UNTITLED"];
 
-		msg = lychee.html(_templateObject14, lychee.locale['DELETE_ALBUM_CONFIRMATION_1'], albumTitle, lychee.locale['DELETE_ALBUM_CONFIRMATION_2']);
+		msg = lychee.html(_templateObject14, lychee.locale["DELETE_ALBUM_CONFIRMATION_1"], albumTitle, lychee.locale["DELETE_ALBUM_CONFIRMATION_2"]);
 	} else {
+		action.title = lychee.locale["DELETE_ALBUMS_QUESTION"];
+		cancel.title = lychee.locale["KEEP_ALBUMS"];
 
-		action.title = lychee.locale['DELETE_ALBUMS_QUESTION'];
-		cancel.title = lychee.locale['KEEP_ALBUMS'];
-
-		msg = lychee.html(_templateObject15, lychee.locale['DELETE_ALBUMS_CONFIRMATION_1'], albumIDs.length, lychee.locale['DELETE_ALBUMS_CONFIRMATION_2']);
+		msg = lychee.html(_templateObject15, lychee.locale["DELETE_ALBUMS_CONFIRMATION_1"], albumIDs.length, lychee.locale["DELETE_ALBUMS_CONFIRMATION_2"]);
 	}
 
 	basicModal.show({
@@ -1562,7 +1578,7 @@ album.delete = function (albumIDs) {
 			action: {
 				title: action.title,
 				fn: action.fn,
-				class: 'red'
+				class: "red"
 			},
 			cancel: {
 				title: cancel.title,
@@ -1575,9 +1591,7 @@ album.delete = function (albumIDs) {
 album.merge = function (albumIDs, albumID) {
 	var confirm = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-
 	var action = function action() {
-
 		basicModal.close();
 		albumIDs.unshift(albumID);
 
@@ -1585,8 +1599,7 @@ album.merge = function (albumIDs, albumID) {
 			albumIDs: albumIDs.join()
 		};
 
-		api.post('Album::merge', params, function (data) {
-
+		api.post("Album::merge", params, function (data) {
 			if (data !== true) {
 				lychee.error(null, params, data);
 			} else {
@@ -1597,15 +1610,15 @@ album.merge = function (albumIDs, albumID) {
 
 	if (confirm) {
 		basicModal.show({
-			body: album.buildMessage(albumIDs, albumID, 'ALBUM_MERGE_1', 'ALBUM_MERGE_2', 'ALBUMS_MERGE'),
+			body: album.buildMessage(albumIDs, albumID, "ALBUM_MERGE_1", "ALBUM_MERGE_2", "ALBUMS_MERGE"),
 			buttons: {
 				action: {
-					title: lychee.locale['MERGE_ALBUM'],
+					title: lychee.locale["MERGE_ALBUM"],
 					fn: action,
-					class: 'red'
+					class: "red"
 				},
 				cancel: {
-					title: lychee.locale['DONT_MERGE'],
+					title: lychee.locale["DONT_MERGE"],
 					fn: basicModal.close
 				}
 			}
@@ -1618,9 +1631,7 @@ album.merge = function (albumIDs, albumID) {
 album.setAlbum = function (albumIDs, albumID) {
 	var confirm = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
-
 	var action = function action() {
-
 		basicModal.close();
 		albumIDs.unshift(albumID);
 
@@ -1628,8 +1639,7 @@ album.setAlbum = function (albumIDs, albumID) {
 			albumIDs: albumIDs.join()
 		};
 
-		api.post('Album::move', params, function (data) {
-
+		api.post("Album::move", params, function (data) {
 			if (data !== true) {
 				lychee.error(null, params, data);
 			} else {
@@ -1640,15 +1650,15 @@ album.setAlbum = function (albumIDs, albumID) {
 
 	if (confirm) {
 		basicModal.show({
-			body: album.buildMessage(albumIDs, albumID, 'ALBUM_MOVE_1', 'ALBUM_MOVE_2', 'ALBUMS_MOVE'),
+			body: album.buildMessage(albumIDs, albumID, "ALBUM_MOVE_1", "ALBUM_MOVE_2", "ALBUMS_MOVE"),
 			buttons: {
 				action: {
-					title: lychee.locale['MOVE_ALBUMS'],
+					title: lychee.locale["MOVE_ALBUMS"],
 					fn: action,
-					class: 'red'
+					class: "red"
 				},
 				cancel: {
-					title: lychee.locale['NOT_MOVE_ALBUMS'],
+					title: lychee.locale["NOT_MOVE_ALBUMS"],
 					fn: basicModal.close
 				}
 			}
@@ -1656,6 +1666,19 @@ album.setAlbum = function (albumIDs, albumID) {
 	} else {
 		action();
 	}
+};
+
+album.apply_nsfw_filter = function () {
+	if (lychee.nsfw_visible) {
+		$('.album[data-nsfw="1"]').show();
+	} else {
+		$('.album[data-nsfw="1"]').hide();
+	}
+};
+
+album.toggle_nsfw_filter = function () {
+	lychee.nsfw_visible = !lychee.nsfw_visible;
+	album.apply_nsfw_filter();
 };
 
 album.isUploadable = function () {
@@ -1676,7 +1699,6 @@ album.isUploadable = function () {
 };
 
 album.reload = function () {
-
 	var albumID = album.getID();
 
 	album.refresh();
@@ -1686,7 +1708,6 @@ album.reload = function () {
 };
 
 album.refresh = function () {
-
 	album.json = null;
 };
 
@@ -1695,21 +1716,16 @@ album.refresh = function () {
  */
 
 var albums = {
-
 	json: null
-
 };
 
 albums.load = function () {
-
 	var startTime = new Date().getTime();
 
-	lychee.animate('.content', 'contentZoomOut');
+	lychee.animate(".content", "contentZoomOut");
 
 	if (albums.json === null) {
-
-		api.post('Albums::get', {}, function (data) {
-
+		api.post("Albums::get", {}, function (data) {
 			var waitTime = void 0;
 
 			// Smart Albums
@@ -1723,12 +1739,12 @@ albums.load = function () {
 
 			// Skip delay when opening a blank Lychee
 			if (!visible.albums() && !visible.photo() && !visible.album()) waitTime = 0;
-			if (visible.album() && lychee.content.html() === '') waitTime = 0;
+			if (visible.album() && lychee.content.html() === "") waitTime = 0;
 
 			setTimeout(function () {
-				header.setMode('albums');
+				header.setMode("albums");
 				view.albums.init();
-				lychee.animate(lychee.content, 'contentZoomIn');
+				lychee.animate(lychee.content, "contentZoomIn");
 
 				tabindex.makeFocusable(lychee.content);
 
@@ -1751,11 +1767,10 @@ albums.load = function () {
 			}, waitTime);
 		});
 	} else {
-
 		setTimeout(function () {
-			header.setMode('albums');
+			header.setMode("albums");
 			view.albums.init();
-			lychee.animate(lychee.content, 'contentZoomIn');
+			lychee.animate(lychee.content, "contentZoomIn");
 
 			tabindex.makeFocusable(lychee.content);
 
@@ -1776,24 +1791,22 @@ albums.load = function () {
 };
 
 albums.parse = function (album) {
-
 	var i = void 0;
 	for (i = 0; i < 3; i++) {
 		if (!album.thumbs[i]) {
-			album.thumbs[i] = album.password === '1' ? 'img/password.svg' : 'img/no_images.svg';
+			album.thumbs[i] = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
 		}
 	}
 };
 
 // TODO: REFACTOR THIS
 albums._createSmartAlbums = function (data) {
-
 	if (data.unsorted) {
 		data.unsorted = {
-			id: 'unsorted',
-			title: lychee.locale['UNSORTED'],
-			sysdate: data.unsorted.num + ' ' + lychee.locale['NUM_PHOTOS'],
-			unsorted: '1',
+			id: "unsorted",
+			title: lychee.locale["UNSORTED"],
+			sysdate: data.unsorted.num + " " + lychee.locale["NUM_PHOTOS"],
+			unsorted: "1",
 			thumbs: data.unsorted.thumbs,
 			thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
 			types: data.unsorted.types
@@ -1802,10 +1815,10 @@ albums._createSmartAlbums = function (data) {
 
 	if (data.starred) {
 		data.starred = {
-			id: 'starred',
-			title: lychee.locale['STARRED'],
-			sysdate: data.starred.num + ' ' + lychee.locale['NUM_PHOTOS'],
-			star: '1',
+			id: "starred",
+			title: lychee.locale["STARRED"],
+			sysdate: data.starred.num + " " + lychee.locale["NUM_PHOTOS"],
+			star: "1",
 			thumbs: data.starred.thumbs,
 			thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
 			types: data.starred.types
@@ -1814,23 +1827,23 @@ albums._createSmartAlbums = function (data) {
 
 	if (data.public) {
 		data.public = {
-			id: 'public',
-			title: lychee.locale['PUBLIC'],
-			sysdate: data.public.num + ' ' + lychee.locale['NUM_PHOTOS'],
-			public: '1',
+			id: "public",
+			title: lychee.locale["PUBLIC"],
+			sysdate: data.public.num + " " + lychee.locale["NUM_PHOTOS"],
+			public: "1",
 			thumbs: data.public.thumbs,
 			thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
-			visible: '0',
+			visible: "0",
 			types: data.public.types
 		};
 	}
 
 	if (data.recent) {
 		data.recent = {
-			id: 'recent',
-			title: lychee.locale['RECENT'],
-			sysdate: data.recent.num + ' ' + lychee.locale['NUM_PHOTOS'],
-			recent: '1',
+			id: "recent",
+			title: lychee.locale["RECENT"],
+			sysdate: data.recent.num + " " + lychee.locale["NUM_PHOTOS"],
+			recent: "1",
 			thumbs: data.recent.thumbs,
 			thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
 			types: data.recent.types
@@ -1842,12 +1855,12 @@ albums._createSmartAlbums = function (data) {
 		    albumName = _ref2[0],
 		    albumData = _ref2[1];
 
-		if (albumData['tag_album'] === '1') {
+		if (albumData["tag_album"] === "1") {
 			data[albumName] = {
 				id: albumData.id,
 				title: albumName,
-				sysdate: albumData.num + ' ' + lychee.locale['NUM_PHOTOS'],
-				tag_album: '1',
+				sysdate: albumData.num + " " + lychee.locale["NUM_PHOTOS"],
+				tag_album: "1",
 				thumbs: albumData.thumbs,
 				thumbs2x: albumData.thumbs2x ? albumData.thumbs2x : null,
 				types: albumData.types
@@ -1857,7 +1870,6 @@ albums._createSmartAlbums = function (data) {
 };
 
 albums.isShared = function (albumID) {
-
 	if (albumID == null) return false;
 	if (!albums.json) return false;
 	if (!albums.json.albums) return false;
@@ -1880,7 +1892,6 @@ albums.isShared = function (albumID) {
 };
 
 albums.getByID = function (albumID) {
-
 	// Function returns the JSON of an album
 
 	if (albumID == null) return undefined;
@@ -1909,7 +1920,6 @@ albums.getByID = function (albumID) {
 };
 
 albums.deleteByID = function (albumID) {
-
 	// Function returns the JSON of an album
 	// This function is only ever invoked for top-level albums so it
 	// doesn't need to descend down the albums tree.
@@ -1921,7 +1931,6 @@ albums.deleteByID = function (albumID) {
 	var deleted = false;
 
 	$.each(albums.json.albums, function (i) {
-
 		if (parseInt(albums.json.albums[i].id) === parseInt(albumID)) {
 			albums.json.albums.splice(i, 1);
 			deleted = true;
@@ -1932,7 +1941,6 @@ albums.deleteByID = function (albumID) {
 	if (deleted === false) {
 		if (!albums.json.shared_albums) return undefined;
 		$.each(albums.json.shared_albums, function (i) {
-
 			if (parseInt(albums.json.shared_albums[i].id) === parseInt(albumID)) {
 				albums.json.shared_albums.splice(i, 1);
 				deleted = true;
@@ -1944,7 +1952,6 @@ albums.deleteByID = function (albumID) {
 	if (deleted === false) {
 		if (!albums.json.smartalbums) return undefined;
 		$.each(albums.json.smartalbums, function (i) {
-
 			if (parseInt(albums.json.smartalbums[i].id) === parseInt(albumID)) {
 				delete albums.json.smartalbums[i];
 				deleted = true;
@@ -1967,10 +1974,9 @@ albums.refresh = function () {
 var build = {};
 
 build.iconic = function (icon) {
-	var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+	var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 
-
-	var html = '';
+	var html = "";
 
 	html += lychee.html(_templateObject16, classes, icon);
 
@@ -1978,8 +1984,7 @@ build.iconic = function (icon) {
 };
 
 build.divider = function (title) {
-
-	var html = '';
+	var html = "";
 
 	html += lychee.html(_templateObject17, title);
 
@@ -1987,32 +1992,30 @@ build.divider = function (title) {
 };
 
 build.editIcon = function (id) {
+	var html = "";
 
-	var html = '';
-
-	html += lychee.html(_templateObject18, id, build.iconic('pencil'));
+	html += lychee.html(_templateObject18, id, build.iconic("pencil"));
 
 	return html;
 };
 
 build.multiselect = function (top, left) {
-
 	return lychee.html(_templateObject19, top, left);
 };
 
 build.getAlbumThumb = function (data, i) {
-	var isVideo = data.types[i] && data.types[i].indexOf('video') > -1;
-	var isRaw = data.types[i] && data.types[i].indexOf('raw') > -1;
+	var isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
+	var isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
 	var thumb = data.thumbs[i];
+	var thumb2x = "";
 
-	if (thumb === 'uploads/thumb/' && isVideo) {
+	if (thumb === "uploads/thumb/" && isVideo) {
 		return "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
-	if (thumb === 'uploads/thumb/' && isRaw) {
+	if (thumb === "uploads/thumb/" && isRaw) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	thumb2x = '';
 	if (data.thumbs2x) {
 		if (data.thumbs2x[i]) {
 			thumb2x = data.thumbs2x[i];
@@ -2024,47 +2027,45 @@ build.getAlbumThumb = function (data, i) {
 		    isPhoto = _lychee$retinize.isPhoto;
 
 		if (!isPhoto) {
-			thumb2x = '';
+			thumb2x = "";
 		}
 	}
 
-	return "<span class=\"thumbimg" + (isVideo ? ' video' : '') + "\"><img class='lazyload' src='img/placeholder.png' data-src='" + thumb + "' " + (thumb2x !== '' ? 'data-srcset=\'' + thumb2x + ' 2x\'' : '') + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
+	return "<span class=\"thumbimg" + (isVideo ? " video" : "") + "\"><img class='lazyload' src='img/placeholder.png' data-src='" + thumb + "' " + (thumb2x !== "" ? "data-srcset='" + thumb2x + " 2x'" : "") + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
 build.album = function (data) {
 	var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-	var html = '';
+	var html = "";
 	var date_stamp = data.sysdate;
 	var sortingAlbums = [];
 
 	// In the special case of take date sorting use the take stamps as title
-	if (lychee.sortingAlbums !== '' && data.min_takestamp && data.max_takestamp) {
-
-		sortingAlbums = lychee.sortingAlbums.replace('ORDER BY ', '').split(' ');
-		if (sortingAlbums[0] === 'max_takestamp' || sortingAlbums[0] === 'min_takestamp') {
-			if (data.min_takestamp !== '' && data.max_takestamp !== '') {
-				date_stamp = data.min_takestamp === data.max_takestamp ? data.max_takestamp : data.min_takestamp + ' - ' + data.max_takestamp;
-			} else if (data.min_takestamp !== '' && sortingAlbums[0] === 'min_takestamp') {
+	if (lychee.sortingAlbums !== "" && data.min_takestamp && data.max_takestamp) {
+		sortingAlbums = lychee.sortingAlbums.replace("ORDER BY ", "").split(" ");
+		if (sortingAlbums[0] === "max_takestamp" || sortingAlbums[0] === "min_takestamp") {
+			if (data.min_takestamp !== "" && data.max_takestamp !== "") {
+				date_stamp = data.min_takestamp === data.max_takestamp ? data.max_takestamp : data.min_takestamp + " - " + data.max_takestamp;
+			} else if (data.min_takestamp !== "" && sortingAlbums[0] === "min_takestamp") {
 				date_stamp = data.min_takestamp;
-			} else if (data.max_takestamp !== '' && sortingAlbums[0] === 'max_takestamp') {
+			} else if (data.max_takestamp !== "" && sortingAlbums[0] === "max_takestamp") {
 				date_stamp = data.max_takestamp;
 			}
 		}
 	}
 
-	html += lychee.html(_templateObject20, disabled ? "disabled" : "", data.id, tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject20, disabled ? "disabled" : "", data.nsfw && data.nsfw === "1" && lychee.nsfw_blur ? "blurred" : "", data.id, data.nsfw && data.nsfw === "1" ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
 
 	if (album.isUploadable() && !disabled) {
-
-		html += lychee.html(_templateObject21, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' ? 'badge--visible' : '', data.visible === '1' ? 'badge--not--hidden' : 'badge--hidden', build.iconic('eye'), data.unsorted === '1' ? 'badge--visible' : '', build.iconic('list'), data.recent === '1' ? 'badge--visible badge--list' : '', build.iconic('clock'), data.password === '1' ? 'badge--visible' : '', build.iconic('lock-locked'), data.tag_album === '1' ? 'badge--tag' : '', build.iconic('tag'));
+		html += lychee.html(_templateObject21, data.nsfw === "1" ? "badge--nsfw" : "", build.iconic("warning"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.password === "1" ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album === "1" ? "badge--tag" : "", build.iconic("tag"));
 	}
 
-	if (data.albums && data.albums.length > 0 || data.hasOwnProperty('has_albums') && data.has_albums === '1') {
-		html += lychee.html(_templateObject22, build.iconic('layers'));
+	if (data.albums && data.albums.length > 0 || data.hasOwnProperty("has_albums") && data.has_albums === "1") {
+		html += lychee.html(_templateObject22, build.iconic("layers"));
 	}
 
-	html += '</div>';
+	html += "</div>";
 
 	return html;
 };
@@ -2072,25 +2073,23 @@ build.album = function (data) {
 build.photo = function (data) {
 	var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+	var html = "";
+	var thumbnail = "";
+	var thumb2x = "";
 
-	var html = '';
-	var thumbnail = '';
-	var thumb2x = '';
+	var isVideo = data.type && data.type.indexOf("video") > -1;
+	var isRaw = data.type && data.type.indexOf("raw") > -1;
+	var isLivePhoto = data.livePhotoUrl !== "" && data.livePhotoUrl !== null;
 
-	var isVideo = data.type && data.type.indexOf('video') > -1;
-	var isRaw = data.type && data.type.indexOf('raw') > -1;
-	var isLivePhoto = data.livePhotoUrl !== '' && data.livePhotoUrl !== null;
-
-	if (data.thumbUrl === 'uploads/thumb/' && isLivePhoto) {
+	if (data.thumbUrl === "uploads/thumb/" && isLivePhoto) {
 		thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	}
-	if (data.thumbUrl === 'uploads/thumb/' && isVideo) {
+	if (data.thumbUrl === "uploads/thumb/" && isVideo) {
 		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
-	} else if (data.thumbUrl === 'uploads/thumb/' && isRaw) {
+	} else if (data.thumbUrl === "uploads/thumb/" && isRaw) {
 		thumbnail = "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
-	} else if (lychee.layout === '0') {
-
-		if (data.hasOwnProperty('thumb2x')) {
+	} else if (lychee.layout === "0") {
+		if (data.hasOwnProperty("thumb2x")) {
 			// Lychee v4
 			thumb2x = data.thumb2x;
 		} else {
@@ -2099,41 +2098,40 @@ build.photo = function (data) {
 			    thumb2x = _lychee$retinize2.path;
 		}
 
-		if (thumb2x !== '') {
+		if (thumb2x !== "") {
 			thumb2x = "data-srcset='" + thumb2x + " 2x'";
 		}
 
-		thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
+		thumbnail = "<span class=\"thumbimg" + (isVideo ? " video" : "") + (isLivePhoto ? " livephoto" : "") + "\">";
 		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 		thumbnail += "</span>";
 	} else {
-
-		if (data.small !== '') {
-			if (data.hasOwnProperty('small2x') && data.small2x !== '') {
+		if (data.small !== "") {
+			if (data.hasOwnProperty("small2x") && data.small2x !== "") {
 				thumb2x = "data-srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
 			}
 
-			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? " video" : "") + (isLivePhoto ? " livephoto" : "") + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
-		} else if (data.medium !== '') {
-			if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
+		} else if (data.medium !== "") {
+			if (data.hasOwnProperty("medium2x") && data.medium2x !== "") {
 				thumb2x = "data-srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 			}
 
-			thumbnail = "<span class=\"thumbimg" + (isVideo ? ' video' : '') + (isLivePhoto ? ' livephoto' : '') + "\">";
+			thumbnail = "<span class=\"thumbimg" + (isVideo ? " video" : "") + (isLivePhoto ? " livephoto" : "") + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else if (!isVideo) {
 			// Fallback for images with no small or medium.
-			thumbnail = "<span class=\"thumbimg" + (isLivePhoto ? ' livephoto' : '') + "\">";
+			thumbnail = "<span class=\"thumbimg" + (isLivePhoto ? " livephoto" : "") + "\">";
 			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.url + "' alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else {
 			// Fallback for videos with no small (the case of no thumb is
 			// handled at the top of this function).
 
-			if (data.hasOwnProperty('thumb2x')) {
+			if (data.hasOwnProperty("thumb2x")) {
 				// Lychee v4
 				thumb2x = data.thumb2x;
 			} else {
@@ -2142,7 +2140,7 @@ build.photo = function (data) {
 				    thumb2x = _lychee$retinize3.path;
 			}
 
-			if (thumb2x !== '') {
+			if (thumb2x !== "") {
 				thumb2x = "data-srcset='" + data.thumbUrl + " 200w, " + thumb2x + " 400w'";
 			}
 
@@ -2154,13 +2152,12 @@ build.photo = function (data) {
 
 	html += lychee.html(_templateObject23, disabled ? "disabled" : "", data.album, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
 
-	if (data.takedate !== '') html += lychee.html(_templateObject24, build.iconic('camera-slr'), data.takedate);else html += lychee.html(_templateObject25, data.sysdate);
+	if (data.takedate !== "") html += lychee.html(_templateObject24, build.iconic("camera-slr"), data.takedate);else html += lychee.html(_templateObject25, data.sysdate);
 
 	html += "</div>";
 
 	if (album.isUploadable()) {
-
-		html += lychee.html(_templateObject26, data.star === '1' ? 'badge--star' : '', build.iconic('star'), data.public === '1' && album.json.public !== '1' ? 'badge--visible badge--hidden' : '', build.iconic('eye'));
+		html += lychee.html(_templateObject26, data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" && album.json.public !== "1" ? "badge--visible badge--hidden" : "", build.iconic("eye"));
 	}
 
 	html += "</div>";
@@ -2175,39 +2172,37 @@ build.overlay_image = function (data) {
 	var type = lychee.image_overlay_type;
 	var html = "";
 
-	if (type && type === 'desc' && data.description !== '') {
+	if (type && type === "desc" && data.description !== "") {
 		html = lychee.html(_templateObject27, data.title, data.description);
-	} else if (type && type === 'takedate' && data.takedate !== '') {
+	} else if (type && type === "takedate" && data.takedate !== "") {
 		html = lychee.html(_templateObject28, data.title, data.takedate);
 	}
 	// fall back to exif data if there is no description
-	else if (exifHash !== '') {
-
-			html += lychee.html(_templateObject29, data.title, data.shutter.replace('s', 'sec'), data.aperture.replace('f/', '&fnof; / '), lychee.locale['PHOTO_ISO'], data.iso, data.focal, data.lens && data.lens !== '' ? '(' + data.lens + ')' : '');
+	else if (exifHash !== "") {
+			html += lychee.html(_templateObject29, data.title, data.shutter.replace("s", "sec"), data.aperture.replace("f/", "&fnof; / "), lychee.locale["PHOTO_ISO"], data.iso, data.focal, data.lens && data.lens !== "" ? "(" + data.lens + ")" : "");
 		}
 
 	return html;
 };
 
 build.imageview = function (data, visibleControls, autoplay) {
+	var html = "";
+	var thumb = "";
 
-	var html = '';
-	var thumb = '';
-
-	if (data.type.indexOf('video') > -1) {
-		html += lychee.html(_templateObject30, visibleControls === true ? '' : 'full', autoplay ? 'autoplay' : '', tabindex.get_next_tab_index(), data.url);
-	} else if (data.type.indexOf('raw') > -1 && data.medium === '') {
-		html += lychee.html(_templateObject31, visibleControls === true ? '' : 'full', tabindex.get_next_tab_index());
+	if (data.type.indexOf("video") > -1) {
+		html += lychee.html(_templateObject30, visibleControls === true ? "" : "full", autoplay ? "autoplay" : "", tabindex.get_next_tab_index(), data.url);
+	} else if (data.type.indexOf("raw") > -1 && data.medium === "") {
+		html += lychee.html(_templateObject31, visibleControls === true ? "" : "full", tabindex.get_next_tab_index());
 	} else {
-		var img = '';
+		var img = "";
 
-		if (data.livePhotoUrl === '' || data.livePhotoUrl === null) {
+		if (data.livePhotoUrl === "" || data.livePhotoUrl === null) {
 			// It's normal photo
 
 			// See if we have the thumbnail loaded...
-			$('.photo').each(function () {
-				if ($(this).attr('data-id') && $(this).attr('data-id') == data.id) {
-					var thumbimg = $(this).find('img');
+			$(".photo").each(function () {
+				if ($(this).attr("data-id") && $(this).attr("data-id") == data.id) {
+					var thumbimg = $(this).find("img");
 					if (thumbimg.length > 0) {
 						thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
 						return false;
@@ -2215,19 +2210,18 @@ build.imageview = function (data, visibleControls, autoplay) {
 				}
 			});
 
-			if (data.medium !== '') {
-				var medium = '';
+			if (data.medium !== "") {
+				var medium = "";
 
-				if (data.hasOwnProperty('medium2x') && data.medium2x !== '') {
+				if (data.hasOwnProperty("medium2x") && data.medium2x !== "") {
 					medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
 				}
-				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.medium + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
+				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.medium + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
 			} else {
-				img = "<img id='image' class='" + (visibleControls === true ? '' : 'full') + "' src='" + data.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
+				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
 			}
 		} else {
-
-			if (data.medium !== '') {
+			if (data.medium !== "") {
 				var medium_dims = data.medium_dim.split("x");
 				var medium_width = medium_dims[0];
 				var medium_height = medium_dims[1];
@@ -2244,29 +2238,28 @@ build.imageview = function (data, visibleControls, autoplay) {
 		if (lychee.image_overlay) html += build.overlay_image(data);
 	}
 
-	html += "\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic('caret-left') + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic('caret-right') + "</a></div>\n\t\t\t";
+	html += "\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic("caret-left") + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic("caret-right") + "</a></div>\n\t\t\t";
 
 	return { html: html, thumb: thumb };
 };
 
 build.no_content = function (typ) {
-
-	var html = '';
+	var html = "";
 
 	html += lychee.html(_templateObject33, build.iconic(typ));
 
 	switch (typ) {
-		case 'magnifying-glass':
-			html += lychee.html(_templateObject34, lychee.locale['VIEW_NO_RESULT']);
+		case "magnifying-glass":
+			html += lychee.html(_templateObject34, lychee.locale["VIEW_NO_RESULT"]);
 			break;
-		case 'eye':
-			html += lychee.html(_templateObject34, lychee.locale['VIEW_NO_PUBLIC_ALBUMS']);
+		case "eye":
+			html += lychee.html(_templateObject34, lychee.locale["VIEW_NO_PUBLIC_ALBUMS"]);
 			break;
-		case 'cog':
-			html += lychee.html(_templateObject34, lychee.locale['VIEW_NO_CONFIGURATION']);
+		case "cog":
+			html += lychee.html(_templateObject34, lychee.locale["VIEW_NO_CONFIGURATION"]);
 			break;
-		case 'question-mark':
-			html += lychee.html(_templateObject34, lychee.locale['VIEW_PHOTO_NOT_FOUND']);
+		case "question-mark":
+			html += lychee.html(_templateObject34, lychee.locale["VIEW_PHOTO_NOT_FOUND"]);
 			break;
 	}
 
@@ -2276,18 +2269,16 @@ build.no_content = function (typ) {
 };
 
 build.uploadModal = function (title, files) {
-
-	var html = '';
+	var html = "";
 
 	html += lychee.html(_templateObject35, title);
 
 	var i = 0;
 
 	while (i < files.length) {
-
 		var file = files[i];
 
-		if (file.name.length > 40) file.name = file.name.substr(0, 17) + '...' + file.name.substr(file.name.length - 20, 20);
+		if (file.name.length > 40) file.name = file.name.substr(0, 17) + "..." + file.name.substr(file.name.length - 20, 20);
 
 		html += lychee.html(_templateObject36, file.name);
 
@@ -2300,42 +2291,38 @@ build.uploadModal = function (title, files) {
 };
 
 build.uploadNewFile = function (name) {
-
 	if (name.length > 40) {
-		name = name.substr(0, 17) + '...' + name.substr(name.length - 20, 20);
+		name = name.substr(0, 17) + "..." + name.substr(name.length - 20, 20);
 	}
 
 	return lychee.html(_templateObject37, name);
 };
 
 build.tags = function (tags) {
-
-	var html = '';
-	var editable = typeof album !== 'undefined' ? album.isUploadable() : false;
+	var html = "";
+	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
 
 	// Search is enabled if logged in (not publicMode) or public seach is enabled
 	var searchable = lychee.publicMode === false || lychee.public_search === true;
 
 	// build class_string for tag
-	var a_class = 'tag';
+	var a_class = "tag";
 	if (searchable) {
-		a_class = a_class + ' search';
+		a_class = a_class + " search";
 	}
 
-	if (tags !== '') {
-
-		tags = tags.split(',');
+	if (tags !== "") {
+		tags = tags.split(",");
 
 		tags.forEach(function (tag, index) {
 			if (editable) {
-				html += lychee.html(_templateObject38, a_class, tag, index, build.iconic('x'));
+				html += lychee.html(_templateObject38, a_class, tag, index, build.iconic("x"));
 			} else {
 				html += lychee.html(_templateObject39, a_class, tag);
 			}
 		});
 	} else {
-
-		html = lychee.html(_templateObject40, lychee.locale['NO_TAGS']);
+		html = lychee.html(_templateObject40, lychee.locale["NO_TAGS"]);
 	}
 
 	return html;
@@ -2357,13 +2344,30 @@ build.u2f = function (credential) {
 var contextMenu = {};
 
 contextMenu.add = function (e) {
-
-	var items = [{ title: build.iconic('image') + lychee.locale['UPLOAD_PHOTO'], fn: function fn() {
-			return $('#upload_files').click();
-		} }, {}, { title: build.iconic('link-intact') + lychee.locale['IMPORT_LINK'], fn: upload.start.url }, { title: build.iconic('dropbox', 'ionicons') + lychee.locale['IMPORT_DROPBOX'], fn: upload.start.dropbox }, { title: build.iconic('terminal') + lychee.locale['IMPORT_SERVER'], fn: upload.start.server }, {}, { title: build.iconic('folder') + lychee.locale['NEW_ALBUM'], fn: album.add }];
+	var items = [{
+		title: build.iconic("image") + lychee.locale["UPLOAD_PHOTO"],
+		fn: function fn() {
+			return $("#upload_files").click();
+		}
+	}, {}, {
+		title: build.iconic("link-intact") + lychee.locale["IMPORT_LINK"],
+		fn: upload.start.url
+	}, {
+		title: build.iconic("dropbox", "ionicons") + lychee.locale["IMPORT_DROPBOX"],
+		fn: upload.start.dropbox
+	}, {
+		title: build.iconic("terminal") + lychee.locale["IMPORT_SERVER"],
+		fn: upload.start.server
+	}, {}, {
+		title: build.iconic("folder") + lychee.locale["NEW_ALBUM"],
+		fn: album.add
+	}];
 
 	if (visible.albums()) {
-		items.push({ title: build.iconic('tags') + lychee.locale['NEW_TAG_ALBUM'], fn: album.addByTags });
+		items.push({
+			title: build.iconic("tags") + lychee.locale["NEW_TAG_ALBUM"],
+			fn: album.addByTags
+		});
 	}
 
 	if (lychee.api_V2 && !lychee.admin) {
@@ -2376,7 +2380,6 @@ contextMenu.add = function (e) {
 };
 
 contextMenu.album = function (albumID, e) {
-
 	// Notice for 'Merge':
 	// fn must call basicContext.close() first,
 	// in order to keep the selection
@@ -2388,27 +2391,45 @@ contextMenu.album = function (albumID, e) {
 	// let showMerge = (albums.json && albums.json.albums && Object.keys(albums.json.albums).length>1);
 	var showMerge = true;
 
-	var items = [{ title: build.iconic('pencil') + lychee.locale['RENAME'], fn: function fn() {
+	var items = [{
+		title: build.iconic("pencil") + lychee.locale["RENAME"],
+		fn: function fn() {
 			return album.setTitle([albumID]);
-		} }, { title: build.iconic('collapse-left') + lychee.locale['MERGE'], visible: showMerge, fn: function fn() {
-			basicContext.close();contextMenu.move([albumID], e, album.merge, 'ROOT', false);
-		} }, { title: build.iconic('folder') + lychee.locale['MOVE'], visible: lychee.sub_albums, fn: function fn() {
-			basicContext.close();contextMenu.move([albumID], e, album.setAlbum, 'ROOT');
-		} },
+		}
+	}, {
+		title: build.iconic("collapse-left") + lychee.locale["MERGE"],
+		visible: showMerge,
+		fn: function fn() {
+			basicContext.close();
+			contextMenu.move([albumID], e, album.merge, "ROOT", false);
+		}
+	}, {
+		title: build.iconic("folder") + lychee.locale["MOVE"],
+		visible: lychee.sub_albums,
+		fn: function fn() {
+			basicContext.close();
+			contextMenu.move([albumID], e, album.setAlbum, "ROOT");
+		}
+	},
 	// { title: build.iconic('cloud') + lychee.locale['SHARE_WITH'],    visible: lychee.api_V2 && lychee.upload,   fn: () => alert('ho')},
-	{ title: build.iconic('trash') + lychee.locale['DELETE'], fn: function fn() {
+	{
+		title: build.iconic("trash") + lychee.locale["DELETE"],
+		fn: function fn() {
 			return album.delete([albumID]);
-		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], fn: function fn() {
+		}
+	}, {
+		title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD"],
+		fn: function fn() {
 			return album.getArchive([albumID]);
-		} }];
+		}
+	}];
 
-	$('.album[data-id="' + albumID + '"]').addClass('active');
+	$('.album[data-id="' + albumID + '"]').addClass("active");
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
 };
 
 contextMenu.albumMulti = function (albumIDs, e) {
-
 	multiselect.stopResize();
 
 	// Automatically merge selected albums when albumIDs contains more than one album
@@ -2420,19 +2441,43 @@ contextMenu.albumMulti = function (albumIDs, e) {
 	// let showMerge = (albums.json && albums.json.albums && Object.keys(albums.json.albums).length>1);
 	var showMerge = true;
 
-	var items = [{ title: build.iconic('pencil') + lychee.locale['RENAME_ALL'], fn: function fn() {
+	var items = [{
+		title: build.iconic("pencil") + lychee.locale["RENAME_ALL"],
+		fn: function fn() {
 			return album.setTitle(albumIDs);
-		} }, { title: build.iconic('collapse-left') + lychee.locale['MERGE_ALL'], visible: showMerge && autoMerge, fn: function fn() {
-			var albumID = albumIDs.shift();album.merge(albumIDs, albumID);
-		} }, { title: build.iconic('collapse-left') + lychee.locale['MERGE'], visible: showMerge && !autoMerge, fn: function fn() {
-			basicContext.close();contextMenu.move(albumIDs, e, album.merge, 'ROOT', false);
-		} }, { title: build.iconic('folder') + lychee.locale['MOVE_ALL'], visible: lychee.sub_albums, fn: function fn() {
-			basicContext.close();contextMenu.move(albumIDs, e, album.setAlbum, 'ROOT');
-		} }, { title: build.iconic('trash') + lychee.locale['DELETE_ALL'], fn: function fn() {
+		}
+	}, {
+		title: build.iconic("collapse-left") + lychee.locale["MERGE_ALL"],
+		visible: showMerge && autoMerge,
+		fn: function fn() {
+			var albumID = albumIDs.shift();
+			album.merge(albumIDs, albumID);
+		}
+	}, {
+		title: build.iconic("collapse-left") + lychee.locale["MERGE"],
+		visible: showMerge && !autoMerge,
+		fn: function fn() {
+			basicContext.close();
+			contextMenu.move(albumIDs, e, album.merge, "ROOT", false);
+		}
+	}, {
+		title: build.iconic("folder") + lychee.locale["MOVE_ALL"],
+		visible: lychee.sub_albums,
+		fn: function fn() {
+			basicContext.close();
+			contextMenu.move(albumIDs, e, album.setAlbum, "ROOT");
+		}
+	}, {
+		title: build.iconic("trash") + lychee.locale["DELETE_ALL"],
+		fn: function fn() {
 			return album.delete(albumIDs);
-		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_ALL'], fn: function fn() {
+		}
+	}, {
+		title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD_ALL"],
+		fn: function fn() {
 			return album.getArchive(albumIDs);
-		} }];
+		}
+	}];
 
 	if (!lychee.api_V2) {
 		items.splice(-1);
@@ -2444,7 +2489,6 @@ contextMenu.albumMulti = function (albumIDs, e) {
 contextMenu.buildList = function (lists, exclude, action) {
 	var parent = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
 	var layer = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 0;
-
 
 	var find = function find(excl, id) {
 		for (var _i = 0; _i < excl.length; _i++) {
@@ -2459,27 +2503,26 @@ contextMenu.buildList = function (lists, exclude, action) {
 	while (i < lists.length) {
 		if (layer === 0 && !lists[i].parent_id || lists[i].parent_id === parent) {
 			(function () {
-
 				var item = lists[i];
 
-				var thumb = 'img/no_cover.svg';
+				var thumb = "img/no_cover.svg";
 				if (item.thumbs && item.thumbs[0]) {
-					if (item.thumbs[0] === 'uploads/thumb/' && item.types[0] && item.types[0].indexOf('video') > -1) {
-						thumb = 'img/play-icon.png';
+					if (item.thumbs[0] === "uploads/thumb/" && item.types[0] && item.types[0].indexOf("video") > -1) {
+						thumb = "img/play-icon.png";
 					} else {
 						thumb = item.thumbs[0];
 					}
 				} else if (item.thumbUrl) {
-					if (item.thumbUrl === 'uploads/thumb/' && item.type.indexOf('video') > -1) {
-						thumb = 'img/play-icon.png';
+					if (item.thumbUrl === "uploads/thumb/" && item.type.indexOf("video") > -1) {
+						thumb = "img/play-icon.png";
 					} else {
 						thumb = item.thumbUrl;
 					}
 				}
 
-				if (item.title === '') item.title = lychee.locale['UNTITLED'];
+				if (item.title === "") item.title = lychee.locale["UNTITLED"];
 
-				var prefix = layer > 0 ? '&nbsp;&nbsp;'.repeat(layer - 1) + '└ ' : '';
+				var prefix = layer > 0 ? "&nbsp;&nbsp;".repeat(layer - 1) + "└ " : "";
 
 				var html = lychee.html(_templateObject43, prefix, thumb, item.title);
 
@@ -2508,17 +2551,18 @@ contextMenu.buildList = function (lists, exclude, action) {
 };
 
 contextMenu.albumTitle = function (albumID, e) {
-
-	api.post('Albums::get', {}, function (data) {
-
+	api.post("Albums::get", {}, function (data) {
 		var items = [];
 
-		items = items.concat({ title: lychee.locale['ROOT'], disabled: albumID === false, fn: function fn() {
+		items = items.concat({
+			title: lychee.locale["ROOT"],
+			disabled: albumID === false,
+			fn: function fn() {
 				return lychee.goto();
-			} });
+			}
+		});
 
 		if (data.albums && data.albums.length > 0) {
-
 			items = items.concat({});
 			items = items.concat(contextMenu.buildList(data.albums, albumID !== false ? [parseInt(albumID, 10)] : [], function (a) {
 				return lychee.goto(a.id);
@@ -2526,7 +2570,6 @@ contextMenu.albumTitle = function (albumID, e) {
 		}
 
 		if (data.shared_albums && data.shared_albums.length > 0) {
-
 			items = items.concat({});
 			items = items.concat(contextMenu.buildList(data.shared_albums, albumID !== false ? [parseInt(albumID, 10)] : [], function (a) {
 				return lychee.goto(a.id);
@@ -2538,9 +2581,12 @@ contextMenu.albumTitle = function (albumID, e) {
 				items.unshift({});
 			}
 
-			items.unshift({ title: build.iconic('pencil') + lychee.locale['RENAME'], fn: function fn() {
+			items.unshift({
+				title: build.iconic("pencil") + lychee.locale["RENAME"],
+				fn: function fn() {
 					return album.setTitle([albumID]);
-				} });
+				}
+			});
 		}
 
 		basicContext.show(items, e.originalEvent, contextMenu.close);
@@ -2548,41 +2594,61 @@ contextMenu.albumTitle = function (albumID, e) {
 };
 
 contextMenu.photo = function (photoID, e) {
-
 	// Notice for 'Move':
 	// fn must call basicContext.close() first,
 	// in order to keep the selection
 
-	var items = [{ title: build.iconic('star') + lychee.locale['STAR'], fn: function fn() {
+	var items = [{
+		title: build.iconic("star") + lychee.locale["STAR"],
+		fn: function fn() {
 			return _photo.setStar([photoID]);
-		} }, { title: build.iconic('tag') + lychee.locale['TAGS'], fn: function fn() {
+		}
+	}, {
+		title: build.iconic("tag") + lychee.locale["TAGS"],
+		fn: function fn() {
 			return _photo.editTags([photoID]);
-		} }, {}, { title: build.iconic('pencil') + lychee.locale['RENAME'], fn: function fn() {
+		}
+	}, {}, {
+		title: build.iconic("pencil") + lychee.locale["RENAME"],
+		fn: function fn() {
 			return _photo.setTitle([photoID]);
-		} }, { title: build.iconic('layers') + lychee.locale['COPY_TO'], fn: function fn() {
-			basicContext.close();contextMenu.move([photoID], e, _photo.copyTo, 'UNSORTED');
-		} }, { title: build.iconic('folder') + lychee.locale['MOVE'], fn: function fn() {
-			basicContext.close();contextMenu.move([photoID], e, _photo.setAlbum, 'UNSORTED');
-		} }, { title: build.iconic('trash') + lychee.locale['DELETE'], fn: function fn() {
+		}
+	}, {
+		title: build.iconic("layers") + lychee.locale["COPY_TO"],
+		fn: function fn() {
+			basicContext.close();
+			contextMenu.move([photoID], e, _photo.copyTo, "UNSORTED");
+		}
+	}, {
+		title: build.iconic("folder") + lychee.locale["MOVE"],
+		fn: function fn() {
+			basicContext.close();
+			contextMenu.move([photoID], e, _photo.setAlbum, "UNSORTED");
+		}
+	}, {
+		title: build.iconic("trash") + lychee.locale["DELETE"],
+		fn: function fn() {
 			return _photo.delete([photoID]);
-		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], fn: function fn() {
+		}
+	}, {
+		title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD"],
+		fn: function fn() {
 			return _photo.getArchive([photoID]);
-		} }];
+		}
+	}];
 
-	$('.photo[data-id="' + photoID + '"]').addClass('active');
+	$('.photo[data-id="' + photoID + '"]').addClass("active");
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
 };
 
 contextMenu.countSubAlbums = function (photoIDs) {
-
 	var count = 0;
 
 	var i = void 0,
 	    j = void 0;
 
 	if (album.albums) {
-
 		for (i = 0; i < photoIDs.length; i++) {
 			for (j = 0; j < album.albums.length; j++) {
 				if (album.albums[j].id === photoIDs[i]) {
@@ -2597,7 +2663,6 @@ contextMenu.countSubAlbums = function (photoIDs) {
 };
 
 contextMenu.photoMulti = function (photoIDs, e) {
-
 	// Notice for 'Move All':
 	// fn must call basicContext.close() first,
 	// in order to keep the selection and multiselect
@@ -2605,9 +2670,9 @@ contextMenu.photoMulti = function (photoIDs, e) {
 	var photocount = photoIDs.length - subcount;
 
 	if (subcount && photocount) {
-		multiselect.deselect('.photo.active, .album.active');
+		multiselect.deselect(".photo.active, .album.active");
 		multiselect.close();
-		lychee.error('Please select either albums or photos!');
+		lychee.error("Please select either albums or photos!");
 		return;
 	}
 	if (subcount) {
@@ -2617,21 +2682,44 @@ contextMenu.photoMulti = function (photoIDs, e) {
 
 	multiselect.stopResize();
 
-	var items = [{ title: build.iconic('star') + lychee.locale['STAR_ALL'], fn: function fn() {
+	var items = [{
+		title: build.iconic("star") + lychee.locale["STAR_ALL"],
+		fn: function fn() {
 			return _photo.setStar(photoIDs);
-		} }, { title: build.iconic('tag') + lychee.locale['TAGS_ALL'], fn: function fn() {
+		}
+	}, {
+		title: build.iconic("tag") + lychee.locale["TAGS_ALL"],
+		fn: function fn() {
 			return _photo.editTags(photoIDs);
-		} }, {}, { title: build.iconic('pencil') + lychee.locale['RENAME_ALL'], fn: function fn() {
+		}
+	}, {}, {
+		title: build.iconic("pencil") + lychee.locale["RENAME_ALL"],
+		fn: function fn() {
 			return _photo.setTitle(photoIDs);
-		} }, { title: build.iconic('layers') + lychee.locale['COPY_ALL_TO'], fn: function fn() {
-			basicContext.close();contextMenu.move(photoIDs, e, _photo.copyTo, 'UNSORTED');
-		} }, { title: build.iconic('folder') + lychee.locale['MOVE_ALL'], fn: function fn() {
-			basicContext.close();contextMenu.move(photoIDs, e, _photo.setAlbum, 'UNSORTED');
-		} }, { title: build.iconic('trash') + lychee.locale['DELETE_ALL'], fn: function fn() {
+		}
+	}, {
+		title: build.iconic("layers") + lychee.locale["COPY_ALL_TO"],
+		fn: function fn() {
+			basicContext.close();
+			contextMenu.move(photoIDs, e, _photo.copyTo, "UNSORTED");
+		}
+	}, {
+		title: build.iconic("folder") + lychee.locale["MOVE_ALL"],
+		fn: function fn() {
+			basicContext.close();
+			contextMenu.move(photoIDs, e, _photo.setAlbum, "UNSORTED");
+		}
+	}, {
+		title: build.iconic("trash") + lychee.locale["DELETE_ALL"],
+		fn: function fn() {
 			return _photo.delete(photoIDs);
-		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD_ALL'], fn: function fn() {
-			return _photo.getArchive(photoIDs, 'FULL');
-		} }];
+		}
+	}, {
+		title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD_ALL"],
+		fn: function fn() {
+			return _photo.getArchive(photoIDs, "FULL");
+		}
+	}];
 
 	if (!lychee.api_V2) {
 		items.splice(-1);
@@ -2641,19 +2729,20 @@ contextMenu.photoMulti = function (photoIDs, e) {
 };
 
 contextMenu.photoTitle = function (albumID, photoID, e) {
-
-	var items = [{ title: build.iconic('pencil') + lychee.locale['RENAME'], fn: function fn() {
+	var items = [{
+		title: build.iconic("pencil") + lychee.locale["RENAME"],
+		fn: function fn() {
 			return _photo.setTitle([photoID]);
-		} }];
+		}
+	}];
 
 	var data = album.json;
 
 	if (data.photos !== false && data.photos.length > 0) {
-
 		items.push({});
 
 		items = items.concat(contextMenu.buildList(data.photos, [photoID], function (a) {
-			return lychee.goto(albumID + '/' + a.id);
+			return lychee.goto(albumID + "/" + a.id);
 		}));
 	}
 
@@ -2666,25 +2755,31 @@ contextMenu.photoTitle = function (albumID, photoID, e) {
 };
 
 contextMenu.photoMore = function (photoID, e) {
-
 	// Show download-item when
 	// a) We are allowed to upload to the album
 	// b) the photo is explicitly marked as downloadable (v4-only)
 	// c) or, the album is explicitly marked as downloadable
-	var showDownload = album.isUploadable() || (_photo.json.hasOwnProperty('downloadable') ? _photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1');
-	var showFull = _photo.json.url && _photo.json.url !== '';
+	var showDownload = album.isUploadable() || (_photo.json.hasOwnProperty("downloadable") ? _photo.json.downloadable === "1" : album.json && album.json.downloadable && album.json.downloadable === "1");
+	var showFull = _photo.json.url && _photo.json.url !== "";
 
-	var items = [{ title: build.iconic('fullscreen-enter') + lychee.locale['FULL_PHOTO'], visible: !!showFull, fn: function fn() {
+	var items = [{
+		title: build.iconic("fullscreen-enter") + lychee.locale["FULL_PHOTO"],
+		visible: !!showFull,
+		fn: function fn() {
 			return window.open(_photo.getDirectLink());
-		} }, { title: build.iconic('cloud-download') + lychee.locale['DOWNLOAD'], visible: !!showDownload, fn: function fn() {
+		}
+	}, {
+		title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD"],
+		visible: !!showDownload,
+		fn: function fn() {
 			return _photo.getArchive([photoID]);
-		} }];
+		}
+	}];
 
 	basicContext.show(items, e.originalEvent);
 };
 
 contextMenu.getSubIDs = function (albums, albumID) {
-
 	var ids = [parseInt(albumID, 10)];
 	var a = void 0;
 
@@ -2702,16 +2797,13 @@ contextMenu.getSubIDs = function (albums, albumID) {
 };
 
 contextMenu.move = function (IDs, e, callback) {
-	var kind = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 'UNSORTED';
+	var kind = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : "UNSORTED";
 	var display_root = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : true;
-
 
 	var items = [];
 
-	api.post('Albums::get', {}, function (data) {
-
+	api.post("Albums::get", {}, function (data) {
 		var addItems = function addItems(albums) {
-
 			// Disable all children
 			// It's not possible to move us into them
 			var i = void 0,
@@ -2742,34 +2834,37 @@ contextMenu.move = function (IDs, e, callback) {
 		};
 
 		if (data.albums && data.albums.length > 0) {
-
 			// items = items.concat(contextMenu.buildList(data.albums, [ album.getID() ], (a) => callback(IDs, a.id))); //photo.setAlbum
 
 			addItems(data.albums);
 		}
 
 		if (data.shared_albums && data.shared_albums.length > 0 && lychee.admin) {
-
 			items = items.concat({});
 			addItems(data.shared_albums);
 		}
 
 		// Show Unsorted when unsorted is not the current album
-		if (display_root && album.getID() !== '0' && !visible.albums()) {
-
+		if (display_root && album.getID() !== "0" && !visible.albums()) {
 			items.unshift({});
-			items.unshift({ title: lychee.locale[kind], fn: function fn() {
+			items.unshift({
+				title: lychee.locale[kind],
+				fn: function fn() {
 					return callback(IDs, 0);
-				} });
+				}
+			});
 		}
 
 		// Don't allow to move the current album to a newly created subalbum
 		// (creating a cycle).
 		if (IDs.length !== 1 || IDs[0] !== (album.json ? album.json.id : null) || callback !== album.setAlbum) {
 			items.unshift({});
-			items.unshift({ title: lychee.locale['NEW_ALBUM'], fn: function fn() {
+			items.unshift({
+				title: lychee.locale["NEW_ALBUM"],
+				fn: function fn() {
 					return album.add(IDs, callback);
-				} });
+				}
+			});
 		}
 
 		basicContext.show(items, e.originalEvent, contextMenu.close);
@@ -2777,60 +2872,85 @@ contextMenu.move = function (IDs, e, callback) {
 };
 
 contextMenu.sharePhoto = function (photoID, e) {
-
 	// v4+ only
-	if (_photo.json.hasOwnProperty('share_button_visible') && _photo.json.share_button_visible !== '1') {
+	if (_photo.json.hasOwnProperty("share_button_visible") && _photo.json.share_button_visible !== "1") {
 		return;
 	}
 
-	var iconClass = 'ionicons';
+	var iconClass = "ionicons";
 
-	var items = [{ title: build.iconic('twitter', iconClass) + 'Twitter', fn: function fn() {
-			return _photo.share(photoID, 'twitter');
-		} }, { title: build.iconic('facebook', iconClass) + 'Facebook', fn: function fn() {
-			return _photo.share(photoID, 'facebook');
-		} }, { title: build.iconic('envelope-closed') + 'Mail', fn: function fn() {
-			return _photo.share(photoID, 'mail');
-		} }, { title: build.iconic('dropbox', iconClass) + 'Dropbox', visible: lychee.admin === true, fn: function fn() {
-			return _photo.share(photoID, 'dropbox');
-		} }, { title: build.iconic('link-intact') + lychee.locale['DIRECT_LINKS'], fn: function fn() {
+	var items = [{
+		title: build.iconic("twitter", iconClass) + "Twitter",
+		fn: function fn() {
+			return _photo.share(photoID, "twitter");
+		}
+	}, {
+		title: build.iconic("facebook", iconClass) + "Facebook",
+		fn: function fn() {
+			return _photo.share(photoID, "facebook");
+		}
+	}, {
+		title: build.iconic("envelope-closed") + "Mail",
+		fn: function fn() {
+			return _photo.share(photoID, "mail");
+		}
+	}, {
+		title: build.iconic("dropbox", iconClass) + "Dropbox",
+		visible: lychee.admin === true,
+		fn: function fn() {
+			return _photo.share(photoID, "dropbox");
+		}
+	}, {
+		title: build.iconic("link-intact") + lychee.locale["DIRECT_LINKS"],
+		fn: function fn() {
 			return _photo.showDirectLinks(photoID);
-		} }];
+		}
+	}];
 
 	basicContext.show(items, e.originalEvent);
 };
 
 contextMenu.shareAlbum = function (albumID, e) {
-
 	// v4+ only
-	if (album.json.hasOwnProperty('share_button_visible') && album.json.share_button_visible !== '1') {
+	if (album.json.hasOwnProperty("share_button_visible") && album.json.share_button_visible !== "1") {
 		return;
 	}
 
-	var iconClass = 'ionicons';
+	var iconClass = "ionicons";
 
-	var items = [{ title: build.iconic('twitter', iconClass) + 'Twitter', fn: function fn() {
-			return album.share('twitter');
-		} }, { title: build.iconic('facebook', iconClass) + 'Facebook', fn: function fn() {
-			return album.share('facebook');
-		} }, { title: build.iconic('envelope-closed') + 'Mail', fn: function fn() {
-			return album.share('mail');
-		} }, { title: build.iconic('link-intact') + lychee.locale['DIRECT_LINK'], fn: function fn() {
+	var items = [{
+		title: build.iconic("twitter", iconClass) + "Twitter",
+		fn: function fn() {
+			return album.share("twitter");
+		}
+	}, {
+		title: build.iconic("facebook", iconClass) + "Facebook",
+		fn: function fn() {
+			return album.share("facebook");
+		}
+	}, {
+		title: build.iconic("envelope-closed") + "Mail",
+		fn: function fn() {
+			return album.share("mail");
+		}
+	}, {
+		title: build.iconic("link-intact") + lychee.locale["DIRECT_LINK"],
+		fn: function fn() {
 			var url = lychee.getBaseUrl() + "r/" + albumID;
-			if (album.json.password === '1') {
+			if (album.json.password === "1") {
 				// Copy the url with prefilled password param
 				url += "?password=";
 			}
 			if (lychee.clipboardCopy(url)) {
-				loadingBar.show('success', lychee.locale['URL_COPIED_TO_CLIPBOARD']);
+				loadingBar.show("success", lychee.locale["URL_COPIED_TO_CLIPBOARD"]);
 			}
-		} }];
+		}
+	}];
 
 	basicContext.show(items, e.originalEvent);
 };
 
 contextMenu.close = function () {
-
 	if (!visible.contextMenu()) return false;
 
 	basicContext.close();
@@ -2846,114 +2966,112 @@ contextMenu.close = function () {
  */
 
 var header = {
-
-	_dom: $('.header')
-
+	_dom: $(".header")
 };
 
 header.dom = function (selector) {
-
-	if (selector == null || selector === '') return header._dom;
+	if (selector == null || selector === "") return header._dom;
 	return header._dom.find(selector);
 };
 
 header.bind = function () {
-
 	// Event Name
 	var eventName = lychee.getEventName();
 
-	header.dom('.header__title').on(eventName, function (e) {
-
-		if ($(this).hasClass('header__title--editable') === false) return false;
+	header.dom(".header__title").on(eventName, function (e) {
+		if ($(this).hasClass("header__title--editable") === false) return false;
 
 		if (lychee.enable_contextmenu_header === false) return false;
 
 		if (visible.photo()) contextMenu.photoTitle(album.getID(), _photo.getID(), e);else contextMenu.albumTitle(album.getID(), e);
 	});
 
-	header.dom('#button_visibility').on(eventName, function (e) {
+	header.dom("#button_visibility").on(eventName, function (e) {
 		_photo.setPublic(_photo.getID(), e);
 	});
-	header.dom('#button_share').on(eventName, function (e) {
+	header.dom("#button_share").on(eventName, function (e) {
 		contextMenu.sharePhoto(_photo.getID(), e);
 	});
 
-	header.dom('#button_visibility_album').on(eventName, function (e) {
+	header.dom("#button_visibility_album").on(eventName, function (e) {
 		album.setPublic(album.getID(), e);
 	});
-	header.dom('#button_share_album').on(eventName, function (e) {
+	header.dom("#button_share_album").on(eventName, function (e) {
 		contextMenu.shareAlbum(album.getID(), e);
 	});
 
-	header.dom('#button_signin').on(eventName, lychee.loginDialog);
-	header.dom('#button_settings').on(eventName, leftMenu.open);
-	header.dom('#button_info_album').on(eventName, _sidebar.toggle);
-	header.dom('#button_info').on(eventName, _sidebar.toggle);
-	header.dom('.button--map-albums').on(eventName, function () {
+	header.dom("#button_signin").on(eventName, lychee.loginDialog);
+	header.dom("#button_settings").on(eventName, leftMenu.open);
+	header.dom("#button_info_album").on(eventName, _sidebar.toggle);
+	header.dom("#button_info").on(eventName, _sidebar.toggle);
+	header.dom(".button--map-albums").on(eventName, function () {
 		lychee.gotoMap();
 	});
-	header.dom('#button_map_album').on(eventName, function () {
+	header.dom("#button_map_album").on(eventName, function () {
 		lychee.gotoMap(album.getID());
 	});
-	header.dom('#button_map').on(eventName, function () {
+	header.dom("#button_map").on(eventName, function () {
 		lychee.gotoMap(album.getID());
 	});
-	header.dom('.button_add').on(eventName, contextMenu.add);
-	header.dom('#button_more').on(eventName, function (e) {
+	header.dom(".button_add").on(eventName, contextMenu.add);
+	header.dom("#button_more").on(eventName, function (e) {
 		contextMenu.photoMore(_photo.getID(), e);
 	});
-	header.dom('#button_move_album').on(eventName, function (e) {
-		contextMenu.move([album.getID()], e, album.setAlbum, 'ROOT', album.getParent() != '');
+	header.dom("#button_move_album").on(eventName, function (e) {
+		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParent() != "");
 	});
-	header.dom('#button_move').on(eventName, function (e) {
+	header.dom("#button_nsfw_album").on(eventName, function (e) {
+		album.setNSFW(album.getID());
+	});
+	header.dom("#button_move").on(eventName, function (e) {
 		contextMenu.move([_photo.getID()], e, _photo.setAlbum);
 	});
-	header.dom('.header__hostedwith').on(eventName, function () {
+	header.dom(".header__hostedwith").on(eventName, function () {
 		window.open(lychee.website);
 	});
-	header.dom('#button_trash_album').on(eventName, function () {
+	header.dom("#button_trash_album").on(eventName, function () {
 		album.delete([album.getID()]);
 	});
-	header.dom('#button_trash').on(eventName, function () {
+	header.dom("#button_trash").on(eventName, function () {
 		_photo.delete([_photo.getID()]);
 	});
-	header.dom('#button_archive').on(eventName, function () {
+	header.dom("#button_archive").on(eventName, function () {
 		album.getArchive([album.getID()]);
 	});
-	header.dom('#button_star').on(eventName, function () {
+	header.dom("#button_star").on(eventName, function () {
 		_photo.setStar([_photo.getID()]);
 	});
-	header.dom('#button_rotate_ccwise').on(eventName, function () {
+	header.dom("#button_rotate_ccwise").on(eventName, function () {
 		photoeditor.rotate(_photo.getID(), -1);
 	});
-	header.dom('#button_rotate_cwise').on(eventName, function () {
+	header.dom("#button_rotate_cwise").on(eventName, function () {
 		photoeditor.rotate(_photo.getID(), 1);
 	});
-	header.dom('#button_back_home').on(eventName, function () {
+	header.dom("#button_back_home").on(eventName, function () {
 		if (!album.json.parent_id) {
 			lychee.goto();
 		} else {
 			lychee.goto(album.getParent());
 		}
 	});
-	header.dom('#button_back').on(eventName, function () {
+	header.dom("#button_back").on(eventName, function () {
 		lychee.goto(album.getID());
 	});
-	header.dom('#button_back_map').on(eventName, function () {
+	header.dom("#button_back_map").on(eventName, function () {
 		lychee.goto(album.getID());
 	});
-	header.dom('#button_fs_album_enter,#button_fs_enter').on(eventName, lychee.fullscreenEnter);
-	header.dom('#button_fs_album_exit,#button_fs_exit').on(eventName, lychee.fullscreenExit).hide();
+	header.dom("#button_fs_album_enter,#button_fs_enter").on(eventName, lychee.fullscreenEnter);
+	header.dom("#button_fs_album_exit,#button_fs_exit").on(eventName, lychee.fullscreenExit).hide();
 
-	header.dom('.header__search').on('keyup click', function () {
+	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
-			lychee.goto('search/' + encodeURIComponent($(this).val()));
+			lychee.goto("search/" + encodeURIComponent($(this).val()));
 		} else if (search.hash !== null) {
 			search.reset();
 		}
 	});
-	header.dom('.header__clear').on(eventName, function () {
-		header.dom('.header__search').focus();
+	header.dom(".header__clear").on(eventName, function () {
+		header.dom(".header__search").focus();
 		search.reset();
 	});
 
@@ -2963,13 +3081,12 @@ header.bind = function () {
 };
 
 header.bind_back = function () {
-
 	// Event Name
 	var eventName = lychee.getEventName();
 
-	header.dom('.header__title').on(eventName, function () {
+	header.dom(".header__title").on(eventName, function () {
 		if (lychee.landing_page_enable && visible.albums()) {
-			window.location.href = '.';
+			window.location.href = ".";
 		} else {
 			return false;
 		}
@@ -2977,9 +3094,8 @@ header.bind_back = function () {
 };
 
 header.show = function () {
-
-	lychee.imageview.removeClass('full');
-	header.dom().removeClass('header--hidden');
+	lychee.imageview.removeClass("full");
+	header.dom().removeClass("header--hidden");
 
 	tabindex.restoreSettings(header.dom());
 
@@ -2989,21 +3105,18 @@ header.show = function () {
 };
 
 header.hideIfLivePhotoNotPlaying = function () {
-
 	// Hides the header, if current live photo is not playing
 	if (_photo.isLivePhotoPlaying() == true) return false;
 	return header.hide();
 };
 
 header.hide = function () {
-
 	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.visible() === false) {
-
 		tabindex.saveSettings(header.dom());
 		tabindex.makeUnfocusable(header.dom());
 
-		lychee.imageview.addClass('full');
-		header.dom().addClass('header--hidden');
+		lychee.imageview.addClass("full");
+		header.dom().addClass("header--hidden");
 
 		_photo.updateSizeLivePhotoDuringAnimation();
 
@@ -3014,11 +3127,10 @@ header.hide = function () {
 };
 
 header.setTitle = function () {
-	var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'Untitled';
+	var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "Untitled";
 
-
-	var $title = header.dom('.header__title');
-	var html = lychee.html(_templateObject44, title, build.iconic('caret-bottom'));
+	var $title = header.dom(".header__title");
+	var html = lychee.html(_templateObject44, title, build.iconic("caret-bottom"));
 
 	$title.html(html);
 
@@ -3026,280 +3138,272 @@ header.setTitle = function () {
 };
 
 header.setMode = function (mode) {
-
-	if (mode === 'albums' && lychee.publicMode === true) mode = 'public';
+	if (mode === "albums" && lychee.publicMode === true) mode = "public";
 
 	switch (mode) {
-
-		case 'public':
-
-			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
-			header.dom('.header__toolbar--public').addClass('header__toolbar--visible');
-			tabindex.makeFocusable(header.dom('.header__toolbar--public'));
-			tabindex.makeUnfocusable(header.dom('.header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map'));
+		case "public":
+			header.dom().removeClass("header--view");
+			header.dom(".header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map").removeClass("header__toolbar--visible");
+			header.dom(".header__toolbar--public").addClass("header__toolbar--visible");
+			tabindex.makeFocusable(header.dom(".header__toolbar--public"));
+			tabindex.makeUnfocusable(header.dom(".header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map"));
 
 			if (lychee.public_search) {
-				var e = $('.header__search, .header__clear', '.header__toolbar--public');
+				var e = $(".header__search, .header__clear", ".header__toolbar--public");
 				e.show();
 				tabindex.makeFocusable(e);
 			} else {
-				var _e2 = $('.header__search, .header__clear', '.header__toolbar--public');
+				var _e2 = $(".header__search, .header__clear", ".header__toolbar--public");
 				_e2.hide();
 				tabindex.makeUnfocusable(_e2);
 			}
 
 			// Set icon in Public mode
 			if (lychee.map_display_public) {
-				var _e3 = $('.button--map-albums', '.header__toolbar--public');
+				var _e3 = $(".button--map-albums", ".header__toolbar--public");
 				_e3.show();
 				tabindex.makeFocusable(_e3);
 			} else {
-				var _e4 = $('.button--map-albums', '.header__toolbar--public');
+				var _e4 = $(".button--map-albums", ".header__toolbar--public");
 				_e4.hide();
 				tabindex.makeUnfocusable(_e4);
 			}
 
 			// Set focus on login button
 			if (lychee.active_focus_on_page_load) {
-				$('#button_signin').focus();
+				$("#button_signin").focus();
 			}
 			return true;
 
-		case 'albums':
+		case "albums":
+			header.dom().removeClass("header--view");
+			header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map").removeClass("header__toolbar--visible");
+			header.dom(".header__toolbar--albums").addClass("header__toolbar--visible");
 
-			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
-			header.dom('.header__toolbar--albums').addClass('header__toolbar--visible');
-
-			tabindex.makeFocusable(header.dom('.header__toolbar--albums'));
-			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map'));
+			tabindex.makeFocusable(header.dom(".header__toolbar--albums"));
+			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map"));
 
 			// If map is disabled, we should hide the icon
 			if (lychee.map_display) {
-				var _e5 = $('.button--map-albums', '.header__toolbar--albums');
+				var _e5 = $(".button--map-albums", ".header__toolbar--albums");
 				_e5.show();
 				tabindex.makeFocusable(_e5);
 			} else {
-				var _e6 = $('.button--map-albums', '.header__toolbar--albums');
+				var _e6 = $(".button--map-albums", ".header__toolbar--albums");
 				_e6.hide();
 				tabindex.makeUnfocusable(_e6);
 			}
 
 			if (lychee.enable_button_add) {
-				var _e7 = $('.button_add', '.header__toolbar--albums');
+				var _e7 = $(".button_add", ".header__toolbar--albums");
 				_e7.show();
 				tabindex.makeFocusable(_e7);
 			} else {
-				var _e8 = $('.button_add', '.header__toolbar--albums');
+				var _e8 = $(".button_add", ".header__toolbar--albums");
 				_e8.remove();
 			}
 
 			return true;
 
-		case 'album':
-
+		case "album":
 			var albumID = album.getID();
 
-			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map').removeClass('header__toolbar--visible');
-			header.dom('.header__toolbar--album').addClass('header__toolbar--visible');
+			header.dom().removeClass("header--view");
+			header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map").removeClass("header__toolbar--visible");
+			header.dom(".header__toolbar--album").addClass("header__toolbar--visible");
 
-			tabindex.makeFocusable(header.dom('.header__toolbar--album'));
-			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map'));
+			tabindex.makeFocusable(header.dom(".header__toolbar--album"));
+			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--map"));
 
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
-			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && album.json.downloadable === '0') {
-				var _e9 = $('#button_archive');
+			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && album.json.downloadable === "0") {
+				var _e9 = $("#button_archive");
 				_e9.hide();
 				tabindex.makeUnfocusable(_e9);
 			} else {
-				var _e10 = $('#button_archive');
+				var _e10 = $("#button_archive");
 				_e10.show();
 				tabindex.makeFocusable(_e10);
 			}
 
-			if (album.json && album.json.hasOwnProperty('share_button_visible') && album.json.share_button_visible !== '1') {
-				var _e11 = $('#button_share_album');
+			if (album.json && album.json.hasOwnProperty("share_button_visible") && album.json.share_button_visible !== "1") {
+				var _e11 = $("#button_share_album");
 				_e11.hide();
 				tabindex.makeUnfocusable(_e11);
 			} else {
-				var _e12 = $('#button_share_album');
+				var _e12 = $("#button_share_album");
 				_e12.show();
 				tabindex.makeFocusable(_e12);
 			}
 
 			// If map is disabled, we should hide the icon
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
-				var _e13 = $('#button_map_album');
+				var _e13 = $("#button_map_album");
 				_e13.show();
 				tabindex.makeFocusable(_e13);
 			} else {
-				var _e14 = $('#button_map_album');
+				var _e14 = $("#button_map_album");
 				_e14.hide();
 				tabindex.makeUnfocusable(_e14);
 			}
 
-			if (albumID === 'starred' || albumID === 'public' || albumID === 'recent') {
-				$('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album').hide();
-				$('.button_add, .header__divider', '.header__toolbar--album').show();
-				tabindex.makeFocusable($('.button_add, .header__divider', '.header__toolbar--album'));
-				tabindex.makeUnfocusable($('#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album'));
-			} else if (albumID === 'unsorted') {
-				$('#button_info_album, #button_visibility_album, #button_move_album').hide();
-				$('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album').show();
-				tabindex.makeFocusable($('#button_trash_album, .button_add, .header__divider', '.header__toolbar--album'));
-				tabindex.makeUnfocusable($('#button_info_album, #button_visibility_album, #button_move_album'));
+			if (albumID === "starred" || albumID === "public" || albumID === "recent") {
+				$("#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album").hide();
+				$(".button_add, .header__divider", ".header__toolbar--album").show();
+				tabindex.makeFocusable($(".button_add, .header__divider", ".header__toolbar--album"));
+				tabindex.makeUnfocusable($("#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album"));
+			} else if (albumID === "unsorted") {
+				$("#button_info_album, #button_visibility_album, #button_move_album").hide();
+				$("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album").show();
+				tabindex.makeFocusable($("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album"));
+				tabindex.makeUnfocusable($("#button_info_album, #button_visibility_album, #button_move_album"));
 			} else if (album.isTagAlbum()) {
-				$('#button_info_album').show();
-				$('#button_move_album').hide();
-				$('.button_add, .header__divider', '.header__toolbar--album').hide();
-				tabindex.makeFocusable($('#button_info_album'));
-				tabindex.makeUnfocusable($('#button_move_album'));
-				tabindex.makeUnfocusable($('.button_add, .header__divider', '.header__toolbar--album'));
+				$("#button_info_album").show();
+				$("#button_move_album").hide();
+				$(".button_add, .header__divider", ".header__toolbar--album").hide();
+				tabindex.makeFocusable($("#button_info_album"));
+				tabindex.makeUnfocusable($("#button_move_album"));
+				tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
 				if (album.isUploadable()) {
-					$('#button_visibility_album, #button_trash_album').show();
-					tabindex.makeFocusable($('#button_visibility_album, #button_trash_album'));
+					$("#button_visibility_album, #button_trash_album").show();
+					tabindex.makeFocusable($("#button_visibility_album, #button_trash_album"));
 				} else {
-					$('#button_visibility_album, #button_trash_album').hide();
-					tabindex.makeUnfocusable($('#button_visibility_album, #button_trash_album'));
+					$("#button_visibility_album, #button_trash_album").hide();
+					tabindex.makeUnfocusable($("#button_visibility_album, #button_trash_album"));
 				}
 			} else {
-				$('#button_info_album').show();
-				tabindex.makeFocusable($('#button_info_album'));
+				$("#button_info_album").show();
+				tabindex.makeFocusable($("#button_info_album"));
 				if (album.isUploadable()) {
-					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').show();
-					tabindex.makeFocusable($('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album'));
+					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").show();
+					tabindex.makeFocusable($("#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
 				} else {
-					$('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album').hide();
-					tabindex.makeUnfocusable($('#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider', '.header__toolbar--album'));
+					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").hide();
+					tabindex.makeUnfocusable($("#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
 				}
 			}
 
 			// Remove buttons if needed
 			if (!lychee.enable_button_visibility) {
-				var _e15 = $('#button_visibility_album', '.header__toolbar--album');
+				var _e15 = $("#button_visibility_album", ".header__toolbar--album");
 				_e15.remove();
 			}
 			if (!lychee.enable_button_share) {
-				var _e16 = $('#button_share_album', '.header__toolbar--album');
+				var _e16 = $("#button_share_album", ".header__toolbar--album");
 				_e16.remove();
 			}
 			if (!lychee.enable_button_archive) {
-				var _e17 = $('#button_archive', '.header__toolbar--album');
+				var _e17 = $("#button_archive", ".header__toolbar--album");
 				_e17.remove();
 			}
 			if (!lychee.enable_button_move) {
-				var _e18 = $('#button_move_album', '.header__toolbar--album');
+				var _e18 = $("#button_move_album", ".header__toolbar--album");
 				_e18.remove();
 			}
 			if (!lychee.enable_button_trash) {
-				var _e19 = $('#button_trash_album', '.header__toolbar--album');
+				var _e19 = $("#button_trash_album", ".header__toolbar--album");
 				_e19.remove();
 			}
 			if (!lychee.enable_button_fullscreen) {
-				var _e20 = $('#button_fs_album_enter', '.header__toolbar--album');
+				var _e20 = $("#button_fs_album_enter", ".header__toolbar--album");
 				_e20.remove();
 			}
 			if (!lychee.enable_button_add) {
-				var _e21 = $('.button_add', '.header__toolbar--album');
+				var _e21 = $(".button_add", ".header__toolbar--album");
 				_e21.remove();
 			}
 
 			return true;
 
-		case 'photo':
+		case "photo":
+			header.dom().addClass("header--view");
+			header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map").removeClass("header__toolbar--visible");
+			header.dom(".header__toolbar--photo").addClass("header__toolbar--visible");
 
-			header.dom().addClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map').removeClass('header__toolbar--visible');
-			header.dom('.header__toolbar--photo').addClass('header__toolbar--visible');
-
-			tabindex.makeFocusable(header.dom('.header__toolbar--photo'));
-			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map'));
+			tabindex.makeFocusable(header.dom(".header__toolbar--photo"));
+			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--map"));
 			// If map is disabled, we should hide the icon
 			if (lychee.publicMode === true ? lychee.map_display_public : lychee.map_display) {
-				var _e22 = $('#button_map');
+				var _e22 = $("#button_map");
 				_e22.show();
 				tabindex.makeFocusable(_e22);
 			} else {
-				var _e23 = $('#button_map');
+				var _e23 = $("#button_map");
 				_e23.hide();
 				tabindex.makeUnfocusable(_e23);
 			}
 
 			if (album.isUploadable()) {
-				var _e24 = $('#button_trash, #button_move, #button_visibility, #button_star');
+				var _e24 = $("#button_trash, #button_move, #button_visibility, #button_star");
 				_e24.show();
 				tabindex.makeFocusable(_e24);
 			} else {
-				var _e25 = $('#button_trash, #button_move, #button_visibility, #button_star');
+				var _e25 = $("#button_trash, #button_move, #button_visibility, #button_star");
 				_e25.hide();
 				tabindex.makeUnfocusable(_e25);
 			}
 
-			if (_photo.json && _photo.json.hasOwnProperty('share_button_visible') && _photo.json.share_button_visible !== '1') {
-				var _e26 = $('#button_share');
+			if (_photo.json && _photo.json.hasOwnProperty("share_button_visible") && _photo.json.share_button_visible !== "1") {
+				var _e26 = $("#button_share");
 				_e26.hide();
 				tabindex.makeUnfocusable(_e26);
 			} else {
-				var _e27 = $('#button_share');
+				var _e27 = $("#button_share");
 				_e27.show();
 				tabindex.makeFocusable(_e27);
 			}
 
 			// Hide More menu if empty (see contextMenu.photoMore)
-			$('#button_more').show();
-			tabindex.makeFocusable($('#button_more'));
-			if (!(album.isUploadable() || (_photo.json.hasOwnProperty('downloadable') ? _photo.json.downloadable === '1' : album.json && album.json.downloadable && album.json.downloadable === '1')) && !(_photo.json.url && _photo.json.url !== '')) {
-				var _e28 = $('#button_more');
+			$("#button_more").show();
+			tabindex.makeFocusable($("#button_more"));
+			if (!(album.isUploadable() || (_photo.json.hasOwnProperty("downloadable") ? _photo.json.downloadable === "1" : album.json && album.json.downloadable && album.json.downloadable === "1")) && !(_photo.json.url && _photo.json.url !== "")) {
+				var _e28 = $("#button_more");
 				_e28.hide();
 				tabindex.makeUnfocusable(_e28);
 			}
 
 			// Remove buttons if needed
 			if (!lychee.enable_button_visibility) {
-				var _e29 = $('#button_visibility', '.header__toolbar--photo');
+				var _e29 = $("#button_visibility", ".header__toolbar--photo");
 				_e29.remove();
 			}
 			if (!lychee.enable_button_share) {
-				var _e30 = $('#button_share', '.header__toolbar--photo');
+				var _e30 = $("#button_share", ".header__toolbar--photo");
 				_e30.remove();
 			}
 			if (!lychee.enable_button_move) {
-				var _e31 = $('#button_move', '.header__toolbar--photo');
+				var _e31 = $("#button_move", ".header__toolbar--photo");
 				_e31.remove();
 			}
 			if (!lychee.enable_button_trash) {
-				var _e32 = $('#button_trash', '.header__toolbar--photo');
+				var _e32 = $("#button_trash", ".header__toolbar--photo");
 				_e32.remove();
 			}
 			if (!lychee.enable_button_fullscreen) {
-				var _e33 = $('#button_fs_enter', '.header__toolbar--photo');
+				var _e33 = $("#button_fs_enter", ".header__toolbar--photo");
 				_e33.remove();
 			}
 			if (!lychee.enable_button_more) {
-				var _e34 = $('#button_more', '.header__toolbar--photo');
+				var _e34 = $("#button_more", ".header__toolbar--photo");
 				_e34.remove();
 			}
 			if (!lychee.enable_button_rotate) {
-				var _e35 = $('#button_rotate_cwise', '.header__toolbar--photo');
+				var _e35 = $("#button_rotate_cwise", ".header__toolbar--photo");
 				_e35.remove();
 
-				_e35 = $('#button_rotate_ccwise', '.header__toolbar--photo');
+				_e35 = $("#button_rotate_ccwise", ".header__toolbar--photo");
 				_e35.remove();
 			}
 			return true;
-		case 'map':
+		case "map":
+			header.dom().removeClass("header--view");
+			header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo").removeClass("header__toolbar--visible");
+			header.dom(".header__toolbar--map").addClass("header__toolbar--visible");
 
-			header.dom().removeClass('header--view');
-			header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo').removeClass('header__toolbar--visible');
-			header.dom('.header__toolbar--map').addClass('header__toolbar--visible');
-
-			tabindex.makeFocusable(header.dom('.header__toolbar--map'));
-			tabindex.makeUnfocusable(header.dom('.header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo'));
+			tabindex.makeFocusable(header.dom(".header__toolbar--map"));
+			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo"));
 			return true;
-
 	}
 
 	return false;
@@ -3309,37 +3413,35 @@ header.setMode = function (mode) {
 // items but for all of public/albums/album/photo views, so 'editable' is a
 // bit of a misnomer at this point...
 header.setEditable = function (editable) {
+	var $title = header.dom(".header__title");
 
-	var $title = header.dom('.header__title');
-
-	if (editable) $title.addClass('header__title--editable');else $title.removeClass('header__title--editable');
+	if (editable) $title.addClass("header__title--editable");else $title.removeClass("header__title--editable");
 
 	return true;
 };
 
 header.applyTranslations = function () {
-
 	var selector_locale = {
-		'#button_signin': 'SIGN_IN',
-		'#button_settings': 'SETTINGS',
-		'#button_info_album': 'ABOUT_ALBUM',
-		'#button_info': 'ABOUT_PHOTO',
-		'.button_add': 'ADD',
-		'#button_move_album': 'MOVE_ALBUM',
-		'#button_move': 'MOVE',
-		'#button_trash_album': 'DELETE_ALBUM',
-		'#button_trash': 'DELETE',
-		'#button_archive': 'DOWNLOAD_ALBUM',
-		'#button_star': 'STAR_PHOTO',
-		'#button_back_home': 'CLOSE_ALBUM',
-		'#button_fs_album_enter': 'FULLSCREEN_ENTER',
-		'#button_fs_enter': 'FULLSCREEN_ENTER',
-		'#button_share': 'SHARE_PHOTO',
-		'#button_share_album': 'SHARE_ALBUM'
+		"#button_signin": "SIGN_IN",
+		"#button_settings": "SETTINGS",
+		"#button_info_album": "ABOUT_ALBUM",
+		"#button_info": "ABOUT_PHOTO",
+		".button_add": "ADD",
+		"#button_move_album": "MOVE_ALBUM",
+		"#button_move": "MOVE",
+		"#button_trash_album": "DELETE_ALBUM",
+		"#button_trash": "DELETE",
+		"#button_archive": "DOWNLOAD_ALBUM",
+		"#button_star": "STAR_PHOTO",
+		"#button_back_home": "CLOSE_ALBUM",
+		"#button_fs_album_enter": "FULLSCREEN_ENTER",
+		"#button_fs_enter": "FULLSCREEN_ENTER",
+		"#button_share": "SHARE_PHOTO",
+		"#button_share_album": "SHARE_ALBUM"
 	};
 
 	for (var selector in selector_locale) {
-		header.dom(selector).prop('title', lychee.locale[selector_locale[selector]]);
+		header.dom(selector).prop("title", lychee.locale[selector_locale[selector]]);
 	}
 };
 
@@ -3348,7 +3450,6 @@ header.applyTranslations = function () {
  */
 
 $(document).ready(function () {
-
 	// Event Name
 	var eventName = lychee.getEventName();
 
@@ -3358,7 +3459,7 @@ $(document).ready(function () {
 	// Set API error handler
 	api.onError = lychee.error;
 
-	$('html').css('visibility', 'visible');
+	$("html").css("visibility", "visible");
 
 	// Multiselect
 	multiselect.bind();
@@ -3367,96 +3468,114 @@ $(document).ready(function () {
 	header.bind();
 
 	// Image View
-	lychee.imageview.on(eventName, '.arrow_wrapper--previous', _photo.previous).on(eventName, '.arrow_wrapper--next', _photo.next).on(eventName, 'img, #livephoto', _photo.update_display_overlay);
+	lychee.imageview.on(eventName, ".arrow_wrapper--previous", _photo.previous).on(eventName, ".arrow_wrapper--next", _photo.next).on(eventName, "img, #livephoto", _photo.update_display_overlay);
 
 	// Keyboard
 
 	Mousetrap.addKeycodes({
-		18: 'ContextMenu',
-		179: 'play_pause',
-		227: 'rewind',
-		228: 'forward'
+		18: "ContextMenu",
+		179: "play_pause",
+		227: "rewind",
+		228: "forward"
 	});
 
-	Mousetrap.bind(['l'], function () {
-		lychee.loginDialog();return false;
-	}).bind(['k'], function () {
-		u2f.login();return false;
-	}).bind(['left'], function () {
-		if (visible.photo() && (!visible.header() || $('img#image').is(':focus') || $('img#livephoto').is(':focus') || $(':focus').length === 0)) {
-			$('#imageview a#previous').click();
+	Mousetrap.bind(["l"], function () {
+		lychee.loginDialog();
+		return false;
+	}).bind(["k"], function () {
+		u2f.login();
+		return false;
+	}).bind(["left"], function () {
+		if (visible.photo() && (!visible.header() || $("img#image").is(":focus") || $("img#livephoto").is(":focus") || $(":focus").length === 0)) {
+			$("#imageview a#previous").click();
 			return false;
 		}
 		return true;
-	}).bind(['right'], function () {
-		if (visible.photo() && (!visible.header() || $('img#image').is(':focus') || $('img#livephoto').is(':focus') || $(':focus').length === 0)) {
-			$('#imageview a#next').click();
+	}).bind(["right"], function () {
+		if (visible.photo() && (!visible.header() || $("img#image").is(":focus") || $("img#livephoto").is(":focus") || $(":focus").length === 0)) {
+			$("#imageview a#next").click();
 			return false;
 		}
 		return true;
-	}).bind(['u'], function () {
+	}).bind(["u"], function () {
 		if (!visible.photo() && album.isUploadable()) {
-			$('#upload_files').click();return false;
+			$("#upload_files").click();
+			return false;
 		}
-	}).bind(['n'], function () {
+	}).bind(["n"], function () {
 		if (!visible.photo() && album.isUploadable()) {
-			album.add();return false;
+			album.add();
+			return false;
 		}
-	}).bind(['s'], function () {
+	}).bind(["s"], function () {
 		if (visible.photo() && album.isUploadable()) {
-			header.dom('#button_star').click();return false;
+			header.dom("#button_star").click();
+			return false;
 		} else if (visible.albums()) {
-			header.dom('.header__search').focus();return false;
+			header.dom(".header__search").focus();
+			return false;
 		}
-	}).bind(['r'], function () {
+	}).bind(["r"], function () {
 		if (album.isUploadable()) {
 			if (visible.album()) {
-				album.setTitle(album.getID());return false;
+				album.setTitle(album.getID());
+				return false;
 			} else if (visible.photo()) {
-				_photo.setTitle([_photo.getID()]);return false;
+				_photo.setTitle([_photo.getID()]);
+				return false;
 			}
 		}
-	}).bind(['d'], function () {
+	}).bind(["h"], album.toggle_nsfw_filter).bind(["d"], function () {
 		if (album.isUploadable()) {
 			if (visible.photo()) {
-				_photo.setDescription(_photo.getID());return false;
+				_photo.setDescription(_photo.getID());
+				return false;
 			} else if (visible.album()) {
-				album.setDescription(album.getID());return false;
+				album.setDescription(album.getID());
+				return false;
 			}
 		}
-	}).bind(['t'], function () {
+	}).bind(["t"], function () {
 		if (visible.photo() && album.isUploadable()) {
-			_photo.editTags([_photo.getID()]);return false;
+			_photo.editTags([_photo.getID()]);
+			return false;
 		}
-	}).bind(['i', 'ContextMenu'], function () {
+	}).bind(["i", "ContextMenu"], function () {
 		if (!visible.multiselect()) {
-			_sidebar.toggle();return false;
+			_sidebar.toggle();
+			return false;
 		}
-	}).bind(['command+backspace', 'ctrl+backspace'], function () {
+	}).bind(["command+backspace", "ctrl+backspace"], function () {
 		if (album.isUploadable()) {
 			if (visible.photo() && basicModal.visible() === false) {
-				_photo.delete([_photo.getID()]);return false;
+				_photo.delete([_photo.getID()]);
+				return false;
 			} else if (visible.album() && basicModal.visible() === false) {
-				album.delete([album.getID()]);return false;
+				album.delete([album.getID()]);
+				return false;
 			}
 		}
-	}).bind(['command+a', 'ctrl+a'], function () {
+	}).bind(["command+a", "ctrl+a"], function () {
 		if (visible.album() && basicModal.visible() === false) {
-			multiselect.selectAll();return false;
+			multiselect.selectAll();
+			return false;
 		} else if (visible.albums() && basicModal.visible() === false) {
-			multiselect.selectAll();return false;
+			multiselect.selectAll();
+			return false;
 		}
-	}).bind(['o'], function () {
+	}).bind(["o"], function () {
 		if (visible.photo()) {
-			_photo.update_overlay_type();return false;
+			_photo.update_overlay_type();
+			return false;
 		}
-	}).bind(['f'], function () {
+	}).bind(["f"], function () {
 		if (visible.album() || visible.photo()) {
-			lychee.fullscreenToggle();return false;
+			lychee.fullscreenToggle();
+			return false;
 		}
 	});
 
-	Mousetrap.bind(['play_pause'], function () {
+	Mousetrap.bind(["play_pause"], function () {
 		// If it's a video, we toggle play/pause
 		var video = $("video");
 
@@ -3469,16 +3588,15 @@ $(document).ready(function () {
 		}
 	});
 
-	Mousetrap.bindGlobal('enter', function () {
+	Mousetrap.bindGlobal("enter", function () {
 		if (basicModal.visible() === true) {
-
 			// check if any of the input fields is focussed
 			// apply action, other do nothing
-			if ($('.basicModal__content input').is(':focus')) {
+			if ($(".basicModal__content input").is(":focus")) {
 				basicModal.action();
 				return false;
 			}
-		} else if (visible.photo() && !lychee.header_auto_hide && ($('img#image').is(':focus') || $('img#livephoto').is(':focus') || $(':focus').length === 0)) {
+		} else if (visible.photo() && !lychee.header_auto_hide && ($("img#image").is(":focus") || $("img#livephoto").is(":focus") || $(":focus").length === 0)) {
 			if (visible.header()) {
 				header.hide();
 			} else {
@@ -3487,8 +3605,8 @@ $(document).ready(function () {
 			return false;
 		}
 		var clicked = false;
-		$(':focus').each(function () {
-			if (!$(this).is('input')) {
+		$(":focus").each(function () {
+			if (!$(this).is("input")) {
 				$(this).click();
 				clicked = true;
 			}
@@ -3500,11 +3618,11 @@ $(document).ready(function () {
 
 	// Prevent 'esc keyup' event to trigger 'go back in history'
 	// and 'alt keyup' to show a webapp context menu for Fire TV
-	Mousetrap.bindGlobal(['esc', 'ContextMenu'], function () {
+	Mousetrap.bindGlobal(["esc", "ContextMenu"], function () {
 		return false;
-	}, 'keyup');
+	}, "keyup");
 
-	Mousetrap.bindGlobal(['esc', 'command+up'], function () {
+	Mousetrap.bindGlobal(["esc", "command+up"], function () {
 		if (basicModal.visible() === true) basicModal.cancel();else if (visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParent());else if (visible.albums() && search.hash !== null) search.reset();else if (visible.mapview()) mapview.close();else if (visible.albums() && lychee.enable_close_tab_on_esc) {
 			window.open("", "_self").close();
 		}
@@ -3512,17 +3630,15 @@ $(document).ready(function () {
 	});
 
 	$(document)
-
 	// Fullscreen on mobile
-	.on('touchend', '#imageview #image', function (e) {
-
+	.on("touchend", "#imageview #image", function (e) {
 		// prevent triggering event 'mousemove'
 		e.preventDefault();
 
-		if (typeof swipe.obj === 'undefined' || Math.abs(swipe.offsetX) <= 5 && Math.abs(swipe.offsetY) <= 5) {
+		if (typeof swipe.obj === "undefined" || Math.abs(swipe.offsetX) <= 5 && Math.abs(swipe.offsetY) <= 5) {
 			// Toggle header only if we're not moving to next/previous photo;
 			// In this case, swipe.preventNextHeaderToggle is set to true
-			if (typeof swipe.preventNextHeaderToggle === 'undefined' || !swipe.preventNextHeaderToggle) {
+			if (typeof swipe.preventNextHeaderToggle === "undefined" || !swipe.preventNextHeaderToggle) {
 				if (visible.header()) {
 					header.hide(e);
 				} else {
@@ -3534,67 +3650,66 @@ $(document).ready(function () {
 			swipe.preventNextHeaderToggle = false;
 		}
 	});
-	$('#imageview')
+	$("#imageview")
 	// Swipe on mobile
-	.swipe().on('swipeStart', function () {
-		if (visible.photo()) swipe.start($('#imageview #image, #imageview #livephoto'));
-	}).swipe().on('swipeMove', function (e) {
+	.swipe().on("swipeStart", function () {
+		if (visible.photo()) swipe.start($("#imageview #image, #imageview #livephoto"));
+	}).swipe().on("swipeMove", function (e) {
 		if (visible.photo()) swipe.move(e.swipe);
-	}).swipe().on('swipeEnd', function (e) {
+	}).swipe().on("swipeEnd", function (e) {
 		if (visible.photo()) swipe.stop(e.swipe, _photo.previous, _photo.next);
 	});
 
 	// Document
 	$(document)
-
 	// Navigation
-	.on('click', '.album', function (e) {
+	.on("click", ".album", function (e) {
 		multiselect.albumClick(e, $(this));
-	}).on('click', '.photo', function (e) {
+	}).on("click", ".photo", function (e) {
 		multiselect.photoClick(e, $(this));
 	})
 
 	// Context Menu
-	.on('contextmenu', '.photo', function (e) {
+	.on("contextmenu", ".photo", function (e) {
 		multiselect.photoContextMenu(e, $(this));
-	}).on('contextmenu', '.album', function (e) {
+	}).on("contextmenu", ".album", function (e) {
 		multiselect.albumContextMenu(e, $(this));
 	})
 
 	// Upload
-	.on('change', '#upload_files', function () {
-		basicModal.close();upload.start.local(this.files);
+	.on("change", "#upload_files", function () {
+		basicModal.close();
+		upload.start.local(this.files);
 	})
 
 	// Drag and Drop upload
-	.on('dragover', function () {
+	.on("dragover", function () {
 		return false;
-	}, false).on('drop', function (e) {
-
+	}, false).on("drop", function (e) {
 		if (!album.isUploadable() || visible.contextMenu() || basicModal.visible() || visible.leftMenu() || !(visible.album() || visible.albums())) {
 			return false;
 		}
 
 		// Detect if dropped item is a file or a link
-		if (e.originalEvent.dataTransfer.files.length > 0) upload.start.local(e.originalEvent.dataTransfer.files);else if (e.originalEvent.dataTransfer.getData('Text').length > 3) upload.start.url(e.originalEvent.dataTransfer.getData('Text'));
+		if (e.originalEvent.dataTransfer.files.length > 0) upload.start.local(e.originalEvent.dataTransfer.files);else if (e.originalEvent.dataTransfer.getData("Text").length > 3) upload.start.url(e.originalEvent.dataTransfer.getData("Text"));
 
 		return false;
 	})
 
 	// click on thumbnail on map
-	.on('click', '.image-leaflet-popup', function (e) {
+	.on("click", ".image-leaflet-popup", function (e) {
 		mapview.goto($(this));
 	})
 
 	// Paste upload
-	.on('paste', function (e) {
+	.on("paste", function (e) {
 		if (e.originalEvent.clipboardData.items) {
 			var items = e.originalEvent.clipboardData.items;
 			var filesToUpload = [];
 
 			// Search clipboard items for an image
 			for (var i = 0; i < items.length; i++) {
-				if (items[i].type.indexOf('image') !== -1 || items[i].type.indexOf('video') !== -1) {
+				if (items[i].type.indexOf("image") !== -1 || items[i].type.indexOf("video") !== -1) {
 					filesToUpload.push(items[i].getAsFile());
 				}
 			}
@@ -3612,13 +3727,12 @@ $(document).ready(function () {
 	})
 
 	// Fullscreen
-	.on('fullscreenchange mozfullscreenchange webkitfullscreenchange msfullscreenchange', lychee.fullscreenUpdate);
+	.on("fullscreenchange mozfullscreenchange webkitfullscreenchange msfullscreenchange", lychee.fullscreenUpdate);
 
 	var rememberScrollPage = function rememberScrollPage(scrollPos) {
-
 		// only for albums with subalbums
 		if (album && album.json && album.json.albums && album.json.albums.length > 0) {
-			var urls = JSON.parse(localStorage.getItem('scroll'));
+			var urls = JSON.parse(localStorage.getItem("scroll"));
 			if (urls == null || urls.length < 1) {
 				urls = {};
 			}
@@ -3632,18 +3746,18 @@ $(document).ready(function () {
 				delete urls[urlWindow];
 			}
 
-			localStorage.setItem('scroll', JSON.stringify(urls));
+			localStorage.setItem("scroll", JSON.stringify(urls));
 		}
 	};
 
 	$(window)
 	// resize
-	.on('resize', function () {
+	.on("resize", function () {
 		if (visible.album() || visible.search()) view.album.content.justify();
 		if (visible.photo()) view.photo.onresize();
 	})
 	// remember scroll positions
-	.on('scroll', function () {
+	.on("scroll", function () {
 		var topScroll = $(window).scrollTop();
 		rememberScrollPage(topScroll);
 	});
@@ -3657,54 +3771,51 @@ $(document).ready(function () {
  */
 
 var leftMenu = {
-
-	_dom: $('.leftMenu')
-
+	_dom: $(".leftMenu")
 };
 
 leftMenu.dom = function (selector) {
-
-	if (selector == null || selector === '') return leftMenu._dom;
+	if (selector == null || selector === "") return leftMenu._dom;
 	return leftMenu._dom.find(selector);
 };
 
 leftMenu.build = function () {
-	var html = lychee.html(_templateObject45, lychee.locale['CLOSE'], lychee.locale['SETTINGS']);
+	var html = lychee.html(_templateObject45, lychee.locale["CLOSE"], lychee.locale["SETTINGS"]);
 	if (lychee.api_V2) {
-		html += lychee.html(_templateObject46, build.iconic('person'), lychee.locale['USERS'], build.iconic('key'), lychee.locale['U2F'], build.iconic('cloud'), lychee.locale['SHARING']);
+		html += lychee.html(_templateObject46, build.iconic("person"), lychee.locale["USERS"], build.iconic("key"), lychee.locale["U2F"], build.iconic("cloud"), lychee.locale["SHARING"]);
 	}
-	html += lychee.html(_templateObject47, build.iconic('align-left'), lychee.locale['LOGS'], build.iconic('wrench'), lychee.locale['DIAGNOSTICS'], build.iconic('info'), lychee.locale['ABOUT_LYCHEE'], build.iconic('account-logout'), lychee.locale['SIGN_OUT']);
+	html += lychee.html(_templateObject47, build.iconic("align-left"), lychee.locale["LOGS"], build.iconic("wrench"), lychee.locale["DIAGNOSTICS"], build.iconic("info"), lychee.locale["ABOUT_LYCHEE"], build.iconic("account-logout"), lychee.locale["SIGN_OUT"]);
 	if (lychee.api_V2 && lychee.update_available) {
-		html += lychee.html(_templateObject48, build.iconic('timer'), lychee.locale['UPDATE_AVAILABLE']);
+		html += lychee.html(_templateObject48, build.iconic("timer"), lychee.locale["UPDATE_AVAILABLE"]);
 	}
 	leftMenu._dom.html(html);
 };
 
 /* Set the width of the side navigation to 250px and the left margin of the page content to 250px */
 leftMenu.open = function () {
-	leftMenu._dom.addClass('leftMenu__visible');
-	lychee.content.addClass('leftMenu__open');
-	lychee.footer.addClass('leftMenu__open');
-	header.dom('.header__title').addClass('leftMenu__open');
-	loadingBar.dom().addClass('leftMenu__open');
+	leftMenu._dom.addClass("leftMenu__visible");
+	lychee.content.addClass("leftMenu__open");
+	lychee.footer.addClass("leftMenu__open");
+	header.dom(".header__title").addClass("leftMenu__open");
+	loadingBar.dom().addClass("leftMenu__open");
 
 	// Make background unfocusable
 	tabindex.makeUnfocusable(header.dom());
 	tabindex.makeUnfocusable(lychee.content);
 	tabindex.makeFocusable(leftMenu._dom);
-	$('#button_signout').focus();
+	$("#button_signout").focus();
 
 	multiselect.unbind();
 };
 
 /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
 leftMenu.close = function () {
-	leftMenu._dom.removeClass('leftMenu__visible');
-	lychee.content.removeClass('leftMenu__open');
-	lychee.footer.removeClass('leftMenu__open');
-	$('.content').removeClass('leftMenu__open');
-	header.dom('.header__title').removeClass('leftMenu__open');
-	loadingBar.dom().removeClass('leftMenu__open');
+	leftMenu._dom.removeClass("leftMenu__visible");
+	lychee.content.removeClass("leftMenu__open");
+	lychee.footer.removeClass("leftMenu__open");
+	$(".content").removeClass("leftMenu__open");
+	header.dom(".header__title").removeClass("leftMenu__open");
+	loadingBar.dom().removeClass("leftMenu__open");
 
 	tabindex.makeFocusable(header.dom());
 	tabindex.makeFocusable(lychee.content);
@@ -3715,23 +3826,22 @@ leftMenu.close = function () {
 };
 
 leftMenu.bind = function () {
-
 	// Event Name
 	var eventName = lychee.getEventName();
 
-	leftMenu.dom('#button_settings_close').on(eventName, leftMenu.close);
-	leftMenu.dom('#text_settings_close').on(eventName, leftMenu.close);
-	leftMenu.dom('#button_settings_open').on(eventName, settings.open);
-	leftMenu.dom('#button_signout').on(eventName, lychee.logout);
-	leftMenu.dom('#button_logs').on(eventName, leftMenu.Logs);
-	leftMenu.dom('#button_diagnostics').on(eventName, leftMenu.Diagnostics);
-	leftMenu.dom('#button_about').on(eventName, lychee.aboutDialog);
+	leftMenu.dom("#button_settings_close").on(eventName, leftMenu.close);
+	leftMenu.dom("#text_settings_close").on(eventName, leftMenu.close);
+	leftMenu.dom("#button_settings_open").on(eventName, settings.open);
+	leftMenu.dom("#button_signout").on(eventName, lychee.logout);
+	leftMenu.dom("#button_logs").on(eventName, leftMenu.Logs);
+	leftMenu.dom("#button_diagnostics").on(eventName, leftMenu.Diagnostics);
+	leftMenu.dom("#button_about").on(eventName, lychee.aboutDialog);
 
 	if (lychee.api_V2) {
-		leftMenu.dom('#button_users').on(eventName, leftMenu.Users);
-		leftMenu.dom('#button_u2f').on(eventName, leftMenu.u2f);
-		leftMenu.dom('#button_sharing').on(eventName, leftMenu.Sharing);
-		leftMenu.dom('#button_update').on(eventName, leftMenu.Update);
+		leftMenu.dom("#button_users").on(eventName, leftMenu.Users);
+		leftMenu.dom("#button_u2f").on(eventName, leftMenu.u2f);
+		leftMenu.dom("#button_sharing").on(eventName, leftMenu.Sharing);
+		leftMenu.dom("#button_update").on(eventName, leftMenu.Update);
 	}
 
 	return true;
@@ -3774,40 +3884,35 @@ leftMenu.Sharing = function () {
  */
 
 var loadingBar = {
-
 	status: null,
-	_dom: $('#loading')
-
+	_dom: $("#loading")
 };
 
 loadingBar.dom = function (selector) {
-
-	if (selector == null || selector === '') return loadingBar._dom;
+	if (selector == null || selector === "") return loadingBar._dom;
 	return loadingBar._dom.find(selector);
 };
 
 loadingBar.show = function (status, errorText) {
-
-	if (status === 'error') {
-
+	if (status === "error") {
 		// Set status
-		loadingBar.status = 'error';
+		loadingBar.status = "error";
 
 		// Parse text
-		if (errorText) errorText = errorText.replace('<br>', '');
-		if (!errorText) errorText = lychee.locale['ERROR_TEXT'];
+		if (errorText) errorText = errorText.replace("<br>", "");
+		if (!errorText) errorText = lychee.locale["ERROR_TEXT"];
 
 		// Move header down
-		if (visible.header()) header.dom().addClass('header--error');
+		if (visible.header()) header.dom().addClass("header--error");
 
 		// Also move down the dark background
 		if (basicModal.visible()) {
-			$('.basicModalContainer').addClass('basicModalContainer--error');
-			$('.basicModal').addClass('basicModal--error');
+			$(".basicModalContainer").addClass("basicModalContainer--error");
+			$(".basicModal").addClass("basicModal--error");
 		}
 
 		// Modify loading
-		loadingBar.dom().removeClass('loading uploading error success').html("<h1>" + lychee.locale['ERROR'] + (": <span>" + errorText + "</span></h1>")).addClass(status).show();
+		loadingBar.dom().removeClass("loading uploading error success").html("<h1>" + lychee.locale["ERROR"] + (": <span>" + errorText + "</span></h1>")).addClass(status).show();
 
 		// Set timeout
 		clearTimeout(loadingBar._timeout);
@@ -3818,25 +3923,25 @@ loadingBar.show = function (status, errorText) {
 		return true;
 	}
 
-	if (status === 'success') {
+	if (status === "success") {
 		// Set status
-		loadingBar.status = 'success';
+		loadingBar.status = "success";
 
 		// Parse text
-		if (errorText) errorText = errorText.replace('<br>', '');
-		if (!errorText) errorText = lychee.locale['ERROR_TEXT'];
+		if (errorText) errorText = errorText.replace("<br>", "");
+		if (!errorText) errorText = lychee.locale["ERROR_TEXT"];
 
 		// Move header down
-		if (visible.header()) header.dom().addClass('header--error');
+		if (visible.header()) header.dom().addClass("header--error");
 
 		// Also move down the dark background
 		if (basicModal.visible()) {
-			$('.basicModalContainer').addClass('basicModalContainer--error');
-			$('.basicModal').addClass('basicModal--error');
+			$(".basicModalContainer").addClass("basicModalContainer--error");
+			$(".basicModal").addClass("basicModal--error");
 		}
 
 		// Modify loading
-		loadingBar.dom().removeClass('loading uploading error success').html("<h1>" + lychee.locale['SUCCESS'] + (": <span>" + errorText + "</span></h1>")).addClass(status).show();
+		loadingBar.dom().removeClass("loading uploading error success").html("<h1>" + lychee.locale["SUCCESS"] + (": <span>" + errorText + "</span></h1>")).addClass(status).show();
 
 		// Set timeout
 		clearTimeout(loadingBar._timeout);
@@ -3848,19 +3953,17 @@ loadingBar.show = function (status, errorText) {
 	}
 
 	if (loadingBar.status === null) {
-
 		// Set status
-		loadingBar.status = lychee.locale['LOADING'];
+		loadingBar.status = lychee.locale["LOADING"];
 
 		// Set timeout
 		clearTimeout(loadingBar._timeout);
 		loadingBar._timeout = setTimeout(function () {
-
 			// Move header down
-			if (visible.header()) header.dom().addClass('header--loading');
+			if (visible.header()) header.dom().addClass("header--loading");
 
 			// Modify loading
-			loadingBar.dom().removeClass('loading uploading error').html('').addClass('loading').show();
+			loadingBar.dom().removeClass("loading uploading error").html("").addClass("loading").show();
 		}, 1000);
 
 		return true;
@@ -3868,17 +3971,15 @@ loadingBar.show = function (status, errorText) {
 };
 
 loadingBar.hide = function (force) {
-
-	if (loadingBar.status !== 'error' && loadingBar.status !== 'success' && loadingBar.status != null || force) {
-
+	if (loadingBar.status !== "error" && loadingBar.status !== "success" && loadingBar.status != null || force) {
 		// Remove status
 		loadingBar.status = null;
 
 		// Move header up
-		header.dom().removeClass('header--error header--loading');
+		header.dom().removeClass("header--error header--loading");
 		// Also move up the dark background
-		$('.basicModalContainer').removeClass('basicModalContainer--error');
-		$('.basicModal').removeClass('basicModal--error');
+		$(".basicModalContainer").removeClass("basicModalContainer--error");
+		$(".basicModal").removeClass("basicModal--error");
 
 		// Set timeout
 		clearTimeout(loadingBar._timeout);
@@ -3893,14 +3994,13 @@ loadingBar.hide = function (force) {
  */
 
 var lychee = {
-
 	title: document.title,
-	version: '',
-	versionCode: '', // not really needed anymore
+	version: "",
+	versionCode: "", // not really needed anymore
 
-	updatePath: 'https://LycheeOrg.github.io/update.json',
-	updateURL: 'https://github.com/LycheeOrg/Lychee/releases',
-	website: 'https://LycheeOrg.github.io',
+	updatePath: "https://LycheeOrg.github.io/update.json",
+	updateURL: "https://github.com/LycheeOrg/Lychee/releases",
+	website: "https://LycheeOrg.github.io",
 
 	publicMode: false,
 	viewMode: false,
@@ -3913,18 +4013,18 @@ var lychee = {
 	upload: false, // enable possibility to upload (multi-user)
 	lock: false, // locked user (multi-user)
 	username: null,
-	layout: '1', // 0: Use default, "square" layout. 1: Use Flickr-like "justified" layout. 2: Use Google-like "unjustified" layout
+	layout: "1", // 0: Use default, "square" layout. 1: Use Flickr-like "justified" layout. 2: Use Google-like "unjustified" layout
 	public_search: false, // display Search in publicMode
 	image_overlay: false, // display Overlay like in Lightroom
 	image_overlay_default: false, // display Overlay like in Lightroom by default
-	image_overlay_type: 'exif', // current Overlay display type
-	image_overlay_type_default: 'exif', // image overlay type default type
+	image_overlay_type: "exif", // current Overlay display type
+	image_overlay_type_default: "exif", // image overlay type default type
 	map_display: false, // display photo coordinates on map
 	map_display_public: false, // display photos of public album on map (user not logged in)
-	map_provider: 'Wikimedia', // Provider of OSM Tiles
+	map_provider: "Wikimedia", // Provider of OSM Tiles
 	map_include_subalbums: false, // include photos of subalbums on map
 	location_decoding: false, // retrieve location name from GPS data
-	location_decoding_caching_type: 'Harddisk', // caching mode for GPS data decoding
+	location_decoding_caching_type: "Harddisk", // caching mode for GPS data decoding
 	location_show: false, // show location name
 	location_show_public: false, // show location name for public albums
 	swipe_tolerance_x: 150, // tolerance for navigating when swiping images to the left and right on mobile
@@ -3932,6 +4032,12 @@ var lychee = {
 
 	landing_page_enabled: false, // is landing page enabled ?
 	delete_imported: false,
+
+	nsfw_visible: true,
+	nsfw_visible_saved: true,
+	nsfw_blur: false,
+	nsfw_warning: false,
+	nsfw_warning_text: "<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>",
 
 	// this is device specific config, in this case default is Desktop.
 	header_auto_hide: true,
@@ -3950,79 +4056,74 @@ var lychee = {
 	enable_tabindex: false,
 	enable_contextmenu_header: true,
 	hide_content_during_imageview: false,
-	device_type: 'desktop',
+	device_type: "desktop",
 
-	checkForUpdates: '1',
+	checkForUpdates: "1",
 	update_json: 0,
 	update_available: false,
-	sortingPhotos: '',
-	sortingAlbums: '',
-	location: '',
+	sortingPhotos: "",
+	sortingAlbums: "",
+	location: "",
 
-	lang: '',
+	lang: "",
 	lang_available: {},
 
 	dropbox: false,
-	dropboxKey: '',
+	dropboxKey: "",
 
-	content: $('.content'),
-	imageview: $('#imageview'),
-	footer: $('#footer'),
+	content: $(".content"),
+	imageview: $("#imageview"),
+	footer: $("#footer"),
 
 	locale: {}
-
 };
 
 lychee.diagnostics = function () {
 	if (lychee.api_V2) {
-		return '/Diagnostics';
+		return "/Diagnostics";
 	} else {
-		return 'plugins/Diagnostics/';
+		return "plugins/Diagnostics/";
 	}
 };
 
 lychee.logs = function () {
 	if (lychee.api_V2) {
-		return '/Logs';
+		return "/Logs";
 	} else {
-		return 'plugins/Log/';
+		return "plugins/Log/";
 	}
 };
 
 lychee.aboutDialog = function () {
-
-	var msg = lychee.html(_templateObject49, lychee.version, lychee.updateURL, lychee.locale['UPDATE_AVAILABLE'], lychee.locale['ABOUT_SUBTITLE'], lychee.website, lychee.locale['ABOUT_DESCRIPTION']);
+	var msg = lychee.html(_templateObject49, lychee.version, lychee.updateURL, lychee.locale["UPDATE_AVAILABLE"], lychee.locale["ABOUT_SUBTITLE"], lychee.website, lychee.locale["ABOUT_DESCRIPTION"]);
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			cancel: {
-				title: lychee.locale['CLOSE'],
+				title: lychee.locale["CLOSE"],
 				fn: basicModal.close
 			}
 		}
 	});
 
-	if (lychee.checkForUpdates === '1') lychee.getUpdate();
+	if (lychee.checkForUpdates === "1") lychee.getUpdate();
 };
 
 lychee.init = function () {
-
 	lychee.adjustContentHeight();
 
-	api.post('Session::init', {}, function (data) {
-
+	api.post("Session::init", {}, function (data) {
 		lychee.api_V2 = data.api_V2 || false;
 
 		if (data.status === 0) {
-
 			// No configuration
 
-			lychee.setMode('public');
+			lychee.setMode("public");
 
 			header.dom().hide();
 			lychee.content.hide();
-			$('body').append(build.no_content('cog'));
+			$("body").append(build.no_content("cog"));
 			settings.createConfig();
 
 			return true;
@@ -4031,16 +4132,16 @@ lychee.init = function () {
 		lychee.sub_albums = data.sub_albums || false;
 		lychee.update_json = data.update_json;
 		lychee.update_available = data.update_available;
-		lychee.landing_page_enable = data.config.landing_page_enable && data.config.landing_page_enable === '1' || false;
+		lychee.landing_page_enable = data.config.landing_page_enable && data.config.landing_page_enable === "1" || false;
 
 		if (lychee.api_V2) {
 			lychee.versionCode = data.config.version;
 		} else {
 			lychee.versionCode = data.config.version.slice(7, data.config.version.length);
 		}
-		if (lychee.versionCode !== '') {
+		if (lychee.versionCode !== "") {
 			var digits = lychee.versionCode.match(/.{1,2}/g);
-			lychee.version = parseInt(digits[0]).toString() + '.' + parseInt(digits[1]).toString() + '.' + parseInt(digits[2]).toString();
+			lychee.version = parseInt(digits[0]).toString() + "." + parseInt(digits[1]).toString() + "." + parseInt(digits[2]).toString();
 		}
 
 		// we copy the locale that exists only.
@@ -4064,39 +4165,43 @@ lychee.init = function () {
 		// 1 = Logged out
 		// 2 = Logged in
 		if (data.status === 2) {
-
 			// Logged in
 
-			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || '';
-			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || '';
-			lychee.dropboxKey = data.config.dropbox_key || data.config.dropboxKey || '';
-			lychee.location = data.config.location || '';
-			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates || '1';
-			lychee.lang = data.config.lang || '';
+			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || "";
+			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || "";
+			lychee.dropboxKey = data.config.dropbox_key || data.config.dropboxKey || "";
+			lychee.location = data.config.location || "";
+			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates || "1";
+			lychee.lang = data.config.lang || "";
 			lychee.lang_available = data.config.lang_available || {};
-			lychee.layout = data.config.layout || '1';
-			lychee.public_search = data.config.public_search && data.config.public_search === '1' || false;
-			lychee.image_overlay_default = data.config.image_overlay && data.config.image_overlay === '1' || false;
+			lychee.layout = data.config.layout || "1";
+			lychee.public_search = data.config.public_search && data.config.public_search === "1" || false;
+			lychee.image_overlay_default = data.config.image_overlay && data.config.image_overlay === "1" || false;
 			lychee.image_overlay = lychee.image_overlay_default;
-			lychee.image_overlay_type = !data.config.image_overlay_type ? 'exif' : data.config.image_overlay_type;
+			lychee.image_overlay_type = !data.config.image_overlay_type ? "exif" : data.config.image_overlay_type;
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
-			lychee.map_display = data.config.map_display && data.config.map_display === '1' || false;
-			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === '1' || false;
-			lychee.map_provider = !data.config.map_provider ? 'Wikimedia' : data.config.map_provider;
-			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === '1' || false;
-			lychee.location_decoding = data.config.location_decoding && data.config.location_decoding === '1' || false;
-			lychee.location_decoding_caching_type = !data.config.location_decoding_caching_type ? 'Harddisk' : data.config.location_decoding_caching_type;
-			lychee.location_show = data.config.location_show && data.config.location_show === '1' || false;
-			lychee.location_show_public = data.config.location_show_public && data.config.location_show_public === '1' || false;
+			lychee.map_display = data.config.map_display && data.config.map_display === "1" || false;
+			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === "1" || false;
+			lychee.map_provider = !data.config.map_provider ? "Wikimedia" : data.config.map_provider;
+			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === "1" || false;
+			lychee.location_decoding = data.config.location_decoding && data.config.location_decoding === "1" || false;
+			lychee.location_decoding_caching_type = !data.config.location_decoding_caching_type ? "Harddisk" : data.config.location_decoding_caching_type;
+			lychee.location_show = data.config.location_show && data.config.location_show === "1" || false;
+			lychee.location_show_public = data.config.location_show_public && data.config.location_show_public === "1" || false;
 			lychee.swipe_tolerance_x = validatedSwipeToleranceX;
 			lychee.swipe_tolerance_y = validatedSwipeToleranceY;
 
-			lychee.default_license = data.config.default_license || 'none';
-			lychee.css = data.config.css || '';
-			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === '1';
-			lychee.downloadable = data.config.downloadable && data.config.downloadable === '1' || false;
-			lychee.share_button_visible = data.config.share_button_visible && data.config.share_button_visible === '1' || false;
-			lychee.delete_imported = data.config.delete_imported && data.config.delete_imported === '1';
+			lychee.default_license = data.config.default_license || "none";
+			lychee.css = data.config.css || "";
+			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === "1";
+			lychee.downloadable = data.config.downloadable && data.config.downloadable === "1" || false;
+			lychee.share_button_visible = data.config.share_button_visible && data.config.share_button_visible === "1" || false;
+			lychee.delete_imported = data.config.delete_imported && data.config.delete_imported === "1";
+
+			lychee.nsfw_visible = data.config.nsfw_visible && data.config.nsfw_visible === "1" || false;
+			lychee.nsfw_blur = data.config.nsfw_blur && data.config.nsfw_blur === "1" || false;
+			lychee.nsfw_warning = data.config.nsfw_warning && data.config.nsfw_warning === "1" || false;
+			lychee.nsfw_warning_text = data.config.nsfw_warning_text || "<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>";
 
 			lychee.header_auto_hide = data.config_device.header_auto_hide;
 			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
@@ -4114,12 +4219,13 @@ lychee.init = function () {
 			lychee.enable_tabindex = data.config_device.enable_tabindex;
 			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
 			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
-			lychee.device_type = data.config_device.device_type || 'desktop'; // we set default as Desktop
+			lychee.device_type = data.config_device.device_type || "desktop"; // we set default as Desktop
 
-			lychee.editor_enabled = data.config.editor_enabled && data.config.editor_enabled === '1' || false;
+			lychee.editor_enabled = data.config.editor_enabled && data.config.editor_enabled === "1" || false;
 
 			lychee.upload = !lychee.api_V2;
 			lychee.admin = !lychee.api_V2;
+			lychee.nsfw_visible_saved = lychee.nsfw_visible;
 
 			// leftMenu
 			leftMenu.build();
@@ -4131,31 +4237,35 @@ lychee.init = function () {
 				lychee.lock = data.lock;
 				lychee.username = data.username;
 			}
-			lychee.setMode('logged_in');
+			lychee.setMode("logged_in");
 
 			// Show dialog when there is no username and password
 			if (data.config.login === false) settings.createLogin();
 		} else if (data.status === 1) {
-
 			// Logged out
 
 			// TODO remove sortingPhoto once the v4 is out
-			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || '';
-			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || '';
-			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates || '1';
-			lychee.layout = data.config.layout || '1';
-			lychee.public_search = data.config.public_search && data.config.public_search === '1' || false;
-			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === '1' || false;
-			lychee.image_overlay_type = !data.config.image_overlay_type ? 'exif' : data.config.image_overlay_type;
+			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || "";
+			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || "";
+			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates || "1";
+			lychee.layout = data.config.layout || "1";
+			lychee.public_search = data.config.public_search && data.config.public_search === "1" || false;
+			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === "1" || false;
+			lychee.image_overlay_type = !data.config.image_overlay_type ? "exif" : data.config.image_overlay_type;
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
-			lychee.map_display = data.config.map_display && data.config.map_display === '1' || false;
-			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === '1' || false;
-			lychee.map_provider = !data.config.map_provider ? 'Wikimedia' : data.config.map_provider;
-			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === '1' || false;
-			lychee.location_show = data.config.location_show && data.config.location_show === '1' || false;
-			lychee.location_show_public = data.config.location_show_public && data.config.location_show_public === '1' || false;
+			lychee.map_display = data.config.map_display && data.config.map_display === "1" || false;
+			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === "1" || false;
+			lychee.map_provider = !data.config.map_provider ? "Wikimedia" : data.config.map_provider;
+			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === "1" || false;
+			lychee.location_show = data.config.location_show && data.config.location_show === "1" || false;
+			lychee.location_show_public = data.config.location_show_public && data.config.location_show_public === "1" || false;
 			lychee.swipe_tolerance_x = validatedSwipeToleranceX;
 			lychee.swipe_tolerance_y = validatedSwipeToleranceY;
+
+			lychee.nsfw_visible = data.config.nsfw_visible && data.config.nsfw_visible === "1" || false;
+			lychee.nsfw_blur = data.config.nsfw_blur && data.config.nsfw_blur === "1" || false;
+			lychee.nsfw_warning = data.config.nsfw_warning && data.config.nsfw_warning === "1" || false;
+			lychee.nsfw_warning_text = data.config.nsfw_warning_text || "<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>";
 
 			lychee.header_auto_hide = data.config_device.header_auto_hide;
 			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
@@ -4173,21 +4283,21 @@ lychee.init = function () {
 			lychee.enable_tabindex = data.config_device.enable_tabindex;
 			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
 			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
-			lychee.device_type = data.config_device.device_type || 'desktop'; // we set default as Desktop
+			lychee.device_type = data.config_device.device_type || "desktop"; // we set default as Desktop
+			lychee.nsfw_visible_saved = nsfw_visible;
 
 			// console.log(lychee.full_photo);
-			lychee.setMode('public');
+			lychee.setMode("public");
 		} else {
 			// should not happen.
 		}
 
-		$(window).bind('popstate', lychee.load);
+		$(window).bind("popstate", lychee.load);
 		lychee.load();
 	});
 };
 
 lychee.login = function (data) {
-
 	var username = data.username;
 	var password = data.password;
 
@@ -4196,88 +4306,80 @@ lychee.login = function (data) {
 		password: password
 	};
 
-	api.post('Session::login', params, function (_data) {
-
+	api.post("Session::login", params, function (_data) {
 		if (_data === true) {
-
 			window.location.reload();
 		} else {
-
 			// Show error and reactive button
-			basicModal.error('password');
+			basicModal.error("password");
 		}
 	});
 };
 
 lychee.loginDialog = function () {
-
 	// Make background make unfocusable
 	tabindex.makeUnfocusable(header.dom());
 	tabindex.makeUnfocusable(lychee.content);
 	tabindex.makeUnfocusable(lychee.imageview);
 
-	var msg = lychee.html(_templateObject50, build.iconic('key'), lychee.locale['USERNAME'], tabindex.get_next_tab_index(), lychee.locale['PASSWORD'], tabindex.get_next_tab_index(), lychee.version, lychee.updateURL, lychee.locale['UPDATE_AVAILABLE']);
+	var msg = lychee.html(_templateObject50, build.iconic("key"), lychee.locale["USERNAME"], tabindex.get_next_tab_index(), lychee.locale["PASSWORD"], tabindex.get_next_tab_index(), lychee.version, lychee.updateURL, lychee.locale["UPDATE_AVAILABLE"]);
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			action: {
-				title: lychee.locale['SIGN_IN'],
+				title: lychee.locale["SIGN_IN"],
 				fn: lychee.login,
 				attributes: [["data-tabindex", tabindex.get_next_tab_index()]]
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close,
 				attributes: [["data-tabindex", tabindex.get_next_tab_index()]]
 			}
 		}
 	});
-	$("#signInKeyLess").on('click', u2f.login);
+	$("#signInKeyLess").on("click", u2f.login);
 
-	if (lychee.checkForUpdates === '1') lychee.getUpdate();
+	if (lychee.checkForUpdates === "1") lychee.getUpdate();
 
 	tabindex.makeFocusable(basicModal.dom());
 };
 
 lychee.logout = function () {
-
-	api.post('Session::logout', {}, function () {
+	api.post("Session::logout", {}, function () {
 		window.location.reload();
 	});
 };
 
 lychee.goto = function () {
-	var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-
-	url = '#' + url;
+	url = "#" + url;
 
 	history.pushState(null, null, url);
 	lychee.load(autoplay);
 };
 
 lychee.gotoMap = function () {
-	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
 
 	// If map functionality is disabled -> go to album
 	if (!lychee.map_display) {
-		loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+		loadingBar.show("error", lychee.locale["ERROR_MAP_DEACTIVATED"]);
 		return;
 	}
-	lychee.goto('map/' + albumID, autoplay);
+	lychee.goto("map/" + albumID, autoplay);
 };
 
 lychee.load = function () {
 	var autoplay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
-
-	var albumID = '';
-	var photoID = '';
-	var hash = document.location.hash.replace('#', '').split('/');
+	var albumID = "";
+	var photoID = "";
+	var hash = document.location.hash.replace("#", "").split("/");
 
 	contextMenu.close();
 	multiselect.close();
@@ -4287,15 +4389,13 @@ lychee.load = function () {
 	if (hash[1] != null) photoID = hash[1];
 
 	if (albumID && photoID) {
-
-		if (albumID == 'map') {
-
+		if (albumID == "map") {
 			// If map functionality is disabled -> do nothing
 			if (!lychee.map_display) {
-				loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+				loadingBar.show("error", lychee.locale["ERROR_MAP_DEACTIVATED"]);
 				return;
 			}
-			$('.no_content').remove();
+			$(".no_content").remove();
 			// show map
 			// albumID has been stored in photoID due to URL format #map/albumID
 			albumID = photoID;
@@ -4311,8 +4411,7 @@ lychee.load = function () {
 			}
 			mapview.open(albumID);
 			lychee.footer_hide();
-		} else if (albumID == 'search') {
-
+		} else if (albumID == "search") {
 			// Search has been triggered
 			var search_string = decodeURIComponent(photoID);
 
@@ -4322,23 +4421,23 @@ lychee.load = function () {
 			}
 			// If public search is diabled -> do nothing
 			if (lychee.publicMode === true && !lychee.public_search) {
-				loadingBar.show('error', lychee.locale['ERROR_SEARCH_DEACTIVATED']);
+				loadingBar.show("error", lychee.locale["ERROR_SEARCH_DEACTIVATED"]);
 				return;
 			}
 
-			header.dom('.header__search').val(search_string);
+			header.dom(".header__search").val(search_string);
 			search.find(search_string);
 
 			lychee.footer_show();
 		} else {
-			$('.no_content').remove();
+			$(".no_content").remove();
 			// Show photo
 
 			// Trash data
 			_photo.json = null;
 
 			// Show Photo
-			if (lychee.content.html() === '' || album.json == null || header.dom('.header__search').length && header.dom('.header__search').val().length !== 0) {
+			if (lychee.content.html() === "" || album.json == null || header.dom(".header__search").length && header.dom(".header__search").val().length !== 0) {
 				lychee.content.hide();
 				album.load(albumID, true);
 			}
@@ -4356,14 +4455,12 @@ lychee.load = function () {
 			lychee.footer_hide();
 		}
 	} else if (albumID) {
-
-		if (albumID == 'map') {
-
-			$('.no_content').remove();
+		if (albumID == "map") {
+			$(".no_content").remove();
 			// Show map of all albums
 			// If map functionality is disabled -> do nothing
 			if (!lychee.map_display) {
-				loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+				loadingBar.show("error", lychee.locale["ERROR_MAP_DEACTIVATED"]);
 				return;
 			}
 
@@ -4375,11 +4472,10 @@ lychee.load = function () {
 			if (visible.sidebar()) _sidebar.toggle();
 			mapview.open();
 			lychee.footer_hide();
-		} else if (albumID == 'search') {
+		} else if (albumID == "search") {
 			// search string is empty -> do nothing
 		} else {
-
-			$('.no_content').remove();
+			$(".no_content").remove();
 			// Trash data
 			_photo.json = null;
 
@@ -4400,8 +4496,7 @@ lychee.load = function () {
 			lychee.footer_show();
 		}
 	} else {
-
-		$('.no_content').remove();
+		$(".no_content").remove();
 		// Trash albums.json when filled with search results
 		if (search.hash != null) {
 			albums.json = null;
@@ -4428,17 +4523,16 @@ lychee.load = function () {
 };
 
 lychee.getUpdate = function () {
-
 	// console.log(lychee.update_available);
 	// console.log(lychee.update_json);
 
 	if (lychee.update_json !== 0) {
 		if (lychee.update_available) {
-			$('.version span').show();
+			$(".version span").show();
 		}
 	} else {
 		var success = function success(data) {
-			if (data.lychee.version > parseInt(lychee.versionCode)) $('.version span').show();
+			if (data.lychee.version > parseInt(lychee.versionCode)) $(".version span").show();
 		};
 
 		$.ajax({
@@ -4449,11 +4543,10 @@ lychee.getUpdate = function () {
 };
 
 lychee.setTitle = function (title, editable) {
-
 	if (lychee.title === title) {
-		document.title = lychee.title + ' - ' + lychee.locale['ALBUMS'];
+		document.title = lychee.title + " - " + lychee.locale["ALBUMS"];
 	} else {
-		document.title = lychee.title + ' - ' + title;
+		document.title = lychee.title + " - " + title;
 	}
 
 	header.setEditable(editable);
@@ -4461,50 +4554,47 @@ lychee.setTitle = function (title, editable) {
 };
 
 lychee.setMode = function (mode) {
-
 	if (lychee.lock) {
-		$('#button_settings_open').remove();
+		$("#button_settings_open").remove();
 	}
 	if (!lychee.upload) {
-		$('#button_sharing').remove();
+		$("#button_sharing").remove();
 
-		$(document).off('click', '.header__title--editable').off('touchend', '.header__title--editable').off('contextmenu', '.photo').off('contextmenu', '.album').off('drop');
+		$(document).off("click", ".header__title--editable").off("touchend", ".header__title--editable").off("contextmenu", ".photo").off("contextmenu", ".album").off("drop");
 
-		Mousetrap.unbind(['u']).unbind(['s']).unbind(['n']).unbind(['r']).unbind(['d']).unbind(['t']).unbind(['command+backspace', 'ctrl+backspace']).unbind(['command+a', 'ctrl+a']);
+		Mousetrap.unbind(["u"]).unbind(["s"]).unbind(["n"]).unbind(["r"]).unbind(["d"]).unbind(["t"]).unbind(["command+backspace", "ctrl+backspace"]).unbind(["command+a", "ctrl+a"]);
 	}
 	if (!lychee.admin) {
-		$('#button_users, #button_logs, #button_diagnostics').remove();
+		$("#button_users, #button_logs, #button_diagnostics").remove();
 	}
 
-	if (mode === 'logged_in') {
+	if (mode === "logged_in") {
 		// we are logged in, we do not need that short cut anymore. :)
-		Mousetrap.unbind(['l']).unbind(['k']);
+		Mousetrap.unbind(["l"]).unbind(["k"]);
 
 		// The code searches by class, so remove the other instance.
-		$('.header__search, .header__clear', '.header__toolbar--public').remove();
+		$(".header__search, .header__clear", ".header__toolbar--public").remove();
 
 		if (!lychee.editor_enabled) {
-			$('#button_rotate_cwise').remove();
-			$('#button_rotate_ccwise').remove();
+			$("#button_rotate_cwise").remove();
+			$("#button_rotate_ccwise").remove();
 		}
 		return;
 	} else {
-		$('.header__search, .header__clear', '.header__toolbar--albums').remove();
-		$('#button_rotate_cwise').remove();
-		$('#button_rotate_ccwise').remove();
+		$(".header__search, .header__clear", ".header__toolbar--albums").remove();
+		$("#button_rotate_cwise").remove();
+		$("#button_rotate_ccwise").remove();
 	}
 
-	$('#button_settings, .header__divider, .leftMenu').remove();
+	$("#button_settings, .header__divider, .leftMenu").remove();
 
-	if (mode === 'public') {
-
+	if (mode === "public") {
 		lychee.publicMode = true;
-	} else if (mode === 'view') {
+	} else if (mode === "view") {
+		Mousetrap.unbind(["esc", "command+up"]);
 
-		Mousetrap.unbind(['esc', 'command+up']);
-
-		$('#button_back, a#next, a#previous').remove();
-		$('.no_content').remove();
+		$("#button_back, a#next, a#previous").remove();
+		$(".no_content").remove();
 
 		lychee.publicMode = true;
 		lychee.viewMode = true;
@@ -4515,15 +4605,14 @@ lychee.setMode = function (mode) {
 };
 
 lychee.animate = function (obj, animation) {
-
-	var animations = [['fadeIn', 'fadeOut'], ['contentZoomIn', 'contentZoomOut']];
+	var animations = [["fadeIn", "fadeOut"], ["contentZoomIn", "contentZoomOut"]];
 
 	if (!obj.jQuery) obj = $(obj);
 
 	for (var i = 0; i < animations.length; i++) {
 		for (var x = 0; x < animations[i].length; x++) {
 			if (animations[i][x] == animation) {
-				obj.removeClass(animations[i][0] + ' ' + animations[i][1]).addClass(animation);
+				obj.removeClass(animations[i][0] + " " + animations[i][1]).addClass(animation);
 				return true;
 			}
 		}
@@ -4533,16 +4622,14 @@ lychee.animate = function (obj, animation) {
 };
 
 lychee.retinize = function () {
-	var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+	var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
-
-	var extention = path.split('.').pop();
-	var isPhoto = extention !== 'svg';
+	var extention = path.split(".").pop();
+	var isPhoto = extention !== "svg";
 
 	if (isPhoto === true) {
-
-		path = path.replace(/\.[^/.]+$/, '');
-		path = path + '@2x' + '.' + extention;
+		path = path.replace(/\.[^/.]+$/, "");
+		path = path + "@2x" + "." + extention;
 	}
 
 	return {
@@ -4552,77 +4639,69 @@ lychee.retinize = function () {
 };
 
 lychee.loadDropbox = function (callback) {
-
-	if (lychee.dropbox === false && lychee.dropboxKey != null && lychee.dropboxKey !== '') {
-
+	if (lychee.dropbox === false && lychee.dropboxKey != null && lychee.dropboxKey !== "") {
 		loadingBar.show();
 
-		var g = document.createElement('script');
-		var s = document.getElementsByTagName('script')[0];
+		var g = document.createElement("script");
+		var s = document.getElementsByTagName("script")[0];
 
-		g.src = 'https://www.dropbox.com/static/api/1/dropins.js';
-		g.id = 'dropboxjs';
-		g.type = 'text/javascript';
-		g.async = 'true';
-		g.setAttribute('data-app-key', lychee.dropboxKey);
+		g.src = "https://www.dropbox.com/static/api/1/dropins.js";
+		g.id = "dropboxjs";
+		g.type = "text/javascript";
+		g.async = "true";
+		g.setAttribute("data-app-key", lychee.dropboxKey);
 		g.onload = g.onreadystatechange = function () {
 			var rs = this.readyState;
-			if (rs && rs !== 'complete' && rs !== 'loaded') return;
+			if (rs && rs !== "complete" && rs !== "loaded") return;
 			lychee.dropbox = true;
 			loadingBar.hide();
 			callback();
 		};
 		s.parentNode.insertBefore(g, s);
-	} else if (lychee.dropbox === true && lychee.dropboxKey != null && lychee.dropboxKey !== '') {
-
+	} else if (lychee.dropbox === true && lychee.dropboxKey != null && lychee.dropboxKey !== "") {
 		callback();
 	} else {
-
 		settings.setDropboxKey(callback);
 	}
 };
 
 lychee.getEventName = function () {
-
-	if (lychee.device_type === 'mobile') {
-		return 'touchend';
+	if (lychee.device_type === "mobile") {
+		return "touchend";
 	}
-	return 'click';
+	return "click";
 };
 
 lychee.escapeHTML = function () {
-	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
+	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
 	// Ensure that html is a string
-	html += '';
+	html += "";
 
 	// Escape all critical characters
-	html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/`/g, '&#96;');
+	html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/`/g, "&#96;");
 
 	return html;
 };
 
 lychee.html = function (literalSections) {
-
 	// Use raw literal sections: we don’t want
 	// backslashes (\n etc.) to be interpreted
 	var raw = literalSections.raw;
-	var result = '';
+	var result = "";
 
 	for (var _len = arguments.length, substs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 		substs[_key - 1] = arguments[_key];
 	}
 
 	substs.forEach(function (subst, i) {
-
 		// Retrieve the literal section preceding
 		// the current substitution
 		var lit = raw[i];
 
 		// If the substitution is preceded by a dollar sign,
 		// we escape special characters in it
-		if (lit.slice(-1) === '$') {
+		if (lit.slice(-1) === "$") {
 			subst = lychee.escapeHTML(subst);
 			lit = lit.slice(0, -1);
 		}
@@ -4640,13 +4719,12 @@ lychee.html = function (literalSections) {
 };
 
 lychee.error = function (errorThrown) {
-	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-	var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+	var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 
+	loadingBar.show("error", errorThrown);
 
-	loadingBar.show('error', errorThrown);
-
-	if (errorThrown === 'Session timed out.') {
+	if (errorThrown === "Session timed out.") {
 		setTimeout(function () {
 			lychee.goto();
 			window.location.reload();
@@ -4706,64 +4784,63 @@ lychee.fullscreenStatus = function () {
 
 lychee.fullscreenUpdate = function () {
 	if (lychee.fullscreenStatus()) {
-		$('#button_fs_album_enter,#button_fs_enter').hide();
-		$('#button_fs_album_exit,#button_fs_exit').show();
+		$("#button_fs_album_enter,#button_fs_enter").hide();
+		$("#button_fs_album_exit,#button_fs_exit").show();
 	} else {
-		$('#button_fs_album_enter,#button_fs_enter').show();
-		$('#button_fs_album_exit,#button_fs_exit').hide();
+		$("#button_fs_album_enter,#button_fs_enter").show();
+		$("#button_fs_album_exit,#button_fs_exit").hide();
 	}
 };
 
 lychee.footer_show = function () {
 	setTimeout(function () {
-		lychee.footer.removeClass('hide_footer');
+		lychee.footer.removeClass("hide_footer");
 	}, 200);
 };
 
 lychee.footer_hide = function () {
-	lychee.footer.addClass('hide_footer');
+	lychee.footer.addClass("hide_footer");
 };
 
 // Because the height of the footer can vary, we need to set some
 // dimensions dynamically, at startup.
 lychee.adjustContentHeight = function () {
 	if (lychee.footer.length > 0) {
-		lychee.content.css('min-height', 'calc(100vh - ' + lychee.content.css('padding-top') + ' - ' + lychee.content.css('padding-bottom') + ' - ' + lychee.footer.outerHeight() + 'px)');
-		$('#container').css('padding-bottom', lychee.footer.outerHeight());
+		lychee.content.css("min-height", "calc(100vh - " + lychee.content.css("padding-top") + " - " + lychee.content.css("padding-bottom") + " - " + lychee.footer.outerHeight() + "px)");
+		$("#container").css("padding-bottom", lychee.footer.outerHeight());
 	} else {
-		lychee.content.css('min-height', 'calc(100vh - ' + lychee.content.css('padding-top') + ' - ' + lychee.content.css('padding-bottom') + ')');
+		lychee.content.css("min-height", "calc(100vh - " + lychee.content.css("padding-top") + " - " + lychee.content.css("padding-bottom") + ")");
 	}
 };
 
 lychee.getBaseUrl = function () {
-	if (location.href.includes('index.html')) {
-		return location.href.replace('index.html' + location.hash, '');
-	} else if (location.href.includes('gallery#')) {
-		return location.href.replace('gallery' + location.hash, '');
+	if (location.href.includes("index.html")) {
+		return location.href.replace("index.html" + location.hash, "");
+	} else if (location.href.includes("gallery#")) {
+		return location.href.replace("gallery" + location.hash, "");
 	} else {
-		return location.href.replace(location.hash, '');
+		return location.href.replace(location.hash, "");
 	}
 };
 
 // Copied from https://github.com/feross/clipboard-copy/blob/9eba597c774feed48301fef689099599d612387c/index.js
 lychee.clipboardCopy = function (text) {
-
 	// Use the Async Clipboard API when available. Requires a secure browsing
 	// context (i.e. HTTPS)
 	if (navigator.clipboard) {
 		return navigator.clipboard.writeText(text).catch(function (err) {
-			throw err !== undefined ? err : new DOMException('The request is not allowed', 'NotAllowedError');
+			throw err !== undefined ? err : new DOMException("The request is not allowed", "NotAllowedError");
 		});
 	}
 
 	// ...Otherwise, use document.execCommand() fallback
 
 	// Put the text to copy into a <span>
-	var span = document.createElement('span');
+	var span = document.createElement("span");
 	span.textContent = text;
 
 	// Preserve consecutive spaces and newlines
-	span.style.whiteSpace = 'pre';
+	span.style.whiteSpace = "pre";
 
 	// Add the <span> to the page
 	document.body.appendChild(span);
@@ -4779,9 +4856,9 @@ lychee.clipboardCopy = function (text) {
 	var success = false;
 
 	try {
-		success = window.document.execCommand('copy');
+		success = window.document.execCommand("copy");
 	} catch (err) {
-		console.log('error', err);
+		console.log("error", err);
 	}
 
 	// Cleanup
@@ -4792,451 +4869,460 @@ lychee.clipboardCopy = function (text) {
 	// ? Promise.resolve()
 	// : Promise.reject(new DOMException('The request is not allowed', 'NotAllowedError'))
 };
+
 lychee.locale = {
+	USERNAME: "username",
+	PASSWORD: "password",
+	ENTER: "Enter",
+	CANCEL: "Cancel",
+	SIGN_IN: "Sign In",
+	CLOSE: "Close",
 
-	'USERNAME': 'username',
-	'PASSWORD': 'password',
-	'ENTER': 'Enter',
-	'CANCEL': 'Cancel',
-	'SIGN_IN': 'Sign In',
-	'CLOSE': 'Close',
+	SETTINGS: "Settings",
+	USERS: "Users",
+	U2F: "U2F",
+	SHARING: "Sharing",
+	CHANGE_LOGIN: "Change Login",
+	CHANGE_SORTING: "Change Sorting",
+	SET_DROPBOX: "Set Dropbox",
+	ABOUT_LYCHEE: "About Lychee",
+	DIAGNOSTICS: "Diagnostics",
+	DIAGNOSTICS_GET_SIZE: "Request space usage",
+	LOGS: "Show Logs",
+	CLEAN_LOGS: "Clean Noise",
+	SIGN_OUT: "Sign Out",
+	UPDATE_AVAILABLE: "Update available!",
+	MIGRATION_AVAILABLE: "Migration available!",
+	CHECK_FOR_UPDATE: "Check for updates",
+	DEFAULT_LICENSE: "Default License for new uploads:",
+	SET_LICENSE: "Set License",
+	SET_OVERLAY_TYPE: "Set Overlay",
+	SET_MAP_PROVIDER: "Set OpenStreetMap tiles provider",
+	SAVE_RISK: "Save my modifications, I accept the Risk!",
+	MORE: "More",
+	DEFAULT: "Default",
 
-	'SETTINGS': 'Settings',
-	'USERS': 'Users',
-	'U2F': 'U2F',
-	'SHARING': 'Sharing',
-	'CHANGE_LOGIN': 'Change Login',
-	'CHANGE_SORTING': 'Change Sorting',
-	'SET_DROPBOX': 'Set Dropbox',
-	'ABOUT_LYCHEE': 'About Lychee',
-	'DIAGNOSTICS': 'Diagnostics',
-	'DIAGNOSTICS_GET_SIZE': 'Request space usage',
-	'LOGS': 'Show Logs',
-	'CLEAN_LOGS': 'Clean Noise',
-	'SIGN_OUT': 'Sign Out',
-	'UPDATE_AVAILABLE': 'Update available!',
-	'MIGRATION_AVAILABLE': 'Migration available!',
-	'CHECK_FOR_UPDATE': 'Check for updates',
-	'DEFAULT_LICENSE': 'Default License for new uploads:',
-	'SET_LICENSE': 'Set License',
-	'SET_OVERLAY_TYPE': 'Set Overlay',
-	'SET_MAP_PROVIDER': 'Set OpenStreetMap tiles provider',
-	'SAVE_RISK': 'Save my modifications, I accept the Risk!',
-	'MORE': 'More',
-	'DEFAULT': 'Default',
+	SMART_ALBUMS: "Smart albums",
+	SHARED_ALBUMS: "Shared albums",
+	ALBUMS: "Albums",
+	PHOTOS: "Pictures",
+	SEARCH_RESULTS: "Search results",
 
-	'SMART_ALBUMS': 'Smart albums',
-	'SHARED_ALBUMS': 'Shared albums',
-	'ALBUMS': 'Albums',
-	'PHOTOS': 'Pictures',
-	'SEARCH_RESULTS': 'Search results',
+	RENAME: "Rename",
+	RENAME_ALL: "Rename All",
+	MERGE: "Merge",
+	MERGE_ALL: "Merge All",
+	MAKE_PUBLIC: "Make Public",
+	SHARE_ALBUM: "Share Album",
+	SHARE_PHOTO: "Share Photo",
+	SHARE_WITH: "Share with...",
+	DOWNLOAD_ALBUM: "Download Album",
+	ABOUT_ALBUM: "About Album",
+	DELETE_ALBUM: "Delete Album",
+	FULLSCREEN_ENTER: "Enter Fullscreen",
+	FULLSCREEN_EXIT: "Exit Fullscreen",
 
-	'RENAME': 'Rename',
-	'RENAME_ALL': 'Rename All',
-	'MERGE': 'Merge',
-	'MERGE_ALL': 'Merge All',
-	'MAKE_PUBLIC': 'Make Public',
-	'SHARE_ALBUM': 'Share Album',
-	'SHARE_PHOTO': 'Share Photo',
-	'SHARE_WITH': 'Share with...',
-	'DOWNLOAD_ALBUM': 'Download Album',
-	'ABOUT_ALBUM': 'About Album',
-	'DELETE_ALBUM': 'Delete Album',
-	'FULLSCREEN_ENTER': 'Enter Fullscreen',
-	'FULLSCREEN_EXIT': 'Exit Fullscreen',
+	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
+	KEEP_ALBUM: "Keep Album",
+	DELETE_ALBUM_CONFIRMATION_1: "Are you sure you want to delete the album",
+	DELETE_ALBUM_CONFIRMATION_2: "and all of the photos it contains? This action can't be undone!",
 
-	'DELETE_ALBUM_QUESTION': 'Delete Album and Photos',
-	'KEEP_ALBUM': 'Keep Album',
-	'DELETE_ALBUM_CONFIRMATION_1': 'Are you sure you want to delete the album',
-	'DELETE_ALBUM_CONFIRMATION_2': 'and all of the photos it contains? This action can\'t be undone!',
+	DELETE_ALBUMS_QUESTION: "Delete Albums and Photos",
+	KEEP_ALBUMS: "Keep Albums",
+	DELETE_ALBUMS_CONFIRMATION_1: "Are you sure you want to delete all",
+	DELETE_ALBUMS_CONFIRMATION_2: "selected albums and all of the photos they contain? This action can't be undone!",
 
-	'DELETE_ALBUMS_QUESTION': 'Delete Albums and Photos',
-	'KEEP_ALBUMS': 'Keep Albums',
-	'DELETE_ALBUMS_CONFIRMATION_1': 'Are you sure you want to delete all',
-	'DELETE_ALBUMS_CONFIRMATION_2': 'selected albums and all of the photos they contain? This action can\'t be undone!',
+	DELETE_UNSORTED_CONFIRM: "Are you sure you want to delete all photos from 'Unsorted'?<br>This action can't be undone!",
+	CLEAR_UNSORTED: "Clear Unsorted",
+	KEEP_UNSORTED: "Keep Unsorted",
 
-	'DELETE_UNSORTED_CONFIRM': 'Are you sure you want to delete all photos from \'Unsorted\'?<br>This action can\'t be undone!',
-	'CLEAR_UNSORTED': 'Clear Unsorted',
-	'KEEP_UNSORTED': 'Keep Unsorted',
+	EDIT_SHARING: "Edit Sharing",
+	MAKE_PRIVATE: "Make Private",
 
-	'EDIT_SHARING': 'Edit Sharing',
-	'MAKE_PRIVATE': 'Make Private',
+	CLOSE_ALBUM: "Close Album",
+	CLOSE_PHOTO: "Close Photo",
+	CLOSE_MAP: "Close Map",
 
-	'CLOSE_ALBUM': 'Close Album',
-	'CLOSE_PHOTO': 'Close Photo',
-	'CLOSE_MAP': 'Close Map',
+	ADD: "Add",
+	MOVE: "Move",
+	MOVE_ALL: "Move All",
+	DUPLICATE: "Duplicate",
+	DUPLICATE_ALL: "Duplicate All",
+	COPY_TO: "Copy to...",
+	COPY_ALL_TO: "Copy All to...",
+	DELETE: "Delete",
+	DELETE_ALL: "Delete All",
+	DOWNLOAD: "Download",
+	DOWNLOAD_MEDIUM: "Download medium size",
+	DOWNLOAD_SMALL: "Download small size",
+	UPLOAD_PHOTO: "Upload Photo",
+	IMPORT_LINK: "Import from Link",
+	IMPORT_DROPBOX: "Import from Dropbox",
+	IMPORT_SERVER: "Import from Server",
+	NEW_ALBUM: "New Album",
+	NEW_TAG_ALBUM: "New Tag Album",
 
-	'ADD': 'Add',
-	'MOVE': 'Move',
-	'MOVE_ALL': 'Move All',
-	'DUPLICATE': 'Duplicate',
-	'DUPLICATE_ALL': 'Duplicate All',
-	'COPY_TO': 'Copy to...',
-	'COPY_ALL_TO': 'Copy All to...',
-	'DELETE': 'Delete',
-	'DELETE_ALL': 'Delete All',
-	'DOWNLOAD': 'Download',
-	'DOWNLOAD_MEDIUM': 'Download medium size',
-	'DOWNLOAD_SMALL': 'Download small size',
-	'UPLOAD_PHOTO': 'Upload Photo',
-	'IMPORT_LINK': 'Import from Link',
-	'IMPORT_DROPBOX': 'Import from Dropbox',
-	'IMPORT_SERVER': 'Import from Server',
-	'NEW_ALBUM': 'New Album',
-	'NEW_TAG_ALBUM': 'New Tag Album',
+	TITLE_NEW_ALBUM: "Enter a title for the new album:",
+	UNTITLED: "Untilted",
+	UNSORTED: "Unsorted",
+	STARRED: "Starred",
+	RECENT: "Recent",
+	PUBLIC: "Public",
+	NUM_PHOTOS: "Photos",
 
-	'TITLE_NEW_ALBUM': 'Enter a title for the new album:',
-	'UNTITLED': 'Untilted',
-	'UNSORTED': 'Unsorted',
-	'STARRED': 'Starred',
-	'RECENT': 'Recent',
-	'PUBLIC': 'Public',
-	'NUM_PHOTOS': 'Photos',
+	CREATE_ALBUM: "Create Album",
+	CREATE_TAG_ALBUM: "Create Tag Album",
 
-	'CREATE_ALBUM': 'Create Album',
-	'CREATE_TAG_ALBUM': 'Create Tag Album',
+	STAR_PHOTO: "Star Photo",
+	STAR: "Star",
+	STAR_ALL: "Star All",
+	TAGS: "Tags",
+	TAGS_ALL: "Tags All",
+	UNSTAR_PHOTO: "Unstar Photo",
 
-	'STAR_PHOTO': 'Star Photo',
-	'STAR': 'Star',
-	'STAR_ALL': 'Star All',
-	'TAGS': 'Tags',
-	'TAGS_ALL': 'Tags All',
-	'UNSTAR_PHOTO': 'Unstar Photo',
+	FULL_PHOTO: "Full Photo",
+	ABOUT_PHOTO: "About Photo",
+	DISPLAY_FULL_MAP: "Map",
+	DIRECT_LINK: "Direct Link",
+	DIRECT_LINKS: "Direct Links",
 
-	'FULL_PHOTO': 'Full Photo',
-	'ABOUT_PHOTO': 'About Photo',
-	'DISPLAY_FULL_MAP': 'Map',
-	'DIRECT_LINK': 'Direct Link',
-	'DIRECT_LINKS': 'Direct Links',
+	ALBUM_ABOUT: "About",
+	ALBUM_BASICS: "Basics",
+	ALBUM_TITLE: "Title",
+	ALBUM_NEW_TITLE: "Enter a new title for this album:",
+	ALBUMS_NEW_TITLE_1: "Enter a title for all",
+	ALBUMS_NEW_TITLE_2: "selected albums:",
+	ALBUM_SET_TITLE: "Set Title",
+	ALBUM_DESCRIPTION: "Description",
+	ALBUM_SHOW_TAGS: "Tags to show",
+	ALBUM_NEW_DESCRIPTION: "Enter a new description for this album:",
+	ALBUM_SET_DESCRIPTION: "Set Description",
+	ALBUM_NEW_SHOWTAGS: "Enter tags of photos that will be visible in this album:",
+	ALBUM_SET_SHOWTAGS: "Set tags to show",
+	ALBUM_ALBUM: "Album",
+	ALBUM_CREATED: "Created",
+	ALBUM_IMAGES: "Images",
+	ALBUM_VIDEOS: "Videos",
+	ALBUM_SHARING: "Share",
+	ALBUM_OWNER: "Owner",
+	ALBUM_SHR_YES: "YES",
+	ALBUM_SHR_NO: "No",
+	ALBUM_PUBLIC: "Public",
+	ALBUM_PUBLIC_EXPL: "Album can be viewed by others, subject to the restrictions below.",
+	ALBUM_FULL: "Full size (v4 only)",
+	ALBUM_FULL_EXPL: "Full size pictures are available",
+	ALBUM_HIDDEN: "Hidden",
+	ALBUM_HIDDEN_EXPL: "Only people with the direct link can view this album.",
+	ALBUM_MARK_NSFW: "Mark album as sensitive",
+	ALBUM_UNMARK_NSFW: "Unmark album as sensitive",
+	ALBUM_NSFW: "Sensitive",
+	ALBUM_NSFW_EXPL: "Album is marked to contain sensitive content.",
+	ALBUM_DOWNLOADABLE: "Downloadable",
+	ALBUM_DOWNLOADABLE_EXPL: "Visitors of your Lychee can download this album.",
+	ALBUM_SHARE_BUTTON_VISIBLE: "Share button is visible",
+	ALBUM_SHARE_BUTTON_VISIBLE_EXPL: "Display social media sharing links.",
+	ALBUM_PASSWORD: "Password",
+	ALBUM_PASSWORD_PROT: "Password protected",
+	ALBUM_PASSWORD_PROT_EXPL: "Album only accessible with a valid password.",
+	ALBUM_PASSWORD_REQUIRED: "This album is protected by a password. Enter the password below to view the photos of this album:",
+	ALBUM_MERGE_1: "Are you sure you want to merge the album",
+	ALBUM_MERGE_2: "into the album",
+	ALBUMS_MERGE: "Are you sure you want to merge all selected albums into the album",
+	MERGE_ALBUM: "Merge Albums",
+	DONT_MERGE: "Don't Merge",
+	ALBUM_MOVE_1: "Are you sure you want to move the album",
+	ALBUM_MOVE_2: "into the album",
+	ALBUMS_MOVE: "Are you sure you want to move all selected albums into the album",
+	MOVE_ALBUMS: "Move Albums",
+	NOT_MOVE_ALBUMS: "Don't Move",
+	ROOT: "Root",
+	ALBUM_REUSE: "Reuse",
+	ALBUM_LICENSE: "License",
+	ALBUM_SET_LICENSE: "Set License",
+	ALBUM_LICENSE_HELP: "Need help choosing?",
+	ALBUM_LICENSE_NONE: "None",
+	ALBUM_RESERVED: "All Rights Reserved",
+	ALBUM_SET_ORDER: "Set Order",
+	ALBUM_ORDERING: "Order by",
 
-	'ALBUM_ABOUT': 'About',
-	'ALBUM_BASICS': 'Basics',
-	'ALBUM_TITLE': 'Title',
-	'ALBUM_NEW_TITLE': 'Enter a new title for this album:',
-	'ALBUMS_NEW_TITLE_1': 'Enter a title for all',
-	'ALBUMS_NEW_TITLE_2': 'selected albums:',
-	'ALBUM_SET_TITLE': 'Set Title',
-	'ALBUM_DESCRIPTION': 'Description',
-	'ALBUM_SHOW_TAGS': 'Tags to show',
-	'ALBUM_NEW_DESCRIPTION': 'Enter a new description for this album:',
-	'ALBUM_SET_DESCRIPTION': 'Set Description',
-	'ALBUM_NEW_SHOWTAGS': 'Enter tags of photos that will be visible in this album:',
-	'ALBUM_SET_SHOWTAGS': 'Set tags to show',
-	'ALBUM_ALBUM': 'Album',
-	'ALBUM_CREATED': 'Created',
-	'ALBUM_IMAGES': 'Images',
-	'ALBUM_VIDEOS': 'Videos',
-	'ALBUM_SHARING': 'Share',
-	'ALBUM_OWNER': 'Owner',
-	'ALBUM_SHR_YES': 'YES',
-	'ALBUM_SHR_NO': 'No',
-	'ALBUM_PUBLIC': 'Public',
-	'ALBUM_PUBLIC_EXPL': 'Album can be viewed by others, subject to the restrictions below.',
-	'ALBUM_FULL': 'Full size (v4 only)',
-	'ALBUM_FULL_EXPL': 'Full size pictures are available',
-	'ALBUM_HIDDEN': 'Hidden',
-	'ALBUM_HIDDEN_EXPL': 'Only people with the direct link can view this album.',
-	'ALBUM_DOWNLOADABLE': 'Downloadable',
-	'ALBUM_DOWNLOADABLE_EXPL': 'Visitors of your Lychee can download this album.',
-	'ALBUM_SHARE_BUTTON_VISIBLE': 'Share button is visible',
-	'ALBUM_SHARE_BUTTON_VISIBLE_EXPL': 'Display social media sharing links.',
-	'ALBUM_PASSWORD': 'Password',
-	'ALBUM_PASSWORD_PROT': 'Password protected',
-	'ALBUM_PASSWORD_PROT_EXPL': 'Album only accessible with a valid password.',
-	'ALBUM_PASSWORD_REQUIRED': 'This album is protected by a password. Enter the password below to view the photos of this album:',
-	'ALBUM_MERGE_1': 'Are you sure you want to merge the album',
-	'ALBUM_MERGE_2': 'into the album',
-	'ALBUMS_MERGE': 'Are you sure you want to merge all selected albums into the album',
-	'MERGE_ALBUM': 'Merge Albums',
-	'DONT_MERGE': "Don't Merge",
-	'ALBUM_MOVE_1': 'Are you sure you want to move the album',
-	'ALBUM_MOVE_2': 'into the album',
-	'ALBUMS_MOVE': 'Are you sure you want to move all selected albums into the album',
-	'MOVE_ALBUMS': "Move Albums",
-	'NOT_MOVE_ALBUMS': "Don't Move",
-	'ROOT': "Root",
-	'ALBUM_REUSE': "Reuse",
-	'ALBUM_LICENSE': 'License',
-	'ALBUM_SET_LICENSE': 'Set License',
-	'ALBUM_LICENSE_HELP': 'Need help choosing?',
-	'ALBUM_LICENSE_NONE': 'None',
-	'ALBUM_RESERVED': 'All Rights Reserved',
-	'ALBUM_SET_ORDER': 'Set Order',
-	'ALBUM_ORDERING': 'Order by',
+	PHOTO_ABOUT: "About",
+	PHOTO_BASICS: "Basics",
+	PHOTO_TITLE: "Title",
+	PHOTO_NEW_TITLE: "Enter a new title for this photo:",
+	PHOTO_SET_TITLE: "Set Title",
+	PHOTO_UPLOADED: "Uploaded",
+	PHOTO_DESCRIPTION: "Description",
+	PHOTO_NEW_DESCRIPTION: "Enter a new description for this photo:",
+	PHOTO_SET_DESCRIPTION: "Set Description",
+	PHOTO_NEW_LICENSE: "Add a License",
+	PHOTO_SET_LICENSE: "Set License",
+	PHOTO_REUSE: "Reuse",
+	PHOTO_LICENSE: "License",
+	PHOTO_LICENSE_HELP: "Need help choosing?",
+	PHOTO_LICENSE_NONE: "None",
+	PHOTO_RESERVED: "All Rights Reserved",
+	PHOTO_IMAGE: "Image",
+	PHOTO_VIDEO: "Video",
+	PHOTO_SIZE: "Size",
+	PHOTO_FORMAT: "Format",
+	PHOTO_RESOLUTION: "Resolution",
+	PHOTO_DURATION: "Duration",
+	PHOTO_FPS: "Frame rate",
+	PHOTO_TAGS: "Tags",
+	PHOTO_NOTAGS: "No Tags",
+	PHOTO_NEW_TAGS: "Enter your tags for this photo. You can add multiple tags by separating them with a comma:",
+	PHOTO_NEW_TAGS_1: "Enter your tags for all",
+	PHOTO_NEW_TAGS_2: "selected photos. Existing tags will be overwritten. You can add multiple tags by separating them with a comma:",
+	PHOTO_SET_TAGS: "Set Tags",
+	PHOTO_CAMERA: "Camera",
+	PHOTO_CAPTURED: "Captured",
+	PHOTO_MAKE: "Make",
+	PHOTO_TYPE: "Type/Model",
+	PHOTO_LENS: "Lens",
+	PHOTO_SHUTTER: "Shutter Speed",
+	PHOTO_APERTURE: "Aperture",
+	PHOTO_FOCAL: "Focal Length",
+	PHOTO_ISO: "ISO",
+	PHOTO_SHARING: "Sharing",
+	PHOTO_SHR_PLUBLIC: "Public",
+	PHOTO_SHR_ALB: "Yes (Album)",
+	PHOTO_SHR_PHT: "Yes (Photo)",
+	PHOTO_SHR_NO: "No",
+	PHOTO_DELETE: "Delete Photo",
+	PHOTO_KEEP: "Keep Photo",
+	PHOTO_DELETE_1: "Are you sure you want to delete the photo",
+	PHOTO_DELETE_2: "? This action can't be undone!",
+	PHOTO_DELETE_ALL_1: "Are you sure you want to delete all",
+	PHOTO_DELETE_ALL_2: "selected photo? This action can't be undone!",
+	PHOTOS_NEW_TITLE_1: "Enter a title for all",
+	PHOTOS_NEW_TITLE_2: "selected photos:",
+	PHOTO_MAKE_PRIVATE_ALBUM: "This photo is located in a public album. To make this photo private or public, edit the visibility of the associated album.",
+	PHOTO_SHOW_ALBUM: "Show Album",
+	PHOTO_PUBLIC: "Public",
+	PHOTO_PUBLIC_EXPL: "Photo can be viewed by others, subject to the restrictions below.",
+	PHOTO_FULL: "Original",
+	PHOTO_FULL_EXPL: "Full-resolution picture is available.",
+	PHOTO_HIDDEN: "Hidden",
+	PHOTO_HIDDEN_EXPL: "Only people with the direct link can view this photo.",
+	PHOTO_DOWNLOADABLE: "Downloadable",
+	PHOTO_DOWNLOADABLE_EXPL: "Visitors of your gallery can download this photo.",
+	PHOTO_SHARE_BUTTON_VISIBLE: "Share button is visible",
+	PHOTO_SHARE_BUTTON_VISIBLE_EXPL: "Display social media sharing links.",
+	PHOTO_PASSWORD_PROT: "Password protected",
+	PHOTO_PASSWORD_PROT_EXPL: "Photo only accessible with a valid password.",
+	PHOTO_EDIT_SHARING_TEXT: "The sharing properties of this photo will be changed to the following:",
+	PHOTO_NO_EDIT_SHARING_TEXT: "Because this photo is located in a public album, it inherits that album's visibility settings.  Its current visibility is shown below for informational purposes only.",
+	PHOTO_EDIT_GLOBAL_SHARING_TEXT: "The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.",
+	PHOTO_SHARING_CONFIRM: "Save",
+	PHOTO_LOCATION: "Location",
+	PHOTO_LATITUDE: "Latitude",
+	PHOTO_LONGITUDE: "Longitude",
+	PHOTO_ALTITUDE: "Altitude",
+	PHOTO_IMGDIRECTION: "Direction",
 
-	'PHOTO_ABOUT': 'About',
-	'PHOTO_BASICS': 'Basics',
-	'PHOTO_TITLE': 'Title',
-	'PHOTO_NEW_TITLE': 'Enter a new title for this photo:',
-	'PHOTO_SET_TITLE': 'Set Title',
-	'PHOTO_UPLOADED': 'Uploaded',
-	'PHOTO_DESCRIPTION': 'Description',
-	'PHOTO_NEW_DESCRIPTION': 'Enter a new description for this photo:',
-	'PHOTO_SET_DESCRIPTION': 'Set Description',
-	'PHOTO_NEW_LICENSE': 'Add a License',
-	'PHOTO_SET_LICENSE': 'Set License',
-	'PHOTO_REUSE': 'Reuse',
-	'PHOTO_LICENSE': 'License',
-	'PHOTO_LICENSE_HELP': 'Need help choosing?',
-	'PHOTO_LICENSE_NONE': 'None',
-	'PHOTO_RESERVED': 'All Rights Reserved',
-	'PHOTO_IMAGE': 'Image',
-	'PHOTO_VIDEO': 'Video',
-	'PHOTO_SIZE': 'Size',
-	'PHOTO_FORMAT': 'Format',
-	'PHOTO_RESOLUTION': 'Resolution',
-	'PHOTO_DURATION': 'Duration',
-	'PHOTO_FPS': 'Frame rate',
-	'PHOTO_TAGS': 'Tags',
-	'PHOTO_NOTAGS': 'No Tags',
-	'PHOTO_NEW_TAGS': 'Enter your tags for this photo. You can add multiple tags by separating them with a comma:',
-	'PHOTO_NEW_TAGS_1': 'Enter your tags for all',
-	'PHOTO_NEW_TAGS_2': 'selected photos. Existing tags will be overwritten. You can add multiple tags by separating them with a comma:',
-	'PHOTO_SET_TAGS': 'Set Tags',
-	'PHOTO_CAMERA': 'Camera',
-	'PHOTO_CAPTURED': 'Captured',
-	'PHOTO_MAKE': 'Make',
-	'PHOTO_TYPE': 'Type/Model',
-	'PHOTO_LENS': 'Lens',
-	'PHOTO_SHUTTER': 'Shutter Speed',
-	'PHOTO_APERTURE': 'Aperture',
-	'PHOTO_FOCAL': 'Focal Length',
-	'PHOTO_ISO': 'ISO',
-	'PHOTO_SHARING': 'Sharing',
-	'PHOTO_SHR_PLUBLIC': 'Public',
-	'PHOTO_SHR_ALB': 'Yes (Album)',
-	'PHOTO_SHR_PHT': 'Yes (Photo)',
-	'PHOTO_SHR_NO': 'No',
-	'PHOTO_DELETE': 'Delete Photo',
-	'PHOTO_KEEP': 'Keep Photo',
-	'PHOTO_DELETE_1': 'Are you sure you want to delete the photo',
-	'PHOTO_DELETE_2': '? This action can\'t be undone!',
-	'PHOTO_DELETE_ALL_1': 'Are you sure you want to delete all',
-	'PHOTO_DELETE_ALL_2': 'selected photo? This action can\'t be undone!',
-	'PHOTOS_NEW_TITLE_1': 'Enter a title for all',
-	'PHOTOS_NEW_TITLE_2': 'selected photos:',
-	'PHOTO_MAKE_PRIVATE_ALBUM': 'This photo is located in a public album. To make this photo private or public, edit the visibility of the associated album.',
-	'PHOTO_SHOW_ALBUM': 'Show Album',
-	'PHOTO_PUBLIC': 'Public',
-	'PHOTO_PUBLIC_EXPL': 'Photo can be viewed by others, subject to the restrictions below.',
-	'PHOTO_FULL': 'Original',
-	'PHOTO_FULL_EXPL': 'Full-resolution picture is available.',
-	'PHOTO_HIDDEN': 'Hidden',
-	'PHOTO_HIDDEN_EXPL': 'Only people with the direct link can view this photo.',
-	'PHOTO_DOWNLOADABLE': 'Downloadable',
-	'PHOTO_DOWNLOADABLE_EXPL': 'Visitors of your gallery can download this photo.',
-	'PHOTO_SHARE_BUTTON_VISIBLE': 'Share button is visible',
-	'PHOTO_SHARE_BUTTON_VISIBLE_EXPL': 'Display social media sharing links.',
-	'PHOTO_PASSWORD_PROT': 'Password protected',
-	'PHOTO_PASSWORD_PROT_EXPL': 'Photo only accessible with a valid password.',
-	'PHOTO_EDIT_SHARING_TEXT': 'The sharing properties of this photo will be changed to the following:',
-	'PHOTO_NO_EDIT_SHARING_TEXT': 'Because this photo is located in a public album, it inherits that album\'s visibility settings.  Its current visibility is shown below for informational purposes only.',
-	'PHOTO_EDIT_GLOBAL_SHARING_TEXT': 'The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.',
-	'PHOTO_SHARING_CONFIRM': 'Save',
-	'PHOTO_LOCATION': 'Location',
-	'PHOTO_LATITUDE': 'Latitude',
-	'PHOTO_LONGITUDE': 'Longitude',
-	'PHOTO_ALTITUDE': 'Altitude',
-	'PHOTO_IMGDIRECTION': 'Direction',
+	LOADING: "Loading",
+	ERROR: "Error",
+	ERROR_TEXT: "Whoops, it looks like something went wrong. Please reload the site and try again!",
+	ERROR_DB_1: "Unable to connect to host database because access was denied. Double-check your host, username and password and ensure that access from your current location is permitted.",
+	ERROR_DB_2: "Unable to create the database. Double-check your host, username and password and ensure that the specified user has the rights to modify and add content to the database.",
+	ERROR_CONFIG_FILE: "Unable to save this configuration. Permission denied in <b>'data/'</b>. Please set the read, write and execute rights for others in <b>'data/'</b> and <b>'uploads/'</b>. Take a look at the readme for more information.",
+	ERROR_UNKNOWN: "Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.",
+	ERROR_LOGIN: "Unable to save login. Please try again with another username and password!",
+	ERROR_MAP_DEACTIVATED: "Map functionality has been deactivated under settings.",
+	ERROR_SEARCH_DEACTIVATED: "Search functionality has been deactivated under settings.",
+	SUCCESS: "OK",
+	RETRY: "Retry",
 
-	'LOADING': 'Loading',
-	'ERROR': 'Error',
-	'ERROR_TEXT': 'Whoops, it looks like something went wrong. Please reload the site and try again!',
-	'ERROR_DB_1': 'Unable to connect to host database because access was denied. Double-check your host, username and password and ensure that access from your current location is permitted.',
-	'ERROR_DB_2': 'Unable to create the database. Double-check your host, username and password and ensure that the specified user has the rights to modify and add content to the database.',
-	'ERROR_CONFIG_FILE': "Unable to save this configuration. Permission denied in <b>'data/'</b>. Please set the read, write and execute rights for others in <b>'data/'</b> and <b>'uploads/'</b>. Take a look at the readme for more information.",
-	'ERROR_UNKNOWN': 'Something unexpected happened. Please try again and check your installation and server. Take a look at the readme for more information.',
-	'ERROR_LOGIN': 'Unable to save login. Please try again with another username and password!',
-	'ERROR_MAP_DEACTIVATED': 'Map functionality has been deactivated under settings.',
-	'ERROR_SEARCH_DEACTIVATED': 'Search functionality has been deactivated under settings.',
-	'SUCCESS': 'OK',
-	'RETRY': 'Retry',
+	SETTINGS_WARNING: "Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.",
+	SETTINGS_SUCCESS_LOGIN: "Login Info updated.",
+	SETTINGS_SUCCESS_SORT: "Sorting order updated.",
+	SETTINGS_SUCCESS_DROPBOX: "Dropbox Key updated.",
+	SETTINGS_SUCCESS_LANG: "Language updated",
+	SETTINGS_SUCCESS_LAYOUT: "Layout updated",
+	SETTINGS_SUCCESS_IMAGE_OVERLAY: "EXIF Overlay setting updated",
+	SETTINGS_SUCCESS_PUBLIC_SEARCH: "Public search updated",
+	SETTINGS_SUCCESS_LICENSE: "Default license updated",
+	SETTINGS_SUCCESS_MAP_DISPLAY: "Map display settings updated",
+	SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC: "Map display settings for public albums updated",
+	SETTINGS_SUCCESS_MAP_PROVIDER: "Map provider settings updated",
 
-	'SETTINGS_WARNING': 'Changing these advanced settings can be harmful to the stability, security and performance of this application. You should only modify them if you are sure of what you are doing.',
-	'SETTINGS_SUCCESS_LOGIN': 'Login Info updated.',
-	'SETTINGS_SUCCESS_SORT': 'Sorting order updated.',
-	'SETTINGS_SUCCESS_DROPBOX': 'Dropbox Key updated.',
-	'SETTINGS_SUCCESS_LANG': 'Language updated',
-	'SETTINGS_SUCCESS_LAYOUT': 'Layout updated',
-	'SETTINGS_SUCCESS_IMAGE_OVERLAY': 'EXIF Overlay setting updated',
-	'SETTINGS_SUCCESS_PUBLIC_SEARCH': 'Public search updated',
-	'SETTINGS_SUCCESS_LICENSE': 'Default license updated',
-	'SETTINGS_SUCCESS_MAP_DISPLAY': 'Map display settings updated',
-	'SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC': 'Map display settings for public albums updated',
-	'SETTINGS_SUCCESS_MAP_PROVIDER': 'Map provider settings updated',
+	U2F_NOT_SUPPORTED: "U2F not supported. Sorry.",
+	U2F_NOT_SECURE: "Environment not secured. U2F not available.",
+	U2F_REGISTER_KEY: "Register new device.",
+	U2F_REGISTRATION_SUCCESS: "Registration successful!",
+	U2F_AUTHENTIFICATION_SUCCESS: "Authentication successful!",
+	U2F_CREDENTIALS: "Credentials",
+	U2F_CREDENTIALS_DELETED: "Credentials deleted!",
 
-	'U2F_NOT_SUPPORTED': 'U2F not supported. Sorry.',
-	'U2F_NOT_SECURE': 'Environment not secured. U2F not available.',
-	'U2F_REGISTER_KEY': 'Register new device.',
-	'U2F_REGISTRATION_SUCCESS': 'Registration successful!',
-	'U2F_AUTHENTIFICATION_SUCCESS': 'Authentication successful!',
-	'U2F_CREDENTIALS': 'Credentials',
-	'U2F_CREDENTIALS_DELETED': 'Credentials deleted!',
+	SETTINGS_SUCCESS_CSS: "CSS updated",
+	SETTINGS_SUCCESS_UPDATE: "Settings updated with success",
 
-	'SETTINGS_SUCCESS_CSS': 'CSS updated',
-	'SETTINGS_SUCCESS_UPDATE': 'Settings updated with success',
+	DB_INFO_TITLE: "Enter your database connection details below:",
+	DB_INFO_HOST: "Database Host (optional)",
+	DB_INFO_USER: "Database Username",
+	DB_INFO_PASSWORD: "Database Password",
+	DB_INFO_TEXT: "Lychee will create its own database. If required, you can enter the name of an existing database instead:",
+	DB_NAME: "Database Name (optional)",
+	DB_PREFIX: "Table prefix (optional)",
+	DB_CONNECT: "Connect",
 
-	'DB_INFO_TITLE': 'Enter your database connection details below:',
-	'DB_INFO_HOST': 'Database Host (optional)',
-	'DB_INFO_USER': 'Database Username',
-	'DB_INFO_PASSWORD': 'Database Password',
-	'DB_INFO_TEXT': 'Lychee will create its own database. If required, you can enter the name of an existing database instead:',
-	'DB_NAME': 'Database Name (optional)',
-	'DB_PREFIX': 'Table prefix (optional)',
-	'DB_CONNECT': 'Connect',
+	LOGIN_TITLE: "Enter a username and password for your installation:",
+	LOGIN_USERNAME: "New Username",
+	LOGIN_PASSWORD: "New Password",
+	LOGIN_PASSWORD_CONFIRM: "Confirm Password",
+	LOGIN_CREATE: "Create Login",
 
-	'LOGIN_TITLE': 'Enter a username and password for your installation:',
-	'LOGIN_USERNAME': 'New Username',
-	'LOGIN_PASSWORD': 'New Password',
-	'LOGIN_PASSWORD_CONFIRM': 'Confirm Password',
-	'LOGIN_CREATE': 'Create Login',
+	PASSWORD_TITLE: "Enter your current username and password:",
+	USERNAME_CURRENT: "Current Username",
+	PASSWORD_CURRENT: "Current Password",
+	PASSWORD_TEXT: "Your username and password will be changed to the following:",
+	PASSWORD_CHANGE: "Change Login",
 
-	'PASSWORD_TITLE': 'Enter your current username and password:',
-	'USERNAME_CURRENT': 'Current Username',
-	'PASSWORD_CURRENT': 'Current Password',
-	'PASSWORD_TEXT': 'Your username and password will be changed to the following:',
-	'PASSWORD_CHANGE': 'Change Login',
+	EDIT_SHARING_TITLE: "Edit Sharing",
+	EDIT_SHARING_TEXT: "The sharing-properties of this album will be changed to the following:",
+	SHARE_ALBUM_TEXT: "This album will be shared with the following properties:",
+	ALBUM_SHARING_CONFIRM: "Save",
 
-	'EDIT_SHARING_TITLE': 'Edit Sharing',
-	'EDIT_SHARING_TEXT': 'The sharing-properties of this album will be changed to the following:',
-	'SHARE_ALBUM_TEXT': 'This album will be shared with the following properties:',
-	'ALBUM_SHARING_CONFIRM': 'Save',
+	SORT_ALBUM_BY_1: "Sort albums by",
+	SORT_ALBUM_BY_2: "in an",
+	SORT_ALBUM_BY_3: "order.",
 
-	'SORT_ALBUM_BY_1': 'Sort albums by',
-	'SORT_ALBUM_BY_2': 'in an',
-	'SORT_ALBUM_BY_3': 'order.',
+	SORT_ALBUM_SELECT_1: "Creation Time",
+	SORT_ALBUM_SELECT_2: "Title",
+	SORT_ALBUM_SELECT_3: "Description",
+	SORT_ALBUM_SELECT_4: "Public",
+	SORT_ALBUM_SELECT_5: "Latest Take Date",
+	SORT_ALBUM_SELECT_6: "Oldest Take Date",
 
-	'SORT_ALBUM_SELECT_1': 'Creation Time',
-	'SORT_ALBUM_SELECT_2': 'Title',
-	'SORT_ALBUM_SELECT_3': 'Description',
-	'SORT_ALBUM_SELECT_4': 'Public',
-	'SORT_ALBUM_SELECT_5': 'Latest Take Date',
-	'SORT_ALBUM_SELECT_6': 'Oldest Take Date',
+	SORT_PHOTO_BY_1: "Sort photos by",
+	SORT_PHOTO_BY_2: "in an",
+	SORT_PHOTO_BY_3: "order.",
 
-	'SORT_PHOTO_BY_1': 'Sort photos by',
-	'SORT_PHOTO_BY_2': 'in an',
-	'SORT_PHOTO_BY_3': 'order.',
+	SORT_PHOTO_SELECT_1: "Upload Time",
+	SORT_PHOTO_SELECT_2: "Take Date",
+	SORT_PHOTO_SELECT_3: "Title",
+	SORT_PHOTO_SELECT_4: "Description",
+	SORT_PHOTO_SELECT_5: "Public",
+	SORT_PHOTO_SELECT_6: "Star",
+	SORT_PHOTO_SELECT_7: "Photo Format",
 
-	'SORT_PHOTO_SELECT_1': 'Upload Time',
-	'SORT_PHOTO_SELECT_2': 'Take Date',
-	'SORT_PHOTO_SELECT_3': 'Title',
-	'SORT_PHOTO_SELECT_4': 'Description',
-	'SORT_PHOTO_SELECT_5': 'Public',
-	'SORT_PHOTO_SELECT_6': 'Star',
-	'SORT_PHOTO_SELECT_7': 'Photo Format',
+	SORT_ASCENDING: "Ascending",
+	SORT_DESCENDING: "Descending",
+	SORT_CHANGE: "Change Sorting",
 
-	'SORT_ASCENDING': 'Ascending',
-	'SORT_DESCENDING': 'Descending',
-	'SORT_CHANGE': 'Change Sorting',
+	DROPBOX_TITLE: "Set Dropbox Key",
+	DROPBOX_TEXT: "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create'>their website</a>. Generate yourself a personal key and enter it below:",
 
-	'DROPBOX_TITLE': 'Set Dropbox Key',
-	'DROPBOX_TEXT': "In order to import photos from your Dropbox, you need a valid drop-ins app key from <a href='https://www.dropbox.com/developers/apps/create'>their website</a>. Generate yourself a personal key and enter it below:",
+	LANG_TEXT: "Change Lychee language for:",
+	LANG_TITLE: "Change Language",
 
-	'LANG_TEXT': 'Change Lychee language for:',
-	'LANG_TITLE': 'Change Language',
+	CSS_TEXT: "Personalize your CSS:",
+	CSS_TITLE: "Change CSS",
 
-	'CSS_TEXT': 'Personalize your CSS:',
-	'CSS_TITLE': 'Change CSS',
+	LAYOUT_TYPE: "Layout of photos:",
+	LAYOUT_SQUARES: "Square thumbnails",
+	LAYOUT_JUSTIFIED: "With aspect, justified",
+	LAYOUT_UNJUSTIFIED: "With aspect, unjustified",
+	SET_LAYOUT: "Change layout",
+	PUBLIC_SEARCH_TEXT: "Public search allowed:",
 
-	'LAYOUT_TYPE': 'Layout of photos:',
-	'LAYOUT_SQUARES': 'Square thumbnails',
-	'LAYOUT_JUSTIFIED': 'With aspect, justified',
-	'LAYOUT_UNJUSTIFIED': 'With aspect, unjustified',
-	'SET_LAYOUT': 'Change layout',
-	'PUBLIC_SEARCH_TEXT': 'Public search allowed:',
+	IMAGE_OVERLAY_TEXT: "Display image overlay by default:",
 
-	'IMAGE_OVERLAY_TEXT': 'Display image overlay by default:',
+	OVERLAY_TYPE: "Data to use in image overlay:",
+	OVERLAY_EXIF: "Photo EXIF data",
+	OVERLAY_DESCRIPTION: "Photo description",
+	OVERLAY_DATE: "Photo date taken",
 
-	'OVERLAY_TYPE': 'Data to use in image overlay:',
-	'OVERLAY_EXIF': 'Photo EXIF data',
-	'OVERLAY_DESCRIPTION': 'Photo description',
-	'OVERLAY_DATE': 'Photo date taken',
+	MAP_PROVIDER: "Provider of OpenStreetMap tiles:",
+	MAP_PROVIDER_WIKIMEDIA: "Wikimedia",
+	MAP_PROVIDER_OSM_ORG: "OpenStreetMap.org (no retina)",
+	MAP_PROVIDER_OSM_DE: "OpenStreetMap.de (no retina)",
+	MAP_PROVIDER_OSM_FR: "OpenStreetMap.fr (no retina)",
+	MAP_PROVIDER_RRZE: "University of Erlangen, Germany (only retina)",
 
-	'MAP_PROVIDER': 'Provider of OpenStreetMap tiles:',
-	'MAP_PROVIDER_WIKIMEDIA': 'Wikimedia',
-	'MAP_PROVIDER_OSM_ORG': 'OpenStreetMap.org (no retina)',
-	'MAP_PROVIDER_OSM_DE': 'OpenStreetMap.de (no retina)',
-	'MAP_PROVIDER_OSM_FR': 'OpenStreetMap.fr (no retina)',
-	'MAP_PROVIDER_RRZE': 'University of Erlangen, Germany (only retina)',
+	MAP_DISPLAY_TEXT: "Enable maps (provided by OpenStreetMap):",
+	MAP_DISPLAY_PUBLIC_TEXT: "Enable maps for public albums (provided by OpenStreetMap):",
+	MAP_INCLUDE_SUBALBUMS_TEXT: "Include photos of subalbums on map:",
+	LOCATION_DECODING: "Decode GPS data into location name",
+	LOCATION_SHOW: "Show location name",
+	LOCATION_SHOW_PUBLIC: "Show location name for public mode",
 
-	'MAP_DISPLAY_TEXT': 'Enable maps (provided by OpenStreetMap):',
-	'MAP_DISPLAY_PUBLIC_TEXT': 'Enable maps for public albums (provided by OpenStreetMap):',
-	'MAP_INCLUDE_SUBALBUMS_TEXT': 'Include photos of subalbums on map:',
-	'LOCATION_DECODING': 'Decode GPS data into location name',
-	'LOCATION_SHOW': 'Show location name',
-	'LOCATION_SHOW_PUBLIC': 'Show location name for public mode',
+	NSFW_VISIBLE_TEXT_1: "Make Sensitive albums visible by default.",
+	NSFW_VISIBLE_TEXT_2: "If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.",
+	SETTINGS_SUCCESS_NSFW_VISIBLE: "Default sensitive album visibility updated with success.",
 
-	'VIEW_NO_RESULT': 'No results',
-	'VIEW_NO_PUBLIC_ALBUMS': 'No public albums',
-	'VIEW_NO_CONFIGURATION': 'No configuration',
-	'VIEW_PHOTO_NOT_FOUND': 'Photo not found',
+	VIEW_NO_RESULT: "No results",
+	VIEW_NO_PUBLIC_ALBUMS: "No public albums",
+	VIEW_NO_CONFIGURATION: "No configuration",
+	VIEW_PHOTO_NOT_FOUND: "Photo not found",
 
-	'NO_TAGS': 'No Tags',
+	NO_TAGS: "No Tags",
 
-	'UPLOAD_MANAGE_NEW_PHOTOS': 'You can now manage your new photo(s).',
-	'UPLOAD_COMPLETE': 'Upload complete',
-	'UPLOAD_COMPLETE_FAILED': 'Failed to upload one or more photos.',
-	'UPLOAD_IMPORTING': 'Importing',
-	'UPLOAD_IMPORTING_URL': 'Importing URL',
-	'UPLOAD_UPLOADING': 'Uploading',
-	'UPLOAD_FINISHED': 'Finished',
-	'UPLOAD_PROCESSING': 'Processing',
-	'UPLOAD_FAILED': 'Failed',
-	'UPLOAD_FAILED_ERROR': 'Upload failed. Server returned an error!',
-	'UPLOAD_FAILED_WARNING': 'Upload failed. Server returned a warning!',
-	'UPLOAD_SKIPPED': 'Skipped',
-	'UPLOAD_ERROR_CONSOLE': 'Please take a look at the console of your browser for further details.',
-	'UPLOAD_UNKNOWN': 'Server returned an unknown response. Please take a look at the console of your browser for further details.',
-	'UPLOAD_ERROR_UNKNOWN': 'Upload failed. Server returned an unkown error!',
-	'UPLOAD_IN_PROGRESS': 'Lychee is currently uploading!',
-	'UPLOAD_IMPORT_WARN_ERR': 'The import has been finished, but returned warnings or errors. Please take a look at the log (Settings -> Show Log) for further details.',
-	'UPLOAD_IMPORT_COMPLETE': 'Import complete',
-	'UPLOAD_IMPORT_INSTR': 'Please enter the direct link to a photo to import it:',
-	'UPLOAD_IMPORT': 'Import',
-	'UPLOAD_IMPORT_SERVER': 'Importing from server',
-	'UPLOAD_IMPORT_SERVER_FOLD': 'Folder empty or no readable files to process. Please take a look at the log (Settings -> Show Log) for further details.',
-	'UPLOAD_IMPORT_SERVER_INSTR': 'This action will import all photos, folders and sub-folders which are located in the following directory. The <b>original files will be deleted</b> after the import when possible.',
-	'UPLOAD_ABSOLUTE_PATH': 'Absolute path to directory',
-	'UPLOAD_IMPORT_SERVER_EMPT': 'Could not start import because the folder was empty!',
+	UPLOAD_MANAGE_NEW_PHOTOS: "You can now manage your new photo(s).",
+	UPLOAD_COMPLETE: "Upload complete",
+	UPLOAD_COMPLETE_FAILED: "Failed to upload one or more photos.",
+	UPLOAD_IMPORTING: "Importing",
+	UPLOAD_IMPORTING_URL: "Importing URL",
+	UPLOAD_UPLOADING: "Uploading",
+	UPLOAD_FINISHED: "Finished",
+	UPLOAD_PROCESSING: "Processing",
+	UPLOAD_FAILED: "Failed",
+	UPLOAD_FAILED_ERROR: "Upload failed. Server returned an error!",
+	UPLOAD_FAILED_WARNING: "Upload failed. Server returned a warning!",
+	UPLOAD_SKIPPED: "Skipped",
+	UPLOAD_ERROR_CONSOLE: "Please take a look at the console of your browser for further details.",
+	UPLOAD_UNKNOWN: "Server returned an unknown response. Please take a look at the console of your browser for further details.",
+	UPLOAD_ERROR_UNKNOWN: "Upload failed. Server returned an unkown error!",
+	UPLOAD_IN_PROGRESS: "Lychee is currently uploading!",
+	UPLOAD_IMPORT_WARN_ERR: "The import has been finished, but returned warnings or errors. Please take a look at the log (Settings -> Show Log) for further details.",
+	UPLOAD_IMPORT_COMPLETE: "Import complete",
+	UPLOAD_IMPORT_INSTR: "Please enter the direct link to a photo to import it:",
+	UPLOAD_IMPORT: "Import",
+	UPLOAD_IMPORT_SERVER: "Importing from server",
+	UPLOAD_IMPORT_SERVER_FOLD: "Folder empty or no readable files to process. Please take a look at the log (Settings -> Show Log) for further details.",
+	UPLOAD_IMPORT_SERVER_INSTR: "This action will import all photos, folders and sub-folders which are located in the following directory. The <b>original files will be deleted</b> after the import when possible.",
+	UPLOAD_ABSOLUTE_PATH: "Absolute path to directory",
+	UPLOAD_IMPORT_SERVER_EMPT: "Could not start import because the folder was empty!",
 
-	'ABOUT_SUBTITLE': 'Self-hosted photo-management done right',
-	'ABOUT_DESCRIPTION': 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',
+	ABOUT_SUBTITLE: "Self-hosted photo-management done right",
+	ABOUT_DESCRIPTION: "is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.",
 
-	'URL_COPY_TO_CLIPBOARD': 'Copy to clipboard',
-	'URL_COPIED_TO_CLIPBOARD': 'Copied URL to clipboard!',
-	'PHOTO_DIRECT_LINKS_TO_IMAGES': 'Direct links to image files:',
-	'PHOTO_MEDIUM': 'Medium',
-	'PHOTO_MEDIUM_HIDPI': 'Medium HiDPI',
-	'PHOTO_SMALL': 'Thumb',
-	'PHOTO_SMALL_HIDPI': 'Thumb HiDPI',
-	'PHOTO_THUMB': 'Square thumb',
-	'PHOTO_THUMB_HIDPI': 'Square thumb HiDPI',
-	'PHOTO_LIVE_VIDEO': 'Video part of live-photo',
-	'PHOTO_VIEW': 'Lychee Photo View:'
+	URL_COPY_TO_CLIPBOARD: "Copy to clipboard",
+	URL_COPIED_TO_CLIPBOARD: "Copied URL to clipboard!",
+	PHOTO_DIRECT_LINKS_TO_IMAGES: "Direct links to image files:",
+	PHOTO_MEDIUM: "Medium",
+	PHOTO_MEDIUM_HIDPI: "Medium HiDPI",
+	PHOTO_SMALL: "Thumb",
+	PHOTO_SMALL_HIDPI: "Thumb HiDPI",
+	PHOTO_THUMB: "Square thumb",
+	PHOTO_THUMB_HIDPI: "Square thumb HiDPI",
+	PHOTO_LIVE_VIDEO: "Video part of live-photo",
+	PHOTO_VIEW: "Lychee Photo View:"
 };
+
 /**
  * @description This module takes care of the map view of a full album and its sub-albums.
  */
 
 var map_provider_layer_attribution = {
-	'Wikimedia': {
-		layer: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png',
+	Wikimedia: {
+		layer: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png",
 		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
 	},
-	'OpenStreetMap.org': {
-		layer: 'https://{s}.tile.osm.org/{z}/{x}/{y}.png',
+	"OpenStreetMap.org": {
+		layer: "https://{s}.tile.osm.org/{z}/{x}/{y}.png",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
-	'OpenStreetMap.de': {
-		layer: 'https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png ',
+	"OpenStreetMap.de": {
+		layer: "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png ",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
-	'OpenStreetMap.fr': {
-		layer: 'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ',
+	"OpenStreetMap.fr": {
+		layer: "https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
-	'RRZE': {
-		layer: 'https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png',
+	RRZE: {
+		layer: "https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	}
 };
@@ -5261,20 +5347,20 @@ mapview.isInitialized = function () {
 
 mapview.title = function (_albumID, _albumTitle) {
 	switch (_albumID) {
-		case 'f':
-			lychee.setTitle(lychee.locale['STARRED'], false);
+		case "f":
+			lychee.setTitle(lychee.locale["STARRED"], false);
 			break;
-		case 's':
-			lychee.setTitle(lychee.locale['PUBLIC'], false);
+		case "s":
+			lychee.setTitle(lychee.locale["PUBLIC"], false);
 			break;
-		case 'r':
-			lychee.setTitle(lychee.locale['RECENT'], false);
+		case "r":
+			lychee.setTitle(lychee.locale["RECENT"], false);
 			break;
-		case '0':
-			lychee.setTitle(lychee.locale['UNSORTED'], false);
+		case "0":
+			lychee.setTitle(lychee.locale["UNSORTED"], false);
 			break;
 		case null:
-			lychee.setTitle(lychee.locale['ALBUMS'], false);
+			lychee.setTitle(lychee.locale["ALBUMS"], false);
 			break;
 		default:
 			lychee.setTitle(_albumTitle, false);
@@ -5286,33 +5372,31 @@ mapview.title = function (_albumID, _albumTitle) {
 mapview.open = function () {
 	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
-
 	// If map functionality is disabled -> do nothing
 	if (!lychee.map_display || lychee.publicMode === true && !lychee.map_display_public) {
-		loadingBar.show('error', lychee.locale['ERROR_MAP_DEACTIVATED']);
+		loadingBar.show("error", lychee.locale["ERROR_MAP_DEACTIVATED"]);
 		return;
 	}
 
-	lychee.animate($('#mapview'), 'fadeIn');
-	$('#mapview').show();
-	header.setMode('map');
+	lychee.animate($("#mapview"), "fadeIn");
+	$("#mapview").show();
+	header.setMode("map");
 
 	mapview.albumID = albumID;
 
 	// initialize container only once
 	if (mapview.isInitialized() == false) {
-
 		// Leaflet seaches for icon in same directoy as js file -> paths needs
 		// to be overwritten
 		delete L.Icon.Default.prototype._getIconUrl;
 		L.Icon.Default.mergeOptions({
-			iconRetinaUrl: 'img/marker-icon-2x.png',
-			iconUrl: 'img/marker-icon.png',
-			shadowUrl: 'img/marker-shadow.png'
+			iconRetinaUrl: "img/marker-icon-2x.png",
+			iconUrl: "img/marker-icon.png",
+			shadowUrl: "img/marker-shadow.png"
 		});
 
 		// Set initial view to (0,0)
-		mapview.map = L.map('leaflet_map_full').setView([0.0, 0.0], 13);
+		mapview.map = L.map("leaflet_map_full").setView([0.0, 0.0], 13);
 
 		L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
 			attribution: map_provider_layer_attribution[lychee.map_provider].attribution
@@ -5320,9 +5404,7 @@ mapview.open = function () {
 
 		mapview.map_provider = lychee.map_provider;
 	} else {
-
 		if (mapview.map_provider !== lychee.map_provider) {
-
 			// removew all layers
 			mapview.map.eachLayer(function (layer) {
 				mapview.map.removeLayer(layer);
@@ -5334,7 +5416,6 @@ mapview.open = function () {
 
 			mapview.map_provider = lychee.map_provider;
 		} else {
-
 			// Mapview has already shown data -> remove only photoLayer showing photos
 			mapview.photoLayer.clear();
 		}
@@ -5347,15 +5428,15 @@ mapview.open = function () {
 	}
 
 	// Define how the photos on the map should look like
-	mapview.photoLayer = L.photo.cluster().on('click', function (e) {
+	mapview.photoLayer = L.photo.cluster().on("click", function (e) {
 		var photo = e.layer.photo;
 		var template = "";
 
 		// Retina version if available
 		if (photo.url2x !== "") {
-			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'srcset="{url} 1x, {url2x} 2x" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), '</span><p>{takedate}</p></div>');
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'srcset="{url} 1x, {url2x} 2x" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), "</span><p>{takedate}</p></div>");
 		} else {
-			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), '</span><p>{takedate}</p></div>');
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), "</span><p>{takedate}</p></div>");
 		}
 
 		e.layer.bindPopup(L.Util.template(template, photo), {
@@ -5376,7 +5457,6 @@ mapview.open = function () {
 
 	// Adds photos to the map
 	var addPhotosToMap = function addPhotosToMap(album) {
-
 		// check if empty
 		if (!album.photos) return;
 
@@ -5385,16 +5465,16 @@ mapview.open = function () {
 		album.photos.forEach(function (element, index) {
 			if (element.latitude || element.longitude) {
 				photos.push({
-					"lat": parseFloat(element.latitude),
-					"lng": parseFloat(element.longitude),
-					"thumbnail": element.thumbUrl !== "uploads/thumb/" ? element.thumbUrl : "img/placeholder.png",
-					"thumbnail2x": element.thumb2x,
-					"url": element.small !== "" ? element.small : element.url,
-					"url2x": element.small2x,
-					"name": element.title,
-					"takedate": element.takedate,
-					"albumID": element.album,
-					"photoID": element.id
+					lat: parseFloat(element.latitude),
+					lng: parseFloat(element.longitude),
+					thumbnail: element.thumbUrl !== "uploads/thumb/" ? element.thumbUrl : "img/placeholder.png",
+					thumbnail2x: element.thumb2x,
+					url: element.small !== "" ? element.small : element.url,
+					url2x: element.small2x,
+					name: element.title,
+					takedate: element.takedate,
+					albumID: element.album,
+					photoID: element.id
 				});
 
 				// Update min/max lat/lng
@@ -5426,22 +5506,20 @@ mapview.open = function () {
 	var getAlbumData = function getAlbumData(_albumID) {
 		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-		if (_albumID !== '' && _albumID !== null) {
+		if (_albumID !== "" && _albumID !== null) {
 			// _ablumID has been to a specific album
 			var _params = {
 				albumID: _albumID,
 				includeSubAlbums: _includeSubAlbums,
-				password: ''
+				password: ""
 			};
 
-			api.post('Album::getPositionData', _params, function (data) {
-
-				if (data === 'Warning: Wrong password!') {
+			api.post("Album::getPositionData", _params, function (data) {
+				if (data === "Warning: Wrong password!") {
 					password.getDialog(_albumID, function () {
-
 						_params.password = password.value;
 
-						api.post('Album::getPositionData', _params, function (_data) {
+						api.post("Album::getPositionData", _params, function (_data) {
 							addPhotosToMap(_data);
 							mapview.title(_albumID, _data.title);
 						});
@@ -5456,17 +5534,15 @@ mapview.open = function () {
 			// _ablumID has been to a specific album
 			var _params2 = {
 				includeSubAlbums: _includeSubAlbums,
-				password: ''
+				password: ""
 			};
 
-			api.post('Albums::getPositionData', _params2, function (data) {
-
-				if (data === 'Warning: Wrong password!') {
+			api.post("Albums::getPositionData", _params2, function (data) {
+				if (data === "Warning: Wrong password!") {
 					password.getDialog(_albumID, function () {
-
 						_params2.password = password.value;
 
-						api.post('Albums::getPositionData', _params2, function (_data) {
+						api.post("Albums::getPositionData", _params2, function (_data) {
 							addPhotosToMap(_data);
 							mapview.title(_albumID, _data.title);
 						});
@@ -5482,10 +5558,8 @@ mapview.open = function () {
 	// If subalbums not being included and album.json already has all data
 	// -> we can reuse it
 	if (lychee.map_include_subalbums === false && album.json !== null && album.json.photos !== null) {
-
 		addPhotosToMap(album.json);
 	} else {
-
 		// Not all needed data has been  preloaded - we need to load everything
 		getAlbumData(albumID, lychee.map_include_subalbums);
 	}
@@ -5495,33 +5569,31 @@ mapview.open = function () {
 };
 
 mapview.close = function () {
-
 	// If map functionality is disabled -> do nothing
 	if (!lychee.map_display) return;
 
-	lychee.animate($('#mapview'), 'fadeOut');
-	$('#mapview').hide();
-	header.setMode('album');
+	lychee.animate($("#mapview"), "fadeOut");
+	$("#mapview").hide();
+	header.setMode("album");
 
 	// Make album focussable
 	tabindex.makeFocusable(lychee.content);
 };
 
 mapview.goto = function (elem) {
-
 	// If map functionality is disabled -> do nothing
 	if (!lychee.map_display) return;
 
-	var photoID = elem.attr('data-id');
-	var albumID = elem.attr('data-album-id');
+	var photoID = elem.attr("data-id");
+	var albumID = elem.attr("data-album-id");
 
-	if (albumID == 'null') albumID = 0;
+	if (albumID == "null") albumID = 0;
 
 	if (album.json == null || albumID !== album.json.id) {
 		album.refresh();
 	}
 
-	lychee.goto(albumID + '/' + photoID);
+	lychee.goto(albumID + "/" + photoID);
 };
 
 /**
@@ -5529,31 +5601,25 @@ mapview.goto = function (elem) {
  */
 
 var isSelectKeyPressed = function isSelectKeyPressed(e) {
-
 	return e.metaKey || e.ctrlKey;
 };
 
 var multiselect = {
-
 	ids: [],
 	albumsSelected: 0,
 	photosSelected: 0,
 	lastClicked: null
-
 };
 
 multiselect.position = {
-
 	top: null,
 	right: null,
 	bottom: null,
 	left: null
-
 };
 
 multiselect.bind = function () {
-
-	$('.content').on('mousedown', function (e) {
+	$(".content").on("mousedown", function (e) {
 		if (e.which === 1) multiselect.show(e);
 	});
 
@@ -5561,12 +5627,10 @@ multiselect.bind = function () {
 };
 
 multiselect.unbind = function () {
-
-	$('.content').off('mousedown');
+	$(".content").off("mousedown");
 };
 
 multiselect.isSelected = function (id) {
-
 	var pos = $.inArray(id, multiselect.ids);
 
 	return {
@@ -5576,7 +5640,6 @@ multiselect.isSelected = function (id) {
 };
 
 multiselect.toggleItem = function (object, id) {
-
 	if (album.isSmartID(id)) return;
 
 	var selected = multiselect.isSelected(id).selected;
@@ -5585,15 +5648,14 @@ multiselect.toggleItem = function (object, id) {
 };
 
 multiselect.addItem = function (object, id) {
-
 	if (album.isSmartID(id)) return;
 	if (!lychee.admin && albums.isShared(id)) return;
 	if (multiselect.isSelected(id).selected === true) return;
 
-	var isAlbum = object.hasClass('album');
+	var isAlbum = object.hasClass("album");
 
 	if (isAlbum && multiselect.photosSelected > 0 || !isAlbum && multiselect.albumsSelected > 0) {
-		lychee.error('Please select either albums or photos!');
+		lychee.error("Please select either albums or photos!");
 		return;
 	}
 
@@ -5619,7 +5681,7 @@ multiselect.removeItem = function (object, id) {
 	multiselect.ids.splice(position, 1);
 	multiselect.deselect(object);
 
-	var isAlbum = object.hasClass('album');
+	var isAlbum = object.hasClass("album");
 
 	if (isAlbum) {
 		multiselect.albumsSelected--;
@@ -5631,11 +5693,10 @@ multiselect.removeItem = function (object, id) {
 };
 
 multiselect.albumClick = function (e, albumObj) {
-
-	var id = albumObj.attr('data-id');
+	var id = albumObj.attr("data-id");
 
 	if ((isSelectKeyPressed(e) || e.shiftKey) && album.isUploadable()) {
-		if (albumObj.hasClass('disabled')) return;
+		if (albumObj.hasClass("disabled")) return;
 
 		if (isSelectKeyPressed(e)) {
 			multiselect.toggleItem(albumObj, id);
@@ -5644,13 +5705,13 @@ multiselect.albumClick = function (e, albumObj) {
 				// Click with Shift. Select all elements between the current
 				// element and the last clicked-on one.
 
-				if (albumObj.prevAll('.album').toArray().includes(multiselect.lastClicked[0])) {
-					albumObj.prevUntil(multiselect.lastClicked, '.album').each(function () {
-						multiselect.addItem($(this), $(this).attr('data-id'));
+				if (albumObj.prevAll(".album").toArray().includes(multiselect.lastClicked[0])) {
+					albumObj.prevUntil(multiselect.lastClicked, ".album").each(function () {
+						multiselect.addItem($(this), $(this).attr("data-id"));
 					});
-				} else if (albumObj.nextAll('.album').toArray().includes(multiselect.lastClicked[0])) {
-					albumObj.nextUntil(multiselect.lastClicked, '.album').each(function () {
-						multiselect.addItem($(this), $(this).attr('data-id'));
+				} else if (albumObj.nextAll(".album").toArray().includes(multiselect.lastClicked[0])) {
+					albumObj.nextUntil(multiselect.lastClicked, ".album").each(function () {
+						multiselect.addItem($(this), $(this).attr("data-id"));
 					});
 				}
 			}
@@ -5663,11 +5724,10 @@ multiselect.albumClick = function (e, albumObj) {
 };
 
 multiselect.photoClick = function (e, photoObj) {
-
-	var id = photoObj.attr('data-id');
+	var id = photoObj.attr("data-id");
 
 	if ((isSelectKeyPressed(e) || e.shiftKey) && album.isUploadable()) {
-		if (photoObj.hasClass('disabled')) return;
+		if (photoObj.hasClass("disabled")) return;
 
 		if (isSelectKeyPressed(e)) {
 			multiselect.toggleItem(photoObj, id);
@@ -5676,13 +5736,13 @@ multiselect.photoClick = function (e, photoObj) {
 				// Click with Shift. Select all elements between the current
 				// element and the last clicked-on one.
 
-				if (photoObj.prevAll('.photo').toArray().includes(multiselect.lastClicked[0])) {
-					photoObj.prevUntil(multiselect.lastClicked, '.photo').each(function () {
-						multiselect.addItem($(this), $(this).attr('data-id'));
+				if (photoObj.prevAll(".photo").toArray().includes(multiselect.lastClicked[0])) {
+					photoObj.prevUntil(multiselect.lastClicked, ".photo").each(function () {
+						multiselect.addItem($(this), $(this).attr("data-id"));
 					});
-				} else if (photoObj.nextAll('.photo').toArray().includes(multiselect.lastClicked[0])) {
-					photoObj.nextUntil(multiselect.lastClicked, '.photo').each(function () {
-						multiselect.addItem($(this), $(this).attr('data-id'));
+				} else if (photoObj.nextAll(".photo").toArray().includes(multiselect.lastClicked[0])) {
+					photoObj.nextUntil(multiselect.lastClicked, ".photo").each(function () {
+						multiselect.addItem($(this), $(this).attr("data-id"));
 					});
 				}
 			}
@@ -5690,16 +5750,15 @@ multiselect.photoClick = function (e, photoObj) {
 			multiselect.addItem(photoObj, id);
 		}
 	} else {
-		lychee.goto(album.getID() + '/' + id);
+		lychee.goto(album.getID() + "/" + id);
 	}
 };
 
 multiselect.albumContextMenu = function (e, albumObj) {
-
-	var id = albumObj.attr('data-id');
+	var id = albumObj.attr("data-id");
 	var selected = multiselect.isSelected(id).selected;
 
-	if (albumObj.hasClass('disabled')) return;
+	if (albumObj.hasClass("disabled")) return;
 
 	if (selected !== false && multiselect.ids.length > 1) {
 		contextMenu.albumMulti(multiselect.ids, e);
@@ -5709,11 +5768,10 @@ multiselect.albumContextMenu = function (e, albumObj) {
 };
 
 multiselect.photoContextMenu = function (e, photoObj) {
-
-	var id = photoObj.attr('data-id');
+	var id = photoObj.attr("data-id");
 	var selected = multiselect.isSelected(id).selected;
 
-	if (photoObj.hasClass('disabled')) return;
+	if (photoObj.hasClass("disabled")) return;
 
 	if (selected !== false && multiselect.ids.length > 1) {
 		contextMenu.photoMulti(multiselect.ids, e);
@@ -5723,13 +5781,12 @@ multiselect.photoContextMenu = function (e, photoObj) {
 		// should not happen... but you never know...
 		contextMenu.photo(_photo.getID(), e);
 	} else {
-		lychee.error('Could not find what you want.');
+		lychee.error("Could not find what you want.");
 	}
 };
 
 multiselect.clearSelection = function () {
-
-	multiselect.deselect('.photo.active, .album.active');
+	multiselect.deselect(".photo.active, .album.active");
 	multiselect.ids = [];
 	multiselect.albumsSelected = 0;
 	multiselect.photosSelected = 0;
@@ -5737,12 +5794,11 @@ multiselect.clearSelection = function () {
 };
 
 multiselect.show = function (e) {
-
 	if (!album.isUploadable()) return false;
 	if (!visible.albums() && !visible.album()) return false;
-	if ($('.album:hover, .photo:hover').length !== 0) return false;
+	if ($(".album:hover, .photo:hover").length !== 0) return false;
 	if (visible.search()) return false;
-	if (visible.multiselect()) $('#multiselect').remove();
+	if (visible.multiselect()) $("#multiselect").remove();
 
 	_sidebar.setSelectable(false);
 
@@ -5755,17 +5811,16 @@ multiselect.show = function (e) {
 	multiselect.position.bottom = $(document).height() - e.pageY;
 	multiselect.position.left = e.pageX;
 
-	$('body').append(build.multiselect(multiselect.position.top, multiselect.position.left));
+	$("body").append(build.multiselect(multiselect.position.top, multiselect.position.left));
 
-	$(document).on('mousemove', multiselect.resize).on('mouseup', function (_e) {
+	$(document).on("mousemove", multiselect.resize).on("mouseup", function (_e) {
 		if (_e.which === 1) {
 			multiselect.getSelection(_e);
-		};
+		}
 	});
 };
 
 multiselect.resize = function (e) {
-
 	if (multiselect.position.top === null || multiselect.position.right === null || multiselect.position.bottom === null || multiselect.position.left === null) return false;
 
 	// Default CSS
@@ -5779,50 +5834,44 @@ multiselect.resize = function (e) {
 	};
 
 	if (e.pageY >= multiselect.position.top) {
-
 		newCSS.top = multiselect.position.top;
-		newCSS.bottom = 'inherit';
+		newCSS.bottom = "inherit";
 		newCSS.height = Math.min(e.pageY, $(document).height() - 3) - multiselect.position.top;
 	} else {
-
-		newCSS.top = 'inherit';
+		newCSS.top = "inherit";
 		newCSS.bottom = multiselect.position.bottom;
 		newCSS.height = multiselect.position.top - Math.max(e.pageY, 2);
 	}
 
 	if (e.pageX >= multiselect.position.left) {
-
-		newCSS.right = 'inherit';
+		newCSS.right = "inherit";
 		newCSS.left = multiselect.position.left;
 		newCSS.width = Math.min(e.pageX, $(document).width() - 3) - multiselect.position.left;
 	} else {
-
 		newCSS.right = multiselect.position.right;
-		newCSS.left = 'inherit';
+		newCSS.left = "inherit";
 		newCSS.width = multiselect.position.left - Math.max(e.pageX, 2);
 	}
 
 	// Updated all CSS properties at once
-	$('#multiselect').css(newCSS);
+	$("#multiselect").css(newCSS);
 };
 
 multiselect.stopResize = function () {
-
-	if (multiselect.position.top !== null) $(document).off('mousemove mouseup');
+	if (multiselect.position.top !== null) $(document).off("mousemove mouseup");
 };
 
 multiselect.getSize = function () {
-
 	if (!visible.multiselect()) return false;
 
-	var $elem = $('#multiselect');
+	var $elem = $("#multiselect");
 	var offset = $elem.offset();
 
 	return {
 		top: offset.top,
 		left: offset.left,
-		width: parseFloat($elem.css('width'), 10),
-		height: parseFloat($elem.css('height'), 10)
+		width: parseFloat($elem.css("width"), 10),
+		height: parseFloat($elem.css("height"), 10)
 	};
 };
 
@@ -5832,16 +5881,14 @@ multiselect.getSelection = function (e) {
 	if (visible.contextMenu()) return false;
 	if (!visible.multiselect()) return false;
 
-	$('.photo, .album').each(function () {
-
+	$(".photo, .album").each(function () {
 		// We select if there's even a slightest overlap.  Overlap between
 		// an object and the selection occurs if the left edge of the
 		// object is to the left of the right edge of the selection *and*
 		// the right edge of the object is to the right of the left edge of
 		// the selection; analogous for top/bottom.
 		if ($(this).offset().left < size.left + size.width && $(this).offset().left + $(this).width() > size.left && $(this).offset().top < size.top + size.height && $(this).offset().top + $(this).height() > size.top) {
-
-			var id = $(this).attr('data-id');
+			var id = $(this).attr("data-id");
 
 			if (isSelectKeyPressed(e)) {
 				multiselect.toggleItem($(this), id);
@@ -5855,23 +5902,20 @@ multiselect.getSelection = function (e) {
 };
 
 multiselect.select = function (id) {
-
 	var el = $(id);
 
-	el.addClass('selected');
-	el.addClass('active');
+	el.addClass("selected");
+	el.addClass("active");
 };
 
 multiselect.deselect = function (id) {
-
 	var el = $(id);
 
-	el.removeClass('selected');
-	el.removeClass('active');
+	el.removeClass("selected");
+	el.removeClass("active");
 };
 
 multiselect.hide = function () {
-
 	_sidebar.setSelectable(true);
 
 	multiselect.stopResize();
@@ -5881,14 +5925,13 @@ multiselect.hide = function () {
 	multiselect.position.bottom = null;
 	multiselect.position.left = null;
 
-	lychee.animate('#multiselect', 'fadeOut');
+	lychee.animate("#multiselect", "fadeOut");
 	setTimeout(function () {
-		return $('#multiselect').remove();
+		return $("#multiselect").remove();
 	}, 300);
 };
 
 multiselect.close = function () {
-
 	_sidebar.setSelectable(true);
 
 	multiselect.stopResize();
@@ -5898,31 +5941,30 @@ multiselect.close = function () {
 	multiselect.position.bottom = null;
 	multiselect.position.left = null;
 
-	lychee.animate('#multiselect', 'fadeOut');
+	lychee.animate("#multiselect", "fadeOut");
 	setTimeout(function () {
-		return $('#multiselect').remove();
+		return $("#multiselect").remove();
 	}, 300);
 };
 
 multiselect.selectAll = function () {
-
 	if (!album.isUploadable()) return false;
 	if (visible.search()) return false;
 	if (!visible.albums() && !visible.album) return false;
-	if (visible.multiselect()) $('#multiselect').remove();
+	if (visible.multiselect()) $("#multiselect").remove();
 
 	_sidebar.setSelectable(false);
 
 	multiselect.clearSelection();
 
-	$('.photo').each(function () {
-		multiselect.addItem($(this), $(this).attr('data-id'));
+	$(".photo").each(function () {
+		multiselect.addItem($(this), $(this).attr("data-id"));
 	});
 
 	if (multiselect.photosSelected === 0) {
 		// There are no pictures.  Try albums then.
-		$('.album').each(function () {
-			multiselect.addItem($(this), $(this).attr('data-id'));
+		$(".album").each(function () {
+			multiselect.addItem($(this), $(this).attr("data-id"));
 		});
 	}
 };
@@ -5932,15 +5974,11 @@ multiselect.selectAll = function () {
  */
 
 var password = {
-
-	value: ''
-
+	value: ""
 };
 
 password.getDialog = function (albumID, callback) {
-
 	var action = function action(data) {
-
 		var passwd = data.password;
 
 		var params = {
@@ -5948,35 +5986,33 @@ password.getDialog = function (albumID, callback) {
 			password: passwd
 		};
 
-		api.post('Album::getPublic', params, function (_data) {
-
+		api.post("Album::getPublic", params, function (_data) {
 			if (_data === true) {
 				basicModal.close();
 				password.value = passwd;
 				callback();
 			} else {
-				basicModal.error('password');
+				basicModal.error("password");
 			}
 		});
 	};
 
 	var cancel = function cancel() {
-
 		basicModal.close();
 		if (!visible.albums() && !visible.album()) lychee.goto();
 	};
 
-	var msg = "\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale['ALBUM_PASSWORD_REQUIRED'] + "\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='" + lychee.locale['PASSWORD'] + "' value=''>\n\t\t\t  </p>\n\t\t\t  ";
+	var msg = "\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale["ALBUM_PASSWORD_REQUIRED"] + "\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='" + lychee.locale["PASSWORD"] + "' value=''>\n\t\t\t  </p>\n\t\t\t  ";
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			action: {
-				title: lychee.locale['ENTER'],
+				title: lychee.locale["ENTER"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: cancel
 			}
 		}
@@ -5988,31 +6024,27 @@ password.getDialog = function (albumID, callback) {
  */
 
 var _photo = {
-
 	json: null,
 	cache: null,
 	supportsPrefetch: null,
 	LivePhotosObject: null
-
 };
 
 _photo.getID = function () {
-
 	var id = null;
 
-	if (_photo.json) id = _photo.json.id;else id = $('.photo:hover, .photo.active').attr('data-id');
+	if (_photo.json) id = _photo.json.id;else id = $(".photo:hover, .photo.active").attr("data-id");
 
 	if ($.isNumeric(id) === true) return id;else return false;
 };
 
 _photo.load = function (photoID, albumID, autoplay) {
-
 	var checkContent = function checkContent() {
 		if (album.json != null && album.json.photos) _photo.load(photoID, albumID, autoplay);else setTimeout(checkContent, 100);
 	};
 
 	var checkPasswd = function checkPasswd() {
-		if (password.value !== '') _photo.load(photoID, albumID, autoplay);else setTimeout(checkPasswd, 200);
+		if (password.value !== "") _photo.load(photoID, albumID, autoplay);else setTimeout(checkPasswd, 200);
 	};
 
 	// we need to check the album.json.photos because otherwise the script is too fast and this raise an error.
@@ -6026,15 +6058,14 @@ _photo.load = function (photoID, albumID, autoplay) {
 		password: password.value
 	};
 
-	api.post('Photo::get', params, function (data) {
-
-		if (data === 'Warning: Photo private!') {
+	api.post("Photo::get", params, function (data) {
+		if (data === "Warning: Photo private!") {
 			lychee.content.show();
 			lychee.goto();
 			return false;
 		}
 
-		if (data === 'Warning: Wrong password!') {
+		if (data === "Warning: Wrong password!") {
 			checkPasswd();
 			return false;
 		}
@@ -6059,20 +6090,20 @@ _photo.load = function (photoID, albumID, autoplay) {
 _photo.hasExif = function () {
 	var exifHash = _photo.json.make + _photo.json.model + _photo.json.shutter + _photo.json.aperture + _photo.json.focal + _photo.json.iso;
 
-	return exifHash !== '';
+	return exifHash !== "";
 };
 
 _photo.hasTakedate = function () {
-	return _photo.json.takedate && _photo.json.takedate !== '';
+	return _photo.json.takedate && _photo.json.takedate !== "";
 };
 
 _photo.hasDesc = function () {
-	return _photo.json.description && _photo.json.description !== '';
+	return _photo.json.description && _photo.json.description !== "";
 };
 
 _photo.isLivePhoto = function () {
 	if (!_photo.json) return false; // In case it's called, but not initialized
-	return _photo.json.livePhotoUrl && _photo.json.livePhotoUrl !== '';
+	return _photo.json.livePhotoUrl && _photo.json.livePhotoUrl !== "";
 };
 
 _photo.isLivePhotoInitizalized = function () {
@@ -6090,18 +6121,18 @@ _photo.update_overlay_type = function () {
 		return false;
 	} else {
 		// console.log('Current ' + lychee.image_overlay_type);
-		var types = ['exif', 'desc', 'takedate'];
+		var types = ["exif", "desc", "takedate"];
 
 		var i = types.indexOf(lychee.image_overlay_type);
 		var j = (i + 1) % types.length;
 		var cont = true;
 		while (i !== j && cont) {
-			if (types[j] === 'desc' && _photo.hasDesc()) cont = false;else if (types[j] === 'takedate' && _photo.hasTakedate()) cont = false;else if (types[j] === 'exif' && _photo.hasExif()) cont = false;else j = (j + 1) % types.length;
+			if (types[j] === "desc" && _photo.hasDesc()) cont = false;else if (types[j] === "takedate" && _photo.hasTakedate()) cont = false;else if (types[j] === "exif" && _photo.hasExif()) cont = false;else j = (j + 1) % types.length;
 		}
 
 		if (i !== j) {
 			lychee.image_overlay_type = types[j];
-			$('#image_overlay').remove();
+			$("#image_overlay").remove();
 			lychee.imageview.append(build.overlay_image(_photo.json));
 		} else {
 			// console.log('no other data found, displaying ' + types[j]);
@@ -6112,7 +6143,7 @@ _photo.update_overlay_type = function () {
 _photo.update_display_overlay = function () {
 	lychee.image_overlay = !lychee.image_overlay;
 	if (!lychee.image_overlay) {
-		$('#image_overlay').remove();
+		$("#image_overlay").remove();
 	} else {
 		lychee.imageview.append(build.overlay_image(_photo.json));
 	}
@@ -6121,24 +6152,23 @@ _photo.update_display_overlay = function () {
 // Preload the next and previous photos for better response time
 _photo.preloadNextPrev = function (photoID) {
 	if (album.json && album.json.photos && album.getByID(photoID)) {
-
 		var previousPhotoID = album.getByID(photoID).previousPhoto;
 		var nextPhotoID = album.getByID(photoID).nextPhoto;
 		var current2x = null;
 
-		$('head [data-prefetch]').remove();
+		$("head [data-prefetch]").remove();
 
 		var preload = function preload(preloadID) {
 			var preloadPhoto = album.getByID(preloadID);
-			var href = '';
+			var href = "";
 
-			if (preloadPhoto.medium != null && preloadPhoto.medium !== '') {
+			if (preloadPhoto.medium != null && preloadPhoto.medium !== "") {
 				href = preloadPhoto.medium;
 
-				if (preloadPhoto.medium2x && preloadPhoto.medium2x !== '') {
+				if (preloadPhoto.medium2x && preloadPhoto.medium2x !== "") {
 					if (current2x === null) {
-						var imgs = $('img#image');
-						current2x = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes('@2x.');
+						var imgs = $("img#image");
+						current2x = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");
 					}
 					if (current2x) {
 						// If the currently displayed image uses the 2x variant,
@@ -6146,12 +6176,12 @@ _photo.preloadNextPrev = function (photoID) {
 						href = preloadPhoto.medium2x;
 					}
 				}
-			} else if (preloadPhoto.type && preloadPhoto.type.indexOf('video') === -1) {
+			} else if (preloadPhoto.type && preloadPhoto.type.indexOf("video") === -1) {
 				// Preload the original size, but only if it's not a video
 				href = preloadPhoto.url;
 			}
 
-			if (href !== '') {
+			if (href !== "") {
 				if (_photo.supportsPrefetch === null) {
 					// Copied from https://www.smashingmagazine.com/2016/02/preload-what-is-it-good-for/
 					var DOMTokenListSupports = function DOMTokenListSupports(tokenList, token) {
@@ -6162,17 +6192,17 @@ _photo.preloadNextPrev = function (photoID) {
 							return tokenList.supports(token);
 						} catch (e) {
 							if (e instanceof TypeError) {
-								console.log('The DOMTokenList doesn\'t have a supported tokens list');
+								console.log("The DOMTokenList doesn't have a supported tokens list");
 							} else {
-								console.error('That shouldn\'t have happened');
+								console.error("That shouldn't have happened");
 							}
 						}
 					};
-					_photo.supportsPrefetch = DOMTokenListSupports(document.createElement('link').relList, 'prefetch');
+					_photo.supportsPrefetch = DOMTokenListSupports(document.createElement("link").relList, "prefetch");
 				}
 
 				if (_photo.supportsPrefetch) {
-					$('head').append(lychee.html(_templateObject51, href));
+					$("head").append(lychee.html(_templateObject51, href));
 				} else {
 					// According to https://caniuse.com/#feat=link-rel-prefetch,
 					// as of mid-2019 it's mainly Safari (both on desktop and mobile)
@@ -6181,18 +6211,17 @@ _photo.preloadNextPrev = function (photoID) {
 			}
 		};
 
-		if (nextPhotoID && nextPhotoID !== '') {
+		if (nextPhotoID && nextPhotoID !== "") {
 			preload(nextPhotoID);
 		}
-		if (previousPhotoID && previousPhotoID !== '') {
+		if (previousPhotoID && previousPhotoID !== "") {
 			preload(previousPhotoID);
 		}
 	}
 };
 
 _photo.parse = function () {
-
-	if (!_photo.json.title) _photo.json.title = lychee.locale['UNTITLED'];
+	if (!_photo.json.title) _photo.json.title = lychee.locale["UNTITLED"];
 };
 
 _photo.updateSizeLivePhotoDuringAnimation = function () {
@@ -6214,19 +6243,16 @@ _photo.updateSizeLivePhotoDuringAnimation = function () {
 };
 
 _photo.previous = function (animate) {
-
-	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).previousPhoto !== '') {
-
+	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).previousPhoto !== "") {
 		var delay = 0;
 
 		if (animate === true) {
-
 			delay = 200;
 
-			$('#imageview #image').css({
-				WebkitTransform: 'translateX(100%)',
-				MozTransform: 'translateX(100%)',
-				transform: 'translateX(100%)',
+			$("#imageview #image").css({
+				WebkitTransform: "translateX(100%)",
+				MozTransform: "translateX(100%)",
+				transform: "translateX(100%)",
 				opacity: 0
 			});
 		}
@@ -6234,25 +6260,22 @@ _photo.previous = function (animate) {
 		setTimeout(function () {
 			if (_photo.getID() === false) return false;
 			_photo.LivePhotosObject = null;
-			lychee.goto(album.getID() + '/' + album.getByID(_photo.getID()).previousPhoto, false);
+			lychee.goto(album.getID() + "/" + album.getByID(_photo.getID()).previousPhoto, false);
 		}, delay);
 	}
 };
 
 _photo.next = function (animate) {
-
-	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).nextPhoto !== '') {
-
+	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).nextPhoto !== "") {
 		var delay = 0;
 
 		if (animate === true) {
-
 			delay = 200;
 
-			$('#imageview #image').css({
-				WebkitTransform: 'translateX(-100%)',
-				MozTransform: 'translateX(-100%)',
-				transform: 'translateX(-100%)',
+			$("#imageview #image").css({
+				WebkitTransform: "translateX(-100%)",
+				MozTransform: "translateX(-100%)",
+				transform: "translateX(-100%)",
 				opacity: 0
 			});
 		}
@@ -6260,49 +6283,44 @@ _photo.next = function (animate) {
 		setTimeout(function () {
 			if (_photo.getID() === false) return false;
 			_photo.LivePhotosObject = null;
-			lychee.goto(album.getID() + '/' + album.getByID(_photo.getID()).nextPhoto, false);
+			lychee.goto(album.getID() + "/" + album.getByID(_photo.getID()).nextPhoto, false);
 		}, delay);
 	}
 };
 
 _photo.delete = function (photoIDs) {
-
 	var action = {};
 	var cancel = {};
-	var msg = '';
-	var photoTitle = '';
+	var msg = "";
+	var photoTitle = "";
 
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
 	if (photoIDs.length === 1) {
-
 		// Get title if only one photo is selected
 		if (visible.photo()) photoTitle = _photo.json.title;else photoTitle = album.getByID(photoIDs).title;
 
 		// Fallback for photos without a title
-		if (photoTitle === '') photoTitle = lychee.locale['UNTITLED'];
+		if (photoTitle === "") photoTitle = lychee.locale["UNTITLED"];
 	}
 
 	action.fn = function () {
-
-		var nextPhoto = '';
-		var previousPhoto = '';
+		var nextPhoto = "";
+		var previousPhoto = "";
 
 		basicModal.close();
 
 		photoIDs.forEach(function (id, index) {
-
 			// Change reference for the next and previous photo
-			if (album.getByID(id).nextPhoto !== '' || album.getByID(id).previousPhoto !== '') {
-
+			if (album.getByID(id).nextPhoto !== "" || album.getByID(id).previousPhoto !== "") {
 				nextPhoto = album.getByID(id).nextPhoto;
 				previousPhoto = album.getByID(id).previousPhoto;
 
-				if (previousPhoto !== '') {
+				if (previousPhoto !== "") {
 					album.getByID(previousPhoto).nextPhoto = nextPhoto;
 				}
-				if (nextPhoto !== '') {
+				if (nextPhoto !== "") {
 					album.getByID(nextPhoto).previousPhoto = previousPhoto;
 				}
 			}
@@ -6317,10 +6335,10 @@ _photo.delete = function (photoIDs) {
 		// next photo is not the current one. Also try the previous one.
 		// Show album otherwise.
 		if (visible.photo()) {
-			if (nextPhoto !== '' && nextPhoto !== _photo.getID()) {
-				lychee.goto(album.getID() + '/' + nextPhoto);
-			} else if (previousPhoto !== '' && previousPhoto !== _photo.getID()) {
-				lychee.goto(album.getID() + '/' + previousPhoto);
+			if (nextPhoto !== "" && nextPhoto !== _photo.getID()) {
+				lychee.goto(album.getID() + "/" + nextPhoto);
+			} else if (previousPhoto !== "" && previousPhoto !== _photo.getID()) {
+				lychee.goto(album.getID() + "/" + previousPhoto);
 			} else {
 				lychee.goto(album.getID());
 			}
@@ -6332,24 +6350,21 @@ _photo.delete = function (photoIDs) {
 			photoIDs: photoIDs.join()
 		};
 
-		api.post('Photo::delete', params, function (data) {
-
+		api.post("Photo::delete", params, function (data) {
 			if (data !== true) lychee.error(null, params, data);
 		});
 	};
 
 	if (photoIDs.length === 1) {
+		action.title = lychee.locale["PHOTO_DELETE"];
+		cancel.title = lychee.locale["PHOTO_KEEP"];
 
-		action.title = lychee.locale['PHOTO_DELETE'];
-		cancel.title = lychee.locale['PHOTO_KEEP'];
-
-		msg = lychee.html(_templateObject52, lychee.locale['PHOTO_DELETE_1'], photoTitle, lychee.locale['PHOTO_DELETE_2']);
+		msg = lychee.html(_templateObject52, lychee.locale["PHOTO_DELETE_1"], photoTitle, lychee.locale["PHOTO_DELETE_2"]);
 	} else {
+		action.title = lychee.locale["PHOTO_DELETE"];
+		cancel.title = lychee.locale["PHOTO_KEEP"];
 
-		action.title = lychee.locale['PHOTO_DELETE'];
-		cancel.title = lychee.locale['PHOTO_KEEP'];
-
-		msg = lychee.html(_templateObject53, lychee.locale['PHOTO_DELETE_ALL_1'], photoIDs.length, lychee.locale['PHOTO_DELETE_ALL_2']);
+		msg = lychee.html(_templateObject53, lychee.locale["PHOTO_DELETE_ALL_1"], photoIDs.length, lychee.locale["PHOTO_DELETE_ALL_2"]);
 	}
 
 	basicModal.show({
@@ -6358,7 +6373,7 @@ _photo.delete = function (photoIDs) {
 			action: {
 				title: action.title,
 				fn: action.fn,
-				class: 'red'
+				class: "red"
 			},
 			cancel: {
 				title: cancel.title,
@@ -6369,27 +6384,24 @@ _photo.delete = function (photoIDs) {
 };
 
 _photo.setTitle = function (photoIDs) {
-
-	var oldTitle = '';
-	var msg = '';
+	var oldTitle = "";
+	var msg = "";
 
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
 	if (photoIDs.length === 1) {
-
 		// Get old title if only one photo is selected
 		if (_photo.json) oldTitle = _photo.json.title;else if (album.json) oldTitle = album.getByID(photoIDs).title;
 	}
 
 	var action = function action(data) {
-
 		basicModal.close();
 
 		var newTitle = data.title;
 
 		if (visible.photo()) {
-			_photo.json.title = newTitle === '' ? 'Untitled' : newTitle;
+			_photo.json.title = newTitle === "" ? "Untitled" : newTitle;
 			view.photo.title();
 		}
 
@@ -6403,8 +6415,7 @@ _photo.setTitle = function (photoIDs) {
 			title: newTitle
 		};
 
-		api.post('Photo::setTitle', params, function (_data) {
-
+		api.post("Photo::setTitle", params, function (_data) {
 			if (_data !== true) {
 				lychee.error(null, params, _data);
 			}
@@ -6413,17 +6424,17 @@ _photo.setTitle = function (photoIDs) {
 
 	var input = lychee.html(_templateObject54, oldTitle);
 
-	if (photoIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale['PHOTO_NEW_TITLE'], input);else msg = lychee.html(_templateObject55, lychee.locale['PHOTOS_NEW_TITLE_1'], photoIDs.length, lychee.locale['PHOTOS_NEW_TITLE_2'], input);
+	if (photoIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TITLE"], input);else msg = lychee.html(_templateObject55, lychee.locale["PHOTOS_NEW_TITLE_1"], photoIDs.length, lychee.locale["PHOTOS_NEW_TITLE_2"], input);
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			action: {
-				title: lychee.locale['PHOTO_SET_TITLE'],
+				title: lychee.locale["PHOTO_SET_TITLE"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -6431,7 +6442,6 @@ _photo.setTitle = function (photoIDs) {
 };
 
 _photo.copyTo = function (photoIDs, albumID) {
-
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
@@ -6440,8 +6450,7 @@ _photo.copyTo = function (photoIDs, albumID) {
 		albumID: albumID
 	};
 
-	api.post('Photo::duplicate', params, function (data) {
-
+	api.post("Photo::duplicate", params, function (data) {
 		if (data !== true) {
 			lychee.error(null, params, data);
 		} else {
@@ -6458,25 +6467,22 @@ _photo.copyTo = function (photoIDs, albumID) {
 };
 
 _photo.setAlbum = function (photoIDs, albumID) {
-
-	var nextPhoto = '';
-	var previousPhoto = '';
+	var nextPhoto = "";
+	var previousPhoto = "";
 
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
 	photoIDs.forEach(function (id, index) {
-
 		// Change reference for the next and previous photo
-		if (album.getByID(id).nextPhoto !== '' || album.getByID(id).previousPhoto !== '') {
-
+		if (album.getByID(id).nextPhoto !== "" || album.getByID(id).previousPhoto !== "") {
 			nextPhoto = album.getByID(id).nextPhoto;
 			previousPhoto = album.getByID(id).previousPhoto;
 
-			if (previousPhoto !== '') {
+			if (previousPhoto !== "") {
 				album.getByID(previousPhoto).nextPhoto = nextPhoto;
 			}
-			if (nextPhoto !== '') {
+			if (nextPhoto !== "") {
 				album.getByID(nextPhoto).previousPhoto = previousPhoto;
 			}
 		}
@@ -6491,10 +6497,10 @@ _photo.setAlbum = function (photoIDs, albumID) {
 	// next photo is not the current one. Also try the previous one.
 	// Show album otherwise.
 	if (visible.photo()) {
-		if (nextPhoto !== '' && nextPhoto !== _photo.getID()) {
-			lychee.goto(album.getID() + '/' + nextPhoto);
-		} else if (previousPhoto !== '' && previousPhoto !== _photo.getID()) {
-			lychee.goto(album.getID() + '/' + previousPhoto);
+		if (nextPhoto !== "" && nextPhoto !== _photo.getID()) {
+			lychee.goto(album.getID() + "/" + nextPhoto);
+		} else if (previousPhoto !== "" && previousPhoto !== _photo.getID()) {
+			lychee.goto(album.getID() + "/" + previousPhoto);
 		} else {
 			lychee.goto(album.getID());
 		}
@@ -6505,8 +6511,7 @@ _photo.setAlbum = function (photoIDs, albumID) {
 		albumID: albumID
 	};
 
-	api.post('Photo::setAlbum', params, function (data) {
-
+	api.post("Photo::setAlbum", params, function (data) {
 		if (data !== true) {
 			lychee.error(null, params, data);
 		} else {
@@ -6522,16 +6527,15 @@ _photo.setAlbum = function (photoIDs, albumID) {
 };
 
 _photo.setStar = function (photoIDs) {
-
 	if (!photoIDs) return false;
 
 	if (visible.photo()) {
-		_photo.json.star = _photo.json.star === '0' ? '1' : '0';
+		_photo.json.star = _photo.json.star === "0" ? "1" : "0";
 		view.photo.star();
 	}
 
 	photoIDs.forEach(function (id) {
-		album.getByID(id).star = album.getByID(id).star === '0' ? '1' : '0';
+		album.getByID(id).star = album.getByID(id).star === "0" ? "1" : "0";
 		view.album.content.star(id);
 	});
 
@@ -6541,60 +6545,57 @@ _photo.setStar = function (photoIDs) {
 		photoIDs: photoIDs.join()
 	};
 
-	api.post('Photo::setStar', params, function (data) {
-
+	api.post("Photo::setStar", params, function (data) {
 		if (data !== true) lychee.error(null, params, data);
 	});
 };
 
 _photo.setPublic = function (photoID, e) {
+	var msg_switch = lychee.html(_templateObject56, lychee.locale["PHOTO_PUBLIC"], lychee.locale["PHOTO_PUBLIC_EXPL"]);
 
-	var msg_switch = lychee.html(_templateObject56, lychee.locale['PHOTO_PUBLIC'], lychee.locale['PHOTO_PUBLIC_EXPL']);
+	var msg_choices = lychee.html(_templateObject57, build.iconic("check"), lychee.locale["PHOTO_FULL"], lychee.locale["PHOTO_FULL_EXPL"], build.iconic("check"), lychee.locale["PHOTO_HIDDEN"], lychee.locale["PHOTO_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["PHOTO_DOWNLOADABLE"], lychee.locale["PHOTO_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE"], lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_PASSWORD_PROT"], lychee.locale["PHOTO_PASSWORD_PROT_EXPL"]);
 
-	var msg_choices = lychee.html(_templateObject57, build.iconic('check'), lychee.locale['PHOTO_FULL'], lychee.locale['PHOTO_FULL_EXPL'], build.iconic('check'), lychee.locale['PHOTO_HIDDEN'], lychee.locale['PHOTO_HIDDEN_EXPL'], build.iconic('check'), lychee.locale['PHOTO_DOWNLOADABLE'], lychee.locale['PHOTO_DOWNLOADABLE_EXPL'], build.iconic('check'), lychee.locale['PHOTO_SHARE_BUTTON_VISIBLE'], lychee.locale['PHOTO_SHARE_BUTTON_VISIBLE_EXPL'], build.iconic('check'), lychee.locale['PHOTO_PASSWORD_PROT'], lychee.locale['PHOTO_PASSWORD_PROT_EXPL']);
-
-	if (_photo.json.public === '2') {
+	if (_photo.json.public === "2") {
 		// Public album. We can't actually change anything but we will
 		// display the current settings.
 
-		var msg = lychee.html(_templateObject58, lychee.locale['PHOTO_NO_EDIT_SHARING_TEXT'], msg_switch, msg_choices);
+		var msg = lychee.html(_templateObject58, lychee.locale["PHOTO_NO_EDIT_SHARING_TEXT"], msg_switch, msg_choices);
 
 		basicModal.show({
 			body: msg,
 			buttons: {
 				cancel: {
-					title: lychee.locale['CLOSE'],
+					title: lychee.locale["CLOSE"],
 					fn: basicModal.close
 				}
 			}
 		});
 
-		$('.basicModal .switch input[name="public"]').prop('checked', true);
+		$('.basicModal .switch input[name="public"]').prop("checked", true);
 		if (album.json) {
-			if (album.json.full_photo !== null && album.json.full_photo === '1') {
-				$('.basicModal .choice input[name="full_photo"]').prop('checked', true);
+			if (album.json.full_photo !== null && album.json.full_photo === "1") {
+				$('.basicModal .choice input[name="full_photo"]').prop("checked", true);
 			}
 			// Photos in public albums are never hidden as such.  It's the
 			// album that's hidden.  Or is that distinction irrelevant to end
 			// users?
-			if (album.json.downloadable === '1') {
-				$('.basicModal .choice input[name="downloadable"]').prop('checked', true);
+			if (album.json.downloadable === "1") {
+				$('.basicModal .choice input[name="downloadable"]').prop("checked", true);
 			}
-			if (album.json.password === '1') {
-				$('.basicModal .choice input[name="password"]').prop('checked', true);
+			if (album.json.password === "1") {
+				$('.basicModal .choice input[name="password"]').prop("checked", true);
 			}
 		}
 
-		$('.basicModal .switch input').attr('disabled', true);
-		$('.basicModal .switch .label').addClass('label--disabled');
+		$(".basicModal .switch input").attr("disabled", true);
+		$(".basicModal .switch .label").addClass("label--disabled");
 	} else {
 		// Private album -- each photo can be shared individually.
 
-		var _msg = lychee.html(_templateObject59, msg_switch, lychee.locale['PHOTO_EDIT_GLOBAL_SHARING_TEXT'], msg_choices);
+		var _msg = lychee.html(_templateObject59, msg_switch, lychee.locale["PHOTO_EDIT_GLOBAL_SHARING_TEXT"], msg_choices);
 
 		var action = function action() {
-
-			var newPublic = $('.basicModal .switch input[name="public"]:checked').length === 1 ? '1' : '0';
+			var newPublic = $('.basicModal .switch input[name="public"]:checked').length === 1 ? "1" : "0";
 
 			if (newPublic !== _photo.json.public) {
 				if (visible.photo()) {
@@ -6609,8 +6610,7 @@ _photo.setPublic = function (photoID, e) {
 
 				// Photo::setPublic simply flips the current state.
 				// Ugly API but effective...
-				api.post('Photo::setPublic', { photoID: photoID }, function (data) {
-
+				api.post("Photo::setPublic", { photoID: photoID }, function (data) {
 					if (data !== true) lychee.error(null, params, data);
 				});
 			}
@@ -6622,38 +6622,38 @@ _photo.setPublic = function (photoID, e) {
 			body: _msg,
 			buttons: {
 				action: {
-					title: lychee.locale['PHOTO_SHARING_CONFIRM'],
+					title: lychee.locale["PHOTO_SHARING_CONFIRM"],
 					fn: action
 				},
 				cancel: {
-					title: lychee.locale['CANCEL'],
+					title: lychee.locale["CANCEL"],
 					fn: basicModal.close
 				}
 			}
 		});
 
-		$('.basicModal .switch input[name="public"]').on('click', function () {
-			if ($(this).prop('checked') === true) {
+		$('.basicModal .switch input[name="public"]').on("click", function () {
+			if ($(this).prop("checked") === true) {
 				if (lychee.full_photo) {
-					$('.basicModal .choice input[name="full_photo"]').prop('checked', true);
+					$('.basicModal .choice input[name="full_photo"]').prop("checked", true);
 				}
 				// Photos shared individually are always hidden.
-				$('.basicModal .choice input[name="hidden"]').prop('checked', true);
+				$('.basicModal .choice input[name="hidden"]').prop("checked", true);
 				if (lychee.downloadable) {
-					$('.basicModal .choice input[name="downloadable"]').prop('checked', true);
+					$('.basicModal .choice input[name="downloadable"]').prop("checked", true);
 				}
 				// Photos shared individually are always hidden.
-				$('.basicModal .choice input[name="hidden"]').prop('checked', true);
+				$('.basicModal .choice input[name="hidden"]').prop("checked", true);
 				if (lychee.share_button_visible) {
-					$('.basicModal .choice input[name="share_button_visible"]').prop('checked', true);
+					$('.basicModal .choice input[name="share_button_visible"]').prop("checked", true);
 				}
 				// Photos shared individually can't be password-protected.
 			} else {
-				$('.basicModal .choice input').prop('checked', false);
+				$(".basicModal .choice input").prop("checked", false);
 			}
 		});
 
-		if (_photo.json.public === '1') {
+		if (_photo.json.public === "1") {
 			$('.basicModal .switch input[name="public"]').click();
 		}
 	}
@@ -6662,11 +6662,9 @@ _photo.setPublic = function (photoID, e) {
 };
 
 _photo.setDescription = function (photoID) {
-
 	var oldDescription = _photo.json.description;
 
 	var action = function action(data) {
-
 		basicModal.close();
 
 		var description = data.description;
@@ -6681,7 +6679,7 @@ _photo.setDescription = function (photoID) {
 			description: description
 		};
 
-		api.post('Photo::setDescription', params, function (_data) {
+		api.post("Photo::setDescription", params, function (_data) {
 			if (_data !== true) {
 				lychee.error(null, params, _data);
 			}
@@ -6689,14 +6687,14 @@ _photo.setDescription = function (photoID) {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject60, lychee.locale['PHOTO_NEW_DESCRIPTION'], lychee.locale['PHOTO_DESCRIPTION'], oldDescription),
+		body: lychee.html(_templateObject60, lychee.locale["PHOTO_NEW_DESCRIPTION"], lychee.locale["PHOTO_DESCRIPTION"], oldDescription),
 		buttons: {
 			action: {
-				title: lychee.locale['PHOTO_SET_DESCRIPTION'],
+				title: lychee.locale["PHOTO_SET_DESCRIPTION"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -6704,9 +6702,8 @@ _photo.setDescription = function (photoID) {
 };
 
 _photo.editTags = function (photoIDs) {
-
-	var oldTags = '';
-	var msg = '';
+	var oldTags = "";
+	var msg = "";
 
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
@@ -6721,27 +6718,26 @@ _photo.editTags = function (photoIDs) {
 	}
 
 	// Improve tags
-	oldTags = oldTags.replace(/,/g, ', ');
+	oldTags = oldTags.replace(/,/g, ", ");
 
 	var action = function action(data) {
-
 		basicModal.close();
 		_photo.setTags(photoIDs, data.tags);
 	};
 
 	var input = lychee.html(_templateObject61, oldTags);
 
-	if (photoIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale['PHOTO_NEW_TAGS'], input);else msg = lychee.html(_templateObject55, lychee.locale['PHOTO_NEW_TAGS_1'], photoIDs.length, lychee.locale['PHOTO_NEW_TAGS_2'], input);
+	if (photoIDs.length === 1) msg = lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TAGS"], input);else msg = lychee.html(_templateObject55, lychee.locale["PHOTO_NEW_TAGS_1"], photoIDs.length, lychee.locale["PHOTO_NEW_TAGS_2"], input);
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			action: {
-				title: lychee.locale['PHOTO_SET_TAGS'],
+				title: lychee.locale["PHOTO_SET_TAGS"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -6749,13 +6745,12 @@ _photo.editTags = function (photoIDs) {
 };
 
 _photo.setTags = function (photoIDs, tags) {
-
 	if (!photoIDs) return false;
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
 	// Parse tags
-	tags = tags.replace(/(\ ,\ )|(\ ,)|(,\ )|(,{1,}\ {0,})|(,$|^,)/g, ',');
-	tags = tags.replace(/,$|^,|(\ ){0,}$/g, '');
+	tags = tags.replace(/(\ ,\ )|(\ ,)|(,\ )|(,{1,}\ {0,})|(,$|^,)/g, ",");
+	tags = tags.replace(/,$|^,|(\ ){0,}$/g, "");
 
 	if (visible.photo()) {
 		_photo.json.tags = tags;
@@ -6771,18 +6766,16 @@ _photo.setTags = function (photoIDs, tags) {
 		tags: tags
 	};
 
-	api.post('Photo::setTags', params, function (data) {
-
+	api.post("Photo::setTags", params, function (data) {
 		if (data !== true) lychee.error(null, params, data);
 	});
 };
 
 _photo.deleteTag = function (photoID, index) {
-
 	var tags = void 0;
 
 	// Remove
-	tags = _photo.json.tags.split(',');
+	tags = _photo.json.tags.split(",");
 	tags.splice(index, 1);
 
 	// Save
@@ -6791,26 +6784,25 @@ _photo.deleteTag = function (photoID, index) {
 };
 
 _photo.share = function (photoID, service) {
-
-	if (_photo.json.hasOwnProperty('share_button_visible') && _photo.json.share_button_visible !== '1') {
+	if (_photo.json.hasOwnProperty("share_button_visible") && _photo.json.share_button_visible !== "1") {
 		return;
 	}
 
 	var url = _photo.getViewLink(photoID);
 
 	switch (service) {
-		case 'twitter':
+		case "twitter":
 			window.open("https://twitter.com/share?url=" + encodeURI(url));
 			break;
-		case 'facebook':
+		case "facebook":
 			window.open("https://www.facebook.com/sharer.php?u=" + encodeURI(url) + "&t=" + encodeURI(_photo.json.title));
 			break;
-		case 'mail':
+		case "mail":
 			location.href = "mailto:?subject=" + encodeURI(_photo.json.title) + "&body=" + encodeURI(url);
 			break;
-		case 'dropbox':
+		case "dropbox":
 			lychee.loadDropbox(function () {
-				var filename = _photo.json.title + '.' + _photo.getDirectLink().split('.').pop();
+				var filename = _photo.json.title + "." + _photo.getDirectLink().split(".").pop();
 				Dropbox.save(_photo.getDirectLink(), filename);
 			});
 			break;
@@ -6818,14 +6810,12 @@ _photo.share = function (photoID, service) {
 };
 
 _photo.setLicense = function (photoID) {
-
 	var callback = function callback() {
-		$('select#license').val(_photo.json.license === '' ? 'none' : _photo.json.license);
+		$("select#license").val(_photo.json.license === "" ? "none" : _photo.json.license);
 		return false;
 	};
 
 	var action = function action(data) {
-
 		basicModal.close();
 		var license = data.license;
 
@@ -6834,8 +6824,7 @@ _photo.setLicense = function (photoID) {
 			license: license
 		};
 
-		api.post('Photo::setLicense', params, function (_data) {
-
+		api.post("Photo::setLicense", params, function (_data) {
 			if (_data !== true) {
 				lychee.error(null, params, _data);
 			} else {
@@ -6846,18 +6835,18 @@ _photo.setLicense = function (photoID) {
 		});
 	};
 
-	var msg = lychee.html(_templateObject8, lychee.locale['PHOTO_LICENSE'], lychee.locale['PHOTO_LICENSE_NONE'], lychee.locale['PHOTO_RESERVED'], lychee.locale['PHOTO_LICENSE_HELP']);
+	var msg = lychee.html(_templateObject8, lychee.locale["PHOTO_LICENSE"], lychee.locale["PHOTO_LICENSE_NONE"], lychee.locale["PHOTO_RESERVED"], lychee.locale["PHOTO_LICENSE_HELP"]);
 
 	basicModal.show({
 		body: msg,
 		callback: callback,
 		buttons: {
 			action: {
-				title: lychee.locale['PHOTO_SET_LICENSE'],
+				title: lychee.locale["PHOTO_SET_LICENSE"],
 				fn: action
 			},
 			cancel: {
-				title: lychee.locale['CANCEL'],
+				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
 			}
 		}
@@ -6866,7 +6855,6 @@ _photo.setLicense = function (photoID) {
 
 _photo.getArchive = function (photoIDs) {
 	var kind = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
-
 
 	if (photoIDs.length === 1 && kind === null) {
 		// For a single photo, allow to pick the kind via a dialog box.
@@ -6880,35 +6868,35 @@ _photo.getArchive = function (photoIDs) {
 		}
 
 		var buildButton = function buildButton(id, label) {
-			return lychee.html(_templateObject62, id, lychee.locale['DOWNLOAD'], build.iconic('cloud-download'), label);
+			return lychee.html(_templateObject62, id, lychee.locale["DOWNLOAD"], build.iconic("cloud-download"), label);
 		};
 
 		var msg = lychee.html(_templateObject63);
 
 		if (myPhoto.url) {
-			msg += buildButton('FULL', lychee.locale['PHOTO_FULL'] + " (" + myPhoto.width + "x" + myPhoto.height + ", " + myPhoto.size + ")");
+			msg += buildButton("FULL", lychee.locale["PHOTO_FULL"] + " (" + myPhoto.width + "x" + myPhoto.height + ", " + myPhoto.size + ")");
 		}
 		if (myPhoto.livePhotoUrl !== null) {
-			msg += buildButton('LIVEPHOTOVIDEO', "" + lychee.locale['PHOTO_LIVE_VIDEO']);
+			msg += buildButton("LIVEPHOTOVIDEO", "" + lychee.locale["PHOTO_LIVE_VIDEO"]);
 		}
-		if (myPhoto.hasOwnProperty('medium2x') && myPhoto.medium2x !== '') {
-			msg += buildButton('MEDIUM2X', lychee.locale['PHOTO_MEDIUM_HIDPI'] + " (" + myPhoto.medium2x_dim + ")");
+		if (myPhoto.hasOwnProperty("medium2x") && myPhoto.medium2x !== "") {
+			msg += buildButton("MEDIUM2X", lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + myPhoto.medium2x_dim + ")");
 		}
-		if (myPhoto.medium !== '') {
-			msg += buildButton('MEDIUM', lychee.locale['PHOTO_MEDIUM'] + " " + (myPhoto.hasOwnProperty('medium_dim') ? '(' + myPhoto.medium_dim + ')' : ''));
+		if (myPhoto.medium !== "") {
+			msg += buildButton("MEDIUM", lychee.locale["PHOTO_MEDIUM"] + " " + (myPhoto.hasOwnProperty("medium_dim") ? "(" + myPhoto.medium_dim + ")" : ""));
 		}
-		if (myPhoto.hasOwnProperty('small2x') && myPhoto.small2x !== '') {
-			msg += buildButton('SMALL2X', lychee.locale['PHOTO_SMALL_HIDPI'] + " (" + myPhoto.small2x_dim + ")");
+		if (myPhoto.hasOwnProperty("small2x") && myPhoto.small2x !== "") {
+			msg += buildButton("SMALL2X", lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + myPhoto.small2x_dim + ")");
 		}
-		if (myPhoto.small !== '') {
-			msg += buildButton('SMALL', lychee.locale['PHOTO_SMALL'] + " " + (myPhoto.hasOwnProperty('small_dim') ? '(' + myPhoto.small_dim + ')' : ''));
+		if (myPhoto.small !== "") {
+			msg += buildButton("SMALL", lychee.locale["PHOTO_SMALL"] + " " + (myPhoto.hasOwnProperty("small_dim") ? "(" + myPhoto.small_dim + ")" : ""));
 		}
 		if (lychee.api_V2) {
-			if (myPhoto.hasOwnProperty('thumb2x') && myPhoto.thumb2x !== '') {
-				msg += buildButton('THUMB2X', lychee.locale['PHOTO_THUMB_HIDPI'] + " (400x400)");
+			if (myPhoto.hasOwnProperty("thumb2x") && myPhoto.thumb2x !== "") {
+				msg += buildButton("THUMB2X", lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)");
 			}
-			if (myPhoto.thumbUrl !== '') {
-				msg += buildButton('THUMB', lychee.locale['PHOTO_THUMB'] + " (200x200)");
+			if (myPhoto.thumbUrl !== "") {
+				msg += buildButton("THUMB", lychee.locale["PHOTO_THUMB"] + " (200x200)");
 			}
 		}
 
@@ -6918,13 +6906,13 @@ _photo.getArchive = function (photoIDs) {
 			body: msg,
 			buttons: {
 				cancel: {
-					title: lychee.locale['CLOSE'],
+					title: lychee.locale["CLOSE"],
 					fn: basicModal.close
 				}
 			}
 		});
 
-		$('.downloads .basicModal__button').on(lychee.getEventName(), function () {
+		$(".downloads .basicModal__button").on(lychee.getEventName(), function () {
 			kind = this.id;
 			basicModal.close();
 			_photo.getArchive(photoIDs, kind);
@@ -6936,7 +6924,7 @@ _photo.getArchive = function (photoIDs) {
 	var link = void 0;
 
 	if (lychee.api_V2) {
-		location.href = api.get_url('Photo::getArchive') + lychee.html(_templateObject65, photoIDs.join(), kind);
+		location.href = api.get_url("Photo::getArchive") + lychee.html(_templateObject65, photoIDs.join(), kind);
 	} else {
 		var url = api.path + "?function=Photo::getArchive&photoID=" + photoIDs[0] + "&kind=" + kind;
 
@@ -6949,19 +6937,17 @@ _photo.getArchive = function (photoIDs) {
 };
 
 _photo.getDirectLink = function () {
+	var url = "";
 
-	var url = '';
-
-	if (_photo.json && _photo.json.url && _photo.json.url !== '') url = _photo.json.url;
+	if (_photo.json && _photo.json.url && _photo.json.url !== "") url = _photo.json.url;
 
 	return url;
 };
 
 _photo.getViewLink = function (photoID) {
-
-	var url = 'view.php?p=' + photoID;
+	var url = "view.php?p=" + photoID;
 	if (lychee.api_V2) {
-		url = 'view?p=' + photoID;
+		url = "view?p=" + photoID;
 	}
 
 	return lychee.getBaseUrl() + url;
@@ -6973,39 +6959,39 @@ _photo.showDirectLinks = function (photoID) {
 	}
 
 	var buildLine = function buildLine(label, url) {
-		return lychee.html(_templateObject66, label, url, lychee.locale['URL_COPY_TO_CLIPBOARD'], build.iconic('copy', 'ionicons'));
+		return lychee.html(_templateObject66, label, url, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"));
 	};
 
-	var msg = lychee.html(_templateObject67, buildLine(lychee.locale['PHOTO_VIEW'], _photo.getViewLink(photoID)), lychee.locale['PHOTO_DIRECT_LINKS_TO_IMAGES']);
+	var msg = lychee.html(_templateObject67, buildLine(lychee.locale["PHOTO_VIEW"], _photo.getViewLink(photoID)), lychee.locale["PHOTO_DIRECT_LINKS_TO_IMAGES"]);
 
 	if (_photo.json.url) {
-		msg += buildLine(lychee.locale['PHOTO_FULL'] + " (" + _photo.json.width + "x" + _photo.json.height + ")", lychee.getBaseUrl() + _photo.json.url);
+		msg += buildLine(lychee.locale["PHOTO_FULL"] + " (" + _photo.json.width + "x" + _photo.json.height + ")", lychee.getBaseUrl() + _photo.json.url);
 	}
-	if (_photo.json.hasOwnProperty('medium2x') && _photo.json.medium2x !== '') {
-		msg += buildLine(lychee.locale['PHOTO_MEDIUM_HIDPI'] + " (" + _photo.json.medium2x_dim + ")", lychee.getBaseUrl() + _photo.json.medium2x);
+	if (_photo.json.hasOwnProperty("medium2x") && _photo.json.medium2x !== "") {
+		msg += buildLine(lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + _photo.json.medium2x_dim + ")", lychee.getBaseUrl() + _photo.json.medium2x);
 	}
-	if (_photo.json.medium !== '') {
-		msg += buildLine(lychee.locale['PHOTO_MEDIUM'] + " " + (_photo.json.hasOwnProperty('medium_dim') ? '(' + _photo.json.medium_dim + ')' : ''), lychee.getBaseUrl() + _photo.json.medium);
+	if (_photo.json.medium !== "") {
+		msg += buildLine(lychee.locale["PHOTO_MEDIUM"] + " " + (_photo.json.hasOwnProperty("medium_dim") ? "(" + _photo.json.medium_dim + ")" : ""), lychee.getBaseUrl() + _photo.json.medium);
 	}
-	if (_photo.json.hasOwnProperty('small2x') && _photo.json.small2x !== '') {
-		msg += buildLine(lychee.locale['PHOTO_SMALL_HIDPI'] + " (" + _photo.json.small2x_dim + ")", lychee.getBaseUrl() + _photo.json.small2x);
+	if (_photo.json.hasOwnProperty("small2x") && _photo.json.small2x !== "") {
+		msg += buildLine(lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + _photo.json.small2x_dim + ")", lychee.getBaseUrl() + _photo.json.small2x);
 	}
-	if (_photo.json.small !== '') {
-		msg += buildLine(lychee.locale['PHOTO_SMALL'] + " " + (_photo.json.hasOwnProperty('small_dim') ? '(' + _photo.json.small_dim + ')' : ''), lychee.getBaseUrl() + _photo.json.small);
+	if (_photo.json.small !== "") {
+		msg += buildLine(lychee.locale["PHOTO_SMALL"] + " " + (_photo.json.hasOwnProperty("small_dim") ? "(" + _photo.json.small_dim + ")" : ""), lychee.getBaseUrl() + _photo.json.small);
 	}
-	if (_photo.json.hasOwnProperty('thumb2x') && _photo.json.thumb2x !== '') {
-		msg += buildLine(lychee.locale['PHOTO_THUMB_HIDPI'] + " (400x400)", lychee.getBaseUrl() + _photo.json.thumb2x);
+	if (_photo.json.hasOwnProperty("thumb2x") && _photo.json.thumb2x !== "") {
+		msg += buildLine(lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)", lychee.getBaseUrl() + _photo.json.thumb2x);
 	} else if (!lychee.api_V2) {
 		var _lychee$retinize4 = lychee.retinize(_photo.json.thumbUrl),
 		    thumb2x = _lychee$retinize4.path;
 
-		msg += buildLine(lychee.locale['PHOTO_THUMB_HIDPI'] + " (400x400)", lychee.getBaseUrl() + thumb2x);
+		msg += buildLine(lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)", lychee.getBaseUrl() + thumb2x);
 	}
-	if (_photo.json.thumbUrl !== '') {
-		msg += buildLine(" " + lychee.locale['PHOTO_THUMB'] + " (200x200)", lychee.getBaseUrl() + _photo.json.thumbUrl);
+	if (_photo.json.thumbUrl !== "") {
+		msg += buildLine(" " + lychee.locale["PHOTO_THUMB"] + " (200x200)", lychee.getBaseUrl() + _photo.json.thumbUrl);
 	}
-	if (_photo.json.livePhotoUrl !== '') {
-		msg += buildLine(" " + lychee.locale['PHOTO_LIVE_VIDEO'] + " ", lychee.getBaseUrl() + _photo.json.livePhotoUrl);
+	if (_photo.json.livePhotoUrl !== "") {
+		msg += buildLine(" " + lychee.locale["PHOTO_LIVE_VIDEO"] + " ", lychee.getBaseUrl() + _photo.json.livePhotoUrl);
 	}
 
 	msg += lychee.html(_templateObject68);
@@ -7014,18 +7000,18 @@ _photo.showDirectLinks = function (photoID) {
 		body: msg,
 		buttons: {
 			cancel: {
-				title: lychee.locale['CLOSE'],
+				title: lychee.locale["CLOSE"],
 				fn: basicModal.close
 			}
 		}
 	});
 
 	// Ensure that no input line is selected on opening.
-	$('.basicModal input:focus').blur();
+	$(".basicModal input:focus").blur();
 
-	$('.directLinks .basicModal__button').on(lychee.getEventName(), function () {
+	$(".directLinks .basicModal__button").on(lychee.getEventName(), function () {
 		if (lychee.clipboardCopy($(this).prev().val())) {
-			loadingBar.show('success', lychee.locale['URL_COPIED_TO_CLIPBOARD']);
+			loadingBar.show("success", lychee.locale["URL_COPIED_TO_CLIPBOARD"]);
 		}
 	});
 };
@@ -7037,9 +7023,8 @@ _photo.showDirectLinks = function (photoID) {
 photoeditor = {};
 
 photoeditor.rotate = function (photoID, direction) {
-
 	var swapDims = function swapDims(d) {
-		var p = d.indexOf('x');
+		var p = d.indexOf("x");
 		if (p !== -1) {
 			return d.substr(0, p) + "x" + d.substr(p + 1);
 		}
@@ -7054,19 +7039,18 @@ photoeditor.rotate = function (photoID, direction) {
 		direction: direction
 	};
 
-	api.post('PhotoEditor::rotate', params, function (data) {
-
+	api.post("PhotoEditor::rotate", params, function (data) {
 		if (data !== true) {
 			lychee.error(null, params, data);
 		} else {
 			var mr = "?" + Math.random();
-			var sel_big = 'img#image';
-			var sel_thumb = 'div[data-id=' + photoID + '] > span > img';
-			var sel_div = 'div[data-id=' + photoID + ']';
-			$(sel_big).prop('src', $(sel_big).attr('src') + mr);
-			$(sel_big).prop('srcset', $(sel_big).attr('src'));
-			$(sel_thumb).prop('src', $(sel_thumb).attr('src') + mr);
-			$(sel_thumb).prop('srcset', $(sel_thumb).attr('src'));
+			var sel_big = "img#image";
+			var sel_thumb = "div[data-id=" + photoID + "] > span > img";
+			var sel_div = "div[data-id=" + photoID + "]";
+			$(sel_big).prop("src", $(sel_big).attr("src") + mr);
+			$(sel_big).prop("srcset", $(sel_big).attr("src"));
+			$(sel_thumb).prop("src", $(sel_thumb).attr("src") + mr);
+			$(sel_thumb).prop("srcset", $(sel_thumb).attr("src"));
 			var arrayLength = album.json.photos.length;
 			for (var i = 0; i < arrayLength; i++) {
 				if (album.json.photos[i].id === photoID) {
@@ -7098,26 +7082,20 @@ photoeditor.rotate = function (photoID, direction) {
  */
 
 var search = {
-
 	hash: null
-
 };
 
 search.find = function (term) {
+	if (term.trim() === "") return false;
 
-	if (term.trim() === '') return false;
+	clearTimeout($(window).data("timeout"));
 
-	clearTimeout($(window).data('timeout'));
-
-	$(window).data('timeout', setTimeout(function () {
-
-		if (header.dom('.header__search').val().length !== 0) {
-
-			api.post('search', { term: term }, function (data) {
-
-				var html = '';
-				var albumsData = '';
-				var photosData = '';
+	$(window).data("timeout", setTimeout(function () {
+		if (header.dom(".header__search").val().length !== 0) {
+			api.post("search", { term: term }, function (data) {
+				var html = "";
+				var albumsData = "";
+				var photosData = "";
 
 				// Build albums
 				if (data && data.albums) {
@@ -7136,16 +7114,16 @@ search.find = function (term) {
 					});
 				}
 
-				var albums_divider = lychee.locale['ALBUMS'];
-				var photos_divider = lychee.locale['PHOTOS'];
+				var albums_divider = lychee.locale["ALBUMS"];
+				var photos_divider = lychee.locale["PHOTOS"];
 
-				if (albumsData !== '') albums_divider += ' (' + data.albums.length + ')';
-				if (photosData !== '') {
-					photos_divider += ' (' + data.photos.length + ')';
-					if (lychee.layout === '1') {
-						photosData = '<div class="justified-layout">' + photosData + '</div>';
-					} else if (lychee.layout === '2') {
-						photosData = '<div class="unjustified-layout">' + photosData + '</div>';
+				if (albumsData !== "") albums_divider += " (" + data.albums.length + ")";
+				if (photosData !== "") {
+					photos_divider += " (" + data.photos.length + ")";
+					if (lychee.layout === "1") {
+						photosData = '<div class="justified-layout">' + photosData + "</div>";
+					} else if (lychee.layout === "2") {
+						photosData = '<div class="unjustified-layout">' + photosData + "</div>";
 					}
 				}
 
@@ -7153,14 +7131,13 @@ search.find = function (term) {
 				// 2. Only photos
 				// 3. Only albums
 				// 4. Albums and photos
-				if (albumsData === '' && photosData === '') html = 'error';else if (albumsData === '') html = build.divider(photos_divider) + photosData;else if (photosData === '') html = build.divider(albums_divider) + albumsData;else html = build.divider(albums_divider) + albumsData + build.divider(photos_divider) + photosData;
+				if (albumsData === "" && photosData === "") html = "error";else if (albumsData === "") html = build.divider(photos_divider) + photosData;else if (photosData === "") html = build.divider(albums_divider) + albumsData;else html = build.divider(albums_divider) + albumsData + build.divider(photos_divider) + photosData;
 
 				// Only refresh view when search results are different
 				if (search.hash !== data.hash) {
+					$(".no_content").remove();
 
-					$('.no_content').remove();
-
-					lychee.animate('.content', 'contentZoomOut');
+					lychee.animate(".content", "contentZoomOut");
 
 					search.hash = data.hash;
 
@@ -7169,17 +7146,17 @@ search.find = function (term) {
 						if (visible.sidebar()) _sidebar.toggle();
 						if (visible.mapview()) mapview.close();
 
-						header.setMode('albums');
+						header.setMode("albums");
 
-						if (html === 'error') {
-							lychee.content.html('');
-							$('body').append(build.no_content('magnifying-glass'));
+						if (html === "error") {
+							lychee.content.html("");
+							$("body").append(build.no_content("magnifying-glass"));
 						} else {
 							lychee.content.html(html);
 							view.album.content.justify();
-							lychee.animate(lychee.content, 'contentZoomIn');
+							lychee.animate(lychee.content, "contentZoomIn");
 						}
-						lychee.setTitle(lychee.locale['SEARCH_RESULTS'], false);
+						lychee.setTitle(lychee.locale["SEARCH_RESULTS"], false);
 					}, 300);
 				}
 			});
@@ -7188,19 +7165,17 @@ search.find = function (term) {
 };
 
 search.reset = function () {
-
-	header.dom('.header__search').val('');
-	$('.no_content').remove();
+	header.dom(".header__search").val("");
+	$(".no_content").remove();
 
 	if (search.hash != null) {
-
 		// Trash data
 		albums.json = null;
 		album.json = null;
 		_photo.json = null;
 		search.hash = null;
 
-		lychee.animate('.divider', 'fadeOut');
+		lychee.animate(".divider", "fadeOut");
 		lychee.goto();
 	}
 };
@@ -7216,22 +7191,20 @@ settings.open = function () {
 };
 
 settings.createConfig = function () {
-
 	var action = function action(data) {
-
-		var dbName = data.dbName || '';
-		var dbUser = data.dbUser || '';
-		var dbPassword = data.dbPassword || '';
-		var dbHost = data.dbHost || '';
-		var dbTablePrefix = data.dbTablePrefix || '';
+		var dbName = data.dbName || "";
+		var dbUser = data.dbUser || "";
+		var dbPassword = data.dbPassword || "";
+		var dbHost = data.dbHost || "";
+		var dbTablePrefix = data.dbTablePrefix || "";
 
 		if (dbUser.length < 1) {
-			basicModal.error('dbUser');
+			basicModal.error("dbUser");
 			return false;
 		}
 
-		if (dbHost.length < 1) dbHost = 'localhost';
-		if (dbName.length < 1) dbName = 'lychee';
+		if (dbHost.length < 1) dbHost = "localhost";
+		if (dbName.length < 1) dbName = "lychee";
 
 		var params = {
 			dbName: dbName,
@@ -7241,18 +7214,15 @@ settings.createConfig = function () {
 			dbTablePrefix: dbTablePrefix
 		};
 
-		api.post('Config::create', params, function (_data) {
-
+		api.post("Config::create", params, function (_data) {
 			if (_data !== true) {
-
 				// Connection failed
-				if (_data === 'Warning: Connection failed!') {
-
+				if (_data === "Warning: Connection failed!") {
 					basicModal.show({
-						body: '<p>' + lychee.locale['ERROR_DB_1'] + '</p>',
+						body: "<p>" + lychee.locale["ERROR_DB_1"] + "</p>",
 						buttons: {
 							action: {
-								title: lychee.locale['RETRY'],
+								title: lychee.locale["RETRY"],
 								fn: settings.createConfig
 							}
 						}
@@ -7262,13 +7232,12 @@ settings.createConfig = function () {
 				}
 
 				// Creation failed
-				if (_data === 'Warning: Creation failed!') {
-
+				if (_data === "Warning: Creation failed!") {
 					basicModal.show({
-						body: '<p>' + lychee.locale['ERROR_DB_2'] + '</p>',
+						body: "<p>" + lychee.locale["ERROR_DB_2"] + "</p>",
 						buttons: {
 							action: {
-								title: lychee.locale['RETRY'],
+								title: lychee.locale["RETRY"],
 								fn: settings.createConfig
 							}
 						}
@@ -7278,13 +7247,12 @@ settings.createConfig = function () {
 				}
 
 				// Could not create file
-				if (_data === 'Warning: Could not create file!') {
-
+				if (_data === "Warning: Could not create file!") {
 					basicModal.show({
-						body: "<p>" + lychee.locale['ERROR_CONFIG_FILE'] + "</p>",
+						body: "<p>" + lychee.locale["ERROR_CONFIG_FILE"] + "</p>",
 						buttons: {
 							action: {
-								title: lychee.locale['RETRY'],
+								title: lychee.locale["RETRY"],
 								fn: settings.createConfig
 							}
 						}
@@ -7295,10 +7263,10 @@ settings.createConfig = function () {
 
 				// Something went wrong
 				basicModal.show({
-					body: '<p>' + lychee.locale['ERROR_UNKNOWN'] + '</p>',
+					body: "<p>" + lychee.locale["ERROR_UNKNOWN"] + "</p>",
 					buttons: {
 						action: {
-							title: lychee.locale['RETRY'],
+							title: lychee.locale["RETRY"],
 							fn: settings.createConfig
 						}
 					}
@@ -7306,7 +7274,6 @@ settings.createConfig = function () {
 
 				return false;
 			} else {
-
 				// Configuration successful
 				window.location.reload();
 
@@ -7315,13 +7282,13 @@ settings.createConfig = function () {
 		});
 	};
 
-	var msg = "\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale['DB_INFO_TITLE'] + "\n\t\t\t\t  <input name='dbHost' class='text' type='text' placeholder='" + lychee.locale['DB_INFO_HOST'] + "' value=''>\n\t\t\t\t  <input name='dbUser' class='text' type='text' placeholder='" + lychee.locale['DB_INFO_USER'] + "' value=''>\n\t\t\t\t  <input name='dbPassword' class='text' type='password' placeholder='" + lychee.locale['DB_INFO_PASSWORD'] + "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale['DB_INFO_TEXT'] + "\n\t\t\t\t  <input name='dbName' class='text' type='text' placeholder='" + lychee.locale['DB_NAME'] + "' value=''>\n\t\t\t\t  <input name='dbTablePrefix' class='text' type='text' placeholder='" + lychee.locale['DB_PREFIX'] + "' value=''>\n\t\t\t  </p>\n\t\t\t  ";
+	var msg = "\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale["DB_INFO_TITLE"] + "\n\t\t\t\t  <input name='dbHost' class='text' type='text' placeholder='" + lychee.locale["DB_INFO_HOST"] + "' value=''>\n\t\t\t\t  <input name='dbUser' class='text' type='text' placeholder='" + lychee.locale["DB_INFO_USER"] + "' value=''>\n\t\t\t\t  <input name='dbPassword' class='text' type='password' placeholder='" + lychee.locale["DB_INFO_PASSWORD"] + "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale["DB_INFO_TEXT"] + "\n\t\t\t\t  <input name='dbName' class='text' type='text' placeholder='" + lychee.locale["DB_NAME"] + "' value=''>\n\t\t\t\t  <input name='dbTablePrefix' class='text' type='text' placeholder='" + lychee.locale["DB_PREFIX"] + "' value=''>\n\t\t\t  </p>\n\t\t\t  ";
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			action: {
-				title: lychee.locale['DB_CONNECT'],
+				title: lychee.locale["DB_CONNECT"],
 				fn: action
 			}
 		}
@@ -7329,25 +7296,23 @@ settings.createConfig = function () {
 };
 
 settings.createLogin = function () {
-
 	var action = function action(data) {
-
 		var username = data.username;
 		var password = data.password;
 		var confirm = data.confirm;
 
 		if (username.length < 1) {
-			basicModal.error('username');
+			basicModal.error("username");
 			return false;
 		}
 
 		if (password.length < 1) {
-			basicModal.error('password');
+			basicModal.error("password");
 			return false;
 		}
 
 		if (password !== confirm) {
-			basicModal.error('confirm');
+			basicModal.error("confirm");
 			return false;
 		}
 
@@ -7358,15 +7323,13 @@ settings.createLogin = function () {
 			password: password
 		};
 
-		api.post('Settings::setLogin', params, function (_data) {
-
+		api.post("Settings::setLogin", params, function (_data) {
 			if (_data !== true) {
-
 				basicModal.show({
-					body: '<p>' + lychee.locale['ERROR_LOGIN'] + '</p>',
+					body: "<p>" + lychee.locale["ERROR_LOGIN"] + "</p>",
 					buttons: {
 						action: {
-							title: lychee.locale['RETRY'],
+							title: lychee.locale["RETRY"],
 							fn: settings.createLogin
 						}
 					}
@@ -7379,13 +7342,13 @@ settings.createLogin = function () {
 		});
 	};
 
-	var msg = "\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale['LOGIN_TITLE'] + "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='" + lychee.locale['LOGIN_USERNAME'] + "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='" + lychee.locale['LOGIN_PASSWORD'] + "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='" + lychee.locale['LOGIN_PASSWORD_CONFIRM'] + "' value=''>\n\t\t\t  </p>\n\t\t\t  ";
+	var msg = "\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale["LOGIN_TITLE"] + "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='" + lychee.locale["LOGIN_USERNAME"] + "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD"] + "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD_CONFIRM"] + "' value=''>\n\t\t\t  </p>\n\t\t\t  ";
 
 	basicModal.show({
 		body: msg,
 		buttons: {
 			action: {
-				title: lychee.locale['LOGIN_CREATE'],
+				title: lychee.locale["LOGIN_CREATE"],
 				fn: action
 			}
 		}
@@ -7394,14 +7357,12 @@ settings.createLogin = function () {
 
 // from https://github.com/electerious/basicModal/blob/master/src/scripts/main.js
 settings.getValues = function (form_name) {
-
 	var values = {};
-	var inputs_select = $(form_name + ' input[name], ' + form_name + ' select[name]');
+	var inputs_select = $(form_name + " input[name], " + form_name + " select[name]");
 
 	// Get value from all inputs
 	$(inputs_select).each(function () {
-
-		var name = $(this).attr('name');
+		var name = $(this).attr("name");
 		// Store name and value of input
 		values[name] = $(this).val();
 	});
@@ -7410,7 +7371,6 @@ settings.getValues = function (form_name) {
 
 // from https://github.com/electerious/basicModal/blob/master/src/scripts/main.js
 settings.bind = function (item, name, fn) {
-
 	// if ($(item).length)
 	// {
 	//     console.log('found');
@@ -7420,59 +7380,55 @@ settings.bind = function (item, name, fn) {
 	//     console.log('not found: ' + item);
 	// }
 	// Action-button
-	$(item).on('click', function () {
+	$(item).on("click", function () {
 		fn(settings.getValues(name));
 	});
 };
 
 settings.changeLogin = function (params) {
-
 	if (params.username.length < 1) {
-		loadingBar.show('error', 'new username cannot be empty.');
-		$('input[name=username]').addClass('error');
+		loadingBar.show("error", "new username cannot be empty.");
+		$("input[name=username]").addClass("error");
 		return false;
 	} else {
-		$('input[name=username]').removeClass('error');
+		$("input[name=username]").removeClass("error");
 	}
 
 	if (params.password.length < 1) {
-		loadingBar.show('error', 'new password cannot be empty.');
-		$('input[name=password]').addClass('error');
+		loadingBar.show("error", "new password cannot be empty.");
+		$("input[name=password]").addClass("error");
 		return false;
 	} else {
-		$('input[name=password]').removeClass('error');
+		$("input[name=password]").removeClass("error");
 	}
 
 	if (params.password !== params.confirm) {
-		loadingBar.show('error', 'new password does not match.');
-		$('input[name=confirm]').addClass('error');
+		loadingBar.show("error", "new password does not match.");
+		$("input[name=confirm]").addClass("error");
 		return false;
 	} else {
-		$('input[name=confirm]').removeClass('error');
+		$("input[name=confirm]").removeClass("error");
 	}
 
-	api.post('Settings::setLogin', params, function (data) {
-
+	api.post("Settings::setLogin", params, function (data) {
 		if (data !== true) {
-			loadingBar.show('error', data.description);
+			loadingBar.show("error", data.description);
 			lychee.error(null, datas, data);
 		} else {
-			$('input[name]').removeClass('error');
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LOGIN']);
+			$("input[name]").removeClass("error");
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LOGIN"]);
 			view.settings.content.clearLogin();
 		}
 	});
 };
 
 settings.changeSorting = function (params) {
-
-	api.post('Settings::setSorting', params, function (data) {
-
+	api.post("Settings::setSorting", params, function (data) {
 		if (data === true) {
-			lychee.sortingAlbums = 'ORDER BY ' + params['typeAlbums'] + ' ' + params['orderAlbums'];
-			lychee.sortingPhotos = 'ORDER BY ' + params['typePhotos'] + ' ' + params['orderPhotos'];
+			lychee.sortingAlbums = "ORDER BY " + params["typeAlbums"] + " " + params["orderAlbums"];
+			lychee.sortingPhotos = "ORDER BY " + params["typePhotos"] + " " + params["orderPhotos"];
 			albums.refresh();
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_SORT']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_SORT"]);
 		} else lychee.error(null, params, data);
 	});
 };
@@ -7481,83 +7437,78 @@ settings.changeDropboxKey = function (params) {
 	// let key = params.key;
 
 	if (params.key.length < 1) {
-		loadingBar.show('error', 'key cannot be empty.');
+		loadingBar.show("error", "key cannot be empty.");
 		return false;
 	}
 
-	api.post('Settings::setDropboxKey', params, function (data) {
-
+	api.post("Settings::setDropboxKey", params, function (data) {
 		if (data === true) {
 			lychee.dropboxKey = params.key;
 			// if (callback) lychee.loadDropbox(callback)
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_DROPBOX']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_DROPBOX"]);
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.changeLang = function (params) {
-
-	api.post('Settings::setLang', params, function (data) {
-
+	api.post("Settings::setLang", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LANG']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LANG"]);
 			lychee.init();
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.setDefaultLicense = function (params) {
-
-	api.post('Settings::setDefaultLicense', params, function (data) {
+	api.post("Settings::setDefaultLicense", params, function (data) {
 		if (data === true) {
 			lychee.default_license = params.license;
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LICENSE']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LICENSE"]);
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.setLayout = function (params) {
-
-	api.post('Settings::setLayout', params, function (data) {
+	api.post("Settings::setLayout", params, function (data) {
 		if (data === true) {
 			lychee.layout = params.layout;
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_LAYOUT']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LAYOUT"]);
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.changePublicSearch = function () {
 	var params = {};
-	if ($('#PublicSearch:checked').length === 1) {
-		params.public_search = '1';
+	if ($("#PublicSearch:checked").length === 1) {
+		params.public_search = "1";
 	} else {
-		params.public_search = '0';
+		params.public_search = "0";
 	}
-	api.post('Settings::setPublicSearch', params, function (data) {
+	api.post("Settings::setPublicSearch", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_PUBLIC_SEARCH']);
-			lychee.public_search = params.public_search === '1';
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_PUBLIC_SEARCH"]);
+			lychee.public_search = params.public_search === "1";
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.changeImageOverlay = function () {
 	var params = {};
-	if ($('#ImageOverlay:checked').length === 1) {
-		params.image_overlay = '1';
+	if ($("#ImageOverlay:checked").length === 1) {
+		params.image_overlay = "1";
 
 		// enable image_overlay_type
-		$('select#ImgOverlayType').attr('disabled', false);
+		$("select#ImgOverlayType").attr("disabled", false);
 	} else {
-		params.image_overlay = '0';
+		params.image_overlay = "0";
 
 		// disable image_overlay_type
-		$('select#ImgOverlayType').attr('disabled', true);
+		$("select#ImgOverlayType").attr("disabled", true);
 	}
-	api.post('Settings::setImageOverlay', params, function (data) {
+	api.post("Settings::setImageOverlay", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_IMAGE_OVERLAY']);
-			lychee.image_overlay_default = params.image_overlay === '1';
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_IMAGE_OVERLAY"]);
+			lychee.image_overlay_default = params.image_overlay === "1";
 			lychee.image_overlay = lychee.image_overlay_default;
 		} else lychee.error(null, params, data);
 	});
@@ -7566,20 +7517,20 @@ settings.changeImageOverlay = function () {
 settings.setOverlayType = function () {
 	// validate the input
 	var params = {};
-	if ($('#ImageOverlay:checked') && $('#ImgOverlayType').val() === "exif") {
-		params.image_overlay_type = 'exif';
-	} else if ($('#ImageOverlay:checked') && $('#ImgOverlayType').val() === "desc") {
-		params.image_overlay_type = 'desc';
-	} else if ($('#ImageOverlay:checked') && $('#ImgOverlayType').val() === "takedate") {
-		params.image_overlay_type = 'takedate';
+	if ($("#ImageOverlay:checked") && $("#ImgOverlayType").val() === "exif") {
+		params.image_overlay_type = "exif";
+	} else if ($("#ImageOverlay:checked") && $("#ImgOverlayType").val() === "desc") {
+		params.image_overlay_type = "desc";
+	} else if ($("#ImageOverlay:checked") && $("#ImgOverlayType").val() === "takedate") {
+		params.image_overlay_type = "takedate";
 	} else {
-		params.image_overlay_type = 'exif';
-		console.log('Error - default used');
+		params.image_overlay_type = "exif";
+		console.log("Error - default used");
 	}
 
-	api.post('Settings::setOverlayType', params, function (data) {
+	api.post("Settings::setOverlayType", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_IMAGE_OVERLAY']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_IMAGE_OVERLAY"]);
 			lychee.image_overlay_type = params.image_overlay_type;
 			lychee.image_overlay_type_default = params.image_overlay_type;
 		} else lychee.error(null, params, data);
@@ -7588,41 +7539,41 @@ settings.setOverlayType = function () {
 
 settings.changeMapDisplay = function () {
 	var params = {};
-	if ($('#MapDisplay:checked').length === 1) {
-		params.map_display = '1';
+	if ($("#MapDisplay:checked").length === 1) {
+		params.map_display = "1";
 	} else {
-		params.map_display = '0';
+		params.map_display = "0";
 	}
-	api.post('Settings::setMapDisplay', params, function (data) {
+	api.post("Settings::setMapDisplay", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_DISPLAY']);
-			lychee.map_display = params.map_display === '1';
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+			lychee.map_display = params.map_display === "1";
 		} else lychee.error(null, params, data);
 	});
 	// Map functionality is disabled
 	// -> map for public albums also needs to be disabled
 	if (lychee.map_display_public === true) {
-		$('#MapDisplayPublic').click();
+		$("#MapDisplayPublic").click();
 	}
 };
 
 settings.changeMapDisplayPublic = function () {
 	var params = {};
-	if ($('#MapDisplayPublic:checked').length === 1) {
-		params.map_display_public = '1';
+	if ($("#MapDisplayPublic:checked").length === 1) {
+		params.map_display_public = "1";
 
 		// If public map functionality is enabled, but map in general is disabled
 		// General map functionality needs to be enabled
 		if (lychee.map_display === false) {
-			$('#MapDisplay').click();
+			$("#MapDisplay").click();
 		}
 	} else {
-		params.map_display_public = '0';
+		params.map_display_public = "0";
 	}
-	api.post('Settings::setMapDisplayPublic', params, function (data) {
+	api.post("Settings::setMapDisplayPublic", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC']);
-			lychee.map_display_public = params.map_display_public === '1';
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC"]);
+			lychee.map_display_public = params.map_display_public === "1";
 		} else lychee.error(null, params, data);
 	});
 };
@@ -7630,11 +7581,11 @@ settings.changeMapDisplayPublic = function () {
 settings.setMapProvider = function () {
 	// validate the input
 	var params = {};
-	params.map_provider = $('#MapProvider').val();
+	params.map_provider = $("#MapProvider").val();
 
-	api.post('Settings::setMapProvider', params, function (data) {
+	api.post("Settings::setMapProvider", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_PROVIDER']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_PROVIDER"]);
 			lychee.map_provider = params.map_provider;
 		} else lychee.error(null, params, data);
 	});
@@ -7642,115 +7593,134 @@ settings.setMapProvider = function () {
 
 settings.changeMapIncludeSubalbums = function () {
 	var params = {};
-	if ($('#MapIncludeSubalbums:checked').length === 1) {
-		params.map_include_subalbums = '1';
+	if ($("#MapIncludeSubalbums:checked").length === 1) {
+		params.map_include_subalbums = "1";
 	} else {
-		params.map_include_subalbums = '0';
+		params.map_include_subalbums = "0";
 	}
-	api.post('Settings::setMapIncludeSubalbums', params, function (data) {
+	api.post("Settings::setMapIncludeSubalbums", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_DISPLAY']);
-			lychee.map_include_subalbums = params.map_include_subalbums === '1';
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+			lychee.map_include_subalbums = params.map_include_subalbums === "1";
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.changeLocationDecoding = function () {
 	var params = {};
-	if ($('#LocationDecoding:checked').length === 1) {
-		params.location_decoding = '1';
+	if ($("#LocationDecoding:checked").length === 1) {
+		params.location_decoding = "1";
 	} else {
-		params.location_decoding = '0';
+		params.location_decoding = "0";
 	}
-	api.post('Settings::setLocationDecoding', params, function (data) {
+	api.post("Settings::setLocationDecoding", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_DISPLAY']);
-			lychee.location_decoding = params.location_decoding === '1';
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+			lychee.location_decoding = params.location_decoding === "1";
 		} else lychee.error(null, params, data);
 	});
 };
 
+settings.changeNSFWVisible = function () {
+	var params = {};
+	if ($("#NSFWVisible:checked").length === 1) {
+		params.nsfw_visible = "1";
+	} else {
+		params.nsfw_visible = "0";
+	}
+	api.post("Settings::setNSFWVisible", params, function (data) {
+		if (data === true) {
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NSFW_VISIBLE"]);
+			lychee.nsfw_visible = params.nsfw_visible === "1";
+			lychee.nsfw_visible_saved = lychee.nsfw_visible;
+		} else {
+			lychee.error(null, params, data);
+		}
+	});
+};
+
+//TODO : later
+// lychee.nsfw_blur = (data.config.nsfw_blur && data.config.nsfw_blur === '1') || false;
+// lychee.nsfw_warning = (data.config.nsfw_warning && data.config.nsfw_warning === '1') || false;
+// lychee.nsfw_warning_text = data.config.nsfw_warning_text || '<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>';
+
 settings.changeLocationShow = function () {
 	var params = {};
-	if ($('#LocationShow:checked').length === 1) {
-		params.location_show = '1';
+	if ($("#LocationShow:checked").length === 1) {
+		params.location_show = "1";
 	} else {
-		params.location_show = '0';
+		params.location_show = "0";
 		// Don't show location
 		// -> location for public albums also needs to be disabled
 		if (lychee.location_show_public === true) {
-			$('#LocationShowPublic').click();
+			$("#LocationShowPublic").click();
 		}
 	}
-	api.post('Settings::setLocationShow', params, function (data) {
+	api.post("Settings::setLocationShow", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_DISPLAY']);
-			lychee.location_show = params.location_show === '1';
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+			lychee.location_show = params.location_show === "1";
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.changeLocationShowPublic = function () {
 	var params = {};
-	if ($('#LocationShowPublic:checked').length === 1) {
-		params.location_show_public = '1';
+	if ($("#LocationShowPublic:checked").length === 1) {
+		params.location_show_public = "1";
 		// If public map functionality is enabled, but map in general is disabled
 		// General map functionality needs to be enabled
 		if (lychee.location_show === false) {
-			$('#LocationShow').click();
+			$("#LocationShow").click();
 		}
 	} else {
-		params.location_show_public = '0';
+		params.location_show_public = "0";
 	}
-	api.post('Settings::setLocationShowPublic', params, function (data) {
+	api.post("Settings::setLocationShowPublic", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_MAP_DISPLAY']);
-			lychee.location_show_public = params.location_show_public === '1';
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+			lychee.location_show_public = params.location_show_public === "1";
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.changeCSS = function () {
-
 	var params = {};
-	params.css = $('#css').val();
+	params.css = $("#css").val();
 
-	api.post('Settings::setCSS', params, function (data) {
-
+	api.post("Settings::setCSS", params, function (data) {
 		if (data === true) {
 			lychee.css = params.css;
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_CSS']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_CSS"]);
 		} else lychee.error(null, params, data);
 	});
 };
 
 settings.save = function (params) {
-
-	api.post('Settings::saveAll', params, function (data) {
-
+	api.post("Settings::saveAll", params, function (data) {
 		if (data === true) {
-			loadingBar.show('success', lychee.locale['SETTINGS_SUCCESS_UPDATE']);
+			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_UPDATE"]);
 			view.full_settings.init();
 			// lychee.init();
-		} else lychee.error('Check the Logs', params, data);
+		} else lychee.error("Check the Logs", params, data);
 	});
 };
 
 settings.save_enter = function (e) {
 	if (e.which === 13) {
 		// show confirmation box
-		$(':focus').blur();
+		$(":focus").blur();
 
 		var action = {};
 		var cancel = {};
 
-		action.title = lychee.locale['ENTER'];
-		action.msg = lychee.html(_templateObject69, lychee.locale['SAVE_RISK']);
+		action.title = lychee.locale["ENTER"];
+		action.msg = lychee.html(_templateObject69, lychee.locale["SAVE_RISK"]);
 
-		cancel.title = lychee.locale['CANCEL'];
+		cancel.title = lychee.locale["CANCEL"];
 
 		action.fn = function () {
-			settings.save(settings.getValues('#fullSettings'));
+			settings.save(settings.getValues("#fullSettings"));
 			basicModal.close();
 		};
 
@@ -7760,7 +7730,7 @@ settings.save_enter = function (e) {
 				action: {
 					title: action.title,
 					fn: action.fn,
-					class: 'red'
+					class: "red"
 				},
 				cancel: {
 					title: cancel.title,
@@ -7776,98 +7746,93 @@ var sharing = {
 };
 
 sharing.add = function () {
-
 	var params = {
-		albumIDs: '',
-		UserIDs: ''
+		albumIDs: "",
+		UserIDs: ""
 	};
 
-	$('#albums_list_to option').each(function () {
-		if (params.albumIDs !== '') params.albumIDs += ',';
+	$("#albums_list_to option").each(function () {
+		if (params.albumIDs !== "") params.albumIDs += ",";
 		params.albumIDs += this.value;
 	});
 
-	$('#user_list_to option').each(function () {
-		if (params.UserIDs !== '') params.UserIDs += ',';
+	$("#user_list_to option").each(function () {
+		if (params.UserIDs !== "") params.UserIDs += ",";
 		params.UserIDs += this.value;
 	});
 
-	if (params.albumIDs === '') {
-		loadingBar.show('error', 'Select an album to share!');
+	if (params.albumIDs === "") {
+		loadingBar.show("error", "Select an album to share!");
 		return false;
 	}
-	if (params.UserIDs === '') {
-		loadingBar.show('error', 'Select a user to share with!');
+	if (params.UserIDs === "") {
+		loadingBar.show("error", "Select a user to share with!");
 		return false;
 	}
 
-	api.post('Sharing::Add', params, function (data) {
+	api.post("Sharing::Add", params, function (data) {
 		if (data !== true) {
-			loadingBar.show('error', data.description);
+			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
 		} else {
-			loadingBar.show('success', 'Sharing updated!');
+			loadingBar.show("success", "Sharing updated!");
 			sharing.list(); // reload user list
 		}
 	});
 };
 
 sharing.delete = function () {
-
 	var params = {
-		ShareIDs: ''
+		ShareIDs: ""
 	};
 
 	$('input[name="remove_id"]:checked').each(function () {
-		if (params.ShareIDs !== '') params.ShareIDs += ',';
+		if (params.ShareIDs !== "") params.ShareIDs += ",";
 		params.ShareIDs += this.value;
 	});
 
-	if (params.ShareIDs === '') {
-		loadingBar.show('error', 'Select a sharing to remove!');
+	if (params.ShareIDs === "") {
+		loadingBar.show("error", "Select a sharing to remove!");
 		return false;
 	}
-	api.post('Sharing::Delete', params, function (data) {
+	api.post("Sharing::Delete", params, function (data) {
 		if (data !== true) {
-			loadingBar.show('error', data.description);
+			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
 		} else {
-			loadingBar.show('success', 'Sharing removed!');
+			loadingBar.show("success", "Sharing removed!");
 			sharing.list(); // reload user list
 		}
 	});
 };
 
 sharing.list = function () {
-	api.post('Sharing::List', {}, function (data) {
+	api.post("Sharing::List", {}, function (data) {
 		sharing.json = data;
 		view.sharing.init();
 	});
 };
+
 /**
  * @description This module takes care of the sidebar.
  */
 
 var _sidebar = {
-
-	_dom: $('.sidebar'),
+	_dom: $(".sidebar"),
 	types: {
 		DEFAULT: 0,
 		TAGS: 1
 	},
 	createStructure: {}
-
 };
 
 _sidebar.dom = function (selector) {
-
-	if (selector == null || selector === '') return _sidebar._dom;
+	if (selector == null || selector === "") return _sidebar._dom;
 
 	return _sidebar._dom.find(selector);
 };
 
 _sidebar.bind = function () {
-
 	// This function should be called after building and appending
 	// the sidebars content to the DOM.
 	// This function can be called multiple times, therefore
@@ -7876,39 +7841,39 @@ _sidebar.bind = function () {
 	// Event Name
 	var eventName = lychee.getEventName();
 
-	_sidebar.dom('#edit_title').off(eventName).on(eventName, function () {
+	_sidebar.dom("#edit_title").off(eventName).on(eventName, function () {
 		if (visible.photo()) _photo.setTitle([_photo.getID()]);else if (visible.album()) album.setTitle([album.getID()]);
 	});
 
-	_sidebar.dom('#edit_description').off(eventName).on(eventName, function () {
+	_sidebar.dom("#edit_description").off(eventName).on(eventName, function () {
 		if (visible.photo()) _photo.setDescription(_photo.getID());else if (visible.album()) album.setDescription(album.getID());
 	});
 
-	_sidebar.dom('#edit_showtags').off(eventName).on(eventName, function () {
+	_sidebar.dom("#edit_showtags").off(eventName).on(eventName, function () {
 		album.setShowTags(album.getID());
 	});
 
-	_sidebar.dom('#edit_tags').off(eventName).on(eventName, function () {
+	_sidebar.dom("#edit_tags").off(eventName).on(eventName, function () {
 		_photo.editTags([_photo.getID()]);
 	});
 
-	_sidebar.dom('#tags .tag').off(eventName).on(eventName, function () {
+	_sidebar.dom("#tags .tag").off(eventName).on(eventName, function () {
 		_sidebar.triggerSearch($(this).text());
 	});
 
-	_sidebar.dom('#tags .tag span').off(eventName).on(eventName, function () {
-		_photo.deleteTag(_photo.getID(), $(this).data('index'));
+	_sidebar.dom("#tags .tag span").off(eventName).on(eventName, function () {
+		_photo.deleteTag(_photo.getID(), $(this).data("index"));
 	});
 
-	_sidebar.dom('#edit_license').off(eventName).on(eventName, function () {
+	_sidebar.dom("#edit_license").off(eventName).on(eventName, function () {
 		if (visible.photo()) _photo.setLicense(_photo.getID());else if (visible.album()) album.setLicense(album.getID());
 	});
 
-	_sidebar.dom('#edit_sorting').off(eventName).on(eventName, function () {
+	_sidebar.dom("#edit_sorting").off(eventName).on(eventName, function () {
 		album.setSorting(album.getID());
 	});
 
-	_sidebar.dom('.attr_location').off(eventName).on(eventName, function () {
+	_sidebar.dom(".attr_location").off(eventName).on(eventName, function () {
 		_sidebar.triggerSearch($(this).text());
 	});
 
@@ -7916,7 +7881,6 @@ _sidebar.bind = function () {
 };
 
 _sidebar.triggerSearch = function (search_string) {
-
 	// If public search is diabled -> do nothing
 	if (lychee.publicMode === true && !lychee.public_search) {
 		// Do not display an error -> just do nothing to not confuse the user
@@ -7925,18 +7889,16 @@ _sidebar.triggerSearch = function (search_string) {
 
 	search.hash = null;
 	// We're either logged in or public search is allowed
-	lychee.goto('search/' + encodeURIComponent(search_string));
+	lychee.goto("search/" + encodeURIComponent(search_string));
 };
 
 _sidebar.toggle = function () {
-
 	if (visible.sidebar() || visible.sidebarbutton()) {
-
-		header.dom('.button--info').toggleClass('active');
-		lychee.content.toggleClass('content--sidebar');
-		lychee.imageview.toggleClass('image--sidebar');
-		if (typeof view !== 'undefined') view.album.content.justify();
-		_sidebar.dom().toggleClass('active');
+		header.dom(".button--info").toggleClass("active");
+		lychee.content.toggleClass("content--sidebar");
+		lychee.imageview.toggleClass("image--sidebar");
+		if (typeof view !== "undefined") view.album.content.justify();
+		_sidebar.dom().toggleClass("active");
 		_photo.updateSizeLivePhotoDuringAnimation();
 
 		return true;
@@ -7948,35 +7910,33 @@ _sidebar.toggle = function () {
 _sidebar.setSelectable = function () {
 	var selectable = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
-
 	// Attributes/Values inside the sidebar are selectable by default.
 	// Selection needs to be deactivated to prevent an unwanted selection
 	// while using multiselect.
 
-	if (selectable === true) _sidebar.dom().removeClass('notSelectable');else _sidebar.dom().addClass('notSelectable');
+	if (selectable === true) _sidebar.dom().removeClass("notSelectable");else _sidebar.dom().addClass("notSelectable");
 };
 
 _sidebar.changeAttr = function (attr) {
-	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '-';
+	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "-";
 	var dangerouslySetInnerHTML = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-
-	if (attr == null || attr === '') return false;
+	if (attr == null || attr === "") return false;
 
 	// Set a default for the value
-	if (value == null || value === '') value = '-';
+	if (value == null || value === "") value = "-";
 
 	// Escape value
 	if (dangerouslySetInnerHTML === false) value = lychee.escapeHTML(value);
 
 	// Set new value
-	_sidebar.dom('.attr_' + attr).html(value);
+	_sidebar.dom(".attr_" + attr).html(value);
 
 	return true;
 };
 
 _sidebar.hideAttr = function (attr) {
-	_sidebar.dom('.attr_' + attr).closest('tr').hide();
+	_sidebar.dom(".attr_" + attr).closest("tr").hide();
 };
 
 _sidebar.secondsToHMS = function (d) {
@@ -7985,30 +7945,29 @@ _sidebar.secondsToHMS = function (d) {
 	var m = Math.floor(d % 3600 / 60);
 	var s = Math.floor(d % 60);
 
-	return (h > 0 ? h.toString() + 'h' : '') + (m > 0 ? m.toString() + 'm' : '') + (s > 0 || h == 0 && m == 0 ? s.toString() + 's' : '');
+	return (h > 0 ? h.toString() + "h" : "") + (m > 0 ? m.toString() + "m" : "") + (s > 0 || h == 0 && m == 0 ? s.toString() + "s" : "");
 };
 
 _sidebar.createStructure.photo = function (data) {
+	if (data == null || data === "") return false;
 
-	if (data == null || data === '') return false;
-
-	var editable = typeof album !== 'undefined' ? album.isUploadable() : false;
+	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
 	var exifHash = data.takedate + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
 	var locationHash = data.longitude + data.latitude + data.altitude;
 	var structure = {};
-	var _public = '';
-	var isVideo = data.type && data.type.indexOf('video') > -1;
+	var _public = "";
+	var isVideo = data.type && data.type.indexOf("video") > -1;
 	var license = void 0;
 
 	// Set the license string for a photo
 	switch (data.license) {
 		// if the photo doesn't have a license
-		case 'none':
-			license = '';
+		case "none":
+			license = "";
 			break;
 		// Localize All Rights Reserved
-		case 'reserved':
-			license = lychee.locale['PHOTO_RESERVED'];
+		case "reserved":
+			license = lychee.locale["PHOTO_RESERVED"];
 			break;
 		// Display anything else that's set
 		default:
@@ -8018,32 +7977,56 @@ _sidebar.createStructure.photo = function (data) {
 
 	// Set value for public
 	switch (data.public) {
-
-		case '0':
-			_public = lychee.locale['PHOTO_SHR_NO'];
+		case "0":
+			_public = lychee.locale["PHOTO_SHR_NO"];
 			break;
-		case '1':
-			_public = lychee.locale['PHOTO_SHR_PHT'];
+		case "1":
+			_public = lychee.locale["PHOTO_SHR_PHT"];
 			break;
-		case '2':
-			_public = lychee.locale['PHOTO_SHR_ALB'];
+		case "2":
+			_public = lychee.locale["PHOTO_SHR_ALB"];
 			break;
 		default:
-			_public = '-';
+			_public = "-";
 			break;
-
 	}
 
 	structure.basics = {
-		title: lychee.locale['PHOTO_BASICS'],
+		title: lychee.locale["PHOTO_BASICS"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['PHOTO_UPLOADED'], kind: 'uploaded', value: data.sysdate }, { title: lychee.locale['PHOTO_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
+		rows: [{
+			title: lychee.locale["PHOTO_TITLE"],
+			kind: "title",
+			value: data.title,
+			editable: editable
+		}, {
+			title: lychee.locale["PHOTO_UPLOADED"],
+			kind: "uploaded",
+			value: data.sysdate
+		}, {
+			title: lychee.locale["PHOTO_DESCRIPTION"],
+			kind: "description",
+			value: data.description,
+			editable: editable
+		}]
 	};
 
 	structure.image = {
-		title: lychee.locale[isVideo ? 'PHOTO_VIDEO' : 'PHOTO_IMAGE'],
+		title: lychee.locale[isVideo ? "PHOTO_VIDEO" : "PHOTO_IMAGE"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_SIZE'], kind: 'size', value: data.size }, { title: lychee.locale['PHOTO_FORMAT'], kind: 'type', value: data.type }, { title: lychee.locale['PHOTO_RESOLUTION'], kind: 'resolution', value: data.width + ' x ' + data.height }]
+		rows: [{
+			title: lychee.locale["PHOTO_SIZE"],
+			kind: "size",
+			value: data.size
+		}, {
+			title: lychee.locale["PHOTO_FORMAT"],
+			kind: "type",
+			value: data.type
+		}, {
+			title: lychee.locale["PHOTO_RESOLUTION"],
+			kind: "resolution",
+			value: data.width + " x " + data.height
+		}]
 	};
 
 	if (isVideo) {
@@ -8055,13 +8038,19 @@ _sidebar.createStructure.photo = function (data) {
 		// We overload the database, storing duration (in full seconds) in
 		// "aperture" and frame rate (floating point with three digits after
 		// the decimal point) in "focal".
-		if (data.aperture != '') {
-			structure.image.rows.push({ title: lychee.locale['PHOTO_DURATION'],
-				kind: 'duration', value: _sidebar.secondsToHMS(data.aperture) });
+		if (data.aperture != "") {
+			structure.image.rows.push({
+				title: lychee.locale["PHOTO_DURATION"],
+				kind: "duration",
+				value: _sidebar.secondsToHMS(data.aperture)
+			});
 		}
-		if (data.focal != '') {
-			structure.image.rows.push({ title: lychee.locale['PHOTO_FPS'],
-				kind: 'fps', value: data.focal + ' fps' });
+		if (data.focal != "") {
+			structure.image.rows.push({
+				title: lychee.locale["PHOTO_FPS"],
+				kind: "fps",
+				value: data.focal + " fps"
+			});
 		}
 	}
 
@@ -8069,48 +8058,119 @@ _sidebar.createStructure.photo = function (data) {
 	//tags handled when contructing the html code for tags
 
 	structure.tags = {
-		title: lychee.locale['PHOTO_TAGS'],
+		title: lychee.locale["PHOTO_TAGS"],
 		type: _sidebar.types.TAGS,
 		value: build.tags(data.tags),
 		editable: editable
+	};
 
-		// Only create EXIF section when EXIF data available
-	};if (exifHash !== '') {
-
+	// Only create EXIF section when EXIF data available
+	if (exifHash !== "") {
 		structure.exif = {
-			title: lychee.locale['PHOTO_CAMERA'],
+			title: lychee.locale["PHOTO_CAMERA"],
 			type: _sidebar.types.DEFAULT,
-			rows: isVideo ? [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }] : [{ title: lychee.locale['PHOTO_CAPTURED'], kind: 'takedate', value: data.takedate }, { title: lychee.locale['PHOTO_MAKE'], kind: 'make', value: data.make }, { title: lychee.locale['PHOTO_TYPE'], kind: 'model', value: data.model }, { title: lychee.locale['PHOTO_LENS'], kind: 'lens', value: data.lens }, { title: lychee.locale['PHOTO_SHUTTER'], kind: 'shutter', value: data.shutter }, { title: lychee.locale['PHOTO_APERTURE'], kind: 'aperture', value: data.aperture }, { title: lychee.locale['PHOTO_FOCAL'], kind: 'focal', value: data.focal }, { title: lychee.locale['PHOTO_ISO'], kind: 'iso', value: data.iso }]
+			rows: isVideo ? [{
+				title: lychee.locale["PHOTO_CAPTURED"],
+				kind: "takedate",
+				value: data.takedate
+			}, {
+				title: lychee.locale["PHOTO_MAKE"],
+				kind: "make",
+				value: data.make
+			}, {
+				title: lychee.locale["PHOTO_TYPE"],
+				kind: "model",
+				value: data.model
+			}] : [{
+				title: lychee.locale["PHOTO_CAPTURED"],
+				kind: "takedate",
+				value: data.takedate
+			}, {
+				title: lychee.locale["PHOTO_MAKE"],
+				kind: "make",
+				value: data.make
+			}, {
+				title: lychee.locale["PHOTO_TYPE"],
+				kind: "model",
+				value: data.model
+			}, {
+				title: lychee.locale["PHOTO_LENS"],
+				kind: "lens",
+				value: data.lens
+			}, {
+				title: lychee.locale["PHOTO_SHUTTER"],
+				kind: "shutter",
+				value: data.shutter
+			}, {
+				title: lychee.locale["PHOTO_APERTURE"],
+				kind: "aperture",
+				value: data.aperture
+			}, {
+				title: lychee.locale["PHOTO_FOCAL"],
+				kind: "focal",
+				value: data.focal
+			}, {
+				title: lychee.locale["PHOTO_ISO"],
+				kind: "iso",
+				value: data.iso
+			}]
 		};
 	} else {
-
 		structure.exif = {};
 	}
 
 	structure.sharing = {
-		title: lychee.locale['PHOTO_SHARING'],
+		title: lychee.locale["PHOTO_SHARING"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_SHR_PLUBLIC'], kind: 'public', value: _public }]
+		rows: [{
+			title: lychee.locale["PHOTO_SHR_PLUBLIC"],
+			kind: "public",
+			value: _public
+		}]
 	};
 
 	structure.license = {
-		title: lychee.locale['PHOTO_REUSE'],
+		title: lychee.locale["PHOTO_REUSE"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['PHOTO_LICENSE'], kind: 'license', value: license, editable: editable }]
+		rows: [{
+			title: lychee.locale["PHOTO_LICENSE"],
+			kind: "license",
+			value: license,
+			editable: editable
+		}]
 	};
 
-	if (locationHash !== '' && locationHash !== 0) {
-
+	if (locationHash !== "" && locationHash !== 0) {
 		structure.location = {
-			title: lychee.locale['PHOTO_LOCATION'],
+			title: lychee.locale["PHOTO_LOCATION"],
 			type: _sidebar.types.DEFAULT,
-			rows: [{ title: lychee.locale['PHOTO_LATITUDE'], kind: 'latitude', value: data.latitude ? DecimalToDegreeMinutesSeconds(data.latitude, true) : '' }, { title: lychee.locale['PHOTO_LONGITUDE'], kind: 'longitude', value: data.longitude ? DecimalToDegreeMinutesSeconds(data.longitude, false) : '' },
+			rows: [{
+				title: lychee.locale["PHOTO_LATITUDE"],
+				kind: "latitude",
+				value: data.latitude ? DecimalToDegreeMinutesSeconds(data.latitude, true) : ""
+			}, {
+				title: lychee.locale["PHOTO_LONGITUDE"],
+				kind: "longitude",
+				value: data.longitude ? DecimalToDegreeMinutesSeconds(data.longitude, false) : ""
+			},
 			// No point in displaying sub-mm precision; 10cm is more than enough.
-			{ title: lychee.locale['PHOTO_ALTITUDE'], kind: 'altitude', value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + 'm' : '' }, { title: lychee.locale['PHOTO_LOCATION'], kind: 'location', value: data.location ? data.location : '' }]
+			{
+				title: lychee.locale["PHOTO_ALTITUDE"],
+				kind: "altitude",
+				value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + "m" : ""
+			}, {
+				title: lychee.locale["PHOTO_LOCATION"],
+				kind: "location",
+				value: data.location ? data.location : ""
+			}]
 		};
 		if (data.imgDirection) {
 			// No point in display sub-degree precision.
-			structure.location.rows.push({ title: lychee.locale['PHOTO_IMGDIRECTION'], kind: 'imgDirection', value: Math.round(data.imgDirection).toString() + '°' });
+			structure.location.rows.push({
+				title: lychee.locale["PHOTO_IMGDIRECTION"],
+				kind: "imgDirection",
+				value: Math.round(data.imgDirection).toString() + "°"
+			});
 		}
 	} else {
 		structure.location = {};
@@ -8127,170 +8187,220 @@ _sidebar.createStructure.photo = function (data) {
 };
 
 _sidebar.createStructure.album = function (album) {
-
 	var data = album.json;
 
-	if (data == null || data === '') return false;
+	if (data == null || data === "") return false;
 
 	var editable = album.isUploadable();
 	var structure = {};
-	var _public = '';
-	var hidden = '';
-	var downloadable = '';
-	var share_button_visible = '';
-	var password = '';
-	var license = '';
-	var sorting = '';
+	var _public = "";
+	var hidden = "";
+	var downloadable = "";
+	var share_button_visible = "";
+	var password = "";
+	var license = "";
+	var sorting = "";
 
 	// Set value for public
 	switch (data.public) {
-
-		case '0':
-			_public = lychee.locale['ALBUM_SHR_NO'];
+		case "0":
+			_public = lychee.locale["ALBUM_SHR_NO"];
 			break;
-		case '1':
-			_public = lychee.locale['ALBUM_SHR_YES'];
+		case "1":
+			_public = lychee.locale["ALBUM_SHR_YES"];
 			break;
 		default:
-			_public = '-';
+			_public = "-";
 			break;
-
 	}
 
 	// Set value for hidden
 	switch (data.visible) {
-
-		case '0':
-			hidden = lychee.locale['ALBUM_SHR_YES'];
+		case "0":
+			hidden = lychee.locale["ALBUM_SHR_YES"];
 			break;
-		case '1':
-			hidden = lychee.locale['ALBUM_SHR_NO'];
+		case "1":
+			hidden = lychee.locale["ALBUM_SHR_NO"];
 			break;
 		default:
-			hidden = '-';
+			hidden = "-";
 			break;
-
 	}
 
 	// Set value for downloadable
 	switch (data.downloadable) {
-
-		case '0':
-			downloadable = lychee.locale['ALBUM_SHR_NO'];
+		case "0":
+			downloadable = lychee.locale["ALBUM_SHR_NO"];
 			break;
-		case '1':
-			downloadable = lychee.locale['ALBUM_SHR_YES'];
+		case "1":
+			downloadable = lychee.locale["ALBUM_SHR_YES"];
 			break;
 		default:
-			downloadable = '-';
+			downloadable = "-";
 			break;
-
 	}
 
 	// Set value for share_button_visible
 	switch (data.share_button_visible) {
-
-		case '0':
-			share_button_visible = lychee.locale['ALBUM_SHR_NO'];
+		case "0":
+			share_button_visible = lychee.locale["ALBUM_SHR_NO"];
 			break;
-		case '1':
-			share_button_visible = lychee.locale['ALBUM_SHR_YES'];
+		case "1":
+			share_button_visible = lychee.locale["ALBUM_SHR_YES"];
 			break;
 		default:
-			share_button_visible = '-';
+			share_button_visible = "-";
 			break;
-
 	}
 
 	// Set value for password
 	switch (data.password) {
-
-		case '0':
-			password = lychee.locale['ALBUM_SHR_NO'];
+		case "0":
+			password = lychee.locale["ALBUM_SHR_NO"];
 			break;
-		case '1':
-			password = lychee.locale['ALBUM_SHR_YES'];
+		case "1":
+			password = lychee.locale["ALBUM_SHR_YES"];
 			break;
 		default:
-			password = '-';
+			password = "-";
 			break;
-
 	}
 
 	// Set license string
 	switch (data.license) {
-		case 'none':
-			license = ''; // consistency
+		case "none":
+			license = ""; // consistency
 			break;
-		case 'reserved':
-			license = lychee.locale['ALBUM_RESERVED'];
+		case "reserved":
+			license = lychee.locale["ALBUM_RESERVED"];
 			break;
 		default:
 			license = data.license;
 			break;
 	}
 
-	if (data.sorting_col === '') {
-		sorting = lychee.locale['DEFAULT'];
+	if (data.sorting_col === "") {
+		sorting = lychee.locale["DEFAULT"];
 	} else {
-		sorting = data.sorting_col + ' ' + data.sorting_order;
+		sorting = data.sorting_col + " " + data.sorting_order;
 	}
 
 	structure.basics = {
-		title: lychee.locale['ALBUM_BASICS'],
+		title: lychee.locale["ALBUM_BASICS"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_TITLE'], kind: 'title', value: data.title, editable: editable }, { title: lychee.locale['ALBUM_DESCRIPTION'], kind: 'description', value: data.description, editable: editable }]
+		rows: [{
+			title: lychee.locale["ALBUM_TITLE"],
+			kind: "title",
+			value: data.title,
+			editable: editable
+		}, {
+			title: lychee.locale["ALBUM_DESCRIPTION"],
+			kind: "description",
+			value: data.description,
+			editable: editable
+		}]
 	};
 
 	if (album.isTagAlbum()) {
-		structure.basics.rows.push({ title: lychee.locale['ALBUM_SHOW_TAGS'], kind: 'showtags', value: data.show_tags, editable: editable });
+		structure.basics.rows.push({
+			title: lychee.locale["ALBUM_SHOW_TAGS"],
+			kind: "showtags",
+			value: data.show_tags,
+			editable: editable
+		});
 	}
 
 	var videoCount = 0;
 	$.each(data.photos, function () {
-		if (this.type && this.type.indexOf('video') > -1) {
+		if (this.type && this.type.indexOf("video") > -1) {
 			videoCount++;
 		}
 	});
 	structure.album = {
-		title: lychee.locale['ALBUM_ALBUM'],
+		title: lychee.locale["ALBUM_ALBUM"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_CREATED'], kind: 'created', value: data.sysdate }]
+		rows: [{
+			title: lychee.locale["ALBUM_CREATED"],
+			kind: "created",
+			value: data.sysdate
+		}]
 	};
 	if (data.albums && data.albums.length > 0) {
-		structure.album.rows.push({ title: lychee.locale['ALBUM_SUBALBUMS'],
-			kind: 'subalbums', value: data.albums.length });
+		structure.album.rows.push({
+			title: lychee.locale["ALBUM_SUBALBUMS"],
+			kind: "subalbums",
+			value: data.albums.length
+		});
 	}
 	if (data.photos) {
 		if (data.photos.length - videoCount > 0) {
-			structure.album.rows.push({ title: lychee.locale['ALBUM_IMAGES'],
-				kind: 'images',
-				value: data.photos.length - videoCount });
+			structure.album.rows.push({
+				title: lychee.locale["ALBUM_IMAGES"],
+				kind: "images",
+				value: data.photos.length - videoCount
+			});
 		}
 	}
 	if (videoCount > 0) {
-		structure.album.rows.push({ title: lychee.locale['ALBUM_VIDEOS'],
-			kind: 'videos', value: videoCount });
+		structure.album.rows.push({
+			title: lychee.locale["ALBUM_VIDEOS"],
+			kind: "videos",
+			value: videoCount
+		});
 	}
 
 	if (data.photos) {
-		structure.album.rows.push({ title: lychee.locale['ALBUM_ORDERING'], kind: 'sorting', value: sorting, editable: editable });
+		structure.album.rows.push({
+			title: lychee.locale["ALBUM_ORDERING"],
+			kind: "sorting",
+			value: sorting,
+			editable: editable
+		});
 	}
 
 	structure.share = {
-		title: lychee.locale['ALBUM_SHARING'],
+		title: lychee.locale["ALBUM_SHARING"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_PUBLIC'], kind: 'public', value: _public }, { title: lychee.locale['ALBUM_HIDDEN'], kind: 'hidden', value: hidden }, { title: lychee.locale['ALBUM_DOWNLOADABLE'], kind: 'downloadable', value: downloadable }, { title: lychee.locale['ALBUM_SHARE_BUTTON_VISIBLE'], kind: 'share_button_visible', value: share_button_visible }, { title: lychee.locale['ALBUM_PASSWORD'], kind: 'password', value: password }]
+		rows: [{
+			title: lychee.locale["ALBUM_PUBLIC"],
+			kind: "public",
+			value: _public
+		}, {
+			title: lychee.locale["ALBUM_HIDDEN"],
+			kind: "hidden",
+			value: hidden
+		}, {
+			title: lychee.locale["ALBUM_DOWNLOADABLE"],
+			kind: "downloadable",
+			value: downloadable
+		}, {
+			title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"],
+			kind: "share_button_visible",
+			value: share_button_visible
+		}, {
+			title: lychee.locale["ALBUM_PASSWORD"],
+			kind: "password",
+			value: password
+		}]
 	};
 
 	if (data.owner != null) {
-		structure.share.rows.push({ title: lychee.locale['ALBUM_OWNER'], kind: 'owner', value: data.owner });
+		structure.share.rows.push({
+			title: lychee.locale["ALBUM_OWNER"],
+			kind: "owner",
+			value: data.owner
+		});
 	}
 
 	structure.license = {
-		title: lychee.locale['ALBUM_REUSE'],
+		title: lychee.locale["ALBUM_REUSE"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale['ALBUM_LICENSE'], kind: 'license', value: license, editable: editable }]
+		rows: [{
+			title: lychee.locale["ALBUM_LICENSE"],
+			kind: "license",
+			value: license,
+			editable: editable
+		}]
 	};
 
 	// Construct all parts of the structure
@@ -8303,14 +8413,12 @@ _sidebar.createStructure.album = function (album) {
 };
 
 _sidebar.has_location = function (structure) {
-
-	if (structure == null || structure === '' || structure === false) return false;
+	if (structure == null || structure === "" || structure === false) return false;
 
 	var _has_location = false;
 
 	structure.forEach(function (section) {
-
-		if (section.title == lychee.locale['PHOTO_LOCATION']) {
+		if (section.title == lychee.locale["PHOTO_LOCATION"]) {
 			_has_location = true;
 		}
 	});
@@ -8319,37 +8427,35 @@ _sidebar.has_location = function (structure) {
 };
 
 _sidebar.render = function (structure) {
+	if (structure == null || structure === "" || structure === false) return false;
 
-	if (structure == null || structure === '' || structure === false) return false;
-
-	var html = '';
+	var html = "";
 
 	var renderDefault = function renderDefault(section) {
-
-		var _html = '';
+		var _html = "";
 
 		_html += "\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>" + section.title + "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t ";
 
-		if (section.title == lychee.locale['PHOTO_LOCATION']) {
+		if (section.title == lychee.locale["PHOTO_LOCATION"]) {
 			var _has_latitude = false;
 			var _has_longitude = false;
 
 			section.rows.forEach(function (row, index, object) {
-				if (row.kind == 'latitude' && row.value !== '') {
+				if (row.kind == "latitude" && row.value !== "") {
 					_has_latitude = true;
 				}
 
-				if (row.kind == 'longitude' && row.value !== '') {
+				if (row.kind == "longitude" && row.value !== "") {
 					_has_longitude = true;
 				}
 
 				// Do not show location is not enabled
-				if (row.kind == 'location' && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
+				if (row.kind == "location" && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
 					object.splice(index, 1);
 				} else {
 					// Explode location string into an array to keep street, city etc separate
-					if (!(row.value === '' || row.value == null)) {
-						section.rows[index].value = row.value.split(',').map(function (item) {
+					if (!(row.value === "" || row.value == null)) {
+						section.rows[index].value = row.value.split(",").map(function (item) {
 							return item.trim();
 						});
 					}
@@ -8362,21 +8468,19 @@ _sidebar.render = function (structure) {
 		}
 
 		section.rows.forEach(function (row) {
-
 			var value = row.value;
 
 			// show only Exif rows which have a value or if its editable
-			if (!(value === '' || value == null) || row.editable === true) {
-
+			if (!(value === "" || value == null) || row.editable === true) {
 				// Wrap span-element around value for easier selecting on change
 				if (Array.isArray(row.value)) {
-					value = '';
+					value = "";
 					row.value.forEach(function (v) {
-						if (v === '' || v == null) {
+						if (v === "" || v == null) {
 							return;
 						}
 						// Add separator if needed
-						if (value !== '') {
+						if (value !== "") {
 							value += lychee.html(_templateObject70, row.kind);
 						}
 						value += lychee.html(_templateObject71, row.kind, v);
@@ -8386,7 +8490,7 @@ _sidebar.render = function (structure) {
 				}
 
 				// Add edit-icon to the value when editable
-				if (row.editable === true) value += ' ' + build.editIcon('edit_' + row.kind);
+				if (row.editable === true) value += " " + build.editIcon("edit_" + row.kind);
 
 				_html += lychee.html(_templateObject73, row.title, value);
 			}
@@ -8398,12 +8502,11 @@ _sidebar.render = function (structure) {
 	};
 
 	var renderTags = function renderTags(section) {
-
-		var _html = '';
-		var editable = '';
+		var _html = "";
+		var editable = "";
 
 		// Add edit-icon to the value when editable
-		if (section.editable === true) editable = build.editIcon('edit_tags');
+		if (section.editable === true) editable = build.editIcon("edit_tags");
 
 		_html += lychee.html(_templateObject74, section.title, section.title.toLowerCase(), section.value, editable);
 
@@ -8411,7 +8514,6 @@ _sidebar.render = function (structure) {
 	};
 
 	structure.forEach(function (section) {
-
 		if (section.type === _sidebar.types.DEFAULT) html += renderDefault(section);else if (section.type === _sidebar.types.TAGS) html += renderTags(section);
 	});
 
@@ -8419,7 +8521,6 @@ _sidebar.render = function (structure) {
 };
 
 function DecimalToDegreeMinutesSeconds(decimal, type) {
-
 	var degrees = 0;
 	var minutes = 0;
 	var seconds = 0;
@@ -8436,13 +8537,13 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 
 	//set direction; north assumed
 	if (type && decimal < 0) {
-		direction = 'S';
+		direction = "S";
 	} else if (!type && decimal < 0) {
-		direction = 'W';
+		direction = "W";
 	} else if (!type) {
-		direction = 'E';
+		direction = "E";
 	} else {
-		direction = 'N';
+		direction = "N";
 	}
 
 	//get absolute value of decimal
@@ -8460,7 +8561,7 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	//reset seconds
 	seconds = Math.floor(seconds - minutes * 60);
 
-	return degrees + '° ' + minutes + '\' ' + seconds + '\" ' + direction;
+	return degrees + "° " + minutes + "' " + seconds + '" ' + direction;
 }
 
 /**
@@ -8468,7 +8569,6 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
  */
 
 var swipe = {
-
 	obj: null,
 	offsetX: 0,
 	offsetY: 0,
@@ -8481,7 +8581,6 @@ swipe.start = function (obj) {
 };
 
 swipe.move = function (e) {
-
 	if (swipe.obj === null) {
 		return false;
 	}
@@ -8494,30 +8593,26 @@ swipe.move = function (e) {
 		swipe.offsetY = +1 * e.y;
 	}
 
-	var value = 'translate(' + swipe.offsetX + 'px, ' + swipe.offsetY + 'px)';
+	var value = "translate(" + swipe.offsetX + "px, " + swipe.offsetY + "px)";
 	swipe.obj.css({
-		'WebkitTransform': value,
-		'MozTransform': value,
-		'transform': value
+		WebkitTransform: value,
+		MozTransform: value,
+		transform: value
 	});
 	return;
 };
 
 swipe.stop = function (e, left, right) {
-
 	// Only execute once
 	if (swipe.obj == null) {
 		return false;
 	}
 
 	if (e.y <= -lychee.swipe_tolerance_y) {
-
 		lychee.goto(album.getID());
 	} else if (e.y >= lychee.swipe_tolerance_y) {
-
 		lychee.goto(album.getID());
 	} else if (e.x <= -lychee.swipe_tolerance_x) {
-
 		left(true);
 
 		// 'touchend' will be called after 'swipeEnd'
@@ -8525,7 +8620,6 @@ swipe.stop = function (e, left, right) {
 		// the toggling of the header
 		swipe.preventNextHeaderToggle = true;
 	} else if (e.x >= lychee.swipe_tolerance_x) {
-
 		right(true);
 
 		// 'touchend' will be called after 'swipeEnd'
@@ -8533,7 +8627,7 @@ swipe.stop = function (e, left, right) {
 		// the toggling of the header
 		swipe.preventNextHeaderToggle = true;
 	} else {
-		var value = 'translate(0px, 0px)';
+		var value = "translate(0px, 0px)";
 		swipe.obj.css({
 			WebkitTransform: value,
 			MozTransform: value,
@@ -8553,14 +8647,11 @@ swipe.stop = function (e, left, right) {
  */
 
 var tabindex = {
-
 	offset_for_header: 100,
 	next_tab_index: 100
-
 };
 
 tabindex.saveSettings = function (elem) {
-
 	if (!lychee.enable_tabindex) return;
 
 	// Todo: Make shorter notation
@@ -8576,7 +8667,6 @@ tabindex.saveSettings = function (elem) {
 };
 
 tabindex.restoreSettings = function (elem) {
-
 	if (!lychee.enable_tabindex) return;
 
 	// Todo: Make shorter noation
@@ -8593,7 +8683,6 @@ tabindex.restoreSettings = function (elem) {
 
 tabindex.makeUnfocusable = function (elem) {
 	var saveFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
 
 	if (!lychee.enable_tabindex) return;
 
@@ -8619,7 +8708,6 @@ tabindex.makeUnfocusable = function (elem) {
 tabindex.makeFocusable = function (elem) {
 	var restoreFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-
 	if (!lychee.enable_tabindex) return;
 
 	// Todo: Make shorter noation
@@ -8643,29 +8731,28 @@ tabindex.makeFocusable = function (elem) {
 };
 
 tabindex.get_next_tab_index = function () {
-
 	tabindex.next_tab_index = tabindex.next_tab_index + 1;
 
 	return tabindex.next_tab_index - 1;
 };
 
 tabindex.reset = function () {
-
 	tabindex.next_tab_index = tabindex.offset_for_header;
 };
+
 var u2f = {
 	json: null
 };
 
 u2f.is_available = function () {
-	if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-		var msg = lychee.html(_templateObject75, lychee.locale['U2F_NOT_SECURE']);
+	if (!window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+		var msg = lychee.html(_templateObject75, lychee.locale["U2F_NOT_SECURE"]);
 
 		basicModal.show({
 			body: msg,
 			buttons: {
 				cancel: {
-					title: lychee.locale['CLOSE'],
+					title: lychee.locale["CLOSE"],
 					fn: basicModal.close
 				}
 			}
@@ -8682,15 +8769,15 @@ u2f.login = function () {
 	}
 
 	new Larapass({
-		login: '/api/webauthn::login',
-		loginOptions: '/api/webauthn::login/gen'
+		login: "/api/webauthn::login",
+		loginOptions: "/api/webauthn::login/gen"
 	}).login({
 		user_id: 0 // for now it is only available to Admin user via a secret key shortcut.
 	}).then(function (data) {
-		loadingBar.show('success', lychee.locale['U2F_AUTHENTIFICATION_SUCCESS']);
+		loadingBar.show("success", lychee.locale["U2F_AUTHENTIFICATION_SUCCESS"]);
 		window.location.reload();
 	}).catch(function (error) {
-		return loadingBar.show('error', 'Something went wrong!');
+		return loadingBar.show("error", "Something went wrong!");
 	});
 };
 
@@ -8700,41 +8787,41 @@ u2f.register = function () {
 	}
 
 	var larapass = new Larapass({
-		register: '/api/webauthn::register',
-		registerOptions: '/api/webauthn::register/gen'
+		register: "/api/webauthn::register",
+		registerOptions: "/api/webauthn::register/gen"
 	});
 	if (Larapass.supportsWebAuthn()) {
 		larapass.register().then(function (response) {
-			loadingBar.show('success', lychee.locale['U2F_REGISTRATION_SUCCESS']);
+			loadingBar.show("success", lychee.locale["U2F_REGISTRATION_SUCCESS"]);
 			u2f.list(); // reload credential list
 		}).catch(function (response) {
-			return loadingBar.show('error', 'Something went wrong!');
+			return loadingBar.show("error", "Something went wrong!");
 		});
 	} else {
-		loadingBar.show('error', lychee.locale['U2F_NOT_SUPPORTED']);
+		loadingBar.show("error", lychee.locale["U2F_NOT_SUPPORTED"]);
 	}
 };
 
 u2f.delete = function (params) {
-
-	api.post('webauthn::delete', params, function (data) {
+	api.post("webauthn::delete", params, function (data) {
 		console.log(data);
 		if (!data) {
-			loadingBar.show('error', data.description);
+			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
 		} else {
-			loadingBar.show('success', lychee.locale['U2F_CREDENTIALS_DELETED']);
+			loadingBar.show("success", lychee.locale["U2F_CREDENTIALS_DELETED"]);
 			u2f.list(); // reload credential list
 		}
 	});
 };
 
 u2f.list = function () {
-	api.post('webauthn::list', {}, function (data) {
+	api.post("webauthn::list", {}, function (data) {
 		u2f.json = data;
 		view.u2f.init();
 	});
 };
+
 /**
  * @description Takes care of every action an album can handle and execute.
  */
@@ -8742,13 +8829,12 @@ u2f.list = function () {
 var upload = {};
 
 upload.show = function (title, files, callback) {
-
 	basicModal.show({
 		body: build.uploadModal(title, files),
 		buttons: {
 			action: {
-				title: lychee.locale['CLOSE'],
-				class: 'hidden',
+				title: lychee.locale["CLOSE"],
+				class: "hidden",
 				fn: basicModal.close
 			}
 		},
@@ -8757,29 +8843,25 @@ upload.show = function (title, files, callback) {
 };
 
 upload.notify = function (title, text) {
-
-	if (text == null || text === '') text = lychee.locale['UPLOAD_MANAGE_NEW_PHOTOS'];
+	if (text == null || text === "") text = lychee.locale["UPLOAD_MANAGE_NEW_PHOTOS"];
 
 	if (!window.webkitNotifications) return false;
 
 	if (window.webkitNotifications.checkPermission() !== 0) window.webkitNotifications.requestPermission();
 
 	if (window.webkitNotifications.checkPermission() === 0 && title) {
-		var popup = window.webkitNotifications.createNotification('', title, text);
+		var popup = window.webkitNotifications.createNotification("", title, text);
 		popup.show();
 	}
 };
 
 upload.start = {
-
 	local: function local(files) {
-
 		var albumID = album.getID();
 		var error = false;
 		var warning = false;
 
 		var process = function process(_files, file) {
-
 			var formData = new FormData();
 			var xhr = new XMLHttpRequest();
 			var pre_progress = 0;
@@ -8787,46 +8869,41 @@ upload.start = {
 			var next_file_started = false;
 
 			var finish = function finish() {
-
 				window.onbeforeunload = null;
 
-				$('#upload_files').val('');
+				$("#upload_files").val("");
 
 				if (error === false && warning === false) {
-
 					// Success
 					basicModal.close();
-					upload.notify(lychee.locale['UPLOAD_COMPLETE']);
+					upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
 				} else if (error === false && warning === true) {
-
 					// Warning
-					$('.basicModal #basicModal__action.hidden').show();
-					upload.notify(lychee.locale['UPLOAD_COMPLETE']);
+					$(".basicModal #basicModal__action.hidden").show();
+					upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
 				} else {
-
 					// Error
-					$('.basicModal #basicModal__action.hidden').show();
-					upload.notify(lychee.locale['UPLOAD_COMPLETE'], lychee.locale['UPLOAD_COMPLETE_FAILED']);
+					$(".basicModal #basicModal__action.hidden").show();
+					upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 				}
 
 				albums.refresh();
 
-				if (album.getID() === false) lychee.goto('unsorted');else album.load(albumID);
+				if (album.getID() === false) lychee.goto("unsorted");else album.load(albumID);
 			};
 
-			formData.append('function', 'Photo::add');
-			formData.append('albumID', albumID);
+			formData.append("function", "Photo::add");
+			formData.append("albumID", albumID);
 			formData.append(0, file);
 
-			var api_url = api.get_url('Photo::add');
+			var api_url = api.get_url("Photo::add");
 
-			xhr.open('POST', api_url);
+			xhr.open("POST", api_url);
 
 			xhr.onload = function () {
-
 				var data = null;
 				var wait = false;
-				var errorText = '';
+				var errorText = "";
 
 				var isNumber = function isNumber(n) {
 					return !isNaN(parseFloat(n)) && isFinite(n);
@@ -8834,7 +8911,7 @@ upload.start = {
 
 				data = xhr.responseText;
 
-				if (typeof data === 'string' && data.search('phpdebugbar') !== -1) {
+				if (typeof data === "string" && data.search("phpdebugbar") !== -1) {
 					// get rid of phpdebugbar thingy
 					var debug_bar_n = data.search("<link rel='stylesheet' type='text/css'");
 					if (debug_bar_n > 0) {
@@ -8845,56 +8922,50 @@ upload.start = {
 				try {
 					data = JSON.parse(data);
 				} catch (e) {
-					data = '';
+					data = "";
 				}
 
 				file.ready = true;
 
 				// Set status
 				if (xhr.status === 200 && isNumber(data)) {
-
 					// Success
-					$('.basicModal .rows .row:nth-child(' + (file.num + 1) + ') .status').html(lychee.locale['UPLOAD_FINISHED']).addClass('success');
+					$(".basicModal .rows .row:nth-child(" + (file.num + 1) + ") .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
 				} else {
-
-					if (data.substr(0, 6) === 'Error:') {
-
-						errorText = data.substr(6) + ' ' + lychee.locale['UPLOAD_ERROR_CONSOLE'];
+					if (data.substr(0, 6) === "Error:") {
+						errorText = data.substr(6) + " " + lychee.locale["UPLOAD_ERROR_CONSOLE"];
 						error = true;
 
 						// Error Status
-						$('.basicModal .rows .row:nth-child(' + (file.num + 1) + ') .status').html(lychee.locale['UPLOAD_FAILED']).addClass('error');
+						$(".basicModal .rows .row:nth-child(" + (file.num + 1) + ") .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 
 						// Throw error
-						if (error === true) lychee.error(lychee.locale['UPLOAD_FAILED_ERROR'], xhr, data);
-					} else if (data.substr(0, 8) === 'Warning:') {
-
+						if (error === true) lychee.error(lychee.locale["UPLOAD_FAILED_ERROR"], xhr, data);
+					} else if (data.substr(0, 8) === "Warning:") {
 						errorText = data.substr(8);
 						warning = true;
 
 						// Warning Status
-						$('.basicModal .rows .row:nth-child(' + (file.num + 1) + ') .status').html(lychee.locale['UPLOAD_SKIPPED']).addClass('warning');
+						$(".basicModal .rows .row:nth-child(" + (file.num + 1) + ") .status").html(lychee.locale["UPLOAD_SKIPPED"]).addClass("warning");
 
 						// Throw error
-						if (error === true) lychee.error(lychee.locale['UPLOAD_FAILED_WARNING'], xhr, data);
+						if (error === true) lychee.error(lychee.locale["UPLOAD_FAILED_WARNING"], xhr, data);
 					} else {
-
-						errorText = lychee.locale['UPLOAD_UNKNOWN'];
+						errorText = lychee.locale["UPLOAD_UNKNOWN"];
 						error = true;
 
 						// Error Status
-						$('.basicModal .rows .row:nth-child(' + (file.num + 1) + ') .status').html(lychee.locale['UPLOAD_FAILED']).addClass('error');
+						$(".basicModal .rows .row:nth-child(" + (file.num + 1) + ") .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 
 						// Throw error
-						if (error === true) lychee.error(lychee.locale['UPLOAD_ERROR_UNKNOWN'], xhr, data);
+						if (error === true) lychee.error(lychee.locale["UPLOAD_ERROR_UNKNOWN"], xhr, data);
 					}
 
-					$('.basicModal .rows .row:nth-child(' + (file.num + 1) + ') p.notice').html(errorText).show();
+					$(".basicModal .rows .row:nth-child(" + (file.num + 1) + ") p.notice").html(errorText).show();
 				}
 
 				// Check if there are file which are not finished
 				for (var i = 0; i < _files.length; i++) {
-
 					if (_files[i].ready === false) {
 						wait = true;
 						break;
@@ -8906,7 +8977,6 @@ upload.start = {
 			};
 
 			xhr.upload.onprogress = function (e) {
-
 				if (e.lengthComputable !== true) return false;
 
 				// Calculate progress
@@ -8914,19 +8984,18 @@ upload.start = {
 
 				// Set progress when progress has changed
 				if (progress > pre_progress) {
-					$('.basicModal .rows .row:nth-child(' + (file.num + 1) + ') .status').html(progress + '%');
+					$(".basicModal .rows .row:nth-child(" + (file.num + 1) + ") .status").html(progress + "%");
 					pre_progress = progress;
 				}
 
 				if (progress >= 100 && next_file_started === false) {
-
 					// Scroll to the uploading file
 					var scrollPos = 0;
 					if (file.num + 1 > 4) scrollPos = (file.num + 1 - 4) * 40;
-					$('.basicModal .rows').scrollTop(scrollPos);
+					$(".basicModal .rows").scrollTop(scrollPos);
 
 					// Set status to processing
-					$('.basicModal .rows .row:nth-child(' + (file.num + 1) + ') .status').html(lychee.locale['UPLOAD_PROCESSING']);
+					$(".basicModal .rows .row:nth-child(" + (file.num + 1) + ") .status").html(lychee.locale["UPLOAD_PROCESSING"]);
 
 					// Upload next file
 					if (file.next != null) {
@@ -8936,7 +9005,7 @@ upload.start = {
 				}
 			};
 
-			xhr.setRequestHeader('X-XSRF-TOKEN', csrf.getCookie('XSRF-TOKEN'));
+			xhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
 			xhr.send(formData);
 		};
 
@@ -8944,7 +9013,6 @@ upload.start = {
 		if (albumID === false || visible.albums() === true) albumID = 0;
 
 		for (var i = 0; i < files.length; i++) {
-
 			files[i].num = i;
 			files[i].ready = false;
 
@@ -8952,85 +9020,78 @@ upload.start = {
 		}
 
 		window.onbeforeunload = function () {
-			return lychee.locale['UPLOAD_IN_PROGRESS'];
+			return lychee.locale["UPLOAD_IN_PROGRESS"];
 		};
 
-		upload.show(lychee.locale['UPLOAD_UPLOADING'], files, function () {
-
+		upload.show(lychee.locale["UPLOAD_UPLOADING"], files, function () {
 			// Upload first file
 			process(files, files[0]);
 		});
 	},
 
 	url: function url() {
-		var _url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+		var _url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
 		var albumID = album.getID();
 
-		_url = typeof _url === 'string' ? _url : '';
+		_url = typeof _url === "string" ? _url : "";
 
 		if (albumID === false) albumID = 0;
 
 		var action = function action(data) {
-
 			var files = [];
 
 			if (data.link && data.link.length > 3) {
-
 				basicModal.close();
 
 				files[0] = {
 					name: data.link
 				};
 
-				upload.show(lychee.locale['UPLOAD_IMPORTING_URL'], files, function () {
-
-					$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_IMPORTING']);
+				upload.show(lychee.locale["UPLOAD_IMPORTING_URL"], files, function () {
+					$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_IMPORTING"]);
 
 					var params = {
 						url: data.link,
 						albumID: albumID
 					};
 
-					api.post('Import::url', params, function (_data) {
-
+					api.post("Import::url", params, function (_data) {
 						// Same code as in import.dropbox()
 
 						if (_data !== true) {
+							$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
 
-							$('.basicModal .rows .row p.notice').html(lychee.locale['UPLOAD_IMPORT_WARN_ERR']).show();
-
-							$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_FINISHED']).addClass('warning');
+							$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
 
 							// Show close button
-							$('.basicModal #basicModal__action.hidden').show();
+							$(".basicModal #basicModal__action.hidden").show();
 
 							// Log error
 							lychee.error(null, params, _data);
 						} else {
-
 							basicModal.close();
 						}
 
-						upload.notify(lychee.locale['UPLOAD_IMPORT_COMPLETE']);
+						upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
 
 						albums.refresh();
 
-						if (album.getID() === false) lychee.goto('0');else album.load(albumID);
+						if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 					});
 				});
-			} else basicModal.error('link');
+			} else basicModal.error("link");
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject76) + lychee.locale['UPLOAD_IMPORT_INSTR'] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + _url + "'></p>"),
+			body: lychee.html(_templateObject76) + lychee.locale["UPLOAD_IMPORT_INSTR"] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + _url + "'></p>"),
 			buttons: {
 				action: {
-					title: lychee.locale['UPLOAD_IMPORT'],
+					title: lychee.locale["UPLOAD_IMPORT"],
 					fn: action
 				},
 				cancel: {
-					title: lychee.locale['CANCEL'],
+					title: lychee.locale["CANCEL"],
 					fn: basicModal.close
 				}
 			}
@@ -9038,23 +9099,20 @@ upload.start = {
 	},
 
 	server: function server() {
-
 		var albumID = album.getID();
 		if (albumID === false) albumID = 0;
 
 		var action = function action(data) {
-
 			var files = [];
 
 			files[0] = {
 				name: data.path
 			};
 
-			var delete_imported = $('.basicModal .choice input[name="delete"]').prop('checked') ? '1' : '0';
+			var delete_imported = $('.basicModal .choice input[name="delete"]').prop("checked") ? "1" : "0";
 
-			upload.show(lychee.locale['UPLOAD_IMPORT_SERVER'], files, function () {
-
-				$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_IMPORTING']);
+			upload.show(lychee.locale["UPLOAD_IMPORT_SERVER"], files, function () {
+				$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_IMPORTING"]);
 
 				var params = {
 					albumID: albumID,
@@ -9063,13 +9121,11 @@ upload.start = {
 				};
 
 				if (lychee.api_V2 === false) {
-					api.post('Import::server', params, function (_data) {
-
+					api.post("Import::server", params, function (_data) {
 						albums.refresh();
-						upload.notify(lychee.locale['UPLOAD_IMPORT_COMPLETE']);
+						upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
 
-						if (_data === 'Notice: Import only contained albums!') {
-
+						if (_data === "Notice: Import only contained albums!") {
 							// No error, but the folder only contained albums
 
 							// Go back to the album overview to show the imported albums
@@ -9078,39 +9134,36 @@ upload.start = {
 							basicModal.close();
 
 							return true;
-						} else if (_data === 'Warning: Folder empty or no readable files to process!') {
-
+						} else if (_data === "Warning: Folder empty or no readable files to process!") {
 							// Error because the import could not start
 
-							$('.basicModal .rows .row p.notice').html(lychee.locale['UPLOAD_IMPORT_SERVER_FOLD']).show();
+							$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_SERVER_FOLD"]).show();
 
-							$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_FAILED']).addClass('error');
+							$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 
 							// Log error
-							lychee.error(lychee.locale['UPLOAD_IMPORT_SERVER_EMPT'], params, _data);
+							lychee.error(lychee.locale["UPLOAD_IMPORT_SERVER_EMPT"], params, _data);
 						} else {
 							if (_data !== true) {
-
 								// Maybe an error, maybe just some skipped photos
 
-								$('.basicModal .rows .row p.notice').html(lychee.locale['UPLOAD_IMPORT_WARN_ERR']).show();
+								$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
 
-								$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_FINISHED']).addClass('warning');
+								$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
 
 								// Log error
 								lychee.error(null, params, _data);
 							} else {
-
 								// No error, everything worked fine
 
 								basicModal.close();
 							}
 
-							if (album.getID() === false) lychee.goto('0');else album.load(albumID);
+							if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 						}
 
 						// Show close button
-						$('.basicModal #basicModal__action.hidden').show();
+						$(".basicModal #basicModal__action.hidden").show();
 
 						return;
 					});
@@ -9133,7 +9186,7 @@ upload.start = {
 						// that reason, our custom protocol terminates every
 						// line with the newline character, including the last
 						// line.
-						var lastNewline = newResponse.lastIndexOf('\n');
+						var lastNewline = newResponse.lastIndexOf("\n");
 						if (lastNewline === -1) {
 							// No valid input data to process.
 							return;
@@ -9147,63 +9200,63 @@ upload.start = {
 						// Advance the counter past the last valid character.
 						lastReadIdx += newResponse.length;
 
-						newResponse.split('\n').forEach(function (resp) {
+						newResponse.split("\n").forEach(function (resp) {
 							var matches = resp.match(/^Status: (.*): (\d+)$/);
 							if (matches !== null) {
-								if (matches[2] !== '100') {
+								if (matches[2] !== "100") {
 									if (currentDir !== matches[1]) {
 										// New directory.  Add a new line to
 										// the dialog box.
 										currentDir = matches[1];
-										$('.basicModal .rows').append(build.uploadNewFile(currentDir));
+										$(".basicModal .rows").append(build.uploadNewFile(currentDir));
 										rowCount++;
 									}
-									$('.basicModal .rows .row:last-child .status').html(matches[2] + '%');
+									$(".basicModal .rows .row:last-child .status").html(matches[2] + "%");
 								} else {
 									// Final status report for this directory.
-									$('.basicModal .rows .row:last-child .status').html(lychee.locale['UPLOAD_FINISHED']).addClass('success');
+									$(".basicModal .rows .row:last-child .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
 								}
 							} else if ((matches = resp.match(/^Problem: (.*): ([^:]*)$/)) !== null) {
 								var rowSelector = void 0;
 								if (currentDir !== matches[1]) {
-									$('.basicModal .rows .row:last-child').before(build.uploadNewFile(matches[1]));
+									$(".basicModal .rows .row:last-child").before(build.uploadNewFile(matches[1]));
 									rowCount++;
-									rowSelector = '.basicModal .rows .row:nth-last-child(2)';
+									rowSelector = ".basicModal .rows .row:nth-last-child(2)";
 								} else {
 									// The problem is with the directory
 									// itself, so alter its existing line.
-									rowSelector = '.basicModal .rows .row:last-child';
+									rowSelector = ".basicModal .rows .row:last-child";
 								}
-								if (matches[2] === 'Given path is not a directory' || matches[2] === 'Given path is reserved') {
-									$(rowSelector + ' .status').html(lychee.locale['UPLOAD_FAILED']).addClass('error');
+								if (matches[2] === "Given path is not a directory" || matches[2] === "Given path is reserved") {
+									$(rowSelector + " .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 								} else {
-									$(rowSelector + ' .status').html(lychee.locale['UPLOAD_SKIPPED']).addClass('warning');
+									$(rowSelector + " .status").html(lychee.locale["UPLOAD_SKIPPED"]).addClass("warning");
 								}
-								$(rowSelector + ' .notice').html(matches[2] === 'Given path is not a directory' ? lychee.locale['UPLOAD_IMPORT_NOT_A_DIRECTORY'] : matches[2] === 'Given path is reserved' ? lychee.locale['UPLOAD_IMPORT_PATH_RESERVED'] : matches[2] === 'Could not read file' ? lychee.locale['UPLOAD_IMPORT_UNREADABLE'] : matches[2] === 'Could not import file' ? lychee.locale['UPLOAD_IMPORT_FAILED'] : matches[2] === 'Unsupported file type' ? lychee.locale['UPLOAD_IMPORT_UNSUPPORTED'] : matches[2] === 'Could not create album' ? lychee.locale['UPLOAD_IMPORT_ALBUM_FAILED'] : matches[2]).show();
+								$(rowSelector + " .notice").html(matches[2] === "Given path is not a directory" ? lychee.locale["UPLOAD_IMPORT_NOT_A_DIRECTORY"] : matches[2] === "Given path is reserved" ? lychee.locale["UPLOAD_IMPORT_PATH_RESERVED"] : matches[2] === "Could not read file" ? lychee.locale["UPLOAD_IMPORT_UNREADABLE"] : matches[2] === "Could not import file" ? lychee.locale["UPLOAD_IMPORT_FAILED"] : matches[2] === "Unsupported file type" ? lychee.locale["UPLOAD_IMPORT_UNSUPPORTED"] : matches[2] === "Could not create album" ? lychee.locale["UPLOAD_IMPORT_ALBUM_FAILED"] : matches[2]).show();
 								encounteredProblems = true;
-							} else if (resp === 'Warning: Approaching memory limit') {
-								$('.basicModal .rows .row:last-child').before(build.uploadNewFile(lychee.locale['UPLOAD_IMPORT_LOW_MEMORY']));
+							} else if (resp === "Warning: Approaching memory limit") {
+								$(".basicModal .rows .row:last-child").before(build.uploadNewFile(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY"]));
 								rowCount++;
-								$('.basicModal .rows .row:nth-last-child(2) .status').html(lychee.locale['UPLOAD_WARNING']).addClass('warning');
-								$('.basicModal .rows .row:nth-last-child(2) .notice').html(lychee.locale['UPLOAD_IMPORT_LOW_MEMORY_EXPL']).show();
+								$(".basicModal .rows .row:nth-last-child(2) .status").html(lychee.locale["UPLOAD_WARNING"]).addClass("warning");
+								$(".basicModal .rows .row:nth-last-child(2) .notice").html(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY_EXPL"]).show();
 							}
-							$('.basicModal .rows').scrollTop((rowCount - 1) * 40);
+							$(".basicModal .rows").scrollTop((rowCount - 1) * 40);
 						}); // forEach (resp)
 					}; // processIncremental
 
-					api.post('Import::server', params, function (_data) {
+					api.post("Import::server", params, function (_data) {
 						// _data is already JSON-parsed.
 						processIncremental(_data);
 
 						albums.refresh();
 
-						upload.notify(lychee.locale['UPLOAD_IMPORT_COMPLETE'], encounteredProblems ? lychee.locale['UPLOAD_COMPLETE_FAILED'] : null);
+						upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"], encounteredProblems ? lychee.locale["UPLOAD_COMPLETE_FAILED"] : null);
 
-						if (album.getID() === false) lychee.goto('0');else album.load(albumID);
+						if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 
 						if (encounteredProblems) {
 							// Show close button
-							$('.basicModal #basicModal__action.hidden').show();
+							$(".basicModal #basicModal__action.hidden").show();
 						} else {
 							basicModal.close();
 						}
@@ -9218,7 +9271,7 @@ upload.start = {
 								// or it may come from, say, a filename, in
 								// which case it would be escaped.
 								if (response.length > 1) {
-									if (response.substring(this.response.length - 2) === '\"') {
+									if (response.substring(this.response.length - 2) === '"') {
 										response += '"';
 									}
 									// else it's a complete response,
@@ -9243,15 +9296,15 @@ upload.start = {
 						} catch (e) {
 							// Most likely a SyntaxError due to something
 							// that went wrong on the server side.
-							$('.basicModal .rows .row:last-child .status').html(lychee.locale['UPLOAD_FAILED']).addClass('error');
+							$(".basicModal .rows .row:last-child .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 
 							albums.refresh();
-							upload.notify(lychee.locale['UPLOAD_COMPLETE'], lychee.locale['UPLOAD_COMPLETE_FAILED']);
+							upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 
-							if (album.getID() === false) lychee.goto('0');else album.load(albumID);
+							if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 
 							// Show close button
-							$('.basicModal #basicModal__action.hidden').show();
+							$(".basicModal #basicModal__action.hidden").show();
 
 							return;
 						}
@@ -9263,42 +9316,39 @@ upload.start = {
 			}); // upload.show
 		}; // action
 
-		var msg = lychee.html(_templateObject77, lychee.locale['UPLOAD_IMPORT_SERVER_INSTR'], lychee.locale['UPLOAD_ABSOLUTE_PATH'], lychee.location);
+		var msg = lychee.html(_templateObject77, lychee.locale["UPLOAD_IMPORT_SERVER_INSTR"], lychee.locale["UPLOAD_ABSOLUTE_PATH"], lychee.location);
 		if (lychee.api_V2) {
-			msg += lychee.html(_templateObject78, build.iconic('check'), lychee.locale['UPLOAD_IMPORT_DELETE_ORIGINALS'], lychee.locale['UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL']);
+			msg += lychee.html(_templateObject78, build.iconic("check"), lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"], lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"]);
 		}
 
 		basicModal.show({
 			body: msg,
 			buttons: {
 				action: {
-					title: lychee.locale['UPLOAD_IMPORT'],
+					title: lychee.locale["UPLOAD_IMPORT"],
 					fn: action
 				},
 				cancel: {
-					title: lychee.locale['CANCEL'],
+					title: lychee.locale["CANCEL"],
 					fn: basicModal.close
 				}
 			}
 		});
 
 		if (lychee.delete_imported) {
-			$('.basicModal .choice input[name="delete"]').prop('checked', true);
+			$('.basicModal .choice input[name="delete"]').prop("checked", true);
 		}
 	},
 
 	dropbox: function dropbox() {
-
 		var albumID = album.getID();
 		if (albumID === false) albumID = 0;
 
 		var success = function success(files) {
-
-			var links = '';
+			var links = "";
 
 			for (var i = 0; i < files.length; i++) {
-
-				links += files[i].link + ',';
+				links += files[i].link + ",";
 
 				files[i] = {
 					name: files[i].link
@@ -9308,139 +9358,133 @@ upload.start = {
 			// Remove last comma
 			links = links.substr(0, links.length - 1);
 
-			upload.show('Importing from Dropbox', files, function () {
-
-				$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_IMPORTING']);
+			upload.show("Importing from Dropbox", files, function () {
+				$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_IMPORTING"]);
 
 				var params = {
 					url: links,
 					albumID: albumID
 				};
 
-				api.post('Import::url', params, function (data) {
-
+				api.post("Import::url", params, function (data) {
 					// Same code as in import.url()
 
 					if (data !== true) {
+						$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
 
-						$('.basicModal .rows .row p.notice').html(lychee.locale['UPLOAD_IMPORT_WARN_ERR']).show();
-
-						$('.basicModal .rows .row .status').html(lychee.locale['UPLOAD_FINISHED']).addClass('warning');
+						$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
 
 						// Show close button
-						$('.basicModal #basicModal__action.hidden').show();
+						$(".basicModal #basicModal__action.hidden").show();
 
 						// Log error
 						lychee.error(null, params, data);
 					} else {
-
 						basicModal.close();
 					}
 
-					upload.notify(lychee.locale['UPLOAD_IMPORT_COMPLETE']);
+					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
 
 					albums.refresh();
 
-					if (album.getID() === false) lychee.goto('0');else album.load(albumID);
+					if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 				});
 			});
 		};
 
 		lychee.loadDropbox(function () {
 			Dropbox.choose({
-				linkType: 'direct',
+				linkType: "direct",
 				multiselect: true,
 				success: success
 			});
 		});
 	}
-
 };
+
 var users = {
 	json: null
 };
 
 users.update = function (params) {
-
 	if (params.username.length < 1) {
-		loadingBar.show('error', 'new username cannot be empty.');
+		loadingBar.show("error", "new username cannot be empty.");
 		return false;
 	}
 
-	if ($('#UserData' + params.id + ' .choice input[name="upload"]:checked').length === 1) {
-		params.upload = '1';
+	if ($("#UserData" + params.id + ' .choice input[name="upload"]:checked').length === 1) {
+		params.upload = "1";
 	} else {
-		params.upload = '0';
+		params.upload = "0";
 	}
-	if ($('#UserData' + params.id + ' .choice input[name="lock"]:checked').length === 1) {
-		params.lock = '1';
+	if ($("#UserData" + params.id + ' .choice input[name="lock"]:checked').length === 1) {
+		params.lock = "1";
 	} else {
-		params.lock = '0';
+		params.lock = "0";
 	}
 
-	api.post('User::Save', params, function (data) {
+	api.post("User::Save", params, function (data) {
 		if (data !== true) {
-			loadingBar.show('error', data.description);
+			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
 		} else {
-			loadingBar.show('success', 'User updated!');
+			loadingBar.show("success", "User updated!");
 			users.list(); // reload user list
 		}
 	});
 };
 
 users.create = function (params) {
-
 	if (params.username.length < 1) {
-		loadingBar.show('error', 'new username cannot be empty.');
+		loadingBar.show("error", "new username cannot be empty.");
 		return false;
 	}
 	if (params.password.length < 1) {
-		loadingBar.show('error', 'new password cannot be empty.');
+		loadingBar.show("error", "new password cannot be empty.");
 		return false;
 	}
 
 	if ($('#UserCreate .choice input[name="upload"]:checked').length === 1) {
-		params.upload = '1';
+		params.upload = "1";
 	} else {
-		params.upload = '0';
+		params.upload = "0";
 	}
 	if ($('#UserCreate .choice input[name="lock"]:checked').length === 1) {
-		params.lock = '1';
+		params.lock = "1";
 	} else {
-		params.lock = '0';
+		params.lock = "0";
 	}
 
-	api.post('User::Create', params, function (data) {
+	api.post("User::Create", params, function (data) {
 		if (data !== true) {
-			loadingBar.show('error', data.description);
+			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
 		} else {
-			loadingBar.show('success', 'User created!');
+			loadingBar.show("success", "User created!");
 			users.list(); // reload user list
 		}
 	});
 };
 
 users.delete = function (params) {
-
-	api.post('User::Delete', params, function (data) {
+	api.post("User::Delete", params, function (data) {
 		if (data !== true) {
-			loadingBar.show('error', data.description);
+			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
 		} else {
-			loadingBar.show('success', 'User deleted!');
+			loadingBar.show("success", "User deleted!");
 			users.list(); // reload user list
 		}
 	});
 };
 
 users.list = function () {
-	api.post('User::List', {}, function (data) {
+	api.post("User::List", {}, function (data) {
 		users.json = data;
 		view.users.init();
 	});
 };
+
 /**
  * @description Responsible to reflect data changes to the UI.
  */
@@ -9448,9 +9492,7 @@ users.list = function () {
 var view = {};
 
 view.albums = {
-
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.albums.title();
@@ -9458,33 +9500,29 @@ view.albums = {
 	},
 
 	title: function title() {
-
 		if (lychee.landing_page_enable) {
-			if (lychee.title !== 'Lychee v4') {
+			if (lychee.title !== "Lychee v4") {
 				lychee.setTitle(lychee.title, false);
 			} else {
-				lychee.setTitle(lychee.locale['ALBUMS'], false);
+				lychee.setTitle(lychee.locale["ALBUMS"], false);
 			}
 		} else {
-			lychee.setTitle(lychee.locale['ALBUMS'], false);
+			lychee.setTitle(lychee.locale["ALBUMS"], false);
 		}
 	},
 
 	content: {
-
 		scrollPosition: 0,
 
 		init: function init() {
-
-			var smartData = '';
-			var albumsData = '';
-			var sharedData = '';
+			var smartData = "";
+			var albumsData = "";
+			var sharedData = "";
 
 			// Smart Albums
 			if (albums.json.smartalbums != null) {
-
 				if (lychee.publicMode === false) {
-					smartData = build.divider(lychee.locale['SMART_ALBUMS']);
+					smartData = build.divider(lychee.locale["SMART_ALBUMS"]);
 				}
 				if (albums.json.smartalbums.unsorted) {
 					albums.parse(albums.json.smartalbums.unsorted);
@@ -9508,7 +9546,7 @@ view.albums = {
 					    albumName = _ref4[0],
 					    albumData = _ref4[1];
 
-					if (albumData['tag_album'] === '1') {
+					if (albumData["tag_album"] === "1") {
 						albums.parse(albumData);
 						smartData += build.album(albumData);
 					}
@@ -9517,7 +9555,6 @@ view.albums = {
 
 			// Albums
 			if (albums.json.albums && albums.json.albums.length !== 0) {
-
 				$.each(albums.json.albums, function () {
 					if (!this.parent_id || this.parent_id === 0) {
 						albums.parse(this);
@@ -9526,15 +9563,14 @@ view.albums = {
 				});
 
 				// Add divider
-				if (lychee.publicMode === false) albumsData = build.divider(lychee.locale['ALBUMS']) + albumsData;
+				if (lychee.publicMode === false) albumsData = build.divider(lychee.locale["ALBUMS"]) + albumsData;
 			}
 
 			if (lychee.api_V2) {
-				var current_owner = '';
+				var current_owner = "";
 				var i = void 0;
 				// Shared
 				if (albums.json.shared_albums && albums.json.shared_albums.length !== 0) {
-
 					for (i = 0; i < albums.json.shared_albums.length; ++i) {
 						var alb = albums.json.shared_albums[i];
 						if (!alb.parent_id || alb.parent_id === 0) {
@@ -9546,25 +9582,17 @@ view.albums = {
 							sharedData += build.album(alb, !lychee.admin);
 						}
 					}
-					// $.each(albums.json.shared_albums, function() {
-					// 	if(!this.parent_id || this.parent_id === 0) {
-					// 		albums.parse(this);
-					// 		sharedData += build.album(this, true)
-					// 	}
-					// });
-					//
-					// // Add divider
-					// if (lychee.publicMode===false) sharedData = build.divider(lychee.locale['SHARED_ALBUMS']) + sharedData
 				}
 			}
 
-			if (smartData === '' && albumsData === '' && sharedData === '') {
-				lychee.content.html('');
-				$('body').append(build.no_content('eye'));
+			if (smartData === "" && albumsData === "" && sharedData === "") {
+				lychee.content.html("");
+				$("body").append(build.no_content("eye"));
 			} else {
 				lychee.content.html(smartData + albumsData + sharedData);
 			}
 
+			album.apply_nsfw_filter();
 			// Restore scroll position
 			if (view.albums.content.scrollPosition != null && view.albums.content.scrollPosition !== 0) {
 				$(document).scrollTop(view.albums.content.scrollPosition);
@@ -9572,33 +9600,27 @@ view.albums = {
 		},
 
 		title: function title(albumID) {
-
 			var title = albums.getByID(albumID).title;
 
 			title = lychee.escapeHTML(title);
 
-			$('.album[data-id="' + albumID + '"] .overlay h1').html(title).attr('title', title);
+			$('.album[data-id="' + albumID + '"] .overlay h1').html(title).attr("title", title);
 		},
 
 		delete: function _delete(albumID) {
-
-			$('.album[data-id="' + albumID + '"]').css('opacity', 0).animate({
+			$('.album[data-id="' + albumID + '"]').css("opacity", 0).animate({
 				width: 0,
 				marginLeft: 0
 			}, 300, function () {
 				$(this).remove();
-				if (albums.json.albums.length <= 0) lychee.content.find('.divider:last-child').remove();
+				if (albums.json.albums.length <= 0) lychee.content.find(".divider:last-child").remove();
 			});
 		}
-
 	}
-
 };
 
 view.album = {
-
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		album.parse();
@@ -9606,30 +9628,29 @@ view.album = {
 		view.album.sidebar();
 		view.album.title();
 		view.album.public();
+		view.album.nsfw();
 		view.album.content.init();
 
 		album.json.init = 1;
 	},
 
 	title: function title() {
-
 		if ((visible.album() || !album.json.init) && !visible.photo()) {
-
 			switch (album.getID()) {
-				case 'starred':
-					lychee.setTitle(lychee.locale['STARRED'], true);
+				case "starred":
+					lychee.setTitle(lychee.locale["STARRED"], true);
 					break;
-				case 'public':
-					lychee.setTitle(lychee.locale['PUBLIC'], true);
+				case "public":
+					lychee.setTitle(lychee.locale["PUBLIC"], true);
 					break;
-				case 'recent':
-					lychee.setTitle(lychee.locale['RECENT'], true);
+				case "recent":
+					lychee.setTitle(lychee.locale["RECENT"], true);
 					break;
-				case 'unsorted':
-					lychee.setTitle(lychee.locale['UNSORTED'], true);
+				case "unsorted":
+					lychee.setTitle(lychee.locale["UNSORTED"], true);
 					break;
 				default:
-					if (album.json.init) _sidebar.changeAttr('title', album.json.title);
+					if (album.json.init) _sidebar.changeAttr("title", album.json.title);
 					lychee.setTitle(album.json.title, true);
 					break;
 			}
@@ -9637,12 +9658,10 @@ view.album = {
 	},
 
 	content: {
-
 		init: function init() {
-
-			var photosData = '';
-			var albumsData = '';
-			var html = '';
+			var photosData = "";
+			var albumsData = "";
+			var html = "";
 
 			if (album.json.albums && album.json.albums !== false) {
 				$.each(album.json.albums, function () {
@@ -9651,27 +9670,26 @@ view.album = {
 				});
 			}
 			if (album.json.photos && album.json.photos !== false) {
-
 				// Build photos
 				$.each(album.json.photos, function () {
 					photosData += build.photo(this, !album.isUploadable());
 				});
 			}
 
-			if (photosData !== '') {
-				if (lychee.layout === '1') {
-					photosData = '<div class="justified-layout">' + photosData + '</div>';
-				} else if (lychee.layout === '2') {
-					photosData = '<div class="unjustified-layout">' + photosData + '</div>';
+			if (photosData !== "") {
+				if (lychee.layout === "1") {
+					photosData = '<div class="justified-layout">' + photosData + "</div>";
+				} else if (lychee.layout === "2") {
+					photosData = '<div class="unjustified-layout">' + photosData + "</div>";
 				}
 			}
 
-			if (albumsData !== '' && photosData !== '') {
-				html = build.divider(lychee.locale['ALBUMS']);
+			if (albumsData !== "" && photosData !== "") {
+				html = build.divider(lychee.locale["ALBUMS"]);
 			}
 			html += albumsData;
-			if (albumsData !== '' && photosData !== '') {
-				html += build.divider(lychee.locale['PHOTOS']);
+			if (albumsData !== "" && photosData !== "") {
+				html += build.divider(lychee.locale["PHOTOS"]);
 			}
 			html += photosData;
 
@@ -9683,46 +9701,43 @@ view.album = {
 
 			// Add photos to view
 			lychee.content.html(html);
+			album.apply_nsfw_filter();
+
 			view.album.content.justify();
 		},
 
 		title: function title(photoID) {
-
 			var title = album.getByID(photoID).title;
 
 			title = lychee.escapeHTML(title);
 
-			$('.photo[data-id="' + photoID + '"] .overlay h1').html(title).attr('title', title);
+			$('.photo[data-id="' + photoID + '"] .overlay h1').html(title).attr("title", title);
 		},
 
 		titleSub: function titleSub(albumID) {
-
 			var title = album.getSubByID(albumID).title;
 
 			title = lychee.escapeHTML(title);
 
-			$('.album[data-id="' + albumID + '"] .overlay h1').html(title).attr('title', title);
+			$('.album[data-id="' + albumID + '"] .overlay h1').html(title).attr("title", title);
 		},
 
 		star: function star(photoID) {
-
 			var $badge = $('.photo[data-id="' + photoID + '"] .icn-star');
 
-			if (album.getByID(photoID).star === '1') $badge.addClass('badge--star');else $badge.removeClass('badge--star');
+			if (album.getByID(photoID).star === "1") $badge.addClass("badge--star");else $badge.removeClass("badge--star");
 		},
 
 		public: function _public(photoID) {
-
 			var $badge = $('.photo[data-id="' + photoID + '"] .icn-share');
 
-			if (album.getByID(photoID).public === '1') $badge.addClass('badge--visible badge--hidden');else $badge.removeClass('badge--visible badge--hidden');
+			if (album.getByID(photoID).public === "1") $badge.addClass("badge--visible badge--hidden");else $badge.removeClass("badge--visible badge--hidden");
 		},
 
 		delete: function _delete(photoID) {
 			var justify = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-
-			$('.photo[data-id="' + photoID + '"]').css('opacity', 0).animate({
+			$('.photo[data-id="' + photoID + '"]').css("opacity", 0).animate({
 				width: 0,
 				marginLeft: 0
 			}, 300, function () {
@@ -9732,23 +9747,23 @@ view.album = {
 					if (visible.sidebar()) {
 						var videoCount = 0;
 						$.each(album.json.photos, function () {
-							if (this.type && this.type.indexOf('video') > -1) {
+							if (this.type && this.type.indexOf("video") > -1) {
 								videoCount++;
 							}
 						});
 						if (album.json.photos.length - videoCount > 0) {
-							_sidebar.changeAttr('images', album.json.photos.length - videoCount);
+							_sidebar.changeAttr("images", album.json.photos.length - videoCount);
 						} else {
-							_sidebar.hideAttr('images');
+							_sidebar.hideAttr("images");
 						}
 						if (videoCount > 0) {
-							_sidebar.changeAttr('videos', videoCount);
+							_sidebar.changeAttr("videos", videoCount);
 						} else {
-							_sidebar.hideAttr('videos');
+							_sidebar.hideAttr("videos");
 						}
 					}
 					if (album.json.photos.length <= 0) {
-						lychee.content.find('.divider').remove();
+						lychee.content.find(".divider").remove();
 					}
 					if (justify) {
 						view.album.content.justify();
@@ -9758,21 +9773,20 @@ view.album = {
 		},
 
 		deleteSub: function deleteSub(albumID) {
-
-			$('.album[data-id="' + albumID + '"]').css('opacity', 0).animate({
+			$('.album[data-id="' + albumID + '"]').css("opacity", 0).animate({
 				width: 0,
 				marginLeft: 0
 			}, 300, function () {
 				$(this).remove();
 				if (album.json) {
 					if (album.json.albums.length <= 0) {
-						lychee.content.find('.divider').remove();
+						lychee.content.find(".divider").remove();
 					}
 					if (visible.sidebar()) {
 						if (album.json.albums.length > 0) {
-							_sidebar.changeAttr('subalbums', album.json.albums.length);
+							_sidebar.changeAttr("subalbums", album.json.albums.length);
 						} else {
-							_sidebar.hideAttr('subalbums');
+							_sidebar.hideAttr("subalbums");
 						}
 					}
 				}
@@ -9781,64 +9795,64 @@ view.album = {
 
 		justify: function justify() {
 			if (!album.json || !album.json.photos || album.json.photos === false) return;
-			if (lychee.layout === '1') {
-				var containerWidth = parseFloat($('.justified-layout').width(), 10);
+			if (lychee.layout === "1") {
+				var containerWidth = parseFloat($(".justified-layout").width(), 10);
 				if (containerWidth == 0) {
 					// Triggered on Reload in photo view.
-					containerWidth = $(window).width() - parseFloat($('.justified-layout').css('margin-left'), 10) - parseFloat($('.justified-layout').css('margin-right'), 10) - parseFloat($('.content').css('padding-right'), 10);
+					containerWidth = $(window).width() - parseFloat($(".justified-layout").css("margin-left"), 10) - parseFloat($(".justified-layout").css("margin-right"), 10) - parseFloat($(".content").css("padding-right"), 10);
 				}
 				var ratio = [];
 				$.each(album.json.photos, function (i) {
 					ratio[i] = this.height > 0 ? this.width / this.height : 1;
-					if (this.type && this.type.indexOf('video') > -1) {
+					if (this.type && this.type.indexOf("video") > -1) {
 						// Video.  If there's no small and medium, we have
 						// to fall back to the square thumb.
-						if (this.small === '' && this.medium === '') {
+						if (this.small === "" && this.medium === "") {
 							ratio[i] = 1;
 						}
 					}
 				});
-				var layoutGeometry = require('justified-layout')(ratio, {
+				var layoutGeometry = require("justified-layout")(ratio, {
 					containerWidth: containerWidth,
 					containerPadding: 0,
 					// boxSpacing: {
 					//     horizontal: 42,
 					//     vertical: 150
 					// },
-					targetRowHeight: parseFloat($('.photo').css('--lychee-default-height'), 10)
+					targetRowHeight: parseFloat($(".photo").css("--lychee-default-height"), 10)
 				});
 				// if (lychee.admin) console.log(layoutGeometry);
-				$('.justified-layout').css('height', layoutGeometry.containerHeight + 'px');
-				$('.justified-layout > div').each(function (i) {
+				$(".justified-layout").css("height", layoutGeometry.containerHeight + "px");
+				$(".justified-layout > div").each(function (i) {
 					if (!layoutGeometry.boxes[i]) {
 						// Race condition in search.find -- window content
 						// and album.json can get out of sync as search
 						// query is being modified.
 						return false;
 					}
-					$(this).css('top', layoutGeometry.boxes[i].top);
-					$(this).css('width', layoutGeometry.boxes[i].width);
-					$(this).css('height', layoutGeometry.boxes[i].height);
-					$(this).css('left', layoutGeometry.boxes[i].left);
+					$(this).css("top", layoutGeometry.boxes[i].top);
+					$(this).css("width", layoutGeometry.boxes[i].width);
+					$(this).css("height", layoutGeometry.boxes[i].height);
+					$(this).css("left", layoutGeometry.boxes[i].left);
 
 					var imgs = $(this).find(".thumbimg > img");
-					if (imgs.length > 0 && imgs[0].getAttribute('data-srcset')) {
-						imgs[0].setAttribute('sizes', layoutGeometry.boxes[i].width + 'px');
+					if (imgs.length > 0 && imgs[0].getAttribute("data-srcset")) {
+						imgs[0].setAttribute("sizes", layoutGeometry.boxes[i].width + "px");
 					}
 				});
-			} else if (lychee.layout === '2') {
-				var _containerWidth = parseFloat($('.unjustified-layout').width(), 10);
+			} else if (lychee.layout === "2") {
+				var _containerWidth = parseFloat($(".unjustified-layout").width(), 10);
 				if (_containerWidth == 0) {
 					// Triggered on Reload in photo view.
-					_containerWidth = $(window).width() - parseFloat($('.unjustified-layout').css('margin-left'), 10) - parseFloat($('.unjustified-layout').css('margin-right'), 10) - parseFloat($('.content').css('padding-right'), 10);
+					_containerWidth = $(window).width() - parseFloat($(".unjustified-layout").css("margin-left"), 10) - parseFloat($(".unjustified-layout").css("margin-right"), 10) - parseFloat($(".content").css("padding-right"), 10);
 				}
 				// For whatever reason, the calculation of margin is
 				// super-slow in Firefox (tested with 68), so we make sure to
 				// do it just once, outside the loop.  Height doesn't seem to
 				// be affected, but we do it the same way for consistency.
-				var margin = parseFloat($('.photo').css('margin-right'), 10);
-				var origHeight = parseFloat($('.photo').css('max-height'), 10);
-				$('.unjustified-layout > div').each(function (i) {
+				var margin = parseFloat($(".photo").css("margin-right"), 10);
+				var origHeight = parseFloat($(".photo").css("max-height"), 10);
+				$(".unjustified-layout > div").each(function (i) {
 					if (!album.json.photos[i]) {
 						// Race condition in search.find -- window content
 						// and album.json can get out of sync as search
@@ -9846,10 +9860,10 @@ view.album = {
 						return false;
 					}
 					var ratio = album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1;
-					if (album.json.photos[i].type && album.json.photos[i].type.indexOf('video') > -1) {
+					if (album.json.photos[i].type && album.json.photos[i].type.indexOf("video") > -1) {
 						// Video.  If there's no small and medium, we have
 						// to fall back to the square thumb.
-						if (album.json.photos[i].small === '' && album.json.photos[i].medium === '') {
+						if (album.json.photos[i].small === "" && album.json.photos[i].medium === "") {
 							ratio = 1;
 						}
 					}
@@ -9863,36 +9877,32 @@ view.album = {
 						height = width / ratio;
 					}
 
-					$(this).css('width', width + 'px');
-					$(this).css('height', height + 'px');
-					if (imgs.length > 0 && imgs[0].getAttribute('data-srcset')) {
-						imgs[0].setAttribute('sizes', width + 'px');
+					$(this).css("width", width + "px");
+					$(this).css("height", height + "px");
+					if (imgs.length > 0 && imgs[0].getAttribute("data-srcset")) {
+						imgs[0].setAttribute("sizes", width + "px");
 					}
 				});
 			}
 		}
-
 	},
 
 	description: function description() {
-
-		_sidebar.changeAttr('description', album.json.description);
+		_sidebar.changeAttr("description", album.json.description);
 	},
 
 	show_tags: function show_tags() {
-
-		_sidebar.changeAttr('show_tags', album.json.show_tags);
+		_sidebar.changeAttr("show_tags", album.json.show_tags);
 	},
 
 	license: function license() {
-
 		var license = void 0;
 		switch (album.json.license) {
-			case 'none':
-				license = ''; // none is displayed as - thus is empty.
+			case "none":
+				license = ""; // none is displayed as - thus is empty.
 				break;
-			case 'reserved':
-				license = lychee.locale['ALBUM_RESERVED'];
+			case "reserved":
+				license = lychee.locale["ALBUM_RESERVED"];
 				break;
 			default:
 				license = album.json.license;
@@ -9900,68 +9910,66 @@ view.album = {
 				break;
 		}
 
-		_sidebar.changeAttr('license', license);
+		_sidebar.changeAttr("license", license);
 	},
 
 	public: function _public() {
+		$("#button_visibility_album").removeClass("active--not-hidden active--hidden");
 
-		$('#button_visibility_album').removeClass('active--not-hidden active--hidden');
-
-		if (album.json.public === '1') {
-
-			if (album.json.visible === '0') {
-				$('#button_visibility_album').addClass('active--hidden');
+		if (album.json.public === "1") {
+			if (album.json.visible === "0") {
+				$("#button_visibility_album").addClass("active--hidden");
 			} else {
-				$('#button_visibility_album').addClass('active--not-hidden');
+				$("#button_visibility_album").addClass("active--not-hidden");
 			}
 
-			$('.photo .iconic-share').remove();
+			$(".photo .iconic-share").remove();
 
-			if (album.json.init) _sidebar.changeAttr('public', lychee.locale['ALBUM_SHR_YES']);
+			if (album.json.init) _sidebar.changeAttr("public", lychee.locale["ALBUM_SHR_YES"]);
 		} else {
-
-			if (album.json.init) _sidebar.changeAttr('public', lychee.locale['ALBUM_SHR_NO']);
+			if (album.json.init) _sidebar.changeAttr("public", lychee.locale["ALBUM_SHR_NO"]);
 		}
 	},
 
 	hidden: function hidden() {
+		if (album.json.visible === "1") _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_NO"]);else _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_YES"]);
+	},
 
-		if (album.json.visible === '1') _sidebar.changeAttr('hidden', lychee.locale['ALBUM_SHR_NO']);else _sidebar.changeAttr('hidden', lychee.locale['ALBUM_SHR_YES']);
+	nsfw: function nsfw() {
+		if (album.json.nsfw === "1") {
+			// Sensitive
+			$("#button_nsfw_album").addClass("active").attr("title", lychee.locale["ALBUM_UNMARK_NSFW"]);
+		} else {
+			// Unensitive
+			$("#button_nsfw_album").removeClass("active").attr("title", lychee.locale["ALBUM_MARK_NSFW"]);
+		}
 	},
 
 	downloadable: function downloadable() {
-
-		if (album.json.downloadable === '1') _sidebar.changeAttr('downloadable', lychee.locale['ALBUM_SHR_YES']);else _sidebar.changeAttr('downloadable', lychee.locale['ALBUM_SHR_NO']);
+		if (album.json.downloadable === "1") _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	shareButtonVisible: function shareButtonVisible() {
-
-		if (album.json.share_button_visible === '1') _sidebar.changeAttr('share_button_visible', lychee.locale['ALBUM_SHR_YES']);else _sidebar.changeAttr('share_button_visible', lychee.locale['ALBUM_SHR_NO']);
+		if (album.json.share_button_visible === "1") _sidebar.changeAttr("share_button_visible", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("share_button_visible", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	password: function password() {
-
-		if (album.json.password === '1') _sidebar.changeAttr('password', lychee.locale['ALBUM_SHR_YES']);else _sidebar.changeAttr('password', lychee.locale['ALBUM_SHR_NO']);
+		if (album.json.password === "1") _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	sidebar: function sidebar() {
-
 		if ((visible.album() || !album.json.init) && !visible.photo()) {
-
 			var structure = _sidebar.createStructure.album(album);
 			var html = _sidebar.render(structure);
 
-			_sidebar.dom('.sidebar__wrapper').html(html);
+			_sidebar.dom(".sidebar__wrapper").html(html);
 			_sidebar.bind();
 		}
 	}
-
 };
 
 view.photo = {
-
 	init: function init(autoplay) {
-
 		multiselect.clearSelection();
 
 		_photo.parse();
@@ -9976,10 +9984,9 @@ view.photo = {
 	},
 
 	show: function show() {
-
 		// Change header
-		lychee.content.addClass('view');
-		header.setMode('photo');
+		lychee.content.addClass("view");
+		header.setMode("photo");
 
 		// Make body not scrollable
 		// use bodyScrollLock package to enable locking on iOS
@@ -9987,11 +9994,11 @@ view.photo = {
 		// Only the info pane needs scrolling
 		// Touch event for swiping of photo still work
 
-		scrollLock.disablePageScroll($('.sidebar__wrapper').get());
+		scrollLock.disablePageScroll($(".sidebar__wrapper").get());
 
 		// Fullscreen
 		var timeout = null;
-		$(document).bind('mousemove', function () {
+		$(document).bind("mousemove", function () {
 			clearTimeout(timeout);
 			// For live Photos: header animtion only if LivePhoto is not playing
 			if (!_photo.isLivePhotoPlaying() && lychee.header_auto_hide) {
@@ -10005,27 +10012,26 @@ view.photo = {
 			setTimeout(header.hideIfLivePhotoNotPlaying, 2500);
 		}
 
-		lychee.animate(lychee.imageview, 'fadeIn');
+		lychee.animate(lychee.imageview, "fadeIn");
 	},
 
 	hide: function hide() {
-
 		header.show();
 
-		lychee.content.removeClass('view');
-		header.setMode('album');
+		lychee.content.removeClass("view");
+		header.setMode("album");
 
 		// Make body scrollable
-		scrollLock.enablePageScroll($('.sidebar__wrapper').get());
+		scrollLock.enablePageScroll($(".sidebar__wrapper").get());
 
 		// Disable Fullscreen
-		$(document).unbind('mousemove');
-		if ($('video').length) {
-			$('video')[$('video').length - 1].pause();
+		$(document).unbind("mousemove");
+		if ($("video").length) {
+			$("video")[$("video").length - 1].pause();
 		}
 
 		// Hide Photo
-		lychee.animate(lychee.imageview, 'fadeOut');
+		lychee.animate(lychee.imageview, "fadeOut");
 		setTimeout(function () {
 			lychee.imageview.hide();
 			view.album.sidebar();
@@ -10033,14 +10039,12 @@ view.photo = {
 	},
 
 	title: function title() {
-
-		if (_photo.json.init) _sidebar.changeAttr('title', _photo.json.title);
+		if (_photo.json.init) _sidebar.changeAttr("title", _photo.json.title);
 		lychee.setTitle(_photo.json.title, true);
 	},
 
 	description: function description() {
-
-		if (_photo.json.init) _sidebar.changeAttr('description', _photo.json.description);
+		if (_photo.json.init) _sidebar.changeAttr("description", _photo.json.description);
 	},
 
 	license: function license() {
@@ -10048,11 +10052,11 @@ view.photo = {
 
 		// Process key to display correct string
 		switch (_photo.json.license) {
-			case 'none':
-				license = ''; // none is displayed as - thus is empty (uniformity of the display).
+			case "none":
+				license = ""; // none is displayed as - thus is empty (uniformity of the display).
 				break;
-			case 'reserved':
-				license = lychee.locale['PHOTO_RESERVED'];
+			case "reserved":
+				license = lychee.locale["PHOTO_RESERVED"];
 				break;
 			default:
 				license = _photo.json.license;
@@ -10060,51 +10064,43 @@ view.photo = {
 		}
 
 		// Update the sidebar if the photo is visible
-		if (_photo.json.init) _sidebar.changeAttr('license', license);
+		if (_photo.json.init) _sidebar.changeAttr("license", license);
 	},
 
 	star: function star() {
-
-		if (_photo.json.star === '1') {
-
+		if (_photo.json.star === "1") {
 			// Starred
-			$('#button_star').addClass('active').attr('title', lychee.locale['UNSTAR_PHOTO']);
+			$("#button_star").addClass("active").attr("title", lychee.locale["UNSTAR_PHOTO"]);
 		} else {
-
 			// Unstarred
-			$('#button_star').removeClass('active').attr('title', lychee.locale['STAR_PHOTO']);
+			$("#button_star").removeClass("active").attr("title", lychee.locale["STAR_PHOTO"]);
 		}
 	},
 
 	public: function _public() {
+		$("#button_visibility").removeClass("active--hidden active--not-hidden");
 
-		$('#button_visibility').removeClass('active--hidden active--not-hidden');
-
-		if (_photo.json.public === '1' || _photo.json.public === '2') {
-
+		if (_photo.json.public === "1" || _photo.json.public === "2") {
 			// Photo public
-			if (_photo.json.public === '1') {
-				$('#button_visibility').addClass('active--hidden');
+			if (_photo.json.public === "1") {
+				$("#button_visibility").addClass("active--hidden");
 			} else {
-				$('#button_visibility').addClass('active--not-hidden');
+				$("#button_visibility").addClass("active--not-hidden");
 			}
 
-			if (_photo.json.init) _sidebar.changeAttr('public', lychee.locale['PHOTO_SHR_YES']);
+			if (_photo.json.init) _sidebar.changeAttr("public", lychee.locale["PHOTO_SHR_YES"]);
 		} else {
-
 			// Photo private
-			if (_photo.json.init) _sidebar.changeAttr('public', 'No');
+			if (_photo.json.init) _sidebar.changeAttr("public", "No");
 		}
 	},
 
 	tags: function tags() {
-
-		_sidebar.changeAttr('tags', build.tags(_photo.json.tags), true);
+		_sidebar.changeAttr("tags", build.tags(_photo.json.tags), true);
 		_sidebar.bind();
 	},
 
 	photo: function photo(autoplay) {
-
 		var ret = build.imageview(_photo.json, visible.header(), autoplay);
 		lychee.imageview.html(ret.html);
 		tabindex.makeFocusable(lychee.imageview);
@@ -10114,29 +10110,29 @@ view.photo = {
 			// Package gives warning that function will be remove and
 			// shoud be replaced by LivePhotosKit.augementElementAsPlayer
 			// But, LivePhotosKit.augementElementAsPlayer is not yet available
-			_photo.LivePhotosObject = LivePhotosKit.Player(document.getElementById('livephoto'));
+			_photo.LivePhotosObject = LivePhotosKit.Player(document.getElementById("livephoto"));
 		}
 
 		view.photo.onresize();
 
-		var $nextArrow = lychee.imageview.find('a#next');
-		var $previousArrow = lychee.imageview.find('a#previous');
+		var $nextArrow = lychee.imageview.find("a#next");
+		var $previousArrow = lychee.imageview.find("a#previous");
 		var photoID = _photo.getID();
-		var hasNext = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).nextPhoto != null && album.getByID(photoID).nextPhoto !== '';
-		var hasPrevious = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).previousPhoto != null && album.getByID(photoID).previousPhoto !== '';
+		var hasNext = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).nextPhoto != null && album.getByID(photoID).nextPhoto !== "";
+		var hasPrevious = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).previousPhoto != null && album.getByID(photoID).previousPhoto !== "";
 
-		var img = $('img#image');
+		var img = $("img#image");
 		if (img.length > 0) {
-			if (!img[0].complete || img[0].currentSrc !== null && img[0].currentSrc === '') {
+			if (!img[0].complete || img[0].currentSrc !== null && img[0].currentSrc === "") {
 				// Image is still loading.  Display the thumb version in the
 				// background.
-				if (ret.thumb !== '') {
-					img.css('background-image', lychee.html(_templateObject79, ret.thumb));
+				if (ret.thumb !== "") {
+					img.css("background-image", lychee.html(_templateObject79, ret.thumb));
 				}
 
 				// Don't preload next/prev until the requested image is
 				// fully loaded.
-				img.on('load', function () {
+				img.on("load", function () {
 					_photo.preloadNextPrev(_photo.getID());
 				});
 			} else {
@@ -10145,47 +10141,42 @@ view.photo = {
 		}
 
 		if (hasNext === false || lychee.viewMode === true) {
-
 			$nextArrow.hide();
 		} else {
-
 			var nextPhotoID = album.getByID(photoID).nextPhoto;
 			var nextPhoto = album.getByID(nextPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
 			var thumbUrl = nextPhoto.thumbUrl;
 
-			if (thumbUrl === 'uploads/thumb/' && nextPhoto.type.indexOf('video') > -1) {
-				thumbUrl = 'img/play-icon.png';
+			if (thumbUrl === "uploads/thumb/" && nextPhoto.type.indexOf("video") > -1) {
+				thumbUrl = "img/play-icon.png";
 			}
-			$nextArrow.css('background-image', lychee.html(_templateObject80, thumbUrl));
+			$nextArrow.css("background-image", lychee.html(_templateObject80, thumbUrl));
 		}
 
 		if (hasPrevious === false || lychee.viewMode === true) {
-
 			$previousArrow.hide();
 		} else {
-
 			var previousPhotoID = album.getByID(photoID).previousPhoto;
 			var previousPhoto = album.getByID(previousPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
 			var _thumbUrl = previousPhoto.thumbUrl;
 
-			if (_thumbUrl === 'uploads/thumb/' && previousPhoto.type.indexOf('video') > -1) {
-				_thumbUrl = 'img/play-icon.png';
+			if (_thumbUrl === "uploads/thumb/" && previousPhoto.type.indexOf("video") > -1) {
+				_thumbUrl = "img/play-icon.png";
 			}
-			$previousArrow.css('background-image', lychee.html(_templateObject80, _thumbUrl));
+			$previousArrow.css("background-image", lychee.html(_templateObject80, _thumbUrl));
 		}
 	},
 
 	sidebar: function sidebar() {
-
 		var structure = _sidebar.createStructure.photo(_photo.json);
 		var html = _sidebar.render(structure);
 		var has_location = _photo.json.latitude && _photo.json.longitude ? true : false;
 
-		_sidebar.dom('.sidebar__wrapper').html(html);
+		_sidebar.dom(".sidebar__wrapper").html(html);
 		_sidebar.bind();
 
 		if (has_location && lychee.map_display) {
@@ -10193,25 +10184,25 @@ view.photo = {
 			// to be overwritten
 			delete L.Icon.Default.prototype._getIconUrl;
 			L.Icon.Default.mergeOptions({
-				iconRetinaUrl: 'img/marker-icon-2x.png',
-				iconUrl: 'img/marker-icon.png',
-				shadowUrl: 'img/marker-shadow.png'
+				iconRetinaUrl: "img/marker-icon-2x.png",
+				iconUrl: "img/marker-icon.png",
+				shadowUrl: "img/marker-shadow.png"
 			});
 
-			var mymap = L.map('leaflet_map_single_photo').setView([_photo.json.latitude, _photo.json.longitude], 13);
+			var mymap = L.map("leaflet_map_single_photo").setView([_photo.json.latitude, _photo.json.longitude], 13);
 
 			L.tileLayer(map_provider_layer_attribution[lychee.map_provider].layer, {
 				attribution: map_provider_layer_attribution[lychee.map_provider].attribution
 			}).addTo(mymap);
 
-			if (!_photo.json.imgDirection || _photo.json.imgDirection === '') {
+			if (!_photo.json.imgDirection || _photo.json.imgDirection === "") {
 				// Add Marker to map, direction is not set
 				L.marker([_photo.json.latitude, _photo.json.longitude]).addTo(mymap);
 			} else {
 				// Add Marker, direction has been set
 				var viewDirectionIcon = L.icon({
-					iconUrl: 'img/view-angle-icon.png',
-					iconRetinaUrl: 'img/view-angle-icon-2x.png',
+					iconUrl: "img/view-angle-icon.png",
+					iconRetinaUrl: "img/view-angle-icon-2x.png",
 					iconSize: [100, 58], // size of the icon
 					iconAnchor: [50, 49] // point of the icon which will correspond to marker's location
 				});
@@ -10222,12 +10213,12 @@ view.photo = {
 	},
 
 	onresize: function onresize() {
-		if (!_photo.json || _photo.json.medium === '' || !_photo.json.medium2x || _photo.json.medium2x === '') return;
+		if (!_photo.json || _photo.json.medium === "" || !_photo.json.medium2x || _photo.json.medium2x === "") return;
 
 		// Calculate the width of the image in the current window without
 		// borders and set 'sizes' to it.
 		var imgWidth = parseInt(_photo.json.medium_dim);
-		var imgHeight = _photo.json.medium_dim.substr(_photo.json.medium_dim.lastIndexOf('x') + 1);
+		var imgHeight = _photo.json.medium_dim.substr(_photo.json.medium_dim.lastIndexOf("x") + 1);
 		var containerWidth = $(window).outerWidth();
 		var containerHeight = $(window).outerHeight();
 
@@ -10239,15 +10230,12 @@ view.photo = {
 			width = containerHeight * imgWidth / imgHeight;
 		}
 
-		$('img#image').attr('sizes', width + 'px');
+		$("img#image").attr("sizes", width + "px");
 	}
-
 };
 
 view.settings = {
-
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.photo.hide();
@@ -10256,8 +10244,7 @@ view.settings = {
 	},
 
 	title: function title() {
-
-		lychee.setTitle(lychee.locale['SETTINGS'], false);
+		lychee.setTitle(lychee.locale["SETTINGS"], false);
 	},
 
 	clearContent: function clearContent() {
@@ -10265,7 +10252,6 @@ view.settings = {
 	},
 
 	content: {
-
 		init: function init() {
 			view.settings.clearContent();
 			view.settings.content.setLogin();
@@ -10279,197 +10265,203 @@ view.settings = {
 				view.settings.content.setOverlay();
 				view.settings.content.setOverlayType();
 				view.settings.content.setMapDisplay();
+				view.settings.content.setNSFWVisible();
 				view.settings.content.setCSS();
 				view.settings.content.moreButton();
 			}
 		},
 
 		setLogin: function setLogin() {
-			var msg = "\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale['PASSWORD_TITLE'] + "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='" + lychee.locale['USERNAME_CURRENT'] + "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='" + lychee.locale['PASSWORD_CURRENT'] + "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale['PASSWORD_TEXT'] + "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='" + lychee.locale['LOGIN_USERNAME'] + "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='" + lychee.locale['LOGIN_PASSWORD'] + "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='" + lychee.locale['LOGIN_PASSWORD_CONFIRM'] + "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">" + lychee.locale['PASSWORD_CHANGE'] + "</a>\n\t\t\t</div>\n\t\t\t</div>";
+			var msg = "\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale["PASSWORD_TITLE"] + "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='" + lychee.locale["USERNAME_CURRENT"] + "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='" + lychee.locale["PASSWORD_CURRENT"] + "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>\n\t\t\t\t  " + lychee.locale["PASSWORD_TEXT"] + "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='" + lychee.locale["LOGIN_USERNAME"] + "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD"] + "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='" + lychee.locale["LOGIN_PASSWORD_CONFIRM"] + "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">" + lychee.locale["PASSWORD_CHANGE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>";
 
 			$(".settings_view").append(msg);
 
-			settings.bind('#basicModal__action_password_change', '.setLogin', settings.changeLogin);
+			settings.bind("#basicModal__action_password_change", ".setLogin", settings.changeLogin);
 		},
 
 		clearLogin: function clearLogin() {
-			$('input[name=oldUsername], input[name=oldPassword], input[name=username], input[name=password], input[name=confirm]').val('');
+			$("input[name=oldUsername], input[name=oldPassword], input[name=username], input[name=password], input[name=confirm]").val("");
 		},
 
 		setSorting: function setSorting() {
-
 			var sortingPhotos = [];
 			var sortingAlbums = [];
 
-			var msg = "\n\t\t\t<div class=\"setSorting\">\n\t\t\t  <p>" + lychee.locale['SORT_ALBUM_BY_1'] + "\n\t\t\t\t  <span class=\"select\">\n\t\t\t\t\t  <select id=\"settings_albums_type\" name=\"typeAlbums\">\n\t\t\t\t\t\t  <option value='id'>" + lychee.locale['SORT_ALBUM_SELECT_1'] + "</option>\n\t\t\t\t\t\t  <option value='title'>" + lychee.locale['SORT_ALBUM_SELECT_2'] + "</option>\n\t\t\t\t\t\t  <option value='description'>" + lychee.locale['SORT_ALBUM_SELECT_3'] + "</option>\n\t\t\t\t\t\t  <option value='public'>" + lychee.locale['SORT_ALBUM_SELECT_4'] + "</option>\n\t\t\t\t\t\t  <option value='max_takestamp'>" + lychee.locale['SORT_ALBUM_SELECT_5'] + "</option>\n\t\t\t\t\t\t  <option value='min_takestamp'>" + lychee.locale['SORT_ALBUM_SELECT_6'] + "</option>\n\t\t\t\t\t  </select>\n\t\t\t\t  </span>\n\t\t\t\t  " + lychee.locale['SORT_ALBUM_BY_2'] + "\n\t\t\t\t  <span class=\"select\">\n\t\t\t\t\t  <select id=\"settings_albums_order\" name=\"orderAlbums\">\n\t\t\t\t\t\t  <option value='ASC'>" + lychee.locale['SORT_ASCENDING'] + "</option>\n\t\t\t\t\t\t  <option value='DESC'>" + lychee.locale['SORT_DESCENDING'] + "</option>\n\t\t\t\t\t  </select>\n\t\t\t\t  </span>\n\t\t\t\t  " + lychee.locale['SORT_ALBUM_BY_3'] + "\n\t\t\t  </p>\n\t\t\t  <p>" + lychee.locale['SORT_PHOTO_BY_1'] + "\n\t\t\t\t  <span class=\"select\">\n\t\t\t\t\t  <select id=\"settings_photos_type\" name=\"typePhotos\">\n\t\t\t\t\t\t  <option value='id'>" + lychee.locale['SORT_PHOTO_SELECT_1'] + "</option>\n\t\t\t\t\t\t  <option value='takestamp'>" + lychee.locale['SORT_PHOTO_SELECT_2'] + "</option>\n\t\t\t\t\t\t  <option value='title'>" + lychee.locale['SORT_PHOTO_SELECT_3'] + "</option>\n\t\t\t\t\t\t  <option value='description'>" + lychee.locale['SORT_PHOTO_SELECT_4'] + "</option>\n\t\t\t\t\t\t  <option value='public'>" + lychee.locale['SORT_PHOTO_SELECT_5'] + "</option>\n\t\t\t\t\t\t  <option value='star'>" + lychee.locale['SORT_PHOTO_SELECT_6'] + "</option>\n\t\t\t\t\t\t  <option value='type'>" + lychee.locale['SORT_PHOTO_SELECT_7'] + "</option>\n\t\t\t\t\t  </select>\n\t\t\t\t  </span>\n\t\t\t\t  " + lychee.locale['SORT_PHOTO_BY_2'] + "\n\t\t\t\t  <span class=\"select\">\n\t\t\t\t\t  <select id=\"settings_photos_order\" name=\"orderPhotos\">\n\t\t\t\t\t\t  <option value='ASC'>" + lychee.locale['SORT_ASCENDING'] + "</option>\n\t\t\t\t\t\t  <option value='DESC'>" + lychee.locale['SORT_DESCENDING'] + "</option>\n\t\t\t\t\t  </select>\n\t\t\t\t  </span>\n\t\t\t\t  " + lychee.locale['SORT_PHOTO_BY_3'] + "\n\t\t\t  </p>\n\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">" + lychee.locale['SORT_CHANGE'] + "</a>\n\t\t\t\t</div>\n\t\t\t  </div>\n\t\t\t  ";
+			var msg = "\n\t\t\t<div class=\"setSorting\">\n\t\t\t  <p>" + lychee.locale["SORT_ALBUM_BY_1"] + "\n\t\t\t\t  <span class=\"select\">\n\t\t\t\t\t  <select id=\"settings_albums_type\" name=\"typeAlbums\">\n\t\t\t\t\t\t  <option value='id'>" + lychee.locale["SORT_ALBUM_SELECT_1"] + "</option>\n\t\t\t\t\t\t  <option value='title'>" + lychee.locale["SORT_ALBUM_SELECT_2"] + "</option>\n\t\t\t\t\t\t  <option value='description'>" + lychee.locale["SORT_ALBUM_SELECT_3"] + "</option>\n\t\t\t\t\t\t  <option value='public'>" + lychee.locale["SORT_ALBUM_SELECT_4"] + "</option>\n\t\t\t\t\t\t  <option value='max_takestamp'>" + lychee.locale["SORT_ALBUM_SELECT_5"] + "</option>\n\t\t\t\t\t\t  <option value='min_takestamp'>" + lychee.locale["SORT_ALBUM_SELECT_6"] + "</option>\n\t\t\t\t\t  </select>\n\t\t\t\t  </span>\n\t\t\t\t  " + lychee.locale["SORT_ALBUM_BY_2"] + "\n\t\t\t\t  <span class=\"select\">\n\t\t\t\t\t  <select id=\"settings_albums_order\" name=\"orderAlbums\">\n\t\t\t\t\t\t  <option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t  <option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t  </select>\n\t\t\t\t  </span>\n\t\t\t\t  " + lychee.locale["SORT_ALBUM_BY_3"] + "\n\t\t\t  </p>\n\t\t\t  <p>" + lychee.locale["SORT_PHOTO_BY_1"] + "\n\t\t\t\t  <span class=\"select\">\n\t\t\t\t\t  <select id=\"settings_photos_type\" name=\"typePhotos\">\n\t\t\t\t\t\t  <option value='id'>" + lychee.locale["SORT_PHOTO_SELECT_1"] + "</option>\n\t\t\t\t\t\t  <option value='takestamp'>" + lychee.locale["SORT_PHOTO_SELECT_2"] + "</option>\n\t\t\t\t\t\t  <option value='title'>" + lychee.locale["SORT_PHOTO_SELECT_3"] + "</option>\n\t\t\t\t\t\t  <option value='description'>" + lychee.locale["SORT_PHOTO_SELECT_4"] + "</option>\n\t\t\t\t\t\t  <option value='public'>" + lychee.locale["SORT_PHOTO_SELECT_5"] + "</option>\n\t\t\t\t\t\t  <option value='star'>" + lychee.locale["SORT_PHOTO_SELECT_6"] + "</option>\n\t\t\t\t\t\t  <option value='type'>" + lychee.locale["SORT_PHOTO_SELECT_7"] + "</option>\n\t\t\t\t\t  </select>\n\t\t\t\t  </span>\n\t\t\t\t  " + lychee.locale["SORT_PHOTO_BY_2"] + "\n\t\t\t\t  <span class=\"select\">\n\t\t\t\t\t  <select id=\"settings_photos_order\" name=\"orderPhotos\">\n\t\t\t\t\t\t  <option value='ASC'>" + lychee.locale["SORT_ASCENDING"] + "</option>\n\t\t\t\t\t\t  <option value='DESC'>" + lychee.locale["SORT_DESCENDING"] + "</option>\n\t\t\t\t\t  </select>\n\t\t\t\t  </span>\n\t\t\t\t  " + lychee.locale["SORT_PHOTO_BY_3"] + "\n\t\t\t  </p>\n\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">" + lychee.locale["SORT_CHANGE"] + "</a>\n\t\t\t\t</div>\n\t\t\t  </div>\n\t\t\t  ";
 
 			$(".settings_view").append(msg);
 
-			if (lychee.sortingAlbums !== '') {
+			if (lychee.sortingAlbums !== "") {
+				sortingAlbums = lychee.sortingAlbums.replace("ORDER BY ", "").split(" ");
 
-				sortingAlbums = lychee.sortingAlbums.replace('ORDER BY ', '').split(' ');
-
-				$('.setSorting select#settings_albums_type').val(sortingAlbums[0]);
-				$('.setSorting select#settings_albums_order').val(sortingAlbums[1]);
+				$(".setSorting select#settings_albums_type").val(sortingAlbums[0]);
+				$(".setSorting select#settings_albums_order").val(sortingAlbums[1]);
 			}
 
-			if (lychee.sortingPhotos !== '') {
+			if (lychee.sortingPhotos !== "") {
+				sortingPhotos = lychee.sortingPhotos.replace("ORDER BY ", "").split(" ");
 
-				sortingPhotos = lychee.sortingPhotos.replace('ORDER BY ', '').split(' ');
-
-				$('.setSorting select#settings_photos_type').val(sortingPhotos[0]);
-				$('.setSorting select#settings_photos_order').val(sortingPhotos[1]);
+				$(".setSorting select#settings_photos_type").val(sortingPhotos[0]);
+				$(".setSorting select#settings_photos_order").val(sortingPhotos[1]);
 			}
 
-			settings.bind('#basicModal__action_sorting_change', '.setSorting', settings.changeSorting);
+			settings.bind("#basicModal__action_sorting_change", ".setSorting", settings.changeSorting);
 		},
 
 		setDropboxKey: function setDropboxKey() {
-			var msg = "\n\t\t\t<div class=\"setDropBox\">\n\t\t\t  <p>" + lychee.locale['DROPBOX_TEXT'] + "\n\t\t\t  <input class='text' name='key' type='text' placeholder='Dropbox API Key' value='" + lychee.dropboxKey + "'>\n\t\t\t  </p>\n\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t<a id=\"basicModal__action_dropbox_change\" class=\"basicModal__button\">" + lychee.locale['DROPBOX_TITLE'] + "</a>\n\t\t\t\t</div>\n\t\t\t  </div>\n\t\t\t  ";
+			var msg = "\n\t\t\t<div class=\"setDropBox\">\n\t\t\t  <p>" + lychee.locale["DROPBOX_TEXT"] + "\n\t\t\t  <input class='text' name='key' type='text' placeholder='Dropbox API Key' value='" + lychee.dropboxKey + "'>\n\t\t\t  </p>\n\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t<a id=\"basicModal__action_dropbox_change\" class=\"basicModal__button\">" + lychee.locale["DROPBOX_TITLE"] + "</a>\n\t\t\t\t</div>\n\t\t\t  </div>\n\t\t\t  ";
 
 			$(".settings_view").append(msg);
-			settings.bind('#basicModal__action_dropbox_change', '.setDropBox', settings.changeDropboxKey);
+			settings.bind("#basicModal__action_dropbox_change", ".setDropBox", settings.changeDropboxKey);
 		},
 
 		setLang: function setLang() {
-			var msg = "\n\t\t\t<div class=\"setLang\">\n\t\t\t<p>" + lychee.locale['LANG_TEXT'] + "\n\t\t\t  <span class=\"select\">\n\t\t\t\t  <select id=\"settings_photos_order\" name=\"lang\">";
+			var msg = "\n\t\t\t<div class=\"setLang\">\n\t\t\t<p>" + lychee.locale["LANG_TEXT"] + "\n\t\t\t  <span class=\"select\">\n\t\t\t\t  <select id=\"settings_photos_order\" name=\"lang\">";
 			var i = 0;
 			while (i < lychee.lang_available.length) {
 				var lang_av = lychee.lang_available[i];
-				msg += "<option " + (lychee.lang === lang_av ? 'selected' : '') + ">" + lang_av + "</option>";
+				msg += "<option " + (lychee.lang === lang_av ? "selected" : "") + ">" + lang_av + "</option>";
 				i += 1;
 			}
-			msg += "\n\t\t\t\t  </select>\n\t\t\t  </span>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_lang\" class=\"basicModal__button\">" + lychee.locale['LANG_TITLE'] + "</a>\n\t\t\t</div>\n\t\t\t</div>";
+			msg += "\n\t\t\t\t  </select>\n\t\t\t  </span>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_lang\" class=\"basicModal__button\">" + lychee.locale["LANG_TITLE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>";
 
 			$(".settings_view").append(msg);
-			settings.bind('#basicModal__action_set_lang', '.setLang', settings.changeLang);
+			settings.bind("#basicModal__action_set_lang", ".setLang", settings.changeLang);
 		},
 
 		setDefaultLicense: function setDefaultLicense() {
-			var msg = "\n\t\t\t<div class=\"setDefaultLicense\">\n\t\t\t<p>" + lychee.locale['DEFAULT_LICENSE'] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t\t<option value=\"none\">" + lychee.locale['PHOTO_LICENSE_NONE'] + "</option>\n\t\t\t\t\t<option value=\"reserved\">" + lychee.locale['PHOTO_RESERVED'] + "</option>\n\t\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<br />\n\t\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">" + lychee.locale['PHOTO_LICENSE_HELP'] + "</a>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_license\" class=\"basicModal__button\">" + lychee.locale['SET_LICENSE'] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setDefaultLicense\">\n\t\t\t<p>" + lychee.locale["DEFAULT_LICENSE"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t\t<option value=\"none\">" + lychee.locale["PHOTO_LICENSE_NONE"] + "</option>\n\t\t\t\t\t<option value=\"reserved\">" + lychee.locale["PHOTO_RESERVED"] + "</option>\n\t\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<br />\n\t\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">" + lychee.locale["PHOTO_LICENSE_HELP"] + "</a>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_license\" class=\"basicModal__button\">" + lychee.locale["SET_LICENSE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
 			$(".settings_view").append(msg);
-			$('select#license').val(lychee.default_license === '' ? 'none' : lychee.default_license);
-			settings.bind('#basicModal__action_set_license', '.setDefaultLicense', settings.setDefaultLicense);
+			$("select#license").val(lychee.default_license === "" ? "none" : lychee.default_license);
+			settings.bind("#basicModal__action_set_license", ".setDefaultLicense", settings.setDefaultLicense);
 		},
 
 		setLayout: function setLayout() {
-			var msg = "\n\t\t\t<div class=\"setLayout\">\n\t\t\t<p>" + lychee.locale['LAYOUT_TYPE'] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"layout\" id=\"layout\">\n\t\t\t\t\t<option value=\"0\">" + lychee.locale['LAYOUT_SQUARES'] + "</option>\n\t\t\t\t\t<option value=\"1\">" + lychee.locale['LAYOUT_JUSTIFIED'] + "</option>\n\t\t\t\t\t<option value=\"2\">" + lychee.locale['LAYOUT_UNJUSTIFIED'] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_layout\" class=\"basicModal__button\">" + lychee.locale['SET_LAYOUT'] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setLayout\">\n\t\t\t<p>" + lychee.locale["LAYOUT_TYPE"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"layout\" id=\"layout\">\n\t\t\t\t\t<option value=\"0\">" + lychee.locale["LAYOUT_SQUARES"] + "</option>\n\t\t\t\t\t<option value=\"1\">" + lychee.locale["LAYOUT_JUSTIFIED"] + "</option>\n\t\t\t\t\t<option value=\"2\">" + lychee.locale["LAYOUT_UNJUSTIFIED"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t</p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_layout\" class=\"basicModal__button\">" + lychee.locale["SET_LAYOUT"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
 			$(".settings_view").append(msg);
-			$('select#layout').val(lychee.layout);
-			settings.bind('#basicModal__action_set_layout', '.setLayout', settings.setLayout);
+			$("select#layout").val(lychee.layout);
+			settings.bind("#basicModal__action_set_layout", ".setLayout", settings.setLayout);
 		},
 
 		setPublicSearch: function setPublicSearch() {
-			var msg = "\n\t\t\t<div class=\"setPublicSearch\">\n\t\t\t<p>" + lychee.locale['PUBLIC_SEARCH_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"PublicSearch\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setPublicSearch\">\n\t\t\t<p>" + lychee.locale["PUBLIC_SEARCH_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"PublicSearch\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
-			if (lychee.public_search) $('#PublicSearch').click();
+			if (lychee.public_search) $("#PublicSearch").click();
 
-			settings.bind('#PublicSearch', '.setPublicSearch', settings.changePublicSearch);
+			settings.bind("#PublicSearch", ".setPublicSearch", settings.changePublicSearch);
 		},
 
-		setOverlay: function setOverlay() {
-			var msg = "\n\t\t\t<div class=\"setOverlay\">\n\t\t\t<p>" + lychee.locale['IMAGE_OVERLAY_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"ImageOverlay\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+		setNSFWVisible: function setNSFWVisible() {
+			var msg = "\n\t\t\t<div class=\"setNSFWVisible\">\n\t\t\t<p>" + lychee.locale["NSFW_VISIBLE_TEXT_1"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"NSFWVisible\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label></p>\n\t\t\t<p>" + lychee.locale["NSFW_VISIBLE_TEXT_2"] + "\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
-			if (lychee.image_overlay_default) $('#ImageOverlay').click();
+			if (lychee.nsfw_visible_saved) {
+				$("#NSFWVisible").click();
+			}
 
-			settings.bind('#ImageOverlay', '.setOverlay', settings.changeImageOverlay);
+			settings.bind("#NSFWVisible", ".setNSFWVisible", settings.changeNSFWVisible);
+		},
+		// TODO: extend to the other settings.
+
+		setOverlay: function setOverlay() {
+			var msg = "\n\t\t\t<div class=\"setOverlay\">\n\t\t\t<p>" + lychee.locale["IMAGE_OVERLAY_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"ImageOverlay\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+
+			$(".settings_view").append(msg);
+			if (lychee.image_overlay_default) $("#ImageOverlay").click();
+
+			settings.bind("#ImageOverlay", ".setOverlay", settings.changeImageOverlay);
 		},
 
 		setOverlayType: function setOverlayType() {
-			var msg = "\n\t\t\t<div class=\"setOverlayType\">\n\t\t\t<p>" + lychee.locale['OVERLAY_TYPE'] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"OverlayType\" id=\"ImgOverlayType\">\n\t\t\t\t\t<option value=\"exif\">" + lychee.locale['OVERLAY_EXIF'] + "</option>\n\t\t\t\t\t<option value=\"desc\">" + lychee.locale['OVERLAY_DESCRIPTION'] + "</option>\n\t\t\t\t\t<option value=\"takedate\">" + lychee.locale['OVERLAY_DATE'] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_overlay_type\" class=\"basicModal__button\">" + lychee.locale['SET_OVERLAY_TYPE'] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setOverlayType\">\n\t\t\t<p>" + lychee.locale["OVERLAY_TYPE"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"OverlayType\" id=\"ImgOverlayType\">\n\t\t\t\t\t<option value=\"exif\">" + lychee.locale["OVERLAY_EXIF"] + "</option>\n\t\t\t\t\t<option value=\"desc\">" + lychee.locale["OVERLAY_DESCRIPTION"] + "</option>\n\t\t\t\t\t<option value=\"takedate\">" + lychee.locale["OVERLAY_DATE"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_overlay_type\" class=\"basicModal__button\">" + lychee.locale["SET_OVERLAY_TYPE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
 
 			// Enable based on image_overlay setting
-			if (!lychee.image_overlay) $('select#ImgOverlayType').attr('disabled', true);
+			if (!lychee.image_overlay) $("select#ImgOverlayType").attr("disabled", true);
 
-			$('select#ImgOverlayType').val(!lychee.image_overlay_type_default ? 'exif' : lychee.image_overlay_type_default);
-			settings.bind('#basicModal__action_set_overlay_type', '.setOverlayType', settings.setOverlayType);
+			$("select#ImgOverlayType").val(!lychee.image_overlay_type_default ? "exif" : lychee.image_overlay_type_default);
+			settings.bind("#basicModal__action_set_overlay_type", ".setOverlayType", settings.setOverlayType);
 		},
 
 		setMapDisplay: function setMapDisplay() {
-			var msg = "\n\t\t\t<div class=\"setMapDisplay\">\n\t\t\t<p>" + lychee.locale['MAP_DISPLAY_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapDisplay\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setMapDisplay\">\n\t\t\t<p>" + lychee.locale["MAP_DISPLAY_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapDisplay\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
-			if (lychee.map_display) $('#MapDisplay').click();
+			if (lychee.map_display) $("#MapDisplay").click();
 
-			settings.bind('#MapDisplay', '.setMapDisplay', settings.changeMapDisplay);
+			settings.bind("#MapDisplay", ".setMapDisplay", settings.changeMapDisplay);
 
-			msg = "\n\t\t\t<div class=\"setMapDisplayPublic\">\n\t\t\t<p>" + lychee.locale['MAP_DISPLAY_PUBLIC_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"MapDisplayPublic\" type=\"checkbox\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
-
-			$(".settings_view").append(msg);
-			if (lychee.map_display_public) $('#MapDisplayPublic').click();
-
-			settings.bind('#MapDisplayPublic', '.setMapDisplayPublic', settings.changeMapDisplayPublic);
-
-			msg = "\n\t\t\t<div class=\"setMapProvider\">\n\t\t\t<p>" + lychee.locale['MAP_PROVIDER'] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"MapProvider\" id=\"MapProvider\">\n\t\t\t\t\t<option value=\"Wikimedia\">" + lychee.locale['MAP_PROVIDER_WIKIMEDIA'] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.org\">" + lychee.locale['MAP_PROVIDER_OSM_ORG'] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.de\">" + lychee.locale['MAP_PROVIDER_OSM_DE'] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.fr\">" + lychee.locale['MAP_PROVIDER_OSM_FR'] + "</option>\n\t\t\t\t\t<option value=\"RRZE\">" + lychee.locale['MAP_PROVIDER_RRZE'] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_map_provider\" class=\"basicModal__button\">" + lychee.locale['SET_MAP_PROVIDER'] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setMapDisplayPublic\">\n\t\t\t<p>" + lychee.locale["MAP_DISPLAY_PUBLIC_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"MapDisplayPublic\" type=\"checkbox\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
+			if (lychee.map_display_public) $("#MapDisplayPublic").click();
 
-			$('select#MapProvider').val(!lychee.map_provider ? 'Wikimedia' : lychee.map_provider);
-			settings.bind('#basicModal__action_set_map_provider', '.setMapProvider', settings.setMapProvider);
+			settings.bind("#MapDisplayPublic", ".setMapDisplayPublic", settings.changeMapDisplayPublic);
 
-			msg = "\n\t\t\t<div class=\"setMapIncludeSubalbums\">\n\t\t\t<p>" + lychee.locale['MAP_INCLUDE_SUBALBUMS_TEXT'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapIncludeSubalbums\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
-
-			$(".settings_view").append(msg);
-			if (lychee.map_include_subalbums) $('#MapIncludeSubalbums').click();
-
-			settings.bind('#MapIncludeSubalbums', '.setMapIncludeSubalbums', settings.changeMapIncludeSubalbums);
-
-			msg = "\n\t\t\t<div class=\"setLocationDecoding\">\n\t\t\t<p>" + lychee.locale['LOCATION_DECODING'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"LocationDecoding\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setMapProvider\">\n\t\t\t<p>" + lychee.locale["MAP_PROVIDER"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"MapProvider\" id=\"MapProvider\">\n\t\t\t\t\t<option value=\"Wikimedia\">" + lychee.locale["MAP_PROVIDER_WIKIMEDIA"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.org\">" + lychee.locale["MAP_PROVIDER_OSM_ORG"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.de\">" + lychee.locale["MAP_PROVIDER_OSM_DE"] + "</option>\n\t\t\t\t\t<option value=\"OpenStreetMap.fr\">" + lychee.locale["MAP_PROVIDER_OSM_FR"] + "</option>\n\t\t\t\t\t<option value=\"RRZE\">" + lychee.locale["MAP_PROVIDER_RRZE"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_map_provider\" class=\"basicModal__button\">" + lychee.locale["SET_MAP_PROVIDER"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
-			if (lychee.location_decoding) $('#LocationDecoding').click();
 
-			settings.bind('#LocationDecoding', '.setLocationDecoding', settings.changeLocationDecoding);
+			$("select#MapProvider").val(!lychee.map_provider ? "Wikimedia" : lychee.map_provider);
+			settings.bind("#basicModal__action_set_map_provider", ".setMapProvider", settings.setMapProvider);
 
-			msg = "\n\t\t\t<div class=\"setLocationShow\">\n\t\t\t<p>" + lychee.locale['LOCATION_SHOW'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"LocationShow\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
-
-			$(".settings_view").append(msg);
-			if (lychee.location_show) $('#LocationShow').click();
-
-			settings.bind('#LocationShow', '.setLocationShow', settings.changeLocationShow);
-
-			msg = "\n\t\t\t<div class=\"setLocationShowPublic\">\n\t\t\t<p>" + lychee.locale['LOCATION_SHOW_PUBLIC'] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"LocationShowPublic\" type=\"checkbox\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+			msg = "\n\t\t\t<div class=\"setMapIncludeSubalbums\">\n\t\t\t<p>" + lychee.locale["MAP_INCLUDE_SUBALBUMS_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"MapIncludeSubalbums\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
-			if (lychee.location_show_public) $('#LocationShowPublic').click();
+			if (lychee.map_include_subalbums) $("#MapIncludeSubalbums").click();
 
-			settings.bind('#LocationShowPublic', '.setLocationShowPublic', settings.changeLocationShowPublic);
+			settings.bind("#MapIncludeSubalbums", ".setMapIncludeSubalbums", settings.changeMapIncludeSubalbums);
+
+			msg = "\n\t\t\t<div class=\"setLocationDecoding\">\n\t\t\t<p>" + lychee.locale["LOCATION_DECODING"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"LocationDecoding\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+
+			$(".settings_view").append(msg);
+			if (lychee.location_decoding) $("#LocationDecoding").click();
+
+			settings.bind("#LocationDecoding", ".setLocationDecoding", settings.changeLocationDecoding);
+
+			msg = "\n\t\t\t<div class=\"setLocationShow\">\n\t\t\t<p>" + lychee.locale["LOCATION_SHOW"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"LocationShow\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+
+			$(".settings_view").append(msg);
+			if (lychee.location_show) $("#LocationShow").click();
+
+			settings.bind("#LocationShow", ".setLocationShow", settings.changeLocationShow);
+
+			msg = "\n\t\t\t<div class=\"setLocationShowPublic\">\n\t\t\t<p>" + lychee.locale["LOCATION_SHOW_PUBLIC"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t\t<input id=\"LocationShowPublic\" type=\"checkbox\">\n\t\t\t\t<span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
+
+			$(".settings_view").append(msg);
+			if (lychee.location_show_public) $("#LocationShowPublic").click();
+
+			settings.bind("#LocationShowPublic", ".setLocationShowPublic", settings.changeLocationShowPublic);
 		},
 
 		setCSS: function setCSS() {
-			var msg = "\n\t\t\t<div class=\"setCSS\">\n\t\t\t<p>" + lychee.locale['CSS_TEXT'] + "</p>\n\t\t\t<textarea id=\"css\"></textarea>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_css\" class=\"basicModal__button\">" + lychee.locale['CSS_TITLE'] + "</a>\n\t\t\t</div>\n\t\t\t</div>";
+			var msg = "\n\t\t\t<div class=\"setCSS\">\n\t\t\t<p>" + lychee.locale["CSS_TEXT"] + "</p>\n\t\t\t<textarea id=\"css\"></textarea>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_css\" class=\"basicModal__button\">" + lychee.locale["CSS_TITLE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>";
 
 			$(".settings_view").append(msg);
 
-			var css_addr = $($("link")[1]).attr('href');
+			var css_addr = $($("link")[1]).attr("href");
 
 			api.get(css_addr, function (data) {
 				$("#css").html(data);
 			});
 
-			settings.bind('#basicModal__action_set_css', '.setCSS', settings.changeCSS);
+			settings.bind("#basicModal__action_set_css", ".setCSS", settings.changeCSS);
 		},
 
 		moreButton: function moreButton() {
-			var msg = lychee.html(_templateObject81, lychee.locale['MORE']);
+			var msg = lychee.html(_templateObject81, lychee.locale["MORE"]);
 
 			$(".settings_view").append(msg);
 
-			$("#basicModal__action_more").on('click', view.full_settings.init);
+			$("#basicModal__action_more").on("click", view.full_settings.init);
 		}
-
 	}
-
 };
 
 view.full_settings = {
-
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.full_settings.title();
@@ -10477,8 +10469,7 @@ view.full_settings = {
 	},
 
 	title: function title() {
-
-		lychee.setTitle('Full Settings', false);
+		lychee.setTitle("Full Settings", false);
 	},
 
 	clearContent: function clearContent() {
@@ -10486,17 +10477,14 @@ view.full_settings = {
 	},
 
 	content: {
-
 		init: function init() {
 			view.full_settings.clearContent();
 
-			api.post('Settings::getAll', {}, function (data) {
+			api.post("Settings::getAll", {}, function (data) {
+				var msg = lychee.html(_templateObject82, lychee.locale["SETTINGS_WARNING"]);
 
-				var msg = lychee.html(_templateObject82, lychee.locale['SETTINGS_WARNING']);
-
-				var prev = '';
+				var prev = "";
 				$.each(data, function () {
-
 					if (this.cat && prev !== this.cat) {
 						msg += lychee.html(_templateObject83, this.cat);
 						prev = this.cat;
@@ -10505,24 +10493,21 @@ view.full_settings = {
 					msg += lychee.html(_templateObject84, this.key, this.key, this.value);
 				});
 
-				msg += lychee.html(_templateObject85, lychee.locale['SAVE_RISK']);
+				msg += lychee.html(_templateObject85, lychee.locale["SAVE_RISK"]);
 				$(".settings_view").append(msg);
 
-				settings.bind('#FullSettingsSave_button', '#fullSettings', settings.save);
+				settings.bind("#FullSettingsSave_button", "#fullSettings", settings.save);
 
-				$('#fullSettings').on('keypress', function (e) {
+				$("#fullSettings").on("keypress", function (e) {
 					settings.save_enter(e);
 				});
 			});
 		}
-
 	}
-
 };
 
 view.users = {
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.photo.hide();
@@ -10531,8 +10516,7 @@ view.users = {
 	},
 
 	title: function title() {
-
-		lychee.setTitle('Users', false);
+		lychee.setTitle("Users", false);
 	},
 
 	clearContent: function clearContent() {
@@ -10540,30 +10524,28 @@ view.users = {
 	},
 
 	content: {
-
 		init: function init() {
-
 			view.users.clearContent();
 
 			if (users.json.length === 0) {
 				$(".users_view").append('<div class="users_view_line" style="margin-bottom: 50px;"><p style="text-align: center">User list is empty!</p></div>');
 			}
 
-			var html = '';
+			var html = "";
 
-			html += '<div class="users_view_line">' + '<p>' + '<span class="text">username</span>' + '<span class="text">new password</span>' + '<span class="text_icon" title="Allow uploads">' + build.iconic('data-transfer-upload') + '</span>' + '<span class="text_icon" title="Restricted account">' + build.iconic('lock-locked') + '</span>' + '</p>' + '</div>';
+			html += '<div class="users_view_line">' + "<p>" + '<span class="text">username</span>' + '<span class="text">new password</span>' + '<span class="text_icon" title="Allow uploads">' + build.iconic("data-transfer-upload") + "</span>" + '<span class="text_icon" title="Restricted account">' + build.iconic("lock-locked") + "</span>" + "</p>" + "</div>";
 
 			$(".users_view").append(html);
 
 			$.each(users.json, function () {
 				$(".users_view").append(build.user(this));
-				settings.bind('#UserUpdate' + this.id, '#UserData' + this.id, users.update);
-				settings.bind('#UserDelete' + this.id, '#UserData' + this.id, users.delete);
+				settings.bind("#UserUpdate" + this.id, "#UserData" + this.id, users.update);
+				settings.bind("#UserDelete" + this.id, "#UserData" + this.id, users.delete);
 				if (this.upload === 1) {
-					$('#UserData' + this.id + ' .choice input[name="upload"]').click();
+					$("#UserData" + this.id + ' .choice input[name="upload"]').click();
 				}
 				if (this.lock === 1) {
-					$('#UserData' + this.id + ' .choice input[name="lock"]').click();
+					$("#UserData" + this.id + ' .choice input[name="lock"]').click();
 				}
 			});
 
@@ -10572,16 +10554,15 @@ view.users = {
 			if (users.json.length === 0) {
 				html += ' style="padding-top: 0px;"';
 			}
-			html += '>' + '<p id="UserCreate">' + '<input class="text" name="username" type="text" value="" placeholder="new username" /> ' + '<input class="text" name="password" type="text" placeholder="new password" /> ' + '<span class="choice" title="Allow uploads">' + '<label>' + '<input type="checkbox" name="upload" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span> ' + '<span class="choice" title="Restricted account">' + '<label>' + '<input type="checkbox" name="lock" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span>' + '</p> ' + '<a id="UserCreate_button"  class="basicModal__button basicModal__button_CREATE">Create</a>' + '</div>';
+			html += ">" + '<p id="UserCreate">' + '<input class="text" name="username" type="text" value="" placeholder="new username" /> ' + '<input class="text" name="password" type="text" placeholder="new password" /> ' + '<span class="choice" title="Allow uploads">' + "<label>" + '<input type="checkbox" name="upload" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + "</label>" + "</span> " + '<span class="choice" title="Restricted account">' + "<label>" + '<input type="checkbox" name="lock" />' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + "</label>" + "</span>" + "</p> " + '<a id="UserCreate_button"  class="basicModal__button basicModal__button_CREATE">Create</a>' + "</div>";
 			$(".users_view").append(html);
-			settings.bind('#UserCreate_button', '#UserCreate', users.create);
+			settings.bind("#UserCreate_button", "#UserCreate", users.create);
 		}
 	}
 };
 
 view.sharing = {
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.photo.hide();
@@ -10590,8 +10571,7 @@ view.sharing = {
 	},
 
 	title: function title() {
-
-		lychee.setTitle('Sharing', false);
+		lychee.setTitle("Sharing", false);
 	},
 
 	clearContent: function clearContent() {
@@ -10599,16 +10579,14 @@ view.sharing = {
 	},
 
 	content: {
-
 		init: function init() {
-
 			view.sharing.clearContent();
 
 			if (sharing.json.shared.length === 0) {
 				$(".sharing_view").append('<div class="sharing_view_line" style="margin-bottom: 50px;"><p style="text-align: center">Sharing list is empty!</p></div>');
 			}
 
-			var html = '';
+			var html = "";
 
 			html += "\n\t\t\t<div class=\"sharing_view_line\"><p>Share</p></div>\n\t\t\t<div class=\"sharing_view_line\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"albums_list\" class=\"form-control select\" size=\"13\" multiple=\"multiple\">";
 
@@ -10616,7 +10594,7 @@ view.sharing = {
 				html += "<option value=\"" + this.id + "\">" + this.title + "</option>";
 			});
 
-			html += "</select>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"albums_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+			html += "</select>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic("media-skip-forward") + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic("chevron-right") + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic("chevron-left") + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"albums_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic("media-skip-backward") + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"albums_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"albums_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
 
 			html += "\n\t\t\t<div class=\"sharing_view_line\"><p class=\"with\">with</p></div>\n\t\t\t<div class=\"sharing_view_line\">\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"from\" id=\"user_list\" class=\"form-control select\" size=\"13\" multiple=\"multiple\">";
 
@@ -10624,37 +10602,36 @@ view.sharing = {
 				html += "<option value=\"" + this.id + "\">" + this.username + "</option>";
 			});
 
-			html += "</select>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic('media-skip-forward') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic('chevron-right') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic('chevron-left') + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic('media-skip-backward') + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"user_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
+			html += "</select>\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-2\">\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_undo\" class=\"btn btn-primary btn-block\">undo</button>-->\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightAll\" class=\"btn btn-default btn-block blue\">" + build.iconic("media-skip-forward") + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_rightSelected\" class=\"btn btn-default btn-block blue\">" + build.iconic("chevron-right") + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftSelected\" class=\"btn btn-default btn-block grey\">" + build.iconic("chevron-left") + "</button>\n\t\t\t\t\t<button type=\"button\" id=\"user_list_leftAll\" class=\"btn btn-default btn-block grey\">" + build.iconic("media-skip-backward") + "</button>\n\t\t\t\t\t<!--<button type=\"button\" id=\"user_list_redo\" class=\"btn btn-warning btn-block\">redo</button>-->\n\t\t\t\t</div>\n\n\t\t\t\t<div class=\"col-xs-5\">\n\t\t\t\t\t<select name=\"to\" id=\"user_list_to\" class=\"form-control select\" size=\"13\" multiple=\"multiple\"></select>\n\t\t\t\t</div>\n\t\t\t</div>";
 			html += "<div class=\"sharing_view_line\"><a id=\"Share_button\"  class=\"basicModal__button\">Share</a></div>";
 			html += '<div class="sharing_view_line">';
 
 			$.each(sharing.json.shared, function () {
-				html += "<p><span class=\"text\">" + this.title + "</span><span class=\"text\">" + this.username + '</span><span class="choice">' + '<label>' + '<input type="checkbox" name="remove_id" value="' + this.id + '"/>' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + '</label>' + '</span></p>' + "";
+				html += "<p><span class=\"text\">" + this.title + "</span><span class=\"text\">" + this.username + '</span><span class="choice">' + "<label>" + '<input type="checkbox" name="remove_id" value="' + this.id + '"/>' + '<span class="checkbox"><svg class="iconic "><use xlink:href="#check"></use></svg></span>' + "</label>" + "</span></p>" + "";
 			});
 
-			html += '</div>';
+			html += "</div>";
 			if (sharing.json.shared.length !== 0) {
 				html += "<div class=\"sharing_view_line\"><a id=\"Remove_button\"  class=\"basicModal__button\">Remove</a></div>";
 			}
 
 			$(".sharing_view").append(html);
 
-			$('#albums_list').multiselect();
-			$('#user_list').multiselect();
-			$("#Share_button").on('click', sharing.add).on('mouseenter', function () {
-				$('#albums_list_to, #user_list_to').addClass('borderBlue');
-			}).on('mouseleave', function () {
-				$('#albums_list_to, #user_list_to').removeClass('borderBlue');
+			$("#albums_list").multiselect();
+			$("#user_list").multiselect();
+			$("#Share_button").on("click", sharing.add).on("mouseenter", function () {
+				$("#albums_list_to, #user_list_to").addClass("borderBlue");
+			}).on("mouseleave", function () {
+				$("#albums_list_to, #user_list_to").removeClass("borderBlue");
 			});
 
-			$('#Remove_button').on('click', sharing.delete);
+			$("#Remove_button").on("click", sharing.delete);
 		}
 	}
 };
 
 view.logs = {
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.photo.hide();
@@ -10663,20 +10640,19 @@ view.logs = {
 	},
 
 	title: function title() {
-
-		lychee.setTitle('Logs', false);
+		lychee.setTitle("Logs", false);
 	},
 
 	clearContent: function clearContent() {
-		var html = '';
+		var html = "";
 		if (lychee.api_V2) {
-			html += lychee.html(_templateObject86, lychee.locale['CLEAN_LOGS']);
+			html += lychee.html(_templateObject86, lychee.locale["CLEAN_LOGS"]);
 		}
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);
 
-		$("#Clean_Noise").on('click', function () {
-			api.post_raw('Logs::clearNoise', {}, function () {
+		$("#Clean_Noise").on("click", function () {
+			api.post_raw("Logs::clearNoise", {}, function () {
 				view.logs.init();
 			});
 		});
@@ -10685,7 +10661,7 @@ view.logs = {
 	content: {
 		init: function init() {
 			view.logs.clearContent();
-			api.post_raw('Logs', {}, function (data) {
+			api.post_raw("Logs", {}, function (data) {
 				$(".logs_diagnostics_view").html(data);
 			});
 		}
@@ -10694,28 +10670,26 @@ view.logs = {
 
 view.diagnostics = {
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.photo.hide();
-		view.diagnostics.title('Diagnostics');
+		view.diagnostics.title("Diagnostics");
 		view.diagnostics.content.init();
 	},
 
 	title: function title() {
-
-		lychee.setTitle('Diagnostics', false);
+		lychee.setTitle("Diagnostics", false);
 	},
 
 	clearContent: function clearContent(update) {
-		var html = '';
+		var html = "";
 
 		if (update === 2) {
-			html += view.diagnostics.button('', lychee.locale['UPDATE_AVAILABLE']);
+			html += view.diagnostics.button("", lychee.locale["UPDATE_AVAILABLE"]);
 		} else if (update === 3) {
-			html += view.diagnostics.button('', lychee.locale['MIGRATION_AVAILABLE']);
+			html += view.diagnostics.button("", lychee.locale["MIGRATION_AVAILABLE"]);
 		} else if (update > 0) {
-			html += view.diagnostics.button('Check_', lychee.locale['CHECK_FOR_UPDATE']);
+			html += view.diagnostics.button("Check_", lychee.locale["CHECK_FOR_UPDATE"]);
 		}
 
 		html += '<pre class="logs_diagnostics_view"></pre>';
@@ -10723,17 +10697,17 @@ view.diagnostics = {
 	},
 
 	button: function button(type, locale) {
-		var html = '';
+		var html = "";
 		html += '<div class="clear_logs_update">';
 		html += lychee.html(_templateObject87, type, locale);
-		html += '</div>';
+		html += "</div>";
 
 		return html;
 	},
 
 	bind: function bind() {
-		$("#Update_Lychee").on('click', view.diagnostics.call_apply_update);
-		$("#Check_Update_Lychee").on('click', view.diagnostics.call_check_update);
+		$("#Update_Lychee").on("click", view.diagnostics.call_apply_update);
+		$("#Check_Update_Lychee").on("click", view.diagnostics.call_check_update);
 	},
 
 	content: {
@@ -10748,72 +10722,71 @@ view.diagnostics = {
 		},
 
 		v_1: function v_1() {
-			api.post_raw('Diagnostics', {}, function (data) {
+			api.post_raw("Diagnostics", {}, function (data) {
 				$(".logs_diagnostics_view").html(data);
 			});
 		},
 
 		v_2: function v_2() {
-			api.post('Diagnostics', {}, function (data) {
+			api.post("Diagnostics", {}, function (data) {
 				view.diagnostics.clearContent(data.update);
-				var html = '';
+				var html = "";
 
-				html += view.diagnostics.content.block('error', 'Diagnostics', data.errors);
-				html += view.diagnostics.content.block('sys', 'System Information', data.infos);
+				html += view.diagnostics.content.block("error", "Diagnostics", data.errors);
+				html += view.diagnostics.content.block("sys", "System Information", data.infos);
 				html += '<a id="Get_Size_Lychee" class="basicModal__button button_left">';
 				html += '<svg class="iconic"><use xlink:href="#reload"></use></svg>';
-				html += lychee.html(_templateObject32, lychee.locale['DIAGNOSTICS_GET_SIZE']);
-				html += '</a>';
-				html += view.diagnostics.content.block('conf', 'Config Information', data.configs);
+				html += lychee.html(_templateObject32, lychee.locale["DIAGNOSTICS_GET_SIZE"]);
+				html += "</a>";
+				html += view.diagnostics.content.block("conf", "Config Information", data.configs);
 
 				$(".logs_diagnostics_view").html(html);
 
 				view.diagnostics.bind();
 
-				$("#Get_Size_Lychee").on('click', view.diagnostics.call_get_size);
+				$("#Get_Size_Lychee").on("click", view.diagnostics.call_get_size);
 			});
 		},
 
 		print_array: function print_array(arr) {
-			var html = '';
+			var html = "";
 			var i = void 0;
 
 			for (i = 0; i < arr.length; i++) {
-				html += '    ' + arr[i] + '\n';
+				html += "    " + arr[i] + "\n";
 			}
 			return html;
 		},
 
 		block: function block(id, title, arr) {
-			var html = '';
+			var html = "";
 			html += '<pre id="content_diag_' + id + '">\n\n\n\n';
-			html += '    ' + title + '\n';
-			html += '    '.padEnd(title.length, '-') + '\n';
+			html += "    " + title + "\n";
+			html += "    ".padEnd(title.length, "-") + "\n";
 			html += view.diagnostics.content.print_array(arr);
-			html += '</pre>\n';
+			html += "</pre>\n";
 			return html;
 		}
-
 	},
 
 	call_check_update: function call_check_update() {
-		api.post('Update::Check', [], function (data) {
-			loadingBar.show('success', data);
+		api.post("Update::Check", [], function (data) {
+			loadingBar.show("success", data);
 			$("#Check_Update_Lychee").remove();
 		});
 	},
 
 	call_apply_update: function call_apply_update() {
-		api.post('Update::Apply', [], function (data) {
-			var html = view.preify(data, '');
+		api.post("Update::Apply", [], function (data) {
+			var html = view.preify(data, "");
 			$("#Update_Lychee").remove();
 			$(html).prependTo(".logs_diagnostics_view");
 		});
 	},
 
 	call_get_size: function call_get_size() {
-		api.post('Diagnostics::getSize', [], function (data) {
-			var html = view.preify(data, '');
+		api.post("Diagnostics::getSize", [], function (data) {
+			var html = view.preify(data, "");
 			$("#Get_Size_Lychee").remove();
 			$(html).appendTo("#content_diag_sys");
 		});
@@ -10822,7 +10795,6 @@ view.diagnostics = {
 
 view.update = {
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.photo.hide();
@@ -10831,12 +10803,11 @@ view.update = {
 	},
 
 	title: function title() {
-
-		lychee.setTitle('Update', false);
+		lychee.setTitle("Update", false);
 	},
 
 	clearContent: function clearContent() {
-		var html = '';
+		var html = "";
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);
 	},
@@ -10846,8 +10817,8 @@ view.update = {
 			view.update.clearContent();
 
 			// code duplicate
-			api.post('Update::Apply', [], function (data) {
-				var html = view.preify(data, 'logs_diagnostics_view');
+			api.post("Update::Apply", [], function (data) {
+				var html = view.preify(data, "logs_diagnostics_view");
 				lychee.content.html(html);
 			});
 		}
@@ -10858,19 +10829,18 @@ view.preify = function (data, css) {
 	var html = '<pre class="' + css + '">';
 	if (Array.isArray(data)) {
 		for (var i = 0; i < data.length; i++) {
-			html += '    ' + data[i] + '\n';
+			html += "    " + data[i] + "\n";
 		}
 	} else {
-		html += '    ' + data;
+		html += "    " + data;
 	}
-	html += '</pre>';
+	html += "</pre>";
 
 	return html;
 };
 
 view.u2f = {
 	init: function init() {
-
 		multiselect.clearSelection();
 
 		view.photo.hide();
@@ -10879,8 +10849,7 @@ view.u2f = {
 	},
 
 	title: function title() {
-
-		lychee.setTitle(lychee.locale['U2F'], false);
+		lychee.setTitle(lychee.locale["U2F"], false);
 	},
 
 	clearContent: function clearContent() {
@@ -10888,27 +10857,24 @@ view.u2f = {
 	},
 
 	content: {
-
 		init: function init() {
-
 			view.u2f.clearContent();
 
-			var html = '';
+			var html = "";
 
 			if (u2f.json.length === 0) {
 				$(".u2f_view").append('<div class="u2f_view_line"><p class="single">Credentials list is empty!</p></div>');
 			} else {
-
-				html += '<div class="u2f_view_line">' + '<p>' + '<span class="text">' + lychee.locale['U2F_CREDENTIALS'] + '</span>' +
+				html += '<div class="u2f_view_line">' + "<p>" + '<span class="text">' + lychee.locale["U2F_CREDENTIALS"] + "</span>" +
 				// '<span class="text_icon" title="Allow uploads">' + build.iconic('data-transfer-upload') + '</span>' +
 				// '<span class="text_icon" title="Restricted account">' + build.iconic('lock-locked') + '</span>' +
-				'</p>' + '</div>';
+				"</p>" + "</div>";
 
 				$(".u2f_view").append(html);
 
 				$.each(u2f.json, function () {
 					$(".u2f_view").append(build.u2f(this));
-					settings.bind('#CredentialDelete' + this.id, '#CredentialData' + this.id, u2f.delete);
+					settings.bind("#CredentialDelete" + this.id, "#CredentialData" + this.id, u2f.delete);
 					// if (this.upload === 1) {
 					//     $('#UserData' + this.id + ' .choice input[name="upload"]').click();
 					// }
@@ -10923,12 +10889,13 @@ view.u2f = {
 			// if (u2f.json.length === 0) {
 			//     html += ' style="padding-top: 0px;"';
 			// }
-			html += '>' + '<a id="RegisterU2FButton"  class="basicModal__button basicModal__button_CREATE">' + lychee.locale['U2F_REGISTER_KEY'] + '</a>' + '</div>';
+			html += ">" + '<a id="RegisterU2FButton"  class="basicModal__button basicModal__button_CREATE">' + lychee.locale["U2F_REGISTER_KEY"] + "</a>" + "</div>";
 			$(".u2f_view").append(html);
-			$("#RegisterU2FButton").on('click', u2f.register);
+			$("#RegisterU2FButton").on("click", u2f.register);
 		}
 	}
 };
+
 /**
  * @description This module is used to check if elements are visible or not.
  */
@@ -10936,23 +10903,23 @@ view.u2f = {
 var visible = {};
 
 visible.albums = function () {
-	if (header.dom('.header__toolbar--public').hasClass('header__toolbar--visible')) return true;
-	if (header.dom('.header__toolbar--albums').hasClass('header__toolbar--visible')) return true;
+	if (header.dom(".header__toolbar--public").hasClass("header__toolbar--visible")) return true;
+	if (header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible")) return true;
 	return false;
 };
 
 visible.album = function () {
-	if (header.dom('.header__toolbar--album').hasClass('header__toolbar--visible')) return true;
+	if (header.dom(".header__toolbar--album").hasClass("header__toolbar--visible")) return true;
 	return false;
 };
 
 visible.photo = function () {
-	if ($('#imageview.fadeIn').length > 0) return true;
+	if ($("#imageview.fadeIn").length > 0) return true;
 	return false;
 };
 
 visible.mapview = function () {
-	if ($('#mapview.fadeIn').length > 0) return true;
+	if ($("#mapview.fadeIn").length > 0) return true;
 	return false;
 };
 
@@ -10962,18 +10929,18 @@ visible.search = function () {
 };
 
 visible.sidebar = function () {
-	if (_sidebar.dom().hasClass('active') === true) return true;
+	if (_sidebar.dom().hasClass("active") === true) return true;
 	return false;
 };
 
 visible.sidebarbutton = function () {
 	if (visible.photo()) return true;
-	if (visible.album() && $('#button_info_album:visible').length > 0) return true;
+	if (visible.album() && $("#button_info_album:visible").length > 0) return true;
 	return false;
 };
 
 visible.header = function () {
-	if (header.dom().hasClass('header--hidden') === true) return false;
+	if (header.dom().hasClass("header--hidden") === true) return false;
 	return true;
 };
 
@@ -10982,54 +10949,50 @@ visible.contextMenu = function () {
 };
 
 visible.multiselect = function () {
-	if ($('#multiselect').length > 0) return true;
+	if ($("#multiselect").length > 0) return true;
 	return false;
 };
 
 visible.leftMenu = function () {
-	if (leftMenu.dom().hasClass('leftMenu__visible')) return true;
+	if (leftMenu.dom().hasClass("leftMenu__visible")) return true;
 	return false;
 };
 
 (function (window, factory) {
 	var basicContext = factory(window, window.document);
 	window.basicContext = basicContext;
-	if ((typeof module === "undefined" ? "undefined" : _typeof(module)) == 'object' && module.exports) {
+	if ((typeof module === "undefined" ? "undefined" : _typeof(module)) == "object" && module.exports) {
 		module.exports = basicContext;
 	}
 })(window, function l(window, document) {
-
-	var ITEM = 'item',
-	    SEPARATOR = 'separator';
+	var ITEM = "item",
+	    SEPARATOR = "separator";
 
 	var dom = function dom() {
-		var elem = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+		var elem = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
-
-		return document.querySelector('.basicContext ' + elem);
+		return document.querySelector(".basicContext " + elem);
 	};
 
 	var valid = function valid() {
 		var item = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-
 		var emptyItem = Object.keys(item).length === 0 ? true : false;
 
 		if (emptyItem === true) item.type = SEPARATOR;
 		if (item.type == null) item.type = ITEM;
-		if (item.class == null) item.class = '';
+		if (item.class == null) item.class = "";
 		if (item.visible !== false) item.visible = true;
 		if (item.icon == null) item.icon = null;
-		if (item.title == null) item.title = 'Undefined';
+		if (item.title == null) item.title = "Undefined";
 
 		// Add disabled class when item disabled
 		if (item.disabled !== true) item.disabled = false;
-		if (item.disabled === true) item.class += ' basicContext__item--disabled';
+		if (item.disabled === true) item.class += " basicContext__item--disabled";
 
 		// Item requires a function when
 		// it's not a separator and not disabled
 		if (item.fn == null && item.type !== SEPARATOR && item.disabled === false) {
-
 			console.warn("Missing fn for item '" + item.title + "'");
 			return false;
 		}
@@ -11038,15 +11001,14 @@ visible.leftMenu = function () {
 	};
 
 	var buildItem = function buildItem(item, num) {
-
-		var html = '',
-		    span = '';
+		var html = "",
+		    span = "";
 
 		// Parse and validate item
-		if (valid(item) === false) return '';
+		if (valid(item) === false) return "";
 
 		// Skip when invisible
-		if (item.visible === false) return '';
+		if (item.visible === false) return "";
 
 		// Give item a unique number
 		item.num = num;
@@ -11056,10 +11018,8 @@ visible.leftMenu = function () {
 
 		// Generate item
 		if (item.type === ITEM) {
-
 			html = "\n\t\t       <tr class='basicContext__item " + item.class + "'>\n\t\t           <td class='basicContext__data' data-num='" + item.num + "'>" + span + item.title + "</td>\n\t\t       </tr>\n\t\t       ";
 		} else if (item.type === SEPARATOR) {
-
 			html = "\n\t\t       <tr class='basicContext__item basicContext__item--separator'></tr>\n\t\t       ";
 		}
 
@@ -11067,8 +11027,7 @@ visible.leftMenu = function () {
 	};
 
 	var build = function build(items) {
-
-		var html = '';
+		var html = "";
 
 		html += "\n\t        <div class='basicContextContainer'>\n\t            <div class='basicContext'>\n\t                <table>\n\t                    <tbody>\n\t        ";
 
@@ -11084,14 +11043,12 @@ visible.leftMenu = function () {
 	var getNormalizedEvent = function getNormalizedEvent() {
 		var e = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-
 		var pos = {
 			x: e.clientX,
 			y: e.clientY
 		};
 
-		if (e.type === 'touchend' && (pos.x == null || pos.y == null)) {
-
+		if (e.type === "touchend" && (pos.x == null || pos.y == null)) {
 			// We need to capture clientX and clientY from original event
 			// when the event 'touchend' does not return the touch position
 
@@ -11111,7 +11068,6 @@ visible.leftMenu = function () {
 	};
 
 	var getPosition = function getPosition(e, context) {
-
 		// Get the click position
 		var normalizedEvent = getNormalizedEvent(e);
 
@@ -11123,21 +11079,23 @@ visible.leftMenu = function () {
 		var browserSize = {
 			width: window.innerWidth,
 			height: window.innerHeight
+		};
 
-			// Get size of context
-		};var contextSize = {
+		// Get size of context
+		var contextSize = {
 			width: context.offsetWidth,
 			height: context.offsetHeight
+		};
 
-			// Fix position based on context and browser size
-		};if (x + contextSize.width > browserSize.width) x = x - (x + contextSize.width - browserSize.width);
+		// Fix position based on context and browser size
+		if (x + contextSize.width > browserSize.width) x = x - (x + contextSize.width - browserSize.width);
 		if (y + contextSize.height > browserSize.height) y = y - (y + contextSize.height - browserSize.height);
 
 		// Make context scrollable and start at the top of the browser
 		// when context is higher than the browser
 		if (contextSize.height > browserSize.height) {
 			y = 0;
-			context.classList.add('basicContext--scrollable');
+			context.classList.add("basicContext--scrollable");
 		}
 
 		// Calculate the relative position of the mouse to the context
@@ -11150,7 +11108,6 @@ visible.leftMenu = function () {
 	var bind = function bind() {
 		var item = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-
 		if (item.fn == null) return false;
 		if (item.visible === false) return false;
 		if (item.disabled === true) return false;
@@ -11162,12 +11119,11 @@ visible.leftMenu = function () {
 	};
 
 	var show = function show(items, e, fnClose, fnCallback) {
-
 		// Build context
 		var html = build(items);
 
 		// Add context to the body
-		document.body.insertAdjacentHTML('beforeend', html);
+		document.body.insertAdjacentHTML("beforeend", html);
 
 		// Cache the context
 		var context = dom();
@@ -11192,27 +11148,25 @@ visible.leftMenu = function () {
 		items.forEach(bind);
 
 		// Do not trigger default event or further propagation
-		if (typeof e.preventDefault === 'function') e.preventDefault();
-		if (typeof e.stopPropagation === 'function') e.stopPropagation();
+		if (typeof e.preventDefault === "function") e.preventDefault();
+		if (typeof e.stopPropagation === "function") e.stopPropagation();
 
 		// Call callback when a function
-		if (typeof fnCallback === 'function') fnCallback();
+		if (typeof fnCallback === "function") fnCallback();
 
 		return true;
 	};
 
 	var visible = function visible() {
-
 		var elem = dom();
 
 		return !(elem == null || elem.length === 0);
 	};
 
 	var close = function close() {
-
 		if (visible() === false) return false;
 
-		var container = document.querySelector('.basicContextContainer');
+		var container = document.querySelector(".basicContextContainer");
 
 		container.parentElement.removeChild(container);
 

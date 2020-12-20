@@ -8,7 +8,7 @@ use App\Http\Middleware\Checks\IsMigrated;
 use Closure;
 use Illuminate\Http\Request;
 
-class AdminCheck
+class MigrationCheck
 {
 	/**
 	 * @var IsMigrated
@@ -31,7 +31,7 @@ class AdminCheck
 	public function handle($request, Closure $next)
 	{
 		if (!$this->isMigrated->assert()) {
-			return view('error.update', ['code' => '503', 'message' => 'Database version is behind, please apply migration.']);
+			return response()->view('error.update', ['code' => '503', 'message' => 'Database version is behind, please apply migration.']);
 		}
 
 		return $next($request);

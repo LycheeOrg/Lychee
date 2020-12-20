@@ -17,5 +17,7 @@ class ExistsDB implements MiddlewareCheck
 		} catch (QueryException $e) {
 			return false;
 		}
+
+		return true;
 	}
 }

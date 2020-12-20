@@ -25,10 +25,10 @@ if (env('APP_ENV') === 'dev') {
 
 Route::feeds();
 
-Route::get('/', [IndexController::class, 'show'])->name('home')->middleware('installed');
+Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['installed', 'migrated']);
 Route::get('/phpinfo', [IndexController::class, 'phpinfo'])->middleware('admin');
-Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware('installed');
-Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'force'])->name('migrate');
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['installed', 'migrated']);
+Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'force'])->name('migrate')->middleware('installed');
 
 /*
  * TODO see to add better redirection functionality later.
@@ -37,12 +37,12 @@ Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::clas
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumid}/{photoid}', [RedirectController::class, 'photo']);
-Route::get('/r/{albumid}', [RedirectController::class, 'album']);
+Route::get('/r/{albumid}/{photoid}', [RedirectController::class, 'photo'])->middleware(['installed', 'migrated']);
+Route::get('/r/{albumid}', [RedirectController::class, 'album'])->middleware(['installed', 'migrated']);
 
 Route::get('/view', [ViewController::class, 'view']);
 Route::get('/demo', [DemoController::class, 'js']);
-Route::get('/frame', [FrameController::class, 'init'])->name('frame');
+Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installed', 'migrated']);
 
 Route::post('/php/index.php', [SessionController::class, 'init']); // entry point if options are not initialized
 

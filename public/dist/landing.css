@@ -1,5 +1,85 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto:300,400,700,900");
-html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
   margin: 0;
   padding: 0;
   border: 0;
@@ -7,30 +87,47 @@ html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockq
   font-size: 100%;
   vertical-align: baseline; }
 
-article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
   display: block; }
 
 body {
   line-height: 1; }
 
-ol, ul {
+ol,
+ul {
   list-style: none; }
 
-blockquote, q {
+blockquote,
+q {
   quotes: none; }
 
-blockquote:before, blockquote:after, q:before, q:after {
-  content: '';
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
   content: none; }
 
 table {
   border-collapse: collapse;
   border-spacing: 0; }
 
-em, i {
+em,
+i {
   font-style: italic; }
 
-strong, b {
+strong,
+b {
   font-weight: bold; }
 
 * {
@@ -38,33 +135,36 @@ strong, b {
   -moz-user-select: none;
   -ms-user-select: none;
       user-select: none;
-  -webkit-transition: color .3s, opacity .3s ease-out, -webkit-transform .3s ease-out, -webkit-box-shadow .3s;
-  transition: color .3s, opacity .3s ease-out, -webkit-transform .3s ease-out, -webkit-box-shadow .3s;
-  -o-transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s;
-  transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s;
-  transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s, -webkit-transform .3s ease-out, -webkit-box-shadow .3s; }
+  -webkit-transition: color 0.3s, opacity 0.3s ease-out, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
+  transition: color 0.3s, opacity 0.3s ease-out, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
+  -o-transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s;
+  transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s;
+  transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s; }
 
-html, body {
-  font-family: 'Roboto', sans-serif;
+html,
+body {
+  font-family: "Roboto", sans-serif;
   background: #000000;
   overflow: hidden; }
 
-ol, ul {
+ol,
+ul {
   list-style: none; }
 
 a {
   text-decoration: none; }
 
 @font-face {
-  font-family: 'socials';
+  font-family: "socials";
   src: url("fonts/socials.eot?egvu10");
   src: url("fonts/socials.eot?egvu10#iefix") format("embedded-opentype"), url("fonts/socials.ttf?egvu10") format("truetype"), url("fonts/socials.woff?egvu10") format("woff"), url("fonts/socials.svg?egvu10#socials") format("svg");
   font-weight: normal;
   font-style: normal; }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^="icon-"],
+[class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'socials' !important;
+  font-family: "socials" !important;
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -91,15 +191,16 @@ a {
   content: "\eaa4"; }
 
 @font-face {
-  font-family: 'icomoon';
+  font-family: "icomoon";
   src: url("fonts/icomoon.eot?mqsjq9");
   src: url("fonts/icomoon.eot?mqsjq9#iefix") format("embedded-opentype"), url("fonts/icomoon.ttf?mqsjq9") format("truetype"), url("fonts/icomoon.woff?mqsjq9") format("woff"), url("fonts/icomoon.svg?mqsjq9#icomoon") format("svg");
   font-weight: normal;
   font-style: normal; }
 
-[class^="icon-"], [class*=" icon-"] {
+[class^="icon-"],
+[class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'icomoon' !important;
+  font-family: "icomoon" !important;
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -2645,7 +2746,9 @@ a {
 .icon-zoom_out_map:before {
   content: "\e56b"; }
 
-.pop-in.toggled, .pop-out.toggled, .pop-in-last.toggled {
+.pop-in.toggled,
+.pop-out.toggled,
+.pop-in-last.toggled {
   opacity: 1;
   -ms-transform: scale(1);
       transform: scale(1);
@@ -2653,7 +2756,8 @@ a {
   -moz-transform: scale(1);
   -o-transform: scale(1); }
 
-.pop-in, .pop-in-last {
+.pop-in,
+.pop-in-last {
   opacity: 0;
   -ms-transform: scale(1.1);
       transform: scale(1.1);
@@ -2667,7 +2771,8 @@ a {
   -moz-transition: all 2s ease-in-out !important;
   -o-transition: all 2s ease-in-out !important; }
 
-.animate-up.toggled, .animate-down.toggled {
+.animate-up.toggled,
+.animate-down.toggled {
   opacity: 1;
   -ms-transform: translateY(0px);
       transform: translateY(0px);
@@ -2719,7 +2824,7 @@ a {
 .socialicons {
   display: block;
   font-size: 23px;
-  font-family: 'socials' !important;
+  font-family: "socials" !important;
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -2761,20 +2866,21 @@ a {
   bottom: 0;
   text-align: center;
   padding: 5px 0 5px 0;
-  -webkit-transition: color .3s, opacity .3s ease-out, margin-left .5s, -webkit-transform .3s ease-out, -webkit-box-shadow .3s;
-  transition: color .3s, opacity .3s ease-out, margin-left .5s, -webkit-transform .3s ease-out, -webkit-box-shadow .3s;
-  -o-transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s, margin-left .5s;
-  transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s, margin-left .5s;
-  transition: color .3s, opacity .3s ease-out, transform .3s ease-out, box-shadow .3s, margin-left .5s, -webkit-transform .3s ease-out, -webkit-box-shadow .3s; }
+  -webkit-transition: color 0.3s, opacity 0.3s ease-out, margin-left 0.5s, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
+  transition: color 0.3s, opacity 0.3s ease-out, margin-left 0.5s, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s;
+  -o-transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s, margin-left 0.5s;
+  transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s, margin-left 0.5s;
+  transition: color 0.3s, opacity 0.3s ease-out, transform 0.3s ease-out, box-shadow 0.3s, margin-left 0.5s, -webkit-transform 0.3s ease-out, -webkit-box-shadow 0.3s; }
   #footer p {
-    color: #CCCCCC;
+    color: #cccccc;
     font-size: 0.5em;
     font-weight: 400; }
     #footer p a {
-      color: #CCC; }
+      color: #ccc; }
     #footer p a:visited {
-      color: #CCC; }
-  #footer p.hosted_by, #footer p.home_copyright {
+      color: #ccc; }
+  #footer p.hosted_by,
+  #footer p.home_copyright {
     text-transform: uppercase; }
 
 #menu {
@@ -2823,7 +2929,7 @@ a {
     font-weight: 700;
     text-align: center; }
     #logo h1 span {
-      font-family: 'Roboto', sans-serif;
+      font-family: "Roboto", sans-serif;
       font-size: 0.6em;
       display: block;
       font-weight: 300;
@@ -2857,7 +2963,9 @@ a {
   top: 0;
   width: 100vw;
   height: 98vh; }
-  #slides .slides-container, #slides li, #slides img {
+  #slides .slides-container,
+  #slides li,
+  #slides img {
     height: 100%;
     width: 100%; }
   #slides img {
@@ -2871,4 +2979,4 @@ a {
   position: absolute;
   background: #000000; }
   #footer p.home_copyright {
-    color: #FFFFFF; }
+    color: #ffffff; }

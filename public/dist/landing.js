@@ -7,20 +7,19 @@
 "use strict";
 
 function gup(b) {
-
 	b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 
 	var a = "[\\?&]" + b + "=([^&#]*)";
 	var d = new RegExp(a);
 	var c = d.exec(window.location.href);
 
-	if (c === null) return '';else return c[1];
+	if (c === null) return "";else return c[1];
 }
+
 var landing = {
 	galleryGrid: null,
 	loaderPerc: null,
 	load_wrap: null
-
 };
 
 landing.init = function () {
@@ -32,83 +31,81 @@ landing.endLoader = function () {
 };
 
 landing.runInitAnimations = function () {
-
-	if ($('#loader_wrap').length > 0) {
-		$('#loader_wrap').fadeOut(1000);
+	if ($("#loader_wrap").length > 0) {
+		$("#loader_wrap").fadeOut(1000);
 	}
 
-	if ($('.animate-down').length > 0) {
-		$('.animate-down').each(function (index) {
+	if ($(".animate-down").length > 0) {
+		$(".animate-down").each(function (index) {
 			var $this = $(this);
 			setTimeout(function () {
-				$this.addClass('toggled');
+				$this.addClass("toggled");
 			}, 100 * index);
 		});
 	}
 
-	if ($('.animate-up').length > 0) {
-		$('.animate-up').each(function (index) {
+	if ($(".animate-up").length > 0) {
+		$(".animate-up").each(function (index) {
 			var $this = $(this);
 			setTimeout(function () {
-				$this.addClass('toggled');
+				$this.addClass("toggled");
 			}, 100 * index);
 		});
 	}
 
-	if ($('.pop-in').length > 0) {
-		$('.pop-in').each(function (index) {
+	if ($(".pop-in").length > 0) {
+		$(".pop-in").each(function (index) {
 			var $this = $(this);
 			setTimeout(function () {
-				$this.addClass('toggled');
+				$this.addClass("toggled");
 			}, 100 * index);
 		});
 	}
 
-	if ($('.pop-out').length > 0) {
-		$('.pop-out').each(function (index) {
+	if ($(".pop-out").length > 0) {
+		$(".pop-out").each(function (index) {
 			var $this = $(this);
 			setTimeout(function () {
-				$this.addClass('toggled');
+				$this.addClass("toggled");
 			}, 100 * index);
 		});
 	}
 };
 
 landing.runInitAnimationsHome = function () {
-
-	if ($('.pop-in').length > 0) {
-		$('.pop-in').each(function (index) {
+	if ($(".pop-in").length > 0) {
+		$(".pop-in").each(function (index) {
 			var $this = $(this);
 			setTimeout(function () {
-				$this.addClass('toggled');
+				$this.addClass("toggled");
 			}, 100 * index);
 		});
 	}
 
 	setTimeout(function () {
-		$('#intro').fadeOut(1000, function () {
-			if ($('.pop-in-last').length > 0) {
-				$('.pop-in-last').each(function (index) {
+		$("#intro").fadeOut(1000, function () {
+			if ($(".pop-in-last").length > 0) {
+				$(".pop-in-last").each(function (index) {
 					var $this = $(this);
 					setTimeout(function () {
-						$this.addClass('toggled');
+						$this.addClass("toggled");
 					}, 100 * index);
 				});
 			}
-			if ($('.animate-down').length > 0) {
-				$('.animate-down').each(function (index) {
+			if ($(".animate-down").length > 0) {
+				$(".animate-down").each(function (index) {
 					var $this = $(this);
 					setTimeout(function () {
-						$this.addClass('toggled');
+						$this.addClass("toggled");
 					}, 100 * index);
 				});
 			}
 
-			if ($('.animate-up').length > 0) {
-				$('.animate-up').each(function (index) {
+			if ($(".animate-up").length > 0) {
+				$(".animate-up").each(function (index) {
 					var $this = $(this);
 					setTimeout(function () {
-						$this.addClass('toggled');
+						$this.addClass("toggled");
 					}, 100 * index);
 				});
 			}
@@ -117,22 +114,21 @@ landing.runInitAnimationsHome = function () {
 };
 
 $(document).ready(function () {
-
 	// Prevent users from saving images
 
 	/*
- 		$("body").on("contextmenu",function(){
- 			return false;
- 		});
- */
+ 			$("body").on("contextmenu",function(){
+ 				return false;
+ 			});
+ 	*/
 
 	// Toggle menu and menu setup
 
-	$('#intro_content').css({
+	$("#intro_content").css({
 		paddingTop: ($(window).height() - 50) / 2 + "px"
 	});
 
-	$('.sub-menu').hide();
+	$(".sub-menu").hide();
 
 	// $('#menu a').each(function() {
 
@@ -146,7 +142,6 @@ $(document).ready(function () {
 	// 	// 	$("#mobile_menu_wrap").prepend('<a class="animate" href="' + href + '">' + text + '</a>');
 	// 	// }
 
-
 	// });
 
 	// $('.sub-menu a').each(function() {
@@ -159,15 +154,13 @@ $(document).ready(function () {
 	//
 	// });
 
-	$('#menu li').hover(function () {
-
-		if ($(this).find('.sub-menu').length > 0) {
-			$(this).find('.sub-menu').show();
+	$("#menu li").hover(function () {
+		if ($(this).find(".sub-menu").length > 0) {
+			$(this).find(".sub-menu").show();
 		}
 	}, function () {
-
-		if ($(this).find('.sub-menu').length > 0) {
-			$(this).find('.sub-menu').hide();
+		if ($(this).find(".sub-menu").length > 0) {
+			$(this).find(".sub-menu").hide();
 		}
 	});
 
@@ -248,7 +241,7 @@ $(document).ready(function () {
 	// 	return false;
 	// });
 
-	if ($('#intro').length > 0) {
+	if ($("#intro").length > 0) {
 		landing.runInitAnimationsHome();
 	} else {
 		landing.runInitAnimations();
