@@ -4,7 +4,6 @@
 
 namespace App\ModelFunctions;
 
-use App;
 use App\Exceptions\NotLoggedInException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
@@ -16,10 +15,8 @@ class SessionFunctions
 {
 	public function log_as_id($id)
 	{
-		if (App::runningUnitTests()) {
-			Session::put('login', true);
-			Session::put('UserID', $id);
-		}
+		Session::put('login', true);
+		Session::put('UserID', $id);
 	}
 
 	/**
