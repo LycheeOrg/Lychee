@@ -4286,7 +4286,7 @@ lychee.init = function () {
 			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
 			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
 			lychee.device_type = data.config_device.device_type || "desktop"; // we set default as Desktop
-			lychee.nsfw_visible_saved = nsfw_visible;
+			lychee.nsfw_visible_saved = lychee.nsfw_visible;
 
 			// console.log(lychee.full_photo);
 			lychee.setMode("public");
@@ -4874,7 +4874,6 @@ lychee.clipboardCopy = function (text) {
 	// ? Promise.resolve()
 	// : Promise.reject(new DOMException('The request is not allowed', 'NotAllowedError'))
 };
-
 lychee.locale = {
 	USERNAME: "username",
 	PASSWORD: "password",
