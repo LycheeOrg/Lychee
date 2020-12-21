@@ -2410,7 +2410,7 @@ lychee.locale = {
 	ALBUM_MARK_NSFW: "Mark album as sensitive",
 	ALBUM_UNMARK_NSFW: "Unmark album as sensitive",
 	ALBUM_NSFW: "Sensitive",
-	ALBUM_NSFW_EXPL: "Album is marked to contain sensitive content.",
+	ALBUM_NSFW_EXPL: "Album contains sensitive content.",
 	ALBUM_DOWNLOADABLE: "Downloadable",
 	ALBUM_DOWNLOADABLE_EXPL: "Visitors of your Lychee can download this album.",
 	ALBUM_SHARE_BUTTON_VISIBLE: "Share button is visible",

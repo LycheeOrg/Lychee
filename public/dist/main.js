@@ -3921,7 +3921,6 @@ var lychee = {
 	nsfw_visible_saved: true,
 	nsfw_blur: false,
 	nsfw_warning: false,
-	nsfw_warning_text: "<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>",
 
 	// this is device specific config, in this case default is Desktop.
 	header_auto_hide: true,
@@ -4087,7 +4086,6 @@ lychee.init = function () {
 			lychee.nsfw_visible = data.config.nsfw_visible && data.config.nsfw_visible === "1" || false;
 			lychee.nsfw_blur = data.config.nsfw_blur && data.config.nsfw_blur === "1" || false;
 			lychee.nsfw_warning = data.config.nsfw_warning_admin && data.config.nsfw_warning_admin === "1" || false;
-			lychee.nsfw_warning_text = data.config.nsfw_warning_text || "<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>";
 
 			lychee.header_auto_hide = data.config_device.header_auto_hide;
 			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
@@ -4151,7 +4149,6 @@ lychee.init = function () {
 			lychee.nsfw_visible = data.config.nsfw_visible && data.config.nsfw_visible === "1" || false;
 			lychee.nsfw_blur = data.config.nsfw_blur && data.config.nsfw_blur === "1" || false;
 			lychee.nsfw_warning = data.config.nsfw_warning && data.config.nsfw_warning === "1" || false;
-			lychee.nsfw_warning_text = data.config.nsfw_warning_text || "<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>";
 
 			lychee.header_auto_hide = data.config_device.header_auto_hide;
 			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
@@ -4904,7 +4901,7 @@ lychee.locale = {
 	ALBUM_MARK_NSFW: "Mark album as sensitive",
 	ALBUM_UNMARK_NSFW: "Unmark album as sensitive",
 	ALBUM_NSFW: "Sensitive",
-	ALBUM_NSFW_EXPL: "Album is marked to contain sensitive content.",
+	ALBUM_NSFW_EXPL: "Album contains sensitive content.",
 	ALBUM_DOWNLOADABLE: "Downloadable",
 	ALBUM_DOWNLOADABLE_EXPL: "Visitors of your Lychee can download this album.",
 	ALBUM_SHARE_BUTTON_VISIBLE: "Share button is visible",
@@ -9693,7 +9690,7 @@ view.album = {
 			// Sensitive
 			$("#button_nsfw_album").addClass("active").attr("title", lychee.locale["ALBUM_UNMARK_NSFW"]);
 		} else {
-			// Unensitive
+			// Not Sensitive
 			$("#button_nsfw_album").removeClass("active").attr("title", lychee.locale["ALBUM_MARK_NSFW"]);
 		}
 	},
