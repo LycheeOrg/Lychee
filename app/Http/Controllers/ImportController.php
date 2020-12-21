@@ -275,10 +275,10 @@ class ImportController extends Controller
 
 		// Skip folders of Lychee
 		if (
-			$path === Storage::path('big') ||
-			$path === Storage::path('medium') ||
-			$path === Storage::path('small') ||
-			$path === Storage::path('thumb')
+			realpath($path) === Storage::path('big') ||
+			realpath($path) === Storage::path('medium') ||
+			realpath($path) === Storage::path('small') ||
+			realpath($path) === Storage::path('thumb')
 		) {
 			$this->status_update('Problem: ' . $origPath . ': Given path is reserved');
 			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee (' . $origPath . ')');
