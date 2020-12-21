@@ -2337,6 +2337,7 @@ build.user = function (user) {
 build.u2f = function (credential) {
 	return lychee.html(_templateObject42, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
 };
+
 /**
  * @description This module is used for the context menu.
  */
@@ -3450,6 +3451,8 @@ header.applyTranslations = function () {
  */
 
 $(document).ready(function () {
+	$("#sensitive_warning").hide();
+
 	// Event Name
 	var eventName = lychee.getEventName();
 
@@ -3650,6 +3653,7 @@ $(document).ready(function () {
 			swipe.preventNextHeaderToggle = false;
 		}
 	});
+
 	$("#imageview")
 	// Swipe on mobile
 	.swipe().on("swipeStart", function () {
@@ -3668,20 +3672,17 @@ $(document).ready(function () {
 	}).on("click", ".photo", function (e) {
 		multiselect.photoClick(e, $(this));
 	})
-
 	// Context Menu
 	.on("contextmenu", ".photo", function (e) {
 		multiselect.photoContextMenu(e, $(this));
 	}).on("contextmenu", ".album", function (e) {
 		multiselect.albumContextMenu(e, $(this));
 	})
-
 	// Upload
 	.on("change", "#upload_files", function () {
 		basicModal.close();
 		upload.start.local(this.files);
 	})
-
 	// Drag and Drop upload
 	.on("dragover", function () {
 		return false;
@@ -3695,12 +3696,10 @@ $(document).ready(function () {
 
 		return false;
 	})
-
 	// click on thumbnail on map
 	.on("click", ".image-leaflet-popup", function (e) {
 		mapview.goto($(this));
 	})
-
 	// Paste upload
 	.on("paste", function (e) {
 		if (e.originalEvent.clipboardData.items) {
@@ -3725,9 +3724,10 @@ $(document).ready(function () {
 			}
 		}
 	})
-
 	// Fullscreen
 	.on("fullscreenchange mozfullscreenchange webkitfullscreenchange msfullscreenchange", lychee.fullscreenUpdate);
+
+	$("#sensitive_warning").on("click", view.album.nsfw_warning.next);
 
 	var rememberScrollPage = function rememberScrollPage(scrollPos) {
 		// only for albums with subalbums
@@ -4075,7 +4075,9 @@ var lychee = {
 	imageview: $("#imageview"),
 	footer: $("#footer"),
 
-	locale: {}
+	locale: {},
+
+	nsfw_unlocked_albums: []
 };
 
 lychee.diagnostics = function () {
@@ -4200,7 +4202,7 @@ lychee.init = function () {
 
 			lychee.nsfw_visible = data.config.nsfw_visible && data.config.nsfw_visible === "1" || false;
 			lychee.nsfw_blur = data.config.nsfw_blur && data.config.nsfw_blur === "1" || false;
-			lychee.nsfw_warning = data.config.nsfw_warning && data.config.nsfw_warning === "1" || false;
+			lychee.nsfw_warning = data.config.nsfw_warning_admin && data.config.nsfw_warning_admin === "1" || false;
 			lychee.nsfw_warning_text = data.config.nsfw_warning_text || "<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>";
 
 			lychee.header_auto_hide = data.config_device.header_auto_hide;
@@ -4486,6 +4488,7 @@ lychee.load = function () {
 			}
 			if (visible.mapview()) mapview.close();
 			if (visible.sidebar() && album.isSmartID(albumID)) _sidebar.toggle();
+			$("#sensitive_warning").hide();
 			if (album.json && albumID === album.json.id) {
 				view.album.title();
 				lychee.content.show();
@@ -4497,6 +4500,7 @@ lychee.load = function () {
 		}
 	} else {
 		$(".no_content").remove();
+
 		// Trash albums.json when filled with search results
 		if (search.hash != null) {
 			albums.json = null;
@@ -4516,6 +4520,7 @@ lychee.load = function () {
 			tabindex.makeUnfocusable(lychee.imageview);
 		}
 		if (visible.mapview()) mapview.close();
+		$("#sensitive_warning").hide();
 		lychee.content.show();
 		lychee.footer_show();
 		albums.load();
@@ -9629,6 +9634,7 @@ view.album = {
 		view.album.title();
 		view.album.public();
 		view.album.nsfw();
+		view.album.nsfw_warning.init();
 		view.album.content.init();
 
 		album.json.init = 1;
@@ -9654,6 +9660,26 @@ view.album = {
 					lychee.setTitle(album.json.title, true);
 					break;
 			}
+		}
+	},
+
+	nsfw_warning: {
+		init: function init() {
+			if (!lychee.nsfw_warning) {
+				$("#sensitive_warning").hide();
+				return;
+			}
+
+			if (album.json.nsfw && album.json.nsfw === "1" && !lychee.nsfw_unlocked_albums.includes(album.json.id)) {
+				$("#sensitive_warning").show();
+			} else {
+				$("#sensitive_warning").hide();
+			}
+		},
+
+		next: function next() {
+			lychee.nsfw_unlocked_albums.push(album.json.id);
+			$("#sensitive_warning").hide();
 		}
 	},
 

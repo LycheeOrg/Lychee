@@ -187,6 +187,11 @@
 <!-- ImageView -->
 <div id="imageview"></div>
 
+<!-- Warning -->
+<div id="sensitive_warning">
+	{!! App\Models\Configs::get_value('nsfw_warning_text','<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>'); !!}
+</div>
+
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="sidebar__header">

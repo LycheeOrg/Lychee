@@ -838,6 +838,7 @@ build.user = function (user) {
 build.u2f = function (credential) {
 	return lychee.html(_templateObject27, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
 };
+
 /**
  * @description This module takes care of the header.
  */

@@ -34,7 +34,8 @@ class AddNsfwAlbum extends Migration
 			['key' => 'nsfw_visible', 'value' => '1', 'cat' => 'Mod NSFW', 'confidentiality' => '0', 'type_range' => BOOL],
 			['key' => 'nsfw_blur', 'value' => '0', 'cat' => 'Mod NSFW', 'confidentiality' => '0', 'type_range' => BOOL],
 			['key' => 'nsfw_warning', 'value' => '0', 'cat' => 'Mod NSFW', 'confidentiality' => '0', 'type_range' => BOOL],
-			['key' => 'nsfw_warning_text', 'value' => '<b>Sensitive content</b><br><p>This album contains sensitive content which some people may find offensive or disturbing.</p>', 'cat' => 'Mod NSFW', 'confidentiality' => '0', 'type_range' => STRING_REQ],
+			['key' => 'nsfw_warning_admin', 'value' => '0', 'cat' => 'Mod NSFW', 'confidentiality' => '0', 'type_range' => BOOL],
+			['key' => 'nsfw_warning_text', 'value' => '<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>', 'cat' => 'Mod NSFW', 'confidentiality' => '0', 'type_range' => STRING_REQ],
 		]);
 	}
 
