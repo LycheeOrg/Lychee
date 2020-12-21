@@ -4,38 +4,917 @@
 /*! lazysizes - v5.2.2 */
 
 !function(e){var t=function(u,D,f){"use strict";var k,H;if(function(){var e;var t={lazyClass:"lazyload",loadedClass:"lazyloaded",loadingClass:"lazyloading",preloadClass:"lazypreload",errorClass:"lazyerror",autosizesClass:"lazyautosizes",srcAttr:"data-src",srcsetAttr:"data-srcset",sizesAttr:"data-sizes",minSize:40,customMedia:{},init:true,expFactor:1.5,hFac:.8,loadMode:2,loadHidden:true,ricTimeout:0,throttleDelay:125};H=u.lazySizesConfig||u.lazysizesConfig||{};for(e in t){if(!(e in H)){H[e]=t[e]}}}(),!D||!D.getElementsByClassName){return{init:function(){},cfg:H,noSupport:true}}var O=D.documentElement,a=u.HTMLPictureElement,P="addEventListener",$="getAttribute",q=u[P].bind(u),I=u.setTimeout,U=u.requestAnimationFrame||I,l=u.requestIdleCallback,j=/^picture$/i,r=["load","error","lazyincluded","_lazyloaded"],i={},G=Array.prototype.forEach,J=function(e,t){if(!i[t]){i[t]=new RegExp("(\\s|^)"+t+"(\\s|$)")}return i[t].test(e[$]("class")||"")&&i[t]},K=function(e,t){if(!J(e,t)){e.setAttribute("class",(e[$]("class")||"").trim()+" "+t)}},Q=function(e,t){var i;if(i=J(e,t)){e.setAttribute("class",(e[$]("class")||"").replace(i," "))}},V=function(t,i,e){var a=e?P:"removeEventListener";if(e){V(t,i)}r.forEach(function(e){t[a](e,i)})},X=function(e,t,i,a,r){var n=D.createEvent("Event");if(!i){i={}}i.instance=k;n.initEvent(t,!a,!r);n.detail=i;e.dispatchEvent(n);return n},Y=function(e,t){var i;if(!a&&(i=u.picturefill||H.pf)){if(t&&t.src&&!e[$]("srcset")){e.setAttribute("srcset",t.src)}i({reevaluate:true,elements:[e]})}else if(t&&t.src){e.src=t.src}},Z=function(e,t){return(getComputedStyle(e,null)||{})[t]},s=function(e,t,i){i=i||e.offsetWidth;while(i<H.minSize&&t&&!e._lazysizesWidth){i=t.offsetWidth;t=t.parentNode}return i},ee=function(){var i,a;var t=[];var r=[];var n=t;var s=function(){var e=n;n=t.length?r:t;i=true;a=false;while(e.length){e.shift()()}i=false};var e=function(e,t){if(i&&!t){e.apply(this,arguments)}else{n.push(e);if(!a){a=true;(D.hidden?I:U)(s)}}};e._lsFlush=s;return e}(),te=function(i,e){return e?function(){ee(i)}:function(){var e=this;var t=arguments;ee(function(){i.apply(e,t)})}},ie=function(e){var i;var a=0;var r=H.throttleDelay;var n=H.ricTimeout;var t=function(){i=false;a=f.now();e()};var s=l&&n>49?function(){l(t,{timeout:n});if(n!==H.ricTimeout){n=H.ricTimeout}}:te(function(){I(t)},true);return function(e){var t;if(e=e===true){n=33}if(i){return}i=true;t=r-(f.now()-a);if(t<0){t=0}if(e||t<9){s()}else{I(s,t)}}},ae=function(e){var t,i;var a=99;var r=function(){t=null;e()};var n=function(){var e=f.now()-i;if(e<a){I(n,a-e)}else{(l||r)(r)}};return function(){i=f.now();if(!t){t=I(n,a)}}},e=function(){var v,m,c,h,e;var y,z,g,p,C,b,A;var n=/^img$/i;var d=/^iframe$/i;var E="onscroll"in u&&!/(gle|ing)bot/.test(navigator.userAgent);var _=0;var w=0;var N=0;var M=-1;var x=function(e){N--;if(!e||N<0||!e.target){N=0}};var W=function(e){if(A==null){A=Z(D.body,"visibility")=="hidden"}return A||!(Z(e.parentNode,"visibility")=="hidden"&&Z(e,"visibility")=="hidden")};var S=function(e,t){var i;var a=e;var r=W(e);g-=t;b+=t;p-=t;C+=t;while(r&&(a=a.offsetParent)&&a!=D.body&&a!=O){r=(Z(a,"opacity")||1)>0;if(r&&Z(a,"overflow")!="visible"){i=a.getBoundingClientRect();r=C>i.left&&p<i.right&&b>i.top-1&&g<i.bottom+1}}return r};var t=function(){var e,t,i,a,r,n,s,l,o,u,f,c;var d=k.elements;if((h=H.loadMode)&&N<8&&(e=d.length)){t=0;M++;for(;t<e;t++){if(!d[t]||d[t]._lazyRace){continue}if(!E||k.prematureUnveil&&k.prematureUnveil(d[t])){R(d[t]);continue}if(!(l=d[t][$]("data-expand"))||!(n=l*1)){n=w}if(!u){u=!H.expand||H.expand<1?O.clientHeight>500&&O.clientWidth>500?500:370:H.expand;k._defEx=u;f=u*H.expFactor;c=H.hFac;A=null;if(w<f&&N<1&&M>2&&h>2&&!D.hidden){w=f;M=0}else if(h>1&&M>1&&N<6){w=u}else{w=_}}if(o!==n){y=innerWidth+n*c;z=innerHeight+n;s=n*-1;o=n}i=d[t].getBoundingClientRect();if((b=i.bottom)>=s&&(g=i.top)<=z&&(C=i.right)>=s*c&&(p=i.left)<=y&&(b||C||p||g)&&(H.loadHidden||W(d[t]))&&(m&&N<3&&!l&&(h<3||M<4)||S(d[t],n))){R(d[t]);r=true;if(N>9){break}}else if(!r&&m&&!a&&N<4&&M<4&&h>2&&(v[0]||H.preloadAfterLoad)&&(v[0]||!l&&(b||C||p||g||d[t][$](H.sizesAttr)!="auto"))){a=v[0]||d[t]}}if(a&&!r){R(a)}}};var i=ie(t);var B=function(e){var t=e.target;if(t._lazyCache){delete t._lazyCache;return}x(e);K(t,H.loadedClass);Q(t,H.loadingClass);V(t,L);X(t,"lazyloaded")};var a=te(B);var L=function(e){a({target:e.target})};var T=function(t,i){try{t.contentWindow.location.replace(i)}catch(e){t.src=i}};var F=function(e){var t;var i=e[$](H.srcsetAttr);if(t=H.customMedia[e[$]("data-media")||e[$]("media")]){e.setAttribute("media",t)}if(i){e.setAttribute("srcset",i)}};var s=te(function(t,e,i,a,r){var n,s,l,o,u,f;if(!(u=X(t,"lazybeforeunveil",e)).defaultPrevented){if(a){if(i){K(t,H.autosizesClass)}else{t.setAttribute("sizes",a)}}s=t[$](H.srcsetAttr);n=t[$](H.srcAttr);if(r){l=t.parentNode;o=l&&j.test(l.nodeName||"")}f=e.firesLoad||"src"in t&&(s||n||o);u={target:t};K(t,H.loadingClass);if(f){clearTimeout(c);c=I(x,2500);V(t,L,true)}if(o){G.call(l.getElementsByTagName("source"),F)}if(s){t.setAttribute("srcset",s)}else if(n&&!o){if(d.test(t.nodeName)){T(t,n)}else{t.src=n}}if(r&&(s||o)){Y(t,{src:n})}}if(t._lazyRace){delete t._lazyRace}Q(t,H.lazyClass);ee(function(){var e=t.complete&&t.naturalWidth>1;if(!f||e){if(e){K(t,"ls-is-cached")}B(u);t._lazyCache=true;I(function(){if("_lazyCache"in t){delete t._lazyCache}},9)}if(t.loading=="lazy"){N--}},true)});var R=function(e){if(e._lazyRace){return}var t;var i=n.test(e.nodeName);var a=i&&(e[$](H.sizesAttr)||e[$]("sizes"));var r=a=="auto";if((r||!m)&&i&&(e[$]("src")||e.srcset)&&!e.complete&&!J(e,H.errorClass)&&J(e,H.lazyClass)){return}t=X(e,"lazyunveilread").detail;if(r){re.updateElem(e,true,e.offsetWidth)}e._lazyRace=true;N++;s(e,t,r,a,i)};var r=ae(function(){H.loadMode=3;i()});var l=function(){if(H.loadMode==3){H.loadMode=2}r()};var o=function(){if(m){return}if(f.now()-e<999){I(o,999);return}m=true;H.loadMode=3;i();q("scroll",l,true)};return{_:function(){e=f.now();k.elements=D.getElementsByClassName(H.lazyClass);v=D.getElementsByClassName(H.lazyClass+" "+H.preloadClass);q("scroll",i,true);q("resize",i,true);q("pageshow",function(e){if(e.persisted){var t=D.querySelectorAll("."+H.loadingClass);if(t.length&&t.forEach){U(function(){t.forEach(function(e){if(e.complete){R(e)}})})}}});if(u.MutationObserver){new MutationObserver(i).observe(O,{childList:true,subtree:true,attributes:true})}else{O[P]("DOMNodeInserted",i,true);O[P]("DOMAttrModified",i,true);setInterval(i,999)}q("hashchange",i,true);["focus","mouseover","click","load","transitionend","animationend"].forEach(function(e){D[P](e,i,true)});if(/d$|^c/.test(D.readyState)){o()}else{q("load",o);D[P]("DOMContentLoaded",i);I(o,2e4)}if(k.elements.length){t();ee._lsFlush()}else{i()}},checkElems:i,unveil:R,_aLSL:l}}(),re=function(){var i;var n=te(function(e,t,i,a){var r,n,s;e._lazysizesWidth=a;a+="px";e.setAttribute("sizes",a);if(j.test(t.nodeName||"")){r=t.getElementsByTagName("source");for(n=0,s=r.length;n<s;n++){r[n].setAttribute("sizes",a)}}if(!i.detail.dataAttr){Y(e,i.detail)}});var a=function(e,t,i){var a;var r=e.parentNode;if(r){i=s(e,r,i);a=X(e,"lazybeforesizes",{width:i,dataAttr:!!t});if(!a.defaultPrevented){i=a.detail.width;if(i&&i!==e._lazysizesWidth){n(e,r,a,i)}}}};var e=function(){var e;var t=i.length;if(t){e=0;for(;e<t;e++){a(i[e])}}};var t=ae(e);return{_:function(){i=D.getElementsByClassName(H.autosizesClass);q("resize",t)},checkElems:t,updateElem:a}}(),t=function(){if(!t.i&&D.getElementsByClassName){t.i=true;re._();e._()}};return I(function(){H.init&&t()}),k={cfg:H,autoSizer:re,loader:e,init:t,uP:Y,aC:K,rC:Q,hC:J,fire:X,gW:s,rAF:ee}}(e,e.document,Date);e.lazySizes=t,"object"==typeof module&&module.exports&&(module.exports=t)}("undefined"!=typeof window?window:{});
-!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"function"==typeof define&&define.amd?define(["exports"],e):e(t.StackBlur={})}(this,function(t){"use strict";function e(t){return(e="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t})(t)}var n=[512,512,456,512,328,456,335,512,405,328,271,456,388,335,292,512,454,405,364,328,298,271,496,456,420,388,360,335,312,292,273,512,482,454,428,405,383,364,345,328,312,298,284,271,259,496,475,456,437,420,404,388,374,360,347,335,323,312,302,292,282,273,265,512,497,482,468,454,441,428,417,405,394,383,373,364,354,345,337,328,320,312,305,298,291,284,278,271,265,259,507,496,485,475,465,456,446,437,428,420,412,404,396,388,381,374,367,360,354,347,341,335,329,323,318,312,307,302,297,292,287,282,278,273,269,265,261,512,505,497,489,482,475,468,461,454,447,441,435,428,422,417,411,405,399,394,389,383,378,373,368,364,359,354,350,345,341,337,332,328,324,320,316,312,309,305,301,298,294,291,287,284,281,278,274,271,268,265,262,259,257,507,501,496,491,485,480,475,470,465,460,456,451,446,442,437,433,428,424,420,416,412,408,404,400,396,392,388,385,381,377,374,370,367,363,360,357,354,350,347,344,341,338,335,332,329,326,323,320,318,315,312,310,307,304,302,299,297,294,292,289,287,285,282,280,278,275,273,271,269,267,265,263,261,259],r=[9,11,12,13,13,14,14,15,15,15,15,16,16,16,16,17,17,17,17,17,17,17,18,18,18,18,18,18,18,18,18,19,19,19,19,19,19,19,19,19,19,19,19,19,19,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,22,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24,24];function o(t,n,r,o,a){if("string"==typeof t&&(t=document.getElementById(t)),!(t&&"object"===e(t)&&"getContext"in t))throw new TypeError("Expecting canvas with `getContext` method in processCanvasRGB(A) calls!");var i=t.getContext("2d");try{return i.getImageData(n,r,o,a)}catch(t){throw new Error("unable to access image data: "+t)}}function a(t,e,n,r,a,f){if(!(isNaN(f)||f<1)){f|=0;var g=o(t,e,n,r,a);g=i(g,e,n,r,a,f),t.getContext("2d").putImageData(g,e,n)}}function i(t,e,o,a,i,f){var g,c,l,s,x,b,d,y,p,m,h,v,w,B,C,E,I,S,N,R,D,G,j,A,k,T=t.data,W=2*f+1,_=a-1,H=i-1,M=f+1,O=M*(M+1)/2,P=new u,q=P;for(l=1;l<W;l++)q=q.next=new u,l===M&&(k=q);q.next=P;var z=null,F=null;d=b=0;var J=n[f],K=r[f];for(c=0;c<i;c++){for(E=I=S=N=y=p=m=h=0,v=M*(R=T[b]),w=M*(D=T[b+1]),B=M*(G=T[b+2]),C=M*(j=T[b+3]),y+=O*R,p+=O*D,m+=O*G,h+=O*j,q=P,l=0;l<M;l++)q.r=R,q.g=D,q.b=G,q.a=j,q=q.next;for(l=1;l<M;l++)s=b+((_<l?_:l)<<2),y+=(q.r=R=T[s])*(A=M-l),p+=(q.g=D=T[s+1])*A,m+=(q.b=G=T[s+2])*A,h+=(q.a=j=T[s+3])*A,E+=R,I+=D,S+=G,N+=j,q=q.next;for(z=P,F=k,g=0;g<a;g++)T[b+3]=j=h*J>>K,0!==j?(j=255/j,T[b]=(y*J>>K)*j,T[b+1]=(p*J>>K)*j,T[b+2]=(m*J>>K)*j):T[b]=T[b+1]=T[b+2]=0,y-=v,p-=w,m-=B,h-=C,v-=z.r,w-=z.g,B-=z.b,C-=z.a,s=d+((s=g+f+1)<_?s:_)<<2,y+=E+=z.r=T[s],p+=I+=z.g=T[s+1],m+=S+=z.b=T[s+2],h+=N+=z.a=T[s+3],z=z.next,v+=R=F.r,w+=D=F.g,B+=G=F.b,C+=j=F.a,E-=R,I-=D,S-=G,N-=j,F=F.next,b+=4;d+=a}for(g=0;g<a;g++){for(I=S=N=E=p=m=h=y=0,v=M*(R=T[b=g<<2]),w=M*(D=T[b+1]),B=M*(G=T[b+2]),C=M*(j=T[b+3]),y+=O*R,p+=O*D,m+=O*G,h+=O*j,q=P,l=0;l<M;l++)q.r=R,q.g=D,q.b=G,q.a=j,q=q.next;for(x=a,l=1;l<=f;l++)b=x+g<<2,y+=(q.r=R=T[b])*(A=M-l),p+=(q.g=D=T[b+1])*A,m+=(q.b=G=T[b+2])*A,h+=(q.a=j=T[b+3])*A,E+=R,I+=D,S+=G,N+=j,q=q.next,l<H&&(x+=a);for(b=g,z=P,F=k,c=0;c<i;c++)T[(s=b<<2)+3]=j=h*J>>K,j>0?(j=255/j,T[s]=(y*J>>K)*j,T[s+1]=(p*J>>K)*j,T[s+2]=(m*J>>K)*j):T[s]=T[s+1]=T[s+2]=0,y-=v,p-=w,m-=B,h-=C,v-=z.r,w-=z.g,B-=z.b,C-=z.a,s=g+((s=c+M)<H?s:H)*a<<2,y+=E+=z.r=T[s],p+=I+=z.g=T[s+1],m+=S+=z.b=T[s+2],h+=N+=z.a=T[s+3],z=z.next,v+=R=F.r,w+=D=F.g,B+=G=F.b,C+=j=F.a,E-=R,I-=D,S-=G,N-=j,F=F.next,b+=a}return t}function f(t,e,n,r,a,i){if(!(isNaN(i)||i<1)){i|=0;var f=o(t,e,n,r,a);f=g(f,e,n,r,a,i),t.getContext("2d").putImageData(f,e,n)}}function g(t,e,o,a,i,f){var g,c,l,s,x,b,d,y,p,m,h,v,w,B,C,E,I,S,N,R,D,G=t.data,j=2*f+1,A=a-1,k=i-1,T=f+1,W=T*(T+1)/2,_=new u,H=_;for(l=1;l<j;l++)H=H.next=new u,l===T&&(D=H);H.next=_;var M=null,O=null;d=b=0;var P=n[f],q=r[f];for(c=0;c<i;c++){for(B=C=E=y=p=m=0,h=T*(I=G[b]),v=T*(S=G[b+1]),w=T*(N=G[b+2]),y+=W*I,p+=W*S,m+=W*N,H=_,l=0;l<T;l++)H.r=I,H.g=S,H.b=N,H=H.next;for(l=1;l<T;l++)s=b+((A<l?A:l)<<2),y+=(H.r=I=G[s])*(R=T-l),p+=(H.g=S=G[s+1])*R,m+=(H.b=N=G[s+2])*R,B+=I,C+=S,E+=N,H=H.next;for(M=_,O=D,g=0;g<a;g++)G[b]=y*P>>q,G[b+1]=p*P>>q,G[b+2]=m*P>>q,y-=h,p-=v,m-=w,h-=M.r,v-=M.g,w-=M.b,s=d+((s=g+f+1)<A?s:A)<<2,y+=B+=M.r=G[s],p+=C+=M.g=G[s+1],m+=E+=M.b=G[s+2],M=M.next,h+=I=O.r,v+=S=O.g,w+=N=O.b,B-=I,C-=S,E-=N,O=O.next,b+=4;d+=a}for(g=0;g<a;g++){for(C=E=B=p=m=y=0,h=T*(I=G[b=g<<2]),v=T*(S=G[b+1]),w=T*(N=G[b+2]),y+=W*I,p+=W*S,m+=W*N,H=_,l=0;l<T;l++)H.r=I,H.g=S,H.b=N,H=H.next;for(x=a,l=1;l<=f;l++)b=x+g<<2,y+=(H.r=I=G[b])*(R=T-l),p+=(H.g=S=G[b+1])*R,m+=(H.b=N=G[b+2])*R,B+=I,C+=S,E+=N,H=H.next,l<k&&(x+=a);for(b=g,M=_,O=D,c=0;c<i;c++)G[s=b<<2]=y*P>>q,G[s+1]=p*P>>q,G[s+2]=m*P>>q,y-=h,p-=v,m-=w,h-=M.r,v-=M.g,w-=M.b,s=g+((s=c+T)<k?s:k)*a<<2,y+=B+=M.r=G[s],p+=C+=M.g=G[s+1],m+=E+=M.b=G[s+2],M=M.next,h+=I=O.r,v+=S=O.g,w+=N=O.b,B-=I,C-=S,E-=N,O=O.next,b+=a}return t}var u=function t(){!function(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}(this,t),this.r=0,this.g=0,this.b=0,this.a=0,this.next=null};t.BlurStack=u,t.image=function(t,e,n,r){if("string"==typeof t&&(t=document.getElementById(t)),t&&"naturalWidth"in t){var o=t.naturalWidth,i=t.naturalHeight;if("string"==typeof e&&(e=document.getElementById(e)),e&&"getContext"in e){e.style.width=o+"px",e.style.height=i+"px",e.width=o,e.height=i;var g=e.getContext("2d");g.clearRect(0,0,o,i),g.drawImage(t,0,0),isNaN(n)||n<1||(r?a(e,0,0,o,i,n):f(e,0,0,o,i,n))}}},t.canvasRGBA=a,t.canvasRGB=f,t.imageDataRGBA=i,t.imageDataRGB=g,Object.defineProperty(t,"__esModule",{value:!0})});
+!(function (t, e) {
+	"object" == typeof exports && "undefined" != typeof module
+		? e(exports)
+		: "function" == typeof define && define.amd
+		? define(["exports"], e)
+		: e((t.StackBlur = {}));
+})(this, function (t) {
+	"use strict";
+	function e(t) {
+		return (e =
+			"function" == typeof Symbol && "symbol" == typeof Symbol.iterator
+				? function (t) {
+						return typeof t;
+				  }
+				: function (t) {
+						return t && "function" == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype ? "symbol" : typeof t;
+				  })(t);
+	}
+	var n = [
+			512,
+			512,
+			456,
+			512,
+			328,
+			456,
+			335,
+			512,
+			405,
+			328,
+			271,
+			456,
+			388,
+			335,
+			292,
+			512,
+			454,
+			405,
+			364,
+			328,
+			298,
+			271,
+			496,
+			456,
+			420,
+			388,
+			360,
+			335,
+			312,
+			292,
+			273,
+			512,
+			482,
+			454,
+			428,
+			405,
+			383,
+			364,
+			345,
+			328,
+			312,
+			298,
+			284,
+			271,
+			259,
+			496,
+			475,
+			456,
+			437,
+			420,
+			404,
+			388,
+			374,
+			360,
+			347,
+			335,
+			323,
+			312,
+			302,
+			292,
+			282,
+			273,
+			265,
+			512,
+			497,
+			482,
+			468,
+			454,
+			441,
+			428,
+			417,
+			405,
+			394,
+			383,
+			373,
+			364,
+			354,
+			345,
+			337,
+			328,
+			320,
+			312,
+			305,
+			298,
+			291,
+			284,
+			278,
+			271,
+			265,
+			259,
+			507,
+			496,
+			485,
+			475,
+			465,
+			456,
+			446,
+			437,
+			428,
+			420,
+			412,
+			404,
+			396,
+			388,
+			381,
+			374,
+			367,
+			360,
+			354,
+			347,
+			341,
+			335,
+			329,
+			323,
+			318,
+			312,
+			307,
+			302,
+			297,
+			292,
+			287,
+			282,
+			278,
+			273,
+			269,
+			265,
+			261,
+			512,
+			505,
+			497,
+			489,
+			482,
+			475,
+			468,
+			461,
+			454,
+			447,
+			441,
+			435,
+			428,
+			422,
+			417,
+			411,
+			405,
+			399,
+			394,
+			389,
+			383,
+			378,
+			373,
+			368,
+			364,
+			359,
+			354,
+			350,
+			345,
+			341,
+			337,
+			332,
+			328,
+			324,
+			320,
+			316,
+			312,
+			309,
+			305,
+			301,
+			298,
+			294,
+			291,
+			287,
+			284,
+			281,
+			278,
+			274,
+			271,
+			268,
+			265,
+			262,
+			259,
+			257,
+			507,
+			501,
+			496,
+			491,
+			485,
+			480,
+			475,
+			470,
+			465,
+			460,
+			456,
+			451,
+			446,
+			442,
+			437,
+			433,
+			428,
+			424,
+			420,
+			416,
+			412,
+			408,
+			404,
+			400,
+			396,
+			392,
+			388,
+			385,
+			381,
+			377,
+			374,
+			370,
+			367,
+			363,
+			360,
+			357,
+			354,
+			350,
+			347,
+			344,
+			341,
+			338,
+			335,
+			332,
+			329,
+			326,
+			323,
+			320,
+			318,
+			315,
+			312,
+			310,
+			307,
+			304,
+			302,
+			299,
+			297,
+			294,
+			292,
+			289,
+			287,
+			285,
+			282,
+			280,
+			278,
+			275,
+			273,
+			271,
+			269,
+			267,
+			265,
+			263,
+			261,
+			259,
+		],
+		r = [
+			9,
+			11,
+			12,
+			13,
+			13,
+			14,
+			14,
+			15,
+			15,
+			15,
+			15,
+			16,
+			16,
+			16,
+			16,
+			17,
+			17,
+			17,
+			17,
+			17,
+			17,
+			17,
+			18,
+			18,
+			18,
+			18,
+			18,
+			18,
+			18,
+			18,
+			18,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			19,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			20,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			21,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			22,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			23,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+			24,
+		];
+	function o(t, n, r, o, a) {
+		if (("string" == typeof t && (t = document.getElementById(t)), !(t && "object" === e(t) && "getContext" in t)))
+			throw new TypeError("Expecting canvas with `getContext` method in processCanvasRGB(A) calls!");
+		var i = t.getContext("2d");
+		try {
+			return i.getImageData(n, r, o, a);
+		} catch (t) {
+			throw new Error("unable to access image data: " + t);
+		}
+	}
+	function a(t, e, n, r, a, f) {
+		if (!(isNaN(f) || f < 1)) {
+			f |= 0;
+			var g = o(t, e, n, r, a);
+			(g = i(g, e, n, r, a, f)), t.getContext("2d").putImageData(g, e, n);
+		}
+	}
+	function i(t, e, o, a, i, f) {
+		var g,
+			c,
+			l,
+			s,
+			x,
+			b,
+			d,
+			y,
+			p,
+			m,
+			h,
+			v,
+			w,
+			B,
+			C,
+			E,
+			I,
+			S,
+			N,
+			R,
+			D,
+			G,
+			j,
+			A,
+			k,
+			T = t.data,
+			W = 2 * f + 1,
+			_ = a - 1,
+			H = i - 1,
+			M = f + 1,
+			O = (M * (M + 1)) / 2,
+			P = new u(),
+			q = P;
+		for (l = 1; l < W; l++) (q = q.next = new u()), l === M && (k = q);
+		q.next = P;
+		var z = null,
+			F = null;
+		d = b = 0;
+		var J = n[f],
+			K = r[f];
+		for (c = 0; c < i; c++) {
+			for (
+				E = I = S = N = y = p = m = h = 0,
+					v = M * (R = T[b]),
+					w = M * (D = T[b + 1]),
+					B = M * (G = T[b + 2]),
+					C = M * (j = T[b + 3]),
+					y += O * R,
+					p += O * D,
+					m += O * G,
+					h += O * j,
+					q = P,
+					l = 0;
+				l < M;
+				l++
+			)
+				(q.r = R), (q.g = D), (q.b = G), (q.a = j), (q = q.next);
+			for (l = 1; l < M; l++)
+				(s = b + ((_ < l ? _ : l) << 2)),
+					(y += (q.r = R = T[s]) * (A = M - l)),
+					(p += (q.g = D = T[s + 1]) * A),
+					(m += (q.b = G = T[s + 2]) * A),
+					(h += (q.a = j = T[s + 3]) * A),
+					(E += R),
+					(I += D),
+					(S += G),
+					(N += j),
+					(q = q.next);
+			for (z = P, F = k, g = 0; g < a; g++)
+				(T[b + 3] = j = (h * J) >> K),
+					0 !== j
+						? ((j = 255 / j), (T[b] = ((y * J) >> K) * j), (T[b + 1] = ((p * J) >> K) * j), (T[b + 2] = ((m * J) >> K) * j))
+						: (T[b] = T[b + 1] = T[b + 2] = 0),
+					(y -= v),
+					(p -= w),
+					(m -= B),
+					(h -= C),
+					(v -= z.r),
+					(w -= z.g),
+					(B -= z.b),
+					(C -= z.a),
+					(s = (d + ((s = g + f + 1) < _ ? s : _)) << 2),
+					(y += E += z.r = T[s]),
+					(p += I += z.g = T[s + 1]),
+					(m += S += z.b = T[s + 2]),
+					(h += N += z.a = T[s + 3]),
+					(z = z.next),
+					(v += R = F.r),
+					(w += D = F.g),
+					(B += G = F.b),
+					(C += j = F.a),
+					(E -= R),
+					(I -= D),
+					(S -= G),
+					(N -= j),
+					(F = F.next),
+					(b += 4);
+			d += a;
+		}
+		for (g = 0; g < a; g++) {
+			for (
+				I = S = N = E = p = m = h = y = 0,
+					v = M * (R = T[(b = g << 2)]),
+					w = M * (D = T[b + 1]),
+					B = M * (G = T[b + 2]),
+					C = M * (j = T[b + 3]),
+					y += O * R,
+					p += O * D,
+					m += O * G,
+					h += O * j,
+					q = P,
+					l = 0;
+				l < M;
+				l++
+			)
+				(q.r = R), (q.g = D), (q.b = G), (q.a = j), (q = q.next);
+			for (x = a, l = 1; l <= f; l++)
+				(b = (x + g) << 2),
+					(y += (q.r = R = T[b]) * (A = M - l)),
+					(p += (q.g = D = T[b + 1]) * A),
+					(m += (q.b = G = T[b + 2]) * A),
+					(h += (q.a = j = T[b + 3]) * A),
+					(E += R),
+					(I += D),
+					(S += G),
+					(N += j),
+					(q = q.next),
+					l < H && (x += a);
+			for (b = g, z = P, F = k, c = 0; c < i; c++)
+				(T[(s = b << 2) + 3] = j = (h * J) >> K),
+					j > 0
+						? ((j = 255 / j), (T[s] = ((y * J) >> K) * j), (T[s + 1] = ((p * J) >> K) * j), (T[s + 2] = ((m * J) >> K) * j))
+						: (T[s] = T[s + 1] = T[s + 2] = 0),
+					(y -= v),
+					(p -= w),
+					(m -= B),
+					(h -= C),
+					(v -= z.r),
+					(w -= z.g),
+					(B -= z.b),
+					(C -= z.a),
+					(s = (g + ((s = c + M) < H ? s : H) * a) << 2),
+					(y += E += z.r = T[s]),
+					(p += I += z.g = T[s + 1]),
+					(m += S += z.b = T[s + 2]),
+					(h += N += z.a = T[s + 3]),
+					(z = z.next),
+					(v += R = F.r),
+					(w += D = F.g),
+					(B += G = F.b),
+					(C += j = F.a),
+					(E -= R),
+					(I -= D),
+					(S -= G),
+					(N -= j),
+					(F = F.next),
+					(b += a);
+		}
+		return t;
+	}
+	function f(t, e, n, r, a, i) {
+		if (!(isNaN(i) || i < 1)) {
+			i |= 0;
+			var f = o(t, e, n, r, a);
+			(f = g(f, e, n, r, a, i)), t.getContext("2d").putImageData(f, e, n);
+		}
+	}
+	function g(t, e, o, a, i, f) {
+		var g,
+			c,
+			l,
+			s,
+			x,
+			b,
+			d,
+			y,
+			p,
+			m,
+			h,
+			v,
+			w,
+			B,
+			C,
+			E,
+			I,
+			S,
+			N,
+			R,
+			D,
+			G = t.data,
+			j = 2 * f + 1,
+			A = a - 1,
+			k = i - 1,
+			T = f + 1,
+			W = (T * (T + 1)) / 2,
+			_ = new u(),
+			H = _;
+		for (l = 1; l < j; l++) (H = H.next = new u()), l === T && (D = H);
+		H.next = _;
+		var M = null,
+			O = null;
+		d = b = 0;
+		var P = n[f],
+			q = r[f];
+		for (c = 0; c < i; c++) {
+			for (
+				B = C = E = y = p = m = 0,
+					h = T * (I = G[b]),
+					v = T * (S = G[b + 1]),
+					w = T * (N = G[b + 2]),
+					y += W * I,
+					p += W * S,
+					m += W * N,
+					H = _,
+					l = 0;
+				l < T;
+				l++
+			)
+				(H.r = I), (H.g = S), (H.b = N), (H = H.next);
+			for (l = 1; l < T; l++)
+				(s = b + ((A < l ? A : l) << 2)),
+					(y += (H.r = I = G[s]) * (R = T - l)),
+					(p += (H.g = S = G[s + 1]) * R),
+					(m += (H.b = N = G[s + 2]) * R),
+					(B += I),
+					(C += S),
+					(E += N),
+					(H = H.next);
+			for (M = _, O = D, g = 0; g < a; g++)
+				(G[b] = (y * P) >> q),
+					(G[b + 1] = (p * P) >> q),
+					(G[b + 2] = (m * P) >> q),
+					(y -= h),
+					(p -= v),
+					(m -= w),
+					(h -= M.r),
+					(v -= M.g),
+					(w -= M.b),
+					(s = (d + ((s = g + f + 1) < A ? s : A)) << 2),
+					(y += B += M.r = G[s]),
+					(p += C += M.g = G[s + 1]),
+					(m += E += M.b = G[s + 2]),
+					(M = M.next),
+					(h += I = O.r),
+					(v += S = O.g),
+					(w += N = O.b),
+					(B -= I),
+					(C -= S),
+					(E -= N),
+					(O = O.next),
+					(b += 4);
+			d += a;
+		}
+		for (g = 0; g < a; g++) {
+			for (
+				C = E = B = p = m = y = 0,
+					h = T * (I = G[(b = g << 2)]),
+					v = T * (S = G[b + 1]),
+					w = T * (N = G[b + 2]),
+					y += W * I,
+					p += W * S,
+					m += W * N,
+					H = _,
+					l = 0;
+				l < T;
+				l++
+			)
+				(H.r = I), (H.g = S), (H.b = N), (H = H.next);
+			for (x = a, l = 1; l <= f; l++)
+				(b = (x + g) << 2),
+					(y += (H.r = I = G[b]) * (R = T - l)),
+					(p += (H.g = S = G[b + 1]) * R),
+					(m += (H.b = N = G[b + 2]) * R),
+					(B += I),
+					(C += S),
+					(E += N),
+					(H = H.next),
+					l < k && (x += a);
+			for (b = g, M = _, O = D, c = 0; c < i; c++)
+				(G[(s = b << 2)] = (y * P) >> q),
+					(G[s + 1] = (p * P) >> q),
+					(G[s + 2] = (m * P) >> q),
+					(y -= h),
+					(p -= v),
+					(m -= w),
+					(h -= M.r),
+					(v -= M.g),
+					(w -= M.b),
+					(s = (g + ((s = c + T) < k ? s : k) * a) << 2),
+					(y += B += M.r = G[s]),
+					(p += C += M.g = G[s + 1]),
+					(m += E += M.b = G[s + 2]),
+					(M = M.next),
+					(h += I = O.r),
+					(v += S = O.g),
+					(w += N = O.b),
+					(B -= I),
+					(C -= S),
+					(E -= N),
+					(O = O.next),
+					(b += a);
+		}
+		return t;
+	}
+	var u = function t() {
+		!(function (t, e) {
+			if (!(t instanceof e)) throw new TypeError("Cannot call a class as a function");
+		})(this, t),
+			(this.r = 0),
+			(this.g = 0),
+			(this.b = 0),
+			(this.a = 0),
+			(this.next = null);
+	};
+	(t.BlurStack = u),
+		(t.image = function (t, e, n, r) {
+			if (("string" == typeof t && (t = document.getElementById(t)), t && "naturalWidth" in t)) {
+				var o = t.naturalWidth,
+					i = t.naturalHeight;
+				if (("string" == typeof e && (e = document.getElementById(e)), e && "getContext" in e)) {
+					(e.style.width = o + "px"), (e.style.height = i + "px"), (e.width = o), (e.height = i);
+					var g = e.getContext("2d");
+					g.clearRect(0, 0, o, i), g.drawImage(t, 0, 0), isNaN(n) || n < 1 || (r ? a(e, 0, 0, o, i, n) : f(e, 0, 0, o, i, n));
+				}
+			}
+		}),
+		(t.canvasRGBA = a),
+		(t.canvasRGB = f),
+		(t.imageDataRGBA = i),
+		(t.imageDataRGB = g),
+		Object.defineProperty(t, "__esModule", { value: !0 });
+});
 //# sourceMappingURL=stackblur.min.js.map
+
 "use strict";
 
 function gup(b) {
-
 	b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 
 	var a = "[\\?&]" + b + "=([^&#]*)";
 	var d = new RegExp(a);
 	var c = d.exec(window.location.href);
 
-	if (c === null) return '';else return c[1];
+	if (c === null) return "";else return c[1];
 }
+
 /**
  * @description This module communicates with Lychee's API
  */
 
 var api = {
-
-	path: 'php/index.php',
+	path: "php/index.php",
 	onError: null
-
 };
 
 api.get_url = function (fn) {
-
-	var api_url = '';
+	var api_url = "";
 
 	if (lychee.api_V2) {
 		// because the api is defined directly by the function called in the route.php
-		api_url = 'api/' + fn;
+		api_url = "api/" + fn;
 	} else {
 		api_url = api.path;
 	}
@@ -44,7 +923,7 @@ api.get_url = function (fn) {
 };
 
 api.isTimeout = function (errorThrown, jqXHR) {
-	if (errorThrown && errorThrown === 'Bad Request' && jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error === 'Session timed out') {
+	if (errorThrown && errorThrown === "Bad Request" && jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error === "Session timed out") {
 		return true;
 	}
 
@@ -54,7 +933,6 @@ api.isTimeout = function (errorThrown, jqXHR) {
 api.post = function (fn, params, callback) {
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 
-
 	loadingBar.show();
 
 	params = $.extend({ function: fn }, params);
@@ -62,11 +940,10 @@ api.post = function (fn, params, callback) {
 	var api_url = api.get_url(fn);
 
 	var success = function success(data) {
-
 		setTimeout(loadingBar.hide, 100);
 
 		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
 			api.onError(data.substring(7, data.length), params, data);
 			return false;
 		}
@@ -75,15 +952,14 @@ api.post = function (fn, params, callback) {
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', params, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
 	};
 
 	var ajaxParams = {
-		type: 'POST',
+		type: "POST",
 		url: api_url,
 		data: params,
-		dataType: 'json',
+		dataType: "json",
 		success: success,
 		error: error
 	};
@@ -98,15 +974,13 @@ api.post = function (fn, params, callback) {
 };
 
 api.get = function (url, callback) {
-
 	loadingBar.show();
 
 	var success = function success(data) {
-
 		setTimeout(loadingBar.hide, 100);
 
 		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
 			api.onError(data.substring(7, data.length), params, data);
 			return false;
 		}
@@ -115,15 +989,14 @@ api.get = function (url, callback) {
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', {}, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", {}, errorThrown);
 	};
 
 	$.ajax({
-		type: 'GET',
+		type: "GET",
 		url: url,
 		data: {},
-		dataType: 'text',
+		dataType: "text",
 		success: success,
 		error: error
 	});
@@ -137,11 +1010,10 @@ api.post_raw = function (fn, params, callback) {
 	var api_url = api.get_url(fn);
 
 	var success = function success(data) {
-
 		setTimeout(loadingBar.hide, 100);
 
 		// Catch errors
-		if (typeof data === 'string' && data.substring(0, 7) === 'Error: ') {
+		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
 			api.onError(data.substring(7, data.length), params, data);
 			return false;
 		}
@@ -150,39 +1022,39 @@ api.post_raw = function (fn, params, callback) {
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
-
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? 'Session timed out.' : 'Server error or API not found.', params, errorThrown);
+		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
 	};
 
 	$.ajax({
-		type: 'POST',
+		type: "POST",
 		url: api_url,
 		data: params,
-		dataType: 'text',
+		dataType: "text",
 		success: success,
 		error: error
 	});
 };
+
 var csrf = {};
 
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
 	if (settings.url !== lychee.updatePath) {
-		jqxhr.setRequestHeader('X-XSRF-TOKEN', csrf.getCookie('XSRF-TOKEN'));
+		jqxhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
 	}
 };
 
 csrf.escape = function (s) {
-	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, '\\$1');
+	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
 };
 
 csrf.getCookie = function (name) {
 	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
-	var match = document.cookie.match(RegExp('(?:^|;\\s*)' + csrf.escape(name) + '=([^;^%]*)'));
+	var match = document.cookie.match(RegExp("(?:^|;\\s*)" + csrf.escape(name) + "=([^;^%]*)"));
 	return match ? match[1] : null;
 };
 
 csrf.bind = function () {
-	$(document).on('ajaxSend', csrf.addLaravelCSRF);
+	$(document).on("ajaxSend", csrf.addLaravelCSRF);
 };
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
@@ -191,41 +1063,38 @@ var lychee = {
 	api_V2: true
 };
 
-lychee.content = $('.content');
+lychee.content = $(".content");
 
 lychee.escapeHTML = function () {
-	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
-
+	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
 	// Ensure that html is a string
-	html += '';
+	html += "";
 
 	// Escape all critical characters
-	html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;').replace(/`/g, '&#96;');
+	html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/`/g, "&#96;");
 
 	return html;
 };
 
 lychee.html = function (literalSections) {
-
 	// Use raw literal sections: we don’t want
 	// backslashes (\n etc.) to be interpreted
 	var raw = literalSections.raw;
-	var result = '';
+	var result = "";
 
 	for (var _len = arguments.length, substs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
 		substs[_key - 1] = arguments[_key];
 	}
 
 	substs.forEach(function (subst, i) {
-
 		// Retrieve the literal section preceding
 		// the current substitution
 		var lit = raw[i];
 
 		// If the substitution is preceded by a dollar sign,
 		// we escape special characters in it
-		if (lit.slice(-1) === '$') {
+		if (lit.slice(-1) === "$") {
 			subst = lychee.escapeHTML(subst);
 			lit = lit.slice(0, -1);
 		}
@@ -243,49 +1112,47 @@ lychee.html = function (literalSections) {
 };
 
 lychee.getEventName = function () {
-
-	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && 'ontouchend' in document.documentElement;
-	return touchendSupport === true ? 'touchend' : 'click';
+	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && "ontouchend" in document.documentElement;
+	return touchendSupport === true ? "touchend" : "click";
 };
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
-
 
 var frame = {
 	refresh: 30000
 };
 
 frame.start_blur = function () {
-	var img = document.getElementById('background');
-	var canvas = document.getElementById('background_canvas');
+	var img = document.getElementById("background");
+	var canvas = document.getElementById("background_canvas");
 	StackBlur.image(img, canvas, 20);
-	canvas.style.width = '100%';
-	canvas.style.height = '100%';
+	canvas.style.width = "100%";
+	canvas.style.height = "100%";
 };
 
 frame.next = function () {
-	$('body').removeClass('loaded');
+	$("body").removeClass("loaded");
 	setTimeout(function () {
 		frame.refreshPicture();
 	}, 1000);
 };
 
 frame.refreshPicture = function () {
-	api.post('Photo::getRandom', {}, function (data) {
+	api.post("Photo::getRandom", {}, function (data) {
 		if (!data.url && !data.medium) {
-			console.log('URL not found');
+			console.log("URL not found");
 		}
-		if (!data.thumbUrl) console.log('Thumb not found');
+		if (!data.thumbUrl) console.log("Thumb not found");
 
-		$('#background').attr('src', data.thumbUrl);
+		$("#background").attr("src", data.thumbUrl);
 
-		var srcset = '';
-		var src = '';
+		var srcset = "";
+		var src = "";
 		this.frame.photo = null;
-		if (data.medium != '') {
+		if (data.medium != "") {
 			src = data.medium;
 
-			if (data.medium2x && data.medium2 != '') {
+			if (data.medium2x && data.medium2 != "") {
 				srcset = data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w";
 				// We use it in the resize callback.
 				this.frame.photo = data;
@@ -294,9 +1161,9 @@ frame.refreshPicture = function () {
 			src = data.url;
 		}
 
-		$('#picture').attr('srcset', srcset);
+		$("#picture").attr("srcset", srcset);
 		frame.resize();
-		$('#picture').attr('src', src).css('display', 'inline');
+		$("#picture").attr("src", src).css("display", "inline");
 
 		setTimeout(function () {
 			frame.next();
@@ -322,16 +1189,15 @@ frame.resize = function () {
 		// enough.
 		var width = winWidth / ratio > winHeight ? winHeight * ratio : winWidth;
 
-		$('#picture').attr('sizes', width + 'px');
+		$("#picture").attr("sizes", width + "px");
 	}
 };
 
 frame.error = function (errorThrown) {
-	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-	var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : '';
+	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
+	var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
 
-
-	loadingBar.show('error', errorThrown);
+	loadingBar.show("error", errorThrown);
 
 	console.error({
 		description: errorThrown,
@@ -348,29 +1214,28 @@ var loadingBar = {
 	hide: function hide() {}
 };
 
-var imageview = $('#imageview');
+var imageview = $("#imageview");
 
 $(function () {
-
 	// set CSRF protection (Laravel)
 	csrf.bind();
 
 	// Set API error handler
 	api.onError = frame.error;
 
-	$(window).on('resize', function () {
+	$(window).on("resize", function () {
 		frame.resize();
 	});
 
-	$('#background').on('load', function () {
+	$("#background").on("load", function () {
 		frame.start_blur();
 	});
 
-	$('#picture').on('load', function () {
-		$('body').addClass('loaded');
+	$("#picture").on("load", function () {
+		$("body").addClass("loaded");
 	});
 
-	api.post('Frame::getSettings', {}, function (data) {
+	api.post("Frame::getSettings", {}, function (data) {
 		frame.set(data);
 	});
 });
