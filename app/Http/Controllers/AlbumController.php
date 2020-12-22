@@ -603,7 +603,7 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Set if a photo is a favorite.
+	 * Set if an album contains sensitive pictures.
 	 *
 	 * @param Request $request
 	 *

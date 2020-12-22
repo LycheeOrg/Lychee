@@ -14,7 +14,8 @@ class Lang
 			if (
 				$list_lang[$i] != '.' &&
 				$list_lang[$i] != '..' &&
-				$list_lang[$i] != 'Lang.php'
+				$list_lang[$i] != 'Lang.php' &&
+				substr($list_lang[$i], -4) == '.php'
 			) {
 				$return[] = __NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4);
 			}
