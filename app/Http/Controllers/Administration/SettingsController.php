@@ -273,6 +273,26 @@ class SettingsController extends Controller
 	}
 
 	/**
+	 * Show NSFW albums by default or not.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setNSFWVisible(Request $request)
+	{
+		$request->validate([
+			'nsfw_visible' => 'required|string',
+		]);
+
+		if ($request['nsfw_visible'] == '1') {
+			return (Configs::set('nsfw_visible', '1')) ? 'true' : 'false';
+		}
+
+		return (Configs::set('nsfw_visible', '0')) ? 'true' : 'false';
+	}
+
+	/**
 	 * Select the image overlay used:
 	 * exif: exif information
 	 * desc: description of the photo

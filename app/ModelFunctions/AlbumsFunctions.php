@@ -239,7 +239,7 @@ class AlbumsFunctions
 					$query = $query->orWhereIn('id', DB::table('user_album')->select('album_id')
 						->where('user_id', '=', $id));
 					$query = $query->orWhere(function ($_query) {
-						$_query->where('public', '=', true)->where('visible_hidden', '=', true);
+						$_query->where('public', '=', true)->where('viewable', '=', true);
 					});
 				});
 			}
@@ -248,7 +248,7 @@ class AlbumsFunctions
 		}
 
 		return Album::where('public', '=', '1')
-			->where('visible_hidden', '=', '1')
+			->where('viewable', '=', '1')
 			->where('parent_id', '=', null);
 	}
 

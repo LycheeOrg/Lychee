@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Dutch implements LangInterface
+use App\Contracts\Language;
+
+final class Dutch implements Language
 {
 	public static function code()
 	{
@@ -153,6 +155,10 @@ final class Dutch implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Full-resolution pictures are available.',
 			'ALBUM_HIDDEN' => 'Verborgen',
 			'ALBUM_HIDDEN_EXPL' => 'Alleen mensen met een link kunnen dit album bekjiken.',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Downloadbaar',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Bezoekers van jouw Lychee kunnen dit album downloaden.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
@@ -369,6 +375,10 @@ final class Dutch implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'With aspect, justified',
 			'LAYOUT_UNJUSTIFIED' => 'With aspect, unjustified',
 			'SET_LAYOUT' => 'Change layout',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Geen resultaten',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Geen publieke albums',

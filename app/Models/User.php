@@ -91,6 +91,11 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		return $this->belongsToMany('App\Models\Album', 'user_album', 'user_id', 'album_id');
 	}
 
+	public function get_username(): string
+	{
+		return $this->is_admin() ? 'Admin' : $this->username;
+	}
+
 	public function is_admin(): bool
 	{
 		return $this->id == 0;

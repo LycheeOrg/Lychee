@@ -4,7 +4,7 @@
 
 namespace App\Http\Middleware;
 
-use App\MiddlewareFunctions\IsInstalled;
+use App\Http\Middleware\Checks\IsInstalled;
 use App\ModelFunctions\SessionFunctions;
 use Closure;
 use Illuminate\Http\Request;

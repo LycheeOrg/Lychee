@@ -26,7 +26,8 @@ class Cast
 			'title' => $album->title,
 			'public' => strval($album->public),
 			'full_photo' => Helpers::str_of_bool($album->is_full_photo_visible()),
-			'visible' => strval($album->visible_hidden),
+			'visible' => strval($album->viewable),
+			'nsfw' => strval($album->nsfw),
 			'parent_id' => $album->str_parent_id(),
 			'description' => strval($album->description),
 
@@ -71,7 +72,8 @@ class Cast
 		$tag_album->max_takestamp = $album->max_takestamp;
 		$tag_album->public = $album->public;
 		$tag_album->full_photo = $album->full_photo;
-		$tag_album->visible_hidden = $album->visible_hidden;
+		$tag_album->viewable = $album->viewable;
+		$tag_album->nsfw = $album->nsfw;
 		$tag_album->downloadable = $album->downloadable;
 		$tag_album->password = $album->password;
 		$tag_album->license = $album->license;

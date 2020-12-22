@@ -91,12 +91,6 @@ class IndexController extends Controller
 	 */
 	public function gallery()
 	{
-		if ($this->lycheeVersion->getDBVersion()['version'] < $this->lycheeVersion->getFileVersion()['version']) {
-			// @codeCoverageIgnoreStart
-			return view('error.update', ['code' => '503', 'message' => 'Database version is behind, please apply migration.']);
-			// @codeCoverageIgnoreEnd
-		}
-
 		$this->symLinkFunctions->remove_outdated();
 		$infos = $this->configFunctions->get_pages_infos();
 

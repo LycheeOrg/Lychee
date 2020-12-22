@@ -12,8 +12,8 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject2 = _taggedTemplateLiteral(["<div class='divider'><h1>", "</h1></div>"], ["<div class='divider'><h1>", "</h1></div>"]),
     _templateObject3 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
     _templateObject4 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
-    _templateObject5 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
-    _templateObject6 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject5 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject6 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject7 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
     _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject9 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
@@ -496,6 +496,7 @@ build.getAlbumThumb = function (data, i) {
 	var isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
 	var isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
 	var thumb = data.thumbs[i];
+	var thumb2x = "";
 
 	if (thumb === "uploads/thumb/" && isVideo) {
 		return "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
@@ -504,7 +505,6 @@ build.getAlbumThumb = function (data, i) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	thumb2x = "";
 	if (data.thumbs2x) {
 		if (data.thumbs2x[i]) {
 			thumb2x = data.thumbs2x[i];
@@ -544,10 +544,10 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.id, tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.nsfw && data.nsfw === "1" && lychee.nsfw_blur ? "blurred" : "", data.id, data.nsfw && data.nsfw === "1" ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
 
 	if (album.isUploadable() && !disabled) {
-		html += lychee.html(_templateObject6, data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.password === "1" ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album === "1" ? "badge--tag" : "", build.iconic("tag"));
+		html += lychee.html(_templateObject6, data.nsfw === "1" ? "badge--nsfw" : "", build.iconic("warning"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.password === "1" ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album === "1" ? "badge--tag" : "", build.iconic("tag"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.hasOwnProperty("has_albums") && data.has_albums === "1") {
@@ -886,6 +886,9 @@ header.bind = function () {
 	header.dom("#button_move_album").on(eventName, function (e) {
 		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParent() != "");
 	});
+	header.dom("#button_nsfw_album").on(eventName, function (e) {
+		album.setNSFW(album.getID());
+	});
 	header.dom("#button_move").on(eventName, function (e) {
 		contextMenu.move([photo.getID()], e, photo.setAlbum);
 	});
@@ -1139,10 +1142,10 @@ header.setMode = function (mode) {
 				$("#button_info_album").show();
 				tabindex.makeFocusable($("#button_info_album"));
 				if (album.isUploadable()) {
-					$("#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").show();
+					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").show();
 					tabindex.makeFocusable($("#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
 				} else {
-					$("#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").hide();
+					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").hide();
 					tabindex.makeUnfocusable($("#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
 				}
 			}
@@ -2404,6 +2407,10 @@ lychee.locale = {
 	ALBUM_FULL_EXPL: "Full size pictures are available",
 	ALBUM_HIDDEN: "Hidden",
 	ALBUM_HIDDEN_EXPL: "Only people with the direct link can view this album.",
+	ALBUM_MARK_NSFW: "Mark album as sensitive",
+	ALBUM_UNMARK_NSFW: "Unmark album as sensitive",
+	ALBUM_NSFW: "Sensitive",
+	ALBUM_NSFW_EXPL: "Album contains sensitive content.",
 	ALBUM_DOWNLOADABLE: "Downloadable",
 	ALBUM_DOWNLOADABLE_EXPL: "Visitors of your Lychee can download this album.",
 	ALBUM_SHARE_BUTTON_VISIBLE: "Share button is visible",
@@ -2633,6 +2640,10 @@ lychee.locale = {
 	LOCATION_DECODING: "Decode GPS data into location name",
 	LOCATION_SHOW: "Show location name",
 	LOCATION_SHOW_PUBLIC: "Show location name for public mode",
+
+	NSFW_VISIBLE_TEXT_1: "Make Sensitive albums visible by default.",
+	NSFW_VISIBLE_TEXT_2: "If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.",
+	SETTINGS_SUCCESS_NSFW_VISIBLE: "Default sensitive album visibility updated with success.",
 
 	VIEW_NO_RESULT: "No results",
 	VIEW_NO_PUBLIC_ALBUMS: "No public albums",

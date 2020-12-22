@@ -53,7 +53,7 @@ class ReadAccessFunctions
 
 		if (
 			$album->public != 1 ||
-			($obeyHidden && $album->visible_hidden !== 1)
+			($obeyHidden && $album->viewable !== 1)
 		) {
 			return 2;  // Warning: Album private!
 		}

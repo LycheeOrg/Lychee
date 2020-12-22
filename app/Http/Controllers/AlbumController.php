@@ -135,7 +135,7 @@ class AlbumController extends Controller
 			$children = $this->albumFunctions->get_children($album, 0, true);
 
 			$return = AlbumCast::toArrayWith($album, $children);
-			$return['owner'] = $album->owner->username;
+			$return['owner'] = $album->owner->get_username();
 
 			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
 			$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
@@ -270,6 +270,7 @@ class AlbumController extends Controller
 		$request->validate([
 			'public' => 'integer|required',
 			'visible' => 'integer|required',
+			'nsfw' => 'integer|required',
 			'downloadable' => 'integer|required',
 			'share_button_visible' => 'integer|required',
 			'full_photo' => 'integer|required',
@@ -286,7 +287,8 @@ class AlbumController extends Controller
 		// Convert values
 		$album->full_photo = ($request['full_photo'] === '1' ? 1 : 0);
 		$album->public = ($request['public'] === '1' ? 1 : 0);
-		$album->visible_hidden = ($request['visible'] === '1' ? 1 : 0);
+		$album->viewable = ($request['visible'] === '1' ? 1 : 0);
+		$album->nsfw = ($request['nsfw'] === '1' ? 1 : 0);
 		$album->downloadable = ($request['downloadable'] === '1' ? 1 : 0);
 		$album->share_button_visible = ($request['share_button_visible'] === '1' ? 1 : 0);
 
@@ -598,6 +600,25 @@ class AlbumController extends Controller
 		}
 
 		return $no_error ? 'true' : 'false';
+	}
+
+	/**
+	 * Set if an album contains sensitive pictures.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setNSFW(Request $request)
+	{
+		$request->validate([
+			'albumID' => 'required|string',
+		]);
+
+		$album = Album::where('id', $request['albumID'])->first();
+		$album->nsfw = ($album->nsfw != 1) ? 1 : 0;
+
+		return $album->save() ? 'true' : 'false';
 	}
 
 	/**

@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Greek implements LangInterface
+use App\Contracts\Language;
+
+final class Greek implements Language
 {
 	public static function code()
 	{
@@ -153,6 +155,10 @@ final class Greek implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Οι εικόνες πλήρης ανάλυσης είναι διαθέσιμες.',
 			'ALBUM_HIDDEN' => 'Κρυφό',
 			'ALBUM_HIDDEN_EXPL' => 'Μόνο άτομα με τον απευθείας σύνδεσμο μπορούν να δουν αυτό το λεύκωμα.',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Δυνατότητα Λήψης',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Οι επισκέπτες της γκαλερί μπορούν να κατεβάσουν αυτό το λεύκωμα.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Share button is visible',
@@ -369,6 +375,10 @@ final class Greek implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'Με ίσες αναλογίες',
 			'LAYOUT_UNJUSTIFIED' => 'Με άνισες αναλογίες',
 			'SET_LAYOUT' => 'Αλλαγή διάταξης',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Κανένα αποτέλεσμα',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Κανένα δημόσιο λεύκωμα',

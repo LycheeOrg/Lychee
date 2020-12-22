@@ -34,7 +34,7 @@ class SmartAlbum extends Album
 	/**
 	 * @var bool
 	 */
-	public $visible_hidden = false;
+	public $viewable = false;
 
 	/**
 	 * @var Carbon

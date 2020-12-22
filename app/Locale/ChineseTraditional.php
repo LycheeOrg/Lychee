@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class ChineseTraditional implements LangInterface
+use App\Contracts\Language;
+
+final class ChineseTraditional implements Language
 {
 	public static function code()
 	{
@@ -153,6 +155,10 @@ final class ChineseTraditional implements LangInterface
 			'ALBUM_FULL_EXPL' => '提供完整解析度照片',
 			'ALBUM_HIDDEN' => '隱藏',
 			'ALBUM_HIDDEN_EXPL' => '只有知道連結者才能檢視',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => '下載',
 			'ALBUM_DOWNLOADABLE_EXPL' => '訪客可以下載該相簿',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => '顯示分享按鈕',
@@ -369,6 +375,10 @@ final class ChineseTraditional implements LangInterface
 			'LAYOUT_JUSTIFIED' => '有方面，有道理',
 			'LAYOUT_UNJUSTIFIED' => '有方面，沒有道理',
 			'SET_LAYOUT' => '變更版面',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => '無結果',
 			'VIEW_NO_PUBLIC_ALBUMS' => '沒有公開相簿',

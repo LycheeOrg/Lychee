@@ -2,7 +2,9 @@
 
 namespace App\Locale;
 
-final class Czech implements LangInterface
+use App\Contracts\Language;
+
+final class Czech implements Language
 {
 	public static function code()
 	{
@@ -154,6 +156,10 @@ final class Czech implements LangInterface
 			'ALBUM_FULL_EXPL' => 'Plné rozlišení k dispozici.',
 			'ALBUM_HIDDEN' => 'Skryté',
 			'ALBUM_HIDDEN_EXPL' => 'Pouze pro návštěvníky s přímým odkazem alba.',
+			'ALBUM_MARK_NSFW' => 'Mark album as sensitive',
+			'ALBUM_UNMARK_NSFW' => 'Unmark album as sensitive',
+			'ALBUM_NSFW' => 'Sensitive',
+			'ALBUM_NSFW_EXPL' => 'Album is marked to contain sensitive content.',
 			'ALBUM_DOWNLOADABLE' => 'Stažitelné',
 			'ALBUM_DOWNLOADABLE_EXPL' => 'Album mouhou stáhnout pouze jeho návštěvníci.',
 			'ALBUM_SHARE_BUTTON_VISIBLE' => 'Tlačítko sdílet je viditelné',
@@ -376,6 +382,10 @@ final class Czech implements LangInterface
 			'LAYOUT_JUSTIFIED' => 'V poměru stran, zarovnáno',
 			'LAYOUT_UNJUSTIFIED' => 'V poměru stran, nezarovnáno',
 			'SET_LAYOUT' => 'Změnit vzhled',
+
+			'NSFW_VISIBLE_TEXT_1' => 'Make Sensitive albums visible by default.',
+			'NSFW_VISIBLE_TEXT_2' => 'If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.',
+			'SETTINGS_SUCCESS_NSFW_VISIBLE' => 'Default sensitive album visibility updated with success.',
 
 			'VIEW_NO_RESULT' => 'Bez výsledku',
 			'VIEW_NO_PUBLIC_ALBUMS' => 'Veřejná alba nejsou k dispozici',

@@ -4,14 +4,23 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Middleware\Checks\ExistsDB;
 use App\Redirections\ToInstall;
 use Closure;
-use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 
 class DBExists
 {
+	/**
+	 * @var
+	 */
+	private $existsDB;
+
+	public function __construct(ExistsDB $existsDB)
+	{
+		$this->existsDB = $existsDB;
+	}
+
 	/**
 	 * Handle an incoming request.
 	 *
@@ -22,11 +31,7 @@ class DBExists
 	 */
 	public function handle($request, Closure $next)
 	{
-		try {
-			if (!Schema::hasTable('configs')) {
-				return ToInstall::go();
-			}
-		} catch (QueryException $e) {
+		if (!$this->existsDB->assert()) {
 			return ToInstall::go();
 		}
 

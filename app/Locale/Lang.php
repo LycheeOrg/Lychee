@@ -2,17 +2,20 @@
 
 namespace App\Locale;
 
+use App\Contracts\Language;
+
 class Lang
 {
-	public static function get_classes()
+	private static function get_classes()
 	{
 		$return = [];
 		$list_lang = scandir(__DIR__);
 		for ($i = 0; $i < count($list_lang); $i++) {
-			if ($list_lang[$i] != '.' &&
+			if (
+				$list_lang[$i] != '.' &&
 				$list_lang[$i] != '..' &&
 				$list_lang[$i] != 'Lang.php' &&
-				$list_lang[$i] != 'LangInterface.php'
+				substr($list_lang[$i], -4) == '.php'
 			) {
 				$return[] = __NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4);
 			}
@@ -31,7 +34,7 @@ class Lang
 		}
 
 		// default: we force English
-		/** @var LangInterface $class_name */
+		/** @var Language $class_name */
 		$class_name = __NAMESPACE__ . '\\' . 'English';
 
 		return $class_name::get_locale();
