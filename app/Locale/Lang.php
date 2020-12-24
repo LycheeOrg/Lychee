@@ -3,19 +3,49 @@
 namespace App\Locale;
 
 use App\Contracts\Language;
+use App\Models\Configs;
 
 class Lang
 {
-	private static function get_classes()
+	private $code;
+
+	/**
+	 * @var Language
+	 */
+	private $language;
+
+	public function __construct()
+	{
+		$this->code = Configs::get_value('lang', 'en');
+
+		$list_lang = $this->get_classes();
+
+		$found = false;
+		for ($i = 0; $i < count($list_lang); $i++) {
+			$language = new $list_lang[$i]();
+			if ($language->code() == $this->code) {
+				$this->language = $language;
+				$found = true;
+				break;
+			}
+		}
+
+		// default: we force English
+		if (!$found) {
+			$this->language = new English();
+		}
+	}
+
+	private function get_classes()
 	{
 		$return = [];
 		$list_lang = scandir(__DIR__);
+		$contract = 'App\Contracts\Language';
+
 		for ($i = 0; $i < count($list_lang); $i++) {
+			$class_candidate = __NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4);
 			if (
-				$list_lang[$i] != '.' &&
-				$list_lang[$i] != '..' &&
-				$list_lang[$i] != 'Lang.php' &&
-				substr($list_lang[$i], -4) == '.php'
+				is_subclass_of($class_candidate, $contract)
 			) {
 				$return[] = __NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4);
 			}
@@ -24,28 +54,18 @@ class Lang
 		return $return;
 	}
 
-	public static function get_lang($value = 'en')
+	public function get_lang()
 	{
-		$list_lang = Lang::get_classes();
-		for ($i = 0; $i < count($list_lang); $i++) {
-			if ($list_lang[$i]::code() == $value) {
-				return $list_lang[$i]::get_locale();
-			}
-		}
-
-		// default: we force English
-		/** @var Language $class_name */
-		$class_name = __NAMESPACE__ . '\\' . 'English';
-
-		return $class_name::get_locale();
+		return $this->language->get_locale();
 	}
 
-	public static function get_lang_available()
+	public function get_lang_available()
 	{
-		$list_lang = Lang::get_classes();
+		$list_lang = $this->get_classes();
 		$return = [];
 		for ($i = 0; $i < count($list_lang); $i++) {
-			$return[] = $list_lang[$i]::code();
+			$language = new $list_lang[$i]();
+			$return[] = $language->code();
 		}
 
 		return $return;

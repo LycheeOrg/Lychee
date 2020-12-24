@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Slovak implements Language
 {
-	public static function code()
+	public function code()
 	{
 		return 'sk';
 	}
 
-	public static function get_locale()
+	public function get_locale()
 	{
 		$locale = [
 			'USERNAME' => 'Meno užívateľa',

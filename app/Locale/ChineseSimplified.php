@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class ChineseSimplified implements Language
 {
-	public static function code()
+	public function code()
 	{
 		return '简体中文';
 	}
 
-	public static function get_locale()
+	public function get_locale()
 	{
 		$locale = [
 			'USERNAME' => '用户名',

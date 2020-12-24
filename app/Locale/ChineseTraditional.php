@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class ChineseTraditional implements Language
 {
-	public static function code()
+	public function code()
 	{
 		return '繁體中文';
 	}
 
-	public static function get_locale()
+	public function get_locale()
 	{
 		$locale = [
 			'USERNAME' => '帳號名稱',

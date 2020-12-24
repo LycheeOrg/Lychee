@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Italian implements Language
 {
-	public static function code()
+	public function code()
 	{
 		return 'it';
 	}
 
-	public static function get_locale()
+	public function get_locale()
 	{
 		$locale = [
 			'USERNAME' => 'nome utente',

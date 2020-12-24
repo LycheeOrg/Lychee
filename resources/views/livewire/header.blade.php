@@ -1,21 +1,3 @@
-@extends('layouts.gallery')
-
-@section('head-js')
-@endsection
-
-@section('head-css')
-<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/main.css') }}">
-<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/user.css') }}">
-@if (App\Assets\Helpers::getDeviceType()=="television")
-<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/TV.css') }}">
-@endif
-@endsection
-
-@section('content')
-<div id="container">
-
-@include('includes.svg')
-
 <!-- Loading -->
 <div id="loading"></div>
 
@@ -160,42 +142,3 @@
 
 
 </header>
-
-<!-- leftMenu -->
-<div class="leftMenu"></div>
-
-<!-- Content -->
-<div class="content"></div>
-
-<!-- MapView -->
-<div id="mapview">
-  <div id="leaflet_map_full"></div>
-</div>
-
-<!-- ImageView -->
-<div id="imageview"></div>
-
-<!-- Warning -->
-<div id="sensitive_warning">
-	{!! App\Models\Configs::get_value('nsfw_warning_text','<h1>Sensitive content</h1><p>This album contains sensitive content which some people may find offensive or disturbing.</p><p>Tap to consent.</p>'); !!}
-</div>
-
-<!-- Sidebar -->
-<div class="sidebar">
-    <div class="sidebar__header">
-        <h1>About</h1>
-    </div>
-    <div class="sidebar__wrapper"></div>
-</div>
-
-<!-- Upload -->
-<div id="upload">
-    <input id="upload_files" type="file" name="fileElem[]" multiple accept="image/*,video/*,.mov">
-</div>
-
-<!-- JS -->
-<script async type="text/javascript" src="{{ App\Assets\Helpers::cacheBusting('dist/main.js') }}"></script>
-</div>
-
-@include('includes.footer')
-@endsection
