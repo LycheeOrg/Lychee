@@ -2,27 +2,13 @@
 
 namespace App\Actions\WebAuth;
 
-use App\ModelFunctions\SessionFunctions;
+use AccessControl;
 
 class Delete
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @param SessionFunctions $sessionFunctions
-	 */
-	public function __construct(
-		SessionFunctions $sessionFunctions
-	) {
-		$this->sessionFunctions = $sessionFunctions;
-	}
-
 	public function do($ids)
 	{
-		$user = $this->sessionFunctions->user();
+		$user = AccessControl::user();
 		$user->removeCredential($ids);
 
 		return 'true';

@@ -2,26 +2,12 @@
 
 namespace App\Actions\WebAuth;
 
-use App\ModelFunctions\SessionFunctions;
+use AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
 
 class VerifyAuthentication
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @param SessionFunctions $sessionFunctions
-	 */
-	public function __construct(
-		SessionFunctions $sessionFunctions
-	) {
-		$this->sessionFunctions = $sessionFunctions;
-	}
-
 	public function do($credential)
 	{
 		$cred = WebAuthn::validateAssertion($credential);
@@ -30,7 +16,7 @@ class VerifyAuthentication
 		if ($cred) {
 			$user = $this->getUserFromCredentials($credential);
 			if ($user) {
-				$this->sessionFunctions->login($user);
+				AccessControl::login($user);
 
 				return response()->json('Authenticated!', 200);
 			}

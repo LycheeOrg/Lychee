@@ -106,7 +106,7 @@ class AlbumController extends Controller
 			'tags' => 'string',
 		]);
 
-		$album = $this->albumFunctions->createTagAlbum($request['title'], $request['tags'], $this->sessionFunctions->id());
+		$album = $this->albumFunctions->createTagAlbum($request['title'], $request['tags'], AccessControl::id());
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}
@@ -171,7 +171,7 @@ class AlbumController extends Controller
 		// Get photos
 		// Get album information
 
-		$album = $this->getAlbum($request['albumID']);
+		$album = $this->albumGet->find($request['albumID']);
 
 		if ($album->smart) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
@@ -415,7 +415,7 @@ class AlbumController extends Controller
 	{
 		$no_error = true;
 		if ($request['albumIDs'] == '0') {
-			$photos = Photo::select_unsorted(Photo::OwnedBy($this->sessionFunctions->id()))->get();
+			$photos = Photo::select_unsorted(Photo::OwnedBy(AccessControl::id()))->get();
 			foreach ($photos as $photo) {
 				$no_error &= $photo->predelete();
 				$no_error &= $photo->delete();
@@ -704,7 +704,7 @@ class AlbumController extends Controller
 
 			$dirs = [];
 			foreach ($albumIDs as $albumID) {
-				$album = $this->getAlbum($albumID);
+				$album = $this->albumGet->find($albumID);
 				$dir = $album->title;
 				if ($album->smart) {
 					$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
@@ -715,10 +715,10 @@ class AlbumController extends Controller
 				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album, $albumID) use (&$zip, $badChars, &$compress_album) {
 					if (!$album->is_downloadable()) {
 						if ($this->albumFunctions->is_smart_album($albumID)) {
-							if (!$this->sessionFunctions->is_logged_in()) {
+							if (!AccessControl::is_logged_in()) {
 								return;
 							}
-						} elseif (!$this->sessionFunctions->is_current_user($album->owner_id)) {
+						} elseif (!AccessControl::is_current_user($album->owner_id)) {
 							return;
 						}
 					}
@@ -754,7 +754,7 @@ class AlbumController extends Controller
 						// that are not downloadable based on their actual
 						// parent album.
 						if (
-							$this->albumFunctions->is_smart_album($albumID) && !$this->sessionFunctions->is_logged_in() &&
+							$this->albumFunctions->is_smart_album($albumID) && !AccessControl::is_logged_in() &&
 							$photo->album_id !== null && !$photo->album->is_downloadable()
 						) {
 							continue;

@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use AccessControl;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
@@ -59,21 +60,15 @@ class SmartAlbum extends Album
 	protected $albumIds = null;
 
 	/**
-	 * @var SessionFunctions
-	 */
-	protected $sessionFunctions;
-
-	/**
 	 * Constructor use DDI.
 	 *
 	 * @param AlbumFunctions   $albumFunctions
 	 * @param SessionFunctions $albumFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
+	public function __construct(AlbumFunctions $albumFunctions)
 	{
 		parent::__construct();
 		$this->albumFunctions = $albumFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 		$this->albumIds = new BaseCollection();
 		$this->created_at = new Carbon();
 		$this->smart = true;
@@ -98,12 +93,12 @@ class SmartAlbum extends Album
 
 	public function filter($query)
 	{
-		if (!$this->sessionFunctions->is_admin()) {
+		if (!AccessControl::is_admin()) {
 			$query = $query->whereIn('album_id', $this->albumIds);
 		}
 
-		if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->id() > 0) {
-			$query = $query->orWhere('owner_id', '=', $this->sessionFunctions->id());
+		if (AccessControl::is_logged_in() && AccessControl::id() > 0) {
+			$query = $query->orWhere('owner_id', '=', AccessControl::id());
 		}
 
 		return $query;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Install;
 
+use App\Actions\Install\ApplyMigration;
 use App\Http\Controllers\Controller;
 
 class MigrationController extends Controller

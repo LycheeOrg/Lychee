@@ -7,6 +7,7 @@ use App\Actions\WebAuth\GenerateAuthentication;
 use App\Actions\WebAuth\GenerateRegistration;
 use App\Actions\WebAuth\Lists as ListDevices;
 use App\Actions\WebAuth\VerifyAuthentication;
+use App\Actions\WebAuth\VerifyRegistration;
 use App\Http\Controllers\Controller;
 use DarkGhostHunter\Larapass\Http\WebAuthnRules;
 use Illuminate\Http\Request;
