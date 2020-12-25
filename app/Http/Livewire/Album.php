@@ -2,6 +2,11 @@
 
 namespace App\Http\Livewire;
 
+use App\Actions\Album\Cast as AlbumCast;
+use App\Actions\Album\Get as AlbumGet;
+use App\ModelFunctions\AlbumFunctions;
+use App\Models\Album as AlbumModel;
+use App\Models\Configs;
 use Livewire\Component;
 
 class Album extends Component
@@ -9,7 +14,7 @@ class Album extends Component
 	/**
 	 * @var int
 	 */
-	public $id;
+	public $albumId;
 
 	/**
 	 * @var Album
@@ -19,49 +24,65 @@ class Album extends Component
 	/**
 	 * @var array (for now)
 	 */
-	public $data;
+	public $info;
 
-	public function mount($id)
+	/**
+	 * @var array (for now)
+	 */
+	public $photos;
+
+	/**
+	 * @var AlbumGet
+	 */
+	private $albumGet;
+
+	/**
+	 * @var AlbumFunctions
+	 */
+	private $albumFunctions;
+
+	public function mount($albumId, AlbumGet $albumGet, AlbumFunctions $albumFunctions)
 	{
-		$this->id = $id;
+		$this->albumId = $albumId;
 		$this->album = null;
-		$this->data = [];
-		$this->data['albums'] = [];
+		$this->info = [];
+		$this->info['albums'] = [];
+
+		$this->albumGet = $albumGet;
+		$this->albumFunctions = $albumFunctions;
 	}
 
 	public function render()
 	{
 		// Get photos
 		// change this for smartalbum
-		$this->album = $this->getAlbum($this->id);
+		/*
+		 * @var AlbumModel
+		 */
+		$this->album = $this->albumGet->find($this->albumId);
 
-		if ($album->smart) {
+		if ($this->album->smart) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
-			$album->setAlbumIDs($publicAlbums);
-			$return = AlbumCast::toArray($album);
+			$this->album->setAlbumIDs($publicAlbums);
+			$this->info = AlbumCast::toArray($this->album);
 		} else {
 			// take care of sub albums
-			$children = $this->albumFunctions->get_children($album, 0, true);
+			$children = $this->albumFunctions->get_children($this->album, 0, true);
 
-			$return = AlbumCast::toArrayWith($album, $children);
-			$return['owner'] = $album->owner->get_username();
+			$this->info = AlbumCast::toArrayWith($this->album, $children);
+			$this->info['owner'] = $this->album->owner->get_username();
 
-			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
-			$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
+			$thumbs = $this->albumFunctions->get_thumbs($this->album, $children);
+			$this->albumFunctions->set_thumbs_children($this->info['albums'], $thumbs[1]);
 		}
 
 		// take care of photos
-		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
-		$photos_query = $album->get_photos();
-		$return['photos'] = $this->albumFunctions->photos($album, $photos_query, $full_photo, $album->get_license());
+		$full_photo = $this->info['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
+		$photos_query = $this->album->get_photos();
+		$this->photos = $this->albumFunctions->photos($this->album, $photos_query, $full_photo, $this->album->get_license());
 
-		$return['id'] = $request['albumID'];
-		$return['num'] = strval(count($return['photos']));
-
-		// finalize the loop
-		if ($return['num'] === '0') {
-			$return['photos'] = false;
-		}
+		$this->info['id'] = $this->albumId;
+		$this->info['num'] = strval(count($this->photos));
 
 		return view('livewire.album');
 	}

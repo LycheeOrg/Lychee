@@ -5,12 +5,13 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Album\Cast as AlbumCast;
+use App\Actions\Album\Get as AlbumGet;
 use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
 use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
-use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
@@ -49,6 +50,11 @@ class AlbumController extends Controller
 	private $smartFactory;
 
 	/**
+	 * @var AlbumGet
+	 */
+	private $albumGet;
+
+	/**
 	 * @param AlbumFunctions      $albumFunctions
 	 * @param AlbumsFunctions     $albumsFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
@@ -57,12 +63,14 @@ class AlbumController extends Controller
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
 		ReadAccessFunctions $readAccessFunctions,
-		SmartFactory $smartFactory
+		SmartFactory $smartFactory,
+		AlbumGet $albumGet
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->smartFactory = $smartFactory;
+		$this->albumGet = $albumGet;
 	}
 
 	/**
@@ -116,7 +124,7 @@ class AlbumController extends Controller
 		$return['albums'] = [];
 		// Get photos
 		// change this for smartalbum
-		$album = $this->getAlbum($request['albumID']);
+		$album = $this->albumGet->find($request['albumID']);
 
 		if ($album->smart) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
@@ -189,25 +197,6 @@ class AlbumController extends Controller
 		$return['id'] = $request['albumID'];
 
 		return $return;
-	}
-
-	/**
-	 * @param string $albumID
-	 *
-	 * @return Album|SmartAlbum
-	 */
-	public function getAlbum(string $albumId): Album
-	{
-		if ($this->albumFunctions->is_smart_album($albumId)) {
-			return $this->smartFactory->make($albumId);
-		} else {
-			$album = Album::find($albumId);
-			if ($album->smart) {
-				return AlbumCast::toTagAlbum($album);
-			} else {
-				return $album;
-			}
-		}
 	}
 
 	/**

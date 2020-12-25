@@ -4,8 +4,8 @@
 
 namespace App\ModelFunctions;
 
+use App\Actions\Album\Cast as AlbumCast;
 use App\Actions\ReadAccessFunctions;
-use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\Models\Album;
 use App\Models\Configs;
 use App\SmartAlbums\SmartFactory;

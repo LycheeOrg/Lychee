@@ -6,9 +6,16 @@
 
 		@if($mode == 'albums')
 		<livewire:albums />
+
 		@elseif($mode == 'album')
+		<livewire:album :albumId="$albumId" />
+
 		@elseif($mode == 'photo')
+		<livewire:photo :albumId="$albumId" :photoId="$photoId" />
+
 		@elseif($mode == 'map')
+		Later...
+
 		@endif
 	{{-- @livewire('left-menu') --}}
 	{{-- @livewire('albums') --}}

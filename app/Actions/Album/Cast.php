@@ -2,7 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-namespace App\ModelFunctions\AlbumActions;
+namespace App\Actions\Album;
 
 use App\Assets\Helpers;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;

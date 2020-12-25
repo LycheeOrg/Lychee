@@ -7,7 +7,6 @@ namespace App\Http\Controllers;
 use AccessControl;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
-use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;

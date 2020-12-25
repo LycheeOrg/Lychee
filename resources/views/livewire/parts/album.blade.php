@@ -1,4 +1,4 @@
-<div class='album
+<div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
 	{{ $data['nsfw'] === "1" && lychee.nsfw_blur ? 'blurred' : '' }}'
 	data-id='{{ $data['id'] }}'

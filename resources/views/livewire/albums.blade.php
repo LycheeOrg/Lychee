@@ -4,7 +4,7 @@
 	<p>{{ Lang::get(['VIEW_NO_PUBLIC_ALBUMS']) }}</p>
 </div>
 @else
-<div class="content">
+<div class="content contentZoomIn">
 	<!-- test comment-->
 	@isset($smartalbums)
 		<div class='divider'><h1>{{ Lang::get('SMART_ALBUMS') }}</h1></div>
