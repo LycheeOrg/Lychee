@@ -4,9 +4,9 @@
 
 namespace App\Http\Controllers;
 
+use AccessControl;
 use App\Assets\Helpers;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
-use App\Locale\Lang;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
@@ -16,6 +16,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
+use Lang;
 
 class SessionController extends Controller
 {
@@ -23,11 +24,6 @@ class SessionController extends Controller
 	 * @var ConfigFunctions
 	 */
 	private $configFunctions;
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
 
 	/**
 	 * @var GitHubFunctions
@@ -39,10 +35,9 @@ class SessionController extends Controller
 	 * @param SessionFunctions $sessionFunctions
 	 * @param GitHubFunctions  $gitHubFunctions
 	 */
-	public function __construct(ConfigFunctions $configFunctions, SessionFunctions $sessionFunctions, GitHubFunctions $gitHubFunctions)
+	public function __construct(ConfigFunctions $configFunctions, GitHubFunctions $gitHubFunctions)
 	{
 		$this->configFunctions = $configFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 		$this->gitHubFunctions = $gitHubFunctions;
 	}
 
@@ -53,7 +48,7 @@ class SessionController extends Controller
 	 */
 	public function init()
 	{
-		$logged_in = $this->sessionFunctions->is_logged_in();
+		$logged_in = AccessControl::is_logged_in();
 
 		// Return settings
 		$return = [];
@@ -62,9 +57,9 @@ class SessionController extends Controller
 		$return['sub_albums'] = true;           // Lychee-laravel does have sub albums
 
 		// Check if login credentials exist and login if they don't
-		if ($this->sessionFunctions->noLogin() === true || $logged_in === true) {
+		if (AccessControl::noLogin() === true || $logged_in === true) {
 			// we the the UserID (it is set to 0 if there is no login/password = admin)
-			$user_id = $this->sessionFunctions->id();
+			$user_id = AccessControl::id();
 
 			if ($user_id == 0) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
@@ -93,6 +88,7 @@ class SessionController extends Controller
 
 			// here we say whether we looged in because there is no login/password or if we actually entered a login/password
 			$return['config']['login'] = $logged_in;
+			$return['config']['lang_available'] = Lang::get_lang_available();
 		} else {
 			// Logged out
 			$return['config'] = $this->configFunctions->public();
@@ -127,18 +123,18 @@ class SessionController extends Controller
 	public function login(UsernamePasswordRequest $request)
 	{
 		// No login
-		if ($this->sessionFunctions->noLogin() === true) {
+		if (AccessControl::noLogin() === true) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
 			return 'true';
 		}
 
 		// this is probably sensitive to timing attacks...
-		if ($this->sessionFunctions->log_as_admin($request['username'], $request['password'], $request->ip()) === true) {
+		if (AccessControl::log_as_admin($request['username'], $request['password'], $request->ip()) === true) {
 			return 'true';
 		}
 
-		if ($this->sessionFunctions->log_as_user($request['username'], $request['password'], $request->ip()) === true) {
+		if (AccessControl::log_as_user($request['username'], $request['password'], $request->ip()) === true) {
 			return 'true';
 		}
 

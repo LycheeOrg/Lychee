@@ -6,10 +6,10 @@
 
 namespace App\Http\Controllers;
 
+use AccessControl;
 use App\Assets\Helpers;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -31,11 +31,6 @@ class ImportController extends Controller
 	 */
 	private $albumFunctions;
 
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
 	private $memCheck;
 	private $memLimit;
 	private $memWarningGiven;
@@ -44,15 +39,13 @@ class ImportController extends Controller
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param PhotoFunctions   $photoFunctions
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param SessionFunctions $sessionFunctions
+	 * @param PhotoFunctions $photoFunctions
+	 * @param AlbumFunctions $albumFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
+	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions)
 	{
 		$this->photoFunctions = $photoFunctions;
 		$this->albumFunctions = $albumFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 		$this->statusCLIFormatting = false;
 		$this->memCheck = true;
 	}
@@ -392,7 +385,7 @@ class ImportController extends Controller
 					->first();
 			}
 			if ($album === null) {
-				$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
+				$album = $this->albumFunctions->create(basename($dir), $albumID, AccessControl::id());
 				// this actually should not fail.
 				if ($album === false) {
 					// @codeCoverageIgnoreStart

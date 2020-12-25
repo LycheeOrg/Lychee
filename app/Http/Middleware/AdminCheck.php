@@ -4,26 +4,20 @@
 
 namespace App\Http\Middleware;
 
+use AccessControl;
 use App\Http\Middleware\Checks\IsInstalled;
-use App\ModelFunctions\SessionFunctions;
 use Closure;
 use Illuminate\Http\Request;
 
 class AdminCheck
 {
 	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
 	 * @var IsInstalled
 	 */
 	private $isInstalled;
 
-	public function __construct(SessionFunctions $sessionFunctions, IsInstalled $isInstalled)
+	public function __construct(IsInstalled $isInstalled)
 	{
-		$this->sessionFunctions = $sessionFunctions;
 		$this->isInstalled = $isInstalled;
 	}
 
@@ -41,7 +35,7 @@ class AdminCheck
 			return $next($request);
 		}
 
-		if (!$this->sessionFunctions->is_admin()) {
+		if (!AccessControl::is_admin()) {
 			return response('false');
 		}
 

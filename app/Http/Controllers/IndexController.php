@@ -4,7 +4,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Locale\Lang;
 use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -12,6 +11,7 @@ use App\Models\Configs;
 use App\Models\Page;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
+use Lang;
 
 class IndexController extends Controller
 {
@@ -24,11 +24,6 @@ class IndexController extends Controller
 	 * @var SymLinkFunctions
 	 */
 	private $symLinkFunctions;
-
-	/**
-	 * @var LycheeVersion
-	 */
-	private $lycheeVersion;
 
 	/**
 	 * @param ConfigFunctions  $configFunctions

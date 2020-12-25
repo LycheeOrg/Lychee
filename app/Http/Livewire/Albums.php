@@ -58,7 +58,6 @@ class Albums extends Component
 
 	public function render()
 	{
-		// dd($this->smartalbums);
 		return view('livewire.albums');
 	}
 }

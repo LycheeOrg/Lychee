@@ -54,6 +54,16 @@ class Lang
 		return $return;
 	}
 
+	public function get(string $string)
+	{
+		return $this->language->get_locale()[$string];
+	}
+
+	public function get_code()
+	{
+		return $this->language->code();
+	}
+
 	public function get_lang()
 	{
 		return $this->language->get_locale();

@@ -4,12 +4,12 @@
 
 namespace App\Http\Controllers;
 
+use AccessControl;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
-use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
@@ -56,13 +56,11 @@ class SearchController extends Controller
 	public function __construct(
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
-		SessionFunctions $sessionFunctions,
 		ReadAccessFunctions $readAccessFunctions,
 		SymLinkFunctions $symLinkFunctions
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
@@ -103,7 +101,7 @@ class SearchController extends Controller
 	 */
 	public function search(Request $request)
 	{
-		if (!$this->sessionFunctions->is_logged_in() && Configs::get_value('public_search', '0') !== '1') {
+		if (!AccessControl::is_logged_in() && Configs::get_value('public_search', '0') !== '1') {
 			return Response::error('Search disabled.');
 		}
 
@@ -155,7 +153,7 @@ class SearchController extends Controller
 			foreach ($albums as $album_model) {
 				$album = AlbumCast::toArray($album_model);
 
-				if ($this->sessionFunctions->is_logged_in()) {
+				if (AccessControl::is_logged_in()) {
 					$album['owner'] = $album_model->owner->username;
 				}
 				if ($this->readAccessFunctions->album($album_model) === 1) {
@@ -190,8 +188,8 @@ class SearchController extends Controller
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);
 				// Add the 'Unsorted' album.
-				if ($this->sessionFunctions->is_logged_in()) {
-					$id = $this->sessionFunctions->id();
+				if (AccessControl::is_logged_in()) {
+					$id = AccessControl::id();
 					$user = User::find($id);
 					if ($id == 0 || $user->upload) {
 						$query->orWhere('album_id', '=', null);

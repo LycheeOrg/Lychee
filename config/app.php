@@ -154,7 +154,7 @@ return [
 		Illuminate\Redis\RedisServiceProvider::class,
 		// Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
 		Illuminate\Session\SessionServiceProvider::class,
-		// Illuminate\Translation\TranslationServiceProvider::class,
+		Illuminate\Translation\TranslationServiceProvider::class,
 		Illuminate\Validation\ValidationServiceProvider::class,
 		Illuminate\View\ViewServiceProvider::class,
 
@@ -173,6 +173,7 @@ return [
 		App\Providers\EventServiceProvider::class,
 		App\Providers\RouteServiceProvider::class,
 		App\Providers\LangServiceProvider::class,
+		App\Providers\AccessControlServiceProvider::class,
 	],
 
 	/*
@@ -188,6 +189,7 @@ return [
 
 	'aliases' => [
 		'App' => Illuminate\Support\Facades\App::class,
+		'AccessControl' => App\Facades\AccessControl::class,
 		'Arr' => Illuminate\Support\Arr::class,
 		'Artisan' => Illuminate\Support\Facades\Artisan::class,
 		'Auth' => Illuminate\Support\Facades\Auth::class,
@@ -207,7 +209,7 @@ return [
 		'Hash' => Illuminate\Support\Facades\Hash::class,
 		'Http' => Illuminate\Support\Facades\Http::class,
 		// 'Lang' => Illuminate\Support\Facades\Lang::class,
-		'Lang' => App\Locale\LangFacade::class,
+		'Lang' => App\Facades\Lang::class,
 		'Log' => Illuminate\Support\Facades\Log::class,
 		'Mail' => Illuminate\Support\Facades\Mail::class,
 		'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,

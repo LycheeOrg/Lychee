@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Assets\Helpers;
-use App\Locale\Lang;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -137,8 +136,6 @@ class Configs extends Model
 
 			$return['sorting_Photos'] = 'ORDER BY ' . $return['sorting_Photos_col'] . ' ' . $return['sorting_Photos_order'];
 			$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
-
-			$return['lang_available'] = Lang::get_lang_available();
 
 			self::$cache = $return;
 		} catch (Exception $e) {

@@ -1,12 +1,9 @@
 <!DOCTYPE HTML>
-<html lang="{{ str_replace('_', '-', Config::get('app.locale')) }}">
+<html lang="{{ str_replace('_', '-', Lang::get_code()) }}">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
 	<title>{{ App\Models\Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE')) }}</title>
-	
-	@yield('head-js')
-	@yield('head-css')
-	
+		
 	<link rel="shortcut icon" href="favicon.ico">
 	<link rel="apple-touch-icon" href="img/apple-touch-icon-ipad.png" sizes="120x120">
 	<link rel="apple-touch-icon" href="img/apple-touch-icon-iphone.png" sizes="152x152">
@@ -16,24 +13,38 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	
+	
+	<script src="Lychee-front/node_modules/lazysizes/lazysizes.min.js"></script>
+	
+	<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/main.css') }}">
+	<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/user.css') }}">
+	@if (App\Assets\Helpers::getDeviceType()=="television")
+	<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/TV.css') }}">
+	@endif
+
 	{{-- @if($rss_enable)
 	  @include('feed::links')
 	@endif --}}
 	
 	<script src="dist/Larapass.js"></script>
 	
-
 	@yield('head-meta')
 @livewireStyles
 </head>
 <body>
-	@include('includes.svg')
-	@yield('content')
-{{-- @livewire('header') --}}
+<div id="container" style="padding-bottom: 62px;">
+<!-- Loading -->
+<div id="loading"></div>
+
+	@livewire('header')
+
+	{{ $slot }}
+
 {{-- @livewire('left-menu') --}}
 {{-- @livewire('albums') --}}
 
 {{-- @include('includes.footer') --}}
 @livewireScripts
+@include('includes.svg')
 </body>
 </html>

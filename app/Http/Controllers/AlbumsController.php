@@ -4,9 +4,9 @@
 
 namespace App\Http\Controllers;
 
+use AccessControl;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -25,23 +25,15 @@ class AlbumsController extends Controller
 	private $albumsFunctions;
 
 	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param AlbumsFunctions  $albumsFunctions
-	 * @param SessionFunctions $sessionFunctions
+	 * @param AlbumFunctions  $albumFunctions
+	 * @param AlbumsFunctions $albumsFunctions
 	 */
 	public function __construct(
 		AlbumFunctions $albumFunctions,
-		AlbumsFunctions $albumsFunctions,
-		SessionFunctions $sessionFunctions
+		AlbumsFunctions $albumsFunctions
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 	}
 
 	/**
@@ -89,10 +81,10 @@ class AlbumsController extends Controller
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);
 				// Add the 'Unsorted' album.
-				if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload()) {
+				if (AccessControl::is_logged_in() && AccessControl::can_upload()) {
 					$query->orWhere('album_id', '=', null);
 
-					$id = $this->sessionFunctions->id();
+					$id = AccessControl::id();
 					if ($id !== 0) {
 						$query->where('owner_id', '=', $id);
 					}

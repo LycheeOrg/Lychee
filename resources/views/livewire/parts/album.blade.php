@@ -3,6 +3,10 @@
 	{{ $data['nsfw'] === "1" && lychee.nsfw_blur ? 'blurred' : '' }}'
 	data-id='{{ $data['id'] }}'
 	data-nsfw='{{ $data['nsfw'] == "1" ? '1' : '0'}}'>
+
+	@for ($i = 0; $i < 3; $i++)
+		@include('livewire.parts.album-thumb')
+	@endfor
   {{-- ${build.getAlbumThumb(data, 2)}
   ${build.getAlbumThumb(data, 1)}
   ${build.getAlbumThumb(data, 0)} --}}
@@ -11,7 +15,6 @@
 	<h1 title='{{ $data['title'] }}'>{{ $data['title'] }}</h1>
 	{{-- <a>{{ $data['date_stamp'] }}</a> --}}
 </div>
-<svg class='iconic'><use xlink:href='#${icon}' /></svg>
 <div class='badges'>
 	@if (isset($data['nsfw']) && $data['nsfw'] == "1")
 		<a class='badge badge--nsfw icn-warning'><svg class='iconic'><use xlink:href='#warning' /></svg></a>

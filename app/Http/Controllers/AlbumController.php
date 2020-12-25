@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers;
 
+use AccessControl;
 use App\Assets\Helpers;
 use App\ControllerFunctions\ReadAccessFunctions;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
@@ -13,7 +14,6 @@ use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -39,11 +39,6 @@ class AlbumController extends Controller
 	private $albumsFunctions;
 
 	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
 	 * @var readAccessFunctions
 	 */
 	private $readAccessFunctions;
@@ -56,19 +51,16 @@ class AlbumController extends Controller
 	/**
 	 * @param AlbumFunctions      $albumFunctions
 	 * @param AlbumsFunctions     $albumsFunctions
-	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 */
 	public function __construct(
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
-		SessionFunctions $sessionFunctions,
 		ReadAccessFunctions $readAccessFunctions,
 		SmartFactory $smartFactory
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->smartFactory = $smartFactory;
 	}
@@ -87,7 +79,7 @@ class AlbumController extends Controller
 			'parent_id' => 'int|nullable',
 		]);
 
-		$album = $this->albumFunctions->create($request['title'], $request['parent_id'], $this->sessionFunctions->id());
+		$album = $this->albumFunctions->create($request['title'], $request['parent_id'], AccessControl::id());
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}

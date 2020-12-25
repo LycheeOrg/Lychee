@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers;
 
+use AccessControl;
 use App\Assets\Helpers;
 use App\Exceptions\AlbumDoesNotExistsException;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
@@ -11,7 +12,6 @@ use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast;
 use App\ModelFunctions\PhotoFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
@@ -35,11 +35,6 @@ class PhotoController extends Controller
 	private $photoFunctions;
 
 	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
 	 * @var AlbumFunction
 	 */
 	private $albumFunctions;
@@ -58,20 +53,17 @@ class PhotoController extends Controller
 	 * @param PhotoFunctions   $photoFunctions
 	 * @param AlbumFunctions   $albumFunctions
 	 * @param AlbumsFunctions  $albumsFunctions
-	 * @param SessionFunctions $sessionFunctions
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
 	public function __construct(
 		PhotoFunctions $photoFunctions,
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
-		SessionFunctions $sessionFunctions,
 		SymLinkFunctions $symLinkFunctions
 	) {
 		$this->photoFunctions = $photoFunctions;
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
@@ -101,7 +93,7 @@ class PhotoController extends Controller
 		Cast::urls($return, $photo);
 
 		$this->symLinkFunctions->getUrl($photo, $return);
-		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
+		if (!AccessControl::is_current_user($photo->owner_id)) {
 			if ($photo->album_id != null) {
 				$album = $photo->album;
 				if (!$album->is_full_photo_visible()) {
@@ -133,7 +125,7 @@ class PhotoController extends Controller
 	public function getRandom()
 	{
 		// here we need to refine.
-		$starred = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
+		$starred = new StarredAlbum($this->albumFunctions);
 		$starred->setAlbumIDs($this->albumsFunctions->getPublicAlbumsId());
 		$photo = $starred->get_photos()->inRandomOrder()->first();
 
@@ -571,7 +563,7 @@ class PhotoController extends Controller
 			return null;
 		}
 
-		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
+		if (!AccessControl::is_current_user($photo->owner_id)) {
 			if ($photo->album_id !== null) {
 				if (!$photo->album->is_downloadable()) {
 					return null;
