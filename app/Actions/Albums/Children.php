@@ -4,7 +4,7 @@ namespace App\Actions\Albums;
 
 class Children
 {
-	public function get(Type $var = null)
+	public function get()
 	{
 		// code...
 	}
