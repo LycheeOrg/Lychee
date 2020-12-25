@@ -2,10 +2,11 @@
 
 namespace App\Providers;
 
-use App\ControllerFunctions\Update\Apply as ApplyUpdate;
-use App\ControllerFunctions\Update\Check as CheckUpdate;
+use App\Actions\Update\Apply as ApplyUpdate;
+use App\Actions\Update\Check as CheckUpdate;
 use App\Image;
 use App\Image\ImageHandler;
+use App\Locale\Lang;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
@@ -30,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
 		AlbumFunctions::class => AlbumFunctions::class,
 		AlbumsFunctions::class => AlbumsFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
+		Lang::class => Lang::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,
 		GitHubFunctions::class => GitHubFunctions::class,

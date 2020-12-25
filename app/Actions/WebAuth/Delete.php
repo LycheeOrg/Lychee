@@ -1,10 +1,10 @@
 <?php
 
-namespace App\ControllerFunctions\WebAuth;
+namespace App\Actions\WebAuth;
 
 use App\ModelFunctions\SessionFunctions;
 
-class Lists
+class Delete
 {
 	/**
 	 * @var SessionFunctions
@@ -20,8 +20,11 @@ class Lists
 		$this->sessionFunctions = $sessionFunctions;
 	}
 
-	public function do()
+	public function do($ids)
 	{
-		return $this->sessionFunctions->user()->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
+		$user = $this->sessionFunctions->user();
+		$user->removeCredential($ids);
+
+		return 'true';
 	}
 }

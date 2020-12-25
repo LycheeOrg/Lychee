@@ -3,7 +3,7 @@
 // @formatter:off
 
 namespace PHPSTORM_META {
-   /*
+	/*
 	* PhpStorm Meta file, to provide autocomplete information for PhpStorm
 	* Generated on 2019-06-21 13:40:12.
 	*
@@ -12,8 +12,8 @@ namespace PHPSTORM_META {
 	*/
 	override(new \Illuminate\Contracts\Container\Container(), map([
 		'' => '@',
-		'App\ControllerFunctions\ReadAccessFunctions' => \App\ControllerFunctions\ReadAccessFunctions::class,
-		'App\ControllerFunctions\ApplyUpdateFunctions' => \App\ControllerFunctions\ApplyUpdateFunctions::class,
+		'App\Actions\ReadAccessFunctions' => \App\Actions\ReadAccessFunctions::class,
+		'App\Actions\ApplyUpdateFunctions' => \App\Actions\ApplyUpdateFunctions::class,
 		'App\Image\ImageHandlerInterface' => \App\Image\ImageHandler::class,
 		'App\Metadata\GitHubFunctions' => \App\Metadata\GitHubFunctions::class,
 		'App\ModelFunctions\AlbumFunctions' => \App\ModelFunctions\AlbumFunctions::class,
@@ -174,8 +174,8 @@ namespace PHPSTORM_META {
 	]));
 	override(\Illuminate\Contracts\Container\Container::make(0), map([
 		'' => '@',
-		'App\ControllerFunctions\ReadAccessFunctions' => \App\ControllerFunctions\ReadAccessFunctions::class,
-		'App\ControllerFunctions\ApplyUpdateFunctions' => \App\ControllerFunctions\ApplyUpdateFunctions::class,
+		'App\Actions\ReadAccessFunctions' => \App\Actions\ReadAccessFunctions::class,
+		'App\Actions\ApplyUpdateFunctions' => \App\Actions\ApplyUpdateFunctions::class,
 		'App\Image\ImageHandlerInterface' => \App\Image\ImageHandler::class,
 		'App\Metadata\GitHubFunctions' => \App\Metadata\GitHubFunctions::class,
 		'App\ModelFunctions\AlbumFunctions' => \App\ModelFunctions\AlbumFunctions::class,
@@ -336,8 +336,8 @@ namespace PHPSTORM_META {
 	]));
 	override(\Illuminate\Contracts\Container\Container::makeWith(0), map([
 		'' => '@',
-		'App\ControllerFunctions\ReadAccessFunctions' => \App\ControllerFunctions\ReadAccessFunctions::class,
-		'App\ControllerFunctions\ApplyUpdateFunctions' => \App\ControllerFunctions\ApplyUpdateFunctions::class,
+		'App\Actions\ReadAccessFunctions' => \App\Actions\ReadAccessFunctions::class,
+		'App\Actions\ApplyUpdateFunctions' => \App\Actions\ApplyUpdateFunctions::class,
 		'App\Image\ImageHandlerInterface' => \App\Image\ImageHandler::class,
 		'App\Metadata\GitHubFunctions' => \App\Metadata\GitHubFunctions::class,
 		'App\ModelFunctions\AlbumFunctions' => \App\ModelFunctions\AlbumFunctions::class,
@@ -498,8 +498,8 @@ namespace PHPSTORM_META {
 	]));
 	override(\App::make(0), map([
 		'' => '@',
-		'App\ControllerFunctions\ReadAccessFunctions' => \App\ControllerFunctions\ReadAccessFunctions::class,
-		'App\ControllerFunctions\ApplyUpdateFunctions' => \App\ControllerFunctions\ApplyUpdateFunctions::class,
+		'App\Actionsunctions' => \App\Actionsass,
+		'App\Actions> \App\Actionslass,
 		'App\Image\ImageHandlerInterface' => \App\Image\ImageHandler::class,
 		'App\Metadata\GitHubFunctions' => \App\Metadata\GitHubFunctions::class,
 		'App\ModelFunctions\AlbumFunctions' => \App\ModelFunctions\AlbumFunctions::class,
@@ -660,8 +660,8 @@ namespace PHPSTORM_META {
 	]));
 	override(\App::makeWith(0), map([
 		'' => '@',
-		'App\ControllerFunctions\ReadAccessFunctions' => \App\ControllerFunctions\ReadAccessFunctions::class,
-		'App\ControllerFunctions\ApplyUpdateFunctions' => \App\ControllerFunctions\ApplyUpdateFunctions::class,
+		'App\Actions \App\Actions
+		'App\ActionsFunctions' => \App\Actions\ApplyUpdateFunctions::class,
 		'App\Image\ImageHandlerInterface' => \App\Image\ImageHandler::class,
 		'App\Metadata\GitHubFunctions' => \App\Metadata\GitHubFunctions::class,
 		'App\ModelFunctions\AlbumFunctions' => \App\ModelFunctions\AlbumFunctions::class,
@@ -822,8 +822,8 @@ namespace PHPSTORM_META {
 	]));
 	override(\app(0), map([
 		'' => '@',
-		'App\ControllerFunctions\ReadAccessFunctions' => \App\ControllerFunctions\ReadAccessFunctions::class,
-		'App\ControllerFunctions\ApplyUpdateFunctions' => \App\ControllerFunctions\ApplyUpdateFunctions::class,
+		'App\Actions\ReadAccessFunctions' => \App\Actions\ReadAccessFunctions::class,
+		'App\Actions\ApplyUpdateFunctions' => \App\Actions\ApplyUpdateFunctions::class,
 		'App\Image\ImageHandlerInterface' => \App\Image\ImageHandler::class,
 		'App\Metadata\GitHubFunctions' => \App\Metadata\GitHubFunctions::class,
 		'App\ModelFunctions\AlbumFunctions' => \App\ModelFunctions\AlbumFunctions::class,
@@ -984,8 +984,8 @@ namespace PHPSTORM_META {
 	]));
 	override(\resolve(0), map([
 		'' => '@',
-		'App\ControllerFunctions\ReadAccessFunctions' => \App\ControllerFunctions\ReadAccessFunctions::class,
-		'App\ControllerFunctions\ApplyUpdateFunctions' => \App\ControllerFunctions\ApplyUpdateFunctions::class,
+		'App\Actions\ReadAccessFunctions' => \App\Actions\ReadAccessFunctions::class,
+		'App\Actions\ApplyUpdateFunctions' => \App\Actions\ApplyUpdateFunctions::class,
 		'App\Image\ImageHandlerInterface' => \App\Image\ImageHandler::class,
 		'App\Metadata\GitHubFunctions' => \App\Metadata\GitHubFunctions::class,
 		'App\ModelFunctions\AlbumFunctions' => \App\ModelFunctions\AlbumFunctions::class,

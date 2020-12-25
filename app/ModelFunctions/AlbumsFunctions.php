@@ -4,7 +4,7 @@
 
 namespace App\ModelFunctions;
 
-use App\ControllerFunctions\ReadAccessFunctions;
+use App\Actions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\Models\Album;
 use App\Models\Configs;

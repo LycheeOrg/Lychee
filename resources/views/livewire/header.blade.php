@@ -1,11 +1,12 @@
 <header class="header">
-    <div class="header__toolbar header__toolbar--public">
+	@if(!AccessControl::is_logged_in())
+    <div class="header__toolbar header__toolbar--public header__toolbar--visible">
 
         <a class="button" id="button_signin" title="{{ Lang::get('SIGN_IN') }}" data-tabindex="1">
             <svg class="iconic"><use xlink:href="#account-login"></use></svg>
         </a>
 
-        <a class="header__title" data-tabindex="2"></a>
+        <a class="header__title" data-tabindex="2">{{ $title }}</a>
 
         <input class="header__search" type="text" name="search" placeholder="{{ Lang::get('SEARCH') }}" data-tabindex="3">
         <a class="header__clear header__clear_public">&times;</a>
@@ -13,15 +14,17 @@
             <svg class="iconic"><use xlink:href="#map"></use></svg>
         </a>
 {{--        <a class="header__hostedwith">{{ Lang::get('HOSTED_WITH_LYCHEE') }}</a>--}}
+	</div>
+	@else
 
-    </div>
-    <div class="header__toolbar header__toolbar--albums">
+	@if($mode == 'albums')
+    <div class="header__toolbar header__toolbar--albums header__toolbar--visible">
 
         <a class="button" id="button_settings" title="{{ Lang::get('SETTINGS') }}" data-tabindex="1">
             <svg class="iconic"><use xlink:href="#cog"></use></svg>
         </a>
 
-        <a class="header__title" data-tabindex="2"></a>
+        <a class="header__title" data-tabindex="2">{{ $title }}</a>
 
         <input class="header__search" type="text" name="search" placeholder="{{ Lang::get('SEARCH') }}" data-tabindex="3">
         <a class="header__clear">&times;</a>
@@ -33,8 +36,9 @@
             <svg class="iconic"><use xlink:href="#plus"></use></svg>
         </a>
 
-    </div>
-    <div class="header__toolbar header__toolbar--album">
+	</div>
+	@elseif( $mode == 'album')
+    <div class="header__toolbar header__toolbar--album header__toolbar--visible">
 
         <a class="button" id="button_back_home" title="{{ Lang::get('CLOSE_ALBUM') }}" data-tabindex="1">
             <svg class="iconic"><use xlink:href="#chevron-left"></use></svg>
@@ -77,8 +81,9 @@
             <svg class="iconic"><use xlink:href="#plus"></use></svg>
         </a>
 
-    </div>
-    <div class="header__toolbar header__toolbar--photo">
+	</div>
+	@elseif ($mode == 'photo')
+    <div class="header__toolbar header__toolbar--photo header__toolbar--visible">
 
         <a class="button" id="button_back" title="{{ Lang::get('CLOSE_PHOTO') }}" data-tabindex="1">
             <svg class="iconic"><use xlink:href="#chevron-left"></use></svg>
@@ -125,7 +130,7 @@
         </a>
 
     </div>
-
+	@elseif ($mode == 'map')
     <div class="header__toolbar header__toolbar--map">
 
         <a class="button" id="button_back_map" title="{{ Lang::get('CLOSE_MAP') }}" data-tabindex="1">
@@ -134,7 +139,18 @@
 
         <a class="header__title" data-tabindex="2"></a>
 
-    </div>
+	</div>
+	@else 
+    <div class="header__toolbar header__toolbar--map">
 
+        <a class="button" id="button_back_map" title="{{ $mode }}" data-tabindex="1">
+            <svg class="iconic"><use xlink:href="#chevron-left"></use></svg>
+        </a>
+
+        <a class="header__title" data-tabindex="2"></a>
+
+	</div>
+	@endif
+	@endif
 
 </header>

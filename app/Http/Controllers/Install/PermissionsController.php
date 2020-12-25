@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Install;
 
-use App\ControllerFunctions\Install\DefaultConfig;
-use App\ControllerFunctions\Install\PermissionsChecker;
+use App\Actions\Install\DefaultConfig;
+use App\Actions\Install\PermissionsChecker;
 use App\Http\Controllers\Controller;
 
 final class PermissionsController extends Controller

@@ -5,7 +5,7 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
-use App\ControllerFunctions\ReadAccessFunctions;
+use App\Actions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;

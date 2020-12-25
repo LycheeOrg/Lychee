@@ -32,19 +32,8 @@
 @livewireStyles
 </head>
 <body>
-<div id="container" style="padding-bottom: 62px;">
-<!-- Loading -->
-<div id="loading"></div>
-
-	@livewire('header')
-
+	@include('includes.svg')
 	{{ $slot }}
-
-{{-- @livewire('left-menu') --}}
-{{-- @livewire('albums') --}}
-
-{{-- @include('includes.footer') --}}
-@livewireScripts
-@include('includes.svg')
+	@livewireScripts
 </body>
 </html>

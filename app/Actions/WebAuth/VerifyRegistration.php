@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ControllerFunctions\WebAuth;
+namespace App\Actions\WebAuth;
 
 use App\ModelFunctions\SessionFunctions;
 use App\Models\User;

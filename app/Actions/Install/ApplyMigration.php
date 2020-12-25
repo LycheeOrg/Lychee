@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ControllerFunctions\Install;
+namespace App\Actions\Install;
 
 use Illuminate\Support\Facades\Artisan;
 

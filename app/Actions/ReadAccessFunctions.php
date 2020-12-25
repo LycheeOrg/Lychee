@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ControllerFunctions;
+namespace App\Actions;
 
 use App\Exceptions\AlbumDoesNotExistsException;
 use App\ModelFunctions\SessionFunctions;

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\ControllerFunctions\Update\Apply as ApplyUpdate;
-use App\ControllerFunctions\Update\Check as CheckUpdate;
+use App\Actions\Update\Apply as ApplyUpdate;
+use App\Actions\Update\Check as CheckUpdate;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\Checks\IsMigrated;
 use App\Metadata\LycheeVersion;

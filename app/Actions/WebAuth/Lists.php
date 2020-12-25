@@ -1,12 +1,10 @@
 <?php
 
-namespace App\ControllerFunctions\WebAuth;
+namespace App\Actions\WebAuth;
 
 use App\ModelFunctions\SessionFunctions;
-use App\Models\User;
-use DarkGhostHunter\Larapass\Facades\WebAuthn;
 
-class GenerateRegistration
+class Lists
 {
 	/**
 	 * @var SessionFunctions
@@ -24,12 +22,6 @@ class GenerateRegistration
 
 	public function do()
 	{
-		/**
-		 * @var User
-		 */
-		$user = $this->sessionFunctions->user();
-
-		// Create an attestation for a given user.
-		return WebAuthn::generateAttestation($user);
+		return $this->sessionFunctions->user()->webAuthnCredentials->map(fn ($cred) => ['id' => $cred->id]);
 	}
 }

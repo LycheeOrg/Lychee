@@ -5,8 +5,8 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
-use App\ControllerFunctions\ReadAccessFunctions;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
 use App\Http\Requests\AlbumRequests\AlbumIDsRequest;

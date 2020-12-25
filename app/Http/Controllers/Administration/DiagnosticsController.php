@@ -6,15 +6,15 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\ControllerFunctions\Diagnostics\BasicPermissionCheck;
-use App\ControllerFunctions\Diagnostics\ConfigSanityCheck;
-use App\ControllerFunctions\Diagnostics\DBSupportCheck;
-use App\ControllerFunctions\Diagnostics\GDSupportCheck;
-use App\ControllerFunctions\Diagnostics\ImageOptCheck;
-use App\ControllerFunctions\Diagnostics\IniSettingsCheck;
-use App\ControllerFunctions\Diagnostics\LycheeDBVersionCheck;
-use App\ControllerFunctions\Diagnostics\PHPVersionCheck;
-use App\ControllerFunctions\Update\Check as CheckUpdate;
+use App\Actions\Diagnostics\BasicPermissionCheck;
+use App\Actions\Diagnostics\ConfigSanityCheck;
+use App\Actions\Diagnostics\DBSupportCheck;
+use App\Actions\Diagnostics\GDSupportCheck;
+use App\Actions\Diagnostics\ImageOptCheck;
+use App\Actions\Diagnostics\IniSettingsCheck;
+use App\Actions\Diagnostics\LycheeDBVersionCheck;
+use App\Actions\Diagnostics\PHPVersionCheck;
+use App\Actions\Update\Check as CheckUpdate;
 use App\Http\Controllers\Controller;
 use App\Metadata\DiskUsage;
 use App\Metadata\LycheeVersion;

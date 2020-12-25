@@ -16,6 +16,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['layout' => ''], function () {
-	Route::get('/livewire', Albums::class)->middleware(['installed', 'migrated']);
-	Route::get('/livewire/Albums', Albums::class)->middleware(['installed', 'migrated']);
+	Route::get('/livewire', Fullpage::class)->middleware(['installed', 'migrated']);
+	Route::get('/livewire/Albums', Fullpage::class)->middleware(['installed', 'migrated']);
 });

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ControllerFunctions\Diagnostics;
+namespace App\Actions\Diagnostics;
 
 use App\Metadata\LycheeVersion;
 

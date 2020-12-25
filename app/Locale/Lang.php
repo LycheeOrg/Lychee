@@ -4,6 +4,7 @@ namespace App\Locale;
 
 use App\Contracts\Language;
 use App\Models\Configs;
+use Illuminate\Support\Collection as BaseCollection;
 
 class Lang
 {
@@ -14,40 +15,37 @@ class Lang
 	 */
 	private $language;
 
+	/**
+	 * Initialize the Facade.
+	 */
 	public function __construct()
 	{
 		$this->code = Configs::get_value('lang', 'en');
 
-		$list_lang = $this->get_classes();
-
-		$found = false;
-		for ($i = 0; $i < count($list_lang); $i++) {
-			$language = new $list_lang[$i]();
-			if ($language->code() == $this->code) {
-				$this->language = $language;
-				$found = true;
-				break;
-			}
-		}
+		$list_lang = $this->get_classes()->map(fn ($l) => new $l())
+			->filter(fn ($l) => $l->code() == $this->code);
 
 		// default: we force English
-		if (!$found) {
+		if ($list_lang->isEmpty()) {
 			$this->language = new English();
+		} else {
+			$this->language = $list_lang->first();
 		}
 	}
 
-	private function get_classes()
+	public function get_classes(): BaseCollection
 	{
-		$return = [];
-		$list_lang = scandir(__DIR__);
+		$return = new BaseCollection();
+
 		$contract = 'App\Contracts\Language';
+		$list_lang = scandir(__DIR__);
 
 		for ($i = 0; $i < count($list_lang); $i++) {
 			$class_candidate = __NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4);
 			if (
 				is_subclass_of($class_candidate, $contract)
 			) {
-				$return[] = __NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4);
+				$return->push(__NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4));
 			}
 		}
 
@@ -71,13 +69,6 @@ class Lang
 
 	public function get_lang_available()
 	{
-		$list_lang = $this->get_classes();
-		$return = [];
-		for ($i = 0; $i < count($list_lang); $i++) {
-			$language = new $list_lang[$i]();
-			$return[] = $language->code();
-		}
-
-		return $return;
+		return $this->get_classes()->map(fn ($l) => (new $l())->code());
 	}
 }

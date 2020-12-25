@@ -1,10 +1,12 @@
 <?php
 
-namespace App\ControllerFunctions\WebAuth;
+namespace App\Actions\WebAuth;
 
 use App\ModelFunctions\SessionFunctions;
+use App\Models\User;
+use DarkGhostHunter\Larapass\Facades\WebAuthn;
 
-class Delete
+class GenerateRegistration
 {
 	/**
 	 * @var SessionFunctions
@@ -20,11 +22,14 @@ class Delete
 		$this->sessionFunctions = $sessionFunctions;
 	}
 
-	public function do($ids)
+	public function do()
 	{
+		/**
+		 * @var User
+		 */
 		$user = $this->sessionFunctions->user();
-		$user->removeCredential($ids);
 
-		return 'true';
+		// Create an attestation for a given user.
+		return WebAuthn::generateAttestation($user);
 	}
 }

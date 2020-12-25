@@ -15,6 +15,8 @@
 	<h1 title='{{ $data['title'] }}'>{{ $data['title'] }}</h1>
 	{{-- <a>{{ $data['date_stamp'] }}</a> --}}
 </div>
+
+@if (AccessControl::is_logged_in())
 <div class='badges'>
 	@if (isset($data['nsfw']) && $data['nsfw'] == "1")
 		<a class='badge badge--nsfw icn-warning'><svg class='iconic'><use xlink:href='#warning' /></svg></a>
@@ -39,9 +41,11 @@
 		<a class='badge badge--tag'><svg class='iconic'><use xlink:href='#tag' /></svg></a>
 	@endif
 </div>
+@endif
 
+@if ((isset($data['has_albums']) && $data['has_albums'] == '1') || (isset($data['albums']) && count($data['albums']) > 0))
 <div class='subalbum_badge'>
 	<a class='badge badge--folder'><svg class='iconic'><use xlink:href='#layers' /></svg></a>
 </div>
-
+@endif
 </div>

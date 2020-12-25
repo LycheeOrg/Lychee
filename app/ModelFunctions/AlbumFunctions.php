@@ -4,8 +4,8 @@
 
 namespace App\ModelFunctions;
 
+use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
-use App\ControllerFunctions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\PhotoActions\Thumb as Thumb;
