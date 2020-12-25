@@ -124,7 +124,7 @@ class Check
 		if (!$up_to_date) {
 			// @codeCoverageIgnoreStart
 			return $this->gitHubFunctions->get_behind_text();
-			// @codeCoverageIgnoreEnd
+		// @codeCoverageIgnoreEnd
 		} else {
 			return 'Already up to date';
 		}
