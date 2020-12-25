@@ -2,10 +2,10 @@
 
 namespace App\Http\Livewire;
 
+use App\Actions\Albums\Tag;
+use App\Actions\Albums\Top;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
-use App\ModelFunctions\SessionFunctions;
-use App\Models\Configs;
 use Livewire\Component;
 
 class Albums extends Component
@@ -17,38 +17,33 @@ class Albums extends Component
 	/**
 	 * @var AlbumFunctions
 	 */
-	private $albumFunctions;
+	// private $albumFunctions;
 
 	/**
 	 * @var AlbumsFunctions
 	 */
 	private $albumsFunctions;
 
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
+	private $get;
 
 	/**
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param AlbumsFunctions  $albumsFunctions
-	 * @param SessionFunctions $sessionFunctions
+	 * //  * @param AlbumFunctions   $albumFunctions
+	 * @param AlbumsFunctions $albumsFunctions
 	 */
 	public function mount(
-		AlbumFunctions $albumFunctions,
+		// AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
-		SessionFunctions $sessionFunctions
+		Tag $tag,
+		Top $top
 	) {
-		$this->albumFunctions = $albumFunctions;
+		// $this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
-		$this->sessionFunctions = $sessionFunctions;
-
-		// caching to avoid further request
-		Configs::get();
+		$this->top = $top;
+		$this->tag = $tag;
 
 		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
 		//
-		$toplevel = $this->albumsFunctions->getToplevelAlbums();
+		$toplevel = $this->get->top();
 		$children = $this->albumsFunctions->get_children($toplevel);
 
 		$this->albums = $this->albumsFunctions->prepare_albums($toplevel['albums'], $children['albums']);

@@ -5,14 +5,12 @@
 namespace App\ModelFunctions;
 
 use App\Actions\Album\Cast as AlbumCast;
+use App\Actions\Albums\Tag;
+use App\Actions\Albums\Top;
 use App\Actions\ReadAccessFunctions;
-use App\Models\Album;
-use App\Models\Configs;
 use App\SmartAlbums\SmartFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
-use Illuminate\Support\Facades\DB;
 
 class AlbumsFunctions
 {
@@ -42,19 +40,31 @@ class AlbumsFunctions
 	private $smartFactory;
 
 	/**
+	 * @var Top
+	 */
+	private $top;
+
+	/**
+	 * @var Tag
+	 */
+	private $tag;
+
+	/**
 	 * AlbumFunctions constructor.
 	 *
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory)
+	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory, Top $top, Tag $tag)
 	{
 		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->albumFunctions = $albumFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 		$this->smartFactory = $smartFactory;
+		$this->top = $top;
+		$this->tag = $tag;
 	}
 
 	/**
@@ -134,7 +144,7 @@ class AlbumsFunctions
 			$smartAlbums->push($this->smartFactory->make($smart_kind));
 		}
 
-		foreach ($this->getTagAlbums() as $tagAlbum) {
+		foreach ($this->tag->get() as $tagAlbum) {
 			$smartAlbums->push($tagAlbum);
 		}
 
@@ -167,7 +177,7 @@ class AlbumsFunctions
 		/*
 		 * @var Collection[Album]
 		 */
-		$toplevel = $toplevel ?? $this->getToplevelAlbums();
+		$toplevel = $toplevel ?? $this->top->get();
 		if ($toplevel === null) {
 			return $albumIDs;
 		}
@@ -189,77 +199,5 @@ class AlbumsFunctions
 		}
 
 		return $albumIDs;
-	}
-
-	/**
-	 * Returns an array of top-level albums and shared albums visible to
-	 * the current user.
-	 * Note: the array may include password-protected albums that are not
-	 * accessible (but are visible).
-	 *
-	 * @return array[Collection[Album]]
-	 */
-	public function getToplevelAlbums(): array
-	{
-		$return = [
-			'albums' => new BaseCollection(),
-			'shared_albums' => new BaseCollection(),
-		];
-
-		$sortingCol = Configs::get_value('sorting_Albums_col');
-		$sortingOrder = Configs::get_value('sorting_Albums_order');
-
-		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', false);
-		$albumCollection = $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder);
-
-		if ($this->sessionFunctions->is_logged_in()) {
-			$id = $this->sessionFunctions->id();
-			list($return['albums'], $return['shared_albums']) = $albumCollection->partition(function ($album) use ($id) {
-				return $album->owner_id == $id;
-			});
-		} else {
-			$return['albums'] = $albumCollection;
-		}
-
-		return $return;
-	}
-
-	private function createTopleveAlbumsQuery(): Builder
-	{
-		if ($this->sessionFunctions->is_logged_in()) {
-			$sql = Album::with([
-				'owner',
-			])->where('parent_id', '=', null);
-
-			$id = $this->sessionFunctions->id();
-
-			if ($id > 0) {
-				$sql = $sql->where(function ($query) use ($id) {
-					$query = $query->where('owner_id', '=', $id);
-					$query = $query->orWhereIn('id', DB::table('user_album')->select('album_id')
-						->where('user_id', '=', $id));
-					$query = $query->orWhere(function ($_query) {
-						$_query->where('public', '=', true)->where('viewable', '=', true);
-					});
-				});
-			}
-
-			return $sql->orderBy('owner_id', 'ASC');
-		}
-
-		return Album::where('public', '=', '1')
-			->where('viewable', '=', '1')
-			->where('parent_id', '=', null);
-	}
-
-	public function getTagAlbums(): Collection
-	{
-		$sortingCol = Configs::get_value('sorting_Albums_col');
-		$sortingOrder = Configs::get_value('sorting_Albums_order');
-
-		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', true);
-
-		return $this->albumFunctions->customSort($sql, $sortingCol, $sortingOrder)
-			->map(fn (Album $album) => AlbumCast::toTagAlbum($album));
 	}
 }

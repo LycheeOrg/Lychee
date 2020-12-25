@@ -5,6 +5,7 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Albums\Top;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use App\Models\Configs;
@@ -24,15 +25,22 @@ class AlbumsController extends Controller
 	private $albumsFunctions;
 
 	/**
+	 * @var Top
+	 */
+	private $top;
+
+	/**
 	 * @param AlbumFunctions  $albumFunctions
 	 * @param AlbumsFunctions $albumsFunctions
 	 */
 	public function __construct(
 		AlbumFunctions $albumFunctions,
-		AlbumsFunctions $albumsFunctions
+		AlbumsFunctions $albumsFunctions,
+		Top $top
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
+		$this->top = $top;
 	}
 
 	/**
@@ -52,7 +60,7 @@ class AlbumsController extends Controller
 
 		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
 		//
-		$toplevel = $this->albumsFunctions->getToplevelAlbums();
+		$toplevel = $this->top->get();
 		$children = $this->albumsFunctions->get_children($toplevel);
 
 		$return['albums'] = $this->albumsFunctions->prepare_albums($toplevel['albums'], $children['albums']);
