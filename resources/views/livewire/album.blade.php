@@ -4,13 +4,12 @@
 		@foreach ($info['albums'] as $data)
 			@include('livewire.parts.album')
 		@endforeach
+
+		@if(count($photos) > 0)
+		<div class='divider'><h1>{{ Lang::get('PHOTOS') }}</h1></div>
+		@endif
 	@endif
-	@php
-	@endphp
-	@if(count($photos) > 0)
-	<div class='divider'><h1>{{ Lang::get('PHOTOS') }}</h1></div>
 	@foreach ($photos as $data)
 		@include('livewire.parts.photo')
 	@endforeach
-	@endif
 </div>

@@ -52,7 +52,7 @@
 		</span>
 	@else
 		@if ($data['small'] !== "")
-		<span class="thumbimg {{ $class_vid_live }}">`;
+		<span class="thumbimg {{ $class_vid_live }}">
 			<img class='lazyload' src='{{ URL::asset('img/placeholder.png') }}'
 				data-src='{{ URL::asset($data['small']) }}'
 				@if (isset($data["small2x"]) && $data['small2x'] !== "")
@@ -64,7 +64,7 @@
 			</span>
 
 		@elseif ($data['medium'] !== "")
-			<span class="thumbimg {{ $class_vid_live }}">`;
+			<span class="thumbimg {{ $class_vid_live }}">
 				<img class='lazyload' src='{{ URL::asset('img/placeholder.png') }}'
 					data-src='{{ URL::asset($data['medium']) }}'
 					@if (isset($data["medium2x"]) && $data['medium2x'] !== "")
