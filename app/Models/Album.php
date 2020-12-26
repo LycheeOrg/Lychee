@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Kalnoy\Nestedset\NodeTrait;
 
 /**
  * App\Album.
@@ -64,6 +65,8 @@ use Illuminate\Support\Carbon;
  */
 class Album extends Model
 {
+	use NodeTrait;
+
 	protected $dates
 	= [
 		'created_at',

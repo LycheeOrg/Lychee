@@ -25,6 +25,7 @@
         "geocoder-php/cache-provider": "^4.1",
         "geocoder-php/nominatim-provider": "^5.1",
         "graham-campbell/markdown": "^13.1",
+        "kalnoy/nestedset": "^5.0",
         "laravel/framework": "^8.0",
         "livewire/livewire": "^2.3",
         "lychee-org/php-exif": "dev-master",

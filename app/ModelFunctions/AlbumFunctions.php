@@ -422,6 +422,9 @@ class AlbumFunctions
 	{
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
+
+		// $album->descendants()->where()
+
 		$children = $this->customSort($album->children(), $sortingCol, $sortingOrder);
 
 		return $children->map(

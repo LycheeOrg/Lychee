@@ -4,6 +4,7 @@ namespace App\Actions\Albums;
 
 use AccessControl;
 use App\ModelFunctions\AlbumFunctions;
+use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Support\Collection as BaseCollection;
 

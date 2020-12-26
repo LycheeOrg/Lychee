@@ -4,13 +4,16 @@
 
 namespace App\ModelFunctions;
 
+use AccessControl;
 use App\Actions\Album\Cast as AlbumCast;
 use App\Actions\Albums\Tag;
 use App\Actions\Albums\Top;
 use App\Actions\ReadAccessFunctions;
+use App\Models\Album;
 use App\SmartAlbums\SmartFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\DB;
 
 class AlbumsFunctions
 {
@@ -124,6 +127,28 @@ class AlbumsFunctions
 		return $return;
 	}
 
+	private function getNotRoots(): array
+	{
+		if (AccessControl::is_admin()) {
+			return [];
+		} elseif (AccessControl::is_logged_in()) {
+			$shared_ids = DB::table('user_album')->select('album_id')
+				->where('user_id', '=', AccessControl::id())
+				->get()->map(fn ($v) => $v->album_id);
+
+			return Album::select('album_id')->where('owner_id', '<>', AccessControl::id())
+				->whereNotIn('id', $shared_ids)
+				->where(fn ($q) => $q->where('public', '<>', '1')
+					->orWhere(fn ($q) => $q->where('public', '=', '1')->where('viewable', '<>', '1'))
+					->orWhere(fn ($q) => $q->where('public', '=', '1')->where('password', '<>', '')))
+				->get()->map(fn ($v) => $v->album_id);
+		} else {
+			Album::where('public', '<>', '1')
+				->orWhere(fn ($q) => $q->where('public', '=', '1')->where('viewable', '<>', '1'))
+				->orWhere(fn ($q) => $q->where('public', '=', '1')->where('password', '<>', ''));
+		}
+	}
+
 	/**
 	 * @param $toplevel optional return from getToplevelAlbums()
 	 *
@@ -173,6 +198,7 @@ class AlbumsFunctions
 	 */
 	public function getPublicAlbumsId($toplevel = null, $children = null, $includePassProtected = false): BaseCollection
 	{
+		$this->getNotAccessible();
 		$albumIDs = new BaseCollection();
 		/*
 		 * @var Collection[Album]

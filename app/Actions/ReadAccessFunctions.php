@@ -2,27 +2,14 @@
 
 namespace App\Actions;
 
+use AccessControl;
 use App\Exceptions\AlbumDoesNotExistsException;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 
 class ReadAccessFunctions
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @param SessionFunctions $sessionFunctions
-	 */
-	public function __construct(SessionFunctions $sessionFunctions)
-	{
-		$this->sessionFunctions = $sessionFunctions;
-	}
-
 	/**
 	 * Check if a (public) user has access to an album
 	 * if 0 : album does not exist
@@ -37,16 +24,16 @@ class ReadAccessFunctions
 	 */
 	public function album($album, bool $obeyHidden = false): int
 	{
-		if ($this->sessionFunctions->is_current_user($album->owner_id)) {
+		if (AccessControl::is_current_user($album->owner_id)) {
 			return 1; // access granted
 		}
 
 		// Check if the album is shared with us
 		if (
-			$this->sessionFunctions->is_logged_in() &&
+			AccessControl::is_logged_in() &&
 			$album->shared_with->map(function ($user) {
 				return $user->id;
-			})->contains($this->sessionFunctions->id())
+			})->contains(AccessControl::id())
 		) {
 			return 1; // access granted
 		}
@@ -62,7 +49,7 @@ class ReadAccessFunctions
 			return 1;  // access granted
 		}
 
-		if ($this->sessionFunctions->has_visible_album($album->id)) {
+		if (AccessControl::has_visible_album($album->id)) {
 			return 1;  // access granted
 		}
 
@@ -89,7 +76,7 @@ class ReadAccessFunctions
 			'recent',
 			'unsorted',
 		])) {
-			if ($this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload()) {
+			if (AccessControl::is_logged_in() && AccessControl::can_upload()) {
 				return 1;
 			}
 			if (($album === 'recent' && Configs::get_value('public_recent', '0') === '1') ||
@@ -118,7 +105,7 @@ class ReadAccessFunctions
 	 */
 	public function photo(Photo $photo)
 	{
-		if ($this->sessionFunctions->is_current_user($photo->owner_id)) {
+		if (AccessControl::is_current_user($photo->owner_id)) {
 			return true;
 		}
 		if ($photo->public === 1) {

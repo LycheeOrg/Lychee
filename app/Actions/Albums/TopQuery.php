@@ -14,7 +14,10 @@ trait TopQuery
 		if (AccessControl::is_logged_in()) {
 			$sql = Album::with([
 				'owner',
-			])->where('parent_id', '=', null);
+			])->whereIsRoot();
+			// $sql = Album::with([
+			// 	'owner',
+			// ])->where('parent_id', '=', null);
 
 			$id = AccessControl::id();
 
@@ -32,8 +35,12 @@ trait TopQuery
 			return $sql->orderBy('owner_id', 'ASC');
 		}
 
-		return Album::where('public', '=', '1')
-			->where('viewable', '=', '1')
-			->where('parent_id', '=', null);
+		return Album::whereIsRoot()
+			->where('public', '=', '1')
+			->where('viewable', '=', '1');
+
+		// Album::where('public', '=', '1')
+		// 	->where('viewable', '=', '1')
+		// 	->where('parent_id', '=', null);
 	}
 }

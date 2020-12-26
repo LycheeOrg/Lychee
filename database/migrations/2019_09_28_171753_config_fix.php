@@ -29,24 +29,15 @@ class ConfigFix extends Migration
 	 */
 	private function update_names()
 	{
-		Configs::where('key', 'justified_layout')
-			->update(['key' => 'layout']);
-		Configs::where('key', '=', 'checkForUpdates')
-			->update(['key' => 'check_for_updates']);
-		Configs::where('key', '=', 'sortingPhotos_col')
-			->update(['key' => 'sorting_Photos_col']);
-		Configs::where('key', '=', 'sortingPhotos_order')
-			->update(['key' => 'sorting_Photos_order']);
-		Configs::where('key', '=', 'sortingAlbums_col')
-			->update(['key' => 'sorting_Albums_col']);
-		Configs::where('key', '=', 'sortingAlbums_order')
-			->update(['key' => 'sorting_Albums_order']);
-		Configs::where('key', '=', 'skipDuplicates')
-			->update(['key' => 'skip_duplicates']);
-		Configs::where('key', '=', 'deleteImported')
-			->update(['key' => 'delete_imported']);
-		Configs::where('key', '=', 'dropboxKey')
-			->update(['key' => 'dropbox_key']);
+		Configs::where('key', '=', 'justified_layout')->update(['key' => 'layout']);
+		Configs::where('key', '=', 'checkForUpdates')->update(['key' => 'check_for_updates']);
+		Configs::where('key', '=', 'sortingPhotos_col')->update(['key' => 'sorting_Photos_col']);
+		Configs::where('key', '=', 'sortingPhotos_order')->update(['key' => 'sorting_Photos_order']);
+		Configs::where('key', '=', 'sortingAlbums_col')->update(['key' => 'sorting_Albums_col']);
+		Configs::where('key', '=', 'sortingAlbums_order')->update(['key' => 'sorting_Albums_order']);
+		Configs::where('key', '=', 'skipDuplicates')->update(['key' => 'skip_duplicates']);
+		Configs::where('key', '=', 'deleteImported')->update(['key' => 'delete_imported']);
+		Configs::where('key', '=', 'dropboxKey')->update(['key' => 'dropbox_key']);
 	}
 
 	/**
@@ -82,15 +73,13 @@ class ConfigFix extends Migration
 		}
 		if (!Schema::hasColumn('configs', 'confidentiality')) {
 			Schema::table('configs', function (Blueprint $table) {
-				$table->tinyInteger('confidentiality')->after('cat')
-					->default(0);
+				$table->tinyInteger('confidentiality')->after('cat')->default(0);
 			});
 		}
 		if (!Schema::hasColumn('configs', 'type_range')) {
 			Schema::table('configs', function (Blueprint $table) {
 				$table->string('type_range')->after('cat')->default('0|1');
-				$table->string('description')->after('confidentiality')
-					->default('');
+				$table->string('description')->after('confidentiality')->default('');
 			});
 		}
 	}
