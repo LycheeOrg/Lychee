@@ -4,7 +4,6 @@ namespace App\Http\Livewire;
 
 use App\Actions\Albums\Tag;
 use App\Actions\Albums\Top;
-use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use Livewire\Component;
 
@@ -15,11 +14,6 @@ class Albums extends Component
 	public $shared_albums;
 
 	/**
-	 * @var AlbumFunctions
-	 */
-	// private $albumFunctions;
-
-	/**
 	 * @var AlbumsFunctions
 	 */
 	private $albumsFunctions;
@@ -27,11 +21,9 @@ class Albums extends Component
 	private $get;
 
 	/**
-	 * //  * @param AlbumFunctions   $albumFunctions
 	 * @param AlbumsFunctions $albumsFunctions
 	 */
 	public function mount(
-		// AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
 		Tag $tag,
 		Top $top

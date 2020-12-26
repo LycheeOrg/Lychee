@@ -181,6 +181,7 @@ class AlbumsFunctions
 		if ($toplevel === null) {
 			return $albumIDs;
 		}
+		// expensive here especially given we only wants the id.
 		$children = $children ?? $this->get_children($toplevel, $includePassProtected);
 
 		$kinds = ['albums', 'shared_albums'];

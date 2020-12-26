@@ -101,47 +101,34 @@ class ConfigFunctions
 
 	public function get_config_device(string $device)
 	{
+		$true = true;
+		$false = false;
+
+		// we just flip the values in the television case
 		if ($device == 'television') {
 			// @codeCoverageIgnoreStart
-			return [
-				'header_auto_hide' => false,
-				'active_focus_on_page_load' => true,
-				'enable_button_visibility' => false,
-				'enable_button_share' => false,
-				'enable_button_archive' => false,
-				'enable_button_move' => false,
-				'enable_button_trash' => false,
-				'enable_button_fullscreen' => false,
-				'enable_button_download' => false,
-				'enable_button_add' => false,
-				'enable_button_more' => false,
-				'enable_button_rotate' => false,
-				'enable_close_tab_on_esc' => true,
-				'enable_contextmenu_header' => false,
-				'hide_content_during_imgview' => true,
-				'enable_tabindex' => true,
-				'device_type' => $device,
-			];
+			$true = false;
+			$false = true;
 			// @codeCoverageIgnoreEnd
 		}
 
 		return [
-			'header_auto_hide' => true,
-			'active_focus_on_page_load' => false,
-			'enable_button_visibility' => true,
-			'enable_button_share' => true,
-			'enable_button_archive' => true,
-			'enable_button_move' => true,
-			'enable_button_trash' => true,
-			'enable_button_fullscreen' => true,
-			'enable_button_download' => true,
-			'enable_button_add' => true,
-			'enable_button_more' => true,
-			'enable_button_rotate' => true,
-			'enable_close_tab_on_esc' => false,
-			'enable_tabindex' => false,
-			'enable_contextmenu_header' => true,
-			'hide_content_during_imgview' => false,
+			'header_auto_hide' => $true,
+			'active_focus_on_page_load' => $false,
+			'enable_button_visibility' => $true,
+			'enable_button_share' => $true,
+			'enable_button_archive' => $true,
+			'enable_button_move' => $true,
+			'enable_button_trash' => $true,
+			'enable_button_fullscreen' => $true,
+			'enable_button_download' => $true,
+			'enable_button_add' => $true,
+			'enable_button_more' => $true,
+			'enable_button_rotate' => $true,
+			'enable_close_tab_on_esc' => $false,
+			'enable_contextmenu_header' => $true,
+			'hide_content_during_imgview' => $false,
+			'enable_tabindex' => $false,
 			'device_type' => $device,
 		];
 	}
