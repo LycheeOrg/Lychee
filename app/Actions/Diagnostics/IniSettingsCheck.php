@@ -2,6 +2,7 @@
 
 namespace App\Actions\Diagnostics;
 
+use App\Contracts\DiagnosticCheckInterface;
 use App\Models\Configs;
 
 class IniSettingsCheck implements DiagnosticCheckInterface

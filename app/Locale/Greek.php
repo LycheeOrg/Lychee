@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Greek implements Language
 {
-	public function code()
+	public function code(): string
 	{
 		return 'el';
 	}
 
-	public function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'όνομα χρήστη',

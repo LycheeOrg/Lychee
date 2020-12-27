@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class NorwegianBokmal implements Language
 {
-	public function code()
+	public function code(): string
 	{
 		return 'nb-no';
 	}
 
-	public function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'brukernavn',

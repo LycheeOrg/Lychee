@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Czech implements Language
 {
-	public function code()
+	public function code(): string
 	{
 		return 'cz';
 	}
 
-	public function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'Uživatelské jméno',

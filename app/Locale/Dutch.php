@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Dutch implements Language
 {
-	public function code()
+	public function code(): string
 	{
 		return 'nl';
 	}
 
-	public function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'gebruikersnaam',
