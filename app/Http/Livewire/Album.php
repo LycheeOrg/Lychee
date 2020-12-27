@@ -70,7 +70,7 @@ class Album extends Component
 			$children = $this->albumFunctions->get_children($this->album, 0, true);
 
 			$this->info = AlbumCast::toArrayWith($this->album, $children);
-			$this->info['owner'] = $this->album->owner->get_username();
+			$this->info['owner'] = $this->album->owner->name();
 
 			$thumbs = $this->albumFunctions->get_thumbs($this->album, $children);
 			$this->albumFunctions->set_thumbs_children($this->info['albums'], $thumbs[1]);

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Actions\Albums\Smart;
 use App\Actions\Albums\Tag;
 use App\Actions\Albums\Top;
 use App\ModelFunctions\AlbumsFunctions;
@@ -18,7 +19,9 @@ class Albums extends Component
 	 */
 	private $albumsFunctions;
 
-	private $get;
+	private $top;
+	private $tag;
+	private $smart;
 
 	/**
 	 * @param AlbumsFunctions $albumsFunctions
@@ -26,12 +29,14 @@ class Albums extends Component
 	public function mount(
 		AlbumsFunctions $albumsFunctions,
 		Tag $tag,
-		Top $top
+		Top $top,
+		Smart $smart
 	) {
 		// $this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
 		$this->top = $top;
 		$this->tag = $tag;
+		$this->smart = $smart;
 
 		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
 		//
@@ -40,7 +45,7 @@ class Albums extends Component
 
 		$this->albums = $this->albumsFunctions->prepare_albums($toplevel['albums'], $children['albums']);
 		$this->shared_albums = $this->albumsFunctions->prepare_albums($toplevel['shared_albums'], $children['shared_albums']);
-		$this->smartalbums = $this->albumsFunctions->getSmartAlbums($toplevel, $children);
+		$this->smartalbums = $this->smart->get();
 	}
 
 	public function render()

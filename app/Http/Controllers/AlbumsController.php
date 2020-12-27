@@ -5,6 +5,7 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Albums\PublicIds;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\ModelFunctions\AlbumFunctions;
@@ -15,6 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AlbumsController extends Controller
 {
+	use PublicIds;
+
 	/**
 	 * @var AlbumFunctions
 	 */
@@ -90,7 +93,7 @@ class AlbumsController extends Controller
 		// Initialize return var
 		$return = [];
 
-		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
+		$albumIDs = $this->getPublicAlbumsId();
 
 		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {

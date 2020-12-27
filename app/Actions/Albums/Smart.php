@@ -14,6 +14,7 @@ use Illuminate\Support\Collection as BaseCollection;
 class Smart
 {
 	use TopQuery;
+	use PublicIds;
 
 	/**
 	 * @var AlbumFunctions
@@ -66,7 +67,7 @@ class Smart
 		/**
 		 * @var Collection[SmartAlbum]
 		 */
-		$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
+		$publicAlbums = $this->getPublicAlbumsId();
 		$smartAlbums = new BaseCollection();
 		foreach ($this->smartFactory::$base_smarts as $smart_kind) {
 			$smartAlbums->push($this->smartFactory->make($smart_kind));

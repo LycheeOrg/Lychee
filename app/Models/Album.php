@@ -4,6 +4,8 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\AlbumBooleans;
+use App\Models\Extensions\AlbumStringify;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -66,6 +68,8 @@ use Kalnoy\Nestedset\NodeTrait;
 class Album extends Model
 {
 	use NodeTrait;
+	use AlbumBooleans;
+	use AlbumStringify;
 
 	protected $dates
 	= [
@@ -146,78 +150,6 @@ class Album extends Model
 			'album_id',
 			'user_id'
 		);
-	}
-
-	/**
-	 * Return whether or not public users will see the full photo.
-	 *
-	 * @return bool
-	 */
-	public function is_full_photo_visible()
-	{
-		if ($this->public) {
-			return $this->full_photo == 1;
-		} else {
-			return Configs::get_value('full_photo', '1') === '1';
-		}
-	}
-
-	/**
-	 * Return parent_id as a string or null.
-	 *
-	 * @return string|null
-	 */
-	public function str_parent_id()
-	{
-		return $this->parent_id == null ? '' : strval($this->parent_id);
-	}
-
-	/**
-	 * Return min_takestamp as a string or ''.
-	 *
-	 * @return string
-	 */
-	public function str_min_takestamp()
-	{
-		return $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
-	}
-
-	/**
-	 * Return min_takestamp as a string or ''.
-	 *
-	 * @return string
-	 */
-	public function str_max_takestamp()
-	{
-		return $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
-	}
-
-	/**
-	 * Return whether or not public users can download photos.
-	 *
-	 * @return bool
-	 */
-	public function is_downloadable()
-	{
-		if ($this->public) {
-			return $this->downloadable == 1;
-		} else {
-			return Configs::get_value('downloadable', '0') === '1';
-		}
-	}
-
-	/**
-	 * Return whether or not display share button.
-	 *
-	 * @return bool
-	 */
-	public function is_share_button_visible()
-	{
-		if ($this->public) {
-			return $this->share_button_visible == 1;
-		} else {
-			return Configs::get_value('share_button_visible', '0') === '1';
-		}
 	}
 
 	/**
