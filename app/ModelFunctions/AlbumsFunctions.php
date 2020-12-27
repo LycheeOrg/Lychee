@@ -12,6 +12,7 @@ use App\Actions\ReadAccessFunctions;
 use App\Models\Album;
 use App\SmartAlbums\SmartFactory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
 
@@ -21,11 +22,6 @@ class AlbumsFunctions
 	 * @var readAccessFunctions
 	 */
 	private $readAccessFunctions;
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
 
 	/**
 	 * @var AlbumFunctions
@@ -59,9 +55,8 @@ class AlbumsFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory, Top $top, Tag $tag)
+	public function __construct(ReadAccessFunctions $readAccessFunctions, AlbumFunctions $albumFunctions, SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory, Top $top, Tag $tag)
 	{
-		$this->sessionFunctions = $sessionFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->albumFunctions = $albumFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
@@ -85,7 +80,7 @@ class AlbumsFunctions
 		foreach ($albums->keys() as $key) {
 			$album_array = AlbumCast::toArrayWith($albums[$key], $children[$key]);
 
-			if ($this->sessionFunctions->is_logged_in()) {
+			if (AccessControl::is_logged_in()) {
 				$album_array['owner'] = $albums[$key]->owner->username;
 			}
 
@@ -127,26 +122,78 @@ class AlbumsFunctions
 		return $return;
 	}
 
-	private function getNotRoots(): array
+	/**
+	 * Build a query that remove all non public albums
+	 * or public albums which are hidden
+	 * or public albums with a password.
+	 *
+	 * @param  Builder
+	 *
+	 * @return Builder
+	 */
+	private function notPublicNotViewable(Builder $query): Builder
+	{
+		return $query
+			// remove NOT public
+			->where('public', '<>', '1')
+			// or PUBLIC BUT NOT VIEWABLE (hidden)
+			->orWhere(fn ($q) => $q->where('public', '=', '1')->where('viewable', '<>', '1'))
+			// or PUBLIC BUT PASSWORD LOCKED
+			->orWhere(fn ($q) => $q->where('public', '=', '1')->where('password', '<>', ''));
+	}
+
+	/**
+	 * Return a collection of Album that are not directly accessible by visibility criteria
+	 * ! we do not include password protected albums from other users.
+	 *
+	 * @return BaseCollection[Album]
+	 */
+	private function getDirectlyNotAccessible(): BaseCollection
 	{
 		if (AccessControl::is_admin()) {
-			return [];
+			return new BaseCollection();
 		} elseif (AccessControl::is_logged_in()) {
 			$shared_ids = DB::table('user_album')->select('album_id')
 				->where('user_id', '=', AccessControl::id())
-				->get()->map(fn ($v) => $v->album_id);
+				->pluck('album_id');
+			// ->get()->map(fn ($v) => $v->album_id);
 
-			return Album::select('album_id')->where('owner_id', '<>', AccessControl::id())
+			return Album::where('owner_id', '<>', AccessControl::id())
+				// shared are accessible
 				->whereNotIn('id', $shared_ids)
-				->where(fn ($q) => $q->where('public', '<>', '1')
-					->orWhere(fn ($q) => $q->where('public', '=', '1')->where('viewable', '<>', '1'))
-					->orWhere(fn ($q) => $q->where('public', '=', '1')->where('password', '<>', '')))
-				->get()->map(fn ($v) => $v->album_id);
+				// remove NOT public
+				->where(fn ($q) => $this->notPublicNotViewable($q))
+				->get();
 		} else {
-			Album::where('public', '<>', '1')
-				->orWhere(fn ($q) => $q->where('public', '=', '1')->where('viewable', '<>', '1'))
-				->orWhere(fn ($q) => $q->where('public', '=', '1')->where('password', '<>', ''));
+			// remove NOT public
+			Album::where(fn ($q) => $this->notPublicNotViewable($q))
+				->get();
 		}
+	}
+
+	/**
+	 * Return an array of ids of albums that are not accessible.
+	 *
+	 * @return array[int]
+	 */
+	private function getNotAccessible(): array
+	{
+		/**
+		 * @var BaseCollection
+		 */
+		$directly = $this->getDirectlyNotAccessible();
+
+		if ($directly->count() > 0) {
+			$sql = Album::select('id');
+			foreach ($directly as $alb) {
+				$sql = $sql->orWhereBetween('_lft', [$alb->_lft, $alb->_rgt]);
+			}
+
+			return $sql->pluck('id');
+			// return $sql->get()->pluck('id');
+		}
+
+		return [];
 	}
 
 	/**
@@ -173,7 +220,7 @@ class AlbumsFunctions
 			$smartAlbums->push($tagAlbum);
 		}
 
-		$can_see_smart = $this->sessionFunctions->is_logged_in() && $this->sessionFunctions->can_upload();
+		$can_see_smart = AccessControl::is_logged_in() && AccessControl::can_upload();
 
 		foreach ($smartAlbums as $smartAlbum) {
 			if ($can_see_smart || $smartAlbum->is_public()) {
@@ -198,33 +245,35 @@ class AlbumsFunctions
 	 */
 	public function getPublicAlbumsId($toplevel = null, $children = null, $includePassProtected = false): BaseCollection
 	{
-		$this->getNotAccessible();
-		$albumIDs = new BaseCollection();
-		/*
-		 * @var Collection[Album]
-		 */
-		$toplevel = $toplevel ?? $this->top->get();
-		if ($toplevel === null) {
-			return $albumIDs;
-		}
-		// expensive here especially given we only wants the id.
-		$children = $children ?? $this->get_children($toplevel, $includePassProtected);
+		$id_not_accessible = $this->getNotAccessible();
 
-		$kinds = ['albums', 'shared_albums'];
+		return Album::select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
+		// // get()->$albumIDs = new BaseCollection();
+		// /*
+		//  * @var Collection[Album]
+		//  */
+		// $toplevel = $toplevel ?? $this->top->get();
+		// if ($toplevel === null) {
+		// 	return $albumIDs;
+		// }
+		// // expensive here especially given we only wants the id.
+		// $children = $children ?? $this->get_children($toplevel, $includePassProtected);
 
-		foreach ($kinds as $kind) {
-			$toplevel[$kind]->each(function ($album) use (&$albumIDs, $includePassProtected) {
-				$haveAccess = $this->readAccessFunctions->album($album, true);
+		// $kinds = ['albums', 'shared_albums'];
 
-				if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
-					$albumIDs->push($album->id);
-				}
-			});
-			$children[$kind]->each(function ($child) use (&$albumIDs) {
-				$albumIDs = $albumIDs->concat($this->albumFunctions->flatMap_id($child));
-			});
-		}
+		// foreach ($kinds as $kind) {
+		// 	$toplevel[$kind]->each(function ($album) use (&$albumIDs, $includePassProtected) {
+		// 		$haveAccess = $this->readAccessFunctions->album($album, true);
 
-		return $albumIDs;
+		// 		if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
+		// 			$albumIDs->push($album->id);
+		// 		}
+		// 	});
+		// 	$children[$kind]->each(function ($child) use (&$albumIDs) {
+		// 		$albumIDs = $albumIDs->concat($this->albumFunctions->flatMap_id($child));
+		// 	});
+		// }
+
+		// return $albumIDs;
 	}
 }

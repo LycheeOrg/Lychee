@@ -5,6 +5,7 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
@@ -30,17 +31,24 @@ class AlbumsController extends Controller
 	private $top;
 
 	/**
+	 * @var Smart
+	 */
+	private $smart;
+
+	/**
 	 * @param AlbumFunctions  $albumFunctions
 	 * @param AlbumsFunctions $albumsFunctions
 	 */
 	public function __construct(
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
-		Top $top
+		Top $top,
+		Smart $smart
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
 		$this->top = $top;
+		$this->smart = $smart;
 	}
 
 	/**
@@ -66,7 +74,7 @@ class AlbumsController extends Controller
 		$return['albums'] = $this->albumsFunctions->prepare_albums($toplevel['albums'], $children['albums']);
 		$return['shared_albums'] = $this->albumsFunctions->prepare_albums($toplevel['shared_albums'], $children['shared_albums']);
 
-		$return['smartalbums'] = $this->albumsFunctions->getSmartAlbums($toplevel, $children);
+		$return['smartalbums'] = $this->smart->get();
 
 		return $return;
 	}
