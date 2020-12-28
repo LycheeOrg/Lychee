@@ -2,15 +2,16 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\Album\Cast as AlbumCast;
 use App\ModelFunctions\AlbumFunctions;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Extensions\CustomSort;
 use Illuminate\Database\Eloquent\Collection;
 
 class Tag
 {
 	use TopQuery;
+	use CustomSort;
 
 	/**
 	 * @var AlbumFunctions
@@ -39,7 +40,7 @@ class Tag
 	{
 		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', true);
 
-		return $this->albumFunctions->customSort($sql, $this->sortingCol, $this->sortingOrder)
-			->map(fn (Album $album) => AlbumCast::toTagAlbum($album));
+		return $this->customSort($sql, $this->sortingCol, $this->sortingOrder)
+			->map(fn (Album $album) => $album->toTagAlbum());
 	}
 }

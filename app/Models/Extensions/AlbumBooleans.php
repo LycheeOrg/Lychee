@@ -47,4 +47,9 @@ trait AlbumBooleans
 			return Configs::get_value('share_button_visible', '0') === '1';
 		}
 	}
+
+	public function is_smart()
+	{
+		return $this->smart;
+	}
 }

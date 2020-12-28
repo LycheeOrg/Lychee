@@ -70,12 +70,10 @@ class AlbumsController extends Controller
 		];
 
 		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
-		//
 		$toplevel = $this->top->get();
-		$children = $this->albumsFunctions->get_children($toplevel);
 
-		$return['albums'] = $this->albumsFunctions->prepare_albums($toplevel['albums'], $children['albums']);
-		$return['shared_albums'] = $this->albumsFunctions->prepare_albums($toplevel['shared_albums'], $children['shared_albums']);
+		$return['albums'] = $this->albumsFunctions->prepare_albums($toplevel['albums']);
+		$return['shared_albums'] = $this->albumsFunctions->prepare_albums($toplevel['shared_albums']);
 
 		$return['smartalbums'] = $this->smart->get();
 

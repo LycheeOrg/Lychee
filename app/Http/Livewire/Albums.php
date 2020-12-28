@@ -39,12 +39,11 @@ class Albums extends Component
 		$this->smart = $smart;
 
 		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
-		//
-		$toplevel = $this->get->top();
-		$children = $this->albumsFunctions->get_children($toplevel);
+		$toplevel = $this->top->get();
 
-		$this->albums = $this->albumsFunctions->prepare_albums($toplevel['albums'], $children['albums']);
-		$this->shared_albums = $this->albumsFunctions->prepare_albums($toplevel['shared_albums'], $children['shared_albums']);
+		$this->albums = $this->albumsFunctions->prepare_albums($toplevel['albums']);
+		$this->shared_albums = $this->albumsFunctions->prepare_albums($toplevel['shared_albums']);
+
 		$this->smartalbums = $this->smart->get();
 	}
 

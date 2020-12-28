@@ -4,8 +4,13 @@
 
 namespace App\Models;
 
+use App\Contracts\AlbumInterface;
 use App\Models\Extensions\AlbumBooleans;
+use App\Models\Extensions\AlbumCast;
+use App\Models\Extensions\AlbumGetters;
+use App\Models\Extensions\AlbumSetters;
 use App\Models\Extensions\AlbumStringify;
+use App\Models\Extensions\CustomSort;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -65,11 +70,15 @@ use Kalnoy\Nestedset\NodeTrait;
  *
  * @property Collection|User[] $shared_with
  */
-class Album extends Model
+class Album extends Model implements AlbumInterface
 {
 	use NodeTrait;
 	use AlbumBooleans;
 	use AlbumStringify;
+	use AlbumGetters;
+	use AlbumCast;
+	use AlbumSetters;
+	use CustomSort;
 
 	protected $dates
 	= [
@@ -99,24 +108,13 @@ class Album extends Model
 	}
 
 	/**
-	 * Return the list of photos.
-	 */
-	public function get_photos()
-	{
-		return $this->photos();
-	}
-
-	/**
 	 * Return the relationship between an album and its owner.
 	 *
 	 * @return BelongsTo
 	 */
 	public function owner()
 	{
-		return $this->belongsTo('App\Models\User', 'owner_id', 'id')->withDefault([
-			'id' => 0,
-			'username' => 'Admin',
-		]);
+		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
 
 	/**
@@ -150,20 +148,6 @@ class Album extends Model
 			'album_id',
 			'user_id'
 		);
-	}
-
-	/**
-	 * Return the Album license or the default one.
-	 *
-	 * @return string
-	 */
-	public function get_license()
-	{
-		if ($this->license == 'none') {
-			return Configs::get_value('default_license');
-		}
-
-		return $this->license;
 	}
 
 	/**

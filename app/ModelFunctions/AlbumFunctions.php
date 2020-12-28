@@ -4,13 +4,15 @@
 
 namespace App\ModelFunctions;
 
+use AccessControl;
 use App\Actions\Album\Cast as AlbumCast;
 use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
+use App\Factories\AlbumFactory;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\PhotoActions\Thumb as Thumb;
 use App\Models\Album;
-use App\Models\Configs;
+use App\Models\Extensions\CustomSort;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
@@ -22,21 +24,12 @@ use Illuminate\Support\Facades\Hash;
 
 class AlbumFunctions
 {
-	protected $smart_albums = [
-		'starred' => '',
-		'public' => '',
-		'recent' => '',
-		'unsorted' => '',
-	];
+	use CustomSort;
+
 	/**
 	 * @var readAccessFunctions
 	 */
 	private $readAccessFunctions;
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
 
 	/**
 	 * @var SymLinkFunctions
@@ -44,50 +37,24 @@ class AlbumFunctions
 	private $symLinkFunctions;
 
 	/**
+	 * @var AlbumFactory
+	 */
+	private $albumFactory;
+
+	/**
 	 * AlbumFunctions constructor.
 	 *
-	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
-	public function __construct(SessionFunctions $sessionFunctions, ReadAccessFunctions $readAccessFunctions, SymLinkFunctions $symLinkFunctions)
-	{
-		$this->sessionFunctions = $sessionFunctions;
+	public function __construct(
+		ReadAccessFunctions $readAccessFunctions,
+		SymLinkFunctions $symLinkFunctions,
+		AlbumFactory $albumFactory
+	) {
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
-	}
-
-	/**
-	 * TODO: MOVE somewhere else
-	 * given an albumID return if the said album is "smart".
-	 *
-	 * @param $albumID
-	 *
-	 * @return bool
-	 */
-	public function is_smart_album($albumID): bool
-	{
-		return array_key_exists($albumID, $this->smart_albums);
-	}
-
-	/**
-	 * given an Album return the sorting column & order for the pictures or the default ones.
-	 *
-	 * @param Album
-	 *
-	 * @return
-	 */
-	private function get_sort(Album $album)
-	{
-		if ($album->sorting_col == '') {
-			$sort_col = Configs::get_value('sorting_Photos_col');
-			$sort_order = Configs::get_value('sorting_Photos_order');
-		} else {
-			$sort_col = $album->sorting_col;
-			$sort_order = $album->sorting_order;
-		}
-
-		return [$sort_col, $sort_order];
+		$this->albumFactory = $albumFactory;
 	}
 
 	/**
@@ -101,7 +68,7 @@ class AlbumFunctions
 	 */
 	public function createTagAlbum(string $title, string $show_tags, int $user_id): Album
 	{
-		$album = $this->album_factory($title);
+		$album = $this->albumFactory->makeFromTitle($title);
 
 		$album->parent_id = null;
 		$album->owner_id = $user_id;
@@ -123,24 +90,11 @@ class AlbumFunctions
 	 */
 	public function create(string $title, int $parent_id, int $user_id): Album
 	{
-		$album = $this->album_factory($title);
+		$album = $this->albumFactory->makeFromTitle($title);
 
 		$this->set_parent($album, $parent_id, $user_id);
 
 		return $this->store_album($album);
-	}
-
-	/**
-	 * Simple factory.
-	 */
-	private function album_factory(string $title): Album
-	{
-		$album = new Album();
-		$album->id = Helpers::generateID();
-		$album->title = $title;
-		$album->description = '';
-
-		return $album;
 	}
 
 	/**
@@ -151,6 +105,8 @@ class AlbumFunctions
 	 * @param int   $user_id
 	 *
 	 * @return Album
+	 *
+	 * TODO: FIX ME
 	 */
 	private function set_parent(Album $album, int $parent_id, int $user_id): Album
 	{
@@ -208,59 +164,59 @@ class AlbumFunctions
 		return $album;
 	}
 
-	private function get_thumbs_album(Album $album, array $previousThumbIDs): BaseCollection
-	{
-		[$sort_col, $sort_order] = $this->get_sort($album);
+	// private function get_thumbs_album(Album $album, array $previousThumbIDs): BaseCollection
+	// {
+	// 	[$sort_col, $sort_order] = $album->get_sort();
 
-		$photos = Photo::where('album_id', $album->id)
-			->orWhereIn('id', $previousThumbIDs)
-			->orderBy('star', 'DESC')
-			->orderBy($sort_col, $sort_order)
-			->orderBy('id', 'ASC')
-			->limit(3)
-			->get();
+	// 	$photos = Photo::where('album_id', $album->id)
+	// 		->orWhereIn('id', $previousThumbIDs)
+	// 		->orderBy('star', 'DESC')
+	// 		->orderBy($sort_col, $sort_order)
+	// 		->orderBy('id', 'ASC')
+	// 		->limit(3)
+	// 		->get();
 
-		return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
-	}
+	// 	return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
+	// }
 
-	public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
-	{
-		$reduced = $children->reduce(function ($collection, $child) {
-			if (isset($child[0]->content_accessible) && $child[0]->content_accessible === false) {
-				return $collection;
-			}
+	// public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
+	// {
+	// 	$reduced = $children->reduce(function ($collection, $child) {
+	// 		if (isset($child[0]->content_accessible) && $child[0]->content_accessible === false) {
+	// 			return $collection;
+	// 		}
 
-			$reduced_child = $this->get_thumbs($child[0], $child[1]);
+	// 		$reduced_child = $this->get_thumbs($child[0], $child[1]);
 
-			return $collection->push($reduced_child);
-		}, new BaseCollection());
+	// 		return $collection->push($reduced_child);
+	// 	}, new BaseCollection());
 
-		$previousThumbIDs = $reduced->flatMap(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))->all();
-		$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
+	// 	$previousThumbIDs = $reduced->flatMap(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))->all();
+	// 	$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
 
-		return new Collection([$thumbs, $reduced]);
-	}
+	// 	return new Collection([$thumbs, $reduced]);
+	// }
 
-	public function set_thumbs(array &$return, BaseCollection $thumbs)
-	{
-		$return['thumbs'] = [];
-		$return['types'] = [];
-		$return['thumbs2x'] = [];
+	// public function set_thumbs(array &$return, BaseCollection $thumbs)
+	// {
+	// 	$return['thumbs'] = [];
+	// 	$return['types'] = [];
+	// 	$return['thumbs2x'] = [];
 
-		$thumbs[0]->each(function (Thumb $thumb, $key) use (&$return) {
-			$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
-		});
-	}
+	// 	$thumbs[0]->each(function (Thumb $thumb, $key) use (&$return) {
+	// 		$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
+	// 	});
+	// }
 
-	public function set_thumbs_children(BaseCollection &$return, BaseCollection $thumbs)
-	{
-		$thumbs->each(function (BaseCollection $subthumb, $key) use (&$return) {
-			$mod = $return[$key];
-			$this->set_thumbs_children($mod['albums'], $subthumb[1]);
-			$this->set_thumbs($mod, $subthumb);
-			$return[$key] = $mod;
-		});
-	}
+	// public function set_thumbs_children(BaseCollection &$return, BaseCollection $thumbs)
+	// {
+	// 	$thumbs->each(function (BaseCollection $subthumb, $key) use (&$return) {
+	// 		$mod = $return[$key];
+	// 		$this->set_thumbs_children($mod['albums'], $subthumb[1]);
+	// 		$this->set_thumbs($mod, $subthumb);
+	// 		$return[$key] = $mod;
+	// 	});
+	// }
 
 	/**
 	 * TODO: MOVE somewhere else.
@@ -319,7 +275,7 @@ class AlbumFunctions
 	 */
 	public function photos(Album $album, $photos_sql, bool $full_photo, string $license = 'none')
 	{
-		[$sortingCol, $sortingOrder] = $this->get_sort($album);
+		[$sortingCol, $sortingOrder] = $album->get_sort();
 
 		$previousPhotoID = '';
 		$return_photos = [];
@@ -359,7 +315,7 @@ class AlbumFunctions
 			PhotoCast::print_license($photo, $license);
 
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
-			if (!$this->sessionFunctions->is_current_user($photo_model->owner_id) && !$full_photo) {
+			if (!AccessControl::is_current_user($photo_model->owner_id) && !$full_photo) {
 				$photo_model->downgrade($photo);
 			}
 
@@ -384,69 +340,49 @@ class AlbumFunctions
 		return $return_photos;
 	}
 
-	/**
-	 * Given a query, depending on the sort column, we do it in the query or on the collection.
-	 * This is to be able to use natural order sorting on title and descriptions.
-	 */
-	public function customSort($query, $sortingCol, $sortingOrder)
-	{
-		if ($query == null) {
-			return new Collection();
-		}
-		if (!in_array($sortingCol, ['title', 'description'])) {
-			return $query
-				->orderBy($sortingCol, $sortingOrder)
-				->get();
-		} else {
-			return $query
-				->get()
-				->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC');
-		}
-	}
+	// /**
+	//  * ! may be memory intensive
+	//  * ! lots of SQL query.
+	//  * TODO: Add recursion limit back.
+	//  *
+	//  * Recursively returns the tree structure of albums.
+	//  *
+	//  * @param Album $album
+	//  * @param $username : speed optimization to avoid an extra query,
+	//  * taking advantage of the fact that subalbums inherit parent's owner
+	//  * @param $recursionLimit : 0 means infinity
+	//  *
+	//  * @return Collection
+	//  */
+	// public function get_children(Album $album, $recursionLimit = 0, $includePassProtected = false): BaseCollection
+	// {
+	// 	$sortingCol = Configs::get_value('sorting_Albums_col');
+	// 	$sortingOrder = Configs::get_value('sorting_Albums_order');
 
-	/**
-	 * ! may be memory intensive
-	 * ! lots of SQL query.
-	 * TODO: Add recursion limit back.
-	 *
-	 * Recursively returns the tree structure of albums.
-	 *
-	 * @param Album $album
-	 * @param $username : speed optimization to avoid an extra query,
-	 * taking advantage of the fact that subalbums inherit parent's owner
-	 * @param $recursionLimit : 0 means infinity
-	 *
-	 * @return Collection
-	 */
-	public function get_children(Album $album, $recursionLimit = 0, $includePassProtected = false): BaseCollection
-	{
-		$sortingCol = Configs::get_value('sorting_Albums_col');
-		$sortingOrder = Configs::get_value('sorting_Albums_order');
+	// 	// $album->descendants()->where()
 
-		// $album->descendants()->where()
+	// 	$children = $this->customSort($album->children(), $sortingCol, $sortingOrder);
 
-		$children = $this->customSort($album->children(), $sortingCol, $sortingOrder);
+	// 	return $children->map(
+	// 		function ($_album) use ($includePassProtected) {
+	// 			$haveAccess = $this->readAccessFunctions->album($_album, true);
 
-		return $children->map(
-			function ($_album) use ($includePassProtected) {
-				$haveAccess = $this->readAccessFunctions->album($_album, true);
+	// 			if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
+	// 				if ($haveAccess === 1) {
+	// 					$collected = $this->get_sub_albums($_album, $includePassProtected);
+	// 				} else {
+	// 					// when we generate the thumbs, we need to know whether that content is visible or not.
+	// 					$_album->content_accessible = false;
+	// 					$collected = new Collection();
+	// 				}
 
-				if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
-					if ($haveAccess === 1) {
-						$collected = $this->get_sub_albums($_album, $includePassProtected);
-					} else {
-						// when we generate the thumbs, we need to know whether that content is visible or not.
-						$_album->content_accessible = false;
-						$collected = new Collection();
-					}
+	// 				return new Collection([$_album, $collected]);
+	// 			}
 
-					return new Collection([$_album, $collected]);
-				}
-
-				return new Collection();
-			}
-		)->reject(fn ($a) => $a->isEmpty());
-	}
+	// 			return new Collection();
+	// 		}
+	// 	)->reject(fn ($a) => $a->isEmpty());
+	// }
 
 	/**
 	 * Recursively set the ownership of the contents of an album.
@@ -469,39 +405,39 @@ class AlbumFunctions
 		return true;
 	}
 
-	/**
-	 * ! Memory intensive
-	 * ! lots of SQL query.
-	 *
-	 * Recursively go through each sub album and build a list of them.
-	 * Unlike AlbumActions\UpdateTakestamps::get_all_sub_albums_id(),
-	 * this function follows access checks and skips hidden subalbums.
-	 * The optional second argument, if true, will result in password-protected
-	 * albums being included (but not their content).
-	 *
-	 * @param Album $parentAlbum
-	 * @param bool  $includePassProtected
-	 *
-	 * @return Collection[Album]
-	 */
-	public function get_sub_albums(Album $album, $includePassProtected = false): BaseCollection
-	{
-		return $album->children->reduce(function ($collect, $_album) use ($includePassProtected) {
-			$haveAccess = $this->readAccessFunctions->album($_album, true);
-			if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
-				if ($haveAccess === 1) {
-					$collected = $this->get_sub_albums($_album, $includePassProtected);
-				} else {
-					// when we generate the thumbs, we need to know whether that content is visible or not.
-					$_album->content_accessible = false;
-					$collected = new BaseCollection();
-				}
-				$collect = $collect->push(new BaseCollection([$_album, $collected]));
-			}
+	// /**
+	//  * ! Memory intensive
+	//  * ! lots of SQL query.
+	//  *
+	//  * Recursively go through each sub album and build a list of them.
+	//  * Unlike AlbumActions\UpdateTakestamps::get_all_sub_albums_id(),
+	//  * this function follows access checks and skips hidden subalbums.
+	//  * The optional second argument, if true, will result in password-protected
+	//  * albums being included (but not their content).
+	//  *
+	//  * @param Album $parentAlbum
+	//  * @param bool  $includePassProtected
+	//  *
+	//  * @return Collection[Album]
+	//  */
+	// public function get_sub_albums(Album $album, $includePassProtected = false): BaseCollection
+	// {
+	// 	return $album->children->reduce(function ($collect, $_album) use ($includePassProtected) {
+	// 		$haveAccess = $this->readAccessFunctions->album($_album, true);
+	// 		if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
+	// 			if ($haveAccess === 1) {
+	// 				$collected = $this->get_sub_albums($_album, $includePassProtected);
+	// 			} else {
+	// 				// when we generate the thumbs, we need to know whether that content is visible or not.
+	// 				$_album->content_accessible = false;
+	// 				$collected = new BaseCollection();
+	// 			}
+	// 			$collect = $collect->push(new BaseCollection([$_album, $collected]));
+	// 		}
 
-			return $collect;
-		}, new BaseCollection())->reject(fn ($e) => $e->isEmpty());
-	}
+	// 		return $collect;
+	// 	}, new BaseCollection())->reject(fn ($e) => $e->isEmpty());
+	// }
 
 	public static function is_tag_album(Album $album): bool
 	{
@@ -530,7 +466,7 @@ class AlbumFunctions
 					if ($album->password === '') {
 						return true;
 					}
-					if ($this->sessionFunctions->has_visible_album($album->id)) {
+					if (AccessControl::has_visible_album($album->id)) {
 						return true;
 					}
 					// $password ??= '';
@@ -563,6 +499,7 @@ class AlbumFunctions
 				$albumIDs[] = $album->id;
 			}
 		}
-		$this->sessionFunctions->add_visible_albums($albumIDs);
+
+		AccessControl::add_visible_albums($albumIDs);
 	}
 }

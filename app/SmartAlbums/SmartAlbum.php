@@ -65,10 +65,10 @@ class SmartAlbum extends Album
 	 * @param AlbumFunctions   $albumFunctions
 	 * @param SessionFunctions $albumFunctions
 	 */
-	public function __construct(AlbumFunctions $albumFunctions)
+	public function __construct()
 	{
 		parent::__construct();
-		$this->albumFunctions = $albumFunctions;
+		$this->albumFunctions = resolve(AlbumFunctions::class);
 		$this->albumIds = new BaseCollection();
 		$this->created_at = new Carbon();
 		$this->smart = true;
@@ -135,7 +135,7 @@ class SmartAlbum extends Album
 		return '';
 	}
 
-	public function get_license()
+	public function get_license(): string
 	{
 		return 'none';
 	}
@@ -148,5 +148,10 @@ class SmartAlbum extends Album
 	public function children()
 	{
 		return null;
+	}
+
+	public function get_all_photos()
+	{
+		return $this->get_photos();
 	}
 }

@@ -4,12 +4,10 @@ namespace App\Actions\Albums;
 
 use AccessControl;
 use App\Actions\Album\Cast as AlbumCast;
+use App\Factories\SmartFactory;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\SymLinkFunctions;
-use App\Models\Album;
-use App\SmartAlbums\SmartFactory;
-use Illuminate\Support\Collection as BaseCollection;
 
 class Smart
 {
@@ -68,10 +66,7 @@ class Smart
 		 * @var Collection[SmartAlbum]
 		 */
 		$publicAlbums = $this->getPublicAlbumsId();
-		$smartAlbums = new BaseCollection();
-		foreach ($this->smartFactory::$base_smarts as $smart_kind) {
-			$smartAlbums->push($this->smartFactory->make($smart_kind));
-		}
+		$smartAlbums = $this->smartFactory->makeAll();
 
 		foreach ($this->tag->get() as $tagAlbum) {
 			$smartAlbums->push($tagAlbum);
@@ -80,7 +75,7 @@ class Smart
 		foreach ($smartAlbums as $smartAlbum) {
 			if (AccessControl::can_upload() || $smartAlbum->is_public()) {
 				$smartAlbum->setAlbumIDs($publicAlbums);
-				$return[$smartAlbum->get_title()] = AlbumCast::toArray($smartAlbum);
+				$return[$smartAlbum->get_title()] = $smartAlbum->toArray();
 				AlbumCast::getThumbs($return[$smartAlbum->get_title()], $smartAlbum, $this->symLinkFunctions);
 			}
 		}

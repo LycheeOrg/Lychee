@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Schema;
 
 class NestedSetForAlbums extends Migration
 {
-	private const ALBUM = 'albums';
+	private const ALBUMS = 'albums';
+	private const PHOTOS = 'photos';
 	private const LEFT = '_lft';
 	private const RIGHT = '_rgt';
 
@@ -18,13 +19,13 @@ class NestedSetForAlbums extends Migration
 	 */
 	public function up()
 	{
-		Schema::table(self::ALBUM, function ($table) {
+		Schema::table(self::ALBUMS, function ($table) {
 			$table->unsignedBigInteger(self::LEFT)->nullable()->default(null)->after('parent_id');
 		});
-		Schema::table(self::ALBUM, function ($table) {
+		Schema::table(self::ALBUMS, function ($table) {
 			$table->unsignedBigInteger(self::RIGHT)->nullable()->default(null)->after(self::LEFT);
 		});
-		Schema::table(self::ALBUM, function ($table) {
+		Schema::table(self::ALBUMS, function ($table) {
 			$table->index([self::LEFT, self::RIGHT]);
 		});
 
@@ -38,10 +39,10 @@ class NestedSetForAlbums extends Migration
 	 */
 	public function down()
 	{
-		Schema::table(self::ALBUM, function (Blueprint $table) {
+		Schema::table(self::ALBUMS, function (Blueprint $table) {
 			$table->dropColumn(self::LEFT);
 		});
-		Schema::table(self::ALBUM, function (Blueprint $table) {
+		Schema::table(self::ALBUMS, function (Blueprint $table) {
 			$table->dropColumn(self::RIGHT);
 		});
 	}

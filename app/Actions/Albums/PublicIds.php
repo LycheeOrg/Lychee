@@ -4,8 +4,7 @@ namespace App\Actions\Albums;
 
 use AccessControl;
 use App\Models\Album;
-// use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
 
@@ -41,11 +40,12 @@ trait PublicIds
 	{
 		if (AccessControl::is_admin()) {
 			return new BaseCollection();
-		} elseif (AccessControl::is_logged_in()) {
+		}
+
+		if (AccessControl::is_logged_in()) {
 			$shared_ids = DB::table('user_album')->select('album_id')
 				->where('user_id', '=', AccessControl::id())
 				->pluck('album_id');
-			// ->get()->map(fn ($v) => $v->album_id);
 
 			return Album::where('owner_id', '<>', AccessControl::id())
 				// shared are accessible
@@ -53,11 +53,11 @@ trait PublicIds
 				// remove NOT public
 				->where(fn ($q) => $this->notPublicNotViewable($q))
 				->get();
-		} else {
-			// remove NOT public
-			Album::where(fn ($q) => $this->notPublicNotViewable($q))
-				->get();
 		}
+
+		// remove NOT public
+		return Album::where(fn ($q) => $this->notPublicNotViewable($q))
+			->get();
 	}
 
 	/**
@@ -65,7 +65,7 @@ trait PublicIds
 	 *
 	 * @return array[int]
 	 */
-	private function getNotAccessible(): array
+	private function getNotAccessible(): BaseCollection
 	{
 		/**
 		 * @var BaseCollection
@@ -79,10 +79,9 @@ trait PublicIds
 			}
 
 			return $sql->pluck('id');
-			// return $sql->get()->pluck('id');
 		}
 
-		return [];
+		return new BaseCollection();
 	}
 
 	/**

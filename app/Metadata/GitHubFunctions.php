@@ -8,7 +8,6 @@ use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
-use App\Models\Logs;
 use Config;
 use Exception;
 
@@ -45,11 +44,6 @@ class GitHubFunctions
 		} catch (Exception $e) {
 			$this->branch = false;
 			$this->head = false;
-			try {
-				Logs::notice(__METHOD__, __LINE__, $e->getMessage());
-			} catch (Exception $e) {
-				// Composer stuff.
-			}
 		}
 		// @codeCoverageIgnoreEnd
 	}
