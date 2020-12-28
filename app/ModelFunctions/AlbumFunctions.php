@@ -10,14 +10,12 @@ use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
 use App\Factories\AlbumFactory;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
-use App\ModelFunctions\PhotoActions\Thumb as Thumb;
 use App\Models\Album;
 use App\Models\Extensions\CustomSort;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\Hash;
@@ -64,6 +62,8 @@ class AlbumFunctions
 	 * @param string $show_tags
 	 * @param int    $user_id
 	 *
+	 * TODO : MOVE
+	 *
 	 * @return Album
 	 */
 	public function createTagAlbum(string $title, string $show_tags, int $user_id): Album
@@ -86,6 +86,8 @@ class AlbumFunctions
 	 * @param int    $parent_id
 	 * @param int    $user_id
 	 *
+	 * TODO: MOVE
+	 *
 	 * @return Album|string
 	 */
 	public function create(string $title, int $parent_id, int $user_id): Album
@@ -106,7 +108,7 @@ class AlbumFunctions
 	 *
 	 * @return Album
 	 *
-	 * TODO: FIX ME
+	 * TODO: FIX ME & MOVE
 	 */
 	private function set_parent(Album $album, int $parent_id, int $user_id): Album
 	{
@@ -130,6 +132,8 @@ class AlbumFunctions
 	 * Method that stores new album to the database.
 	 *
 	 * @param $album
+	 *
+	 * TODO: MOVE
 	 *
 	 * @return Album|string
 	 */
@@ -163,60 +167,6 @@ class AlbumFunctions
 
 		return $album;
 	}
-
-	// private function get_thumbs_album(Album $album, array $previousThumbIDs): BaseCollection
-	// {
-	// 	[$sort_col, $sort_order] = $album->get_sort();
-
-	// 	$photos = Photo::where('album_id', $album->id)
-	// 		->orWhereIn('id', $previousThumbIDs)
-	// 		->orderBy('star', 'DESC')
-	// 		->orderBy($sort_col, $sort_order)
-	// 		->orderBy('id', 'ASC')
-	// 		->limit(3)
-	// 		->get();
-
-	// 	return $photos->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
-	// }
-
-	// public function get_thumbs(Album $album, BaseCollection $children): BaseCollection
-	// {
-	// 	$reduced = $children->reduce(function ($collection, $child) {
-	// 		if (isset($child[0]->content_accessible) && $child[0]->content_accessible === false) {
-	// 			return $collection;
-	// 		}
-
-	// 		$reduced_child = $this->get_thumbs($child[0], $child[1]);
-
-	// 		return $collection->push($reduced_child);
-	// 	}, new BaseCollection());
-
-	// 	$previousThumbIDs = $reduced->flatMap(fn ($e) => $e[0]->map(fn (Thumb $t) => $t->thumbID))->all();
-	// 	$thumbs = $this->get_thumbs_album($album, $previousThumbIDs);
-
-	// 	return new Collection([$thumbs, $reduced]);
-	// }
-
-	// public function set_thumbs(array &$return, BaseCollection $thumbs)
-	// {
-	// 	$return['thumbs'] = [];
-	// 	$return['types'] = [];
-	// 	$return['thumbs2x'] = [];
-
-	// 	$thumbs[0]->each(function (Thumb $thumb, $key) use (&$return) {
-	// 		$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
-	// 	});
-	// }
-
-	// public function set_thumbs_children(BaseCollection &$return, BaseCollection $thumbs)
-	// {
-	// 	$thumbs->each(function (BaseCollection $subthumb, $key) use (&$return) {
-	// 		$mod = $return[$key];
-	// 		$this->set_thumbs_children($mod['albums'], $subthumb[1]);
-	// 		$this->set_thumbs($mod, $subthumb);
-	// 		$return[$key] = $mod;
-	// 	});
-	// }
 
 	/**
 	 * TODO: MOVE somewhere else.
@@ -256,20 +206,22 @@ class AlbumFunctions
 		return $return_photos;
 	}
 
-	public function flatMap_id(BaseCollection $subAlbums): BaseCollection
-	{
-		return $subAlbums->reduce(function ($collect, $e) {
-			$collect->push($e[0]->id);
+	// public function flatMap_id(BaseCollection $subAlbums): BaseCollection
+	// {
+	// 	return $subAlbums->reduce(function ($collect, $e) {
+	// 		$collect->push($e[0]->id);
 
-			return $collect->concat($this->flatMap_id($e[1]));
-		}, new BaseCollection());
-	}
+	// 		return $collect->concat($this->flatMap_id($e[1]));
+	// 	}, new BaseCollection());
+	// }
 
 	/**
 	 * take a $photo_sql query and return an array containing their pictures.
 	 *
 	 * @param Builder $photos_sql
 	 * @param bool    $full_photo
+	 *
+	 * TODO: MOVE
 	 *
 	 * @return array
 	 */
@@ -340,55 +292,13 @@ class AlbumFunctions
 		return $return_photos;
 	}
 
-	// /**
-	//  * ! may be memory intensive
-	//  * ! lots of SQL query.
-	//  * TODO: Add recursion limit back.
-	//  *
-	//  * Recursively returns the tree structure of albums.
-	//  *
-	//  * @param Album $album
-	//  * @param $username : speed optimization to avoid an extra query,
-	//  * taking advantage of the fact that subalbums inherit parent's owner
-	//  * @param $recursionLimit : 0 means infinity
-	//  *
-	//  * @return Collection
-	//  */
-	// public function get_children(Album $album, $recursionLimit = 0, $includePassProtected = false): BaseCollection
-	// {
-	// 	$sortingCol = Configs::get_value('sorting_Albums_col');
-	// 	$sortingOrder = Configs::get_value('sorting_Albums_order');
-
-	// 	// $album->descendants()->where()
-
-	// 	$children = $this->customSort($album->children(), $sortingCol, $sortingOrder);
-
-	// 	return $children->map(
-	// 		function ($_album) use ($includePassProtected) {
-	// 			$haveAccess = $this->readAccessFunctions->album($_album, true);
-
-	// 			if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
-	// 				if ($haveAccess === 1) {
-	// 					$collected = $this->get_sub_albums($_album, $includePassProtected);
-	// 				} else {
-	// 					// when we generate the thumbs, we need to know whether that content is visible or not.
-	// 					$_album->content_accessible = false;
-	// 					$collected = new Collection();
-	// 				}
-
-	// 				return new Collection([$_album, $collected]);
-	// 			}
-
-	// 			return new Collection();
-	// 		}
-	// 	)->reject(fn ($a) => $a->isEmpty());
-	// }
-
 	/**
 	 * Recursively set the ownership of the contents of an album.
 	 *
 	 * @param $albumID
 	 * @param int $ownerId
+	 *
+	 * TODO: IMPROVE -> Use descendance
 	 *
 	 * @return bool
 	 */
@@ -405,40 +315,6 @@ class AlbumFunctions
 		return true;
 	}
 
-	// /**
-	//  * ! Memory intensive
-	//  * ! lots of SQL query.
-	//  *
-	//  * Recursively go through each sub album and build a list of them.
-	//  * Unlike AlbumActions\UpdateTakestamps::get_all_sub_albums_id(),
-	//  * this function follows access checks and skips hidden subalbums.
-	//  * The optional second argument, if true, will result in password-protected
-	//  * albums being included (but not their content).
-	//  *
-	//  * @param Album $parentAlbum
-	//  * @param bool  $includePassProtected
-	//  *
-	//  * @return Collection[Album]
-	//  */
-	// public function get_sub_albums(Album $album, $includePassProtected = false): BaseCollection
-	// {
-	// 	return $album->children->reduce(function ($collect, $_album) use ($includePassProtected) {
-	// 		$haveAccess = $this->readAccessFunctions->album($_album, true);
-	// 		if ($haveAccess === 1 || ($includePassProtected && $haveAccess === 3)) {
-	// 			if ($haveAccess === 1) {
-	// 				$collected = $this->get_sub_albums($_album, $includePassProtected);
-	// 			} else {
-	// 				// when we generate the thumbs, we need to know whether that content is visible or not.
-	// 				$_album->content_accessible = false;
-	// 				$collected = new BaseCollection();
-	// 			}
-	// 			$collect = $collect->push(new BaseCollection([$_album, $collected]));
-	// 		}
-
-	// 		return $collect;
-	// 	}, new BaseCollection())->reject(fn ($e) => $e->isEmpty());
-	// }
-
 	public static function is_tag_album(Album $album): bool
 	{
 		return $album->smart && !empty($album->showtags);
@@ -448,6 +324,8 @@ class AlbumFunctions
 	 * Provided an password and an album, check if the album can be
 	 * unlocked. If yes, unlock all albums with the same password.
 	 * ?string is not valid php 7.3 ...
+	 *
+	 * TODO: MOVE
 	 */
 	public function unlockAlbum(string $albumid, $password): bool
 	{
@@ -484,6 +362,7 @@ class AlbumFunctions
 
 	/**
 	 * Provided an password, add all the albums that the password unlocks.
+	 * TODO: MOVE.
 	 */
 	public function unlockAllAlbums(string $password): void
 	{

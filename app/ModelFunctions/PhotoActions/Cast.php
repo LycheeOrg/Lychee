@@ -94,7 +94,7 @@ class Cast
 
 		foreach ($sizes as $size => $url) {
 			if ($photo_model->$size != '') {
-				$return[$size] = Storage::url($size . '/' . $url);
+				$return[$size] = Storage::url(str_replace('2x', '', $size) . '/' . $url);
 				$return[$size . '_dim'] = $photo_model->$size;
 			} else {
 				$return[$size] = '';

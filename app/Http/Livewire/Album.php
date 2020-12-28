@@ -57,14 +57,14 @@ class Album extends Component
 		if ($this->album->is_smart()) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
 			$this->album->setAlbumIDs($publicAlbums);
-			$this->info = $this->album->toArray();
+			$this->info = $this->album->toReturnArray();
 		} else {
 			// take care of sub albums
 			$children = $this->album->get_children();
 
-			$return = $this->album->toArray();
+			$return = $this->album->toReturnArray();
 			$this->info['albums'] = $children->map(function ($child) {
-				$arr_child = $child->toArray();
+				$arr_child = $child->toReturnArray();
 				$thb = $child->get_thumbs();
 				$child->set_thumbs($arr_child, $thb);
 

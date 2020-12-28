@@ -15,7 +15,7 @@ trait AlbumCast
 	 *
 	 * @return array
 	 */
-	public function toArray(): array
+	public function toReturnArray(): array
 	{
 		$return = [
 			'id' => strval($this->id),

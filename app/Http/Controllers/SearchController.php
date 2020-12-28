@@ -5,7 +5,6 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
-use App\Actions\Album\Cast as AlbumCast;
 use App\Actions\Albums\Top;
 use App\Actions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumFunctions;
@@ -153,7 +152,7 @@ class SearchController extends Controller
 		if ($albums != null) {
 			$i = 0;
 			foreach ($albums as $album_model) {
-				$album = AlbumCast::toArray($album_model);
+				$album = $album_model->toReturnArray();
 
 				if (AccessControl::is_logged_in()) {
 					$album['owner'] = $album_model->owner->username;
@@ -162,15 +161,8 @@ class SearchController extends Controller
 					// We don't need 'albums' but we do need to come up with
 					// all the subalbums in order to get accurate thumbs info
 					// and to let the front end know if there are any.
-					$children = $this->albumFunctions->get_children($album_model);
-
-					$album['albums'] = $children->map(function ($e) {
-						return AlbumCast::toArray($e[0]);
-					});
-
-					$thumbs = $this->albumFunctions->get_thumbs($album_model, $children);
-					$this->albumFunctions->set_thumbs($album, $thumbs);
-					$album['has_albums'] = count($album['albums']) > 1 ? '1' : '0';
+					$thumbs = $this->album_model->get_thumbs();
+					$this->album_model->set_thumbs($album, $thumbs);
 				}
 
 				$return['albums'][$i] = $album;

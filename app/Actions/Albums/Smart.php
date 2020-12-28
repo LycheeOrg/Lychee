@@ -75,7 +75,7 @@ class Smart
 		foreach ($smartAlbums as $smartAlbum) {
 			if (AccessControl::can_upload() || $smartAlbum->is_public()) {
 				$smartAlbum->setAlbumIDs($publicAlbums);
-				$return[$smartAlbum->get_title()] = $smartAlbum->toArray();
+				$return[$smartAlbum->get_title()] = $smartAlbum->toReturnArray();
 				AlbumCast::getThumbs($return[$smartAlbum->get_title()], $smartAlbum, $this->symLinkFunctions);
 			}
 		}

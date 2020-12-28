@@ -41,7 +41,7 @@ class AlbumsFunctions
 			 * @var Album
 			 */
 			$album = $albums[$key];
-			$album_array = $album->toArray();
+			$album_array = $album->toReturnArray();
 
 			if (AccessControl::is_logged_in()) {
 				$album_array['owner'] = $albums[$key]->owner->name();

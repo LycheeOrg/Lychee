@@ -131,14 +131,14 @@ class AlbumController extends Controller
 		if ($album->smart) {
 			$publicAlbums = $this->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
-			$return = $album->toArray();
+			$return = $album->toReturnArray();
 		} else {
 			// take care of sub albums
 			$children = $album->get_children();
 
-			$return = $album->toArray();
+			$return = $album->toReturnArray();
 			$return['albums'] = $children->map(function ($child) {
-				$arr_child = $child->toArray();
+				$arr_child = $child->toReturnArray();
 				$thb = $child->get_thumbs();
 				$child->set_thumbs($arr_child, $thb);
 
