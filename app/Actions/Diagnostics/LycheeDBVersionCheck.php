@@ -2,6 +2,7 @@
 
 namespace App\Actions\Diagnostics;
 
+use App\Contracts\DiagnosticCheckInterface;
 use App\Metadata\LycheeVersion;
 
 class LycheeDBVersionCheck implements DiagnosticCheckInterface

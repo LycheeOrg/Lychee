@@ -5,10 +5,11 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
-use App\Actions\Album\Cast as AlbumCast;
-use App\Actions\Album\Get as AlbumGet;
+use App\Actions\Albums\PublicIds;
 use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
+use App\Factories\AlbumFactory;
+use App\Factories\SmartFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
 use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
@@ -20,7 +21,6 @@ use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
-use App\SmartAlbums\SmartFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -29,6 +29,8 @@ use ZipStream\ZipStream;
 
 class AlbumController extends Controller
 {
+	use PublicIds;
+
 	/**
 	 * @var AlbumFunctions
 	 */
@@ -45,14 +47,14 @@ class AlbumController extends Controller
 	private $readAccessFunctions;
 
 	/**
+	 * @var AlbumFactory
+	 */
+	private $albumFactory;
+
+	/**
 	 * @var SmartFactory
 	 */
 	private $smartFactory;
-
-	/**
-	 * @var AlbumGet
-	 */
-	private $albumGet;
 
 	/**
 	 * @param AlbumFunctions      $albumFunctions
@@ -63,14 +65,14 @@ class AlbumController extends Controller
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
 		ReadAccessFunctions $readAccessFunctions,
-		SmartFactory $smartFactory,
-		AlbumGet $albumGet
+		AlbumFactory $albumFactory,
+		SmartFactory $smartFactory
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
+		$this->albumFactory = $albumFactory;
 		$this->smartFactory = $smartFactory;
-		$this->albumGet = $albumGet;
 	}
 
 	/**
@@ -124,21 +126,25 @@ class AlbumController extends Controller
 		$return['albums'] = [];
 		// Get photos
 		// change this for smartalbum
-		$album = $this->albumGet->find($request['albumID']);
+		$album = $this->albumFactory->make($request['albumID']);
 
 		if ($album->smart) {
-			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
+			$publicAlbums = $this->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
-			$return = AlbumCast::toArray($album);
+			$return = $album->toReturnArray();
 		} else {
 			// take care of sub albums
-			$children = $this->albumFunctions->get_children($album, 0, true);
+			$children = $album->get_children();
 
-			$return = AlbumCast::toArrayWith($album, $children);
-			$return['owner'] = $album->owner->get_username();
+			$return = $album->toReturnArray();
+			$return['albums'] = $children->map(function ($child) {
+				$arr_child = $child->toReturnArray();
+				$thb = $child->get_thumbs();
+				$child->set_thumbs($arr_child, $thb);
 
-			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
-			$this->albumFunctions->set_thumbs_children($return['albums'], $thumbs[1]);
+				return $arr_child;
+			})->values();
+			$return['owner'] = $album->owner->name();
 		}
 
 		// take care of photos
@@ -161,6 +167,7 @@ class AlbumController extends Controller
 	 * Provided an albumID, returns the album with only map related data.
 	 *
 	 * @param Request $request
+	 *                         TODO: FIXME
 	 *
 	 * @return array|string
 	 */
@@ -171,7 +178,7 @@ class AlbumController extends Controller
 		// Get photos
 		// Get album information
 
-		$album = $this->albumGet->find($request['albumID']);
+		$album = $this->albumFactory->make($request['albumID']);
 
 		if ($album->smart) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
@@ -182,8 +189,7 @@ class AlbumController extends Controller
 			$album_list = collect();
 			if ($request['includeSubAlbums']) {
 				// Get all subalbums of the current album
-				$album_list = $this->albumFunctions->get_sub_albums($album);
-				$album_list = $this->albumFunctions->flatMap_id($album_list);
+				$album_list = $album->getDescendants(['id']);
 			}
 
 			// Add current albumID to array
@@ -704,7 +710,7 @@ class AlbumController extends Controller
 
 			$dirs = [];
 			foreach ($albumIDs as $albumID) {
-				$album = $this->albumGet->find($albumID);
+				$album = $this->albumFactory->make($albumID);
 				$dir = $album->title;
 				if ($album->smart) {
 					$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
@@ -714,7 +720,7 @@ class AlbumController extends Controller
 
 				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album, $albumID) use (&$zip, $badChars, &$compress_album) {
 					if (!$album->is_downloadable()) {
-						if ($this->albumFunctions->is_smart_album($albumID)) {
+						if ($this->smartFactory->is_smart($albumID)) {
 							if (!AccessControl::is_logged_in()) {
 								return;
 							}
@@ -754,7 +760,7 @@ class AlbumController extends Controller
 						// that are not downloadable based on their actual
 						// parent album.
 						if (
-							$this->albumFunctions->is_smart_album($albumID) && !AccessControl::is_logged_in() &&
+							$this->smartFactory->is_smart($albumID) && !AccessControl::is_logged_in() &&
 							$photo->album_id !== null && !$photo->album->is_downloadable()
 						) {
 							continue;

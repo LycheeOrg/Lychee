@@ -2,10 +2,8 @@
 
 namespace App\Http\Livewire;
 
-use App\Actions\Album\Cast as AlbumCast;
-use App\Actions\Album\Get as AlbumGet;
+use App\Factories\AlbumFactory;
 use App\ModelFunctions\AlbumFunctions;
-use App\Models\Album as AlbumModel;
 use App\Models\Configs;
 use Livewire\Component;
 
@@ -32,48 +30,47 @@ class Album extends Component
 	public $photos;
 
 	/**
-	 * @var AlbumGet
+	 * @var AlbumFactory
 	 */
-	private $albumGet;
+	private $albumFactory;
 
 	/**
 	 * @var AlbumFunctions
 	 */
 	private $albumFunctions;
 
-	public function mount($albumId, AlbumGet $albumGet, AlbumFunctions $albumFunctions)
+	public function mount($albumId, AlbumFactory $albumFactory, AlbumFunctions $albumFunctions)
 	{
 		$this->albumId = $albumId;
 		$this->album = null;
 		$this->info = [];
 		$this->info['albums'] = [];
 
-		$this->albumGet = $albumGet;
+		$this->albumFactory = $albumFactory;
 		$this->albumFunctions = $albumFunctions;
 	}
 
 	public function render()
 	{
-		// Get photos
-		// change this for smartalbum
-		/*
-		 * @var AlbumModel
-		 */
-		$this->album = $this->albumGet->find($this->albumId);
+		$this->album = $this->albumFactory->make($this->albumId);
 
-		if ($this->album->smart) {
+		if ($this->album->is_smart()) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
 			$this->album->setAlbumIDs($publicAlbums);
-			$this->info = AlbumCast::toArray($this->album);
+			$this->info = $this->album->toReturnArray();
 		} else {
 			// take care of sub albums
-			$children = $this->albumFunctions->get_children($this->album, 0, true);
+			$children = $this->album->get_children();
 
-			$this->info = AlbumCast::toArrayWith($this->album, $children);
-			$this->info['owner'] = $this->album->owner->get_username();
+			$return = $this->album->toReturnArray();
+			$this->info['albums'] = $children->map(function ($child) {
+				$arr_child = $child->toReturnArray();
+				$thb = $child->get_thumbs();
+				$child->set_thumbs($arr_child, $thb);
 
-			$thumbs = $this->albumFunctions->get_thumbs($this->album, $children);
-			$this->albumFunctions->set_thumbs_children($this->info['albums'], $thumbs[1]);
+				return $arr_child;
+			})->values();
+			$this->info['owner'] = $this->album->owner->name();
 		}
 
 		// take care of photos

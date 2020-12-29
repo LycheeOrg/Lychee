@@ -3,6 +3,7 @@
 namespace App\Actions\Diagnostics;
 
 use App\Assets\Helpers;
+use App\Contracts\DiagnosticCheckInterface;
 use Illuminate\Support\Facades\Storage;
 
 class BasicPermissionCheck implements DiagnosticCheckInterface

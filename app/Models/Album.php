@@ -4,6 +4,13 @@
 
 namespace App\Models;
 
+use App\Contracts\AlbumInterface;
+use App\Models\Extensions\AlbumBooleans;
+use App\Models\Extensions\AlbumCast;
+use App\Models\Extensions\AlbumGetters;
+use App\Models\Extensions\AlbumSetters;
+use App\Models\Extensions\AlbumStringify;
+use App\Models\Extensions\CustomSort;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -12,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Kalnoy\Nestedset\NodeTrait;
 
 /**
  * App\Album.
@@ -62,8 +70,16 @@ use Illuminate\Support\Carbon;
  *
  * @property Collection|User[] $shared_with
  */
-class Album extends Model
+class Album extends Model implements AlbumInterface
 {
+	use NodeTrait;
+	use AlbumBooleans;
+	use AlbumStringify;
+	use AlbumGetters;
+	use AlbumCast;
+	use AlbumSetters;
+	use CustomSort;
+
 	protected $dates
 	= [
 		'created_at',
@@ -92,24 +108,13 @@ class Album extends Model
 	}
 
 	/**
-	 * Return the list of photos.
-	 */
-	public function get_photos()
-	{
-		return $this->photos();
-	}
-
-	/**
 	 * Return the relationship between an album and its owner.
 	 *
 	 * @return BelongsTo
 	 */
 	public function owner()
 	{
-		return $this->belongsTo('App\Models\User', 'owner_id', 'id')->withDefault([
-			'id' => 0,
-			'username' => 'Admin',
-		]);
+		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
 
 	/**
@@ -143,92 +148,6 @@ class Album extends Model
 			'album_id',
 			'user_id'
 		);
-	}
-
-	/**
-	 * Return whether or not public users will see the full photo.
-	 *
-	 * @return bool
-	 */
-	public function is_full_photo_visible()
-	{
-		if ($this->public) {
-			return $this->full_photo == 1;
-		} else {
-			return Configs::get_value('full_photo', '1') === '1';
-		}
-	}
-
-	/**
-	 * Return parent_id as a string or null.
-	 *
-	 * @return string|null
-	 */
-	public function str_parent_id()
-	{
-		return $this->parent_id == null ? '' : strval($this->parent_id);
-	}
-
-	/**
-	 * Return min_takestamp as a string or ''.
-	 *
-	 * @return string
-	 */
-	public function str_min_takestamp()
-	{
-		return $this->min_takestamp == null ? '' : $this->min_takestamp->format('M Y');
-	}
-
-	/**
-	 * Return min_takestamp as a string or ''.
-	 *
-	 * @return string
-	 */
-	public function str_max_takestamp()
-	{
-		return $this->max_takestamp == null ? '' : $this->max_takestamp->format('M Y');
-	}
-
-	/**
-	 * Return whether or not public users can download photos.
-	 *
-	 * @return bool
-	 */
-	public function is_downloadable()
-	{
-		if ($this->public) {
-			return $this->downloadable == 1;
-		} else {
-			return Configs::get_value('downloadable', '0') === '1';
-		}
-	}
-
-	/**
-	 * Return whether or not display share button.
-	 *
-	 * @return bool
-	 */
-	public function is_share_button_visible()
-	{
-		if ($this->public) {
-			return $this->share_button_visible == 1;
-		} else {
-			return Configs::get_value('share_button_visible', '0') === '1';
-		}
-	}
-
-	/**
-	 * Return the Album license or the default one.
-	 *
-	 * @return string
-	 */
-	public function get_license()
-	{
-		if ($this->license == 'none') {
-			return Configs::get_value('default_license');
-		}
-
-		return $this->license;
 	}
 
 	/**

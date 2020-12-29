@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Swedish implements Language
 {
-	public function code()
+	public function code(): string
 	{
 		return 'sv';
 	}
 
-	public function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'användarnamn',

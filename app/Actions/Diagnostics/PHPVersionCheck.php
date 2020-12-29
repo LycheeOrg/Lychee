@@ -2,6 +2,8 @@
 
 namespace App\Actions\Diagnostics;
 
+use App\Contracts\DiagnosticCheckInterface;
+
 class PHPVersionCheck implements DiagnosticCheckInterface
 {
 	public function check(array &$errors): void

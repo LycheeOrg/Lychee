@@ -2,6 +2,8 @@
 
 namespace App\Actions\Diagnostics;
 
+use App\Contracts\DiagnosticCheckInterface;
+
 class GDSupportCheck implements DiagnosticCheckInterface
 {
 	public function check(array &$errors): void

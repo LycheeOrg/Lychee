@@ -5,8 +5,8 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Albums\Top;
 use App\Actions\ReadAccessFunctions;
-use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
@@ -32,11 +32,6 @@ class SearchController extends Controller
 	private $albumsFunctions;
 
 	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
 	 * @var readAccessFunctions
 	 */
 	private $readAccessFunctions;
@@ -45,6 +40,11 @@ class SearchController extends Controller
 	 * @var SymLinkFunctions
 	 */
 	private $symLinkFunctions;
+
+	/**
+	 * @var Top
+	 */
+	private $top;
 
 	/**
 	 * @param AlbumFunctions      $albumFunctions
@@ -57,12 +57,14 @@ class SearchController extends Controller
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
 		ReadAccessFunctions $readAccessFunctions,
-		SymLinkFunctions $symLinkFunctions
+		SymLinkFunctions $symLinkFunctions,
+		Top $top
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
+		$this->top = $top;
 	}
 
 	/**
@@ -131,8 +133,7 @@ class SearchController extends Controller
 		 * from the top level.  This includes password-protected albums
 		 * (since they are visible) but not their content.
 		 */
-		$toplevel = $this->albumsFunctions->getToplevelAlbums();
-		$albumIDs = $this->albumsFunctions->getPublicAlbumsId($toplevel, null, true);
+		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
 
 		$query = Album::with([
 			'owner',
@@ -151,7 +152,7 @@ class SearchController extends Controller
 		if ($albums != null) {
 			$i = 0;
 			foreach ($albums as $album_model) {
-				$album = AlbumCast::toArray($album_model);
+				$album = $album_model->toReturnArray();
 
 				if (AccessControl::is_logged_in()) {
 					$album['owner'] = $album_model->owner->username;
@@ -160,15 +161,8 @@ class SearchController extends Controller
 					// We don't need 'albums' but we do need to come up with
 					// all the subalbums in order to get accurate thumbs info
 					// and to let the front end know if there are any.
-					$children = $this->albumFunctions->get_children($album_model);
-
-					$album['albums'] = $children->map(function ($e) {
-						return AlbumCast::toArray($e[0]);
-					});
-
-					$thumbs = $this->albumFunctions->get_thumbs($album_model, $children);
-					$this->albumFunctions->set_thumbs($album, $thumbs);
-					$album['has_albums'] = count($album['albums']) > 1 ? '1' : '0';
+					$thumbs = $this->album_model->get_thumbs();
+					$this->album_model->set_thumbs($album, $thumbs);
 				}
 
 				$return['albums'][$i] = $album;
@@ -183,7 +177,7 @@ class SearchController extends Controller
 		 * accessible from the top level, only this time without
 		 * password-protected ones.
 		 */
-		$albumIDs = $this->albumsFunctions->getPublicAlbumsId($toplevel);
+		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
 		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);

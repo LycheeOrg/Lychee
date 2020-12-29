@@ -4,12 +4,15 @@ namespace App\Actions\Albums;
 
 use AccessControl;
 use App\ModelFunctions\AlbumFunctions;
+use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Extensions\CustomSort;
 use Illuminate\Support\Collection as BaseCollection;
 
 class Top
 {
 	use TopQuery;
+	use CustomSort;
 
 	/**
 	 * @var AlbumFunctions
@@ -50,7 +53,7 @@ class Top
 		];
 
 		$sql = $this->createTopleveAlbumsQuery()->where('smart', '=', false);
-		$albumCollection = $this->albumFunctions->customSort($sql, $this->sortingCol, $this->sortingOrder);
+		$albumCollection = $this->customSort($sql, $this->sortingCol, $this->sortingOrder);
 
 		if (AccessControl::is_logged_in()) {
 			$id = AccessControl::id();

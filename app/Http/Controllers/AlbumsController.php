@@ -5,6 +5,8 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Albums\PublicIds;
+use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
@@ -14,6 +16,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class AlbumsController extends Controller
 {
+	use PublicIds;
+
 	/**
 	 * @var AlbumFunctions
 	 */
@@ -30,17 +34,24 @@ class AlbumsController extends Controller
 	private $top;
 
 	/**
+	 * @var Smart
+	 */
+	private $smart;
+
+	/**
 	 * @param AlbumFunctions  $albumFunctions
 	 * @param AlbumsFunctions $albumsFunctions
 	 */
 	public function __construct(
 		AlbumFunctions $albumFunctions,
 		AlbumsFunctions $albumsFunctions,
-		Top $top
+		Top $top,
+		Smart $smart
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->albumsFunctions = $albumsFunctions;
 		$this->top = $top;
+		$this->smart = $smart;
 	}
 
 	/**
@@ -59,14 +70,12 @@ class AlbumsController extends Controller
 		];
 
 		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
-		//
 		$toplevel = $this->top->get();
-		$children = $this->albumsFunctions->get_children($toplevel);
 
-		$return['albums'] = $this->albumsFunctions->prepare_albums($toplevel['albums'], $children['albums']);
-		$return['shared_albums'] = $this->albumsFunctions->prepare_albums($toplevel['shared_albums'], $children['shared_albums']);
+		$return['albums'] = $this->albumsFunctions->prepare_albums($toplevel['albums']);
+		$return['shared_albums'] = $this->albumsFunctions->prepare_albums($toplevel['shared_albums']);
 
-		$return['smartalbums'] = $this->albumsFunctions->getSmartAlbums($toplevel, $children);
+		$return['smartalbums'] = $this->smart->get();
 
 		return $return;
 	}
@@ -82,7 +91,7 @@ class AlbumsController extends Controller
 		// Initialize return var
 		$return = [];
 
-		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
+		$albumIDs = $this->getPublicAlbumsId();
 
 		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {
