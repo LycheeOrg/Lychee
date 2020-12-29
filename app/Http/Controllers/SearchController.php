@@ -5,10 +5,10 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Albums\PublicIds;
 use App\Actions\Albums\Top;
 use App\Actions\ReadAccessFunctions;
 use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
@@ -21,15 +21,12 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
+	use PublicIds;
+
 	/**
 	 * @var AlbumFunctions
 	 */
 	private $albumFunctions;
-
-	/**
-	 * @var AlbumsFunctions
-	 */
-	private $albumsFunctions;
 
 	/**
 	 * @var readAccessFunctions
@@ -48,20 +45,17 @@ class SearchController extends Controller
 
 	/**
 	 * @param AlbumFunctions      $albumFunctions
-	 * @param AlbumsFunctions     $albumsFunctions
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
 	public function __construct(
 		AlbumFunctions $albumFunctions,
-		AlbumsFunctions $albumsFunctions,
 		ReadAccessFunctions $readAccessFunctions,
 		SymLinkFunctions $symLinkFunctions,
 		Top $top
 	) {
 		$this->albumFunctions = $albumFunctions;
-		$this->albumsFunctions = $albumsFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 		$this->top = $top;
@@ -133,7 +127,7 @@ class SearchController extends Controller
 		 * from the top level.  This includes password-protected albums
 		 * (since they are visible) but not their content.
 		 */
-		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
+		$albumIDs = $this->getPublicAlbumsId();
 
 		$query = Album::with([
 			'owner',
@@ -177,7 +171,7 @@ class SearchController extends Controller
 		 * accessible from the top level, only this time without
 		 * password-protected ones.
 		 */
-		$albumIDs = $this->albumsFunctions->getPublicAlbumsId();
+		$albumIDs = $this->getPublicAlbumsId();
 		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);

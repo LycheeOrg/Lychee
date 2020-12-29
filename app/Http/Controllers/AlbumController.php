@@ -15,7 +15,6 @@ use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
 use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
 use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\AlbumsFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -37,11 +36,6 @@ class AlbumController extends Controller
 	private $albumFunctions;
 
 	/**
-	 * @var AlbumsFunctions
-	 */
-	private $albumsFunctions;
-
-	/**
 	 * @var readAccessFunctions
 	 */
 	private $readAccessFunctions;
@@ -58,18 +52,15 @@ class AlbumController extends Controller
 
 	/**
 	 * @param AlbumFunctions      $albumFunctions
-	 * @param AlbumsFunctions     $albumsFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 */
 	public function __construct(
 		AlbumFunctions $albumFunctions,
-		AlbumsFunctions $albumsFunctions,
 		ReadAccessFunctions $readAccessFunctions,
 		AlbumFactory $albumFactory,
 		SmartFactory $smartFactory
 	) {
 		$this->albumFunctions = $albumFunctions;
-		$this->albumsFunctions = $albumsFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->albumFactory = $albumFactory;
 		$this->smartFactory = $smartFactory;
@@ -181,7 +172,7 @@ class AlbumController extends Controller
 		$album = $this->albumFactory->make($request['albumID']);
 
 		if ($album->smart) {
-			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
+			$publicAlbums = $this->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
 			$photos_sql = $album->get_photos();
 		} else {
@@ -713,7 +704,7 @@ class AlbumController extends Controller
 				$album = $this->albumFactory->make($albumID);
 				$dir = $album->title;
 				if ($album->smart) {
-					$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
+					$publicAlbums = $this->getPublicAlbumsId();
 					$album->setAlbumIDs($publicAlbums);
 				}
 				$photos_sql = $album->get_photos();

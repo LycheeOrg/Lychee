@@ -6,7 +6,6 @@ use AccessControl;
 use App\Actions\Album\Cast as AlbumCast;
 use App\Factories\SmartFactory;
 use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 
 class Smart
@@ -18,11 +17,6 @@ class Smart
 	 * @var AlbumFunctions
 	 */
 	public $albumFunctions;
-
-	/**
-	 * @var AlbumsFunctions
-	 */
-	public $albumsFunctions;
 
 	/**
 	 * @var SymLinkFunctions
@@ -39,9 +33,8 @@ class Smart
 	 */
 	public $smartFactory;
 
-	public function __construct(AlbumsFunctions $albumsFunctions, SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory, Tag $tag)
+	public function __construct(SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory, Tag $tag)
 	{
-		$this->albumsFunctions = $albumsFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 		$this->smartFactory = $smartFactory;
 		$this->tag = $tag;

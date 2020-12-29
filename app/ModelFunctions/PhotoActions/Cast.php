@@ -84,7 +84,7 @@ class Cast
 			$photoUrl2x = explode('.', $photoUrl);
 			$photoUrl2x = $photoUrl2x[0] . '@2x.' . $photoUrl2x[1];
 		}
-		// TODO: REFACTOR
+
 		$sizes = [
 			'medium' => $photoUrl,
 			'medium2x' => $photoUrl2x,
@@ -101,38 +101,6 @@ class Cast
 				$return[$size . '_dim'] = '';
 			}
 		}
-		// // Parse medium
-		// if ($photo_model->medium != '') {
-		// 	$return['medium'] = Storage::url('medium/' . $photoUrl);
-		// 	$return['medium_dim'] = $photo_model->medium;
-		// } else {
-		// 	$return['medium'] = '';
-		// 	$return['medium_dim'] = '';
-		// }
-
-		// if ($photo_model->medium2x != '') {
-		// 	$return['medium2x'] = Storage::url('medium/' . $photoUrl2x);
-		// 	$return['medium2x_dim'] = $photo_model->medium2x;
-		// } else {
-		// 	$return['medium2x'] = '';
-		// 	$return['medium2x_dim'] = '';
-		// }
-
-		// if ($photo_model->small != '') {
-		// 	$return['small'] = Storage::url('small/' . $photoUrl);
-		// 	$return['small_dim'] = $photo_model->small;
-		// } else {
-		// 	$return['small'] = '';
-		// 	$return['small_dim'] = '';
-		// }
-
-		// if ($photo_model->small2x != '') {
-		// 	$return['small2x'] = Storage::url('small/' . $photoUrl2x);
-		// 	$return['small2x_dim'] = $photo_model->small2x;
-		// } else {
-		// 	$return['small2x'] = '';
-		// 	$return['small2x_dim'] = '';
-		// }
 
 		// Parse paths
 		$return['thumbUrl'] = Storage::url('thumb/' . $photo_model->thumbUrl);
