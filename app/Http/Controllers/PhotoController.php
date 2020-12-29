@@ -592,7 +592,7 @@ class PhotoController extends Controller
 				$kind = '';
 				break;
 			case 'MEDIUM2X':
-				if ($this->photoFunctions->isVideo($photo)) {
+				if ($this->photoFunctions->isVideo($photo) === false) {
 					$fileName = $photo->url;
 				} else {
 					$fileName = $photo->thumbUrl;
@@ -603,7 +603,7 @@ class PhotoController extends Controller
 				$kind = '-' . $photo->medium2x;
 				break;
 			case 'MEDIUM':
-				if ($this->photoFunctions->isVideo($photo)) {
+				if ($this->photoFunctions->isVideo($photo) === false) {
 					$path = 'medium/' . $photo->url;
 				} else {
 					$path = 'medium/' . $photo->thumbUrl;
@@ -611,7 +611,7 @@ class PhotoController extends Controller
 				$kind = '-' . $photo->medium;
 				break;
 			case 'SMALL2X':
-				if ($this->photoFunctions->isVideo($photo)) {
+				if ($this->photoFunctions->isVideo($photo) === false) {
 					$fileName = $photo->url;
 				} else {
 					$fileName = $photo->thumbUrl;
@@ -622,7 +622,7 @@ class PhotoController extends Controller
 				$kind = '-' . $photo->small2x;
 				break;
 			case 'SMALL':
-				if ($this->photoFunctions->isVideo($photo)) {
+				if ($this->photoFunctions->isVideo($photo) === false) {
 					$path = 'small/' . $photo->url;
 				} else {
 					$path = 'small/' . $photo->thumbUrl;
