@@ -8,6 +8,7 @@ class SetShowTags extends Setter
 {
 	public function __construct()
 	{
+		parent::__construct();
 		$this->property = 'showtags';
 	}
 

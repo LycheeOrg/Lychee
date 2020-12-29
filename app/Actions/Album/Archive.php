@@ -21,6 +21,7 @@ class Archive extends Action
 
 	public function __construct()
 	{
+		parent::__construct();
 		// Illicit chars
 		$this->badChars = array_merge(array_map('chr', range(0, 31)), ['<', '>', ':', '"', '/', '\\', '|', '?', '*']);
 	}

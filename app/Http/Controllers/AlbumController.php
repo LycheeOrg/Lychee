@@ -11,6 +11,7 @@ use App\Actions\Album\Delete;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\Prepare;
+use App\Actions\Album\PrepareData;
 use App\Actions\Album\SetDescription;
 use App\Actions\Album\SetLicense;
 use App\Actions\Album\SetNSFW;
@@ -20,13 +21,11 @@ use App\Actions\Album\SetSorting;
 use App\Actions\Album\SetTitle;
 use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Albums\Extensions\PublicIds;
-use App\Actions\ReadAccessFunctions;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
 use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
 use App\ModelFunctions\AlbumFunctions;
-use App\Models\Album;
 use App\Models\Logs;
 use App\Response;
 use Illuminate\Http\Request;
@@ -43,32 +42,12 @@ class AlbumController extends Controller
 	private $albumFunctions;
 
 	/**
-	 * @var readAccessFunctions
-	 */
-	private $readAccessFunctions;
-
-	/**
-	 * @var AlbumFactory
-	 */
-	private $albumFactory;
-
-	/** @var UpdateTakestamps */
-	private $updateTakestamps;
-
-	/**
-	 * @param AlbumFunctions      $albumFunctions
-	 * @param ReadAccessFunctions $readAccessFunctions
+	 * @param AlbumFunctions $albumFunctions
 	 */
 	public function __construct(
-		AlbumFunctions $albumFunctions,
-		ReadAccessFunctions $readAccessFunctions,
-		AlbumFactory $albumFactory,
-		UpdateTakestamps $updateTakestamps
+		AlbumFunctions $albumFunctions
 	) {
 		$this->albumFunctions = $albumFunctions;
-		$this->readAccessFunctions = $readAccessFunctions;
-		$this->albumFactory = $albumFactory;
-		$this->updateTakestamps = $updateTakestamps;
 	}
 
 	/**
@@ -120,9 +99,9 @@ class AlbumController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function get(AlbumIDRequest $request, Prepare $prepare)
+	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory, Prepare $prepare)
 	{
-		$album = $this->albumFactory->make($request['albumID']);
+		$album = $albumFactory->make($request['albumID']);
 
 		return $prepare->do($album);
 	}
@@ -134,28 +113,11 @@ class AlbumController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function getPositionData(AlbumIDRequest $request)
+	public function getPositionData(AlbumIDRequest $request, PrepareData $prepareData)
 	{
-		$request->validate(['includeSubAlbums' => 'string|required']);
-		$return = [];
+		$validated = $request->validate(['includeSubAlbums' => 'string|required']);
 
-		$album = $this->albumFactory->make($request['albumID']);
-
-		if ($album->smart) {
-			$album->setAlbumIDs($this->getPublicAlbumsId());
-			$photos_sql = $album->get_photos();
-		} elseif ($request['includeSubAlbums']) {
-			$photos_sql = $album->get_all_photos();
-		} else {
-			$photos_sql = $album->get_photos();
-		}
-
-		$full_photo = $album->is_full_photo_visible();
-
-		$return['photos'] = $this->albumFunctions->photosLocationData($photos_sql, $full_photo);
-		$return['id'] = $request['albumID'];
-
-		return $return;
+		return $prepareData->get($request['albumID'], $validated);
 	}
 
 	/**
@@ -337,7 +299,7 @@ class AlbumController extends Controller
 			'orderPhotos' => 'required|string',
 		]);
 
-		return $setSorting->do($request['albumID'], $validated);
+		return $setSorting->do($request['albumID'], $validated) ? 'true' : 'false';
 	}
 
 	/**
