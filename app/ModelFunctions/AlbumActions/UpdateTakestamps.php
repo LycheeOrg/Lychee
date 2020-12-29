@@ -24,9 +24,8 @@ class UpdateTakestamps
 	{
 		return $album->children->reduce(function ($collect, $_album) {
 			return $collect
-				->concat([$_album->id])
 				->concat(self::get_all_sub_albums_id($_album));
-		}, new Collection());
+		}, new Collection([$album->id]));
 	}
 
 	/**
@@ -35,7 +34,7 @@ class UpdateTakestamps
 	 */
 	public static function update_min_max_takestamp(Album $album)
 	{
-		$album_list = self::get_all_sub_albums_id($album, [$album->id]);
+		$album_list = self::get_all_sub_albums_id($album);
 
 		$album->min_takestamp = Photo::whereIn('album_id', $album_list)->min('takestamp');
 		$album->max_takestamp = Photo::whereIn('album_id', $album_list)->max('takestamp');
