@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Diagnostics;
+namespace App\Actions\Diagnostics\Checks;
 
 use App\Contracts\DiagnosticCheckInterface;
 use App\Metadata\LycheeVersion;
@@ -22,12 +22,11 @@ class LycheeDBVersionCheck implements DiagnosticCheckInterface
 	 * @param array caching the return of lycheeVersion->get()
 	 */
 	public function __construct(
-		LycheeVersion $lycheeVersion,
-		$versions
+		LycheeVersion $lycheeVersion
 	) {
 		$this->lycheeVersion = $lycheeVersion;
 
-		$this->versions = $versions;
+		$this->versions = $this->lycheeVersion->get();
 	}
 
 	public function check(array &$errors): void

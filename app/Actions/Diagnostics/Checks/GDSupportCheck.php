@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Diagnostics;
+namespace App\Actions\Diagnostics\Checks;
 
 use App\Contracts\DiagnosticCheckInterface;
 

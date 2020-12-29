@@ -47,7 +47,7 @@ class SmartFactory
 	{
 		$smartAlbums = new Collection();
 
-		foreach (array_keys($this->base_smarts) as $smart_kind) {
+		foreach ($this->base_smarts as $smart_kind => $_) {
 			$smartAlbums->push($this->make($smart_kind));
 		}
 

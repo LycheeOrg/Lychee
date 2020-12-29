@@ -15,7 +15,7 @@ class AccessControlServiceProvider extends ServiceProvider
 	public function register()
 	{
 		$this->app->bind('AccessControl', function () {
-			return new SessionFunctions();
+			return resolve(SessionFunctions::class);
 		});
 	}
 

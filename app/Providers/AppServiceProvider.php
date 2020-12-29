@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Factories\LangFactory;
 use App\Image;
 use App\Image\ImageHandler;
 use App\Locale\Lang;
@@ -31,6 +32,7 @@ class AppServiceProvider extends ServiceProvider
 		AlbumFunctions::class => AlbumFunctions::class,
 		AlbumsFunctions::class => AlbumsFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
+		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,

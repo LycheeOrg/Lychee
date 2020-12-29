@@ -2,19 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Album\UpdateTakestamps;
 use App\Console\Commands\Utilities\Colorize;
-use App\ModelFunctions\AlbumActions\UpdateTakestamps;
 use Illuminate\Console\Command;
 
 class RebuildTakestamps extends Command
 {
-	/**
-	 * Add color to the command line output.
-	 *
-	 * @var Colorize
-	 */
-	private $col;
-
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -30,24 +23,14 @@ class RebuildTakestamps extends Command
 	protected $description = 'Rebuild albums takestamps.';
 
 	/**
-	 * Create a new command instance.
-	 *
-	 * @return void
-	 */
-	public function __construct(Colorize $colorize)
-	{
-		parent::__construct();
-
-		$this->col = $colorize;
-	}
-
-	/**
 	 * Execute the console command.
 	 *
 	 * @return mixed
 	 */
-	public function handle()
+	public function handle(UpdateTakestamps $updateTakestamps, Colorize $colorize)
 	{
-		UpdateTakestamps::reset_takestamp();
+		$updateTakestamps->all();
+
+		$this->line($colorize->green('Done.'));
 	}
 }

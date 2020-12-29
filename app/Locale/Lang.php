@@ -3,72 +3,61 @@
 namespace App\Locale;
 
 use App\Contracts\Language;
+use App\Factories\LangFactory;
 use App\Models\Configs;
-use Illuminate\Support\Collection as BaseCollection;
 
 class Lang
 {
+	/** @var LangFactory */
+	private $langFactory;
+
+	/** @var string */
 	private $code;
 
-	/**
-	 * @var Language
-	 */
+	/** @var Language */
 	private $language;
 
 	/**
 	 * Initialize the Facade.
 	 */
-	public function __construct()
+	public function __construct(LangFactory $langFactory)
 	{
+		$this->langFactory = $langFactory;
+
 		$this->code = Configs::get_value('lang', 'en');
 
-		$list_lang = $this->get_classes()->map(fn ($l) => new $l())
-			->filter(fn ($l) => $l->code() == $this->code);
-
-		// default: we force English
-		if ($list_lang->isEmpty()) {
-			$this->language = new English();
-		} else {
-			$this->language = $list_lang->first();
-		}
+		$this->language = $langFactory->make($this->code);
 	}
 
-	public function get_classes(): BaseCollection
-	{
-		$return = new BaseCollection();
-
-		$contract = 'App\Contracts\Language';
-		$list_lang = scandir(__DIR__);
-
-		for ($i = 0; $i < count($list_lang); $i++) {
-			$class_candidate = __NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4);
-			if (
-				is_subclass_of($class_candidate, $contract)
-			) {
-				$return->push(__NAMESPACE__ . '\\' . substr($list_lang[$i], 0, -4));
-			}
-		}
-
-		return $return;
-	}
-
+	/**
+	 * Quickly translate a string (used with the Facade).
+	 */
 	public function get(string $string)
 	{
 		return $this->language->get_locale()[$string];
 	}
 
+	/**
+	 * Return code (mostly for HTML).
+	 */
 	public function get_code()
 	{
 		return $this->language->code();
 	}
 
+	/**
+	 * Return the language array (AJAX initialization).
+	 */
 	public function get_lang()
 	{
 		return $this->language->get_locale();
 	}
 
+	/**
+	 * Return the languages available (AJAX initialization & settings).
+	 */
 	public function get_lang_available()
 	{
-		return $this->get_classes()->map(fn ($l) => (new $l())->code());
+		return $this->langFactory->getCodes();
 	}
 }

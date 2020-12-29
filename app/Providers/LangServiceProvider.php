@@ -15,7 +15,7 @@ class LangServiceProvider extends ServiceProvider
 	public function register()
 	{
 		$this->app->bind('lang', function () {
-			return new Lang();
+			return resolve(Lang::class);
 		});
 	}
 
