@@ -5,9 +5,9 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Album\UpdateTakestamps;
 use App\Assets\Helpers;
 use App\Exceptions\AlbumDoesNotExistsException;
-use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast;
@@ -49,6 +49,9 @@ class PhotoController extends Controller
 	 */
 	private $symLinkFunctions;
 
+	/** @var UpdateTakestamps */
+	private $updateTakestamps;
+
 	/**
 	 * @param PhotoFunctions   $photoFunctions
 	 * @param AlbumFunctions   $albumFunctions
@@ -58,13 +61,14 @@ class PhotoController extends Controller
 	public function __construct(
 		PhotoFunctions $photoFunctions,
 		AlbumFunctions $albumFunctions,
-		AlbumsFunctions $albumsFunctions,
-		SymLinkFunctions $symLinkFunctions
+		SymLinkFunctions $symLinkFunctions,
+		UpdateTakestamps $updateTakestamps
 	) {
 		$this->photoFunctions = $photoFunctions;
 		$this->albumFunctions = $albumFunctions;
-		$this->albumsFunctions = $albumsFunctions;
+		// $this->albumsFunctions = $albumsFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
+		$this->updateTakestamps = $updateTakestamps;
 	}
 
 	/**
@@ -361,15 +365,11 @@ class PhotoController extends Controller
 					);
 					$no_error = false;
 				}
-				$no_error &= AlbumUpdate::update_takestamps(
-					$oldAlbum,
-					[$photo->takestamp],
-					false
-				);
+				$no_error &= $this->updateTakestamps->singleAndSave($oldAlbum);
 			}
 		}
 		if ($album !== null) {
-			$no_error &= AlbumUpdate::update_takestamps($album, $takestamp, true);
+			$no_error &= $this->updateTakestamps->singleAndSave($album);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -456,11 +456,7 @@ class PhotoController extends Controller
 
 		// TODO: ideally we would like to avoid duplicates here...
 		for ($i = 0; $i < count($albums); $i++) {
-			$no_error &= AlbumUpdate::update_takestamps(
-				$albums[$i],
-				[$takestamp[$i]],
-				false
-			);
+			$no_error &= $this->updateTakestamps->singleAndSave($albums[$i]);
 		}
 
 		return $no_error ? 'true' : 'false';

@@ -4,10 +4,10 @@
 
 namespace App\ModelFunctions;
 
+use App\Actions\Album\UpdateTakestamps;
 use App\Assets\Helpers;
 use App\Image\ImageHandlerInterface;
 use App\Metadata\Extractor;
-use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -826,7 +826,8 @@ class PhotoFunctions
 
 				return Response::error('Could not find specified album');
 			}
-			if (!AlbumUpdate::update_takestamps($album, [$photo->takestamp], true)) {
+			$update = resolve(UpdateTakestamps::class);
+			if (!$update->singleAndSave($album)) {
 				Logs::error(__METHOD__, __LINE__, 'Could not update album takestamps');
 
 				return Response::error('Could not update album takestamps');

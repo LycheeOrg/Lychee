@@ -5,6 +5,7 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Albums\PublicIds;
 use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
@@ -13,7 +14,6 @@ use App\Factories\SmartFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
 use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
-use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
 use App\ModelFunctions\AlbumFunctions;
 use App\Models\Album;
 use App\Models\Configs;
@@ -50,6 +50,9 @@ class AlbumController extends Controller
 	 */
 	private $smartFactory;
 
+	/** @var UpdateTakestamps */
+	private $updateTakestamps;
+
 	/**
 	 * @param AlbumFunctions      $albumFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
@@ -58,12 +61,14 @@ class AlbumController extends Controller
 		AlbumFunctions $albumFunctions,
 		ReadAccessFunctions $readAccessFunctions,
 		AlbumFactory $albumFactory,
-		SmartFactory $smartFactory
+		SmartFactory $smartFactory,
+		UpdateTakestamps $updateTakestamps
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->albumFactory = $albumFactory;
 		$this->smartFactory = $smartFactory;
+		$this->updateTakestamps = $updateTakestamps;
 	}
 
 	/**
@@ -438,7 +443,7 @@ class AlbumController extends Controller
 			$no_error &= $album->delete();
 
 			if ($parentAlbum !== null) {
-				$no_error &= AlbumUpdate::update_takestamps($parentAlbum, [$minTS, $maxTS], false);
+				$no_error &= $this->updateTakestamps->singleAndSave($parentAlbum);
 			}
 		}
 
@@ -508,10 +513,10 @@ class AlbumController extends Controller
 			$no_error &= $album_t->delete();
 
 			if ($parentAlbum !== null) {
-				$no_error &= AlbumUpdate::update_takestamps($parentAlbum, array_slice($takestamps, -2), false);
+				$no_error &= $this->updateTakestamps->singleAndSave($parentAlbum);
 			}
 		}
-		$no_error &= AlbumUpdate::update_takestamps($album, $takestamps, true);
+		$no_error &= $this->updateTakestamps->singleAndSave($album);
 
 		return $no_error ? 'true' : 'false';
 	}
@@ -570,11 +575,11 @@ class AlbumController extends Controller
 
 					$no_error = false;
 				}
-				$no_error &= AlbumUpdate::update_takestamps($oldParentAlbum, [$album->min_takestamp, $album->max_takestamp], false);
+				$no_error &= $this->updateTakestamps->singleAndSave($oldParentAlbum);
 			}
 		}
 		if ($album_master !== null) {
-			$no_error &= AlbumUpdate::update_takestamps($album_master, $takestamps, true);
+			$no_error &= $this->updateTakestamps->singleAndSave($album_master);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -841,7 +846,7 @@ class AlbumController extends Controller
 	 */
 	public function RebuildTakestamps(Request $request)
 	{
-		AlbumUpdate::reset_takestamp();
+		$this->updateTakestamps->all();
 
 		return 'true';
 	}
