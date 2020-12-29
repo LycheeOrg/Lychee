@@ -8,6 +8,8 @@ use App\Models\Photo;
 
 trait AlbumGetters
 {
+	use CustomSort;
+
 	/**
 	 * given an Album return the sorting column & order for the pictures or the default ones.
 	 *
@@ -17,7 +19,7 @@ trait AlbumGetters
 	 */
 	public function get_sort(): array
 	{
-		if ($this->sorting_col == '') {
+		if ($this->sorting_col == null || $this->sorting_col == '') {
 			$sort_col = Configs::get_value('sorting_Photos_col');
 			$sort_order = Configs::get_value('sorting_Photos_order');
 		} else {

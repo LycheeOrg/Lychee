@@ -49,9 +49,13 @@ trait AlbumCast
 			'has_albums' => Helpers::str_of_bool($this->isLeaf() === false),
 		];
 
-		if ($this->smart && !empty($this->showtags)) {
+		if ($this->is_tag_album()) {
 			$return['tag_album'] = '1';
 			$return['show_tags'] = $this->showtags;
+		}
+
+		if (!empty($this->showtags) || !$this->smart) {
+			$return['owner'] = $this->owner->name();
 		}
 
 		return $return;

@@ -150,6 +150,9 @@ class SmartAlbum extends Album
 		return null;
 	}
 
+	/**
+	 * We override this method so we can use it elsewhere. :).
+	 */
 	public function get_all_photos()
 	{
 		return $this->get_photos();

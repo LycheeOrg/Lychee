@@ -3,7 +3,6 @@
 namespace App\Actions\Albums;
 
 use AccessControl;
-use App\Actions\Album\Cast as AlbumCast;
 use App\Factories\SmartFactory;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -65,11 +64,13 @@ class Smart
 			$smartAlbums->push($tagAlbum);
 		}
 
+		/* @var SmartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
 			if (AccessControl::can_upload() || $smartAlbum->is_public()) {
 				$smartAlbum->setAlbumIDs($publicAlbums);
 				$return[$smartAlbum->get_title()] = $smartAlbum->toReturnArray();
-				AlbumCast::getThumbs($return[$smartAlbum->get_title()], $smartAlbum, $this->symLinkFunctions);
+				$thumbs = $smartAlbum->get_thumbs();
+				$smartAlbum->set_thumbs($return[$smartAlbum->get_title()], $thumbs);
 			}
 		}
 

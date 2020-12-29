@@ -2,9 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Actions\Album\Photos;
 use App\Factories\AlbumFactory;
-use App\ModelFunctions\AlbumFunctions;
-use App\Models\Configs;
 use Livewire\Component;
 
 class Album extends Component
@@ -35,11 +34,11 @@ class Album extends Component
 	private $albumFactory;
 
 	/**
-	 * @var AlbumFunctions
+	 * @var Photos
 	 */
-	private $albumFunctions;
+	private $photosFunctions;
 
-	public function mount($albumId, AlbumFactory $albumFactory, AlbumFunctions $albumFunctions)
+	public function mount($albumId, AlbumFactory $albumFactory, Photos $photosFunctions)
 	{
 		$this->albumId = $albumId;
 		$this->album = null;
@@ -47,7 +46,7 @@ class Album extends Component
 		$this->info['albums'] = [];
 
 		$this->albumFactory = $albumFactory;
-		$this->albumFunctions = $albumFunctions;
+		$this->photos = $photosFunctions;
 	}
 
 	public function render()
@@ -57,26 +56,19 @@ class Album extends Component
 		if ($this->album->is_smart()) {
 			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
 			$this->album->setAlbumIDs($publicAlbums);
-			$this->info = $this->album->toReturnArray();
 		} else {
 			// take care of sub albums
-			$children = $this->album->get_children();
-
-			$return = $this->album->toReturnArray();
-			$this->info['albums'] = $children->map(function ($child) {
+			$this->info['albums'] = $this->album->get_children()->map(function ($child) {
 				$arr_child = $child->toReturnArray();
-				$thb = $child->get_thumbs();
-				$child->set_thumbs($arr_child, $thb);
+				$child->set_thumbs($arr_child, $child->get_thumbs());
 
 				return $arr_child;
 			})->values();
-			$this->info['owner'] = $this->album->owner->name();
 		}
+		$this->info = $this->album->toReturnArray();
 
 		// take care of photos
-		$full_photo = $this->info['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
-		$photos_query = $this->album->get_photos();
-		$this->photos = $this->albumFunctions->photos($this->album, $photos_query, $full_photo, $this->album->get_license());
+		$this->photos = $this->photosFunctions->get($this->album);
 
 		$this->info['id'] = $this->albumId;
 		$this->info['num'] = strval(count($this->photos));

@@ -52,4 +52,9 @@ trait AlbumBooleans
 	{
 		return $this->smart;
 	}
+
+	public function is_tag_album()
+	{
+		return $this->smart && !empty($this->showtags);
+	}
 }

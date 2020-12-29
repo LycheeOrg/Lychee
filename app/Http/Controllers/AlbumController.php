@@ -5,6 +5,9 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Album\Create;
+use App\Actions\Album\CreateTag;
+use App\Actions\Album\Photos;
 use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Albums\PublicIds;
 use App\Actions\ReadAccessFunctions;
@@ -41,11 +44,6 @@ class AlbumController extends Controller
 	private $readAccessFunctions;
 
 	/**
-	 * @var AlbumFactory
-	 */
-	private $albumFactory;
-
-	/**
 	 * @var SmartFactory
 	 */
 	private $smartFactory;
@@ -60,13 +58,11 @@ class AlbumController extends Controller
 	public function __construct(
 		AlbumFunctions $albumFunctions,
 		ReadAccessFunctions $readAccessFunctions,
-		AlbumFactory $albumFactory,
 		SmartFactory $smartFactory,
 		UpdateTakestamps $updateTakestamps
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
-		$this->albumFactory = $albumFactory;
 		$this->smartFactory = $smartFactory;
 		$this->updateTakestamps = $updateTakestamps;
 	}
@@ -78,14 +74,16 @@ class AlbumController extends Controller
 	 *
 	 * @return false|string
 	 */
-	public function add(Request $request)
+	public function add(Request $request, Create $create)
 	{
 		$request->validate([
 			'title' => 'string|required|max:100',
 			'parent_id' => 'int|nullable',
 		]);
 
-		$album = $this->albumFunctions->create($request['title'], $request['parent_id'], AccessControl::id());
+		$album = $create->create($request['title'], $request['parent_id']);
+		//! this may also be an RESPONSE not an ALBUM !!!
+		//! FIXME
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}
@@ -97,14 +95,16 @@ class AlbumController extends Controller
 	 *
 	 * @return false|string
 	 */
-	public function addByTags(Request $request)
+	public function addByTags(Request $request, CreateTag $create)
 	{
 		$request->validate([
 			'title' => 'string|required|max:100',
 			'tags' => 'string',
 		]);
 
-		$album = $this->albumFunctions->createTagAlbum($request['title'], $request['tags'], AccessControl::id());
+		$album = $create->create($request['title'], $request['tags']);
+		//! this may also be an RESPONSE not an ALBUM !!!
+		//! FIXME
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}
@@ -116,38 +116,30 @@ class AlbumController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function get(AlbumIDRequest $request)
+	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory, Photos $photos)
 	{
 		$return = [];
 		$return['albums'] = [];
 		// Get photos
 		// change this for smartalbum
-		$album = $this->albumFactory->make($request['albumID']);
+		$album = $albumFactory->make($request['albumID']);
 
 		if ($album->smart) {
 			$publicAlbums = $this->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
-			$return = $album->toReturnArray();
 		} else {
 			// take care of sub albums
-			$children = $album->get_children();
-
-			$return = $album->toReturnArray();
-			$return['albums'] = $children->map(function ($child) {
+			$return['albums'] = $album->get_children()->map(function ($child) {
 				$arr_child = $child->toReturnArray();
-				$thb = $child->get_thumbs();
-				$child->set_thumbs($arr_child, $thb);
+				$child->set_thumbs($arr_child, $child->get_thumbs());
 
 				return $arr_child;
 			})->values();
-			$return['owner'] = $album->owner->name();
 		}
+		$return = $album->toReturnArray();
 
 		// take care of photos
-		$full_photo = $return['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
-		$photos_query = $album->get_photos();
-		$return['photos'] = $this->albumFunctions->photos($album, $photos_query, $full_photo, $album->get_license());
-
+		$return['photos'] = $photos->get($album);
 		$return['id'] = $request['albumID'];
 		$return['num'] = strval(count($return['photos']));
 
@@ -167,14 +159,14 @@ class AlbumController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function getPositionData(AlbumIDRequest $request)
+	public function getPositionData(AlbumIDRequest $request, AlbumFactory $albumFactory)
 	{
 		$request->validate(['includeSubAlbums' => 'string|required']);
 		$return = [];
 		// Get photos
 		// Get album information
 
-		$album = $this->albumFactory->make($request['albumID']);
+		$album = $albumFactory->make($request['albumID']);
 
 		if ($album->smart) {
 			$publicAlbums = $this->getPublicAlbumsId();
@@ -350,7 +342,7 @@ class AlbumController extends Controller
 			return 'false';
 		}
 
-		if (!$this->albumFunctions->is_tag_album($album)) {
+		if (!$album->is_tag_album()) {
 			Logs::error(__METHOD__, __LINE__, 'Could not change show tags on non tag album');
 
 			return 'false';
@@ -642,7 +634,7 @@ class AlbumController extends Controller
 	 *
 	 * @return string|StreamedResponse
 	 */
-	public function getArchive(AlbumIDsRequest $request)
+	public function getArchive(AlbumIDsRequest $request, AlbumFactory $albumFactory)
 	{
 		if (Storage::getDefaultDriver() === 's3') {
 			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
@@ -699,14 +691,14 @@ class AlbumController extends Controller
 			$zipTitle = 'Albums';
 		}
 
-		$response = new StreamedResponse(function () use ($albumIDs, $badChars) {
+		$response = new StreamedResponse(function () use ($albumIDs, $badChars, $albumFactory) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 			$zip = new ZipStream(null, $options);
 
 			$dirs = [];
 			foreach ($albumIDs as $albumID) {
-				$album = $this->albumFactory->make($albumID);
+				$album = $albumFactory->make($albumID);
 				$dir = $album->title;
 				if ($album->smart) {
 					$publicAlbums = $this->getPublicAlbumsId();

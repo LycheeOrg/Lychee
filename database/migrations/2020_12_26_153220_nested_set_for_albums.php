@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Album\UpdateTakestamps;
 use App\Models\Album;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -8,7 +9,6 @@ use Illuminate\Support\Facades\Schema;
 class NestedSetForAlbums extends Migration
 {
 	private const ALBUMS = 'albums';
-	private const PHOTOS = 'photos';
 	private const LEFT = '_lft';
 	private const RIGHT = '_rgt';
 
@@ -30,13 +30,13 @@ class NestedSetForAlbums extends Migration
 		});
 
 		Album::fixTree();
-		$update = resolve(UpdateTakestamps::class);
 
 		/*
 		 * Update all takestamps
 		 * - we do it here and not in the lychee_photo migration anymore.
 		 * - we could not do it yet then as the tree was not initialized.
 		 */
+		$update = resolve(UpdateTakestamps::class);
 		$update->all();
 	}
 
