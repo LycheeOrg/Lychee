@@ -3,6 +3,7 @@
 namespace App\Actions\Albums;
 
 use AccessControl;
+use App\Actions\Albums\Extensions\PublicIds;
 use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;

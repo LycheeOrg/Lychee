@@ -5,29 +5,28 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Album\Archive;
 use App\Actions\Album\Create;
 use App\Actions\Album\CreateTag;
-use App\Actions\Album\Photos;
+use App\Actions\Album\Move;
+use App\Actions\Album\Prepare;
+use App\Actions\Album\SetPublic;
 use App\Actions\Album\UpdateTakestamps;
-use App\Actions\Albums\PublicIds;
+use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
 use App\Factories\AlbumFactory;
-use App\Factories\SmartFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
 use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
 use App\ModelFunctions\AlbumFunctions;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use ZipStream\ZipStream;
 
 class AlbumController extends Controller
 {
@@ -44,9 +43,9 @@ class AlbumController extends Controller
 	private $readAccessFunctions;
 
 	/**
-	 * @var SmartFactory
+	 * @var AlbumFactory
 	 */
-	private $smartFactory;
+	private $albumFactory;
 
 	/** @var UpdateTakestamps */
 	private $updateTakestamps;
@@ -58,12 +57,12 @@ class AlbumController extends Controller
 	public function __construct(
 		AlbumFunctions $albumFunctions,
 		ReadAccessFunctions $readAccessFunctions,
-		SmartFactory $smartFactory,
+		AlbumFactory $albumFactory,
 		UpdateTakestamps $updateTakestamps
 	) {
 		$this->albumFunctions = $albumFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
-		$this->smartFactory = $smartFactory;
+		$this->albumFactory = $albumFactory;
 		$this->updateTakestamps = $updateTakestamps;
 	}
 
@@ -116,73 +115,34 @@ class AlbumController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory, Photos $photos)
+	public function get(AlbumIDRequest $request, Prepare $prepare)
 	{
-		$return = [];
-		$return['albums'] = [];
-		// Get photos
-		// change this for smartalbum
-		$album = $albumFactory->make($request['albumID']);
+		$album = $this->albumFactory->make($request['albumID']);
 
-		if ($album->smart) {
-			$publicAlbums = $this->getPublicAlbumsId();
-			$album->setAlbumIDs($publicAlbums);
-		} else {
-			// take care of sub albums
-			$return['albums'] = $album->get_children()->map(function ($child) {
-				$arr_child = $child->toReturnArray();
-				$child->set_thumbs($arr_child, $child->get_thumbs());
-
-				return $arr_child;
-			})->values();
-		}
-		$return = $album->toReturnArray();
-
-		// take care of photos
-		$return['photos'] = $photos->get($album);
-		$return['id'] = $request['albumID'];
-		$return['num'] = strval(count($return['photos']));
-
-		// finalize the loop
-		if ($return['num'] === '0') {
-			$return['photos'] = false;
-		}
-
-		return $return;
+		return $prepare->do($album);
 	}
 
 	/**
 	 * Provided an albumID, returns the album with only map related data.
 	 *
 	 * @param Request $request
-	 *                         TODO: FIXME
 	 *
 	 * @return array|string
 	 */
-	public function getPositionData(AlbumIDRequest $request, AlbumFactory $albumFactory)
+	public function getPositionData(AlbumIDRequest $request)
 	{
 		$request->validate(['includeSubAlbums' => 'string|required']);
 		$return = [];
-		// Get photos
-		// Get album information
 
-		$album = $albumFactory->make($request['albumID']);
+		$album = $this->albumFactory->make($request['albumID']);
 
 		if ($album->smart) {
-			$publicAlbums = $this->getPublicAlbumsId();
-			$album->setAlbumIDs($publicAlbums);
+			$album->setAlbumIDs($this->getPublicAlbumsId());
 			$photos_sql = $album->get_photos();
+		} elseif ($request['includeSubAlbums']) {
+			$photos_sql = $album->get_all_photos();
 		} else {
-			// take care of sub albums
-			$album_list = collect();
-			if ($request['includeSubAlbums']) {
-				// Get all subalbums of the current album
-				$album_list = $album->getDescendants(['id']);
-			}
-
-			// Add current albumID to array
-			$album_list->push($request['albumID']);
-			$photos_sql = Photo::whereIn('album_id', $album_list);
+			$photos_sql = $album->get_photos();
 		}
 
 		$full_photo = $album->is_full_photo_visible();
@@ -240,59 +200,21 @@ class AlbumController extends Controller
 	 *
 	 * @return bool|string
 	 */
-	public function setPublic(AlbumIDRequestInt $request)
+	public function setPublic(AlbumIDRequestInt $request, SetPublic $setPublic)
 	{
-		$request->validate([
+		$validated = $request->validate([
 			'public' => 'integer|required',
 			'visible' => 'integer|required',
 			'nsfw' => 'integer|required',
 			'downloadable' => 'integer|required',
 			'share_button_visible' => 'integer|required',
 			'full_photo' => 'integer|required',
+			'password' => 'sometimes|string',
 		]);
 
-		$album = Album::find($request['albumID']);
+		$album = $this->albumFactory->make($request['albumID']);
 
-		if ($album === null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-			return 'false';
-		}
-
-		// Convert values
-		$album->full_photo = ($request['full_photo'] === '1' ? 1 : 0);
-		$album->public = ($request['public'] === '1' ? 1 : 0);
-		$album->viewable = ($request['visible'] === '1' ? 1 : 0);
-		$album->nsfw = ($request['nsfw'] === '1' ? 1 : 0);
-		$album->downloadable = ($request['downloadable'] === '1' ? 1 : 0);
-		$album->share_button_visible = ($request['share_button_visible'] === '1' ? 1 : 0);
-
-		// Set public
-		if (!$album->save()) {
-			return 'false';
-		}
-
-		// Reset permissions for photos
-		if ($album->public == 1) {
-			if ($album->photos()->count() > 0) {
-				if (!$album->photos()->update(['public' => '0'])) {
-					return 'false';
-				}
-			}
-		}
-
-		if ($request->has('password')) {
-			if (strlen($request['password']) > 0) {
-				$album->password = bcrypt($request['password']);
-			} else {
-				$album->password = null;
-			}
-			if (!$album->save()) {
-				return 'false';
-			}
-		}
-
-		return 'true';
+		return $setPublic->do($album, $validated) ? 'true' : 'false'; // we should return a 422 or similar
 	}
 
 	/**
@@ -309,12 +231,6 @@ class AlbumController extends Controller
 		]);
 
 		$album = Album::find($request['albumID']);
-
-		if ($album === null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-			return 'false';
-		}
 
 		$album->description = ($request['description'] == null) ? '' : $request['description'];
 
@@ -335,12 +251,6 @@ class AlbumController extends Controller
 		]);
 
 		$album = Album::find($request['albumID']);
-
-		if ($album === null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-			return 'false';
-		}
 
 		if (!$album->is_tag_album()) {
 			Logs::error(__METHOD__, __LINE__, 'Could not change show tags on non tag album');
@@ -370,12 +280,6 @@ class AlbumController extends Controller
 		 * @var Album|null
 		 */
 		$album = Album::find($request['albumID']);
-
-		if ($album == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-			return 'false';
-		}
 
 		$licenses = Helpers::get_all_licenses();
 
@@ -520,7 +424,7 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function move(AlbumIDsRequest $request)
+	public function move(AlbumIDsRequest $request, Move $move)
 	{
 		// Convert to array
 		$albumIDs = explode(',', $request['albumIDs']);
@@ -528,53 +432,7 @@ class AlbumController extends Controller
 		// Get first albumID
 		$albumID = array_shift($albumIDs);
 
-		$album_master = null;
-		if ($albumID != 0) {
-			$album_master = Album::find($albumID);
-			if ($album_master === null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
-
-				return 'false';
-			}
-		}
-
-		$albums = Album::whereIn('id', $albumIDs)->get();
-		$no_error = true;
-		$takestamps = [];
-		foreach ($albums as $album) {
-			$oldParentID = $album->parent_id;
-
-			if ($albumID != 0) {
-				$album->parent_id = $albumID;
-
-				// just to be sure to handle ownership changes in the process.
-				$album->owner_id = $album_master->owner_id;
-				$no_error &= $this->albumFunctions->setContentsOwner([$album->id], $album_master->owner_id);
-			} else {
-				$album->parent_id = null;
-			}
-
-			$no_error &= $album->save();
-
-			if ($album_master !== null) {
-				array_push($takestamps, $album->min_takestamp, $album->max_takestamp);
-			}
-
-			if ($oldParentID !== null) {
-				$oldParentAlbum = Album::find($oldParentID);
-				if ($oldParentAlbum === null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find a parent album');
-
-					$no_error = false;
-				}
-				$no_error &= $this->updateTakestamps->singleAndSave($oldParentAlbum);
-			}
-		}
-		if ($album_master !== null) {
-			$no_error &= $this->updateTakestamps->singleAndSave($album_master);
-		}
-
-		return $no_error ? 'true' : 'false';
+		return $move->do($albumID, $albumIDs) ? 'true' : 'false';
 	}
 
 	/**
@@ -634,7 +492,7 @@ class AlbumController extends Controller
 	 *
 	 * @return string|StreamedResponse
 	 */
-	public function getArchive(AlbumIDsRequest $request, AlbumFactory $albumFactory)
+	public function getArchive(AlbumIDsRequest $request, Archive $archive)
 	{
 		if (Storage::getDefaultDriver() === 's3') {
 			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
@@ -642,203 +500,21 @@ class AlbumController extends Controller
 			return 'false';
 		}
 
-		// Illicit chars
-		$badChars = array_merge(
-			array_map('chr', range(0, 31)),
-			[
-				'<',
-				'>',
-				':',
-				'"',
-				'/',
-				'\\',
-				'|',
-				'?',
-				'*',
-			]
-		);
-
 		$albumIDs = explode(',', $request['albumIDs']);
 
-		if (count($albumIDs) === 1) {
-			switch ($albumIDs[0]) {
-				case 'starred':
-					$zipTitle = 'Starred';
-					break;
-				case 'public':
-					$zipTitle = 'Public';
-					break;
-				case 'recent':
-					$zipTitle = 'Recent';
-					break;
-				case 'unsorted':
-					$zipTitle = 'Unsorted';
-					break;
-				default:
-					$album = Album::find($albumIDs[0]);
-					if ($album === null) {
-						Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-						return 'false';
-					}
-					$zipTitle = str_replace($badChars, '', $album->title);
-					if ($zipTitle === '') {
-						$zipTitle = 'Untitled';
-					}
-					break;
-			}
-		} else {
-			$zipTitle = 'Albums';
-		}
-
-		$response = new StreamedResponse(function () use ($albumIDs, $badChars, $albumFactory) {
-			$options = new \ZipStream\Option\Archive();
-			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
-			$zip = new ZipStream(null, $options);
-
-			$dirs = [];
-			foreach ($albumIDs as $albumID) {
-				$album = $albumFactory->make($albumID);
-				$dir = $album->title;
-				if ($album->smart) {
-					$publicAlbums = $this->getPublicAlbumsId();
-					$album->setAlbumIDs($publicAlbums);
-				}
-				$photos_sql = $album->get_photos();
-
-				$compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album, $albumID) use (&$zip, $badChars, &$compress_album) {
-					if (!$album->is_downloadable()) {
-						if ($this->smartFactory->is_smart($albumID)) {
-							if (!AccessControl::is_logged_in()) {
-								return;
-							}
-						} elseif (!AccessControl::is_current_user($album->owner_id)) {
-							return;
-						}
-					}
-
-					$dir = str_replace($badChars, '', $dir);
-					if ($dir === '') {
-						$dir = 'Untitled';
-					}
-					// Check for duplicates
-					if (!empty($dirs)) {
-						$i = 1;
-						$tmp_dir = $dir;
-						while (in_array($tmp_dir, $dirs)) {
-							// Set new directory name
-							$tmp_dir = $dir . '-' . $i;
-							$i++;
-						}
-						$dir = $tmp_dir;
-					}
-					$dirs[] = $dir;
-
-					if ($parent_dir !== '') {
-						$dir = $parent_dir . '/' . $dir;
-					}
-
-					$files = [];
-					$photos = $photos_sql->get();
-					// We don't bother with additional sorting here; who
-					// cares in what order photos are zipped?
-
-					foreach ($photos as $photo) {
-						// For photos in public smart albums, skip the ones
-						// that are not downloadable based on their actual
-						// parent album.
-						if (
-							$this->smartFactory->is_smart($albumID) && !AccessControl::is_logged_in() &&
-							$photo->album_id !== null && !$photo->album->is_downloadable()
-						) {
-							continue;
-						}
-
-						$is_raw = ($photo->type == 'raw');
-
-						$prefix_url = $is_raw ? 'raw/' : 'big/';
-						$url = Storage::path($prefix_url . $photo->url);
-						// Check if readable
-						if (!@is_readable($url)) {
-							Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
-							continue;
-						}
-
-						// Get extension of image
-						$extension = Helpers::getExtension($url, false);
-
-						// Set title for photo
-						$title = str_replace($badChars, '', $photo->title);
-						if (!isset($title) || $title === '') {
-							$title = 'Untitled';
-						}
-
-						$file = $title . ($is_raw ? '' : $extension);
-
-						// Check for duplicates
-						if (!empty($files)) {
-							$i = 1;
-							$tmp_file = $file;
-							$pos = strrpos($tmp_file, '.');
-							while (in_array($tmp_file, $files)) {
-								// Set new title for photo
-								$tmp_file = substr_replace($file, '-' . $i, $pos, 0);
-								$i++;
-							}
-							$file = $tmp_file;
-						}
-						// Add to array
-						$files[] = $file;
-
-						// Reset the execution timeout for every iteration.
-						set_time_limit(ini_get('max_execution_time'));
-
-						// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
-						$zip->addFileFromPath($dir . '/' . $file, $url);
-					} // foreach ($photos)
-
-					// Recursively compress subalbums
-					if (!$album->smart) {
-						$subDirs = [];
-						foreach ($album->children as $subAlbum) {
-							if ($this->readAccessFunctions->album($subAlbum, true) === 1) {
-								$subSql = Photo::set_order(Photo::where('album_id', '=', $subAlbum->id));
-								$compress_album($subSql, $subAlbum->title, $subDirs, $dir, $subAlbum, $subAlbum->id);
-							}
-						}
-					}
-				}; // $compress_album
-
-				$compress_album($photos_sql, $dir, $dirs, '', $album, $albumID);
-			} // foreach ($albumIDs)
-
-			// finish the zip stream
-			$zip->finish();
-		});
-
-		// Set file type and destination
-		$response->headers->set('Content-Type', 'application/x-zip');
-		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip', mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip');
-		$response->headers->set('Content-Disposition', $disposition);
-
-		// Disable caching
-		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-		$response->headers->set('Pragma', 'no-cache');
-		$response->headers->set('Expires', '0');
-
-		return $response;
+		return $archive->do($albumIDs);
 	}
 
 	/**
-	 * Return the archive of the pictures of the album and its subalbums.
+	 * Rebuild Takestamps.
 	 *
-	 * @param Request $request
+	 * @param UpdateTakestamps $updateTakestamps
 	 *
-	 * @return string|StreamedResponse
+	 * @return string
 	 */
-	public function RebuildTakestamps(Request $request)
+	public function RebuildTakestamps(UpdateTakestamps $updateTakestamps)
 	{
-		$this->updateTakestamps->all();
+		$updateTakestamps->all();
 
 		return 'true';
 	}

@@ -15,7 +15,7 @@ class SmartAlbum extends Album
 	/**
 	 * @var int
 	 */
-	public $id = '';
+	// public $id = '';
 
 	/**
 	 * @var string

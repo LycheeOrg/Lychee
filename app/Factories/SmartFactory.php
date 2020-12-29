@@ -22,7 +22,7 @@ class SmartFactory
 		'recent' => RecentAlbum::class,
 	];
 
-	public function is_smart($kind)
+	public function is_smart($kind): bool
 	{
 		return array_key_exists($kind, $this->base_smarts);
 	}

@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use AccessControl;
+use App\Actions\Album\Extensions\StoreAlbum;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 

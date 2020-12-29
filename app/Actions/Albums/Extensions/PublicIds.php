@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Albums;
+namespace App\Actions\Albums\Extensions;
 
 use AccessControl;
 use App\Models\Album;

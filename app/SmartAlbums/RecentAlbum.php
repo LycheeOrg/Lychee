@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class RecentAlbum extends SmartAlbum
 {
+	public $id = 'recent';
+
 	public function get_title()
 	{
 		return 'recent';

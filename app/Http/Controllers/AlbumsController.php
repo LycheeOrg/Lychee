@@ -5,8 +5,8 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
+use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Albums\Prepare;
-use App\Actions\Albums\PublicIds;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\ModelFunctions\AlbumFunctions;

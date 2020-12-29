@@ -20,6 +20,16 @@ class AlbumFactory
 	}
 
 	/**
+	 * In the case of is_smart we forward the call to the smart factory.
+	 *
+	 * @param string|ing
+	 */
+	public function is_smart($kind): bool
+	{
+		return $this->smartFactory->is_smart($kind);
+	}
+
+	/**
 	 * @param string $albumID
 	 *
 	 * @return Album|SmartAlbum|TagAlbum
@@ -30,7 +40,9 @@ class AlbumFactory
 			return $this->smartFactory->make($albumId);
 		}
 
-		$album = Album::find($albumId);
+		//! We need to catch that one, otherwise it is returned as a 404 by Laravel
+		$album = Album::findOrFail($albumId);
+
 		if ($album->smart) {
 			return $album->toTagAlbum();
 		}

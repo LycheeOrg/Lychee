@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use AccessControl;
+use App\Actions\Album\Extensions\StoreAlbum;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 
@@ -42,8 +43,6 @@ class Create
 	 * @param int   $user_id
 	 *
 	 * @return Album
-	 *
-	 * TODO: FIX ME (NESTED TREE)
 	 */
 	private function set_parent(Album &$album, int $parent_id): void
 	{

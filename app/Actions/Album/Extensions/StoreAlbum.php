@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions\Album;
+namespace App\Actions\Album\Extensions;
 
 use App\Assets\Helpers;
 use App\Models\Album;

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PublicAlbum extends SmartAlbum
 {
+	public $id = 'public';
+
 	public function get_title()
 	{
 		return 'public';
