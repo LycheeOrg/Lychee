@@ -6,7 +6,7 @@ namespace App\Actions\Album;
 
 use App\Models\Album;
 
-class UpdateTakestamps
+class UpdateTakestamps extends Action
 {
 	public function single(Album &$album): void
 	{

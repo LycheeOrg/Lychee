@@ -2,21 +2,11 @@
 
 namespace App\Actions\Album;
 
-use App\Factories\AlbumFactory;
 use App\Models\Album;
+use App\Models\Logs;
 
 class Move extends UpdateTakestamps
 {
-	/**
-	 * @var AlbumFactory
-	 */
-	public $albumFactory;
-
-	public function __construct(AlbumFactory $albumFactory)
-	{
-		$this->albumFactory = $albumFactory;
-	}
-
 	/**
 	 * @param string $albumID
 	 *
@@ -29,6 +19,12 @@ class Move extends UpdateTakestamps
 		// ! check type
 		if ($albumID != 0) {
 			$album_master = $this->albumFactory->make($albumID);
+
+			if ($album_master->is_smart()) {
+				Logs::error(__METHOD__, __LINE__, 'Move possible on smart albums');
+
+				return false;
+			}
 		} else {
 			$albumID = null;
 		}

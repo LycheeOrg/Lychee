@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Actions\Album;
+
+class SetTitle extends Setters
+{
+	public function __construct()
+	{
+		$this->property = 'title';
+	}
+}

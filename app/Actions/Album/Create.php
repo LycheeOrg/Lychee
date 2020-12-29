@@ -4,22 +4,11 @@ namespace App\Actions\Album;
 
 use AccessControl;
 use App\Actions\Album\Extensions\StoreAlbum;
-use App\Factories\AlbumFactory;
 use App\Models\Album;
 
-class Create
+class Create extends Action
 {
 	use StoreAlbum;
-
-	/**
-	 * @var AlbumFactory
-	 */
-	public $albumFactory;
-
-	public function __construct(AlbumFactory $albumFactory)
-	{
-		$this->albumFactory = $albumFactory;
-	}
 
 	/**
 	 * @param string $albumID

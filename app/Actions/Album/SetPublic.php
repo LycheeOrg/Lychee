@@ -2,12 +2,20 @@
 
 namespace App\Actions\Album;
 
-use App\Models\Album;
+use App\Models\Logs;
 
-class SetPublic
+class SetPublic extends Action
 {
-	public function do(Album $album, array $values): bool
+	public function do(string $albumID, array $values): bool
 	{
+		if ($this->albumFactory->is_smart($albumID)) {
+			Logs::error(__METHOD__, __LINE__, 'Not applicable to smart albums.');
+
+			return false;
+		}
+
+		$album = $this->albumFactory->make($albumID);
+
 		// Convert values
 		$album->full_photo = ($values['full_photo'] === '1' ? 1 : 0);
 		$album->public = ($values['public'] === '1' ? 1 : 0);

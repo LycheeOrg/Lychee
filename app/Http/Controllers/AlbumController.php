@@ -4,17 +4,23 @@
 
 namespace App\Http\Controllers;
 
-use AccessControl;
 use App\Actions\Album\Archive;
 use App\Actions\Album\Create;
 use App\Actions\Album\CreateTag;
+use App\Actions\Album\Delete;
+use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\Prepare;
+use App\Actions\Album\SetDescription;
+use App\Actions\Album\SetLicense;
+use App\Actions\Album\SetNSFW;
 use App\Actions\Album\SetPublic;
+use App\Actions\Album\SetShowTags;
+use App\Actions\Album\SetSorting;
+use App\Actions\Album\SetTitle;
 use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\ReadAccessFunctions;
-use App\Assets\Helpers;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
@@ -22,7 +28,6 @@ use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
 use App\ModelFunctions\AlbumFunctions;
 use App\Models\Album;
 use App\Models\Logs;
-use App\Models\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -81,7 +86,7 @@ class AlbumController extends Controller
 		]);
 
 		$album = $create->create($request['title'], $request['parent_id']);
-		//! this may also be an RESPONSE not an ALBUM !!!
+		//! this may also be a RESPONSE not an ALBUM !!!
 		//! FIXME
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
@@ -102,7 +107,7 @@ class AlbumController extends Controller
 		]);
 
 		$album = $create->create($request['title'], $request['tags']);
-		//! this may also be an RESPONSE not an ALBUM !!!
+		//! this may also be a RESPONSE not an ALBUM !!!
 		//! FIXME
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
@@ -170,27 +175,19 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Provided a title and an albumID, change the title of the album.
+	 * Provided a title and an albumIDs, change the title of the albums.
 	 *
 	 * @param Request $request
 	 *
 	 * @return string
 	 */
-	public function setTitle(AlbumIDsRequest $request)
+	public function setTitle(AlbumIDsRequest $request, SetTitle $setTitle)
 	{
 		$request->validate([
 			'title' => 'string|required|max:100',
 		]);
 
-		$albums = Album::whereIn('id', explode(',', $request['albumIDs']))->get();
-
-		$no_error = true;
-		$albums->each(function ($album) use (&$no_error, $request) {
-			$album->title = $request['title'];
-			$no_error &= $album->save();
-		});
-
-		return $no_error ? 'true' : 'false';
+		return $setTitle->do(explode(',', $request['albumIDs']), $request['title']) ? 'true' : 'false';
 	}
 
 	/**
@@ -212,9 +209,7 @@ class AlbumController extends Controller
 			'password' => 'sometimes|string',
 		]);
 
-		$album = $this->albumFactory->make($request['albumID']);
-
-		return $setPublic->do($album, $validated) ? 'true' : 'false'; // we should return a 422 or similar
+		return $setPublic->do($request['albumID'], $validated) ? 'true' : 'false'; // we should return a 422 or similar
 	}
 
 	/**
@@ -224,17 +219,13 @@ class AlbumController extends Controller
 	 *
 	 * @return bool|string
 	 */
-	public function setDescription(AlbumIDRequestInt $request)
+	public function setDescription(AlbumIDRequestInt $request, SetDescription $setDescription)
 	{
 		$request->validate([
 			'description' => 'string|nullable|max:1000',
 		]);
 
-		$album = Album::find($request['albumID']);
-
-		$album->description = ($request['description'] == null) ? '' : $request['description'];
-
-		return ($album->save()) ? 'true' : 'false';
+		return $setDescription->do($request['albumID'], $request['description'] ?? '') ? 'true' : 'false';
 	}
 
 	/**
@@ -244,23 +235,13 @@ class AlbumController extends Controller
 	 *
 	 * @return bool|string
 	 */
-	public function setShowTags(AlbumIDRequestInt $request)
+	public function setShowTags(AlbumIDRequestInt $request, SetShowTags $setShowTags)
 	{
 		$request->validate([
 			'show_tags' => 'string|required|max:1000|min:1',
 		]);
 
-		$album = Album::find($request['albumID']);
-
-		if (!$album->is_tag_album()) {
-			Logs::error(__METHOD__, __LINE__, 'Could not change show tags on non tag album');
-
-			return 'false';
-		}
-
-		$album->showtags = $request['show_tags'];
-
-		return ($album->save()) ? 'true' : 'false';
+		return $setShowTags->do($request['albumID'], $request['show_tags']) ? 'true' : 'false';
 	}
 
 	/**
@@ -270,36 +251,13 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setLicense(AlbumIDRequestInt $request)
+	public function setLicense(AlbumIDRequestInt $request, SetLicense $setLicense)
 	{
 		$request->validate([
 			'license' => 'required|string',
 		]);
 
-		/**
-		 * @var Album|null
-		 */
-		$album = Album::find($request['albumID']);
-
-		$licenses = Helpers::get_all_licenses();
-
-		$found = false;
-		$i = 0;
-		while (!$found && $i < count($licenses)) {
-			if ($licenses[$i] == $request['license']) {
-				$found = true;
-			}
-			$i++;
-		}
-		if (!$found) {
-			Logs::error(__METHOD__, __LINE__, 'License not recognised: ' . $request['license']);
-
-			return Response::error('License not recognised!');
-		}
-
-		$album->license = $request['license'];
-
-		return $album->save() ? 'true' : 'false';
+		return $setLicense->do($request['albumID'], $request['license']) ? 'true' : 'false';
 	}
 
 	/**
@@ -309,41 +267,9 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function delete(AlbumIDsRequest $request)
+	public function delete(AlbumIDsRequest $request, Delete $delete)
 	{
-		$no_error = true;
-		if ($request['albumIDs'] == '0') {
-			$photos = Photo::select_unsorted(Photo::OwnedBy(AccessControl::id()))->get();
-			foreach ($photos as $photo) {
-				$no_error &= $photo->predelete();
-				$no_error &= $photo->delete();
-			}
-
-			return $no_error ? 'true' : 'false';
-		}
-		$albums = Album::whereIn('id', explode(',', $request['albumIDs']))->get();
-
-		foreach ($albums as $album) {
-			$no_error &= $album->predelete();
-
-			/**
-			 * @var Album
-			 */
-			$parentAlbum = null;
-			if ($album->parent_id !== null) {
-				$parentAlbum = $album->parent;
-				$minTS = $album->min_takestamp;
-				$maxTS = $album->max_takestamp;
-			}
-
-			$no_error &= $album->delete();
-
-			if ($parentAlbum !== null) {
-				$no_error &= $this->updateTakestamps->singleAndSave($parentAlbum);
-			}
-		}
-
-		return $no_error ? 'true' : 'false';
+		return $delete->do($request['albumIDs']) ? 'true' : 'false';
 	}
 
 	/**
@@ -353,68 +279,14 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function merge(AlbumIDsRequest $request)
+	public function merge(AlbumIDsRequest $request, Merge $merge)
 	{
 		// Convert to array
 		$albumIDs = explode(',', $request['albumIDs']);
 		// Get first albumID
 		$albumID = array_shift($albumIDs);
 
-		$album = Album::find($albumID);
-
-		if ($album === null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');
-
-			return 'false';
-		}
-
-		$photos = Photo::whereIn('album_id', $albumIDs)->get();
-		$no_error = true;
-		foreach ($photos as $photo) {
-			$photo->album_id = $albumID;
-
-			// just to be sure to handle ownership changes in the process.
-			$photo->owner_id = $album->owner_id;
-
-			$no_error &= $photo->save();
-		}
-
-		$albums = Album::whereIn('parent_id', $albumIDs)->get();
-		$no_error = true;
-		foreach ($albums as $album_t) {
-			$album_t->parent_id = $albumID;
-
-			// just to be sure to handle ownership changes in the process.
-			$album_t->owner_id = $album->owner_id;
-			$no_error &= $this->albumFunctions->setContentsOwner($album_t->id, $album->owner_id);
-
-			$no_error &= $album_t->save();
-		}
-		$no_error &= $album->save();
-
-		$albums = Album::whereIn('id', $albumIDs)->get();
-		$takestamps = [];
-		foreach ($albums as $album_t) {
-			$parentAlbum = null;
-			if ($album_t->parent_id !== null) {
-				$parentAlbum = $album_t->parent;
-				if ($parentAlbum === null) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find a parent album');
-					$no_error = false;
-				}
-			}
-
-			array_push($takestamps, $album_t->min_takestamp, $album_t->max_takestamp);
-
-			$no_error &= $album_t->delete();
-
-			if ($parentAlbum !== null) {
-				$no_error &= $this->updateTakestamps->singleAndSave($parentAlbum);
-			}
-		}
-		$no_error &= $this->updateTakestamps->singleAndSave($album);
-
-		return $no_error ? 'true' : 'false';
+		return $merge->do($albumID, $albumIDs) ? 'true' : 'false';
 	}
 
 	/**
@@ -442,16 +314,13 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setNSFW(Request $request)
+	public function setNSFW(Request $request, SetNSFW $setNSFW)
 	{
 		$request->validate([
 			'albumID' => 'required|string',
 		]);
 
-		$album = Album::where('id', $request['albumID'])->first();
-		$album->nsfw = ($album->nsfw != 1) ? 1 : 0;
-
-		return $album->save() ? 'true' : 'false';
+		return $setNSFW->do($request['albumID'], '_') ? 'true' : 'false';
 	}
 
 	/**
@@ -461,28 +330,14 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setSorting(AlbumIDRequest $request)
+	public function setSorting(AlbumIDRequest $request, SetSorting $setSorting)
 	{
-		$request->validate([
+		$validated = $request->validate([
 			'typePhotos' => 'nullable',
 			'orderPhotos' => 'required|string',
 		]);
 
-		/**
-		 * @var Album|null
-		 */
-		$album = Album::find($request['albumID']);
-
-		if ($album == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-			return 'false';
-		}
-
-		Album::where('id', '=', $request['albumID'])
-			->update(['sorting_col' => $request['typePhotos'] ?? '', 'sorting_order' => $request['orderPhotos']]);
-
-		return 'true';
+		return $setSorting->do($request['albumID'], $validated);
 	}
 
 	/**

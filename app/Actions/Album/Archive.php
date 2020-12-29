@@ -5,7 +5,6 @@ namespace App\Actions\Album;
 use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Assets\Helpers;
-use App\Factories\AlbumFactory;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -14,21 +13,14 @@ use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
 
-class Archive
+class Archive extends Action
 {
 	use PublicIds;
 
 	private $badChars;
 
-	/**
-	 * @var AlbumFactory
-	 */
-	public $albumFactory;
-
-	public function __construct(AlbumFactory $albumFactory)
+	public function __construct()
 	{
-		$this->albumFactory = $albumFactory;
-
 		// Illicit chars
 		$this->badChars = array_merge(array_map('chr', range(0, 31)), ['<', '>', ':', '"', '/', '\\', '|', '?', '*']);
 	}
