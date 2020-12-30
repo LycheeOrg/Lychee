@@ -200,7 +200,6 @@ trait PhotoCast
 				$return['url'] = '';
 			} elseif ($return['medium'] != '') {
 				$return['url'] = '';
-			} else {
 			}
 		}
 	}
