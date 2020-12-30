@@ -8,7 +8,6 @@ use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Albums\Top;
 use App\Actions\ReadAccessFunctions;
-use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
@@ -197,8 +196,8 @@ class SearchController extends Controller
 		if ($photos != null) {
 			$i = 0;
 			foreach ($photos as $photo) {
-				$return['photos'][$i] = PhotoCast::toArray($photo);
-				PhotoCast::urls($return['photos'][$i], $photo);
+				$return['photos'][$i] = $photo->toReturnArray();
+				$photo->urls($return['photos'][$i]);
 				$this->symLinkFunctions->getUrl($photo, $return['photos'][$i]);
 				$i++;
 			}

@@ -2,7 +2,7 @@
 
 /** @noinspection PhpUndefinedClassInspection */
 
-namespace App\ModelFunctions\PhotoActions;
+namespace App\Models\Extensions;
 
 use App\Assets\Helpers;
 

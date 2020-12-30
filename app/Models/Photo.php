@@ -4,9 +4,9 @@
 
 namespace App\Models;
 
-use App\Assets\Helpers;
-use App\ModelFunctions\PhotoActions\Cast;
-use Exception;
+use App\Models\Extensions\PhotoBooleans;
+use App\Models\Extensions\PhotoCast;
+use App\Models\Extensions\PhotoGetters;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -109,6 +109,10 @@ use Storage;
  */
 class Photo extends Model
 {
+	use PhotoBooleans;
+	use PhotoCast;
+	use PhotoGetters;
+
 	/**
 	 * This extends the date types from Model to allow coercion with Carbon object.
 	 *
@@ -148,189 +152,6 @@ class Photo extends Model
 			'id' => 0,
 			'username' => 'Admin',
 		]);
-	}
-
-	/**
-	 * Searches for a match of the livePhotoContentID to build a pair
-	 * of photo and video to form a live Photo
-	 * Warning: Only return the first hit!
-	 *
-	 * @param string $livePhotoContentID
-	 * @param string $albumID
-	 *
-	 * @return Photo|bool|Builder|Model|object
-	 */
-	public function findLivePhotoPartner(string $livePhotoContentID, string $albumID = null)
-	{
-		// Todo: We need to search for pairs (Video + Photo)
-		// Photo+Photo or Video+Video does not work
-		$sql = $this->where('livePhotoContentID', '=', $livePhotoContentID)
-			->where('album_id', '=', $albumID)
-			->whereNull('livePhotoUrl');
-
-		return ($sql->count() == 0) ? false : $sql->first();
-	}
-
-	/**
-	 * Check if a photo already exists in the database via its checksum.
-	 *
-	 * @param string $checksum
-	 * @param $photoID
-	 *
-	 * @return Photo|bool|Builder|Model|object
-	 */
-	public function isDuplicate(string $checksum, $photoID = null)
-	{
-		$sql = $this->where(function ($q) use ($checksum) {
-			$q->where('checksum', '=', $checksum)
-				->orWhere('livePhotoChecksum', '=', $checksum);
-		});
-		if (isset($photoID)) {
-			$sql = $sql->where('id', '<>', $photoID);
-		}
-
-		return ($sql->count() == 0) ? false : $sql->first();
-	}
-
-	/**
-	 * ! how is this different than Cast::to_array ?
-	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
-	 *
-	 * @return array returns photo-attributes in a normalized structure
-	 */
-	public function prepareLocationData()
-	{
-		// Init
-		$photo = [];
-
-		// Set unchanged attributes
-		$photo['id'] = strval($this->id);
-		$photo['title'] = $this->title;
-		$photo['album'] = $this->album_id !== null ? strval($this->album_id) : null;
-		$photo['latitude'] = $this->latitude;
-		$photo['longitude'] = $this->longitude;
-
-		// if this is a video
-		if (strpos($this->type, 'video') === 0) {
-			$photoUrl = $this->thumbUrl;
-		} else {
-			$photoUrl = $this->url;
-		}
-
-		$photoUrl2x = '';
-		if ($photoUrl !== '') {
-			$photoUrl2x = explode('.', $photoUrl);
-			$photoUrl2x = $photoUrl2x[0] . '@2x.' . $photoUrl2x[1];
-		}
-
-		if ($this->small != '') {
-			$photo['small'] = Storage::url('small/' . $photoUrl);
-		} else {
-			$photo['small'] = '';
-		}
-
-		if ($this->small2x != '') {
-			$photo['small2x'] = Storage::url('small/' . $photoUrl2x);
-		} else {
-			$photo['small2x'] = '';
-		}
-
-		// Parse paths
-		$photo['thumbUrl'] = Storage::url('thumb/' . $this->thumbUrl);
-
-		if ($this->thumb2x == '1') {
-			$thumbUrl2x = explode('.', $this->thumbUrl);
-			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
-			$photo['thumb2x'] = Storage::url('thumb/' . $thumbUrl2x);
-		} else {
-			$photo['thumb2x'] = '';
-		}
-
-		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
-		$photo['url'] = Storage::url($path_prefix . $this->url);
-
-		if (isset($this->takestamp) && $this->takestamp != null) {
-			// Use takestamp
-			$photo['takedate'] = $this->takestamp->format('d F Y \a\t H:i');
-		} else {
-			$photo['takedate'] = '';
-		}
-
-		return $photo;
-	}
-
-	/**
-	 * TODO: Move me
-	 * Downgrade the quality of the pictures.
-	 *
-	 * @param array $return
-	 */
-	public function downgrade(array &$return)
-	{
-		if (strpos($this->type, 'video') == 0) {
-			if ($return['medium2x'] != '') {
-				$return['url'] = '';
-			} elseif ($return['medium'] != '') {
-				$return['url'] = '';
-			} else {
-			}
-		}
-	}
-
-	/**
-	 * Retun the shutter speed as a proper string.
-	 */
-	public function get_shutter_str()
-	{
-		$shutter = $this->shutter;
-		// shutter speed needs to be processed. It is stored as a string `a/b s`
-		if ($shutter != '' && substr($shutter, 0, 2) != '1/') {
-			preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
-			if ($matches) {
-				$a = intval($matches[1]);
-				$b = intval($matches[2]);
-				if ($b != 0) {
-					try {
-						$gcd = Helpers::gcd($a, $b);
-						$a = $a / $gcd;
-						$b = $b / $gcd;
-					} catch (Exception $e) {
-						// this should not happen as we covered the case $b = 0;
-					}
-					if ($a == 1) {
-						$shutter = '1/' . $b . ' s';
-					} else {
-						$shutter = ($a / $b) . ' s';
-					}
-				}
-			}
-		}
-
-		if ($shutter == '1/1 s') {
-			$shutter = '1 s';
-		}
-
-		return $shutter;
-	}
-
-	/**
-	 * TODO: [get rid of/move] me.
-	 * Get the public value of a picture
-	 * if 0 : picture is private
-	 * if 1 : picture is public alone
-	 * if 2 : picture is public by album being public (if being in an album).
-	 *
-	 * @return string
-	 */
-	public function get_public()
-	{
-		$ret = $this->public == 1 ? '1' : '0';
-
-		if ($this->album_id != null) {
-			$ret = $this->album->public == '1' ? '2' : $ret;
-		}
-
-		return $ret;
 	}
 
 	/**
@@ -431,10 +252,6 @@ class Photo extends Model
 
 		return !$error;
 	}
-
-	/**
-	 *  Defines a bunch of helpers.
-	 */
 
 	/**
 	 * @param $query

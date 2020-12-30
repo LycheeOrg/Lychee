@@ -3,7 +3,6 @@
 namespace App\Actions\Album;
 
 use AccessControl;
-use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
@@ -64,10 +63,9 @@ class Photos
 
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
-			// ! FIXME get rid of the static call
-			$photo = PhotoCast::toArray($photo_model);
-			PhotoCast::urls($photo, $photo_model);
-			PhotoCast::print_license($photo, $album->get_license());
+			$photo = $photo_model->toReturnArray();
+			$photo_model->urls($photo);
+			$photo['license'] = $photo_model->get_license($album->get_license());
 
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
 			if (!AccessControl::is_current_user($photo_model->owner_id) && !$album->is_full_photo_visible()) {

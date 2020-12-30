@@ -63,6 +63,12 @@ trait AlbumCast
 
 	public function toTagAlbum(): TagAlbum
 	{
+		/**
+		 * ! DO NOT USE ->save() on this object!
+		 * It is convenient to quickly convert, but if you want to ->save(),
+		 * this will create conflict in the database as NestedTree thinks it
+		 * is a new object and not an already existing one.
+		 */
 		$tag_album = resolve(TagAlbum::class);
 		$tag_album->id = $this->id;
 		$tag_album->title = $this->title;

@@ -2,7 +2,6 @@
 
 namespace App\Models\Extensions;
 
-use App\ModelFunctions\PhotoActions\Thumb;
 use Illuminate\Support\Collection;
 
 trait AlbumSetters

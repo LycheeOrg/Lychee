@@ -6,7 +6,6 @@ use App\Actions\Album\Prepare;
 use App\Actions\Albums\Prepare as AlbumsPrepare;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
-use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -107,8 +106,8 @@ class DemoController extends Controller
 			/** @var Photo $photo */
 			foreach ($album->photos as $photo) {
 				$return_photo = [];
-				$return_photo_json = PhotoCast::toArray($photo);
-				PhotoCast::urls($return_photo_json, $photo);
+				$return_photo_json = $photo->toReturnArray();
+				$photo->urls($return_photo_json);
 				$return_photo_json['original_album'] = $return_photo_json['album'];
 				$return_photo_json['album'] = $album->id;
 				$return_photo['id'] = $photo->id;

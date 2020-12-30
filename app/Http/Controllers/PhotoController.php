@@ -9,7 +9,8 @@ use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Assets\Helpers;
 use App\Exceptions\AlbumDoesNotExistsException;
-use App\ModelFunctions\PhotoActions\Cast;
+use App\Http\Requests\PhotoRequests\PhotoIDRequest;
+use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
@@ -40,21 +41,16 @@ class PhotoController extends Controller
 	 */
 	private $symLinkFunctions;
 
-	/** @var UpdateTakestamps */
-	private $updateTakestamps;
-
 	/**
 	 * @param PhotoFunctions   $photoFunctions
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
 	public function __construct(
 		PhotoFunctions $photoFunctions,
-		SymLinkFunctions $symLinkFunctions,
-		UpdateTakestamps $updateTakestamps
+		SymLinkFunctions $symLinkFunctions
 	) {
 		$this->photoFunctions = $photoFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
-		$this->updateTakestamps = $updateTakestamps;
 	}
 
 	/**
@@ -64,23 +60,12 @@ class PhotoController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function get(Request $request)
+	public function get(PhotoIDRequest $request)
 	{
-		$request->validate([
-			'photoID' => 'string|required',
-		]);
+		$photo = Photo::with('album')->findOrFail($request['photoID']);
 
-		$photo = Photo::with('album')->find($request['photoID']);
-
-		// Photo not found?
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-			return 'false';
-		}
-
-		$return = Cast::toArray($photo);
-		Cast::urls($return, $photo);
+		$return = $photo->toReturnArray();
+		$photo->urls($return);
 
 		$this->symLinkFunctions->getUrl($photo, $return);
 		if (!AccessControl::is_current_user($photo->owner_id)) {
@@ -123,8 +108,8 @@ class PhotoController extends Controller
 			return Response::error('no pictures found!');
 		}
 
-		$return = Cast::toArray($photo);
-		Cast::urls($return, $photo);
+		$return = $photo->toReturnArray();
+		$photo->urls($return);
 		$this->symLinkFunctions->getUrl($photo, $return);
 		if ($photo->album_id !== null && !$photo->album->is_full_photo_visible()) {
 			$photo->downgrade($return);
@@ -169,10 +154,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setTitle(Request $request)
+	public function setTitle(PhotoIDsRequest $request)
 	{
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'title' => 'required|string|max:100',
 		]);
 
@@ -195,12 +179,8 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setStar(Request $request)
+	public function setStar(PhotoIDsRequest $request)
 	{
-		$request->validate([
-			'photoIDs' => 'required|string',
-		]);
-
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
 			->get();
 
@@ -220,10 +200,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setDescription(Request $request)
+	public function setDescription(PhotoIDRequest $request)
 	{
 		$request->validate([
-			'photoID' => 'required|string',
 			'description' => 'string|nullable',
 		]);
 
@@ -250,12 +229,8 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setPublic(Request $request)
+	public function setPublic(PhotoIDRequest $request)
 	{
-		$request->validate([
-			'photoID' => 'required|string',
-		]);
-
 		$photo = Photo::find($request['photoID']);
 
 		// Photo not found?
@@ -277,10 +252,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setTags(Request $request)
+	public function setTags(PhotoIDsRequest $request)
 	{
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'tags' => 'string|nullable',
 		]);
 
@@ -303,10 +277,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setAlbum(Request $request)
+	public function setAlbum(PhotoIDsRequest $request, UpdateTakestamps $updateTakestamps)
 	{
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'albumID' => 'required|string',
 		]);
 
@@ -351,11 +324,11 @@ class PhotoController extends Controller
 					);
 					$no_error = false;
 				}
-				$no_error &= $this->updateTakestamps->singleAndSave($oldAlbum);
+				$no_error &= $updateTakestamps->singleAndSave($oldAlbum);
 			}
 		}
 		if ($album !== null) {
-			$no_error &= $this->updateTakestamps->singleAndSave($album);
+			$no_error &= $updateTakestamps->singleAndSave($album);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -368,10 +341,9 @@ class PhotoController extends Controller
 	 *
 	 * @return false|string
 	 */
-	public function setLicense(Request $request)
+	public function setLicense(PhotoIDRequest $request)
 	{
 		$request->validate([
-			'photoID' => 'required|string',
 			'license' => 'required|string',
 		]);
 
@@ -416,12 +388,8 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function delete(Request $request)
+	public function delete(PhotoIDsRequest $request, UpdateTakestamps $updateTakestamps)
 	{
-		$request->validate([
-			'photoIDs' => 'required|string',
-		]);
-
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
 			->get();
 
@@ -442,7 +410,7 @@ class PhotoController extends Controller
 
 		// TODO: ideally we would like to avoid duplicates here...
 		for ($i = 0; $i < count($albums); $i++) {
-			$no_error &= $this->updateTakestamps->singleAndSave($albums[$i]);
+			$no_error &= $updateTakestamps->singleAndSave($albums[$i]);
 		}
 
 		return $no_error ? 'true' : 'false';
@@ -456,10 +424,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function duplicate(Request $request)
+	public function duplicate(PhotoIDsRequest $request)
 	{
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'albumID' => 'string',
 		]);
 
@@ -655,7 +622,7 @@ class PhotoController extends Controller
 	 *
 	 * @return StreamedResponse|Response|string|void
 	 */
-	public function getArchive(Request $request)
+	public function getArchive(PhotoIDsRequest $request)
 	{
 		if (Storage::getDefaultDriver() === 's3') {
 			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
@@ -664,7 +631,6 @@ class PhotoController extends Controller
 		}
 
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'kind' => 'nullable|string',
 		]);
 

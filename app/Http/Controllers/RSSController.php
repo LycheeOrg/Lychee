@@ -6,7 +6,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Albums\Extensions\PublicIds;
 use App\ModelFunctions\AlbumsFunctions;
-use App\ModelFunctions\PhotoActions\Cast;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -69,8 +68,8 @@ class RSSController extends Controller
 			->get();
 
 		$photos = $photos->map(function (Photo $photo_model) {
-			$photo = Cast::toArray($photo_model);
-			Cast::urls($photo, $photo_model);
+			$photo = $photo_model->toReturnArray();
+			$photo_model->urls($photo);
 
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
 			$id = null;

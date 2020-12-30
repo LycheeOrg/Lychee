@@ -2,7 +2,6 @@
 
 namespace App\Models\Extensions;
 
-use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\Models\Configs;
 use App\Models\Photo;
 
@@ -75,7 +74,7 @@ trait AlbumGetters
 			->orderBy('photos.id', 'ASC')
 			->limit(3)
 			->get()
-			->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));
+			->map(fn ($photo) => $photo->toThumb());
 	}
 
 	public function get_children()
