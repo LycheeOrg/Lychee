@@ -55,8 +55,6 @@ class Merge extends UpdateTakestamps
 		$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
 
 		// update takestamps parent of new place
-		$no_error &= $this->singleAndSave($album_master);
-
-		return $no_error;
+		return $no_error & $this->singleAndSave($album_master);
 	}
 }

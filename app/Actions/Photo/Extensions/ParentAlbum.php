@@ -5,7 +5,6 @@ namespace App\Actions\Photo\Extensions;
 use App\Actions\Album\UpdateTakestamps;
 use App\Exceptions\JsonError;
 use App\Factories\AlbumFactory;
-use App\Models\Album;
 use App\Models\Logs;
 
 trait ParentAlbum
