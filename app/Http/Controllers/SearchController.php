@@ -8,7 +8,6 @@ use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Albums\Top;
 use App\Actions\ReadAccessFunctions;
-use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
@@ -22,11 +21,6 @@ use Illuminate\Http\Request;
 class SearchController extends Controller
 {
 	use PublicIds;
-
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
 
 	/**
 	 * @var readAccessFunctions
@@ -44,18 +38,15 @@ class SearchController extends Controller
 	private $top;
 
 	/**
-	 * @param AlbumFunctions      $albumFunctions
 	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
 	public function __construct(
-		AlbumFunctions $albumFunctions,
 		ReadAccessFunctions $readAccessFunctions,
 		SymLinkFunctions $symLinkFunctions,
 		Top $top
 	) {
-		$this->albumFunctions = $albumFunctions;
 		$this->readAccessFunctions = $readAccessFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 		$this->top = $top;

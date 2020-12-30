@@ -34,7 +34,6 @@ class Albums extends Component
 		Top $top,
 		Smart $smart
 	) {
-		// $this->albumFunctions = $albumFunctions;
 		$this->prepareAlbum = $prepareAlbum;
 		$this->top = $top;
 		$this->smart = $smart;

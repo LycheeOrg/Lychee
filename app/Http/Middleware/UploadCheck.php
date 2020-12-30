@@ -4,12 +4,11 @@
 
 namespace App\Http\Middleware;
 
-use App\ModelFunctions\AlbumFunctions;
+use App\Factories\AlbumFactory;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\Logs;
 use App\Models\Photo;
-use App\Models\User;
 use Closure;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Query\Builder;
@@ -23,15 +22,13 @@ class UploadCheck
 	 */
 	private $sessionFunctions;
 
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
+	/** @var AlbumFactory */
+	private $albumFactory;
 
-	public function __construct(SessionFunctions $sessionFunctions, AlbumFunctions $albumFunctions)
+	public function __construct(SessionFunctions $sessionFunctions, AlbumFactory $albumFactory)
 	{
 		$this->sessionFunctions = $sessionFunctions;
-		$this->albumFunctions = $albumFunctions;
+		$this->albumFactory = $albumFactory;
 	}
 
 	/**
@@ -103,7 +100,7 @@ class UploadCheck
 
 		// Remove smart albums (they get a pass).
 		for ($i = 0; $i < count($albumIDs);) {
-			if ($this->albumFunctions->is_smart_album($albumIDs[$i]) || $albumIDs[$i] === '0') {
+			if ($this->albumFactory->is_smart($albumIDs[$i]) || $albumIDs[$i] === '0') {
 				array_splice($albumIDs, $i, 1);
 			} else {
 				$i++;

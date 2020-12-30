@@ -19,6 +19,7 @@ use App\Actions\Album\SetPublic;
 use App\Actions\Album\SetShowTags;
 use App\Actions\Album\SetSorting;
 use App\Actions\Album\SetTitle;
+use App\Actions\Album\Unlock;
 use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Assets\Helpers;
@@ -26,7 +27,6 @@ use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
 use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
-use App\ModelFunctions\AlbumFunctions;
 use App\Models\Logs;
 use App\Response;
 use Illuminate\Http\Request;
@@ -36,20 +36,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class AlbumController extends Controller
 {
 	use PublicIds;
-
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
-
-	/**
-	 * @param AlbumFunctions $albumFunctions
-	 */
-	public function __construct(
-		AlbumFunctions $albumFunctions
-	) {
-		$this->albumFunctions = $albumFunctions;
-	}
 
 	/**
 	 * Add a new Album.
@@ -128,13 +114,13 @@ class AlbumController extends Controller
 	 *
 	 * @return string
 	 */
-	public function getPublic(AlbumIDRequest $request)
+	public function getPublic(AlbumIDRequest $request, Unlock $unlock)
 	{
 		$request->validate([
 			'password' => 'string|nullable',
 		]);
 
-		return $this->albumFunctions->unlockAlbum($request['albumID'], $request['password']) ? 'true' : 'false';
+		return $unlock->do($request['albumID'], $request['password']) ? 'true' : 'false';
 	}
 
 	/**

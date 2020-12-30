@@ -11,8 +11,6 @@ use App\Locale\Lang;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
@@ -29,8 +27,6 @@ class AppServiceProvider extends ServiceProvider
 	= [
 		SymLinkFunctions::class => SymLinkFunctions::class,
 		PhotoFunctions::class => PhotoFunctions::class,
-		AlbumFunctions::class => AlbumFunctions::class,
-		AlbumsFunctions::class => AlbumsFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,

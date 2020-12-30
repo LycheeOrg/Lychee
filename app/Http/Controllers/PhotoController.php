@@ -36,16 +36,6 @@ class PhotoController extends Controller
 	private $photoFunctions;
 
 	/**
-	 * @var AlbumFunction
-	 */
-	private $albumFunctions;
-
-	/**
-	 * @var AlbumsFunction
-	 */
-	private $albumsFunctions;
-
-	/**
 	 * @var SymLinkFunctions
 	 */
 	private $symLinkFunctions;
@@ -55,8 +45,6 @@ class PhotoController extends Controller
 
 	/**
 	 * @param PhotoFunctions   $photoFunctions
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param AlbumsFunctions  $albumsFunctions
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
 	public function __construct(

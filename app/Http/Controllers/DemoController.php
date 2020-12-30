@@ -6,7 +6,6 @@ use App\Actions\Album\Prepare;
 use App\Actions\Albums\Prepare as AlbumsPrepare;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
-use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\Models\Album;
 use App\Models\Configs;
@@ -15,20 +14,6 @@ use Response;
 
 class DemoController extends Controller
 {
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
-
-	/**
-	 * @param AlbumFunctions $albumFunctions
-	 */
-	public function __construct(
-		AlbumFunctions $albumFunctions
-	) {
-		$this->albumFunctions = $albumFunctions;
-	}
-
 	/**
 	 * This function returns what are the possible return output to simulate
 	 * the server interaction in the case of the demo server here:

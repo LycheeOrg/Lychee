@@ -6,9 +6,8 @@
 
 namespace App\Http\Controllers;
 
-use AccessControl;
+use App\Actions\Album\Create;
 use App\Assets\Helpers;
-use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\Models\Album;
 use App\Models\Configs;
@@ -26,11 +25,6 @@ class ImportController extends Controller
 	 */
 	private $photoFunctions;
 
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
-
 	private $memCheck;
 	private $memLimit;
 	private $memWarningGiven;
@@ -40,12 +34,10 @@ class ImportController extends Controller
 	 * Create a new command instance.
 	 *
 	 * @param PhotoFunctions $photoFunctions
-	 * @param AlbumFunctions $albumFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions)
+	public function __construct(PhotoFunctions $photoFunctions)
 	{
 		$this->photoFunctions = $photoFunctions;
-		$this->albumFunctions = $albumFunctions;
 		$this->statusCLIFormatting = false;
 		$this->memCheck = true;
 	}
@@ -385,7 +377,8 @@ class ImportController extends Controller
 					->first();
 			}
 			if ($album === null) {
-				$album = $this->albumFunctions->create(basename($dir), $albumID, AccessControl::id());
+				$create = resolve(Create::class);
+				$album = $create->create(basename($dir), $albumID);
 				// this actually should not fail.
 				if ($album === false) {
 					// @codeCoverageIgnoreStart

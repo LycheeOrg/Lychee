@@ -3,8 +3,6 @@
 namespace App\SmartAlbums;
 
 use AccessControl;
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Support\Carbon;
@@ -50,25 +48,13 @@ class SmartAlbum extends Album
 	public $password = '';
 
 	/**
-	 * @var AlbumFunctions
-	 */
-	protected $albumFunctions;
-
-	/**
 	 * @var Collection[int]
 	 */
 	protected $albumIds = null;
 
-	/**
-	 * Constructor use DDI.
-	 *
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param SessionFunctions $albumFunctions
-	 */
 	public function __construct()
 	{
 		parent::__construct();
-		$this->albumFunctions = resolve(AlbumFunctions::class);
 		$this->albumIds = new BaseCollection();
 		$this->created_at = new Carbon();
 		$this->smart = true;

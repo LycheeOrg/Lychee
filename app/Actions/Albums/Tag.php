@@ -2,7 +2,6 @@
 
 namespace App\Actions\Albums;
 
-use App\ModelFunctions\AlbumFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\CustomSort;
@@ -14,11 +13,6 @@ class Tag
 	use CustomSort;
 
 	/**
-	 * @var AlbumFunctions
-	 */
-	public $albumFunctions;
-
-	/**
 	 * @var string
 	 */
 	private $sortingCol;
@@ -28,10 +22,8 @@ class Tag
 	 */
 	private $sortingOrder;
 
-	public function __construct(AlbumFunctions $albumFunctions)
+	public function __construct()
 	{
-		$this->albumFunctions = $albumFunctions;
-
 		$this->sortingCol = Configs::get_value('sorting_Albums_col');
 		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
 	}

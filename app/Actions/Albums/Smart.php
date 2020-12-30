@@ -5,18 +5,12 @@ namespace App\Actions\Albums;
 use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Factories\SmartFactory;
-use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 
 class Smart
 {
 	use TopQuery;
 	use PublicIds;
-
-	/**
-	 * @var AlbumFunctions
-	 */
-	public $albumFunctions;
 
 	/**
 	 * @var SymLinkFunctions
