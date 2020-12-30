@@ -4,6 +4,7 @@ namespace App\Actions\Album;
 
 use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\ReadAccessFunctions;
 use App\Assets\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -18,11 +19,13 @@ class Archive extends Action
 	use PublicIds;
 
 	private $badChars;
+	private $readAccessFunctions;
 
-	public function __construct()
+	public function __construct(ReadAccessFunctions $readAccessFunctions)
 	{
 		parent::__construct();
 		// Illicit chars
+		$this->readAccessFunctions = $readAccessFunctions;
 		$this->badChars = array_merge(array_map('chr', range(0, 31)), ['<', '>', ':', '"', '/', '\\', '|', '?', '*']);
 	}
 
@@ -53,107 +56,6 @@ class Archive extends Action
 				$photos_sql = $album->get_photos();
 
 				$this->compress_album($photos_sql, $dir, $dirs, '', $album, $albumID, $zip);
-
-				// $compress_album = function ($photos_sql, $dir, &$dirs, $parent_dir, $album, $albumID) use (&$zip, &$compress_album) {
-				// 	if (!$album->is_downloadable()) {
-				// 		if ($this->albumFactory->is_smart($albumID)) {
-				// 			if (!AccessControl::is_logged_in()) {
-				// 				return;
-				// 			}
-				// 		} elseif (!AccessControl::is_current_user($album->owner_id)) {
-				// 			return;
-				// 		}
-				// 	}
-
-				// 	$dir = str_replace($this->badChars, '', $dir) ?: 'Untitled';
-
-				// 	// Check for duplicates
-				// 	if (!empty($dirs)) {
-				// 		$i = 1;
-				// 		$tmp_dir = $dir;
-				// 		while (in_array($tmp_dir, $dirs)) {
-				// 			// Set new directory name
-				// 			$tmp_dir = $dir . '-' . $i;
-				// 			$i++;
-				// 		}
-				// 		$dir = $tmp_dir;
-				// 	}
-				// 	$dirs[] = $dir;
-
-				// 	if ($parent_dir !== '') {
-				// 		$dir = $parent_dir . '/' . $dir;
-				// 	}
-
-				// 	$files = [];
-				// 	$photos = $photos_sql->get();
-				// 	// We don't bother with additional sorting here; who
-				// 	// cares in what order photos are zipped?
-
-				// 	foreach ($photos as $photo) {
-				// 		// For photos in public smart albums, skip the ones
-				// 		// that are not downloadable based on their actual
-				// 		// parent album.
-				// 		if (
-				// 			$this->albumFactory->is_smart($albumID) && !AccessControl::is_logged_in() &&
-				// 			$photo->album_id !== null && !$photo->album->is_downloadable()
-				// 		) {
-				// 			continue;
-				// 		}
-
-				// 		$is_raw = ($photo->type == 'raw');
-
-				// 		$prefix_url = $is_raw ? 'raw/' : 'big/';
-				// 		$url = Storage::path($prefix_url . $photo->url);
-				// 		// Check if readable
-				// 		if (!@is_readable($url)) {
-				// 			Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
-				// 			continue;
-				// 		}
-
-				// 		// Get extension of image
-				// 		$extension = Helpers::getExtension($url, false);
-
-				// 		// Set title for photo
-				// 		$title = str_replace($this->badChars, '', $photo->title);
-				// 		if (!isset($title) || $title === '') {
-				// 			$title = 'Untitled';
-				// 		}
-
-				// 		$file = $title . ($is_raw ? '' : $extension);
-
-				// 		// Check for duplicates
-				// 		if (!empty($files)) {
-				// 			$i = 1;
-				// 			$tmp_file = $file;
-				// 			$pos = strrpos($tmp_file, '.');
-				// 			while (in_array($tmp_file, $files)) {
-				// 				// Set new title for photo
-				// 				$tmp_file = substr_replace($file, '-' . $i, $pos, 0);
-				// 				$i++;
-				// 			}
-				// 			$file = $tmp_file;
-				// 		}
-				// 		// Add to array
-				// 		$files[] = $file;
-
-				// 		// Reset the execution timeout for every iteration.
-				// 		set_time_limit(ini_get('max_execution_time'));
-
-				// 		// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
-				// 		$zip->addFileFromPath($dir . '/' . $file, $url);
-				// 	} // foreach ($photos)
-
-				// 	// Recursively compress subalbums
-				// 	if (!$album->smart) {
-				// 		$subDirs = [];
-				// 		foreach ($album->children as $subAlbum) {
-				// 			if ($this->readAccessFunctions->album($subAlbum, true) === 1) {
-				// 				$subSql = Photo::set_order(Photo::where('album_id', '=', $subAlbum->id));
-				// 				$compress_album($subSql, $subAlbum->title, $subDirs, $dir, $subAlbum, $subAlbum->id);
-				// 			}
-				// 		}
-				// 	}
-				// }; // $compress_album
 			}
 
 			// finish the zip stream
@@ -204,7 +106,7 @@ class Archive extends Action
 	 * Album compression
 	 * ! include recursive call.
 	 */
-	private function compress_album($photos_sql, $dir, &$dirs, $parent_dir, $album, $albumID, &$zip)
+	private function compress_album($photos_sql, $dir_name, &$dirs, $parent_dir, $album, $albumID, &$zip)
 	{
 		if (!$album->is_downloadable()) {
 			if ($this->albumFactory->is_smart($albumID)) {
@@ -216,23 +118,23 @@ class Archive extends Action
 			}
 		}
 
-		$dir = str_replace($this->badChars, '', $dir) ?: 'Untitled';
+		$dir_name = str_replace($this->badChars, '', $dir_name) ?: 'Untitled';
 
 		// Check for duplicates
 		if (!empty($dirs)) {
 			$i = 1;
-			$tmp_dir = $dir;
+			$tmp_dir = $dir_name;
 			while (in_array($tmp_dir, $dirs)) {
 				// Set new directory name
-				$tmp_dir = $dir . '-' . $i;
+				$tmp_dir = $dir_name . '-' . $i;
 				$i++;
 			}
-			$dir = $tmp_dir;
+			$dir_name = $tmp_dir;
 		}
-		$dirs[] = $dir;
+		$dirs[] = $dir_name;
 
 		if ($parent_dir !== '') {
-			$dir = $parent_dir . '/' . $dir;
+			$dir_name = $parent_dir . '/' . $dir_name;
 		}
 
 		$files = [];
@@ -291,7 +193,7 @@ class Archive extends Action
 			set_time_limit(ini_get('max_execution_time'));
 
 			// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
-			$zip->addFileFromPath($dir . '/' . $file, $url);
+			$zip->addFileFromPath($dir_name . '/' . $file, $url);
 		} // foreach ($photos)
 
 		// Recursively compress subalbums
@@ -300,7 +202,7 @@ class Archive extends Action
 			foreach ($album->children as $subAlbum) {
 				if ($this->readAccessFunctions->album($subAlbum, true) === 1) {
 					$subSql = Photo::set_order(Photo::where('album_id', '=', $subAlbum->id));
-					$this->compress_album($subSql, $subAlbum->title, $subDirs, $dir, $subAlbum, $subAlbum->id, $zip);
+					$this->compress_album($subSql, $subAlbum->title, $subDirs, $dir_name, $subAlbum, $subAlbum->id, $zip);
 				}
 			}
 		}
