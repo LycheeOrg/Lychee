@@ -4,6 +4,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Albums\Extensions\PublicIds;
 use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast;
 use App\ModelFunctions\SymLinkFunctions;
@@ -16,10 +17,7 @@ use Spatie\Feed\FeedItem;
 
 class RSSController extends Controller
 {
-	/**
-	 * @var AlbumsFunctions
-	 */
-	private $albumsFunctions;
+	use PublicIds;
 
 	/**
 	 * @var SymLinkFunctions
@@ -31,10 +29,8 @@ class RSSController extends Controller
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
 	public function __construct(
-		AlbumsFunctions $albumsFunctions,
 		SymLinkFunctions $symLinkFunctions
 	) {
-		$this->albumsFunctions = $albumsFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
@@ -65,7 +61,7 @@ class RSSController extends Controller
 			->where(function ($q) {
 				$q->whereIn(
 					'album_id',
-					$this->albumsFunctions->getPublicAlbumsId()
+					$this->getPublicAlbumsId()
 				)
 					->orWhere('public', '=', '1');
 			})

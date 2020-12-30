@@ -161,7 +161,14 @@ class Album extends Model implements AlbumInterface
 	 */
 	public function predelete()
 	{
-		return $this->get_all_photos->delete();
+		$no_error = true;
+		$photos = $this->get_all_photos()->get();
+		foreach ($photos as $photo) {
+			$no_error &= $photo->predelete();
+			$no_error &= $photo->delete();
+		}
+
+		return $no_error;
 	}
 
 	/**

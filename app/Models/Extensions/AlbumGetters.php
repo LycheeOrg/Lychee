@@ -72,7 +72,7 @@ trait AlbumGetters
 		return $this->get_all_photos()
 			->orderBy('star', 'DESC')
 			->orderBy($sort_col, $sort_order)
-			->orderBy('id', 'ASC')
+			->orderBy('photos.id', 'ASC')
 			->limit(3)
 			->get()
 			->map(fn ($photo) => PhotoCast::toThumb($photo, $this->symLinkFunctions));

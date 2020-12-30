@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class TagAlbum extends SmartAlbum
 {
+	public $table = 'albums';
+
 	public function get_title()
 	{
 		return $this->title;

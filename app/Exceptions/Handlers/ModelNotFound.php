@@ -2,12 +2,10 @@
 
 namespace App\Exceptions\Handlers;
 
-use Illuminate\Contracts\Encryption\DecryptException;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Throwable;
 
-class InvalidPayload
+class ModelNotFound
 {
 	/**
 	 * Render an exception into an HTTP response.
@@ -19,7 +17,7 @@ class InvalidPayload
 	 */
 	public function check($request, Throwable $exception)
 	{
-		return $exception instanceof DecryptException;
+		return $exception instanceof ModelNotFoundException;
 	}
 
 	/**
@@ -28,7 +26,7 @@ class InvalidPayload
 	// @codeCoverageIgnoreStart
 	public function go()
 	{
-		return response()->json(['error' => 'Session timed out'], 400);
+		return response()->json('false', 200);
 	}
 
 	// @codeCoverageIgnoreEnd

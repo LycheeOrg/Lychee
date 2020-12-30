@@ -31,16 +31,16 @@ class Prepare
 		if ($album->smart) {
 			$publicAlbums = $this->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
-		} else {
-			// take care of sub albums
-			$return['albums'] = $album->get_children()->map(function ($child) {
-				$arr_child = $child->toReturnArray();
-				$child->set_thumbs($arr_child, $child->get_thumbs());
-
-				return $arr_child;
-			})->values();
 		}
 		$return = $album->toReturnArray();
+
+		// take care of sub albums
+		$return['albums'] = $album->get_children()->map(function ($child) {
+			$arr_child = $child->toReturnArray();
+			$child->set_thumbs($arr_child, $child->get_thumbs());
+
+			return $arr_child;
+		})->values();
 
 		// take care of photos
 		$return['photos'] = $this->photos->get($album);

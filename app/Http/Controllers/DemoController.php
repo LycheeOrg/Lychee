@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\ModelFunctions\AlbumActions\Cast as AlbumCast;
+use App\Actions\Album\Prepare;
+use App\Actions\Albums\Prepare as AlbumsPrepare;
+use App\Actions\Albums\Smart;
+use App\Actions\Albums\Top;
 use App\ModelFunctions\AlbumFunctions;
 use App\ModelFunctions\PhotoActions\Cast as PhotoCast;
 use App\Models\Album;
@@ -58,11 +61,14 @@ class DemoController extends Controller
 		 * Albums::get.
 		 */
 		$albums_controller = resolve(AlbumsController::class);
+		$top = resolve(Top::class);
+		$smart = resolve(Smart::class);
+		$prepareAlbums = resolve(AlbumsPrepare::class);
 
 		$return_albums = [];
 		$return_albums['name'] = 'Albums::get';
 		$return_albums['type'] = 'string';
-		$return_albums['data'] = json_encode($albums_controller->get());
+		$return_albums['data'] = json_encode($albums_controller->get($top, $smart, $prepareAlbums));
 
 		$functions[] = $return_albums;
 
@@ -84,6 +90,7 @@ class DemoController extends Controller
 		/*
 		 * @var Album
 		 */
+		$prepare = resolve(Prepare::class);
 		foreach ($albums as $album) {
 			/**
 			 * Copy paste from Album::get().
@@ -91,24 +98,7 @@ class DemoController extends Controller
 			// Get photos
 			// Get album information
 
-			$children = $this->albumFunctions->get_children($album, 0, true);
-			$return_album_json = AlbumCast::toArrayWith($album, $children);
-			$return_album_json['owner'] = $album->owner->username;
-
-			$thumbs = $this->albumFunctions->get_thumbs($album, $children);
-			$this->albumFunctions->set_thumbs_children($return_album_json['albums'], $thumbs[1]);
-
-			// take care of photos
-			$full_photo = $return_album_json['full_photo'] ?? Configs::get_value('full_photo', '1') === '1';
-			$photos_query = $album->get_photos();
-			$return_album_json['photos'] = $this->albumFunctions->photos($album, $photos_query, $full_photo, $album->get_license());
-
-			$return_album_json['num'] = strval(count($return_album_json['photos']));
-
-			// finalize the loop
-			if ($return_album_json['num'] === '0') {
-				$return_album_json['photos'] = false;
-			}
+			$return_album_json = $prepare->do($album);
 
 			$return_album = [];
 			$return_album['id'] = $album->id;

@@ -6,6 +6,7 @@ namespace App\Factories;
 
 use App\Assets\Helpers;
 use App\Models\Album;
+use App\SmartAlbums\TagAlbum;
 
 class AlbumFactory
 {
@@ -44,7 +45,8 @@ class AlbumFactory
 		$album = Album::findOrFail($albumId);
 
 		if ($album->smart) {
-			return $album->toTagAlbum();
+			// we reload it.
+			return TagAlbum::findOrFail($albumId);
 		}
 
 		return $album;

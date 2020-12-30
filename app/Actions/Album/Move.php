@@ -48,7 +48,7 @@ class Move extends UpdateTakestamps
 		if ($no_error && $album_master !== null) {
 			// updat owner
 			$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
-			$album_master->get_all_photos()->update(['owner_id' => $album_master->owner_id]);
+			$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
 
 			// update takestamps parent of new place
 			$no_error &= $this->singleAndSave($album_master);

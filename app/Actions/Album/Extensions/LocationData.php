@@ -21,7 +21,7 @@ trait LocationData
 
 		$return_photos = [];
 		$photo_counter = 0;
-		$photos = $photos_sql->select('album_id', 'id', 'latitude', 'longitude', 'small', 'small2x', 'takestamp', 'thumb2x', 'thumbUrl', 'title', 'type', 'url')
+		$photos = $photos_sql->select('album_id', 'photos.id', 'latitude', 'longitude', 'small', 'small2x', 'takestamp', 'thumb2x', 'thumbUrl', 'photos.title', 'type', 'url')
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')
 			->with('album')

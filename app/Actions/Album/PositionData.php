@@ -5,7 +5,7 @@ namespace App\Actions\Album;
 use App\Actions\Album\Extensions\LocationData;
 use App\Actions\Albums\Extensions\PublicIds;
 
-class PrepareData extends Action
+class PositionData extends Action
 {
 	use PublicIds;
 	use LocationData;
@@ -24,7 +24,7 @@ class PrepareData extends Action
 		}
 
 		$return['photos'] = $this->photosLocationData($photos_sql);
-		$return['id'] = $data['albumID'];
+		$return['id'] = strval($album->id);
 
 		return $return;
 	}

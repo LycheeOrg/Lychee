@@ -6,10 +6,9 @@ namespace App\Http\Controllers;
 
 use AccessControl;
 use App\Actions\Album\UpdateTakestamps;
+use App\Actions\Albums\Extensions\PublicIds;
 use App\Assets\Helpers;
 use App\Exceptions\AlbumDoesNotExistsException;
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\PhotoActions\Cast;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -29,6 +28,8 @@ use ZipStream\ZipStream;
 
 class PhotoController extends Controller
 {
+	use PublicIds;
+
 	/**
 	 * @var PhotoFunctions
 	 */
@@ -60,13 +61,10 @@ class PhotoController extends Controller
 	 */
 	public function __construct(
 		PhotoFunctions $photoFunctions,
-		AlbumFunctions $albumFunctions,
 		SymLinkFunctions $symLinkFunctions,
 		UpdateTakestamps $updateTakestamps
 	) {
 		$this->photoFunctions = $photoFunctions;
-		$this->albumFunctions = $albumFunctions;
-		// $this->albumsFunctions = $albumsFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 		$this->updateTakestamps = $updateTakestamps;
 	}
@@ -129,8 +127,8 @@ class PhotoController extends Controller
 	public function getRandom()
 	{
 		// here we need to refine.
-		$starred = new StarredAlbum($this->albumFunctions);
-		$starred->setAlbumIDs($this->albumsFunctions->getPublicAlbumsId());
+		$starred = new StarredAlbum();
+		$starred->setAlbumIDs($this->getPublicAlbumsId());
 		$photo = $starred->get_photos()->inRandomOrder()->first();
 
 		if ($photo == null) {

@@ -10,8 +10,8 @@ use App\Actions\Album\CreateTag;
 use App\Actions\Album\Delete;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
+use App\Actions\Album\PositionData;
 use App\Actions\Album\Prepare;
-use App\Actions\Album\PrepareData;
 use App\Actions\Album\SetDescription;
 use App\Actions\Album\SetLicense;
 use App\Actions\Album\SetNSFW;
@@ -21,6 +21,7 @@ use App\Actions\Album\SetSorting;
 use App\Actions\Album\SetTitle;
 use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Albums\Extensions\PublicIds;
+use App\Assets\Helpers;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\AlbumRequests\AlbumIDRequestInt;
@@ -113,11 +114,11 @@ class AlbumController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function getPositionData(AlbumIDRequest $request, PrepareData $prepareData)
+	public function getPositionData(AlbumIDRequest $request, PositionData $positionData)
 	{
 		$validated = $request->validate(['includeSubAlbums' => 'string|required']);
 
-		return $prepareData->get($request['albumID'], $validated);
+		return $positionData->get($request['albumID'], $validated);
 	}
 
 	/**
@@ -218,6 +219,14 @@ class AlbumController extends Controller
 		$request->validate([
 			'license' => 'required|string',
 		]);
+
+		$licenses = Helpers::get_all_licenses();
+
+		if (!in_array($request['license'], $licenses, true)) {
+			Logs::error(__METHOD__, __LINE__, 'License not recognised: ' . $request['license']);
+
+			return Response::error('License not recognised!');
+		}
 
 		return $setLicense->do($request['albumID'], $request['license']) ? 'true' : 'false';
 	}

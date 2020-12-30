@@ -68,7 +68,9 @@ trait AlbumCast
 		$tag_album->title = $this->title;
 		$tag_album->owner_id = $this->owner_id;
 		$tag_album->parent_id = $this->parent_id;
-		$tag_album->description = $this->description;
+		$tag_album->_lft = $this->_lft;
+		$tag_album->_rgt = $this->_rgt;
+		$tag_album->description = $this->description ?? '';
 		$tag_album->min_takestamp = $this->min_takestamp;
 		$tag_album->max_takestamp = $this->max_takestamp;
 		$tag_album->public = $this->public;

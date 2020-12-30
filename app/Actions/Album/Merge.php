@@ -26,7 +26,6 @@ class Merge extends UpdateTakestamps
 		$no_error = true;
 		$no_error &= Photo::whereIn('album_id', $albumIDs)->update([
 			'album_id' => $album_master->id,
-			'owner_id' => $album_master->owner_id,
 		]);
 
 		// Merge Sub-albums
@@ -34,7 +33,6 @@ class Merge extends UpdateTakestamps
 		$albums = Album::whereIn('parent_id', $albumIDs);
 		foreach ($albums as $album) {
 			$album->parent_id = $album_master->id;
-			$album->owner_id = $album_master->owner_id;
 			$album->save();
 		}
 
@@ -52,6 +50,9 @@ class Merge extends UpdateTakestamps
 			Album::fixTree();
 			Logs::notice(__FUNCTION__, __LINE__, 'Tree has been fixed.');
 		}
+
+		$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
+		$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
 
 		// update takestamps parent of new place
 		$no_error &= $this->singleAndSave($album_master);

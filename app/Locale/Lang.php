@@ -60,4 +60,9 @@ class Lang
 	{
 		return $this->langFactory->getCodes();
 	}
+
+	public function factory(): LangFactory
+	{
+		return $this->langFactory;
+	}
 }

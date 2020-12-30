@@ -4,6 +4,7 @@ namespace App\Exceptions\Handlers;
 
 use App\Redirections\ToInstall;
 use Illuminate\Database\QueryException as QueryException;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Throwable;
 
@@ -12,8 +13,8 @@ class AccessDBDenied
 	/**
 	 * Render an exception into an HTTP response.
 	 *
-	 * @param Illuminate\Http\Request $request
-	 * @param Throwable               $exception
+	 * @param Request   $request
+	 * @param Throwable $exception
 	 *
 	 * @return bool
 	 */
@@ -24,7 +25,7 @@ class AccessDBDenied
 	}
 
 	/**
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	// @codeCoverageIgnoreStart
 	public function go()
