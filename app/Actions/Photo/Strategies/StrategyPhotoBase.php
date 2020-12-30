@@ -22,7 +22,6 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 	{
 		$info = $this->getMetadata($file, $create->path, $create->kind, $create->extension);
 
-		// TODO: move this elsewhere
 		$create->photo->title = $info['title'];
 		$create->photo->url = $create->photo_Url;
 		$create->photo->description = $info['description'];

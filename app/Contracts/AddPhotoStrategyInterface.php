@@ -14,4 +14,8 @@ interface AddPhotoStrategyInterface
 	public function loadMetadata(Create &$create, array $file);
 
 	public function generate_thumbs(Create &$create, bool &$skip_db_entry_creation, bool &$no_error);
+
+	public function setParentAndOwnership(Create &$create);
+
+	public function findLivePartner(Create &$create);
 }
