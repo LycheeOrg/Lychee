@@ -25,12 +25,12 @@ class DiagnosticsChecksFactory
 
 	public function makeAll(): array
 	{
-		$checks = [];
+		$checks_ret = [];
 
 		foreach ($this->checks as $check) {
-			$checks[] = resolve($check); // take care of dependency injection <3
+			$checks_ret[] = resolve($check); // take care of dependency injection <3
 		}
 
-		return $checks;
+		return $checks_ret;
 	}
 }

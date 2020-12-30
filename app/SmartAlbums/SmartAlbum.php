@@ -11,11 +11,6 @@ use Illuminate\Support\Collection as BaseCollection;
 class SmartAlbum extends Album
 {
 	/**
-	 * @var int
-	 */
-	// public $id = '';
-
-	/**
 	 * @var string
 	 */
 	public $title = '';

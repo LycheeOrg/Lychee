@@ -26,8 +26,6 @@ class Prepare
 	 */
 	public function do(Album $album): array
 	{
-		$return = ['albums' => []];
-
 		if ($album->smart) {
 			$publicAlbums = $this->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
