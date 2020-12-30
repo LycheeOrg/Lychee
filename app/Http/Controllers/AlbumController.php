@@ -52,8 +52,6 @@ class AlbumController extends Controller
 		]);
 
 		$album = $create->create($request['title'], $request['parent_id']);
-		//! this may also be a RESPONSE not an ALBUM !!!
-		//! FIXME
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}
@@ -73,8 +71,6 @@ class AlbumController extends Controller
 		]);
 
 		$album = $create->create($request['title'], $request['tags']);
-		//! this may also be a RESPONSE not an ALBUM !!!
-		//! FIXME
 
 		return Response::json($album->id, JSON_NUMERIC_CHECK);
 	}

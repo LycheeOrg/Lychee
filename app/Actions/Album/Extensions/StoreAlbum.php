@@ -3,15 +3,15 @@
 namespace App\Actions\Album\Extensions;
 
 use App\Assets\Helpers;
+use App\Exceptions\JsonError;
 use App\Models\Album;
 use App\Models\Logs;
-use App\Response;
 use Illuminate\Database\QueryException;
 
 trait StoreAlbum
 {
 	/**
-	 * @return Album|Response
+	 * @return Album
 	 */
 	public function store_album(Album &$album)
 	{
@@ -20,7 +20,7 @@ trait StoreAlbum
 
 			try {
 				if (!$album->save()) {
-					return Response::error('Could not save album in database!');
+					throw new JsonError('Could not save album in database!');
 				}
 			} catch (QueryException $e) {
 				$errorCode = $e->getCode();
@@ -36,7 +36,7 @@ trait StoreAlbum
 				} else {
 					Logs::error(__METHOD__, __LINE__, 'Something went wrong, error ' . $errorCode . ', ' . $e->getMessage());
 
-					return Response::error('Something went wrong, error' . $errorCode . ', please check the logs');
+					throw new JsonError('Something went wrong, error' . $errorCode . ', please check the logs');
 				}
 			}
 		} while ($retry);
