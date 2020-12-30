@@ -4,20 +4,16 @@
 
 namespace App\Http\Controllers;
 
-use AccessControl;
-use App\Actions\Album\Extensions\LocationData;
 use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\Albums\PositionData;
 use App\Actions\Albums\Prepare;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Models\Configs;
-use App\Models\Photo;
-use Illuminate\Database\Eloquent\Builder;
 
 class AlbumsController extends Controller
 {
 	use PublicIds;
-	use LocationData;
 
 	/**
 	 * @return array|string returns an array of albums or false on failure
@@ -48,34 +44,8 @@ class AlbumsController extends Controller
 	/**
 	 * @return array|string returns an array of photos of all albums or false on failure
 	 */
-	public function getPositionData()
+	public function getPositionData(PositionData $positionData)
 	{
-		// caching to avoid further request
-		Configs::get();
-
-		// Initialize return var
-		$return = [];
-
-		$albumIDs = $this->getPublicAlbumsId();
-
-		$query = Photo::with('album')->where(
-			function (Builder $query) use ($albumIDs) {
-				$query->whereIn('album_id', $albumIDs);
-				// Add the 'Unsorted' album.
-				if (AccessControl::is_logged_in() && AccessControl::can_upload()) {
-					$query->orWhere('album_id', '=', null);
-
-					$id = AccessControl::id();
-					if ($id !== 0) {
-						$query->where('owner_id', '=', $id);
-					}
-				}
-			}
-		);
-
-		$full_photo = Configs::get_value('full_photo', '1') == '1';
-		$return['photos'] = $this->photosLocationData($query, $full_photo);
-
-		return $return;
+		return $positionData->do();
 	}
 }
