@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use AccessControl;
-use App\Exceptions\AlbumDoesNotExistsException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -88,10 +87,7 @@ class ReadAccessFunctions
 			}
 		}
 
-		$album = Album::find($album);
-		if ($album == null) {
-			throw new AlbumDoesNotExistsException();
-		}
+		$album = Album::findOrFail($album);
 
 		return $this->album($album, $obeyHidden);
 	}

@@ -4,7 +4,7 @@
 
 namespace App\Http\Controllers;
 
-use App\ModelFunctions\PhotoFunctions;
+use App\Actions\Photo\Extensions\Constants;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -13,15 +13,7 @@ use Storage;
 
 class PhotoEditorController extends Controller
 {
-	/**
-	 * @var PhotoFuctions
-	 */
-	private $photoFunctions;
-
-	public function __construct(PhotoFunctions $photoFunctions)
-	{
-		$this->photoFunctions = $photoFunctions;
-	}
+	use Constants;
 
 	/**
 	 * Given a photoID and a direction (+1: 90° clockwise, -1: 90° counterclockwise) rotate an image.
@@ -58,7 +50,7 @@ class PhotoEditorController extends Controller
 			return 'false';
 		}
 
-		if ($this->photoFunctions->isVideo($photo)) {
+		if ($this->isVideo($photo)) {
 			Logs::error(__METHOD__, __LINE__, 'Trying to rotate a video');
 
 			return 'false';

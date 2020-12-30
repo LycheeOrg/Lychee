@@ -20,7 +20,7 @@ class Prepare
 	}
 
 	/**
-	 * @param string $albumID
+	 * @param Album $album
 	 *
 	 * @return array
 	 */

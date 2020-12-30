@@ -7,18 +7,22 @@ namespace App\Http\Controllers;
 use AccessControl;
 use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\Photo\Create;
+use App\Actions\Photo\Extensions\Constants;
+use App\Actions\Photo\Extensions\Save;
+use App\Actions\Photo\Prepare;
+use App\Actions\Photo\Random;
 use App\Assets\Helpers;
-use App\Exceptions\AlbumDoesNotExistsException;
+use App\Factories\AlbumFactory;
+use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
-use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
-use App\SmartAlbums\StarredAlbum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -30,11 +34,8 @@ use ZipStream\ZipStream;
 class PhotoController extends Controller
 {
 	use PublicIds;
-
-	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
+	use Constants;
+	use Save;
 
 	/**
 	 * @var SymLinkFunctions
@@ -42,14 +43,11 @@ class PhotoController extends Controller
 	private $symLinkFunctions;
 
 	/**
-	 * @param PhotoFunctions   $photoFunctions
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
 	public function __construct(
-		PhotoFunctions $photoFunctions,
 		SymLinkFunctions $symLinkFunctions
 	) {
-		$this->photoFunctions = $photoFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
@@ -60,35 +58,11 @@ class PhotoController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function get(PhotoIDRequest $request)
+	public function get(PhotoIDRequest $request, Prepare $prepare)
 	{
 		$photo = Photo::with('album')->findOrFail($request['photoID']);
 
-		$return = $photo->toReturnArray();
-		$photo->urls($return);
-
-		$this->symLinkFunctions->getUrl($photo, $return);
-		if (!AccessControl::is_current_user($photo->owner_id)) {
-			if ($photo->album_id != null) {
-				$album = $photo->album;
-				if (!$album->is_full_photo_visible()) {
-					$photo->downgrade($return);
-				}
-				$return['downloadable'] = $album->is_downloadable() ? '1' : '0';
-				$return['share_button_visible'] = $album->is_share_button_visible() ? '1' : '0';
-			} else { // Unsorted
-				if (Configs::get_value('full_photo', '1') != '1') {
-					$photo->downgrade($return);
-				}
-				$return['downloadable'] = Configs::get_value('downloadable', '0');
-				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
-			}
-		} else {
-			$return['downloadable'] = '1';
-			$return['share_button_visible'] = '1';
-		}
-
-		return $return;
+		return $prepare->do($photo);
 	}
 
 	/**
@@ -97,25 +71,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function getRandom()
+	public function getRandom(Random $random)
 	{
-		// here we need to refine.
-		$starred = new StarredAlbum();
-		$starred->setAlbumIDs($this->getPublicAlbumsId());
-		$photo = $starred->get_photos()->inRandomOrder()->first();
-
-		if ($photo == null) {
-			return Response::error('no pictures found!');
-		}
-
-		$return = $photo->toReturnArray();
-		$photo->urls($return);
-		$this->symLinkFunctions->getUrl($photo, $return);
-		if ($photo->album_id !== null && !$photo->album->is_full_photo_visible()) {
-			$photo->downgrade($return);
-		}
-
-		return $return;
+		return $random->do();
 	}
 
 	/**
@@ -125,10 +83,9 @@ class PhotoController extends Controller
 	 *
 	 * @return false|string
 	 */
-	public function add(Request $request)
+	public function add(AlbumIDRequest $request, Create $create)
 	{
 		$request->validate([
-			'albumID' => 'string|required',
 			'0' => 'required',
 		]);
 
@@ -144,7 +101,7 @@ class PhotoController extends Controller
 		$nameFile['type'] = $file->getMimeType();
 		$nameFile['tmp_name'] = $file->getPathName();
 
-		return $this->photoFunctions->add($nameFile, $request['albumID']);
+		return $create->add($nameFile, $request['albumID']);
 	}
 
 	/**
@@ -291,15 +248,7 @@ class PhotoController extends Controller
 		$album = null;
 		if ($albumID !== '0') {
 			// just to be sure to handle ownership changes in the process.
-			$album = Album::find($albumID);
-			if ($album === null) {
-				Logs::error(
-					__METHOD__,
-					__LINE__,
-					'Could not find specified album'
-				);
-				throw new AlbumDoesNotExistsException();
-			}
+			$album = Album::findOrFail($albumID);
 		}
 
 		$no_error = true;
@@ -424,7 +373,7 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function duplicate(PhotoIDsRequest $request)
+	public function duplicate(PhotoIDsRequest $request, AlbumFactory $albumFactory, UpdateTakestamps $updateTakestamps)
 	{
 		$request->validate([
 			'albumID' => 'string',
@@ -433,7 +382,7 @@ class PhotoController extends Controller
 		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
 			->get();
 
-		$no_error = true;
+		$duplicate = null;
 		foreach ($photos as $photo) {
 			$duplicate = new Photo();
 			$duplicate->id = Helpers::generateID();
@@ -472,10 +421,14 @@ class PhotoController extends Controller
 			$duplicate->livePhotoContentID = $photo->livePhotoContentID;
 			$duplicate->livePhotoUrl = $photo->livePhotoUrl;
 			$duplicate->livePhotoChecksum = $photo->livePhotoChecksum;
-			$no_error &= !is_object($this->photoFunctions->save($duplicate, $duplicate->album_id));
+			$this->save($duplicate);
+		}
+		if ($duplicate->album_id != null) {
+			$parent = $albumFactory->make($duplicate->album_id);
+			$updateTakestamps->singleAndSave($parent);
 		}
 
-		return $no_error ? 'true' : 'false';
+		return 'true';
 	}
 
 	/**
@@ -541,7 +494,7 @@ class PhotoController extends Controller
 				$kind = '';
 				break;
 			case 'MEDIUM2X':
-				if ($this->photoFunctions->isVideo($photo) === false) {
+				if ($this->isVideo($photo) === false) {
 					$fileName = $photo->url;
 				} else {
 					$fileName = $photo->thumbUrl;
@@ -552,7 +505,7 @@ class PhotoController extends Controller
 				$kind = '-' . $photo->medium2x;
 				break;
 			case 'MEDIUM':
-				if ($this->photoFunctions->isVideo($photo) === false) {
+				if ($this->isVideo($photo) === false) {
 					$path = 'medium/' . $photo->url;
 				} else {
 					$path = 'medium/' . $photo->thumbUrl;
@@ -560,7 +513,7 @@ class PhotoController extends Controller
 				$kind = '-' . $photo->medium;
 				break;
 			case 'SMALL2X':
-				if ($this->photoFunctions->isVideo($photo) === false) {
+				if ($this->isVideo($photo) === false) {
 					$fileName = $photo->url;
 				} else {
 					$fileName = $photo->thumbUrl;
@@ -571,7 +524,7 @@ class PhotoController extends Controller
 				$kind = '-' . $photo->small2x;
 				break;
 			case 'SMALL':
-				if ($this->photoFunctions->isVideo($photo) === false) {
+				if ($this->isVideo($photo) === false) {
 					$path = 'small/' . $photo->url;
 				} else {
 					$path = 'small/' . $photo->thumbUrl;

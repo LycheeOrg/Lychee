@@ -4,7 +4,6 @@ namespace App\Models\Extensions;
 
 use App\Assets\Helpers;
 use App\Models\Configs;
-use App\Models\Photo;
 use Exception;
 
 trait PhotoGetters
@@ -82,28 +81,5 @@ trait PhotoGetters
 		}
 
 		return Configs::get_value('default_license');
-	}
-
-	/**
-	 * ! Does not require a Photo object, should probably be moved elsewhere.
-	 *
-	 * Searches for a match of the livePhotoContentID to build a pair
-	 * of photo and video to form a live Photo
-	 * Warning: Only return the first hit!
-	 *
-	 * @param string $livePhotoContentID
-	 * @param string $albumID
-	 *
-	 * @return Photo|bool|Builder|Model|object
-	 */
-	public function findLivePhotoPartner(string $livePhotoContentID, string $albumID = null)
-	{
-		// Todo: We need to search for pairs (Video + Photo)
-		// Photo+Photo or Video+Video does not work
-		$sql = $this->where('livePhotoContentID', '=', $livePhotoContentID)
-			->where('album_id', '=', $albumID)
-			->whereNull('livePhotoUrl');
-
-		return ($sql->count() == 0) ? false : $sql->first();
 	}
 }
