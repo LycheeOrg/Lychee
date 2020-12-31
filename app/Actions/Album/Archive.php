@@ -16,8 +16,6 @@ use ZipStream\ZipStream;
 
 class Archive extends Action
 {
-	use PublicIds;
-
 	private $badChars;
 	private $readAccessFunctions;
 
@@ -50,7 +48,7 @@ class Archive extends Action
 
 				$dir = $album->title;
 				if ($album->smart) {
-					$publicAlbums = $this->getPublicAlbumsId();
+					$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
 					$album->setAlbumIDs($publicAlbums);
 				}
 				$photos_sql = $album->get_photos();

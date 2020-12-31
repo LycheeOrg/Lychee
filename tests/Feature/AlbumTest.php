@@ -17,52 +17,52 @@ class AlbumTest extends TestCase
 	 */
 	public function testAddNotLogged()
 	{
-		$albums_tests = new AlbumsUnitTest();
-		$albums_tests->add($this, '0', 'test_album', 'false');
+		$albums_tests = new AlbumsUnitTest($this);
+		$albums_tests->add('0', 'test_album', 'false');
 
-		$albums_tests->get($this, 'recent', '', 'true');
-		$albums_tests->get($this, 'starred', '', 'true');
-		$albums_tests->get($this, 'public', '', 'true');
-		$albums_tests->get($this, 'unsorted', '', 'true');
+		$albums_tests->get('recent', '', 'true');
+		$albums_tests->get('starred', '', 'true');
+		$albums_tests->get('public', '', 'true');
+		$albums_tests->get('unsorted', '', 'true');
 	}
 
 	public function testAddReadLogged()
 	{
-		$albums_tests = new AlbumsUnitTest();
+		$albums_tests = new AlbumsUnitTest($this);
 		$session_tests = new SessionUnitTest();
 
 		$session_tests->log_as_id(0);
 
-		$albums_tests->get($this, 'recent', '', 'true');
-		$albums_tests->get($this, 'starred', '', 'true');
-		$albums_tests->get($this, 'public', '', 'true');
-		$albums_tests->get($this, 'unsorted', '', 'true');
+		$albums_tests->get('recent', '', 'true');
+		$albums_tests->get('starred', '', 'true');
+		$albums_tests->get('public', '', 'true');
+		$albums_tests->get('unsorted', '', 'true');
 
-		$albumID = $albums_tests->add($this, '0', 'test_album', 'true');
-		$albumID2 = $albums_tests->add($this, '0', 'test_album2', 'true');
-		$albumID3 = $albums_tests->add($this, '0', 'test_album3', 'true');
-		$albumTagID1 = $albums_tests->addByTags($this, 'test_tag_album1', 'test', 'true');
+		$albumID = $albums_tests->add('0', 'test_album', 'true');
+		$albumID2 = $albums_tests->add('0', 'test_album2', 'true');
+		$albumID3 = $albums_tests->add('0', 'test_album3', 'true');
+		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test', 'true');
 
-		$albums_tests->set_tags($this, $albumTagID1, 'test, coolnewtag, secondnewtag', 'true');
-		$response = $albums_tests->get($this, $albumTagID1, '', 'true');
+		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag', 'true');
+		$response = $albums_tests->get($albumTagID1, '', 'true');
 		$response->assertSee('test, coolnewtag, secondnewtag');
 
-		$albums_tests->see_in_albums($this, $albumID);
-		$albums_tests->see_in_albums($this, $albumID2);
-		$albums_tests->see_in_albums($this, $albumID3);
-		$albums_tests->see_in_albums($this, $albumTagID1);
+		$albums_tests->see_in_albums($albumID);
+		$albums_tests->see_in_albums($albumID2);
+		$albums_tests->see_in_albums($albumID3);
+		$albums_tests->see_in_albums($albumTagID1);
 
-		$albums_tests->move($this, $albumTagID1, $albumID3);
-		$albums_tests->move($this, $albumID3, $albumID2);
-		$albums_tests->move($this, $albumID2, $albumID);
-		$albums_tests->move($this, $albumID3, '0');
+		$albums_tests->move($albumTagID1, $albumID3);
+		$albums_tests->move($albumID3, $albumID2);
+		$albums_tests->move($albumID2, $albumID);
+		$albums_tests->move($albumID3, '0');
 
 		/*
 		 * try to get a non existing album
 		 */
-		$albums_tests->get($this, '999', '', 'false');
+		$albums_tests->get('999', '', 'false');
 
-		$response = $albums_tests->get($this, $albumID, '', 'true');
+		$response = $albums_tests->get($albumID, '', 'true');
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => '',
@@ -70,25 +70,25 @@ class AlbumTest extends TestCase
 			'albums' => [['id' => $albumID2]],
 		]);
 
-		$albums_tests->set_title($this, $albumID, 'NEW_TEST');
-		$albums_tests->set_description($this, $albumID, 'new description');
-		$albums_tests->set_license($this, $albumID, 'WTFPL', '"Error: License not recognised!');
-		$albums_tests->set_license($this, $albumID, 'reserved');
-		$albums_tests->set_sorting($this, $albumID, 'title', 'ASC');
+		$albums_tests->set_title($albumID, 'NEW_TEST');
+		$albums_tests->set_description($albumID, 'new description');
+		$albums_tests->set_license($albumID, 'WTFPL', '"Error: License not recognised!');
+		$albums_tests->set_license($albumID, 'reserved');
+		$albums_tests->set_sorting($albumID, 'title', 'ASC');
 
 		/**
 		 * Let's see if the info changed.
 		 */
-		$response = $albums_tests->get($this, $albumID, '', 'true');
+		$response = $albums_tests->get($albumID, '', 'true');
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => 'new description',
 			'title' => 'NEW_TEST',
 		]);
 
-		$albums_tests->set_sorting($this, $albumID, '', 'ASC');
+		$albums_tests->set_sorting($albumID, '', 'ASC');
 
-		$albums_tests->AlbumRebuildTakestamps($this);
+		$albums_tests->AlbumRebuildTakestamps();
 
 		/*
 		 * Flush the session to see if we can access the album
@@ -98,8 +98,8 @@ class AlbumTest extends TestCase
 		/*
 		 * Let's try to get the info of the album we just created.
 		 */
-		$albums_tests->get_public($this, $albumID, '', 'false');
-		$albums_tests->get($this, $albumID, '', '"Warning: Album private!"');
+		$albums_tests->get_public($albumID, '', 'false');
+		$albums_tests->get($albumID, '', '"Warning: Album private!"');
 
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
@@ -109,25 +109,25 @@ class AlbumTest extends TestCase
 		/*
 		 * Let's try to delete this album.
 		 */
-		$albums_tests->delete($this, $albumID);
+		$albums_tests->delete($albumID);
 
 		/*
 		 * Because we deleted the album, we should not see it anymore.
 		 */
-		$albums_tests->dont_see_in_albums($this, $albumID);
+		$albums_tests->dont_see_in_albums($albumID);
 
 		$session_tests->logout($this);
 	}
 
 	public function testTrueNegative()
 	{
-		$albums_tests = new AlbumsUnitTest();
+		$albums_tests = new AlbumsUnitTest($this);
 		$session_tests = new SessionUnitTest();
 
 		$session_tests->log_as_id(0);
 
-		$albums_tests->set_description($this, '-1', 'new description', 'false');
-		$albums_tests->set_public($this, '-1', 1, 1, 1, 0, 1, 1, 'false');
+		$albums_tests->set_description('-1', 'new description', 'false');
+		$albums_tests->set_public('-1', 1, 1, 1, 0, 1, 1, 'false');
 
 		$session_tests->logout($this);
 	}

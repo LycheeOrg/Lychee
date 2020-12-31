@@ -2,6 +2,7 @@
 
 namespace App\ModelFunctions;
 
+use AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SymLink;
@@ -9,21 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class SymLinkFunctions
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * AlbumFunctions constructor.
-	 *
-	 * @param SessionFunctions $sessionFunctions
-	 */
-	public function __construct(SessionFunctions $sessionFunctions)
-	{
-		$this->sessionFunctions = $sessionFunctions;
-	}
-
 	/**
 	 * @param Photo $photo
 	 *
@@ -40,7 +26,7 @@ class SymLinkFunctions
 			return null;
 		}
 
-		if ($this->sessionFunctions->is_admin() && Configs::get_value('SL_for_admin', '0') === '0') {
+		if (AccessControl::is_admin() && Configs::get_value('SL_for_admin', '0') === '0') {
 			// @codeCoverageIgnoreStart
 			return null;
 			// @codeCoverageIgnoreEnd

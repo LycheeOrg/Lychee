@@ -10,7 +10,6 @@ use App\ModelFunctions\SymLinkFunctions;
 class Smart
 {
 	use TopQuery;
-	use PublicIds;
 
 	/**
 	 * @var SymLinkFunctions
@@ -52,7 +51,7 @@ class Smart
 		/**
 		 * @var Collection[SmartAlbum]
 		 */
-		$publicAlbums = $this->getPublicAlbumsId();
+		$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
 		$smartAlbums = $this->smartFactory->makeAll();
 
 		foreach ($this->tag->get() as $tagAlbum) {

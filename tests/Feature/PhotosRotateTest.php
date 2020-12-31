@@ -15,7 +15,7 @@ class PhotosRotateTest extends TestCase
 	 */
 	public function testRotate()
 	{
-		$photos_tests = new PhotosUnitTest();
+		$photos_tests = new PhotosUnitTest($this);
 		$session_tests = new SessionUnitTest();
 
 		$session_tests->log_as_id(0);
@@ -34,11 +34,11 @@ class PhotosRotateTest extends TestCase
 			true
 		);
 
-		$id = $photos_tests->upload($this, $file);
+		$id = $photos_tests->upload($file);
 
-		$photos_tests->get($this, $id, 'true');
+		$photos_tests->get($id, 'true');
 
-		$response = $photos_tests->get($this, $id, 'true');
+		$response = $photos_tests->get($id, 'true');
 		/*
 		* Check some Exif data
 		*/
@@ -61,15 +61,15 @@ class PhotosRotateTest extends TestCase
 		$response->assertSee('false', false);
 
 		Configs::set('editor_enabled', '1');
-		$photos_tests->rotate($this, '-1', 1, 'false');
-		$photos_tests->rotate($this, $id, 'asdq', 'false', 422);
-		$photos_tests->rotate($this, $id, '2', 'false');
-		$photos_tests->rotate($this, $id, 1);
+		$photos_tests->rotate('-1', 1, 'false');
+		$photos_tests->rotate($id, 'asdq', 'false', 422);
+		$photos_tests->rotate($id, '2', 'false');
+		$photos_tests->rotate($id, 1);
 
 		/*
 		* Check some Exif data
 		*/
-		$response = $photos_tests->get($this, $id, 'true');
+		$response = $photos_tests->get($id, 'true');
 		$response->assertJson([
 			'height' => '6720',
 			'id' => $id,
@@ -79,12 +79,12 @@ class PhotosRotateTest extends TestCase
 			'width' => '4480',
 		]);
 
-		$photos_tests->rotate($this, $id, -1);
+		$photos_tests->rotate($id, -1);
 
 		/*
 		* Check some Exif data
 		*/
-		$response = $photos_tests->get($this, $id, 'true');
+		$response = $photos_tests->get($id, 'true');
 		$response->assertJson([
 			'height' => '4480',
 			'id' => $id,
@@ -94,7 +94,7 @@ class PhotosRotateTest extends TestCase
 			'width' => '6720',
 		]);
 
-		$photos_tests->delete($this, $id, 'true');
+		$photos_tests->delete($id, 'true');
 
 		// reset
 		Configs::set('editor_enabled', $editor_enabled_value);

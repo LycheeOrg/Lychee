@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Actions\Albums\Extensions\PublicIds;
 use App\Models\Configs;
 use App\Models\Photo;
 
@@ -68,8 +69,15 @@ trait AlbumGetters
 	{
 		[$sort_col, $sort_order] = $this->get_sort();
 
-		return $this->get_all_photos()
-			->orderBy('star', 'DESC')
+		$sql = $this->get_all_photos();
+
+		//? apply safety filter : Do not leak pictures which are not ours
+		$publicAlbumsId = resolve(PublicIds::class)->getPublicAlbumsId();
+		if ($publicAlbumsId != null && !$publicAlbumsId->isEmpty()) {
+			$sql = $sql->whereIn('album_id', $publicAlbumsId);
+		}
+
+		return $sql->orderBy('star', 'DESC')
 			->orderBy($sort_col, $sort_order)
 			->orderBy('photos.id', 'ASC')
 			->limit(3)

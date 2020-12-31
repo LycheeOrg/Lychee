@@ -116,7 +116,7 @@ class SessionFunctions
 	public function noLogin()
 	{
 		$adminUser = User::find(0);
-		if ($adminUser->password === '' && $adminUser->username === '') {
+		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
 			$this->user_data = $adminUser;
 			Session::put('login', true);
 			Session::put('UserID', 0);
@@ -169,7 +169,7 @@ class SessionFunctions
 	public function log_as_admin(string $username, string $password, string $ip)
 	{
 		$AdminUser = User::find(0);
-		if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
+		if ($AdminUser !== null && Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
 			$this->user_data = $AdminUser;
 			Session::put('login', true);
 			Session::put('UserID', 0);

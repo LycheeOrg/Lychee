@@ -9,7 +9,6 @@ use App\Assets\Helpers;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
@@ -31,9 +30,8 @@ class SessionController extends Controller
 	private $gitHubFunctions;
 
 	/**
-	 * @param ConfigFunctions  $configFunctions
-	 * @param SessionFunctions $sessionFunctions
-	 * @param GitHubFunctions  $gitHubFunctions
+	 * @param ConfigFunctions $configFunctions
+	 * @param GitHubFunctions $gitHubFunctions
 	 */
 	public function __construct(ConfigFunctions $configFunctions, GitHubFunctions $gitHubFunctions)
 	{

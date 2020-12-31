@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Factories\LangFactory;
@@ -30,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
 		ConfigFunctions::class => ConfigFunctions::class,
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
+		PublicIds::class => PublicIds::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,
 		GitHubFunctions::class => GitHubFunctions::class,
@@ -51,11 +53,7 @@ class AppServiceProvider extends ServiceProvider
 			/* @noinspection PhpUndefinedClassInspection */
 			DB::listen(function ($query) {
 				/* @noinspection PhpUndefinedClassInspection */
-				Log::info(
-					$query->sql,
-					$query->bindings,
-					$query->time
-				);
+				Log::info($query->sql, $query->bindings, $query->time);
 			});
 			// @codeCoverageIgnoreEnd
 		}
@@ -68,16 +66,14 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->singleton(
-			Image\ImageHandlerInterface::class,
-			function ($app) {
-				$compressionQuality = Configs::get_value(
-					'compression_quality',
-					90
-				);
+		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
+			$compressionQuality = Configs::get_value('compression_quality', 90);
 
-				return new ImageHandler($compressionQuality);
-			}
-		);
+			return new ImageHandler($compressionQuality);
+		});
+
+		// $this->app->singleton(PublicIds::class, function ($app) {
+		// 	return new PublicIds();
+		// });
 	}
 }

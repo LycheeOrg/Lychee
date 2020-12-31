@@ -7,7 +7,6 @@ use App\Actions\Albums\Extensions\PublicIds;
 
 class PositionData extends Action
 {
-	use PublicIds;
 	use LocationData;
 
 	public function get(string $albumID, array $data)
@@ -15,7 +14,7 @@ class PositionData extends Action
 		$album = $this->albumFactory->make($albumID);
 
 		if ($album->smart) {
-			$album->setAlbumIDs($this->getPublicAlbumsId());
+			$album->setAlbumIDs(resolve(PublicIds::class)->getPublicAlbumsId());
 			$photos_sql = $album->get_photos();
 		} elseif ($data['includeSubAlbums']) {
 			$photos_sql = $album->get_all_photos();

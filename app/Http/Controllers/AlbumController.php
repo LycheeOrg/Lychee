@@ -21,7 +21,6 @@ use App\Actions\Album\SetSorting;
 use App\Actions\Album\SetTitle;
 use App\Actions\Album\Unlock;
 use App\Actions\Album\UpdateTakestamps;
-use App\Actions\Albums\Extensions\PublicIds;
 use App\Assets\Helpers;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
@@ -35,8 +34,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AlbumController extends Controller
 {
-	use PublicIds;
-
 	/**
 	 * Add a new Album.
 	 *

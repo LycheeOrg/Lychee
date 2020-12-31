@@ -8,8 +8,24 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
 
-trait PublicIds
+class PublicIds
 {
+	/** @var BaseCollection */
+	private $white_list = null;
+	/** @var BaseCollection */
+	private $black_list = null;
+
+	public function __construct()
+	{
+		$this->initNotAccessible();
+		$this->initPublicAlbumId();
+	}
+
+	/*------------------------------------------------------------------------------- */
+	/**
+	 * Initialize.
+	 */
+
 	/**
 	 * Build a query that remove all non public albums
 	 * or public albums which are hidden
@@ -60,12 +76,7 @@ trait PublicIds
 			->get();
 	}
 
-	/**
-	 * Return an array of ids of albums that are not accessible.
-	 *
-	 * @return array[int]
-	 */
-	private function getNotAccessible(): BaseCollection
+	private function initNotAccessible(): BaseCollection
 	{
 		/**
 		 * @var BaseCollection
@@ -78,21 +89,50 @@ trait PublicIds
 				$sql = $sql->orWhereBetween('_lft', [$alb->_lft, $alb->_rgt]);
 			}
 
-			return $sql->pluck('id');
+			$this->black_list = $sql->pluck('id');
+
+			return $this->black_list;
 		}
 
-		return new BaseCollection();
+		$this->black_list = new BaseCollection();
+
+		return $this->black_list;
 	}
 
+	private function initPublicAlbumId(): BaseCollection
+	{
+		$id_not_accessible = $this->getNotAccessible();
+		$this->white_list = Album::select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
+
+		return $this->white_list;
+	}
+
+	/*------------------------------------------------------------------------------- */
 	/**
-	 * @param $toplevel optional return from getToplevelAlbums()
-	 *
+	 * Getters.
+	 */
+
+	/**
 	 * @return Collection[int] of all recursive albums ID accessible by the current user from the top level
 	 */
 	public function getPublicAlbumsId(): BaseCollection
 	{
-		$id_not_accessible = $this->getNotAccessible();
+		return $this->white_list ?? $this->initPublicAlbumId();
+	}
 
-		return Album::select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
+	/**
+	 * Return an array of ids of albums that are not accessible.
+	 *
+	 * @return array[int]
+	 */
+	public function getNotAccessible(): BaseCollection
+	{
+		return $this->black_list ?? $this->initNotAccessible();
+	}
+
+	public function refresh()
+	{
+		$this->white_list = null;
+		$this->black_list = null;
 	}
 }

@@ -19,8 +19,6 @@ use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-	use PublicIds;
-
 	/**
 	 * @var readAccessFunctions
 	 */
@@ -37,7 +35,6 @@ class SearchController extends Controller
 	private $top;
 
 	/**
-	 * @param SessionFunctions    $sessionFunctions
 	 * @param ReadAccessFunctions $readAccessFunctions
 	 * @param SymLinkFunctions    $symLinkFunctions
 	 */
@@ -117,7 +114,7 @@ class SearchController extends Controller
 		 * from the top level.  This includes password-protected albums
 		 * (since they are visible) but not their content.
 		 */
-		$albumIDs = $this->getPublicAlbumsId();
+		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
 
 		$query = Album::with([
 			'owner',
@@ -161,7 +158,7 @@ class SearchController extends Controller
 		 * accessible from the top level, only this time without
 		 * password-protected ones.
 		 */
-		$albumIDs = $this->getPublicAlbumsId();
+		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
 		$query = Photo::with('album')->where(
 			function (Builder $query) use ($albumIDs) {
 				$query->whereIn('album_id', $albumIDs);

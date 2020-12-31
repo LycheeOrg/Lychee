@@ -4,8 +4,8 @@
 
 namespace App\Http\Middleware;
 
+use AccessControl;
 use App\Factories\AlbumFactory;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -17,17 +17,11 @@ use Illuminate\Http\Response;
 
 class UploadCheck
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
 	/** @var AlbumFactory */
 	private $albumFactory;
 
-	public function __construct(SessionFunctions $sessionFunctions, AlbumFactory $albumFactory)
+	public function __construct(AlbumFactory $albumFactory)
 	{
-		$this->sessionFunctions = $sessionFunctions;
 		$this->albumFactory = $albumFactory;
 	}
 
@@ -42,16 +36,16 @@ class UploadCheck
 	public function handle(Request $request, Closure $next)
 	{
 		// not logged!
-		if (!$this->sessionFunctions->is_logged_in()) {
+		if (!AccessControl::is_logged_in()) {
 			return response('false');
 		}
 
 		// is admin
-		if ($this->sessionFunctions->is_admin()) {
+		if (AccessControl::is_admin()) {
 			return $next($request);
 		}
 
-		$user = $this->sessionFunctions->user();
+		$user = AccessControl::user();
 
 		// is not admin and does not have upload rights
 		if (!$user->upload) {

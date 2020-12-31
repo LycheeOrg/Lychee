@@ -16,8 +16,6 @@ use Spatie\Feed\FeedItem;
 
 class RSSController extends Controller
 {
-	use PublicIds;
-
 	/**
 	 * @var SymLinkFunctions
 	 */
@@ -60,7 +58,7 @@ class RSSController extends Controller
 			->where(function ($q) {
 				$q->whereIn(
 					'album_id',
-					$this->getPublicAlbumsId()
+					resolve(PublicIds::class)->getPublicAlbumsId()
 				)
 					->orWhere('public', '=', '1');
 			})

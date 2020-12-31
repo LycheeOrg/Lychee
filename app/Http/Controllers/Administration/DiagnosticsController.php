@@ -40,7 +40,7 @@ class DiagnosticsController extends Controller
 	{
 		$errors = resolve(Errors::class)->get();
 
-		if (AccessControl::is_admin()) {
+		if (AccessControl::is_admin() || AccessControl::noLogin()) {
 			$infos = resolve(Info::class)->get();
 			$configs = resolve(Configuration::class)->get();
 		} else {
@@ -88,7 +88,7 @@ class DiagnosticsController extends Controller
 	public function get_size()
 	{
 		$infos = ['You must be logged to see this.'];
-		if (AccessControl::is_admin()) {
+		if (AccessControl::is_admin() || AccessControl::noLogin()) {
 			$infos = resolve(Space::class)->get();
 		}
 

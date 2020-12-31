@@ -8,13 +8,11 @@ use App\SmartAlbums\StarredAlbum;
 
 class Random extends SymLinker
 {
-	use PublicIds;
-
 	public function do(): array
 	{
 		// here we need to refine.
 		$starred = new StarredAlbum();
-		$starred->setAlbumIDs($this->getPublicAlbumsId());
+		$starred->setAlbumIDs(resolve(PublicIds::class)->getPublicAlbumsId());
 		$photo = $starred->get_photos()->inRandomOrder()->first();
 
 		if ($photo == null) {

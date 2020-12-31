@@ -7,8 +7,6 @@ use App\Models\Album;
 
 class Prepare
 {
-	use PublicIds;
-
 	/**
 	 * @var Photos
 	 */
@@ -27,7 +25,7 @@ class Prepare
 	public function do(Album $album): array
 	{
 		if ($album->smart) {
-			$publicAlbums = $this->getPublicAlbumsId();
+			$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
 		}
 		$return = $album->toReturnArray();

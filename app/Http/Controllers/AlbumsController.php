@@ -4,7 +4,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Albums\PositionData;
 use App\Actions\Albums\Prepare;
 use App\Actions\Albums\Smart;
@@ -13,8 +12,6 @@ use App\Models\Configs;
 
 class AlbumsController extends Controller
 {
-	use PublicIds;
-
 	/**
 	 * @return array|string returns an array of albums or false on failure
 	 */

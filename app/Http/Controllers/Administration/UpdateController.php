@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers\Administration;
 
+use AccessControl;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\Checks\IsMigrated;
-use App\Metadata\LycheeVersion;
-use App\ModelFunctions\SessionFunctions;
 use App\Response;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,54 +17,15 @@ use Illuminate\Http\Request;
 class UpdateController extends Controller
 {
 	/**
-	 * @var ApplyUpdate
-	 */
-	private $applyUpdate;
-
-	/**
-	 * @var CheckUpdate
-	 */
-	private $checkUpdate;
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @var LycheeVersion
-	 */
-	private $lycheeVersion;
-
-	/**
-	 * @param GitHubFunctions $gitHubFunctions
-	 * @param ApplyUpdate     $apply
-	 * @param GitRequest      $gitRequest
-	 */
-	public function __construct(
-		ApplyUpdate $applyUpdate,
-		CheckUpdate $checkUpdate,
-		SessionFunctions $sessionFunctions,
-		LycheeVersion $lycheeVersion,
-		IsMigrated $isMigrated
-	) {
-		$this->applyUpdate = $applyUpdate;
-		$this->checkUpdate = $checkUpdate;
-		$this->sessionFunctions = $sessionFunctions;
-		$this->lycheeVersion = $lycheeVersion;
-		$this->isMigrated = $isMigrated;
-	}
-
-	/**
 	 * Return if up to date or the number of commits behind
 	 * This invalidates the cache for the url.
 	 *
 	 * @return string
 	 */
-	public function check()
+	public function check(CheckUpdate $checkUpdate)
 	{
 		try {
-			return Response::json($this->checkUpdate->getText());
+			return Response::json($checkUpdate->getText());
 			// @codeCoverageIgnoreStart
 		} catch (Exception $e) {
 			return Response::error($e->getMessage()); // Not master
@@ -79,10 +39,10 @@ class UpdateController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function apply()
+	public function apply(CheckUpdate $checkUpdate, ApplyUpdate $applyUpdate)
 	{
 		try {
-			$this->checkUpdate->canUpdate();
+			$checkUpdate->canUpdate();
 			// @codeCoverageIgnoreStart
 		} catch (Exception $e) {
 			return Response::error($e->getMessage());
@@ -90,22 +50,26 @@ class UpdateController extends Controller
 		// @codeCoverageIgnoreEnd
 
 		// @codeCoverageIgnoreStart
-		return $this->applyUpdate->run();
+		return $applyUpdate->run();
 	}
 
-	public function force(Request $request)
+	public function force(Request $request, IsMigrated $isMigrated, ApplyUpdate $applyUpdate)
 	{
-		if ($this->isMigrated->assert()) {
+		if ($isMigrated->assert()) {
 			return redirect()->route('home');
 		}
 
 		if (
-			$this->sessionFunctions->is_admin() || $this->sessionFunctions->noLogin() ||
-			$this->sessionFunctions->log_as_admin($request['username'] ?? '', $request['password'] ?? '', $request->ip())
+			AccessControl::is_admin() || AccessControl::noLogin() ||
+			AccessControl::log_as_admin($request['username'] ?? '', $request['password'] ?? '', $request->ip())
 		) {
 			$output = [];
-			$this->applyUpdate->artisan($output);
-			$this->applyUpdate->filter($output);
+			$applyUpdate->artisan($output);
+			$applyUpdate->filter($output);
+
+			if (AccessControl::noLogin()) {
+				AccessControl::logout();
+			}
 
 			return '<pre>' . implode("\n", $output) . '</pre>';
 		} else {

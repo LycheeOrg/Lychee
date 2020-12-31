@@ -3,14 +3,11 @@
 namespace App\Actions\Album;
 
 use AccessControl;
-use App\Actions\Albums\Extensions\PublicIds;
 use App\Models\Album;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock extends Action
 {
-	use PublicIds;
-
 	/**
 	 * Provided an password and an album, check if the album can be
 	 * unlocked. If yes, unlock all albums with the same password.

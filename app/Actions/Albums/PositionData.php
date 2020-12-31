@@ -9,7 +9,6 @@ use App\Models\Photo;
 
 class PositionData
 {
-	use PublicIds;
 	use LocationData;
 
 	/**
@@ -27,7 +26,7 @@ class PositionData
 		// Initialize return var
 		$return = [];
 
-		$albumIDs = $this->getPublicAlbumsId();
+		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
 
 		$query = Photo::with('album')->whereIn('album_id', $albumIDs);
 

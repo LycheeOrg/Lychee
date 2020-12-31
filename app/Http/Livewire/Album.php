@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Actions\Album\Photos;
 use App\Factories\AlbumFactory;
 use Livewire\Component;
+use PublicIds;
 
 class Album extends Component
 {
@@ -33,12 +34,9 @@ class Album extends Component
 	 */
 	private $albumFactory;
 
-	/**
-	 * @var Photos
-	 */
-	private $photosFunctions;
+	private $photosAction;
 
-	public function mount($albumId, AlbumFactory $albumFactory, Photos $photosFunctions)
+	public function mount($albumId, AlbumFactory $albumFactory, Photos $photosAction)
 	{
 		$this->albumId = $albumId;
 		$this->album = null;
@@ -46,29 +44,29 @@ class Album extends Component
 		$this->info['albums'] = [];
 
 		$this->albumFactory = $albumFactory;
-		$this->photos = $photosFunctions;
+		$this->photosAction = $photosAction;
 	}
 
 	public function render()
 	{
 		$this->album = $this->albumFactory->make($this->albumId);
 
-		if ($this->album->is_smart()) {
-			$publicAlbums = $this->albumsFunctions->getPublicAlbumsId();
+		if ($this->album->smart) {
+			$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
 			$this->album->setAlbumIDs($publicAlbums);
-		} else {
-			// take care of sub albums
-			$this->info['albums'] = $this->album->get_children()->map(function ($child) {
-				$arr_child = $child->toReturnArray();
-				$child->set_thumbs($arr_child, $child->get_thumbs());
-
-				return $arr_child;
-			})->values();
 		}
 		$this->info = $this->album->toReturnArray();
 
+		// take care of sub albums
+		$this->info['albums'] = $this->album->get_children()->map(function ($child) {
+			$arr_child = $child->toReturnArray();
+			$child->set_thumbs($arr_child, $child->get_thumbs());
+
+			return $arr_child;
+		})->values();
+
 		// take care of photos
-		$this->photos = $this->photosFunctions->get($this->album);
+		$this->photos = $this->photosAction->get($this->album);
 
 		$this->info['id'] = $this->albumId;
 		$this->info['num'] = strval(count($this->photos));
