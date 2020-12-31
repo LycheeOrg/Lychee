@@ -29,6 +29,18 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Application Environment
+	|--------------------------------------------------------------------------
+	|
+	| This value determines whether livewire front-end is enabled as it is
+	| currently under development.
+	|
+	*/
+
+	'livewire' => (bool) env('LIVEWIRE_ENABLED', false),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Application Debug Mode
 	|--------------------------------------------------------------------------
 	|
