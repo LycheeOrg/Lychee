@@ -35,7 +35,7 @@ class Delete extends UpdateTakestamps
 		$parentAlbum = null;
 		foreach ($albums as $album) {
 			$no_error &= $album->predelete();
-			if ($parentAlbum !== null && $album->parent_id !== null) {
+			if ($parentAlbum == null && $album->parent_id !== null) {
 				$parentAlbum = $album->parent_id;
 			}
 			//! We break the tree (because delete() is broken see https://github.com/lazychaser/laravel-nestedset/issues/485)

@@ -17,7 +17,7 @@ class Merge extends UpdateTakestamps
 	{
 		$album_master = $this->albumFactory->make($albumID);
 		if ($album_master->is_smart()) {
-			Logs::error(__METHOD__, __LINE__, 'Merge possible on smart albums');
+			Logs::error(__METHOD__, __LINE__, 'Merge is not possible on smart albums');
 
 			return false;
 		}

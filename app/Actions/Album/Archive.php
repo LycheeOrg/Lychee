@@ -199,7 +199,7 @@ class Archive extends Action
 			$subDirs = [];
 			foreach ($album->children as $subAlbum) {
 				if ($this->readAccessFunctions->album($subAlbum, true) === 1) {
-					$subSql = Photo::set_order(Photo::where('album_id', '=', $subAlbum->id));
+					$subSql = Photo::where('album_id', '=', $subAlbum->id);
 					$this->compress_album($subSql, $subAlbum->title, $subDirs, $dir_name, $subAlbum, $subAlbum->id, $zip);
 				}
 			}
