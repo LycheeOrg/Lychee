@@ -317,7 +317,7 @@ class Extractor
 		// but only if return value is not null (= function has been disabled)
 		$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
 		if (is_null($metadata['location']) == false) {
-			$metadata['location'] = substr($metadata['location'] , 0, 100);
+			$metadata['location'] = substr($metadata['location'] , 0, 255);
 		}
         
 		return $metadata;
