@@ -71,9 +71,5 @@ class AppServiceProvider extends ServiceProvider
 
 			return new ImageHandler($compressionQuality);
 		});
-
-		// $this->app->singleton(PublicIds::class, function ($app) {
-		// 	return new PublicIds();
-		// });
 	}
 }

@@ -131,6 +131,11 @@ class SmartAlbum extends Album
 		return null;
 	}
 
+	public function get_children()
+	{
+		return new BaseCollection();
+	}
+
 	/**
 	 * We override this method so we can use it elsewhere. :).
 	 */
