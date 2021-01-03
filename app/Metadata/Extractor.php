@@ -313,13 +313,13 @@ class Extractor
 			}
 		}
 
-		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr 
+		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr
 		// but only if return value is not null (= function has been disabled)
 		$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
 		if (is_null($metadata['location']) == false) {
-			$metadata['location'] = substr($metadata['location'] , 0, 255);
+			$metadata['location'] = substr($metadata['location'], 0, 255);
 		}
-        
+
 		return $metadata;
 	}
 }
