@@ -25,10 +25,14 @@ class SetPublic extends Action
 		$album->share_button_visible = ($values['share_button_visible'] === '1' ? 1 : 0);
 
 		// Set password if provided
-		if (isset($values['password'])) {
-			if (strlen($values['password']) > 0) {
+		if (array_key_exists('password', $values)) {
+			// password is provided => there is a change
+
+			if (isset($values['password'])) {
+				// password is not null => we update the value with the hash
 				$album->password = bcrypt($values['password']);
 			} else {
+				// we remove the password
 				$album->password = null;
 			}
 		}

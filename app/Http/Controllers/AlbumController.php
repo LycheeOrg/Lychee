@@ -148,7 +148,7 @@ class AlbumController extends Controller
 			'downloadable' => 'integer|required',
 			'share_button_visible' => 'integer|required',
 			'full_photo' => 'integer|required',
-			'password' => 'sometimes|string',
+			'password' => 'sometimes|string|nullable',
 		]);
 
 		return $setPublic->do($request['albumID'], $validated) ? 'true' : 'false'; // we should return a 422 or similar
