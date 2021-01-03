@@ -21,6 +21,14 @@ class UpdateTakestamps extends Action
 		return $album->save();
 	}
 
+	public function ancestors(Album $album)
+	{
+		$album->ancestors()
+			->where('min_takestamp', '>=', $album->min_takestamp)
+			->orWhere('max_takestamp', '<=', $album->max_takestamp)
+			->update(['max_takestamp' => $album->max_takestamp, 'min_takestamp' => $album->min_takestamp]);
+	}
+
 	public function all()
 	{
 		$albums = Album::get();

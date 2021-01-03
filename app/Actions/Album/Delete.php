@@ -3,11 +3,15 @@
 namespace App\Actions\Album;
 
 use AccessControl;
+use App\Actions\Album\Extensions\Ancestors;
 use App\Models\Album;
 use App\Models\Photo;
+use Illuminate\Support\Collection as BaseCollection;
 
 class Delete extends UpdateTakestamps
 {
+	use Ancestors;
+
 	/**
 	 * @param string $albumID
 	 *
@@ -24,37 +28,36 @@ class Delete extends UpdateTakestamps
 				$no_error &= $photo->delete();
 			}
 
-			return $no_error ? 'true' : 'false';
+			return $no_error;
 		}
 
 		$albums = Album::whereIn('id', explode(',', $albumIDs))->get();
 
-		/**
-		 * @var Album
-		 */
-		$parentAlbum = null;
+		$ancestors = new BaseCollection();
 		foreach ($albums as $album) {
 			$no_error &= $album->predelete();
-			if ($parentAlbum == null && $album->parent_id !== null) {
-				$parentAlbum = $album->parent_id;
+
+			//? We only need to update parents if node is not a root and if the min & max are set.
+			if (!$album->isRoot() && $album->min_takestamp != null && $album->max_takestamp != null) {
+				$ancestors->push(['_lft' => $album->_lft, '_rgt' => $album->_rgt, 'min' => $album->min_takestamp, 'max' => $album->max_takestamp]);
 			}
+
 			//! We break the tree (because delete() is broken see https://github.com/lazychaser/laravel-nestedset/issues/485)
 			Album::where('_lft', '>', $album->_lft)->where('_rgt', '<=', $album->_rgt)->delete();
+
 			$no_error &= $album->delete();
 		}
-		// We fix the tree :)
+
+		//! Tree is still broken, but we need to query the Ancestors Id here before fixing the tree.
+		$ancestors = $this->getAncestorsOutdated($ancestors)->pluck('id');
+
+		//? We fix the tree :)
 		if (Album::isBroken()) {
 			Album::fixTree();
 		}
 
-		/**
-		 *  We can just do that at the end, because $parentAlbum will
-		 * be the same for all the albums in the case of a sub album.
-		 */
-		if ($parentAlbum !== null) {
-			$parentAlbum = $this->albumFactory->make($parentAlbum);
-			$this->singleAndSave($parentAlbum);
-		}
+		$ancestors = Album::whereIn('id', $ancestors)->get();
+		$ancestors->each(fn ($ancestor, $_) => $this->singleAndSave($ancestor));
 
 		return $no_error;
 	}

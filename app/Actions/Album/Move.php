@@ -2,11 +2,16 @@
 
 namespace App\Actions\Album;
 
+use App\Actions\Album\Extensions\Ancestors;
 use App\Models\Album;
 use App\Models\Logs;
+use Illuminate\Support\Collection as BaseCollection;
+use Illuminate\Support\Facades\DB;
 
 class Move extends UpdateTakestamps
 {
+	use Ancestors;
+
 	/**
 	 * @param string $albumID
 	 *
@@ -31,19 +36,35 @@ class Move extends UpdateTakestamps
 
 		$albums = Album::whereIn('id', $albumIDs)->get();
 		$no_error = true;
-		$oldParentID = null;
+		$oldParentID = new BaseCollection();
 
 		foreach ($albums as $album) {
-			$oldParentID = $album->parent_id;
+			$oldParentID->push(['id' => $album->parent_id, 'min' => $album->min_takestamp, 'max' => $album->max_takestamp]);
+
 			$album->parent_id = $albumID;
 			$no_error &= $album->save();
 		}
+		// Tree should be updated by itself here.
 
-		if ($no_error && $oldParentID !== null) {
-			$oldParentAlbum = $this->albumFactory->make($oldParentID);
-			// update takestamps of old place
-			$no_error &= $this->singleAndSave($oldParentAlbum);
-		}
+		$sql = Album::select('_lft', '_rgt', 'min_takestamps', 'max_takestamps')
+			->where(DB::raw('0')); // initialize with 0.
+
+		$oldParentID->eachSpread(function ($id, $min, $max) use ($sql) {
+			$sql->orWhere(fn ($q) => $q
+				// this smartly select all the ancestors
+				->where('id', '=', $id)
+				// this smartly select only the one that need to be updated:
+				// min is greater OR EQUAL than the min of the deleted album
+				// max is smaller OR EQUAL than the max of the deleted album
+				//? the EQUAL is the condition we are interested in, bigger/smaller is just for safety
+				->where(fn ($q) => $q
+					->where('min_takestamp', '>=', $min)
+					->orWhere('max_takestamp', '<=', $max)));
+		});
+		$ancestorsList = $sql->get();
+
+		$ancestors = $this->getAncestorsOutdated($ancestorsList, '>=', '<=');
+		$ancestors->each(fn ($ancestor, $_) => $this->singleAndSave($ancestor));
 
 		if ($no_error && $album_master !== null) {
 			// updat owner
@@ -52,6 +73,9 @@ class Move extends UpdateTakestamps
 
 			// update takestamps parent of new place
 			$no_error &= $this->singleAndSave($album_master);
+
+			// propagate to ancestors (only to the necessary ones)
+			$this->ancestors($album_master);
 		}
 
 		return $no_error;

@@ -28,20 +28,16 @@ class Prepare
 	public function do(BaseCollection $albums)
 	{
 		$return = [];
-		foreach ($albums->keys() as $key) {
-			/**
-			 * @var Album
-			 */
-			$album = $albums[$key];
+		foreach ($albums as $_ => $album) {
 			$album_array = $album->toReturnArray();
 
 			if (AccessControl::is_logged_in()) {
-				$album_array['owner'] = $albums[$key]->owner->name();
+				$album_array['owner'] = $album->owner->name();
 			}
 
-			if ($this->readAccessFunctions->album($albums[$key]) === 1) {
-				$thumbs = $albums[$key]->get_thumbs();
-				$albums[$key]->set_thumbs($album_array, $thumbs);
+			if ($this->readAccessFunctions->album($album) === 1) {
+				$thumbs = $album->get_thumbs();
+				$album->set_thumbs($album_array, $thumbs);
 			}
 
 			// Add to return
