@@ -48,7 +48,7 @@ trait ImageEditing
 	{
 		// we need imagick to do the job
 		if (!Configs::hasImagick()) {
-			Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to failed: Imagick not installed.');
+			Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file failed: Imagick not installed.');
 
 			return '';
 		}
@@ -68,7 +68,6 @@ trait ImageEditing
 		$tmp_file = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to ' . $tmp_file);
 
-		$resWidth = $resHeight = 0;
 		$resWidth = $resHeight = 0;
 		$width = $photo->width;
 		$height = $photo->height;
@@ -117,7 +116,7 @@ trait ImageEditing
 
 		$uploadFolder = Storage::path(strtolower($pathType) . '/');
 		if (Helpers::hasPermissions($uploadFolder) === false) {
-			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of medium-photo, because ' . $uploadFolder . ' is missing or not readable and writable.');
+			Logs::notice(__METHOD__, __LINE__, 'Skipped creation of ' . $type . '-photo, because ' . $uploadFolder . ' is missing or not readable and writable.');
 
 			return false;
 		}

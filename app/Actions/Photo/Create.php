@@ -87,7 +87,7 @@ class Create
 		// Calculate checksum
 		$this->photo->checksum = $this->checksum($this->tmp_name);
 		$duplicate = $this->get_duplicate($this->photo->checksum);
-		$exists = $duplicate !== null;
+		$exists = ($duplicate !== null);
 
 		/*
 		 * ! From here we need to use a Strategy depending if we have
