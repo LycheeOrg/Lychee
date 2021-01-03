@@ -3,12 +3,14 @@
 namespace App\Models\Extensions;
 
 use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\Albums\Extensions\PublicViewable;
 use App\Models\Configs;
 use App\Models\Photo;
 
 trait AlbumGetters
 {
 	use CustomSort;
+	use PublicViewable;
 
 	/**
 	 * given an Album return the sorting column & order for the pictures or the default ones.
@@ -89,13 +91,10 @@ trait AlbumGetters
 	{
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
-		$sql = $this->children();
 
+		$sql = $this->children()->getQuery();
 		//? apply safety filter : Do not leak albums which are not visible
-		$forbiddenId = resolve(PublicIds::class)->getNotAccessible();
-		if ($forbiddenId != null && !$forbiddenId->isEmpty()) {
-			$sql = $sql->whereNotIn('id', $forbiddenId);
-		}
+		$sql = $this->publicViewable($sql);
 
 		return $this->customSort($sql, $sortingCol, $sortingOrder);
 	}

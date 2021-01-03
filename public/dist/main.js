@@ -2519,7 +2519,7 @@ contextMenu.buildList = function (lists, exclude, action) {
 };
 
 contextMenu.albumTitle = function (albumID, e) {
-	api.post("Albums::get", {}, function (data) {
+	api.post("Albums::tree", {}, function (data) {
 		var items = [];
 
 		items = items.concat({ title: lychee.locale["ROOT"], disabled: albumID === false, fn: function fn() {
@@ -2722,7 +2722,7 @@ contextMenu.move = function (IDs, e, callback) {
 
 	var items = [];
 
-	api.post("Albums::get", {}, function (data) {
+	api.post("Albums::tree", {}, function (data) {
 		var addItems = function addItems(albums) {
 			// Disable all children
 			// It's not possible to move us into them

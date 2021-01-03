@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use AccessControl;
 use App\Assets\Helpers;
 use App\SmartAlbums\TagAlbum;
 
@@ -55,7 +56,9 @@ trait AlbumCast
 		}
 
 		if (!empty($this->showtags) || !$this->smart) {
-			$return['owner'] = $this->owner->name();
+			if (AccessControl::is_logged_in()) {
+				$return['owner'] = $this->owner->name();
+			}
 		}
 
 		return $return;

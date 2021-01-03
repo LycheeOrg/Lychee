@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\DB;
 class PublicIds
 {
 	/** @var BaseCollection */
-	private $white_list = null;
+	private $authorized_list = null;
 	/** @var BaseCollection */
-	private $black_list = null;
+	private $forbidden_list = null;
 
 	public function __construct()
 	{
@@ -92,22 +92,22 @@ class PublicIds
 				$sql = $sql->orWhereBetween('_lft', [$alb->_lft, $alb->_rgt]);
 			}
 
-			$this->black_list = $sql->pluck('id');
+			$this->forbidden_list = $sql->pluck('id');
 
-			return $this->black_list;
+			return $this->forbidden_list;
 		}
 
-		$this->black_list = new BaseCollection();
+		$this->forbidden_list = new BaseCollection();
 
-		return $this->black_list;
+		return $this->forbidden_list;
 	}
 
 	private function initPublicAlbumId(): BaseCollection
 	{
 		$id_not_accessible = $this->getNotAccessible();
-		$this->white_list = Album::select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
+		$this->authorized_list = Album::select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
 
-		return $this->white_list;
+		return $this->authorized_list;
 	}
 
 	/*------------------------------------------------------------------------------- */
@@ -120,7 +120,7 @@ class PublicIds
 	 */
 	public function getPublicAlbumsId(): BaseCollection
 	{
-		return $this->white_list ?? $this->initPublicAlbumId();
+		return $this->authorized_list ?? $this->initPublicAlbumId();
 	}
 
 	/**
@@ -130,12 +130,15 @@ class PublicIds
 	 */
 	public function getNotAccessible(): BaseCollection
 	{
-		return $this->black_list ?? $this->initNotAccessible();
+		return $this->forbidden_list ?? $this->initNotAccessible();
 	}
 
+	/**
+	 * We need to refresh PublicIds in our test suite.
+	 */
 	public function refresh()
 	{
-		$this->white_list = null;
-		$this->black_list = null;
+		$this->authorized_list = null;
+		$this->forbidden_list = null;
 	}
 }

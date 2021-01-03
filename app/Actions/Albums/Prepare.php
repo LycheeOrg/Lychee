@@ -35,6 +35,7 @@ class Prepare
 				$album_array['owner'] = $album->owner->name();
 			}
 
+			// TODO figure out if this test is necessary (especially the share with part)
 			if ($this->readAccessFunctions->album($album) === 1) {
 				$thumbs = $album->get_thumbs();
 				$album->set_thumbs($album_array, $thumbs);

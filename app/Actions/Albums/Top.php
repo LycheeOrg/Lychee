@@ -3,6 +3,7 @@
 namespace App\Actions\Albums;
 
 use AccessControl;
+use App\Actions\Albums\Extensions\TopQuery;
 use App\Models\Configs;
 use App\Models\Extensions\CustomSort;
 use Illuminate\Support\Collection as BaseCollection;
@@ -48,9 +49,7 @@ class Top
 
 		if (AccessControl::is_logged_in()) {
 			$id = AccessControl::id();
-			list($return['albums'], $return['shared_albums']) = $albumCollection->partition(function ($album) use ($id) {
-				return $album->owner_id == $id;
-			});
+			list($return['albums'], $return['shared_albums']) = $albumCollection->partition(fn ($album) => $album->owner_id == $id);
 		} else {
 			$return['albums'] = $albumCollection;
 		}

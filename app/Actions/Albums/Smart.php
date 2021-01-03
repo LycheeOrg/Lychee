@@ -4,6 +4,7 @@ namespace App\Actions\Albums;
 
 use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\Albums\Extensions\TopQuery;
 use App\Factories\SmartFactory;
 use App\ModelFunctions\SymLinkFunctions;
 

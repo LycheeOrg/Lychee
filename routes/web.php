@@ -59,6 +59,7 @@ Route::post('/api/webauthn::delete', [Administration\WebAuthController::class, '
 
 Route::post('/api/Albums::get', [AlbumsController::class, 'get']);
 Route::post('/api/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
+Route::post('/api/Albums::tree', [AlbumsController::class, 'tree']);
 
 Route::post('/api/Album::get', [AlbumController::class, 'get'])->middleware('read');
 Route::post('/api/Album::getPositionData', [AlbumController::class, 'getPositionData'])->middleware('read');

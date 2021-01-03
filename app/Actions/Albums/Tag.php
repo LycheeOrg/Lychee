@@ -2,6 +2,7 @@
 
 namespace App\Actions\Albums;
 
+use App\Actions\Albums\Extensions\TopQuery;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\CustomSort;

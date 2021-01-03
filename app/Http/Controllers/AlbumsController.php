@@ -8,6 +8,7 @@ use App\Actions\Albums\PositionData;
 use App\Actions\Albums\Prepare;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
+use App\Actions\Albums\Tree;
 use App\Models\Configs;
 
 class AlbumsController extends Controller
@@ -36,6 +37,14 @@ class AlbumsController extends Controller
 		$return['smartalbums'] = $smart->get();
 
 		return $return;
+	}
+
+	/**
+	 * @return array as the full tree of visible albums
+	 */
+	public function tree(Tree $tree)
+	{
+		return $tree->get();
 	}
 
 	/**
