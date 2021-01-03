@@ -74,9 +74,9 @@ trait AlbumGetters
 		$sql = $this->get_all_photos();
 
 		//? apply safety filter : Do not leak pictures which are not ours
-		$publicAlbumsId = resolve(PublicIds::class)->getPublicAlbumsId();
-		if ($publicAlbumsId != null && !$publicAlbumsId->isEmpty()) {
-			$sql = $sql->whereIn('album_id', $publicAlbumsId);
+		$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
+		if ($forbiddenID != null && !$forbiddenID->isEmpty()) {
+			$sql = $sql->whereNotIn('album_id', $forbiddenID);
 		}
 
 		return $sql->orderBy('star', 'DESC')
@@ -92,7 +92,7 @@ trait AlbumGetters
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
-		$sql = $this->children()->getQuery();
+		$sql = $this->children()->with('owner')->getQuery();
 		//? apply safety filter : Do not leak albums which are not visible
 		$sql = $this->publicViewable($sql);
 
