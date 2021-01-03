@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 class Unlock extends Action
 {
 	/**
-	 * Provided an password and an album, check if the album can be
+	 * Provided a password and an album, check if the album can be
 	 * unlocked. If yes, unlock all albums with the same password.
 	 *
 	 * @param string $albumID
@@ -42,7 +42,7 @@ class Unlock extends Action
 	}
 
 	/**
-	 * Provided an password, add all the albums that the password unlocks.
+	 * Provided a password, add all the albums that the password unlocks.
 	 */
 	public function propagate(string $password): void
 	{

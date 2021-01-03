@@ -27,7 +27,7 @@ class PublicIds
 	 */
 
 	/**
-	 * Build a query that remove all non public albums
+	 * Build a query that removes all non public albums
 	 * or public albums which are hidden
 	 * or public albums with a password.
 	 *

@@ -4,6 +4,13 @@ namespace App\Actions\Photo;
 
 use App\Models\Photo;
 
+/**
+ * This class is used to set a property of a SINGLE photo.
+ * As a result, the do function takes as input an photoID.
+ *
+ * do will crash if photoID is not correct, throwing an exception Model not found.
+ * This is intended behaviour.
+ */
 class Setter
 {
 	public $property;
