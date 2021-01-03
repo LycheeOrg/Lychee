@@ -89,7 +89,14 @@ trait AlbumGetters
 	{
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
+		$sql = $this->children();
 
-		return $this->customSort($this->children(), $sortingCol, $sortingOrder);
+		//? apply safety filter : Do not leak albums which are not visible
+		$forbiddenId = resolve(PublicIds::class)->getNotAccessible();
+		if ($forbiddenId != null && !$forbiddenId->isEmpty()) {
+			$sql = $sql->whereNotIn('id', $forbiddenId);
+		}
+
+		return $this->customSort($sql, $sortingCol, $sortingOrder);
 	}
 }

@@ -24,7 +24,16 @@ class SetPublic extends Action
 		$album->downloadable = ($values['downloadable'] === '1' ? 1 : 0);
 		$album->share_button_visible = ($values['share_button_visible'] === '1' ? 1 : 0);
 
-		// Set public
+		// Set password if provided
+		if (isset($values['password'])) {
+			if (strlen($values['password']) > 0) {
+				$album->password = bcrypt($values['password']);
+			} else {
+				$album->password = null;
+			}
+		}
+
+		// Set Public
 		if (!$album->save()) {
 			return false;
 		}
@@ -32,17 +41,6 @@ class SetPublic extends Action
 		// Reset permissions for photos
 		if ($album->public == 1) {
 			$album->photos()->update(['public' => '0']);
-		}
-
-		if (isset($values['password'])) {
-			if (strlen($values['password']) > 0) {
-				$album->password = bcrypt($values['password']);
-			} else {
-				$album->password = null;
-			}
-			if (!$album->save()) {
-				return false;
-			}
 		}
 
 		return true;

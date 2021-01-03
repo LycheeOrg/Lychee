@@ -74,8 +74,7 @@ trait PhotoCast
 
 		$photoUrl2x = '';
 		if ($photoUrl !== '') {
-			$photoUrl2x = explode('.', $photoUrl);
-			$photoUrl2x = $photoUrl2x[0] . '@2x.' . $photoUrl2x[1];
+			$photoUrl2x = Helpers::ex2x($photoUrl);
 		}
 
 		if ($this->small != '') {
@@ -94,8 +93,7 @@ trait PhotoCast
 		$photo['thumbUrl'] = Storage::url('thumb/' . $this->thumbUrl);
 
 		if ($this->thumb2x == '1') {
-			$thumbUrl2x = explode('.', $this->thumbUrl);
-			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+			$thumbUrl2x = Helpers::ex2x($this->thumbUrl);
 			$photo['thumb2x'] = Storage::url('thumb/' . $thumbUrl2x);
 		} else {
 			$photo['thumb2x'] = '';

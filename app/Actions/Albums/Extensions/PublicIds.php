@@ -66,13 +66,16 @@ class PublicIds
 			return Album::where('owner_id', '<>', AccessControl::id())
 				// shared are accessible
 				->whereNotIn('id', $shared_ids)
+				// unlocked albums
+				->whereNotIn('id', AccessControl::get_visible_albums())
 				// remove NOT public
 				->where(fn ($q) => $this->notPublicNotViewable($q))
 				->get();
 		}
 
 		// remove NOT public
-		return Album::where(fn ($q) => $this->notPublicNotViewable($q))
+		return Album::whereNotIn('id', AccessControl::get_visible_albums())
+			->where(fn ($q) => $this->notPublicNotViewable($q))
 			->get();
 	}
 

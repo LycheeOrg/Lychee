@@ -224,6 +224,15 @@ class SessionFunctions
 		Session::put('visible_albums', $visible_albums);
 	}
 
+	public function get_visible_albums(): array
+	{
+		if (Session::has('visible_albums')) {
+			return explode('|', Session::get('visible_albums'));
+		}
+
+		return [];
+	}
+
 	/**
 	 * Log out the current user.
 	 */
