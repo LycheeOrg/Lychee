@@ -37,7 +37,6 @@ class Legacy
 		// LEGACY STUFF
 		$configs = Configs::get();
 
-		// dd(Configs::get_value('version', '040000'), Configs::get('version', '040000') <= '040008');
 		if (Configs::get_value('version', '040000') <= '040008') {
 			// Check if login credentials exist and login if they don't
 			if (
