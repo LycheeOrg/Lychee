@@ -422,20 +422,4 @@ class AlbumsUnitTest
 
 		return $response;
 	}
-
-	/**
-	 * Test position data (Album).
-	 */
-	protected function AlbumRebuildTakestamps(
-		int $code = 200,
-		string $result = 'true'
-	) {
-		$response = $this->testCase->get('/Albums/RebuildTakestamps');
-		$response->assertStatus($code);
-		if ($result != 'true') {
-			$response->assertSee($result, false);
-		}
-
-		return $response;
-	}
 }

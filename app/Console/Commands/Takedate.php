@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Album\UpdateTakestamps;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
@@ -29,7 +28,7 @@ class Takedate extends Command
 	 *
 	 * @return mixed
 	 */
-	public function handle(Extractor $metadataExtractor, UpdateTakestamps $updateTakestamps)
+	public function handle(Extractor $metadataExtractor)
 	{
 		$argument = $this->argument('nb');
 		$from = $this->argument('from');
@@ -52,7 +51,6 @@ class Takedate extends Command
 					$photo->takestamp = $info['takestamp'];
 					if ($photo->save()) {
 						$this->line($i . ': Takestamp updated for ' . $photo->title);
-						$updateTakestamps->singleAndSave($photo->album);
 					} else {
 						$this->line($i . ': Failed to update takestamp for ' . $photo->title);
 					}

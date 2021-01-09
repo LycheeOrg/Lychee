@@ -124,7 +124,6 @@ class Create
 			$res = $this->livePhotoPartner->id;
 		} else {
 			$res = $this->save($this->photo);
-			$this->updateParentAlbum();
 		}
 
 		if ($delete_imported && !is_uploaded_file($this->tmp_name) && ($exists || Configs::get_value('import_via_symlink', '0') !== '1')) {

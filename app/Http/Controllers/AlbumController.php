@@ -20,7 +20,6 @@ use App\Actions\Album\SetShowTags;
 use App\Actions\Album\SetSorting;
 use App\Actions\Album\SetTitle;
 use App\Actions\Album\Unlock;
-use App\Actions\Album\UpdateTakestamps;
 use App\Assets\Helpers;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
@@ -308,19 +307,5 @@ class AlbumController extends Controller
 		$albumIDs = explode(',', $request['albumIDs']);
 
 		return $archive->do($albumIDs);
-	}
-
-	/**
-	 * Rebuild Takestamps.
-	 *
-	 * @param UpdateTakestamps $updateTakestamps
-	 *
-	 * @return string
-	 */
-	public function RebuildTakestamps(UpdateTakestamps $updateTakestamps)
-	{
-		$updateTakestamps->all();
-
-		return 'true';
 	}
 }

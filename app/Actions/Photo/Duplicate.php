@@ -2,7 +2,6 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Album\UpdateTakestamps;
 use App\Actions\Photo\Extensions\Save;
 use App\Assets\Helpers;
 use App\Factories\AlbumFactory;
@@ -13,12 +12,10 @@ class Duplicate
 	use Save;
 
 	private $albumFactory;
-	private $updateTakestamps;
 
-	public function __construct(AlbumFactory $albumFactory, UpdateTakestamps $updateTakestamps)
+	public function __construct(AlbumFactory $albumFactory)
 	{
 		$this->albumFactory = $albumFactory;
-		$this->updateTakestamps = $updateTakestamps;
 	}
 
 	public function do(array $photoIds, ?string $albumID)
@@ -65,11 +62,6 @@ class Duplicate
 			$duplicate->livePhotoUrl = $photo->livePhotoUrl;
 			$duplicate->livePhotoChecksum = $photo->livePhotoChecksum;
 			$this->save($duplicate);
-		}
-
-		if ($duplicate->album_id != null) {
-			$parent = $this->albumFactory->make($duplicate->album_id);
-			$this->updateTakestamps->singleAndSave($parent);
 		}
 	}
 }
