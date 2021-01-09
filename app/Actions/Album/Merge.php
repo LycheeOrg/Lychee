@@ -6,7 +6,7 @@ use App\Models\Album;
 use App\Models\Logs;
 use App\Models\Photo;
 
-class Merge
+class Merge extends Action
 {
 	/**
 	 * @param string $albumID

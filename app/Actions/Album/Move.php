@@ -5,7 +5,7 @@ namespace App\Actions\Album;
 use App\Models\Album;
 use App\Models\Logs;
 
-class Move
+class Move extends Action
 {
 	/**
 	 * @param string $albumID
