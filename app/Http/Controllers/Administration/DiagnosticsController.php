@@ -87,7 +87,7 @@ class DiagnosticsController extends Controller
 	 */
 	public function get_size()
 	{
-		$infos = ['You must be logged to see this.'];
+		$infos = ['You must be logged in to see this.'];
 		if (AccessControl::is_admin() || AccessControl::noLogin()) {
 			$infos = resolve(Space::class)->get();
 		}
