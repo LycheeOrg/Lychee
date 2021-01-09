@@ -39,7 +39,11 @@ class DecodeGpsLocations extends Command
 	 */
 	public function handle()
 	{
-		$photos = Photo::whereNotNull('latitude')->whereNotNull('longitude')->whereNull('location')
+		// Update location if field 'location' is null or empty
+		$photos = Photo::whereNotNull('latitude')->whereNotNull('longitude')->where(
+			function ($query) {
+				$query->where('location', '=', '')->orWhereNull('location');
+			})
 			->get();
 
 		if (count($photos) == 0) {
