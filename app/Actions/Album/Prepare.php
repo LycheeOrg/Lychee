@@ -27,6 +27,10 @@ class Prepare
 		if ($album->smart) {
 			$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
 			$album->setAlbumIDs($publicAlbums);
+		} else {
+			// we only do this when not in smart mode (i.e. no sub albums)
+			// that way we limit the number of times we have to query.
+			resolve(PublicIds::class)->setAlbum($album);
 		}
 		$return = $album->toReturnArray();
 

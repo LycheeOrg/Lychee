@@ -23,7 +23,7 @@ class Unlock extends Action
 		}
 
 		$album = $this->albumFactory->make($albumid);
-		if ($album->public == 1) {
+		if ($album->is_public()) {
 			if ($album->password === '') {
 				return true;
 			}

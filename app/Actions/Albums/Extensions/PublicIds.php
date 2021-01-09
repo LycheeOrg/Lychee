@@ -11,19 +11,19 @@ use Illuminate\Support\Facades\DB;
 class PublicIds
 {
 	/** @var BaseCollection */
-	private $authorized_list = null;
-	/** @var BaseCollection */
 	private $forbidden_list = null;
+
+	/** @var Album */
+	private $parent = null;
 
 	public function __construct()
 	{
 		$this->initNotAccessible();
-		$this->initPublicAlbumId();
 	}
 
 	/*------------------------------------------------------------------------------- */
 	/**
-	 * Initialize.
+	 * Queries.
 	 */
 
 	/**
@@ -46,6 +46,19 @@ class PublicIds
 			->orWhere(fn ($q) => $q->where('public', '=', '1')->where('password', '<>', ''));
 	}
 
+	private function init(): Builder
+	{
+		// unlocked albums
+		$query = Album::whereNotIn('id', AccessControl::get_visible_albums());
+
+		if ($this->parent == null) {
+			return $query;
+		}
+
+		// add descendant constraints.
+		return $query->where('_lft', '>', $this->parent->_lft)->where('_rgt', '<', $this->parent->_rgt);
+	}
+
 	/**
 	 * Return a collection of Album that are not directly accessible by visibility criteria
 	 * ! we do not include password protected albums from other users.
@@ -63,24 +76,29 @@ class PublicIds
 				->where('user_id', '=', AccessControl::id())
 				->pluck('album_id');
 
-			return Album::where('owner_id', '<>', AccessControl::id())
+			return $this->init()
+				->where('owner_id', '<>', AccessControl::id())
 				// shared are accessible
 				->whereNotIn('id', $shared_ids)
-				// unlocked albums
-				->whereNotIn('id', AccessControl::get_visible_albums())
 				// remove NOT public
 				->where(fn ($q) => $this->notPublicNotViewable($q))
 				->get();
 		}
 
 		// remove NOT public
-		return Album::whereNotIn('id', AccessControl::get_visible_albums())
-			->where(fn ($q) => $this->notPublicNotViewable($q))
+		return $this->init()->where(fn ($q) => $this->notPublicNotViewable($q))
 			->get();
 	}
 
-	private function initNotAccessible(): BaseCollection
+	/*------------------------------------------------------------------------------- */
+
+	/**
+	 * Initializers.
+	 */
+	private function initNotAccessible(?Album $parent = null): BaseCollection
 	{
+		$this->parent = $parent;
+
 		/**
 		 * @var BaseCollection
 		 */
@@ -102,25 +120,26 @@ class PublicIds
 		return $this->forbidden_list;
 	}
 
-	private function initPublicAlbumId(): BaseCollection
-	{
-		$id_not_accessible = $this->getNotAccessible();
-		$this->authorized_list = Album::select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
-
-		return $this->authorized_list;
-	}
-
 	/*------------------------------------------------------------------------------- */
 	/**
 	 * Getters.
 	 */
 
 	/**
+	 * This function must only be called from ROOT. In other words for:
+	 * => smart albums
+	 * => search
+	 * => map
+	 * => random
+	 * => RSS.
+	 *
 	 * @return Collection[int] of all recursive albums ID accessible by the current user from the top level
 	 */
 	public function getPublicAlbumsId(): BaseCollection
 	{
-		return $this->authorized_list ?? $this->initPublicAlbumId();
+		$id_not_accessible = $this->getNotAccessible(null);
+
+		return Album::select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
 	}
 
 	/**
@@ -138,7 +157,20 @@ class PublicIds
 	 */
 	public function refresh()
 	{
-		$this->authorized_list = null;
 		$this->forbidden_list = null;
+	}
+
+	/*------------------------------------------------------------------------------- */
+
+	/**
+	 * Setter.
+	 */
+	public function setAlbum(Album $album)
+	{
+		if ($this->parent == $album) {
+			return;
+		}
+
+		$this->initNotAccessible($album);
 	}
 }
