@@ -50,7 +50,7 @@ class PhotoEditorController extends Controller
 			return 'false';
 		}
 
-		if ($this->isVideo($photo)) {
+		if ($photo->isVideo()) {
 			Logs::error(__METHOD__, __LINE__, 'Trying to rotate a video');
 
 			return 'false';

@@ -2,8 +2,12 @@
 
 namespace App\Models\Extensions;
 
+use App\Actions\Photo\Extensions\Constants;
+
 trait PhotoBooleans
 {
+	use Constants;
+
 	/**
 	 * Check if a photo already exists in the database via its checksum.
 	 *
@@ -24,6 +28,17 @@ trait PhotoBooleans
 			$sql = $sql->where('id', '<>', $photoID);
 		}
 
-		return ($sql->count() == 0) ? false : $sql->first();
+		return $sql->first() ?? false;
+	}
+
+	/**
+	 * We are checking if the beginning of the type string is
+	 * video.
+	 *
+	 * type contains the mime informations
+	 */
+	public function isVideo(): bool
+	{
+		return $this->isValidVideoType($this->type);
 	}
 }

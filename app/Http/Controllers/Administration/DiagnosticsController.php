@@ -44,8 +44,8 @@ class DiagnosticsController extends Controller
 			$infos = resolve(Info::class)->get();
 			$configs = resolve(Configuration::class)->get();
 		} else {
-			$infos = ['You must be logged to see this.'];
-			$configs = ['You must be logged to see this.'];
+			$infos = ['You must be logged in to see this.'];
+			$configs = ['You must be logged in to see this.'];
 		}
 
 		return [

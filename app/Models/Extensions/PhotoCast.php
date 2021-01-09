@@ -193,12 +193,11 @@ trait PhotoCast
 	 */
 	public function downgrade(array &$return)
 	{
-		if (strpos($this->type, 'video') === 0) {
-			if ($return['medium2x'] != '') {
-				$return['url'] = '';
-			} elseif ($return['medium'] != '') {
-				$return['url'] = '';
-			}
+		if (
+			$this->isVideo() === false &&
+			($return['medium2x'] != '' || $return['medium'] != '')
+		) {
+			$return['url'] = '';
 		}
 	}
 }

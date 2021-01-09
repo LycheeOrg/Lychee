@@ -91,7 +91,7 @@ trait VideoEditing
 	}
 
 	/**
-	 * Creates smaller copies of Photo.
+	 * Extract the video part of the a Livephoto.
 	 *
 	 * @param Photo  $photo
 	 * @param string $type

@@ -6,7 +6,7 @@ use App\Models\Photo;
 
 /**
  * This class is used to toggle a boolean property of a SINGLE photo.
- * As a result, the do function takes as input an photoID.
+ * As a result, the do function takes as input a photoID.
  *
  * do will crash if photoID is not correct, throwing an exception Model not found.
  * This is intended behaviour.

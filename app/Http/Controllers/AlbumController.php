@@ -117,7 +117,7 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Provided a title and an albumIDs, change the title of the albums.
+	 * Provided a title and albumIDs, change the title of the albums.
 	 *
 	 * @param Request $request
 	 *

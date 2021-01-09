@@ -2,8 +2,6 @@
 
 namespace App\Actions\Photo\Extensions;
 
-use App\Models\Photo;
-
 trait Constants
 {
 	/**
@@ -115,13 +113,5 @@ trait Constants
 	public function getValidExtensions(): array
 	{
 		return $this->validExtensions;
-	}
-
-	/**
-	 * Sometimes we just need to know if a Photo is a video.
-	 */
-	public function isVideo(Photo $photo): bool
-	{
-		return $this->isValidVideoType($photo->type);
 	}
 }

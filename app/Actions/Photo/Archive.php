@@ -135,6 +135,12 @@ class Archive
 		$prefix_path = $photo->type == 'raw' ? 'raw/' : 'big/';
 
 		// determine the file based on given size
+		if ($photo->isVideo() === false) {
+			$fileName = $photo->url;
+		} else {
+			$fileName = $photo->thumbUrl;
+		}
+
 		switch ($kind_input) {
 			case 'FULL':
 				$path = $prefix_path . $photo->url;
@@ -145,37 +151,19 @@ class Archive
 				$kind = '';
 				break;
 			case 'MEDIUM2X':
-				if ($this->isVideo($photo) === false) {
-					$fileName = $photo->url;
-				} else {
-					$fileName = $photo->thumbUrl;
-				}
 				$path = 'medium/' . Helpers::ex2x($fileName);
 				$kind = '-' . $photo->medium2x;
 				break;
 			case 'MEDIUM':
-				if ($this->isVideo($photo) === false) {
-					$path = 'medium/' . $photo->url;
-				} else {
-					$path = 'medium/' . $photo->thumbUrl;
-				}
+				$path = 'medium/' . $fileName;
 				$kind = '-' . $photo->medium;
 				break;
 			case 'SMALL2X':
-				if ($this->isVideo($photo) === false) {
-					$fileName = $photo->url;
-				} else {
-					$fileName = $photo->thumbUrl;
-				}
 				$path = 'small/' . Helpers::ex2x($fileName);
 				$kind = '-' . $photo->small2x;
 				break;
 			case 'SMALL':
-				if ($this->isVideo($photo) === false) {
-					$path = 'small/' . $photo->url;
-				} else {
-					$path = 'small/' . $photo->thumbUrl;
-				}
+				$path = 'small/' . $fileName;
 				$kind = '-' . $photo->small;
 				break;
 			case 'THUMB2X':
