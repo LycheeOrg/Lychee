@@ -9,9 +9,11 @@ class PublicAlbum extends SmartAlbum
 {
 	public $id = 'public';
 
-	public function get_title()
+	public function __construct()
 	{
-		return 'public';
+		parent::__construct();
+
+		$this->title = 'public';
 	}
 
 	public function get_photos(): Builder

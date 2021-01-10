@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Builder;
 
 class StarredAlbum extends SmartAlbum
 {
-	public $id = 'starred';
-
-	public function get_title()
+	public function __construct()
 	{
-		return 'starred';
+		parent::__construct();
+
+		$this->title = 'starred';
 	}
 
 	public function get_photos(): Builder

@@ -13,11 +13,6 @@ class SmartAlbum extends Album
 	/**
 	 * @var string
 	 */
-	public $title = '';
-
-	/**
-	 * @var string
-	 */
 	public $description = '';
 
 	/**
@@ -53,11 +48,6 @@ class SmartAlbum extends Album
 		$this->albumIds = new BaseCollection();
 		$this->created_at = new Carbon();
 		$this->smart = true;
-	}
-
-	public function get_title()
-	{
-		return 'undefined';
 	}
 
 	/**

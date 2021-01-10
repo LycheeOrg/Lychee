@@ -10,9 +10,11 @@ class RecentAlbum extends SmartAlbum
 {
 	public $id = 'recent';
 
-	public function get_title()
+	public function __construct()
 	{
-		return 'recent';
+		parent::__construct();
+
+		$this->title = 'recent';
 	}
 
 	public function get_photos(): Builder

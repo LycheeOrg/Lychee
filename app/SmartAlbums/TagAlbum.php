@@ -9,11 +9,6 @@ class TagAlbum extends SmartAlbum
 {
 	public $table = 'albums';
 
-	public function get_title()
-	{
-		return $this->title;
-	}
-
 	public function get_photos(): Builder
 	{
 		$sql = Photo::query();

@@ -9,9 +9,11 @@ class UnsortedAlbum extends SmartAlbum
 {
 	public $id = 'unsorted';
 
-	public function get_title()
+	public function __construct()
 	{
-		return 'unsorted';
+		parent::__construct();
+
+		$this->title = 'unsorted';
 	}
 
 	public function get_photos(): Builder
