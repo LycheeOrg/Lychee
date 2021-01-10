@@ -5,6 +5,7 @@ namespace App\Actions\Album;
 use App\Models\Album;
 use App\Models\Logs;
 use App\Models\Photo;
+use Illuminate\Support\Facades\DB;
 
 class Merge extends Action
 {
@@ -22,15 +23,15 @@ class Merge extends Action
 			return false;
 		}
 
-		// Merge Photos
 		$no_error = true;
-		$no_error &= Photo::whereIn('album_id', $albumIDs)->update([
-			'album_id' => $album_master->id,
-		]);
+		// Merge Photos
+		if (DB::table('phtoos')->whereIn('album_id', $albumIDs)->count() > 0) {
+			$no_error &= Photo::whereIn('album_id', $albumIDs)->update(['album_id' => $album_master->id]);
+		}
 
 		// Merge Sub-albums
 		// ! we have to do it via Model::save() in order to not break the tree
-		$albums = Album::whereIn('parent_id', $albumIDs);
+		$albums = Album::whereIn('parent_id', $albumIDs)->get();
 		foreach ($albums as $album) {
 			$album->parent_id = $album_master->id;
 			$album->save();
@@ -38,7 +39,7 @@ class Merge extends Action
 
 		// now we delete the albums
 		// ! we have to do it via Model::delete() in order to not break the tree
-		$albums = Album::whereIn('id', $albumIDs);
+		$albums = Album::whereIn('id', $albumIDs)->get();
 		foreach ($albums as $album) {
 			$album->delete();
 		}
