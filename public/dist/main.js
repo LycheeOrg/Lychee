@@ -1818,7 +1818,8 @@ albums._createSmartAlbums = function (data) {
 		data.unsorted = {
 			id: "unsorted",
 			title: lychee.locale["UNSORTED"],
-			sysdate: data.unsorted.num + " " + lychee.locale["NUM_PHOTOS"],
+			// sysdate: data.unsorted.num + " " + lychee.locale["NUM_PHOTOS"],
+			sysdate: "",
 			unsorted: "1",
 			thumbs: data.unsorted.thumbs,
 			thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
@@ -1830,7 +1831,8 @@ albums._createSmartAlbums = function (data) {
 		data.starred = {
 			id: "starred",
 			title: lychee.locale["STARRED"],
-			sysdate: data.starred.num + " " + lychee.locale["NUM_PHOTOS"],
+			sysdate: "",
+			//			sysdate: data.starred.num + " " + lychee.locale["NUM_PHOTOS"],
 			star: "1",
 			thumbs: data.starred.thumbs,
 			thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
@@ -1842,7 +1844,8 @@ albums._createSmartAlbums = function (data) {
 		data.public = {
 			id: "public",
 			title: lychee.locale["PUBLIC"],
-			sysdate: data.public.num + " " + lychee.locale["NUM_PHOTOS"],
+			sysdate: "",
+			//			sysdate: data.public.num + " " + lychee.locale["NUM_PHOTOS"],
 			public: "1",
 			thumbs: data.public.thumbs,
 			thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
@@ -1855,7 +1858,8 @@ albums._createSmartAlbums = function (data) {
 		data.recent = {
 			id: "recent",
 			title: lychee.locale["RECENT"],
-			sysdate: data.recent.num + " " + lychee.locale["NUM_PHOTOS"],
+			sysdate: "",
+			//			sysdate: data.recent.num + " " + lychee.locale["NUM_PHOTOS"],
 			recent: "1",
 			thumbs: data.recent.thumbs,
 			thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
