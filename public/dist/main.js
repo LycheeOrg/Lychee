@@ -1487,14 +1487,24 @@ album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
 	// Get title of first album
 	if (parseInt(albumID, 10) === 0) {
 		title = lychee.locale["ROOT"];
-	} else if (albums.json) title = albums.getByID(albumID).title;
+	} else if (albums.json) {
+		album1 = albums.getByID(albumID);
+		if (album1) {
+			title = album1.title;
+		}
+	}
 
 	// Fallback for first album without a title
 	if (title === "") title = lychee.locale["UNTITLED"];
 
 	if (albumIDs.length === 1) {
 		// Get title of second album
-		if (albums.json) sTitle = albums.getByID(albumIDs[0]).title;
+		if (albums.json) {
+			album2 = albums.getByID(albumIDs[0]);
+			if (album2) {
+				sTitle = album2.title;
+			}
+		}
 
 		// Fallback for second album without a title
 		if (sTitle === "") sTitle = lychee.locale["UNTITLED"];
