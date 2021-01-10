@@ -1872,7 +1872,7 @@ albums._createSmartAlbums = function (data) {
 			data[albumName] = {
 				id: albumData.id,
 				title: albumName,
-				sysdate: albumData.num + " " + lychee.locale["NUM_PHOTOS"],
+				sysdate: "",
 				tag_album: "1",
 				thumbs: albumData.thumbs,
 				thumbs2x: albumData.thumbs2x ? albumData.thumbs2x : null,
