@@ -4,7 +4,7 @@ namespace App\Actions\Albums\Extensions;
 
 use AccessControl;
 use App\Models\Album;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
 
@@ -49,7 +49,8 @@ class PublicIds
 	private function init(): Builder
 	{
 		// unlocked albums
-		$query = Album::whereNotIn('id', AccessControl::get_visible_albums());
+		$query = DB::table('albums')->select('_lft', '_rgt')
+			->whereNotIn('id', AccessControl::get_visible_albums());
 
 		if ($this->parent == null) {
 			return $query;
@@ -63,7 +64,7 @@ class PublicIds
 	 * Return a collection of Album that are not directly accessible by visibility criteria
 	 * ! we do not include password protected albums from other users.
 	 *
-	 * @return BaseCollection[Album]
+	 * @return BaseCollection[(_lft, _rgt)]
 	 */
 	private function getDirectlyNotAccessible(): BaseCollection
 	{
@@ -105,7 +106,7 @@ class PublicIds
 		$directly = $this->getDirectlyNotAccessible();
 
 		if ($directly->count() > 0) {
-			$sql = Album::select('id');
+			$sql = DB::table('albums')->select('id');
 			foreach ($directly as $alb) {
 				$sql = $sql->orWhereBetween('_lft', [$alb->_lft, $alb->_rgt]);
 			}
@@ -139,7 +140,7 @@ class PublicIds
 	{
 		$id_not_accessible = $this->getNotAccessible(null);
 
-		return Album::select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
+		return DB::table('albums')->select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
 	}
 
 	/**
