@@ -25,7 +25,7 @@ class Merge extends Action
 
 		$no_error = true;
 		// Merge Photos
-		if (DB::table('phtoos')->whereIn('album_id', $albumIDs)->count() > 0) {
+		if (DB::table('photos')->whereIn('album_id', $albumIDs)->count() > 0) {
 			$no_error &= Photo::whereIn('album_id', $albumIDs)->update(['album_id' => $album_master->id]);
 		}
 
