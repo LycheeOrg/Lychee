@@ -51,11 +51,9 @@ trait PhotoGetters
 	 *
 	 * @return string
 	 */
-	public function get_public()
+	public function get_public(): string
 	{
-		$ret = $this->public == 1 ? '1' : '0';
-
-		return $ret;
+		return $this->public == 1 ? '1' : '0';
 	}
 
 	/**

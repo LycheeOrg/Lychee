@@ -17,7 +17,6 @@ class SetAlbum extends Setters
 
 	public function execute(array $photoIDs, string $albumID)
 	{
-		$no_error = true;
 		$album = null;
 
 		if ($albumID != '0') {
@@ -32,8 +31,6 @@ class SetAlbum extends Setters
 			}
 		}
 
-		$no_error &= $this->do($photoIDs, $albumID == '0' ? null : $albumID);
-
-		return $no_error;
+		return $this->do($photoIDs, $albumID == '0' ? null : $albumID);
 	}
 }
