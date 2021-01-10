@@ -44,7 +44,7 @@ class Prepare
 
 		// take care of photos
 		$return['photos'] = $this->photos->get($album);
-		$return['id'] = $album->id;
+		$return['id'] = strval($album->id);
 		$return['num'] = strval(count($return['photos']));
 
 		// finalize the loop
