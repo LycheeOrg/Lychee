@@ -95,6 +95,12 @@ class SmartAlbum extends Album
 		return null;
 	}
 
+	// overload the function
+	public function isLeaf()
+	{
+		return true;
+	}
+
 	public function is_downloadable()
 	{
 		return Configs::get_value('downloadable', '0') == '1';
