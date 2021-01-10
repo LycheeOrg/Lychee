@@ -2,22 +2,17 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Album\UpdateTakestamps;
 use App\Exceptions\JsonError;
 use App\Factories\AlbumFactory;
-use App\Models\Album;
-use App\Models\Photo;
 
 class SetAlbum extends Setters
 {
 	private $albumFactory;
-	private $updateTakestamps;
 
-	public function __construct(AlbumFactory $albumFactory, UpdateTakestamps $updateTakestamps)
+	public function __construct(AlbumFactory $albumFactory)
 	{
 		$this->property = 'album_id';
 		$this->albumFactory = $albumFactory;
-		$this->updateTakestamps = $updateTakestamps;
 	}
 
 	public function execute(array $photoIDs, string $albumID)
@@ -37,18 +32,7 @@ class SetAlbum extends Setters
 			}
 		}
 
-		$old_parents = Photo::select('album_id')->whereNotNull('album_id')->whereIn('id', $photoIDs)->pluck('album_id');
-
 		$no_error &= $this->do($photoIDs, $albumID == '0' ? null : $albumID);
-
-		if ($album !== null) {
-			$no_error &= $this->updateTakestamps->singleAndSave($album);
-		}
-
-		$old_albums = Album::whereIn('id', $old_parents)->get();
-		foreach ($old_albums as $old_album) {
-			$no_error &= $this->updateTakestamps->singleAndSave($old_album);
-		}
 
 		return $no_error;
 	}

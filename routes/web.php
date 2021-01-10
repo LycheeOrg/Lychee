@@ -125,8 +125,6 @@ Route::get('/Update', [Administration\UpdateController::class, 'apply'])->middle
 Route::post('/api/Update::Apply', [Administration\UpdateController::class, 'apply'])->middleware('admin');
 Route::post('/api/Update::Check', [Administration\UpdateController::class, 'check'])->middleware('admin');
 
-Route::get('/Albums/RebuildTakestamps', [AlbumController::class, 'RebuildTakestamps'])->middleware('admin');
-
 // unused
 Route::post('/api/Logs::clear', [Administration\LogController::class, 'clear'])->middleware('admin');
 

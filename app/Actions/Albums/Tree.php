@@ -35,7 +35,8 @@ class Tree
 		$return = [];
 		$PublicIds = resolve(PublicIds::class);
 
-		$sql = Album::where('smart', '=', false)
+		$sql = Album::initQuery()
+			->where('smart', '=', false)
 			->whereNotIn('id', $PublicIds->getNotAccessible())
 			->orderBy('owner_id', 'ASC');
 		$albumCollection = $this->customSort($sql, $this->sortingCol, $this->sortingOrder);
@@ -55,9 +56,9 @@ class Tree
 	{
 		return $albums->map(function ($album) {
 			$ret = [
-				'id' => $album->id,
+				'id' => strval($album->id),
 				'title' => $album->title,
-				'parent_id' => $album->parent_id,
+				'parent_id' => strval($album->parent_id),
 			];
 			$album->set_thumbs($ret, $album->get_thumbs());
 			$ret['albums'] = $this->prepare($album->children);

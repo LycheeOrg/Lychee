@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\Album\UpdateTakestamps;
 use App\Models\Album;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -30,14 +29,6 @@ class NestedSetForAlbums extends Migration
 		});
 
 		Album::fixTree();
-
-		/*
-		 * Update all takestamps
-		 * - we do it here and not in the lychee_photo migration anymore.
-		 * - we could not do it yet then as the tree was not initialized.
-		 */
-		$update = resolve(UpdateTakestamps::class);
-		$update->all();
 	}
 
 	/**

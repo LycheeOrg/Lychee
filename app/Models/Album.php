@@ -8,6 +8,7 @@ use App\Contracts\AlbumInterface;
 use App\Models\Extensions\AlbumBooleans;
 use App\Models\Extensions\AlbumCast;
 use App\Models\Extensions\AlbumGetters;
+use App\Models\Extensions\AlbumQuery;
 use App\Models\Extensions\AlbumSetters;
 use App\Models\Extensions\AlbumStringify;
 use App\Models\Extensions\CustomSort;
@@ -79,6 +80,7 @@ class Album extends Model implements AlbumInterface
 	use AlbumCast;
 	use AlbumSetters;
 	use CustomSort;
+	use AlbumQuery;
 
 	protected $dates
 	= [

@@ -88,8 +88,6 @@ class AlbumTest extends TestCase
 
 		$albums_tests->set_sorting($albumID, '', 'ASC');
 
-		$albums_tests->AlbumRebuildTakestamps();
-
 		/*
 		 * Flush the session to see if we can access the album
 		 */

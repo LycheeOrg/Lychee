@@ -47,18 +47,13 @@ trait PhotoGetters
 	/**
 	 * Get the public value of a picture
 	 * if 0 : picture is private
-	 * if 1 : picture is public alone
-	 * if 2 : picture is public by album being public (if being in an album).
+	 * if 1 : picture is public alone.
 	 *
 	 * @return string
 	 */
 	public function get_public()
 	{
 		$ret = $this->public == 1 ? '1' : '0';
-
-		if ($this->album_id != null) {
-			$ret = $this->album->public == '1' ? '2' : $ret;
-		}
 
 		return $ret;
 	}

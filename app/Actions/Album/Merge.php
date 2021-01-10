@@ -6,7 +6,7 @@ use App\Models\Album;
 use App\Models\Logs;
 use App\Models\Photo;
 
-class Merge extends UpdateTakestamps
+class Merge extends Action
 {
 	/**
 	 * @param string $albumID
@@ -53,12 +53,6 @@ class Merge extends UpdateTakestamps
 
 		$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
 		$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
-
-		// update takestamps parent of new place
-		$no_error &= $this->singleAndSave($album_master);
-
-		// propagate to ancestors (only to the necessary ones)
-		$this->ancestors($album_master);
 
 		return $no_error;
 	}

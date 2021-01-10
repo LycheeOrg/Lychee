@@ -2,26 +2,11 @@
 
 namespace App\Actions\Photo\Extensions;
 
-use App\Actions\Album\UpdateTakestamps;
 use App\Exceptions\JsonError;
 use App\Factories\AlbumFactory;
-use App\Models\Logs;
 
 trait ParentAlbum
 {
-	public function updateParentAlbum()
-	{
-		$updateTakestamps = resolve(UpdateTakestamps::class);
-
-		if ($this->parentAlbum != null) {
-			if (!$updateTakestamps->singleAndSave($this->parentAlbum)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not update album takestamps');
-
-				throw new JsonError('Could not update album takestamps');
-			}
-		}
-	}
-
 	public function initParentId($albumID_in)
 	{
 		/** @var AlbumFactory */
