@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class StarredAlbum extends SmartAlbum
 {
+	public $id = 'starred';
+
 	public function __construct()
 	{
 		parent::__construct();
