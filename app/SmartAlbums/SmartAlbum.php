@@ -2,11 +2,10 @@
 
 namespace App\SmartAlbums;
 
-use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Support\Collection as BaseCollection;
 
-class SmartAlbum extends Album
+class SmartAlbum extends BareSmartAlbum
 {
 	/**
 	 * @var string
