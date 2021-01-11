@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9e279db51a3447527bbe5d89704e2127",
+    "content-hash": "09b75e13eb48e1dae71aeb83c5b53d12",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -337,32 +337,33 @@
         },
         {
             "name": "darkghosthunter/larapass",
-            "version": "dev-master",
+            "version": "dev-LycheeSpecial",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/Larapass.git",
-                "reference": "f8283c7a02cde3704a08b9e53aec32a99d239577"
+                "reference": "0d03a9ad17f32b5cdbad5667c8312078e5a57f49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/Larapass/zipball/f8283c7a02cde3704a08b9e53aec32a99d239577",
-                "reference": "f8283c7a02cde3704a08b9e53aec32a99d239577",
+                "url": "https://api.github.com/repos/LycheeOrg/Larapass/zipball/0d03a9ad17f32b5cdbad5667c8312078e5a57f49",
+                "reference": "0d03a9ad17f32b5cdbad5667c8312078e5a57f49",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "illuminate/support": "^8.0",
                 "nyholm/psr7": "^1.3",
-                "php": "^7.3.0",
+                "php": ">=7.4.0",
                 "ramsey/uuid": "^4.0",
                 "symfony/psr-http-message-bridge": "^2.0",
-                "web-auth/webauthn-lib": "^3.2"
+                "thecodingmachine/safe": "^1.3.3",
+                "web-auth/webauthn-lib": "^3.3"
             },
             "require-dev": {
-                "orchestra/testbench": "^6.0",
-                "phpunit/phpunit": "^8.5||^9.0"
+                "laravel/framework": "8.*",
+                "orchestra/testbench": "^6.7.2",
+                "phpunit/phpunit": "^9.0"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -407,7 +408,7 @@
                 "webauthn"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/Larapass/tree/master"
+                "source": "https://github.com/LycheeOrg/Larapass/tree/LycheeSpecial"
             },
             "funding": [
                 {
@@ -419,7 +420,7 @@
                     "url": "https://paypal.me/darkghosthunter"
                 }
             ],
-            "time": "2020-12-15T16:56:37+00:00"
+            "time": "2021-01-11T20:00:11+00:00"
         },
         {
             "name": "doctrine/cache",
