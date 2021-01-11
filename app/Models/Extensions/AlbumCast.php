@@ -21,7 +21,7 @@ trait AlbumCast
 		$return = [
 			'id' => strval($this->id),
 			'title' => $this->title,
-			'public' => strval($this->public),
+			'public' => Helpers::str_of_bool($this->is_public()),
 			'full_photo' => Helpers::str_of_bool($this->is_full_photo_visible()),
 			'visible' => strval($this->viewable),
 			'nsfw' => strval($this->nsfw),

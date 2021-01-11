@@ -142,8 +142,8 @@ class SearchController extends Controller
 					// We don't need 'albums' but we do need to come up with
 					// all the subalbums in order to get accurate thumbs info
 					// and to let the front end know if there are any.
-					$thumbs = $this->album_model->get_thumbs();
-					$this->album_model->set_thumbs($album, $thumbs);
+					$thumbs = $album_model->get_thumbs();
+					$album_model->set_thumbs($album, $thumbs);
 				}
 
 				$return['albums'][$i] = $album;

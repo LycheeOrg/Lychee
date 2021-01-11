@@ -9,6 +9,8 @@ use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use Exception;
+use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\FFMpeg;
 use Illuminate\Support\Facades\Storage;
 use ImageOptimizer;
 
@@ -43,7 +45,8 @@ trait VideoEditing
 		/**
 		 * ! check if we can use path instead of this ugly thing.
 		 */
-		$ffmpeg = FFMpeg\FFMpeg::create();
+		$ffmpeg = FFMpeg::create();
+		/** @var Video */
 		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
 		$tmp = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
@@ -52,7 +55,7 @@ trait VideoEditing
 			/**
 			 * ! check if we can use path instead of this ugly thing.
 			 */
-			$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds($photo->aperture / 2));
+			$frame = $video->frame(TimeCode::fromSeconds($photo->aperture / 2));
 			$frame->save($tmp);
 		} catch (Exception $e) {
 			Logs::notice(__METHOD__, __LINE__, 'Failed to extract snapshot from video ' . $tmp);
@@ -72,7 +75,7 @@ trait VideoEditing
 				/**
 				 * ! check if we can use path instead of this ugly thing.
 				 */
-				$frame = $video->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(0));
+				$frame = $video->frame(TimeCode::fromSeconds(0));
 				$frame->save($tmp);
 				$success = file_exists($tmp) ? (filesize($tmp) > 0) : false;
 				if (!$success) {
@@ -138,7 +141,7 @@ trait VideoEditing
 			/**
 			 * ! check if we can use path instead of this ugly thing.
 			 */
-			$ffmpeg = FFMpeg\FFMpeg::create();
+			$ffmpeg = FFMpeg::create();
 			$video = $ffmpeg->open(stream_get_meta_data($fp_video)['uri']);
 			$format = new MOVFormat();
 			// Add additional parameter to extract the first video stream

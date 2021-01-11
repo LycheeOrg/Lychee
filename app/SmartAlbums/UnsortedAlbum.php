@@ -14,15 +14,11 @@ class UnsortedAlbum extends SmartAlbum
 		parent::__construct();
 
 		$this->title = 'unsorted';
+		$this->public = false;
 	}
 
 	public function get_photos(): Builder
 	{
 		return Photo::unsorted()->where(fn ($q) => $this->filter($q));
-	}
-
-	public function is_public()
-	{
-		return false;
 	}
 }

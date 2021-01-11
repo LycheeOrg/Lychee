@@ -13,15 +13,11 @@ class StarredAlbum extends SmartAlbum
 		parent::__construct();
 
 		$this->title = 'starred';
+		$this->public = Configs::get_value('public_starred', '0') === '1';
 	}
 
 	public function get_photos(): Builder
 	{
 		return Photo::stars()->where(fn ($q) => $this->filter($q));
-	}
-
-	public function is_public()
-	{
-		return Configs::get_value('public_starred', '0') === '1';
 	}
 }

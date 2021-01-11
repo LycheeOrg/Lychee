@@ -4,35 +4,15 @@ namespace App\SmartAlbums;
 
 use AccessControl;
 use App\Models\Album;
-use App\Models\Configs;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
 
-class SmartAlbum extends Album
+class BareSmartAlbum extends Album
 {
-	/**
-	 * @var string
-	 */
-	public $description = '';
-
 	/**
 	 * @var Carbon
 	 */
 	public $created_at = null;
-
-	/**
-	 * fake password string.
-	 *
-	 * @var string
-	 */
-	public $password = '';
-
-	/**
-	 * fake password string.
-	 *
-	 * @var string
-	 */
-	public $license = '';
 
 	/**
 	 * @var Collection[int]
@@ -72,38 +52,25 @@ class SmartAlbum extends Album
 		return $query;
 	}
 
-	/*------------------------- BOOLEANS --------------------------------- */
-	public function is_full_photo_visible(): bool
-	{
-		return false;
-	}
-
-	public function isLeaf(): bool
-	{
-		return true;
-	}
-
-	public function is_downloadable(): bool
-	{
-		return Configs::get_value('downloadable', '0') == '1';
-	}
-
-	public function is_share_button_visible(): bool
-	{
-		return Configs::get_value('share_button_visible', '0');
-	}
-
 	/*------------------------- STRINGS --------------------------------- */
-
-	/*------------------------- GETTERS --------------------------------- */
-	public function children()
+	public function str_parent_id()
 	{
-		return null;
+		return '';
 	}
 
-	public function get_children()
+	public function str_min_takestamp()
 	{
-		return new BaseCollection();
+		return '';
+	}
+
+	public function str_max_takestamp()
+	{
+		return '';
+	}
+
+	public function get_license(): string
+	{
+		return 'none';
 	}
 
 	/**

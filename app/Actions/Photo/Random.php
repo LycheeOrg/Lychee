@@ -3,7 +3,7 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Albums\Extensions\PublicIds;
-use App\Response;
+use App\Exceptions\JsonError;
 use App\SmartAlbums\StarredAlbum;
 
 class Random extends SymLinker
@@ -16,7 +16,7 @@ class Random extends SymLinker
 		$photo = $starred->get_photos()->inRandomOrder()->first();
 
 		if ($photo == null) {
-			return Response::error('no pictures found!');
+			throw new JsonError('no pictures found!');
 		}
 
 		$return = $photo->toReturnArray();
