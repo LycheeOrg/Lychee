@@ -20,7 +20,7 @@ trait Constants
 	public $validVideoTypes = [
 		'video/mp4',
 		'video/mpeg',
-		'image/x-tga', // mpg
+		'image/x-tga', // mpg; will be corrected by the metadata extractor
 		'video/ogg',
 		'video/webm',
 		'video/quicktime',
@@ -28,6 +28,7 @@ trait Constants
 		'video/x-ms-wmv', // wmv file
 		'video/x-msvideo', // Avi
 		'video/x-m4v', // Avi
+		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
 	];
 
 	/**
