@@ -4,8 +4,10 @@ namespace App\Exceptions;
 
 use App\Exceptions\Handlers\AccessDBDenied;
 use App\Exceptions\Handlers\ApplyComposer;
+use App\Exceptions\Handlers\FileTooLarge;
 use App\Exceptions\Handlers\InvalidPayload;
 use App\Exceptions\Handlers\NoEncryptionKey;
+use App\Exceptions\Handlers\RequestTooLarge;
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
@@ -64,6 +66,8 @@ class Handler extends ExceptionHandler
 		$checks[] = new InvalidPayload();
 		$checks[] = new AccessDBDenied();
 		$checks[] = new ApplyComposer();
+		$checks[] = new FileTooLarge();
+		$checks[] = new RequestTooLarge();
 
 		foreach ($checks as $check) {
 			if ($check->check($request, $exception)) {
