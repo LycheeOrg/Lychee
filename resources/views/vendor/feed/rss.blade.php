@@ -1,5 +1,4 @@
-<?=
-/* Using an echo tag here so the `<? ... ?>` won't get parsed as short tags */
+<?php echo /* Using an echo tag here so the `<? ... ?>` won't get parsed as short tags */
 '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
 ?>
 <rss version="2.0">
@@ -17,10 +16,13 @@
                 <description><![CDATA[{!! $item->summary !!}]]></description>
                 <author><![CDATA[{{ $item->author }}]]></author>
                 <guid>{{ url($item->id) }}</guid>
-                @if(isset($item->enclosure))
-                    <enclosure url="{{ $item->enclosure->url }}" length="{{ $item->enclosure->length }}" type="{{ $item->enclosure->mime_type }}" />
+                <pubDate>{{ $item->updated->toRfc3339String() }}</pubDate>
+                @if($item->__isset('enclosure'))
+                    <enclosure url="{{ url($item->enclosure) }}" length="{{ $item->enclosureLength }}" type="{{ $item->enclosureType }}" />
                 @endif
-                <pubDate>{{ $item->updated->toRssString() }}</pubDate>
+                @foreach($item->category as $category)
+                    <category>{{ $category }}</category>
+                @endforeach
             </item>
         @endforeach
     </channel>
