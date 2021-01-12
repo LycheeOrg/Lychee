@@ -402,6 +402,8 @@ final class Greek implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Παρακαλούμε ρίξτε μια ματιά στην κονσόλα του περιηγητή σας για περισσότερες λεπτομέρειες.',
 			'UPLOAD_UNKNOWN' => 'Ο εξυπηρετητής επέστρεψε μία άγνωστη απόκριση. Παρακαλούμε ρίξτε μια ματιά στην κονσόλα του περιηγητή σας για περισσότερες λεπτομέρειες.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Η μεταφόρτωση απέτυχε. Ο εξυπηρετητής επέστρεψε ένα άγνωστο σφάλμα!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Το Lychee αυτή τη στιγμή μεταφορτώνει!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Η εισαγωγή ολοκληρώθηκε, αλλά επέστρεψε προειδοποιήσεις ή σφάλματα. Παρακαλούμε ρίξτε μια ματία στις καταγραφές (Ρυθμίσεις -> Εμφάνιση Καταγραφών) για περισσότερες λεπτομέρειες.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Η εισαγωγή ολοκληρώθηκε',

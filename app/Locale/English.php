@@ -403,6 +403,8 @@ final class English implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Please take a look at the console of your browser for further details.',
 			'UPLOAD_UNKNOWN' => 'Server returned an unknown response. Please take a look at the console of your browser for further details.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Upload failed. Server returned an unkown error!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee is currently uploading!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'The import has been finished, but returned warnings or errors. Please take a look at the log (Settings -> Show Log) for further details.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Import complete',

@@ -402,6 +402,8 @@ final class Spanish implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Por favor, eche un vistazo a la consola de su navegador para más detalles.',
 			'UPLOAD_UNKNOWN' => 'El servidor devolvió una respuesta desconocida. Por favor, eche un vistazo a la consola de su navegador para más detalles.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Subida fallida. ¡El servidor devolvió un error desconocido!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => '¡Lychee está subiendo actualmente!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'La importación ha finalizado, pero devolvió advertencias o errores. Por favor, eche un vistazo al registro (Configuración -> Mostrar registro) para obtener más detalles.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importación completa',

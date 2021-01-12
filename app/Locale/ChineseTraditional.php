@@ -402,6 +402,8 @@ final class ChineseTraditional implements Language
 			'UPLOAD_ERROR_CONSOLE' => '請查看瀏覽器控制台獲取詳細信息。',
 			'UPLOAD_UNKNOWN' => '伺服器傳回了未知響應。請查看瀏覽器控制台獲取詳細信息。',
 			'UPLOAD_ERROR_UNKNOWN' => '上傳失敗。伺服器回傳了一個未知錯誤！',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee當前正在上傳！',
 			'UPLOAD_IMPORT_WARN_ERR' => '導入成功，但返回了的警告或錯誤。請查看日誌（設置->顯示日誌）以獲取詳細信息。',
 			'UPLOAD_IMPORT_COMPLETE' => '導入完成',

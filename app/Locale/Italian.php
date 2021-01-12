@@ -408,6 +408,8 @@ final class Italian implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Per favore controlla la console del tuo browser per ulteriori dettagli.',
 			'UPLOAD_UNKNOWN' => 'Il server ha restituito una risposta sconosciuta. Per favore controlla la console del tuo browser per ulteriori dettagli.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Caricamneto fallito. Il server ha restituito un errore sconosciuto!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee sta momentaneamente caricando!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'L\'importazione è finita, ma ha restituito errori o avvisi. Per favore controlla il log (Impostazioni -> Visualizza Log) per ulteriori dettagli.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importazione completata',

@@ -403,6 +403,8 @@ final class Russian implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Подробности смотрите в консоли браузера.',
 			'UPLOAD_UNKNOWN' => 'Сервер вернул непонятный ответ. Проверьте консоль браузера.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Загрузка не удалась: сервер вернул что-то непонятное!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee выполняет выгрузку.',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Импорт был завершён, но обнаружены ошибки или предупреждения. Пожалуйста, проверьте лог (Settings -> Логи).',
 			'UPLOAD_IMPORT_COMPLETE' => 'Импорт завершён',
