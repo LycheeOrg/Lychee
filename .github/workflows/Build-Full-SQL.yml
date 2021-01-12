@@ -122,9 +122,6 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v1.2.1
-        with:
-          # file: ./coverage.xml # optional
-          verbose: true # optional (default = false)
 
       - name: Make sure we can go backward
         run: php artisan migrate:rollback
