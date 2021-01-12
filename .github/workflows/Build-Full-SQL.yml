@@ -118,7 +118,9 @@ jobs:
           php artisan migrate
       
       - name: Apply tests
-        run: vendor/bin/phpunit --verbose
+        run: |
+          vendor/bin/phpunit --verbose
+          ls -l
 
       - name: Codecov
         uses: codecov/codecov-action@v1.2.1
