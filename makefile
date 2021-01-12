@@ -113,8 +113,10 @@ gen_minor:
 release_minor: gen_minor
 	git commit -S -m "bump to version $(shell cat version.md)"
 
-release_major:
+gen_major:
 	php gen_release major
 	git add database
 	git add version.md
+
+release_major: gen_major
 	git commit -m "bump to version $(shell cat version.md)"
