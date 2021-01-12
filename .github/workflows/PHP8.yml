@@ -106,7 +106,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-suggest
+        run: composer install --prefer-dist --no-interaction
 
       - name: Check Syntax
         run: vendor/bin/php-cs-fixer fix --config=.php_cs --verbose --diff --dry-run
