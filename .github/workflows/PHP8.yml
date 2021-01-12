@@ -1,21 +1,14 @@
-name: Build-Full-SQL
+name: PHP-8-Build-Dev
 
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
-    paths-ignore:
-      - '**/*.md'
-  pull_request:
-    paths-ignore:
-      - '**/*.md'
 
 jobs:
   tests:
 
     runs-on: ${{ matrix.operating-system }}
-    # We want to run on external PRs, but not on our own internal PRs as they'll be run by the push to the branch.
-    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
-    
+
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -38,21 +31,17 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-20.04]
-        php-versions: ['7.4']
+        php-versions: ['8.0']
         sql-versions: ['mysql', 'postgresql', 'sqlite']
+        experimental: ['true']
 
-    name: PHP ${{ matrix.php-versions }} - ${{ matrix.sql-versions }} - ${{ matrix.operating-system }}
+    name: PHP ${{ matrix.php-versions }} - ${{ matrix.sql-versions }}
 
     env:
       extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
       key: cache-v1 # can be any string, change to clear the extension cache.
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.7.0
-        with:
-          access_token: ${{ github.token }}
-
       # Checks out a copy of your repository on the ubuntu machine
       - name: Checkout code
         uses: actions/checkout@v2
@@ -85,7 +74,23 @@ jobs:
           extensions: ${{ env.extensions }}
           coverage: xdebug
           tools: pecl, composer
-      
+
+      - name: Set Up imagick (php8 and php7.3)
+        if: ${{ matrix.php-versions != '7.4' }}
+        run: |
+          git clone https://github.com/Imagick/imagick.git
+          cd imagick && phpize && ./configure && make
+          DEST=$(php -i | grep 'extension_dir => /')
+          php -i | grep 'extension_dir => /'
+          php -i | grep 'extension_dir'
+          echo $DEST
+          DEST2=$(echo "${DEST##* }")
+          echo 'Copying imagick.so to ' $DEST2
+          sudo cp modules/imagick.so $DEST2
+          echo 'Update php.ini file at ' $(echo $(php --ini | grep 'Loaded Configuration File') | awk 'NF>1{print $NF}')
+          sudo echo 'extension="imagick.so"' >> $(echo $(php --ini | grep 'Loaded Configuration File') | awk 'NF>1{print $NF}')
+          cd ..
+
       - name: Install Exiftools
         run: sudo apt-get -y install libimage-exiftool-perl
 
