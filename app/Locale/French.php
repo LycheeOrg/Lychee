@@ -402,6 +402,8 @@ final class French implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Veuillez consulter la console de votre navigateur pour obtenir plus de détails.',
 			'UPLOAD_UNKNOWN' => 'Le serveur a retourné une reponse inconnue. Veuillez consulter la console de votre navigateur pour obtenir plus de détails.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Échec de l\'upload. Le serveur a retourné une erreur inconnue !',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee est en cours de téléchargement !',
 			'UPLOAD_IMPORT_WARN_ERR' => 'L\'importation est terminée, mais des erreurs ou des avertissements ont été retournés. Veuillez consulter le fichier de Log (Paramètres -> Afficher les logs) pour obtenir plus de détails.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importation terminée',

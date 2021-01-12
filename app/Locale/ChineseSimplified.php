@@ -402,6 +402,8 @@ final class ChineseSimplified implements Language
 			'UPLOAD_ERROR_CONSOLE' => '请查看浏览器控制台获取详细信息。',
 			'UPLOAD_UNKNOWN' => '服务器返回未知响应。请查看浏览器控制台获取详细信息。',
 			'UPLOAD_ERROR_UNKNOWN' => '上传失败。服务器返回了一个未知错误！',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee 当前正在上传！',
 			'UPLOAD_IMPORT_WARN_ERR' => '导入成功，但返回了的警告或错误。请查看日志（设置->显示日志）以获取详细信息。',
 			'UPLOAD_IMPORT_COMPLETE' => '导入完成',

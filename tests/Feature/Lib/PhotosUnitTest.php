@@ -65,7 +65,8 @@ class PhotosUnitTest
 				'albumID' => '0',
 			]
 		);
-		$response->assertStatus(302);
+		$response->assertStatus(200);
+		$response->assertSee('"Error: validation failed"', false);
 	}
 
 	/**
