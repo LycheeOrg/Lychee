@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
+use AccessControl;
 use App\Http\Controllers\ImportController;
-use App\ModelFunctions\SessionFunctions;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -22,21 +22,6 @@ class Sync extends Command
 	 * @var string
 	 */
 	protected $description = 'Sync a directory to lychee';
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @param SessionFunctions $sessionFunctions
-	 */
-	public function __construct(
-		SessionFunctions $sessionFunctions
-	) {
-		$this->sessionFunctions = $sessionFunctions;
-		parent::__construct();
-	}
 
 	/**
 	 * Execute the console command.
@@ -59,7 +44,7 @@ class Sync extends Command
 		// Disable Memory Check
 		$import_controller->disableMemCheck();
 
-		$this->sessionFunctions->log_as_id($owner_id);
+		AccessControl::log_as_id($owner_id);
 
 		try {
 			$import_controller->server_exec($directory, $album_id, $delete_imported, $force_skip_duplicates, null, $resync_metadata);

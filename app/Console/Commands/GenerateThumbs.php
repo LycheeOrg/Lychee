@@ -2,13 +2,15 @@
 
 namespace App\Console\Commands;
 
-use App\ModelFunctions\PhotoFunctions;
+use App\Actions\Photo\Extensions\ImageEditing;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 
 class GenerateThumbs extends Command
 {
+	use ImageEditing;
+
 	/**
 	 * @var array
 	 */
@@ -32,25 +34,6 @@ class GenerateThumbs extends Command
 	 * @var string
 	 */
 	protected $description = 'Generate intermediate thumbs if missing';
-
-	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
-	/**
-	 * Create a new command instance.
-	 *
-	 * @param PhotoFunctions $photoFunctions
-	 *
-	 * @return void
-	 */
-	public function __construct(PhotoFunctions $photoFunctions)
-	{
-		parent::__construct();
-
-		$this->photoFunctions = $photoFunctions;
-	}
 
 	/**
 	 * Execute the console command.
@@ -105,7 +88,7 @@ class GenerateThumbs extends Command
 		$bar->start();
 
 		foreach ($photos as $photo) {
-			if ($this->photoFunctions->resizePhoto(
+			if ($this->resizePhoto(
 				$photo,
 				$type,
 				$maxWidth,

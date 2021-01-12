@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Session;
 
 class SessionFunctions
 {
+	public $user_data = null;
+
 	public function log_as_id($id)
 	{
 		Session::put('login', true);
@@ -46,7 +48,7 @@ class SessionFunctions
 
 	public function can_upload(): bool
 	{
-		return $this->id() == 0 || $this->user()->upload;
+		return $this->is_logged_in() && ($this->id() == 0 || $this->user()->upload);
 	}
 
 	/**
@@ -101,6 +103,7 @@ class SessionFunctions
 	 */
 	public function login(User $user)
 	{
+		$this->user_data = $user;
 		Session::put('login', true);
 		Session::put('UserID', $user->id);
 	}
@@ -113,7 +116,8 @@ class SessionFunctions
 	public function noLogin()
 	{
 		$adminUser = User::find(0);
-		if ($adminUser->password === '' && $adminUser->username === '') {
+		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
+			$this->user_data = $adminUser;
 			Session::put('login', true);
 			Session::put('UserID', 0);
 
@@ -140,6 +144,7 @@ class SessionFunctions
 		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
 
 		if ($user != null && Hash::check($password, $user->password)) {
+			$this->user_data = $user;
 			Session::put('login', true);
 			Session::put('UserID', $user->id);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
@@ -164,7 +169,8 @@ class SessionFunctions
 	public function log_as_admin(string $username, string $password, string $ip)
 	{
 		$AdminUser = User::find(0);
-		if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
+		if ($AdminUser !== null && Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
+			$this->user_data = $AdminUser;
 			Session::put('login', true);
 			Session::put('UserID', 0);
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
@@ -218,11 +224,21 @@ class SessionFunctions
 		Session::put('visible_albums', $visible_albums);
 	}
 
+	public function get_visible_albums(): array
+	{
+		if (Session::has('visible_albums')) {
+			return explode('|', Session::get('visible_albums'));
+		}
+
+		return [];
+	}
+
 	/**
 	 * Log out the current user.
 	 */
 	public function logout()
 	{
+		$this->user_data = null;
 		Session::flush();
 	}
 }

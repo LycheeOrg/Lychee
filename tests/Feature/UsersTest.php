@@ -59,7 +59,7 @@ class UsersTest extends TestCase
 	{
 		$sessions_test = new SessionUnitTest();
 		$users_test = new UsersUnitTest();
-		$album_tests = new AlbumsUnitTest();
+		$album_tests = new AlbumsUnitTest($this);
 
 		/*
 		 * Scenario is as follow
@@ -167,13 +167,13 @@ class UsersTest extends TestCase
 		$sessions_test->init($this, 'true');
 
 		// 19
-		$album_tests->get($this, 'public', '', 'true');
+		$album_tests->get('public', '', 'true');
 
 		// 20
-		$album_tests->get($this, 'starred', '', 'true');
+		$album_tests->get('starred', '', 'true');
 
 		// 21
-		$album_tests->get($this, 'unsorted', '', 'true');
+		$album_tests->get('unsorted', '', 'true');
 
 		// 22
 		$sessions_test->set_new($this, 'test_abcde', 'testing2', '"Error: Old username or password entered incorrectly!"');

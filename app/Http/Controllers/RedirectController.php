@@ -4,24 +4,21 @@
 
 namespace App\Http\Controllers;
 
-use App\ModelFunctions\AlbumFunctions;
+use App\Actions\Album\Unlock;
 use App\Models\Configs;
 use Illuminate\Http\Request;
 
 class RedirectController extends Controller
 {
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
-
-	/**
-	 * @param SessionFunctions $sessionFunctions
-	 */
-	public function __construct(
-		AlbumFunctions $albumFunctions
-	) {
-		$this->albumFunctions = $albumFunctions;
+	private function passwordManagement(Request $request, $albumid, Unlock $unlock)
+	{
+		if ($request->filled('password')) {
+			if (Configs::get_value('unlock_password_photos_with_url_param', '0') == '1') {
+				$unlock->propagate($request['password']);
+			} else {
+				$unlock->do($albumid, $request['password']);
+			}
+		}
 	}
 
 	/**
@@ -30,15 +27,9 @@ class RedirectController extends Controller
 	 * @param Request $request
 	 * @param string  $albumid
 	 */
-	public function album(Request $request, $albumid)
+	public function album(Request $request, $albumid, Unlock $unlock)
 	{
-		if ($request->filled('password')) {
-			if (Configs::get_value('unlock_password_photos_with_url_param', '0') == '1') {
-				$this->albumFunctions->unlockAllAlbums($request['password']);
-			} else {
-				$this->albumFunctions->unlockAlbum($albumid, $request['password']);
-			}
-		}
+		$this->passwordManagement($request, $albumid, $unlock);
 
 		return redirect('gallery#' . $albumid);
 	}
@@ -50,15 +41,9 @@ class RedirectController extends Controller
 	 * @param string  $albumid
 	 * @param string  $photoid
 	 */
-	public function photo(Request $request, $albumid, $photoid)
+	public function photo(Request $request, $albumid, $photoid, Unlock $unlock)
 	{
-		if ($request->filled('password')) {
-			if (Configs::get_value('unlock_password_photos_with_url_param', '0') == '1') {
-				$this->albumFunctions->unlockAllAlbums($request['password']);
-			} else {
-				$this->albumFunctions->unlockAlbum($albumid, $request['password']);
-			}
-		}
+		$this->passwordManagement($request, $albumid, $unlock);
 
 		return redirect('gallery#' . $albumid . '/' . $photoid);
 	}

@@ -4,8 +4,8 @@
 
 namespace App\Http\Controllers\Administration;
 
+use AccessControl;
 use App\Http\Controllers\Controller;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,26 +14,13 @@ use Illuminate\Support\Facades\DB;
 class SharingController extends Controller
 {
 	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @param SessionFunctions $sessionFunctions
-	 */
-	public function __construct(SessionFunctions $sessionFunctions)
-	{
-		$this->sessionFunctions = $sessionFunctions;
-	}
-
-	/**
 	 * Return the list of current sharing rights.
 	 *
 	 * @return array
 	 */
 	public function listSharing()
 	{
-		$UserId = $this->sessionFunctions->id();
+		$UserId = AccessControl::id();
 		if ($UserId == 0) {
 			$shared = DB::table('user_album')
 				->select(

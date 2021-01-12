@@ -4,74 +4,45 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Photo\Archive;
+use App\Actions\Photo\Create;
+use App\Actions\Photo\Delete;
+use App\Actions\Photo\Duplicate;
+use App\Actions\Photo\Prepare;
+use App\Actions\Photo\Random;
+use App\Actions\Photo\SetAlbum;
+use App\Actions\Photo\SetDescription;
+use App\Actions\Photo\SetLicense;
+use App\Actions\Photo\SetPublic;
+use App\Actions\Photo\SetStar;
+use App\Actions\Photo\SetTags;
+use App\Actions\Photo\SetTitle;
 use App\Assets\Helpers;
-use App\Exceptions\AlbumDoesNotExistsException;
-use App\ModelFunctions\AlbumActions\UpdateTakestamps as AlbumUpdate;
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\AlbumsFunctions;
-use App\ModelFunctions\PhotoActions\Cast;
-use App\ModelFunctions\PhotoFunctions;
-use App\ModelFunctions\SessionFunctions;
+use App\Http\Requests\AlbumRequests\AlbumIDRequest;
+use App\Http\Requests\PhotoRequests\PhotoIDRequest;
+use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
 use App\ModelFunctions\SymLinkFunctions;
-use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
-use App\SmartAlbums\StarredAlbum;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\HeaderUtils;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use ZipStream\ZipStream;
 
 class PhotoController extends Controller
 {
-	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @var AlbumFunction
-	 */
-	private $albumFunctions;
-
-	/**
-	 * @var AlbumsFunction
-	 */
-	private $albumsFunctions;
-
 	/**
 	 * @var SymLinkFunctions
 	 */
 	private $symLinkFunctions;
 
 	/**
-	 * @param PhotoFunctions   $photoFunctions
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param AlbumsFunctions  $albumsFunctions
-	 * @param SessionFunctions $sessionFunctions
 	 * @param SymLinkFunctions $symLinkFunctions
 	 */
 	public function __construct(
-		PhotoFunctions $photoFunctions,
-		AlbumFunctions $albumFunctions,
-		AlbumsFunctions $albumsFunctions,
-		SessionFunctions $sessionFunctions,
 		SymLinkFunctions $symLinkFunctions
 	) {
-		$this->photoFunctions = $photoFunctions;
-		$this->albumFunctions = $albumFunctions;
-		$this->albumsFunctions = $albumsFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 		$this->symLinkFunctions = $symLinkFunctions;
 	}
 
@@ -82,46 +53,11 @@ class PhotoController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function get(Request $request)
+	public function get(PhotoIDRequest $request, Prepare $prepare)
 	{
-		$request->validate([
-			'photoID' => 'string|required',
-		]);
+		$photo = Photo::with('album')->findOrFail($request['photoID']);
 
-		$photo = Photo::with('album')->find($request['photoID']);
-
-		// Photo not found?
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-			return 'false';
-		}
-
-		$return = Cast::toArray($photo);
-		Cast::urls($return, $photo);
-
-		$this->symLinkFunctions->getUrl($photo, $return);
-		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
-			if ($photo->album_id != null) {
-				$album = $photo->album;
-				if (!$album->is_full_photo_visible()) {
-					$photo->downgrade($return);
-				}
-				$return['downloadable'] = $album->is_downloadable() ? '1' : '0';
-				$return['share_button_visible'] = $album->is_share_button_visible() ? '1' : '0';
-			} else { // Unsorted
-				if (Configs::get_value('full_photo', '1') != '1') {
-					$photo->downgrade($return);
-				}
-				$return['downloadable'] = Configs::get_value('downloadable', '0');
-				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
-			}
-		} else {
-			$return['downloadable'] = '1';
-			$return['share_button_visible'] = '1';
-		}
-
-		return $return;
+		return $prepare->do($photo);
 	}
 
 	/**
@@ -130,25 +66,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function getRandom()
+	public function getRandom(Random $random)
 	{
-		// here we need to refine.
-		$starred = new StarredAlbum($this->albumFunctions, $this->sessionFunctions);
-		$starred->setAlbumIDs($this->albumsFunctions->getPublicAlbumsId());
-		$photo = $starred->get_photos()->inRandomOrder()->first();
-
-		if ($photo == null) {
-			return Response::error('no pictures found!');
-		}
-
-		$return = Cast::toArray($photo);
-		Cast::urls($return, $photo);
-		$this->symLinkFunctions->getUrl($photo, $return);
-		if ($photo->album_id !== null && !$photo->album->is_full_photo_visible()) {
-			$photo->downgrade($return);
-		}
-
-		return $return;
+		return $random->do();
 	}
 
 	/**
@@ -158,12 +78,15 @@ class PhotoController extends Controller
 	 *
 	 * @return false|string
 	 */
-	public function add(Request $request)
+	public function add(AlbumIDRequest $request, Create $create)
 	{
-		$request->validate([
-			'albumID' => 'string|required',
-			'0' => 'required',
-		]);
+		try {
+			$request->validate([
+				'0' => 'required',
+			]);
+		} catch (ValidationException $e) {
+			return Response::error('validation failed');
+		}
 
 		if (!$request->hasfile('0')) {
 			return Response::error('missing files');
@@ -177,7 +100,7 @@ class PhotoController extends Controller
 		$nameFile['type'] = $file->getMimeType();
 		$nameFile['tmp_name'] = $file->getPathName();
 
-		return $this->photoFunctions->add($nameFile, $request['albumID']);
+		return $create->add($nameFile, $request['albumID']);
 	}
 
 	/**
@@ -187,23 +110,13 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setTitle(Request $request)
+	public function setTitle(PhotoIDsRequest $request, SetTitle $setTitle)
 	{
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'title' => 'required|string|max:100',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
-			->get();
-
-		$no_error = true;
-		foreach ($photos as $photo) {
-			$photo->title = $request['title'];
-			$no_error |= $photo->save();
-		}
-
-		return $no_error ? 'true' : 'false';
+		return $setTitle->do(explode(',', $request['photoIDs']), $request['title']) ? 'true' : 'false';
 	}
 
 	/**
@@ -213,22 +126,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setStar(Request $request)
+	public function setStar(PhotoIDsRequest $request, SetStar $setStar)
 	{
-		$request->validate([
-			'photoIDs' => 'required|string',
-		]);
-
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
-			->get();
-
-		$no_error = true;
-		foreach ($photos as $photo) {
-			$photo->star = ($photo->star != 1) ? 1 : 0;
-			$no_error |= $photo->save();
-		}
-
-		return $no_error ? 'true' : 'false';
+		return $setStar->do(explode(',', $request['photoIDs']), $request['title']) ? 'true' : 'false';
 	}
 
 	/**
@@ -238,25 +138,13 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setDescription(Request $request)
+	public function setDescription(PhotoIDRequest $request, SetDescription $setDescription)
 	{
 		$request->validate([
-			'photoID' => 'required|string',
 			'description' => 'string|nullable',
 		]);
 
-		$photo = Photo::find($request['photoID']);
-
-		// Photo not found?
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-			return 'false';
-		}
-
-		$photo->description = $request['description'];
-
-		return $photo->save() ? 'true' : 'false';
+		return $setDescription->do($request['photoID'], $request['description'] ?? '') ? 'true' : 'false';
 	}
 
 	/**
@@ -268,24 +156,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setPublic(Request $request)
+	public function setPublic(PhotoIDRequest $request, SetPublic $setPublic)
 	{
-		$request->validate([
-			'photoID' => 'required|string',
-		]);
-
-		$photo = Photo::find($request['photoID']);
-
-		// Photo not found?
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-			return 'false';
-		}
-
-		$photo->public = $photo->public != 1 ? 1 : 0;
-
-		return $photo->save() ? 'true' : 'false';
+		return $setPublic->do($request['photoID']) ? 'true' : 'false';
 	}
 
 	/**
@@ -295,23 +168,13 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setTags(Request $request)
+	public function setTags(PhotoIDsRequest $request, SetTags $setTags)
 	{
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'tags' => 'string|nullable',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
-			->get();
-
-		$no_error = true;
-		foreach ($photos as $photo) {
-			$photo->tags = ($request['tags'] !== null ? $request['tags'] : '');
-			$no_error &= $photo->save();
-		}
-
-		return $no_error ? 'true' : 'false';
+		return $setTags->do(explode(',', $request['photoIDs']), $request['tags'] ?? '') ? 'true' : 'false';
 	}
 
 	/**
@@ -321,66 +184,13 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setAlbum(Request $request)
+	public function setAlbum(PhotoIDsRequest $request, SetAlbum $setAlbum)
 	{
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'albumID' => 'required|string',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
-			->get();
-
-		$albumID = $request['albumID'];
-
-		$album = null;
-		if ($albumID !== '0') {
-			// just to be sure to handle ownership changes in the process.
-			$album = Album::find($albumID);
-			if ($album === null) {
-				Logs::error(
-					__METHOD__,
-					__LINE__,
-					'Could not find specified album'
-				);
-				throw new AlbumDoesNotExistsException();
-			}
-		}
-
-		$no_error = true;
-		$takestamp = [];
-		foreach ($photos as $photo) {
-			$oldAlbumID = $photo->album_id;
-
-			$photo->album_id = ($albumID == '0') ? null : $albumID;
-			if ($album !== null) {
-				$photo->owner_id = $album->owner_id;
-				$takestamp[] = $photo->takestamp;
-			}
-			$no_error &= $photo->save();
-
-			if ($oldAlbumID !== null) {
-				$oldAlbum = Album::find($oldAlbumID);
-				if ($oldAlbum === null) {
-					Logs::error(
-						__METHOD__,
-						__LINE__,
-						'Could not find an album'
-					);
-					$no_error = false;
-				}
-				$no_error &= AlbumUpdate::update_takestamps(
-					$oldAlbum,
-					[$photo->takestamp],
-					false
-				);
-			}
-		}
-		if ($album !== null) {
-			$no_error &= AlbumUpdate::update_takestamps($album, $takestamp, true);
-		}
-
-		return $no_error ? 'true' : 'false';
+		return $setAlbum->execute(explode(',', $request['photoIDs']), $request['albumID']) ? 'true' : 'false';
 	}
 
 	/**
@@ -390,45 +200,21 @@ class PhotoController extends Controller
 	 *
 	 * @return false|string
 	 */
-	public function setLicense(Request $request)
+	public function setLicense(PhotoIDRequest $request, SetLicense $setLicense)
 	{
 		$request->validate([
-			'photoID' => 'required|string',
 			'license' => 'required|string',
 		]);
 
-		$photo = Photo::find($request['photoID']);
-
-		// Photo not found?
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-			return 'false';
-		}
-
 		$licenses = Helpers::get_all_licenses();
 
-		$found = false;
-		$i = 0;
-		while (!$found && $i < count($licenses)) {
-			if ($licenses[$i] == $request['license']) {
-				$found = true;
-			}
-			$i++;
-		}
-		if (!$found) {
-			Logs::error(
-				__METHOD__,
-				__LINE__,
-				'License not recognised: ' . $request['license']
-			);
+		if (!in_array($request['license'], $licenses, true)) {
+			Logs::error(__METHOD__, __LINE__, 'License not recognised: ' . $request['license']);
 
 			return Response::error('License not recognised!');
 		}
 
-		$photo->license = $request['license'];
-
-		return $photo->save() ? 'true' : 'false';
+		return $setLicense->do($request['photoID'], $request['license']) ? 'true' : 'false';
 	}
 
 	/**
@@ -438,40 +224,9 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function delete(Request $request)
+	public function delete(PhotoIDsRequest $request, Delete $delete)
 	{
-		$request->validate([
-			'photoIDs' => 'required|string',
-		]);
-
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
-			->get();
-
-		$no_error = true;
-		$albums = [];
-		$takestamp = [];
-
-		foreach ($photos as $photo) {
-			$no_error &= $photo->predelete();
-
-			if ($photo->album_id !== null) {
-				$albums[] = $photo->album;
-				$takestamp[] = $photo->takestamp;
-			}
-
-			$no_error &= $photo->delete();
-		}
-
-		// TODO: ideally we would like to avoid duplicates here...
-		for ($i = 0; $i < count($albums); $i++) {
-			$no_error &= AlbumUpdate::update_takestamps(
-				$albums[$i],
-				[$takestamp[$i]],
-				false
-			);
-		}
-
-		return $no_error ? 'true' : 'false';
+		return $delete->do(explode(',', $request['photoIDs'])) ? 'true' : 'false';
 	}
 
 	/**
@@ -482,196 +237,15 @@ class PhotoController extends Controller
 	 *
 	 * @return string
 	 */
-	public function duplicate(Request $request)
+	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
 	{
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'albumID' => 'string',
 		]);
 
-		$photos = Photo::whereIn('id', explode(',', $request['photoIDs']))
-			->get();
+		$duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ?? null);
 
-		$no_error = true;
-		foreach ($photos as $photo) {
-			$duplicate = new Photo();
-			$duplicate->id = Helpers::generateID();
-			$duplicate->title = $photo->title;
-			$duplicate->description = $photo->description;
-			$duplicate->url = $photo->url;
-			$duplicate->tags = $photo->tags;
-			$duplicate->public = $photo->public;
-			$duplicate->type = $photo->type;
-			$duplicate->width = $photo->width;
-			$duplicate->height = $photo->height;
-			$duplicate->size = $photo->size;
-			$duplicate->iso = $photo->iso;
-			$duplicate->aperture = $photo->aperture;
-			$duplicate->make = $photo->make;
-			$duplicate->model = $photo->model;
-			$duplicate->lens = $photo->lens;
-			$duplicate->shutter = $photo->shutter;
-			$duplicate->focal = $photo->focal;
-			$duplicate->latitude = $photo->latitude;
-			$duplicate->longitude = $photo->longitude;
-			$duplicate->altitude = $photo->altitude;
-			$duplicate->imgDirection = $photo->imgDirection;
-			$duplicate->location = $photo->location;
-			$duplicate->takestamp = $photo->takestamp;
-			$duplicate->star = $photo->star;
-			$duplicate->thumbUrl = $photo->thumbUrl;
-			$duplicate->thumb2x = $photo->thumb2x;
-			$duplicate->album_id = isset($request['albumID']) ? $request['albumID'] : $photo->album_id;
-			$duplicate->checksum = $photo->checksum;
-			$duplicate->medium = $photo->medium;
-			$duplicate->medium2x = $photo->medium2x;
-			$duplicate->small = $photo->small;
-			$duplicate->small2x = $photo->small2x;
-			$duplicate->owner_id = $photo->owner_id;
-			$duplicate->livePhotoContentID = $photo->livePhotoContentID;
-			$duplicate->livePhotoUrl = $photo->livePhotoUrl;
-			$duplicate->livePhotoChecksum = $photo->livePhotoChecksum;
-			$no_error &= !is_object($this->photoFunctions->save($duplicate, $duplicate->album_id));
-		}
-
-		return $no_error ? 'true' : 'false';
-	}
-
-	/**
-	 * extract the file names.
-	 *
-	 * @param $photoID
-	 * @param $request
-	 *
-	 * @return array|null
-	 */
-	public function extract_names($photoID, $request)
-	{
-		// Illicit chars
-		$badChars = array_merge(
-			array_map('chr', range(0, 31)),
-			[
-				'<',
-				'>',
-				':',
-				'"',
-				'/',
-				'\\',
-				'|',
-				'?',
-				'*',
-			]
-		);
-
-		$photo = Photo::with('album')->find($photoID);
-
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-			return null;
-		}
-
-		if (!$this->sessionFunctions->is_current_user($photo->owner_id)) {
-			if ($photo->album_id !== null) {
-				if (!$photo->album->is_downloadable()) {
-					return null;
-				}
-			} else {
-				if (Configs::get_value('downloadable', '0') === '0') {
-					return null;
-				}
-			}
-		}
-
-		$title = str_replace($badChars, '', $photo->title);
-		if ($title === '') {
-			$title = 'Untitled';
-		}
-
-		$prefix_path = $photo->type == 'raw' ? 'raw/' : 'big/';
-		// determine the file based on given size
-		switch ($request['kind']) {
-			case 'FULL':
-				$path = $prefix_path . $photo->url;
-				$kind = '';
-				break;
-			case 'LIVEPHOTOVIDEO':
-				$path = $prefix_path . $photo->livePhotoUrl;
-				$kind = '';
-				break;
-			case 'MEDIUM2X':
-				if ($this->photoFunctions->isVideo($photo) === false) {
-					$fileName = $photo->url;
-				} else {
-					$fileName = $photo->thumbUrl;
-				}
-				$fileName2x = explode('.', $fileName);
-				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-				$path = 'medium/' . $fileName2x;
-				$kind = '-' . $photo->medium2x;
-				break;
-			case 'MEDIUM':
-				if ($this->photoFunctions->isVideo($photo) === false) {
-					$path = 'medium/' . $photo->url;
-				} else {
-					$path = 'medium/' . $photo->thumbUrl;
-				}
-				$kind = '-' . $photo->medium;
-				break;
-			case 'SMALL2X':
-				if ($this->photoFunctions->isVideo($photo) === false) {
-					$fileName = $photo->url;
-				} else {
-					$fileName = $photo->thumbUrl;
-				}
-				$fileName2x = explode('.', $fileName);
-				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-				$path = 'small/' . $fileName2x;
-				$kind = '-' . $photo->small2x;
-				break;
-			case 'SMALL':
-				if ($this->photoFunctions->isVideo($photo) === false) {
-					$path = 'small/' . $photo->url;
-				} else {
-					$path = 'small/' . $photo->thumbUrl;
-				}
-				$kind = '-' . $photo->small;
-				break;
-			case 'THUMB2X':
-				$fileName2x = explode('.', $photo->thumbUrl);
-				$fileName2x = $fileName2x[0] . '@2x.' . $fileName2x[1];
-				$path = 'thumb/' . $fileName2x;
-				$kind = '-400x400';
-				break;
-			case 'THUMB':
-				$path = 'thumb/' . $photo->thumbUrl;
-				$kind = '-200x200';
-				break;
-			default:
-				Logs::error(
-					__METHOD__,
-					__LINE__,
-					'Invalid kind ' . $request['kind']
-				);
-
-				return null;
-		}
-
-		$fullpath = Storage::path($path);
-		// Check the file actually exists
-		if (!Storage::exists($path)) {
-			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $fullpath . ' (' . $title . ')');
-
-			return null;
-		}
-
-		// Get extension of image
-		$extension = '';
-		if ($photo->type != 'raw') {
-			$extension = Helpers::getExtension($fullpath, false);
-		}
-
-		return [$title, $kind, $extension, $fullpath];
+		return 'true';
 	}
 
 	/**
@@ -681,7 +255,7 @@ class PhotoController extends Controller
 	 *
 	 * @return StreamedResponse|Response|string|void
 	 */
-	public function getArchive(Request $request)
+	public function getArchive(PhotoIDsRequest $request, Archive $archive)
 	{
 		if (Storage::getDefaultDriver() === 's3') {
 			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
@@ -690,71 +264,12 @@ class PhotoController extends Controller
 		}
 
 		$request->validate([
-			'photoIDs' => 'required|string',
 			'kind' => 'nullable|string',
 		]);
 
 		$photoIDs = explode(',', $request['photoIDs']);
 
-		if (count($photoIDs) === 1) {
-			$ret = $this->extract_names($photoIDs[0], $request);
-			if ($ret === null) {
-				return abort(404);
-			}
-
-			list($title, $kind, $extension, $url) = $ret;
-
-			// Set title for photo
-			$file = $title . $kind . $extension;
-
-			$response = new BinaryFileResponse($url);
-			$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
-		} else {
-			$response = new StreamedResponse(function () use ($request, $photoIDs) {
-				$options = new \ZipStream\Option\Archive();
-				$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
-				$zip = new ZipStream(null, $options);
-
-				$files = [];
-				foreach ($photoIDs as $photoID) {
-					$ret = $this->extract_names($photoID, $request);
-					if ($ret == null) {
-						return abort(404);
-					}
-
-					list($title, $kind, $extension, $url) = $ret;
-
-					// Set title for photo
-					$file = $title . $kind . $extension;
-					// Check for duplicates
-					if (!empty($files)) {
-						$i = 1;
-						$tmp_file = $file;
-						while (in_array($tmp_file, $files)) {
-							// Set new title for photo
-							$tmp_file = $title . $kind . '-' . $i . $extension;
-							$i++;
-						}
-						$file = $tmp_file;
-					}
-					// Add to array
-					$files[] = $file;
-
-					// Reset the execution timeout for every iteration.
-					set_time_limit(ini_get('max_execution_time'));
-
-					$zip->addFileFromPath($file, $url);
-				} // foreach ($photoIDs)
-
-				// finish the zip stream
-				$zip->finish();
-			});
-
-			// Set file type and destination
-			$response->headers->set('Content-Type', 'application/x-zip');
-			$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, 'Photos.zip');
-			$response->headers->set('Content-Disposition', $disposition);
-		}
+		$response = $archive->do($photoIDs, $request['kind']);
 
 		// Disable caching
 		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');

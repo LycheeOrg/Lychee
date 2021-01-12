@@ -59,6 +59,7 @@ Route::post('/api/webauthn::delete', [Administration\WebAuthController::class, '
 
 Route::post('/api/Albums::get', [AlbumsController::class, 'get']);
 Route::post('/api/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
+Route::post('/api/Albums::tree', [AlbumsController::class, 'tree']);
 
 Route::post('/api/Album::get', [AlbumController::class, 'get'])->middleware('read');
 Route::post('/api/Album::getPositionData', [AlbumController::class, 'getPositionData'])->middleware('read');
@@ -123,8 +124,6 @@ Route::get('/Diagnostics', [Administration\DiagnosticsController::class, 'show']
 Route::get('/Update', [Administration\UpdateController::class, 'apply'])->middleware('admin');
 Route::post('/api/Update::Apply', [Administration\UpdateController::class, 'apply'])->middleware('admin');
 Route::post('/api/Update::Check', [Administration\UpdateController::class, 'check'])->middleware('admin');
-
-Route::get('/Albums/RebuildTakestamps', [AlbumController::class, 'RebuildTakestamps'])->middleware('admin');
 
 // unused
 Route::post('/api/Logs::clear', [Administration\LogController::class, 'clear'])->middleware('admin');

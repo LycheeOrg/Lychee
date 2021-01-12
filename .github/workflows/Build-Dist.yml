@@ -71,7 +71,6 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
-          coverage: xdebug
           tools: pecl, composer
       
       - name: Install Exiftools

@@ -8,18 +8,18 @@ use Illuminate\Database\Eloquent\Builder;
 
 class StarredAlbum extends SmartAlbum
 {
-	public function get_title()
+	public $id = 'starred';
+
+	public function __construct()
 	{
-		return 'starred';
+		parent::__construct();
+
+		$this->title = 'starred';
+		$this->public = Configs::get_value('public_starred', '0') === '1';
 	}
 
 	public function get_photos(): Builder
 	{
 		return Photo::stars()->where(fn ($q) => $this->filter($q));
-	}
-
-	public function is_public()
-	{
-		return Configs::get_value('public_starred', '0') === '1';
 	}
 }

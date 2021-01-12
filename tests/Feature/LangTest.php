@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Locale\Lang;
+use Lang;
 use Tests\TestCase;
 
 class LangTest extends TestCase
@@ -15,16 +15,15 @@ class LangTest extends TestCase
 	public function testLang()
 	{
 		$lang_available = Lang::get_lang_available();
-
 		$keys = array_keys(Lang::get_lang());
-		foreach ($lang_available as $lang) {
-			$lang_test = Lang::get_lang($lang);
+
+		foreach ($lang_available as $code) {
+			$lang_test = Lang::factory()->make($code);
+			$locale = $lang_test->get_locale();
 
 			foreach ($keys as $key) {
-				$this->assertArrayHasKey($key, $lang_test, 'Language ' . $lang . ' is incomplete.');
+				$this->assertArrayHasKey($key, $locale, 'Language ' . $lang_test->code() . ' is incomplete.');
 			}
 		}
-
-		$this->assertEquals(Lang::get_lang(), Lang::get_lang('does_not_exists'));
 	}
 }

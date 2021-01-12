@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Administration;
 
-use App\ControllerFunctions\WebAuth\Delete as DeleteDevices;
-use App\ControllerFunctions\WebAuth\GenerateAuthentication;
-use App\ControllerFunctions\WebAuth\GenerateRegistration;
-use App\ControllerFunctions\WebAuth\Lists as ListDevices;
-use App\ControllerFunctions\WebAuth\VerifyAuthentication;
-use App\ControllerFunctions\WebAuth\VerifyRegistration;
+use App\Actions\WebAuth\Delete as DeleteDevices;
+use App\Actions\WebAuth\GenerateAuthentication;
+use App\Actions\WebAuth\GenerateRegistration;
+use App\Actions\WebAuth\Lists as ListDevices;
+use App\Actions\WebAuth\VerifyAuthentication;
+use App\Actions\WebAuth\VerifyRegistration;
 use App\Http\Controllers\Controller;
 use DarkGhostHunter\Larapass\Http\WebAuthnRules;
 use Illuminate\Http\Request;

@@ -3,6 +3,7 @@
 namespace App\Exceptions\Handlers;
 
 use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Throwable;
 
@@ -11,8 +12,8 @@ class InvalidPayload
 	/**
 	 * Render an exception into an HTTP response.
 	 *
-	 * @param Illuminate\Http\Request $request
-	 * @param Throwable               $exception
+	 * @param Request   $request
+	 * @param Throwable $exception
 	 *
 	 * @return bool
 	 */
@@ -22,7 +23,7 @@ class InvalidPayload
 	}
 
 	/**
-	 * @return \Illuminate\Http\Response
+	 * @return Response
 	 */
 	// @codeCoverageIgnoreStart
 	public function go()

@@ -2,14 +2,20 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Photo\Extensions\Constants;
+use App\Actions\Photo\Extensions\ImageEditing;
+use App\Actions\Photo\Extensions\VideoEditing;
 use App\Metadata\Extractor;
-use App\ModelFunctions\PhotoFunctions;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Storage;
 
 class VideoData extends Command
 {
+	use Constants;
+	use VideoEditing;
+	use ImageEditing;
+
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -25,11 +31,6 @@ class VideoData extends Command
 	protected $description = 'Generate video thumbnails and metadata if missing';
 
 	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
-	/**
 	 * @var Extractor
 	 */
 	private $metadataExtractor;
@@ -37,15 +38,14 @@ class VideoData extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param PhotoFunctions $photoFunctions
+	 * @param Extractor $metadataExtractor
 	 *
 	 * @return void
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
+	public function __construct(Extractor $metadataExtractor)
 	{
 		parent::__construct();
 
-		$this->photoFunctions = $photoFunctions;
 		$this->metadataExtractor = $metadataExtractor;
 	}
 
@@ -66,7 +66,7 @@ class VideoData extends Command
 			)
 		);
 
-		$photos = Photo::whereIn('type', $this->photoFunctions->getValidVideoTypes())
+		$photos = Photo::whereIn('type', $this->getValidVideoTypes())
 			->where('width', '=', 0)
 			->take($this->argument('count'))
 			->get();
@@ -129,21 +129,21 @@ class VideoData extends Command
 				if ($photo->thumbUrl === '' || $photo->thumb2x === 0 || $photo->small === '' || $photo->small2x === '') {
 					$frame_tmp = '';
 					try {
-						$frame_tmp = $this->photoFunctions->extractVideoFrame($photo);
+						$frame_tmp = $this->extractVideoFrame($photo);
 					} catch (\Exception $exception) {
 						$this->line($exception->getMessage());
 					}
 					if ($frame_tmp !== '') {
 						$this->line('Extracted video frame for thumbnails');
 						if ($photo->thumbUrl === '' || $photo->thumb2x === 0) {
-							if (!$this->photoFunctions->createThumb($photo, $frame_tmp)) {
+							if (!$this->createThumb($photo, $frame_tmp)) {
 								$this->line('Could not create thumbnail for video');
 							}
 							$urlBase = explode('.', $photo->url);
 							$photo->thumbUrl = $urlBase[0] . '.jpeg';
 						}
 						if ($photo->small === '' || $photo->small2x === '') {
-							$this->photoFunctions->createSmallerImages($photo, $frame_tmp);
+							$this->createSmallerImages($photo, $frame_tmp);
 						}
 						unlink($frame_tmp);
 					}

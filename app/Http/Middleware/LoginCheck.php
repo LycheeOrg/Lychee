@@ -4,22 +4,12 @@
 
 namespace App\Http\Middleware;
 
-use App\ModelFunctions\SessionFunctions;
+use AccessControl;
 use Closure;
 use Illuminate\Http\Request;
 
 class LoginCheck
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	public function __construct(SessionFunctions $sessionFunctions)
-	{
-		$this->sessionFunctions = $sessionFunctions;
-	}
-
 	/**
 	 * Handle an incoming request.
 	 *
@@ -30,7 +20,7 @@ class LoginCheck
 	 */
 	public function handle($request, Closure $next)
 	{
-		if (!$this->sessionFunctions->is_logged_in()) {
+		if (!AccessControl::is_logged_in()) {
 			return response('false');
 		}
 

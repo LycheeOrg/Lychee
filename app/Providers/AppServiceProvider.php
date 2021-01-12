@@ -2,15 +2,16 @@
 
 namespace App\Providers;
 
-use App\ControllerFunctions\Update\Apply as ApplyUpdate;
-use App\ControllerFunctions\Update\Check as CheckUpdate;
+use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\Update\Apply as ApplyUpdate;
+use App\Actions\Update\Check as CheckUpdate;
+use App\Factories\LangFactory;
 use App\Image;
 use App\Image\ImageHandler;
+use App\Locale\Lang;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\AlbumsFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
@@ -27,9 +28,10 @@ class AppServiceProvider extends ServiceProvider
 	= [
 		SymLinkFunctions::class => SymLinkFunctions::class,
 		PhotoFunctions::class => PhotoFunctions::class,
-		AlbumFunctions::class => AlbumFunctions::class,
-		AlbumsFunctions::class => AlbumsFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
+		LangFactory::class => LangFactory::class,
+		Lang::class => Lang::class,
+		PublicIds::class => PublicIds::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,
 		GitHubFunctions::class => GitHubFunctions::class,
@@ -51,11 +53,7 @@ class AppServiceProvider extends ServiceProvider
 			/* @noinspection PhpUndefinedClassInspection */
 			DB::listen(function ($query) {
 				/* @noinspection PhpUndefinedClassInspection */
-				Log::info(
-					$query->sql,
-					$query->bindings,
-					$query->time
-				);
+				Log::info($query->sql, $query->bindings, $query->time);
 			});
 			// @codeCoverageIgnoreEnd
 		}
@@ -68,16 +66,10 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->singleton(
-			Image\ImageHandlerInterface::class,
-			function ($app) {
-				$compressionQuality = Configs::get_value(
-					'compression_quality',
-					90
-				);
+		$this->app->singleton(Image\ImageHandlerInterface::class, function ($app) {
+			$compressionQuality = Configs::get_value('compression_quality', 90);
 
-				return new ImageHandler($compressionQuality);
-			}
-		);
+			return new ImageHandler($compressionQuality);
+		});
 	}
 }

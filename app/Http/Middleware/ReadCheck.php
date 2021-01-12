@@ -4,7 +4,7 @@
 
 namespace App\Http\Middleware;
 
-use App\ControllerFunctions\ReadAccessFunctions;
+use App\Actions\ReadAccessFunctions;
 use App\Models\Logs;
 use App\Models\Photo;
 use Closure;

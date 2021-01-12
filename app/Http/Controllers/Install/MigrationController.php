@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Install;
 
-use App\ControllerFunctions\Install\ApplyMigration;
+use App\Actions\Install\ApplyMigration;
 use App\Http\Controllers\Controller;
 
 class MigrationController extends Controller
@@ -39,8 +39,8 @@ class MigrationController extends Controller
 			'title' => 'Lychee-installer',
 			'step' => 4,
 			'lines' => $output,
-			'errors' => $error, ]
-		);
+			'errors' => $error,
+		]);
 	}
 
 	/**

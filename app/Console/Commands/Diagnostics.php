@@ -2,8 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Diagnostics\Configuration;
+use App\Actions\Diagnostics\Errors;
+use App\Actions\Diagnostics\Info;
 use App\Console\Commands\Utilities\Colorize;
-use App\Http\Controllers\Administration\DiagnosticsController;
 use Illuminate\Console\Command;
 
 class Diagnostics extends Command
@@ -64,14 +66,12 @@ class Diagnostics extends Command
 	 */
 	public function handle()
 	{
-		$ctrl = resolve(DiagnosticsController::class);
-
 		$this->line('');
 		$this->line('');
-		$this->block('Diagnostics', $ctrl->get_errors());
+		$this->block('Diagnostics', resolve(Errors::class)->get());
 		$this->line('');
-		$this->block('System Information', $ctrl->get_info());
+		$this->block('System Information', resolve(Info::class)->get());
 		$this->line('');
-		$this->block('Config Information', $ctrl->get_config());
+		$this->block('Config Information', resolve(Configuration::class)->get());
 	}
 }

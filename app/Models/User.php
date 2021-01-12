@@ -91,11 +91,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		return $this->belongsToMany('App\Models\Album', 'user_album', 'user_id', 'album_id');
 	}
 
-	public function get_username(): string
-	{
-		return $this->is_admin() ? 'Admin' : $this->username;
-	}
-
 	public function is_admin(): bool
 	{
 		return $this->id == 0;
@@ -106,11 +101,13 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 		return $this->id == 0 || $this->upload;
 	}
 
+	// ! Used by Larapass
 	public function username(): string
 	{
 		return utf8_encode($this->username);
 	}
 
+	// ! Used by Larapass
 	public function name(): string
 	{
 		return ($this->id == 0) ? 'Admin' : $this->username;

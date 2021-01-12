@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Slovak implements Language
 {
-	public static function code()
+	public function code(): string
 	{
 		return 'sk';
 	}
 
-	public static function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'Meno užívateľa',
@@ -409,6 +409,8 @@ final class Slovak implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Skontrolujte konzolu prehliadača, pre zistenie ďalších podrobností.',
 			'UPLOAD_UNKNOWN' => 'Server vrátil neznámu odpoveď.Skontrolujte konzolu prehliadača, pre zistenie ďalších podrobností.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Nahrávanie zlyhalo. Server ohlásil neznámu chybu!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee práve nahráva!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Import je hotový, vyskytli sa ale chyby alebo varovania. Skontrolujte protokoly (Nastavenia/ Protokoly).',
 			'UPLOAD_IMPORT_COMPLETE' => 'Import hotový',

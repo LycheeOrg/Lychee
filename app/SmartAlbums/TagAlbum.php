@@ -5,12 +5,9 @@ namespace App\SmartAlbums;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 
-class TagAlbum extends SmartAlbum
+class TagAlbum extends BareSmartAlbum
 {
-	public function get_title()
-	{
-		return $this->title;
-	}
+	public $table = 'albums';
 
 	public function get_photos(): Builder
 	{
@@ -22,10 +19,5 @@ class TagAlbum extends SmartAlbum
 		}
 
 		return $sql->where(fn ($q) => $this->filter($q));
-	}
-
-	public function is_public()
-	{
-		return $this->public;
 	}
 }

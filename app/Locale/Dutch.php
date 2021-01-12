@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Dutch implements Language
 {
-	public static function code()
+	public function code(): string
 	{
 		return 'nl';
 	}
 
-	public static function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'gebruikersnaam',
@@ -402,6 +402,8 @@ final class Dutch implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Kijk naar je browsers console voor meer informatie.',
 			'UPLOAD_UNKNOWN' => 'Server gaf een onbekende terugkoppeling, kijk naar je browsers console voor meer informatie.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Upload mislukt. Server gaf een onbekende error!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee is aan het uploaden!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'De import is voltooid maar gaf waarschuwingen of errors terug. Kijk naar de logs (instellingen -> Show Log) for further details.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Import complete',

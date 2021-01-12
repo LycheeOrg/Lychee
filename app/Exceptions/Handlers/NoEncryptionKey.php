@@ -4,6 +4,7 @@ namespace App\Exceptions\Handlers;
 
 use App\Redirections\ToInstall;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use RuntimeException;
@@ -14,8 +15,8 @@ class NoEncryptionKey
 	/**
 	 * Render an exception into an HTTP response.
 	 *
-	 * @param Illuminate\Http\Request $request
-	 * @param Throwable               $exception
+	 * @param Request   $request
+	 * @param Throwable $exception
 	 *
 	 * @return bool
 	 */
@@ -26,7 +27,7 @@ class NoEncryptionKey
 	}
 
 	/**
-	 * @return Response or View
+	 * @return Response|View
 	 */
 	// @codeCoverageIgnoreStart
 	public function go()

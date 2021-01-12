@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class NorwegianBokmal implements Language
 {
-	public static function code()
+	public function code(): string
 	{
 		return 'nb-no';
 	}
 
-	public static function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'brukernavn',
@@ -403,6 +403,8 @@ final class NorwegianBokmal implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Vennligst se konsollen i nettleseren for mer informasjon.',
 			'UPLOAD_UNKNOWN' => 'Serveren svarte med en ukjent feilmelding. Vennlist se konsollen i nettleseren for mer informasjon.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Opplasting feilet. Serveren svarte med en ukjent feil!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee laster for tiden opp!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Importeringen er ferdig, men advarsler eller feil ble returnert. Vennligst see loggen (Innstilinger -> Vis Logg) for mer informasjon.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importering fullført',

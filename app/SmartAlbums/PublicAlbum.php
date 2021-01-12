@@ -7,9 +7,13 @@ use Illuminate\Database\Eloquent\Builder;
 
 class PublicAlbum extends SmartAlbum
 {
-	public function get_title()
+	public $id = 'public';
+
+	public function __construct()
 	{
-		return 'public';
+		parent::__construct();
+
+		$this->title = 'public';
 	}
 
 	public function get_photos(): Builder

@@ -16,8 +16,8 @@ class GeoDataTest extends TestCase
 	 */
 	public function testGeo()
 	{
-		$photos_tests = new PhotosUnitTest();
-		$albums_tests = new AlbumsUnitTest();
+		$photos_tests = new PhotosUnitTest($this);
+		$albums_tests = new AlbumsUnitTest($this);
 		$session_tests = new SessionUnitTest();
 
 		$session_tests->log_as_id(0);
@@ -36,10 +36,10 @@ class GeoDataTest extends TestCase
 			true
 		);
 
-		$id = $photos_tests->upload($this, $file);
+		$id = $photos_tests->upload($file);
 
-		$response = $photos_tests->get($this, $id, 'true');
-		$photos_tests->see_in_unsorted($this, $id);
+		$response = $photos_tests->get($id, 'true');
+		$photos_tests->see_in_unsorted($id);
 		/*
 		* Check some Exif data
 		*/
@@ -71,10 +71,10 @@ class GeoDataTest extends TestCase
 			]
 		);
 
-		$albumID = $albums_tests->add($this, '0', 'test_mongolia');
-		$photos_tests->set_album($this, $albumID, $id, 'true');
-		$photos_tests->dont_see_in_unsorted($this, $id);
-		$response = $albums_tests->get($this, $albumID, '', 'true');
+		$albumID = $albums_tests->add('0', 'test_mongolia');
+		$photos_tests->set_album($albumID, $id, 'true');
+		$photos_tests->dont_see_in_unsorted($id);
+		$response = $albums_tests->get($albumID, '', 'true');
 		$content = $response->getContent();
 		$array_content = json_decode($content);
 		$this->assertEquals(1, count($array_content->photos));
@@ -87,12 +87,12 @@ class GeoDataTest extends TestCase
 		// set to 0
 		Configs::set('map_display', '0');
 		$this->assertEquals(Configs::get_value('map_display'), '0');
-		$albums_tests->AlbumsGetPositionDataFull($this, 200); // we need to fix this
+		$albums_tests->AlbumsGetPositionDataFull(200); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
 		$this->assertEquals(Configs::get_value('map_display'), '1');
-		$response = $albums_tests->AlbumsGetPositionDataFull($this, 200);
+		$response = $albums_tests->AlbumsGetPositionDataFull(200);
 		$content = $response->getContent();
 		$array_content = json_decode($content);
 		$this->assertEquals(1, count($array_content->photos));
@@ -101,19 +101,19 @@ class GeoDataTest extends TestCase
 		// set to 0
 		Configs::set('map_display', '0');
 		$this->assertEquals(Configs::get_value('map_display'), '0');
-		$albums_tests->AlbumGetPositionDataFull($this, $albumID, 200); // we need to fix this
+		$albums_tests->AlbumGetPositionDataFull($albumID, 200); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
 		$this->assertEquals(Configs::get_value('map_display'), '1');
-		$response = $albums_tests->AlbumGetPositionDataFull($this, $albumID, 200);
+		$response = $albums_tests->AlbumGetPositionDataFull($albumID, 200);
 		$content = $response->getContent();
 		$array_content = json_decode($content);
 		$this->assertEquals(1, count($array_content->photos));
 		$this->assertEquals($id, $array_content->photos[0]->id);
 
-		$photos_tests->delete($this, $id, 'true');
-		$albums_tests->delete($this, $albumID);
+		$photos_tests->delete($id, 'true');
+		$albums_tests->delete($albumID);
 
 		// reset
 		Configs::set('map_display', $map_display_value);

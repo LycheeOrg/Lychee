@@ -4,12 +4,11 @@
 
 namespace App\Http\Middleware;
 
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\SessionFunctions;
+use AccessControl;
+use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Logs;
 use App\Models\Photo;
-use App\Models\User;
 use Closure;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Query\Builder;
@@ -18,20 +17,12 @@ use Illuminate\Http\Response;
 
 class UploadCheck
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
+	/** @var AlbumFactory */
+	private $albumFactory;
 
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
-
-	public function __construct(SessionFunctions $sessionFunctions, AlbumFunctions $albumFunctions)
+	public function __construct(AlbumFactory $albumFactory)
 	{
-		$this->sessionFunctions = $sessionFunctions;
-		$this->albumFunctions = $albumFunctions;
+		$this->albumFactory = $albumFactory;
 	}
 
 	/**
@@ -45,16 +36,16 @@ class UploadCheck
 	public function handle(Request $request, Closure $next)
 	{
 		// not logged!
-		if (!$this->sessionFunctions->is_logged_in()) {
+		if (!AccessControl::is_logged_in()) {
 			return response('false');
 		}
 
 		// is admin
-		if ($this->sessionFunctions->is_admin()) {
+		if (AccessControl::is_admin()) {
 			return $next($request);
 		}
 
-		$user = $this->sessionFunctions->user();
+		$user = AccessControl::user();
 
 		// is not admin and does not have upload rights
 		if (!$user->upload) {
@@ -103,7 +94,7 @@ class UploadCheck
 
 		// Remove smart albums (they get a pass).
 		for ($i = 0; $i < count($albumIDs);) {
-			if ($this->albumFunctions->is_smart_album($albumIDs[$i]) || $albumIDs[$i] === '0') {
+			if ($this->albumFactory->is_smart($albumIDs[$i]) || $albumIDs[$i] === '0') {
 				array_splice($albumIDs, $i, 1);
 			} else {
 				$i++;

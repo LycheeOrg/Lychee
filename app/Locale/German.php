@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class German implements Language
 {
-	public static function code()
+	public function code(): string
 	{
 		return 'de';
 	}
 
-	public static function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'Benutzername',
@@ -411,6 +411,8 @@ final class German implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Bitte schauen Sie in die Konsole Ihres Browsers, um weiter Details zu erfahren.',
 			'UPLOAD_UNKNOWN' => 'Der Server hat eine unbekannte Antwort gegeben. Bitte schauen Sie in die Konsole Ihres Browsers, um weiter Details zu erfahren.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Hochladen fehlgeschlagen. Der Server hat einen unbekannten Fehler gemeldet!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee ist gerade beim Hochladen!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Der Import ist fertig, hat aber Warnungen oder Fehler zurückgegeben. Schauen Sie bitte ins Protokoll (Einstellungen/Protokoll ansehen).',
 			'UPLOAD_IMPORT_COMPLETE' => 'Import abgeschlossen',

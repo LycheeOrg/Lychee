@@ -4,14 +4,16 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\Photo\Extensions\Constants;
 use App\Metadata\Extractor;
-use App\ModelFunctions\PhotoFunctions;
 use App\Models\Photo;
 use Illuminate\Console\Command;
 use Storage;
 
 class ExifLens extends Command
 {
+	use Constants;
+
 	/**
 	 * The name and signature of the console command.
 	 *
@@ -27,11 +29,6 @@ class ExifLens extends Command
 	protected $description = 'Get EXIF data from pictures if missing';
 
 	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
-
-	/**
 	 * @var Extractor
 	 */
 	private $metadataExtractor;
@@ -42,11 +39,10 @@ class ExifLens extends Command
 	 * @param PhotoFunctions $photoFunctions
 	 * @param Extractor      $metadataExtractor
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, Extractor $metadataExtractor)
+	public function __construct(Extractor $metadataExtractor)
 	{
 		parent::__construct();
 
-		$this->photoFunctions = $photoFunctions;
 		$this->metadataExtractor = $metadataExtractor;
 	}
 
@@ -64,7 +60,7 @@ class ExifLens extends Command
 
 		// we use lens because this is the one which is most likely to be empty.
 		$photos = Photo::where('lens', '=', '')
-			->whereNotIn('type', $this->photoFunctions->getValidVideoTypes())
+			->whereNotIn('type', $this->getValidVideoTypes())
 			->offset($from)
 			->limit($argument)
 			->get();

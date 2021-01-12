@@ -43,15 +43,15 @@ class RSSTest extends TestCase
 		$response->assertStatus(200);
 
 		// now we start adding some stuff
-		$photos_tests = new PhotosUnitTest();
-		$albums_tests = new AlbumsUnitTest();
+		$photos_tests = new PhotosUnitTest($this);
+		$albums_tests = new AlbumsUnitTest($this);
 		$session_tests = new SessionUnitTest();
 
 		// log as admin
 		$session_tests->log_as_id(0);
 
 		// create an album
-		$albumID = $albums_tests->add($this, '0', 'test_album', 'true');
+		$albumID = $albums_tests->add('0', 'test_album', 'true');
 
 		// upload a picture
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
@@ -62,27 +62,27 @@ class RSSTest extends TestCase
 			null,
 			true
 		);
-		$photoID = $photos_tests->upload($this, $file);
+		$photoID = $photos_tests->upload($file);
 
 		// set it to public
-		$photos_tests->set_public($this, $photoID);
+		$photos_tests->set_public($photoID);
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
 		$response->assertStatus(200);
 
 		// set picture to private
-		$photos_tests->set_public($this, $photoID);
+		$photos_tests->set_public($photoID);
 
 		// move picture to album
-		$photos_tests->set_album($this, $albumID, $photoID, 'true');
-		$albums_tests->set_public($this, $albumID, 1, 1, 1, 0, 1, 1, 'true');
+		$photos_tests->set_album($albumID, $photoID, 'true');
+		$albums_tests->set_public($albumID, 1, 1, 1, 0, 1, 1, 'true');
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
 		$response->assertStatus(200);
 
-		$albums_tests->delete($this, $albumID);
+		$albums_tests->delete($albumID);
 
 		Configs::set('Mod_Frame', $init_config_value);
 		Configs::set('full_photo', $init_full_photo);

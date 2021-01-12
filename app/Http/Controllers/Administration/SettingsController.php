@@ -4,12 +4,11 @@
 
 namespace App\Http\Controllers\Administration;
 
+use AccessControl;
 use App\Assets\Helpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
 use App\Legacy\Legacy;
-use App\Locale\Lang;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
@@ -18,22 +17,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Lang;
 
 class SettingsController extends Controller
 {
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	/**
-	 * @param SessionFunctions $sessionFunctions
-	 */
-	public function __construct(SessionFunctions $sessionFunctions)
-	{
-		$this->sessionFunctions = $sessionFunctions;
-	}
-
 	/**
 	 * Set the Login information of the Lychee configuration
 	 * Either they are not already set and we directly bcrypt the parameters
@@ -61,12 +48,12 @@ class SettingsController extends Controller
 			$adminUser->username = bcrypt($request['username']);
 			$adminUser->password = bcrypt($request['password']);
 			$adminUser->save();
-			$this->sessionFunctions->login($adminUser);
+			AccessControl::login($adminUser);
 
 			return 'true';
 		}
 
-		if ($this->sessionFunctions->is_admin()) {
+		if (AccessControl::is_admin()) {
 			if (
 				$adminUser->password === ''
 				|| Hash::check($oldPassword, $adminUser->password)
@@ -81,8 +68,8 @@ class SettingsController extends Controller
 			unset($adminUser);
 
 			return Response::error('Current password entered incorrectly!');
-		} elseif ($this->sessionFunctions->is_logged_in()) {
-			$id = $this->sessionFunctions->id();
+		} elseif (AccessControl::is_logged_in()) {
+			$id = AccessControl::id();
 
 			// this is probably sensitive to timing attacks...
 			$user = User::find($id);

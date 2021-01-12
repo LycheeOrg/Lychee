@@ -6,10 +6,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Photo\Create;
+use App\Actions\Photo\Extensions\Constants;
 use App\Assets\Helpers;
-use App\ModelFunctions\AlbumFunctions;
-use App\ModelFunctions\PhotoFunctions;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -21,38 +20,18 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ImportController extends Controller
 {
-	/**
-	 * @var PhotoFunctions
-	 */
-	private $photoFunctions;
+	use Constants;
 
-	/**
-	 * @var AlbumFunctions
-	 */
-	private $albumFunctions;
-
-	/**
-	 * @var SessionFunctions
-	 */
-	private $sessionFunctions;
-
-	private $memCheck;
+	private $memCheck = true;
 	private $memLimit;
 	private $memWarningGiven;
-	private $statusCLIFormatting;
+	private $statusCLIFormatting = false;
 
 	/**
 	 * Create a new command instance.
-	 *
-	 * @param PhotoFunctions   $photoFunctions
-	 * @param AlbumFunctions   $albumFunctions
-	 * @param SessionFunctions $sessionFunctions
 	 */
-	public function __construct(PhotoFunctions $photoFunctions, AlbumFunctions $albumFunctions, SessionFunctions $sessionFunctions)
+	public function __construct()
 	{
-		$this->photoFunctions = $photoFunctions;
-		$this->albumFunctions = $albumFunctions;
-		$this->sessionFunctions = $sessionFunctions;
 		$this->statusCLIFormatting = false;
 		$this->memCheck = true;
 	}
@@ -78,7 +57,9 @@ class ImportController extends Controller
 		$nameFile['type'] = $mime;
 		$nameFile['tmp_name'] = $path;
 
-		if ($this->photoFunctions->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates, $resync_metadata) === false) {
+		$create = resolve(Create::class);
+
+		if ($create->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates, $resync_metadata) === false) {
 			// @codeCoverageIgnoreStart
 			return false;
 			// @codeCoverageIgnoreEnd
@@ -121,14 +102,14 @@ class ImportController extends Controller
 			// This prevents us from downloading invalid photos.
 			// Verify extension
 			$extension = Helpers::getExtension($url, true);
-			if (!$this->photoFunctions->isValidExtension($extension)) {
+			if (!$this->isValidExtension($extension)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo format not supported (' . $url . ')');
 				continue;
 			}
 			// Verify image
 			$type = @exif_imagetype($url);
-			if (!$this->photoFunctions->isValidImageType($type) && !in_array(strtolower($extension), $this->photoFunctions->validExtensions, true)) {
+			if (!$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported (' . $url . ')');
 				continue;
@@ -366,7 +347,7 @@ class ImportController extends Controller
 			$extension = Helpers::getExtension($file, true);
 			$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
 			$is_raw = in_array(strtolower($extension), explode('|', $raw_formats), true);
-			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->photoFunctions->validExtensions, true) || $is_raw) {
+			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
 				if ($this->photo($file, $delete_imported, $albumID, $force_skip_duplicates, $resync_metadata) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
@@ -392,7 +373,8 @@ class ImportController extends Controller
 					->first();
 			}
 			if ($album === null) {
-				$album = $this->albumFunctions->create(basename($dir), $albumID, $this->sessionFunctions->id());
+				$create = resolve(Create::class);
+				$album = $create->create(basename($dir), $albumID);
 				// this actually should not fail.
 				if ($album === false) {
 					// @codeCoverageIgnoreStart

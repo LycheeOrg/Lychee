@@ -4,6 +4,7 @@ namespace App\Exceptions\Handlers;
 
 use ErrorException;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 use Throwable;
@@ -13,8 +14,8 @@ class ApplyComposer
 	/**
 	 * Render an exception into an HTTP response.
 	 *
-	 * @param Illuminate\Http\Request $request
-	 * @param Throwable               $exception
+	 * @param Request   $request
+	 * @param Throwable $exception
 	 *
 	 * @return bool
 	 */
@@ -24,7 +25,7 @@ class ApplyComposer
 	}
 
 	/**
-	 * @return Response or View
+	 * @return Response|View
 	 */
 	// @codeCoverageIgnoreStart
 	public function go()

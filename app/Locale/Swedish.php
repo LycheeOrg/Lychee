@@ -6,12 +6,12 @@ use App\Contracts\Language;
 
 final class Swedish implements Language
 {
-	public static function code()
+	public function code(): string
 	{
 		return 'sv';
 	}
 
-	public static function get_locale()
+	public function get_locale(): array
 	{
 		$locale = [
 			'USERNAME' => 'användarnamn',
@@ -402,6 +402,8 @@ final class Swedish implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Kontrollera din webbläsares konsoll för ytterligare information.',
 			'UPLOAD_UNKNOWN' => 'Servern returnerade ett oklart svar. Kontrollera din webbläsares konsoll för ytterligare information.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Uppladdning misslyckades. Servern returnerade ett oklart fel!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
 			'UPLOAD_IN_PROGRESS' => 'Lychee laddar för tillfället upp material!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Importeringen är avslutad, men processen gav felmeddelanden. Kontrollera logfilen (Inställningar -> Visa logfilen) för ytterligare detaljer.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importeringen klar',

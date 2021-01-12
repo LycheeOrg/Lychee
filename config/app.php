@@ -29,6 +29,18 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Application Environment
+	|--------------------------------------------------------------------------
+	|
+	| This value determines whether livewire front-end is enabled as it is
+	| currently under development.
+	|
+	*/
+
+	'livewire' => (bool) env('LIVEWIRE_ENABLED', false),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Application Debug Mode
 	|--------------------------------------------------------------------------
 	|
@@ -152,7 +164,7 @@ return [
 		Illuminate\Pipeline\PipelineServiceProvider::class,
 		Illuminate\Queue\QueueServiceProvider::class,
 		Illuminate\Redis\RedisServiceProvider::class,
-		Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
+		// Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
 		Illuminate\Session\SessionServiceProvider::class,
 		Illuminate\Translation\TranslationServiceProvider::class,
 		Illuminate\Validation\ValidationServiceProvider::class,
@@ -172,6 +184,8 @@ return [
 		// App\Providers\BroadcastServiceProvider::class,
 		App\Providers\EventServiceProvider::class,
 		App\Providers\RouteServiceProvider::class,
+		App\Providers\LangServiceProvider::class,
+		App\Providers\AccessControlServiceProvider::class,
 	],
 
 	/*
@@ -187,6 +201,7 @@ return [
 
 	'aliases' => [
 		'App' => Illuminate\Support\Facades\App::class,
+		'AccessControl' => App\Facades\AccessControl::class,
 		'Arr' => Illuminate\Support\Arr::class,
 		'Artisan' => Illuminate\Support\Facades\Artisan::class,
 		'Auth' => Illuminate\Support\Facades\Auth::class,
@@ -205,12 +220,13 @@ return [
 		'Gate' => Illuminate\Support\Facades\Gate::class,
 		'Hash' => Illuminate\Support\Facades\Hash::class,
 		'Http' => Illuminate\Support\Facades\Http::class,
-		'Lang' => Illuminate\Support\Facades\Lang::class,
+		// 'Lang' => Illuminate\Support\Facades\Lang::class,
+		'Lang' => App\Facades\Lang::class,
 		'Log' => Illuminate\Support\Facades\Log::class,
 		'Mail' => Illuminate\Support\Facades\Mail::class,
 		'Markdown' => GrahamCampbell\Markdown\Facades\Markdown::class,
 		'Notification' => Illuminate\Support\Facades\Notification::class,
-		'Password' => Illuminate\Support\Facades\Password::class,
+		// 'Password' => Illuminate\Support\Facades\Password::class,
 		'Queue' => Illuminate\Support\Facades\Queue::class,
 		'Redirect' => Illuminate\Support\Facades\Redirect::class,
 		'Redis' => Illuminate\Support\Facades\Redis::class,
