@@ -2458,12 +2458,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/php-exif.git",
-                "reference": "cd63c0c95e64beada122c38659390216a974cfa5"
+                "reference": "1ea3468d4ea6a5cf0ea6c748a3a2376de38bbbfd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/cd63c0c95e64beada122c38659390216a974cfa5",
-                "reference": "cd63c0c95e64beada122c38659390216a974cfa5",
+                "url": "https://api.github.com/repos/LycheeOrg/php-exif/zipball/1ea3468d4ea6a5cf0ea6c748a3a2376de38bbbfd",
+                "reference": "1ea3468d4ea6a5cf0ea6c748a3a2376de38bbbfd",
                 "shasum": ""
             },
             "require": {
@@ -2517,9 +2517,9 @@
             ],
             "support": {
                 "issues": "https://github.com/LycheeOrg/php-exif/issues",
-                "source": "https://github.com/LycheeOrg/php-exif/tree/v0.7.2"
+                "source": "https://github.com/LycheeOrg/php-exif/tree/master"
             },
-            "time": "2021-01-07T12:55:30+00:00"
+            "time": "2021-01-12T11:12:02+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -4615,16 +4615,16 @@
         },
         {
             "name": "swiftmailer/swiftmailer",
-            "version": "v6.2.4",
+            "version": "v6.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swiftmailer/swiftmailer.git",
-                "reference": "56f0ab23f54c4ccbb0d5dcc67ff8552e0c98d59e"
+                "reference": "698a6a9f54d7eb321274de3ad19863802c879fb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/56f0ab23f54c4ccbb0d5dcc67ff8552e0c98d59e",
-                "reference": "56f0ab23f54c4ccbb0d5dcc67ff8552e0c98d59e",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/698a6a9f54d7eb321274de3ad19863802c879fb7",
+                "reference": "698a6a9f54d7eb321274de3ad19863802c879fb7",
                 "shasum": ""
             },
             "require": {
@@ -4674,7 +4674,7 @@
             ],
             "support": {
                 "issues": "https://github.com/swiftmailer/swiftmailer/issues",
-                "source": "https://github.com/swiftmailer/swiftmailer/tree/v6.2.4"
+                "source": "https://github.com/swiftmailer/swiftmailer/tree/v6.2.5"
             },
             "funding": [
                 {
@@ -4686,7 +4686,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-12-08T18:02:06+00:00"
+            "time": "2021-01-12T09:35:59+00:00"
         },
         {
             "name": "symfony/cache",
