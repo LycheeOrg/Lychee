@@ -27,6 +27,7 @@ use App\Models\Photo;
 use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PhotoController extends Controller
@@ -79,9 +80,13 @@ class PhotoController extends Controller
 	 */
 	public function add(AlbumIDRequest $request, Create $create)
 	{
-		$request->validate([
-			'0' => 'required',
-		]);
+		try {
+			$request->validate([
+				'0' => 'required',
+			]);
+		} catch (ValidationException $e) {
+			return Response::error('validation failed');
+		}
 
 		if (!$request->hasfile('0')) {
 			return Response::error('missing files');
