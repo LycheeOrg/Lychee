@@ -6,13 +6,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Photo\Create;
+use App\Actions\Album\Create as AlbumCreate;
+use App\Actions\Photo\Create as PhotoCreate;
 use App\Actions\Photo\Extensions\Constants;
 use App\Assets\Helpers;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Response;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use ImagickException;
@@ -57,15 +59,20 @@ class ImportController extends Controller
 		$nameFile['type'] = $mime;
 		$nameFile['tmp_name'] = $path;
 
-		$create = resolve(Create::class);
+		$create = resolve(PhotoCreate::class);
 
-		if ($create->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates, $resync_metadata) === false) {
-			// @codeCoverageIgnoreStart
-			return false;
-			// @codeCoverageIgnoreEnd
+		$res = true;
+		try {
+			if ($create->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates, $resync_metadata) === false) {
+				// @codeCoverageIgnoreStart
+				$res = false;
+				// @codeCoverageIgnoreEnd
+			}
+		} catch (Exception $e) {
+			$res = false;
 		}
 
-		return true;
+		return $res;
 	}
 
 	/**
@@ -373,7 +380,7 @@ class ImportController extends Controller
 					->first();
 			}
 			if ($album === null) {
-				$create = resolve(Create::class);
+				$create = resolve(AlbumCreate::class);
 				$album = $create->create(basename($dir), $albumID);
 				// this actually should not fail.
 				if ($album === false) {
