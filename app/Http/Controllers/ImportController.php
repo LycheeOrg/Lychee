@@ -68,9 +68,11 @@ class ImportController extends Controller
 				$res = false;
 				// @codeCoverageIgnoreEnd
 			}
+			// @codeCoverageIgnoreStart
 		} catch (Exception $e) {
 			$res = false;
 		}
+		// @codeCoverageIgnoreEnd
 
 		return $res;
 	}
