@@ -18,20 +18,6 @@ use Illuminate\View\View;
 class DiagnosticsController extends Controller
 {
 	/**
-	 * @var CheckUpdate
-	 */
-	private $checkUpdate;
-
-	/**
-	 * @param CheckUpdate $checkUpdate
-	 */
-	public function __construct(
-		CheckUpdate $checkUpdate
-	) {
-		$this->checkUpdate = $checkUpdate;
-	}
-
-	/**
 	 * Return the requested information.
 	 *
 	 * @return array
@@ -61,10 +47,10 @@ class DiagnosticsController extends Controller
 	 *
 	 * @return array
 	 */
-	public function get()
+	public function get(CheckUpdate $checkUpdate)
 	{
 		$ret = $this->get_data();
-		$ret['update'] = $this->checkUpdate->getCode();
+		$ret['update'] = $checkUpdate->getCode();
 
 		return $ret;
 	}

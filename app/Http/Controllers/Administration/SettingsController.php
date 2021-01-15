@@ -4,18 +4,14 @@
 
 namespace App\Http\Controllers\Administration;
 
-use AccessControl;
+use App\Actions\Settings\Login;
 use App\Assets\Helpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
-use App\Legacy\Legacy;
 use App\Models\Configs;
 use App\Models\Logs;
-use App\Models\User;
-use App\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Lang;
 
@@ -33,100 +29,9 @@ class SettingsController extends Controller
 	 *
 	 * @return string
 	 */
-	public function setLogin(UsernamePasswordRequest $request)
+	public function setLogin(UsernamePasswordRequest $request, Login $login)
 	{
-		$oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
-		$oldUsername = $request->has('oldUsername') ? $request['oldUsername'] : '';
-
-		if (Legacy::SetPassword($request)) {
-			return 'true';
-		}
-
-		// > 4.0.8
-		$adminUser = User::find(0);
-		if ($adminUser->password === '' && $adminUser->username === '') {
-			$adminUser->username = bcrypt($request['username']);
-			$adminUser->password = bcrypt($request['password']);
-			$adminUser->save();
-			AccessControl::login($adminUser);
-
-			return 'true';
-		}
-
-		if (AccessControl::is_admin()) {
-			if (
-				$adminUser->password === ''
-				|| Hash::check($oldPassword, $adminUser->password)
-			) {
-				$adminUser->username = bcrypt($request['username']);
-				$adminUser->password = bcrypt($request['password']);
-				$adminUser->save();
-				unset($adminUser);
-
-				return 'true';
-			}
-			unset($adminUser);
-
-			return Response::error('Current password entered incorrectly!');
-		} elseif (AccessControl::is_logged_in()) {
-			$id = AccessControl::id();
-
-			// this is probably sensitive to timing attacks...
-			$user = User::find($id);
-
-			if ($user == null) {
-				Logs::error(
-					__METHOD__,
-					__LINE__,
-					'User (' . $id . ') does not exist!'
-				);
-
-				return Response::error('Could not find User.');
-			}
-
-			if ($user->lock) {
-				Logs::notice(
-					__METHOD__,
-					__LINE__,
-					'Locked user (' . $user->username
-						. ') tried to change his identity from ' . $request->ip()
-				);
-
-				return Response::error('Locked account!');
-			}
-
-			if (User::where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
-				Logs::notice(
-					__METHOD__,
-					__LINE__,
-					'User (' . $user->username
-						. ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip()
-				);
-
-				return Response::error('Username already exists.');
-			}
-
-			if (
-				$user->username == $oldUsername
-				&& Hash::check($oldPassword, $user->password)
-			) {
-				Logs::notice(
-					__METHOD__,
-					__LINE__,
-					'User (' . $user->username . ') changed his identity for ('
-						. $request['username'] . ') from ' . $request->ip()
-				);
-				$user->username = $request['username'];
-				$user->password = bcrypt($request['password']);
-
-				return $user->save() ? 'true' : 'false';
-			} else {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username
-					. ') tried to change his identity from ' . $request->ip());
-
-				return Response::error('Old username or password entered incorrectly!');
-			}
-		}
+		return $login->do($request) ? 'true' : 'false';
 	}
 
 	/**
@@ -138,17 +43,17 @@ class SettingsController extends Controller
 	 */
 	public function setSorting(Request $request)
 	{
-		$request->validate([
+		$validated = $request->validate([
 			'typeAlbums' => 'required|string',
 			'orderAlbums' => 'required|string',
 			'typePhotos' => 'required|string',
 			'orderPhotos' => 'required|string',
 		]);
 
-		Configs::set('sorting_Photos_col', $request['typePhotos']);
-		Configs::set('sorting_Photos_order', $request['orderPhotos']);
-		Configs::set('sorting_Albums_col', $request['typeAlbums']);
-		Configs::set('sorting_Albums_order', $request['orderAlbums']);
+		Configs::set('sorting_Photos_col', $validated['typePhotos']);
+		Configs::set('sorting_Photos_order', $validated['orderPhotos']);
+		Configs::set('sorting_Albums_col', $validated['typeAlbums']);
+		Configs::set('sorting_Albums_order', $validated['orderAlbums']);
 
 		return 'true';
 	}
@@ -162,23 +67,15 @@ class SettingsController extends Controller
 	 */
 	public function setLang(Request $request)
 	{
-		$request->validate([
-			'lang' => 'required|string',
-		]);
+		$validated = $request->validate(['lang' => 'required|string']);
 
-		$lang_available = Lang::get_lang_available();
-		for ($i = 0; $i < count($lang_available); $i++) {
-			if ($request['lang'] == $lang_available[$i]) {
-				return (Configs::set('lang', $lang_available[$i])) ? 'true'
-					: 'false';
+		foreach (Lang::get_lang_available() as $lang) {
+			if ($validated['lang'] == $lang) {
+				return Configs::set('lang', $lang) ? 'true' : 'false';
 			}
 		}
 
-		Logs::error(
-			__METHOD__,
-			__LINE__,
-			'Could not update settings. Unknown lang.'
-		);
+		Logs::error(__METHOD__, __LINE__, 'Could not update settings. Unknown lang.');
 
 		return 'false';
 	}
@@ -195,11 +92,9 @@ class SettingsController extends Controller
 	 */
 	public function setLayout(Request $request)
 	{
-		$request->validate([
-			'layout' => 'required|string',
-		]);
+		$validated = $request->validate(['layout' => 'required|string']);
 
-		return (Configs::set('layout', $request['layout'])) ? 'true' : 'false';
+		return Configs::set('layout', $validated['layout']) ? 'true' : 'false';
 	}
 
 	/**
@@ -211,11 +106,9 @@ class SettingsController extends Controller
 	 */
 	public function setDropboxKey(Request $request)
 	{
-		$request->validate([
-			'key' => 'string|nullable',
-		]);
+		$validated = $request->validate(['key' => 'string|nullable']);
 
-		return (Configs::set('dropbox_key', $request['key'])) ? 'true' : 'false';
+		return Configs::set('dropbox_key', $validated['key']) ? 'true' : 'false';
 	}
 
 	/**
@@ -227,15 +120,13 @@ class SettingsController extends Controller
 	 */
 	public function setPublicSearch(Request $request)
 	{
-		$request->validate([
-			'public_search' => 'required|string',
-		]);
+		$validated = $request->validate(['public_search' => 'required|string']);
 
-		if ($request['public_search'] == '1') {
-			return (Configs::set('public_search', '1')) ? 'true' : 'false';
+		if ($validated['public_search'] == '1') {
+			return Configs::set('public_search', '1') ? 'true' : 'false';
 		}
 
-		return (Configs::set('public_search', '0')) ? 'true' : 'false';
+		return Configs::set('public_search', '0') ? 'true' : 'false';
 	}
 
 	/**
@@ -248,15 +139,13 @@ class SettingsController extends Controller
 	 */
 	public function setImageOverlay(Request $request)
 	{
-		$request->validate([
-			'image_overlay' => 'required|string',
-		]);
+		$validated = $request->validate(['image_overlay' => 'required|string']);
 
-		if ($request['image_overlay'] == '1') {
-			return (Configs::set('image_overlay', '1')) ? 'true' : 'false';
+		if ($validated['image_overlay'] == '1') {
+			return Configs::set('image_overlay', '1') ? 'true' : 'false';
 		}
 
-		return (Configs::set('image_overlay', '0')) ? 'true' : 'false';
+		return Configs::set('image_overlay', '0') ? 'true' : 'false';
 	}
 
 	/**
@@ -268,15 +157,13 @@ class SettingsController extends Controller
 	 */
 	public function setNSFWVisible(Request $request)
 	{
-		$request->validate([
-			'nsfw_visible' => 'required|string',
-		]);
+		$validated = $request->validate(['nsfw_visible' => 'required|string']);
 
-		if ($request['nsfw_visible'] == '1') {
-			return (Configs::set('nsfw_visible', '1')) ? 'true' : 'false';
+		if ($validated['nsfw_visible'] == '1') {
+			return Configs::set('nsfw_visible', '1') ? 'true' : 'false';
 		}
 
-		return (Configs::set('nsfw_visible', '0')) ? 'true' : 'false';
+		return Configs::set('nsfw_visible', '0') ? 'true' : 'false';
 	}
 
 	/**
@@ -291,14 +178,9 @@ class SettingsController extends Controller
 	 */
 	public function setImageOverlayType(Request $request)
 	{
-		$request->validate([
-			'image_overlay_type' => 'required|string',
-		]);
+		$validated = $request->validate(['image_overlay_type' => 'required|string']);
 
-		return (Configs::set(
-			'image_overlay_type',
-			$request['image_overlay_type']
-		)) ? 'true' : 'false';
+		return Configs::set('image_overlay_type', $validated['image_overlay_type']) ? 'true' : 'false';
 	}
 
 	/**
@@ -310,26 +192,15 @@ class SettingsController extends Controller
 	 */
 	public function setDefaultLicense(Request $request)
 	{
-		$request->validate([
-			'license' => 'required|string',
-		]);
+		$validated = $request->validate(['license' => 'required|string']);
 
-		// add this to the list
-		$licenses = Helpers::get_all_licenses();
-		$i = 0;
-		while ($i < count($licenses)) {
-			if ($licenses[$i] === $request['license']) {
-				return (Configs::set('default_license', $request['license']))
-					? 'true' : 'false';
+		foreach (Helpers::get_all_licenses() as $license) {
+			if ($license === $validated['license']) {
+				return Configs::set('default_license', $license) ? 'true' : 'false';
 			}
-			$i++;
 		}
 
-		Logs::error(
-			__METHOD__,
-			__LINE__,
-			'Could not find the submitted license'
-		);
+		Logs::error(__METHOD__, __LINE__, 'Could not find the submitted license');
 
 		return 'false';
 	}
@@ -343,15 +214,13 @@ class SettingsController extends Controller
 	 */
 	public function setMapDisplay(Request $request)
 	{
-		$request->validate([
-			'map_display' => 'required|string',
-		]);
+		$request->validate(['map_display' => 'required|string']);
 
 		if ($request['map_display'] == '1') {
-			return (Configs::set('map_display', '1')) ? 'true' : 'false';
+			return Configs::set('map_display', '1') ? 'true' : 'false';
 		}
 
-		return (Configs::set('map_display', '0')) ? 'true' : 'false';
+		return Configs::set('map_display', '0') ? 'true' : 'false';
 	}
 
 	/**
@@ -363,15 +232,13 @@ class SettingsController extends Controller
 	 */
 	public function setMapDisplayPublic(Request $request)
 	{
-		$request->validate([
-			'map_display_public' => 'required|string',
-		]);
+		$request->validate(['map_display_public' => 'required|string']);
 
 		if ($request['map_display_public'] == '1') {
-			return (Configs::set('map_display_public', '1')) ? 'true' : 'false';
+			return Configs::set('map_display_public', '1') ? 'true' : 'false';
 		}
 
-		return (Configs::set('map_display_public', '0')) ? 'true' : 'false';
+		return Configs::set('map_display_public', '0') ? 'true' : 'false';
 	}
 
 	/**
@@ -383,14 +250,9 @@ class SettingsController extends Controller
 	 */
 	public function setMapProvider(Request $request)
 	{
-		$request->validate([
-			'map_provider' => 'required|string',
-		]);
+		$request->validate(['map_provider' => 'required|string']);
 
-		return (Configs::set(
-			'map_provider',
-			$request['map_provider']
-		)) ? 'true' : 'false';
+		return Configs::set('map_provider', $request['map_provider']) ? 'true' : 'false';
 	}
 
 	/**
@@ -402,15 +264,13 @@ class SettingsController extends Controller
 	 */
 	public function setMapIncludeSubalbums(Request $request)
 	{
-		$request->validate([
-			'map_include_subalbums' => 'required|string',
-		]);
+		$request->validate(['map_include_subalbums' => 'required|string']);
 
 		if ($request['map_include_subalbums'] == '1') {
-			return (Configs::set('map_include_subalbums', '1')) ? 'true' : 'false';
+			return Configs::set('map_include_subalbums', '1') ? 'true' : 'false';
 		}
 
-		return (Configs::set('map_include_subalbums', '0')) ? 'true' : 'false';
+		return Configs::set('map_include_subalbums', '0') ? 'true' : 'false';
 	}
 
 	/**
@@ -422,14 +282,9 @@ class SettingsController extends Controller
 	 */
 	public function setLocationDecoding(Request $request)
 	{
-		$request->validate([
-			'location_decoding' => 'required|string',
-		]);
+		$request->validate(['location_decoding' => 'required|string']);
 
-		return (Configs::set(
-			'location_decoding',
-			$request['location_decoding']
-		)) ? 'true' : 'false';
+		return Configs::set('location_decoding', $request['location_decoding']) ? 'true' : 'false';
 	}
 
 	/**
@@ -441,14 +296,9 @@ class SettingsController extends Controller
 	 */
 	public function setLocationShow(Request $request)
 	{
-		$request->validate([
-			'location_show' => 'required|string',
-		]);
+		$request->validate(['location_show' => 'required|string']);
 
-		return (Configs::set(
-			'location_show',
-			$request['location_show']
-		)) ? 'true' : 'false';
+		return Configs::set('location_show', $request['location_show']) ? 'true' : 'false';
 	}
 
 	/**
@@ -460,14 +310,12 @@ class SettingsController extends Controller
 	 */
 	public function setLocationShowPublic(Request $request)
 	{
-		$request->validate([
-			'location_show_public' => 'required|string',
-		]);
+		$request->validate(['location_show_public' => 'required|string']);
 
-		return (Configs::set(
+		return Configs::set(
 			'location_show_public',
 			$request['location_show_public']
-		)) ? 'true' : 'false';
+		) ? 'true' : 'false';
 	}
 
 	/**
@@ -516,9 +364,7 @@ class SettingsController extends Controller
 	public function saveAll(Request $request)
 	{
 		$no_error = true;
-		foreach ($request->except([
-			'_token', 'function', '/api/Settings::saveAll',
-		]) as $key => $value) {
+		foreach ($request->except(['_token', 'function', '/api/Settings::saveAll']) as $key => $value) {
 			$value = ($value == null) ? '' : $value;
 			$no_error &= Configs::set($key, $value);
 		}
