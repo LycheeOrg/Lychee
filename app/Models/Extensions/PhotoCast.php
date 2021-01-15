@@ -153,7 +153,12 @@ trait PhotoCast
 		$return['thumb2x'] = ($this->thumb2x == '1') ? Storage::url('thumb/' . Helpers::ex2x($this->thumbUrl)) : '';
 
 		$path_prefix = ($this->type == 'raw') ? 'raw/' : 'big/';
-		$return['url'] = Storage::url($path_prefix . $this->url);
+		$filename = Storage::url($path_prefix . $this->url);
+		$return['url'] = $filename;
+		// With import_via_symlink enabled sysdate is import date; change to original photo timestamp
+		if (is_link($filename)) {
+			$return['sysdate'] = date('d F Y \a\\t H:i', filemtime(readlink($filename)));
+		}
 
 		if ($this->livePhotoUrl !== '' && $this->livePhotoUrl !== null) {
 			$return['livePhotoUrl'] = Storage::url('big/' . $this->livePhotoUrl);
