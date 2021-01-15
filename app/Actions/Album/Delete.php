@@ -5,6 +5,7 @@ namespace App\Actions\Album;
 use AccessControl;
 use App\Models\Album;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Schema;
 
 class Delete
 {
@@ -29,6 +30,7 @@ class Delete
 
 		$albums = Album::whereIn('id', explode(',', $albumIDs))->get();
 
+		Schema::disableForeignKeyConstraints();
 		foreach ($albums as $album) {
 			$no_error &= $album->predelete();
 
@@ -37,6 +39,7 @@ class Delete
 
 			$no_error &= $album->delete();
 		}
+		Schema::enableForeignKeyConstraints();
 
 		//? We fix the tree :)
 		if (Album::isBroken()) {
