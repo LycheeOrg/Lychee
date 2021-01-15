@@ -13,7 +13,7 @@ class Rotate
 {
 	use Constants;
 
-	private function check(Photo $photo, int $direction)
+	private function check(Photo $photo, int $direction): bool
 	{
 		if ($photo->isVideo()) {
 			Logs::error(__METHOD__, __LINE__, 'Trying to rotate a video');
@@ -44,6 +44,8 @@ class Rotate
 			return false;
 			// @codeCoverageIgnoreEnd
 		}
+
+		return true;
 	}
 
 	public function do(Photo $photo, int $direction)
