@@ -41,7 +41,7 @@ trait PhotoCast
 			'location' => $this->location,
 			'livePhotoContentID' => $this->livePhotoContentID,
 
-			'sysdate' => $this->created_at->format('d F Y'),
+			'sysdate' => $this->created_at->format('d F Y \a\t H:i'),
 			'takedate' => isset($this->takestamp) ? $this->takestamp->format('d F Y \a\t H:i') : '',
 			'license' => $this->license,
 		];

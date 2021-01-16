@@ -14,14 +14,15 @@ class Takedate extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:takedate {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}';
+	protected $signature = 'lychee:takedate {from=0 : from which do we start} {nb=5 : generate exif data if missing} {tm=600 : timeout time requirement}' .
+		   '{--timestamp : use timestamps of media files if exif data missing}';
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Make sure takedate is correct';
+	protected $description = 'Update missing takedate entries';
 
 	/**
 	 * Execute the console command.
@@ -33,8 +34,12 @@ class Takedate extends Command
 		$argument = $this->argument('nb');
 		$from = $this->argument('from');
 		$timeout = $this->argument('tm');
+		$timestamps = $this->option('timestamp');
 		set_time_limit($timeout);
 
+		if ($argument == 0) {
+			$argument = PHP_INT_MAX;
+		}
 		$photos = Photo::whereNull('takestamp')->offset($from)->limit($argument)->get();
 		if (count($photos) == 0) {
 			$this->line('No pictures requires takedate updates.');
@@ -45,22 +50,36 @@ class Takedate extends Command
 		$i = $from;
 		foreach ($photos as $photo) {
 			$url = Storage::path('big/' . $photo->url);
-			if (file_exists($url)) {
-				$info = $metadataExtractor->extract($url, $photo->type);
-				if ($info['takestamp'] != null) {
-					$photo->takestamp = $info['takestamp'];
-					if ($photo->save()) {
-						$this->line($i . ': Takestamp updated for ' . $photo->title);
-					} else {
-						$this->line($i . ': Failed to update takestamp for ' . $photo->title);
-					}
-				} else {
-					$this->line($i . ': Could not get Takestamp data for ' . $photo->title . '.');
-				}
-			} else {
-				$this->line($i . ': File does not exist for ' . $photo->title . '.');
-			}
 			$i++;
+			if (!file_exists($url)) {
+				$this->line($i . ': File does not exist for ' . $photo->title . '.');
+				continue;
+			}
+			$info = $metadataExtractor->extract($url, $photo->type);
+			$stamp = $info['takestamp'];
+			if ($stamp != null) {
+				$photo->takestamp = $stamp;
+				if ($photo->save()) {
+					$this->line($i . ': Takestamp updated for ' . $photo->title);
+				} else {
+					$this->line($i . ': Failed to update takestamp for ' . $photo->title);
+				}
+				continue;
+			}
+			if (!$timestamps) {
+				$this->line($i . ': Could not get Takestamp data for ' . $photo->title . '.');
+				continue;
+			}
+			$filename = $url;
+			if (is_link($filename)) {
+				$filename = readlink($filename);
+			}
+			$photo->created_at = filemtime($filename);
+			if ($photo->save()) {
+				$this->line($i . ': Created_at updated for ' . $photo->title);
+			} else {
+				$this->line($i . ': Failed to update created_at for ' . $photo->title);
+			}
 		}
 	}
 }
