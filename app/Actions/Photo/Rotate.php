@@ -80,7 +80,6 @@ class Rotate
 				$filename = Helpers::ex2x($filename);
 			}
 			$uploadFolder = Storage::path($img_type . '/');
-			$img_path = $uploadFolder . $photo->url;
 
 			// Rotate the image
 			$img_path = $uploadFolder . $filename;

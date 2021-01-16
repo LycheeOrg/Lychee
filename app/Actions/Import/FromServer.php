@@ -46,7 +46,7 @@ class FromServer
 			}
 		}
 		// We set the warning threshold at 90% of the limit.
-		$this->exec->memLimit = intval($this->memLimit * 0.9);
+		$this->exec->memLimit = intval($this->exec->memLimit * 0.9);
 
 		$response = new StreamedResponse();
 		$response->setCallback(function () use ($validated) {

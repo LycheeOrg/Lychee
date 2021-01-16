@@ -3,6 +3,7 @@
 namespace App\Actions\Import;
 
 use App\Actions\Import\Extensions\ImportPhoto;
+use App\Actions\Photo\Extensions\Constants;
 use App\Assets\Helpers;
 use App\Models\Album;
 use App\Models\Configs;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Storage;
 class Exec
 {
 	use ImportPhoto;
+	use Constants;
 
 	public $force_skip_duplicates = false;
 	public $resync_metadata = false;
@@ -142,7 +144,7 @@ class Exec
 		// Parse path
 		$origPath = $path;
 
-		if ($this->parsePath($path, $origPath)) {
+		if (!$this->parsePath($path, $origPath)) {
 			return;
 		}
 
@@ -205,12 +207,10 @@ class Exec
 				if ($this->photo($file, $this->delete_imported, $albumID, $this->force_skip_duplicates, $this->resync_metadata) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
-					continue;
 				}
 			} else {
 				$this->status_update('Problem: ' . $file . ': Unsupported file type');
 				Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
-				continue;
 			}
 		}
 		$this->status_update('Status: ' . $origPath . ': 100' . $percent_symbol);
