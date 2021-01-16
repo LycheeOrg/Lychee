@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use AccessControl;
-use App\Http\Controllers\ImportController;
+use App\Actions\Import\Exec;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -28,26 +28,24 @@ class Sync extends Command
 	 *
 	 * @return mixed
 	 */
-	public function handle()
+	public function handle(Exec $exec)
 	{
 		$this->info('Start syncing.');
 		$directory = $this->argument('dir');
 		$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
 		$album_id = (int) $this->option('album_id'); // in case no ID provided -> import to root folder
-		$resync_metadata = $this->option('resync_metadata');
-		$delete_imported = false; // we want to sync -> do not delete imported files
-		$force_skip_duplicates = true;
-		$import_controller = resolve(ImportController::class);
 
 		// Enable CLI formatting of status
-		$import_controller->enableCLIStatus();
-		// Disable Memory Check
-		$import_controller->disableMemCheck();
+		$exec->statusCLIFormatting = true;
+		$exec->memCheck = false;
+		$exec->delete_imported = false; // we want to sync -> do not delete imported files
+		$exec->force_skip_duplicates = true;
+		$exec->resync_metadata = $this->option('resync_metadata');
 
 		AccessControl::log_as_id($owner_id);
 
 		try {
-			$import_controller->server_exec($directory, $album_id, $delete_imported, $force_skip_duplicates, null, $resync_metadata);
+			$exec->do($directory, $album_id);
 		} catch (Exception $e) {
 			$this->error($e);
 		}
