@@ -47,7 +47,7 @@ class Takedate extends Command
 			return false;
 		}
 
-		$i = $from;
+		$i = $from - 1;
 		foreach ($photos as $photo) {
 			$url = Storage::path('big/' . $photo->url);
 			$i++;
@@ -70,11 +70,10 @@ class Takedate extends Command
 				$this->line($i . ': Could not get Takestamp data for ' . $photo->title . '.');
 				continue;
 			}
-			$filename = $url;
-			if (is_link($filename)) {
-				$filename = readlink($filename);
+			if (is_link($url)) {
+				$url = readlink($url);
 			}
-			$photo->created_at = filemtime($filename);
+			$photo->created_at = filemtime($url);
 			if ($photo->save()) {
 				$this->line($i . ': Created_at updated for ' . $photo->title);
 			} else {
