@@ -12,6 +12,7 @@ use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
 use App\Actions\Album\Prepare;
+use App\Actions\Album\SetCover;
 use App\Actions\Album\SetDescription;
 use App\Actions\Album\SetLicense;
 use App\Actions\Album\SetNSFW;
@@ -183,6 +184,28 @@ class AlbumController extends Controller
 		]);
 
 		return $setShowTags->do($request['albumID'], $request['show_tags']) ? 'true' : 'false';
+	}
+
+	/**
+	 * Set cover image of the album.
+	 *
+	 * @param Request $request
+	 *
+	 * @return bool|string
+	 */
+	public function setCover(AlbumIDRequestInt $request, SetCover $setCover)
+	{
+		//FINAL
+//		$request->validate([
+//			'cover' => 'integer|required',
+//		]);
+//		return $setCover->do($request['albumID'], $request['cover'] ?? '') ? 'true' : 'false';
+		//TEST
+		$request->validate([
+			'description' => 'string|nullable|max:1000',
+		]);
+
+		return $setCover->do($request['albumID'], $request['description'] ?? '') ? 'true' : 'false';
 	}
 
 	/**

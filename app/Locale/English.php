@@ -121,6 +121,8 @@ final class English implements Language
 			'TAGS' => 'Tag',
 			'TAGS_ALL' => 'Tag Selected',
 			'UNSTAR_PHOTO' => 'Unstar Photo',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'About Photo',
