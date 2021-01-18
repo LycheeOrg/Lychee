@@ -27,7 +27,7 @@ class Thumb
 	public function toArray(): array
 	{
 		return [
-			'id' => $this->id,
+			'id' => strval($this->id),
 			'type' => $this->type,
 			'thumb' => $this->thumb,
 			'thumb2x' => $this->thumb2x,
