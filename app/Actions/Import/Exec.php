@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Storage;
 class Exec
 {
 	use ImportPhoto;
-	use Create;
 	use Constants;
 
 	public $force_skip_duplicates = false;
