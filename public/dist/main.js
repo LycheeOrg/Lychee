@@ -1894,7 +1894,9 @@ albums._createSmartAlbums = function (data) {
 		}
 	} else {
 		if (data.unsorted) {
-			data.unsorted.title = lychee.locale["UNSORTED"], data.unsorted.sysdate = "", data.unsorted.unsorted = "1";
+			data.unsorted.title = lychee.locale["UNSORTED"];
+			data.unsorted.sysdate = "";
+			data.unsorted.unsorted = "1";
 		}
 
 		if (data.starred) {
@@ -1904,13 +1906,15 @@ albums._createSmartAlbums = function (data) {
 		}
 
 		if (data.public) {
-			data.public.title = lychee.locale["PUBLIC"], data.public.sysdate = "";
+			data.public.title = lychee.locale["PUBLIC"];
+			data.public.sysdate = "";
 			data.public.public = "1";
 			data.public.visible = "0";
 		}
 
 		if (data.recent) {
-			data.recent.title = lychee.locale["RECENT"], data.recent.sysdate = "";
+			data.recent.title = lychee.locale["RECENT"];
+			data.recent.sysdate = "";
 			data.recent.recent = "1";
 		}
 
