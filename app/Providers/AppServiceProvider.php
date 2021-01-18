@@ -13,7 +13,6 @@ use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
 use App\ModelFunctions\ConfigFunctions;
-use App\ModelFunctions\PhotoFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
@@ -27,7 +26,6 @@ class AppServiceProvider extends ServiceProvider
 	public $singletons
 	= [
 		SymLinkFunctions::class => SymLinkFunctions::class,
-		PhotoFunctions::class => PhotoFunctions::class,
 		ConfigFunctions::class => ConfigFunctions::class,
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
