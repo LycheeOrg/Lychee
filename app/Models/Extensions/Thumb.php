@@ -24,10 +24,11 @@ class Thumb
 		$this->thumb2x = Helpers::ex2x($this->thumb);
 	}
 
-	public function insertToArrays(array &$thumb, array &$type, array &$thumb2x): void
+	public function insertToArrays(array &$thumb, array &$type, array &$thumb2x, array &$thumbIDs): void
 	{
 		$thumb[] = $this->thumb;
 		$type[] = $this->type;
 		$thumb2x[] = $this->thumb2x;
+		$thumbIDs[] = $this->thumbID;
 	}
 }

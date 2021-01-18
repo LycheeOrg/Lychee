@@ -11,9 +11,10 @@ trait AlbumSetters
 		$return['thumbs'] = [];
 		$return['types'] = [];
 		$return['thumbs2x'] = [];
+		$return['thumbIDs'] = [];
 
 		$thumbs->each(function (Thumb $thumb, $key) use (&$return) {
-			$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
+			$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x'], $return['thumbIDs']);
 		});
 	}
 }

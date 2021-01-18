@@ -44,6 +44,7 @@ trait AlbumCast
 			'sorting_col' => $this->sorting_col,
 			'sorting_order' => $this->sorting_order,
 
+			'thumbIDs' => [],
 			'thumbs' => [],
 			'thumbs2x' => [],
 			'types' => [],
