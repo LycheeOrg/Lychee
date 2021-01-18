@@ -492,36 +492,6 @@ build.multiselect = function (top, left) {
 	return lychee.html(_templateObject4, top, left);
 };
 
-/*build.getAlbumThumb = function (data, i) {
-	let isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
-	let isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
-	let thumb = data.thumbs[i];
-	var thumb2x = "";
-
-	if (thumb === "uploads/thumb/" && isVideo) {
-		return `<span class="thumbimg"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
-	}
-	if (thumb === "uploads/thumb/" && isRaw) {
-		return `<span class="thumbimg"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
-	}
-
-	if (data.thumbs2x) {
-		if (data.thumbs2x[i]) {
-			thumb2x = data.thumbs2x[i];
-		}
-	} else {
-		// Fallback code for Lychee v3
-		var { path: thumb2x, isPhoto: isPhoto } = lychee.retinize(data.thumbs[i]);
-		if (!isPhoto) {
-			thumb2x = "";
-		}
-	}
-
-	return `<span class="thumbimg${isVideo ? " video" : ""}"><img class='lazyload' src='img/placeholder.png' data-src='${thumb}' ${
-		thumb2x !== "" ? "data-srcset='" + thumb2x + " 2x'" : ""
-	} alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
-};*/
-
 // two additional images that are barely visible seems a bit overkill - use same image 3 times
 // if this simplification comes to pass data.types, data.thumbs and data.thumbs2x no longer need to be arrays
 build.getAlbumThumb = function (data) {
@@ -531,7 +501,7 @@ build.getAlbumThumb = function (data) {
 
 	if (lychee.api_V2) {
 		isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
-		isRaw = data.thumb.type && data.thumb.types.indexOf("raw") > -1;
+		isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
 		thumb = data.thumb.thumb;
 	} else {
 		isVideo = data.types[0] && data.type.indexOf("video") > -1;

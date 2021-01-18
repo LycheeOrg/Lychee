@@ -1824,16 +1824,16 @@ albums.load = function () {
 
 albums.parse = function (album) {
 	var i = void 0;
-	for (i = 0; i < 3; i++) {
-		if (lychee.api_V2) {
-			if (!album.thumb) {
-				album.thumb = {};
-				album.thumb.id = "";
-				album.thumb.thumb = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
-				album.thumb.type = "";
-				album.thumb.thumb2x = "";
-			}
-		} else {
+	if (lychee.api_V2) {
+		if (!album.thumb) {
+			album.thumb = {};
+			album.thumb.id = "";
+			album.thumb.thumb = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
+			album.thumb.type = "";
+			album.thumb.thumb2x = "";
+		}
+	} else {
+		for (i = 0; i < 3; i++) {
 			if (!album.thumbs[i]) {
 				album.thumbs[i] = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
 			}
@@ -1843,76 +1843,88 @@ albums.parse = function (album) {
 
 // TODO: REFACTOR THIS
 albums._createSmartAlbums = function (data) {
-	if (data.unsorted) {
-		data.unsorted = {
-			id: "unsorted",
-			title: lychee.locale["UNSORTED"],
-			// sysdate: data.unsorted.num + " " + lychee.locale["NUM_PHOTOS"],
-			sysdate: "",
-			unsorted: "1",
-			thumbs: data.unsorted.thumbs,
-			thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
-			types: data.unsorted.types
-		};
-	}
-
-	if (data.starred) {
-		data.starred = {
-			id: "starred",
-			title: lychee.locale["STARRED"],
-			sysdate: "",
-			//			sysdate: data.starred.num + " " + lychee.locale["NUM_PHOTOS"],
-			star: "1",
-			thumbs: data.starred.thumbs,
-			thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
-			types: data.starred.types
-		};
-	}
-
-	if (data.public) {
-		data.public = {
-			id: "public",
-			title: lychee.locale["PUBLIC"],
-			sysdate: "",
-			//			sysdate: data.public.num + " " + lychee.locale["NUM_PHOTOS"],
-			public: "1",
-			thumbs: data.public.thumbs,
-			thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
-			visible: "0",
-			types: data.public.types
-		};
-	}
-
-	if (data.recent) {
-		data.recent = {
-			id: "recent",
-			title: lychee.locale["RECENT"],
-			sysdate: "",
-			//			sysdate: data.recent.num + " " + lychee.locale["NUM_PHOTOS"],
-			recent: "1",
-			thumbs: data.recent.thumbs,
-			thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
-			types: data.recent.types
-		};
-	}
-
-	Object.entries(data).forEach(function (_ref) {
-		var _ref2 = _slicedToArray(_ref, 2),
-		    albumName = _ref2[0],
-		    albumData = _ref2[1];
-
-		if (albumData["tag_album"] === "1") {
-			data[albumName] = {
-				id: albumData.id,
-				title: albumName,
+	if (!lychee.api_V2) {
+		if (data.unsorted) {
+			data.unsorted = {
+				id: "unsorted",
+				title: lychee.locale["UNSORTED"],
 				sysdate: "",
-				tag_album: "1",
-				thumbs: albumData.thumbs,
-				thumbs2x: albumData.thumbs2x ? albumData.thumbs2x : null,
-				types: albumData.types
+				unsorted: "1",
+				thumbs: data.unsorted.thumbs,
+				thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
+				types: data.unsorted.types
 			};
 		}
-	});
+
+		if (data.starred) {
+			data.starred = {
+				id: "starred",
+				title: lychee.locale["STARRED"],
+				sysdate: "",
+				star: "1",
+				thumbs: data.starred.thumbs,
+				thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
+				types: data.starred.types
+			};
+		}
+
+		if (data.public) {
+			data.public = {
+				id: "public",
+				title: lychee.locale["PUBLIC"],
+				sysdate: "",
+				public: "1",
+				thumbs: data.public.thumbs,
+				thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
+				visible: "0",
+				types: data.public.types
+			};
+		}
+
+		if (data.recent) {
+			data.recent = {
+				id: "recent",
+				title: lychee.locale["RECENT"],
+				sysdate: "",
+				recent: "1",
+				thumbs: data.recent.thumbs,
+				thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
+				types: data.recent.types
+			};
+		}
+	} else {
+		if (data.unsorted) {
+			data.unsorted.title = lychee.locale["UNSORTED"], data.unsorted.sysdate = "", data.unsorted.unsorted = "1";
+		}
+
+		if (data.starred) {
+			data.starred.title = lychee.locale["STARRED"];
+			data.starred.sysdate = "";
+			data.starred.star = "1";
+		}
+
+		if (data.public) {
+			data.public.title = lychee.locale["PUBLIC"], data.public.sysdate = "";
+			data.public.public = "1";
+			data.public.visible = "0";
+		}
+
+		if (data.recent) {
+			data.recent.title = lychee.locale["RECENT"], data.recent.sysdate = "";
+			data.recent.recent = "1";
+		}
+
+		Object.entries(data).forEach(function (_ref) {
+			var _ref2 = _slicedToArray(_ref, 2),
+			    albumName = _ref2[0],
+			    albumData = _ref2[1];
+
+			if (albumData["tag_album"] === "1") {
+				data[albumName].sysdate = "";
+				data[albumName].tag_album = "1";
+			}
+		});
+	}
 };
 
 albums.isShared = function (albumID) {
@@ -2049,36 +2061,6 @@ build.multiselect = function (top, left) {
 	return lychee.html(_templateObject19, top, left);
 };
 
-/*build.getAlbumThumb = function (data, i) {
-	let isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
-	let isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
-	let thumb = data.thumbs[i];
-	var thumb2x = "";
-
-	if (thumb === "uploads/thumb/" && isVideo) {
-		return `<span class="thumbimg"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
-	}
-	if (thumb === "uploads/thumb/" && isRaw) {
-		return `<span class="thumbimg"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
-	}
-
-	if (data.thumbs2x) {
-		if (data.thumbs2x[i]) {
-			thumb2x = data.thumbs2x[i];
-		}
-	} else {
-		// Fallback code for Lychee v3
-		var { path: thumb2x, isPhoto: isPhoto } = lychee.retinize(data.thumbs[i]);
-		if (!isPhoto) {
-			thumb2x = "";
-		}
-	}
-
-	return `<span class="thumbimg${isVideo ? " video" : ""}"><img class='lazyload' src='img/placeholder.png' data-src='${thumb}' ${
-		thumb2x !== "" ? "data-srcset='" + thumb2x + " 2x'" : ""
-	} alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
-};*/
-
 // two additional images that are barely visible seems a bit overkill - use same image 3 times
 // if this simplification comes to pass data.types, data.thumbs and data.thumbs2x no longer need to be arrays
 build.getAlbumThumb = function (data) {
@@ -2088,7 +2070,7 @@ build.getAlbumThumb = function (data) {
 
 	if (lychee.api_V2) {
 		isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
-		isRaw = data.thumb.type && data.thumb.types.indexOf("raw") > -1;
+		isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
 		thumb = data.thumb.thumb;
 	} else {
 		isVideo = data.types[0] && data.type.indexOf("video") > -1;

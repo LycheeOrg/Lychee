@@ -6,6 +6,7 @@ use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Albums\Extensions\PublicViewable;
 use App\Models\Configs;
 use App\Models\Photo;
+use DebugBar;
 
 trait AlbumGetters
 {
@@ -70,9 +71,12 @@ trait AlbumGetters
 
 	public function get_thumb(): ?Thumb
 	{
+		DebugBar::warning('get_thumb:' . $this->id);
 		if ($this->cover != null) {
+			DebugBar::notice('cover');
 			$cover = $this->cover;
 		} else {
+			DebugBar::notice('not cover');
 			[$sort_col, $sort_order] = $this->get_sort();
 
 			$sql = $this->get_all_photos();
