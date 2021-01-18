@@ -35,12 +35,7 @@ class Prepare
 		$return = $album->toReturnArray();
 
 		// take care of sub albums
-		$return['albums'] = $album->get_children()->map(function ($child) {
-			$arr_child = $child->toReturnArray();
-			$child->set_thumbs($arr_child, $child->get_thumbs());
-
-			return $arr_child;
-		})->values();
+		$return['albums'] = $album->get_children()->map(fn ($a) => $a->toReturnArray())->values();
 
 		// take care of photos
 		$return['photos'] = $this->photos->get($album);

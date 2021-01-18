@@ -44,10 +44,7 @@ trait AlbumCast
 			'sorting_col' => $this->sorting_col,
 			'sorting_order' => $this->sorting_order,
 
-			'thumbIDs' => [],
-			'thumbs' => [],
-			'thumbs2x' => [],
-			'types' => [],
+			'thumb' => optional($this->get_thumb())->toArray(),
 			'has_albums' => Helpers::str_of_bool($this->isLeaf() === false),
 		];
 

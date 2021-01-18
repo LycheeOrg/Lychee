@@ -68,28 +68,30 @@ trait AlbumGetters
 			->where('albums._rgt', '<=', $this->_rgt);
 	}
 
-	public function get_thumbs()
+	public function get_thumb(): ?Thumb
 	{
 		if ($this->cover != null) {
-			return $this->cover->toThumb();
+			$cover = $this->cover;
+		} else {
+			[$sort_col, $sort_order] = $this->get_sort();
+
+			$sql = $this->get_all_photos();
+
+			//? apply safety filter : Do not leak pictures which are not ours
+			$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
+
+			if ($forbiddenID != null && !$forbiddenID->isEmpty()) {
+				$sql = $sql->whereNotIn('album_id', $forbiddenID);
+			}
+
+			$cover = $sql->orderBy('star', 'DESC')
+				->orderBy($sort_col, $sort_order)
+				->orderBy('photos.id', 'ASC')
+				->limit(1)
+				->first();
 		}
 
-		[$sort_col, $sort_order] = $this->get_sort();
-
-		$sql = $this->get_all_photos();
-
-		//? apply safety filter : Do not leak pictures which are not ours
-		$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
-		if ($forbiddenID != null && !$forbiddenID->isEmpty()) {
-			$sql = $sql->whereNotIn('album_id', $forbiddenID);
-		}
-
-		return $sql->orderBy('star', 'DESC')
-			->orderBy($sort_col, $sort_order)
-			->orderBy('photos.id', 'ASC')
-			->limit(1)
-			->get()
-			->map(fn ($photo) => $photo->toThumb());
+		return optional($cover)->toThumb();
 	}
 
 	public function get_children()

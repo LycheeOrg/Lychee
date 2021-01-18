@@ -35,8 +35,6 @@ class Prepare
 				$album_array['owner'] = $album->owner->name();
 			}
 
-			$album->set_thumbs($album_array, $album->get_thumbs());
-
 			// Add to return
 			$return[] = $album_array;
 		}

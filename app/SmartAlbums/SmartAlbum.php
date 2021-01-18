@@ -13,6 +13,11 @@ class SmartAlbum extends BareSmartAlbum
 	public $description = '';
 
 	/**
+	 * fake cover.
+	 */
+	public $cover = null;
+
+	/**
 	 * fake password string.
 	 *
 	 * @var string

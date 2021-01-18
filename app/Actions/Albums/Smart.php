@@ -64,8 +64,6 @@ class Smart
 			if (AccessControl::can_upload() || $smartAlbum->is_public()) {
 				$smartAlbum->setAlbumIDs($publicAlbums);
 				$return[$smartAlbum->title] = $smartAlbum->toReturnArray();
-				$thumbs = $smartAlbum->get_thumbs();
-				$smartAlbum->set_thumbs($return[$smartAlbum->title], $thumbs);
 			}
 		}
 

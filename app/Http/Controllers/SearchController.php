@@ -138,13 +138,6 @@ class SearchController extends Controller
 				if (AccessControl::is_logged_in()) {
 					$album['owner'] = $album_model->owner->username;
 				}
-				if ($this->readAccessFunctions->album($album_model) === 1) {
-					// We don't need 'albums' but we do need to come up with
-					// all the subalbums in order to get accurate thumbs info
-					// and to let the front end know if there are any.
-					$thumbs = $album_model->get_thumbs();
-					$album_model->set_thumbs($album, $thumbs);
-				}
 
 				$return['albums'][$i] = $album;
 				$i++;
