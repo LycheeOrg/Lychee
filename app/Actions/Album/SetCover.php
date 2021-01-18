@@ -12,7 +12,7 @@ class SetCover extends Setter
 		$this->property = 'cover_id';
 	}
 
-	public function do(string $albumID, string $value): bool
+	public function do(string $albumID, ?string $value): bool
 	{
 		if ($this->albumFactory->is_smart($albumID)) {
 			throw new JsonError('This is not possible for Smart albums.');

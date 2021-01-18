@@ -18,7 +18,7 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
     _templateObject8 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject9 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject10 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
-    _templateObject11 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject11 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject12 = _taggedTemplateLiteral(["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject13 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject14 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
@@ -492,10 +492,52 @@ build.multiselect = function (top, left) {
 	return lychee.html(_templateObject4, top, left);
 };
 
-build.getAlbumThumb = function (data, i) {
-	var isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
-	var isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
-	var thumb = data.thumbs[i];
+/*build.getAlbumThumb = function (data, i) {
+	let isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
+	let isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
+	let thumb = data.thumbs[i];
+	var thumb2x = "";
+
+	if (thumb === "uploads/thumb/" && isVideo) {
+		return `<span class="thumbimg"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
+	}
+	if (thumb === "uploads/thumb/" && isRaw) {
+		return `<span class="thumbimg"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
+	}
+
+	if (data.thumbs2x) {
+		if (data.thumbs2x[i]) {
+			thumb2x = data.thumbs2x[i];
+		}
+	} else {
+		// Fallback code for Lychee v3
+		var { path: thumb2x, isPhoto: isPhoto } = lychee.retinize(data.thumbs[i]);
+		if (!isPhoto) {
+			thumb2x = "";
+		}
+	}
+
+	return `<span class="thumbimg${isVideo ? " video" : ""}"><img class='lazyload' src='img/placeholder.png' data-src='${thumb}' ${
+		thumb2x !== "" ? "data-srcset='" + thumb2x + " 2x'" : ""
+	} alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
+};*/
+
+// two additional images that are barely visible seems a bit overkill - use same image 3 times
+// if this simplification comes to pass data.types, data.thumbs and data.thumbs2x no longer need to be arrays
+build.getAlbumThumb = function (data) {
+	var isVideo = void 0;
+	var isRaw = void 0;
+	var thumb = void 0;
+
+	if (lychee.api_V2) {
+		isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
+		isRaw = data.thumb.type && data.thumb.types.indexOf("raw") > -1;
+		thumb = data.thumb.thumb;
+	} else {
+		isVideo = data.types[0] && data.type.indexOf("video") > -1;
+		isRaw = data.types[0] && data.types[0].indexOf("raw") > -1;
+		thumb = data.thumbs[0];
+	}
 	var thumb2x = "";
 
 	if (thumb === "uploads/thumb/" && isVideo) {
@@ -505,13 +547,11 @@ build.getAlbumThumb = function (data, i) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	if (data.thumbs2x) {
-		if (data.thumbs2x[i]) {
-			thumb2x = data.thumbs2x[i];
-		}
+	if (lychee.api_V2) {
+		thumb2x = data.thumb.thumb2x;
 	} else {
 		// Fallback code for Lychee v3
-		var _lychee$retinize = lychee.retinize(data.thumbs[i]),
+		var _lychee$retinize = lychee.retinize(data.thumbs[0]),
 		    thumb2x = _lychee$retinize.path,
 		    isPhoto = _lychee$retinize.isPhoto;
 
@@ -544,7 +584,7 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.nsfw && data.nsfw === "1" && lychee.nsfw_blur ? "blurred" : "", data.id, data.nsfw && data.nsfw === "1" ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject5, disabled ? "disabled" : "", data.nsfw && data.nsfw === "1" && lychee.nsfw_blur ? "blurred" : "", data.id, data.nsfw && data.nsfw === "1" ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, date_stamp);
 
 	if (album.isUploadable() && !disabled) {
 		html += lychee.html(_templateObject6, data.nsfw === "1" ? "badge--nsfw" : "", build.iconic("warning"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.password === "1" ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album === "1" ? "badge--tag" : "", build.iconic("tag"));
@@ -565,6 +605,7 @@ build.photo = function (data) {
 	var html = "";
 	var thumbnail = "";
 	var thumb2x = "";
+	var isCover = data.id === album.json.cover_id;
 
 	var isVideo = data.type && data.type.indexOf("video") > -1;
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
@@ -646,7 +687,7 @@ build.photo = function (data) {
 	html += "</div>";
 
 	if (album.isUploadable()) {
-		html += lychee.html(_templateObject11, data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" && album.json.public !== "1" ? "badge--visible badge--hidden" : "", build.iconic("eye"));
+		html += lychee.html(_templateObject11, isCover ? "badge--cover" : "", build.iconic("folder-cover"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" && album.json.public !== "1" ? "badge--visible badge--hidden" : "", build.iconic("eye"));
 	}
 
 	html += "</div>";

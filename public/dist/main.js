@@ -321,7 +321,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject25 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
-    _templateObject26 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject26 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t\t\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject27 = _taggedTemplateLiteral(["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject28 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
@@ -1166,6 +1166,25 @@ album.setDescription = function (albumID) {
 	});
 };
 
+album.toggleCover = function (photoID) {
+	if (!photoID) return false;
+
+	album.json.cover_id = album.json.cover_id === photoID ? "" : photoID;
+
+	var params = {
+		albumID: album.json.id,
+		cover_id: album.json.cover_id
+	};
+
+	api.post("Album::setCover", params, function (data) {
+		if (data !== true) {
+			lychee.error(null, params, data);
+		} else {
+			view.album.content.cover(photoID);
+		}
+	});
+};
+
 album.setLicense = function (albumID) {
 	var callback = function callback() {
 		$("select#license").val(album.json.license === "" ? "none" : album.json.license);
@@ -1806,8 +1825,18 @@ albums.load = function () {
 albums.parse = function (album) {
 	var i = void 0;
 	for (i = 0; i < 3; i++) {
-		if (!album.thumbs[i]) {
-			album.thumbs[i] = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
+		if (lychee.api_V2) {
+			if (!album.thumb) {
+				album.thumb = {};
+				album.thumb.id = "";
+				album.thumb.thumb = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
+				album.thumb.type = "";
+				album.thumb.thumb2x = "";
+			}
+		} else {
+			if (!album.thumbs[i]) {
+				album.thumbs[i] = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
+			}
 		}
 	}
 };
@@ -2020,10 +2049,52 @@ build.multiselect = function (top, left) {
 	return lychee.html(_templateObject19, top, left);
 };
 
-build.getAlbumThumb = function (data, i) {
-	var isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
-	var isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
-	var thumb = data.thumbs[i];
+/*build.getAlbumThumb = function (data, i) {
+	let isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
+	let isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
+	let thumb = data.thumbs[i];
+	var thumb2x = "";
+
+	if (thumb === "uploads/thumb/" && isVideo) {
+		return `<span class="thumbimg"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
+	}
+	if (thumb === "uploads/thumb/" && isRaw) {
+		return `<span class="thumbimg"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
+	}
+
+	if (data.thumbs2x) {
+		if (data.thumbs2x[i]) {
+			thumb2x = data.thumbs2x[i];
+		}
+	} else {
+		// Fallback code for Lychee v3
+		var { path: thumb2x, isPhoto: isPhoto } = lychee.retinize(data.thumbs[i]);
+		if (!isPhoto) {
+			thumb2x = "";
+		}
+	}
+
+	return `<span class="thumbimg${isVideo ? " video" : ""}"><img class='lazyload' src='img/placeholder.png' data-src='${thumb}' ${
+		thumb2x !== "" ? "data-srcset='" + thumb2x + " 2x'" : ""
+	} alt='Photo thumbnail' data-overlay='false' draggable='false'></span>`;
+};*/
+
+// two additional images that are barely visible seems a bit overkill - use same image 3 times
+// if this simplification comes to pass data.types, data.thumbs and data.thumbs2x no longer need to be arrays
+build.getAlbumThumb = function (data) {
+	var isVideo = void 0;
+	var isRaw = void 0;
+	var thumb = void 0;
+
+	if (lychee.api_V2) {
+		isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
+		isRaw = data.thumb.type && data.thumb.types.indexOf("raw") > -1;
+		thumb = data.thumb.thumb;
+	} else {
+		isVideo = data.types[0] && data.type.indexOf("video") > -1;
+		isRaw = data.types[0] && data.types[0].indexOf("raw") > -1;
+		thumb = data.thumbs[0];
+	}
 	var thumb2x = "";
 
 	if (thumb === "uploads/thumb/" && isVideo) {
@@ -2033,13 +2104,11 @@ build.getAlbumThumb = function (data, i) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	if (data.thumbs2x) {
-		if (data.thumbs2x[i]) {
-			thumb2x = data.thumbs2x[i];
-		}
+	if (lychee.api_V2) {
+		thumb2x = data.thumb.thumb2x;
 	} else {
 		// Fallback code for Lychee v3
-		var _lychee$retinize = lychee.retinize(data.thumbs[i]),
+		var _lychee$retinize = lychee.retinize(data.thumbs[0]),
 		    thumb2x = _lychee$retinize.path,
 		    isPhoto = _lychee$retinize.isPhoto;
 
@@ -2072,7 +2141,7 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject20, disabled ? "disabled" : "", data.nsfw && data.nsfw === "1" && lychee.nsfw_blur ? "blurred" : "", data.id, data.nsfw && data.nsfw === "1" ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject20, disabled ? "disabled" : "", data.nsfw && data.nsfw === "1" && lychee.nsfw_blur ? "blurred" : "", data.id, data.nsfw && data.nsfw === "1" ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, date_stamp);
 
 	if (album.isUploadable() && !disabled) {
 		html += lychee.html(_templateObject21, data.nsfw === "1" ? "badge--nsfw" : "", build.iconic("warning"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.password === "1" ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album === "1" ? "badge--tag" : "", build.iconic("tag"));
@@ -2093,6 +2162,7 @@ build.photo = function (data) {
 	var html = "";
 	var thumbnail = "";
 	var thumb2x = "";
+	var isCover = data.id === album.json.cover_id;
 
 	var isVideo = data.type && data.type.indexOf("video") > -1;
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
@@ -2174,7 +2244,7 @@ build.photo = function (data) {
 	html += "</div>";
 
 	if (album.isUploadable()) {
-		html += lychee.html(_templateObject26, data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" && album.json.public !== "1" ? "badge--visible badge--hidden" : "", build.iconic("eye"));
+		html += lychee.html(_templateObject26, isCover ? "badge--cover" : "", build.iconic("folder-cover"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" && album.json.public !== "1" ? "badge--visible badge--hidden" : "", build.iconic("eye"));
 	}
 
 	html += "</div>";
@@ -2415,6 +2485,23 @@ contextMenu.album = function (albumID, e) {
 			return album.getArchive([albumID]);
 		} }];
 
+	if (album.json) {
+		// not top level
+		myalbum = album.getSubByID(albumID);
+		photoID = myalbum.thumbIDs[0];
+		//FINAL
+		//		coverActive = (album.json.cover == photoID);
+		//TEST
+		coverActive = album.json.description == "" + photoID;
+		// prepend context menu item
+		items.unshift({
+			title: build.iconic("folder-cover", coverActive ? "active" : "") + lychee.locale[coverActive ? "REMOVE_COVER" : "SET_COVER"],
+			fn: function fn() {
+				return album.toggleCover(photoID);
+			}
+		});
+	}
+
 	$('.album[data-id="' + albumID + '"]').addClass("active");
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
@@ -2569,15 +2656,20 @@ contextMenu.albumTitle = function (albumID, e) {
 };
 
 contextMenu.photo = function (photoID, e) {
-	// Notice for 'Move':
-	// fn must call basicContext.close() first,
-	// in order to keep the selection
+	var coverActive = photoID === album.json.cover_id;
 
 	var items = [{ title: build.iconic("star") + lychee.locale["STAR"], fn: function fn() {
 			return _photo.setStar([photoID]);
 		} }, { title: build.iconic("tag") + lychee.locale["TAGS"], fn: function fn() {
 			return _photo.editTags([photoID]);
-		} }, {}, { title: build.iconic("pencil") + lychee.locale["RENAME"], fn: function fn() {
+		} },
+	// for future work, use a list of all the ancestors.
+	{
+		title: build.iconic("folder-cover", coverActive ? "active" : "") + lychee.locale[coverActive ? "REMOVE_COVER" : "SET_COVER"],
+		fn: function fn() {
+			return album.toggleCover(photoID);
+		}
+	}, {}, { title: build.iconic("pencil") + lychee.locale["RENAME"], fn: function fn() {
 			return _photo.setTitle([photoID]);
 		} }, {
 		title: build.iconic("layers") + lychee.locale["COPY_TO"],
@@ -2585,7 +2677,11 @@ contextMenu.photo = function (photoID, e) {
 			basicContext.close();
 			contextMenu.move([photoID], e, _photo.copyTo, "UNSORTED");
 		}
-	}, {
+	},
+	// Notice for 'Move':
+	// fn must call basicContext.close() first,
+	// in order to keep the selection
+	{
 		title: build.iconic("folder") + lychee.locale["MOVE"],
 		fn: function fn() {
 			basicContext.close();
@@ -9510,6 +9606,12 @@ view.album = {
 			var $badge = $('.photo[data-id="' + photoID + '"] .icn-share');
 
 			if (album.getByID(photoID).public === "1") $badge.addClass("badge--visible badge--hidden");else $badge.removeClass("badge--visible badge--hidden");
+		},
+
+		cover: function cover(photoID) {
+			var $badge = $('.photo[data-id="' + photoID + '"] .icn-cover');
+
+			if (album.json.cover_id === photoID) $badge.addClass("badge--cover");else $badge.removeClass("badge--cover");
 		},
 
 		delete: function _delete(photoID) {

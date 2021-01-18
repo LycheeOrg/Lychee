@@ -197,10 +197,10 @@ class AlbumController extends Controller
 	public function setCover(AlbumIDRequestInt $request, SetCover $setCover)
 	{
 		$request->validate([
-			'cover_id' => 'integer|required',
+			'cover_id' => 'integer|nullable',
 		]);
 
-		return $setCover->do($request['albumID'], $request['cover_id'] ?? '') ? 'true' : 'false';
+		return $setCover->do($request['albumID'], $request['cover_id']) ? 'true' : 'false';
 	}
 
 	/**
