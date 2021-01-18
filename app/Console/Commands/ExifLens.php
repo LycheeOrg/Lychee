@@ -36,8 +36,7 @@ class ExifLens extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @param PhotoFunctions $photoFunctions
-	 * @param Extractor      $metadataExtractor
+	 * @param Extractor $metadataExtractor
 	 */
 	public function __construct(Extractor $metadataExtractor)
 	{
