@@ -110,9 +110,7 @@ class AlbumController extends Controller
 	 */
 	public function getPublic(AlbumIDRequest $request, Unlock $unlock)
 	{
-		$request->validate([
-			'password' => 'string|nullable',
-		]);
+		$request->validate(['password' => 'string|nullable']);
 
 		return $unlock->do($request['albumID'], $request['password']) ? 'true' : 'false';
 	}
@@ -126,9 +124,7 @@ class AlbumController extends Controller
 	 */
 	public function setTitle(AlbumIDsRequest $request, SetTitle $setTitle)
 	{
-		$request->validate([
-			'title' => 'string|required|max:100',
-		]);
+		$request->validate(['title' => 'string|required|max:100']);
 
 		return $setTitle->do(explode(',', $request['albumIDs']), $request['title']) ? 'true' : 'false';
 	}
@@ -164,9 +160,7 @@ class AlbumController extends Controller
 	 */
 	public function setDescription(AlbumIDRequestInt $request, SetDescription $setDescription)
 	{
-		$request->validate([
-			'description' => 'string|nullable|max:1000',
-		]);
+		$request->validate(['description' => 'string|nullable|max:1000']);
 
 		return $setDescription->do($request['albumID'], $request['description'] ?? '') ? 'true' : 'false';
 	}
@@ -180,9 +174,7 @@ class AlbumController extends Controller
 	 */
 	public function setShowTags(AlbumIDRequestInt $request, SetShowTags $setShowTags)
 	{
-		$request->validate([
-			'show_tags' => 'string|required|max:1000|min:1',
-		]);
+		$request->validate(['show_tags' => 'string|required|max:1000|min:1']);
 
 		return $setShowTags->do($request['albumID'], $request['show_tags']) ? 'true' : 'false';
 	}
@@ -212,9 +204,7 @@ class AlbumController extends Controller
 	 */
 	public function setLicense(AlbumIDRequestInt $request, SetLicense $setLicense)
 	{
-		$request->validate([
-			'license' => 'required|string',
-		]);
+		$request->validate(['license' => 'required|string']);
 
 		$licenses = Helpers::get_all_licenses();
 
@@ -283,9 +273,7 @@ class AlbumController extends Controller
 	 */
 	public function setNSFW(Request $request, SetNSFW $setNSFW)
 	{
-		$request->validate([
-			'albumID' => 'required|string',
-		]);
+		$request->validate(['albumID' => 'required|string']);
 
 		return $setNSFW->do($request['albumID'], '_') ? 'true' : 'false';
 	}

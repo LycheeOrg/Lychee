@@ -5,49 +5,14 @@
 namespace App\Http\Controllers;
 
 use AccessControl;
-use App\Actions\Albums\Extensions\PublicIds;
-use App\Actions\Albums\Top;
-use App\Actions\ReadAccessFunctions;
-use App\ModelFunctions\SymLinkFunctions;
-use App\Models\Album;
+use App\Actions\Search\AlbumSearch;
+use App\Actions\Search\PhotoSearch;
 use App\Models\Configs;
-use App\Models\Photo;
-use App\Models\User;
 use App\Response;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class SearchController extends Controller
 {
-	/**
-	 * @var readAccessFunctions
-	 */
-	private $readAccessFunctions;
-
-	/**
-	 * @var SymLinkFunctions
-	 */
-	private $symLinkFunctions;
-
-	/**
-	 * @var Top
-	 */
-	private $top;
-
-	/**
-	 * @param ReadAccessFunctions $readAccessFunctions
-	 * @param SymLinkFunctions    $symLinkFunctions
-	 */
-	public function __construct(
-		ReadAccessFunctions $readAccessFunctions,
-		SymLinkFunctions $symLinkFunctions,
-		Top $top
-	) {
-		$this->readAccessFunctions = $readAccessFunctions;
-		$this->symLinkFunctions = $symLinkFunctions;
-		$this->top = $top;
-	}
-
 	/**
 	 * Escape special characters for a LIKE query.
 	 *
@@ -56,19 +21,11 @@ class SearchController extends Controller
 	 *
 	 * @return string
 	 */
-	private static function escape_like(string $value, string $char = '\\'): string
+	private function escape_like(string $value, string $char = '\\'): string
 	{
 		return str_replace(
-			[
-				$char,
-				'%',
-				'_',
-			],
-			[
-				$char . $char,
-				$char . '%',
-				$char . '_',
-			],
+			[$char, '%', '_'],
+			[$char . $char, $char . '%', $char . '_'],
 			$value
 		);
 	}
@@ -82,118 +39,25 @@ class SearchController extends Controller
 	 *
 	 * @return array
 	 */
-	public function search(Request $request)
+	public function search(Request $request, AlbumSearch $albumSearch, PhotoSearch $photoSearch)
 	{
 		if (!AccessControl::is_logged_in() && Configs::get_value('public_search', '0') !== '1') {
 			return Response::error('Search disabled.');
 		}
 
-		$request->validate([
-			'term' => 'required|string',
-		]);
-
-		// Initialize return var
-		$return = [
-			'photos' => null,
-			'albums' => null,
-			'hash' => '',
-		];
+		$request->validate(['term' => 'required|string']);
 
 		$terms = explode(' ', $request['term']);
 
 		$escaped_terms = [];
-
 		foreach ($terms as $term) {
-			$escaped_terms[] = SearchController::escape_like($term);
+			$escaped_terms[] = $this->escape_like($term);
 		}
 
-		/**
-		 * Albums.
-		 *
-		 * Begin by building a list of all albums and subalbums accessible
-		 * from the top level.  This includes password-protected albums
-		 * (since they are visible) but not their content.
-		 */
-		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
-
-		$query = Album::with([
-			'owner',
-		])
-			->whereIn('id', $albumIDs);
-		for ($i = 0; $i < count($escaped_terms); $i++) {
-			$escaped_term = $escaped_terms[$i];
-			$query->where(
-				function (Builder $query) use ($escaped_term) {
-					$query->where('title', 'like', '%' . $escaped_term . '%')
-						->orWhere('description', 'like', '%' . $escaped_term . '%');
-				}
-			);
-		}
-		$albums = $query->get();
-		if ($albums != null) {
-			$i = 0;
-			foreach ($albums as $album_model) {
-				$album = $album_model->toReturnArray();
-
-				if (AccessControl::is_logged_in()) {
-					$album['owner'] = $album_model->owner->username;
-				}
-
-				$return['albums'][$i] = $album;
-				$i++;
-			}
-		}
-
-		/*
-		 * Photos.
-		 *
-		 * We again begin by building a list of all albums and subalbums
-		 * accessible from the top level, only this time without
-		 * password-protected ones.
-		 */
-		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
-		$query = Photo::with('album')->where(
-			function (Builder $query) use ($albumIDs) {
-				$query->whereIn('album_id', $albumIDs);
-				// Add the 'Unsorted' album.
-				if (AccessControl::is_logged_in()) {
-					$id = AccessControl::id();
-					$user = User::find($id);
-					if ($id == 0 || $user->upload) {
-						$query->orWhere('album_id', '=', null);
-						if ($id !== 0) {
-							$query->where('owner_id', '=', $id);
-						}
-					}
-				}
-			}
-		);
-		for ($i = 0; $i < count($escaped_terms); $i++) {
-			$escaped_term = $escaped_terms[$i];
-			$query->where(
-				function (Builder $query) use ($escaped_term) {
-					$query->where('title', 'like', '%' . $escaped_term . '%')
-						->orWhere('description', 'like', '%' . $escaped_term . '%')
-						->orWhere('tags', 'like', '%' . $escaped_term . '%')
-						->orWhere('location', 'like', '%' . $escaped_term . '%');
-				}
-			);
-		}
-		/**
-		 * @var Photo[]
-		 */
-		$photos = $query->get();
-		if ($photos != null) {
-			$i = 0;
-			foreach ($photos as $photo) {
-				$return['photos'][$i] = $photo->toReturnArray();
-				$photo->urls($return['photos'][$i]);
-				$this->symLinkFunctions->getUrl($photo, $return['photos'][$i]);
-				$i++;
-			}
-		}
-
-		// Hash
+		// Initialize return var
+		$return = [];
+		$return['albums'] = $albumSearch->query($escaped_terms);
+		$return['photos'] = $photoSearch->query($escaped_terms);
 		$return['hash'] = md5(json_encode($return));
 
 		return $return;

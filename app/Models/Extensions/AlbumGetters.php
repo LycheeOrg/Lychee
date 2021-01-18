@@ -81,7 +81,10 @@ trait AlbumGetters
 			$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
 
 			if ($forbiddenID != null && !$forbiddenID->isEmpty()) {
-				$sql = $sql->whereNotIn('album_id', $forbiddenID);
+				$sql = $sql->where(
+					fn ($q) => $q->whereNull('album_id')
+						->orWhereNotIn('album_id', $forbiddenID)
+				);
 			}
 
 			$cover = $sql->orderBy('star', 'DESC')
