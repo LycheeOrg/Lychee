@@ -140,7 +140,7 @@ class Album extends Model implements AlbumInterface
 	}
 
 	/**
-	 * Return the relationship between a sub album and its parent.
+	 * Return the relationship between a cover picture and its parent.
 	 *
 	 * @return BelongsTo
 	 */
