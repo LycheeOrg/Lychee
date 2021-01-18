@@ -81,9 +81,7 @@ class PhotoController extends Controller
 	public function add(AlbumIDRequest $request, Create $create)
 	{
 		try {
-			$request->validate([
-				'0' => 'required',
-			]);
+			$request->validate(['0' => 'required']);
 		} catch (ValidationException $e) {
 			return Response::error('validation failed');
 		}
@@ -112,9 +110,7 @@ class PhotoController extends Controller
 	 */
 	public function setTitle(PhotoIDsRequest $request, SetTitle $setTitle)
 	{
-		$request->validate([
-			'title' => 'required|string|max:100',
-		]);
+		$request->validate(['title' => 'required|string|max:100']);
 
 		return $setTitle->do(explode(',', $request['photoIDs']), $request['title']) ? 'true' : 'false';
 	}
@@ -140,9 +136,7 @@ class PhotoController extends Controller
 	 */
 	public function setDescription(PhotoIDRequest $request, SetDescription $setDescription)
 	{
-		$request->validate([
-			'description' => 'string|nullable',
-		]);
+		$request->validate(['description' => 'string|nullable']);
 
 		return $setDescription->do($request['photoID'], $request['description'] ?? '') ? 'true' : 'false';
 	}
@@ -170,9 +164,7 @@ class PhotoController extends Controller
 	 */
 	public function setTags(PhotoIDsRequest $request, SetTags $setTags)
 	{
-		$request->validate([
-			'tags' => 'string|nullable',
-		]);
+		$request->validate(['tags' => 'string|nullable']);
 
 		return $setTags->do(explode(',', $request['photoIDs']), $request['tags'] ?? '') ? 'true' : 'false';
 	}
@@ -186,9 +178,7 @@ class PhotoController extends Controller
 	 */
 	public function setAlbum(PhotoIDsRequest $request, SetAlbum $setAlbum)
 	{
-		$request->validate([
-			'albumID' => 'required|string',
-		]);
+		$request->validate(['albumID' => 'required|string']);
 
 		return $setAlbum->execute(explode(',', $request['photoIDs']), $request['albumID']) ? 'true' : 'false';
 	}
@@ -202,9 +192,7 @@ class PhotoController extends Controller
 	 */
 	public function setLicense(PhotoIDRequest $request, SetLicense $setLicense)
 	{
-		$request->validate([
-			'license' => 'required|string',
-		]);
+		$request->validate(['license' => 'required|string']);
 
 		$licenses = Helpers::get_all_licenses();
 
@@ -239,9 +227,7 @@ class PhotoController extends Controller
 	 */
 	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
 	{
-		$request->validate([
-			'albumID' => 'string',
-		]);
+		$request->validate(['albumID' => 'string']);
 
 		$duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ?? null);
 

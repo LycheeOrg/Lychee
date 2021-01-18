@@ -77,7 +77,10 @@ trait AlbumGetters
 		//? apply safety filter : Do not leak pictures which are not ours
 		$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
 		if ($forbiddenID != null && !$forbiddenID->isEmpty()) {
-			$sql = $sql->whereNotIn('album_id', $forbiddenID);
+			$sql = $sql->where(
+				fn ($q) => $q->whereNull('album_id')
+					->orWhereNotIn('album_id', $forbiddenID)
+			);
 		}
 
 		return $sql->orderBy('star', 'DESC')

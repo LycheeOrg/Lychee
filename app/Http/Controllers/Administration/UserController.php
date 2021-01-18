@@ -2,22 +2,16 @@
 
 namespace App\Http\Controllers\Administration;
 
+use App\Actions\User\Create;
+use App\Actions\User\Save;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UserPostIdRequest;
 use App\Http\Requests\UserRequests\UserPostRequest;
-use App\Models\Logs;
 use App\Models\User;
-use App\Response;
-use Exception;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-	public function __construct()
-	{
-		$this->middleware([]);
-	}
-
 	public function list()
 	{
 		return User::where('id', '>', 0)->get();
@@ -27,52 +21,28 @@ class UserController extends Controller
 	 * Save modification done to a user.
 	 * Note that an admin can change the password of a user at will.
 	 *
-	 * @param Request $request
+	 * @param UserPostRequest $request
 	 *
 	 * @return string
 	 */
-	public function save(UserPostRequest $request)
+	public function save(UserPostRequest $request, Save $save)
 	{
-		$user = User::find($request['id']);
-		if ($user === null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified user ' . $request['id']);
+		$user = User::findOrFail($request['id']);
 
-			return 'false';
-		}
-
-		if (User::where('username', '=', $request['username'])->where('id', '!=', $request['id'])->count()) {
-			return Response::error('username must be unique');
-		}
-
-		// check for duplicate name here !
-		$user->username = $request['username'];
-		$user->upload = ($request['upload'] == '1');
-		$user->lock = ($request['lock'] == '1');
-		if ($request->has('password') && $request['password'] != '') {
-			$user->password = bcrypt($request['password']);
-		}
-
-		return $user->save() ? 'true' : 'false';
+		return $save->do($user, $request->all()) ? 'true' : 'false';
 	}
 
 	/**
 	 * Delete a user.
 	 * FIXME: What happen to the albums owned ?
 	 *
-	 * @param Request $request
+	 * @param UserPostIdRequest $request
 	 *
 	 * @return string
-	 *
-	 * @throws Exception
 	 */
 	public function delete(UserPostIdRequest $request)
 	{
-		$user = User::find($request['id']);
-		if ($user === null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find specified user ' . $request['id']);
-
-			return 'false';
-		}
+		$user = User::findOrFail($request['id']);
 
 		return $user->delete() ? 'true' : 'false';
 	}
@@ -84,25 +54,15 @@ class UserController extends Controller
 	 *
 	 * @return string
 	 */
-	public function create(Request $request)
+	public function create(Request $request, Create $create)
 	{
-		$request->validate([
+		$data = $request->validate([
 			'username' => 'required|string|max:100',
 			'password' => 'required|string|max:50',
 			'upload' => 'required',
 			'lock' => 'required',
 		]);
 
-		if (User::where('username', '=', $request['username'])->count()) {
-			return Response::error('username must be unique');
-		}
-
-		$user = new User();
-		$user->upload = ($request['upload'] == '1');
-		$user->lock = ($request['lock'] == '1');
-		$user->username = $request['username'];
-		$user->password = bcrypt($request['password']);
-
-		return @$user->save() ? 'true' : 'false';
+		return $create->do($data) ? 'true' : 'false';
 	}
 }
