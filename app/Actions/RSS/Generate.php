@@ -81,13 +81,15 @@ class Generate
 
 	public function do()
 	{
-		$publicIds = resolve(PublicIds::class)->getPublicAlbumsId();
+		$publicIds = resolve(PublicIds::class)->getNotAccessible();
 		$rss_recent = intval(Configs::get_value('rss_recent_days', '7'));
 		$rss_max = Configs::get_Value('rss_max_items', '100');
 		$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 
 		$photos = Photo::with('album', 'owner')
 			->where('created_at', '>=', $nowMinus)
+			// we select photo which album IS PUBLICALLY ACCESSIBLE
+			// or PHOTO MARKED AS PUBLIC.
 			->where(fn ($q) => $q->whereIn('album_id', $publicIds)->orWhere('public', '=', '1'))
 			->limit($rss_max)
 			->get();

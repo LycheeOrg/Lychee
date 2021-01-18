@@ -18,9 +18,9 @@ class FromServer
 	public function do($validated)
 	{
 		if (isset($validated['delete_imported'])) {
-			$this->exec->delete_imported = $validated['delete_imported'] === '1';
+			$this->exec->delete_imported = ($validated['delete_imported'] === '1');
 		} else {
-			$this->exec->delete_imported = Configs::get_value('delete_imported', '0') === '1';
+			$this->exec->delete_imported = (Configs::get_value('delete_imported', '0') === '1');
 		}
 
 		// memory_limit can have a K/M/etc suffix which makes querying it

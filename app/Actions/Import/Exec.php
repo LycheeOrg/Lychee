@@ -2,6 +2,7 @@
 
 namespace App\Actions\Import;
 
+use App\Actions\Album\Create;
 use App\Actions\Import\Extensions\ImportPhoto;
 use App\Actions\Photo\Extensions\Constants;
 use App\Assets\Helpers;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class Exec
 {
 	use ImportPhoto;
+	use Create;
 	use Constants;
 
 	public $force_skip_duplicates = false;
@@ -23,6 +25,13 @@ class Exec
 	public $statusCLIFormatting = false;
 	public $memLimit;
 	public $memWarningGiven = false;
+
+	private $raw_formats = [];
+
+	public function __construct()
+	{
+		$this->raw_formats = explode('|', strtolower(Configs::get_value('raw_formats', '')));
+	}
 
 	/**
 	 * Output status update to stdout (from where StreamedResponse picks it up).
@@ -200,8 +209,7 @@ class Exec
 				continue;
 			}
 			$extension = Helpers::getExtension($file, true);
-			$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
-			$is_raw = in_array(strtolower($extension), explode('|', $raw_formats), true);
+			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
 				if ($this->photo($file, $this->delete_imported, $albumID, $this->force_skip_duplicates, $this->resync_metadata) === false) {
@@ -226,7 +234,7 @@ class Exec
 					->first();
 			}
 			if ($album === null) {
-				$create = resolve(AlbumCreate::class);
+				$create = resolve(Create::class);
 				$album = $create->create(basename($dir), $albumID);
 				// this actually should not fail.
 				if ($album === false) {
@@ -252,7 +260,7 @@ class Exec
 	private function check_file_matches_pattern(string $pattern, string $filename)
 	{
 		// This function checks if the given filename matches the pattern allowing for
-		// star als wildcard (as in *.jpg)
+		// star as wildcard (as in *.jpg)
 		// Example: '*.jpg' matches all jpgs
 
 		$pattern = preg_replace_callback('/([^*])/', [$this, 'preg_quote_callback_fct'], $pattern);
