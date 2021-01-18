@@ -81,7 +81,8 @@ class AlbumController extends Controller
 	 */
 	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory, Prepare $prepare)
 	{
-		$album = $albumFactory->make($request['albumID']);
+		$validated = $request->validated();
+		$album = $albumFactory->make($validated['albumID']);
 
 		return $prepare->do($album);
 	}
@@ -195,17 +196,11 @@ class AlbumController extends Controller
 	 */
 	public function setCover(AlbumIDRequestInt $request, SetCover $setCover)
 	{
-		//FINAL
-//		$request->validate([
-//			'cover' => 'integer|required',
-//		]);
-//		return $setCover->do($request['albumID'], $request['cover'] ?? '') ? 'true' : 'false';
-		//TEST
 		$request->validate([
-			'description' => 'string|nullable|max:1000',
+			'cover_id' => 'integer|required',
 		]);
 
-		return $setCover->do($request['albumID'], $request['description'] ?? '') ? 'true' : 'false';
+		return $setCover->do($request['albumID'], $request['cover_id'] ?? '') ? 'true' : 'false';
 	}
 
 	/**

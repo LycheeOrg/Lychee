@@ -70,36 +70,16 @@ trait AlbumGetters
 
 	public function get_thumbs()
 	{
-		// SQL REQUIRES REVIEW
-		$sql = Photo::leftJoin('albums', 'photos.album_id', '=', 'albums.id')
-		   ->select('photos.*');
-
-		//? apply safety filter : Do not leak pictures which are not ours
-		$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
-		if ($forbiddenID != null && !$forbiddenID->isEmpty()) {
-			$sql = $sql->whereNotIn('album_id', $forbiddenID);
+		if ($this->cover != null) {
+			return $this->cover->toThumb();
 		}
 
-//		$fp = fopen('/tmp/vardump.txt', 'a');
-//		fwrite($fp, serialize($this->description) . "\n");
-//		fclose($fp);
-		// FINAL
-//		if ($this->cover && $this->cover > 0) {
-//			// cover set return it
-//			return $sql->where('photos.id', '=', $this->cover)
-//				->get()
-//				->map(fn ($photo) => $photo->toThumb());
-//		}
-		// TEST
-		if ($this->description && $this->description != '') {
-			return $sql->where('photos.id', '=', $this->description)
-				->get()
-				->map(fn ($photo) => $photo->toThumb());
-		}
-		// default: pick random starred photo as cover (one is enough)
 		[$sort_col, $sort_order] = $this->get_sort();
 
 		$sql = $this->get_all_photos();
+
+		//? apply safety filter : Do not leak pictures which are not ours
+		$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
 		if ($forbiddenID != null && !$forbiddenID->isEmpty()) {
 			$sql = $sql->whereNotIn('album_id', $forbiddenID);
 		}

@@ -138,7 +138,7 @@ class Photo extends Model
 	 */
 	public function album()
 	{
-		return $this->belongsTo('App\Models\Album', 'album_id', 'id')->withDefault(['public' => '1']);
+		return $this->belongsTo('App\Models\Album', 'album_id', 'id');
 	}
 
 	/**
@@ -148,10 +148,7 @@ class Photo extends Model
 	 */
 	public function owner()
 	{
-		return $this->belongsTo('App\Models\User', 'owner_id', 'id')->withDefault([
-			'id' => 0,
-			'username' => 'Admin',
-		]);
+		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
 
 	/**
