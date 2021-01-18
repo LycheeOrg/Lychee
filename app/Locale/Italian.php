@@ -123,6 +123,8 @@ final class Italian implements Language
 			'TAGS' => 'Tag',
 			'TAGS_ALL' => 'Tagga Tutto',
 			'UNSTAR_PHOTO' => 'Rimuovi dalle Foto Speciali',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'Informazioni sulla Foto',

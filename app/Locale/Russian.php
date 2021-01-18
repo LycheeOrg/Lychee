@@ -121,6 +121,8 @@ final class Russian implements Language
 			'TAGS' => 'Теги',
 			'TAGS_ALL' => 'теги для всех',
 			'UNSTAR_PHOTO' => 'Снять отметку',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Полный размер',
 			'ABOUT_PHOTO' => 'О фотографии',

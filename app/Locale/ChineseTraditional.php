@@ -121,6 +121,8 @@ final class ChineseTraditional implements Language
 			'TAGS' => '標籤',
 			'TAGS_ALL' => '批量標籤',
 			'UNSTAR_PHOTO' => '從我的最愛中移除',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => '打開原圖',
 			'ABOUT_PHOTO' => '照片資訊',

@@ -121,6 +121,8 @@ final class Spanish implements Language
 			'TAGS' => 'Etiquetar',
 			'TAGS_ALL' => 'Etiquetar Todo',
 			'UNSTAR_PHOTO' => 'Desetiquetar Foto',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Foto Completa',
 			'ABOUT_PHOTO' => 'Acerca de la Foto',

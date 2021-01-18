@@ -123,6 +123,8 @@ final class German implements Language
 			'TAGS' => 'Taggen',
 			'TAGS_ALL' => 'Ausgewählte Taggen',
 			'UNSTAR_PHOTO' => 'Foto von Favoriten entfernen',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Original öffnen',
 			'ABOUT_PHOTO' => 'Über dieses Foto',

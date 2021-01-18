@@ -122,6 +122,8 @@ final class Slovak implements Language
 			'TAGS' => 'Štítky',
 			'TAGS_ALL' => 'Štítky pre všetky',
 			'UNSTAR_PHOTO' => 'Obrázok odstrániť z obľúbených',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Otvoriť originál',
 			'ABOUT_PHOTO' => 'O tomto obrázku',

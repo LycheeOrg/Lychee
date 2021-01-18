@@ -13,9 +13,10 @@ class SmartAlbum extends BareSmartAlbum
 	public $description = '';
 
 	/**
-	 * fake cover.
+	 * prevent cover.
 	 */
 	public $cover = null;
+	public $cover_id = null;
 
 	/**
 	 * fake password string.

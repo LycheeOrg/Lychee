@@ -122,6 +122,8 @@ final class Czech implements Language
 			'TAGS' => 'Štítek',
 			'TAGS_ALL' => 'Oštítkovat vše',
 			'UNSTAR_PHOTO' => 'Odebrat z oblíbených',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Otevřít originál',
 			'ABOUT_PHOTO' => 'O fotografii',
