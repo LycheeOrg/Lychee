@@ -41,12 +41,18 @@ class BareSmartAlbum extends Album
 
 	public function filter($query)
 	{
-		if (!AccessControl::is_admin()) {
-			$query = $query->whereIn('album_id', $this->albumIds);
+		if (AccessControl::is_admin()) {
+			return $query;
 		}
 
-		if (AccessControl::is_logged_in() && AccessControl::id() > 0) {
-			$query = $query->orWhere('owner_id', '=', AccessControl::id());
+		if (AccessControl::is_logged_in()) {
+			$query = $query->where('owner_id', '=', AccessControl::id())
+				->orWhere(
+					fn ($q) => $q->whereNotNull('album_id')
+						->whereIn('album_id', $this->albumIds)
+				);
+		} else {
+			$query = $query->whereIn('album_id', $this->albumIds);
 		}
 
 		return $query;

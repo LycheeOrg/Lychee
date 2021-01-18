@@ -39,7 +39,7 @@ class Rotate
 		// Abort on symlinks to avoid messing with originals linked
 		if (is_link(Storage::path('big/') . $photo->url)) {
 			// @codeCoverageIgnoreStart
-			Logs::error(__METHOD__, __LINE__, 'SynLinked images cannot be rotated');
+			Logs::error(__METHOD__, __LINE__, 'SymLinked images cannot be rotated');
 
 			return false;
 			// @codeCoverageIgnoreEnd
