@@ -141,12 +141,12 @@ class Archive extends Action
 		// cares in what order photos are zipped?
 
 		foreach ($photos as $photo) {
-			// For photos in public smart albums, skip the ones
-			// that are not downloadable based on their actual
-			// parent album.
+			// For photos in smart or tag albums, skip the ones that are not
+			// downloadable based on their actual parent album.  Photos from
+			// Unsorted are handled implicitly by the photo ownership test.
 			if (
-				$this->albumFactory->is_smart($albumID) && !AccessControl::is_logged_in() &&
-				$photo->album_id !== null && !$photo->album->is_downloadable()
+				$album->smart && !AccessControl::is_current_user($photo->owner_id) &&
+				!$photo->album->is_downloadable()
 			) {
 				continue;
 			}
