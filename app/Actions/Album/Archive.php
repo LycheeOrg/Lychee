@@ -142,11 +142,12 @@ class Archive extends Action
 
 		foreach ($photos as $photo) {
 			// For photos in smart or tag albums, skip the ones that are not
-			// downloadable based on their actual parent album.  Photos from
-			// Unsorted are handled implicitly by the photo ownership test.
+			// downloadable based on their actual parent album.  The test for
+			// album_id == null shouldn't really be needed as all such photos
+			// in smart albums should be owned by the current user...
 			if (
 				$album->smart && !AccessControl::is_current_user($photo->owner_id) &&
-				!$photo->album->is_downloadable()
+				!($photo->album_id == null ? $album->is_downloadable() : $photo->album->is_downloadable())
 			) {
 				continue;
 			}
