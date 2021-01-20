@@ -3,15 +3,19 @@ name: Build-Full-SQL
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
+    paths-ignore:
+      - '**/*.md'
   pull_request:
-    branches:
-        - master
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
   tests:
 
     runs-on: ${{ matrix.operating-system }}
-
+    # We want to run on external PRs, but not on our own internal PRs as they'll be run by the push to the branch.
+    if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
+    
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -44,6 +48,11 @@ jobs:
       key: cache-v1 # can be any string, change to clear the extension cache.
 
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.7.0
+        with:
+          access_token: ${{ github.token }}
+
       # Checks out a copy of your repository on the ubuntu machine
       - name: Checkout code
         uses: actions/checkout@v2
