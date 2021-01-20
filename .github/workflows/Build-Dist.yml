@@ -3,7 +3,11 @@ name: Build-Dist
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
+    paths-ignore:
+      - '**/*.md'
   pull_request:
+    paths-ignore:
+      - '**/*.md'
 
 jobs:
   tests:
@@ -44,6 +48,11 @@ jobs:
       key: cache-v1 # can be any string, change to clear the extension cache.
 
     steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.7.0
+        with:
+          access_token: ${{ github.token }}
+
       # Checks out a copy of your repository on the ubuntu machine
       - name: Checkout code
         uses: actions/checkout@v2
