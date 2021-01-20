@@ -18,8 +18,9 @@ class Delete
 	{
 		$no_error = true;
 		// root = unsorted
-		if ($albumIDs == '0') {
-			$photos = Photo::select_unsorted(Photo::OwnedBy(AccessControl::id()))->get();
+		if ($albumIDs == 'unsorted') {
+			$photos = Photo::OwnedBy(AccessControl::id())->where('album_id', '=', null)->get();
+
 			foreach ($photos as $photo) {
 				$no_error &= $photo->predelete();
 				$no_error &= $photo->delete();

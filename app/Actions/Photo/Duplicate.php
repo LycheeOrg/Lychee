@@ -52,6 +52,9 @@ class Duplicate
 			$duplicate->thumbUrl = $photo->thumbUrl;
 			$duplicate->thumb2x = $photo->thumb2x;
 			$duplicate->album_id = $albumID ?? $photo->album_id;
+			if ($duplicate->album_id === '0') {
+				$duplicate->album_id = null;
+			}
 			$duplicate->checksum = $photo->checksum;
 			$duplicate->medium = $photo->medium;
 			$duplicate->medium2x = $photo->medium2x;
