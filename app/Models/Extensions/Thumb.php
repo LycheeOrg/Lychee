@@ -11,12 +11,12 @@ class Thumb
 	public $thumb = '';
 	public $type = '';
 	public $thumb2x = '';
-	public $thumbID = null;
+	public $id = null;
 
-	public function __construct(string $type, int $thumbID)
+	public function __construct(string $type, int $id)
 	{
 		$this->type = $type;
-		$this->thumbID = $thumbID;
+		$this->id = $id;
 	}
 
 	public function set_thumb2x(): void
@@ -24,10 +24,13 @@ class Thumb
 		$this->thumb2x = Helpers::ex2x($this->thumb);
 	}
 
-	public function insertToArrays(array &$thumb, array &$type, array &$thumb2x): void
+	public function toArray(): array
 	{
-		$thumb[] = $this->thumb;
-		$type[] = $this->type;
-		$thumb2x[] = $this->thumb2x;
+		return [
+			'id' => strval($this->id),
+			'type' => $this->type,
+			'thumb' => $this->thumb,
+			'thumb2x' => $this->thumb2x,
+		];
 	}
 }

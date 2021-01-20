@@ -12,7 +12,7 @@ class SetShowTags extends Setter
 		$this->property = 'showtags';
 	}
 
-	public function do(string $albumID, string $value): bool
+	public function do(string $albumID, ?string $value): bool
 	{
 		$album = $this->albumFactory->make($albumID);
 

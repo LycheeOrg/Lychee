@@ -121,6 +121,8 @@ final class Dutch implements Language
 			'TAGS' => 'Tags',
 			'TAGS_ALL' => 'Geselecteerde tags',
 			'UNSTAR_PHOTO' => 'Verwijder ster markeering',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => 'Over Foto',

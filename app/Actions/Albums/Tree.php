@@ -59,8 +59,8 @@ class Tree
 				'id' => strval($album->id),
 				'title' => $album->title,
 				'parent_id' => strval($album->parent_id),
+				'thumb' => optional($album->get_thumb())->toArray(),
 			];
-			$album->set_thumbs($ret, $album->get_thumbs());
 			$ret['albums'] = $this->prepare($album->children);
 
 			return $ret;

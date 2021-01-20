@@ -30,7 +30,6 @@ class AlbumSearch
 			if (AccessControl::is_logged_in()) {
 				$album['owner'] = $album_model->owner->username;
 			}
-			$album_model->set_thumbs($album, $album_model->get_thumbs());
 
 			return $album;
 		});

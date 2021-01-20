@@ -69,6 +69,7 @@ Route::post('/api/Album::addByTags', [AlbumController::class, 'addByTags'])->mid
 Route::post('/api/Album::setTitle', [AlbumController::class, 'setTitle'])->middleware('upload');
 Route::post('/api/Album::setNSFW', [AlbumController::class, 'setNSFW'])->middleware('upload');
 Route::post('/api/Album::setDescription', [AlbumController::class, 'setDescription'])->middleware('upload');
+Route::post('/api/Album::setCover', [AlbumController::class, 'setCover'])->middleware('upload');
 Route::post('/api/Album::setShowTags', [AlbumController::class, 'setShowTags'])->middleware('upload');
 Route::post('/api/Album::setPublic', [AlbumController::class, 'setPublic'])->middleware('upload');
 Route::post('/api/Album::delete', [AlbumController::class, 'delete'])->middleware('upload');

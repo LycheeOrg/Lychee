@@ -12,7 +12,7 @@ class SetNSFW extends Setter
 		$this->property = 'nsfw';
 	}
 
-	public function do(string $albumID, string $_): bool
+	public function do(string $albumID, ?string $_): bool
 	{
 		if ($this->albumFactory->is_smart($albumID)) {
 			Logs::warning(__FUNCTION__, __LINE__, 'NSFW tag is not possible on smart albums.');

@@ -12,6 +12,7 @@ use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
 use App\Actions\Album\Prepare;
+use App\Actions\Album\SetCover;
 use App\Actions\Album\SetDescription;
 use App\Actions\Album\SetLicense;
 use App\Actions\Album\SetNSFW;
@@ -80,7 +81,8 @@ class AlbumController extends Controller
 	 */
 	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory, Prepare $prepare)
 	{
-		$album = $albumFactory->make($request['albumID']);
+		$validated = $request->validated();
+		$album = $albumFactory->make($validated['albumID']);
 
 		return $prepare->do($album);
 	}
@@ -175,6 +177,22 @@ class AlbumController extends Controller
 		$request->validate(['show_tags' => 'string|required|max:1000|min:1']);
 
 		return $setShowTags->do($request['albumID'], $request['show_tags']) ? 'true' : 'false';
+	}
+
+	/**
+	 * Set cover image of the album.
+	 *
+	 * @param Request $request
+	 *
+	 * @return bool|string
+	 */
+	public function setCover(AlbumIDRequestInt $request, SetCover $setCover)
+	{
+		$request->validate([
+			'photoID' => 'integer|nullable',
+		]);
+
+		return $setCover->do($request['albumID'], $request['photoID']) ? 'true' : 'false';
 	}
 
 	/**

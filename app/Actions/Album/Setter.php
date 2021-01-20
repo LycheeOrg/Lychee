@@ -15,7 +15,7 @@ class Setter extends Action
 {
 	public $property;
 
-	public function do(string $albumID, string $value): bool
+	public function do(string $albumID, ?string $value): bool
 	{
 		$album = $this->albumFactory->make($albumID);
 

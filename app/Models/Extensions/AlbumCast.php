@@ -26,6 +26,7 @@ trait AlbumCast
 			'visible' => strval($this->viewable),
 			'nsfw' => strval($this->nsfw),
 			'parent_id' => $this->str_parent_id(),
+			'cover_id' => strval($this->cover_id),
 			'description' => strval($this->description),
 
 			'downloadable' => Helpers::str_of_bool($this->is_downloadable()),
@@ -44,9 +45,7 @@ trait AlbumCast
 			'sorting_col' => $this->sorting_col,
 			'sorting_order' => $this->sorting_order,
 
-			'thumbs' => [],
-			'thumbs2x' => [],
-			'types' => [],
+			'thumb' => optional($this->get_thumb())->toArray(),
 			'has_albums' => Helpers::str_of_bool($this->isLeaf() === false),
 		];
 

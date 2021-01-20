@@ -2,18 +2,10 @@
 
 namespace App\Models\Extensions;
 
-use Illuminate\Support\Collection;
-
 trait AlbumSetters
 {
-	public function set_thumbs(array &$return, Collection $thumbs = null)
+	public function set_thumb(array &$return, Thumb $thumb = null)
 	{
-		$return['thumbs'] = [];
-		$return['types'] = [];
-		$return['thumbs2x'] = [];
-
-		$thumbs->each(function (Thumb $thumb, $key) use (&$return) {
-			$thumb->insertToArrays($return['thumbs'], $return['types'], $return['thumbs2x']);
-		});
+		$return['thumb'] = optional($thumb)->toArray();
 	}
 }

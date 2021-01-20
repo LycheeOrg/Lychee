@@ -134,6 +134,16 @@ class Album extends Model implements AlbumInterface
 	 *
 	 * @return BelongsTo
 	 */
+	public function cover()
+	{
+		return $this->hasOne('App\Models\Photo', 'id', 'cover_id');
+	}
+
+	/**
+	 * Return the relationship between a cover picture and its parent.
+	 *
+	 * @return BelongsTo
+	 */
 	public function parent()
 	{
 		return $this->belongsTo('App\Models\Album', 'parent_id', 'id');

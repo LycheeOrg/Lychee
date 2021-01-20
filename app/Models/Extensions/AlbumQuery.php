@@ -10,7 +10,7 @@ trait AlbumQuery
 {
 	public static function initQuery(): Builder
 	{
-		return self::with(['owner'])->select('albums.*')
+		return self::with(['owner', 'cover'])->select('albums.*')
 			->addSelect([
 				'max_takestamp' => Photo::leftJoin('albums as a', 'album_id', '=', 'a.id')
 					->select('takestamp')

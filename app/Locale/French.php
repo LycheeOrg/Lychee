@@ -123,6 +123,8 @@ final class French implements Language
 			'TAGS' => 'Tagger',
 			'TAGS_ALL' => 'Tagger la sélection',
 			'UNSTAR_PHOTO' => 'Retirer des Favoris',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Ouvrir l\'original',
 			'ABOUT_PHOTO' => 'À propos de la photo',

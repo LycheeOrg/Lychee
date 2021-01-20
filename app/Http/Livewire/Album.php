@@ -58,12 +58,7 @@ class Album extends Component
 		$this->info = $this->album->toReturnArray();
 
 		// take care of sub albums
-		$this->info['albums'] = $this->album->get_children()->map(function ($child) {
-			$arr_child = $child->toReturnArray();
-			$child->set_thumbs($arr_child, $child->get_thumbs());
-
-			return $arr_child;
-		})->values();
+		$this->info['albums'] = $this->album->get_children()->map(fn (Album $a) => $a->toReturnArray())->values();
 
 		// take care of photos
 		$this->photos = $this->photosAction->get($this->album);

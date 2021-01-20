@@ -121,6 +121,8 @@ final class Greek implements Language
 			'TAGS' => 'Ετικέτες',
 			'TAGS_ALL' => 'Ετικέτες στα επιλεγμένα',
 			'UNSTAR_PHOTO' => 'Αφαιρέστε Αστέρια από τη Φωτογραφία',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Πρωτότυπη Φωτογραφία',
 			'ABOUT_PHOTO' => 'Πληροφορίες Φωτογραφίας',

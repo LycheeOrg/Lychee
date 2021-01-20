@@ -316,12 +316,12 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject18 = _taggedTemplateLiteral(["<div id='", "' class='edit'>", "</div>"], ["<div id='", "' class='edit'>", "</div>"]),
     _templateObject19 = _taggedTemplateLiteral(["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"], ["<div id='multiselect' style='top: ", "px; left: ", "px;'></div>"]),
     _templateObject20 = _taggedTemplateLiteral(["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class='album ", " ", "'\n\t\t\t\tdata-id='", "'\n\t\t\t\tdata-nsfw='", "'\n\t\t\t\tdata-tabindex='", "'>\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t  ", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t\t\t<a>$", "</a>\n\t\t\t\t</div>\n\t\t\t"]),
-    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject21 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-warning'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " ", " icn-share'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", "'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject22 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"], ["\n\t\t\t\t<div class='subalbum_badge'>\n\t\t\t\t\t<a class='badge badge--folder'>", "</a>\n\t\t\t\t</div>"]),
     _templateObject23 = _taggedTemplateLiteral(["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"], ["\n\t\t\t<div class='photo ", "' data-album-id='", "' data-id='", "' data-tabindex='", "'>\n\t\t\t\t", "\n\t\t\t\t<div class='overlay'>\n\t\t\t\t\t<h1 title='$", "'>$", "</h1>\n\t\t\t"]),
     _templateObject24 = _taggedTemplateLiteral(["<a><span title='Camera Date'>", "</span>", "</a>"], ["<a><span title='Camera Date'>", "</span>", "</a>"]),
     _templateObject25 = _taggedTemplateLiteral(["<a>", "</a>"], ["<a>", "</a>"]),
-    _templateObject26 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
+    _templateObject26 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t<div class='badges'>\n\t\t\t\t<a class='badge ", " icn-star'>", "</a>\n\t\t\t\t<a class='badge ", " icn-share'>", "</a>\n\t\t\t\t<a class='badge ", " icn-cover'>", "</a>\n\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject27 = _taggedTemplateLiteral(["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"], ["\n\t\t\t\t\t<div id=\"image_overlay\">\n\t\t\t\t\t\t<h1>$", "</h1>\n\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t</div>\n\t\t\t\t"]),
     _templateObject28 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\">\n\t\t\t\t<h1>$", "</h1>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject29 = _taggedTemplateLiteral(["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div id=\"image_overlay\"><h1>$", "</h1>\n\t\t\t<p>", " at ", ", ", " ", "<br>\n\t\t\t", " ", "</p>\n\t\t\t</div>\n\t\t"]),
@@ -925,6 +925,11 @@ album.add = function () {
 			return !isNaN(parseInt(n, 10)) && isFinite(n);
 		};
 
+		if (!data.title.trim()) {
+			basicModal.error("title");
+			return;
+		}
+
 		basicModal.close();
 
 		var params = {
@@ -971,6 +976,15 @@ album.add = function () {
 
 album.addByTags = function () {
 	var action = function action(data) {
+		if (!data.title.trim()) {
+			basicModal.error("title");
+			return;
+		}
+		if (!data.tags.trim()) {
+			basicModal.error("tags");
+			return;
+		}
+
 		basicModal.close();
 
 		var params = {
@@ -1010,6 +1024,11 @@ album.setShowTags = function (albumID) {
 	var oldShowTags = album.json.show_tags;
 
 	var action = function action(data) {
+		if (!data.show_tags.trim()) {
+			basicModal.error("show_tags");
+			return;
+		}
+
 		var show_tags = data.show_tags;
 		basicModal.close();
 
@@ -1066,6 +1085,11 @@ album.setTitle = function (albumIDs) {
 	}
 
 	var action = function action(data) {
+		if (!data.title.trim()) {
+			basicModal.error("title");
+			return;
+		}
+
 		basicModal.close();
 
 		var newTitle = data.title;
@@ -1161,6 +1185,28 @@ album.setDescription = function (albumID) {
 			cancel: {
 				title: lychee.locale["CANCEL"],
 				fn: basicModal.close
+			}
+		}
+	});
+};
+
+album.toggleCover = function (photoID) {
+	if (!photoID) return false;
+
+	album.json.cover_id = album.json.cover_id === photoID ? "" : photoID;
+
+	var params = {
+		albumID: album.json.id,
+		photoID: album.json.cover_id
+	};
+
+	api.post("Album::setCover", params, function (data) {
+		if (data !== true) {
+			lychee.error(null, params, data);
+		} else {
+			view.album.content.cover(photoID);
+			if (!album.getParent()) {
+				albums.refresh();
 			}
 		}
 	});
@@ -1540,7 +1586,7 @@ album.delete = function (albumIDs) {
 				});
 			} else if (visible.album()) {
 				albums.refresh();
-				if (albumIDs.length === 1 && parseInt(album.getID()) === parseInt(albumIDs[0])) {
+				if (albumIDs.length === 1 && album.getID() == albumIDs[0]) {
 					lychee.goto(album.getParent());
 				} else {
 					albumIDs.forEach(function (id) {
@@ -1554,7 +1600,7 @@ album.delete = function (albumIDs) {
 		});
 	};
 
-	if (albumIDs.toString() === "0") {
+	if (albumIDs.toString() === "unsorted") {
 		action.title = lychee.locale["CLEAR_UNSORTED"];
 		cancel.title = lychee.locale["KEEP_UNSORTED"];
 
@@ -1805,85 +1851,111 @@ albums.load = function () {
 
 albums.parse = function (album) {
 	var i = void 0;
-	for (i = 0; i < 3; i++) {
-		if (!album.thumbs[i]) {
-			album.thumbs[i] = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
+	if (lychee.api_V2) {
+		if (!album.thumb) {
+			album.thumb = {};
+			album.thumb.id = "";
+			album.thumb.thumb = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
+			album.thumb.type = "";
+			album.thumb.thumb2x = "";
+		}
+	} else {
+		for (i = 0; i < 3; i++) {
+			if (!album.thumbs[i]) {
+				album.thumbs[i] = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
+			}
 		}
 	}
 };
 
 // TODO: REFACTOR THIS
 albums._createSmartAlbums = function (data) {
-	if (data.unsorted) {
-		data.unsorted = {
-			id: "unsorted",
-			title: lychee.locale["UNSORTED"],
-			// sysdate: data.unsorted.num + " " + lychee.locale["NUM_PHOTOS"],
-			sysdate: "",
-			unsorted: "1",
-			thumbs: data.unsorted.thumbs,
-			thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
-			types: data.unsorted.types
-		};
-	}
-
-	if (data.starred) {
-		data.starred = {
-			id: "starred",
-			title: lychee.locale["STARRED"],
-			sysdate: "",
-			//			sysdate: data.starred.num + " " + lychee.locale["NUM_PHOTOS"],
-			star: "1",
-			thumbs: data.starred.thumbs,
-			thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
-			types: data.starred.types
-		};
-	}
-
-	if (data.public) {
-		data.public = {
-			id: "public",
-			title: lychee.locale["PUBLIC"],
-			sysdate: "",
-			//			sysdate: data.public.num + " " + lychee.locale["NUM_PHOTOS"],
-			public: "1",
-			thumbs: data.public.thumbs,
-			thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
-			visible: "0",
-			types: data.public.types
-		};
-	}
-
-	if (data.recent) {
-		data.recent = {
-			id: "recent",
-			title: lychee.locale["RECENT"],
-			sysdate: "",
-			//			sysdate: data.recent.num + " " + lychee.locale["NUM_PHOTOS"],
-			recent: "1",
-			thumbs: data.recent.thumbs,
-			thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
-			types: data.recent.types
-		};
-	}
-
-	Object.entries(data).forEach(function (_ref) {
-		var _ref2 = _slicedToArray(_ref, 2),
-		    albumName = _ref2[0],
-		    albumData = _ref2[1];
-
-		if (albumData["tag_album"] === "1") {
-			data[albumName] = {
-				id: albumData.id,
-				title: albumName,
+	if (!lychee.api_V2) {
+		if (data.unsorted) {
+			data.unsorted = {
+				id: "unsorted",
+				title: lychee.locale["UNSORTED"],
 				sysdate: "",
-				tag_album: "1",
-				thumbs: albumData.thumbs,
-				thumbs2x: albumData.thumbs2x ? albumData.thumbs2x : null,
-				types: albumData.types
+				unsorted: "1",
+				thumbs: data.unsorted.thumbs,
+				thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
+				types: data.unsorted.types
 			};
 		}
-	});
+
+		if (data.starred) {
+			data.starred = {
+				id: "starred",
+				title: lychee.locale["STARRED"],
+				sysdate: "",
+				star: "1",
+				thumbs: data.starred.thumbs,
+				thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
+				types: data.starred.types
+			};
+		}
+
+		if (data.public) {
+			data.public = {
+				id: "public",
+				title: lychee.locale["PUBLIC"],
+				sysdate: "",
+				public: "1",
+				thumbs: data.public.thumbs,
+				thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
+				visible: "0",
+				types: data.public.types
+			};
+		}
+
+		if (data.recent) {
+			data.recent = {
+				id: "recent",
+				title: lychee.locale["RECENT"],
+				sysdate: "",
+				recent: "1",
+				thumbs: data.recent.thumbs,
+				thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
+				types: data.recent.types
+			};
+		}
+	} else {
+		if (data.unsorted) {
+			data.unsorted.title = lychee.locale["UNSORTED"];
+			data.unsorted.sysdate = "";
+			data.unsorted.unsorted = "1";
+		}
+
+		if (data.starred) {
+			data.starred.title = lychee.locale["STARRED"];
+			data.starred.sysdate = "";
+			data.starred.star = "1";
+		}
+
+		if (data.public) {
+			data.public.title = lychee.locale["PUBLIC"];
+			data.public.sysdate = "";
+			data.public.public = "1";
+			data.public.visible = "0";
+		}
+
+		if (data.recent) {
+			data.recent.title = lychee.locale["RECENT"];
+			data.recent.sysdate = "";
+			data.recent.recent = "1";
+		}
+
+		Object.entries(data).forEach(function (_ref) {
+			var _ref2 = _slicedToArray(_ref, 2),
+			    albumName = _ref2[0],
+			    albumData = _ref2[1];
+
+			if (albumData["tag_album"] === "1") {
+				data[albumName].sysdate = "";
+				data[albumName].tag_album = "1";
+			}
+		});
+	}
 };
 
 albums.isShared = function (albumID) {
@@ -2020,10 +2092,22 @@ build.multiselect = function (top, left) {
 	return lychee.html(_templateObject19, top, left);
 };
 
-build.getAlbumThumb = function (data, i) {
-	var isVideo = data.types[i] && data.types[i].indexOf("video") > -1;
-	var isRaw = data.types[i] && data.types[i].indexOf("raw") > -1;
-	var thumb = data.thumbs[i];
+// two additional images that are barely visible seems a bit overkill - use same image 3 times
+// if this simplification comes to pass data.types, data.thumbs and data.thumbs2x no longer need to be arrays
+build.getAlbumThumb = function (data) {
+	var isVideo = void 0;
+	var isRaw = void 0;
+	var thumb = void 0;
+
+	if (lychee.api_V2) {
+		isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
+		isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
+		thumb = data.thumb.thumb;
+	} else {
+		isVideo = data.types[0] && data.type.indexOf("video") > -1;
+		isRaw = data.types[0] && data.types[0].indexOf("raw") > -1;
+		thumb = data.thumbs[0];
+	}
 	var thumb2x = "";
 
 	if (thumb === "uploads/thumb/" && isVideo) {
@@ -2033,13 +2117,11 @@ build.getAlbumThumb = function (data, i) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	if (data.thumbs2x) {
-		if (data.thumbs2x[i]) {
-			thumb2x = data.thumbs2x[i];
-		}
+	if (lychee.api_V2) {
+		thumb2x = data.thumb.thumb2x;
 	} else {
 		// Fallback code for Lychee v3
-		var _lychee$retinize = lychee.retinize(data.thumbs[i]),
+		var _lychee$retinize = lychee.retinize(data.thumbs[0]),
 		    thumb2x = _lychee$retinize.path,
 		    isPhoto = _lychee$retinize.isPhoto;
 
@@ -2057,6 +2139,7 @@ build.album = function (data) {
 	var html = "";
 	var date_stamp = data.sysdate;
 	var sortingAlbums = [];
+	var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
 
 	// In the special case of take date sorting use the take stamps as title
 	if (lychee.sortingAlbums !== "" && data.min_takestamp && data.max_takestamp) {
@@ -2072,10 +2155,10 @@ build.album = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject20, disabled ? "disabled" : "", data.nsfw && data.nsfw === "1" && lychee.nsfw_blur ? "blurred" : "", data.id, data.nsfw && data.nsfw === "1" ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data, 2), build.getAlbumThumb(data, 1), build.getAlbumThumb(data, 0), data.title, data.title, date_stamp);
+	html += lychee.html(_templateObject20, disabled ? "disabled" : "", data.nsfw && data.nsfw === "1" && lychee.nsfw_blur ? "blurred" : "", data.id, data.nsfw && data.nsfw === "1" ? "1" : "0", tabindex.get_next_tab_index(), build.getAlbumThumb(data), build.getAlbumThumb(data), build.getAlbumThumb(data), data.title, data.title, date_stamp);
 
 	if (album.isUploadable() && !disabled) {
-		html += lychee.html(_templateObject21, data.nsfw === "1" ? "badge--nsfw" : "", build.iconic("warning"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.password === "1" ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album === "1" ? "badge--tag" : "", build.iconic("tag"));
+		html += lychee.html(_templateObject21, data.nsfw === "1" ? "badge--nsfw" : "", build.iconic("warning"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.password === "1" ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album === "1" ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.hasOwnProperty("has_albums") && data.has_albums === "1") {
@@ -2093,6 +2176,7 @@ build.photo = function (data) {
 	var html = "";
 	var thumbnail = "";
 	var thumb2x = "";
+	var isCover = data.id === album.json.cover_id;
 
 	var isVideo = data.type && data.type.indexOf("video") > -1;
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
@@ -2174,7 +2258,7 @@ build.photo = function (data) {
 	html += "</div>";
 
 	if (album.isUploadable()) {
-		html += lychee.html(_templateObject26, data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" && album.json.public !== "1" ? "badge--visible badge--hidden" : "", build.iconic("eye"));
+		html += lychee.html(_templateObject26, data.star === "1" ? "badge--star" : "", build.iconic("star"), data.public === "1" && album.json.public !== "1" ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -2415,6 +2499,21 @@ contextMenu.album = function (albumID, e) {
 			return album.getArchive([albumID]);
 		} }];
 
+	if (album.json) {
+		// not top level
+		var myalbum = album.getSubByID(albumID);
+		if (myalbum.thumb.id) {
+			var coverActive = myalbum.thumb.id === album.json.cover_id;
+			// prepend context menu item
+			items.unshift({
+				title: build.iconic("folder-cover", coverActive ? "active" : "") + lychee.locale[coverActive ? "REMOVE_COVER" : "SET_COVER"],
+				fn: function fn() {
+					return album.toggleCover(myalbum.thumb.id);
+				}
+			});
+		}
+	}
+
 	$('.album[data-id="' + albumID + '"]').addClass("active");
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
@@ -2569,15 +2668,20 @@ contextMenu.albumTitle = function (albumID, e) {
 };
 
 contextMenu.photo = function (photoID, e) {
-	// Notice for 'Move':
-	// fn must call basicContext.close() first,
-	// in order to keep the selection
+	var coverActive = photoID === album.json.cover_id;
 
 	var items = [{ title: build.iconic("star") + lychee.locale["STAR"], fn: function fn() {
 			return _photo.setStar([photoID]);
 		} }, { title: build.iconic("tag") + lychee.locale["TAGS"], fn: function fn() {
 			return _photo.editTags([photoID]);
-		} }, {}, { title: build.iconic("pencil") + lychee.locale["RENAME"], fn: function fn() {
+		} },
+	// for future work, use a list of all the ancestors.
+	{
+		title: build.iconic("folder-cover", coverActive ? "active" : "") + lychee.locale[coverActive ? "REMOVE_COVER" : "SET_COVER"],
+		fn: function fn() {
+			return album.toggleCover(photoID);
+		}
+	}, {}, { title: build.iconic("pencil") + lychee.locale["RENAME"], fn: function fn() {
 			return _photo.setTitle([photoID]);
 		} }, {
 		title: build.iconic("layers") + lychee.locale["COPY_TO"],
@@ -2585,7 +2689,11 @@ contextMenu.photo = function (photoID, e) {
 			basicContext.close();
 			contextMenu.move([photoID], e, _photo.copyTo, "UNSORTED");
 		}
-	}, {
+	},
+	// Notice for 'Move':
+	// fn must call basicContext.close() first,
+	// in order to keep the selection
+	{
 		title: build.iconic("folder") + lychee.locale["MOVE"],
 		fn: function fn() {
 			basicContext.close();
@@ -3152,21 +3260,26 @@ header.setMode = function (mode) {
 			}
 
 			if (albumID === "starred" || albumID === "public" || albumID === "recent") {
-				$("#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album").hide();
-				$(".button_add, .header__divider", ".header__toolbar--album").show();
-				tabindex.makeFocusable($(".button_add, .header__divider", ".header__toolbar--album"));
-				tabindex.makeUnfocusable($("#button_info_album, #button_trash_album, #button_visibility_album, #button_move_album"));
+				$("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_move_album").hide();
+				if (album.isUploadable()) {
+					$(".button_add, .header__divider", ".header__toolbar--album").show();
+					tabindex.makeFocusable($(".button_add, .header__divider", ".header__toolbar--album"));
+				} else {
+					$(".button_add, .header__divider", ".header__toolbar--album").hide();
+					tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
+				}
+				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_move_album"));
 			} else if (albumID === "unsorted") {
-				$("#button_info_album, #button_visibility_album, #button_move_album").hide();
+				$("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_move_album").hide();
 				$("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album").show();
 				tabindex.makeFocusable($("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album"));
-				tabindex.makeUnfocusable($("#button_info_album, #button_visibility_album, #button_move_album"));
+				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_move_album"));
 			} else if (album.isTagAlbum()) {
 				$("#button_info_album").show();
-				$("#button_move_album").hide();
+				$("#button_nsfw_album, #button_move_album").hide();
 				$(".button_add, .header__divider", ".header__toolbar--album").hide();
 				tabindex.makeFocusable($("#button_info_album"));
-				tabindex.makeUnfocusable($("#button_move_album"));
+				tabindex.makeUnfocusable($("#button_nsfw_album, #button_move_album"));
 				tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
 				if (album.isUploadable()) {
 					$("#button_visibility_album, #button_trash_album").show();
@@ -3180,10 +3293,10 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable($("#button_info_album"));
 				if (album.isUploadable()) {
 					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").show();
-					tabindex.makeFocusable($("#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
+					tabindex.makeFocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
 				} else {
 					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").hide();
-					tabindex.makeUnfocusable($("#button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
+					tabindex.makeUnfocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
 				}
 			}
 
@@ -4200,6 +4313,15 @@ lychee.init = function () {
 lychee.login = function (data) {
 	var username = data.username;
 	var password = data.password;
+
+	if (!username.trim()) {
+		basicModal.error("username");
+		return;
+	}
+	if (!password.trim()) {
+		basicModal.error("password");
+		return;
+	}
 
 	var params = {
 		username: username,
@@ -6300,6 +6422,11 @@ _photo.setTitle = function (photoIDs) {
 	}
 
 	var action = function action(data) {
+		if (!data.title.trim()) {
+			basicModal.error("title");
+			return;
+		}
+
 		basicModal.close();
 
 		var newTitle = data.title;
@@ -6671,7 +6798,17 @@ _photo.setTags = function (photoIDs, tags) {
 	};
 
 	api.post("Photo::setTags", params, function (data) {
-		if (data !== true) lychee.error(null, params, data);
+		if (data !== true) {
+			lychee.error(null, params, data);
+		} else if (albums.json && albums.json.smartalbums) {
+			$.each(Object.entries(albums.json.smartalbums), function () {
+				if (this.length == 2 && this[1]["tag_album"] === "1") {
+					// If we have any tag albums, force a refresh.
+					albums.refresh();
+					return false;
+				}
+			});
+		}
 	});
 };
 
@@ -7205,12 +7342,12 @@ settings.createLogin = function () {
 		var password = data.password;
 		var confirm = data.confirm;
 
-		if (username.length < 1) {
+		if (!username.trim()) {
 			basicModal.error("username");
 			return false;
 		}
 
-		if (password.length < 1) {
+		if (!password.trim()) {
 			basicModal.error("password");
 			return false;
 		}
@@ -8798,7 +8935,7 @@ upload.start = {
 		var action = function action(data) {
 			var files = [];
 
-			if (data.link && data.link.length > 3) {
+			if (data.link && data.link.trim().length > 3) {
 				basicModal.close();
 
 				files[0] = {
@@ -8860,6 +8997,11 @@ upload.start = {
 		if (albumID === false) albumID = 0;
 
 		var action = function action(data) {
+			if (!data.path.trim()) {
+				basicModal.error("path");
+				return;
+			}
+
 			var files = [];
 
 			files[0] = {
@@ -9510,6 +9652,25 @@ view.album = {
 			var $badge = $('.photo[data-id="' + photoID + '"] .icn-share');
 
 			if (album.getByID(photoID).public === "1") $badge.addClass("badge--visible badge--hidden");else $badge.removeClass("badge--visible badge--hidden");
+		},
+
+		cover: function cover(photoID) {
+			$('.album .icn-cover').removeClass("badge--cover");
+			$('.photo .icn-cover').removeClass("badge--cover");
+
+			if (album.json.cover_id === photoID) {
+				var badge = $('.photo[data-id="' + photoID + '"] .icn-cover');
+				if (badge.length > 0) {
+					badge.addClass("badge--cover");
+				} else {
+					$.each(album.json.albums, function () {
+						if (this.thumb.id === photoID) {
+							$('.album[data-id="' + this.id + '"] .icn-cover').addClass("badge--cover");
+							return false;
+						}
+					});
+				}
+			}
 		},
 
 		delete: function _delete(photoID) {

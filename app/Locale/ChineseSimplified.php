@@ -121,6 +121,8 @@ final class ChineseSimplified implements Language
 			'TAGS' => '标签',
 			'TAGS_ALL' => '批量打标签',
 			'UNSTAR_PHOTO' => '取消星标',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Open Original',
 			'ABOUT_PHOTO' => '关于照片',

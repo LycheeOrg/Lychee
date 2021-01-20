@@ -121,6 +121,8 @@ final class Swedish implements Language
 			'TAGS' => 'Tag',
 			'TAGS_ALL' => 'Vald taggen',
 			'UNSTAR_PHOTO' => 'Ta bort stjärnmärke',
+			'SET_COVER' => 'Set Album Cover',
+			'REMOVE_COVER' => 'Remove Album Cover',
 
 			'FULL_PHOTO' => 'Originalfotografi',
 			'ABOUT_PHOTO' => 'Om fotografiet',
