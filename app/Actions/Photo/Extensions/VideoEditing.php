@@ -48,7 +48,13 @@ trait VideoEditing
 		$ffmpeg = FFMpeg::create();
 		/** @var Video */
 		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
-		$tmp = tempnam(sys_get_temp_dir(), 'lychee') . '.jpeg';
+		if (!($tmp = tempnam(sys_get_temp_dir(), 'lychee')) ||
+			!rename($tmp, $tmp . '.jpeg')) {
+			Logs::notice(__METHOD__, __LINE__, 'Could not create a temporary file.');
+
+			return '';
+		}
+		$tmp .= '.jpeg';
 		Logs::notice(__METHOD__, __LINE__, 'Saving frame to ' . $tmp);
 
 		try {
