@@ -64,6 +64,7 @@ final class Russian implements Language
 			'MOVE_ALBUM' => 'Move Album',
 			'FULLSCREEN_ENTER' => 'Полный экран',
 			'FULLSCREEN_EXIT' => 'Оконный режим',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Удалить альбом и все фото',
 			'KEEP_ALBUM' => 'Сохранить альбом',

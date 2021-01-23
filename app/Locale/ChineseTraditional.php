@@ -64,6 +64,7 @@ final class ChineseTraditional implements Language
 			'MOVE_ALBUM' => '移動相簿',
 			'FULLSCREEN_ENTER' => '全螢幕模式',
 			'FULLSCREEN_EXIT' => '結束全螢幕模式',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => '刪除相簿和照片',
 			'KEEP_ALBUM' => '保留相簿',

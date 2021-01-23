@@ -66,6 +66,7 @@ final class German implements Language
 			'MOVE_ALBUM' => 'Album verschieben',
 			'FULLSCREEN_ENTER' => 'Vollbild',
 			'FULLSCREEN_EXIT' => 'Vollbild beenden',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Album und Fotos löschen',
 			'KEEP_ALBUM' => 'Album behalten',

@@ -64,6 +64,7 @@ final class Italian implements Language
 			'MOVE_ALBUM' => 'Move Album',
 			'FULLSCREEN_ENTER' => 'Entra In Modalità Schermo Intero',
 			'FULLSCREEN_EXIT' => 'Esci Dalla Modalità Schermo Intero',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Elimina Album e Immagini',
 			'KEEP_ALBUM' => 'Mantieni Album',

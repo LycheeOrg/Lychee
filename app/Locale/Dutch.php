@@ -64,6 +64,7 @@ final class Dutch implements Language
 			'MOVE_ALBUM' => 'Move Album',
 			'FULLSCREEN_ENTER' => 'Enter Fullscreen',
 			'FULLSCREEN_EXIT' => 'Exit Fullscreen',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Verwijder Album en Foto\'s',
 			'KEEP_ALBUM' => 'Behoud Album',

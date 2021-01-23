@@ -64,6 +64,7 @@ final class Greek implements Language
 			'MOVE_ALBUM' => 'Μετακίνηση Λευκώματος',
 			'FULLSCREEN_ENTER' => 'Εισέλθετε σε λειτουργία Πλήρης Οθόνης',
 			'FULLSCREEN_EXIT' => 'Εξέλθετε από λειτουργία Πλήρης Οθόνης',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Διαγραφή Λευκώματος και Φωτογραφιών',
 			'KEEP_ALBUM' => 'Διατήρηση Λευκώματος',

@@ -65,6 +65,7 @@ final class Czech implements Language
 			'MOVE_ALBUM' => 'Přesunout album',
 			'FULLSCREEN_ENTER' => 'Spustit režim celé obrazovky',
 			'FULLSCREEN_EXIT' => 'Ukončit režim celé obrazovky',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Mazání alba a fotografie',
 			'KEEP_ALBUM' => 'Ponechat album',

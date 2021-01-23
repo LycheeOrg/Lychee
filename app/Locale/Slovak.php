@@ -65,6 +65,7 @@ final class Slovak implements Language
 			'MOVE_ALBUM' => 'Album presunúť',
 			'FULLSCREEN_ENTER' => 'Celá obrazovka',
 			'FULLSCREEN_EXIT' => 'Opustiť celú obrazovku',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Album a obrázky zmazať',
 			'KEEP_ALBUM' => 'Album ponechať',

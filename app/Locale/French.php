@@ -66,6 +66,7 @@ final class French implements Language
 			'MOVE_ALBUM' => 'Déplacer l\'album',
 			'FULLSCREEN_ENTER' => 'Enter en plein écran',
 			'FULLSCREEN_EXIT' => 'Sortir du plein écran',
+			'SHARING_ALBUM_USERS' => 'Partager l\'album avec des utilisateurs',
 
 			'DELETE_ALBUM_QUESTION' => 'Supprimer l\'album et ses photos',
 			'KEEP_ALBUM' => 'Garder l\'album',

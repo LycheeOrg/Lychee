@@ -64,6 +64,7 @@ final class Swedish implements Language
 			'MOVE_ALBUM' => 'Move Album',
 			'FULLSCREEN_ENTER' => 'Enter Fullscreen',
 			'FULLSCREEN_EXIT' => 'Exit Fullscreen',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Radera album och fotografier',
 			'KEEP_ALBUM' => 'Behåll albumet',

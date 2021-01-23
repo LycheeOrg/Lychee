@@ -64,6 +64,7 @@ final class Spanish implements Language
 			'MOVE_ALBUM' => 'Mover Álbum',
 			'FULLSCREEN_ENTER' => 'Ingreser a pantalla completa',
 			'FULLSCREEN_EXIT' => 'Salir de pantalla completa',
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
 
 			'DELETE_ALBUM_QUESTION' => 'Eliminar Álbum y Fotos',
 			'KEEP_ALBUM' => 'Mantener Álbum',
