@@ -207,13 +207,12 @@ class SessionFunctions
 	 */
 	public function add_visible_albums($albumIDs)
 	{
+		$visible_albums = [];
 		if (Session::has('visible_albums')) {
 			$visible_albums = Session::get('visible_albums');
-		} else {
-			$visible_albums = '';
+			$visible_albums = explode('|', $visible_albums);
 		}
 
-		$visible_albums = explode('|', $visible_albums);
 		foreach ($albumIDs as $albumID) {
 			if (!in_array($albumID, $visible_albums)) {
 				$visible_albums[] = $albumID;
