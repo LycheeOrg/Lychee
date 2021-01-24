@@ -67,7 +67,7 @@
         <a class="button button--eye" id="button_visibility_album" title="{{ $locale['VISIBILITY_ALBUM'] }}" data-tabindex="3">
             <svg class="iconic iconic--eye"><use xlink:href="#eye"></use></svg>
         </a>
-        <a class="button" title="{{ $locale['SHARING_ALBUM_USERS'] }}" data-tabindex="4">
+        <a class="button" id="button_sharing_album_users" title="{{ $locale['SHARING_ALBUM_USERS'] }}" data-tabindex="4">
             <svg class="iconic"><use xlink:href="#people"></use></svg>
         </a>
         <a class="button button--nsfw" id="button_nsfw_album" title="{{ $locale['ALBUM_MARK_NSFW'] }}" data-tabindex="5">
