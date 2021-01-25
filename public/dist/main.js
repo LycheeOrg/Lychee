@@ -1467,6 +1467,128 @@ album.setPublic = function (albumID, e) {
 	});
 };
 
+album.shareUsers = function (albumID, e) {
+	var addShare = function addShare(listIds) {
+		var params = {
+			albumIDs: albumID,
+			UserIDs: listIds.join(",")
+		};
+		api.post("Sharing::Add", params, function (data) {
+			if (data !== true) {
+				loadingBar.show("error", data.description);
+				lychee.error(null, params, data);
+			} else {
+				loadingBar.show("success", "Sharing updated!");
+			}
+		});
+	};
+
+	var removeShare = function removeShare(listIds) {
+		var params = { ShareIDs: listIds.join(",") };
+		api.post("Sharing::Delete", params, function (data) {
+			if (data !== true) {
+				loadingBar.show("error", data.description);
+				lychee.error(null, params, data);
+			}
+		});
+	};
+
+	if (!basicModal.visible()) {
+		var msg = "<form id=\"sharing_people_form\">\n\t\t\t<p>" + lychee.locale["WAIT_FETCH_DATA"] + "</p>\n\t\t</form>";
+
+		api.post("User::List", {}, function (users) {
+			$("#sharing_people_form").empty();
+			if (users !== {}) {
+				$("#sharing_people_form").append("<p>" + lychee.locale["SHARING_ALBUM_USERS_LONG_MESSAGE"] + "</p>");
+				$.each(users, function (_, user) {
+					$("#sharing_people_form").append("<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='" + user.id + "'>\n\t\t\t\t\t\t\t<span class='checkbox'>" + build.iconic("check") + "</span>\n\t\t\t\t\t\t\t<span class='label'>" + user.username + "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>");
+				});
+				api.post("Sharing::List", {}, function (data) {
+					if (data !== undefined && data.shared !== []) {
+						var sharingOfAlbum = data.shared.filter(function (val) {
+							return val.album_id == albumID;
+						});
+						sharingOfAlbum.forEach(function (sharing) {
+							$(".basicModal .choice input[name=\"" + sharing.user_id + "\"]").prop("checked", true);
+						});
+					}
+				});
+			} else {
+				$("#sharing_people_form").append("<p>" + lychee.locale["SHARING_ALBUM_USERS_NO_USERS"] + "</p>");
+			}
+		});
+
+		basicModal.show({
+			body: msg,
+			buttons: {
+				action: {
+					title: lychee.locale["ALBUM_SHARING_CONFIRM"],
+					fn: function fn(data) {
+						album.shareUsers(albumID, e);
+					}
+				},
+				cancel: {
+					title: lychee.locale["CANCEL"],
+					fn: basicModal.close
+				}
+			}
+		});
+		return true;
+	}
+
+	var usersToShare = [];
+	var usersNotToShare = [];
+	$(".basicModal .choice input").each(function (_, input) {
+		if ($(input).is(":checked")) {
+			usersToShare.push(parseInt(input.name, 10));
+		} else {
+			usersNotToShare.push(parseInt(input.name, 10));
+		}
+	});
+
+	api.post("Sharing::List", {}, function (data) {
+		var sharingToAdd = [];
+		var sharingToDelete = [];
+		if (data !== undefined && data.shared !== []) {
+			// No need to use everything: we need only the ids of the users with
+			// whom this album is already shared with, and the id of the share.
+			var sharingList = new Map(data.shared.filter(function (val) {
+				return val.album_id == albumID;
+			}).map(function (val) {
+				return [val.user_id, val.id];
+			}));
+			var usersInSharingList = Array.from(sharingList.keys());
+			usersToShare.forEach(function (userId) {
+				if (!usersInSharingList.includes(userId)) {
+					// We want to share this album with this user who doesn't
+					// already have it -> add a new share for this user
+					sharingToAdd.push(userId);
+				}
+			});
+			usersNotToShare.forEach(function (userId) {
+				if (usersInSharingList.includes(userId)) {
+					// We don't want to share this album with this user but he
+					// already has it -> delete the share
+					sharingToDelete.push(sharingList.get(userId));
+				}
+			});
+		} else {
+			// There's not a single share created yet
+			sharingToAdd = usersToShare;
+		}
+		basicModal.close();
+
+		if (sharingToDelete.length > 0) {
+			removeShare(sharingToDelete);
+		}
+		if (sharingToAdd.length > 0) {
+			addShare(sharingToAdd);
+		}
+	});
+
+	return true;
+};
+
 album.setNSFW = function (albumID, e) {
 	album.json.nsfw = album.json.nsfw === "0" ? "1" : "0";
 
@@ -3007,6 +3129,11 @@ header.bind = function () {
 	header.dom("#button_visibility_album").on(eventName, function (e) {
 		album.setPublic(album.getID(), e);
 	});
+
+	header.dom("#button_sharing_album_users").on(eventName, function (e) {
+		album.shareUsers(album.getID(), e);
+	});
+
 	header.dom("#button_share_album").on(eventName, function (e) {
 		contextMenu.shareAlbum(album.getID(), e);
 	});
@@ -4945,6 +5072,11 @@ lychee.locale = {
 	DELETE_ALBUM: "Delete Album",
 	FULLSCREEN_ENTER: "Enter Fullscreen",
 	FULLSCREEN_EXIT: "Exit Fullscreen",
+
+	SHARING_ALBUM_USERS: "Share this album with users",
+	SHARING_ALBUM_USERS_LONG_MESSAGE: "Select the users to share this album with them",
+	WAIT_FETCH_DATA: "Please wait while we get the data.",
+	SHARING_ALBUM_USERS_NO_USERS: "There's no user to share the album with.",
 
 	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
 	KEEP_ALBUM: "Keep Album",
@@ -9655,8 +9787,8 @@ view.album = {
 		},
 
 		cover: function cover(photoID) {
-			$('.album .icn-cover').removeClass("badge--cover");
-			$('.photo .icn-cover').removeClass("badge--cover");
+			$(".album .icn-cover").removeClass("badge--cover");
+			$(".photo .icn-cover").removeClass("badge--cover");
 
 			if (album.json.cover_id === photoID) {
 				var badge = $('.photo[data-id="' + photoID + '"] .icn-cover');
