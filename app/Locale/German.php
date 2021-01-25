@@ -66,7 +66,11 @@ final class German implements Language
 			'MOVE_ALBUM' => 'Album verschieben',
 			'FULLSCREEN_ENTER' => 'Vollbild',
 			'FULLSCREEN_EXIT' => 'Vollbild beenden',
+
 			'SHARING_ALBUM_USERS' => 'Share this album with users',
+			'WAIT_FETCH_DATA' => 'Please wait while we get the data.',
+			'SHARING_ALBUM_USERS_NO_USERS' => "There's no user to share the album with.",
+			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Select the users to share this album with them',
 
 			'DELETE_ALBUM_QUESTION' => 'Album und Fotos löschen',
 			'KEEP_ALBUM' => 'Album behalten',

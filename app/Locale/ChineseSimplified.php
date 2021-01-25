@@ -65,6 +65,11 @@ final class ChineseSimplified implements Language
 			'FULLSCREEN_ENTER' => 'Enter Fullscreen',
 			'FULLSCREEN_EXIT' => 'Exit Fullscreen',
 
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
+			'WAIT_FETCH_DATA' => 'Please wait while we get the data.',
+			'SHARING_ALBUM_USERS_NO_USERS' => "There's no user to share the album with.",
+			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Select the users to share this album with them',
+
 			'DELETE_ALBUM_QUESTION' => '删除相册和照片',
 			'KEEP_ALBUM' => '保留相册',
 			'DELETE_ALBUM_CONFIRMATION_1' => '是否确认删除相册',

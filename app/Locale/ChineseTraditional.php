@@ -64,7 +64,11 @@ final class ChineseTraditional implements Language
 			'MOVE_ALBUM' => '移動相簿',
 			'FULLSCREEN_ENTER' => '全螢幕模式',
 			'FULLSCREEN_EXIT' => '結束全螢幕模式',
+
 			'SHARING_ALBUM_USERS' => 'Share this album with users',
+			'WAIT_FETCH_DATA' => 'Please wait while we get the data.',
+			'SHARING_ALBUM_USERS_NO_USERS' => "There's no user to share the album with.",
+			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Select the users to share this album with them',
 
 			'DELETE_ALBUM_QUESTION' => '刪除相簿和照片',
 			'KEEP_ALBUM' => '保留相簿',
