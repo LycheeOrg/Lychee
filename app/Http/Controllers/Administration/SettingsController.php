@@ -224,24 +224,6 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Enable display of photos on map for public albums.
-	 *
-	 * @param Request $request
-	 *
-	 * @return string
-	 */
-	public function setMapDisplayPublic(Request $request)
-	{
-		$request->validate(['map_display_public' => 'required|string']);
-
-		if ($request['map_display_public'] == '1') {
-			return Configs::set('map_display_public', '1') ? 'true' : 'false';
-		}
-
-		return Configs::set('map_display_public', '0') ? 'true' : 'false';
-	}
-
-	/**
 	 * Enable display of photo direction on map.
 	 *
 	 * @param Request $request
