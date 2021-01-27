@@ -137,7 +137,7 @@ class GdHandler implements ImageHandlerInterface
 		if ($res === false) {
 			return false;
 		}
-		list($sourceImg, $mime, $width, $height) = $res;
+		list($sourceImg, , $width, $height) = $res;
 
 		if ($width < $height) {
 			$newSize = $width;
