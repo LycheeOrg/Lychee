@@ -242,6 +242,24 @@ class SettingsController extends Controller
 	}
 
 	/**
+	 * Enable display of photo direction on map.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setMapDisplayDirection(Request $request)
+	{
+		$request->validate(['map_display_direction' => 'required|string']);
+
+		if ($request['map_display_direction'] == '1') {
+			return Configs::set('map_display_direction', '1') ? 'true' : 'false';
+		}
+
+		return Configs::set('map_display_direction', '0') ? 'true' : 'false';
+	}
+
+	/**
 	 * Set provider of OSM map tiles.
 	 *
 	 * @param Request $request
