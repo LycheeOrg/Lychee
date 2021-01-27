@@ -461,6 +461,16 @@ class PhotosUnitTest
 		return $response->streamedContent();
 	}
 
+	/**
+	 * Rotate a picture.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $id
+	 * @param          $direction
+	 * @param string   $result
+	 *
+	 * @return TestResponse
+	 */
 	protected function rotate(
 		string $id,
 		$direction,
@@ -473,7 +483,11 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($code);
 		if ($code == 200) {
-			$response->assertSee($result, false);
+			if ($result != 'true') {
+				$response->assertSee($result, false);
+			}
 		}
+
+		return $response;
 	}
 }

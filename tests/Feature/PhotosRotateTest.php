@@ -29,7 +29,7 @@ class PhotosRotateTest extends TestCase
 		$file = new UploadedFile(
 			'public/uploads/import/night.jpg',
 			'night.jpg',
-			'image/jpg',
+			'image/jpeg',
 			null,
 			true
 		);
@@ -64,18 +64,17 @@ class PhotosRotateTest extends TestCase
 		$photos_tests->rotate('-1', 1, 'false');
 		$photos_tests->rotate($id, 'asdq', 'false', 422);
 		$photos_tests->rotate($id, '2', 'false');
-		$photos_tests->rotate($id, 1);
 
+		$response = $photos_tests->rotate($id, 1);
 		/*
 		* Check some Exif data
 		*/
-		$response = $photos_tests->get($id, 'true');
 		$response->assertJson([
 			'height' => '6720',
 			'id' => $id,
 			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
-			'small_dim' => '360x540',
-			'medium_dim' => '1080x1620',
+			'small_dim' => '240x360',
+			'medium_dim' => '720x1620',
 			'width' => '4480',
 		]);
 
