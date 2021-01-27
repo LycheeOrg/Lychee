@@ -68,8 +68,8 @@ final class French implements Language
 			'FULLSCREEN_EXIT' => 'Sortir du plein écran',
 
 			'SHARING_ALBUM_USERS' => 'Partager l\'album avec des utilisateurs',
-			'WAIT_FETCH_DATA' => 'Merci de patienter que les données soient récupérées.',
-			'SHARING_ALBUM_USERS_NO_USERS' => "Il n'y pas d'utilisateurs avec qui partager cet album.",
+			'WAIT_FETCH_DATA' => 'Merci de patienter que les données soient récupérées...',
+			'SHARING_ALBUM_USERS_NO_USERS' => "Il n'y pas d'utilisateurs avec qui partager cet album",
 			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Sélectionner les utilisateurs avec qui partager cet album',
 
 			'DELETE_ALBUM_QUESTION' => 'Supprimer l\'album et ses photos',
