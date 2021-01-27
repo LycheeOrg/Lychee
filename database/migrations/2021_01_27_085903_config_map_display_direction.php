@@ -21,7 +21,7 @@ class ConfigMapDisplayDirection extends Migration
 			[
 				'key' => 'map_display_direction',
 				'value' => '1',
-				'confidentiality' => 1,
+				'confidentiality' => 0,
 				'cat' => 'Mod Map',
 				'type_range' => BOOL,
 			],
