@@ -85,24 +85,11 @@ class GdHandler implements ImageHandlerInterface
 		int &$resWidth,
 		int &$resHeight
 	): bool {
-		list($width, $height, $mime) = getimagesize($source);
-
-		$sourceImg = $this->readImage($source, $mime);
-
-		if ($sourceImg === false) {
+		$res = $this->readImage($source);
+		if ($res === false) {
 			return false;
 		}
-
-		// the image may need to be rotated prior to scaling
-		try {
-			$exif = exif_read_data($source);
-		} catch (\Exception $e) {
-			$exif = [];
-		}
-		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
-		$dimensions = $this->autoRotateInternal($sourceImg, $orientation);
-		$width = $dimensions['width'];
-		$height = $dimensions['height'];
+		list($sourceImg, $mime, $width, $height) = $res;
 
 		if ($newWidth == 0) {
 			$newWidth = $newHeight * ($width / $height);
@@ -146,24 +133,11 @@ class GdHandler implements ImageHandlerInterface
 		int $newWidth,
 		int $newHeight
 	): bool {
-		list($width, $height, $mime) = getimagesize($source);
-
-		$sourceImg = $this->readImage($source, $mime);
-
-		if ($sourceImg === false) {
+		$res = $this->readImage($source);
+		if ($res === false) {
 			return false;
 		}
-
-		// the image may need to be rotated prior to cropping
-		try {
-			$exif = exif_read_data($source);
-		} catch (\Exception $e) {
-			$exif = [];
-		}
-		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
-		$dimensions = $this->autoRotateInternal($sourceImg, $orientation);
-		$width = $dimensions['width'];
-		$height = $dimensions['height'];
+		list($sourceImg, $mime, $width, $height) = $res;
 
 		if ($width < $height) {
 			$newSize = $width;
@@ -220,21 +194,11 @@ class GdHandler implements ImageHandlerInterface
 	 */
 	public function rotate(string $source, int $angle, string $destination = null): bool
 	{
-		list($width, $height, $mime) = getimagesize($source);
-
-		$image = $this->readImage($source, $mime);
-		if ($image === false) {
+		$res = $this->readImage($source);
+		if ($res === false) {
 			return false;
 		}
-
-		// the image may need to be rotated upright prior to the requested rotation
-		try {
-			$exif = exif_read_data($source);
-		} catch (\Exception $e) {
-			$exif = [];
-		}
-		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
-		$dimensions = $this->autoRotateInternal($image, $orientation);
+		list($image, $mime) = $res;
 
 		$image = imagerotate($image, -$angle, 0);
 		if ($image === false) {
@@ -307,25 +271,26 @@ class GdHandler implements ImageHandlerInterface
 
 	/**
 	 * @param string $source
-	 * @param int    $mime
 	 *
-	 * @return resource|bool|null
+	 * @return array|false
 	 */
-	private function readImage(string $source, int $mime)
+	private function readImage(string $source)
 	{
+		list(, , $mime) = getimagesize($source);
+
 		switch ($mime) {
 			case IMAGETYPE_JPEG:
 			case IMAGETYPE_JPEG2000:
-				return imagecreatefromjpeg($source);
+				$image = imagecreatefromjpeg($source);
 				break;
 			case IMAGETYPE_PNG:
-				return imagecreatefrompng($source);
+				$image = imagecreatefrompng($source);
 				break;
 			case IMAGETYPE_GIF:
-				return imagecreatefromgif($source);
+				$image = imagecreatefromgif($source);
 				break;
 			case IMAGETYPE_WEBP:
-				return imagecreatefromwebp($source);
+				$image = imagecreatefromwebp($source);
 				break;
 			default:
 				Logs::error(__METHOD__, __LINE__, 'Type of photo "' . $mime . '" is not supported');
@@ -333,6 +298,21 @@ class GdHandler implements ImageHandlerInterface
 				return false;
 				break;
 		}
+
+		if ($image === false) {
+			return false;
+		}
+
+		// the image may need to be rotated prior to any processing
+		try {
+			$exif = exif_read_data($source);
+		} catch (\Exception $e) {
+			$exif = [];
+		}
+		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
+		$dimensions = $this->autoRotateInternal($sourceImg, $orientation);
+
+		return [$image, $mime, $dimensions['width'], $dimensions['height']];
 	}
 
 	/**

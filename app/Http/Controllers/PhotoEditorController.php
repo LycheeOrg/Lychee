@@ -29,7 +29,7 @@ class PhotoEditorController extends Controller
 
 		$photo = Photo::findOrFail($request['photoID']);
 
-		if ($rotate->do($photo, intval($request['direction'])) == false) {
+		if (!$rotate->do($photo, intval($request['direction']))) {
 			return 'false';
 		}
 

@@ -482,10 +482,8 @@ class PhotosUnitTest
 			'direction' => $direction,
 		]);
 		$response->assertStatus($code);
-		if ($code == 200) {
-			if ($result != 'true') {
-				$response->assertSee($result, false);
-			}
+		if ($code == 200 && $result != 'true') {
+			$response->assertSee($result, false);
 		}
 
 		return $response;
