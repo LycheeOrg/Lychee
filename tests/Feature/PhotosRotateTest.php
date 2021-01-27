@@ -74,7 +74,7 @@ class PhotosRotateTest extends TestCase
 			'id' => $id,
 			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
 			'small_dim' => '240x360',
-			'medium_dim' => '720x1620',
+			'medium_dim' => '720x1080',
 			'width' => '4480',
 		]);
 
