@@ -123,8 +123,10 @@ class Archive
 		$photo = Photo::with('album')->findOrFail($photoID);
 
 		if (!AccessControl::is_current_user($photo->owner_id)) {
-			if ($photo->album_id !== null && !$photo->album->is_downloadable()) {
-				return null;
+			if ($photo->album_id !== null) {
+				if (!$photo->album->is_downloadable()) {
+					return null;
+				}
 			} elseif (Configs::get_value('downloadable', '0') === '0') {
 				return null;
 			}
