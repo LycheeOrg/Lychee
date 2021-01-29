@@ -127,10 +127,8 @@ class Create
 			$res = $this->save($this->photo);
 		}
 
-		if ($delete_imported && !is_uploaded_file($this->tmp_name) && ($exists || !$import_via_symlink)) {
-			if (!@unlink($this->tmp_name)) {
-				Logs::warning(__METHOD__, __LINE__, 'Failed to delete file (' . $this->tmp_name . ')');
-			}
+		if ($delete_imported && !is_uploaded_file($this->tmp_name) && ($exists || !$import_via_symlink) && !@unlink($this->tmp_name)) {
+			Logs::warning(__METHOD__, __LINE__, 'Failed to delete file (' . $this->tmp_name . ')');
 		}
 
 		return $res;

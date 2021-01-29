@@ -28,9 +28,9 @@ class FromServer
 			$this->exec->import_via_symlink = (Configs::get_value('import_via_symlink', '0') === '1');
 		}
 		if (isset($validated['skip_duplicates'])) {
-			$this->exec->skip_duplicates = ($validated['skip_duplicates'] === '1');
+			$this->exec->force_skip_duplicates |= ($validated['skip_duplicates'] === '1');
 		} else {
-			$this->exec->skip_duplicates = (Configs::get_value('skip_duplicates', '0') === '1');
+			$this->exec->force_skip_duplicates |= (Configs::get_value('skip_duplicates', '0') === '1');
 		}
 		if (isset($validated['resync_metadata'])) {
 			$this->exec->resync_metadata = ($validated['resync_metadata'] === '1');

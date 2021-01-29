@@ -55,7 +55,7 @@ class FromUrl
 			}
 
 			// Import photo
-			if (!$this->photo($tmp_name, true, $albumId)) {
+			if (!$this->photo($tmp_name, true, false, $albumId)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
 			}
