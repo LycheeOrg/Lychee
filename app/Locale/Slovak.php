@@ -67,9 +67,9 @@ final class Slovak implements Language
 			'FULLSCREEN_EXIT' => 'Opustiť celú obrazovku',
 
 			'SHARING_ALBUM_USERS' => 'Share this album with users',
-			'WAIT_FETCH_DATA' => 'Please wait while we get the data.',
-			'SHARING_ALBUM_USERS_NO_USERS' => "There's no user to share the album with.",
-			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Select the users to share this album with them',
+			'WAIT_FETCH_DATA' => 'Please wait while we get the data...',
+			'SHARING_ALBUM_USERS_NO_USERS' => 'There are no users to share the album with',
+			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Select the users to share this album with',
 
 			'DELETE_ALBUM_QUESTION' => 'Album a obrázky zmazať',
 			'KEEP_ALBUM' => 'Album ponechať',
