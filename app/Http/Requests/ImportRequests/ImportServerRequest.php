@@ -27,6 +27,9 @@ class ImportServerRequest extends FormRequest
 			'path' => 'string|required',
 			'albumID' => 'int|required',
 			'delete_imported' => 'int',
+			'import_via_symlink' => 'int',
+			'skip_duplicates' => 'int',
+			'resync_metadata' => 'int',
 		];
 	}
 }

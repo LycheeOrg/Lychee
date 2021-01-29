@@ -19,6 +19,8 @@ class Exec
 	public $force_skip_duplicates = false;
 	public $resync_metadata = false;
 	public $delete_imported;
+	public $import_via_symlink;
+	public $skip_duplicates;
 
 	public $memCheck = true;
 	public $statusCLIFormatting = false;
@@ -211,7 +213,7 @@ class Exec
 			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
-				if ($this->photo($file, $this->delete_imported, $albumID, $this->force_skip_duplicates, $this->resync_metadata) === false) {
+				if ($this->photo($file, $this->delete_imported, $albumID, ($this->force_skip_duplicates || $this->skip_duplicates), $this->import_via_symlink, $this->resync_metadata) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 				}
