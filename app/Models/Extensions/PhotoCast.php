@@ -43,7 +43,7 @@ trait PhotoCast
 
 			'sysdate' => $this->created_at->format('d F Y \a\t H:i'),
 			'takedate' => isset($this->takestamp) ? $this->takestamp->format('d F Y \a\t H:i') : '',
-			'license' => $this->license,
+			'license' => $this->get_license(),
 		];
 	}
 
