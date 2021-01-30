@@ -3,7 +3,7 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-class ConfigAlbumSubtitleType extends Migration
+class DisplayTakedate extends Migration
 {
 	/**
 	 * Run the migrations.
