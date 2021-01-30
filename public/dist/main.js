@@ -4064,6 +4064,7 @@ var lychee = {
 	image_overlay_type_default: "exif", // image overlay type default type
 	map_display: false, // display photo coordinates on map
 	map_display_public: false, // display photos of public album on map (user not logged in)
+	map_display_direction: true, // use the GPS direction data on displayed maps
 	map_provider: "Wikimedia", // Provider of OSM Tiles
 	map_include_subalbums: false, // include photos of subalbums on map
 	location_decoding: false, // retrieve location name from GPS data
@@ -4226,6 +4227,7 @@ lychee.init = function () {
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
 			lychee.map_display = data.config.map_display && data.config.map_display === "1" || false;
 			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === "1" || false;
+			lychee.map_display_direction = data.config.map_display_direction && data.config.map_display_direction === "1" || false;
 			lychee.map_provider = !data.config.map_provider ? "Wikimedia" : data.config.map_provider;
 			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === "1" || false;
 			lychee.location_decoding = data.config.location_decoding && data.config.location_decoding === "1" || false;
@@ -4298,6 +4300,7 @@ lychee.init = function () {
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
 			lychee.map_display = data.config.map_display && data.config.map_display === "1" || false;
 			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === "1" || false;
+			lychee.map_display_direction = data.config.map_display_direction && data.config.map_display_direction === "1" || false;
 			lychee.map_provider = !data.config.map_provider ? "Wikimedia" : data.config.map_provider;
 			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === "1" || false;
 			lychee.location_show = data.config.location_show && data.config.location_show === "1" || false;
@@ -10179,7 +10182,7 @@ view.photo = {
 				attribution: map_provider_layer_attribution[lychee.map_provider].attribution
 			}).addTo(mymap);
 
-			if (!_photo.json.imgDirection || _photo.json.imgDirection === "") {
+			if (!lychee.map_display_direction || !_photo.json.imgDirection || _photo.json.imgDirection === "") {
 				// Add Marker to map, direction is not set
 				L.marker([_photo.json.latitude, _photo.json.longitude]).addTo(mymap);
 			} else {
