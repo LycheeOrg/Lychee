@@ -2,8 +2,8 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\Models\Configs;
-use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
@@ -34,8 +34,7 @@ class UpdateTest extends TestCase
 	{
 		$gitpull = Configs::get_value('allow_online_git_pull', '0');
 
-		$session_tests = new SessionUnitTest();
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		Configs::set('allow_online_git_pull', '0');
 		$this->do_call('Error: Online updates are not allowed.');
@@ -53,6 +52,6 @@ class UpdateTest extends TestCase
 
 		Configs::set('allow_online_git_pull', $gitpull);
 
-		$session_tests->logout($this);
+		AccessControl::logout();
 	}
 }

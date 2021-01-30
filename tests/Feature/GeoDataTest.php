@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class GeoDataTest extends TestCase
@@ -18,9 +18,8 @@ class GeoDataTest extends TestCase
 	{
 		$photos_tests = new PhotosUnitTest($this);
 		$albums_tests = new AlbumsUnitTest($this);
-		$session_tests = new SessionUnitTest();
 
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		/*
 		* Make a copy of the image because import deletes the file and we want to be
@@ -118,6 +117,6 @@ class GeoDataTest extends TestCase
 		// reset
 		Configs::set('map_display', $map_display_value);
 
-		$session_tests->logout($this);
+		AccessControl::logout();
 	}
 }

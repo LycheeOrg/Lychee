@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class RSSTest extends TestCase
@@ -45,10 +45,9 @@ class RSSTest extends TestCase
 		// now we start adding some stuff
 		$photos_tests = new PhotosUnitTest($this);
 		$albums_tests = new AlbumsUnitTest($this);
-		$session_tests = new SessionUnitTest();
 
 		// log as admin
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		// create an album
 		$albumID = $albums_tests->add('0', 'test_album', 'true');
@@ -86,5 +85,7 @@ class RSSTest extends TestCase
 
 		Configs::set('Mod_Frame', $init_config_value);
 		Configs::set('full_photo', $init_full_photo);
+
+		AccessControl::logout();
 	}
 }
