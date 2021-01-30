@@ -58,7 +58,7 @@ class RSSTest extends TestCase
 		$file = new UploadedFile(
 			'public/uploads/import/night.jpg',
 			'night.jpg',
-			'image/jpg',
+			'image/jpeg',
 			null,
 			true
 		);

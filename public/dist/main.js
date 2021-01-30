@@ -347,7 +347,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject49 = _taggedTemplateLiteral(["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p><a target='_blank' href='", "'>Lychee</a> ", "</p>\n\t\t\t  "], ["\n\t\t\t\t<h1>Lychee ", "</h1>\n\t\t\t\t<div class='version'><span><a target='_blank' href='", "'>", "</a></span></div>\n\t\t\t\t<h1>", "</h1>\n\t\t\t\t<p><a target='_blank' href='", "'>Lychee</a> ", "</p>\n\t\t\t  "]),
     _templateObject50 = _taggedTemplateLiteral(["\n\t\t\t<a class='signInKeyLess' id='signInKeyLess'>", "</a>\n\t\t\t<form>\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off' data-tabindex='", "'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "' data-tabindex='", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "' data-tabindex='-1'>", "</a><span></p>\n\t\t\t</form>\n\t\t\t"], ["\n\t\t\t<a class='signInKeyLess' id='signInKeyLess'>", "</a>\n\t\t\t<form>\n\t\t\t\t<p class='signIn'>\n\t\t\t\t\t<input class='text' name='username' autocomplete='on' type='text' placeholder='$", "' autocapitalize='off' data-tabindex='", "'>\n\t\t\t\t\t<input class='text' name='password' autocomplete='current-password' type='password' placeholder='$", "' data-tabindex='", "'>\n\t\t\t\t</p>\n\t\t\t\t<p class='version'>Lychee ", "<span> &#8211; <a target='_blank' href='", "' data-tabindex='-1'>", "</a><span></p>\n\t\t\t</form>\n\t\t\t"]),
     _templateObject51 = _taggedTemplateLiteral(["<link data-prefetch rel=\"prefetch\" href=\"", "\">"], ["<link data-prefetch rel=\"prefetch\" href=\"", "\">"]),
-    _templateObject52 = _taggedTemplateLiteral(["<p>", " '", "' ", "</p>"], ["<p>", " '", "' ", "</p>"]),
+    _templateObject52 = _taggedTemplateLiteral(["<p>", " '", "'", "</p>"], ["<p>", " '", "'", "</p>"]),
     _templateObject53 = _taggedTemplateLiteral(["<p>", " ", " ", "</p>"], ["<p>", " ", " ", "</p>"]),
     _templateObject54 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='$", "'>"]),
     _templateObject55 = _taggedTemplateLiteral(["<p>", " ", " ", " ", "</p>"], ["<p>", " ", " ", " ", "</p>"]),
@@ -1755,6 +1755,35 @@ album.isUploadable = function () {
 	}
 
 	return album.json.owner === lychee.username;
+};
+
+album.updatePhoto = function (data) {
+	if (album.json) {
+		$.each(album.json.photos, function () {
+			if (this.id === data.id) {
+				this.width = data.width;
+				this.height = data.height;
+				this.small = data.small;
+				this.small_dim = data.small_dim;
+				this.small2x = data.small2x;
+				this.small2x_dim = data.small2x_dim;
+				this.medium = data.medium;
+				this.medium_dim = data.medium_dim;
+				this.medium2x = data.medium2x;
+				this.medium2x_dim = data.medium2x_dim;
+				this.thumbUrl = data.thumbUrl;
+				this.thumb2x = data.thumb2x;
+				this.url = data.url;
+				this.size = data.size;
+
+				view.album.content.updatePhoto(this);
+				albums.refresh();
+
+				return false;
+			}
+			return true;
+		});
+	}
 };
 
 album.reload = function () {
@@ -7064,14 +7093,6 @@ _photo.showDirectLinks = function (photoID) {
 photoeditor = {};
 
 photoeditor.rotate = function (photoID, direction) {
-	var swapDims = function swapDims(d) {
-		var p = d.indexOf("x");
-		if (p !== -1) {
-			return d.substr(0, p) + "x" + d.substr(p + 1);
-		}
-		return d;
-	};
-
 	if (!photoID) return false;
 	if (!direction) return false;
 
@@ -7081,39 +7102,26 @@ photoeditor.rotate = function (photoID, direction) {
 	};
 
 	api.post("PhotoEditor::rotate", params, function (data) {
-		if (data !== true) {
+		if (data === false) {
 			lychee.error(null, params, data);
 		} else {
-			var mr = "?" + Math.random();
-			var sel_big = "img#image";
-			var sel_thumb = "div[data-id=" + photoID + "] > span > img";
-			var sel_div = "div[data-id=" + photoID + "]";
-			$(sel_big).prop("src", $(sel_big).attr("src") + mr);
-			$(sel_big).prop("srcset", $(sel_big).attr("src"));
-			$(sel_thumb).prop("src", $(sel_thumb).attr("src") + mr);
-			$(sel_thumb).prop("srcset", $(sel_thumb).attr("src"));
-			var arrayLength = album.json.photos.length;
-			for (var i = 0; i < arrayLength; i++) {
-				if (album.json.photos[i].id === photoID) {
-					var w = album.json.photos[i].width;
-					var h = album.json.photos[i].height;
-					album.json.photos[i].height = w;
-					album.json.photos[i].width = h;
-					album.json.photos[i].small += mr;
-					album.json.photos[i].small_dim = swapDims(album.json.photos[i].small_dim);
-					album.json.photos[i].small2x += mr;
-					album.json.photos[i].small2x_dim = swapDims(album.json.photos[i].small2x_dim);
-					album.json.photos[i].medium += mr;
-					album.json.photos[i].medium_dim = swapDims(album.json.photos[i].medium_dim);
-					album.json.photos[i].medium2x += mr;
-					album.json.photos[i].medium2x_dim = swapDims(album.json.photos[i].medium2x_dim);
-					album.json.photos[i].thumb2x += mr;
-					album.json.photos[i].thumbUrl += mr;
-					album.json.photos[i].url += mr;
-					view.album.content.justify();
-					break;
-				}
+			_photo.json = data;
+			_photo.json.original_album = _photo.json.album;
+			if (album.json) {
+				_photo.json.album = album.json.id;
 			}
+
+			var image = $("img#image");
+			if (_photo.json.hasOwnProperty("medium2x") && _photo.json.medium2x !== "") {
+				image.prop("srcset", _photo.json.medium + " " + parseInt(_photo.json.medium_dim, 10) + "w, " + _photo.json.medium2x + " " + parseInt(_photo.json.medium2x_dim, 10) + "w");
+			} else {
+				image.prop("srcset", "");
+			}
+			image.prop("src", _photo.json.medium !== "" ? _photo.json.medium : _photo.json.url);
+			view.photo.onresize();
+			view.photo.sidebar();
+
+			album.updatePhoto(data);
 		}
 	});
 };
@@ -9655,8 +9663,8 @@ view.album = {
 		},
 
 		cover: function cover(photoID) {
-			$('.album .icn-cover').removeClass("badge--cover");
-			$('.photo .icn-cover').removeClass("badge--cover");
+			$(".album .icn-cover").removeClass("badge--cover");
+			$(".photo .icn-cover").removeClass("badge--cover");
 
 			if (album.json.cover_id === photoID) {
 				var badge = $('.photo[data-id="' + photoID + '"] .icn-cover');
@@ -9671,6 +9679,42 @@ view.album = {
 					});
 				}
 			}
+		},
+
+		updatePhoto: function updatePhoto(data) {
+			var src = void 0,
+			    srcset = "";
+
+			// This mimicks the structure of build.photo
+			if (lychee.layout === "0") {
+				src = data.thumbUrl;
+				if (data.hasOwnProperty("thumb2x") && data.thumb2x !== "") {
+					srcset = data.thumb2x + " 2x";
+				}
+			} else {
+				if (data.small !== "") {
+					src = data.small;
+					if (data.hasOwnProperty("small2x") && data.small2x !== "") {
+						srcset = data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w";
+					}
+				} else if (data.medium !== "") {
+					src = data.medium;
+					if (data.hasOwnProperty("medium2x") && data.medium2x !== "") {
+						srcset = data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w";
+					}
+				} else if (!data.type || data.type.indexOf("video") !== 0) {
+					src = data.url;
+				} else {
+					src = data.thumbUrl;
+					if (data.hasOwnProperty("thumb2x") && data.thumb2x !== "") {
+						srcset = data.thumbUrl + " 200w, " + data.thumb2x + " 400w";
+					}
+				}
+			}
+
+			$('.photo[data-id="' + data.id + '"] > span.thumbimg > img').attr("data-src", src).attr("data-srcset", srcset).addClass("lazyload");
+
+			view.album.content.justify();
 		},
 
 		delete: function _delete(photoID) {
@@ -9917,6 +9961,7 @@ view.photo = {
 		view.photo.title();
 		view.photo.star();
 		view.photo.public();
+		view.photo.header();
 		view.photo.photo(autoplay);
 
 		_photo.json.init = 1;
@@ -10148,6 +10193,14 @@ view.photo = {
 				var marker = L.marker([_photo.json.latitude, _photo.json.longitude], { icon: viewDirectionIcon }).addTo(mymap);
 				marker.setRotationAngle(_photo.json.imgDirection);
 			}
+		}
+	},
+
+	header: function header() {
+		if (_photo.json.type && (_photo.json.type.indexOf("video") === 0 || _photo.json.type === "raw") || _photo.json.livePhotoUrl !== "" && _photo.json.livePhotoUrl !== null) {
+			$("#button_rotate_cwise, #button_rotate_ccwise").hide();
+		} else {
+			$("#button_rotate_cwise, #button_rotate_ccwise").show();
 		}
 	},
 
