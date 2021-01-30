@@ -74,7 +74,7 @@ class StrategyDuplicate extends StrategyPhotoBase
 				$res = new JsonWarning('This photo has been skipped because it\'s already in your library.');
 			}
 
-			if ($this->delete_imported && !is_uploaded_file($create->tmp_name)) {
+			if ($this->delete_imported && !$create->is_uploaded) {
 				@unlink($create->tmp_name);
 			}
 

@@ -52,6 +52,8 @@ class Create
 	/** @var array */
 	public $info;
 	public $livePhotoPartner;
+	/** @var bool */
+	public $is_uploaded;
 
 	public function add(
 		array $file,
@@ -80,6 +82,7 @@ class Create
 
 		// Set paths
 		$this->tmp_name = $file['tmp_name'];
+		$this->is_uploaded = is_uploaded_file($file['tmp_name']);
 		$this->photo_Url = md5(microtime()) . $this->extension;
 		$this->path_prefix = ($this->kind != 'raw') ? 'big/' : 'raw/';
 		$this->path = Storage::path($this->path_prefix . $this->photo_Url);
@@ -126,7 +129,7 @@ class Create
 			$res = $this->save($this->photo);
 		}
 
-		if ($delete_imported && !is_uploaded_file($this->tmp_name) && ($exists || Configs::get_value('import_via_symlink', '0') !== '1')) {
+		if ($delete_imported && !$this->is_uploaded && ($exists || Configs::get_value('import_via_symlink', '0') !== '1')) {
 			@unlink($this->tmp_name);
 		}
 

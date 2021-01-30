@@ -7,6 +7,7 @@ use App\Actions\Photo\Extensions\ImageEditing;
 use App\Actions\Photo\Extensions\VideoEditing;
 use App\Exceptions\JsonError;
 use App\Image\ImageHandlerInterface;
+use App\Metadata\Extractor;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -27,7 +28,7 @@ class StrategyPhoto extends StrategyPhotoBase
 	public function storeFile(Create $create)
 	{
 		// Import if not uploaded via web
-		if (!is_uploaded_file($create->tmp_name)) {
+		if (!$create->is_uploaded) {
 			// TODO: use the storage facade here
 			// Check if the user wants to create symlinks instead of copying the photo
 			if (Configs::get_value('import_via_symlink', '0') === '1') {
@@ -72,13 +73,23 @@ class StrategyPhoto extends StrategyPhotoBase
 				$create->photo->type === 'image/jpeg'
 				&& isset($create->info['orientation'])
 				&& $create->info['orientation'] !== ''
-				&& Configs::get_value('import_via_symlink', '0') === '0'
 			) {
-				$rotation = $this->imageHandler->autoRotate($create->path, $create->info);
+				// If we are importing via symlink, we don't actually overwrite
+				// the source but we still need to fix the dimensions.
+				$pretend = (!$create->is_uploaded && Configs::get_value('import_via_symlink', '0') === '1');
+				$rotation = $this->imageHandler->autoRotate($create->path, $create->info, $pretend);
 
 				if ($rotation !== [false, false]) {
 					$create->photo->width = $rotation['width'];
 					$create->photo->height = $rotation['height'];
+
+					if (!$pretend) {
+						// If the image was rotated, the size may have changed.
+						$metadataExtractor = resolve(Extractor::class);
+						$info = [];
+						$metadataExtractor->size($info, $create->path);
+						$create->photo->size = $info['size'];
+					}
 				}
 			}
 

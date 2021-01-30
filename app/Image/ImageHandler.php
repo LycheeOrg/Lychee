@@ -68,11 +68,39 @@ class ImageHandler implements ImageHandlerInterface
 	 *
 	 * @param string $path
 	 * @param array  $info
+	 * @param bool   $pretend
 	 *
 	 * @return array
 	 */
-	public function autoRotate(string $path, array $info): array
+	public function autoRotate(string $path, array $info, bool $pretend = false): array
 	{
-		return $this->engines[0]->autoRotate($path, $info);
+		$i = 0;
+		$ret = [false, false];
+		while ($i < count($this->engines) && ($ret = $this->engines[$i]->autoRotate($path, $info, $pretend)) == [false, false]) {
+			$i++;
+		}
+
+		return $ret;
+	}
+
+	/**
+	 * @param string $source
+	 * @param int    $angle
+	 * @param string $destination
+	 *
+	 * @return bool
+	 */
+	public function rotate(string $source, int $angle, string $destination = null): bool
+	{
+		if ($angle != 90 && $angle != -90) {
+			return false;
+		}
+
+		$i = 0;
+		while ($i < count($this->engines) && !$this->engines[$i]->rotate($source, $angle, $destination)) {
+			$i++;
+		}
+
+		return $i != count($this->engines);
 	}
 }
