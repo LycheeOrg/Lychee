@@ -46,11 +46,15 @@ class Delete
 			$no_error &= $photo->delete();
 		}
 
+		$sql_delete = Album::where(0);
+
+		//! We break the tree (because delete() is broken see https://github.com/lazychaser/laravel-nestedset/issues/485)
 		Schema::disableForeignKeyConstraints();
 		foreach ($albums as $album) {
-			//! We break the tree (because delete() is broken see https://github.com/lazychaser/laravel-nestedset/issues/485)
-			Album::where('_lft', '>=', $album->_lft)->where('_rgt', '<=', $album->_rgt)->delete();
+			$sql_delete = $sql_delete->orWhere(fn ($q) => $q
+				->where('_lft', '>=', $album->_lft)->where('_rgt', '<=', $album->_rgt));
 		}
+		$sql_delete->delete();
 		Schema::enableForeignKeyConstraints();
 
 		//? We fix the tree :)
