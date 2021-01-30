@@ -48,8 +48,18 @@ interface ImageHandlerInterface
 	 *
 	 * @param string $path
 	 * @param array  $info
+	 * @param boo    $pretend
 	 *
 	 * @return array
 	 */
-	public function autoRotate(string $path, array $info): array;
+	public function autoRotate(string $path, array $info, bool $pretend = false): array;
+
+	/**
+	 * @param string $source
+	 * @param int    $angle
+	 * @param string $destination
+	 *
+	 * @return bool
+	 */
+	public function rotate(string $source, int $angle, string $destination = null): bool;
 }

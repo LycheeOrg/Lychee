@@ -93,14 +93,14 @@ class ImagickHandler implements ImageHandlerInterface
 			// Read image
 			$image = new \Imagick();
 			$image->readImage($source);
+			// the image may need to be rotated prior to scaling
+			$this->autoRotateInternal($image);
+
 			$image->setImageCompressionQuality($this->compressionQuality);
 
 			$profiles = $image->getImageProfiles('icc', true);
 
 			$image->scaleImage($newWidth, $newHeight, ($newWidth != 0 && $newHeight != 0));
-
-			// the image may need to be rotated prior saving
-			$this->autoRotateInternal($image);
 
 			// Remove metadata to save some bytes
 			$image->stripImage();
@@ -141,14 +141,14 @@ class ImagickHandler implements ImageHandlerInterface
 		try {
 			$image = new \Imagick();
 			$image->readImage($source);
+			// the image may need to be rotated prior to cropping
+			$this->autoRotateInternal($image);
+
 			$image->setImageCompressionQuality($this->compressionQuality);
 
 			$profiles = $image->getImageProfiles('icc', true);
 
 			$image->cropThumbnailImage($newWidth, $newHeight);
-
-			// the image may need to be rotated prior saving
-			$this->autoRotateInternal($image);
 
 			// Remove metadata to save some bytes
 			$image->stripImage();
@@ -178,7 +178,7 @@ class ImagickHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function autoRotate(string $path, array $info): array
+	public function autoRotate(string $path, array $info, bool $pretend = false): array
 	{
 		try {
 			$image = new \Imagick();
@@ -188,7 +188,7 @@ class ImagickHandler implements ImageHandlerInterface
 
 			$dimensions = $this->autoRotateInternal($image);
 
-			if ($rotate) {
+			if ($rotate && !$pretend) {
 				$image->writeImage($path);
 			}
 
@@ -200,6 +200,36 @@ class ImagickHandler implements ImageHandlerInterface
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 
 			return [false, false];
+		}
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function rotate(string $source, int $angle, string $destination = null): bool
+	{
+		try {
+			$image = new \Imagick();
+			if ($image->readImage($source) === false) {
+				return false;
+			}
+			// the image may need to be rotated upright prior to the requested rotation
+			$this->autoRotateInternal($image);
+
+			if ($image->rotateImage(new \ImagickPixel(), $angle) === false) {
+				return false;
+			}
+
+			$ret = $image->writeImage($destination);
+
+			$image->clear();
+			$image->destroy();
+
+			return $ret;
+		} catch (ImagickException $exception) {
+			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
+
+			return false;
 		}
 	}
 }

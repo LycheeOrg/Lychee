@@ -52,6 +52,8 @@ class Create
 	/** @var array */
 	public $info;
 	public $livePhotoPartner;
+	/** @var bool */
+	public $is_uploaded;
 
 	public function add(
 		array $file,
@@ -81,6 +83,7 @@ class Create
 
 		// Set paths
 		$this->tmp_name = $file['tmp_name'];
+		$this->is_uploaded = is_uploaded_file($file['tmp_name']);
 		$this->photo_Url = md5(microtime()) . $this->extension;
 		$this->path_prefix = ($this->kind != 'raw') ? 'big/' : 'raw/';
 		$this->path = Storage::path($this->path_prefix . $this->photo_Url);
@@ -127,7 +130,7 @@ class Create
 			$res = $this->save($this->photo);
 		}
 
-		if ($delete_imported && !is_uploaded_file($this->tmp_name) && ($exists || !$import_via_symlink) && !@unlink($this->tmp_name)) {
+		if ($delete_imported && !$this->is_uploaded && ($exists || !$import_via_symlink) && !@unlink($this->tmp_name)) {
 			Logs::warning(__METHOD__, __LINE__, 'Failed to delete file (' . $this->tmp_name . ')');
 		}
 

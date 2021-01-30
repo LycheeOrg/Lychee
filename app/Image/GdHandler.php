@@ -85,7 +85,11 @@ class GdHandler implements ImageHandlerInterface
 		int &$resWidth,
 		int &$resHeight
 	): bool {
-		list($width, $height, $mime) = getimagesize($source);
+		$res = $this->readImage($source);
+		if ($res === false) {
+			return false;
+		}
+		list($sourceImg, $mime, $width, $height) = $res;
 
 		if ($newWidth == 0) {
 			$newWidth = $newHeight * ($width / $height);
@@ -99,45 +103,18 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		$image = imagecreatetruecolor($newWidth, $newHeight);
-		$sourceImg = $this->createImage($source, $mime);
-
-		if ($sourceImg === false) {
-			return false;
-		}
 
 		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
-		// the image may need to be rotated prior saving
-		try {
-			$exif = exif_read_data($source);
-		} catch (\Exception $e) {
-			$exif = [];
-		}
-		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
-		$dimensions = $this->autoRotateInternal($image, $orientation);
-
-		switch ($mime) {
-			case IMAGETYPE_JPEG:
-			case IMAGETYPE_JPEG2000:
-				imagejpeg($image, $destination, $this->compressionQuality);
-				break;
-			case IMAGETYPE_PNG:
-				imagepng($image, $destination);
-				break;
-			case IMAGETYPE_GIF:
-				imagegif($image, $destination);
-				break;
-			case IMAGETYPE_WEBP:
-				imagewebp($image, $destination);
-				break;
-				// createImage above already checked for any invalid values
+		if ($this->writeImage($destination, $image, $mime) === false) {
+			return false;
 		}
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
 
-		$resWidth = $dimensions['width'];
-		$resHeight = $dimensions['height'];
+		$resWidth = $newWidth;
+		$resHeight = $newHeight;
 
 		// Optimize image
 		if (Configs::get_value('lossless_optimization', '0') == '1') {
@@ -156,7 +133,11 @@ class GdHandler implements ImageHandlerInterface
 		int $newWidth,
 		int $newHeight
 	): bool {
-		list($width, $height, $mime) = getimagesize($source);
+		$res = $this->readImage($source);
+		if ($res === false) {
+			return false;
+		}
+		list($sourceImg, , $width, $height) = $res;
 
 		if ($width < $height) {
 			$newSize = $width;
@@ -169,24 +150,12 @@ class GdHandler implements ImageHandlerInterface
 		}
 
 		$image = imagecreatetruecolor($newWidth, $newHeight);
-		$sourceImg = $this->createImage($source, $mime);
-
-		if ($sourceImg === false) {
-			return false;
-		}
 
 		$this->fastImageCopyResampled($image, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
 
-		// the image may need to be rotated prior saving
-		try {
-			$exif = exif_read_data($source);
-		} catch (\Exception $e) {
-			$exif = [];
+		if (imagejpeg($image, $destination, $this->compressionQuality) === false) {
+			return false;
 		}
-		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
-		$this->autoRotateInternal($image, $orientation);
-
-		imagejpeg($image, $destination, $this->compressionQuality);
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
@@ -202,7 +171,7 @@ class GdHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function autoRotate(string $path, array $info): array
+	public function autoRotate(string $path, array $info, bool $pretend = false): array
 	{
 		$image = imagecreatefromjpeg($path);
 
@@ -211,13 +180,36 @@ class GdHandler implements ImageHandlerInterface
 
 		$dimensions = $this->autoRotateInternal($image, $orientation);
 
-		if ($rotate) {
+		if ($rotate && !$pretend) {
 			imagejpeg($image, $path, 100);
 		}
 
 		imagedestroy($image);
 
 		return $dimensions;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function rotate(string $source, int $angle, string $destination = null): bool
+	{
+		$res = $this->readImage($source);
+		if ($res === false) {
+			return false;
+		}
+		list($image, $mime) = $res;
+
+		$image = imagerotate($image, -$angle, 0);
+		if ($image === false) {
+			return false;
+		}
+
+		$ret = $this->writeImage($destination ?? $source, $image, $mime, 100);
+
+		imagedestroy($image);
+
+		return $ret;
 	}
 
 	/**
@@ -279,25 +271,26 @@ class GdHandler implements ImageHandlerInterface
 
 	/**
 	 * @param string $source
-	 * @param int    $mime
 	 *
-	 * @return resource|bool|null
+	 * @return array|false
 	 */
-	private function createImage(string $source, int $mime)
+	private function readImage(string $source)
 	{
+		list(, , $mime) = getimagesize($source);
+
 		switch ($mime) {
 			case IMAGETYPE_JPEG:
 			case IMAGETYPE_JPEG2000:
-				return imagecreatefromjpeg($source);
+				$image = imagecreatefromjpeg($source);
 				break;
 			case IMAGETYPE_PNG:
-				return imagecreatefrompng($source);
+				$image = imagecreatefrompng($source);
 				break;
 			case IMAGETYPE_GIF:
-				return imagecreatefromgif($source);
+				$image = imagecreatefromgif($source);
 				break;
 			case IMAGETYPE_WEBP:
-				return imagecreatefromwebp($source);
+				$image = imagecreatefromwebp($source);
 				break;
 			default:
 				Logs::error(__METHOD__, __LINE__, 'Type of photo "' . $mime . '" is not supported');
@@ -305,5 +298,51 @@ class GdHandler implements ImageHandlerInterface
 				return false;
 				break;
 		}
+
+		if ($image === false) {
+			return false;
+		}
+
+		// the image may need to be rotated prior to any processing
+		try {
+			$exif = exif_read_data($source);
+		} catch (\Exception $e) {
+			$exif = [];
+		}
+		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
+		$dimensions = $this->autoRotateInternal($sourceImg, $orientation);
+
+		return [$image, $mime, $dimensions['width'], $dimensions['height']];
+	}
+
+	/**
+	 * @param string   $destination
+	 * @param resource $image
+	 * @param int      $mime
+	 * @param int      $quality
+	 *
+	 * @return bool
+	 */
+	private function writeImage(string $destination, $image, int $mime, int $quality = null): bool
+	{
+		$ret = false;
+
+		switch ($mime) {
+			case IMAGETYPE_JPEG:
+			case IMAGETYPE_JPEG2000:
+				$ret = imagejpeg($image, $destination, $quality ?? $this->compressionQuality);
+				break;
+			case IMAGETYPE_PNG:
+				$ret = imagepng($image, $destination);
+				break;
+			case IMAGETYPE_GIF:
+				$ret = imagegif($image, $destination);
+				break;
+			case IMAGETYPE_WEBP:
+				$ret = imagewebp($image, $destination);
+				break;
+		}
+
+		return $ret;
 	}
 }
