@@ -55,8 +55,11 @@ class StrategyDuplicate extends StrategyPhotoBase
 			// Before we skip entirely, check if there is a sidecar file and if the metadata needs to be updated (from a sidecar)
 			if ($this->resync_metadata === true) {
 				$info = $this->getMetadata($file, $create->path, $create->kind, $create->extension);
+				$attr = $existing->attributesToArray();
 				foreach ($info as $key => $value) {
-					if ($existing->$key !== null && $value !== $existing->$key) {
+					if (array_key_exists($key, $attr)	// check if key exists, even if null
+						&& (($existing->$key !== null && $value !== $existing->$key) || ($existing->$key === null && $value !== null && $value !== ''))
+						&& $value != $existing->$key) {	// avoid false positives when comparing variables of different types (e.g string vs int)
 						$metadataChanged = true;
 						$existing->$key = $value;
 					}
