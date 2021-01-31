@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Eloquent\WebAuthnCredential;
@@ -18,7 +19,7 @@ class WebAuthTest extends TestCase
 	{
 		$sessionFunctions = new SessionFunctions();
 
-		$sessionFunctions->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		$response = $this->post('/api/webauthn::register/gen');
 		$response->assertStatus(200);
@@ -52,7 +53,7 @@ class WebAuthTest extends TestCase
 		]);
 		$response->assertStatus(422);
 
-		$sessionFunctions->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		$response = $this->post('/api/webauthn::list');
 		$response->assertStatus(200); // code 200 something

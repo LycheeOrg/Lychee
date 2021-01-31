@@ -4,6 +4,7 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
@@ -31,7 +32,7 @@ class AlbumTest extends TestCase
 		$albums_tests = new AlbumsUnitTest($this);
 		$session_tests = new SessionUnitTest();
 
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		$albums_tests->get('recent', '', 'true');
 		$albums_tests->get('starred', '', 'true');
@@ -102,7 +103,7 @@ class AlbumTest extends TestCase
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
 		 */
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		/*
 		 * Let's try to delete this album.
@@ -122,7 +123,7 @@ class AlbumTest extends TestCase
 		$albums_tests = new AlbumsUnitTest($this);
 		$session_tests = new SessionUnitTest();
 
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		$albums_tests->set_description('-1', 'new description', 'false');
 		$albums_tests->set_public('-1', 1, 1, 1, 0, 1, 1, 'false');
