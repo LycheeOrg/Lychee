@@ -33,7 +33,9 @@ class MigrateAdminUser extends Migration
 	{
 		if (Schema::hasTable('users')) {
 			$user = User::find(0);
-			$user->delete();
+			if ($user != null) {
+				$user->delete();
+			}
 		}
 	}
 }
