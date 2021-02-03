@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use AccessControl;
 use App\Actions\Import\Exec;
+use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
 
@@ -39,6 +40,7 @@ class Sync extends Command
 		$exec->statusCLIFormatting = true;
 		$exec->memCheck = false;
 		$exec->delete_imported = false; // we want to sync -> do not delete imported files
+		$exec->import_via_symlink = (Configs::get_value('import_via_symlink', '0') === '1');
 		$exec->skip_duplicates = true;
 		$exec->resync_metadata = $this->option('resync_metadata');
 
