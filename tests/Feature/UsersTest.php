@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
 use Tests\Feature\Lib\AlbumsUnitTest;
@@ -102,7 +103,7 @@ class UsersTest extends TestCase
 		 */
 
 		// 1
-		$sessions_test->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		// 2
 		$users_test->add($this, 'test_abcd', 'test_abcd', '1', '1', 'true');
@@ -154,7 +155,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout($this);
 
 		// 15
-		$sessions_test->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		// 16
 		$users_test->save($this, $id, 'test_abcde', 'testing', '0', '0', 'true');
@@ -197,7 +198,7 @@ class UsersTest extends TestCase
 		$sessions_test->logout($this);
 
 		// 29
-		$sessions_test->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		// 30
 		$users_test->delete($this, $id, 'true');

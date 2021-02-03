@@ -4,8 +4,8 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\Models\Configs;
-use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class DiagnosticsTest extends TestCase
@@ -20,8 +20,7 @@ class DiagnosticsTest extends TestCase
 		$response = $this->get('/Diagnostics');
 		$response->assertStatus(200); // code 200 something
 
-		$session_tests = new SessionUnitTest();
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		$response = $this->get('/Diagnostics');
 		$response->assertStatus(200); // code 200 something
@@ -36,6 +35,6 @@ class DiagnosticsTest extends TestCase
 
 		Configs::where('key', '=', 'lossless_optimization')->update(['value' => '1']);
 
-		$session_tests->logout($this);
+		AccessControl::logout();
 	}
 }

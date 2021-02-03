@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class PhotosRotateTest extends TestCase
@@ -16,9 +16,8 @@ class PhotosRotateTest extends TestCase
 	public function testRotate()
 	{
 		$photos_tests = new PhotosUnitTest($this);
-		$session_tests = new SessionUnitTest();
 
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		/*
 		* Make a copy of the image because import deletes the file and we want to be
@@ -98,6 +97,6 @@ class PhotosRotateTest extends TestCase
 		// reset
 		Configs::set('editor_enabled', $editor_enabled_value);
 
-		$session_tests->logout($this);
+		AccessControl::logout();
 	}
 }
