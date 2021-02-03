@@ -14,12 +14,12 @@ trait ImportPhoto
 	 * @param bool $delete_imported
 	 * @param bool $import_via_symlink
 	 * @param int  $albumID
-	 * @param bool $force_skip_duplicates
+	 * @param bool $skip_duplicates
 	 * @param bool $resync_metadata
 	 *
 	 * @return bool returns true when photo import was successful
 	 */
-	public function photo($path, $delete_imported, $import_via_symlink, $albumID = 0, $force_skip_duplicates = false, $resync_metadata = false)
+	public function photo($path, $delete_imported, $import_via_symlink, $albumID = 0, $skip_duplicates = false, $resync_metadata = false)
 	{
 		// No need to validate photo type and extension in this function.
 		// $photo->add will take care of it.
@@ -37,12 +37,12 @@ trait ImportPhoto
 			$import_via_symlink = false;
 		}
 		// (re-syncing metadata makes no sense when importing duplicates)
-		if (!$force_skip_duplicates) {
+		if (!$skip_duplicates) {
 			$resync_metadata = false;
 		}
 
 		try {
-			if ($create->add($nameFile, $albumID, $delete_imported, $force_skip_duplicates, $import_via_symlink, $resync_metadata) === false) {
+			if ($create->add($nameFile, $albumID, $delete_imported, $skip_duplicates, $import_via_symlink, $resync_metadata) === false) {
 				// @codeCoverageIgnoreStart
 				return false;
 				// @codeCoverageIgnoreEnd

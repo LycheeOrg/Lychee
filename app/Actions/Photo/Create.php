@@ -59,7 +59,7 @@ class Create
 		array $file,
 		$albumID_in = 0,
 		bool $delete_imported = false,
-		bool $force_skip_duplicates = false,
+		bool $skip_duplicates = false,
 		bool $import_via_symlink = false,
 		bool $resync_metadata = false
 	) {
@@ -104,7 +104,7 @@ class Create
 		if (!$duplicate) {
 			$strategy = new StrategyPhoto($import_via_symlink);
 		} else {
-			$strategy = new StrategyDuplicate($force_skip_duplicates, $resync_metadata, $delete_imported);
+			$strategy = new StrategyDuplicate($skip_duplicates, $resync_metadata, $delete_imported);
 		}
 
 		$strategy->storeFile($this);

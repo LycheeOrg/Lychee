@@ -5,23 +5,22 @@ namespace App\Actions\Photo\Strategies;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Metadata;
 use App\Exceptions\JsonWarning;
-use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use Storage;
 
 class StrategyDuplicate extends StrategyPhotoBase
 {
-	public $force_skip_duplicates;
+	public $skip_duplicates;
 	public $resync_metadata;
 	public $delete_imported;
 
 	public function __construct(
-		bool $force_skip_duplicate,
+		bool $skip_duplicates,
 		bool $resync_metadata,
 		bool $delete_imported
 	) {
-		$this->force_skip_duplicate = $force_skip_duplicate;
+		$this->skip_duplicates = $skip_duplicates;
 		$this->resync_metadata = $resync_metadata;
 		$this->delete_imported = $delete_imported;
 	}
@@ -49,7 +48,7 @@ class StrategyDuplicate extends StrategyPhotoBase
 
 		// Photo already exists
 		// Check if the user wants to skip duplicates
-		if ($this->force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
+		if ($this->skip_duplicates) {
 			$metadataChanged = false;
 
 			// Before we skip entirely, check if there is a sidecar file and if the metadata needs to be updated (from a sidecar)
@@ -88,6 +87,6 @@ class StrategyDuplicate extends StrategyPhotoBase
 
 	public function generate_thumbs(Create &$create, bool &$skip_db_entry_creation, bool &$no_error)
 	{
-		Logs::notice(__FILE__, __LINE__, 'Nothing to store, image is a duplicate');
+		Logs::notice(__FILE__, __LINE__, 'Nothing to generate, image is a duplicate');
 	}
 }

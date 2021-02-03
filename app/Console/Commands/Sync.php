@@ -39,7 +39,7 @@ class Sync extends Command
 		$exec->statusCLIFormatting = true;
 		$exec->memCheck = false;
 		$exec->delete_imported = false; // we want to sync -> do not delete imported files
-		$exec->force_skip_duplicates = true;
+		$exec->skip_duplicates = true;
 		$exec->resync_metadata = $this->option('resync_metadata');
 
 		AccessControl::log_as_id($owner_id);

@@ -98,7 +98,7 @@ class PhotoController extends Controller
 		$nameFile['type'] = $file->getMimeType();
 		$nameFile['tmp_name'] = $file->getPathName();
 
-		return $create->add($nameFile, $request['albumID']);
+		return $create->add($nameFile, $request['albumID'], false, (Configs::get_value('skip_duplicates', '0') === '1'));
 	}
 
 	/**

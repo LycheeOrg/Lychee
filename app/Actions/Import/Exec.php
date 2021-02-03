@@ -16,7 +16,7 @@ class Exec
 	use ImportPhoto;
 	use Constants;
 
-	public $force_skip_duplicates = false;
+	public $skip_duplicates = false;
 	public $resync_metadata = false;
 	public $delete_imported;
 	public $import_via_symlink;
@@ -212,7 +212,7 @@ class Exec
 			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
-				if ($this->photo($file, $this->delete_imported, $this->import_via_symlink, $albumID, $this->force_skip_duplicates, $this->resync_metadata) === false) {
+				if ($this->photo($file, $this->delete_imported, $this->import_via_symlink, $albumID, $this->skip_duplicates, $this->resync_metadata) === false) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 				}
@@ -227,7 +227,7 @@ class Exec
 		foreach ($dirs as $dir) {
 			// Folder
 			$album = null;
-			if ($this->force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
+			if ($this->skip_duplicates) {
 				$album = Album::where('parent_id', '=', $albumID == 0 ? null : $albumID)
 					->where('title', '=', basename($dir))
 					->get()
