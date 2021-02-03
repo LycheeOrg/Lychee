@@ -4,7 +4,8 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Metadata;
-use App\Exceptions\JsonWarning;
+use App\Exceptions\PhotoResyncedException;
+use App\Exceptions\PhotoSkippedException;
 use App\Models\Logs;
 use App\Models\Photo;
 use Storage;
@@ -69,11 +70,11 @@ class StrategyDuplicate extends StrategyPhotoBase
 				Logs::notice(__METHOD__, __LINE__, 'Updating metdata of existing photo.');
 				$existing->save();
 
-				$res = new JsonWarning('This photo has been skipped because it\'s already in your library, but its metadata has been updated.');
+				$res = new PhotoResyncedException('This photo has been skipped because it\'s already in your library, but its metadata has been updated.');
 			} else {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
-				$res = new JsonWarning('This photo has been skipped because it\'s already in your library.');
+				$res = new PhotoSkippedException('This photo has been skipped because it\'s already in your library.');
 			}
 
 			if ($this->delete_imported && !$create->is_uploaded) {

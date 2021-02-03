@@ -101,37 +101,39 @@ class Create
 		 * ! a video
 		 */
 
-		if (!$duplicate) {
-			$strategy = new StrategyPhoto($import_via_symlink);
-		} else {
-			$strategy = new StrategyDuplicate($skip_duplicates, $resync_metadata, $delete_imported);
-		}
+		try {
+			if (!$duplicate) {
+				$strategy = new StrategyPhoto($import_via_symlink);
+			} else {
+				$strategy = new StrategyDuplicate($skip_duplicates, $resync_metadata, $delete_imported);
+			}
 
-		$strategy->storeFile($this);
-		$strategy->hydrate($this, $duplicate, $file);
+			$strategy->storeFile($this);
+			$strategy->hydrate($this, $duplicate, $file);
 
-		// set $this->info
-		$strategy->loadMetadata($this, $file);
+			// set $this->info
+			$strategy->loadMetadata($this, $file);
 
-		$strategy->setParentAndOwnership($this);
+			$strategy->setParentAndOwnership($this);
 
-		// set $this->livePhotoPartner
-		$strategy->findLivePartner($this);
+			// set $this->livePhotoPartner
+			$strategy->findLivePartner($this);
 
-		$no_error = true;
-		$skip_db_entry_creation = false;
+			$no_error = true;
+			$skip_db_entry_creation = false;
 
-		$strategy->generate_thumbs($this, $skip_db_entry_creation, $no_error);
+			$strategy->generate_thumbs($this, $skip_db_entry_creation, $no_error);
 
-		// In case it's a live photo and we've uploaded the video
-		if ($skip_db_entry_creation === true) {
-			$res = $this->livePhotoPartner->id;
-		} else {
-			$res = $this->save($this->photo);
-		}
-
-		if ($delete_imported && !$this->is_uploaded && ($exists || !$import_via_symlink) && !@unlink($this->tmp_name)) {
-			Logs::warning(__METHOD__, __LINE__, 'Failed to delete file (' . $this->tmp_name . ')');
+			// In case it's a live photo and we've uploaded the video
+			if ($skip_db_entry_creation === true) {
+				$res = $this->livePhotoPartner->id;
+			} else {
+				$res = $this->save($this->photo);
+			}
+		} finally {
+			if ($delete_imported && !$this->is_uploaded && ($exists || !$import_via_symlink) && !@unlink($this->tmp_name)) {
+				Logs::warning(__METHOD__, __LINE__, 'Failed to delete file (' . $this->tmp_name . ')');
+			}
 		}
 
 		return $res;

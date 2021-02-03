@@ -6,6 +6,8 @@ use App\Actions\Album\Create;
 use App\Actions\Import\Extensions\ImportPhoto;
 use App\Actions\Photo\Extensions\Constants;
 use App\Assets\Helpers;
+use App\Exceptions\PhotoResyncedException;
+use App\Exceptions\PhotoSkippedException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -58,7 +60,7 @@ class Exec
 			}
 			flush();
 		} else {
-			echo $status . PHP_EOL;
+			echo substr($status, strpos($status, ' ') + 1) . PHP_EOL;
 		}
 	}
 
@@ -212,7 +214,16 @@ class Exec
 			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
-				if ($this->photo($file, $this->delete_imported, $this->import_via_symlink, $albumID, $this->skip_duplicates, $this->resync_metadata) === false) {
+				try {
+					if ($this->photo($file, $this->delete_imported, $this->import_via_symlink, $albumID, $this->skip_duplicates, $this->resync_metadata) === false) {
+						$this->status_update('Problem: ' . $file . ': Could not import file');
+						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
+					}
+				} catch (PhotoSkippedException $e) {
+					$this->status_update('Problem: ' . $file . ': Skipped duplicate');
+				} catch (PhotoResyncedException $e) {
+					$this->status_update('Problem: ' . $file . ': Skipped duplicate (resynced metadata)');
+				} catch (Exception $e) {
 					$this->status_update('Problem: ' . $file . ': Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 				}

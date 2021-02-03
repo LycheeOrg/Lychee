@@ -3,7 +3,6 @@
 namespace App\Actions\Import\Extensions;
 
 use App\Actions\Photo\Create;
-use Exception;
 
 trait ImportPhoto
 {
@@ -41,17 +40,11 @@ trait ImportPhoto
 			$resync_metadata = false;
 		}
 
-		try {
-			if ($create->add($nameFile, $albumID, $delete_imported, $skip_duplicates, $import_via_symlink, $resync_metadata) === false) {
-				// @codeCoverageIgnoreStart
-				return false;
-				// @codeCoverageIgnoreEnd
-			}
+		if ($create->add($nameFile, $albumID, $delete_imported, $skip_duplicates, $import_via_symlink, $resync_metadata) === false) {
 			// @codeCoverageIgnoreStart
-		} catch (Exception $e) {
 			return false;
+			// @codeCoverageIgnoreEnd
 		}
-		// @codeCoverageIgnoreEnd
 
 		return true;
 	}
