@@ -22,6 +22,7 @@ use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
 use App\ModelFunctions\SymLinkFunctions;
+use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
