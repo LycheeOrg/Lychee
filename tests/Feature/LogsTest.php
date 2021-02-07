@@ -4,8 +4,8 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\Models\Logs;
-use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class LogsTest extends TestCase
@@ -17,14 +17,12 @@ class LogsTest extends TestCase
 	 */
 	public function testLogs()
 	{
-		$session_tests = new SessionUnitTest();
-
 		$response = $this->get('/Logs');
 		$response->assertOk();
 		$response->assertSeeText('false');
 
 		// set user as admin
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		Logs::notice(__METHOD__, __LINE__, 'test');
 		$response = $this->get('/Logs');
@@ -32,7 +30,7 @@ class LogsTest extends TestCase
 		$response->assertDontSeeText('false');
 		$response->assertViewIs('logs.list');
 
-		$session_tests->logout($this);
+		AccessControl::logout();
 	}
 
 	public function testApiLogs()
@@ -54,8 +52,7 @@ class LogsTest extends TestCase
 		$response->assertSeeText('false');
 
 		// set user as admin
-		$session_tests = new SessionUnitTest();
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		$response = $this->post('/api/Logs::clearNoise');
 		$response->assertOk();
@@ -69,6 +66,6 @@ class LogsTest extends TestCase
 		$response->assertOk();
 		$response->assertSeeText('Everything looks fine, Lychee has not reported any problems!');
 
-		$session_tests->logout($this);
+		AccessControl::logout();
 	}
 }

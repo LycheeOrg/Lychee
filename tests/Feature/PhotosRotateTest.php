@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use AccessControl;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\PhotosUnitTest;
-use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
 
 class PhotosRotateTest extends TestCase
@@ -16,9 +16,8 @@ class PhotosRotateTest extends TestCase
 	public function testRotate()
 	{
 		$photos_tests = new PhotosUnitTest($this);
-		$session_tests = new SessionUnitTest();
 
-		$session_tests->log_as_id(0);
+		AccessControl::log_as_id(0);
 
 		/*
 		* Make a copy of the image because import deletes the file and we want to be
@@ -29,7 +28,7 @@ class PhotosRotateTest extends TestCase
 		$file = new UploadedFile(
 			'public/uploads/import/night.jpg',
 			'night.jpg',
-			'image/jpg',
+			'image/jpeg',
 			null,
 			true
 		);
@@ -64,18 +63,17 @@ class PhotosRotateTest extends TestCase
 		$photos_tests->rotate('-1', 1, 'false');
 		$photos_tests->rotate($id, 'asdq', 'false', 422);
 		$photos_tests->rotate($id, '2', 'false');
-		$photos_tests->rotate($id, 1);
 
+		$response = $photos_tests->rotate($id, 1);
 		/*
 		* Check some Exif data
 		*/
-		$response = $photos_tests->get($id, 'true');
 		$response->assertJson([
 			'height' => '6720',
 			'id' => $id,
 			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
-			'small_dim' => '360x540',
-			'medium_dim' => '1080x1620',
+			'small_dim' => '240x360',
+			'medium_dim' => '720x1080',
 			'width' => '4480',
 		]);
 
@@ -99,6 +97,6 @@ class PhotosRotateTest extends TestCase
 		// reset
 		Configs::set('editor_enabled', $editor_enabled_value);
 
-		$session_tests->logout($this);
+		AccessControl::logout();
 	}
 }

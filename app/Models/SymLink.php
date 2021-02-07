@@ -66,7 +66,7 @@ class SymLink extends Model
 	];
 
 	/**
-	 * Generate a sim link.
+	 * Generate a sym link.
 	 * The salt is important in order to remove the deterministic side of the address.
 	 *
 	 * @param Photo  $photo
@@ -76,14 +76,13 @@ class SymLink extends Model
 	 */
 	private function create(Photo $photo, string $kind, string $salt, $field)
 	{
-		$urls = explode('.', $photo->$field);
 		if (substr($kind, -2, 2) == '2x') {
-			$url = $urls[0] . '@2x.' . $urls[1];
+			$url = Helpers::ex2x($photo->$field);
 		} else {
-			$url = $urls[0] . '.' . $urls[1];
+			$url = $photo->$field;
 		}
 
-		if ($photo->type == 'raw') {
+		if ($photo->type == 'raw' && $kind == 'url') {
 			$original = Storage::path('raw/' . $url);
 		} else {
 			$original = Storage::path($this->kinds_dir[$kind] . '/' . $url);
@@ -121,12 +120,12 @@ class SymLink extends Model
 			$this->create($photo, 'url', strval($now), 'url');
 		}
 
-		// in case of video we need to use thumbUrl instead
 		$kinds = [
 			'medium', 'medium2x', 'small', 'small2x', 'thumbUrl', 'thumb2x',
 		];
 
-		if (strpos($photo->type, 'video') === 0) {
+		if ($photo->isVideo() || $photo->type == 'raw') {
+			// in case of video and raw we need to use thumbUrl instead
 			foreach ($kinds as $kind) {
 				if ($photo->$kind != '' && $photo->$kind != '0') {
 					$this->create($photo, $kind, strval($now), 'thumbUrl');

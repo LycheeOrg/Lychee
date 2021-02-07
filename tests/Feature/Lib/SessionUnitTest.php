@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Lib;
 
-use App\ModelFunctions\SessionFunctions;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
@@ -109,14 +108,5 @@ class SessionUnitTest
 		]);
 		$response->assertOk();
 		$response->assertSee($result, false);
-	}
-
-	/**
-	 * @param int $id
-	 */
-	public function log_as_id(int $id)
-	{
-		$sessionFunctions = new SessionFunctions();
-		$sessionFunctions->log_as_id($id);
 	}
 }
