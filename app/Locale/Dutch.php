@@ -65,6 +65,11 @@ final class Dutch implements Language
 			'FULLSCREEN_ENTER' => 'Enter Fullscreen',
 			'FULLSCREEN_EXIT' => 'Exit Fullscreen',
 
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
+			'WAIT_FETCH_DATA' => 'Please wait while we get the data...',
+			'SHARING_ALBUM_USERS_NO_USERS' => 'There are no users to share the album with',
+			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Select the users to share this album with',
+
 			'DELETE_ALBUM_QUESTION' => 'Verwijder Album en Foto\'s',
 			'KEEP_ALBUM' => 'Behoud Album',
 			'DELETE_ALBUM_CONFIRMATION_1' => 'Weet je zeker dat je dit album en alle foto\'s die het',

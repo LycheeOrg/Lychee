@@ -49,35 +49,38 @@
         <a class="button button--eye" id="button_visibility_album" title="{{ Lang::get('VISIBILITY_ALBUM') }}" data-tabindex="3">
             <svg class="iconic iconic--eye"><use xlink:href="#eye"></use></svg>
         </a>
-        <a class="button button--nsfw" id="button_nsfw_album" title="{{ Lang::get('ALBUM_MARK_NSFW') }}" data-tabindex="4">
+        <a class="button" id="button_sharing_album_users" title="{{ Lang::get('SHARING_ALBUM_USERS') }}" data-tabindex="4">
+            <svg class="iconic"><use xlink:href="#people"></use></svg>
+        </a>
+        <a class="button button--nsfw" id="button_nsfw_album" title="{{ Lang::get('ALBUM_MARK_NSFW') }}" data-tabindex="5">
             <svg class="iconic"><use xlink:href="#warning"></use></svg>
         </a>
-        <a class="button button--share" id="button_share_album" title="{{ Lang::get('SHARE_ALBUM') }}" data-tabindex="5">
+        <a class="button button--share" id="button_share_album" title="{{ Lang::get('SHARE_ALBUM') }}" data-tabindex="6">
             <svg class="iconic ionicons"><use xlink:href="#share-ion"></use></svg>
         </a>
-        <a class="button" id="button_archive" title="{{ Lang::get('DOWNLOAD_ALBUM') }}" data-tabindex="6">
+        <a class="button" id="button_archive" title="{{ Lang::get('DOWNLOAD_ALBUM') }}" data-tabindex="7">
             <svg class="iconic"><use xlink:href="#cloud-download"></use></svg>
         </a>
-        <a class="button button--info" id="button_info_album" title="{{ Lang::get('ABOUT_ALBUM') }}" data-tabindex="7">
+        <a class="button button--info" id="button_info_album" title="{{ Lang::get('ABOUT_ALBUM') }}" data-tabindex="8">
             <svg class="iconic"><use xlink:href="#info"></use></svg>
         </a>
-        <a class="button button--map" id="button_map_album" title="{{ Lang::get('DISPLAY_FULL_MAP') }}" data-tabindex="8">
+        <a class="button button--map" id="button_map_album" title="{{ Lang::get('DISPLAY_FULL_MAP') }}" data-tabindex="9">
             <svg class="iconic"><use xlink:href="#map"></use></svg>
         </a>
-        <a class="button" id="button_move_album" title="{{ Lang::get('MOVE_ALBUM') }}" data-tabindex="9">
+        <a class="button" id="button_move_album" title="{{ Lang::get('MOVE_ALBUM') }}" data-tabindex="10">
             <svg class="iconic"><use xlink:href="#folder"></use></svg>
         </a>
-        <a class="button" id="button_trash_album" title="{{ Lang::get('DELETE_ALBUM') }}" data-tabindex="10">
+        <a class="button" id="button_trash_album" title="{{ Lang::get('DELETE_ALBUM') }}" data-tabindex="11">
             <svg class="iconic"><use xlink:href="#trash"></use></svg>
         </a>
-        <a class="button" id="button_fs_album_enter" title="{{ Lang::get('FULLSCREEN_ENTER') }}" data-tabindex="11">
+        <a class="button" id="button_fs_album_enter" title="{{ Lang::get('FULLSCREEN_ENTER') }}" data-tabindex="12">
             <svg class="iconic"><use xlink:href="#fullscreen-enter"></use></svg>
         </a>
-        <a class="button" id="button_fs_album_exit" title="{{ Lang::get('FULLSCREEN_EXIT') }}" data-tabindex="12">
+        <a class="button" id="button_fs_album_exit" title="{{ Lang::get('FULLSCREEN_EXIT') }}" data-tabindex="13">
             <svg class="iconic"><use xlink:href="#fullscreen-exit"></use></svg>
         </a>
         <a class="header__divider"></a>
-        <a class="button button_add" title="{{ Lang::get('ADD') }}" data-tabindex="12">
+        <a class="button button_add" title="{{ Lang::get('ADD') }}" data-tabindex="14">
             <svg class="iconic"><use xlink:href="#plus"></use></svg>
         </a>
 
