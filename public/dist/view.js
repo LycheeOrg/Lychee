@@ -1132,7 +1132,7 @@ header.setMode = function (mode) {
 			}
 
 			if (albumID === "starred" || albumID === "public" || albumID === "recent") {
-				$("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_move_album").hide();
+				$("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
 				if (album.isUploadable()) {
 					$(".button_add, .header__divider", ".header__toolbar--album").show();
 					tabindex.makeFocusable($(".button_add, .header__divider", ".header__toolbar--album"));
@@ -1140,12 +1140,12 @@ header.setMode = function (mode) {
 					$(".button_add, .header__divider", ".header__toolbar--album").hide();
 					tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
 				}
-				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_move_album"));
+				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album"));
 			} else if (albumID === "unsorted") {
-				$("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_move_album").hide();
+				$("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
 				$("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album").show();
 				tabindex.makeFocusable($("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album"));
-				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_move_album"));
+				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_sharing_album_users, #button_move_album"));
 			} else if (album.isTagAlbum()) {
 				$("#button_info_album").show();
 				$("#button_nsfw_album, #button_move_album").hide();
@@ -1154,27 +1154,27 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable($("#button_nsfw_album, #button_move_album"));
 				tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
 				if (album.isUploadable()) {
-					$("#button_visibility_album, #button_trash_album").show();
-					tabindex.makeFocusable($("#button_visibility_album, #button_trash_album"));
+					$("#button_visibility_album, #button_sharing_album_users, #button_trash_album").show();
+					tabindex.makeFocusable($("#button_visibility_album, #button_sharing_album_users, #button_trash_album"));
 				} else {
-					$("#button_visibility_album, #button_trash_album").hide();
-					tabindex.makeUnfocusable($("#button_visibility_album, #button_trash_album"));
+					$("#button_visibility_album, #button_sharing_album_users, #button_trash_album").hide();
+					tabindex.makeUnfocusable($("#button_visibility_album, #button_sharing_album_users, #button_trash_album"));
 				}
 			} else {
 				$("#button_info_album").show();
 				tabindex.makeFocusable($("#button_info_album"));
 				if (album.isUploadable()) {
-					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").show();
-					tabindex.makeFocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
+					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album").show();
+					tabindex.makeFocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album"));
 				} else {
-					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album").hide();
-					tabindex.makeUnfocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, .button_add, .header__divider", ".header__toolbar--album"));
+					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album").hide();
+					tabindex.makeUnfocusable($("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album"));
 				}
 			}
 
 			// Remove buttons if needed
 			if (!lychee.enable_button_visibility) {
-				var _e14 = $("#button_visibility_album", ".header__toolbar--album");
+				var _e14 = $("#button_visibility_album", "#button_sharing_album_users", ".header__toolbar--album");
 				_e14.remove();
 			}
 			if (!lychee.enable_button_share) {
@@ -2339,9 +2339,9 @@ lychee.locale = {
 	FULLSCREEN_EXIT: "Exit Fullscreen",
 
 	SHARING_ALBUM_USERS: "Share this album with users",
-	SHARING_ALBUM_USERS_LONG_MESSAGE: "Select the users to share this album with them",
-	WAIT_FETCH_DATA: "Please wait while we get the data.",
-	SHARING_ALBUM_USERS_NO_USERS: "There's no user to share the album with.",
+	SHARING_ALBUM_USERS_LONG_MESSAGE: "Select the users to share this album with",
+	WAIT_FETCH_DATA: "Please wait while we get the data...",
+	SHARING_ALBUM_USERS_NO_USERS: "There are no users to share the album with",
 
 	DELETE_ALBUM_QUESTION: "Delete Album and Photos",
 	KEEP_ALBUM: "Keep Album",
