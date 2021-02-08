@@ -310,7 +310,7 @@ class GdHandler implements ImageHandlerInterface
 			$exif = [];
 		}
 		$orientation = isset($exif['Orientation']) && $exif['Orientation'] !== '' ? $exif['Orientation'] : 1;
-		$dimensions = $this->autoRotateInternal($sourceImg, $orientation);
+		$dimensions = $this->autoRotateInternal($image, $orientation);
 
 		return [$image, $mime, $dimensions['width'], $dimensions['height']];
 	}
