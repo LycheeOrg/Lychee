@@ -111,6 +111,7 @@ jobs:
         run: |
           sudo service mysql start
           mysql -uroot -proot -e 'create database homestead_test;'
+          mysql -uroot -proot homestead_test < .github/workflows/v3.sql
           cp .github/workflows/.env.mariadb .env
 
       - name: setup PostGre Database
