@@ -65,6 +65,11 @@ final class Russian implements Language
 			'FULLSCREEN_ENTER' => 'Полный экран',
 			'FULLSCREEN_EXIT' => 'Оконный режим',
 
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
+			'WAIT_FETCH_DATA' => 'Please wait while we get the data...',
+			'SHARING_ALBUM_USERS_NO_USERS' => 'There are no users to share the album with',
+			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Select the users to share this album with',
+
 			'DELETE_ALBUM_QUESTION' => 'Удалить альбом и все фото',
 			'KEEP_ALBUM' => 'Сохранить альбом',
 			'DELETE_ALBUM_CONFIRMATION_1' => 'Вы точно хотите удалить альбом',

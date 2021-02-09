@@ -5,8 +5,8 @@
 namespace App\Http\Controllers\Administration;
 
 use AccessControl;
+use App\Actions\Sharing\ListShare;
 use App\Http\Controllers\Controller;
-use App\Models\Album;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,131 +18,9 @@ class SharingController extends Controller
 	 *
 	 * @return array
 	 */
-	public function listSharing()
+	public function listSharing(ListShare $listShare)
 	{
-		$UserId = AccessControl::id();
-		if ($UserId == 0) {
-			$shared = DB::table('user_album')
-				->select(
-					'user_album.id',
-					'user_id',
-					'album_id',
-					'username',
-					'title',
-					'parent_id'
-				)
-				->join('users', 'user_id', 'users.id')
-				->join('albums', 'album_id', 'albums.id')
-				->orderBy('title', 'ASC')
-				->orderBy('username', 'ASC')
-				->get()
-				->each(function (&$s) {
-					$s->title = Album::getFullPath($s);
-				});
-
-			$albums = Album::select(['id', 'title', 'parent_id'])->orderBy('title', 'ASC')
-				->get()->each(function (&$album) {
-					$album->title = Album::getFullPath($album);
-				});
-
-			$users = User::select(['id', 'username'])
-				->where('id', '>', 0)
-				->orderBy('username', 'ASC')->get();
-		} else {
-			$shared = DB::table('user_album')
-				->select(
-					'user_album.id',
-					'user_id',
-					'album_id',
-					'username',
-					'title',
-					'parent_id'
-				)
-				->join('users', 'user_id', 'users.id')
-				->join('albums', 'album_id', 'albums.id')
-				->where('albums.owner_id', '=', $UserId)
-				->orderBy('title', 'ASC')
-				->orderBy('username', 'ASC')
-				->get()
-				->each(function (&$s) {
-					$s->title = Album::getFullPath($s);
-				});
-
-			$albums = Album::select(['id', 'title', 'parent_id'])
-				->where('owner_id', '=', $UserId)->orderBy('title', 'ASC')->get()->each(function ($album) {
-					$album->title = Album::getFullPath($album);
-				});
-
-			$users = User::select(['id', 'username'])
-				->where('id', '>', 0)
-				->orderBy('username', 'ASC')->get();
-		}
-
-		return [
-			'shared' => $shared,
-			'albums' => $albums,
-			'users' => $users,
-		];
-	}
-
-	/**
-	 * FIXME: What does this function actually do ? It is not called anywhere in the Lychee-front O.o.
-	 *
-	 * @param Request $request
-	 *
-	 * @return array
-	 */
-	public function getUserList(Request $request)
-	{
-		$request->validate([
-			'albumIDs' => 'string|required',
-		]);
-		$array_albumIDs = explode(',', $request['albumIDs']);
-		sort($array_albumIDs);
-
-		$users = User::select('id', 'username')->where('id', '>', 0)->get();
-		$shared = DB::table('user_album')
-			->select('user_id', 'album_id')
-			->whereIn('album_id', $array_albumIDs)
-			->orderBy('user_id', 'ASC')
-			->orderBy('album_id', 'ASC')
-			->get();
-
-		$user_share = [];
-		foreach ($shared as $share) {
-			if (!isset($user_share[$share['user_id']])) {
-				$user_share[$share['user_id']] = [];
-			}
-			$user_share[$share['user_id']][] = $share['album_id'];
-		}
-
-		$return_array = [];
-		foreach ($users as $user) {
-			if (!isset($user_share[$user->id])) {
-				$return_array[] = $user;
-			} else {
-				$no = false;
-
-				// quick test to avoid the loop
-				if (count($user_share[$user->id]) != count($array_albumIDs)) {
-					$no = true;
-				}
-
-				$i = 0;
-				while (!$no && $i < count($user_share[$user->id])) {
-					if ($user_share[$user->id][$i] != $array_albumIDs[$i]) {
-						$no = true;
-					}
-					$i++;
-				}
-
-				if ($no) {
-					$return_array[] = $user;
-				}
-			}
-		}
-
-		return $return_array;
+		return $listShare->do(AccessControl::id());
 	}
 
 	/**

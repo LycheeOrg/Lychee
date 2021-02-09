@@ -65,6 +65,11 @@ final class NorwegianBokmal implements Language
 			'FULLSCREEN_ENTER' => 'Gå i Fullskjermvisning',
 			'FULLSCREEN_EXIT' => 'Slutt Fullskjermvisning',
 
+			'SHARING_ALBUM_USERS' => 'Share this album with users',
+			'WAIT_FETCH_DATA' => 'Please wait while we get the data...',
+			'SHARING_ALBUM_USERS_NO_USERS' => 'There are no users to share the album with',
+			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Select the users to share this album with',
+
 			'DELETE_ALBUM_QUESTION' => 'Fjern Album og Bilder',
 			'KEEP_ALBUM' => 'Behold Album',
 			'DELETE_ALBUM_CONFIRMATION_1' => 'Ønsker du virkelig å fjerne album',
