@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Actions\Photo\Extensions\Checksum;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\ImageEditing;
 use App\Assets\Helpers;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Rotate
 {
+	use Checksum;
 	use Constants;
 	use ImageEditing;
 
@@ -59,17 +61,34 @@ class Rotate
 			return false;
 		}
 
-		// We will use new names to avoid problems with image caching.
-		$new_prefix = md5(microtime());
-		$url = $photo->url;
-		$new_url = $new_prefix . Helpers::getExtension($url);
+		// Generate a temporary name for the rotated file.
 		$big_folder = Storage::path('big/');
+		$url = $photo->url;
 		$path = $big_folder . $url;
-		$new_path = $big_folder . $new_url;
+		$extension = Helpers::getExtension($url);
+		if (!($new_tmp = tempnam($big_folder, 'lychee')) ||
+			!@rename($new_tmp, $new_tmp . $extension)) {
+			Logs::notice(__METHOD__, __LINE__, 'Could not create a temporary file.');
+
+			return false;
+		}
+		$new_tmp .= $extension;
 
 		// Rotate the original image.
-		if ($this->imageHandler->rotate($path, ($direction == 1) ? 90 : -90, $new_path) === false) {
+		if ($this->imageHandler->rotate($path, ($direction == 1) ? 90 : -90, $new_tmp) === false) {
 			Logs::error(__METHOD__, __LINE__, 'Failed to rotate ' . $path);
+
+			return false;
+		}
+
+		// We will use new names to avoid problems with image caching.
+		$new_prefix = $this->checksum($new_tmp);
+		$new_url = $new_prefix . $extension;
+		$new_path = $big_folder . $new_url;
+
+		// Rename the temporary file, now that we know its final name.
+		if (!@rename($new_tmp, $new_path)) {
+			Logs::error(__METHOD__, __LINE__, 'Failed to rename ' . $new_tmp);
 
 			return false;
 		}

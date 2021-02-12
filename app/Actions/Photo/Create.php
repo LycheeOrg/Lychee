@@ -83,15 +83,15 @@ class Create
 		// Set paths
 		$this->tmp_name = $file['tmp_name'];
 		$this->is_uploaded = is_uploaded_file($file['tmp_name']);
-		$this->photo_Url = md5(microtime()) . $this->extension;
 		$this->path_prefix = ($this->kind != 'raw') ? 'big/' : 'raw/';
-		$this->path = Storage::path($this->path_prefix . $this->photo_Url);
 
 		// Calculate checksum
 		$this->photo->checksum = $this->checksum($this->tmp_name);
 		$duplicate = $this->get_duplicate($this->photo->checksum);
 		$exists = ($duplicate !== null);
 
+		$this->photo_Url = $this->photo->checksum . $this->extension;
+		$this->path = Storage::path($this->path_prefix . $this->photo_Url);
 		/*
 		 * ! From here we need to use a Strategy depending if we have
 		 * ! a duplicate
