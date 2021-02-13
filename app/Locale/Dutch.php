@@ -405,6 +405,7 @@ final class Dutch implements Language
 			'UPLOAD_FAILED' => 'Mislukt',
 			'UPLOAD_FAILED_ERROR' => 'Upload mislukt. Server gaf een error!',
 			'UPLOAD_FAILED_WARNING' => 'Upload mislukt. Server gaf een waarschuwing!',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Overgeslagen',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -441,6 +442,7 @@ final class Dutch implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Could not import the file!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Unsupported file type!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Could not create the album!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',

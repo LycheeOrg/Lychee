@@ -411,6 +411,7 @@ final class Italian implements Language
 			'UPLOAD_FAILED' => 'Fallito',
 			'UPLOAD_FAILED_ERROR' => 'Caricamento fallito. Il server ha restituito un errore!',
 			'UPLOAD_FAILED_WARNING' => 'Caricamento fallito. Il server ha restituito un avviso!',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Saltato',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -447,6 +448,7 @@ final class Italian implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Could not import the file!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Unsupported file type!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Could not create the album!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Gestione propria delle foto fatta nel modo giusto',
 			'ABOUT_DESCRIPTION' => 'è uno strumento gratuito di gestione delle foto, eseguito nel server o sul tuo spazio web. L\'installazione è questione di secondi. Carica, gestisci e condividi foto come in un\'applicazione nativa. Lychee offre tutto ciò di cui hai bisogno e tutte le tue foto vengono salvate in modo sicuro.',

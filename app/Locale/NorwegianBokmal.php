@@ -406,6 +406,7 @@ final class NorwegianBokmal implements Language
 			'UPLOAD_FAILED' => 'Feilet',
 			'UPLOAD_FAILED_ERROR' => 'Opplasting feilet. Serveren svarte med en feil!',
 			'UPLOAD_FAILED_WARNING' => 'Opplasting feilet. Serveren svarte med en advarsel!',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Hoppet over',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -442,6 +443,7 @@ final class NorwegianBokmal implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Kan ikke importere filen!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Filtypen er ikke støttet!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Kan ikke lage albumet!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Selvlevert bildehåndtering den riktige måten!',
 			'ABOUT_DESCRIPTION' => 'er et gratis bildehåndteringsverktøy, som kjører på serveren eller en webhost som du eier og kontrollerer. Installasjon tar sekunder. Last opp, håndter, og del bilder som om det er din egen maskin. Lychee leverer alt du trenger, og alle bildene er trygt lagret.',

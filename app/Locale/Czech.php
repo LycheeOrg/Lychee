@@ -412,6 +412,7 @@ final class Czech implements Language
 			'UPLOAD_FAILED' => 'Selhání',
 			'UPLOAD_FAILED_ERROR' => 'Upload selhal. Server vrátil chybu!',
 			'UPLOAD_FAILED_WARNING' => 'Upload selhal. Server vrátil upozornění!',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Vynecháno',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -448,6 +449,7 @@ final class Czech implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Soubor nelze importovat!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Nepodporovaný typ souboru!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Album nelze vytvořit!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Ideální řešení vlastního hostování a správy fotografií',
 			'ABOUT_DESCRIPTION' => 'je open-source nástroj na správu fotogragfií na Vašem serveru nebo webu. Instalace je hotova dílem okmažiku. Upload, správa a sdílení fotografií se provádí běžnými aplikacemi. Lychee přináší vše, co je třeba pro bezpečné online uložení Vašich fotografií.',

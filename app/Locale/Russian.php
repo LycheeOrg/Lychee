@@ -406,6 +406,7 @@ final class Russian implements Language
 			'UPLOAD_FAILED' => 'Ошибка',
 			'UPLOAD_FAILED_ERROR' => 'Загрузка не удалась: сервер вернул ошибку.',
 			'UPLOAD_FAILED_WARNING' => 'Загрузка не удалась, сервер вернул предупреждение.',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Пропущено',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -442,6 +443,7 @@ final class Russian implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Could not import the file!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Unsupported file type!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Could not create the album!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => "- это бесплатный фотоменеджер для Вашего сервера или хостинга. Установка занимает считанные секунды. Загружайте, редактируйте и делитесь фотографиями как в любимом приложении! Lychee обеспечит Вас всем необходимым, включая безопасность хранения Ваших фотографий! <br />На русский язык перевёл Евгений Лебедев. Пожалуйста, <a href='mailto://k-t-c(at)ya.ru'>дайте мне знать</a>, если заметите неточности.",

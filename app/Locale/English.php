@@ -406,6 +406,7 @@ final class English implements Language
 			'UPLOAD_FAILED' => 'Failed',
 			'UPLOAD_FAILED_ERROR' => 'Upload failed. Server returned an error!',
 			'UPLOAD_FAILED_WARNING' => 'Upload failed. Server returned a warning!',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Skipped',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -442,6 +443,7 @@ final class English implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Could not import the file!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Unsupported file type!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Could not create the album!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Self-hosted photo-management done right',
 			'ABOUT_DESCRIPTION' => 'is a free photo-management tool, which runs on your server or web-space. Installing is a matter of seconds. Upload, manage and share photos like from a native application. Lychee comes with everything you need and all your photos are stored securely.',

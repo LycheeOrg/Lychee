@@ -412,6 +412,7 @@ final class Slovak implements Language
 			'UPLOAD_FAILED' => 'Zlyhanie',
 			'UPLOAD_FAILED_ERROR' => 'Nahrávanie zlyhalo. Server ohlásil chybu!',
 			'UPLOAD_FAILED_WARNING' => 'Nahrávanie zlyhalo. Server ohlásil varovanie!',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Preskočiť',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -448,6 +449,7 @@ final class Slovak implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Súbor sa nedá naimportovať!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Nepodporovaný typ súboru!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Nemožno vytvoriť album!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Vlastný hostovaný manažment obrázkov!',
 			'ABOUT_DESCRIPTION' => 'je open-source nástroj, bežiaci na vašom vlastnom serveri alebo v cloude. Inštalácia je otázkou sekúnd. Nahrať, spravovať a zdieľať obrázky ako v natívnej aplikácii. Lychee ponúka všetko čo potrebujete vy a vaše obrázky pre bezpečné uloženie.',

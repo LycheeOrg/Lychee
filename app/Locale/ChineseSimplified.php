@@ -406,6 +406,7 @@ final class ChineseSimplified implements Language
 			'UPLOAD_FAILED' => '失败',
 			'UPLOAD_FAILED_ERROR' => '上传失败。服务器返回了一个错误！',
 			'UPLOAD_FAILED_WARNING' => '上传失败。服务器返回了一个警告！',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => '已跳过',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -442,6 +443,7 @@ final class ChineseSimplified implements Language
 			'UPLOAD_IMPORT_FAILED' => '不能导入文件！',
 			'UPLOAD_IMPORT_UNSUPPORTED' => '不支持的文件类型！',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => '不能创建相册！',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => '自托管照片管理的正确之选',
 			'ABOUT_DESCRIPTION' => '是一个自由的照片管理工具，其其运行于您的服务器或Web空间。仅需几分钟即可安装。Lychee 为您提供了像原生应用那样上传、管理和分享照片所需的一切，您的所有照片都将安全地存储。',

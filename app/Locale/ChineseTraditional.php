@@ -405,6 +405,7 @@ final class ChineseTraditional implements Language
 			'UPLOAD_FAILED' => '失敗',
 			'UPLOAD_FAILED_ERROR' => '上傳失敗。伺服器傳回了一個錯誤！',
 			'UPLOAD_FAILED_WARNING' => '上傳失敗。伺服器傳回了一個警告！',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => '已跳過',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -441,6 +442,7 @@ final class ChineseTraditional implements Language
 			'UPLOAD_IMPORT_FAILED' => '無法導入文件！',
 			'UPLOAD_IMPORT_UNSUPPORTED' => '不支援的文件類型！',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => '無法創建相簿！',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Lychee自主託管的照片管理程序',
 			'ABOUT_DESCRIPTION' => '是一個免費的照片管理工具，可在您的伺服器或網站空間上運行。安裝僅需幾秒鐘。<br>上傳，管理和分享照片(例如從本機應用程序)。<br>Lychee提供您所需的一切，所有照片均安全存儲。',

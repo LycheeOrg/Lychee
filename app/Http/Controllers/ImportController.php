@@ -40,7 +40,15 @@ class ImportController extends Controller
 	public function server(ImportServerRequest $request, FromServer $fromServer)
 	{
 		$validated = $request->validated();
+		$store = $request->session();
+		$store->forget('cancel');
 
-		return $fromServer->do($validated);
+		return $fromServer->do($validated, $store);
+	}
+
+	public function serverCancel(ImportServerRequest $request, FromServer $fromServer)
+	{
+		$request->session()->put('cancel', true);
+		echo '"success"';
 	}
 }

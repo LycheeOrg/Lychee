@@ -414,6 +414,7 @@ final class German implements Language
 			'UPLOAD_FAILED' => 'Fehlgeschlagen',
 			'UPLOAD_FAILED_ERROR' => 'Hochladen fehlgeschlagen. Der Server hat einen Fehler gemeldet!',
 			'UPLOAD_FAILED_WARNING' => 'Hochladen fehlgeschlagen. Der Server hat eine Warnung ausgegeben!',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Übersprungen',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -450,6 +451,7 @@ final class German implements Language
 			'UPLOAD_IMPORT_FAILED' => 'The Datei konnte nicht importiert werden!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Dateityp wird nicht unterstützt!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Album konnte nicht erstellt werden!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Selbst gehostetes Foto-Management, aber richtig!',
 			'ABOUT_DESCRIPTION' => 'ist ein freies Foto-Management-Werkzeug, dass auf Ihrem Server oder Webspace läuft. Die Installation ist eine Sache von Sekunden. Hochladen, Organisieren und Teilen von Fotos funktioniert wie in einer nativen Anwendung. Lychee hält alles bereit, was Sie benötigen, und alle Bilder werden sicher abgespeichert.',

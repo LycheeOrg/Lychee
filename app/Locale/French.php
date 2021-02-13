@@ -405,6 +405,7 @@ final class French implements Language
 			'UPLOAD_FAILED' => 'Échec',
 			'UPLOAD_FAILED_ERROR' => 'Échec d\'upload. Le serveur a retourné une erreur !',
 			'UPLOAD_FAILED_WARNING' => 'Échec d\'upload. Le serveur a retourné un avertissement !',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Ignoré',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -441,6 +442,7 @@ final class French implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Impossible d\'importer le fichier !',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Type de fichier non supporté !',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Impossible de créer l\'album !',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Hebergement personalisé de photo à votre façon !',
 			'ABOUT_DESCRIPTION' => ' est une outil de gestion de gallerie gratuit qui fonctionne sur votre propre serveur. L\'installation est rapide. Uploadez, gérez et partagez vos photos comme avec une application propre. Lychee vous fourni tout ce dont vous avez besoin et vos photos sont stockées en sécurité chez vous.',

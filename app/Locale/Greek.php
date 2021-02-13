@@ -405,6 +405,7 @@ final class Greek implements Language
 			'UPLOAD_FAILED' => 'Απέτυχε',
 			'UPLOAD_FAILED_ERROR' => 'Η μεταφόρτωση απέτυχε. Ο εξυπηρετητής επέστρεψε ένα σφάλμα!',
 			'UPLOAD_FAILED_WARNING' => 'Η μεταφόρτωση απέτυχε. Ο εξυπηρετητής επέστρεψε μία προειδοποίηση!',
+			'UPLOAD_CANCELLED' => 'Cancelled',
 			'UPLOAD_SKIPPED' => 'Παραλείφθηκε',
 			'UPLOAD_UPDATED' => 'Updated',
 			'UPLOAD_IMPORT_SKIPPED_DUPLICATE' => 'This photo has been skipped because it\'s already in your library.',
@@ -441,6 +442,7 @@ final class Greek implements Language
 			'UPLOAD_IMPORT_FAILED' => 'Δεν ήταν δυνατή η εισαγωγή του αρχείου!',
 			'UPLOAD_IMPORT_UNSUPPORTED' => 'Μη υποστηριζόμενος τύπος αρχείου!',
 			'UPLOAD_IMPORT_ALBUM_FAILED' => 'Δεν ήταν δυνατή η δημιουργία του λευκώματος!',
+			'UPLOAD_IMPORT_CANCELLED' => 'Import cancelled',
 
 			'ABOUT_SUBTITLE' => 'Αυτό-φιλοξενούμενη διαχείριση φωτογραφιών καμωμένη σωστά',
 			'ABOUT_DESCRIPTION' => 'είναι ένα δωρεάν εργαλείο διαχείρισης φωτογραφιών, το οποίο "τρέχει" στον δικό σας εξυπηρετητή ή δικτυακό-χώρο. Εγκαθίσταται σε μερικά δευτερόλεπτα. Μεταφορτώστε, διαχειριστείτε και κοινοποιήστε φωτογραφίες σαν από εγκατεστημένη εφαρμογή. Το Lychee παρέχεται με όλες τις λειτουργίες που χρειάζεστε και όλες οι φωτογραφίες σας είναι αποθηκευμένες με ασφάλεια.',
