@@ -11,6 +11,8 @@ use App\Exceptions\PhotoSkippedException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
+use Exception;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
 class Exec
@@ -150,7 +152,6 @@ class Exec
 	public function do(
 		string $path,
 		$albumID,
-		$store,
 		$ignore_list = null
 	) {
 		// Parse path
@@ -178,9 +179,8 @@ class Exec
 		$this->status_update('Status: ' . $origPath . ': 0' . $percent_symbol);
 		foreach ($files as $file) {
 			// re-read session in case cancelling import was requested
-			$store->start();
-			if ($store->exists('cancel')) {
-				$store->forget('cancel');
+			if (Session::has('cancel')) {
+				Session::forget('cancel');
 				$this->status_update('Problem: ' . $path . '/: Import cancelled');
 				Logs::warning(__METHOD__, __LINE__, 'Import cancelled');
 

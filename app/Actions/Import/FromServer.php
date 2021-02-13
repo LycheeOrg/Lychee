@@ -3,7 +3,6 @@
 namespace App\Actions\Import;
 
 use App\Models\Configs;
-use Illuminate\Session\Store;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FromServer
@@ -16,7 +15,7 @@ class FromServer
 		$this->exec = $exec;
 	}
 
-	public function do($validated, Store $store)
+	public function do($validated)
 	{
 		if (isset($validated['delete_imported'])) {
 			$this->exec->delete_imported = ($validated['delete_imported'] === '1');
@@ -37,7 +36,7 @@ class FromServer
 			$this->exec->resync_metadata = ($validated['resync_metadata'] === '1');
 		} else {
 			// do we need a default?
-//			$this->exec->resync_metadata = (Configs::get_value('resync_metadata', '0') === '1');
+			//			$this->exec->resync_metadata = (Configs::get_value('resync_metadata', '0') === '1');
 			$this->exec->resync_metadata = false;
 		}
 
@@ -67,11 +66,11 @@ class FromServer
 		$this->exec->memLimit = intval($this->exec->memLimit * 0.9);
 
 		$response = new StreamedResponse();
-		$response->setCallback(function () use ($validated, $store) {
+		$response->setCallback(function () use ($validated) {
 			// Surround the response in '"' characters to make it a valid
 			// JSON string.
 			echo '"';
-			$this->exec->do($validated['path'], $validated['albumID'], $store);
+			$this->exec->do($validated['path'], $validated['albumID']);
 			echo '"';
 		});
 		// nginx-specific voodoo, as per https://symfony.com/doc/current/components/http_foundation.html#streaming-a-response
