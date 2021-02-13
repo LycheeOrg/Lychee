@@ -179,6 +179,7 @@ class Exec
 		$this->status_update('Status: ' . $origPath . ': 0' . $percent_symbol);
 		foreach ($files as $file) {
 			// re-read session in case cancelling import was requested
+			session()->start();
 			if (Session::has('cancel')) {
 				Session::forget('cancel');
 				$this->status_update('Problem: ' . $path . '/: Import cancelled');
