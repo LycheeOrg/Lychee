@@ -66,8 +66,10 @@ class Rotate
 		$url = $photo->url;
 		$path = $big_folder . $url;
 		$extension = Helpers::getExtension($url);
-		if (!($new_tmp = tempnam($big_folder, 'lychee')) ||
-			!@rename($new_tmp, $new_tmp . $extension)) {
+		if (
+			!($new_tmp = tempnam($big_folder, 'lychee')) ||
+			!@rename($new_tmp, $new_tmp . $extension)
+		) {
 			Logs::notice(__METHOD__, __LINE__, 'Could not create a temporary file.');
 
 			return false;
@@ -82,7 +84,7 @@ class Rotate
 		}
 
 		// We will use new names to avoid problems with image caching.
-		$new_prefix = $this->checksum($new_tmp);
+		$new_prefix = substr($this->checksum($new_tmp), 0, 32);
 		$new_url = $new_prefix . $extension;
 		$new_path = $big_folder . $new_url;
 
@@ -159,7 +161,8 @@ class Rotate
 				'small2x' => $photo->small2x,
 				'medium' => $photo->medium,
 				'medium2x' => $photo->medium2x,
-			]);
+			]
+		);
 
 		return true;
 	}
