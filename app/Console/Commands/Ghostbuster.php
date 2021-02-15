@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Assets\Helpers;
 use App\Console\Commands\Utilities\Colorize;
 use App\Models\Photo;
 use Illuminate\Console\Command;
@@ -93,14 +94,9 @@ class Ghostbuster extends Command
 
 				// for normal pictures
 				$to_delete[] = 'small/' . $url;
+				$to_delete[] = 'small/' . Helpers::ex2x($url);
 				$to_delete[] = 'medium/' . $url;
-				if (count($photoName) === 2) {
-					$to_delete[] = 'small/' . $photoName[0] . '@2x.' . $photoName[1];
-					$to_delete[] = 'medium/' . $photoName[0] . '@2x.' . $photoName[1];
-				} else {
-					$to_delete[] = 'small/' . $photoName[0] . '@2x';
-					$to_delete[] = 'medium/' . $photoName[0] . '@2x';
-				}
+				$to_delete[] = 'medium/' . Helpers::ex2x($url);
 				$to_delete[] = 'big/' . $url;
 
 				foreach ($to_delete as $del) {
