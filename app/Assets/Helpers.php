@@ -206,7 +206,9 @@ class Helpers
 	{
 		$thumbUrl2x = explode('.', $url);
 
-		return $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+		return (count($thumbUrl2x) === 2) ?
+			$thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1] :
+			$thumbUrl2x[0] . '@2x';
 	}
 
 	/**
