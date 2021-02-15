@@ -93,9 +93,14 @@ class Ghostbuster extends Command
 
 				// for normal pictures
 				$to_delete[] = 'small/' . $url;
-				$to_delete[] = 'small/' . $photoName[0] . '@2x.' . $photoName[1];
 				$to_delete[] = 'medium/' . $url;
-				$to_delete[] = 'medium/' . $photoName[0] . '@2x.' . $photoName[1];
+				if (count($photoName) === 2) {
+					$to_delete[] = 'small/' . $photoName[0] . '@2x.' . $photoName[1];
+					$to_delete[] = 'medium/' . $photoName[0] . '@2x.' . $photoName[1];
+				} else {
+					$to_delete[] = 'small/' . $photoName[0] . '@2x';
+					$to_delete[] = 'medium/' . $photoName[0] . '@2x';
+				}
 				$to_delete[] = 'big/' . $url;
 
 				foreach ($to_delete as $del) {
