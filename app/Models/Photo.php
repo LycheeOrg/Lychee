@@ -4,6 +4,7 @@
 
 namespace App\Models;
 
+use App\Assets\Helpers;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\PhotoGetters;
@@ -185,8 +186,7 @@ class Photo extends Model
 			$photoName = $this->url;
 		}
 		if ($photoName !== '') {
-			$photoName2x = explode('.', $photoName);
-			$photoName2x = $photoName2x[0] . '@2x.' . $photoName2x[1];
+			$photoName2x = Helpers::ex2x($photoName);
 
 			// Delete Live Photo Video file
 			// TODO: USE STORAGE FOR DELETE
@@ -230,8 +230,7 @@ class Photo extends Model
 
 		if ($this->thumbUrl != '') {
 			// Get retina thumb url
-			$thumbUrl2x = explode('.', $this->thumbUrl);
-			$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
+			$thumbUrl2x = Helpers::ex2x($this->thumbUrl);
 			// Delete thumb
 			// TODO: USE STORAGE FOR DELETE
 			if (Storage::exists('thumb/' . $this->thumbUrl) && !unlink(Storage::path('thumb/' . $this->thumbUrl))) {

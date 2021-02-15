@@ -129,7 +129,7 @@ trait ImageEditing
 
 		// Add the @2x postfix if we're dealing with an HiDPI type
 		if (strpos($type, '2x') > 0) {
-			$filename = preg_replace('/^(.*)\.(.*)$/', '\1@2x.\2', $filename);
+			$filename = Helpers::ex2x($filename);
 		}
 
 		// Is photo big enough?
