@@ -197,7 +197,7 @@ class Exec
 			session()->start();
 			if (Session::has('cancel')) {
 				Session::forget('cancel');
-				$this->status_error($path . '/', 'Import cancelled');
+				$this->status_error($origPath, 'Import cancelled');
 				Logs::warning(__METHOD__, __LINE__, 'Import cancelled');
 
 				return;
