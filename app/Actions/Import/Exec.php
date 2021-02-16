@@ -66,6 +66,21 @@ class Exec
 		}
 	}
 
+	private function status_progress(string $path, string $msg)
+	{
+		$this->status_update('Status: ' . $path . ': ' . $msg);
+	}
+
+	private function status_warning(string $msg)
+	{
+		$this->status_update('Warning: ' . $msg);
+	}
+
+	private function status_error(string $path, string $msg)
+	{
+		$this->status_update('Problem: ' . $path . ': ' . $msg);
+	}
+
 	private function parsePath(string &$path, string $origPath)
 	{
 		if (!isset($path)) {
@@ -77,7 +92,7 @@ class Exec
 			$path = substr($path, 0, -1);
 		}
 		if (is_dir($path) === false) {
-			$this->status_update('Problem: ' . $origPath . ': Given path is not a directory');
+			$this->status_error($origPath, 'Given path is not a directory');
 			Logs::error(__METHOD__, __LINE__, 'Given path is not a directory (' . $origPath . ')');
 
 			return false;
@@ -90,7 +105,7 @@ class Exec
 			realpath($path) === Storage::path('small') ||
 			realpath($path) === Storage::path('thumb')
 		) {
-			$this->status_update('Problem: ' . $origPath . ': Given path is reserved');
+			$this->status_error($origPath, 'Given path is reserved');
 			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee (' . $origPath . ')');
 
 			return false;
@@ -136,7 +151,7 @@ class Exec
 	{
 		if ($this->memCheck && !$this->memWarningGiven && memory_get_usage() > $this->memLimit) {
 			// @codeCoverageIgnoreStart
-			$this->status_update('Warning: Approaching memory limit');
+			$this->status_warning('Approaching memory limit');
 			$this->memWarningGiven = true;
 			// @codeCoverageIgnoreEnd
 		}
@@ -176,13 +191,13 @@ class Exec
 		// Add '%' at end for CLI output
 		$percent_symbol = ($this->statusCLIFormatting) ? '%' : '';
 
-		$this->status_update('Status: ' . $origPath . ': 0' . $percent_symbol);
+		$this->status_progress($origPath, '0' . $percent_symbol);
 		foreach ($files as $file) {
 			// re-read session in case cancelling import was requested
 			session()->start();
 			if (Session::has('cancel')) {
 				Session::forget('cancel');
-				$this->status_update('Problem: ' . $path . '/: Import cancelled');
+				$this->status_error($path . '/', 'Import cancelled');
 				Logs::warning(__METHOD__, __LINE__, 'Import cancelled');
 
 				return;
@@ -197,7 +212,7 @@ class Exec
 			// 100%, which are always generated.
 			$time = microtime(true);
 			if ($time - $lastStatus >= 1) {
-				$this->status_update('Status: ' . $origPath . ': ' . intval($filesCount / $filesTotal * 100) . $percent_symbol);
+				$this->status_progress($origPath, intval($filesCount / $filesTotal * 100) . $percent_symbol);
 				$lastStatus = $time;
 			}
 
@@ -217,7 +232,7 @@ class Exec
 			// It is possible to move a file because of directory permissions but
 			// the file may still be unreadable by the user
 			if (!is_readable($file)) {
-				$this->status_update('Problem: ' . $file . ': Could not read file');
+				$this->status_error($file, 'Could not read file');
 				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
 				continue;
 			}
@@ -227,23 +242,23 @@ class Exec
 				// Photo or Video
 				try {
 					if ($this->photo($file, $this->delete_imported, $this->import_via_symlink, $albumID, $this->skip_duplicates, $this->resync_metadata) === false) {
-						$this->status_update('Problem: ' . $file . ': Could not import file');
+						$this->status_error($file, 'Could not import file');
 						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					}
 				} catch (PhotoSkippedException $e) {
-					$this->status_update('Problem: ' . $file . ': Skipped duplicate');
+					$this->status_error($file, 'Skipped duplicate');
 				} catch (PhotoResyncedException $e) {
-					$this->status_update('Problem: ' . $file . ': Skipped duplicate (resynced metadata)');
+					$this->status_error($file, 'Skipped duplicate (resynced metadata)');
 				} catch (Exception $e) {
-					$this->status_update('Problem: ' . $file . ': Could not import file');
+					$this->status_error($file, 'Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 				}
 			} else {
-				$this->status_update('Problem: ' . $file . ': Unsupported file type');
+				$this->status_error($file, 'Unsupported file type');
 				Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
 			}
 		}
-		$this->status_update('Status: ' . $origPath . ': 100' . $percent_symbol);
+		$this->status_progress($origPath, '100' . $percent_symbol);
 
 		// Album creation
 		foreach ($dirs as $dir) {
@@ -262,7 +277,7 @@ class Exec
 				if ($album === false) {
 					// @codeCoverageIgnoreStart
 
-					$this->status_update('Problem: ' . basename($dir) . ': Could not create album');
+					$this->status_error(basename($dir), ': Could not create album');
 					Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
 					continue;
 				}
