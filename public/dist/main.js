@@ -372,7 +372,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject74 = _taggedTemplateLiteral(["<h1>", "</h1>"], ["<h1>", "</h1>"]),
     _templateObject75 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
     _templateObject76 = _taggedTemplateLiteral(["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"], ["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"]),
-    _templateObject77 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='delete'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='delete'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject77 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t"]),
     _templateObject78 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
     _templateObject79 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
     _templateObject80 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
@@ -4223,6 +4223,8 @@ var lychee = {
 
 	landing_page_enabled: false, // is landing page enabled ?
 	delete_imported: false,
+	import_via_symlink: false,
+	skip_duplicates: false,
 
 	nsfw_visible: true,
 	nsfw_visible_saved: true,
@@ -4231,7 +4233,7 @@ var lychee = {
 
 	album_subtitle_type: "oldstyle",
 
-	upload_processing_limit: 2,
+	upload_processing_limit: 4,
 
 	// this is device specific config, in this case default is Desktop.
 	header_auto_hide: true,
@@ -4307,6 +4309,8 @@ lychee.aboutDialog = function () {
 };
 
 lychee.init = function () {
+	var exitview = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
 	lychee.adjustContentHeight();
 
 	api.post("Session::init", {}, function (data) {
@@ -4395,7 +4399,8 @@ lychee.init = function () {
 			lychee.downloadable = data.config.downloadable && data.config.downloadable === "1" || false;
 			lychee.share_button_visible = data.config.share_button_visible && data.config.share_button_visible === "1" || false;
 			lychee.delete_imported = data.config.delete_imported && data.config.delete_imported === "1";
-
+			lychee.import_via_symlink = data.config.import_via_symlink && data.config.import_via_symlink === "1";
+			lychee.skip_duplicates = data.config.skip_duplicates && data.config.skip_duplicates === "1";
 			lychee.nsfw_visible = data.config.nsfw_visible && data.config.nsfw_visible === "1" || false;
 			lychee.nsfw_blur = data.config.nsfw_blur && data.config.nsfw_blur === "1" || false;
 			lychee.nsfw_warning = data.config.nsfw_warning_admin && data.config.nsfw_warning_admin === "1" || false;
@@ -4424,7 +4429,10 @@ lychee.init = function () {
 			lychee.admin = !lychee.api_V2;
 			lychee.nsfw_visible_saved = lychee.nsfw_visible;
 
-			lychee.upload_processing_limit = parseInt(data.config.upload_processing_limit) || 4;
+			lychee.upload_processing_limit = parseInt(data.config.upload_processing_limit);
+			// when null or any non stringified numeric value is sent from the server we get NaN.
+			// we fix this.
+			if (isNaN(lychee.upload_processing_limit)) lychee.upload_processing_limit = 4;
 
 			// leftMenu
 			leftMenu.build();
@@ -4492,8 +4500,10 @@ lychee.init = function () {
 			// should not happen.
 		}
 
-		$(window).bind("popstate", lychee.load);
-		lychee.load();
+		if (exitview) {
+			$(window).bind("popstate", lychee.load);
+			lychee.load();
+		}
 	});
 };
 
@@ -5486,6 +5496,9 @@ lychee.locale = {
 	UPLOAD_FAILED_ERROR: "Upload failed. Server returned an error!",
 	UPLOAD_FAILED_WARNING: "Upload failed. Server returned a warning!",
 	UPLOAD_SKIPPED: "Skipped",
+	UPLOAD_UPDATED: "Updated",
+	UPLOAD_IMPORT_SKIPPED_DUPLICATE: "This photo has been skipped because it's already in your library.",
+	UPLOAD_IMPORT_RESYNCED_DUPLICATE: "This photo has been skipped because it's already in your library, but its metadata has been updated.",
 	UPLOAD_ERROR_CONSOLE: "Please take a look at the console of your browser for further details.",
 	UPLOAD_UNKNOWN: "Server returned an unknown response. Please take a look at the console of your browser for further details.",
 	UPLOAD_ERROR_UNKNOWN: "Upload failed. Server returned an unkown error!",
@@ -7897,11 +7910,14 @@ settings.changeCSS = function () {
 };
 
 settings.save = function (params) {
+	var exitview = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
 	api.post("Settings::saveAll", params, function (data) {
 		if (data === true) {
 			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_UPDATE"]);
 			view.full_settings.init();
-			// lychee.init();
+			// re-read settings
+			lychee.init(exitview);
 		} else lychee.error("Check the Logs", params, data);
 	});
 };
@@ -7920,7 +7936,7 @@ settings.save_enter = function (e) {
 		cancel.title = lychee.locale["CANCEL"];
 
 		action.fn = function () {
-			settings.save(settings.getValues("#fullSettings"));
+			settings.save(settings.getValues("#fullSettings"), false);
 			basicModal.close();
 		};
 
@@ -8872,17 +8888,52 @@ u2f.list = function () {
 
 var upload = {};
 
-upload.show = function (title, files, callback) {
+var choiceDeleteSelector = '.basicModal .choice input[name="delete"]';
+var choiceSymlinkSelector = '.basicModal .choice input[name="symlinks"]';
+var choiceDuplicateSelector = '.basicModal .choice input[name="skipduplicates"]';
+var choiceResyncSelector = '.basicModal .choice input[name="resyncmetadata"]';
+var actionSelector = ".basicModal #basicModal__action";
+var cancelSelector = ".basicModal #basicModal__cancel";
+var lastRowSelector = ".basicModal .rows .row:last-child";
+var prelastRowSelector = ".basicModal .rows .row:nth-last-child(2)";
+
+var nRowStatusSelector = function nRowStatusSelector(row) {
+	return ".basicModal .rows .row:nth-child(" + row + ") .status";
+};
+
+var showCloseButton = function showCloseButton() {
+	$(actionSelector).show();
+	// re-activate cancel button to close modal panel if needed
+	$(cancelSelector).removeClass("basicModal__button--active").hide();
+};
+
+upload.show = function (title, files, run_callback) {
+	var cancel_callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+
 	basicModal.show({
 		body: build.uploadModal(title, files),
 		buttons: {
 			action: {
 				title: lychee.locale["CLOSE"],
 				class: "hidden",
-				fn: basicModal.close
+				fn: function fn() {
+					if ($(actionSelector).is(":visible")) basicModal.close();
+				}
+			},
+			cancel: {
+				title: lychee.locale["CANCEL"],
+				class: "red hidden",
+				fn: function fn() {
+					// close modal if close button is displayed
+					if ($(actionSelector).is(":visible")) basicModal.close();
+					if (cancel_callback) {
+						$(cancelSelector).addClass("busy");
+						cancel_callback();
+					}
+				}
 			}
 		},
-		callback: callback
+		callback: run_callback
 	});
 };
 
@@ -8907,12 +8958,17 @@ upload.start = {
 		var processing_count = 0;
 		var next_upload = 0;
 		var currently_uploading = false;
+		var cancelUpload = false;
 
 		var process = function process(file_num) {
 			var formData = new FormData();
 			var xhr = new XMLHttpRequest();
 			var pre_progress = 0;
 			var progress = 0;
+
+			if (file_num === 0) {
+				$(cancelSelector).show();
+			}
 
 			var finish = function finish() {
 				window.onbeforeunload = null;
@@ -8925,11 +8981,11 @@ upload.start = {
 					upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
 				} else if (error === false && warning === true) {
 					// Warning
-					$(".basicModal #basicModal__action.hidden").show();
+					showCloseButton();
 					upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
 				} else {
 					// Error
-					$(".basicModal #basicModal__action.hidden").show();
+					showCloseButton();
 					upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 				}
 
@@ -8973,7 +9029,7 @@ upload.start = {
 				// Set status
 				if (xhr.status === 200 && isNumber(data)) {
 					// Success
-					$(".basicModal .rows .row:nth-child(" + (file_num + 1) + ") .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
+					$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
 				} else {
 					if (xhr.status === 413 || data.substr(0, 6) === "Error:") {
 						if (xhr.status === 413) {
@@ -8989,7 +9045,7 @@ upload.start = {
 						error = true;
 
 						// Error Status
-						$(".basicModal .rows .row:nth-child(" + (file_num + 1) + ") .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
+						$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 
 						// Throw error
 						lychee.error(lychee.locale["UPLOAD_FAILED_ERROR"], xhr, data);
@@ -8998,7 +9054,7 @@ upload.start = {
 						warning = true;
 
 						// Warning Status
-						$(".basicModal .rows .row:nth-child(" + (file_num + 1) + ") .status").html(lychee.locale["UPLOAD_SKIPPED"]).addClass("warning");
+						$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_SKIPPED"]).addClass("warning");
 
 						// Throw error
 						lychee.error(lychee.locale["UPLOAD_FAILED_WARNING"], xhr, data);
@@ -9007,7 +9063,7 @@ upload.start = {
 						error = true;
 
 						// Error Status
-						$(".basicModal .rows .row:nth-child(" + (file_num + 1) + ") .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
+						$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 
 						// Throw error
 						lychee.error(lychee.locale["UPLOAD_ERROR_UNKNOWN"], xhr, data);
@@ -9019,7 +9075,7 @@ upload.start = {
 				processing_count--;
 
 				// Upload next file
-				if (!currently_uploading && (processing_count < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && next_upload < files.length) {
+				if (!currently_uploading && !cancelUpload && (processing_count < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && next_upload < files.length) {
 					process(next_upload);
 				}
 
@@ -9037,7 +9093,7 @@ upload.start = {
 
 				// Set progress when progress has changed
 				if (progress > pre_progress) {
-					$(".basicModal .rows .row:nth-child(" + (file_num + 1) + ") .status").html(progress + "%");
+					$(nRowStatusSelector(file_num + 1)).html(progress + "%");
 					pre_progress = progress;
 				}
 
@@ -9048,12 +9104,12 @@ upload.start = {
 					$(".basicModal .rows").scrollTop(scrollPos);
 
 					// Set status to processing
-					$(".basicModal .rows .row:nth-child(" + (file_num + 1) + ") .status").html(lychee.locale["UPLOAD_PROCESSING"]);
+					$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_PROCESSING"]);
 					processing_count++;
 					currently_uploading = false;
 
 					// Upload next file
-					if ((processing_count < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && next_upload < files.length) {
+					if (!cancelUpload && (processing_count < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && next_upload < files.length) {
 						process(next_upload);
 					}
 				}
@@ -9076,6 +9132,9 @@ upload.start = {
 		upload.show(lychee.locale["UPLOAD_UPLOADING"], files, function () {
 			// Upload first file
 			process(next_upload);
+		}, function () {
+			cancelUpload = true;
+			error = true;
 		});
 	},
 
@@ -9164,15 +9223,23 @@ upload.start = {
 				name: data.path
 			};
 
-			var delete_imported = $('.basicModal .choice input[name="delete"]').prop("checked") ? "1" : "0";
+			var delete_imported = $(choiceDeleteSelector).prop("checked") ? "1" : "0";
+			var import_via_symlink = $(choiceSymlinkSelector).prop("checked") ? "1" : "0";
+			var skip_duplicates = $(choiceDuplicateSelector).prop("checked") ? "1" : "0";
+			var resync_metadata = $(choiceResyncSelector).prop("checked") ? "1" : "0";
+			var cancelUpload = false;
 
 			upload.show(lychee.locale["UPLOAD_IMPORT_SERVER"], files, function () {
+				$(cancelSelector).show();
 				$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_IMPORTING"]);
 
 				var params = {
 					albumID: albumID,
 					path: data.path,
-					delete_imported: delete_imported
+					delete_imported: delete_imported,
+					import_via_symlink: import_via_symlink,
+					skip_duplicates: skip_duplicates,
+					resync_metadata: resync_metadata
 				};
 
 				if (lychee.api_V2 === false) {
@@ -9217,8 +9284,7 @@ upload.start = {
 							if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 						}
 
-						// Show close button
-						$(".basicModal #basicModal__action.hidden").show();
+						showCloseButton();
 
 						return;
 					});
@@ -9228,7 +9294,7 @@ upload.start = {
 					var lastReadIdx = 0;
 					var currentDir = data.path;
 					var encounteredProblems = false;
-					var rowCount = 1;
+					var topSkip = 0;
 
 					// Worker function invoked from both the response progress
 					// callback and the completion callback.
@@ -9254,7 +9320,6 @@ upload.start = {
 						}
 						// Advance the counter past the last valid character.
 						lastReadIdx += newResponse.length;
-
 						newResponse.split("\n").forEach(function (resp) {
 							var matches = resp.match(/^Status: (.*): (\d+)$/);
 							if (matches !== null) {
@@ -9264,38 +9329,54 @@ upload.start = {
 										// the dialog box.
 										currentDir = matches[1];
 										$(".basicModal .rows").append(build.uploadNewFile(currentDir));
-										rowCount++;
+										topSkip += $(lastRowSelector).outerHeight();
 									}
-									$(".basicModal .rows .row:last-child .status").html(matches[2] + "%");
+									$(lastRowSelector + " .status").html(matches[2] + "%");
 								} else {
 									// Final status report for this directory.
-									$(".basicModal .rows .row:last-child .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
+									$(lastRowSelector + " .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
 								}
 							} else if ((matches = resp.match(/^Problem: (.*): ([^:]*)$/)) !== null) {
 								var rowSelector = void 0;
 								if (currentDir !== matches[1]) {
-									$(".basicModal .rows .row:last-child").before(build.uploadNewFile(matches[1]));
-									rowCount++;
-									rowSelector = ".basicModal .rows .row:nth-last-child(2)";
+									$(lastRowSelector).before(build.uploadNewFile(matches[1]));
+									rowSelector = prelastRowSelector;
 								} else {
 									// The problem is with the directory
 									// itself, so alter its existing line.
-									rowSelector = ".basicModal .rows .row:last-child";
+									rowSelector = lastRowSelector;
+									topSkip -= $(rowSelector).outerHeight();
 								}
 								if (matches[2] === "Given path is not a directory" || matches[2] === "Given path is reserved") {
 									$(rowSelector + " .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
+								} else if (matches[2] === "Skipped duplicate (resynced metadata)") {
+									$(rowSelector + " .status").html(lychee.locale["UPLOAD_UPDATED"]).addClass("warning");
+								} else if (matches[2] === "Import cancelled") {
+									$(rowSelector + " .status").html(lychee.locale["UPLOAD_CANCELLED"]).addClass("error");
 								} else {
 									$(rowSelector + " .status").html(lychee.locale["UPLOAD_SKIPPED"]).addClass("warning");
 								}
-								$(rowSelector + " .notice").html(matches[2] === "Given path is not a directory" ? lychee.locale["UPLOAD_IMPORT_NOT_A_DIRECTORY"] : matches[2] === "Given path is reserved" ? lychee.locale["UPLOAD_IMPORT_PATH_RESERVED"] : matches[2] === "Could not read file" ? lychee.locale["UPLOAD_IMPORT_UNREADABLE"] : matches[2] === "Could not import file" ? lychee.locale["UPLOAD_IMPORT_FAILED"] : matches[2] === "Unsupported file type" ? lychee.locale["UPLOAD_IMPORT_UNSUPPORTED"] : matches[2] === "Could not create album" ? lychee.locale["UPLOAD_IMPORT_ALBUM_FAILED"] : matches[2]).show();
+								var translations = {
+									"Given path is not a directory": "UPLOAD_IMPORT_NOT_A_DIRECTORY",
+									"Given path is reserved": "UPLOAD_IMPORT_PATH_RESERVED",
+									"Could not read file": "UPLOAD_IMPORT_UNREADABLE",
+									"Could not import file": "UPLOAD_IMPORT_FAILED",
+									"Unsupported file type": "UPLOAD_IMPORT_UNSUPPORTED",
+									"Could not create album": "UPLOAD_IMPORT_ALBUM_FAILED",
+									"Skipped duplicate": "UPLOAD_IMPORT_SKIPPED_DUPLICATE",
+									"Skipped duplicate (resynced metadata)": "UPLOAD_IMPORT_RESYNCED_DUPLICATE",
+									"Import cancelled": "UPLOAD_IMPORT_CANCELLED"
+								};
+								$(rowSelector + " .notice").html(matches[2] in translations ? lychee.locale[translations[matches[2]]] : matches[2]).show();
+								topSkip += $(rowSelector).outerHeight();
 								encounteredProblems = true;
 							} else if (resp === "Warning: Approaching memory limit") {
-								$(".basicModal .rows .row:last-child").before(build.uploadNewFile(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY"]));
-								rowCount++;
-								$(".basicModal .rows .row:nth-last-child(2) .status").html(lychee.locale["UPLOAD_WARNING"]).addClass("warning");
-								$(".basicModal .rows .row:nth-last-child(2) .notice").html(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY_EXPL"]).show();
+								$(lastRowSelector).before(build.uploadNewFile(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY"]));
+								topSkip += $(prelastRowSelector).outerHeight();
+								$(prelastRowSelector + " .status").html(lychee.locale["UPLOAD_WARNING"]).addClass("warning");
+								$(prelastRowSelector + " .notice").html(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY_EXPL"]).show();
 							}
-							$(".basicModal .rows").scrollTop((rowCount - 1) * 40);
+							$(".basicModal .rows").scrollTop(topSkip);
 						}); // forEach (resp)
 					}; // processIncremental
 
@@ -9309,12 +9390,7 @@ upload.start = {
 
 						if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 
-						if (encounteredProblems) {
-							// Show close button
-							$(".basicModal #basicModal__action.hidden").show();
-						} else {
-							basicModal.close();
-						}
+						if (encounteredProblems) showCloseButton();else basicModal.close();
 					}, function (event) {
 						// We received a possibly partial response.
 						// We need to begin by terminating the data with a
@@ -9351,15 +9427,14 @@ upload.start = {
 						} catch (e) {
 							// Most likely a SyntaxError due to something
 							// that went wrong on the server side.
-							$(".basicModal .rows .row:last-child .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
+							$(lastRowSelector + " .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 
 							albums.refresh();
 							upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 
 							if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 
-							// Show close button
-							$(".basicModal #basicModal__action.hidden").show();
+							showCloseButton();
 
 							return;
 						}
@@ -9368,12 +9443,18 @@ upload.start = {
 						processIncremental(jsonResponse);
 					}); // api.post
 				} // lychee.api_V2
+			}, function () {
+				if (!cancelUpload) {
+					api.post("Import::serverCancel", {}, function (resp) {
+						if (resp === "true") cancelUpload = true;
+					});
+				}
 			}); // upload.show
 		}; // action
 
 		var msg = lychee.html(_templateObject76, lychee.locale["UPLOAD_IMPORT_SERVER_INSTR"], lychee.locale["UPLOAD_ABSOLUTE_PATH"], lychee.location);
 		if (lychee.api_V2) {
-			msg += lychee.html(_templateObject77, build.iconic("check"), lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"], lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"]);
+			msg += lychee.html(_templateObject77, build.iconic("check"), lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"], lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK"], lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES"], lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA"], lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA_EXPL"]);
 		}
 
 		basicModal.show({
@@ -9390,8 +9471,25 @@ upload.start = {
 			}
 		});
 
+		var $delete = $(choiceDeleteSelector);
+		var $symlinks = $(choiceSymlinkSelector);
+		var $duplicates = $(choiceDuplicateSelector);
+		var $resync = $(choiceResyncSelector);
+
 		if (lychee.delete_imported) {
-			$('.basicModal .choice input[name="delete"]').prop("checked", true);
+			$delete.prop("checked", true);
+			$symlinks.prop("checked", false).prop("disabled", true);
+		} else {
+			if (lychee.import_via_symlink) {
+				$symlinks.prop("checked", true);
+				$delete.prop("checked", false).prop("disabled", true);
+			}
+		}
+		if (lychee.skip_duplicates) {
+			$duplicates.prop("checked", true);
+			if (lychee.resync_metadata) $resync.prop("checked", true);
+		} else {
+			$resync.prop("disabled", true);
 		}
 	},
 
@@ -9454,6 +9552,31 @@ upload.start = {
 				success: success
 			});
 		});
+	}
+};
+
+upload.check = function () {
+	var $delete = $(choiceDeleteSelector);
+	var $symlinks = $(choiceSymlinkSelector);
+
+	if ($delete.prop("checked")) {
+		$symlinks.prop("checked", false).prop("disabled", true);
+	} else {
+		$symlinks.prop("disabled", false);
+		if ($symlinks.prop("checked")) {
+			$delete.prop("checked", false).prop("disabled", true);
+		} else {
+			$delete.prop("disabled", false);
+		}
+	}
+
+	var $duplicates = $(choiceDuplicateSelector);
+	var $resync = $(choiceResyncSelector);
+
+	if ($duplicates.prop("checked")) {
+		$resync.prop("disabled", false);
+	} else {
+		$resync.prop("checked", false).prop("disabled", true);
 	}
 };
 
