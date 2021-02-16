@@ -180,7 +180,12 @@ class Archive extends Action
 				$pos = strrpos($tmp_file, '.');
 				while (in_array($tmp_file, $files)) {
 					// Set new title for photo
-					$tmp_file = substr_replace($file, '-' . $i, $pos, 0);
+					if ($pos !== false) {
+						$tmp_file = substr_replace($file, '-' . $i, $pos, 0);
+					} else {
+						// No extension.
+						$tmp_file = $file . '-' . $i;
+					}
 					$i++;
 				}
 				$file = $tmp_file;
