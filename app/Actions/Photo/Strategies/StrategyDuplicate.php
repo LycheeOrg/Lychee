@@ -4,24 +4,24 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Metadata;
-use App\Exceptions\JsonWarning;
-use App\Models\Configs;
+use App\Exceptions\PhotoResyncedException;
+use App\Exceptions\PhotoSkippedException;
 use App\Models\Logs;
 use App\Models\Photo;
 use Storage;
 
 class StrategyDuplicate extends StrategyPhotoBase
 {
-	public $force_skip_duplicates;
+	public $skip_duplicates;
 	public $resync_metadata;
 	public $delete_imported;
 
 	public function __construct(
-		bool $force_skip_duplicate,
+		bool $skip_duplicates,
 		bool $resync_metadata,
 		bool $delete_imported
 	) {
-		$this->force_skip_duplicate = $force_skip_duplicate;
+		$this->skip_duplicates = $skip_duplicates;
 		$this->resync_metadata = $resync_metadata;
 		$this->delete_imported = $delete_imported;
 	}
@@ -49,14 +49,17 @@ class StrategyDuplicate extends StrategyPhotoBase
 
 		// Photo already exists
 		// Check if the user wants to skip duplicates
-		if ($this->force_skip_duplicates || Configs::get_value('skip_duplicates', '0') === '1') {
+		if ($this->skip_duplicates) {
 			$metadataChanged = false;
 
 			// Before we skip entirely, check if there is a sidecar file and if the metadata needs to be updated (from a sidecar)
 			if ($this->resync_metadata === true) {
 				$info = $this->getMetadata($file, $create->path, $create->kind, $create->extension);
+				$attr = $existing->attributesToArray();
 				foreach ($info as $key => $value) {
-					if ($existing->$key !== null && $value !== $existing->$key) {
+					if (array_key_exists($key, $attr)	// check if key exists, even if null
+						&& (($existing->$key !== null && $value !== $existing->$key) || ($existing->$key === null && $value !== null && $value !== ''))
+						&& $value != $existing->$key) {	// avoid false positives when comparing variables of different types (e.g string vs int)
 						$metadataChanged = true;
 						$existing->$key = $value;
 					}
@@ -67,11 +70,11 @@ class StrategyDuplicate extends StrategyPhotoBase
 				Logs::notice(__METHOD__, __LINE__, 'Updating metdata of existing photo.');
 				$existing->save();
 
-				$res = new JsonWarning('This photo has been skipped because it\'s already in your library, but its metadata has been updated.');
+				$res = new PhotoResyncedException('This photo has been skipped because it\'s already in your library, but its metadata has been updated.');
 			} else {
 				Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 
-				$res = new JsonWarning('This photo has been skipped because it\'s already in your library.');
+				$res = new PhotoSkippedException('This photo has been skipped because it\'s already in your library.');
 			}
 
 			if ($this->delete_imported && !$create->is_uploaded) {
@@ -85,6 +88,6 @@ class StrategyDuplicate extends StrategyPhotoBase
 
 	public function generate_thumbs(Create &$create, bool &$skip_db_entry_creation, bool &$no_error)
 	{
-		Logs::notice(__FILE__, __LINE__, 'Nothing to store, image is a duplicate');
+		Logs::notice(__FILE__, __LINE__, 'Nothing to generate, image is a duplicate');
 	}
 }

@@ -10,13 +10,13 @@ use App\Actions\Import\FromServer;
 use App\Actions\Import\FromUrl;
 use App\Http\Requests\ImportRequests\ImportServerRequest;
 use App\Http\Requests\ImportRequests\ImportUrlRequest;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 use ImagickException;
 
 class ImportController extends Controller
 {
 	/**
-	 * @param Request $request
+	 * @param ImportUrlRequest $request
 	 *
 	 * @return false|string
 	 */
@@ -31,7 +31,7 @@ class ImportController extends Controller
 	}
 
 	/**
-	 * @param Request $request
+	 * @param ImportServerRequest $request
 	 *
 	 * @return bool|string
 	 *
@@ -40,7 +40,15 @@ class ImportController extends Controller
 	public function server(ImportServerRequest $request, FromServer $fromServer)
 	{
 		$validated = $request->validated();
+		Session::forget('cancel');
 
 		return $fromServer->do($validated);
+	}
+
+	public function serverCancel()
+	{
+		Session::put('cancel', true);
+
+		return 'true';
 	}
 }

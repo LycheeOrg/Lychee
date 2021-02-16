@@ -18,10 +18,13 @@ use App\Actions\Photo\SetStar;
 use App\Actions\Photo\SetTags;
 use App\Actions\Photo\SetTitle;
 use App\Assets\Helpers;
+use App\Exceptions\JsonError;
+use App\Exceptions\JsonWarning;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
 use App\ModelFunctions\SymLinkFunctions;
+use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
@@ -98,7 +101,15 @@ class PhotoController extends Controller
 		$nameFile['type'] = $file->getMimeType();
 		$nameFile['tmp_name'] = $file->getPathName();
 
-		return $create->add($nameFile, $request['albumID']);
+		try {
+			$res = $create->add($nameFile, $request['albumID'], false, (Configs::get_value('skip_duplicates', '0') === '1'));
+		} catch (JsonWarning $e) {
+			$res = $e->render();
+		} catch (JsonError $e) {
+			$res = $e->render();
+		}
+
+		return $res;
 	}
 
 	/**

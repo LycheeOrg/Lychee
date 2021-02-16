@@ -8,7 +8,6 @@ use App\Actions\Photo\Extensions\VideoEditing;
 use App\Exceptions\JsonError;
 use App\Image\ImageHandlerInterface;
 use App\Metadata\Extractor;
-use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use Exception;
@@ -16,10 +15,13 @@ use Exception;
 class StrategyPhoto extends StrategyPhotoBase
 {
 	public $imageHandler;
+	public $import_via_symlink;
 
-	public function __construct()
-	{
+	public function __construct(
+		bool $import_via_symlink
+	) {
 		$this->imageHandler = app(ImageHandlerInterface::class);
+		$this->import_via_symlink = $import_via_symlink;
 	}
 
 	use ImageEditing;
@@ -31,7 +33,7 @@ class StrategyPhoto extends StrategyPhotoBase
 		if (!$create->is_uploaded) {
 			// TODO: use the storage facade here
 			// Check if the user wants to create symlinks instead of copying the photo
-			if (Configs::get_value('import_via_symlink', '0') === '1') {
+			if ($this->import_via_symlink) {
 				if (!symlink($create->tmp_name, $create->path)) {
 					// @codeCoverageIgnoreStart
 					Logs::error(__METHOD__, __LINE__, 'Could not create symlink');
@@ -76,7 +78,7 @@ class StrategyPhoto extends StrategyPhotoBase
 			) {
 				// If we are importing via symlink, we don't actually overwrite
 				// the source but we still need to fix the dimensions.
-				$pretend = (!$create->is_uploaded && Configs::get_value('import_via_symlink', '0') === '1');
+				$pretend = (!$create->is_uploaded && $this->import_via_symlink);
 				$rotation = $this->imageHandler->autoRotate($create->path, $create->info, $pretend);
 
 				if ($rotation !== [false, false]) {
