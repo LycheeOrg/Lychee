@@ -6,6 +6,7 @@ use AccessControl;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
+use Illuminate\Support\Collection as BaseCollection;
 
 class Photos
 {
@@ -28,10 +29,6 @@ class Photos
 	{
 		[$sortingCol, $sortingOrder] = $album->get_sort();
 		$photos_sql = $album->get_photos();
-
-		$previousPhotoID = '';
-		$return_photos = [];
-		$photo_counter = 0;
 
 		/**
 		 * @var Collection[Photo]
@@ -59,13 +56,32 @@ class Photos
 			// Secondary sorting key -- just preserves current order.
 			$keys = array_keys($photos);
 			array_multisort($values, $sortingOrder === 'ASC' ? SORT_ASC : SORT_DESC, SORT_NATURAL | SORT_FLAG_CASE, $keys, SORT_ASC, $photos);
+			$photos = collect($photos);
 		}
+
+		return $this->getPhotos($photos, $album->get_license());
+	}
+
+	/**
+	 * Convert a collection of Photos to the frontend format.  This is also
+	 * used by Search.
+	 *
+	 * @param BaseCollection $photos
+	 * @param string         $license
+	 *
+	 * @return array
+	 */
+	public function getPhotos(BaseCollection $photos, string $license = 'none')
+	{
+		$previousPhotoID = '';
+		$return_photos = [];
+		$photo_counter = 0;
 
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->toReturnArray();
 			$photo_model->urls($photo);
-			$photo['license'] = $photo_model->get_license($album->get_license());
+			$photo['license'] = $photo_model->get_license($license);
 
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
 			if (!AccessControl::is_current_user($photo_model->owner_id) && !$album->is_full_photo_visible()) {
