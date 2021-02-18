@@ -59,7 +59,7 @@ class Photos
 			$photos = collect($photos);
 		}
 
-		return $this->getPhotos($photos, $album->get_license());
+		return $this->getPhotos($photos, $album->get_license(), $album->is_full_photo_visible());
 	}
 
 	/**
@@ -68,10 +68,11 @@ class Photos
 	 *
 	 * @param BaseCollection $photos
 	 * @param string         $license
+	 * @param bool           $full_photo
 	 *
 	 * @return array
 	 */
-	public function getPhotos(BaseCollection $photos, string $license = 'none')
+	public function getPhotos(BaseCollection $photos, string $license = 'none', bool $full_photo = null)
 	{
 		$previousPhotoID = '';
 		$return_photos = [];
@@ -84,8 +85,18 @@ class Photos
 			$photo['license'] = $photo_model->get_license($license);
 
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
-			if (!AccessControl::is_current_user($photo_model->owner_id) && !$album->is_full_photo_visible()) {
-				$photo_model->downgrade($photo);
+			if (!AccessControl::is_current_user($photo_model->owner_id)) {
+				if ($full_photo !== null) {
+					if (!$full_photo) {
+						$photo_model->downgrade($photo);
+					}
+				} elseif ($photo_model->album_id != null) {
+					if (!$photo_model->album->is_full_photo_visible()) {
+						$photo_model->downgrade($photo);
+					}
+				} elseif (Configs::get_value('full_photo', '1') != '1') {
+					$photo_model->downgrade($photo);
+				}
 			}
 
 			// Set previous and next photoID for navigation purposes
