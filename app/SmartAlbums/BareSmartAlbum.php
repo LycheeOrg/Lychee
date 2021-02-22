@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use AccessControl;
 use App\Models\Album;
+use App\Models\Configs;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
 
@@ -53,6 +54,10 @@ class BareSmartAlbum extends Album
 				);
 		} else {
 			$query = $query->whereIn('album_id', $this->albumIds);
+		}
+
+		if (Configs::get_value('public_photos_hidden', '1') === '0') {
+			$query = $query->orWhere('public', '=', 1);
 		}
 
 		return $query;

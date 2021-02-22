@@ -43,6 +43,9 @@ class Prepare extends SymLinker
 				$return['share_button_visible'] = Configs::get_value('share_button_visible', '0');
 			}
 		} else {
+			if ($photo->album_id != null && $photo->album->is_public()) {
+				$return['public'] = '2';
+			}
 			$return['downloadable'] = '1';
 			$return['share_button_visible'] = '1';
 		}
