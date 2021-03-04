@@ -13,16 +13,7 @@ class ConfigRemoveImageOverlay extends Migration
 	 */
 	public function up()
 	{
-		DB::table('configs')->update([
-			[
-				'key' => 'image_overlay_type',
-				'value' => 'desc',
-				'cat' => 'Gallery',
-				'type_range' => 'exif|desc|date|none',
-				'confidentiality' => '0',
-			],
-		]);
-
+		Configs::where('key', '=', 'image_overlay_type')->update(['type_range' => 'exif|desc|date|none']);
 		Configs::where('key', '=', 'image_overlay')->delete();
 	}
 
@@ -35,15 +26,7 @@ class ConfigRemoveImageOverlay extends Migration
 	{
 		defined('BOOL') or define('BOOL', '0|1');
 
-		DB::table('configs')->update([
-			[
-				'key' => 'image_overlay_type',
-				'value' => 'desc',
-				'cat' => 'Gallery',
-				'type_range' => 'exif|desc|takedate',
-				'confidentiality' => '0',
-			],
-		]);
+		Configs::where('key', '=', 'image_overlay_type')->update(['type_range' => 'exif|desc|takedate']);
 
 		DB::table('configs')->insert([
 			[
