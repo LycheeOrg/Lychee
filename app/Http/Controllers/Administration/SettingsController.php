@@ -130,25 +130,6 @@ class SettingsController extends Controller
 	}
 
 	/**
-	 * Show image overlay by default or not
-	 * (white text in the bottom right corner).
-	 *
-	 * @param Request $request
-	 *
-	 * @return string
-	 */
-	public function setImageOverlay(Request $request)
-	{
-		$validated = $request->validate(['image_overlay' => 'required|string']);
-
-		if ($validated['image_overlay'] == '1') {
-			return Configs::set('image_overlay', '1') ? 'true' : 'false';
-		}
-
-		return Configs::set('image_overlay', '0') ? 'true' : 'false';
-	}
-
-	/**
 	 * Show NSFW albums by default or not.
 	 *
 	 * @param Request $request
@@ -168,9 +149,10 @@ class SettingsController extends Controller
 
 	/**
 	 * Select the image overlay used:
-	 * exif: exif information
+	 * none: no overlay
 	 * desc: description of the photo
-	 * takedate: date of the photo (and dimensions?).
+	 * date: date of the photo
+	 * exif: exif information.
 	 *
 	 * @param Request $request
 	 *

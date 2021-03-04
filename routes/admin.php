@@ -27,7 +27,6 @@ Route::post('/api/Settings::setSorting', [SettingsController::class, 'setSorting
 Route::post('/api/Settings::setLang', [SettingsController::class, 'setLang']);
 Route::post('/api/Settings::setLayout', [SettingsController::class, 'setLayout']);
 Route::post('/api/Settings::setPublicSearch', [SettingsController::class, 'setPublicSearch']);
-Route::post('/api/Settings::setImageOverlay', [SettingsController::class, 'setImageOverlay']);
 Route::post('/api/Settings::setDefaultLicense', [SettingsController::class, 'setDefaultLicense']);
 Route::post('/api/Settings::setMapDisplay', [SettingsController::class, 'setMapDisplay']);
 Route::post('/api/Settings::setMapDisplayPublic', [SettingsController::class, 'setMapDisplayPublic']);
