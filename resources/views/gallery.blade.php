@@ -161,6 +161,12 @@
 
     </div>
 
+	<div class="header__toolbar header__toolbar--config">
+        <a class="button" id="button_close_config" title="{{ $locale['CLOSE'] }}" data-tabindex="1">
+            <svg class="iconic"><use xlink:href="#plus"></use></svg>
+        </a>
+        <a class="header__title" data-tabindex="2"></a>
+    </div>
 
 </header>
 
