@@ -29,8 +29,10 @@
 
         <a class="header__title" data-tabindex="2"></a>
 
-        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" data-tabindex="3">
-        <a class="header__clear header__clear_public">&times;</a>
+		<div class="header__search__field">
+	        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" data-tabindex="3">
+    	    <a class="header__clear header__clear_public">&times;</a>
+    	</div>
         <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}" data-tabindex="4">
             <svg class="iconic"><use xlink:href="#map"></use></svg>
         </a>
@@ -44,9 +46,10 @@
         </a>
 
         <a class="header__title" data-tabindex="2"></a>
-
-        <input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" data-tabindex="3">
-        <a class="header__clear">&times;</a>
+		<div class="header__search__field">
+        	<input class="header__search" type="text" name="search" placeholder="{{ $locale['SEARCH'] }}" data-tabindex="3">
+        	<a class="header__clear">&times;</a>
+        </div>
         <a class="header__divider"></a>
         <a class="button button--map-albums" title="{{ $locale['DISPLAY_FULL_MAP'] }}" data-tabindex="4">
             <svg class="iconic"><use xlink:href="#map"></use></svg>
