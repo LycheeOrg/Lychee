@@ -118,17 +118,13 @@ trait VideoEditing
 
 		if ($frame_tmp === '') {
 			$filename = $photo->url;
-			//! why is this dead code?
-			$url = Storage::path('big/' . $filename);
 		} else {
 			$filename = $photo->thumbUrl;
-			//! why is this dead code?
-			$url = $frame_tmp;
 		}
 
 		$filename_video_mov = basename($filename, Helpers::getExtension($filename, false)) . '.mov';
 
-		$uploadFolder = $this->permissionCheck('big/');
+		$uploadFolder = Storage::path('big/');
 
 		try {
 			// 1. Extract the video part
