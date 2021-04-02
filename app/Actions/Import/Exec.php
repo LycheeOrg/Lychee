@@ -180,7 +180,7 @@ class Exec
 		// then the subdirectories.  This way, if the process fails along the
 		// way, it's much easier for the user to figure out what was imported
 		// and what was not.
-		
+
 		// Update ignore list
 		$ignore_list = $this->setUpIgnoreList($path, $ignore_list);
 
