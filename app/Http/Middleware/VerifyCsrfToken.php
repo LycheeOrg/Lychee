@@ -15,8 +15,9 @@ class VerifyCsrfToken extends Middleware
 	 * @var array
 	 */
 	protected $except = [
-		// entry point...
+		// entry points...
 		'/php/index.php',
+		'/api/Session::init',
 	];
 
 	/**
