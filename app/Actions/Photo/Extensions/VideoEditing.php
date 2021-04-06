@@ -48,8 +48,10 @@ trait VideoEditing
 		$ffmpeg = FFMpeg::create();
 		/** @var Video */
 		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
-		if (!($tmp = tempnam(sys_get_temp_dir(), 'lychee')) ||
-			!rename($tmp, $tmp . '.jpeg')) {
+		if (
+			!($tmp = tempnam(sys_get_temp_dir(), 'lychee')) ||
+			!rename($tmp, $tmp . '.jpeg')
+		) {
 			Logs::notice(__METHOD__, __LINE__, 'Could not create a temporary file.');
 
 			return '';
@@ -124,7 +126,7 @@ trait VideoEditing
 
 		$filename_video_mov = basename($filename, Helpers::getExtension($filename, false)) . '.mov';
 
-		$uploadFolder = Storage::path('big/');
+		$uploadFolder = $this->folderPermission('big/');
 
 		try {
 			// 1. Extract the video part
