@@ -13,7 +13,7 @@
     "license": "MIT",
     "type": "project",
     "require": {
-        "php": "^7.4.0 || ^8.0",
+        "php": "^7.4.0|^8.0",
         "ext-bcmath": "*",
         "ext-exif": "*",
         "ext-gd": "*",
@@ -31,10 +31,10 @@
         "lychee-org/php-exif": "dev-master",
         "maennchen/zipstream-php": "^1.2.0",
         "php-ffmpeg/php-ffmpeg": "^0.17.0",
-        "php-http/guzzle6-adapter": "^2.0",
+        "php-http/guzzle7-adapter": "^0.1.1",
         "php-http/message": "^1.8",
         "spatie/guzzle-rate-limiter-middleware": "^1.0",
-        "spatie/laravel-feed": "^2.6",
+        "spatie/laravel-feed": "^3.0",
         "spatie/laravel-image-optimizer": "^1.6.2",
         "symfony/cache": "^5.1",
         "whichbrowser/parser": "^2.0"
@@ -46,7 +46,7 @@
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^2.16",
         "itsgoingd/clockwork": "^4.1",
-        "laravel/homestead": "^10.8",
+        "laravel/homestead": "^11.4",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9"
     },
