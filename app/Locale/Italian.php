@@ -370,9 +370,8 @@ final class Italian implements Language
 			'SET_LAYOUT' => 'Cambia layout',
 
 			'PUBLIC_SEARCH_TEXT' => 'Ricerca pubblica consentita:',
-			'IMAGE_OVERLAY_TEXT' => 'Mostra dati della filigrana per impostazione predefinita:',
-
 			'OVERLAY_TYPE' => 'Contenuto da utilizzare nella filigrana:',
+			'OVERLAY_NONE' => 'None',
 			'OVERLAY_EXIF' => 'Dati Foto EXIF',
 			'OVERLAY_DESCRIPTION' => 'Descrizione della Foto',
 			'OVERLAY_DATE' => 'Data di Creazione della Foto',

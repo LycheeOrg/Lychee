@@ -2410,7 +2410,7 @@ build.photo = function (data) {
 build.check_overlay_type = function (data, overlay_type) {
 	var next = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-	var types = ["exif", "desc", "date"];
+	var types = ["desc", "date", "exif", "none"];
 	var idx = types.indexOf(overlay_type);
 	if (idx < 0) return "none";
 	if (next) idx++;
@@ -2418,8 +2418,8 @@ build.check_overlay_type = function (data, overlay_type) {
 
 	for (var i = 0; i < types.length; i++) {
 		var type = types[(idx + i) % types.length];
+		if (type === "date" || type === "none") return type;
 		if (type === "desc" && data.description && data.description !== "") return type;
-		if (type === "date") return type;
 		if (type === "exif" && exifHash !== "") return type;
 	}
 };
@@ -2451,7 +2451,9 @@ build.overlay_image = function (data) {
 				}
 			}
 			break;
+		case "none":
 		default:
+			return "";
 	}
 
 	return lychee.html(_templateObject28, data.title) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
@@ -2508,9 +2510,7 @@ build.imageview = function (data, visibleControls, autoplay) {
 		html += lychee.html(_templateObject31, img);
 	}
 
-	if (lychee.image_overlay) html += build.overlay_image(data);
-
-	html += "\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic("caret-left") + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic("caret-right") + "</a></div>\n\t\t\t";
+	html += build.overlay_image(data) + ("\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic("caret-left") + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic("caret-right") + "</a></div>\n\t\t\t");
 
 	return { html: html, thumb: thumb };
 };
@@ -3816,10 +3816,9 @@ $(document).ready(function () {
 	header.bind();
 
 	// Image View
-	lychee.imageview.on(eventName, ".arrow_wrapper--previous", _photo.previous).on(eventName, ".arrow_wrapper--next", _photo.next).on(eventName, "img, #livephoto", _photo.update_display_overlay);
+	lychee.imageview.on(eventName, ".arrow_wrapper--previous", _photo.previous).on(eventName, ".arrow_wrapper--next", _photo.next).on(eventName, "img, #livephoto", _photo.cycle_display_overlay);
 
 	// Keyboard
-
 	Mousetrap.addKeycodes({
 		18: "ContextMenu",
 		179: "play_pause",
@@ -3913,7 +3912,7 @@ $(document).ready(function () {
 		}
 	}).bind(["o"], function () {
 		if (visible.photo()) {
-			_photo.update_overlay_type();
+			_photo.cycle_display_overlay();
 			return false;
 		}
 	}).bind(["f"], function () {
@@ -3981,7 +3980,9 @@ $(document).ready(function () {
 	// Fullscreen on mobile
 	.on("touchend", "#imageview #image", function (e) {
 		// prevent triggering event 'mousemove'
-		e.preventDefault();
+		// why? this also prevents 'click' from firing which results in unexpected behaviour
+		// unable to reproduce problems arising from 'mousemove' on iOS devices
+		//			e.preventDefault();
 
 		if (typeof swipe.obj === "undefined" || Math.abs(swipe.offsetX) <= 5 && Math.abs(swipe.offsetY) <= 5) {
 			// Toggle header only if we're not moving to next/previous photo;
@@ -4360,8 +4361,6 @@ var lychee = {
 	username: null,
 	layout: "1", // 0: Use default, "square" layout. 1: Use Flickr-like "justified" layout. 2: Use Google-like "unjustified" layout
 	public_search: false, // display Search in publicMode
-	image_overlay: false, // display Overlay like in Lightroom
-	image_overlay_default: false, // display Overlay like in Lightroom by default
 	image_overlay_type: "exif", // current Overlay display type
 	image_overlay_type_default: "exif", // image overlay type default type
 	map_display: false, // display photo coordinates on map
@@ -4532,8 +4531,6 @@ lychee.init = function () {
 			lychee.lang_available = data.config.lang_available || {};
 			lychee.layout = data.config.layout || "1";
 			lychee.public_search = data.config.public_search && data.config.public_search === "1" || false;
-			lychee.image_overlay_default = data.config.image_overlay && data.config.image_overlay === "1" || false;
-			lychee.image_overlay = lychee.image_overlay_default;
 			lychee.image_overlay_type = !data.config.image_overlay_type ? "exif" : data.config.image_overlay_type;
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
 			lychee.map_display = data.config.map_display && data.config.map_display === "1" || false;
@@ -4614,7 +4611,6 @@ lychee.init = function () {
 			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates || "1";
 			lychee.layout = data.config.layout || "1";
 			lychee.public_search = data.config.public_search && data.config.public_search === "1" || false;
-			lychee.image_overlay = data.config.image_overlay && data.config.image_overlay === "1" || false;
 			lychee.image_overlay_type = !data.config.image_overlay_type ? "exif" : data.config.image_overlay_type;
 			lychee.image_overlay_type_default = lychee.image_overlay_type;
 			lychee.map_display = data.config.map_display && data.config.map_display === "1" || false;
@@ -5614,10 +5610,11 @@ lychee.locale = {
 
 	IMAGE_OVERLAY_TEXT: "Display image overlay by default:",
 
-	OVERLAY_TYPE: "Data to use in image overlay:",
-	OVERLAY_EXIF: "Photo EXIF data",
-	OVERLAY_DESCRIPTION: "Photo description",
-	OVERLAY_DATE: "Photo date taken",
+	OVERLAY_TYPE: "Photo overlay:",
+	OVERLAY_NONE: "None",
+	OVERLAY_EXIF: "EXIF data",
+	OVERLAY_DESCRIPTION: "Description",
+	OVERLAY_DATE: "Date taken",
 
 	MAP_PROVIDER: "Provider of OpenStreetMap tiles:",
 	MAP_PROVIDER_WIKIMEDIA: "Wikimedia",
@@ -6506,25 +6503,14 @@ _photo.isLivePhotoPlaying = function () {
 	return _photo.LivePhotosObject.isPlaying;
 };
 
-_photo.update_overlay_type = function () {
-	// Only run if the overlay is showing
-	if (!lychee.image_overlay) return false;
-
+_photo.cycle_display_overlay = function () {
 	var oldtype = build.check_overlay_type(_photo.json, lychee.image_overlay_type);
 	var newtype = build.check_overlay_type(_photo.json, oldtype, true);
 	if (oldtype !== newtype) {
 		lychee.image_overlay_type = newtype;
 		$("#image_overlay").remove();
-		lychee.imageview.append(build.overlay_image(_photo.json));
-	}
-};
-
-_photo.update_display_overlay = function () {
-	lychee.image_overlay = !lychee.image_overlay;
-	if (!lychee.image_overlay) {
-		$("#image_overlay").remove();
-	} else {
-		lychee.imageview.append(build.overlay_image(_photo.json));
+		var newoverlay = build.overlay_image(_photo.json);
+		if (newoverlay !== "") lychee.imageview.append(newoverlay);
 	}
 };
 
@@ -7858,37 +7844,19 @@ settings.changePublicSearch = function () {
 	});
 };
 
-settings.changeImageOverlay = function () {
-	var params = {};
-	if ($("#ImageOverlay:checked").length === 1) {
-		params.image_overlay = "1";
-
-		// enable image_overlay_type
-		$("select#ImgOverlayType").attr("disabled", false);
-	} else {
-		params.image_overlay = "0";
-
-		// disable image_overlay_type
-		$("select#ImgOverlayType").attr("disabled", true);
-	}
-	api.post("Settings::setImageOverlay", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_IMAGE_OVERLAY"]);
-			lychee.image_overlay_default = params.image_overlay === "1";
-			lychee.image_overlay = lychee.image_overlay_default;
-		} else lychee.error(null, params, data);
-	});
-};
-
 settings.setOverlayType = function () {
 	// validate the input
 	var params = {};
-	if ($("#ImageOverlay:checked") && $("#ImgOverlayType").val() === "exif") {
+	var check = $("#ImageOverlay:checked") ? true : false;
+	var type = $("#ImgOverlayType").val();
+	if (check && type === "exif") {
 		params.image_overlay_type = "exif";
-	} else if ($("#ImageOverlay:checked") && $("#ImgOverlayType").val() === "desc") {
+	} else if (check && type === "desc") {
 		params.image_overlay_type = "desc";
-	} else if ($("#ImageOverlay:checked") && $("#ImgOverlayType").val() === "takedate") {
-		params.image_overlay_type = "takedate";
+	} else if (check && type === "date") {
+		params.image_overlay_type = "date";
+	} else if (check && type === "none") {
+		params.image_overlay_type = "none";
 	} else {
 		params.image_overlay_type = "exif";
 		console.log("Error - default used");
@@ -10679,7 +10647,6 @@ view.settings = {
 				view.settings.content.setDefaultLicense();
 				view.settings.content.setLayout();
 				view.settings.content.setPublicSearch();
-				view.settings.content.setOverlay();
 				view.settings.content.setOverlayType();
 				view.settings.content.setMapDisplay();
 				view.settings.content.setNSFWVisible();
@@ -10781,22 +10748,10 @@ view.settings = {
 		},
 		// TODO: extend to the other settings.
 
-		setOverlay: function setOverlay() {
-			var msg = "\n\t\t\t<div class=\"setOverlay\">\n\t\t\t<p>" + lychee.locale["IMAGE_OVERLAY_TEXT"] + "\n\t\t\t<label class=\"switch\">\n\t\t\t  <input id=\"ImageOverlay\" type=\"checkbox\">\n\t\t\t  <span class=\"slider round\"></span>\n\t\t\t</label>\n\t\t\t</p>\n\t\t\t</div>\n\t\t\t";
-
-			$(".settings_view").append(msg);
-			if (lychee.image_overlay_default) $("#ImageOverlay").click();
-
-			settings.bind("#ImageOverlay", ".setOverlay", settings.changeImageOverlay);
-		},
-
 		setOverlayType: function setOverlayType() {
-			var msg = "\n\t\t\t<div class=\"setOverlayType\">\n\t\t\t<p>" + lychee.locale["OVERLAY_TYPE"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"OverlayType\" id=\"ImgOverlayType\">\n\t\t\t\t\t<option value=\"exif\">" + lychee.locale["OVERLAY_EXIF"] + "</option>\n\t\t\t\t\t<option value=\"desc\">" + lychee.locale["OVERLAY_DESCRIPTION"] + "</option>\n\t\t\t\t\t<option value=\"takedate\">" + lychee.locale["OVERLAY_DATE"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_overlay_type\" class=\"basicModal__button\">" + lychee.locale["SET_OVERLAY_TYPE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
+			var msg = "\n\t\t\t<div class=\"setOverlayType\">\n\t\t\t<p>" + lychee.locale["OVERLAY_TYPE"] + "\n\t\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t\t<select name=\"OverlayType\" id=\"ImgOverlayType\">\n\t\t\t\t\t<option value=\"exif\">" + lychee.locale["OVERLAY_EXIF"] + "</option>\n\t\t\t\t\t<option value=\"desc\">" + lychee.locale["OVERLAY_DESCRIPTION"] + "</option>\n\t\t\t\t\t<option value=\"date\">" + lychee.locale["OVERLAY_DATE"] + "</option>\n\t\t\t\t\t<option value=\"none\">" + lychee.locale["OVERLAY_NONE"] + "</option>\n\t\t\t\t</select>\n\t\t\t</span>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<a id=\"basicModal__action_set_overlay_type\" class=\"basicModal__button\">" + lychee.locale["SET_OVERLAY_TYPE"] + "</a>\n\t\t\t</div>\n\t\t\t</div>\n\t\t\t";
 
 			$(".settings_view").append(msg);
-
-			// Enable based on image_overlay setting
-			if (!lychee.image_overlay) $("select#ImgOverlayType").attr("disabled", true);
 
 			$("select#ImgOverlayType").val(!lychee.image_overlay_type_default ? "exif" : lychee.image_overlay_type_default);
 			settings.bind("#basicModal__action_set_overlay_type", ".setOverlayType", settings.setOverlayType);

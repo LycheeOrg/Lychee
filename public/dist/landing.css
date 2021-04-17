@@ -2838,11 +2838,6 @@ a {
   -webkit-transition: all 0.3s;
   -moz-transition: all 0.3s;
   -o-transition: all 0.3s; }
-  .socialicons:hover {
-    color: #b5b5b5;
-    -ms-transform: scale(1.3);
-        transform: scale(1.3);
-    -webkit-transform: scale(1.3); }
 
 #twitter:before {
   content: "\ea96"; }
@@ -2858,6 +2853,13 @@ a {
 
 #facebook:before {
   content: "\ea91"; }
+
+@media (hover: hover) {
+  .socialicons:hover {
+    color: #b5b5b5;
+    -ms-transform: scale(1.3);
+        transform: scale(1.3);
+    -webkit-transform: scale(1.3); } }
 
 #footer {
   z-index: 3;
@@ -2900,8 +2902,6 @@ a {
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
     -o-transition: all 0.3s; }
-    #menu a:hover {
-      color: #b5b5b5 !important; }
   #menu .current-menu-item a {
     color: #b5b5b5 !important; }
 
@@ -2911,6 +2911,10 @@ a {
   top: 0;
   z-index: 98;
   width: 80%; }
+
+@media (hover: hover) {
+  #menu a:hover {
+    color: #b5b5b5 !important; } }
 
 #header {
   position: fixed;
