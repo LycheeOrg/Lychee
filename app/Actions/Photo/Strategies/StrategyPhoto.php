@@ -14,6 +14,8 @@ use Exception;
 
 class StrategyPhoto extends StrategyPhotoBase
 {
+	use ImageEditing;
+	use VideoEditing;
 	public $imageHandler;
 	public $import_via_symlink;
 
@@ -23,9 +25,6 @@ class StrategyPhoto extends StrategyPhotoBase
 		$this->imageHandler = app(ImageHandlerInterface::class);
 		$this->import_via_symlink = $import_via_symlink;
 	}
-
-	use ImageEditing;
-	use VideoEditing;
 
 	public function storeFile(Create $create)
 	{
