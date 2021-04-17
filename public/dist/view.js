@@ -298,15 +298,6 @@ photo.getDirectLink = function () {
 	return $("#imageview img").attr("src").replace(/"/g, "").replace(/url\(|\)$/gi, "");
 };
 
-photo.update_display_overlay = function () {
-	lychee.image_overlay = !lychee.image_overlay;
-	if (!lychee.image_overlay) {
-		$("#image_overlay").remove();
-	} else {
-		$("#imageview").append(build.overlay_image(photo.json));
-	}
-};
-
 photo.show = function () {
 	$("#imageview").removeClass("full");
 	header.dom().removeClass("header--hidden");
@@ -377,8 +368,6 @@ $(document).ready(function () {
 	csrf.bind();
 
 	// Image View
-	imageview.on("click", "img", photo.update_display_overlay);
-
 	$(window).on("resize", photo.onresize);
 
 	// Save ID of photo
@@ -686,7 +675,7 @@ build.photo = function (data) {
 build.check_overlay_type = function (data, overlay_type) {
 	var next = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-	var types = ["exif", "desc", "date"];
+	var types = ["desc", "date", "exif", "none"];
 	var idx = types.indexOf(overlay_type);
 	if (idx < 0) return "none";
 	if (next) idx++;
@@ -694,8 +683,8 @@ build.check_overlay_type = function (data, overlay_type) {
 
 	for (var i = 0; i < types.length; i++) {
 		var type = types[(idx + i) % types.length];
+		if (type === "date" || type === "none") return type;
 		if (type === "desc" && data.description && data.description !== "") return type;
-		if (type === "date") return type;
 		if (type === "exif" && exifHash !== "") return type;
 	}
 };
@@ -727,7 +716,9 @@ build.overlay_image = function (data) {
 				}
 			}
 			break;
+		case "none":
 		default:
+			return "";
 	}
 
 	return lychee.html(_templateObject12, data.title) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
@@ -784,9 +775,7 @@ build.imageview = function (data, visibleControls, autoplay) {
 		html += lychee.html(_templateObject15, img);
 	}
 
-	if (lychee.image_overlay) html += build.overlay_image(data);
-
-	html += "\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic("caret-left") + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic("caret-right") + "</a></div>\n\t\t\t";
+	html += build.overlay_image(data) + ("\n\t\t\t<div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>" + build.iconic("caret-left") + "</a></div>\n\t\t\t<div class='arrow_wrapper arrow_wrapper--next'><a id='next'>" + build.iconic("caret-right") + "</a></div>\n\t\t\t");
 
 	return { html: html, thumb: thumb };
 };
@@ -2720,10 +2709,11 @@ lychee.locale = {
 
 	IMAGE_OVERLAY_TEXT: "Display image overlay by default:",
 
-	OVERLAY_TYPE: "Data to use in image overlay:",
-	OVERLAY_EXIF: "Photo EXIF data",
-	OVERLAY_DESCRIPTION: "Photo description",
-	OVERLAY_DATE: "Photo date taken",
+	OVERLAY_TYPE: "Photo overlay:",
+	OVERLAY_NONE: "None",
+	OVERLAY_EXIF: "EXIF data",
+	OVERLAY_DESCRIPTION: "Description",
+	OVERLAY_DATE: "Date taken",
 
 	MAP_PROVIDER: "Provider of OpenStreetMap tiles:",
 	MAP_PROVIDER_WIKIMEDIA: "Wikimedia",
