@@ -33,8 +33,8 @@
         "php-ffmpeg/php-ffmpeg": "^0.17.0",
         "php-http/guzzle7-adapter": "^0.1.1",
         "php-http/message": "^1.8",
-        "spatie/guzzle-rate-limiter-middleware": "^1.0",
-        "spatie/laravel-feed": "^3.0",
+        "spatie/guzzle-rate-limiter-middleware": "^2.0",
+        "spatie/laravel-feed": ">=3.1",
         "spatie/laravel-image-optimizer": "^1.6.2",
         "symfony/cache": "^5.1",
         "whichbrowser/parser": "^2.0"
@@ -45,7 +45,7 @@
         "barryvdh/laravel-ide-helper": "^2.6",
         "filp/whoops": "^2.5",
         "friendsofphp/php-cs-fixer": "^2.16",
-        "itsgoingd/clockwork": "^4.1",
+        "itsgoingd/clockwork": "^5.0",
         "laravel/homestead": "^11.4",
         "nunomaduro/collision": "^5.0",
         "phpunit/phpunit": "^9"
