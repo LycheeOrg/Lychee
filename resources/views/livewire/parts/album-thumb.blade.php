@@ -1,12 +1,14 @@
-@if (isset($data['types'][$i]))
+@if (isset($data['thumb']))
 	@php
-	$isVideo = $data['types'][$i] && Str::contains($data['types'][$i],"video");
+	// dd($data['thumb']);
+	$isVideo = $data['thumb']['type'] && Str::contains($data['thumb']['type'],"video");
+
 	@endphp
-	@if ($data['thumbs'][$i] == "uploads/thumb/" && $isVideo)
+	@if ($data['thumb']['thumb'] == "uploads/thumb/" && $isVideo)
 		<span class="thumbimg">
 			<img src='{{ URL::asset('img/play-icon.png') }}' alt='Photo thumbnail' data-overlay='false' draggable='false'>
 		</span>
-	@elseif($data['thumbs'][$i] === "uploads/thumb/" && $data['types'][$i] && Str::contains($data['types'][$i],"raw"))
+	@elseif($data['thumb']['thumb'] === "uploads/thumb/" && $data['thumb']['type'] && Str::contains($data['thumb']['type'],"raw"))
 		<span class="thumbimg">
 			<img src='{{ URL::asset('img/placeholder.png') }}' alt='Photo thumbnail' data-overlay='false' draggable='false'>
 		</span>
@@ -14,9 +16,9 @@
 
 	<span class="thumbimg {{ $isVideo ? "video" : ""}}">
 		<img class='lazyload' src='{{ URL::asset('img/placeholder.png') }}'
-			data-src='{{ URL::asset($data['thumbs'][$i]) }}'
-		@if ($data['thumbs2x'][$i] != "")
-			data-srcset='{{ URL::asset($data['thumbs2x'][$i]) }} 2x'
+			data-src='{{ URL::asset($data['thumb']['thumb']) }}'
+		@if ($data['thumb']['thumb2x'] != "")
+			data-srcset='{{ URL::asset($data['thumb']['thumb2x']) }} 2x'
 		@endif
 			alt='Photo thumbnail' data-overlay='false' draggable='false'>
 	</span>

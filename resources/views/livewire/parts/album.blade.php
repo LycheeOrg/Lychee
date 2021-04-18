@@ -1,15 +1,12 @@
 <div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
-	{{ $data['nsfw'] === "1" && lychee.nsfw_blur ? 'blurred' : '' }}'
+	{{ $data['nsfw'] === "1" && App\Models\Configs::get('nsfw_blur') == '1' ? 'blurred' : '' }}'
 	data-id='{{ $data['id'] }}'
 	data-nsfw='{{ $data['nsfw'] == "1" ? '1' : '0'}}'>
 
 	@for ($i = 0; $i < 3; $i++)
 		@include('livewire.parts.album-thumb')
 	@endfor
-  {{-- ${build.getAlbumThumb(data, 2)}
-  ${build.getAlbumThumb(data, 1)}
-  ${build.getAlbumThumb(data, 0)} --}}
 
 <div class='overlay'>
 	<h1 title='{{ $data['title'] }}'>{{ $data['title'] }}</h1>

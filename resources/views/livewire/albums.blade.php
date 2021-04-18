@@ -1,7 +1,7 @@
 @if (!$smartalbums && !$albums && !$shared_albums)
 <div class='no_content fadeIn'>
 	<svg class='iconic'><use xlink:href='#eye' /></svg>
-	<p>{{ Lang::get(['VIEW_NO_PUBLIC_ALBUMS']) }}</p>
+	<p>{{ Lang::get('VIEW_NO_PUBLIC_ALBUMS') }}</p>
 </div>
 @else
 <div class="content contentZoomIn">
