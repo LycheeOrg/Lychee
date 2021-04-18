@@ -1,5 +1,4 @@
-<?=
-	/* Using an echo tag here so the `<? ... ?>` won't get parsed as short tags */
+<?php echo /* Using an echo tag here so the `<? ... ?>` won't get parsed as short tags */
 	'<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
 ?>
 <feed xmlns="http://www.w3.org/2005/Atom">
@@ -26,10 +25,12 @@
             @if($item->__isset('enclosure'))
               <enclosure url="{{ url($item->enclosure) }}" length="{{ $item->enclosureLength }}" type="{{ $item->enclosureType }}" />
             @endif
+            @foreach($item->category as $category)
             <category type="html">
-                <![CDATA[{!! $item->category ?? '' !!}]]>
+                <![CDATA[{!! $category !!}]]>
             </category>
-            <updated>{{ $item->updated->toRssString() }}</updated>
+            @endforeach
+            <updated>{{ $item->updated->toRfc3339String() }}</updated>
         </entry>
     @endforeach
 </feed>

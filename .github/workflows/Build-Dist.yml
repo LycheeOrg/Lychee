@@ -100,7 +100,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-suggest --no-dev
+        run: composer install --prefer-dist --no-interaction --no-dev
 
       - name: Build Dist
         run: |

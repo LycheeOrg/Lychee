@@ -17,8 +17,6 @@ use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\SmartAlbums\SmartFactory;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -46,15 +44,6 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		if (config('app.db_log_sql', false)) {
-			// @codeCoverageIgnoreStart
-			/* @noinspection PhpUndefinedClassInspection */
-			DB::listen(function ($query) {
-				/* @noinspection PhpUndefinedClassInspection */
-				Log::info($query->sql, $query->bindings, $query->time);
-			});
-			// @codeCoverageIgnoreEnd
-		}
 	}
 
 	/**
