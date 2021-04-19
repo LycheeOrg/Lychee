@@ -1,11 +1,11 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Album;
 
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
 
-class ThumbAlbum extends Component
+class Thumbimg extends Component
 {
 	public $isVideo;
 	public $type;
@@ -32,16 +32,13 @@ class ThumbAlbum extends Component
 	 */
 	public function render()
 	{
-		if ($this->type == '') {
-			return view('components.thumb-placeholder');
-		}
 		if ($this->thumb == 'uploads/thumb/' && $this->isVideo) {
-			return view('components.thumb-play');
+			return view('components.album.thumb-play');
 		}
 		if ($this->thumb == 'uploads/thumb/' && Str::contains($this->type, 'raw')) {
-			return view('components.thumb-placeholder');
+			return view('components.album.thumb-placeholder');
 		}
 
-		return view('components.thumb-album');
+		return view('components.album.thumbimg');
 	}
 }

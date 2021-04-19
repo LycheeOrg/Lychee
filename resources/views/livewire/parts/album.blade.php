@@ -1,14 +1,14 @@
 <div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
-	{{ $data['nsfw'] === "1" && App\Models\Configs::get('nsfw_blur') == '1' ? 'blurred' : '' }}'
+	{{ $data['nsfw'] === "1" && App\Models\Configs::get_value('nsfw_blur', '1') == '1' ? 'blurred' : '' }}'
 	data-id='{{ $data['id'] }}'
 	data-nsfw='{{ $data['nsfw'] == "1" ? '1' : '0'}}'>
 
 	@for ($i = 0; $i < 3; $i++)
 		@if($data['thumb'])
-			<x-ThumbAlbum type="{{ $data['thumb']['type'] }}" thumb="{{ $data['thumb']['thumb'] }}" thumb2x="{{ $data['thumb']['thumb2x'] }}" />
+			<x-album.thumbimg type="{{ $data['thumb']['type'] }}" thumb="{{ $data['thumb']['thumb'] }}" thumb2x="{{ $data['thumb']['thumb2x'] }}" />
 		@else
-			<x-ThumbAlbum />
+			<x-album.placeholder />
 		@endif
 	@endfor
 
