@@ -5,7 +5,11 @@
 	data-nsfw='{{ $data['nsfw'] == "1" ? '1' : '0'}}'>
 
 	@for ($i = 0; $i < 3; $i++)
-		@include('livewire.parts.album-thumb')
+		@if($data['thumb'])
+			<x-ThumbAlbum type="{{ $data['thumb']['type'] }}" thumb="{{ $data['thumb']['thumb'] }}" thumb2x="{{ $data['thumb']['thumb2x'] }}" />
+		@else
+			<x-ThumbAlbum />
+		@endif
 	@endfor
 
 <div class='overlay'>
