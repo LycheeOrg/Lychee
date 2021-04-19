@@ -9,7 +9,7 @@ class RequirementsChecker
 	 *
 	 * @var _minPhpVersion
 	 */
-	private $_minPhpVersion = '7.2.0';
+	private $_minPhpVersion = '7.4.0';
 
 	/**
 	 * Check for the server requirements.
