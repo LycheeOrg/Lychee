@@ -22,7 +22,7 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 
 		//! 28 Nov 2021	 => 7.4 = DEPRECATED = ERROR
 		// $php_error = 8;
-		// $php_warning = 7.4;
+		// $php_warning = 8;
 		// $php_latest = 8;
 
 		//! 25 Nov 2021	 => 8.1 = Released   => 8.0 = WARNING
