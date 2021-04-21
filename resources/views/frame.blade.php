@@ -5,7 +5,7 @@
 @endsection
 
 @section('head-css')
-    <link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/frame.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/frame.css') }}">
 @endsection
 
 

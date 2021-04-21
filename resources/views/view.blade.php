@@ -2,7 +2,7 @@
 
 @section('head-css')
     <!-- CSS -->
-    <link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/main.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/main.css') }}">
 
     <link rel="shortcut icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="Lychee-front/images/apple-touch-icon-iphone.png" sizes="120x120">
@@ -64,7 +64,7 @@
 </div>
 
 <!-- JS -->
-<script type="text/javascript" src="{{ App\Assets\Helpers::cacheBusting('dist/view.js') }}"></script>
+<script type="text/javascript" src="{{ Helpers::cacheBusting('dist/view.js') }}"></script>
 
 <script type="text/javascript">
 lychee.api_V2 = true;

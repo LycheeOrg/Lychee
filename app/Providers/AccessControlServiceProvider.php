@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\ModelFunctions\SessionFunctions;
 use Illuminate\Support\ServiceProvider;
 
 class AccessControlServiceProvider extends ServiceProvider
@@ -14,9 +13,6 @@ class AccessControlServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->bind('AccessControl', function () {
-			return resolve(SessionFunctions::class);
-		});
 	}
 
 	/**

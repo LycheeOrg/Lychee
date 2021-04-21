@@ -173,8 +173,8 @@ return [
 		// App\Providers\BroadcastServiceProvider::class,
 		App\Providers\EventServiceProvider::class,
 		App\Providers\RouteServiceProvider::class,
-		App\Providers\LangServiceProvider::class,
-		App\Providers\AccessControlServiceProvider::class,
+		// App\Providers\LangServiceProvider::class,
+		// App\Providers\AccessControlServiceProvider::class,
 	],
 
 	/*
@@ -210,6 +210,7 @@ return [
 		'Hash' => Illuminate\Support\Facades\Hash::class,
 		'Http' => Illuminate\Support\Facades\Http::class,
 		// 'Lang' => Illuminate\Support\Facades\Lang::class,
+		'Helpers' => App\Facades\Helpers::class,
 		'Lang' => App\Facades\Lang::class,
 		'Log' => Illuminate\Support\Facades\Log::class,
 		'Mail' => Illuminate\Support\Facades\Mail::class,

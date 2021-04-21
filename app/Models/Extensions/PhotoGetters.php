@@ -2,9 +2,9 @@
 
 namespace App\Models\Extensions;
 
-use App\Assets\Helpers;
 use App\Models\Configs;
 use Exception;
+use Helpers;
 
 trait PhotoGetters
 {

@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
-use App\Assets\Helpers;
 use App\Console\Commands\Utilities\Colorize;
 use App\Models\Photo;
+use Helpers;
 use Illuminate\Console\Command;
 use Storage;
 

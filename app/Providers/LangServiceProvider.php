@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Locale\Lang;
 use Illuminate\Support\ServiceProvider;
 
 class LangServiceProvider extends ServiceProvider
@@ -14,9 +13,6 @@ class LangServiceProvider extends ServiceProvider
 	 */
 	public function register()
 	{
-		$this->app->bind('lang', function () {
-			return resolve(Lang::class);
-		});
 	}
 
 	/**

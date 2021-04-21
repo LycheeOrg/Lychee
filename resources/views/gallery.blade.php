@@ -4,10 +4,10 @@
 @endsection
 
 @section('head-css')
-<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/main.css') }}">
-<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/user.css') }}">
-@if (App\Assets\Helpers::getDeviceType()=="television")
-<link type="text/css" rel="stylesheet" href="{{ App\Assets\Helpers::cacheBusting('dist/TV.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/main.css') }}">
+<link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/user.css') }}">
+@if (Helpers::getDeviceType()=="television")
+<link type="text/css" rel="stylesheet" href="{{ Helpers::cacheBusting('dist/TV.css') }}">
 @endif
 @endsection
 
@@ -206,7 +206,7 @@
 </div>
 
 <!-- JS -->
-<script async type="text/javascript" src="{{ App\Assets\Helpers::cacheBusting('dist/main.js') }}"></script>
+<script async type="text/javascript" src="{{ Helpers::cacheBusting('dist/main.js') }}"></script>
 </div>
 
 @include('includes.footer')
