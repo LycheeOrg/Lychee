@@ -2,7 +2,6 @@
 
 namespace App\Actions\Photo\Extensions;
 
-use App\Assets\Helpers;
 use App\Metadata\Extractor;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Configs;
@@ -11,6 +10,7 @@ use App\Models\Photo;
 use Exception;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
+use Helpers;
 use Illuminate\Support\Facades\Storage;
 use ImageOptimizer;
 
