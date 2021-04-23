@@ -362,6 +362,7 @@ final class Portuguese implements Language
 			'PUBLIC_SEARCH_TEXT' => 'Pesquisa pública permitida:',
 			'IMAGE_OVERLAY_TEXT' => 'Mostrar o overlay da data por defeito:',
 			'OVERLAY_TYPE' => 'Data a usar no overlay da imagem:',
+			'OVERLAY_NONE' => 'None',
 			'OVERLAY_EXIF' => 'Informação EXIF da fotografia',
 			'OVERLAY_DESCRIPTION' => 'Descrição da fotografia',
 			'OVERLAY_DATE' => 'Data da Fotografia',
