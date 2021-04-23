@@ -20,8 +20,9 @@ class Fullpage extends Component
 
 	protected $listeners = ['openAlbum', 'back'];
 
-	public function mount($albumId = null, $photoId = null, AlbumFactory $albumFactory)
+	public function mount($albumId = null, $photoId = null)
 	{
+		$albumFactory = resolve(AlbumFactory::class);
 		if ($albumId == null) {
 			$this->mode = 'albums';
 		} else {
