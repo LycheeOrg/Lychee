@@ -3,5 +3,7 @@
 	{!! $src !!}
 	{!! $srcset !!}
 	{!! $srcset2x !!}
-	alt='Photo thumbnail' data-overlay='false' draggable='false' >
+	alt='Photo thumbnail'
+	data-overlay='false'
+	draggable='false' >
 </span>

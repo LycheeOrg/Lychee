@@ -1,3 +1,8 @@
 <span class="thumbimg">
-	<img src='{{ URL::asset('img/placeholder.png') }}' alt='Photo thumbnail' data-overlay='false' draggable='false'>
+	<img class='lazyload'
+	src='{{ URL::asset('img/placeholder.png') }}'
+	data-src='img/no_images.svg'
+	alt='Photo thumbnail'
+	data-overlay='false'
+	draggable='false'>
 </span>
