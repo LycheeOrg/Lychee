@@ -3,12 +3,12 @@
 namespace App\Actions\Photo\Extensions;
 
 use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
-use App\Assets\Helpers;
 use App\Exceptions\FolderIsNotWritable;
 use App\Exceptions\JsonError;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
+use Helpers;
 use Illuminate\Support\Facades\Storage;
 
 trait Checks

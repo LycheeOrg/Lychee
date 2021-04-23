@@ -1,15 +1,15 @@
-<div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album
+<div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album {{ $data['nsfw'] === "1" && App\Models\Configs::get_value('nsfw_blur', '1') == '1' ? 'blurred' : '' }}'
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
-	{{ $data['nsfw'] === "1" && lychee.nsfw_blur ? 'blurred' : '' }}'
 	data-id='{{ $data['id'] }}'
+	data-tabindex='{{ Helpers::data_index() }}'
 	data-nsfw='{{ $data['nsfw'] == "1" ? '1' : '0'}}'>
-
 	@for ($i = 0; $i < 3; $i++)
-		@include('livewire.parts.album-thumb')
+		@if($data['thumb'])
+			<x-album.thumbimg type="{{ $data['thumb']['type'] }}" thumb="{{ $data['thumb']['thumb'] }}" thumb2x="{{ $data['thumb']['thumb2x'] }}" />
+		@else
+			<x-album.placeholder />
+		@endif
 	@endfor
-  {{-- ${build.getAlbumThumb(data, 2)}
-  ${build.getAlbumThumb(data, 1)}
-  ${build.getAlbumThumb(data, 0)} --}}
 
 <div class='overlay'>
 	<h1 title='{{ $data['title'] }}'>{{ $data['title'] }}</h1>
@@ -19,33 +19,35 @@
 @if (AccessControl::is_logged_in())
 <div class='badges'>
 	@if (isset($data['nsfw']) && $data['nsfw'] == "1")
-		<a class='badge badge--nsfw icn-warning'><svg class='iconic'><use xlink:href='#warning' /></svg></a>
+		<x-icon class='badge--nsfw icn-warning' icon='warning' />
 	@endif
 	@if (isset($data['star']) && $data['star'] == "1")
-		<a class='badge badge--star icn-star'><svg class='iconic'><use xlink:href='#star' /></svg></a>
+		<x-icon class='badge--star icn-star' icon='star' />
 	@endif
 	@if (isset($data['public']) && $data['public'] == "1")
-		<a class='badge badge--visible {{ $data['visible'] == "1" ? "badge--not--hidden" : "badge--hidden"}} icn-share'>
-			<svg class='iconic'><use xlink:href='#eye' /></svg></a>
+		<x-icon class='badge--visible {{ $data['visible'] == "1" ? "badge--not--hidden" : "badge--hidden"}} icn-share' icon='eye' />
 	@endif
 	@if (isset($data['unsorted']) && $data['unsorted'] == "1")
-		<a class='badge badge--visible'><svg class='iconic'><use xlink:href='#list' /></svg></a>
+		<x-icon class='badge--visible' icon='list' />
 	@endif
 	@if (isset($data['recent']) && $data['recent'] == "1")
-		<a class='badge badge--visible badge--list'><svg class='iconic'><use xlink:href='#clock' /></svg></a>
+		<x-icon class='badge--visible badge--list' icon='clock' />
 	@endif
 	@if (isset($data['password']) && $data['password'] == "1")
-		<a class='badge badge--visible'><svg class='iconic'><use xlink:href='#lock-locked' /></svg></a>
+		<x-icon class='badge--visible' icon='lock-locked' />
 	@endif
 	@if (isset($data['tag_album']) && $data['tag_album'] == "1")
-		<a class='badge badge--tag'><svg class='iconic'><use xlink:href='#tag' /></svg></a>
+		<x-icon class='badge--tag' icon='tag' />
+	@endif
+	@if (isset($data['cover_id']) && isset($data['thumb']['id']) && $data['cover_id'] == $data['thumb']['id'])
+		<x-icon class='badge--cover icn-cover' icon='folder-cover' />
 	@endif
 </div>
 @endif
 
 @if ((isset($data['has_albums']) && $data['has_albums'] == '1') || (isset($data['albums']) && count($data['albums']) > 0))
 <div class='subalbum_badge'>
-	<a class='badge badge--folder'><svg class='iconic'><use xlink:href='#layers' /></svg></a>
+	<x-icon class='badge--folder' icon='layers' />
 </div>
 @endif
 </div>

@@ -9,6 +9,16 @@ use WhichBrowser\Parser as BrowserParser;
 
 class Helpers
 {
+	private int $numTab = 0;
+
+	/**
+	 * Initialize the Facade.
+	 */
+	public function __construct()
+	{
+		$this->numTab = 0;
+	}
+
 	/**
 	 * Add UnixTimeStamp to file path suffix.
 	 *
@@ -16,7 +26,7 @@ class Helpers
 	 *
 	 * @return string
 	 */
-	public static function cacheBusting(string $filePath): string
+	public function cacheBusting(string $filePath): string
 	{
 		if (File::exists($filePath)) {
 			// @codeCoverageIgnoreStart
@@ -38,7 +48,7 @@ class Helpers
 	 *
 	 * @return string
 	 */
-	public static function getDeviceType(): string
+	public function getDeviceType(): string
 	{
 		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
 
@@ -50,7 +60,7 @@ class Helpers
 	 *
 	 * @return string generated ID
 	 */
-	public static function generateID()
+	public function generateID()
 	{
 		// Generate id based on the current microtime
 
@@ -83,7 +93,7 @@ class Helpers
 	 *
 	 * @return string updated ID
 	 */
-	public static function trancateIf32(string $id, int $prevShortId = 0)
+	public function trancateIf32(string $id, int $prevShortId = 0)
 	{
 		if (PHP_INT_MAX > 2147483647) {
 			return $id;
@@ -106,7 +116,7 @@ class Helpers
 	 *
 	 * @return string extension of the filename starting with a dot
 	 */
-	public static function getExtension($filename, $isURI = false)
+	public function getExtension($filename, $isURI = false)
 	{
 		// If $filename is an URI, get only the path component
 		if ($isURI === true) {
@@ -133,7 +143,7 @@ class Helpers
 	 *
 	 * @return bool
 	 */
-	public static function hasPermissions($path)
+	public function hasPermissions($path)
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
@@ -154,7 +164,7 @@ class Helpers
 	 *
 	 * @return bool
 	 */
-	public static function hasFullPermissions($path)
+	public function hasFullPermissions($path)
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
@@ -180,7 +190,7 @@ class Helpers
 	 *
 	 * @throws DivideByZeroException
 	 */
-	public static function gcd($a, $b)
+	public function gcd($a, $b)
 	{
 		if ($b == 0) {
 			throw new DivideByZeroException();
@@ -193,7 +203,7 @@ class Helpers
 	 * Properly convert a boolean to a string
 	 * the default php function returns '' in case of false, this is not the behavior we want.
 	 */
-	public static function str_of_bool(bool $b)
+	public function str_of_bool(bool $b)
 	{
 		return $b ? '1' : '0';
 	}
@@ -202,7 +212,7 @@ class Helpers
 	 * Given a Url generate the @2x correcponding url.
 	 * This is used for thumbs, small and medium.
 	 */
-	public static function ex2x($url)
+	public function ex2x($url)
 	{
 		$thumbUrl2x = explode('.', $url);
 
@@ -214,7 +224,7 @@ class Helpers
 	/**
 	 * Returns the available licenses.
 	 */
-	public static function get_all_licenses()
+	public function get_all_licenses()
 	{
 		return [
 			'none',
@@ -251,5 +261,33 @@ class Helpers
 			'CC-BY-SA-3.0',
 			'CC-BY-SA-4.0',
 		];
+	}
+
+	/**
+	 * Return incrementing numbers.
+	 */
+	public function data_index(): int
+	{
+		$this->numTab++;
+
+		return $this->numTab;
+	}
+
+	/**
+	 * Reset and return incrementing numbers.
+	 */
+	public function data_index_r(): int
+	{
+		$this->numTab = 1;
+
+		return $this->numTab;
+	}
+
+	/**
+	 * Reset the incrementing number.
+	 */
+	public function data_index_set(int $idx = 0): void
+	{
+		$this->numTab = $idx;
 	}
 }

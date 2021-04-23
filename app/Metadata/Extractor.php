@@ -2,9 +2,9 @@
 
 namespace App\Metadata;
 
-use App\Assets\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
+use Helpers;
 use PHPExif\Reader\Reader;
 
 class Extractor

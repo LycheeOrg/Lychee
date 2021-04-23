@@ -3,9 +3,9 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\Save;
-use App\Assets\Helpers;
 use App\Factories\AlbumFactory;
 use App\Models\Photo;
+use Helpers;
 
 class Duplicate
 {

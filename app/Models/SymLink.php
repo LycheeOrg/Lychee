@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Assets\Helpers;
 use Eloquent;
 use Exception;
+use Helpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;

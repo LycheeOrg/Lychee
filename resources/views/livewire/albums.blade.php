@@ -1,7 +1,7 @@
 @if (!$smartalbums && !$albums && !$shared_albums)
 <div class='no_content fadeIn'>
 	<svg class='iconic'><use xlink:href='#eye' /></svg>
-	<p>{{ Lang::get(['VIEW_NO_PUBLIC_ALBUMS']) }}</p>
+	<p>{{ Lang::get('VIEW_NO_PUBLIC_ALBUMS') }}</p>
 </div>
 @else
 <div class="content contentZoomIn">
@@ -11,10 +11,12 @@
 		@foreach ($smartalbums as $data)
 			@include('livewire.parts.album')
 		@endforeach
+		@if(count($albums) > 0)
+		<div class='divider'><h1>{{ Lang::get('ALBUMS') }}</h1></div>
+		@endif
 	@endisset
 
 	@if(count($albums) > 0)
-		<div class='divider'><h1>{{ Lang::get('ALBUMS') }}</h1></div>
 		@foreach ($albums as $data)
 			@include('livewire.parts.album')
 		@endforeach

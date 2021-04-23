@@ -1,6 +1,6 @@
 <?php
 
-use App\Assets\Helpers;
+use App\Facades\Helpers;
 use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Database\Migrations\Migration;
