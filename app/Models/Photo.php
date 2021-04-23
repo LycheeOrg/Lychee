@@ -4,10 +4,10 @@
 
 namespace App\Models;
 
+use App\Assets\Helpers;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\PhotoGetters;
-use Helpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

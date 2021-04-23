@@ -2,11 +2,11 @@
 
 namespace App\Actions\Photo\Extensions;
 
+use App\Assets\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use Exception;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
 
 trait ImageEditing

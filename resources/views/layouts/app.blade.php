@@ -16,10 +16,10 @@
 	
 	<script src="{{ URL::asset('Lychee-front/node_modules/lazysizes/lazysizes.min.js') }}"></script>
 	
-	<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/main.css')) }}">
-	<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/user.css')) }}">
-	@if (Helpers::getDeviceType()=="television")
-	<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/TV.css')) }}">
+	<link type="text/css" rel="stylesheet" href="{{ URL::asset(App\Assets\Helpers::cacheBusting('dist/main.css')) }}">
+	<link type="text/css" rel="stylesheet" href="{{ URL::asset(App\Assets\Helpers::cacheBusting('dist/user.css')) }}">
+	@if (App\Assets\Helpers::getDeviceType()=="television")
+	<link type="text/css" rel="stylesheet" href="{{ URL::asset(App\Assets\Helpers::cacheBusting('dist/TV.css')) }}">
 	@endif
 
 	{{-- @if($rss_enable)

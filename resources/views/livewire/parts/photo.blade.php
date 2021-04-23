@@ -1,15 +1,14 @@
-@php
-	$isVideo = Str::contains($data['type'], "video");
-	$isRaw = Str::contains($data['type'], "raw");
-	$isLivePhoto = $data['livePhotoUrl'] != "" && $data['livePhotoUrl'] != null;
-	$class_vid_live = ($isVideo ? ' video' : '') . ($isLivePhoto ? ' livephoto' : '');
-@endphp
-<div class='photo ${disabled ? `disabled` : ``}'
-	data-album-id='{{ URL::asset($data['album']) }}'
-	data-id='{{ $data['id'] }}'
-	data-tabindex='{{ Helpers::data_index() }}'
-	{{-- data-tabindex='${tabindex.get_next_tab_index()}' --}}
-	>
+	@php
+		$isVideo = Str::contains($data['type'], "video");
+		$isRaw = Str::contains($data['type'], "raw");
+		$isLivePhoto = $data['livePhotoUrl'] != "" && $data['livePhotoUrl'] != null;
+		$class_vid_live = ($isVideo ? ' video' : '') . ($isLivePhoto ? ' livephoto' : '');
+	@endphp
+	<div class='photo ${disabled ? `disabled` : ``}'
+		data-album-id='{{ URL::asset($data['album']) }}'
+		data-id='{{ $data['id'] }}'
+		{{-- data-tabindex='${tabindex.get_next_tab_index()}' --}}
+		>
 
 	@if ($data['thumbUrl'] == "uploads/thumb/" && $isLivePhoto) 
 		<span class="thumbimg">
@@ -21,53 +20,81 @@
 				></span>
 
 	@elseif ($data['thumbUrl'] == "uploads/thumb/" && $isVideo)
-		<x-photo.play />
+		<span class="thumbimg">
+			<img src='{{ URL::asset('img/play-icon.png') }}'
+				alt='Photo
+				thumbnail'
+				data-overlay='false'
+				draggable='false'
+				{{-- data-tabindex='${tabindex.get_next_tab_index()}' --}}
+				></span>
 
 	@elseif ($data['thumbUrl'] === "uploads/thumb/" && $isRaw)
-		<x-photo.placeholder />
+		<span class="thumbimg">
+			<img src='{{ URL::asset('img/placeholder.png') }}'
+				alt='Photo
+				thumbnail'
+				data-overlay='false'
+				draggable='false'
+				{{-- data-tabindex='${tabindex.get_next_tab_index()}' --}}
+				></span>
 
-	@elseif (App\Models\Configs::get_value('layout', '0') == "0")
-		<x-photo.thumbimg
-			class="{{ $class_vid_live }}"
-			thumb="{{ $data['thumbUrl'] }}"
-			thumb2x="{{ $data['thumb2x'] }}"
-			type="square"
-		/>
+	@elseif (false && $lychee['layout'] == "0")
+		<span class="thumbimg {{ $class_vid_live }}">
+			<img class='lazyload' src='{{ URL::asset('img/placeholder.png') }}'
+				data-src='{{ URL::asset($data['thumbUrl']) }}'
+				@if (isset($data["thumb2x"]) && $data["thumb2x"] !== "")
+					data-srcset='{{ URL::asset($data["thumb2x"]) }} 2x'
+				@endif
+				alt='Photo thumbnail'
+				data-overlay='false'
+				draggable='false' >
+		</span>
 	@else
 		@if ($data['small'] !== "")
-		<x-photo.thumbimg
-			class="{{ $class_vid_live }}"
-			thumb="{{ $data['small'] }}"
-			thumb2x="{{ $data['small2x'] }}"
-			dim="{{ intval($data['small_dim']) }}"
-			dim2x="{{ intval($data['small2x_dim']) }}"
-		/>
+		<span class="thumbimg {{ $class_vid_live }}">
+			<img class='lazyload' src='{{ URL::asset('img/placeholder.png') }}'
+				data-src='{{ URL::asset($data['small']) }}'
+				@if (isset($data["small2x"]) && $data['small2x'] !== "")
+					data-srcset='{{ URL::asset($data['small']) }} {{ intval($data['small_dim']) }}w, {{ URL::asset($data['small2x']) }} {{ intval($data['small2x_dim']) }}w'
+				@endif
+				alt='Photo thumbnail'
+				data-overlay='false'
+				draggable='false' >
+			</span>
 
 		@elseif ($data['medium'] !== "")
-			<x-photo.thumbimg
-				class="{{ $class_vid_live }}"
-				thumb="{{ $data['medium'] }}"
-				thumb2x="{{ $data['medium2x'] }}"
-				dim="{{ intval($data['medium_dim']) }}"
-				dim2x="{{ intval($data['medium2x_dim']) }}"
-			/>
+			<span class="thumbimg {{ $class_vid_live }}">
+				<img class='lazyload' src='{{ URL::asset('img/placeholder.png') }}'
+					data-src='{{ URL::asset($data['medium']) }}'
+					@if (isset($data["medium2x"]) && $data['medium2x'] !== "")
+						data-srcset='{{ URL::asset($data['medium']) }} {{ intval($data['medium_dim']) }}w, {{ URL::asset($data['medium2x']) }} {{ intval($data['medium2x_dim']) }}w'
+					@endif
+					alt='Photo thumbnail'
+					data-overlay='false'
+					draggable='false' >
+			</span>
 
 		@elseif (!$isVideo)
 			{{-- Fallback for images with no small or medium. --}}
-			<x-photo.thumbimg
-				class="{{ $isLivePhoto ? " livephoto" : "" }}"
-				thumb="{{ $data['url'] }}"
-			/>
+			<span class="thumbimg {{ $isLivePhoto ? " livephoto" : "" }}">
+			<img class='lazyload' src='{{ URL::asset('img/placeholder.png') }}'
+				data-src='{{ URL::asset($data['url']) }}'
+				alt='Photo thumbnail'
+				data-overlay='false'
+				draggable='false' >
+			</span>
 
 		@else
 			{{-- Fallback for videos with no small (the case of no thumb is handled at the top of this function). --}}
-			<x-photo.thumbimg
-				class="video"
-				thumb="{{ $data['thumbUrl'] }}"
-				thumb2x="{{ $data['thumb2x'] }}"
-				dim="200"
-				dim2x="400"
-				/>
+			<span class="thumbimg video">
+				<img class='lazyload' src='{{ URL::asset('img/placeholder.png') }}'
+					data-src='{{ $data['thumbUrl'] }}'
+					@if (isset($data["thumb2x"]) && $data["thumb2x"] !== "")
+						data-srcset='{{ URL::asset($data['thumbUrl']) }} 200w, {{ URL::asset($data["thumb2x"]) }} 400w'
+					@endif
+					alt='Photo thumbnail' data-overlay='false' draggable='false' >
+			</span>
 		@endif
 	@endif
 
@@ -84,11 +111,11 @@
 	@if (AccessControl::is_logged_in())
 		<div class='badges'>
 			@if($data['star'] == '1')
-			<x-icon class='badge--star icn-star' icon='star' />
+			<a class='badge badge--star icn-star'><svg class='iconic'><use xlink:href='#star' /></svg></a>
 			@endif
 			@if($data['public'] == '1' // && album.json.public !== "1"
 			)
-			<x-icon class='badge--visible badge--hidden icn-share' icon='eye' />
+			<a class='badge badge--visible badge--hidden icn-share'><svg class='iconic'><use xlink:href='#eye' /></svg></a>
 			@endif
 		</div>
 	@endif

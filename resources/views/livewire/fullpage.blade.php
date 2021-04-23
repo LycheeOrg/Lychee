@@ -2,16 +2,16 @@
 	<!-- Loading -->
 	<div id="loading"></div>
 	
-		<livewire:header :mode="$mode" :album="$album" />
+		<livewire:header :mode="$mode" />
 
 		@if($mode == 'albums')
 		<livewire:albums />
 
 		@elseif($mode == 'album')
-		<livewire:album :album="$album" />
+		<livewire:album :albumId="$albumId" />
 
 		@elseif($mode == 'photo')
-		<livewire:photo :album="$album" :photo="$photoId" />
+		<livewire:photo :albumId="$albumId" :photoId="$photoId" />
 
 		@elseif($mode == 'map')
 		Later...

@@ -5,7 +5,6 @@ namespace App\Providers;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
-use App\Assets\Helpers;
 use App\Factories\LangFactory;
 use App\Image;
 use App\Image\ImageHandler;
@@ -28,7 +27,6 @@ class AppServiceProvider extends ServiceProvider
 		ConfigFunctions::class => ConfigFunctions::class,
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
-		Helpers::class => Helpers::class,
 		PublicIds::class => PublicIds::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,
@@ -59,18 +57,6 @@ class AppServiceProvider extends ServiceProvider
 			$compressionQuality = Configs::get_value('compression_quality', 90);
 
 			return new ImageHandler($compressionQuality);
-		});
-
-		$this->app->bind('AccessControl', function () {
-			return resolve(SessionFunctions::class);
-		});
-
-		$this->app->bind('lang', function () {
-			return resolve(Lang::class);
-		});
-
-		$this->app->bind('Helpers', function () {
-			return resolve(Helpers::class);
 		});
 	}
 }

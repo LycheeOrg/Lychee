@@ -3,8 +3,8 @@
 namespace App\Models\Extensions;
 
 use AccessControl;
+use App\Assets\Helpers;
 use App\SmartAlbums\TagAlbum;
-use Helpers;
 
 trait AlbumCast
 {

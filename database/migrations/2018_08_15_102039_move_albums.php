@@ -1,8 +1,8 @@
 <?php
 
+use App\Assets\Helpers;
 use App\Models\Album;
 use App\Models\Logs;
-use Helpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

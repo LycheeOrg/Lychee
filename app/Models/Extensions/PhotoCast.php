@@ -2,8 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use App\Assets\Helpers;
 use App\ModelFunctions\SymLinkFunctions;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
 
 trait PhotoCast
