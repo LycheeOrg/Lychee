@@ -1,8 +1,8 @@
 <?php
 
+use App\Facades\Helpers;
 use App\Models\Logs;
 use App\Models\Photo;
-use Helpers;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
