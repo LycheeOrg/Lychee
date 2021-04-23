@@ -3,13 +3,13 @@
 namespace App\Metadata;
 
 use App;
-use App\Assets\Helpers;
 use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Config;
 use Exception;
+use Helpers;
 
 class GitHubFunctions
 {
