@@ -7,6 +7,7 @@
 <div class='photo ${disabled ? `disabled` : ``}'
 	data-album-id='{{ URL::asset($data['album']) }}'
 	data-id='{{ $data['id'] }}'
+	data-tabindex='{{ Helpers::data_index() }}'
 	{{-- data-tabindex='${tabindex.get_next_tab_index()}' --}}
 	>
 

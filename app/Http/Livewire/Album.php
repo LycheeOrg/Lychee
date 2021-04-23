@@ -36,10 +36,9 @@ class Album extends Component
 
 	private $photosAction;
 
-	public function mount($albumId, AlbumFactory $albumFactory, Photos $photosAction)
+	public function mount($album, AlbumFactory $albumFactory, Photos $photosAction)
 	{
-		$this->albumId = $albumId;
-		$this->album = null;
+		$this->album = $album;
 		$this->info = [];
 		$this->info['albums'] = [];
 
@@ -49,8 +48,6 @@ class Album extends Component
 
 	public function render()
 	{
-		$this->album = $this->albumFactory->make($this->albumId);
-
 		if ($this->album->smart) {
 			$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
 			$this->album->setAlbumIDs($publicAlbums);

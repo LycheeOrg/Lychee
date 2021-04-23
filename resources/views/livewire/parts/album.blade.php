@@ -1,9 +1,8 @@
-<div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album
+<div wire:click="$emit('openAlbum', '{{ $data['id'] }}')" class='album {{ $data['nsfw'] === "1" && App\Models\Configs::get_value('nsfw_blur', '1') == '1' ? 'blurred' : '' }}'
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
-	{{ $data['nsfw'] === "1" && App\Models\Configs::get_value('nsfw_blur', '1') == '1' ? 'blurred' : '' }}'
 	data-id='{{ $data['id'] }}'
+	data-tabindex='{{ Helpers::data_index() }}'
 	data-nsfw='{{ $data['nsfw'] == "1" ? '1' : '0'}}'>
-
 	@for ($i = 0; $i < 3; $i++)
 		@if($data['thumb'])
 			<x-album.thumbimg type="{{ $data['thumb']['type'] }}" thumb="{{ $data['thumb']['thumb'] }}" thumb2x="{{ $data['thumb']['thumb2x'] }}" />
