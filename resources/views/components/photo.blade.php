@@ -1,4 +1,4 @@
-<div style="--w: ;--h: "
+<div style="--w: {{ $_w }};--h: {{ $_h }}"
 	class='photo' {{-- ${disabled ? `disabled` : ``}'--}} 
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
@@ -15,7 +15,15 @@
 		@include('components.photo.thumb-placeholder')
 	
 	@else
-		@include('components.photo.thumbimg')
+		<span class="thumbimg {{ $class }}">
+			<img class='lazyload'
+			{!! $src !!}
+			{!! $srcset !!}
+			{!! $srcset2x !!}
+			alt='Photo thumbnail'
+			data-overlay='false'
+			draggable='false' >
+		</span>
 	@endif
 
 	<div class='overlay'>

@@ -37,8 +37,7 @@
 		animation-name: fadeOut;
 	}
 	// Albums and Photos ------------------------------------------------------ //
-	.album,
-	.photo {
+	.album {
 		position: relative;
 		width: 202px;
 		height: 202px;
@@ -50,13 +49,14 @@
 		animation-timing-function: $timing;
 		.thumbimg {
 			position: absolute;
-			width: 200px;
-			height: 200px;
+			width: 100%;
+			height: 100%;
 			background: #222;
 			color: #222;
 			box-shadow: 0 2px 5px black(0.5);
 			border: 1px solid white(0.5);
-			transition: opacity 0.3s ease-out, transform 0.3s ease-out, border-color 0.3s ease-out;
+			transition: opacity 0.3s ease-out, transform 0.3s ease-out,
+				border-color 0.3s ease-out;
 		}
 		.thumbimg > img {
 			width: 100%;
@@ -105,6 +105,7 @@
 			}
 		}
 	}
+
 	// Album -------------------------------------------------------------- //
 	.album {
 		.thumbimg:first-child,
@@ -138,127 +139,114 @@
 		}
 	}
 	// Overlay -------------------------------------------------------------- //
-	.album .overlay,
-	.photo .overlay {
-		position: absolute;
-		margin: 0 1px;
-		width: 200px;
-		background: linear-gradient(to bottom, black(0), black(0.6));
-		bottom: 1px;
-	}
-	// No overlay for empty albums
-	.album .thumbimg[data-overlay="false"] + .overlay {
-		background: none;
-	}
-	.photo .overlay {
-		opacity: 0;
-	}
-	.photo:focus .overlay,
-	.photo.active .overlay {
-		opacity: 1;
-	}
-	.album .overlay h1,
-	.photo .overlay h1 {
-		min-height: 19px;
-		width: 180px;
-		margin: 12px 0 5px 15px;
-		color: #fff;
-		text-shadow: 0 1px 3px black(0.4);
-		font-size: 16px;
-		font-weight: bold;
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-	.album .overlay a,
-	.photo .overlay a {
-		display: block;
-		margin: 0 0 12px 15px;
-		font-size: 11px;
-		color: #ccc;
-		text-shadow: 0 1px 3px black(0.4);
-	}
-	.album .overlay a .iconic,
-	.photo .overlay a .iconic {
-		fill: #ccc;
-		margin: 0 5px 0 0;
-		width: 8px;
-		height: 8px;
-	}
-
-	.album .thumbimg[data-overlay="false"] + .overlay h1,
-	.album .thumbimg[data-overlay="false"] + .overlay a {
-		text-shadow: none;
-	}
-	// Badge -------------------------------------------------------------- //
-	.album .badges,
-	.photo .badges {
-		position: relative;
-		margin: -1px 0 0 6px;
-	}
-	.album .subalbum_badge {
-		position: absolute;
-		right: 0;
-		top: 0;
-		//margin: -1px 0 0 6px;
-	}
-	.album .badge,
-	.photo .badge {
-		display: none;
-		margin: 0 0 0 6px;
-		padding: 12px 8px 6px;
-		width: 18px;
-		background: $colorRed;
-		box-shadow: 0 0 2px black(0.6);
-		border-radius: 0 0 5px 5px;
-		border: 1px solid #fff;
-		border-top: none;
-		color: #fff;
-		text-align: center;
-		text-shadow: 0 1px 0 black(0.4);
-		opacity: 0.9;
-
-		&--visible {
-			display: inline-block;
+	.album {
+		.overlay {
+			position: absolute;
+			margin: 0 1px;
+			width: 100%;
+			background: linear-gradient(to bottom, black(0), black(0.6));
+			bottom: 0px;
+			h1 {
+				min-height: 19px;
+				width: 180px;
+				margin: 12px 0 5px 15px;
+				color: #fff;
+				text-shadow: 0 1px 3px black(0.4);
+				font-size: 16px;
+				font-weight: bold;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+			a {
+				display: block;
+				margin: 0 0 12px 15px;
+				font-size: 11px;
+				color: #ccc;
+				text-shadow: 0 1px 3px black(0.4);
+			}
+			a .iconic {
+				fill: #ccc;
+				margin: 0 5px 0 0;
+				width: 8px;
+				height: 8px;
+			}
 		}
-		&--not--hidden {
-			background: $colorGreen;
-		}
-		&--hidden {
-			background: $colorOrange;
-		}
-		&--cover {
-			display: "inline-block";
-			background: $colorOrange;
-		}
-		&--star {
-			display: inline-block;
-			background: $colorYellow;
-		}
-		&--nsfw {
-			display: inline-block;
-			background: $colorPink;
-		}
-		&--list {
-			background: $colorBlue;
-		}
-		&--tag {
-			display: inline-block;
-			background: $colorGreen;
-		}
-		.iconic {
-			fill: #fff;
-			width: 16px;
-			height: 16px;
-		}
-		&--folder {
-			display: inline-block;
-			box-shadow: none;
+		// No overlay for empty albums
+		.thumbimg[data-overlay="false"] + .overlay {
 			background: none;
-			border: none;
+			h1, a {
+				text-shadow: none;
+			}
+		}
+		// Badge -------------------------------------------------------------- //
+		.badges {
+			position: relative;
+			margin: -1px 0 0 6px;
+		}
+		.subalbum_badge {
+			position: absolute;
+			right: 0;
+			top: 0;
+			//margin: -1px 0 0 6px;
+		}
+		.badge {
+			display: none;
+			margin: 0 0 0 6px;
+			padding: 12px 8px 6px;
+			width: 18px;
+			background: $colorRed;
+			box-shadow: 0 0 2px black(0.6);
+			border-radius: 0 0 5px 5px;
+			border: 1px solid #fff;
+			border-top: none;
+			color: #fff;
+			text-align: center;
+			text-shadow: 0 1px 0 black(0.4);
+			opacity: 0.9;
+
+			&--visible {
+				display: inline-block;
+			}
+			&--not--hidden {
+				background: $colorGreen;
+			}
+			&--hidden {
+				background: $colorOrange;
+			}
+			&--cover {
+				display: "inline-block";
+				background: $colorOrange;
+			}
+			&--star {
+				display: inline-block;
+				background: $colorYellow;
+			}
+			&--nsfw {
+				display: inline-block;
+				background: $colorPink;
+			}
+			&--list {
+				background: $colorBlue;
+			}
+			&--tag {
+				display: inline-block;
+				background: $colorGreen;
+			}
 			.iconic {
-				width: 12px;
-				height: 12px;
+				fill: #fff;
+				width: 16px;
+				height: 16px;
+			}
+			&--folder {
+				display: inline-block;
+				box-shadow: none;
+				background: none;
+				border: none;
+				.iconic {
+					width: 12px;
+					height: 12px;
+				}
 			}
 		}
 	}
@@ -295,8 +283,7 @@
 		width: 100%;
 		max-width: 100%;
 
-		.album,
-		.photo {
+		.album {
 			// 3 thumbnails per row
 			--size: calc((100vw - 3px) / 3);
 			width: calc(var(--size) - 3px);
@@ -353,8 +340,7 @@
 		width: 100%;
 		max-width: 100%;
 
-		.album,
-		.photo {
+		.album {
 			// 4 thumbnails per row
 			--size: calc((100vw - 3px) / 4);
 			width: calc(var(--size) - 3px);
@@ -410,8 +396,7 @@
 		width: 100%;
 		max-width: 100%;
 
-		.album,
-		.photo {
+		.album {
 			// 5 thumbnails per row
 			--size: calc((100vw - 5px) / 5);
 			width: calc(var(--size) - 5px);

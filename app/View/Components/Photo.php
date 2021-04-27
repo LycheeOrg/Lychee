@@ -9,9 +9,6 @@ use Illuminate\View\Component;
 
 class Photo extends Component
 {
-	public $isVideo = false;
-	public $isRaw = false;
-	public $isLivePhoto = false;
 	public $class = '';
 
 	public $album_id = '';
@@ -25,16 +22,13 @@ class Photo extends Component
 	public $takedate = '';
 	public $sysdate = '';
 
-	public $thumb = '';
-	public $thumb2x = '';
-	public $dim = '';
-	public $dim2x = '';
-
 	public $src = '';
 	public $srcset = '';
 	public $srcset2x = '';
 
 	public $layout = false;
+	public $_w = 200;
+	public $_h = 200;
 
 	/**
 	 * Create a new component instance.
@@ -51,47 +45,71 @@ class Photo extends Component
 		$this->star = $data['star'] == '1';
 		$this->public = $data['public'] == '1';
 
-		$this->isVideo = Str::contains($data['type'], 'video');
-		$this->isRaw = Str::contains($data['type'], 'raw');
-		$this->isLivePhoto = $data['livePhotoUrl'] != '' && $data['livePhotoUrl'] != null;
+		$isVideo = Str::contains($data['type'], 'video');
+		$isRaw = Str::contains($data['type'], 'raw');
+		$isLivePhoto = filled($data['livePhotoUrl']);
 
 		$this->class = '';
-		$this->class .= $this->isVideo ? ' video' : '';
-		$this->class .= $this->isLivePhoto ? ' livephoto' : '';
+		$this->class .= $isVideo ? ' video' : '';
+		$this->class .= $isLivePhoto ? ' livephoto' : '';
 
 		$this->layout = Configs::get_value('layout', '0') == '0';
 
 		if ($data['thumbUrl'] == 'uploads/thumb/') {
-			$this->show_live = $this->isLivePhoto;
-			$this->show_play = $this->isVideo;
-			$this->show_placeholder = $this->isRaw;
+			$this->show_live = $isLivePhoto;
+			$this->show_play = $isVideo;
+			$this->show_placeholder = $isRaw;
 		}
 
+		$dim = '';
+		$dim2x = '';
+		$thumb2x = '';
+
 		if ($this->layout) {
-			$this->thumb = $data['thumbUrl'];
-			$this->thumb2x = $data['thumb2x'];
+			$thumb = $data['thumbUrl'];
+			$thumb2x = $data['thumb2x'];
 		} elseif ($data['small'] !== '') {
-			$this->thumb = $data['small'];
-			$this->thumb2x = $data['small2x'];
-			$this->dim = intval($data['small_dim']);
-			$this->dim2x = intval($data['small2x_dim']);
+			$thumb = $data['small'];
+			$thumb2x = $data['small2x'];
+			$wh = explode('x', $data['small_dim']);
+			$this->_w = intval($wh[0]);
+			$this->_h = intval($wh[1]);
+			$dim = intval($data['small_dim']);
+			$dim2x = intval($data['small2x_dim']);
 		} elseif ($data['medium'] !== '') {
-			$this->thumb = $data['medium'];
-			$this->thumb2x = $data['medium2x'];
-			$this->dim = intval($data['medium_dim']);
-			$this->dim2x = intval($data['medium2x_dim']);
-		} elseif (!$this->isVideo) {
+			$thumb = $data['medium'];
+			$thumb2x = $data['medium2x'];
+			$wh = explode('x', $data['medium_dim']);
+			$this->_w = intval($wh[0]);
+			$this->_h = intval($wh[1]);
+			$dim = intval($data['medium_dim']);
+			$dim2x = intval($data['medium2x_dim']);
+		} elseif (!$isVideo) {
 			// Fallback for images with no small or medium.
-			$this->thumb = $data['url'];
-			$this->class = $this->isLivePhoto ? ' livephoto' : '';
+			$thumb = $data['url'];
+			$this->_w = intval($data['width']);
+			$this->_h = intval($data['height']);
 		} else {
-			// Fallback for videos with no small (the case of no thumb is handled else where.
+			// Fallback for videos with no small (the case of no thumb is handled else where).
 			$this->class = 'video';
-			$this->thumb = $data['thumbUrl'];
-			$this->thumb2x = $data['thumb2x'];
-			$this->dim = '200';
-			$this->dim2x = '400';
+			$thumb = $data['thumbUrl'];
+			$thumb2x = $data['thumb2x'];
+			$dim = '200';
+			$dim2x = '400';
 		}
+
+		$this->src = "src='" . URL::asset('img/placeholder.png') . "'";
+		$this->srcset = "data-src='" . URL::asset($thumb) . "'";
+		$thumb2x_src = '';
+
+		if ($this->layout) {
+			$thumb2x_src = URL::asset($thumb2x) . ' 2x';
+		} else {
+			$thumb2x_src = URL::asset($thumb) . ' ' . $dim . 'w, ';
+			$thumb2x_src .= URL::asset($thumb2x) . ' ' . $dim2x . 'w';
+		}
+
+		$this->srcset2x = $thumb2x != '' ? "data-srcset='" . $thumb2x_src . "'" : '';
 	}
 
 	/**
@@ -101,19 +119,6 @@ class Photo extends Component
 	 */
 	public function render()
 	{
-		$this->src = "src='" . URL::asset('img/placeholder.png') . "'";
-		$this->srcset = "data-src='" . URL::asset($this->thumb) . "'";
-		$thumb2x_src = '';
-
-		if ($this->layout) {
-			$thumb2x_src = URL::asset($this->thumb2x) . ' 2x';
-		} else {
-			$thumb2x_src = URL::asset($this->thumb) . ' ' . $this->dim . 'w, ';
-			$thumb2x_src .= URL::asset($this->thumb2x) . ' ' . $this->dim2x . 'w';
-		}
-
-		$this->srcset2x = $this->thumb2x != '' ? "data-srcset='" . $thumb2x_src . "'" : '';
-
 		return view('components.photo');
 	}
 }

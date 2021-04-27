@@ -14,8 +14,9 @@
 		<div class='divider'><h1>{{ Lang::get('PHOTOS') }}</h1></div>
 		@endif
 	@endif
+	<div class="flkr">
 	@foreach ($photos as $data)
 		<x-photo :data="$data" />
-		{{-- @include('livewire.parts.photo') --}}
 	@endforeach
+	</div>
 </div>
