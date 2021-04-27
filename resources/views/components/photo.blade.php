@@ -1,4 +1,5 @@
-<div style="--w: {{ $_w }};--h: {{ $_h }}"
+<div wire:click="$emit('openPhoto', '{{ $photo_id }}')" 
+	style="--w: {{ $_w }};--h: {{ $_h }}"
 	class='photo' {{-- ${disabled ? `disabled` : ``}'--}} 
 	data-album-id='{{ $album_id }}'
 	data-id='{{ $photo_id }}'
