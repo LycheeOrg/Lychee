@@ -1,5 +1,5 @@
 <span class="thumbimg">
-	<img src='{{ URL::asset('img/play-icon.png') }}'
+	<img src='{{ URL::asset('img/live-photo-icon.png') }}'
 		alt='Photo thumbnail'
 		data-overlay='false'
 		draggable='false'

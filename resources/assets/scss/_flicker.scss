@@ -1,0 +1,34 @@
+@media (min-width: 768px) {
+	/* FLICKR like image display */
+	.jg {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.jg > a,
+	.jg > div,
+	.jg::after {
+		--ratio: calc(var(--w) / var(--h));
+		--row-height: 180px;
+		flex-basis: calc(var(--ratio) * var(--row-height));
+	}
+
+	.jg > a,
+	.jg > div {
+		margin: 0.25rem;
+		flex-grow: calc(var(--ratio) * 100);
+	}
+
+	.jg::after {
+		--w: 2;
+		--h: 1;
+		content: "";
+		flex-grow: 1000000;
+	}
+
+	.jg > a > img,
+	.jg > div > img {
+		display: block;
+		width: 100%;
+	}
+}

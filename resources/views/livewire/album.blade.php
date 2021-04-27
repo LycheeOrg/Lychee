@@ -15,6 +15,7 @@
 		@endif
 	@endif
 	@foreach ($photos as $data)
-		@include('livewire.parts.photo')
+		<x-photo :data="$data" />
+		{{-- @include('livewire.parts.photo') --}}
 	@endforeach
 </div>
