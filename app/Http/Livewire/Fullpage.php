@@ -3,6 +3,10 @@
 namespace App\Http\Livewire;
 
 use App\Factories\AlbumFactory;
+use App\Models\Album;
+use App\Models\Photo;
+use App\SmartAlbums\SmartAlbum;
+use App\SmartAlbums\TagAlbum;
 use Livewire\Component;
 
 class Fullpage extends Component
@@ -11,6 +15,9 @@ class Fullpage extends Component
 	 * @var
 	 */
 	public $mode;
+	/**
+	 * @var Photo
+	 */
 	public $photo = null;
 
 	/**
@@ -18,7 +25,7 @@ class Fullpage extends Component
 	 */
 	public $album = null;
 
-	protected $listeners = ['openAlbum', 'back'];
+	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
 
 	public function mount($albumId = null, $photoId = null)
 	{
@@ -28,10 +35,10 @@ class Fullpage extends Component
 		} else {
 			$this->mode = 'album';
 			$this->album = $albumFactory->make($albumId);
-			// $this->albumId = $albumId;
+
 			if ($photoId != null) {
 				$this->mode = 'photo';
-				$this->photo = $photoId;
+				$this->photo = Photo::with('album')->findOrFail($photoId);
 			}
 		}
 	}
@@ -39,6 +46,11 @@ class Fullpage extends Component
 	public function openAlbum($albumId)
 	{
 		return redirect('/livewire/' . $albumId);
+	}
+
+	public function openPhoto($photoId)
+	{
+		return redirect('/livewire/' . $this->album->id . '/' . $photoId);
 	}
 
 	// Ideal we would like to avoid the redirect as they are slow.

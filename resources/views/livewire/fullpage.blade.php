@@ -11,7 +11,7 @@
 		<livewire:album :album="$album" />
 
 		@elseif($mode == 'photo')
-		<livewire:photo :album="$album" :photo="$photoId" />
+		<livewire:photo :album="$album" :photo="$photo" />
 
 		@elseif($mode == 'map')
 		Later...

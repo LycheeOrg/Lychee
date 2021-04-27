@@ -7,7 +7,7 @@
 		@if($data['thumb'])
 			<x-album.thumbimg type="{{ $data['thumb']['type'] }}" thumb="{{ $data['thumb']['thumb'] }}" thumb2x="{{ $data['thumb']['thumb2x'] }}" />
 		@else
-			<x-album.placeholder />
+			@include('components.album.thumb-placeholder')
 		@endif
 	@endfor
 
