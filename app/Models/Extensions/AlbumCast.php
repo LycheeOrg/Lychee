@@ -33,9 +33,17 @@ trait AlbumCast
 			'share_button_visible' => Helpers::str_of_bool($this->is_share_button_visible()),
 
 			// Parse date
+			// The raw takestamps are used by clients which localize date/times at the GUI layer
+			// The formatted takestamps are currently used by the web frontend
+			// Maybe, it would be reasonable to migrate the web frontend to use the raw formats, too
+			// and let JavaScript do the localization at the client side
 			'sysdate' => $this->created_at->format('F Y'),
+			'created_at_raw' => $this->created_at->timestamp,
 			'min_takestamp' => $this->str_min_takestamp(),
+			'min_takestamp_raw' => $this->min_takestamp !== null ? $this->min_takestamp->timestamp : null,
 			'max_takestamp' => $this->str_max_takestamp(),
+			'max_takestamp_raw' => $this->max_takestamp !== null ? $this->max_takestamp->timestamp : null,
+			'updated_at_raw' => $this->updated_at !== null ? $this->updated_at->timestamp : null,
 
 			// Parse password
 			'password' => Helpers::str_of_bool($this->password != ''),
