@@ -90,6 +90,7 @@ class StrategyPhoto extends StrategyPhotoBase
 						$info = [];
 						$metadataExtractor->size($info, $create->path);
 						$create->photo->size = $info['size'];
+						$create->photo->filesize_raw = $info['filesize_raw'];
 					}
 				}
 			}

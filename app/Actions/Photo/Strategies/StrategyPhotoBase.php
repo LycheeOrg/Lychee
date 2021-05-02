@@ -30,6 +30,7 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 		$create->photo->height = $info['height'] ? $info['height'] : 0;
 		$create->photo->type = ($info['type'] ? $info['type'] : $create->mimeType);
 		$create->photo->size = $info['size'];
+		$create->photo->filesize_raw = $info['filesize_raw'];
 		$create->photo->iso = $info['iso'];
 		$create->photo->aperture = $info['aperture'];
 		$create->photo->make = $info['make'];

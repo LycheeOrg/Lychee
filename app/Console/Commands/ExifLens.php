@@ -79,6 +79,10 @@ class ExifLens extends Command
 					$photo->size = $info['size'];
 					$updated = true;
 				}
+				if ($photo->filesize_raw != $info['filesize_raw']) {
+					$photo->filesize_raw = $info['filesize_raw'];
+					$updated = true;
+				}
 				if ($photo->iso == '' && $info['iso'] != '') {
 					$photo->iso = $info['iso'];
 					$updated = true;

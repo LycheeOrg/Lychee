@@ -105,6 +105,7 @@ class Rotate
 		$info = [];
 		$metadataExtractor->size($info, $new_path);
 		$photo->size = $info['size'];
+		$photo->filesize_raw = $info['filesize_raw'];
 		// Also restore the original date.
 		if ($photo->takestamp) {
 			@touch($new_path, strtotime($photo->takestamp));
@@ -155,6 +156,7 @@ class Rotate
 				'width' => $photo->width,
 				'height' => $photo->height,
 				'size' => $photo->size,
+				'filesize_raw' => $photo->filesize_raw,
 				'thumbUrl' => $photo->thumbUrl,
 				'thumb2x' => $photo->thumb2x,
 				'small' => $photo->small,

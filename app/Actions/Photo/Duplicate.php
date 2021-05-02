@@ -35,6 +35,7 @@ class Duplicate
 			$duplicate->width = $photo->width;
 			$duplicate->height = $photo->height;
 			$duplicate->size = $photo->size;
+			$duplicate->filesize_raw = $photo->filesize_raw;
 			$duplicate->iso = $photo->iso;
 			$duplicate->aperture = $photo->aperture;
 			$duplicate->make = $photo->make;
