@@ -24,7 +24,9 @@ trait PhotoCast
 			'public' => $this->get_public(),
 			'album' => $this->album_id !== null ? strval($this->album_id) : null,
 			'width' => strval($this->width),
+			'width_raw' => $this->width !== null ? $this->width : -1,
 			'height' => strval($this->height),
+			'height_raw' => $this->height !== null ? $this->height : -1,
 			'type' => $this->type,
 			'size' => $this->size,
 			'iso' => $this->iso,
@@ -42,7 +44,10 @@ trait PhotoCast
 			'livePhotoContentID' => $this->livePhotoContentID,
 
 			'sysdate' => $this->created_at->format('d F Y \a\t H:i'),
+			'created_at_raw' => $this->created_at->timestamp,
 			'takedate' => isset($this->takestamp) ? $this->takestamp->format('d F Y \a\t H:i') : '',
+			'takestamp_raw' => isset($this->takestamp) ? $this->takestamp->timestamp : null,
+			'updated_at_raw' => isset($this->updated_at) ? $this->updated_at->timestamp : null,
 			'license' => $this->license,
 		];
 	}
