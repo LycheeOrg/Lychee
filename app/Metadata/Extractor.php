@@ -53,7 +53,9 @@ class Extractor
 	public function size(array &$metadata, string $filename)
 	{
 		// Size
-		$size = filesize($filename) / 1024;
+		$filesize_raw = filesize($filename);
+		$metadata['filesize_raw'] = $filesize_raw;
+		$size = $filesize_raw / 1024;
 		if ($size >= 1024) {
 			$metadata['size'] = round($size / 1024, 1) . ' MB';
 		} else {
