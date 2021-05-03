@@ -20,7 +20,7 @@
 
 #### A great looking and easy-to-use photo-management-system.
 
-*Since the 1st of April 2018 this project has moved to its own Organisation (https://github.com/LycheeOrg) where people are able to submit their fixes to it. We, the Organisation owners, want to thank electerious (Tobias Reich) for the opportunity to make this project live on.*
+*The Lychee project was moved to [LycheeOrg](https://github.com/LycheeOrg) on the 1st of April 2018. We would like to thank electerious (Tobias Reich) for creating Lychee and for giving us the opportunity to make this project live on.*
 
 
 Upgrade from v3 is straight forward. [Upgrade. &#187;](https://lycheeorg.github.io/docs/upgrade.html)
