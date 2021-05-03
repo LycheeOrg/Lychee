@@ -1,8 +1,9 @@
 <p align="center"><a href="https://lycheeorg.github.io"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></a></p>
 
-[![Build Status][build-status-shield]](https://travis-ci.com/LycheeOrg/Lychee)
+[![Build Status][build-status-shield]](https://github.com/LycheeOrg/Lychee/actions)
 [![Code Coverage][codecov-shield]](https://codecov.io/gh/LycheeOrg/Lychee)
 [![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
+[![PHP Support][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
 [![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
 [![CII Best Practices Summary][cii-shield]](https://bestpractices.coreinfrastructure.org/projects/2855)
 [![Quality Gate Status][sonar-shield]](https://sonarcloud.io/dashboard?id=LycheeOrg_Lychee-Laravel)
@@ -80,9 +81,10 @@ Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server
 Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub!
 
 [1]: https://lycheeorg.github.io/docs/settings.html
-[build-status-shield]: https://travis-ci.com/LycheeOrg/Lychee.svg?branch=master
+[build-status-shield]: https://img.shields.io/github/workflow/status/LycheeOrg/Lychee/Build-Full-SQL
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
 [release-shield]: https://img.shields.io/github/release-pre/LycheeOrg/Lychee.svg
+[php-shield]: https://img.shields.io/badge/PHP-7.4%2C%208.0-blue
 [license-shield]: https://img.shields.io/github/license/LycheeOrg/Lychee.svg
 [cii-shield]: https://img.shields.io/cii/summary/2855.svg
 [sonar-shield]: https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee-Laravel&metric=alert_status
