@@ -1,4 +1,4 @@
-<div class="content contentZoomIn">
+<div id="imageview" class="fadeIn full" style="display: block;">
 @if (Str::contains($data['type'], 'video'))
 	<video
 		width="auto"
