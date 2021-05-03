@@ -1,10 +1,12 @@
 <p align="center"><a href="https://lycheeorg.github.io"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></a></p>
 
+[![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
+[![PHP 7.4][php-7.4-shield]](https://lycheeorg.github.io/docs/#server-requirements)
+[![PHP 8.0][php-8.0-shield]](https://lycheeorg.github.io/docs/#server-requirements)
+[![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
+<br>
 [![Build Status][build-status-shield]](https://github.com/LycheeOrg/Lychee/actions)
 [![Code Coverage][codecov-shield]](https://codecov.io/gh/LycheeOrg/Lychee)
-[![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
-[![PHP Support][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
-[![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
 [![CII Best Practices Summary][cii-shield]](https://bestpractices.coreinfrastructure.org/projects/2855)
 [![Quality Gate Status][sonar-shield]](https://sonarcloud.io/dashboard?id=LycheeOrg_Lychee-Laravel)
 <br>
@@ -84,7 +86,8 @@ Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particula
 [build-status-shield]: https://img.shields.io/github/workflow/status/LycheeOrg/Lychee/Build-Full-SQL
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
 [release-shield]: https://img.shields.io/github/release-pre/LycheeOrg/Lychee.svg
-[php-shield]: https://img.shields.io/badge/PHP-7.4%2C%208.0-blue
+[php-7.4-shield]: https://img.shields.io/badge/PHP-7.4-blue
+[php-8.0-shield]: https://img.shields.io/badge/PHP-8.0-blue
 [license-shield]: https://img.shields.io/github/license/LycheeOrg/Lychee.svg
 [cii-shield]: https://img.shields.io/cii/summary/2855.svg
 [sonar-shield]: https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee-Laravel&metric=alert_status
