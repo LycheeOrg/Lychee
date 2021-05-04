@@ -905,21 +905,7 @@ function gup(b) {
  */
 
 var api = {
-	path: "php/index.php",
 	onError: null
-};
-
-api.get_url = function (fn) {
-	var api_url = "";
-
-	if (lychee.api_V2) {
-		// because the api is defined directly by the function called in the route.php
-		api_url = "api/" + fn;
-	} else {
-		api_url = api.path;
-	}
-
-	return api_url;
 };
 
 api.isTimeout = function (errorThrown, jqXHR) {
@@ -937,7 +923,7 @@ api.post = function (fn, params, callback) {
 
 	params = $.extend({ function: fn }, params);
 
-	var api_url = api.get_url(fn);
+	var api_url = "api/" + fn;
 
 	var success = function success(data) {
 		setTimeout(loadingBar.hide, 100);
@@ -1007,7 +993,7 @@ api.post_raw = function (fn, params, callback) {
 
 	params = $.extend({ function: fn }, params);
 
-	var api_url = api.get_url(fn);
+	var api_url = "api/" + fn;
 
 	var success = function success(data) {
 		setTimeout(loadingBar.hide, 100);

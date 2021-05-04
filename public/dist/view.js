@@ -57,21 +57,7 @@ function gup(b) {
  */
 
 var api = {
-	path: "php/index.php",
 	onError: null
-};
-
-api.get_url = function (fn) {
-	var api_url = "";
-
-	if (lychee.api_V2) {
-		// because the api is defined directly by the function called in the route.php
-		api_url = "api/" + fn;
-	} else {
-		api_url = api.path;
-	}
-
-	return api_url;
 };
 
 api.isTimeout = function (errorThrown, jqXHR) {
@@ -89,7 +75,7 @@ api.post = function (fn, params, callback) {
 
 	params = $.extend({ function: fn }, params);
 
-	var api_url = api.get_url(fn);
+	var api_url = "api/" + fn;
 
 	var success = function success(data) {
 		setTimeout(loadingBar.hide, 100);
@@ -159,7 +145,7 @@ api.post_raw = function (fn, params, callback) {
 
 	params = $.extend({ function: fn }, params);
 
-	var api_url = api.get_url(fn);
+	var api_url = "api/" + fn;
 
 	var success = function success(data) {
 		setTimeout(loadingBar.hide, 100);
@@ -486,15 +472,9 @@ build.getAlbumThumb = function (data) {
 	var isRaw = void 0;
 	var thumb = void 0;
 
-	if (lychee.api_V2) {
-		isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
-		isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
-		thumb = data.thumb.thumb;
-	} else {
-		isVideo = data.types[0] && data.type.indexOf("video") > -1;
-		isRaw = data.types[0] && data.types[0].indexOf("raw") > -1;
-		thumb = data.thumbs[0];
-	}
+	isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
+	isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
+	thumb = data.thumb.thumb;
 	var thumb2x = "";
 
 	if (thumb === "uploads/thumb/" && isVideo) {
@@ -504,18 +484,7 @@ build.getAlbumThumb = function (data) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	if (lychee.api_V2) {
-		thumb2x = data.thumb.thumb2x;
-	} else {
-		// Fallback code for Lychee v3
-		var _lychee$retinize = lychee.retinize(data.thumbs[0]),
-		    thumb2x = _lychee$retinize.path,
-		    isPhoto = _lychee$retinize.isPhoto;
-
-		if (!isPhoto) {
-			thumb2x = "";
-		}
-	}
+	thumb2x = data.thumb.thumb2x;
 
 	return "<span class=\"thumbimg" + (isVideo ? " video" : "") + "\"><img class='lazyload' src='img/placeholder.png' data-src='" + thumb + "' " + (thumb2x !== "" ? "data-srcset='" + thumb2x + " 2x'" : "") + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
@@ -601,8 +570,8 @@ build.photo = function (data) {
 			thumb2x = data.thumb2x;
 		} else {
 			// Lychee v3
-			var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
-			    thumb2x = _lychee$retinize2.path;
+			var _lychee$retinize = lychee.retinize(data.thumbUrl),
+			    thumb2x = _lychee$retinize.path;
 		}
 
 		if (thumb2x !== "") {
@@ -643,8 +612,8 @@ build.photo = function (data) {
 				thumb2x = data.thumb2x;
 			} else {
 				// Lychee v3
-				var _lychee$retinize3 = lychee.retinize(data.thumbUrl),
-				    thumb2x = _lychee$retinize3.path;
+				var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
+				    thumb2x = _lychee$retinize2.path;
 			}
 
 			if (thumb2x !== "") {
@@ -1361,31 +1330,6 @@ header.setEditable = function (editable) {
 	if (editable) $title.addClass("header__title--editable");else $title.removeClass("header__title--editable");
 
 	return true;
-};
-
-header.applyTranslations = function () {
-	var selector_locale = {
-		"#button_signin": "SIGN_IN",
-		"#button_settings": "SETTINGS",
-		"#button_info_album": "ABOUT_ALBUM",
-		"#button_info": "ABOUT_PHOTO",
-		".button_add": "ADD",
-		"#button_move_album": "MOVE_ALBUM",
-		"#button_move": "MOVE",
-		"#button_trash_album": "DELETE_ALBUM",
-		"#button_trash": "DELETE",
-		"#button_archive": "DOWNLOAD_ALBUM",
-		"#button_star": "STAR_PHOTO",
-		"#button_back_home": "CLOSE_ALBUM",
-		"#button_fs_album_enter": "FULLSCREEN_ENTER",
-		"#button_fs_enter": "FULLSCREEN_ENTER",
-		"#button_share": "SHARE_PHOTO",
-		"#button_share_album": "SHARE_ALBUM"
-	};
-
-	for (var selector in selector_locale) {
-		header.dom(selector).prop("title", lychee.locale[selector_locale[selector]]);
-	}
 };
 
 /**
