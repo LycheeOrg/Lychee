@@ -9,12 +9,12 @@
 		autobuffer
 		{{autoplay ? "autoplay" : ""}}
 		data-tabindex='{{ Helpers::data_index() }}'
-		><source src='{{ $data['url'] }}'>Your browser does not support the video tag.</video>
+		><source src='{{ URL::asset($data['url']) }}'>Your browser does not support the video tag.</video>
 @elseif(Str::contains($data['type'], 'raw'))
 	<img
 		id='image'
 		class='{{ $visibleControls === true ? "" : "full" }}'
-		src='img/placeholder.png'
+		src='{{ URL::asset('img/placeholder.png') }}'
 		draggable='false'
 		alt='big'
 		data-tabindex='{{ Helpers::data_index() }}'
@@ -25,9 +25,10 @@
 			<img
 				id='image'
 				class='{{ $visibleControls === true ? "" : "full" }}'
-				src='{{ $data['medium'] }}'
+				src='{{ URL::asset($data['medium']) }}'
 				@if ($data['medium2x'] !== "")
-					srcset='{{ $data['medium'] }} {{ intval($data['medium_dim']) }}w, {{ $data['medium2x'] }} {{ intval($data['medium2x_dim']) }}w'
+					srcset='{{ URL::asset($data['medium']) }} {{ intval($data['medium_dim']) }}w,
+					{{ URL::asset($data['medium2x']) }} {{ intval($data['medium2x_dim']) }}w'
 				@endif
 				data-tabindex='{{ Helpers::data_index() }}'
 				/>
@@ -35,7 +36,7 @@
 			<img
 				id='image'
 				class='{{ $visibleControls === true ? "" : "full" }}'
-				src='{{ $data['url'] }}'
+				src='{{ URL::asset($data['url']) }}'
 				draggable='false'
 				alt='big'
 				data-tabindex='{{ Helpers::data_index() }}'
@@ -52,8 +53,8 @@
 			id='livephoto'
 			data-live-photo
 			data-proactively-loads-video='true'
-			data-photo-src='{{ $data['medium'] }}'
-			data-video-src='{{ $data['livePhotoUrl'] }}'
+			data-photo-src='{{ URL::asset($data['medium']) }}'
+			data-video-src='{{ URL::asset($data['livePhotoUrl']) }}'
 			style='width: {{ $medium_width }}px; height: {{ $medium_height }}px'
 			data-tabindex='{{ Helpers::data_index() }}'
 			>
@@ -63,8 +64,8 @@
 			id='livephoto'
 			data-live-photo
 			data-proactively-loads-video='true'
-			data-photo-src='{{ $data['url'] }}'
-			data-video-src='{{ $data['livePhotoUrl'] }}'
+			data-photo-src='{{ URL::asset($data['url']) }}'
+			data-video-src='{{ URL::asset($data['livePhotoUrl']) }}'
 			style='width: {{ $data['width'] }}px; height: {{ $data['height'] }}px'
 			data-tabindex='{{ Helpers::data_index() }}'
 			>

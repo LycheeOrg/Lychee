@@ -11,8 +11,15 @@ class PhotoOverlay extends Component
 {
 	private $types = ['desc', 'date', 'exif', 'none'];
 	public $title = '';
+	public $type = 'none';
 	public $overlay = '';
 	public $idx = 0;
+	public $description = '';
+	public $camera_date = false;
+	public $date = '';
+	public $exif1 = '';
+	public $exif2 = '';
+
 	private $photo_data;
 
 	public function mount(array $data)
@@ -62,60 +69,43 @@ class PhotoOverlay extends Component
 	{
 		$this->title = $this->photo_data['title'];
 
-		switch ($this->checkOverlayType()) {
-			case 'desc':
-				$this->overlay = $this->photo_data['description'];
-				break;
-			case 'date':
-				if ($this->photo_data['takedate'] !== '') {
-					$this->overlay = '<a>';
-					$this->overlay .= "<span title='Camera Date'>";
-					$this->overlay .= "<a class='badge camera-slr'>";
-					$this->overlay .= "<svg class='iconic'><use xlink:href='#camera-slr' />";
-					$this->overlay .= '</svg></a></span>';
-					$this->overlay .= $this->photo_data['takedate'];
-					$this->overlay .= '</a>';
-				} else {
-					$this->overlay = $this->data['created_at'];
-				}
-				break;
-			case 'exif':
-				if ($this->genExifHash() !== '') {
-					if ($this->photo_data['shutter'] !== '') {
-						$this->overlay = str_replace('s', 'sec', $this->photo_data['shutter']);
-					}
-					if ($this->photo_data['aperture'] !== '') {
-						if ($this->overlay !== '') {
-							$this->overlay .= ' at ';
-						}
-						$this->overlay .= str_replace('f/', '&fnof; / ', $this->photo_data['aperture']);
-					}
-					if ($this->photo_data['iso'] !== '') {
-						if ($this->overlay !== '') {
-							$this->overlay .= ', ';
-						}
-						$this->overlay .= Lang::get('PHOTO_ISO') . ' ' . $this->photo_data['iso'];
-					}
-					if ($this->photo_data['focal'] !== '') {
-						if ($this->overlay !== '') {
-							$this->overlay .= '<br />';
-						}
-						$this->overlay .= $this->photo_data['focal'];
-						if ($this->photo_data['lens'] !== '') {
-							$this->overlay .= ' (' . $this->photo_data['focal'] . ')';
-						}
-					}
-				}
-				break;
-			case 'none':
-			default:
-			;
+		$this->type = $this->checkOverlayType();
+		$this->description = $this->photo_data['description'];
+		if ($this->photo_data['takedate'] !== '') {
+			$this->camera_date = true;
+			$this->date = $this->photo_data['takedate'];
+		} else {
+			$this->camera_date = false;
+			$this->date = $this->data['sysdate'];
 		}
 
-		if ($this->overlay !== '') {
-			$this->overlay = '<p>' . $this->overlay . '</p>';
+		$exif1 = '';
+		$exif2 = '';
+		if ($this->genExifHash() !== '') {
+			if ($this->photo_data['shutter'] !== '') {
+				$exif1 = str_replace('s', 'sec', $this->photo_data['shutter']);
+			}
+			if ($this->photo_data['aperture'] !== '') {
+				$this->c($exif1, ' at ', str_replace('f/', '&fnof; / ', $this->photo_data['aperture']));
+			}
+			if ($this->photo_data['iso'] !== '') {
+				$this->c($exif1, ', ', Lang::get('PHOTO_ISO') . ' ' . $this->photo_data['iso']);
+			}
+			if ($this->photo_data['focal'] !== '') {
+				$exif2 = $this->photo_data['focal'] . ($this->photo_data['lens'] !== '' ? ' (' . $this->photo_data['lens'] . ')' : '');
+			}
 		}
+		$this->exif1 = trim($exif1);
+		$this->exif2 = trim($exif2);
 
 		return view('livewire.photo-overlay');
+	}
+
+	private function c(string &$in, string $glue, string $content): void
+	{
+		if ($in !== '') {
+			$in .= $glue;
+		}
+		$in .= $content;
 	}
 }
