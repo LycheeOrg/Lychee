@@ -372,7 +372,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject74 = _taggedTemplateLiteral(["<h1>", "</h1>"], ["<h1>", "</h1>"]),
     _templateObject75 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
     _templateObject76 = _taggedTemplateLiteral(["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"], ["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"]),
-    _templateObject77 = _taggedTemplateLiteral(["\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t", "\n\t\t\t\t\t</p>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject77 = _taggedTemplateLiteral(["\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
     _templateObject78 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
     _templateObject79 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
     _templateObject80 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
@@ -400,21 +400,7 @@ function gup(b) {
  */
 
 var api = {
-	path: "php/index.php",
 	onError: null
-};
-
-api.get_url = function (fn) {
-	var api_url = "";
-
-	if (lychee.api_V2) {
-		// because the api is defined directly by the function called in the route.php
-		api_url = "api/" + fn;
-	} else {
-		api_url = api.path;
-	}
-
-	return api_url;
 };
 
 api.isTimeout = function (errorThrown, jqXHR) {
@@ -432,7 +418,7 @@ api.post = function (fn, params, callback) {
 
 	params = $.extend({ function: fn }, params);
 
-	var api_url = api.get_url(fn);
+	var api_url = "api/" + fn;
 
 	var success = function success(data) {
 		setTimeout(loadingBar.hide, 100);
@@ -502,7 +488,7 @@ api.post_raw = function (fn, params, callback) {
 
 	params = $.extend({ function: fn }, params);
 
-	var api_url = api.get_url(fn);
+	var api_url = "api/" + fn;
 
 	var success = function success(data) {
 		setTimeout(loadingBar.hide, 100);
@@ -1599,20 +1585,7 @@ album.share = function (service) {
 };
 
 album.getArchive = function (albumIDs) {
-	var link = "";
-
-	// double check with API_V2 this will not work...
-	if (lychee.api_V2) {
-		location.href = api.get_url("Album::getArchive") + lychee.html(_templateObject12, albumIDs.join());
-	} else {
-		var url = api.path + "?function=Album::getArchive&albumID=" + albumIDs[0];
-
-		if (location.href.indexOf("index.html") > 0) link = location.href.replace(location.hash, "").replace("index.html", url);else link = location.href.replace(location.hash, "") + url;
-
-		if (lychee.publicMode === true) link += "&password=" + encodeURIComponent(password.value);
-
-		location.href = link;
-	}
+	location.href = "api/Album::getArchive" + lychee.html(_templateObject12, albumIDs.join());
 };
 
 album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
@@ -1972,111 +1945,64 @@ albums.load = function () {
 };
 
 albums.parse = function (album) {
-	var i = void 0;
-	if (lychee.api_V2) {
-		if (!album.thumb) {
-			album.thumb = {};
-			album.thumb.id = "";
-			album.thumb.thumb = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
-			album.thumb.type = "";
-			album.thumb.thumb2x = "";
-		}
-	} else {
-		for (i = 0; i < 3; i++) {
-			if (!album.thumbs[i]) {
-				album.thumbs[i] = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
-			}
-		}
+	if (!album.thumb) {
+		album.thumb = {};
+		album.thumb.id = "";
+		album.thumb.thumb = album.password === "1" ? "img/password.svg" : "img/no_images.svg";
+		album.thumb.type = "";
+		album.thumb.thumb2x = "";
 	}
 };
 
 // TODO: REFACTOR THIS
 albums._createSmartAlbums = function (data) {
-	if (!lychee.api_V2) {
-		if (data.unsorted) {
-			data.unsorted = {
-				id: "unsorted",
-				title: lychee.locale["UNSORTED"],
-				sysdate: "",
-				unsorted: "1",
-				thumbs: data.unsorted.thumbs,
-				thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
-				types: data.unsorted.types
-			};
-		}
+	if (data.unsorted) {
+		data.unsorted = {
+			id: "unsorted",
+			title: lychee.locale["UNSORTED"],
+			sysdate: "",
+			unsorted: "1",
+			thumbs: data.unsorted.thumbs,
+			thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
+			types: data.unsorted.types
+		};
+	}
 
-		if (data.starred) {
-			data.starred = {
-				id: "starred",
-				title: lychee.locale["STARRED"],
-				sysdate: "",
-				star: "1",
-				thumbs: data.starred.thumbs,
-				thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
-				types: data.starred.types
-			};
-		}
+	if (data.starred) {
+		data.starred = {
+			id: "starred",
+			title: lychee.locale["STARRED"],
+			sysdate: "",
+			star: "1",
+			thumbs: data.starred.thumbs,
+			thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
+			types: data.starred.types
+		};
+	}
 
-		if (data.public) {
-			data.public = {
-				id: "public",
-				title: lychee.locale["PUBLIC"],
-				sysdate: "",
-				public: "1",
-				thumbs: data.public.thumbs,
-				thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
-				visible: "0",
-				types: data.public.types
-			};
-		}
+	if (data.public) {
+		data.public = {
+			id: "public",
+			title: lychee.locale["PUBLIC"],
+			sysdate: "",
+			public: "1",
+			thumbs: data.public.thumbs,
+			thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
+			visible: "0",
+			types: data.public.types
+		};
+	}
 
-		if (data.recent) {
-			data.recent = {
-				id: "recent",
-				title: lychee.locale["RECENT"],
-				sysdate: "",
-				recent: "1",
-				thumbs: data.recent.thumbs,
-				thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
-				types: data.recent.types
-			};
-		}
-	} else {
-		if (data.unsorted) {
-			data.unsorted.title = lychee.locale["UNSORTED"];
-			data.unsorted.sysdate = "";
-			data.unsorted.unsorted = "1";
-		}
-
-		if (data.starred) {
-			data.starred.title = lychee.locale["STARRED"];
-			data.starred.sysdate = "";
-			data.starred.star = "1";
-		}
-
-		if (data.public) {
-			data.public.title = lychee.locale["PUBLIC"];
-			data.public.sysdate = "";
-			data.public.public = "1";
-			data.public.visible = "0";
-		}
-
-		if (data.recent) {
-			data.recent.title = lychee.locale["RECENT"];
-			data.recent.sysdate = "";
-			data.recent.recent = "1";
-		}
-
-		Object.entries(data).forEach(function (_ref) {
-			var _ref2 = _slicedToArray(_ref, 2),
-			    albumName = _ref2[0],
-			    albumData = _ref2[1];
-
-			if (albumData["tag_album"] === "1") {
-				data[albumName].sysdate = "";
-				data[albumName].tag_album = "1";
-			}
-		});
+	if (data.recent) {
+		data.recent = {
+			id: "recent",
+			title: lychee.locale["RECENT"],
+			sysdate: "",
+			recent: "1",
+			thumbs: data.recent.thumbs,
+			thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
+			types: data.recent.types
+		};
 	}
 };
 
@@ -2221,15 +2147,9 @@ build.getAlbumThumb = function (data) {
 	var isRaw = void 0;
 	var thumb = void 0;
 
-	if (lychee.api_V2) {
-		isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
-		isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
-		thumb = data.thumb.thumb;
-	} else {
-		isVideo = data.types[0] && data.type.indexOf("video") > -1;
-		isRaw = data.types[0] && data.types[0].indexOf("raw") > -1;
-		thumb = data.thumbs[0];
-	}
+	isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
+	isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
+	thumb = data.thumb.thumb;
 	var thumb2x = "";
 
 	if (thumb === "uploads/thumb/" && isVideo) {
@@ -2239,18 +2159,7 @@ build.getAlbumThumb = function (data) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	if (lychee.api_V2) {
-		thumb2x = data.thumb.thumb2x;
-	} else {
-		// Fallback code for Lychee v3
-		var _lychee$retinize = lychee.retinize(data.thumbs[0]),
-		    thumb2x = _lychee$retinize.path,
-		    isPhoto = _lychee$retinize.isPhoto;
-
-		if (!isPhoto) {
-			thumb2x = "";
-		}
-	}
+	thumb2x = data.thumb.thumb2x;
 
 	return "<span class=\"thumbimg" + (isVideo ? " video" : "") + "\"><img class='lazyload' src='img/placeholder.png' data-src='" + thumb + "' " + (thumb2x !== "" ? "data-srcset='" + thumb2x + " 2x'" : "") + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
@@ -2336,8 +2245,8 @@ build.photo = function (data) {
 			thumb2x = data.thumb2x;
 		} else {
 			// Lychee v3
-			var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
-			    thumb2x = _lychee$retinize2.path;
+			var _lychee$retinize = lychee.retinize(data.thumbUrl),
+			    thumb2x = _lychee$retinize.path;
 		}
 
 		if (thumb2x !== "") {
@@ -2378,8 +2287,8 @@ build.photo = function (data) {
 				thumb2x = data.thumb2x;
 			} else {
 				// Lychee v3
-				var _lychee$retinize3 = lychee.retinize(data.thumbUrl),
-				    thumb2x = _lychee$retinize3.path;
+				var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
+				    thumb2x = _lychee$retinize2.path;
 			}
 
 			if (thumb2x !== "") {
@@ -2625,7 +2534,7 @@ contextMenu.add = function (e) {
 		items.push({ title: build.iconic("tags") + lychee.locale["NEW_TAG_ALBUM"], fn: album.addByTags });
 	}
 
-	if (lychee.api_V2 && !lychee.admin) {
+	if (!lychee.admin) {
 		// remove import from dropbox and server if not admin
 		items.splice(3, 2);
 	} else if (!lychee.dropboxKey || lychee.dropboxKey === "") {
@@ -2708,9 +2617,7 @@ contextMenu.album = function (albumID, e) {
 			basicContext.close();
 			contextMenu.move([albumID], e, album.setAlbum, "ROOT");
 		}
-	},
-	// { title: build.iconic('cloud') + lychee.locale['SHARE_WITH'],    visible: lychee.api_V2 && lychee.upload,   fn: () => alert('ho')},
-	{ title: build.iconic("trash") + lychee.locale["DELETE"], fn: function fn() {
+	}, { title: build.iconic("trash") + lychee.locale["DELETE"], fn: function fn() {
 			return album.delete([albumID]);
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD"], fn: function fn() {
 			return album.getArchive([albumID]);
@@ -2776,10 +2683,6 @@ contextMenu.albumMulti = function (albumIDs, e) {
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD_ALL"], fn: function fn() {
 			return album.getArchive(albumIDs);
 		} }];
-
-	if (!lychee.api_V2) {
-		items.splice(-1);
-	}
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
 };
@@ -2990,10 +2893,6 @@ contextMenu.photoMulti = function (photoIDs, e) {
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD_ALL"], fn: function fn() {
 			return _photo.getArchive(photoIDs, "FULL");
 		} }];
-
-	if (!lychee.api_V2) {
-		items.splice(-1);
-	}
 
 	basicContext.show(items, e.originalEvent, contextMenu.close);
 };
@@ -3251,24 +3150,16 @@ contextMenu.config = function (e) {
 		items.push({
 			title: build.iconic("align-left") + lychee.locale["LOGS"],
 			fn: function fn() {
-				if (lychee.api_V2) {
-					view.logs.init();
-				} else {
-					window.open(lychee.logs());
-				}
+				view.logs.init();
 			}
 		});
 		items.push({
 			title: build.iconic("wrench") + lychee.locale["DIAGNOSTICS"],
 			fn: function fn() {
-				if (lychee.api_V2) {
-					view.diagnostics.init();
-				} else {
-					window.open(lychee.diagnostics());
-				}
+				view.diagnostics.init();
 			}
 		});
-		if (lychee.api_V2 && lychee.update_available) {
+		if (lychee.update_available) {
 			items.push({ title: build.iconic("timer") + lychee.locale["UPDATE_AVAILABLE"], fn: view.update.init });
 		}
 	}
@@ -3766,31 +3657,6 @@ header.setEditable = function (editable) {
 	return true;
 };
 
-header.applyTranslations = function () {
-	var selector_locale = {
-		"#button_signin": "SIGN_IN",
-		"#button_settings": "SETTINGS",
-		"#button_info_album": "ABOUT_ALBUM",
-		"#button_info": "ABOUT_PHOTO",
-		".button_add": "ADD",
-		"#button_move_album": "MOVE_ALBUM",
-		"#button_move": "MOVE",
-		"#button_trash_album": "DELETE_ALBUM",
-		"#button_trash": "DELETE",
-		"#button_archive": "DOWNLOAD_ALBUM",
-		"#button_star": "STAR_PHOTO",
-		"#button_back_home": "CLOSE_ALBUM",
-		"#button_fs_album_enter": "FULLSCREEN_ENTER",
-		"#button_fs_enter": "FULLSCREEN_ENTER",
-		"#button_share": "SHARE_PHOTO",
-		"#button_share_album": "SHARE_ALBUM"
-	};
-
-	for (var selector in selector_locale) {
-		header.dom(selector).prop("title", lychee.locale[selector_locale[selector]]);
-	}
-};
-
 /**
  * @description This module is used for bindings.
  */
@@ -4126,11 +3992,9 @@ leftMenu.dom = function (selector) {
 
 leftMenu.build = function () {
 	var html = lychee.html(_templateObject44, lychee.locale["CLOSE"], lychee.locale["SETTINGS"]);
-	if (lychee.api_V2) {
-		html += lychee.html(_templateObject45, build.iconic("person"), lychee.locale["USERS"], build.iconic("key"), lychee.locale["U2F"], build.iconic("cloud"), lychee.locale["SHARING"]);
-	}
+	html += lychee.html(_templateObject45, build.iconic("person"), lychee.locale["USERS"], build.iconic("key"), lychee.locale["U2F"], build.iconic("cloud"), lychee.locale["SHARING"]);
 	html += lychee.html(_templateObject46, build.iconic("align-left"), lychee.locale["LOGS"], build.iconic("wrench"), lychee.locale["DIAGNOSTICS"], build.iconic("info"), lychee.locale["ABOUT_LYCHEE"], build.iconic("account-logout"), lychee.locale["SIGN_OUT"]);
-	if (lychee.api_V2 && lychee.update_available) {
+	if (lychee.update_available) {
 		html += lychee.html(_templateObject47, build.iconic("timer"), lychee.locale["UPDATE_AVAILABLE"]);
 	}
 	leftMenu._dom.html(html);
@@ -4181,31 +4045,20 @@ leftMenu.bind = function () {
 	leftMenu.dom("#button_logs").on(eventName, leftMenu.Logs);
 	leftMenu.dom("#button_diagnostics").on(eventName, leftMenu.Diagnostics);
 	leftMenu.dom("#button_about").on(eventName, lychee.aboutDialog);
-
-	if (lychee.api_V2) {
-		leftMenu.dom("#button_users").on(eventName, leftMenu.Users);
-		leftMenu.dom("#button_u2f").on(eventName, leftMenu.u2f);
-		leftMenu.dom("#button_sharing").on(eventName, leftMenu.Sharing);
-		leftMenu.dom("#button_update").on(eventName, leftMenu.Update);
-	}
+	leftMenu.dom("#button_users").on(eventName, leftMenu.Users);
+	leftMenu.dom("#button_u2f").on(eventName, leftMenu.u2f);
+	leftMenu.dom("#button_sharing").on(eventName, leftMenu.Sharing);
+	leftMenu.dom("#button_update").on(eventName, leftMenu.Update);
 
 	return true;
 };
 
 leftMenu.Logs = function () {
-	if (lychee.api_V2) {
-		view.logs.init();
-	} else {
-		window.open(lychee.logs());
-	}
+	view.logs.init();
 };
 
 leftMenu.Diagnostics = function () {
-	if (lychee.api_V2) {
-		view.diagnostics.init();
-	} else {
-		window.open(lychee.diagnostics());
-	}
+	view.diagnostics.init();
 };
 
 leftMenu.Update = function () {
@@ -4431,19 +4284,11 @@ var lychee = {
 };
 
 lychee.diagnostics = function () {
-	if (lychee.api_V2) {
-		return "/Diagnostics";
-	} else {
-		return "plugins/Diagnostics/";
-	}
+	return "/Diagnostics";
 };
 
 lychee.logs = function () {
-	if (lychee.api_V2) {
-		return "/Logs";
-	} else {
-		return "plugins/Log/";
-	}
+	return "/Logs";
 };
 
 lychee.aboutDialog = function () {
@@ -4468,8 +4313,6 @@ lychee.init = function () {
 	lychee.adjustContentHeight();
 
 	api.post("Session::init", {}, function (data) {
-		lychee.api_V2 = data.api_V2 || false;
-
 		if (data.status === 0) {
 			// No configuration
 
@@ -4488,11 +4331,7 @@ lychee.init = function () {
 		lychee.update_available = data.update_available;
 		lychee.landing_page_enable = data.config.landing_page_enable && data.config.landing_page_enable === "1" || false;
 
-		if (lychee.api_V2) {
-			lychee.versionCode = data.config.version;
-		} else {
-			lychee.versionCode = data.config.version.slice(7, data.config.version.length);
-		}
+		lychee.versionCode = data.config.version;
 		if (lychee.versionCode !== "") {
 			var digits = lychee.versionCode.match(/.{1,2}/g);
 			lychee.version = parseInt(digits[0]).toString() + "." + parseInt(digits[1]).toString() + "." + parseInt(digits[2]).toString();
@@ -4504,11 +4343,6 @@ lychee.init = function () {
 		// or if we need to change some locale string
 		for (var key in data.locale) {
 			lychee.locale[key] = data.locale[key];
-		}
-
-		if (!lychee.api_V2) {
-			// Apply translations to the header
-			header.applyTranslations();
 		}
 
 		var validatedSwipeToleranceX = data.config.swipe_tolerance_x && !isNaN(parseInt(data.config.swipe_tolerance_x)) && parseInt(data.config.swipe_tolerance_x) || 150;
@@ -4578,8 +4412,6 @@ lychee.init = function () {
 
 			lychee.editor_enabled = data.config.editor_enabled && data.config.editor_enabled === "1" || false;
 
-			lychee.upload = !lychee.api_V2;
-			lychee.admin = !lychee.api_V2;
 			lychee.nsfw_visible_saved = lychee.nsfw_visible;
 
 			lychee.upload_processing_limit = parseInt(data.config.upload_processing_limit);
@@ -4591,12 +4423,10 @@ lychee.init = function () {
 			leftMenu.build();
 			leftMenu.bind();
 
-			if (lychee.api_V2) {
-				lychee.upload = data.admin || data.upload;
-				lychee.admin = data.admin;
-				lychee.lock = data.lock;
-				lychee.username = data.username;
-			}
+			lychee.upload = data.admin || data.upload;
+			lychee.admin = data.admin;
+			lychee.lock = data.lock;
+			lychee.username = data.username;
 			lychee.setMode("logged_in");
 
 			// Show dialog when there is no username and password
@@ -6824,7 +6654,7 @@ _photo.copyTo = function (photoIDs, albumID) {
 		if (data !== true) {
 			lychee.error(null, params, data);
 		} else {
-			if (lychee.api_V2 || albumID === album.getID()) {
+			if (albumID === album.getID()) {
 				album.reload();
 			} else {
 				// Lychee v3 does not support the albumID argument to
@@ -7270,13 +7100,11 @@ _photo.getArchive = function (photoIDs) {
 		if (myPhoto.small !== "") {
 			msg += buildButton("SMALL", lychee.locale["PHOTO_SMALL"] + " " + (myPhoto.hasOwnProperty("small_dim") ? "(" + myPhoto.small_dim + ")" : ""));
 		}
-		if (lychee.api_V2) {
-			if (myPhoto.hasOwnProperty("thumb2x") && myPhoto.thumb2x !== "") {
-				msg += buildButton("THUMB2X", lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)");
-			}
-			if (myPhoto.thumbUrl !== "") {
-				msg += buildButton("THUMB", lychee.locale["PHOTO_THUMB"] + " (200x200)");
-			}
+		if (myPhoto.hasOwnProperty("thumb2x") && myPhoto.thumb2x !== "") {
+			msg += buildButton("THUMB2X", lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)");
+		}
+		if (myPhoto.thumbUrl !== "") {
+			msg += buildButton("THUMB", lychee.locale["PHOTO_THUMB"] + " (200x200)");
 		}
 
 		msg += lychee.html(_templateObject63);
@@ -7300,19 +7128,7 @@ _photo.getArchive = function (photoIDs) {
 		return true;
 	}
 
-	var link = void 0;
-
-	if (lychee.api_V2) {
-		location.href = api.get_url("Photo::getArchive") + lychee.html(_templateObject64, photoIDs.join(), kind);
-	} else {
-		var url = api.path + "?function=Photo::getArchive&photoID=" + photoIDs[0] + "&kind=" + kind;
-
-		link = lychee.getBaseUrl() + url;
-
-		if (lychee.publicMode === true) link += "&password=" + encodeURIComponent(password.value);
-
-		location.href = link;
-	}
+	location.href = "api/Photo::getArchive" + lychee.html(_templateObject64, photoIDs.join(), kind);
 };
 
 _photo.getDirectLink = function () {
@@ -7324,10 +7140,7 @@ _photo.getDirectLink = function () {
 };
 
 _photo.getViewLink = function (photoID) {
-	var url = "view.php?p=" + photoID;
-	if (lychee.api_V2) {
-		url = "view?p=" + photoID;
-	}
+	var url = "view?p=" + photoID;
 
 	return lychee.getBaseUrl() + url;
 };
@@ -7360,11 +7173,6 @@ _photo.showDirectLinks = function (photoID) {
 	}
 	if (_photo.json.hasOwnProperty("thumb2x") && _photo.json.thumb2x !== "") {
 		msg += buildLine(lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)", lychee.getBaseUrl() + _photo.json.thumb2x);
-	} else if (!lychee.api_V2) {
-		var _lychee$retinize4 = lychee.retinize(_photo.json.thumbUrl),
-		    thumb2x = _lychee$retinize4.path;
-
-		msg += buildLine(lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)", lychee.getBaseUrl() + thumb2x);
 	}
 	if (_photo.json.thumbUrl !== "") {
 		msg += buildLine(" " + lychee.locale["PHOTO_THUMB"] + " (200x200)", lychee.getBaseUrl() + _photo.json.thumbUrl);
@@ -9119,7 +8927,7 @@ upload.start = {
 			formData.append("albumID", albumID);
 			formData.append(0, files[file_num]);
 
-			var api_url = api.get_url("Photo::add");
+			var api_url = "api/" + "Photo::add";
 
 			xhr.open("POST", api_url);
 
@@ -9363,207 +9171,159 @@ upload.start = {
 					resync_metadata: resync_metadata
 				};
 
-				if (lychee.api_V2 === false) {
-					api.post("Import::server", params, function (_data) {
-						albums.refresh();
-						upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
+				// Variables holding state across the invocations of
+				// processIncremental().
+				var lastReadIdx = 0;
+				var currentDir = data.path;
+				var encounteredProblems = false;
+				var topSkip = 0;
 
-						if (_data === "Notice: Import only contained albums!") {
-							// No error, but the folder only contained albums
-
-							// Go back to the album overview to show the imported albums
-							if (visible.albums()) lychee.load();else album.reload();
-
-							basicModal.close();
-
-							return true;
-						} else if (_data === "Warning: Folder empty or no readable files to process!") {
-							// Error because the import could not start
-
-							$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_SERVER_FOLD"]).show();
-
-							$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
-
-							// Log error
-							lychee.error(lychee.locale["UPLOAD_IMPORT_SERVER_EMPT"], params, _data);
-						} else {
-							if (_data !== true) {
-								// Maybe an error, maybe just some skipped photos
-
-								$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
-
-								$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
-
-								// Log error
-								lychee.error(null, params, _data);
+				// Worker function invoked from both the response progress
+				// callback and the completion callback.
+				var processIncremental = function processIncremental(jsonResponse) {
+					// Skip the part that we've already processed during
+					// the previous invocation(s).
+					var newResponse = jsonResponse.substring(lastReadIdx);
+					// Because of all the potential buffering along the way,
+					// we can't be sure if the last line is complete.  For
+					// that reason, our custom protocol terminates every
+					// line with the newline character, including the last
+					// line.
+					var lastNewline = newResponse.lastIndexOf("\n");
+					if (lastNewline === -1) {
+						// No valid input data to process.
+						return;
+					}
+					if (lastNewline !== newResponse.length - 1) {
+						// Last line is not newline-terminated, so it
+						// must be incomplete.  Strip it; it will be
+						// handled during the next invocation.
+						newResponse = newResponse.substring(0, lastNewline + 1);
+					}
+					// Advance the counter past the last valid character.
+					lastReadIdx += newResponse.length;
+					newResponse.split("\n").forEach(function (resp) {
+						var matches = resp.match(/^Status: (.*): (\d+)$/);
+						if (matches !== null) {
+							if (matches[2] !== "100") {
+								if (currentDir !== matches[1]) {
+									// New directory.  Add a new line to
+									// the dialog box.
+									currentDir = matches[1];
+									$(".basicModal .rows").append(build.uploadNewFile(currentDir));
+									topSkip += $(lastRowSelector).outerHeight();
+								}
+								$(lastRowSelector + " .status").html(matches[2] + "%");
 							} else {
-								// No error, everything worked fine
-
-								basicModal.close();
+								// Final status report for this directory.
+								$(lastRowSelector + " .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
 							}
-
-							if (album.getID() === false) lychee.goto("0");else album.load(albumID);
+						} else if ((matches = resp.match(/^Problem: (.*): ([^:]*)$/)) !== null) {
+							var rowSelector = void 0;
+							if (currentDir !== matches[1]) {
+								$(lastRowSelector).before(build.uploadNewFile(matches[1]));
+								rowSelector = prelastRowSelector;
+							} else {
+								// The problem is with the directory
+								// itself, so alter its existing line.
+								rowSelector = lastRowSelector;
+								topSkip -= $(rowSelector).outerHeight();
+							}
+							if (matches[2] === "Given path is not a directory" || matches[2] === "Given path is reserved") {
+								$(rowSelector + " .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
+							} else if (matches[2] === "Skipped duplicate (resynced metadata)") {
+								$(rowSelector + " .status").html(lychee.locale["UPLOAD_UPDATED"]).addClass("warning");
+							} else if (matches[2] === "Import cancelled") {
+								$(rowSelector + " .status").html(lychee.locale["UPLOAD_CANCELLED"]).addClass("error");
+							} else {
+								$(rowSelector + " .status").html(lychee.locale["UPLOAD_SKIPPED"]).addClass("warning");
+							}
+							var translations = {
+								"Given path is not a directory": "UPLOAD_IMPORT_NOT_A_DIRECTORY",
+								"Given path is reserved": "UPLOAD_IMPORT_PATH_RESERVED",
+								"Could not read file": "UPLOAD_IMPORT_UNREADABLE",
+								"Could not import file": "UPLOAD_IMPORT_FAILED",
+								"Unsupported file type": "UPLOAD_IMPORT_UNSUPPORTED",
+								"Could not create album": "UPLOAD_IMPORT_ALBUM_FAILED",
+								"Skipped duplicate": "UPLOAD_IMPORT_SKIPPED_DUPLICATE",
+								"Skipped duplicate (resynced metadata)": "UPLOAD_IMPORT_RESYNCED_DUPLICATE",
+								"Import cancelled": "UPLOAD_IMPORT_CANCELLED"
+							};
+							$(rowSelector + " .notice").html(matches[2] in translations ? lychee.locale[translations[matches[2]]] : matches[2]).show();
+							topSkip += $(rowSelector).outerHeight();
+							encounteredProblems = true;
+						} else if (resp === "Warning: Approaching memory limit") {
+							$(lastRowSelector).before(build.uploadNewFile(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY"]));
+							topSkip += $(prelastRowSelector).outerHeight();
+							$(prelastRowSelector + " .status").html(lychee.locale["UPLOAD_WARNING"]).addClass("warning");
+							$(prelastRowSelector + " .notice").html(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY_EXPL"]).show();
 						}
+						$(".basicModal .rows").scrollTop(topSkip);
+					}); // forEach (resp)
+				}; // processIncremental
+
+				api.post("Import::server", params, function (_data) {
+					// _data is already JSON-parsed.
+					processIncremental(_data);
+
+					albums.refresh();
+
+					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"], encounteredProblems ? lychee.locale["UPLOAD_COMPLETE_FAILED"] : null);
+
+					if (album.getID() === false) lychee.goto("0");else album.load(albumID);
+
+					if (encounteredProblems) showCloseButton();else basicModal.close();
+				}, function (event) {
+					// We received a possibly partial response.
+					// We need to begin by terminating the data with a
+					// '"' so that it can be JSON-parsed.
+					var response = this.response;
+					if (response.length > 0) {
+						if (response.substring(this.response.length - 1) === '"') {
+							// This might be either a terminating '"'
+							// or it may come from, say, a filename, in
+							// which case it would be escaped.
+							if (response.length > 1) {
+								if (response.substring(this.response.length - 2) === '"') {
+									response += '"';
+								}
+								// else it's a complete response,
+								// requiring no termination from us.
+							} else {
+								// The response is just '"'.
+								response += '"';
+							}
+						} else {
+							// This should be the most common case for
+							// partial responses.
+							response += '"';
+						}
+					}
+					// Parse the response as JSON.  This will remove
+					// the surrounding '"' characters, unescape any '"'
+					// from the middle, and translate '\n' sequences into
+					// newlines.
+					var jsonResponse = void 0;
+					try {
+						jsonResponse = JSON.parse(response);
+					} catch (e) {
+						// Most likely a SyntaxError due to something
+						// that went wrong on the server side.
+						$(lastRowSelector + " .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
+
+						albums.refresh();
+						upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
+
+						if (album.getID() === false) lychee.goto("0");else album.load(albumID);
 
 						showCloseButton();
 
 						return;
-					});
-				} else {
-					// Variables holding state across the invocations of
-					// processIncremental().
-					var lastReadIdx = 0;
-					var currentDir = data.path;
-					var encounteredProblems = false;
-					var topSkip = 0;
-
-					// Worker function invoked from both the response progress
-					// callback and the completion callback.
-					var processIncremental = function processIncremental(jsonResponse) {
-						// Skip the part that we've already processed during
-						// the previous invocation(s).
-						var newResponse = jsonResponse.substring(lastReadIdx);
-						// Because of all the potential buffering along the way,
-						// we can't be sure if the last line is complete.  For
-						// that reason, our custom protocol terminates every
-						// line with the newline character, including the last
-						// line.
-						var lastNewline = newResponse.lastIndexOf("\n");
-						if (lastNewline === -1) {
-							// No valid input data to process.
-							return;
-						}
-						if (lastNewline !== newResponse.length - 1) {
-							// Last line is not newline-terminated, so it
-							// must be incomplete.  Strip it; it will be
-							// handled during the next invocation.
-							newResponse = newResponse.substring(0, lastNewline + 1);
-						}
-						// Advance the counter past the last valid character.
-						lastReadIdx += newResponse.length;
-						newResponse.split("\n").forEach(function (resp) {
-							var matches = resp.match(/^Status: (.*): (\d+)$/);
-							if (matches !== null) {
-								if (matches[2] !== "100") {
-									if (currentDir !== matches[1]) {
-										// New directory.  Add a new line to
-										// the dialog box.
-										currentDir = matches[1];
-										$(".basicModal .rows").append(build.uploadNewFile(currentDir));
-										topSkip += $(lastRowSelector).outerHeight();
-									}
-									$(lastRowSelector + " .status").html(matches[2] + "%");
-								} else {
-									// Final status report for this directory.
-									$(lastRowSelector + " .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
-								}
-							} else if ((matches = resp.match(/^Problem: (.*): ([^:]*)$/)) !== null) {
-								var rowSelector = void 0;
-								if (currentDir !== matches[1]) {
-									$(lastRowSelector).before(build.uploadNewFile(matches[1]));
-									rowSelector = prelastRowSelector;
-								} else {
-									// The problem is with the directory
-									// itself, so alter its existing line.
-									rowSelector = lastRowSelector;
-									topSkip -= $(rowSelector).outerHeight();
-								}
-								if (matches[2] === "Given path is not a directory" || matches[2] === "Given path is reserved") {
-									$(rowSelector + " .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
-								} else if (matches[2] === "Skipped duplicate (resynced metadata)") {
-									$(rowSelector + " .status").html(lychee.locale["UPLOAD_UPDATED"]).addClass("warning");
-								} else if (matches[2] === "Import cancelled") {
-									$(rowSelector + " .status").html(lychee.locale["UPLOAD_CANCELLED"]).addClass("error");
-								} else {
-									$(rowSelector + " .status").html(lychee.locale["UPLOAD_SKIPPED"]).addClass("warning");
-								}
-								var translations = {
-									"Given path is not a directory": "UPLOAD_IMPORT_NOT_A_DIRECTORY",
-									"Given path is reserved": "UPLOAD_IMPORT_PATH_RESERVED",
-									"Could not read file": "UPLOAD_IMPORT_UNREADABLE",
-									"Could not import file": "UPLOAD_IMPORT_FAILED",
-									"Unsupported file type": "UPLOAD_IMPORT_UNSUPPORTED",
-									"Could not create album": "UPLOAD_IMPORT_ALBUM_FAILED",
-									"Skipped duplicate": "UPLOAD_IMPORT_SKIPPED_DUPLICATE",
-									"Skipped duplicate (resynced metadata)": "UPLOAD_IMPORT_RESYNCED_DUPLICATE",
-									"Import cancelled": "UPLOAD_IMPORT_CANCELLED"
-								};
-								$(rowSelector + " .notice").html(matches[2] in translations ? lychee.locale[translations[matches[2]]] : matches[2]).show();
-								topSkip += $(rowSelector).outerHeight();
-								encounteredProblems = true;
-							} else if (resp === "Warning: Approaching memory limit") {
-								$(lastRowSelector).before(build.uploadNewFile(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY"]));
-								topSkip += $(prelastRowSelector).outerHeight();
-								$(prelastRowSelector + " .status").html(lychee.locale["UPLOAD_WARNING"]).addClass("warning");
-								$(prelastRowSelector + " .notice").html(lychee.locale["UPLOAD_IMPORT_LOW_MEMORY_EXPL"]).show();
-							}
-							$(".basicModal .rows").scrollTop(topSkip);
-						}); // forEach (resp)
-					}; // processIncremental
-
-					api.post("Import::server", params, function (_data) {
-						// _data is already JSON-parsed.
-						processIncremental(_data);
-
-						albums.refresh();
-
-						upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"], encounteredProblems ? lychee.locale["UPLOAD_COMPLETE_FAILED"] : null);
-
-						if (album.getID() === false) lychee.goto("0");else album.load(albumID);
-
-						if (encounteredProblems) showCloseButton();else basicModal.close();
-					}, function (event) {
-						// We received a possibly partial response.
-						// We need to begin by terminating the data with a
-						// '"' so that it can be JSON-parsed.
-						var response = this.response;
-						if (response.length > 0) {
-							if (response.substring(this.response.length - 1) === '"') {
-								// This might be either a terminating '"'
-								// or it may come from, say, a filename, in
-								// which case it would be escaped.
-								if (response.length > 1) {
-									if (response.substring(this.response.length - 2) === '"') {
-										response += '"';
-									}
-									// else it's a complete response,
-									// requiring no termination from us.
-								} else {
-									// The response is just '"'.
-									response += '"';
-								}
-							} else {
-								// This should be the most common case for
-								// partial responses.
-								response += '"';
-							}
-						}
-						// Parse the response as JSON.  This will remove
-						// the surrounding '"' characters, unescape any '"'
-						// from the middle, and translate '\n' sequences into
-						// newlines.
-						var jsonResponse = void 0;
-						try {
-							jsonResponse = JSON.parse(response);
-						} catch (e) {
-							// Most likely a SyntaxError due to something
-							// that went wrong on the server side.
-							$(lastRowSelector + " .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
-
-							albums.refresh();
-							upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
-
-							if (album.getID() === false) lychee.goto("0");else album.load(albumID);
-
-							showCloseButton();
-
-							return;
-						}
-						// The rest of the work is the same as for the full
-						// response.
-						processIncremental(jsonResponse);
-					}); // api.post
-				} // lychee.api_V2
+					}
+					// The rest of the work is the same as for the full
+					// response.
+					processIncremental(jsonResponse);
+				}); // api.post
 			}, function () {
 				if (!cancelUpload) {
 					api.post("Import::serverCancel", {}, function (resp) {
@@ -9574,9 +9334,7 @@ upload.start = {
 		}; // action
 
 		var msg = lychee.html(_templateObject76, lychee.locale["UPLOAD_IMPORT_SERVER_INSTR"], lychee.locale["UPLOAD_ABSOLUTE_PATH"], lychee.location);
-		if (lychee.api_V2) {
-			msg += lychee.html(_templateObject77, build.iconic("check"), lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"], lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK"], lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES"], lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA"], lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA_EXPL"]);
-		}
+		msg += lychee.html(_templateObject77, build.iconic("check"), lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"], lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK"], lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES"], lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA"], lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA_EXPL"]);
 
 		basicModal.show({
 			body: msg,
@@ -9840,10 +9598,10 @@ view.albums = {
 					smartData += build.album(albums.json.smartalbums.recent);
 				}
 
-				Object.entries(albums.json.smartalbums).forEach(function (_ref3) {
-					var _ref4 = _slicedToArray(_ref3, 2),
-					    albumName = _ref4[0],
-					    albumData = _ref4[1];
+				Object.entries(albums.json.smartalbums).forEach(function (_ref) {
+					var _ref2 = _slicedToArray(_ref, 2),
+					    albumName = _ref2[0],
+					    albumData = _ref2[1];
 
 					if (albumData["tag_album"] === "1") {
 						albums.parse(albumData);
@@ -9865,21 +9623,19 @@ view.albums = {
 				if (lychee.publicMode === false) albumsData = build.divider(lychee.locale["ALBUMS"]) + albumsData;
 			}
 
-			if (lychee.api_V2) {
-				var current_owner = "";
-				var i = void 0;
-				// Shared
-				if (albums.json.shared_albums && albums.json.shared_albums.length !== 0) {
-					for (i = 0; i < albums.json.shared_albums.length; ++i) {
-						var alb = albums.json.shared_albums[i];
-						if (!alb.parent_id || alb.parent_id === 0) {
-							albums.parse(alb);
-							if (current_owner !== alb.owner && lychee.publicMode === false) {
-								sharedData += build.divider(alb.owner);
-								current_owner = alb.owner;
-							}
-							sharedData += build.album(alb, !lychee.admin);
+			var current_owner = "";
+			var i = void 0;
+			// Shared
+			if (albums.json.shared_albums && albums.json.shared_albums.length !== 0) {
+				for (i = 0; i < albums.json.shared_albums.length; ++i) {
+					var alb = albums.json.shared_albums[i];
+					if (!alb.parent_id || alb.parent_id === 0) {
+						albums.parse(alb);
+						if (current_owner !== alb.owner && lychee.publicMode === false) {
+							sharedData += build.divider(alb.owner);
+							current_owner = alb.owner;
 						}
+						sharedData += build.album(alb, !lychee.admin);
 					}
 				}
 			}
@@ -11021,9 +10777,7 @@ view.logs = {
 
 	clearContent: function clearContent() {
 		var html = "";
-		if (lychee.api_V2) {
-			html += lychee.html(_templateObject85, lychee.locale["CLEAN_LOGS"]);
-		}
+		html += lychee.html(_templateObject85, lychee.locale["CLEAN_LOGS"]);
 		html += '<pre class="logs_diagnostics_view"></pre>';
 		lychee.content.html(html);
 
@@ -11091,17 +10845,7 @@ view.diagnostics = {
 		init: function init() {
 			view.diagnostics.clearContent(false);
 
-			if (lychee.api_V2) {
-				view.diagnostics.content.v_2();
-			} else {
-				view.diagnostics.content.v_1();
-			}
-		},
-
-		v_1: function v_1() {
-			api.post_raw("Diagnostics", {}, function (data) {
-				$(".logs_diagnostics_view").html(data);
-			});
+			view.diagnostics.content.v_2();
 		},
 
 		v_2: function v_2() {

@@ -1,9 +1,12 @@
 <p align="center"><a href="https://lycheeorg.github.io"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></a></p>
 
-[![Build Status][build-status-shield]](https://travis-ci.com/LycheeOrg/Lychee)
-[![Code Coverage][codecov-shield]](https://codecov.io/gh/LycheeOrg/Lychee)
 [![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
+[![PHP 7.4][php-7.4-shield]](https://lycheeorg.github.io/docs/#server-requirements)
+[![PHP 8.0][php-8.0-shield]](https://lycheeorg.github.io/docs/#server-requirements)
 [![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
+<br>
+[![Build Status][build-status-shield]](https://github.com/LycheeOrg/Lychee/actions)
+[![Code Coverage][codecov-shield]](https://codecov.io/gh/LycheeOrg/Lychee)
 [![CII Best Practices Summary][cii-shield]](https://bestpractices.coreinfrastructure.org/projects/2855)
 [![Quality Gate Status][sonar-shield]](https://sonarcloud.io/dashboard?id=LycheeOrg_Lychee-Laravel)
 <br>
@@ -17,7 +20,7 @@
 
 #### A great looking and easy-to-use photo-management-system.
 
-*Since the 1st of April 2018 this project has moved to its own Organisation (https://github.com/LycheeOrg) where people are able to submit their fixes to it. We, the Organisation owners, want to thank electerious (Tobias Reich) for the opportunity to make this project live on.*
+*The Lychee project was moved to [LycheeOrg](https://github.com/LycheeOrg) on the 1st of April 2018. We would like to thank electerious (Tobias Reich) for creating Lychee and for giving us the opportunity to make this project live on.*
 
 
 Upgrade from v3 is straight forward. [Upgrade. &#187;](https://lycheeorg.github.io/docs/upgrade.html)
@@ -29,7 +32,7 @@ Lychee is a free photo-management tool, which runs on your server or web-space. 
 
 ## Installation
 
-To run Lychee, everything you need is a web-server with PHP 7.3 or later and a MySQL-Database. Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
+To run Lychee, everything you need is a web-server with PHP 7.4 or later and a MySQL-Database. Follow the instructions to install Lychee on your server. This version of Lychee is built on the Laravel framework. To install:
 
 1. Clone this repo to your server and set the web root to `lychee/public`
 2. Run `composer install --no-dev` to install dependencies
@@ -80,9 +83,11 @@ Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server
 Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub!
 
 [1]: https://lycheeorg.github.io/docs/settings.html
-[build-status-shield]: https://travis-ci.com/LycheeOrg/Lychee.svg?branch=master
+[build-status-shield]: https://img.shields.io/github/workflow/status/LycheeOrg/Lychee/Build-Full-SQL
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
 [release-shield]: https://img.shields.io/github/release-pre/LycheeOrg/Lychee.svg
+[php-7.4-shield]: https://img.shields.io/badge/PHP-7.4-blue
+[php-8.0-shield]: https://img.shields.io/badge/PHP-8.0-blue
 [license-shield]: https://img.shields.io/github/license/LycheeOrg/Lychee.svg
 [cii-shield]: https://img.shields.io/cii/summary/2855.svg
 [sonar-shield]: https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee-Laravel&metric=alert_status
