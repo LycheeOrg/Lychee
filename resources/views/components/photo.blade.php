@@ -31,7 +31,7 @@
 		<h1 title='{{ $title }}'>{{ $title }}</h1>
 
 	@if ($takedate !== "") 
-		<a><span title='Camera Date'><svg class='iconic'><use xlink:href='#camera-slr' /></svg></span>{{ $takedate }}</a>
+		<a><span title='Camera Date'><x-iconic icon='camera-slr' /></span>{{ $takedate }}</a>
 	@else
 		<a>{{ $sysdate }}</a>
 	@endif

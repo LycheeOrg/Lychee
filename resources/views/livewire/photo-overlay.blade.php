@@ -16,7 +16,7 @@
 			@endif
 		@break
 		@case('exif')
-			{{ $exif1 }}
+			{{ html_entity_decode($exif1) }}
 			<br>
 			{{ $exif2 }}
 		@break
