@@ -9,7 +9,7 @@
 
 		@elseif($mode == 'album')
 		<livewire:album :album="$album" />
-		<livewire:sidebar :album="$album" />
+		{{-- <livewire:sidebar :album="$album" /> --}}
 
 		@elseif($mode == 'photo')
 		<livewire:photo :album="$album" :photo="$photo" />

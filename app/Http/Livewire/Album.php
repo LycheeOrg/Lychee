@@ -9,6 +9,14 @@ use Livewire\Component;
 
 class Album extends Component
 {
+	const FLKR = 'flkr';
+	const MASONRY = 'masonry';
+
+	/**
+	 * @var string
+	 */
+	public $layout = Album::MASONRY;
+
 	/**
 	 * @var int
 	 */

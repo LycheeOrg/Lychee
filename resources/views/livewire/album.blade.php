@@ -14,7 +14,7 @@
 		<div class='divider'><h1>{{ Lang::get('PHOTOS') }}</h1></div>
 		@endif
 	@endif
-	<div class="flkr">
+	<div class="{{ $layout }}">
 	@foreach ($photos as $data)
 		<x-photo :data="$data" />
 	@endforeach
