@@ -32,7 +32,7 @@ class Geodecoder
 			'timeout' => Configs::get_value('location_decoding_timeout'),
 		]);
 
-		$httpAdapter = new \Http\Adapter\Guzzle6\Client($httpClient);
+		$httpAdapter = new \Http\Adapter\Guzzle7\Client($httpClient);
 
 		$provider = new Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', config('app.name'));
 
