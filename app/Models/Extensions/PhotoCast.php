@@ -27,9 +27,8 @@ trait PhotoCast
 		$thumbFileName2x = $this->thumb2x === '1' ? Helpers::ex2x($this->thumbUrl) : null;
 
 		$sizeVariants = [
-			// TODO: For the sake of a clean API replace width/height of the thumbnails with their proper values. They are not stored in the DB, but probably hard-coded somewhere. However, none of the front-end clients currently need these values.
-			'thumb' => $this->createSizeVariant('thumb', $this->thumbUrl, -1, -1),
-			'thumb2x' => $this->createSizeVariant('thumb', $thumbFileName2x, -1, -1),
+			'thumb' => $this->createSizeVariant('thumb', $this->thumbUrl, 200, 200),
+			'thumb2x' => $this->createSizeVariant('thumb', $thumbFileName2x, 400, 400),
 			'small' => $this->createSizeVariant('small', $baseFileName, $this->small_width, $this->small_height),
 			'small2x' => $this->createSizeVariant('small', $baseFileName2x, $this->small2x_width, $this->small2x_height),
 			'medium' => $this->createSizeVariant('medium', $baseFileName, $this->medium_width, $this->medium_height),
