@@ -6386,7 +6386,8 @@ _photo.preloadNextPrev = function (photoID) {
 	if (album.json && album.json.photos && album.getByID(photoID)) {
 		var previousPhotoID = album.getByID(photoID).previousPhoto;
 		var nextPhotoID = album.getByID(photoID).nextPhoto;
-		var current2x = null;
+		var imgs = $("img#image");
+		var isUsing2xCurrently = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");;
 
 		$("head [data-prefetch]").remove();
 
@@ -6394,19 +6395,12 @@ _photo.preloadNextPrev = function (photoID) {
 			var preloadPhoto = album.getByID(preloadID);
 			var href = "";
 
-			if (preloadPhoto.medium != null && preloadPhoto.medium !== "") {
-				href = preloadPhoto.medium;
-
-				if (preloadPhoto.medium2x && preloadPhoto.medium2x !== "") {
-					if (current2x === null) {
-						var imgs = $("img#image");
-						current2x = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");
-					}
-					if (current2x) {
-						// If the currently displayed image uses the 2x variant,
-						// chances are that so will the next one.
-						href = preloadPhoto.medium2x;
-					}
+			if (preloadPhoto.sizeVariants.medium != null) {
+				href = preloadPhoto.sizeVariants.medium.url;
+				if (preloadPhoto.sizeVariants.medium2x != null && isUsing2xCurrently) {
+					// If the currently displayed image uses the 2x variant,
+					// chances are that so will the next one.
+					href = preloadPhoto.sizeVariants.medium2x.url;
 				}
 			} else if (preloadPhoto.type && preloadPhoto.type.indexOf("video") === -1) {
 				// Preload the original size, but only if it's not a video
