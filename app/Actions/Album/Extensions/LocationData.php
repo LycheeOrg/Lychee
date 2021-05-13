@@ -31,9 +31,7 @@ trait LocationData
 		* @var Photo
 		*/
 		foreach ($photos as $photo_model) {
-			// Turn data from the database into a front-end friendly format
-			// ! Check if this needs prepareLocationData or to_array
-			$photo = $photo_model->prepareLocationData();
+			$photo = $photo_model->toReturnArray();
 			$symLinkFunctions->getUrl($photo_model, $photo);
 
 			// Add to return

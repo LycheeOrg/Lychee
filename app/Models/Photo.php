@@ -50,9 +50,17 @@ use Storage;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string      $medium
+ * @property int|null    $medium_width
+ * @property int|null    $medium_height
  * @property string      $medium2x
+ * @property int|null    $medium2x_width
+ * @property int|null    $medium2x_height
  * @property string      $small
+ * @property int|null    $small_width
+ * @property int|null    $small_height
  * @property string      $small2x
+ * @property int|null    $small2x_width
+ * @property int|null    $small2x_height
  * @property int         $thumb2x
  * @property string      $livePhotoContentID
  * @property string      $livePhotoChecksum
