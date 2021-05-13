@@ -47,8 +47,8 @@ use Storage;
  * @property int|null    $album_id
  * @property string      $checksum
  * @property string      $license
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property Carbon      $created_at
+ * @property Carbon      $updated_at
  * @property int|null    $medium_width
  * @property int|null    $medium_height
  * @property int|null    $medium2x_width

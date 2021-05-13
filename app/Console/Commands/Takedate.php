@@ -57,6 +57,7 @@ class Takedate extends Command
 		}
 
 		$i = $from - 1;
+		/* @var Photo $photo */
 		foreach ($photos as $photo) {
 			$url = Storage::path('big/' . $photo->url);
 			$i++;
@@ -65,6 +66,7 @@ class Takedate extends Command
 				continue;
 			}
 			$info = $metadataExtractor->extract($url, $photo->type);
+			/* @var \DateTime $stamp */
 			$stamp = $info['takestamp'];
 			if ($stamp != null) {
 				if ($stamp == $photo->takestamp) {
@@ -73,7 +75,7 @@ class Takedate extends Command
 				}
 				$photo->takestamp = $stamp;
 				if ($photo->save()) {
-					$this->line($i . ': Takestamp updated to ' . $stamp . ' for ' . $photo->title);
+					$this->line($i . ': Takestamp updated to ' . $stamp->format('d M Y \a\t H:i') . ' for ' . $photo->title);
 				} else {
 					$this->line($i . ': Failed to update takestamp for ' . $photo->title);
 				}
@@ -91,7 +93,7 @@ class Takedate extends Command
 				$this->line($i . ': Created_at up to date for ' . $photo->title);
 				continue;
 			}
-			$photo->created_at = $created_at;
+			$photo->created_at->setTimestamp($created_at);
 			if ($photo->save()) {
 				$this->line($i . ': Created_at updated to ' . $photo->created_at->format('d M Y \a\t H:i') . ' for ' . $photo->title);
 			} else {

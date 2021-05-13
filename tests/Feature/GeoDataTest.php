@@ -58,7 +58,7 @@ class GeoDataTest extends TestCase
 				'focal' => '44 mm',
 				'altitude' => '1633.0000',
 				'license' => 'none',
-				'takedate' => '17 August 2011 at 16:39',
+				'takestamp' => '2011-08-17T14:39:37.000000Z',
 				'public' => '0',
 				'downloadable' => '1',
 				'share_button_visible' => '1',

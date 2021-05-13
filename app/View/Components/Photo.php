@@ -42,7 +42,7 @@ class Photo extends Component
 		$this->photo_id = $data['id'];
 		$this->title = $data['title'];
 		$this->takedate = $data['takedate'];
-		$this->sysdate = $data['sysdate'];
+		$this->created_at = $data['created_at'];
 		$this->star = $data['star'] == '1';
 		$this->public = $data['public'] == '1';
 

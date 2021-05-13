@@ -232,7 +232,7 @@ class Extractor
 				$metadata['takestamp'] = null;
 				Logs::notice(__METHOD__, __LINE__, 'Takestamp (' . $takestamp->format('Y-m-d H:i:s') . ') out of bounds (needs to be between 1970-01-01 00:00:01 and 2038-01-19 03:14:07)');
 			} else {
-				$metadata['takestamp'] = $takestamp->format('Y-m-d H:i:s');
+				$metadata['takestamp'] = $takestamp;
 			}
 		} else {
 			$metadata['takestamp'] = null;
