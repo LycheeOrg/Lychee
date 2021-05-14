@@ -108,7 +108,7 @@ class SymLink extends Model
 		if ($photo->type == 'raw' && $sizeVariant == Photo::VARIANT_ORIGINAL) {
 			$originalPath = Storage::path('raw/' . $originalFileName);
 		} else {
-			$originalPath = Storage::path(self::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/' . $originalFileName);
+			$originalPath = Storage::path(Photo::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/' . $originalFileName);
 		}
 		$extension = Helpers::getExtension($originalPath);
 		$symFilename = hash('sha256', $salt . '|' . $originalPath) . $extension;

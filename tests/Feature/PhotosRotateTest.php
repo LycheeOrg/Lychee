@@ -42,10 +42,10 @@ class PhotosRotateTest extends TestCase
 		* Check some Exif data
 		*/
 		$response->assertJson([
-			'height' => '4480',
+			'height' => 4480,
 			'id' => $id,
 			'size' => '20.1 MB',
-			'width' => '6720',
+			'width' => 6720,
 			'sizeVariants' => [
 				'small' => [
 					'width' => 540,
@@ -77,10 +77,10 @@ class PhotosRotateTest extends TestCase
 		* Check some Exif data
 		*/
 		$response->assertJson([
-			'height' => '6720',
+			'height' => 6720,
 			'id' => $id,
 			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
-			'width' => '4480',
+			'width' => 4480,
 			'sizeVariants' => [
 				'small' => [
 					'width' => 240,
@@ -100,10 +100,10 @@ class PhotosRotateTest extends TestCase
 		*/
 		$response = $photos_tests->get($id, 'true');
 		$response->assertJson([
-			'height' => '4480',
+			'height' => 4480,
 			'id' => $id,
 			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
-			'width' => '6720',
+			'width' => 6720,
 			'sizeVariants' => [
 				'small' => [
 					'width' => 540,
