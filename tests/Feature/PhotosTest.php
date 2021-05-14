@@ -99,7 +99,8 @@ class PhotosTest extends TestCase
 			'aperture' => 'f/2.8',
 			'description' => 'A night photography',
 			'focal' => '16 mm',
-			'height' => 4480,
+			'height' => '4480',
+			'height_raw' => 4480,
 			'id' => $id,
 			'iso' => '1250',
 			'lens' => 'EF16-35mm f/2.8L USM',
@@ -114,7 +115,8 @@ class PhotosTest extends TestCase
 			'takedate' => '01 June 2019 at 01:28',
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',
-			'width' => 6720,
+			'width' => '6720',
+			'width_raw' => 6720,
 			'sizeVariants' => [
 				'small' => [
 					'width' => 540,

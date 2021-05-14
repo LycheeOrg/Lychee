@@ -80,9 +80,17 @@ class PhotosRotateTest extends TestCase
 			'height' => '6720',
 			'id' => $id,
 			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
-			'small_dim' => '240x360',
-			'medium_dim' => '720x1080',
 			'width' => '4480',
+			'sizeVariants' => [
+				'small' => [
+					'width' => 240,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 720,
+					'height' => 1080,
+				],
+			],
 		]);
 
 		$photos_tests->rotate($id, -1);
@@ -95,9 +103,17 @@ class PhotosRotateTest extends TestCase
 			'height' => '4480',
 			'id' => $id,
 			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
-			'small_dim' => '540x360',
-			'medium_dim' => '1620x1080',
 			'width' => '6720',
+			'sizeVariants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+			],
 		]);
 
 		$photos_tests->delete($id, 'true');
