@@ -15,7 +15,7 @@ class SymLinkFunctions
 	 *
 	 * @return SymLink|null
 	 */
-	public function find(Photo $photo)
+	public function find(Photo $photo): ?SymLink
 	{
 		if (Storage::getDefaultDriver() == 's3') {
 			// @codeCoverageIgnoreStart

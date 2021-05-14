@@ -101,13 +101,14 @@ trait PhotoCast
 	 */
 	public function toThumb(): Thumb
 	{
+		/* @var $symLinkFunctions ?SymLinkFunctions */
 		$symLinkFunctions = resolve(SymLinkFunctions::class);
 
 		$thumb = new Thumb($this->type, $this->id);
 		// maybe refactor?
 		$sym = $symLinkFunctions->find($this);
 		if ($sym !== null) {
-			$thumb->thumb = $sym->get('thumbUrl');
+			$thumb->thumb = $sym->get('thumb');
 			// default is '' so if thumb2x does not exist we just reply '' which is the behaviour we want
 			$thumb->thumb2x = $sym->get('thumb2x');
 		} else {

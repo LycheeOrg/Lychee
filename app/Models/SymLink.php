@@ -181,9 +181,12 @@ class SymLink extends Model
 	}
 
 	/**
-	 * @param string $sizeVariant
+	 * Returns the relative symlinked path of a particular size variant, if it exists.
 	 *
-	 * @return string Relative path to symbolic link
+	 * @param string $sizeVariant An enum-like attribute which indicates what size variant shall be sym-linked.
+	 *                            Allowed values are 'original', 'thumb', 'thumb2x', 'small', 'small2x', 'medium', 'medium2x'
+	 *
+	 * @return string Relative path to symbolic link or the empty string ('')
 	 */
 	public function get(string $sizeVariant): string
 	{
