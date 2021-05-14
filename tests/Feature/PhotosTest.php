@@ -109,14 +109,22 @@ class PhotosTest extends TestCase
 			'public' => '1',
 			'shutter' => '30 s',
 			'size' => '20.1 MB',
-			'small_dim' => '540x360',
 			'star' => '1',
 			'tags' => 'night',
-			'medium_dim' => '1620x1080',
 			'takedate' => '01 June 2019 at 01:28',
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',
 			'width' => 6720,
+			'sizeVariants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+			],
 		]);
 
 		/**

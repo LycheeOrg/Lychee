@@ -45,9 +45,17 @@ class PhotosRotateTest extends TestCase
 			'height' => '4480',
 			'id' => $id,
 			'size' => '20.1 MB',
-			'small_dim' => '540x360',
-			'medium_dim' => '1620x1080',
 			'width' => '6720',
+			'sizeVariants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+			],
 		]);
 
 		$editor_enabled_value = Configs::get_value('editor_enabled');
