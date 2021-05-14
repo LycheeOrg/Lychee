@@ -117,6 +117,8 @@ class Photo extends Model
 	use PhotoBooleans;
 	use PhotoCast;
 	use PhotoGetters;
+	const THUMBNAIL_DIM = 200;
+	const THUMBNAIL2X_DIM = 400;
 
 	/**
 	 * This extends the date types from Model to allow coercion with Carbon object.

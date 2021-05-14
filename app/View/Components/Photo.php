@@ -27,8 +27,8 @@ class Photo extends Component
 	public $srcset2x = '';
 
 	public $layout = false;
-	public $_w = 200;
-	public $_h = 200;
+	public int $_w = \App\Models\Photo::THUMBNAIL_DIM;
+	public int $_h = \App\Models\Photo::THUMBNAIL_DIM;
 
 	/**
 	 * Create a new component instance.
@@ -95,8 +95,8 @@ class Photo extends Component
 			$this->class = 'video';
 			$thumb = $data['thumbUrl'];
 			$thumb2x = $data['thumb2x'];
-			$dim = '200';
-			$dim2x = '400';
+			$dim = (string) \App\Models\Photo::THUMBNAIL_DIM;
+			$dim2x = (string) \App\Models\Photo::THUMBNAIL2X_DIM;
 		}
 
 		$this->src = "src='" . URL::asset('img/placeholder.png') . "'";

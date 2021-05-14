@@ -170,11 +170,11 @@ class Archive
 				break;
 			case 'THUMB2X':
 				$path = 'thumb/' . Helpers::ex2x($photo->thumbUrl);
-				$kind = '-400x400';
+				$kind = '-' . Photo::THUMBNAIL2X_DIM . 'x' . Photo::THUMBNAIL2X_DIM;
 				break;
 			case 'THUMB':
 				$path = 'thumb/' . $photo->thumbUrl;
-				$kind = '-200x200';
+				$kind = '-' . Photo::THUMBNAIL_DIM . 'x' . Photo::THUMBNAIL_DIM;
 				break;
 			default:
 				Logs::error(__METHOD__, __LINE__, 'Invalid kind ' . $kind_input);

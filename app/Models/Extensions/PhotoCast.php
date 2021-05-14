@@ -3,6 +3,7 @@
 namespace App\Models\Extensions;
 
 use App\ModelFunctions\SymLinkFunctions;
+use App\Models\Photo;
 use Helpers;
 use Illuminate\Support\Facades\Storage;
 
@@ -27,8 +28,8 @@ trait PhotoCast
 		$thumbFileName2x = $this->thumb2x === '1' ? Helpers::ex2x($this->thumbUrl) : null;
 
 		$sizeVariants = [
-			'thumb' => $this->serializeSizeVariant('thumb', $this->thumbUrl, 200, 200),
-			'thumb2x' => $this->serializeSizeVariant('thumb', $thumbFileName2x, 400, 400),
+			'thumb' => $this->serializeSizeVariant('thumb', $this->thumbUrl, Photo::THUMBNAIL_DIM, Photo::THUMBNAIL_DIM),
+			'thumb2x' => $this->serializeSizeVariant('thumb', $thumbFileName2x, Photo::THUMBNAIL2X_DIM, Photo::THUMBNAIL2X_DIM),
 			'small' => $this->serializeSizeVariant('small', $baseFileName, $this->small_width, $this->small_height),
 			'small2x' => $this->serializeSizeVariant('small', $baseFileName2x, $this->small2x_width, $this->small2x_height),
 			'medium' => $this->serializeSizeVariant('medium', $baseFileName, $this->medium_width, $this->medium_height),
