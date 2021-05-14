@@ -398,9 +398,6 @@ class AlbumsUnitTest
 		string $result = 'true'
 	) {
 		$response = $this->testCase->json('POST', '/api/Albums::getPositionData', []);
-		if ($response->getStatusCode() == 500) {
-			$response->dump();
-		}
 		$response->assertStatus($code);
 		if ($result != 'true') {
 			$response->assertSee($result, false);
