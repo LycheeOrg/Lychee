@@ -119,6 +119,27 @@ class Photo extends Model
 	use PhotoGetters;
 	const THUMBNAIL_DIM = 200;
 	const THUMBNAIL2X_DIM = 400;
+	const VARIANT_THUMB = 'thumb';
+	const VARIANT_THUMB2X = 'thumb2x';
+	const VARIANT_SMALL = 'small';
+	const VARIANT_SMALL2X = 'small2x';
+	const VARIANT_MEDIUM = 'medium';
+	const VARIANT_MEDIUM2X = 'medium2x';
+	const VARIANT_ORIGINAL = 'original';
+
+	/**
+	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
+	 * Use this array to avoid the anti-pattern "magic constants" throughout the whole code.
+	 */
+	const VARIANT_2_PATH_PREFIX = [
+		self::VARIANT_THUMB => 'thumb',
+		self::VARIANT_THUMB2X => 'thumb',
+		self::VARIANT_SMALL => 'small',
+		self::VARIANT_SMALL2X => 'small',
+		self::VARIANT_MEDIUM => 'medium',
+		self::VARIANT_MEDIUM2X => 'medium',
+		self::VARIANT_ORIGINAL => 'big',
+	];
 
 	/**
 	 * This extends the date types from Model to allow coercion with Carbon object.

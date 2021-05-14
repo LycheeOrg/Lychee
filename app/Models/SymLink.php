@@ -45,46 +45,32 @@ use Illuminate\Support\Facades\Storage;
 class SymLink extends Model
 {
 	/**
-	 * Maps a size variant to a path prefix.
-	 * This mapping must be the same as for App\Models\Photo in order to avoid cases.
-	 */
-	const VARIANT_2_PATH_PREFIX = [
-		'original' => 'big',
-		'medium' => 'medium',
-		'medium2x' => 'medium',
-		'small' => 'small',
-		'small2x' => 'small',
-		'thumb' => 'thumb',
-		'thumb2x' => 'thumb',
-	];
-
-	/**
 	 * Maps a size variant to the name of the attribute (field) of App\Models\Photo which stores the original
 	 * filename.
 	 * (Despite the attributes being named "url" they actually store filenames).
 	 */
 	const VARIANT_2_ORIGINAL_FILENAME_FIELD = [
-		'original' => 'url',
-		'medium' => 'url',
-		'medium2x' => 'url',
-		'small' => 'url',
-		'small2x' => 'url',
-		'thumb' => 'thumbUrl',
-		'thumb2x' => 'thumbUrl',
+		Photo::VARIANT_THUMB => 'thumbUrl',
+		Photo::VARIANT_THUMB2X => 'thumbUrl',
+		Photo::VARIANT_SMALL => 'url',
+		Photo::VARIANT_SMALL2X => 'url',
+		Photo::VARIANT_MEDIUM => 'url',
+		Photo::VARIANT_MEDIUM2X => 'url',
+		Photo::VARIANT_ORIGINAL => 'url',
 	];
 
 	/**
-	 * Maps a size variant to the name of an attribute (field) of the class App\Models\Photo which can be exploited
+	 * Maps a size variant to the name of an attribute (field) of the class App\Models\Photo which may be exploited
 	 * as an indicator whether this size variant exist.
 	 */
 	const VARIANT_2_INDICATOR_FIELD = [
-		'original' => 'url',             // type: string|null
-		'medium' => 'medium_width',      // type: int|null
-		'medium2x' => 'medium2x_width',  // type: int|null
-		'small' => 'small_width',        // type: int|null
-		'small2x' => 'small2x_width',    // type: int|null
-		'thumb' => 'thumbUrl',           // type: string|null
-		'thumb2x' => 'thumb2x',          // type: integer, either 0 or 1
+		Photo::VARIANT_THUMB => 'thumbUrl',           // type: string|null
+		Photo::VARIANT_THUMB2X => 'thumb2x',          // type: integer, either 0 or 1
+		Photo::VARIANT_SMALL => 'small_width',        // type: int|null
+		Photo::VARIANT_SMALL2X => 'small2x_width',    // type: int|null
+		Photo::VARIANT_MEDIUM => 'medium_width',      // type: int|null
+		Photo::VARIANT_MEDIUM2X => 'medium2x_width',  // type: int|null
+		Photo::VARIANT_ORIGINAL => 'url',             // type: string|null
 	];
 
 	/**
@@ -93,13 +79,13 @@ class SymLink extends Model
 	 * (Despite some attributes being named "url" they actually store relative paths).
 	 */
 	const VARIANT_2_SYM_PATH_FIELD = [
-		'original' => 'url',
-		'medium' => 'medium',
-		'medium2x' => 'medium2x',
-		'small' => 'small',
-		'small2x' => 'small2x',
-		'thumb' => 'thumbUrl',
-		'thumb2x' => 'thumb2x',
+		Photo::VARIANT_THUMB => 'thumbUrl',
+		Photo::VARIANT_THUMB2X => 'thumb2x',
+		Photo::VARIANT_SMALL => 'small',
+		Photo::VARIANT_SMALL2X => 'small2x',
+		Photo::VARIANT_MEDIUM => 'medium',
+		Photo::VARIANT_MEDIUM2X => 'medium2x',
+		Photo::VARIANT_ORIGINAL => 'url',
 	];
 
 	/**
@@ -108,18 +94,18 @@ class SymLink extends Model
 	 *
 	 * @param Photo  $photo       The original photo
 	 * @param string $sizeVariant An enum-like attribute which indicates what size variant shall be sym-linked.
-	 *                            Allowed values are 'original', 'thumb', 'thumb2x', 'small', 'small2x', 'medium', 'medium2x'
+	 *                            Allowed values are defined as constants in class Photo.
 	 * @param string $salt
 	 */
 	private function create(Photo $photo, string $sizeVariant, string $salt)
 	{
 		// in case of video and raw we always need to use the field 'thumbUrl' for anything which is not the original size
-		$originalFieldName = ($sizeVariant != 'original' && ($photo->isVideo() || $photo->type == 'raw')) ?
-			'thumbUrl' :
+		$originalFieldName = ($sizeVariant != Photo::VARIANT_ORIGINAL && ($photo->isVideo() || $photo->type == 'raw')) ?
+			self::VARIANT_2_ORIGINAL_FILENAME_FIELD[Photo::VARIANT_THUMB] :
 			self::VARIANT_2_ORIGINAL_FILENAME_FIELD[$sizeVariant];
 		$originalFileName = (substr($sizeVariant, -2, 2) == '2x') ? Helpers::ex2x($photo->$originalFieldName) : $photo->$originalFieldName;
 
-		if ($photo->type == 'raw' && $sizeVariant == 'original') {
+		if ($photo->type == 'raw' && $sizeVariant == Photo::VARIANT_ORIGINAL) {
 			$originalPath = Storage::path('raw/' . $originalFileName);
 		} else {
 			$originalPath = Storage::path(self::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/' . $originalFileName);
@@ -168,13 +154,11 @@ class SymLink extends Model
 	{
 		foreach (self::VARIANT_2_SYM_PATH_FIELD as $variant => $field) {
 			if ($this->$field != '') {
-				switch ($variant) {
-					case 'original':
-						$return['url'] = Storage::drive('symbolic')->url($this->$field);
-						break;
-					default:
-						$return['sizeVariants'][$variant]['url'] = Storage::drive('symbolic')->url($this->$field);
-						break;
+				// TODO: This could be avoided, if the original variant was also serialized into the sub-array 'sizeVariants', see comment in PhotoCast#toReturnArray
+				if ($variant == Photo::VARIANT_ORIGINAL) {
+					$return['url'] = Storage::drive('symbolic')->url($this->$field);
+				} else {
+					$return['sizeVariants'][$variant]['url'] = Storage::drive('symbolic')->url($this->$field);
 				}
 			}
 		}
@@ -184,7 +168,7 @@ class SymLink extends Model
 	 * Returns the relative symlinked path of a particular size variant, if it exists.
 	 *
 	 * @param string $sizeVariant An enum-like attribute which indicates what size variant shall be sym-linked.
-	 *                            Allowed values are 'original', 'thumb', 'thumb2x', 'small', 'small2x', 'medium', 'medium2x'
+	 *                            Allowed values are defined as constants in class Photo.
 	 *
 	 * @return string Relative path to symbolic link or the empty string ('')
 	 */
