@@ -69,12 +69,13 @@ class SymLink extends Model
 	 * Generate a sym link.
 	 * The salt is important in order to remove the deterministic side of the address.
 	 *
-	 * @param Photo  $photo
-	 * @param string $kind
+	 * @param Photo  $photo The original photo
+	 * @param string $kind  An enum-like attribute which indicates what size variant shall be sym-linked.
+	 *                      Allowed values are 'thumb', 'thumb2x', 'small', 'small2x', 'medium', 'medium2x'
 	 * @param string $salt
-	 * @param $field
+	 * @param string $field The name of the attribute (field) within the class Photo which contains the original URL
 	 */
-	private function create(Photo $photo, string $kind, string $salt, $field)
+	private function create(Photo $photo, string $kind, string $salt, string $field)
 	{
 		if (substr($kind, -2, 2) == '2x') {
 			$url = Helpers::ex2x($photo->$field);
@@ -133,7 +134,7 @@ class SymLink extends Model
 			}
 		} else {
 			foreach ($kinds as $kind) {
-				if ($photo->$kind != '' && $photo->$kind != '0') {
+				if ($photo->{$kind . '_width'} != null) {
 					$this->create($photo, $kind, strval($now), $this->kinds_origin[$kind]);
 				}
 			}
@@ -143,13 +144,13 @@ class SymLink extends Model
 	/**
 	 * Given the return array, override the link provided.
 	 *
-	 * @param array $return
+	 * @param array $return The serialization of a photo as returned by Photo#toReturnArray()
 	 */
 	public function override(array &$return)
 	{
 		foreach ($this->kinds_dir as $kind => $dir) {
 			if ($this->$kind != '') {
-				$return[$kind] = Storage::drive('symbolic')->url($this->$kind);
+				$return['sizeVariants'][$kind]['url'] = Storage::drive('symbolic')->url($this->$kind);
 			}
 		}
 	}

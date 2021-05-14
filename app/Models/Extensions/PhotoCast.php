@@ -27,12 +27,12 @@ trait PhotoCast
 		$thumbFileName2x = $this->thumb2x === '1' ? Helpers::ex2x($this->thumbUrl) : null;
 
 		$sizeVariants = [
-			'thumb' => $this->createSizeVariant('thumb', $this->thumbUrl, 200, 200),
-			'thumb2x' => $this->createSizeVariant('thumb', $thumbFileName2x, 400, 400),
-			'small' => $this->createSizeVariant('small', $baseFileName, $this->small_width, $this->small_height),
-			'small2x' => $this->createSizeVariant('small', $baseFileName2x, $this->small2x_width, $this->small2x_height),
-			'medium' => $this->createSizeVariant('medium', $baseFileName, $this->medium_width, $this->medium_height),
-			'medium2x' => $this->createSizeVariant('medium', $baseFileName2x, $this->medium2x_width, $this->medium2x_height),
+			'thumb' => $this->serializeSizeVariant('thumb', $this->thumbUrl, 200, 200),
+			'thumb2x' => $this->serializeSizeVariant('thumb', $thumbFileName2x, 400, 400),
+			'small' => $this->serializeSizeVariant('small', $baseFileName, $this->small_width, $this->small_height),
+			'small2x' => $this->serializeSizeVariant('small', $baseFileName2x, $this->small2x_width, $this->small2x_height),
+			'medium' => $this->serializeSizeVariant('medium', $baseFileName, $this->medium_width, $this->medium_height),
+			'medium2x' => $this->serializeSizeVariant('medium', $baseFileName2x, $this->medium2x_width, $this->medium2x_height),
 		];
 
 		return [
@@ -86,7 +86,7 @@ trait PhotoCast
 	 * @return array|null An associative array with the following attributes "url", "width" and "height" or null, if
 	 *                    any of the parameters is null
 	 */
-	protected function createSizeVariant(string $pathPrefix, ?string $baseFileName, ?int $width, ?int $height): ?array
+	protected function serializeSizeVariant(string $pathPrefix, ?string $baseFileName, ?int $width, ?int $height): ?array
 	{
 		return ($width === null || $height === null || $baseFileName === null || $baseFileName === '') ? null : [
 			'url' => Storage::url($pathPrefix . '/' . $baseFileName),

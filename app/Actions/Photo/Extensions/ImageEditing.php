@@ -146,7 +146,8 @@ trait ImageEditing
 			return false;
 		}
 
-		$photo->{$type} = $resWidth . 'x' . $resHeight;
+		$photo->{$type . '_width'} = $resWidth;
+		$photo->{$type . '_height'} = $resHeight;
 
 		return true;
 	}

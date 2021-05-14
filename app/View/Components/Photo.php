@@ -65,6 +65,7 @@ class Photo extends Component
 		$dim2x = '';
 		$thumb2x = '';
 
+		// TODO: The class Photo for the database model does not anymore contain the attributes `small`, `small_dim`, etc. Probably this code needs some fix/refactoring, too. However, where is this method invoked and what is the structure of the passed `data` array? (Could find any invocation.)
 		if ($this->layout) {
 			$thumb = $data['thumbUrl'];
 			$thumb2x = $data['thumb2x'];
