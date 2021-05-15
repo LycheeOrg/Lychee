@@ -193,7 +193,7 @@ class PhotosTest extends TestCase
 
 		AccessControl::logout();
 	}
-{
+
 	/**
 	 * Test live photo upload.
 	 *
