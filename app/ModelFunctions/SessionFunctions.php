@@ -169,14 +169,21 @@ class SessionFunctions
 	public function log_as_admin(string $username, string $password, string $ip)
 	{
 		$AdminUser = User::find(0);
-		if ($AdminUser !== null && Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
-			$this->user_data = $AdminUser;
-			Session::put('login', true);
-			Session::put('UserID', 0);
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
 
-			return true;
+		if ($AdminUser !== null) {
+			// Admin User exist, so we check against it.
+			if (Hash::check($username, $AdminUser->username) && Hash::check($password, $AdminUser->password)) {
+				$this->user_data = $AdminUser;
+				Session::put('login', true);
+				Session::put('UserID', 0);
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $username . ') has logged in from ' . $ip);
+
+				return true;
+			}
+
+			return false;
 		}
+		// Admin User does not exist yet, so we use the Legacy.
 
 		return Legacy::log_as_admin($username, $password, $ip);
 	}
