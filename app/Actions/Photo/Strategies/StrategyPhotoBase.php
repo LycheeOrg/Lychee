@@ -81,7 +81,7 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 
 		if ($livePhotoPartner != null) {
 			// if both are a photo or a video -> it's not a live photo
-			if (in_array($create->photo->type, $create->validVideoTypes, true) === in_array($create->livePhotoPartner->type, $create->validVideoTypes, true)) {
+			if (in_array($create->photo->type, $create->validVideoTypes, true) === in_array($livePhotoPartner->type, $create->validVideoTypes, true)) {
 				$livePhotoPartner = null;
 			}
 		}
