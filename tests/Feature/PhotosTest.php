@@ -193,6 +193,50 @@ class PhotosTest extends TestCase
 
 		AccessControl::logout();
 	}
+{
+	/**
+	 * Test live photo upload.
+	 *
+	 * @return void
+	 */
+	public function testLivePhotoUpload()
+	{
+		$photos_tests = new PhotosUnitTest($this);
+
+		AccessControl::log_as_id(0);
+
+		/*
+		 * Make a copy of the image because import deletes the file and we want to be
+		 * able to use the test on a local machine and not just in CI.
+		 */
+		copy('tests/Feature/train.jpg', 'public/uploads/import/train.jpg');
+		copy('tests/Feature/train.mov', 'public/uploads/import/train.mov');
+
+		$photo_file = new UploadedFile(
+			'public/uploads/import/train.jpg',
+			'train.jpg',
+			'image/jpeg',
+			null,
+			true
+		);
+
+		$photo_id = $photos_tests->upload($photo_file);
+
+		$video_file = new UploadedFile(
+			'public/uploads/import/train.mov',
+			'train.mov',
+			'video/quicktime',
+			null,
+			true
+		);
+
+		$video_id = $photos_tests->upload($video_file);
+
+		$response = $photos_tests->get($photo_id, 'true');
+		$response->assertStatus(200);
+
+		AccessControl::logout();
+	}
 
 	public function testTrueNegative()
 	{
