@@ -42,11 +42,6 @@ class Prepare
 		$return['id'] = strval($album->id);
 		$return['num'] = strval(count($return['photos']));
 
-		// finalize the loop
-		if ($return['num'] === '0') {
-			$return['photos'] = false;
-		}
-
 		return $return;
 	}
 }

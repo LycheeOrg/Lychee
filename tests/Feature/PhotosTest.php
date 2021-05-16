@@ -168,7 +168,7 @@ class PhotosTest extends TestCase
 		$response = $albums_tests->get($albumID, '', 'true');
 		$content = $response->getContent();
 		$array_content = json_decode($content);
-		$this->assertEquals(0, $array_content->photos);
+		$this->assertEquals(0, count($array_content->photos));
 
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');
