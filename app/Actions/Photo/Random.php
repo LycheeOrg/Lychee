@@ -20,7 +20,6 @@ class Random extends SymLinker
 		}
 
 		$return = $photo->toReturnArray();
-		$photo->urls($return);
 		$this->symLinkFunctions->getUrl($photo, $return);
 		if ($photo->album_id !== null && !$photo->album->is_full_photo_visible()) {
 			$photo->downgrade($return);

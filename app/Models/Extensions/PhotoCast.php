@@ -3,6 +3,7 @@
 namespace App\Models\Extensions;
 
 use App\ModelFunctions\SymLinkFunctions;
+use App\Models\Photo;
 use Helpers;
 use Illuminate\Support\Facades\Storage;
 
@@ -15,6 +16,40 @@ trait PhotoCast
 	 */
 	public function toReturnArray(): array
 	{
+		if ($this->isVideo()) {
+			$filename = $this->thumbUrl;
+		} elseif ($this->type == 'raw') {
+			// It's a raw file -> we also use jpeg as extension
+			$filename = $this->thumbUrl;
+		} else {
+			$filename = $this->url;
+		}
+		$filename2x = ($filename !== '') ? Helpers::ex2x($filename) : '';
+		$thumbFileName2x = $this->thumb2x === '1' ? Helpers::ex2x($this->thumbUrl) : null;
+
+		// The original size is not stored in this sub-array but on the root level of the JSON response
+		// TODO: Maybe harmonize and put original variant into this array, too? This would also avoid an ugly if branch in SymLink#override.
+		$sizeVariants = [
+			Photo::VARIANT_THUMB => $this->serializeSizeVariant(
+				Photo::VARIANT_THUMB, $this->thumbUrl, Photo::THUMBNAIL_DIM, Photo::THUMBNAIL_DIM
+			),
+			Photo::VARIANT_THUMB2X => $this->serializeSizeVariant(
+				Photo::VARIANT_THUMB2X, $thumbFileName2x, Photo::THUMBNAIL2X_DIM, Photo::THUMBNAIL2X_DIM
+			),
+			Photo::VARIANT_SMALL => $this->serializeSizeVariant(
+				Photo::VARIANT_SMALL, $filename, $this->small_width, $this->small_height
+			),
+			Photo::VARIANT_SMALL2X => $this->serializeSizeVariant(
+				Photo::VARIANT_SMALL2X, $filename2x, $this->small2x_width, $this->small2x_height
+			),
+			Photo::VARIANT_MEDIUM => $this->serializeSizeVariant(
+				Photo::VARIANT_MEDIUM, $filename, $this->medium_width, $this->medium_height
+			),
+			Photo::VARIANT_MEDIUM2X => $this->serializeSizeVariant(
+				Photo::VARIANT_MEDIUM2X, $filename2x, $this->medium2x_width, $this->medium2x_height
+			),
+		];
+
 		return [
 			'id' => strval($this->id),
 			'title' => $this->title,
@@ -23,10 +58,9 @@ trait PhotoCast
 			'star' => Helpers::str_of_bool($this->star),
 			'public' => $this->get_public(),
 			'album' => $this->album_id !== null ? strval($this->album_id) : null,
-			'width' => strval($this->width),
-			'width_raw' => $this->width !== null ? $this->width : -1,
-			'height' => strval($this->height),
-			'height_raw' => $this->height !== null ? $this->height : -1,
+			'url' => ($this->type == 'raw') ? Storage::url('raw/' . $this->url) : Storage::url('big/' . $this->url),
+			'width' => $this->width !== null ? $this->width : 0,
+			'height' => $this->height !== null ? $this->height : 0,
 			'type' => $this->type,
 			'filesize' => $this->filesize,
 			'iso' => $this->iso,
@@ -34,7 +68,8 @@ trait PhotoCast
 			'make' => $this->make,
 			'model' => $this->model,
 			'shutter' => $this->get_shutter_str(),
-			'focal' => $this->focal,
+			// We need to format the framerate (stored as focal) -> max 2 decimal digits
+			'focal' => (strpos($this->type, 'video') === 0) ? round($this->focal, 2) : $this->focal,
 			'lens' => $this->lens,
 			'latitude' => $this->latitude,
 			'longitude' => $this->longitude,
@@ -42,128 +77,38 @@ trait PhotoCast
 			'imgDirection' => $this->imgDirection,
 			'location' => $this->location,
 			'livePhotoContentID' => $this->livePhotoContentID,
-
+			'livePhotoUrl' => ($this->livePhotoUrl !== '' && $this->livePhotoUrl !== null) ? Storage::url('big/' . $this->livePhotoUrl) : null,
 			'sysdate' => $this->created_at->format('d F Y \a\t H:i'),
 			'created_at_raw' => $this->created_at->timestamp,
 			'takedate' => isset($this->takestamp) ? $this->takestamp->format('d F Y \a\t H:i') : '',
 			'takestamp_raw' => isset($this->takestamp) ? $this->takestamp->timestamp : null,
 			'updated_at_raw' => isset($this->updated_at) ? $this->updated_at->timestamp : null,
 			'license' => $this->license,
+			'sizeVariants' => $sizeVariants,
 		];
 	}
 
 	/**
-	 * ! how is this different than Cast::to_array ?
-	 * Returns photo-attributes into a front-end friendly format. Note that some attributes remain unchanged.
+	 * Returns a front-end friendly array which describes a particular size variant of a media file.
 	 *
-	 * @return array returns photo-attributes in a normalized structure
+	 * @param string      $sizeVariant The name of the size variant which is being serialized; used to determine the correct path prefix
+	 * @param string|null $fileName    The filename
+	 * @param int|null    $width       The width of this variant
+	 * @param int|null    $height      The height of this variant
+	 *
+	 * @return array|null An associative array with the following attributes "url", "width" and "height" or null, if
+	 *                    any of the parameters is null
 	 */
-	public function prepareLocationData()
+	protected function serializeSizeVariant(string $sizeVariant, ?string $fileName, ?int $width, ?int $height): ?array
 	{
-		// Init
-		$photo = [];
-
-		// Set unchanged attributes
-		$photo['id'] = strval($this->id);
-		$photo['title'] = $this->title;
-		$photo['album'] = $this->album_id !== null ? strval($this->album_id) : null;
-		$photo['latitude'] = $this->latitude;
-		$photo['longitude'] = $this->longitude;
-
-		// if this is a video
-		if (strpos($this->type, 'video') === 0) {
-			$photoUrl = $this->thumbUrl;
+		if ($width === null || $height === null || $fileName === null || $fileName === '') {
+			return null;
 		} else {
-			$photoUrl = $this->url;
-		}
-
-		$photoUrl2x = '';
-		if ($photoUrl !== '') {
-			$photoUrl2x = Helpers::ex2x($photoUrl);
-		}
-
-		if ($this->small != '') {
-			$photo['small'] = Storage::url('small/' . $photoUrl);
-		} else {
-			$photo['small'] = '';
-		}
-
-		if ($this->small2x != '') {
-			$photo['small2x'] = Storage::url('small/' . $photoUrl2x);
-		} else {
-			$photo['small2x'] = '';
-		}
-
-		// Parse paths
-		$photo['thumbUrl'] = Storage::url('thumb/' . $this->thumbUrl);
-
-		if ($this->thumb2x == '1') {
-			$thumbUrl2x = Helpers::ex2x($this->thumbUrl);
-			$photo['thumb2x'] = Storage::url('thumb/' . $thumbUrl2x);
-		} else {
-			$photo['thumb2x'] = '';
-		}
-
-		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
-		$photo['url'] = Storage::url($path_prefix . $this->url);
-
-		if (isset($this->takestamp) && $this->takestamp != null) {
-			// Use takestamp
-			$photo['takedate'] = $this->takestamp->format('d F Y \a\t H:i');
-		} else {
-			$photo['takedate'] = '';
-		}
-
-		return $photo;
-	}
-
-	/**
-	 * Given a photo, return the proper URL.
-	 */
-	public function urls(array &$return): void
-	{
-		// if this is a video
-		if (strpos($this->type, 'video') === 0) {
-			$photoUrl = $this->thumbUrl;
-
-			// We need to format the framerate (stored as focal) -> max 2 decimal digits
-			$return['focal'] = round($return['focal'], 2);
-		} elseif ($this->type == 'raw') {
-			// It's a raw file -> we also use jpeg as extension
-			$photoUrl = $this->thumbUrl;
-		} else {
-			$photoUrl = $this->url;
-		}
-		$photoUrl2x = ($photoUrl !== '') ? Helpers::ex2x($photoUrl) : '';
-
-		$sizes = [
-			'medium' => $photoUrl,
-			'medium2x' => $photoUrl2x,
-			'small' => $photoUrl,
-			'small2x' => $photoUrl2x,
-		];
-
-		foreach ($sizes as $size => $url) {
-			if ($this->$size != '') {
-				$return[$size] = Storage::url(str_replace('2x', '', $size) . '/' . $url);
-				$return[$size . '_dim'] = $this->$size;
-			} else {
-				$return[$size] = '';
-				$return[$size . '_dim'] = '';
-			}
-		}
-
-		// Parse paths
-		$return['thumbUrl'] = Storage::url('thumb/' . $this->thumbUrl);
-		$return['thumb2x'] = ($this->thumb2x == '1') ? Storage::url('thumb/' . Helpers::ex2x($this->thumbUrl)) : '';
-
-		$path_prefix = ($this->type == 'raw') ? 'raw/' : 'big/';
-		$return['url'] = Storage::url($path_prefix . $this->url);
-
-		if ($this->livePhotoUrl !== '' && $this->livePhotoUrl !== null) {
-			$return['livePhotoUrl'] = Storage::url('big/' . $this->livePhotoUrl);
-		} else {
-			$return['livePhotoUrl'] = null;
+			return [
+				'url' => Storage::url(Photo::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/' . $fileName),
+				'width' => $width,
+				'height' => $height,
+			];
 		}
 	}
 
@@ -172,17 +117,20 @@ trait PhotoCast
 	 */
 	public function toThumb(): Thumb
 	{
+		/* @var $symLinkFunctions ?SymLinkFunctions */
 		$symLinkFunctions = resolve(SymLinkFunctions::class);
 
 		$thumb = new Thumb($this->type, $this->id);
 		// maybe refactor?
 		$sym = $symLinkFunctions->find($this);
 		if ($sym !== null) {
-			$thumb->thumb = $sym->get('thumbUrl');
+			$thumb->thumb = $sym->get(Photo::VARIANT_THUMB);
 			// default is '' so if thumb2x does not exist we just reply '' which is the behaviour we want
-			$thumb->thumb2x = $sym->get('thumb2x');
+			$thumb->thumb2x = $sym->get(Photo::VARIANT_THUMB2X);
 		} else {
-			$thumb->thumb = Storage::url('thumb/' . $this->thumbUrl);
+			$thumb->thumb = Storage::url(
+				Photo::VARIANT_2_PATH_PREFIX[Photo::VARIANT_THUMB] . '/' . $this->thumbUrl
+			);
 			if ($this->thumb2x == '1') {
 				$thumb->set_thumb2x();
 			}
@@ -200,7 +148,7 @@ trait PhotoCast
 	{
 		if (
 			$this->isVideo() === false &&
-			($return['medium2x'] != '' || $return['medium'] != '')
+			($return['sizeVariants']['medium2x'] !== null || $return['sizeVariants']['medium'] !== null)
 		) {
 			$return['url'] = '';
 		}

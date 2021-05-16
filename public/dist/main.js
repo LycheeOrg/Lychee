@@ -1823,27 +1823,41 @@ album.isUploadable = function () {
 };
 
 album.updatePhoto = function (data) {
+	var deepCopySizeVariant = function deepCopySizeVariant(src) {
+		if (src === undefined || src === null) return null;
+		var result = {};
+		result.url = src.url;
+		result.width = src.width;
+		result.height = src.height;
+		return result;
+	};
+
 	if (album.json) {
 		$.each(album.json.photos, function () {
 			if (this.id === data.id) {
 				this.width = data.width;
 				this.height = data.height;
-				this.small = data.small;
-				this.small_dim = data.small_dim;
-				this.small2x = data.small2x;
-				this.small2x_dim = data.small2x_dim;
-				this.medium = data.medium;
-				this.medium_dim = data.medium_dim;
-				this.medium2x = data.medium2x;
-				this.medium2x_dim = data.medium2x_dim;
-				this.thumbUrl = data.thumbUrl;
-				this.thumb2x = data.thumb2x;
 				this.url = data.url;
 				this.filesize = data.filesize;
-
+				// Deep copy size variants
+				this.sizeVariants = {
+					thumb: null,
+					thumb2x: null,
+					small: null,
+					small2x: null,
+					medium: null,
+					medium2x: null
+				};
+				if (data.sizeVariants !== undefined && data.sizeVariants !== null) {
+					this.sizeVariants.thumb = deepCopySizeVariant(data.sizeVariants.thumb);
+					this.sizeVariants.thumb2x = deepCopySizeVariant(data.sizeVariants.thumb2x);
+					this.sizeVariants.small = deepCopySizeVariant(data.sizeVariants.small);
+					this.sizeVariants.small2x = deepCopySizeVariant(data.sizeVariants.small2x);
+					this.sizeVariants.medium = deepCopySizeVariant(data.sizeVariants.medium);
+					this.sizeVariants.medium2x = deepCopySizeVariant(data.sizeVariants.medium2x);
+				}
 				view.album.content.updatePhoto(this);
 				albums.refresh();
-
 				return false;
 			}
 			return true;
@@ -2231,17 +2245,17 @@ build.photo = function (data) {
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
 	var isLivePhoto = data.livePhotoUrl !== "" && data.livePhotoUrl !== null;
 
-	if (data.thumbUrl === "uploads/thumb/" && isLivePhoto) {
+	if (data.sizeVariants.thumb.url === "uploads/thumb/" && isLivePhoto) {
 		thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	}
-	if (data.thumbUrl === "uploads/thumb/" && isVideo) {
+	if (data.sizeVariants.thumb.url === "uploads/thumb/" && isVideo) {
 		thumbnail = "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
-	} else if (data.thumbUrl === "uploads/thumb/" && isRaw) {
+	} else if (data.sizeVariants.thumb.url === "uploads/thumb/" && isRaw) {
 		thumbnail = "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 	} else if (lychee.layout === "0") {
-		if (data.hasOwnProperty("thumb2x")) {
+		if (data.sizeVariants.thumb2x !== null) {
 			// Lychee v4
-			thumb2x = data.thumb2x;
+			thumb2x = data.sizeVariants.thumb2x.url;
 		} else {
 			// Lychee v3
 			var _lychee$retinize = lychee.retinize(data.thumbUrl),
@@ -2253,24 +2267,24 @@ build.photo = function (data) {
 		}
 
 		thumbnail = "<span class=\"thumbimg" + (isVideo ? " video" : "") + (isLivePhoto ? " livephoto" : "") + "\">";
-		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
+		thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.sizeVariants.thumb.url + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 		thumbnail += "</span>";
 	} else {
-		if (data.small !== "") {
-			if (data.hasOwnProperty("small2x") && data.small2x !== "") {
-				thumb2x = "data-srcset='" + data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w'";
+		if (data.sizeVariants.small !== null) {
+			if (data.sizeVariants.small2x !== null) {
+				thumb2x = "data-srcset='" + data.sizeVariants.small.url + " " + data.sizeVariants.small.width + "w, " + data.sizeVariants.small2x.url + " " + data.sizeVariants.small2x.width + "w'";
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? " video" : "") + (isLivePhoto ? " livephoto" : "") + "\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.small + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.sizeVariants.small.url + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
-		} else if (data.medium !== "") {
-			if (data.hasOwnProperty("medium2x") && data.medium2x !== "") {
-				thumb2x = "data-srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+		} else if (data.sizeVariants.medium !== null) {
+			if (data.sizeVariants.medium2x !== null) {
+				thumb2x = "data-srcset='" + data.sizeVariants.medium.url + " " + data.sizeVariants.medium.width + "w, " + data.sizeVariants.medium2x.url + " " + data.sizeVariants.medium2x.width + "w'";
 			}
 
 			thumbnail = "<span class=\"thumbimg" + (isVideo ? " video" : "") + (isLivePhoto ? " livephoto" : "") + "\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.medium + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.sizeVariants.medium.url + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		} else if (!isVideo) {
 			// Fallback for images with no small or medium.
@@ -2281,9 +2295,9 @@ build.photo = function (data) {
 			// Fallback for videos with no small (the case of no thumb is
 			// handled at the top of this function).
 
-			if (data.hasOwnProperty("thumb2x")) {
+			if (data.sizeVariants.thumb2x !== null) {
 				// Lychee v4
-				thumb2x = data.thumb2x;
+				thumb2x = data.sizeVariants.thumb2x.url;
 			} else {
 				// Lychee v3
 				var _lychee$retinize2 = lychee.retinize(data.thumbUrl),
@@ -2291,11 +2305,11 @@ build.photo = function (data) {
 			}
 
 			if (thumb2x !== "") {
-				thumb2x = "data-srcset='" + data.thumbUrl + " 200w, " + thumb2x + " 400w'";
+				thumb2x = "data-srcset='" + data.sizeVariants.thumb.url + " " + data.sizeVariants.thumb.width + "w, " + thumb2x + " " + data.sizeVariants.thumb2x.width + "w'";
 			}
 
 			thumbnail = "<span class=\"thumbimg video\">";
-			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.thumbUrl + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
+			thumbnail += "<img class='lazyload' src='img/placeholder.png' data-src='" + data.sizeVariants.thumb.url + "' " + thumb2x + " alt='Photo thumbnail' data-overlay='false' draggable='false' >";
 			thumbnail += "</span>";
 		}
 	}
@@ -2373,7 +2387,7 @@ build.imageview = function (data, visibleControls, autoplay) {
 
 	if (data.type.indexOf("video") > -1) {
 		html += lychee.html(_templateObject29, visibleControls === true ? "" : "full", autoplay ? "autoplay" : "", tabindex.get_next_tab_index(), data.url);
-	} else if (data.type.indexOf("raw") > -1 && data.medium === "") {
+	} else if (data.type.indexOf("raw") > -1 && data.sizeVariants.medium === null) {
 		html += lychee.html(_templateObject30, visibleControls === true ? "" : "full", tabindex.get_next_tab_index());
 	} else {
 		var img = "";
@@ -2392,23 +2406,22 @@ build.imageview = function (data, visibleControls, autoplay) {
 				}
 			});
 
-			if (data.medium !== "") {
+			if (data.sizeVariants.medium !== null) {
 				var medium = "";
 
-				if (data.hasOwnProperty("medium2x") && data.medium2x !== "") {
-					medium = "srcset='" + data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w'";
+				if (data.sizeVariants.medium2x !== null) {
+					medium = "srcset='" + data.sizeVariants.medium.url + " " + data.sizeVariants.medium.width + "w, " + data.sizeVariants.medium2x.url + " " + data.sizeVariants.medium2x.width + "w'";
 				}
-				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.medium + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
+				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.sizeVariants.medium.url + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
 			} else {
 				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
 			}
 		} else {
-			if (data.medium !== "") {
-				var medium_dims = data.medium_dim.split("x");
-				var medium_width = medium_dims[0];
-				var medium_height = medium_dims[1];
+			if (data.sizeVariants.medium !== null) {
+				var medium_width = data.sizeVariants.medium.width;
+				var medium_height = data.sizeVariants.medium.height;
 				// It's a live photo
-				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.medium + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px' data-tabindex='" + tabindex.get_next_tab_index() + "'></div>";
+				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.sizeVariants.medium.url + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + medium_width + "px; height: " + medium_height + "px' data-tabindex='" + tabindex.get_next_tab_index() + "'></div>";
 			} else {
 				// It's a live photo
 				img = "<div id='livephoto' data-live-photo data-proactively-loads-video='true' data-photo-src='" + data.url + "' data-video-src='" + data.livePhotoUrl + "'  style='width: " + data.width + "px; height: " + data.height + "px' data-tabindex='" + tabindex.get_next_tab_index() + "'></div>";
@@ -5523,7 +5536,7 @@ lychee.locale = {
   */
 	printFilesizeLocalized: function printFilesizeLocalized(filesize) {
 		console.assert(Number.isInteger(filesize), "printFilesizeLocalized: expected integer, got %s", typeof filesize === "undefined" ? "undefined" : _typeof(filesize));
-		var suffix = [' B', ' kB', ' MB', ' GB'];
+		var suffix = [" B", " kB", " MB", " GB"];
 		var i = 0;
 		// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
 		// We aim at a number which has at most 3 non-decimal digits, i.e. the result shall be in the interval
@@ -5714,10 +5727,10 @@ mapview.open = function () {
 				photos.push({
 					lat: parseFloat(element.latitude),
 					lng: parseFloat(element.longitude),
-					thumbnail: element.thumbUrl !== "uploads/thumb/" ? element.thumbUrl : "img/placeholder.png",
-					thumbnail2x: element.thumb2x,
-					url: element.small !== "" ? element.small : element.url,
-					url2x: element.small2x,
+					thumbnail: element.sizeVariants.thumb !== null ? element.sizeVariants.thumb.url : "img/placeholder.png",
+					thumbnail2x: element.sizeVariants.thumb2x !== null ? element.sizeVariants.thumb2x.url : null,
+					url: element.sizeVariants.small !== null ? element.sizeVariants.small.url : element.url,
+					url2x: element.sizeVariants.small2x !== null ? element.sizeVariants.small2x.url : null,
 					name: element.title,
 					takedate: element.takedate,
 					albumID: element.album,
@@ -6378,7 +6391,8 @@ _photo.preloadNextPrev = function (photoID) {
 	if (album.json && album.json.photos && album.getByID(photoID)) {
 		var previousPhotoID = album.getByID(photoID).previousPhoto;
 		var nextPhotoID = album.getByID(photoID).nextPhoto;
-		var current2x = null;
+		var imgs = $("img#image");
+		var isUsing2xCurrently = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");
 
 		$("head [data-prefetch]").remove();
 
@@ -6386,19 +6400,12 @@ _photo.preloadNextPrev = function (photoID) {
 			var preloadPhoto = album.getByID(preloadID);
 			var href = "";
 
-			if (preloadPhoto.medium != null && preloadPhoto.medium !== "") {
-				href = preloadPhoto.medium;
-
-				if (preloadPhoto.medium2x && preloadPhoto.medium2x !== "") {
-					if (current2x === null) {
-						var imgs = $("img#image");
-						current2x = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");
-					}
-					if (current2x) {
-						// If the currently displayed image uses the 2x variant,
-						// chances are that so will the next one.
-						href = preloadPhoto.medium2x;
-					}
+			if (preloadPhoto.sizeVariants.medium != null) {
+				href = preloadPhoto.sizeVariants.medium.url;
+				if (preloadPhoto.sizeVariants.medium2x != null && isUsing2xCurrently) {
+					// If the currently displayed image uses the 2x variant,
+					// chances are that so will the next one.
+					href = preloadPhoto.sizeVariants.medium2x.url;
 				}
 			} else if (preloadPhoto.type && preloadPhoto.type.indexOf("video") === -1) {
 				// Preload the original size, but only if it's not a video
@@ -7117,23 +7124,23 @@ _photo.getArchive = function (photoIDs) {
 		if (myPhoto.livePhotoUrl !== null) {
 			msg += buildButton("LIVEPHOTOVIDEO", "" + lychee.locale["PHOTO_LIVE_VIDEO"]);
 		}
-		if (myPhoto.hasOwnProperty("medium2x") && myPhoto.medium2x !== "") {
-			msg += buildButton("MEDIUM2X", lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + myPhoto.medium2x_dim + ")");
+		if (myPhoto.sizeVariants.medium2x !== null) {
+			msg += buildButton("MEDIUM2X", lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + myPhoto.sizeVariants.medium2x.width + "x" + myPhoto.sizeVariants.medium2x.height + ")");
 		}
-		if (myPhoto.medium !== "") {
-			msg += buildButton("MEDIUM", lychee.locale["PHOTO_MEDIUM"] + " " + (myPhoto.hasOwnProperty("medium_dim") ? "(" + myPhoto.medium_dim + ")" : ""));
+		if (myPhoto.sizeVariants.medium !== null) {
+			msg += buildButton("MEDIUM", lychee.locale["PHOTO_MEDIUM"] + " (" + myPhoto.sizeVariants.medium.width + "x" + myPhoto.sizeVariants.medium.height + ")");
 		}
-		if (myPhoto.hasOwnProperty("small2x") && myPhoto.small2x !== "") {
-			msg += buildButton("SMALL2X", lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + myPhoto.small2x_dim + ")");
+		if (myPhoto.sizeVariants.small2x !== null) {
+			msg += buildButton("SMALL2X", lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + myPhoto.sizeVariants.small2x.width + "x" + myPhoto.sizeVariants.small2x.height + ")");
 		}
-		if (myPhoto.small !== "") {
-			msg += buildButton("SMALL", lychee.locale["PHOTO_SMALL"] + " " + (myPhoto.hasOwnProperty("small_dim") ? "(" + myPhoto.small_dim + ")" : ""));
+		if (myPhoto.sizeVariants.small !== null) {
+			msg += buildButton("SMALL", lychee.locale["PHOTO_SMALL"] + " (" + myPhoto.sizeVariants.small.width + "x" + myPhoto.sizeVariants.small.height + ")");
 		}
-		if (myPhoto.hasOwnProperty("thumb2x") && myPhoto.thumb2x !== "") {
-			msg += buildButton("THUMB2X", lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)");
+		if (myPhoto.sizeVariants.thumb2x !== null) {
+			msg += buildButton("THUMB2X", lychee.locale["PHOTO_THUMB_HIDPI"] + " (" + myPhoto.sizeVariants.thumb2x.width + "x" + myPhoto.sizeVariants.thumb2x.height + ")");
 		}
-		if (myPhoto.thumbUrl !== "") {
-			msg += buildButton("THUMB", lychee.locale["PHOTO_THUMB"] + " (200x200)");
+		if (myPhoto.sizeVariants.thumb !== null) {
+			msg += buildButton("THUMB", lychee.locale["PHOTO_THUMB"] + " (" + myPhoto.sizeVariants.thumb.width + "x" + myPhoto.sizeVariants.thumb.height + ")");
 		}
 
 		msg += lychee.html(_templateObject63);
@@ -7188,23 +7195,23 @@ _photo.showDirectLinks = function (photoID) {
 	if (_photo.json.url) {
 		msg += buildLine(lychee.locale["PHOTO_FULL"] + " (" + _photo.json.width + "x" + _photo.json.height + ")", lychee.getBaseUrl() + _photo.json.url);
 	}
-	if (_photo.json.hasOwnProperty("medium2x") && _photo.json.medium2x !== "") {
-		msg += buildLine(lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + _photo.json.medium2x_dim + ")", lychee.getBaseUrl() + _photo.json.medium2x);
+	if (_photo.json.sizeVariants.medium2x !== null) {
+		msg += buildLine(lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + _photo.json.sizeVariants.medium2x.width + "x" + _photo.json.sizeVariants.medium2x.height + ")", lychee.getBaseUrl() + _photo.json.sizeVariants.medium2x.url);
 	}
-	if (_photo.json.medium !== "") {
-		msg += buildLine(lychee.locale["PHOTO_MEDIUM"] + " " + (_photo.json.hasOwnProperty("medium_dim") ? "(" + _photo.json.medium_dim + ")" : ""), lychee.getBaseUrl() + _photo.json.medium);
+	if (_photo.json.sizeVariants.medium !== null) {
+		msg += buildLine(lychee.locale["PHOTO_MEDIUM"] + " (" + _photo.json.sizeVariants.medium.width + "x" + _photo.json.sizeVariants.medium.height + ")", lychee.getBaseUrl() + _photo.json.sizeVariants.medium.url);
 	}
-	if (_photo.json.hasOwnProperty("small2x") && _photo.json.small2x !== "") {
-		msg += buildLine(lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + _photo.json.small2x_dim + ")", lychee.getBaseUrl() + _photo.json.small2x);
+	if (_photo.json.sizeVariants.small2x !== null) {
+		msg += buildLine(lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + _photo.json.sizeVariants.small2x.width + "x" + _photo.json.sizeVariants.small2x.height + ")", lychee.getBaseUrl() + _photo.json.sizeVariants.small2x.url);
 	}
-	if (_photo.json.small !== "") {
-		msg += buildLine(lychee.locale["PHOTO_SMALL"] + " " + (_photo.json.hasOwnProperty("small_dim") ? "(" + _photo.json.small_dim + ")" : ""), lychee.getBaseUrl() + _photo.json.small);
+	if (_photo.json.sizeVariants.small !== null) {
+		msg += buildLine(lychee.locale["PHOTO_SMALL"] + " (" + _photo.json.sizeVariants.small.width + "x" + _photo.json.sizeVariants.small.height + ")", lychee.getBaseUrl() + _photo.json.sizeVariants.small.url);
 	}
-	if (_photo.json.hasOwnProperty("thumb2x") && _photo.json.thumb2x !== "") {
-		msg += buildLine(lychee.locale["PHOTO_THUMB_HIDPI"] + " (400x400)", lychee.getBaseUrl() + _photo.json.thumb2x);
+	if (_photo.json.sizeVariants.thumb2x !== null) {
+		msg += buildLine(lychee.locale["PHOTO_THUMB_HIDPI"] + " (" + _photo.json.sizeVariants.thumb2x.width + "x" + _photo.json.sizeVariants.thumb2x.height + ")", lychee.getBaseUrl() + _photo.json.sizeVariants.thumb2x.url);
 	}
-	if (_photo.json.thumbUrl !== "") {
-		msg += buildLine(" " + lychee.locale["PHOTO_THUMB"] + " (200x200)", lychee.getBaseUrl() + _photo.json.thumbUrl);
+	if (_photo.json.sizeVariants.thumb !== null) {
+		msg += buildLine(lychee.locale["PHOTO_THUMB"] + " (" + _photo.json.sizeVariants.thumb.width + "x" + _photo.json.sizeVariants.thumb.height + ")", lychee.getBaseUrl() + _photo.json.sizeVariants.thumb.url);
 	}
 	if (_photo.json.livePhotoUrl !== "") {
 		msg += buildLine(" " + lychee.locale["PHOTO_LIVE_VIDEO"] + " ", lychee.getBaseUrl() + _photo.json.livePhotoUrl);
@@ -7258,12 +7265,12 @@ photoeditor.rotate = function (photoID, direction) {
 			}
 
 			var image = $("img#image");
-			if (_photo.json.hasOwnProperty("medium2x") && _photo.json.medium2x !== "") {
-				image.prop("srcset", _photo.json.medium + " " + parseInt(_photo.json.medium_dim, 10) + "w, " + _photo.json.medium2x + " " + parseInt(_photo.json.medium2x_dim, 10) + "w");
+			if (_photo.json.sizeVariants.medium2x !== null) {
+				image.prop("srcset", _photo.json.sizeVariants.medium.url + " " + _photo.json.sizeVariants.medium.width + "w, " + _photo.json.sizeVariants.medium2x.url + " " + _photo.json.sizeVariants.medium2x.width + "w");
 			} else {
 				image.prop("srcset", "");
 			}
-			image.prop("src", _photo.json.medium !== "" ? _photo.json.medium : _photo.json.url);
+			image.prop("src", _photo.json.sizeVariants.medium !== null ? _photo.json.sizeVariants.medium.url : _photo.json.url);
 			view.photo.onresize();
 			view.photo.sidebar();
 
@@ -9864,27 +9871,27 @@ view.album = {
 
 			// This mimicks the structure of build.photo
 			if (lychee.layout === "0") {
-				src = data.thumbUrl;
-				if (data.hasOwnProperty("thumb2x") && data.thumb2x !== "") {
-					srcset = data.thumb2x + " 2x";
+				src = data.sizeVariants.thumb.url;
+				if (data.sizeVariants.thumb2x !== null) {
+					srcset = data.sizeVariants.thumb2x.url + " 2x";
 				}
 			} else {
-				if (data.small !== "") {
-					src = data.small;
-					if (data.hasOwnProperty("small2x") && data.small2x !== "") {
-						srcset = data.small + " " + parseInt(data.small_dim, 10) + "w, " + data.small2x + " " + parseInt(data.small2x_dim, 10) + "w";
+				if (data.sizeVariants.small !== null) {
+					src = data.sizeVariants.small.url;
+					if (data.sizeVariants.small2x !== null) {
+						srcset = data.sizeVariants.small.url + " " + data.sizeVariants.small.width + "w, " + data.sizeVariants.small2x.url + " " + data.sizeVariants.small2x.width + "w";
 					}
-				} else if (data.medium !== "") {
-					src = data.medium;
-					if (data.hasOwnProperty("medium2x") && data.medium2x !== "") {
-						srcset = data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w";
+				} else if (data.sizeVariants.medium !== null) {
+					src = data.sizeVariants.medium.url;
+					if (data.sizeVariants.medium2x !== null) {
+						srcset = data.sizeVariants.medium.url + " " + data.sizeVariants.medium.width + "w, " + data.sizeVariants.medium2x.url + " " + data.sizeVariants.medium2x.width + "w";
 					}
 				} else if (!data.type || data.type.indexOf("video") !== 0) {
 					src = data.url;
 				} else {
-					src = data.thumbUrl;
-					if (data.hasOwnProperty("thumb2x") && data.thumb2x !== "") {
-						srcset = data.thumbUrl + " 200w, " + data.thumb2x + " 400w";
+					src = data.sizeVariants.thumb.url;
+					if (data.sizeVariants.thumb2x !== null) {
+						srcset = data.sizeVariants.thumb.url + " " + data.sizeVariants.thumb.width + "w, " + data.sizeVariants.thumb2x.url + " " + data.sizeVariants.thumb2x.width + "w";
 					}
 				}
 			}
@@ -10308,7 +10315,7 @@ view.photo = {
 			var nextPhoto = album.getByID(nextPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
-			var thumbUrl = nextPhoto.thumbUrl;
+			var thumbUrl = nextPhoto.sizeVariants.thumb.url;
 
 			if (thumbUrl === "uploads/thumb/" && nextPhoto.type.indexOf("video") > -1) {
 				thumbUrl = "img/play-icon.png";
@@ -10323,7 +10330,7 @@ view.photo = {
 			var previousPhoto = album.getByID(previousPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
-			var _thumbUrl = previousPhoto.thumbUrl;
+			var _thumbUrl = previousPhoto.sizeVariants.thumb.url;
 
 			if (_thumbUrl === "uploads/thumb/" && previousPhoto.type.indexOf("video") > -1) {
 				_thumbUrl = "img/play-icon.png";
@@ -10382,12 +10389,12 @@ view.photo = {
 	},
 
 	onresize: function onresize() {
-		if (!_photo.json || _photo.json.medium === "" || !_photo.json.medium2x || _photo.json.medium2x === "") return;
+		if (!_photo.json || _photo.json.sizeVariants.medium === null || _photo.json.sizeVariants.medium2x === null) return;
 
 		// Calculate the width of the image in the current window without
 		// borders and set 'sizes' to it.
-		var imgWidth = parseInt(_photo.json.medium_dim);
-		var imgHeight = _photo.json.medium_dim.substr(_photo.json.medium_dim.lastIndexOf("x") + 1);
+		var imgWidth = _photo.json.sizeVariants.medium.width;
+		var imgHeight = _photo.json.sizeVariants.medium.height;
 		var containerWidth = $(window).outerWidth();
 		var containerHeight = $(window).outerHeight();
 

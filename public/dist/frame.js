@@ -1125,21 +1125,21 @@ frame.next = function () {
 
 frame.refreshPicture = function () {
 	api.post("Photo::getRandom", {}, function (data) {
-		if (!data.url && !data.medium) {
+		if (!data.url && (data.sizeVariants === null || data.sizeVariants.medium === null)) {
 			console.log("URL not found");
 		}
-		if (!data.thumbUrl) console.log("Thumb not found");
+		if (data.sizeVariants.thumb === null) console.log("Thumb not found");
 
-		$("#background").attr("src", data.thumbUrl);
+		$("#background").attr("src", data.sizeVariants.thumb.url);
 
 		var srcset = "";
 		var src = "";
 		this.frame.photo = null;
-		if (data.medium !== "") {
-			src = data.medium;
+		if (data.sizeVariants.medium !== null) {
+			src = data.sizeVariants.medium.url;
 
-			if (data.medium2x && data.medium2x !== "") {
-				srcset = data.medium + " " + parseInt(data.medium_dim, 10) + "w, " + data.medium2x + " " + parseInt(data.medium2x_dim, 10) + "w";
+			if (data.sizeVariants.medium2x !== null) {
+				srcset = data.sizeVariants.medium.url + " " + data.sizeVariants.medium.width + "w, " + data.sizeVariants.medium2x.url + " " + data.sizeVariants.medium2x.width + "w";
 				// We use it in the resize callback.
 				this.frame.photo = data;
 			}

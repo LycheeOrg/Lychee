@@ -58,15 +58,22 @@ class GeoDataTest extends TestCase
 				'focal' => '44 mm',
 				'altitude' => '1633.0000',
 				'license' => 'none',
-				'medium' => '',
-				'medium_dim' => '',
-				'medium2x' => '',
-				'medium2x_dim' => '',
-				'small_dim' => '542x360',
 				'takedate' => '17 August 2011 at 16:39',
 				'public' => '0',
 				'downloadable' => '1',
 				'share_button_visible' => '1',
+				'sizeVariants' => [
+					'thumb' => [
+						'width' => 200,
+						'height' => 200,
+					],
+					'small' => [
+						'width' => 542,
+						'height' => 360,
+					],
+					'medium' => null,
+					'medium2x' => null,
+				],
 			]
 		);
 

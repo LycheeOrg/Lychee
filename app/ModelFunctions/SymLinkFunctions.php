@@ -15,7 +15,7 @@ class SymLinkFunctions
 	 *
 	 * @return SymLink|null
 	 */
-	public function find(Photo $photo)
+	public function find(Photo $photo): ?SymLink
 	{
 		if (Storage::getDefaultDriver() == 's3') {
 			// @codeCoverageIgnoreStart
@@ -47,14 +47,19 @@ class SymLinkFunctions
 	}
 
 	/**
-	 * get URLS of pictures.
+	 * Get URLS of pictures.
 	 *
-	 * @param Photo $photo
-	 * @param $return
+	 * This method modifies the serialization of a photo such that the original URLs are replaced by symlinks.
+	 * *Attention:* The passed $photo and the passed array $return which represents the serialization of the photo must
+	 * match.
+	 * It is the caller's responsibility to ensure that $return equals $photo->toReturnArray().
+	 *
+	 * @param Photo $photo  The photo that is going to be serialized
+	 * @param array $return The serialization of the passed photo as returned by Photo#toReturnArray()
 	 */
 	public function getUrl(
 		Photo $photo,
-		&$return
+		array &$return
 	) {
 		$sym = $this->find($photo);
 		if ($sym != null) {

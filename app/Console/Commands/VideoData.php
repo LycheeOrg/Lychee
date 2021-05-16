@@ -126,7 +126,7 @@ class VideoData extends Command
 					$this->line('Updated metadata');
 				}
 
-				if ($photo->thumbUrl === '' || $photo->thumb2x === 0 || $photo->small === '' || $photo->small2x === '') {
+				if ($photo->thumbUrl === '' || $photo->thumb2x === 0 || $photo->small_width === null || $photo->small2x_width === null) {
 					$frame_tmp = '';
 					try {
 						$frame_tmp = $this->extractVideoFrame($photo);
@@ -142,7 +142,7 @@ class VideoData extends Command
 							$urlBase = explode('.', $photo->url);
 							$photo->thumbUrl = $urlBase[0] . '.jpeg';
 						}
-						if ($photo->small === '' || $photo->small2x === '') {
+						if ($photo->small_width === null || $photo->small2x_width === null) {
 							$this->createSmallerImages($photo, $frame_tmp);
 						}
 						unlink($frame_tmp);

@@ -16,7 +16,6 @@ class Prepare extends SymLinker
 	public function do(Photo $photo): array
 	{
 		$return = $photo->toReturnArray();
-		$photo->urls($return);
 
 		$this->symLinkFunctions->getUrl($photo, $return);
 

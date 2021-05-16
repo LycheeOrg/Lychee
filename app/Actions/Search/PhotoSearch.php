@@ -65,7 +65,6 @@ class PhotoSearch
 		return $photos->map(
 			function ($photo) {
 				$photo_array = $photo->toReturnArray();
-				$photo->urls($photo_array);
 				$this->symLinkFunctions->getUrl($photo, $photo_array);
 
 				return $photo_array;
