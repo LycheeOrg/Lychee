@@ -18,6 +18,7 @@ trait Metadata
 	 */
 	private function getFileMetadata($file, $path, $kind, $extension): array
 	{
+		/* @var  Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
 
 		$info = $metadataExtractor->extract($path, $kind);

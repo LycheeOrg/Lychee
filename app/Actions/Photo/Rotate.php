@@ -101,10 +101,9 @@ class Rotate
 		$photo->height = $old_width;
 
 		// The file size may have changed after the rotation.
+		/* @var  Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
-		$info = [];
-		$metadataExtractor->size($info, $new_path);
-		$photo->size = $info['size'];
+		$photo->filesize = $metadataExtractor->filesize($new_path);
 		// Also restore the original date.
 		if ($photo->takestamp) {
 			@touch($new_path, strtotime($photo->takestamp));
@@ -154,7 +153,7 @@ class Rotate
 				'url' => $photo->url,
 				'width' => $photo->width,
 				'height' => $photo->height,
-				'size' => $photo->size,
+				'filesize' => $photo->filesize,
 				'thumbUrl' => $photo->thumbUrl,
 				'thumb2x' => $photo->thumb2x,
 				'small' => $photo->small,

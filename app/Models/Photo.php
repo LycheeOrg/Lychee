@@ -27,7 +27,7 @@ use Storage;
  * @property string      $type
  * @property int|null    $width
  * @property int|null    $height
- * @property string      $size
+ * @property int         $filesize
  * @property string      $iso
  * @property string      $aperture
  * @property string      $make
