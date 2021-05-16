@@ -44,7 +44,7 @@ class PhotosRotateTest extends TestCase
 		$response->assertJson([
 			'height' => 4480,
 			'id' => $id,
-			'size' => '20.1 MB',
+			'filesize' => 21104156,
 			'width' => 6720,
 			'sizeVariants' => [
 				'small' => [
@@ -79,7 +79,7 @@ class PhotosRotateTest extends TestCase
 		$response->assertJson([
 			'height' => 6720,
 			'id' => $id,
-			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
+			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
 			'width' => 4480,
 			'sizeVariants' => [
 				'small' => [
@@ -102,7 +102,7 @@ class PhotosRotateTest extends TestCase
 		$response->assertJson([
 			'height' => 4480,
 			'id' => $id,
-			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
+			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
 			'width' => 6720,
 			'sizeVariants' => [
 				'small' => [

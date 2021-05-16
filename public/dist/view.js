@@ -1585,7 +1585,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.image = {
 		title: lychee.locale[isVideo ? "PHOTO_VIDEO" : "PHOTO_IMAGE"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: data.size }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, { title: lychee.locale["PHOTO_RESOLUTION"], kind: "resolution", value: data.width + " x " + data.height }]
+		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, { title: lychee.locale["PHOTO_RESOLUTION"], kind: "resolution", value: data.width + " x " + data.height }]
 	};
 
 	if (isVideo) {
@@ -2727,7 +2727,37 @@ lychee.locale = {
 	PHOTO_THUMB: "Square thumb",
 	PHOTO_THUMB_HIDPI: "Square thumb HiDPI",
 	PHOTO_LIVE_VIDEO: "Video part of live-photo",
-	PHOTO_VIEW: "Lychee Photo View:"
+	PHOTO_VIEW: "Lychee Photo View:",
+
+	/**
+  * Formats a number representing a filesize in bytes as a localized string
+  * @param {!number} filesize
+  * @return {string} A formatted and localized string
+  */
+	printFilesizeLocalized: function printFilesizeLocalized(filesize) {
+		console.assert(Number.isInteger(filesize), "printFilesizeLocalized: expected integer, got %s", typeof filesize === "undefined" ? "undefined" : _typeof(filesize));
+		var suffix = [" B", " kB", " MB", " GB"];
+		var i = 0;
+		// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
+		// We aim at a number which has at most 3 non-decimal digits, i.e. the result shall be in the interval
+		// [1000/1024, 1000) = [0.977, 1000)  (lower bound included, upper bound excluded)
+		while (filesize >= 1000.0 && i < suffix.length) {
+			filesize = filesize / 1024.0;
+			i++;
+		}
+
+		// The number of decimal digits is anti-proportional to the number of non-decimal digits
+		// In total, there shall always be three digits
+		if (filesize >= 100.0) {
+			filesize = Math.round(filesize);
+		} else if (filesize >= 10.0) {
+			filesize = Math.round(filesize * 10.0) / 10.0;
+		} else {
+			filesize = Math.round(filesize * 100.0) / 100.0;
+		}
+
+		return Number(filesize).toLocaleString() + suffix[i];
+	}
 };
 
 /**

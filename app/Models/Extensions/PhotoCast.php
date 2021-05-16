@@ -62,7 +62,7 @@ trait PhotoCast
 			'width' => $this->width !== null ? $this->width : 0,
 			'height' => $this->height !== null ? $this->height : 0,
 			'type' => $this->type,
-			'size' => $this->size,
+			'filesize' => $this->filesize,
 			'iso' => $this->iso,
 			'aperture' => $this->aperture,
 			'make' => $this->make,

@@ -49,7 +49,7 @@ class GeoDataTest extends TestCase
 				'width' => '1280',
 				'height' => '850',
 				'type' => 'image/jpeg',
-				'size' => '196.6 KB',
+				'filesize' => 201316,
 				'iso' => '200',
 				'aperture' => 'f/13.0',
 				'make' => 'NIKON CORPORATION',

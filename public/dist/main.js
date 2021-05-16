@@ -291,9 +291,9 @@ if (L.MarkerClusterGroup) {
 
 "use strict";
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'></p>"], ["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'></p>"]),
     _templateObject2 = _taggedTemplateLiteral(["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"], ["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"]),
@@ -1838,7 +1838,7 @@ album.updatePhoto = function (data) {
 				this.width = data.width;
 				this.height = data.height;
 				this.url = data.url;
-				this.size = data.size;
+				this.filesize = data.filesize;
 				// Deep copy size variants
 				this.sizeVariants = {
 					thumb: null,
@@ -5527,7 +5527,37 @@ lychee.locale = {
 	PHOTO_THUMB: "Square thumb",
 	PHOTO_THUMB_HIDPI: "Square thumb HiDPI",
 	PHOTO_LIVE_VIDEO: "Video part of live-photo",
-	PHOTO_VIEW: "Lychee Photo View:"
+	PHOTO_VIEW: "Lychee Photo View:",
+
+	/**
+  * Formats a number representing a filesize in bytes as a localized string
+  * @param {!number} filesize
+  * @return {string} A formatted and localized string
+  */
+	printFilesizeLocalized: function printFilesizeLocalized(filesize) {
+		console.assert(Number.isInteger(filesize), "printFilesizeLocalized: expected integer, got %s", typeof filesize === "undefined" ? "undefined" : _typeof(filesize));
+		var suffix = [" B", " kB", " MB", " GB"];
+		var i = 0;
+		// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
+		// We aim at a number which has at most 3 non-decimal digits, i.e. the result shall be in the interval
+		// [1000/1024, 1000) = [0.977, 1000)  (lower bound included, upper bound excluded)
+		while (filesize >= 1000.0 && i < suffix.length) {
+			filesize = filesize / 1024.0;
+			i++;
+		}
+
+		// The number of decimal digits is anti-proportional to the number of non-decimal digits
+		// In total, there shall always be three digits
+		if (filesize >= 100.0) {
+			filesize = Math.round(filesize);
+		} else if (filesize >= 10.0) {
+			filesize = Math.round(filesize * 10.0) / 10.0;
+		} else {
+			filesize = Math.round(filesize * 100.0) / 100.0;
+		}
+
+		return Number(filesize).toLocaleString() + suffix[i];
+	}
 };
 
 /**
@@ -7089,7 +7119,7 @@ _photo.getArchive = function (photoIDs) {
 		var msg = lychee.html(_templateObject62);
 
 		if (myPhoto.url) {
-			msg += buildButton("FULL", lychee.locale["PHOTO_FULL"] + " (" + myPhoto.width + "x" + myPhoto.height + ", " + myPhoto.size + ")");
+			msg += buildButton("FULL", lychee.locale["PHOTO_FULL"] + " (" + myPhoto.width + "x" + myPhoto.height + ", " + lychee.locale.printFilesizeLocalized(myPhoto.filesize) + ")");
 		}
 		if (myPhoto.livePhotoUrl !== null) {
 			msg += buildButton("LIVEPHOTOVIDEO", "" + lychee.locale["PHOTO_LIVE_VIDEO"]);
@@ -8151,7 +8181,7 @@ _sidebar.createStructure.photo = function (data) {
 	structure.image = {
 		title: lychee.locale[isVideo ? "PHOTO_VIDEO" : "PHOTO_IMAGE"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: data.size }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, { title: lychee.locale["PHOTO_RESOLUTION"], kind: "resolution", value: data.width + " x " + data.height }]
+		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, { title: lychee.locale["PHOTO_RESOLUTION"], kind: "resolution", value: data.width + " x " + data.height }]
 	};
 
 	if (isVideo) {
