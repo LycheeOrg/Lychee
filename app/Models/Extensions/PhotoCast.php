@@ -34,7 +34,7 @@ trait PhotoCast
 				Photo::VARIANT_THUMB, $this->thumbUrl, Photo::THUMBNAIL_DIM, Photo::THUMBNAIL_DIM
 			),
 			Photo::VARIANT_THUMB2X => $this->serializeSizeVariant(
-				Photo::VARIANT_THUMB, $thumbFileName2x, Photo::THUMBNAIL2X_DIM, Photo::THUMBNAIL2X_DIM
+				Photo::VARIANT_THUMB2X, $thumbFileName2x, Photo::THUMBNAIL2X_DIM, Photo::THUMBNAIL2X_DIM
 			),
 			Photo::VARIANT_SMALL => $this->serializeSizeVariant(
 				Photo::VARIANT_SMALL, $filename, $this->small_width, $this->small_height
