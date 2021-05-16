@@ -75,12 +75,8 @@ class ExifLens extends Command
 			if (file_exists($url)) {
 				$info = $this->metadataExtractor->extract($url, $photo->type);
 				$updated = false;
-				if ($photo->size == '' && $info['size'] != '') {
-					$photo->size = $info['size'];
-					$updated = true;
-				}
-				if ($photo->filesize_raw != $info['filesize_raw']) {
-					$photo->filesize_raw = $info['filesize_raw'];
+				if ($photo->filesize == '' && $info['filesize'] != '') {
+					$photo->filesize = $info['filesize'];
 					$updated = true;
 				}
 				if ($photo->iso == '' && $info['iso'] != '') {

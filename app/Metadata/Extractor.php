@@ -38,8 +38,7 @@ class Extractor
 			'altitude' => null,
 			'imgDirection' => null,
 			'location' => null,
-			'size' => 0,
-			'filesize_raw' => 0,
+			'filesize' => 0,
 			'livePhotoContentID' => null,
 			'livePhotoStillImageTime' => null,
 			'MicroVideoOffset' => null,
@@ -47,20 +46,21 @@ class Extractor
 	}
 
 	/**
-	 * @param array  $metadata
-	 * @param string $filename
+	 * Returns the size of a file in bytes.
+	 *
+	 * @param string $path The relative file path
+	 *
+	 * @return int The file size in bytes or 0 in case of a failure
 	 */
-	public function size(array &$metadata, string $filename)
+	public function filesize(string $path): int
 	{
-		// Size
-		$filesize_raw = filesize($filename);
-		$metadata['filesize_raw'] = $filesize_raw;
-		$size = $filesize_raw / 1024;
+		return (int) filesize($path);
+		/*$size = $filesize_raw / 1024;
 		if ($size >= 1024) {
-			$metadata['size'] = round($size / 1024, 1) . ' MB';
+			$metadata['filesize'] = round($size / 1024, 1) . ' MB';
 		} else {
-			$metadata['size'] = round($size, 1) . ' KB';
-		}
+			$metadata['filesize'] = round($size, 1) . ' KB';
+		}*/
 	}
 
 	/**
@@ -178,8 +178,7 @@ class Extractor
 		$metadata['longitude'] = ($exif->getLongitude() !== false) ? $exif->getLongitude() : null;
 		$metadata['altitude'] = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
 		$metadata['imgDirection'] = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
-		$metadata['size'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
-		$metadata['filesize_raw'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
+		$metadata['filesize'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
 		$metadata['livePhotoContentID'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
 
@@ -307,14 +306,6 @@ class Extractor
 
 		if ($metadata['shutter'] !== '') {
 			$metadata['shutter'] = $metadata['shutter'] . ' s';
-		}
-		if ($metadata['size'] > 0) {
-			$metadata['size'] = $metadata['size'] / 1024;
-			if ($metadata['size'] >= 1024) {
-				$metadata['size'] = round($metadata['size'] / 1024, 1) . ' MB';
-			} else {
-				$metadata['size'] = round($metadata['size'], 1) . ' KB';
-			}
 		}
 
 		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr

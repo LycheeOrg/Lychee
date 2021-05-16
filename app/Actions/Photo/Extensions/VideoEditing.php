@@ -33,6 +33,7 @@ trait VideoEditing
 		if ($photo->aperture === '') {
 			$path = Storage::path('big/' . $photo->url);
 
+			/* @var  Extractor $metadataExtractor */
 			$metadataExtractor = resolve(Extractor::class);
 			$info = $metadataExtractor->extract($path, 'video');
 			$photo->aperture = $info['aperture'];
