@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\Configs;
+use App\Models\Photo as PhotoModel;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
@@ -27,8 +28,8 @@ class Photo extends Component
 	public $srcset2x = '';
 
 	public $layout = false;
-	public int $_w = \App\Models\Photo::THUMBNAIL_DIM;
-	public int $_h = \App\Models\Photo::THUMBNAIL_DIM;
+	public int $_w = PhotoModel::THUMBNAIL_DIM;
+	public int $_h = PhotoModel::THUMBNAIL_DIM;
 
 	/**
 	 * Create a new component instance.

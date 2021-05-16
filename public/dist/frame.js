@@ -1125,7 +1125,7 @@ frame.next = function () {
 
 frame.refreshPicture = function () {
 	api.post("Photo::getRandom", {}, function (data) {
-		if (!data.url && data.sizeVariants.medium === null) {
+		if (!data.url && (data.sizeVariants === null || data.sizeVariants.medium === null)) {
 			console.log("URL not found");
 		}
 		if (data.sizeVariants.thumb === null) console.log("Thumb not found");

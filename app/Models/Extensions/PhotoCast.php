@@ -16,7 +16,7 @@ trait PhotoCast
 	 */
 	public function toReturnArray(): array
 	{
-		if (strpos($this->type, 'video') === 0) {
+		if ($this->isVideo()) {
 			$filename = $this->thumbUrl;
 		} elseif ($this->type == 'raw') {
 			// It's a raw file -> we also use jpeg as extension
@@ -101,11 +101,15 @@ trait PhotoCast
 	 */
 	protected function serializeSizeVariant(string $sizeVariant, ?string $fileName, ?int $width, ?int $height): ?array
 	{
-		return ($width === null || $height === null || $fileName === null || $fileName === '') ? null : [
-			'url' => Storage::url(Photo::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/' . $fileName),
-			'width' => $width,
-			'height' => $height,
-		];
+		if ($width === null || $height === null || $fileName === null || $fileName === '') {
+			return null;
+		} else {
+			return [
+				'url' => Storage::url(Photo::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/' . $fileName),
+				'width' => $width,
+				'height' => $height,
+			];
+		}
 	}
 
 	/**

@@ -1823,6 +1823,15 @@ album.isUploadable = function () {
 };
 
 album.updatePhoto = function (data) {
+	var deepCopySizeVariant = function deepCopySizeVariant(src) {
+		if (src === undefined || src === null) return null;
+		var result = {};
+		result.url = src.url;
+		result.width = src.width;
+		result.height = src.height;
+		return result;
+	};
+
 	if (album.json) {
 		$.each(album.json.photos, function () {
 			if (this.id === data.id) {
@@ -1831,58 +1840,24 @@ album.updatePhoto = function (data) {
 				this.url = data.url;
 				this.size = data.size;
 				// Deep copy size variants
-				this.sizeVariants = {};
-				if (data.sizeVariants.thumb !== null) {
-					this.sizeVariants.thumb = {};
-					this.sizeVariants.thumb.url = data.sizeVariants.thumb.url;
-					this.sizeVariants.thumb.width = data.sizeVariants.thumb.width;
-					this.sizeVariants.thumb.height = data.sizeVariants.thumb.height;
-				} else {
-					this.sizeVariants.thumb = null;
-				}
-				if (data.sizeVariants.thumb2x !== null) {
-					this.sizeVariants.thumb2x = {};
-					this.sizeVariants.thumb2x.url = data.sizeVariants.thumb2x.url;
-					this.sizeVariants.thumb2x.width = data.sizeVariants.thumb2x.width;
-					this.sizeVariants.thumb2x.height = data.sizeVariants.thumb2x.height;
-				} else {
-					this.sizeVariants.thumb2x = null;
-				}
-				if (data.sizeVariants.small !== null) {
-					this.sizeVariants.small = {};
-					this.sizeVariants.small.url = data.sizeVariants.small.url;
-					this.sizeVariants.small.width = data.sizeVariants.small.width;
-					this.sizeVariants.small.height = data.sizeVariants.small.height;
-				} else {
-					this.sizeVariants.small = null;
-				}
-				if (data.sizeVariants.small2x !== null) {
-					this.sizeVariants.small2x = {};
-					this.sizeVariants.small2x.url = data.sizeVariants.small2x.url;
-					this.sizeVariants.small2x.width = data.sizeVariants.small2x.width;
-					this.sizeVariants.small2x.height = data.sizeVariants.small2x.height;
-				} else {
-					this.sizeVariants.small2x = null;
-				}
-				if (data.sizeVariants.medium !== null) {
-					this.sizeVariants.medium = {};
-					this.sizeVariants.medium.url = data.sizeVariants.medium.url;
-					this.sizeVariants.medium.width = data.sizeVariants.medium.width;
-					this.sizeVariants.medium.height = data.sizeVariants.medium.height;
-				} else {
-					this.sizeVariants.medium = null;
-				}
-				if (data.sizeVariants.medium2x !== null) {
-					this.sizeVariants.medium2x = {};
-					this.sizeVariants.medium2x.url = data.sizeVariants.medium2x.url;
-					this.sizeVariants.medium2x.width = data.sizeVariants.medium2x.width;
-					this.sizeVariants.medium2x.height = data.sizeVariants.medium2x.height;
-				} else {
-					this.sizeVariants.medium2x = null;
+				this.sizeVariants = {
+					thumb: null,
+					thumb2x: null,
+					small: null,
+					small2x: null,
+					medium: null,
+					medium2x: null
+				};
+				if (data.sizeVariants !== undefined && data.sizeVariants !== null) {
+					this.sizeVariants.thumb = deepCopySizeVariant(data.sizeVariants.thumb);
+					this.sizeVariants.thumb2x = deepCopySizeVariant(data.sizeVariants.thumb2x);
+					this.sizeVariants.small = deepCopySizeVariant(data.sizeVariants.small);
+					this.sizeVariants.small2x = deepCopySizeVariant(data.sizeVariants.small2x);
+					this.sizeVariants.medium = deepCopySizeVariant(data.sizeVariants.medium);
+					this.sizeVariants.medium2x = deepCopySizeVariant(data.sizeVariants.medium2x);
 				}
 				view.album.content.updatePhoto(this);
 				albums.refresh();
-
 				return false;
 			}
 			return true;
@@ -6387,7 +6362,7 @@ _photo.preloadNextPrev = function (photoID) {
 		var previousPhotoID = album.getByID(photoID).previousPhoto;
 		var nextPhotoID = album.getByID(photoID).nextPhoto;
 		var imgs = $("img#image");
-		var isUsing2xCurrently = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");;
+		var isUsing2xCurrently = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");
 
 		$("head [data-prefetch]").remove();
 
