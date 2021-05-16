@@ -36,7 +36,7 @@ return [
 	 *
 	 * Reference: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
 	 *
-	 * Available Value: 'deny', 'sameorigin', 'allow-from <uri>'
+	 * Available Value: 'deny', 'sameorigin'
 	 */
 
 	'x-frame-options' => 'deny',    // deny because we don't use frame.
