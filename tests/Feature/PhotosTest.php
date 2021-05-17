@@ -200,6 +200,9 @@ class PhotosTest extends TestCase
 		$photos_tests = new PhotosUnitTest($this);
 
 		AccessControl::log_as_id(0);
+		// MUST use exiftool to get live photo metadata
+		$init_config_value = Configs::get_value('has_exiftool');
+		Configs::set('has_exiftool', '1');
 
 		/*
 		 * Make a copy of the image because import deletes the file and we want to be
@@ -233,6 +236,7 @@ class PhotosTest extends TestCase
 		$this->assertEquals($photo->livePhotoContentID, 'E905E6C6-C747-4805-942F-9904A0281F02');
 		$this->assertStringEndsWith('.mov', $photo->livePhotoUrl);
 
+		Configs::set('has_exiftool', $init_config_value);
 		AccessControl::logout();
 	}
 
