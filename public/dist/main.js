@@ -1973,7 +1973,7 @@ albums._createSmartAlbums = function (data) {
 		data.unsorted = {
 			id: "unsorted",
 			title: lychee.locale["UNSORTED"],
-			sysdate: "",
+			created_at: null,
 			unsorted: "1",
 			thumbs: data.unsorted.thumbs,
 			thumbs2x: data.unsorted.thumbs2x ? data.unsorted.thumbs2x : null,
@@ -1985,7 +1985,7 @@ albums._createSmartAlbums = function (data) {
 		data.starred = {
 			id: "starred",
 			title: lychee.locale["STARRED"],
-			sysdate: "",
+			created_at: null,
 			star: "1",
 			thumbs: data.starred.thumbs,
 			thumbs2x: data.starred.thumbs2x ? data.starred.thumbs2x : null,
@@ -1997,7 +1997,7 @@ albums._createSmartAlbums = function (data) {
 		data.public = {
 			id: "public",
 			title: lychee.locale["PUBLIC"],
-			sysdate: "",
+			created_at: null,
 			public: "1",
 			thumbs: data.public.thumbs,
 			thumbs2x: data.public.thumbs2x ? data.public.thumbs2x : null,
@@ -2010,7 +2010,7 @@ albums._createSmartAlbums = function (data) {
 		data.recent = {
 			id: "recent",
 			title: lychee.locale["RECENT"],
-			sysdate: "",
+			created_at: null,
 			recent: "1",
 			thumbs: data.recent.thumbs,
 			thumbs2x: data.recent.thumbs2x ? data.recent.thumbs2x : null,
@@ -2180,7 +2180,10 @@ build.getAlbumThumb = function (data) {
 build.album = function (data) {
 	var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
-	var subtitle = data.sysdate;
+	var formattedCreationTs = lychee.locale.printMonthYear(data.created_at);
+	var formattedMinTs = lychee.locale.printMonthYear(data.min_takestamp);
+	var formattedMaxTs = lychee.locale.printMonthYear(data.max_takestamp);
+	var subtitle = formattedCreationTs;
 
 	// check setting album_subtitle_type:
 	// takedate: date range (min/max_takedate from EXIF; if missing defaults to creation)
@@ -2192,9 +2195,9 @@ build.album = function (data) {
 			subtitle = data.description ? data.description : "";
 			break;
 		case "takedate":
-			if (data.min_takestamp && data.min_takestamp !== "" || data.max_takestamp && data.max_takestamp !== "") {
-				// either min_takestamp or max_takestamp set and not null
-				subtitle = data.min_takestamp === data.max_takestamp ? data.max_takestamp : data.min_takestamp + " - " + data.max_takestamp;
+			if (formattedMinTs !== "" || formattedMaxTs !== "") {
+				// either min_takestamp or max_takestamp is set
+				subtitle = formattedMinTs === formattedMaxTs ? formattedMaxTs : formattedMinTs + " - " + formattedMaxTs;
 				subtitle = "<span title='Camera Date'>" + build.iconic("camera-slr") + "</span>" + subtitle;
 				break;
 			}
@@ -2206,12 +2209,12 @@ build.album = function (data) {
 			if (lychee.sortingAlbums !== "" && data.min_takestamp && data.max_takestamp) {
 				var sortingAlbums = lychee.sortingAlbums.replace("ORDER BY ", "").split(" ");
 				if (sortingAlbums[0] === "max_takestamp" || sortingAlbums[0] === "min_takestamp") {
-					if (data.min_takestamp !== "" && data.max_takestamp !== "") {
-						subtitle = data.min_takestamp === data.max_takestamp ? data.max_takestamp : data.min_takestamp + " - " + data.max_takestamp;
-					} else if (data.min_takestamp !== "" && sortingAlbums[0] === "min_takestamp") {
-						subtitle = data.min_takestamp;
-					} else if (data.max_takestamp !== "" && sortingAlbums[0] === "max_takestamp") {
-						subtitle = data.max_takestamp;
+					if (formattedMinTs !== "" && formattedMaxTs !== "") {
+						subtitle = formattedMinTs === formattedMaxTs ? formattedMaxTs : formattedMinTs + " - " + formattedMaxTs;
+					} else if (formattedMinTs !== "" && sortingAlbums[0] === "min_takestamp") {
+						subtitle = formattedMinTs;
+					} else if (formattedMaxTs !== "" && sortingAlbums[0] === "max_takestamp") {
+						subtitle = formattedMaxTs;
 					}
 				}
 			}
@@ -2316,7 +2319,7 @@ build.photo = function (data) {
 
 	html += lychee.html(_templateObject24, disabled ? "disabled" : "", data.album, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
 
-	if (data.takedate !== "") html += lychee.html(_templateObject25, build.iconic("camera-slr"), data.takedate);else html += lychee.html(_templateObject26, data.sysdate);
+	if (data.takestamp !== null) html += lychee.html(_templateObject25, build.iconic("camera-slr"), lychee.locale.printDateTime(data.takestamp));else html += lychee.html(_templateObject26, lychee.locale.printDateTime(data.created_at));
 
 	html += "</div>";
 
@@ -2353,7 +2356,7 @@ build.overlay_image = function (data) {
 			overlay = data.description;
 			break;
 		case "date":
-			if (data.takedate && data.takedate !== "") overlay = "<a><span title='Camera Date'>" + build.iconic("camera-slr") + "</span>" + data.takedate + "</a>";else overlay = data.sysdate;
+			if (data.takestamp != null) overlay = "<a><span title='Camera Date'>" + build.iconic("camera-slr") + "</span>" + lychee.locale.printDateTime(data.takestamp) + "</a>";else overlay = lychee.locale.printDateTime(data.created_at);
 			break;
 		case "exif":
 			var exifHash = data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
@@ -5557,6 +5560,42 @@ lychee.locale = {
 		}
 
 		return Number(filesize).toLocaleString() + suffix[i];
+	},
+
+	/**
+  * Converts a JSON encoded date/time into a localized string.
+  *
+  * The localized string uses the JS "medium" verbosity.
+  * The precise definition of "medium verbosity" depends on the current locale, but for Western languages this
+  * means that the date portion is fully printed with digits (e.g. something like 03/30/2021 for English,
+  * 30/03/2021 for French and 30.03.2021 for German), and that the time portion is printed with a resolution of
+  * seconds with two digits for all parts either in 24h or 12h scheme (e.g. something like 02:24:13pm for English
+  * and 14:24:13 for French/German).
+  *
+  * @param {?string} jsonDateTime
+  * @return {string} A formatted and localized time
+  */
+	printDateTime: function printDateTime(jsonDateTime) {
+		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
+		var locale = "default"; // use the user's browser settings
+		var format = { dateStyle: "medium", timeStyle: "medium" };
+		return new Date(jsonDateTime).toLocaleString(locale, format);
+	},
+
+	/**
+  * Converts a JSON encoded date/time into a localized string which only displays month and year.
+  *
+  * The month is printed as a shortened word with 3/4 letters, the year is printed with 4 digits (e.g. something like
+  * "Aug 2020" in English or "Août 2020" in French).
+  *
+  * @param {?string} jsonDateTime
+  * @return {string} A formatted and localized month and year
+  */
+	printMonthYear: function printMonthYear(jsonDateTime) {
+		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
+		var locale = "default"; // use the user's browser settings
+		var format = { month: "short", year: "numeric" };
+		return new Date(jsonDateTime).toLocaleDateString(locale, format);
 	}
 };
 
@@ -5689,14 +5728,21 @@ mapview.open = function () {
 
 	// Define how the photos on the map should look like
 	mapview.photoLayer = L.photo.cluster().on("click", function (e) {
-		var photo = e.layer.photo;
+		var photo = {
+			photoID: e.layer.photo.photoID,
+			albumID: e.layer.photo.albumID,
+			name: e.layer.photo.name,
+			url: e.layer.photo.url,
+			url2x: e.layer.photo.url2x,
+			takestamp: lychee.locale.printDateTime(e.layer.photo.takestamp)
+		};
 		var template = "";
 
 		// Retina version if available
 		if (photo.url2x !== "") {
-			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'srcset="{url} 1x, {url2x} 2x" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), "</span><p>{takedate}</p></div>");
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'srcset="{url} 1x, {url2x} 2x" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), "</span><p>{takestamp}</p></div>");
 		} else {
-			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), "</span><p>{takedate}</p></div>");
+			template = template.concat('<img class="image-leaflet-popup" src="{url}" ', 'data-album-id="{albumID}" data-id="{photoID}"/><div><h1>{name}</h1><span title="Camera Date">', build.iconic("camera-slr"), "</span><p>{takestamp}</p></div>");
 		}
 
 		e.layer.bindPopup(L.Util.template(template, photo), {
@@ -5732,7 +5778,7 @@ mapview.open = function () {
 					url: element.sizeVariants.small !== null ? element.sizeVariants.small.url : element.url,
 					url2x: element.sizeVariants.small2x !== null ? element.sizeVariants.small2x.url : null,
 					name: element.title,
-					takedate: element.takedate,
+					takestamp: element.takestamp,
 					albumID: element.album,
 					photoID: element.id
 				});
@@ -6353,8 +6399,8 @@ _photo.hasExif = function () {
 	return exifHash !== "";
 };
 
-_photo.hasTakedate = function () {
-	return _photo.json.takedate && _photo.json.takedate !== "";
+_photo.hasTakestamp = function () {
+	return _photo.json.takestamp !== null;
 };
 
 _photo.hasDesc = function () {
@@ -8133,7 +8179,7 @@ _sidebar.createStructure.photo = function (data) {
 	if (data == null || data === "") return false;
 
 	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
-	var exifHash = data.takedate + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
+	var exifHash = data.takestamp + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
 	var locationHash = data.longitude + data.latitude + data.altitude;
 	var structure = {};
 	var _public = "";
@@ -8175,7 +8221,7 @@ _sidebar.createStructure.photo = function (data) {
 	structure.basics = {
 		title: lychee.locale["PHOTO_BASICS"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: data.sysdate }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
 	};
 
 	structure.image = {
@@ -8216,7 +8262,7 @@ _sidebar.createStructure.photo = function (data) {
 		structure.exif = {
 			title: lychee.locale["PHOTO_CAMERA"],
 			type: _sidebar.types.DEFAULT,
-			rows: isVideo ? [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: data.takedate }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }] : [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: data.takedate }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }, { title: lychee.locale["PHOTO_LENS"], kind: "lens", value: data.lens }, { title: lychee.locale["PHOTO_SHUTTER"], kind: "shutter", value: data.shutter }, { title: lychee.locale["PHOTO_APERTURE"], kind: "aperture", value: data.aperture }, { title: lychee.locale["PHOTO_FOCAL"], kind: "focal", value: data.focal }, { title: lychee.locale["PHOTO_ISO"], kind: "iso", value: data.iso }]
+			rows: isVideo ? [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.takestamp) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }] : [{ title: lychee.locale["PHOTO_CAPTURED"], kind: "takedate", value: lychee.locale.printDateTime(data.takestamp) }, { title: lychee.locale["PHOTO_MAKE"], kind: "make", value: data.make }, { title: lychee.locale["PHOTO_TYPE"], kind: "model", value: data.model }, { title: lychee.locale["PHOTO_LENS"], kind: "lens", value: data.lens }, { title: lychee.locale["PHOTO_SHUTTER"], kind: "shutter", value: data.shutter }, { title: lychee.locale["PHOTO_APERTURE"], kind: "aperture", value: data.aperture }, { title: lychee.locale["PHOTO_FOCAL"], kind: "focal", value: data.focal }, { title: lychee.locale["PHOTO_ISO"], kind: "iso", value: data.iso }]
 		};
 	} else {
 		structure.exif = {};
@@ -8394,7 +8440,7 @@ _sidebar.createStructure.album = function (album) {
 	structure.album = {
 		title: lychee.locale["ALBUM_ALBUM"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_CREATED"], kind: "created", value: data.sysdate }]
+		rows: [{ title: lychee.locale["ALBUM_CREATED"], kind: "created", value: lychee.locale.printDateTime(data.created_at) }]
 	};
 	if (data.albums && data.albums.length > 0) {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_SUBALBUMS"], kind: "subalbums", value: data.albums.length });
