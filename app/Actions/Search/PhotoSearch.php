@@ -56,7 +56,7 @@ class PhotoSearch
 					->orWhere('tags', 'like', '%' . $escaped_term . '%')
 					->orWhere('location', 'like', '%' . $escaped_term . '%')
 					->orWhere('model', 'like', '%' . $escaped_term . '%')
-					->orWhere('takestamp', 'like', '%' . $escaped_term . '%')
+					->orWhere('taken_at', 'like', '%' . $escaped_term . '%')
 			);
 		}
 

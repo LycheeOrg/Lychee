@@ -111,7 +111,7 @@ class PhotosTest extends TestCase
 			'filesize' => 21104156,
 			'star' => '1',
 			'tags' => 'night',
-			'takestamp' => '2019-05-31T23:28:25.000000Z',
+			'taken_at' => '2019-06-01T03:28:25+0200',
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',
 			'width' => 6720,

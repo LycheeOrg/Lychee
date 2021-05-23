@@ -48,7 +48,7 @@ class Takedate extends Command
 		if ($force) {
 			$photos = Photo::offset($from)->limit($argument)->get();
 		} else {
-			$photos = Photo::whereNull('takestamp')->offset($from)->limit($argument)->get();
+			$photos = Photo::whereNull('taken_at')->offset($from)->limit($argument)->get();
 		}
 		if (count($photos) == 0) {
 			$this->line('No pictures require takedate updates.');
@@ -67,13 +67,13 @@ class Takedate extends Command
 			}
 			$info = $metadataExtractor->extract($url, $photo->type);
 			/* @var \DateTime $stamp */
-			$stamp = $info['takestamp'];
+			$stamp = $info['taken_at'];
 			if ($stamp != null) {
 				if ($stamp == $photo->takestamp) {
 					$this->line($i . ': Takestamp up to date for ' . $photo->title);
 					continue;
 				}
-				$photo->takestamp = $stamp;
+				$photo->taken_at = $stamp;
 				if ($photo->save()) {
 					$this->line($i . ': Takestamp updated to ' . $stamp->format('d M Y \a\t H:i') . ' for ' . $photo->title);
 				} else {

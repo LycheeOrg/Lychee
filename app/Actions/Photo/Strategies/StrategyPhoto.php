@@ -94,8 +94,8 @@ class StrategyPhoto extends StrategyPhotoBase
 			}
 
 			// Set original date
-			if ($create->info['takestamp'] !== null) {
-				@touch($create->path, $create->info['takestamp']->getTimestamp());
+			if ($create->info['taken_at'] !== null) {
+				@touch($create->path, $create->info['taken_at']->getTimestamp());
 			}
 
 			// For videos extract a frame from the middle

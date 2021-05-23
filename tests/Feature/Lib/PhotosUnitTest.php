@@ -46,9 +46,6 @@ class PhotosUnitTest
 				'0' => $file,
 			]
 		);
-		if ($response->getStatusCode() !== 200) {
-			$response->dump();
-		}
 		$response->assertStatus(200);
 		$response->assertDontSee('Error');
 
@@ -431,9 +428,6 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Photo::delete', [
 			'photoIDs' => $id,
 		]);
-		if ($response->getStatusCode() !== 200) {
-			$response->dump();
-		}
 		$response->assertStatus(200);
 		$response->assertSee($result, false);
 	}

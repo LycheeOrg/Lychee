@@ -4,12 +4,12 @@
 
 namespace App\Models;
 
+use App\Casts\DateTimeWithTimezoneCast;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\PhotoGetters;
 use Helpers;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Storage;
@@ -40,7 +40,8 @@ use Storage;
  * @property float|null  $altitude
  * @property float|null  imgDirection
  * @property string|null location
- * @property Carbon|null $takestamp
+ * @property Carbon|null $taken_at
+ * @property string|null $taken_at_orig_tz
  * @property int         $star
  * @property string      $thumbUrl
  * @property string      $livePhotoUrl
@@ -112,7 +113,7 @@ use Storage;
  * @method static Builder|Photo whereWidth($value)
  * @mixin Eloquent
  */
-class Photo extends Model
+class Photo extends PatchedBaseModel
 {
 	use PhotoBooleans;
 	use PhotoCast;
@@ -141,22 +142,14 @@ class Photo extends Model
 		self::VARIANT_ORIGINAL => 'big',
 	];
 
-	/**
-	 * This extends the date types from Model to allow coercion with Carbon object.
-	 *
-	 * @var array dates
-	 */
-	protected $dates = [
-		'created_at',
-		'updated_at',
-		'takestamp',
-	];
-
 	protected $casts = [
 		'public' => 'int',
 		'star' => 'int',
 		'downloadable' => 'int',
 		'share_button_visible' => 'int',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+		'taken_at' => DateTimeWithTimezoneCast::class,
 	];
 
 	/**
@@ -354,5 +347,37 @@ class Photo extends Model
 		}
 
 		return ($sql->count() == 0) ? false : $sql->first();
+	}
+
+	/**
+	 * Sets the datetime when the photo has been taken.
+	 *
+	 * This mutator also sets the internal attribute `taken_at_orig_tz`
+	 * accordingly.
+	 *
+	 * @param Carbon|null $datetime The datetime when the photo
+	 *                              has been taken
+	 */
+	public function setTakenAtAttribute(?Carbon $datetime)
+	{
+		//throw new \BadMethodCallException('Whoops! Mutator for attribute \'taken_at\' called');
+		$this->attributes['taken_at'] = $datetime;
+		$this->attributes['taken_at_orig_tz'] = $datetime == null ? null : $datetime->getTimezone()->getName();
+		if ($datetime !== null && empty($this->attributes['taken_at_orig_tz'])) {
+			var_dump($this->attributes['taken_at_orig_tz']);
+			throw new \InvalidArgumentException('Attribute \'taken_at\' has empty timezone attribute: \'' . $datetime->getTimezone()->getName() . '\'');
+		}
+	}
+
+	/**
+	 * Mutator for attribute `taken_at_orig_tz`.
+	 *
+	 * Always throws an exception.
+	 *
+	 * @param string|null $timezone The timezone
+	 */
+	public function setTakenAtOrigTzAttribute(?string $timezone)
+	{
+		throw new \BadMethodCallException('Attribute \'taken_at_orig_tz\' must not be set explicitly, set \'taken_at\' instead');
 	}
 }

@@ -32,10 +32,10 @@ trait AlbumCast
 			'downloadable' => Helpers::str_of_bool($this->is_downloadable()),
 			'share_button_visible' => Helpers::str_of_bool($this->is_share_button_visible()),
 
-			'created_at' => $this->created_at->toJSON(),
-			'updated_at' => $this->updated_at->toJSON(),
-			'min_takestamp' => $this->min_takestamp !== null ? $this->min_takestamp->toJSON() : null,
-			'max_takestamp' => $this->max_takestamp !== null ? $this->max_takestamp->toJSON() : null,
+			'created_at' => $this->created_at->format(\DateTimeInterface::ISO8601),
+			'updated_at' => $this->updated_at->format(\DateTimeInterface::ISO8601),
+			'min_taken_at' => $this->min_taken_at !== null ? $this->min_taken_at->format(\DateTimeInterface::ISO8601) : null,
+			'max_taken_at' => $this->max_taken_at !== null ? $this->max_taken_at->format(\DateTimeInterface::ISO8601) : null,
 
 			// Parse password
 			'password' => Helpers::str_of_bool($this->password != ''),
@@ -79,8 +79,8 @@ trait AlbumCast
 		$tag_album->_lft = $this->_lft;
 		$tag_album->_rgt = $this->_rgt;
 		$tag_album->description = $this->description ?? '';
-		$tag_album->min_takestamp = $this->min_takestamp;
-		$tag_album->max_takestamp = $this->max_takestamp;
+		$tag_album->min_taken_at = $this->min_taken_at;
+		$tag_album->max_taken_at = $this->max_taken_at;
 		$tag_album->public = $this->public;
 		$tag_album->full_photo = $this->full_photo;
 		$tag_album->viewable = $this->viewable;
