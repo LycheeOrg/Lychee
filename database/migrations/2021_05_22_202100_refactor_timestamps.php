@@ -1,9 +1,9 @@
 <?php
 
+use App\Models\PatchedBaseModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -21,6 +21,15 @@ class RefactorTimestamps extends Migration
 	private const TZ_NAME_MAX_LENGTH = 31;
 	private const TAKESTAMP_COL_NAME = 'takestamp';
 	private const DATETIME_PRECISION = 0;
+	private const CONFIGS_TABLE_NAME = 'configs';
+	private const CONFIG_KEY_COL_NAME = 'key';
+	private const CONFIG_KEY = 'sorting_Photos_col';
+	private const CONFIG_VALUE_COL_NAME = 'value';
+	private const CONFIG_VALUE_OLD = 'takestamp';
+	private const CONFIG_VALUE_NEW = 'taken_at';
+	private const CONFIG_RANGE_COL_NAME = 'type_range';
+	private const CONFIG_RANGE_OLD = 'id|takestamp|title|description|public|star|type';
+	private const CONFIG_RANGE_NEW = 'id|taken_at|title|description|public|star|type';
 
 	/**
 	 * Run the migrations.
@@ -62,7 +71,7 @@ class RefactorTimestamps extends Migration
 			// the database connection had been the same as the
 			// default timezone of the PHP application, before the timezone
 			// for the database connection has explicitly been configured to
-			// always use 'UTC'.
+			// always use PatchedBaseModel::DB_TIMEZONE_NAME.
 			// Note that this assumption is always true for SQLite backends,
 			// because SQLite is not an independent server process, but runs
 			// as part of the application.
@@ -74,23 +83,12 @@ class RefactorTimestamps extends Migration
 			// that this timezone has been used previously.
 			// We fetch the timestamps as SQL datetime string (without
 			// timezone information), interpret them according to the
-			// default timezone of the application, convert them to UTC
-			// and write them back to the DB.
-			$created_at = Carbon::createFromFormat(
-				self::SQL_DATETIME_FORMAT,
-				$photo->{self::CREATED_AT_COL_NAME}
-			);
-			$created_at->setTimezone('UTC');
-			$updated_at = Carbon::createFromFormat(
-				self::SQL_DATETIME_FORMAT,
-				$photo->{self::UPDATED_AT_COL_NAME}
-			);
-			$updated_at->setTimezone('UTC');
-			$taken_at = Carbon::createFromFormat(
-				self::SQL_DATETIME_FORMAT,
-				$photo->{self::TAKESTAMP_COL_NAME}
-			);
-			$taken_at->setTimezone('UTC');
+			// default timezone of the application, convert them to
+			// PatchedBaseModel::DB_TIMEZONE_NAME and write them back to the
+			// DB.
+			$created_at = $this->upgradeDatetime($photo->{self::CREATED_AT_COL_NAME});
+			$updated_at = $this->upgradeDatetime($photo->{self::UPDATED_AT_COL_NAME});
+			$taken_at = $this->upgradeDatetime($photo->{self::TAKESTAMP_COL_NAME});
 
 			// We set the timezone in which the photo has originally been
 			// taken to the default timezone of the PHP application.
@@ -103,13 +101,22 @@ class RefactorTimestamps extends Migration
 			// information from the photos.
 			// We don't do that here in order to avoid a time consuming
 			// migration for large datasets.
+			$taken_at_orig_tz = ($taken_at === null) ? null : date_default_timezone_get();
+
 			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
 				self::CREATED_AT_COL_NAME => $created_at,
 				self::UPDATED_AT_COL_NAME => $updated_at,
 				self::TAKEN_AT_COL_NAME => $taken_at,
-				self::TAKEN_AT_TZ_COL_NAME => Config::get('app.timezone'),
+				self::TAKEN_AT_TZ_COL_NAME => $taken_at_orig_tz,
 			]);
 		}
+
+		// Update sorting criterion and range in the configuration table
+		$sortingCriterion = $this->getConfiguredSortingCriterion();
+		if ($sortingCriterion == self::CONFIG_VALUE_OLD) {
+			$sortingCriterion = self::CONFIG_VALUE_NEW;
+		}
+		$this->setConfiguredSortingCriterion($sortingCriterion, self::CONFIG_RANGE_NEW);
 
 		DB::commit();
 
@@ -142,21 +149,13 @@ class RefactorTimestamps extends Migration
 		])->lazyById();
 
 		foreach ($photos as $photo) {
-			$created_at = Carbon::createFromFormat(
-				self::SQL_DATETIME_FORMAT,
-				$photo->{self::CREATED_AT_COL_NAME}, 'UTC'
+			$created_at = $this->downgradeDatetime($photo->{self::CREATED_AT_COL_NAME});
+			$updated_at = $this->downgradeDatetime($photo->{self::UPDATED_AT_COL_NAME});
+			$takestamp = $this->convertDatetime(
+				$photo->{self::TAKEN_AT_COL_NAME},
+				PatchedBaseModel::DB_TIMEZONE_NAME,
+				$photo->{self::TAKEN_AT_TZ_COL_NAME}
 			);
-			$created_at->setTimezone(Config::get('app.timezone'));
-			$updated_at = Carbon::createFromFormat(
-				self::SQL_DATETIME_FORMAT,
-				$photo->{self::UPDATED_AT_COL_NAME}, 'UTC'
-			);
-			$updated_at->setTimezone(Config::get('app.timezone'));
-			$takestamp = Carbon::createFromFormat(
-				self::SQL_DATETIME_FORMAT,
-				$photo->{self::TAKEN_AT_COL_NAME}, 'UTC'
-			);
-			$takestamp->setTimezone($photo->{self::TAKEN_AT_TZ_COL_NAME});
 
 			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
 				self::CREATED_AT_COL_NAME => $created_at,
@@ -164,6 +163,13 @@ class RefactorTimestamps extends Migration
 				self::TAKESTAMP_COL_NAME => $takestamp,
 			]);
 		}
+
+		// Downgrade sorting criterion and range in the configuration table
+		$sortingCriterion = $this->getConfiguredSortingCriterion();
+		if ($sortingCriterion == self::CONFIG_VALUE_NEW) {
+			$sortingCriterion = self::CONFIG_VALUE_OLD;
+		}
+		$this->setConfiguredSortingCriterion($sortingCriterion, self::CONFIG_RANGE_OLD);
 
 		DB::commit();
 
@@ -173,5 +179,63 @@ class RefactorTimestamps extends Migration
 				self::TAKEN_AT_TZ_COL_NAME,
 			]);
 		});
+	}
+
+	protected function upgradeDatetime(?string $sqlDatetime): ?string
+	{
+		return $this->convertDatetime(
+			$sqlDatetime,
+			date_default_timezone_get(),
+			PatchedBaseModel::DB_TIMEZONE_NAME
+		);
+	}
+
+	protected function downgradeDatetime(?string $sqlDatetime): ?string
+	{
+		return $this->convertDatetime(
+			$sqlDatetime,
+			PatchedBaseModel::DB_TIMEZONE_NAME,
+			date_default_timezone_get()
+		);
+	}
+
+	protected function convertDatetime(?string $sqlDatetime, ?string $oldTz, ?string $newTz): ?string
+	{
+		if ($sqlDatetime === null) {
+			return null;
+		}
+		$result = Carbon::createFromFormat(
+			self::SQL_DATETIME_FORMAT,
+			$sqlDatetime,
+			$oldTz
+		);
+		$result->setTimezone($newTz);
+
+		return $result->format(self::SQL_DATETIME_FORMAT);
+	}
+
+	protected function getConfiguredSortingCriterion(): string
+	{
+		$config = DB::table(self::CONFIGS_TABLE_NAME)->select([
+			self::CONFIG_VALUE_COL_NAME,
+		])->where(
+			self::CONFIG_KEY_COL_NAME,
+			'=',
+			self::CONFIG_KEY
+		)->first();
+
+		return $config->{self::CONFIG_VALUE_COL_NAME};
+	}
+
+	protected function setConfiguredSortingCriterion(string $criterion, string $range): void
+	{
+		DB::table(self::CONFIGS_TABLE_NAME)->where(
+			self::CONFIG_KEY_COL_NAME,
+			'=',
+			self::CONFIG_KEY
+		)->update([
+			self::CONFIG_VALUE_COL_NAME => $criterion,
+			self::CONFIG_RANGE_COL_NAME => $range,
+		]);
 	}
 }
