@@ -101,10 +101,9 @@ class Rotate
 		$photo->height = $old_width;
 
 		// The file size may have changed after the rotation.
+		/* @var  Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
-		$info = [];
-		$metadataExtractor->size($info, $new_path);
-		$photo->size = $info['size'];
+		$photo->filesize = $metadataExtractor->filesize($new_path);
 		// Also restore the original date.
 		if ($photo->takestamp) {
 			@touch($new_path, strtotime($photo->takestamp));
@@ -119,20 +118,24 @@ class Rotate
 			}
 			$photo->thumbUrl = '';
 		}
-		if ($photo->small != '') {
+		if ($photo->small_width !== null) {
 			@unlink(Storage::path('small/' . $url));
-			$photo->small = '';
-			if ($photo->small2x != '') {
+			$photo->small_width = null;
+			$photo->small_height = null;
+			if ($photo->small2x_width !== null) {
 				@unlink(Storage::path('small/' . Helpers::ex2x($url)));
-				$photo->small2x = '';
+				$photo->small2x_width = null;
+				$photo->small2x_height = null;
 			}
 		}
-		if ($photo->medium != '') {
+		if ($photo->medium_width !== null) {
 			@unlink(Storage::path('medium/' . $url));
-			$photo->medium = '';
-			if ($photo->medium2x != '') {
+			$photo->medium_width = null;
+			$photo->medium_height = null;
+			if ($photo->medium2x_width !== null) {
 				@unlink(Storage::path('medium/' . Helpers::ex2x($url)));
-				$photo->medium2x = '';
+				$photo->medium2x_width = null;
+				$photo->medium2x_height = null;
 			}
 		}
 		@unlink($path);
@@ -154,13 +157,17 @@ class Rotate
 				'url' => $photo->url,
 				'width' => $photo->width,
 				'height' => $photo->height,
-				'size' => $photo->size,
+				'filesize' => $photo->filesize,
 				'thumbUrl' => $photo->thumbUrl,
 				'thumb2x' => $photo->thumb2x,
-				'small' => $photo->small,
-				'small2x' => $photo->small2x,
-				'medium' => $photo->medium,
-				'medium2x' => $photo->medium2x,
+				'small_width' => $photo->small_width,
+				'small_height' => $photo->small_height,
+				'small2x_width' => $photo->small2x_width,
+				'small2x_height' => $photo->small2x_height,
+				'medium_width' => $photo->medium_width,
+				'medium_height' => $photo->medium_height,
+				'medium2x_width' => $photo->medium2x_width,
+				'medium2x_height' => $photo->medium2x_height,
 			]
 		);
 

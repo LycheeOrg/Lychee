@@ -27,7 +27,7 @@ use Storage;
  * @property string      $type
  * @property int|null    $width
  * @property int|null    $height
- * @property string      $size
+ * @property int         $filesize
  * @property string      $iso
  * @property string      $aperture
  * @property string      $make
@@ -49,10 +49,14 @@ use Storage;
  * @property string      $license
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string      $medium
- * @property string      $medium2x
- * @property string      $small
- * @property string      $small2x
+ * @property int|null    $medium_width
+ * @property int|null    $medium_height
+ * @property int|null    $medium2x_width
+ * @property int|null    $medium2x_height
+ * @property int|null    $small_width
+ * @property int|null    $small_height
+ * @property int|null    $small2x_width
+ * @property int|null    $small2x_height
  * @property int         $thumb2x
  * @property string      $livePhotoContentID
  * @property string      $livePhotoChecksum
@@ -113,6 +117,29 @@ class Photo extends Model
 	use PhotoBooleans;
 	use PhotoCast;
 	use PhotoGetters;
+	const THUMBNAIL_DIM = 200;
+	const THUMBNAIL2X_DIM = 400;
+	const VARIANT_THUMB = 'thumb';
+	const VARIANT_THUMB2X = 'thumb2x';
+	const VARIANT_SMALL = 'small';
+	const VARIANT_SMALL2X = 'small2x';
+	const VARIANT_MEDIUM = 'medium';
+	const VARIANT_MEDIUM2X = 'medium2x';
+	const VARIANT_ORIGINAL = 'original';
+
+	/**
+	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
+	 * Use this array to avoid the anti-pattern "magic constants" throughout the whole code.
+	 */
+	const VARIANT_2_PATH_PREFIX = [
+		self::VARIANT_THUMB => 'thumb',
+		self::VARIANT_THUMB2X => 'thumb',
+		self::VARIANT_SMALL => 'small',
+		self::VARIANT_SMALL2X => 'small',
+		self::VARIANT_MEDIUM => 'medium',
+		self::VARIANT_MEDIUM2X => 'medium',
+		self::VARIANT_ORIGINAL => 'big',
+	];
 
 	/**
 	 * This extends the date types from Model to allow coercion with Carbon object.

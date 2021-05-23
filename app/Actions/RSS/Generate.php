@@ -58,7 +58,6 @@ class Generate
 	private function toFeedItem(Photo $photo_model)
 	{
 		$photo_array = $photo_model->toReturnArray();
-		$photo_model->urls($photo_array);
 
 		$this->symLinkFunctions->getUrl($photo_model, $photo_array);
 

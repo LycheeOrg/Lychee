@@ -34,7 +34,7 @@ class Duplicate
 			$duplicate->type = $photo->type;
 			$duplicate->width = $photo->width;
 			$duplicate->height = $photo->height;
-			$duplicate->size = $photo->size;
+			$duplicate->filesize = $photo->filesize;
 			$duplicate->iso = $photo->iso;
 			$duplicate->aperture = $photo->aperture;
 			$duplicate->make = $photo->make;
@@ -56,10 +56,14 @@ class Duplicate
 				$duplicate->album_id = null;
 			}
 			$duplicate->checksum = $photo->checksum;
-			$duplicate->medium = $photo->medium;
-			$duplicate->medium2x = $photo->medium2x;
-			$duplicate->small = $photo->small;
-			$duplicate->small2x = $photo->small2x;
+			$duplicate->medium_width = $photo->medium_width;
+			$duplicate->medium_height = $photo->medium_height;
+			$duplicate->medium2x_width = $photo->medium2x_width;
+			$duplicate->medium2x_height = $photo->medium2x_height;
+			$duplicate->small_width = $photo->small_width;
+			$duplicate->small_height = $photo->small_height;
+			$duplicate->small2x_width = $photo->small2x_width;
+			$duplicate->small2x_height = $photo->small2x_height;
 			$duplicate->owner_id = $photo->owner_id;
 			$duplicate->livePhotoContentID = $photo->livePhotoContentID;
 			$duplicate->livePhotoUrl = $photo->livePhotoUrl;

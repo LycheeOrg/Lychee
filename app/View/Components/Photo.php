@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\Configs;
+use App\Models\Photo as PhotoModel;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
@@ -27,8 +28,8 @@ class Photo extends Component
 	public $srcset2x = '';
 
 	public $layout = false;
-	public $_w = 200;
-	public $_h = 200;
+	public int $_w = PhotoModel::THUMBNAIL_DIM;
+	public int $_h = PhotoModel::THUMBNAIL_DIM;
 
 	/**
 	 * Create a new component instance.
@@ -65,6 +66,7 @@ class Photo extends Component
 		$dim2x = '';
 		$thumb2x = '';
 
+		// TODO: The class Photo for the database model does not anymore contain the attributes `small`, `small_dim`, etc. Probably this code needs some fix/refactoring, too. However, where is this method invoked and what is the structure of the passed `data` array? (Could find any invocation.)
 		if ($this->layout) {
 			$thumb = $data['thumbUrl'];
 			$thumb2x = $data['thumb2x'];
@@ -94,8 +96,8 @@ class Photo extends Component
 			$this->class = 'video';
 			$thumb = $data['thumbUrl'];
 			$thumb2x = $data['thumb2x'];
-			$dim = '200';
-			$dim2x = '400';
+			$dim = (string) \App\Models\Photo::THUMBNAIL_DIM;
+			$dim2x = (string) \App\Models\Photo::THUMBNAIL2X_DIM;
 		}
 
 		$this->src = "src='" . URL::asset('img/placeholder.png') . "'";

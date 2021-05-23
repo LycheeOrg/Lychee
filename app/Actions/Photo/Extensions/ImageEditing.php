@@ -146,7 +146,8 @@ trait ImageEditing
 			return false;
 		}
 
-		$photo->{$type} = $resWidth . 'x' . $resHeight;
+		$photo->{$type . '_width'} = $resWidth;
+		$photo->{$type . '_height'} = $resHeight;
 
 		return true;
 	}
@@ -166,11 +167,11 @@ trait ImageEditing
 		$src = ($frame_tmp === '') ? Storage::path('big/' . $photo->url) : $frame_tmp;
 		$photoName = explode('.', $photo->url);
 
-		$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '.jpeg'), 200, 200);
+		$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '.jpeg'), Photo::THUMBNAIL_DIM, Photo::THUMBNAIL_DIM);
 
-		if (Configs::get_value('thumb_2x') === '1' && $photo->width >= 400 && $photo->height >= 400) {
+		if (Configs::get_value('thumb_2x') === '1' && $photo->width >= Photo::THUMBNAIL2X_DIM && $photo->height >= Photo::THUMBNAIL2X_DIM) {
 			// Retina thumbs
-			$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'), 400, 400);
+			$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'), Photo::THUMBNAIL2X_DIM, Photo::THUMBNAIL2X_DIM);
 			$photo->thumb2x = 1;
 		} else {
 			$photo->thumb2x = 0;

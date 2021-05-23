@@ -99,7 +99,7 @@ class PhotosTest extends TestCase
 			'aperture' => 'f/2.8',
 			'description' => 'A night photography',
 			'focal' => '16 mm',
-			'height' => 4480,
+			'height' => '4480',
 			'id' => $id,
 			'iso' => '1250',
 			'lens' => 'EF16-35mm f/2.8L USM',
@@ -108,15 +108,23 @@ class PhotosTest extends TestCase
 			'model' => 'Canon EOS R',
 			'public' => '1',
 			'shutter' => '30 s',
-			'size' => '20.1 MB',
-			'small_dim' => '540x360',
+			'filesize' => 21104156,
 			'star' => '1',
 			'tags' => 'night',
-			'medium_dim' => '1620x1080',
 			'takedate' => '01 June 2019 at 01:28',
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',
 			'width' => 6720,
+			'sizeVariants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+			],
 		]);
 
 		/**

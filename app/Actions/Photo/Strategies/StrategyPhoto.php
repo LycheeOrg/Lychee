@@ -86,10 +86,9 @@ class StrategyPhoto extends StrategyPhotoBase
 
 					if (!$pretend) {
 						// If the image was rotated, the size may have changed.
+						/* @var  Extractor $metadataExtractor */
 						$metadataExtractor = resolve(Extractor::class);
-						$info = [];
-						$metadataExtractor->size($info, $create->path);
-						$create->photo->size = $info['size'];
+						$create->photo->filesize = $metadataExtractor->filesize($create->path);
 					}
 				}
 			}

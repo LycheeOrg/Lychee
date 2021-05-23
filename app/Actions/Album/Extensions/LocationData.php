@@ -21,7 +21,7 @@ trait LocationData
 
 		$return_photos = [];
 		$photo_counter = 0;
-		$photos = $photos_sql->select('album_id', 'photos.id', 'latitude', 'longitude', 'small', 'small2x', 'takestamp', 'thumb2x', 'thumbUrl', 'photos.title', 'type', 'url')
+		$photos = $photos_sql
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')
 			->with('album')
@@ -31,9 +31,7 @@ trait LocationData
 		* @var Photo
 		*/
 		foreach ($photos as $photo_model) {
-			// Turn data from the database into a front-end friendly format
-			// ! Check if this needs prepareLocationData or to_array
-			$photo = $photo_model->prepareLocationData();
+			$photo = $photo_model->toReturnArray();
 			$symLinkFunctions->getUrl($photo_model, $photo);
 
 			// Add to return

@@ -44,61 +44,84 @@ use Illuminate\Support\Facades\Storage;
  */
 class SymLink extends Model
 {
-	// we have exactly the same mapping as for app/Photo in order to avoid cases
-	protected $kinds_dir = [
-		'url' => 'big',
-		'medium' => 'medium',
-		'medium2x' => 'medium',
-		'small' => 'small',
-		'small2x' => 'small',
-		'thumbUrl' => 'thumb',
-		'thumb2x' => 'thumb',
+	/**
+	 * Maps a size variant to the name of the attribute (field) of App\Models\Photo which stores the original
+	 * filename.
+	 * (Despite the attributes being named "url" they actually store filenames).
+	 */
+	const VARIANT_2_ORIGINAL_FILENAME_FIELD = [
+		Photo::VARIANT_THUMB => 'thumbUrl',
+		Photo::VARIANT_THUMB2X => 'thumbUrl',
+		Photo::VARIANT_SMALL => 'url',
+		Photo::VARIANT_SMALL2X => 'url',
+		Photo::VARIANT_MEDIUM => 'url',
+		Photo::VARIANT_MEDIUM2X => 'url',
+		Photo::VARIANT_ORIGINAL => 'url',
 	];
 
-	protected $kinds_origin = [
-		'url' => 'url',
-		'medium' => 'url',
-		'medium2x' => 'url',
-		'small' => 'url',
-		'small2x' => 'url',
-		'thumbUrl' => 'thumbUrl',
-		'thumb2x' => 'thumbUrl',
+	/**
+	 * Maps a size variant to the name of an attribute (field) of the class App\Models\Photo which may be exploited
+	 * as an indicator whether this size variant exist.
+	 */
+	const VARIANT_2_INDICATOR_FIELD = [
+		Photo::VARIANT_THUMB => 'thumbUrl',           // type: string|null
+		Photo::VARIANT_THUMB2X => 'thumb2x',          // type: integer, either 0 or 1
+		Photo::VARIANT_SMALL => 'small_width',        // type: int|null
+		Photo::VARIANT_SMALL2X => 'small2x_width',    // type: int|null
+		Photo::VARIANT_MEDIUM => 'medium_width',      // type: int|null
+		Photo::VARIANT_MEDIUM2X => 'medium2x_width',  // type: int|null
+		Photo::VARIANT_ORIGINAL => 'url',             // type: string|null
+	];
+
+	/**
+	 * Maps a size variant to the name of the attribute (field) of this class/database table which stores the
+	 * symlinked path.
+	 * (Despite some attributes being named "url" they actually store relative paths).
+	 */
+	const VARIANT_2_SYM_PATH_FIELD = [
+		Photo::VARIANT_THUMB => 'thumbUrl',
+		Photo::VARIANT_THUMB2X => 'thumb2x',
+		Photo::VARIANT_SMALL => 'small',
+		Photo::VARIANT_SMALL2X => 'small2x',
+		Photo::VARIANT_MEDIUM => 'medium',
+		Photo::VARIANT_MEDIUM2X => 'medium2x',
+		Photo::VARIANT_ORIGINAL => 'url',
 	];
 
 	/**
 	 * Generate a sym link.
 	 * The salt is important in order to remove the deterministic side of the address.
 	 *
-	 * @param Photo  $photo
-	 * @param string $kind
+	 * @param Photo  $photo       The original photo
+	 * @param string $sizeVariant An enum-like attribute which indicates what size variant shall be sym-linked.
+	 *                            Allowed values are defined as constants in class Photo.
 	 * @param string $salt
-	 * @param $field
 	 */
-	private function create(Photo $photo, string $kind, string $salt, $field)
+	private function create(Photo $photo, string $sizeVariant, string $salt)
 	{
-		if (substr($kind, -2, 2) == '2x') {
-			$url = Helpers::ex2x($photo->$field);
-		} else {
-			$url = $photo->$field;
-		}
+		// in case of video and raw we always need to use the field 'thumbUrl' for anything which is not the original size
+		$originalFieldName = ($sizeVariant != Photo::VARIANT_ORIGINAL && ($photo->isVideo() || $photo->type == 'raw')) ?
+			self::VARIANT_2_ORIGINAL_FILENAME_FIELD[Photo::VARIANT_THUMB] :
+			self::VARIANT_2_ORIGINAL_FILENAME_FIELD[$sizeVariant];
+		$originalFileName = (substr($sizeVariant, -2, 2) == '2x') ? Helpers::ex2x($photo->$originalFieldName) : $photo->$originalFieldName;
 
-		if ($photo->type == 'raw' && $kind == 'url') {
-			$original = Storage::path('raw/' . $url);
+		if ($photo->type == 'raw' && $sizeVariant == Photo::VARIANT_ORIGINAL) {
+			$originalPath = Storage::path('raw/' . $originalFileName);
 		} else {
-			$original = Storage::path($this->kinds_dir[$kind] . '/' . $url);
+			$originalPath = Storage::path(Photo::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/' . $originalFileName);
 		}
-		$extension = Helpers::getExtension($original);
-		$file_name = hash('sha256', $salt . '|' . $original) . $extension;
-		$sym = Storage::drive('symbolic')->path($file_name);
+		$extension = Helpers::getExtension($originalPath);
+		$symFilename = hash('sha256', $salt . '|' . $originalPath) . $extension;
+		$symPath = Storage::drive('symbolic')->path($symFilename);
 
 		try {
 			// in theory we should be safe...
-			symlink($original, $sym);
+			symlink($originalPath, $symPath);
 		} catch (Exception $exception) {
-			unlink($sym);
-			symlink($original, $sym);
+			unlink($symPath);
+			symlink($originalPath, $symPath);
 		}
-		$this->$kind = $file_name;
+		$this->{self::VARIANT_2_SYM_PATH_FIELD[$sizeVariant]} = $symFilename;
 	}
 
 	/**
@@ -115,54 +138,45 @@ class SymLink extends Model
 		$this->created_at = $now;
 		$this->updated_at = $now;
 
-		// first the URL
-		if ($photo->url != '') {
-			$this->create($photo, 'url', strval($now), 'url');
-		}
-
-		$kinds = [
-			'medium', 'medium2x', 'small', 'small2x', 'thumbUrl', 'thumb2x',
-		];
-
-		if ($photo->isVideo() || $photo->type == 'raw') {
-			// in case of video and raw we need to use thumbUrl instead
-			foreach ($kinds as $kind) {
-				if ($photo->$kind != '' && $photo->$kind != '0') {
-					$this->create($photo, $kind, strval($now), 'thumbUrl');
-				}
-			}
-		} else {
-			foreach ($kinds as $kind) {
-				if ($photo->$kind != '' && $photo->$kind != '0') {
-					$this->create($photo, $kind, strval($now), $this->kinds_origin[$kind]);
-				}
+		foreach (self::VARIANT_2_INDICATOR_FIELD as $variant => $indicator_field) {
+			if ($photo->{$indicator_field} != null && $photo->{$indicator_field} != 0 && $photo->{$indicator_field} != '') {
+				$this->create($photo, $variant, strval($now));
 			}
 		}
 	}
 
 	/**
-	 * Given the return array, override the link provided.
+	 * Given the return array of a photo, override the link provided.
 	 *
-	 * @param array $return
+	 * @param array $return The serialization of a photo as returned by Photo#toReturnArray()
 	 */
 	public function override(array &$return)
 	{
-		foreach ($this->kinds_dir as $kind => $dir) {
-			if ($this->$kind != '') {
-				$return[$kind] = Storage::drive('symbolic')->url($this->$kind);
+		foreach (self::VARIANT_2_SYM_PATH_FIELD as $variant => $field) {
+			if ($this->$field != '') {
+				// TODO: This could be avoided, if the original variant was also serialized into the sub-array 'sizeVariants', see comment in PhotoCast#toReturnArray
+				if ($variant == Photo::VARIANT_ORIGINAL) {
+					$return['url'] = Storage::drive('symbolic')->url($this->$field);
+				} else {
+					$return['sizeVariants'][$variant]['url'] = Storage::drive('symbolic')->url($this->$field);
+				}
 			}
 		}
 	}
 
 	/**
-	 * @param $kind
+	 * Returns the relative symlinked path of a particular size variant, if it exists.
 	 *
-	 * @return string URL to symbolic link
+	 * @param string $sizeVariant An enum-like attribute which indicates what size variant shall be sym-linked.
+	 *                            Allowed values are defined as constants in class Photo.
+	 *
+	 * @return string Relative path to symbolic link or the empty string ('')
 	 */
-	public function get($kind)
+	public function get(string $sizeVariant): string
 	{
-		if ($this->$kind != '') {
-			return Storage::drive('symbolic')->url($this->$kind);
+		$field = self::VARIANT_2_SYM_PATH_FIELD[$sizeVariant];
+		if ($this->$field != '') {
+			return Storage::drive('symbolic')->url($this->$field);
 		} else {
 			return '';
 		}
@@ -175,9 +189,9 @@ class SymLink extends Model
 	 */
 	public function delete()
 	{
-		foreach ($this->kinds_dir as $kind => $dir) {
-			if ($this->$kind != '') {
-				$path = Storage::drive('symbolic')->path($this->$kind);
+		foreach (self::VARIANT_2_SYM_PATH_FIELD as $variant => $field) {
+			if ($this->$field != '') {
+				$path = Storage::drive('symbolic')->path($this->$field);
 				try {
 					unlink($path);
 				} catch (Exception $e) {

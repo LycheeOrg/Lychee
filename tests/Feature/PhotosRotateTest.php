@@ -42,12 +42,20 @@ class PhotosRotateTest extends TestCase
 		* Check some Exif data
 		*/
 		$response->assertJson([
-			'height' => '4480',
+			'height' => 4480,
 			'id' => $id,
-			'size' => '20.1 MB',
-			'small_dim' => '540x360',
-			'medium_dim' => '1620x1080',
-			'width' => '6720',
+			'filesize' => 21104156,
+			'width' => 6720,
+			'sizeVariants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+			],
 		]);
 
 		$editor_enabled_value = Configs::get_value('editor_enabled');
@@ -69,12 +77,20 @@ class PhotosRotateTest extends TestCase
 		* Check some Exif data
 		*/
 		$response->assertJson([
-			'height' => '6720',
+			'height' => 6720,
 			'id' => $id,
-			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
-			'small_dim' => '240x360',
-			'medium_dim' => '720x1080',
-			'width' => '4480',
+			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
+			'width' => 4480,
+			'sizeVariants' => [
+				'small' => [
+					'width' => 240,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 720,
+					'height' => 1080,
+				],
+			],
 		]);
 
 		$photos_tests->rotate($id, -1);
@@ -84,12 +100,20 @@ class PhotosRotateTest extends TestCase
 		*/
 		$response = $photos_tests->get($id, 'true');
 		$response->assertJson([
-			'height' => '4480',
+			'height' => 4480,
 			'id' => $id,
-			// 'size' => '20.1 MB', // This changes during the image manipulation sadly.
-			'small_dim' => '540x360',
-			'medium_dim' => '1620x1080',
-			'width' => '6720',
+			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
+			'width' => 6720,
+			'sizeVariants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+			],
 		]);
 
 		$photos_tests->delete($id, 'true');
