@@ -37,6 +37,9 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 		if ($value === null) {
 			return null;
 		}
+		if (!is_string($value)) {
+			throw new \InvalidArgumentException('$value must be an SQL datetime string');
+		}
 		if (!($model instanceof PatchedBaseModel)) {
 			throw new \InvalidArgumentException('$model must extend \App\Models\PatchedBaseModel');
 		}
@@ -74,7 +77,6 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 */
 	public function set($model, string $key, $value, array $attributes): array
 	{
-		$tzKey = $key . self::TZ_ATTRIBUTE_SUFFIX;
 		if (!($model instanceof PatchedBaseModel)) {
 			throw new \InvalidArgumentException('$model must extend \App\Models\PatchedBaseModel');
 		}
@@ -83,6 +85,7 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 		}
 		$sqlDatetimeString = $model->fromDateTime($value);
 		$sqlTimezoneString = $value === null ? null : $value->getTimezone()->getName();
+		$tzKey = $key . self::TZ_ATTRIBUTE_SUFFIX;
 
 		return [
 			$key => $sqlDatetimeString,

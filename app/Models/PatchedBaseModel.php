@@ -51,14 +51,9 @@ class PatchedBaseModel extends Model
 	 * programmatically from the DB connection which is associated to this
 	 * model instance.
 	 * However, there seems not be an API for that.
-	 * TODO: Receive timezone of database dynamically at runtime.
+	 * TODO: Receive timezone of database connection dynamically at runtime.
 	 */
 	const DB_TIMEZONE_NAME = 'UTC';
-
-	/**
-	 * See comment for DB_TIMEZONE_NAME.
-	 */
-	const DB_TIMEZONE_OFFSET = 0;
 
 	/**
 	 * Converts a DateTime to a storable SQL datetime string.
@@ -171,7 +166,7 @@ class PatchedBaseModel extends Model
 			$result = Date::createFromTimestamp($value);
 			$result->setTimezone(date_default_timezone_get());
 
-			return Date::createFromTimestamp($value);
+			return $result;
 		}
 
 		// If the value is in simply year, month, day format, we will instantiate the
@@ -201,7 +196,7 @@ class PatchedBaseModel extends Model
 			$result = Date::createFromFormat(
 				$format, $value, self::DB_TIMEZONE_NAME
 			);
-			if ($result->getTimezone()->getOffset($result) == self::DB_TIMEZONE_OFFSET) {
+			if ($result->getTimezone()->getName() === self::DB_TIMEZONE_NAME) {
 				// If the timezone is different to UTC, we don't set it, because then
 				// the timezone came from the input string.
 				// If the timezone equals UTC, then we assume that no explicit timezone
@@ -223,7 +218,7 @@ class PatchedBaseModel extends Model
 		// Might throw an InvalidArgumentException if no recognized format is found,
 		// but this is intended
 		$result = Date::parse($value, self::DB_TIMEZONE_NAME);
-		if ($result->getTimezone()->getOffset($result) == self::DB_TIMEZONE_OFFSET) {
+		if ($result->getTimezone()->getName() === self::DB_TIMEZONE_NAME) {
 			$result->setTimezone(date_default_timezone_get());
 		}
 

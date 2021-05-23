@@ -348,36 +348,4 @@ class Photo extends PatchedBaseModel
 
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
-
-	/**
-	 * Sets the datetime when the photo has been taken.
-	 *
-	 * This mutator also sets the internal attribute `taken_at_orig_tz`
-	 * accordingly.
-	 *
-	 * @param Carbon|null $datetime The datetime when the photo
-	 *                              has been taken
-	 */
-	public function setTakenAtAttribute(?Carbon $datetime)
-	{
-		//throw new \BadMethodCallException('Whoops! Mutator for attribute \'taken_at\' called');
-		$this->attributes['taken_at'] = $datetime;
-		$this->attributes['taken_at_orig_tz'] = $datetime == null ? null : $datetime->getTimezone()->getName();
-		if ($datetime !== null && empty($this->attributes['taken_at_orig_tz'])) {
-			var_dump($this->attributes['taken_at_orig_tz']);
-			throw new \InvalidArgumentException('Attribute \'taken_at\' has empty timezone attribute: \'' . $datetime->getTimezone()->getName() . '\'');
-		}
-	}
-
-	/**
-	 * Mutator for attribute `taken_at_orig_tz`.
-	 *
-	 * Always throws an exception.
-	 *
-	 * @param string|null $timezone The timezone
-	 */
-	public function setTakenAtOrigTzAttribute(?string $timezone)
-	{
-		throw new \BadMethodCallException('Attribute \'taken_at_orig_tz\' must not be set explicitly, set \'taken_at\' instead');
-	}
 }
