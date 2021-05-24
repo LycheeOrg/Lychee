@@ -199,8 +199,8 @@ class Extractor
 			// **Notes about a):**
 			//
 			// For best human interaction with photos the date/time when the
-			// photo has been taken reflects the local timezone of the
-			// location where the photo has been taken.
+			// photo has been taken should be based on the local timezone of
+			// the location where the photo has been taken.
 			// This matches the beholder's expectation; e.g. a photo of a
 			// sunset should show a "wall time" around the early evening,
 			// while a breakfast photo should show a "wall time" in the
@@ -231,27 +231,38 @@ class Extractor
 			// as part of the specification.
 			//
 			// Here, we rely here on a simple filetype-based heuristics and,
-			// for a timestamp we suspect to be in UTC, we covert it to the
+			// for a timestamp we suspect to be in UTC, we convert it to the
 			// application's default timezone.
-			// All other timestamps are not altered.
-			// Either the meta-data extractor was able to properly extract
-			// a timezone information (good case) or the returned \DateTime
-			// object uses the application's default timezone in lack of an
-			// explicit timezone (bad case).
-			// In the "bad case", the shown "wall time" is correct relative
-			// to the application's default timezone.
+			// All other timestamps are not altered, but used "as is":
+			//
+			//   i) Either the meta-data extractor was able to properly
+			//      extract a timezone information (good case), or
+			//  ii) the meta-data extractor returned a \DateTime object which
+			//      uses the application's default timezone due to the EXIF
+			//      date lacking an explicit timezone (bad case).
+			//
+			// In the "bad case", the shown "wall time" relative to the
+			// application's default timezone matches the EXIF time.
 			// This approach implicitly assumes that the beholder of the photo
 			// in front of the GUI uses the same timezone as the backend
 			// and thus sees the correct "wall time" which is consistent to
 			// content of the photo.
+			//
 			// Other possible approaches would include deriving the original
 			// timezone from the file name or from other objects in the same
 			// album, as well as extracting the timezone from the location
 			// data if present.
 			// The latter is what the "big players" like Google Photo or
 			// Apple do.
-			//
 			// TODO: Implement timezone derivation from location data.
+			// See [this StackOverflow answer](https://stackoverflow.com/a/16086964/2690527)
+			// for a fairly comprehensive overview of available options.
+			// The [Geo-Timezone PHP Library](https://github.com/minube/geo-timezone)
+			// seems to be the most accurate one and does not depend on an
+			// external web-service.
+			// Unfortunately, it is not an simple PHP library which can be
+			// pulled in as a Composer dependencies, but requires a binary
+			// PHP extension (`geos.so`).
 			//
 			// **Notes about b):**
 			//
