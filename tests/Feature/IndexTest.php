@@ -25,6 +25,9 @@ class IndexTest extends TestCase
 		$response->assertOk();
 
 		$response = $this->post('/api/Albums::get', []);
+		if ($response->getStatusCode() === 500) {
+			$response->dump();
+		}
 		$response->assertOk();
 	}
 

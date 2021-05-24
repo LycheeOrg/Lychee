@@ -44,6 +44,9 @@ class DemoTest extends TestCase
 
 		// check redirection
 		$response = $this->get('/demo');
+		if ($response->getStatusCode() === 500) {
+			$response->dump();
+		}
 		$response->assertStatus(200);
 		$response->assertViewIs('demo');
 
