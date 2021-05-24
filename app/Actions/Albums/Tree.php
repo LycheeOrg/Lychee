@@ -35,7 +35,7 @@ class Tree
 		$return = [];
 		$PublicIds = resolve(PublicIds::class);
 
-		$sql = Album::initQuery()
+		$sql = Album::query()
 			->where('smart', '=', false)
 			->whereNotIn('id', $PublicIds->getNotAccessible())
 			->orderBy('owner_id', 'ASC');

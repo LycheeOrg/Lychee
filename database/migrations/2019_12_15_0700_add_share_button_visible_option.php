@@ -21,7 +21,9 @@ class AddShareButtonVisibleOption extends Migration
 			$table->boolean('share_button_visible')->after('downloadable')->default(false);
 		});
 
-		Album::where('id', '>', 1)
+		Album::query()
+			->withoutGlobalScopes()
+			->where('id', '>', 1)
 			->where('public', '=', 1)
 			->update([
 				'share_button_visible' => true,

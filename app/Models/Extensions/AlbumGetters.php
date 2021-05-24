@@ -11,7 +11,6 @@ trait AlbumGetters
 {
 	use CustomSort;
 	use PublicViewable;
-	use AlbumQuery;
 
 	/**
 	 * given an Album return the sorting column & order for the pictures or the default ones.
@@ -102,7 +101,7 @@ trait AlbumGetters
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
-		$sql = self::initQuery()->where('parent_id', '=', $this->id);
+		$sql = self::query()->where('parent_id', '=', $this->id);
 		//? apply safety filter : Do not leak albums which are not visible
 		$sql = $this->publicViewable($sql);
 

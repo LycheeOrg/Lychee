@@ -13,11 +13,11 @@ trait TopQuery
 	private function createTopleveAlbumsQuery(): Builder
 	{
 		if (AccessControl::is_logged_in()) {
-			$baseQuery = Album::initQuery()->whereIsRoot();
+			$baseQuery = Album::query()->whereIsRoot();
 
 			return $this->publicViewable($baseQuery)->orderBy('owner_id', 'ASC');
 		}
 
-		return $this->publicViewable(Album::initQuery()->whereIsRoot());
+		return $this->publicViewable(Album::query()->whereIsRoot());
 	}
 }
