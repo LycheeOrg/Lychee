@@ -71,7 +71,7 @@ class Generate
 			'id' => url('/' . $id),
 			'title' => $photo_model->title,
 			'summary' => $photo_model->description,
-			'updated' => $photo_model->created_at,
+			'updated' => $photo_model->updated_at,
 			'link' => $photo_array['url'],
 			'enclosure' => $enclosure->url,
 			'enclosureLength' => $enclosure->length,

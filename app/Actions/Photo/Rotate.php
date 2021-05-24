@@ -105,8 +105,8 @@ class Rotate
 		$metadataExtractor = resolve(Extractor::class);
 		$photo->filesize = $metadataExtractor->filesize($new_path);
 		// Also restore the original date.
-		if ($photo->takestamp) {
-			@touch($new_path, strtotime($photo->takestamp));
+		if ($photo->taken_at !== null) {
+			@touch($new_path, $photo->taken_at->getTimestamp());
 		}
 
 		// Delete all old image files, including the original.

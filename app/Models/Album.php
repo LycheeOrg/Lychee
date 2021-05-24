@@ -15,7 +15,6 @@ use App\Models\Extensions\CustomSort;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,8 +29,8 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property int               $owner_id
  * @property int|null          $parent_id
  * @property string            $description
- * @property Carbon|null       $min_takestamp
- * @property Carbon|null       $max_takestamp
+ * @property Carbon|null       $min_taken_at
+ * @property Carbon|null       $max_taken_at
  * @property int               $public
  * @property int               $full_photo
  * @property int               $viewable
@@ -41,8 +40,8 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string            $license
  * @property bool              $smart
  * @property text              $showtags
- * @property Carbon|null       $created_at
- * @property Carbon|null       $updated_at
+ * @property Carbon            $created_at
+ * @property Carbon            $updated_at
  * @property Collection[Album] $children
  * @property User              $owner
  * @property Album             $parent
@@ -71,7 +70,7 @@ use Kalnoy\Nestedset\NodeTrait;
  *
  * @property Collection|User[] $shared_with
  */
-class Album extends Model implements AlbumInterface
+class Album extends PatchedBaseModel implements AlbumInterface
 {
 	use NodeTrait;
 	use AlbumBooleans;
@@ -82,14 +81,6 @@ class Album extends Model implements AlbumInterface
 	use CustomSort;
 	use AlbumQuery;
 
-	protected $dates
-	= [
-		'created_at',
-		'updated_at',
-		'min_takestamp',
-		'max_takestamp',
-	];
-
 	protected $casts
 	= [
 		'public' => 'int',
@@ -97,6 +88,10 @@ class Album extends Model implements AlbumInterface
 		'viewable' => 'int',
 		'downloadable' => 'int',
 		'share_button_visible' => 'int',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+		'min_taken_at' => 'datetime',
+		'max_taken_at' => 'datetime',
 	];
 
 	/**
