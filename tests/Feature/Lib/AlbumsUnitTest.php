@@ -159,9 +159,6 @@ class AlbumsUnitTest
 			'/api/Album::get',
 			['albumID' => $id, 'password' => $password]
 		);
-		if ($response->getStatusCode() === 500) {
-			$response->dump();
-		}
 		$response->assertOk();
 		if ($result != 'true') {
 			$response->assertSee($result, false);
