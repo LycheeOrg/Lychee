@@ -52,14 +52,6 @@ return [
 			'unix_socket' => env('DB_SOCKET', ''),
 			'charset' => 'utf8mb4',
 			'collation' => 'utf8mb4_unicode_ci',
-			// The timezone of the DB connection should always be set in order
-			// to ensure that the PHP application and the DB server have a
-			// mutual understanding how SQL datetime strings without an
-			// explicit timezone indication such as `YYYY-MM-DD hh:mm:ss`
-			// shall be interpreted.
-			// The setting here must not be changed and must match the
-			// assumption in \App\Models\PatchedBaseModel.
-			'timezone' => '+00:00',
 			'prefix' => '',
 			'prefix_indexes' => true,
 			'strict' => true,
@@ -78,14 +70,6 @@ return [
 			'username' => env('DB_USERNAME', 'forge'),
 			'password' => env('DB_PASSWORD', ''),
 			'charset' => 'utf8',
-			// The timezone of the DB connection should always be set in order
-			// to ensure that the PHP application and the DB server have a
-			// mutual understanding how SQL datetime strings without an
-			// explicit timezone indication such as `YYYY-MM-DD hh:mm:ss`
-			// shall be interpreted.
-			// The setting here must not be changed and must match the
-			// assumption in \App\Models\PatchedBaseModel.
-			'timezone' => 'UTC',
 			'prefix' => '',
 			'prefix_indexes' => true,
 			'schema' => 'public',

@@ -4,12 +4,12 @@
 
 namespace App\Models;
 
-use App\Casts\DateTimeWithTimezoneCast;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\PhotoGetters;
 use Helpers;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Storage;
@@ -40,16 +40,15 @@ use Storage;
  * @property float|null  $altitude
  * @property float|null  imgDirection
  * @property string|null location
- * @property Carbon|null $taken_at
- * @property string|null $taken_at_orig_tz
+ * @property Carbon|null $takestamp
  * @property int         $star
  * @property string      $thumbUrl
  * @property string      $livePhotoUrl
  * @property int|null    $album_id
  * @property string      $checksum
  * @property string      $license
- * @property Carbon      $created_at
- * @property Carbon      $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property int|null    $medium_width
  * @property int|null    $medium_height
  * @property int|null    $medium2x_width
@@ -113,7 +112,7 @@ use Storage;
  * @method static Builder|Photo whereWidth($value)
  * @mixin Eloquent
  */
-class Photo extends PatchedBaseModel
+class Photo extends Model
 {
 	use PhotoBooleans;
 	use PhotoCast;
@@ -142,14 +141,22 @@ class Photo extends PatchedBaseModel
 		self::VARIANT_ORIGINAL => 'big',
 	];
 
+	/**
+	 * This extends the date types from Model to allow coercion with Carbon object.
+	 *
+	 * @var array dates
+	 */
+	protected $dates = [
+		'created_at',
+		'updated_at',
+		'takestamp',
+	];
+
 	protected $casts = [
 		'public' => 'int',
 		'star' => 'int',
 		'downloadable' => 'int',
 		'share_button_visible' => 'int',
-		'created_at' => 'datetime',
-		'updated_at' => 'datetime',
-		'taken_at' => DateTimeWithTimezoneCast::class,
 	];
 
 	/**

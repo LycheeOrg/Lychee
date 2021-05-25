@@ -60,7 +60,7 @@ class Helpers
 	 *
 	 * @return string generated ID
 	 */
-	public function generateID(): string
+	public function generateID()
 	{
 		// Generate id based on the current microtime
 

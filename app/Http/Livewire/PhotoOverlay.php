@@ -76,7 +76,7 @@ class PhotoOverlay extends Component
 					$this->overlay .= $this->photo_data['takedate'];
 					$this->overlay .= '</a>';
 				} else {
-					$this->overlay = $this->data['created_at'];
+					$this->overlay = $this->data['sysdate'];
 				}
 				break;
 			case 'exif':

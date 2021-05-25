@@ -47,7 +47,7 @@ class Duplicate
 			$duplicate->altitude = $photo->altitude;
 			$duplicate->imgDirection = $photo->imgDirection;
 			$duplicate->location = $photo->location;
-			$duplicate->taken_at = $photo->taken_at;
+			$duplicate->takestamp = $photo->takestamp;
 			$duplicate->star = $photo->star;
 			$duplicate->thumbUrl = $photo->thumbUrl;
 			$duplicate->thumb2x = $photo->thumb2x;

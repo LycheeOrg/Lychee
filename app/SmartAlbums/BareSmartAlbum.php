@@ -16,11 +16,6 @@ class BareSmartAlbum extends Album
 	public $created_at = null;
 
 	/**
-	 * @var Carbon
-	 */
-	public $updated_at = null;
-
-	/**
 	 * @var Collection[int]
 	 */
 	protected $albumIds = null;
@@ -30,7 +25,6 @@ class BareSmartAlbum extends Album
 		parent::__construct();
 		$this->albumIds = new BaseCollection();
 		$this->created_at = new Carbon();
-		$this->updated_at = new Carbon();
 		$this->smart = true;
 	}
 
@@ -71,6 +65,16 @@ class BareSmartAlbum extends Album
 
 	/*------------------------- STRINGS --------------------------------- */
 	public function str_parent_id()
+	{
+		return '';
+	}
+
+	public function str_min_takestamp()
+	{
+		return '';
+	}
+
+	public function str_max_takestamp()
 	{
 		return '';
 	}

@@ -12,19 +12,19 @@ trait AlbumQuery
 	{
 		return self::with(['owner', 'cover'])->select('albums.*')
 			->addSelect([
-				'max_taken_at' => Photo::leftJoin('albums as a', 'album_id', '=', 'a.id')
-					->select('taken_at')
+				'max_takestamp' => Photo::leftJoin('albums as a', 'album_id', '=', 'a.id')
+					->select('takestamp')
 					->where('albums._lft', '<=', DB::raw('a._lft'))
 					->where('a._rgt', '<=', DB::raw('albums._rgt'))
-					->whereNotNull('taken_at')
-					->orderBy('taken_at', 'desc')
+					->whereNotNull('takestamp')
+					->orderBy('takestamp', 'desc')
 					->limit(1),
-				'min_taken_at' => Photo::leftJoin('albums as a', 'album_id', '=', 'a.id')
-					->select('taken_at')
+				'min_takestamp' => Photo::leftJoin('albums as a', 'album_id', '=', 'a.id')
+					->select('takestamp')
 					->where('albums._lft', '<=', DB::raw('a._lft'))
 					->where('a._rgt', '<=', DB::raw('albums._rgt'))
-					->whereNotNull('taken_at')
-					->orderBy('taken_at', 'asc')
+					->whereNotNull('takestamp')
+					->orderBy('takestamp', 'asc')
 					->limit(1),
 			]);
 	}
