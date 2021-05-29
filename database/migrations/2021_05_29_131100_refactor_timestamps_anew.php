@@ -60,10 +60,15 @@ class RefactorTimestampsAnew extends Migration
 	 */
 	public function up()
 	{
-		$this->fixPagesTable();
-		$this->upgradeORMSystemTimes();
-		$this->upgradePhotos();
-		$this->upgradeConfiguration();
+		try {
+			$this->fixPagesTable();
+			$this->upgradeORMSystemTimes();
+			$this->upgradePhotos();
+			$this->upgradeConfiguration();
+		} catch (\Exception $e) {
+			echo $e->getTraceAsString();
+			throw $e;
+		}
 	}
 
 	/**
@@ -71,9 +76,14 @@ class RefactorTimestampsAnew extends Migration
 	 */
 	public function down()
 	{
-		$this->downgradeORMSystemTimes();
-		$this->downgradePhotos();
-		$this->downgradeConfiguration();
+		try {
+			$this->downgradeORMSystemTimes();
+			$this->downgradePhotos();
+			$this->downgradeConfiguration();
+		} catch (\Exception $e) {
+			echo $e->getTraceAsString();
+			throw $e;
+		}
 	}
 
 	/**
@@ -118,6 +128,45 @@ class RefactorTimestampsAnew extends Migration
 	 */
 	protected function upgradeORMSystemTimesByTable(string $tableName): void
 	{
+		// We must use three single calls to work around an SQLite limitation
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->renameColumn(self::CREATED_AT_COL_NAME, self::CREATED_AT_COL_NAME . '_tmp');
+		});
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->renameColumn(self::UPDATED_AT_COL_NAME, self::UPDATED_AT_COL_NAME . '_tmp');
+		});
+		// Create the new columns as temporarily nullable
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->dateTime(
+				self::CREATED_AT_COL_NAME,
+				self::DATETIME_PRECISION
+			)->nullable();
+			$table->dateTime(
+				self::UPDATED_AT_COL_NAME,
+				self::DATETIME_PRECISION
+			)->nullable();
+		});
+		$needsConversion = $this->needsConversionOnUpgrade();
+		DB::beginTransaction();
+		$entities = DB::table($tableName)->select([
+			self::ID_COL_NAME,
+			self::CREATED_AT_COL_NAME . '_tmp',
+			self::UPDATED_AT_COL_NAME . '_tmp',
+		])->lazyById();
+		foreach ($entities as $entity) {
+			$created_at = $entity->{self::CREATED_AT_COL_NAME . '_tmp'};
+			$updated_at = $entity->{self::UPDATED_AT_COL_NAME . '_tmp'};
+			if ($needsConversion) {
+				$created_at = $this->upgradeDatetime($created_at);
+				$updated_at = $this->upgradeDatetime($updated_at);
+			}
+			DB::table($tableName)->where(self::ID_COL_NAME, '=', $entity->id)->update([
+				self::CREATED_AT_COL_NAME => $created_at,
+				self::UPDATED_AT_COL_NAME => $updated_at,
+			]);
+		}
+		DB::commit();
+		// Make the new columns non-nullable
 		Schema::table($tableName, function (Blueprint $table) {
 			$table->dateTime(
 				self::CREATED_AT_COL_NAME,
@@ -128,25 +177,13 @@ class RefactorTimestampsAnew extends Migration
 				self::DATETIME_PRECISION
 			)->nullable(false)->change();
 		});
-		if (!$this->needsConversionOnUpgrade()) {
-			return;
-		}
-		DB::beginTransaction();
-		$entities = DB::table($tableName)->select([
-			self::ID_COL_NAME,
-			self::CREATED_AT_COL_NAME,
-			self::UPDATED_AT_COL_NAME,
-		])->lazyById();
-		foreach ($entities as $entity) {
-			$created_at = $this->upgradeDatetime($entity->{self::CREATED_AT_COL_NAME});
-			$updated_at = $this->upgradeDatetime($entity->{self::UPDATED_AT_COL_NAME});
-
-			DB::table($tableName)->where(self::ID_COL_NAME, '=', $entity->id)->update([
-				self::CREATED_AT_COL_NAME => $created_at,
-				self::UPDATED_AT_COL_NAME => $updated_at,
-			]);
-		}
-		DB::commit();
+		// We must use two single calls to work around an SQLite limitation
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->dropColumn(self::CREATED_AT_COL_NAME . '_tmp');
+		});
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->dropColumn(self::UPDATED_AT_COL_NAME . '_tmp');
+		});
 	}
 
 	/**
@@ -168,35 +205,43 @@ class RefactorTimestampsAnew extends Migration
 	 */
 	protected function downgradeORMSystemTimesByTable(string $tableName): void
 	{
+		// We must use three single calls to work around an SQLite limitation
 		Schema::table($tableName, function (Blueprint $table) {
-			$table->timestamp(
-				self::CREATED_AT_COL_NAME,
-				self::DATETIME_PRECISION
-			)->nullable(true)->change();
-			$table->timestamp(
-				self::UPDATED_AT_COL_NAME,
-				self::DATETIME_PRECISION
-			)->nullable(true)->change();
+			$table->renameColumn(self::CREATED_AT_COL_NAME, self::CREATED_AT_COL_NAME . '_tmp');
 		});
-		if (!$this->needsConversionOnDowngrade()) {
-			return;
-		}
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->renameColumn(self::UPDATED_AT_COL_NAME, self::UPDATED_AT_COL_NAME . '_tmp');
+		});
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->timestamps();
+		});
+		$needsConversion = $this->needsConversionOnUpgrade();
 		DB::beginTransaction();
 		$entities = DB::table($tableName)->select([
 			self::ID_COL_NAME,
-			self::CREATED_AT_COL_NAME,
-			self::UPDATED_AT_COL_NAME,
+			self::CREATED_AT_COL_NAME . '_tmp',
+			self::UPDATED_AT_COL_NAME . '_tmp',
 		])->lazyById();
 		foreach ($entities as $entity) {
-			$created_at = $this->downgradeDatetime($entity->{self::CREATED_AT_COL_NAME});
-			$updated_at = $this->downgradeDatetime($entity->{self::UPDATED_AT_COL_NAME});
-
+			$created_at = $entity->{self::CREATED_AT_COL_NAME . '_tmp'};
+			$updated_at = $entity->{self::UPDATED_AT_COL_NAME . '_tmp'};
+			if ($needsConversion) {
+				$created_at = $this->downgradeDatetime($created_at);
+				$updated_at = $this->downgradeDatetime($updated_at);
+			}
 			DB::table($tableName)->where(self::ID_COL_NAME, '=', $entity->id)->update([
 				self::CREATED_AT_COL_NAME => $created_at,
 				self::UPDATED_AT_COL_NAME => $updated_at,
 			]);
 		}
 		DB::commit();
+		// We must use two single calls to work around an SQLite limitation
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->dropColumn(self::CREATED_AT_COL_NAME . '_tmp');
+		});
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->dropColumn(self::UPDATED_AT_COL_NAME . '_tmp');
+		});
 	}
 
 	/**
