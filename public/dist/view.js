@@ -2797,15 +2797,15 @@ lychee.locale = {
 		// want to call `toLocalString` which is fine and don't do any time
 		// arithmetics.
 		// Then we add the original timezone to the string manually.
-		var splitDateTime = jsonDateTime.split(/([-Z+])/);
-		console.assert(splitDateTime.length === 3, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
+		var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
+		console.assert(splitDateTime.length === 4, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
 		var locale = "default"; // use the user's browser settings
 		var format = { dateStyle: "medium", timeStyle: "medium" };
-		var result = new Date(splitDateTime[0]).toLocaleString(locale, format);
-		if (splitDateTime[1] === "Z" || splitDateTime[2] === "00:00") {
+		var result = new Date(splitDateTime[1]).toLocaleString(locale, format);
+		if (splitDateTime[2] === "Z" || splitDateTime[3] === "00:00") {
 			result += " UTC";
 		} else {
-			result += " UTC" + splitDateTime[1] + splitDateTime[2];
+			result += " UTC" + splitDateTime[2] + splitDateTime[3];
 		}
 		return result;
 	},
