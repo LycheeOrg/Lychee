@@ -99,7 +99,7 @@ class Album extends Model implements AlbumInterface
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	//protected $with = ['owner', 'cover'];
+	protected $with = ['owner', 'cover'];
 
 	/**
 	 * This method is called by the framework after the model has been
