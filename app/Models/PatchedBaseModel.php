@@ -237,6 +237,6 @@ class PatchedBaseModel extends Model
 	 */
 	protected function serializeDate(\DateTimeInterface $date): string
 	{
-		return $date->format(\DateTimeInterface::ISO8601);
+		return $date->format(\DateTimeInterface::ATOM);
 	}
 }

@@ -32,10 +32,10 @@ trait AlbumCast
 			'downloadable' => Helpers::str_of_bool($this->is_downloadable()),
 			'share_button_visible' => Helpers::str_of_bool($this->is_share_button_visible()),
 
-			'created_at' => $this->created_at->format(\DateTimeInterface::ISO8601),
-			'updated_at' => $this->updated_at->format(\DateTimeInterface::ISO8601),
-			'min_taken_at' => $this->min_taken_at !== null ? $this->min_taken_at->format(\DateTimeInterface::ISO8601) : null,
-			'max_taken_at' => $this->max_taken_at !== null ? $this->max_taken_at->format(\DateTimeInterface::ISO8601) : null,
+			'created_at' => $this->created_at->format(\DateTimeInterface::ATOM),
+			'updated_at' => $this->updated_at->format(\DateTimeInterface::ATOM),
+			'min_taken_at' => $this->min_taken_at !== null ? $this->min_taken_at->format(\DateTimeInterface::ATOM) : null,
+			'max_taken_at' => $this->max_taken_at !== null ? $this->max_taken_at->format(\DateTimeInterface::ATOM) : null,
 
 			// Parse password
 			'password' => Helpers::str_of_bool($this->password != ''),
