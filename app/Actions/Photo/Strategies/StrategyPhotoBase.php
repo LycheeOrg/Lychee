@@ -37,7 +37,7 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 		$create->photo->lens = $info['lens'];
 		$create->photo->shutter = $info['shutter'];
 		$create->photo->focal = $info['focal'];
-		$create->photo->takestamp = $info['takestamp'];
+		$create->photo->taken_at = $info['taken_at'];
 		$create->photo->latitude = $info['latitude'];
 		$create->photo->longitude = $info['longitude'];
 		$create->photo->altitude = $info['altitude'];

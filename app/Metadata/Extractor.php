@@ -5,6 +5,7 @@ namespace App\Metadata;
 use App\Models\Configs;
 use App\Models\Logs;
 use Helpers;
+use Illuminate\Support\Carbon;
 use PHPExif\Reader\Reader;
 
 class Extractor
@@ -29,7 +30,7 @@ class Extractor
 			'model' => '',
 			'shutter' => '',
 			'focal' => '',
-			'takestamp' => null,
+			'taken_at' => null,
 			'lens' => '',
 			'tags' => '',
 			'position' => '',
@@ -182,60 +183,186 @@ class Extractor
 		$metadata['livePhotoContentID'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
 
-		$takestamp = $exif->getCreationDate();
-		if ($takestamp !== false) {
-			// Some videos store creation time in local time while others use
-			// UTC and it's often impossible to tell, especially since the
-			// metadata extractors are not consistent either.  We rely here on
-			// a simple filetype-based heuristics and, for a timestamp we
-			// suspect to be in UTC, we covert it to the local time of the
-			// Lychee server so that it's displayed to users as local time.
+		$taken_at = $exif->getCreationDate();
+		if ($taken_at !== false) {
+			$taken_at = Carbon::instance($taken_at);
+
+			// There are three different timezone which needs to considered:
 			//
-			// Other possible approaches would include deriving local time from
-			// the file name or from other objects in the same album, as well
-			// as extracting the time zone from the location data if present.
+			//  a) The original timezone of the location where the photo has
+			//     been taken
+			//  b) The timezone of the server which is running the Lychee
+			//     backend
+			//  c) The timezone of the beholder who is looking at the photo
+			//     with his/her web browser
+			//
+			// **Notes about a):**
+			//
+			// For best human interaction with photos the date/time when the
+			// photo has been taken should be based on the local timezone of
+			// the location where the photo has been taken.
+			// This matches the beholder's expectation; e.g. a photo of a
+			// sunset should show a "wall time" around the early evening,
+			// while a breakfast photo should show a "wall time" in the
+			// morning.
+			// Contrary, for handling photos programmatically, timestamps
+			// (in UTC) are best.
+			// Unfortunately, the EXIF specification prior to version 2.31
+			// did not consider timezone information and only defined
+			// tag #9003 "DateTimeOriginal" which uses the string format
+			// "YYYY-MM-DD hh:mm:ss" _without_ timezone information.
+			// Moreover, the specification left open, if this string should
+			// represent a "wall time" relative to the local timezone of the
+			// location where the photo has been taken or a UTC-based time.
+			// As most cameras for still photography have just a dumb
+			// timezone-unaware clock, they simply store that time.
+			// This time is most probably the "wall time" in the local
+			// timezone assuming that the owner of the camera has set the
+			// correct time.
+			// For videos the situation is a little bit different.
+			// Some video cameras store creation time in local time while
+			// others use UTC and it's often impossible to tell, especially
+			// since the metadata extractors are not consistent either.
+			// Since 2016 and EXIF 2.31 the situation has improved.
+			// Next to the old tag "DateTimeOriginal" EXIF 2.31 also includes
+			// GPS datetime information and GPS time offset.
+			// On top, there is XMP which has been created by Adobe but is
+			// now an ISO standard and always included timezone information
+			// as part of the specification.
+			//
+			// Here, we rely here on a simple filetype-based heuristics and,
+			// for a timestamp we suspect to be in UTC, we convert it to the
+			// application's default timezone.
+			// All other timestamps are not altered, but used "as is":
+			//
+			//   i) Either the meta-data extractor was able to properly
+			//      extract a timezone information (good case), or
+			//  ii) the meta-data extractor returned a \DateTime object which
+			//      uses the application's default timezone due to the EXIF
+			//      date lacking an explicit timezone (bad case).
+			//
+			// In the "bad case", the shown "wall time" relative to the
+			// application's default timezone matches the EXIF time.
+			// This approach implicitly assumes that the beholder of the photo
+			// in front of the GUI uses the same timezone as the backend
+			// and thus sees the correct "wall time" which is consistent to
+			// content of the photo.
+			//
+			// Other possible approaches would include deriving the original
+			// timezone from the file name or from other objects in the same
+			// album, as well as extracting the timezone from the location
+			// data if present.
+			// The latter is what the "big players" like Google Photo or
+			// Apple do.
+			// TODO: Implement timezone derivation from location data.
+			// See [this StackOverflow answer](https://stackoverflow.com/a/16086964/2690527)
+			// for a fairly comprehensive overview of available options.
+			// The [Geo-Timezone PHP Library](https://github.com/minube/geo-timezone)
+			// seems to be the most accurate one and does not depend on an
+			// external web-service.
+			// Unfortunately, it is not an simple PHP library which can be
+			// pulled in as a Composer dependencies, but requires a binary
+			// PHP extension (`geos.so`).
+			//
+			// **Notes about b):**
+			//
+			// With respect to the beholder, b) is irrelevant.
+			// However, please be aware that there is not necessarily a single
+			// server timezone, but actually three.
+			// The timezone of the server OS, the configured timezone of the
+			// PHP application and the timezone of SQL connection to the SQL
+			// server.
+			// Those three timezone are not necessarily identical, especially
+			// not, if the Lychee application and the SQL server are running
+			// on different machines.
+			// {@link App\Models\PatchedBaseModel} takes care that
+			// all timestamps are (de-)hydrated as UTC timestamps.
+			// Moreover, {@link App\Models\Photo} ensures that the original
+			// timezone information of the datetime when the photo has been
+			// taken is stored.
+			//
+			// **Notes about c):**
+			//
+			// The datetime is sent from the web backend to the client using
+			// the JSON (aka ISO 8601) format incl. the correct time-offset
+			// (e.g. 20210519T211643+02:00).
+			// On top, the original timezone is sent to the client as
+			// the string attribute `taken_at_orig_tz` which either is
+			//
+			//  - a named timezone like "Europe/Paris" (most accurate),
+			//  - a timezone abbreviation like "CEST" (central european summer
+			//    time, less accurate), or
+			//  - a time offset like "+02:00" (least accurate),
+			//
+			// whatever the metadata extractor was able to extract from the
+			// media file.
+			// In theory, this give the GUI to show the datetime of creation
+			// either
+			//
+			//  a) relative to the original timezone (probably the most
+			//     useful option),
+			//  b) relative to UTC, or
+			//  c) relative to the beholder's own, local timezone.
+			//
+			// Note 1: At the moment, the "original timezone" typically is not
+			//         the "true" original timezone, but the configured
+			//         default timezone of the PHP application (see notes
+			//         about a).
+			// Note 2: We do not set the the attribute `taken_at_orig_tz`
+			//         here.
+			//         This is the responsibility of {@link App\Models\Photo}.
+			//         At the layer of the "business logic" we only use
+			//         the attribute `taken_at` which extends
+			//         \DateTimeInterface and stores the timezone.
 			if ($kind === 'video') {
 				$locals = strtolower(Configs::get_value('local_takestamp_video_formats', ''));
 				if (!in_array(strtolower($extension), explode('|', $locals), true)) {
 					// This is a video format where we expect the takestamp
 					// to be provided in UTC.
-					if ($takestamp->getTimezone()->getName() === date_default_timezone_get()) {
+					if ($taken_at->getTimezone()->getName() === date_default_timezone_get()) {
 						// Most likely the time zone info was missing so the
 						// system default was used instead, which is wrong,
-						// because the takestamp is actually in UTC.  This will
-						// trigger, e.g., for mp4 files with the Exiftool
-						// extractor.  We recreate the takestamp as a UTC
-						// timestamp and _then_ change the time zone to local.
-						$takestamp = new \DateTime($takestamp->format('Y-m-d H:i:s'), new \DateTimeZone('UTC'));
-						$takestamp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-					} elseif ($takestamp->getTimezone()->getName() === 'Z') {
-						// This one is correctly in Zulu (UTC).  We just need
-						// to change the time zone to local.
-						$takestamp->setTimezone(new \DateTimeZone(date_default_timezone_get()));
-					} else {
-						// In the remaining case the time zone information was
-						// extracted and the takestamp is assumed to be in local
-						// time, so we don't need to do anything.
-						//
-						// The only known example are the mov files from Apple
-						// devices; the time zone will be formatted as "+01:00"
-						// so neither of the two conditions above should trigger.
+						// because the recording time is actually in UTC.
+						// This will trigger, e.g., for mp4 files with the
+						// Exiftool extractor.
+						// We recreate the recording time as a UTC timestamp
+						// and _then_ change the timezone to the application's
+						// default timezone.
+						// Note: This assumes that the application's default
+						// timezone is the same as the timezone of the
+						// location where the video has been recorded and that
+						// the beholder (of the video) expects to observe
+						// that timezone.
+						$taken_at = new \DateTime(
+							$taken_at->format('Y-m-d H:i:s'),
+							new \DateTimeZone('UTC')
+						);
+						$taken_at->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+					} elseif ($taken_at->getTimezone()->getName() === 'Z') {
+						// This one is correctly in Zulu (UTC).
+						// We change the timezone to the application's default
+						// timezone and convert the time.
+						// Note: This assumes that the application's default
+						// timezone is the same as the timezone of the
+						// location where the video has been recorded and that
+						// the beholder (of the video) expects to observe
+						// that timezone.
+						$taken_at->setTimezone(new \DateTimeZone(date_default_timezone_get()));
 					}
+					// In the remaining cases the timezone information was
+					// extracted and the recording time is assumed exhibit
+					// to original timezone of the location where the video
+					// has been recorded.
+					// So we don't need to do anything.
+					//
+					// The only known example are the mov files from Apple
+					// devices; the time zone will be formatted as "+01:00"
+					// so neither of the two conditions above should trigger.
 				}
 			}
-
-			// We need to make sure that the takestamp is between '1970-01-01 00:00:01' UTC and '2038-01-19 03:14:07' UTC.
-			// We set the value to null in case we're out of bounds
-			$min_date = new \DateTime('1970-01-01 00:00:01', new \DateTimeZone('UTC'));
-			$max_date = new \DateTime('2038-01-19 03:14:07', new \DateTimeZone('UTC'));
-			if ($takestamp < $min_date || $takestamp > $max_date) {
-				$metadata['takestamp'] = null;
-				Logs::notice(__METHOD__, __LINE__, 'Takestamp (' . $takestamp->format('Y-m-d H:i:s') . ') out of bounds (needs to be between 1970-01-01 00:00:01 and 2038-01-19 03:14:07)');
-			} else {
-				$metadata['takestamp'] = $takestamp->format('Y-m-d H:i:s');
-			}
+			$metadata['taken_at'] = $taken_at;
 		} else {
-			$metadata['takestamp'] = null;
+			$metadata['taken_at'] = null;
 		}
 
 		// We need to make sure, latitude is between -90/90 and longitude is between -180/180
