@@ -3,7 +3,7 @@
 use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
 
-class BumpVersion040303 extends Migration
+class BumpVersion040304 extends Migration
 {
 	/**
 	 * Run the migrations.
@@ -12,7 +12,7 @@ class BumpVersion040303 extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('key', 'version')->update(['value' => '040303']);
+		Configs::where('key', 'version')->update(['value' => '040304']);
 	}
 
 	/**

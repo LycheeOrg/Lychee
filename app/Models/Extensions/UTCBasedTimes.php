@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Extensions;
 
 use Carbon\CarbonInterface;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use InvalidArgumentException;
 
 /**
- * Class PatchedBaseModel.
+ * Trait UTCBasedTimes.
  *
  * This model stores all timestamps without timezone information relative to
  * UTC in the database.
@@ -38,22 +37,11 @@ use InvalidArgumentException;
  * timezone for the database connection and always assumes that SQL datetime
  * strings without a timezone are given relative to UTC.
  */
-class PatchedBaseModel extends Model
+trait UTCBasedTimes
 {
-	/**
-	 * This must match the timezone which is used for the database connection.
-	 * For SQLite this poses no problem, because SQLite does not know the
-	 * concept of an independent timezone for the database, but it is crucial
-	 * for connections to "real" DBMS systems like PostgreSQL and MySQL.
-	 * This setting must match the setting from `config/database.php`.
-	 * To be more robust, it would be better not to hard-code this timezone,
-	 * but to determine the timezone of the database connection
-	 * programmatically from the DB connection which is associated to this
-	 * model instance.
-	 * However, there seems not be an API for that.
-	 * TODO: Receive timezone of database connection dynamically at runtime.
-	 */
-	const DB_TIMEZONE_NAME = 'UTC';
+	private static string $DB_TIMEZONE_NAME = 'UTC';
+	private static string $DB_DATETIME_FORMAT = 'Y-m-d H:i:s';
+	private static string $STANDARD_DATE_PATTERN = '/^(\d{4})-(\d{1,2})-(\d{1,2})$/';
 
 	/**
 	 * Converts a DateTime to a storable SQL datetime string.
@@ -61,14 +49,14 @@ class PatchedBaseModel extends Model
 	 * This method fixes Model#fromDateTime.
 	 * The returned SQL datetime string without a timezone indication always
 	 * represents an instant of time relative to
-	 * {@link self::DB_TIMEZONE_NAME}.
+	 * {@link UTCBasedTimes::$DB_TIMEZONE_NAME}.
 	 * The original method simply cuts off any timezone information from the
 	 * input.
 	 *
 	 * If the input string has a recognized string format but without a
 	 * timezone indication, e.g. something like `YYYY-MM-DD hh:mm:ss`, then
 	 * the input string is interpreted as a "wall time" relative to
-	 * {@link self::DB_TIMEZONE_NAME}.
+	 * {@link UTCBasedTimes::$DB_TIMEZONE_NAME}.
 	 * As a result, the input string and returned string represent the same
 	 * "wall time" without any conversion.
 	 * However, the input string and returned string may still differ and
@@ -78,7 +66,7 @@ class PatchedBaseModel extends Model
 	 * For any input type which has a timezone information (e.g. objects
 	 * which inherit \DateTimeInterface, string with explicit timezone
 	 * information, etc.) the original timezone is respected and the result
-	 * is properly converted to {@link self::DB_TIMEZONE_NAME}.
+	 * is properly converted to {@link UTCBasedTimes::$DB_TIMEZONE_NAME}.
 	 *
 	 * @param mixed $value
 	 *
@@ -93,9 +81,9 @@ class PatchedBaseModel extends Model
 		if (empty($carbonTime)) {
 			return null;
 		}
-		$carbonTime->setTimezone(self::DB_TIMEZONE_NAME);
+		$carbonTime->setTimezone(self::$DB_TIMEZONE_NAME);
 
-		return $carbonTime->format($this->getDateFormat());
+		return $carbonTime->format(self::$DB_DATETIME_FORMAT);
 	}
 
 	/**
@@ -103,10 +91,10 @@ class PatchedBaseModel extends Model
 	 *
 	 * This method fixes Model#asDateTime.
 	 * For any input without an explicit timezone, the input time is
-	 * interpreted relative to {@link self::DB_TIMEZONE_NAME}.
+	 * interpreted relative to {@link UTCBasedTimes::$DB_TIMEZONE_NAME}.
 	 * The returned Carbon object uses the application's default timezone
 	 * with the date/time properly converted from
-	 * {@link self::DB_TIMEZONE_NAME} to `date_default_timezone_get()`.
+	 * {@link UTCBasedTimes::$DB_TIMEZONE_NAME} to `date_default_timezone_get()`.
 	 *
 	 * In particular, the following holds:
 	 *  - If the input value is already a DateTime object (i.e. implements
@@ -125,7 +113,7 @@ class PatchedBaseModel extends Model
 	 *    as given by the string.
 	 *  - If the input value is a string _without_ a timezone information,
 	 *    then the given datetime string is interpreted relative to
-	 *    {@link self::DB_TIMEZONE_NAME} and the returned Carbon object uses
+	 *    {@link UTCBasedTimes::$DB_TIMEZONE_NAME} and the returned Carbon object uses
 	 *    the application's default timezone.
 	 *    In other words, if the input value equals '1970-01-01 00:00:00' and
 	 *    the application's default timezone is CET, then the Carbon object
@@ -175,9 +163,9 @@ class PatchedBaseModel extends Model
 		// Applied patch: The standard date format Y-m-d _without_ a timezone
 		// is interpreted relative to UTC and _then_ set to the
 		// application's default timezone.
-		if ($this->isStandardDateFormat($value)) {
+		if (preg_match(self::$STANDARD_DATE_PATTERN, $value)) {
 			$result = Date::createFromFormat(
-				'Y-m-d', $value, self::DB_TIMEZONE_NAME
+				'Y-m-d', $value, self::$DB_TIMEZONE_NAME
 			)->startOfDay();
 			$result->setTimezone(date_default_timezone_get());
 
@@ -192,11 +180,10 @@ class PatchedBaseModel extends Model
 		// Note that the timezone parameter is ignored for formats which
 		// include explicit timezone information.
 		try {
-			$format = $this->getDateFormat();
 			$result = Date::createFromFormat(
-				$format, $value, self::DB_TIMEZONE_NAME
+				self::$DB_DATETIME_FORMAT, $value, self::$DB_TIMEZONE_NAME
 			);
-			if ($result->getTimezone()->getName() === self::DB_TIMEZONE_NAME) {
+			if ($result->getTimezone()->getName() === self::$DB_TIMEZONE_NAME) {
 				// If the timezone is different to UTC, we don't set it, because then
 				// the timezone came from the input string.
 				// If the timezone equals UTC, then we assume that no explicit timezone
@@ -217,8 +204,8 @@ class PatchedBaseModel extends Model
 
 		// Might throw an InvalidArgumentException if no recognized format is found,
 		// but this is intended
-		$result = Date::parse($value, self::DB_TIMEZONE_NAME);
-		if ($result->getTimezone()->getName() === self::DB_TIMEZONE_NAME) {
+		$result = Date::parse($value, self::$DB_TIMEZONE_NAME);
+		if ($result->getTimezone()->getName() === self::$DB_TIMEZONE_NAME) {
 			$result->setTimezone(date_default_timezone_get());
 		}
 

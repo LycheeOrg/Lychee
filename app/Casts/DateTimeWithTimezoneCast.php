@@ -2,8 +2,8 @@
 
 namespace App\Casts;
 
-use App\Models\PatchedBaseModel;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 class DateTimeWithTimezoneCast implements CastsAttributes
@@ -19,15 +19,11 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	 * relation contains a second string attribute whose name equals
 	 * $key . '_orig_tz' and which stores the original timezone of the
 	 * (key, value)-pair at hand.
-	 * Moreover, this class assumes that the associated model extends
-	 * {@link \App\Models\PatchedBaseModel}, because this method relies on
-	 * proper datetime conversion with respect to the underlying timezone of
-	 * the database.
 	 *
-	 * @param PatchedBaseModel $model      the associated model class
-	 * @param string           $key        the name of the SQL column holding the datetime
-	 * @param string           $value      the SQL datetime string
-	 * @param array            $attributes all SQL attributes of the entity
+	 * @param Model  $model      the associated model class
+	 * @param string $key        the name of the SQL column holding the datetime
+	 * @param string $value      the SQL datetime string
+	 * @param array  $attributes all SQL attributes of the entity
 	 *
 	 * @return Carbon|null The Carbon object with a properly set timezone
 	 */
@@ -39,9 +35,6 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 		}
 		if (!is_string($value)) {
 			throw new \InvalidArgumentException('$value must be an SQL datetime string');
-		}
-		if (!($model instanceof PatchedBaseModel)) {
-			throw new \InvalidArgumentException('$model must extend \App\Models\PatchedBaseModel');
 		}
 		if (array_key_exists($tzKey, $attributes)) {
 			$tz = $attributes[$tzKey];
@@ -62,24 +55,15 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 	/**
 	 * Converts the given value into an SQL string for storage.
 	 *
-	 * Attention:
-	 * For this method to work properly, the method assume that the associated
-	 * model extends {@link \App\Models\PatchedBaseModel}, because this method
-	 * relies on proper datetime conversion with respect to the underlying
-	 * timezone of the database.
-	 *
-	 * @param PatchedBaseModel $model      the associated model class
-	 * @param string           $key        the name of the SQL column holding the datetime
-	 * @param Carbon|null      $value      the Carbon object of the model
-	 * @param array            $attributes
+	 * @param Model       $model      the associated model class
+	 * @param string      $key        the name of the SQL column holding the datetime
+	 * @param Carbon|null $value      the Carbon object of the model
+	 * @param array       $attributes
 	 *
 	 * @return array An associative map of SQL columns and their values
 	 */
 	public function set($model, string $key, $value, array $attributes): array
 	{
-		if (!($model instanceof PatchedBaseModel)) {
-			throw new \InvalidArgumentException('$model must extend \App\Models\PatchedBaseModel');
-		}
 		if ($value !== null && !($value instanceof Carbon)) {
 			throw new \InvalidArgumentException('$value must extend \DateTimeInterface');
 		}

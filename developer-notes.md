@@ -5,8 +5,8 @@ In particular, it highlights some pitfalls one can easily trap into.
 
 # TLTR for the Impatient
 
- 1. If you create a new Eloquent model, extend from `\App\Models\PatchedBaseModel`.
-    Do not extend from `\Illuminate\Database\Eloquent\Model` directly.
+ 1. If you create a new Eloquent model, use the trait
+    `\App\Models\Extensions\UTCBasedTimes`.
  2. If you write a database migration and create a new table, do not use
     the convenient method `\Illuminate\Database\Schema\Blueprint#timestamps`
     in order to create the columns `created_at` and `updated_at`.

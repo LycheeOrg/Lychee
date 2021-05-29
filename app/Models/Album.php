@@ -12,9 +12,11 @@ use App\Models\Extensions\AlbumQuery;
 use App\Models\Extensions\AlbumSetters;
 use App\Models\Extensions\AlbumStringify;
 use App\Models\Extensions\CustomSort;
+use App\Models\Extensions\UTCBasedTimes;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -70,7 +72,7 @@ use Kalnoy\Nestedset\NodeTrait;
  *
  * @property Collection|User[] $shared_with
  */
-class Album extends PatchedBaseModel implements AlbumInterface
+class Album extends Model implements AlbumInterface
 {
 	use NodeTrait;
 	use AlbumBooleans;
@@ -80,6 +82,7 @@ class Album extends PatchedBaseModel implements AlbumInterface
 	use AlbumSetters;
 	use CustomSort;
 	use AlbumQuery;
+	use UTCBasedTimes;
 
 	protected $casts
 	= [

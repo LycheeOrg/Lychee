@@ -1,24 +1,33 @@
 <?php
 
-use App\Models\PatchedBaseModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class RefactorTimestamps extends Migration
+class RefactorTimestampsAnew extends Migration
 {
+	private const SQL_TIMEZONE_NAME = 'UTC';
 	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
 	private const ID_COL_NAME = 'id';
+	private const CREATED_AT_COL_NAME = 'created_at';
+	private const UPDATED_AT_COL_NAME = 'updated_at';
+	private const DATETIME_PRECISION = 0;
+	private const TABLE_NAMES = [
+		'albums',
+		'logs',
+		'pages',
+		'photos',
+		'sym_links',
+		'users',
+	];
 	// The longest named timezones are "America/North_Dakota/New_Salem" and
 	// "America/Argentina/Buenos_Aires" (both have 30 letters)
 	private const TZ_NAME_MAX_LENGTH = 31;
-	private const DATETIME_PRECISION = 0;
 	// All constants related to the Photos relation
 	private const PHOTOS_TABLE_NAME = 'photos';
-	private const PHOTO_CREATED_AT_COL_NAME = 'created_at';
-	private const PHOTO_UPDATED_AT_COL_NAME = 'updated_at';
 	private const PHOTO_TAKEN_AT_COL_NAME = 'taken_at';
 	private const PHOTO_TAKEN_AT_TZ_COL_NAME = 'taken_at_orig_tz';
 	private const PHOTO_TAKESTAMP_COL_NAME = 'takestamp';
@@ -51,15 +60,156 @@ class RefactorTimestamps extends Migration
 	 */
 	public function up()
 	{
+		$this->fixPagesTable();
+		$this->upgradeORMSystemTimes();
+		$this->upgradePhotos();
+		$this->upgradeConfiguration();
+	}
+
+	/**
+	 * Reverse the migration.
+	 */
+	public function down()
+	{
+		$this->downgradeORMSystemTimes();
+		$this->downgradePhotos();
+		$this->downgradeConfiguration();
+	}
+
+	/**
+	 * Fixes a buggy row in the table Pages.
+	 *
+	 * This bug was introduced by the migration `CreatePagesTable` on
+	 * 2019-02-21 11:43:56.
+	 * Normally, the Eloquent ORM framework ensures that the columns
+	 * `created_at` and `updated_at` are not null and are set correctly
+	 * if one calls {@link \Illuminate\Database\Eloquent\Model::save()}.
+	 * However, the migration manually inserted a row, by-passed the
+	 * Eloquent ORM layer and did not set these columns.
+	 */
+	protected function fixPagesTable(): void
+	{
+		DB::table('pages')
+			->where('title', '=', 'gallery')
+			->where('link', '=', '/gallery')
+			->whereNull('created_at')
+			->update([
+				'created_at' => '2019-02-21 11:43:56',
+				'updated_at' => '2019-02-21 11:43:56',
+			]);
+	}
+
+	/**
+	 * Upgrades the systems times `created_at` and `updated_at` for each table
+	 * in {@link RefactorTimestampsAnew::TABLE_NAMES}.
+	 */
+	protected function upgradeORMSystemTimes(): void
+	{
+		foreach (self::TABLE_NAMES as $tableName) {
+			$this->upgradeORMSystemTimesByTable($tableName);
+		}
+	}
+
+	/**
+	 * Upgrades the system times `created_at` and `updated_at` for the given
+	 * table.
+	 *
+	 * @param string $tableName the name of the table to be upgraded
+	 */
+	protected function upgradeORMSystemTimesByTable(string $tableName): void
+	{
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->dateTime(
+				self::CREATED_AT_COL_NAME,
+				self::DATETIME_PRECISION
+			)->nullable(false)->change();
+			$table->dateTime(
+				self::UPDATED_AT_COL_NAME,
+				self::DATETIME_PRECISION
+			)->nullable(false)->change();
+		});
+		if (!$this->needsConversionOnUpgrade()) {
+			return;
+		}
+		DB::beginTransaction();
+		$entities = DB::table($tableName)->select([
+			self::ID_COL_NAME,
+			self::CREATED_AT_COL_NAME,
+			self::UPDATED_AT_COL_NAME,
+		])->lazyById();
+		foreach ($entities as $entity) {
+			$created_at = $this->upgradeDatetime($entity->{self::CREATED_AT_COL_NAME});
+			$updated_at = $this->upgradeDatetime($entity->{self::UPDATED_AT_COL_NAME});
+
+			DB::table($tableName)->where(self::ID_COL_NAME, '=', $entity->id)->update([
+				self::CREATED_AT_COL_NAME => $created_at,
+				self::UPDATED_AT_COL_NAME => $updated_at,
+			]);
+		}
+		DB::commit();
+	}
+
+	/**
+	 * Downgrades the systems times `created_at` and `updated_at` for each
+	 * table in {@link RefactorTimestampsAnew::TABLE_NAMES}.
+	 */
+	protected function downgradeORMSystemTimes(): void
+	{
+		foreach (self::TABLE_NAMES as $tableName) {
+			$this->downgradeORMSystemTimesByTable($tableName);
+		}
+	}
+
+	/**
+	 * Downgrades the system times `created_at` and `updated_at` for the given
+	 * table.
+	 *
+	 * @param string $tableName the name of the table to be downgraded
+	 */
+	protected function downgradeORMSystemTimesByTable(string $tableName): void
+	{
+		Schema::table($tableName, function (Blueprint $table) {
+			$table->timestamp(
+				self::CREATED_AT_COL_NAME,
+				self::DATETIME_PRECISION
+			)->nullable(true)->change();
+			$table->timestamp(
+				self::UPDATED_AT_COL_NAME,
+				self::DATETIME_PRECISION
+			)->nullable(true)->change();
+		});
+		if (!$this->needsConversionOnDowngrade()) {
+			return;
+		}
+		DB::beginTransaction();
+		$entities = DB::table($tableName)->select([
+			self::ID_COL_NAME,
+			self::CREATED_AT_COL_NAME,
+			self::UPDATED_AT_COL_NAME,
+		])->lazyById();
+		foreach ($entities as $entity) {
+			$created_at = $this->downgradeDatetime($entity->{self::CREATED_AT_COL_NAME});
+			$updated_at = $this->downgradeDatetime($entity->{self::UPDATED_AT_COL_NAME});
+
+			DB::table($tableName)->where(self::ID_COL_NAME, '=', $entity->id)->update([
+				self::CREATED_AT_COL_NAME => $created_at,
+				self::UPDATED_AT_COL_NAME => $updated_at,
+			]);
+		}
+		DB::commit();
+	}
+
+	/**
+	 * Upgrades the table Photos.
+	 *
+	 * It adds the columns `taken_at` and `taken_at_orig_tz`, sets the values
+	 * of the newly added columns using the value of the column `takestamp`,
+	 * converts the time value of required by the DBMS and drops the old
+	 * column `takestamp` afterwards.
+	 */
+	protected function upgradePhotos(): void
+	{
 		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
-			$table->dateTime(
-				self::PHOTO_CREATED_AT_COL_NAME,
-				self::DATETIME_PRECISION
-			)->nullable(false)->change();
-			$table->dateTime(
-				self::PHOTO_UPDATED_AT_COL_NAME,
-				self::DATETIME_PRECISION
-			)->nullable(false)->change();
 			$table->dateTime(
 				self::PHOTO_TAKEN_AT_COL_NAME,
 				self::DATETIME_PRECISION
@@ -69,30 +219,81 @@ class RefactorTimestamps extends Migration
 				self::TZ_NAME_MAX_LENGTH
 			)->nullable(true)->default(null)->comment('the timezone at which the photo has originally been taken');
 		});
-
+		$needsConversion = $this->needsConversionOnUpgrade();
 		DB::beginTransaction();
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
-			self::PHOTO_CREATED_AT_COL_NAME,
-			self::PHOTO_UPDATED_AT_COL_NAME,
 			self::PHOTO_TAKESTAMP_COL_NAME,
 		])->lazyById();
-
 		foreach ($photos as $photo) {
-			$created_at = $this->upgradeDatetime($photo->{self::PHOTO_CREATED_AT_COL_NAME});
-			$updated_at = $this->upgradeDatetime($photo->{self::PHOTO_UPDATED_AT_COL_NAME});
-			$taken_at = $this->upgradeDatetime($photo->{self::PHOTO_TAKESTAMP_COL_NAME});
+			$taken_at = $photo->{self::PHOTO_TAKESTAMP_COL_NAME};
+			if ($needsConversion) {
+				$taken_at = $this->upgradeDatetime($taken_at);
+			}
 			$taken_at_orig_tz = ($taken_at === null) ? null : date_default_timezone_get();
 
 			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
-				self::PHOTO_CREATED_AT_COL_NAME => $created_at,
-				self::PHOTO_UPDATED_AT_COL_NAME => $updated_at,
 				self::PHOTO_TAKEN_AT_COL_NAME => $taken_at,
 				self::PHOTO_TAKEN_AT_TZ_COL_NAME => $taken_at_orig_tz,
 			]);
 		}
+		DB::commit();
+		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
+			$table->dropColumn([self::PHOTO_TAKESTAMP_COL_NAME]);
+		});
+	}
 
-		// Upgrade sorting criterion and range in the configuration table
+	/**
+	 * Downgrades the table Photos.
+	 *
+	 * It adds the previous column `takestamp`, sets the value of the re-added
+	 * column using the value of the column `taken_at`, converts the time
+	 * value of required by the DBMS and drops the columns `taken_at`
+	 * and `taken_at_orig_tz` afterwards.
+	 */
+	protected function downgradePhotos(): void
+	{
+		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
+			$table->timestamp(
+				self::PHOTO_TAKESTAMP_COL_NAME,
+				self::DATETIME_PRECISION
+			)->nullable(true)->default(null);
+		});
+		$needsConversion = $this->needsConversionOnUpgrade();
+		DB::beginTransaction();
+		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
+			self::ID_COL_NAME,
+			self::PHOTO_TAKEN_AT_COL_NAME,
+			self::PHOTO_TAKEN_AT_TZ_COL_NAME,
+		])->lazyById();
+		foreach ($photos as $photo) {
+			$takestamp = $photo->{self::PHOTO_TAKEN_AT_COL_NAME};
+			if ($needsConversion) {
+				$takestamp = $this->convertDatetime(
+					$takestamp,
+					self::SQL_TIMEZONE_NAME,
+					$photo->{self::PHOTO_TAKEN_AT_TZ_COL_NAME}
+				);
+			}
+			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
+				self::PHOTO_TAKESTAMP_COL_NAME => $takestamp,
+			]);
+		}
+		DB::commit();
+		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
+			$table->dropColumn([
+				self::PHOTO_TAKEN_AT_COL_NAME,
+				self::PHOTO_TAKEN_AT_TZ_COL_NAME,
+			]);
+		});
+	}
+
+	/**
+	 * Upgrades sorting criterion and range in the configuration table.
+	 */
+	protected function upgradeConfiguration(): void
+	{
+		DB::beginTransaction();
 		$this->convertConfiguration(
 			self::CONFIG_PS_KEY,
 			self::CONFIG_PS_VALUE_OLD2NEW,
@@ -103,52 +304,15 @@ class RefactorTimestamps extends Migration
 			self::CONFIG_AS_VALUE_OLD2NEW,
 			self::CONFIG_AS_RANGE_NEW
 		);
-
 		DB::commit();
-
-		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
-			$table->dropColumn([self::PHOTO_TAKESTAMP_COL_NAME]);
-		});
 	}
 
 	/**
-	 * Reverse the migration.
+	 * Downgrades sorting criterion and range in the configuration table.
 	 */
-	public function down()
+	protected function downgradeConfiguration(): void
 	{
-		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
-			$table->dateTime(
-				self::PHOTO_TAKESTAMP_COL_NAME,
-				self::DATETIME_PRECISION
-			)->nullable(true)->default(null);
-		});
-
 		DB::beginTransaction();
-		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
-			self::ID_COL_NAME,
-			self::PHOTO_CREATED_AT_COL_NAME,
-			self::PHOTO_UPDATED_AT_COL_NAME,
-			self::PHOTO_TAKEN_AT_COL_NAME,
-			self::PHOTO_TAKEN_AT_TZ_COL_NAME,
-		])->lazyById();
-
-		foreach ($photos as $photo) {
-			$created_at = $this->downgradeDatetime($photo->{self::PHOTO_CREATED_AT_COL_NAME});
-			$updated_at = $this->downgradeDatetime($photo->{self::PHOTO_UPDATED_AT_COL_NAME});
-			$takestamp = $this->convertDatetime(
-				$photo->{self::PHOTO_TAKEN_AT_COL_NAME},
-				PatchedBaseModel::DB_TIMEZONE_NAME,
-				$photo->{self::PHOTO_TAKEN_AT_TZ_COL_NAME}
-			);
-
-			DB::table(self::PHOTOS_TABLE_NAME)->where(self::ID_COL_NAME, '=', $photo->id)->update([
-				self::PHOTO_CREATED_AT_COL_NAME => $created_at,
-				self::PHOTO_UPDATED_AT_COL_NAME => $updated_at,
-				self::PHOTO_TAKESTAMP_COL_NAME => $takestamp,
-			]);
-		}
-
-		// Downgrade sorting criterion and range in the configuration table
 		$this->convertConfiguration(
 			self::CONFIG_PS_KEY,
 			self::CONFIG_PS_VALUE_NEW2OLD,
@@ -159,15 +323,7 @@ class RefactorTimestamps extends Migration
 			self::CONFIG_AS_VALUE_NEW2OLD,
 			self::CONFIG_AS_RANGE_OLD
 		);
-
 		DB::commit();
-
-		Schema::table(self::PHOTOS_TABLE_NAME, function (Blueprint $table) {
-			$table->dropColumn([
-				self::PHOTO_TAKEN_AT_COL_NAME,
-				self::PHOTO_TAKEN_AT_TZ_COL_NAME,
-			]);
-		});
 	}
 
 	/**
@@ -204,7 +360,7 @@ class RefactorTimestamps extends Migration
 		return $this->convertDatetime(
 			$sqlDatetime,
 			date_default_timezone_get(),
-			PatchedBaseModel::DB_TIMEZONE_NAME
+			self::SQL_TIMEZONE_NAME
 		);
 	}
 
@@ -222,7 +378,7 @@ class RefactorTimestamps extends Migration
 	{
 		return $this->convertDatetime(
 			$sqlDatetime,
-			PatchedBaseModel::DB_TIMEZONE_NAME,
+			self::SQL_TIMEZONE_NAME,
 			date_default_timezone_get()
 		);
 	}
@@ -304,5 +460,59 @@ class RefactorTimestamps extends Migration
 			$value = $map[$value];
 		}
 		$this->setConfiguration($key, $value, $range);
+	}
+
+	/**
+	 * Returns true, if a date/time value must be converted from the default
+	 * timezone of the application (which has previously been used by the
+	 * database connection) to UTC during upgrade.
+	 *
+	 * @return bool true, if conversion is required, false if not
+	 */
+	protected function needsConversionOnUpgrade(): bool
+	{
+		$dbConnType = Config::get('database.default');
+		switch ($dbConnType) {
+			case 'mysql':
+				// For MySQl no time conversion is required.
+				// When the timezone of the DB connection has been switched
+				// from the application's default timezone to UTC, MySQL
+				// automatically converted all timestamps, because the
+				// original SQL type has been `TIMESTAMP`.
+				return false;
+			case 'sqlite':
+			case 'pgsql':
+				// For PostgreSQL and SQLite we must convert.
+				return true;
+			default:
+				// What is about sqlsrv? Is this actually used?
+				throw new InvalidArgumentException('Unsupported DB system: ' . $dbConnType);
+		}
+	}
+
+	/**
+	 * Returns true, if a date/time value must be converted from UTC to the
+	 * default timezone of the application (which will be used by the DB
+	 * connection after downgrade) during upgrade.
+	 *
+	 * @return bool true, if conversion is required, false if not
+	 */
+	protected function needsConversionOnDowngrade(): bool
+	{
+		$dbConnType = Config::get('database.default');
+		switch ($dbConnType) {
+			case 'mysql':
+			case 'sqlite':
+			case 'pgsql':
+				// Note that downgrading is asymmetric for MySQl.
+				// The upgraded version uses the MySQL type `DATETIME` which
+				// has no "auto-conversion" feature neither.
+				// So we must convert date/times for all DBMS during
+				// downgrade.
+				return true;
+			default:
+				// What is about sqlsrv? Is this actually used?
+				throw new InvalidArgumentException('Unsupported DB system: ' . $dbConnType);
+		}
 	}
 }

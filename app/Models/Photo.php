@@ -8,8 +8,10 @@ use App\Casts\DateTimeWithTimezoneCast;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\PhotoGetters;
+use App\Models\Extensions\UTCBasedTimes;
 use Helpers;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Storage;
@@ -113,11 +115,12 @@ use Storage;
  * @method static Builder|Photo whereWidth($value)
  * @mixin Eloquent
  */
-class Photo extends PatchedBaseModel
+class Photo extends Model
 {
 	use PhotoBooleans;
 	use PhotoCast;
 	use PhotoGetters;
+	use UTCBasedTimes;
 	const THUMBNAIL_DIM = 200;
 	const THUMBNAIL2X_DIM = 400;
 	const VARIANT_THUMB = 'thumb';
