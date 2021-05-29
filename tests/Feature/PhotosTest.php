@@ -115,7 +115,7 @@ class PhotosTest extends TestCase
 			'filesize' => 21104156,
 			'star' => '1',
 			'tags' => 'night',
-			'taken_at' => $taken_at->format(\DateTimeInterface::ISO8601),
+			'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',

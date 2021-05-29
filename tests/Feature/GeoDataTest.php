@@ -69,7 +69,7 @@ class GeoDataTest extends TestCase
 				'focal' => '44 mm',
 				'altitude' => '1633.0000',
 				'license' => 'none',
-				'taken_at' => $taken_at->format(\DateTimeInterface::ISO8601),
+				'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
 				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 				'public' => '0',
 				'downloadable' => '1',
