@@ -7,6 +7,7 @@ use App\Actions\Albums\Extensions\PublicViewable;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait AlbumGetters
 {
@@ -48,7 +49,12 @@ trait AlbumGetters
 	}
 
 	/**
-	 * Return the list of photos.
+	 * Return a query builder or an SQL relation for the list of photos.
+	 *
+	 * See comment in {@link \App\SmartAlbums\BareSmartAlbum} why we need
+	 * an ambitious return type here.
+	 *
+	 * @return Builder|HasMany
 	 */
 	public function get_photos()
 	{
@@ -76,7 +82,12 @@ trait AlbumGetters
 		} else {
 			[$sort_col, $sort_order] = $this->get_sort();
 
-			$sql = $this->get_all_photos();
+			/* @var Builder|HasMany $sql */
+			if ($this->is_smart()) {
+				$sql = $this->get_photos();
+			} else {
+				$sql = $this->get_all_photos();
+			}
 
 			//? apply safety filter : Do not leak pictures which are not ours
 			$forbiddenID = resolve(PublicIds::class)->getNotAccessible();

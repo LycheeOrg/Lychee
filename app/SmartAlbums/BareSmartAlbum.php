@@ -8,6 +8,24 @@ use App\Models\Configs;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection as BaseCollection;
 
+/**
+ * Class BareSmartAlbum.
+ *
+ * Extending this class from {@link \App\Models\Album} does not make much
+ * sense.
+ * For example, an album can (recursively) have sub-albums which is not
+ * possible for smart albums.
+ * Also, a smart album can neither be moved, copied nor deleted.
+ * A smart album has no parent album neither.
+ * In consequence, there are many properties and methods inherited from
+ * {@link \App\Models\Album} which triggers errors and exceptions when
+ * accidentally called for an object of this class.
+ * It would be much cleaner, if {@link \App\Models\Album} and this class
+ * implemented the same interface which defines those properties and
+ * methods which both have in common.
+ *
+ * TODO: Refactor this.
+ */
 class BareSmartAlbum extends Album
 {
 	/**
@@ -78,13 +96,5 @@ class BareSmartAlbum extends Album
 	public function get_license(): string
 	{
 		return 'none';
-	}
-
-	/**
-	 * We override this method so we can use it elsewhere. :).
-	 */
-	public function get_all_photos()
-	{
-		return $this->get_photos();
 	}
 }
