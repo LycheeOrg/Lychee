@@ -11,6 +11,7 @@ use App\Models\Extensions\AlbumGetters;
 use App\Models\Extensions\AlbumSetters;
 use App\Models\Extensions\AlbumStringify;
 use App\Models\Extensions\CustomSort;
+use App\Models\Extensions\NodeTrait;
 use App\Models\Extensions\UTCBasedTimes;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,7 +22,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
-use Kalnoy\Nestedset\NodeTrait;
 
 /**
  * App\Album.
@@ -99,7 +99,7 @@ class Album extends Model implements AlbumInterface
 	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['owner', 'cover'];
+	//protected $with = ['owner', 'cover'];
 
 	/**
 	 * This method is called by the framework after the model has been
