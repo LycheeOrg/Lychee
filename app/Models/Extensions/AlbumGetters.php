@@ -6,6 +6,7 @@ use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Albums\Extensions\PublicViewable;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Builder;
 
 trait AlbumGetters
 {
@@ -59,9 +60,10 @@ trait AlbumGetters
 	 *
 	 * @return Builder
 	 */
-	public function get_all_photos()
+	public function get_all_photos(): Builder
 	{
-		return Photo::leftJoin('albums', 'photos.album_id', '=', 'albums.id')
+		return Photo::query()
+			->leftJoin('albums', 'photos.album_id', '=', 'albums.id')
 			->select('photos.*')
 			->where('albums._lft', '>=', $this->_lft)
 			->where('albums._rgt', '<=', $this->_rgt);
