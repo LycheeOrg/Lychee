@@ -2,8 +2,8 @@
 
 namespace App\Actions\Settings;
 
-use AccessControl;
 use App\Exceptions\JsonError;
+use App\Facades\AccessControl;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;

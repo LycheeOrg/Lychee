@@ -6,12 +6,12 @@ namespace App\Metadata;
 
 use App\Models\Configs;
 use App\Models\Logs;
-use Cache;
 use Geocoder\Provider\Cache\ProviderCache;
 use Geocoder\Provider\Nominatim\Nominatim;
 use Geocoder\Query\ReverseQuery;
 use Geocoder\StatefulGeocoder;
 use GuzzleHttp\HandlerStack;
+use Illuminate\Support\Facades\Cache;
 use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 use Spatie\GuzzleRateLimiterMiddleware\Store;
 

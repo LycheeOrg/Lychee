@@ -4,7 +4,7 @@
 
 namespace App\Models\Extensions;
 
-use Helpers;
+use App\Facades\Helpers;
 
 class Thumb
 {

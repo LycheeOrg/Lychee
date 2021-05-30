@@ -2,8 +2,8 @@
 
 namespace App\Actions\Album;
 
-use AccessControl;
 use App\Actions\Album\Extensions\StoreAlbum;
+use App\Facades\AccessControl;
 use App\Models\Album;
 
 class CreateTag extends Action

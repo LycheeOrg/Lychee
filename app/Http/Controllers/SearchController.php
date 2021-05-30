@@ -4,9 +4,9 @@
 
 namespace App\Http\Controllers;
 
-use AccessControl;
 use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\PhotoSearch;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Response;
 use Illuminate\Http\Request;

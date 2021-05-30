@@ -2,8 +2,8 @@
 
 namespace App\Console\Commands;
 
-use AccessControl;
 use App\Actions\Import\Exec;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;

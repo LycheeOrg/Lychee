@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Administration;
 
-use AccessControl;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\Checks\IsMigrated;
 use App\Response;

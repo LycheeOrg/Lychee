@@ -2,12 +2,12 @@
 
 namespace App\Actions\Photo;
 
-use AccessControl;
 use App\Actions\Photo\Extensions\Constants;
+use App\Facades\AccessControl;
+use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -120,6 +120,7 @@ class Archive
 	 */
 	public function extract_names($photoID, $kind_input)
 	{
+		/** @var Photo $photo */
 		$photo = Photo::with('album')->findOrFail($photoID);
 
 		if (!AccessControl::is_current_user($photo->owner_id)) {
@@ -154,19 +155,19 @@ class Archive
 				break;
 			case 'MEDIUM2X':
 				$path = 'medium/' . Helpers::ex2x($fileName);
-				$kind = '-' . $photo->medium2x;
+				$kind = '-' . $photo->medium2x_width . 'x' . $photo->medium2x_height;
 				break;
 			case 'MEDIUM':
 				$path = 'medium/' . $fileName;
-				$kind = '-' . $photo->medium;
+				$kind = '-' . $photo->medium_width . 'x' . $photo->medium_height;
 				break;
 			case 'SMALL2X':
 				$path = 'small/' . Helpers::ex2x($fileName);
-				$kind = '-' . $photo->small2x;
+				$kind = '-' . $photo->small2x_width . 'x' . $photo->small2x_height;
 				break;
 			case 'SMALL':
 				$path = 'small/' . $fileName;
-				$kind = '-' . $photo->small;
+				$kind = '-' . $photo->small_width . 'x' . $photo->small_height;
 				break;
 			case 'THUMB2X':
 				$path = 'thumb/' . Helpers::ex2x($photo->thumbUrl);

@@ -2,8 +2,8 @@
 
 namespace App\Actions\Albums;
 
-use AccessControl;
 use App\Actions\ReadAccessFunctions;
+use App\Facades\AccessControl;
 use Illuminate\Support\Collection as BaseCollection;
 
 class Prepare
@@ -21,7 +21,7 @@ class Prepare
 	/**
 	 * Given a list of albums, generate an array to be returned.
 	 *
-	 * @param Collection[Album] $albums
+	 * @param BaseCollection[Album] $albums
 	 *
 	 * @return array
 	 */

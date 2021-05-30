@@ -93,7 +93,7 @@ class Helpers
 	 *
 	 * @return string updated ID
 	 */
-	public function trancateIf32(string $id, int $prevShortId = 0)
+	public function trancateIf32(string $id, int $prevShortId = 0): string
 	{
 		if (PHP_INT_MAX > 2147483647) {
 			return $id;
@@ -111,12 +111,12 @@ class Helpers
 	/**
 	 * Returns the extension of the filename (path or URI) or an empty string.
 	 *
-	 * @param $filename
-	 * @param bool $isURI
+	 * @param string $filename
+	 * @param bool   $isURI
 	 *
 	 * @return string extension of the filename starting with a dot
 	 */
-	public function getExtension($filename, $isURI = false)
+	public function getExtension(string $filename, bool $isURI = false): string
 	{
 		// If $filename is an URI, get only the path component
 		if ($isURI === true) {
@@ -139,11 +139,11 @@ class Helpers
 	/**
 	 * Check if $path has readable and writable permissions.
 	 *
-	 * @param $path
+	 * @param string $path
 	 *
 	 * @return bool
 	 */
-	public function hasPermissions($path)
+	public function hasPermissions(string $path): bool
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
@@ -160,11 +160,11 @@ class Helpers
 	/**
 	 * Check if $path has readable and writable permissions.
 	 *
-	 * @param $path
+	 * @param string $path
 	 *
 	 * @return bool
 	 */
-	public function hasFullPermissions($path)
+	public function hasFullPermissions(string $path): bool
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
@@ -183,48 +183,48 @@ class Helpers
 	 * Compute the GCD of a and b
 	 * This function is used to simplify the shutter speed when given in the form of e.g. 50/100.
 	 *
-	 * @param $a
-	 * @param $b
+	 * @param int $a
+	 * @param int $b
 	 *
-	 * @return mixed
+	 * @return int
 	 *
 	 * @throws DivideByZeroException
 	 */
-	public function gcd($a, $b)
+	public function gcd(int $a, int $b): int
 	{
 		if ($b == 0) {
 			throw new DivideByZeroException();
 		}
 
-		return ($a % $b) ? Helpers::gcd($b, $a % $b) : $b;
+		return ($a % $b) ? $this->gcd($b, $a % $b) : $b;
 	}
 
 	/**
 	 * Properly convert a boolean to a string
 	 * the default php function returns '' in case of false, this is not the behavior we want.
 	 */
-	public function str_of_bool(bool $b)
+	public function str_of_bool(bool $b): string
 	{
 		return $b ? '1' : '0';
 	}
 
 	/**
-	 * Given a Url generate the @2x correcponding url.
+	 * Given a filename generate the @2x corresponding filename.
 	 * This is used for thumbs, small and medium.
 	 */
-	public function ex2x($url)
+	public function ex2x(string $filename): string
 	{
-		$thumbUrl2x = explode('.', $url);
+		$filename2x = explode('.', $filename);
 
-		return (count($thumbUrl2x) === 2) ?
-			$thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1] :
-			$thumbUrl2x[0] . '@2x';
+		return (count($filename2x) === 2) ?
+			$filename2x[0] . '@2x.' . $filename2x[1] :
+			$filename2x[0] . '@2x';
 	}
 
 	/**
 	 * Returns the available licenses.
 	 */
-	public function get_all_licenses()
+	public function get_all_licenses(): array
 	{
 		return [
 			'none',

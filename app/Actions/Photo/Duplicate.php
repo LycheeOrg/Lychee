@@ -3,9 +3,9 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\Save;
+use App\Facades\Helpers;
 use App\Factories\AlbumFactory;
 use App\Models\Photo;
-use Helpers;
 
 class Duplicate
 {
@@ -20,9 +20,10 @@ class Duplicate
 
 	public function do(array $photoIds, ?string $albumID)
 	{
-		$photos = Photo::whereIn('id', $photoIds)->get();
+		$photos = Photo::query()->whereIn('id', $photoIds)->get();
 
 		$duplicate = null;
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$duplicate = new Photo();
 			$duplicate->id = Helpers::generateID();

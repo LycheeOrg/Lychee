@@ -3,9 +3,9 @@
 namespace App\Actions\Album\Extensions;
 
 use App\Exceptions\JsonError;
+use App\Facades\Helpers;
 use App\Models\Album;
 use App\Models\Logs;
-use Helpers;
 use Illuminate\Database\QueryException;
 
 trait StoreAlbum

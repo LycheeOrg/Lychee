@@ -19,6 +19,7 @@ use App\Actions\Photo\SetTags;
 use App\Actions\Photo\SetTitle;
 use App\Exceptions\JsonError;
 use App\Exceptions\JsonWarning;
+use App\Facades\Helpers;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
@@ -27,7 +28,6 @@ use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
-use Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -52,12 +52,13 @@ class PhotoController extends Controller
 	/**
 	 * Given a photoID returns the data of the photo.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDRequest $request
 	 *
-	 * @return array|string
+	 * @return ?array
 	 */
 	public function get(PhotoIDRequest $request, Prepare $prepare)
 	{
+		/** @var ?Photo $photo */
 		$photo = Photo::with('album')->findOrFail($request['photoID']);
 
 		return $prepare->do($photo);
@@ -67,7 +68,7 @@ class PhotoController extends Controller
 	 * Return a random public photo (starred)
 	 * This is used in the Frame Controller.
 	 *
-	 * @return string
+	 * @return array
 	 */
 	public function getRandom(Random $random)
 	{

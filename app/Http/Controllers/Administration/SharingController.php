@@ -4,8 +4,8 @@
 
 namespace App\Http\Controllers\Administration;
 
-use AccessControl;
 use App\Actions\Sharing\ListShare;
+use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;

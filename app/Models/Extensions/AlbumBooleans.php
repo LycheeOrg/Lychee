@@ -35,7 +35,7 @@ trait AlbumBooleans
 	 *
 	 * @return bool
 	 */
-	public function is_downloadable()
+	public function is_downloadable(): bool
 	{
 		if ($this->is_public()) {
 			return $this->downloadable == 1;
@@ -49,7 +49,7 @@ trait AlbumBooleans
 	 *
 	 * @return bool
 	 */
-	public function is_share_button_visible()
+	public function is_share_button_visible(): bool
 	{
 		if ($this->is_public()) {
 			return $this->share_button_visible == 1;

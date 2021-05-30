@@ -4,9 +4,9 @@
 
 namespace App\Factories;
 
+use App\Facades\Helpers;
 use App\Models\Album;
 use App\SmartAlbums\TagAlbum;
-use Helpers;
 
 class AlbumFactory
 {

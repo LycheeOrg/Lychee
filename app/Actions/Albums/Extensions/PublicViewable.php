@@ -2,7 +2,7 @@
 
 namespace App\Actions\Albums\Extensions;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 

@@ -17,8 +17,6 @@ trait AlbumGetters
 	/**
 	 * given an Album return the sorting column & order for the pictures or the default ones.
 	 *
-	 * @param Album
-	 *
 	 * @return array
 	 */
 	public function get_sort(): array

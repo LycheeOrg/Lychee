@@ -3,9 +3,9 @@
 namespace App\Actions\Photo\Extensions;
 
 use App\Exceptions\JsonError;
+use App\Facades\Helpers;
 use App\Models\Logs;
 use App\Models\Photo;
-use Helpers;
 use Illuminate\Database\QueryException;
 
 trait Save

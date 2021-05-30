@@ -15,7 +15,7 @@ class SessionFunctions
 {
 	public $user_data = null;
 
-	public function log_as_id($id)
+	public function log_as_id($id): void
 	{
 		Session::put('login', true);
 		Session::put('UserID', $id);
@@ -27,7 +27,7 @@ class SessionFunctions
 	 *
 	 * @return bool
 	 */
-	public function is_logged_in()
+	public function is_logged_in(): bool
 	{
 		if (Session::get('login') === true) {
 			return true;
@@ -41,7 +41,7 @@ class SessionFunctions
 	 *
 	 * @return bool
 	 */
-	public function is_admin()
+	public function is_admin(): bool
 	{
 		return Session::get('login') && Session::get('UserID') === 0;
 	}
@@ -57,7 +57,7 @@ class SessionFunctions
 	 *
 	 * @return int
 	 */
-	public function id()
+	public function id(): int
 	{
 		if (!Session::get('login')) {
 			throw new NotLoggedInException();
@@ -93,7 +93,7 @@ class SessionFunctions
 	 *
 	 * @return bool
 	 */
-	public function is_current_user(int $userId)
+	public function is_current_user(int $userId): bool
 	{
 		return Session::get('login') && (Session::get('UserID') === $userId || Session::get('UserID') === 0);
 	}
@@ -101,7 +101,7 @@ class SessionFunctions
 	/**
 	 * Given a user, login.
 	 */
-	public function login(User $user)
+	public function login(User $user): void
 	{
 		$this->user_data = $user;
 		Session::put('login', true);
@@ -113,7 +113,7 @@ class SessionFunctions
 	 *
 	 * @return bool returns true when no login was found
 	 */
-	public function noLogin()
+	public function noLogin(): bool
 	{
 		$adminUser = User::find(0);
 		if ($adminUser !== null && $adminUser->password === '' && $adminUser->username === '') {
@@ -138,7 +138,7 @@ class SessionFunctions
 	 *
 	 * @return bool
 	 */
-	public function log_as_user(string $username, string $password, string $ip)
+	public function log_as_user(string $username, string $password, string $ip): bool
 	{
 		// We select the NON ADMIN user
 		$user = User::where('username', '=', $username)->where('id', '>', '0')->first();
@@ -166,7 +166,7 @@ class SessionFunctions
 	 *
 	 * @return bool
 	 */
-	public function log_as_admin(string $username, string $password, string $ip)
+	public function log_as_admin(string $username, string $password, string $ip): bool
 	{
 		$AdminUser = User::find(0);
 
@@ -195,7 +195,7 @@ class SessionFunctions
 	 *
 	 * @return bool
 	 */
-	public function has_visible_album($albumID)
+	public function has_visible_album($albumID): bool
 	{
 		if (!Session::has('visible_albums')) {
 			return false;
@@ -212,7 +212,7 @@ class SessionFunctions
 	 *
 	 * @param $albumIDs
 	 */
-	public function add_visible_albums($albumIDs)
+	public function add_visible_albums($albumIDs): void
 	{
 		$visible_albums = [];
 		if (Session::has('visible_albums')) {

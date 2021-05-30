@@ -5,16 +5,16 @@
 namespace App\Models;
 
 use App\Casts\DateTimeWithTimezoneCast;
+use App\Facades\Helpers;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\PhotoGetters;
 use App\Models\Extensions\UTCBasedTimes;
-use Helpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * App\Photo.
@@ -66,11 +66,8 @@ use Storage;
  * @property Album|null  $album
  * @property User        $owner
  *
- * @method static Builder|Photo newModelQuery()
- * @method static Builder|Photo newQuery()
  * @method static Builder|Photo ownedBy($id)
  * @method static Builder|Photo public ()
- * @method static Builder|Photo query()
  * @method static Builder|Photo recent()
  * @method static Builder|Photo stars()
  * @method static Builder|Photo unsorted()
@@ -89,9 +86,9 @@ use Storage;
  * @method static Builder|Photo whereLatitude($value)
  * @method static Builder|Photo whereLens($value)
  * @method static Builder|Photo whereLicense($value)
- * @method static Builder|Photo wherelivePhotoChecksum($value)
- * @method static Builder|Photo wherelivePhotoContentID($value)
- * @method static Builder|Photo wherelivePhotoUrl($value)
+ * @method static Builder|Photo whereLivePhotoChecksum($value)
+ * @method static Builder|Photo whereLivePhotoContentID($value)
+ * @method static Builder|Photo whereLivePhotoUrl($value)
  * @method static Builder|Photo whereLongitude($value)
  * @method static Builder|Photo whereMake($value)
  * @method static Builder|Photo whereMedium($value)
@@ -105,7 +102,7 @@ use Storage;
  * @method static Builder|Photo whereSmall2x($value)
  * @method static Builder|Photo whereStar($value)
  * @method static Builder|Photo whereTags($value)
- * @method static Builder|Photo whereTakestamp($value)
+ * @method static Builder|Photo whereTakenAt($value)
  * @method static Builder|Photo whereThumb2x($value)
  * @method static Builder|Photo whereThumbUrl($value)
  * @method static Builder|Photo whereTitle($value)
@@ -113,7 +110,6 @@ use Storage;
  * @method static Builder|Photo whereUpdatedAt($value)
  * @method static Builder|Photo whereUrl($value)
  * @method static Builder|Photo whereWidth($value)
- * @mixin Eloquent
  */
 class Photo extends Model
 {
@@ -160,7 +156,7 @@ class Photo extends Model
 	 *
 	 * @return BelongsTo
 	 */
-	public function album()
+	public function album(): BelongsTo
 	{
 		return $this->belongsTo('App\Models\Album', 'album_id', 'id');
 	}
@@ -170,7 +166,7 @@ class Photo extends Model
 	 *
 	 * @return BelongsTo
 	 */
-	public function owner()
+	public function owner(): BelongsTo
 	{
 		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
@@ -180,9 +176,9 @@ class Photo extends Model
 	 *
 	 * @param bool $keep_original
 	 *
-	 * @return bool
+	 * @return bool True on success, false otherwise
 	 */
-	public function predelete(bool $keep_original = false)
+	public function predelete(bool $keep_original = false): bool
 	{
 		if ($this->isDuplicate($this->checksum, $this->id)) {
 			Logs::notice(__METHOD__, __LINE__, $this->id . ' is a duplicate!');

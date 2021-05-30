@@ -2,13 +2,13 @@
 
 namespace App\Actions\Album;
 
-use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\ReadAccessFunctions;
+use App\Facades\AccessControl;
+use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -140,6 +140,7 @@ class Archive extends Action
 		// We don't bother with additional sorting here; who
 		// cares in what order photos are zipped?
 
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// For photos in smart or tag albums, skip the ones that are not
 			// downloadable based on their actual parent album.  The test for
