@@ -20,7 +20,7 @@ class AddFileSizeRawCol extends Migration
 	public function up()
 	{
 		Schema::table(self::TABLE_NAME, function (Blueprint $table) {
-			$table->unsignedInteger(self::NEW_COL_NAME)->default(0)->after(self::OLD_COL_NAME);
+			$table->unsignedBigInteger(self::NEW_COL_NAME)->default(0)->after(self::OLD_COL_NAME);
 		});
 
 		DB::beginTransaction();
