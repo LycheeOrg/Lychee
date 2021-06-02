@@ -146,7 +146,7 @@ class RefactorTimestampsAnew extends Migration
 				self::DATETIME_PRECISION
 			)->nullable();
 		});
-		$needsConversion = $this->needsConversionOnUpgrade();
+		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
 		$entities = DB::table($tableName)->select([
 			self::ID_COL_NAME,
@@ -215,7 +215,7 @@ class RefactorTimestampsAnew extends Migration
 		Schema::table($tableName, function (Blueprint $table) {
 			$table->timestamps();
 		});
-		$needsConversion = $this->needsConversionOnUpgrade();
+		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
 		$entities = DB::table($tableName)->select([
 			self::ID_COL_NAME,
@@ -264,7 +264,7 @@ class RefactorTimestampsAnew extends Migration
 				self::TZ_NAME_MAX_LENGTH
 			)->nullable(true)->default(null)->comment('the timezone at which the photo has originally been taken');
 		});
-		$needsConversion = $this->needsConversionOnUpgrade();
+		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
@@ -304,7 +304,7 @@ class RefactorTimestampsAnew extends Migration
 				self::DATETIME_PRECISION
 			)->nullable(true)->default(null);
 		});
-		$needsConversion = $this->needsConversionOnUpgrade();
+		$needsConversion = $this->needsConversion();
 		DB::beginTransaction();
 		$photos = DB::table(self::PHOTOS_TABLE_NAME)->select([
 			self::ID_COL_NAME,
@@ -509,51 +509,18 @@ class RefactorTimestampsAnew extends Migration
 
 	/**
 	 * Returns true, if a date/time value must be converted from the default
-	 * timezone of the application (which has previously been used by the
-	 * database connection) to UTC during upgrade.
+	 * timezone of the application from/to UTC during up-/downgrade.
 	 *
 	 * @return bool true, if conversion is required, false if not
 	 */
-	protected function needsConversionOnUpgrade(): bool
+	protected function needsConversion(): bool
 	{
 		$dbConnType = Config::get('database.default');
 		switch ($dbConnType) {
 			case 'mysql':
-				// For MySQl no time conversion is required.
-				// When the timezone of the DB connection has been switched
-				// from the application's default timezone to UTC, MySQL
-				// automatically converted all timestamps, because the
-				// original SQL type has been `TIMESTAMP`.
 				return false;
 			case 'sqlite':
 			case 'pgsql':
-				// For PostgreSQL and SQLite we must convert.
-				return true;
-			default:
-				// What is about sqlsrv? Is this actually used?
-				throw new InvalidArgumentException('Unsupported DB system: ' . $dbConnType);
-		}
-	}
-
-	/**
-	 * Returns true, if a date/time value must be converted from UTC to the
-	 * default timezone of the application (which will be used by the DB
-	 * connection after downgrade) during upgrade.
-	 *
-	 * @return bool true, if conversion is required, false if not
-	 */
-	protected function needsConversionOnDowngrade(): bool
-	{
-		$dbConnType = Config::get('database.default');
-		switch ($dbConnType) {
-			case 'mysql':
-			case 'sqlite':
-			case 'pgsql':
-				// Note that downgrading is asymmetric for MySQl.
-				// The upgraded version uses the MySQL type `DATETIME` which
-				// has no "auto-conversion" feature neither.
-				// So we must convert date/times for all DBMS during
-				// downgrade.
 				return true;
 			default:
 				// What is about sqlsrv? Is this actually used?

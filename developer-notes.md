@@ -10,7 +10,7 @@ In particular, it highlights some pitfalls one can easily trap into.
  2. If you write a database migration and create a new table, do not use
     the convenient method `\Illuminate\Database\Schema\Blueprint#timestamps`
     in order to create the columns `created_at` and `updated_at`.
-    Instead create them manually like this
+    Instead, create them manually like this
     
         $table->dateTime('created_at', 0)->nullable(false);
         $table->dateTime('updated_at', 0)->nullable(false);
@@ -31,7 +31,7 @@ In particular, it highlights some pitfalls one can easily trap into.
 
 All date/time values are stored at the DB back-end relative to UTC without
 explicit timezone information.
-for communication between the PHP application and the DB back-end all
+For communication between the PHP application and the DB back-end all
 date/time values are converted to SQL strings relative to UTC without
 explicit timezone indication in the string.
 For DBMS which support to set an explicit timezone for the connection
@@ -43,10 +43,10 @@ The default timezone of the application as set in `./config/app.php` or
 At the level of the PHP application all date/time values are `Carbon` objects.
 Conversion of the timezone of a `Carbon` instance and UTC happens at the
 application layer during hydration/dehydration from/to the DBMS
-(that's where `\App\Models\PatchedBaseModel` comes into play).
+(that's where `\App\Models\Extension\UTCBasedTimes` comes into play).
 If a date/time value is hydrated from the DBMS (in UTC) and no better
 target timezone for the value is known, then the instantiated `Carbon`
-object uses the application's default timezone and the represented time
+object uses the application's default timezone, and the represented time
 is correctly converted from UTC to the application's default timezone such
 that the represented instant in time is kept the same.
 
@@ -107,14 +107,14 @@ Let us ignore the fact that PostgreSQL surpasses any other DB with respect to ra
 
 ### Conclusion
 
-The Lychee application uses option 1, i.e. `DATETIME` for MySQL and `TIMESTAMP WITHOUT TIME ZONE` for PosgreSQL for the simple reason that MySQL provides the larger range for that type.
+The Lychee application uses option 1, i.e. `DATETIME` for MySQL and `TIMESTAMP WITHOUT TIME ZONE` for PostgreSQL for the simple reason that MySQL provides the larger range for that type.
 Otherwise, the application had to ensure that there are no date/time values before 1970 and after 2038 or MySQL will throw SQL exceptions during INSERT/UPDATE.
-The lack of auto-conversion by the DB for the chose option 1 is not a problem.
+The lack of auto-conversion by the DB for the chosen option 1 is not a problem.
 Correct conversion from/to UTC happens on the application layer.
 
 ### Eloquent Mappings
 
-The class `\Illuminate\Database\Schema\Blueprint` provides several method to create columns.
+The class `\Illuminate\Database\Schema\Blueprint` provides several methods to create columns.
 They map to the respective SQL types as follows
 
      Blueprint    | MySQL     | PostgreSQL                  | SQLite   | Remarks
@@ -128,8 +128,8 @@ They map to the respective SQL types as follows
 With respect to functional behaviour, we have two "broken" mappings that should not be used.
 
  - The method `Blueprint::timestamp` maps to the MySQL type `TIMESTAMP` which performs auto-conversion, but the PostgreSQL type `TIMESTAMP WITHOUT TIME ZONE` does not.
- - The method `Blueprint::datetime_tz` maps to the MySQL type `DATETIME` which lacks auto-coversion, but the PostgreSQL type `TIMESTAMP WITH TIME ZONE` converts values.
+ - The method `Blueprint::datetime_tz` maps to the MySQL type `DATETIME` which lacks auto-conversion, but the PostgreSQL type `TIMESTAMP WITH TIME ZONE` converts values.
 
 This means only the methods `timestamp_tz` and `datetime` are usable in a DB-independent manner.
-Also the convenient method `timestamps` must not be used.
+Also, the convenient method `timestamps` must not be used.
 Taking into account the conclusion from above, the Lychee Application only uses `Blueprint::datetime`, because it shows identical behaviour for each DBMS and has no year-2038-problem on MySQL.
