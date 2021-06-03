@@ -4,6 +4,7 @@ namespace App\Actions\Photo\Extensions;
 
 use App\Facades\Helpers;
 use App\Models\Configs;
+use App\Models\Extensions\SizeVariant;
 use App\Models\Logs;
 use App\Models\Photo;
 use Exception;
@@ -167,11 +168,11 @@ trait ImageEditing
 		$src = ($frame_tmp === '') ? Storage::path('big/' . $photo->url) : $frame_tmp;
 		$photoName = explode('.', $photo->url);
 
-		$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '.jpeg'), Photo::THUMBNAIL_DIM, Photo::THUMBNAIL_DIM);
+		$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '.jpeg'), SizeVariant::THUMBNAIL_DIM, SizeVariant::THUMBNAIL_DIM);
 
-		if (Configs::get_value('thumb_2x') === '1' && $photo->width >= Photo::THUMBNAIL2X_DIM && $photo->height >= Photo::THUMBNAIL2X_DIM) {
+		if (Configs::get_value('thumb_2x') === '1' && $photo->width >= SizeVariant::THUMBNAIL2X_DIM && $photo->height >= SizeVariant::THUMBNAIL2X_DIM) {
 			// Retina thumbs
-			$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'), Photo::THUMBNAIL2X_DIM, Photo::THUMBNAIL2X_DIM);
+			$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'), SizeVariant::THUMBNAIL2X_DIM, SizeVariant::THUMBNAIL2X_DIM);
 			$photo->thumb2x = 1;
 		} else {
 			$photo->thumb2x = 0;

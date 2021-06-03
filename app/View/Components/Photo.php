@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\Configs;
+use App\Models\Extensions\SizeVariant;
 use App\Models\Photo as PhotoModel;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;

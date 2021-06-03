@@ -46,6 +46,9 @@ class PhotosUnitTest
 				'0' => $file,
 			]
 		);
+		if ($response->getStatusCode() === 500) {
+			$response->dump();
+		}
 		$response->assertStatus(200);
 		$response->assertDontSee('Error');
 
@@ -103,6 +106,9 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Photo::get', [
 			'photoID' => $photo_id,
 		]);
+		if ($response->getStatusCode() === 500) {
+			$response->dump();
+		}
 		$response->assertStatus(200);
 		if ($result != 'true') {
 			$response->assertSee($result, false);

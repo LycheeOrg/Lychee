@@ -6,6 +6,7 @@ use App\Actions\Photo\Extensions\Constants;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Configs;
+use App\Models\Extensions\SizeVariant;
 use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Storage;
@@ -171,11 +172,11 @@ class Archive
 				break;
 			case 'THUMB2X':
 				$path = 'thumb/' . Helpers::ex2x($photo->thumbUrl);
-				$kind = '-' . Photo::THUMBNAIL2X_DIM . 'x' . Photo::THUMBNAIL2X_DIM;
+				$kind = '-' . SizeVariant::THUMBNAIL2X_DIM . 'x' . SizeVariant::THUMBNAIL2X_DIM;
 				break;
 			case 'THUMB':
 				$path = 'thumb/' . $photo->thumbUrl;
-				$kind = '-' . Photo::THUMBNAIL_DIM . 'x' . Photo::THUMBNAIL_DIM;
+				$kind = '-' . SizeVariant::THUMBNAIL_DIM . 'x' . SizeVariant::THUMBNAIL_DIM;
 				break;
 			default:
 				Logs::error(__METHOD__, __LINE__, 'Invalid kind ' . $kind_input);

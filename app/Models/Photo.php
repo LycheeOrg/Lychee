@@ -5,10 +5,10 @@
 namespace App\Models;
 
 use App\Casts\DateTimeWithTimezoneCast;
-use App\Facades\Helpers;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\PhotoGetters;
+use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -19,52 +19,53 @@ use Illuminate\Support\Facades\Storage;
 /**
  * App\Photo.
  *
- * @property int         $id
- * @property string      $title
- * @property string|null $description
- * @property string      $url
- * @property string      $tags
- * @property int         $public
- * @property int         $owner_id
- * @property string      $type
- * @property int|null    $width
- * @property int|null    $height
- * @property int         $filesize
- * @property string      $iso
- * @property string      $aperture
- * @property string      $make
- * @property string      $model
- * @property string      $lens
- * @property string      $shutter
- * @property string      $focal
- * @property float|null  $latitude
- * @property float|null  $longitude
- * @property float|null  $altitude
- * @property float|null  imgDirection
- * @property string|null location
- * @property Carbon|null $taken_at
- * @property string|null $taken_at_orig_tz
- * @property int         $star
- * @property string      $thumbUrl
- * @property string      $livePhotoUrl
- * @property int|null    $album_id
- * @property string      $checksum
- * @property string      $license
- * @property Carbon      $created_at
- * @property Carbon      $updated_at
- * @property int|null    $medium_width
- * @property int|null    $medium_height
- * @property int|null    $medium2x_width
- * @property int|null    $medium2x_height
- * @property int|null    $small_width
- * @property int|null    $small_height
- * @property int|null    $small2x_width
- * @property int|null    $small2x_height
- * @property int         $thumb2x
- * @property string      $livePhotoContentID
- * @property string      $livePhotoChecksum
- * @property Album|null  $album
- * @property User        $owner
+ * @property int          $id
+ * @property string       $title
+ * @property string|null  $description
+ * @property string       $url
+ * @property string       $tags
+ * @property int          $public
+ * @property int          $owner_id
+ * @property string       $type
+ * @property int|null     $width
+ * @property int|null     $height
+ * @property int          $filesize
+ * @property string       $iso
+ * @property string       $aperture
+ * @property string       $make
+ * @property string       $model
+ * @property string       $lens
+ * @property string       $shutter
+ * @property string       $focal
+ * @property float|null   $latitude
+ * @property float|null   $longitude
+ * @property float|null   $altitude
+ * @property float|null   $imgDirection
+ * @property string|null  $location
+ * @property Carbon|null  $taken_at
+ * @property string|null  $taken_at_orig_tz
+ * @property int          $star
+ * @property string       $thumbUrl
+ * @property string       $livePhotoUrl
+ * @property int|null     $album_id
+ * @property string       $checksum
+ * @property string       $license
+ * @property Carbon       $created_at
+ * @property Carbon       $updated_at
+ * @property int|null     $medium_width
+ * @property int|null     $medium_height
+ * @property int|null     $medium2x_width
+ * @property int|null     $medium2x_height
+ * @property int|null     $small_width
+ * @property int|null     $small_height
+ * @property int|null     $small2x_width
+ * @property int|null     $small2x_height
+ * @property int          $thumb2x
+ * @property string       $livePhotoContentID
+ * @property string       $livePhotoChecksum
+ * @property Album|null   $album
+ * @property User         $owner
+ * @property SizeVariants $size_variants
  *
  * @method static Builder|Photo ownedBy($id)
  * @method static Builder|Photo public ()
@@ -117,29 +118,6 @@ class Photo extends Model
 	use PhotoCast;
 	use PhotoGetters;
 	use UTCBasedTimes;
-	const THUMBNAIL_DIM = 200;
-	const THUMBNAIL2X_DIM = 400;
-	const VARIANT_THUMB = 'thumb';
-	const VARIANT_THUMB2X = 'thumb2x';
-	const VARIANT_SMALL = 'small';
-	const VARIANT_SMALL2X = 'small2x';
-	const VARIANT_MEDIUM = 'medium';
-	const VARIANT_MEDIUM2X = 'medium2x';
-	const VARIANT_ORIGINAL = 'original';
-
-	/**
-	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
-	 * Use this array to avoid the anti-pattern "magic constants" throughout the whole code.
-	 */
-	const VARIANT_2_PATH_PREFIX = [
-		self::VARIANT_THUMB => 'thumb',
-		self::VARIANT_THUMB2X => 'thumb',
-		self::VARIANT_SMALL => 'small',
-		self::VARIANT_SMALL2X => 'small',
-		self::VARIANT_MEDIUM => 'medium',
-		self::VARIANT_MEDIUM2X => 'medium',
-		self::VARIANT_ORIGINAL => 'big',
-	];
 
 	protected $casts = [
 		'public' => 'int',
@@ -150,6 +128,36 @@ class Photo extends Model
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
 	];
+
+	/**
+	 * @var string[] The list of attributes which exist as columns of the DB
+	 *               relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		'thumbUrl',  // serialized as part of size_variants
+		'small_width',  // serialized as part of size_variants
+		'small_height',  // serialized as part of size_variants
+		'small2x_width',  // serialized as part of size_variants
+		'small2x_height',  // serialized as part of size_variants
+		'medium_width',  // serialized as part of size_variants
+		'medium_height',  // serialized as part of size_variants
+		'medium2x_width',  // serialized as part of size_variants
+		'medium2x_height',  // serialized as part of size_variants
+	];
+
+	/**
+	 * @var string[] The list of "virtual" attributes which do not exist as
+	 *               columns of the DB relation but shall be appended to JSON
+	 *               from accessors
+	 */
+	protected $appends = [
+		'size_variants', // see getSizeVariantsAttribute()
+	];
+
+	/**
+	 * @var SizeVariants|null caches the size variants associated to this class, once they have been created by {@link getSizeVariantsAttribute()}
+	 */
+	protected ?SizeVariants $sizeVariants = null;
 
 	/**
 	 * Return the relationship between a Photo and its Album.
@@ -188,6 +196,8 @@ class Photo extends Model
 
 		$error = false;
 		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
+
+		// Delete original file
 		if ($keep_original === false) {
 			// quick check...
 			if (!Storage::exists($path_prefix . $this->url)) {
@@ -199,70 +209,80 @@ class Photo extends Model
 			}
 		}
 
-		if ((strpos($this->type, 'video') === 0) || ($this->type == 'raw')) {
-			$photoName = $this->thumbUrl;
-		} else {
-			$photoName = $this->url;
-		}
-		if ($photoName !== '') {
-			$photoName2x = Helpers::ex2x($photoName);
-
-			// Delete Live Photo Video file
-			// TODO: USE STORAGE FOR DELETE
-			// check first if livePhotoUrl is available
-			if ($this->livePhotoUrl !== null) {
-				if (!Storage::exists('big/' . $this->livePhotoUrl)) {
-					Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path('big/' . $this->livePhotoUrl));
-					$error = true;
-				} elseif (!Storage::delete('big/' . $this->livePhotoUrl)) {
-					Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path('big/' . $this->livePhotoUrl));
-					$error = true;
-				}
-			}
-
-			// Delete medium
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('medium/' . $photoName) && !unlink(Storage::path('medium/' . $photoName))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
+		// Delete Live Photo Video file
+		// TODO: USE STORAGE FOR DELETE
+		// check first if livePhotoUrl is available
+		if ($this->livePhotoUrl !== null) {
+			if (!Storage::exists('big/' . $this->livePhotoUrl)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path('big/' . $this->livePhotoUrl));
 				$error = true;
-			}
-
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('medium/' . $photoName2x) && !unlink(Storage::path('medium/' . $photoName2x))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
-				$error = true;
-			}
-
-			// Delete small
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('small/' . $photoName) && !unlink(Storage::path('small/' . $photoName))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
-				$error = true;
-			}
-
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('small/' . $photoName2x) && !unlink(Storage::path('small/' . $photoName2x))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
+			} elseif (!Storage::delete('big/' . $this->livePhotoUrl)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path('big/' . $this->livePhotoUrl));
 				$error = true;
 			}
 		}
 
-		if ($this->thumbUrl != '') {
-			// Get retina thumb url
-			$thumbUrl2x = Helpers::ex2x($this->thumbUrl);
-			// Delete thumb
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('thumb/' . $this->thumbUrl) && !unlink(Storage::path('thumb/' . $this->thumbUrl))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
-				$error = true;
-			}
+		$sizeVariants = $this->size_variants;
 
-			// Delete thumb@2x
-			// TODO: USE STORAGE FOR DELETE
-			if (Storage::exists('thumb/' . $thumbUrl2x) && !unlink(Storage::path('thumb/' . $thumbUrl2x))) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
-				$error = true;
-			}
+		// Delete medium
+		// TODO: USE STORAGE FOR DELETE
+		if (
+			$sizeVariants->getThumb() &&
+			Storage::exists($sizeVariants->getThumb()->getUrl()) &&
+			!unlink(Storage::path($sizeVariants->getThumb()->getUrl()))
+		) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
+			$error = true;
+		}
+
+		// TODO: USE STORAGE FOR DELETE
+		if (
+			$sizeVariants->getThumb2x() &&
+			Storage::exists($sizeVariants->getThumb2x()->getUrl()) &&
+			!unlink(Storage::path($sizeVariants->getThumb2x()->getUrl()))
+		) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
+			$error = true;
+		}
+
+		// TODO: USE STORAGE FOR DELETE
+		if (
+			$sizeVariants->getSmall() &&
+			Storage::exists($sizeVariants->getSmall()->getUrl()) &&
+			!unlink(Storage::path($sizeVariants->getSmall()->getUrl()))
+		) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
+			$error = true;
+		}
+
+		// TODO: USE STORAGE FOR DELETE
+		if (
+			$sizeVariants->getSmall2x() &&
+			Storage::exists($sizeVariants->getSmall2x()->getUrl()) &&
+			!unlink(Storage::path($sizeVariants->getSmall2x()->getUrl()))
+		) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
+			$error = true;
+		}
+
+		// TODO: USE STORAGE FOR DELETE
+		if (
+			$sizeVariants->getMedium() &&
+			Storage::exists($sizeVariants->getMedium()->getUrl()) &&
+			!unlink(Storage::path($sizeVariants->getMedium()->getUrl()))
+		) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
+			$error = true;
+		}
+
+		// TODO: USE STORAGE FOR DELETE
+		if (
+			$sizeVariants->getMedium2x() &&
+			Storage::exists($sizeVariants->getMedium2x()->getUrl()) &&
+			!unlink(Storage::path($sizeVariants->getMedium2x()->getUrl()))
+		) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
+			$error = true;
 		}
 
 		return !$error;
@@ -348,7 +368,12 @@ class Photo extends Model
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
 
-	protected function getSizeVariantsAttribute()
+	protected function getSizeVariantsAttribute(): SizeVariants
 	{
+		if ($this->sizeVariants === null) {
+			$this->sizeVariants = new SizeVariants($this);
+		}
+
+		return $this->sizeVariants;
 	}
 }

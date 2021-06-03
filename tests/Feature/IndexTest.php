@@ -19,6 +19,9 @@ class IndexTest extends TestCase
 		 * check if we can actually get a nice answer.
 		 */
 		$response = $this->get('/');
+		if ($response->getStatusCode() === 500) {
+			$response->dump();
+		}
 		$response->assertOk();
 
 		$response = $this->post('/php/index.php', []);

@@ -73,4 +73,34 @@ class SizeVariants implements Arrayable, JsonSerializable
 	{
 		return $this->toArray();
 	}
+
+	public function getThumb(): SizeVariant
+	{
+		return $this->thumb;
+	}
+
+	public function getThumb2x(): ?SizeVariant
+	{
+		return $this->thumb2x;
+	}
+
+	public function getSmall(): ?SizeVariant
+	{
+		return $this->small;
+	}
+
+	public function getSmall2x(): ?SizeVariant
+	{
+		return $this->small2x;
+	}
+
+	public function getMedium(): ?SizeVariant
+	{
+		return $this->medium;
+	}
+
+	public function getMedium2x(): ?SizeVariant
+	{
+		return $this->medium2x;
+	}
 }
