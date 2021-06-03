@@ -33,7 +33,7 @@ class Rotate
 			return false;
 		}
 
-		if ($photo->livePhotoUrl !== null) {
+		if ($photo->live_photo_filename !== null) {
 			Logs::error(__METHOD__, __LINE__, 'Trying to rotate a live photo');
 
 			return false;
@@ -63,9 +63,9 @@ class Rotate
 
 		// Generate a temporary name for the rotated file.
 		$big_folder = Storage::path('big/');
-		$url = $photo->url;
-		$path = $big_folder . $url;
-		$extension = Helpers::getExtension($url);
+		$filename = $photo->filename;
+		$path = $big_folder . $filename;
+		$extension = Helpers::getExtension($filename);
 		if (
 			!($new_tmp = tempnam($big_folder, 'lychee')) ||
 			!@rename($new_tmp, $new_tmp . $extension)
@@ -84,9 +84,9 @@ class Rotate
 		}
 
 		// We will use new names to avoid problems with image caching.
-		$new_prefix = substr($this->checksum($new_tmp), 0, 32);
-		$new_url = $new_prefix . $extension;
-		$new_path = $big_folder . $new_url;
+		$new_basename = substr($this->checksum($new_tmp), 0, 32);
+		$new_filename = $new_basename . $extension;
+		$new_path = $big_folder . $new_filename;
 
 		// Rename the temporary file, now that we know its final name.
 		if (!@rename($new_tmp, $new_path)) {
@@ -95,7 +95,7 @@ class Rotate
 			return false;
 		}
 
-		$photo->url = $new_url;
+		$photo->filename = $new_filename;
 		$old_width = $photo->width;
 		$photo->width = $photo->height;
 		$photo->height = $old_width;
@@ -110,33 +110,24 @@ class Rotate
 		}
 
 		// Delete all old image files, including the original.
-		if ($photo->thumbUrl != '') {
-			@unlink(Storage::path('thumb/' . $photo->thumbUrl));
-			if ($photo->thumb2x != 0) {
-				@unlink(Storage::path('thumb/' . Helpers::ex2x($photo->thumbUrl)));
-				$photo->thumb2x = 0;
-			}
-			$photo->thumbUrl = '';
+		$sizeVariants = $photo->size_variants;
+		if ($sizeVariants->getThumb()) {
+			@unlink(Storage::path($sizeVariants->getThumb()->getUrl()));
 		}
-		if ($photo->small_width !== null) {
-			@unlink(Storage::path('small/' . $url));
-			$photo->small_width = null;
-			$photo->small_height = null;
-			if ($photo->small2x_width !== null) {
-				@unlink(Storage::path('small/' . Helpers::ex2x($url)));
-				$photo->small2x_width = null;
-				$photo->small2x_height = null;
-			}
+		if ($sizeVariants->getThumb2x()) {
+			@unlink(Storage::path($sizeVariants->getThumb2x()->getUrl()));
 		}
-		if ($photo->medium_width !== null) {
-			@unlink(Storage::path('medium/' . $url));
-			$photo->medium_width = null;
-			$photo->medium_height = null;
-			if ($photo->medium2x_width !== null) {
-				@unlink(Storage::path('medium/' . Helpers::ex2x($url)));
-				$photo->medium2x_width = null;
-				$photo->medium2x_height = null;
-			}
+		if ($sizeVariants->getSmall()) {
+			@unlink(Storage::path($sizeVariants->getSmall()->getUrl()));
+		}
+		if ($sizeVariants->getSmall2x()) {
+			@unlink(Storage::path($sizeVariants->getSmall2x()->getUrl()));
+		}
+		if ($sizeVariants->getMedium()) {
+			@unlink(Storage::path($sizeVariants->getMedium()->getUrl()));
+		}
+		if ($sizeVariants->getMedium2x()) {
+			@unlink(Storage::path($sizeVariants->getMedium2x()->getUrl()));
 		}
 		@unlink($path);
 
@@ -144,7 +135,7 @@ class Rotate
 		if ($this->createThumb($photo) === false) {
 			Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
 		} else {
-			$photo->thumbUrl = $new_prefix . '.jpeg';
+			$photo->thumb_filename = $new_basename . '.jpeg';
 		}
 		$this->createSmallerImages($photo);
 
@@ -156,11 +147,11 @@ class Rotate
 			->where('checksum', $photo->checksum)
 			->where('id', '<>', $photo->id)
 			->update([
-				'url' => $photo->url,
+				'filename' => $photo->filename,
 				'width' => $photo->width,
 				'height' => $photo->height,
 				'filesize' => $photo->filesize,
-				'thumbUrl' => $photo->thumbUrl,
+				'thumb_filename' => $photo->thumb_filename,
 				'thumb2x' => $photo->thumb2x,
 				'small_width' => $photo->small_width,
 				'small_height' => $photo->small_height,

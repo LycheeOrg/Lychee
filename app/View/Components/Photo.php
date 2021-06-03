@@ -4,7 +4,6 @@ namespace App\View\Components;
 
 use App\Models\Configs;
 use App\Models\Extensions\SizeVariant;
-use App\Models\Photo as PhotoModel;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
@@ -29,8 +28,8 @@ class Photo extends Component
 	public $srcset2x = '';
 
 	public $layout = false;
-	public int $_w = PhotoModel::THUMBNAIL_DIM;
-	public int $_h = PhotoModel::THUMBNAIL_DIM;
+	public int $_w = SizeVariant::THUMBNAIL_DIM;
+	public int $_h = SizeVariant::THUMBNAIL_DIM;
 
 	/**
 	 * Create a new component instance.
@@ -44,12 +43,12 @@ class Photo extends Component
 		$this->title = $data['title'];
 		$this->takedate = $data['taken_at'];
 		$this->created_at = $data['created_at'];
-		$this->star = $data['star'] == '1';
-		$this->public = $data['public'] == '1';
+		$this->star = $data['star'];
+		$this->public = $data['public'];
 
 		$isVideo = Str::contains($data['type'], 'video');
 		$isRaw = Str::contains($data['type'], 'raw');
-		$isLivePhoto = filled($data['livePhotoUrl']);
+		$isLivePhoto = filled($data['live_Photo_filename']);
 
 		$this->class = '';
 		$this->class .= $isVideo ? ' video' : '';

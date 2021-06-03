@@ -120,9 +120,9 @@ trait VideoEditing
 		//
 
 		if ($frame_tmp === '') {
-			$filename = $photo->url;
+			$filename = $photo->filename;
 		} else {
-			$filename = $photo->thumbUrl;
+			$filename = $photo->thumb_filename;
 		}
 
 		$filename_video_mov = basename($filename, Helpers::getExtension($filename, false)) . '.mov';
@@ -131,7 +131,7 @@ trait VideoEditing
 
 		try {
 			// 1. Extract the video part
-			$fp = fopen($uploadFolder . $photo->url, 'r');
+			$fp = fopen($uploadFolder . $photo->filename, 'r');
 			$fp_video = tmpfile(); // use a temporary file, will be delted once closed
 
 			// The MP4 file is located in the last bytes of the file
@@ -159,7 +159,7 @@ trait VideoEditing
 
 			// Save file path; Checksum calclation not needed since
 			// we do not perform matching for Google Motion Photos (as for iOS Live Photos)
-			$photo->livePhotoUrl = $filename_video_mov;
+			$photo->live_photo_filename = $filename_video_mov;
 		} catch (Exception $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 

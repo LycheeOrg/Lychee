@@ -8,6 +8,7 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 use Spatie\Feed\FeedItem;
 
 class Generate
@@ -30,7 +31,7 @@ class Generate
 	{
 		$enclosure = new \stdClass();
 
-		$path = public_path($photo_array['url']);
+		$path = Storage::path($photo_array['url']);
 		$enclosure->length = File::size($path);
 		$enclosure->mime_type = File::mimeType($path);
 		$enclosure->url = url('/' . $photo_array['url']);

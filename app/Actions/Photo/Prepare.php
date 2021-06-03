@@ -49,7 +49,7 @@ class Prepare extends SymLinker
 			$return['share_button_visible'] = '1';
 		}
 
-		$return['license'] = $photo->get_license();
+		$return['license'] = $photo->license;
 
 		return $return;
 	}

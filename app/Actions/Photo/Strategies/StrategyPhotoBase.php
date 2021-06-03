@@ -23,7 +23,7 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 		$info = $this->getMetadata($file, $create->path, $create->kind, $create->extension);
 
 		$create->photo->title = $info['title'];
-		$create->photo->url = $create->photo_Url;
+		$create->photo->filename = $create->photo_filename;
 		$create->photo->description = $info['description'];
 		$create->photo->tags = $info['tags'];
 		$create->photo->width = $info['width'] ? $info['width'] : 0;
@@ -43,7 +43,7 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 		$create->photo->altitude = $info['altitude'];
 		$create->photo->imgDirection = $info['imgDirection'];
 		$create->photo->location = $info['location'];
-		$create->photo->livePhotoContentID = $info['livePhotoContentID'];
+		$create->photo->live_photo_content_id = $info['live_photo_content_id'];
 		$create->photo->public = $create->public;
 		$create->photo->star = $create->star;
 
@@ -70,14 +70,14 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 	public function findLivePartner(Create &$create)
 	{
 		$livePhotoPartner = null;
-		if ($create->photo->livePhotoContentID) {
+		if ($create->photo->live_photo_content_id) {
 			// Todo: We need to search for pairs (Video + Photo)
 			// Photo+Photo or Video+Video does not work
 
 			$livePhotoPartner = Photo::query()
-				->where('livePhotoContentID', '=', $create->photo->livePhotoContentID)
+				->where('live_photo_content_id', '=', $create->photo->live_photo_content_id)
 				->where('album_id', '=', $create->photo->album_id)
-				->whereNull('livePhotoUrl')->first();
+				->whereNull('live_photo_filename')->first();
 		}
 
 		if ($livePhotoPartner != null) {
@@ -90,8 +90,8 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 		if ($livePhotoPartner != null) {
 			// I'm uploading a photo, video already exists
 			if (!(in_array($create->photo->type, $create->validVideoTypes, true))) {
-				$create->photo->livePhotoUrl = $create->livePhotoPartner->url;
-				$create->photo->livePhotoChecksum = $create->livePhotoPartner->checksum;
+				$create->photo->live_photo_filename = $create->livePhotoPartner->filename;
+				$create->photo->live_photo_checksum = $create->livePhotoPartner->checksum;
 				// Todo: Delete the livePhotoPartner
 
 				$create->livePhotoPartner->predelete(true);

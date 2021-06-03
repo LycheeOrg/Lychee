@@ -54,13 +54,13 @@ class SymLink extends Model
 	 * (Despite the attributes being named "url" they actually store filenames).
 	 */
 	const VARIANT_2_ORIGINAL_FILENAME_FIELD = [
-		SizeVariant::VARIANT_THUMB => 'thumbUrl',
-		SizeVariant::VARIANT_THUMB2X => 'thumbUrl',
-		SizeVariant::VARIANT_SMALL => 'url',
-		SizeVariant::VARIANT_SMALL2X => 'url',
-		SizeVariant::VARIANT_MEDIUM => 'url',
-		SizeVariant::VARIANT_MEDIUM2X => 'url',
-		SizeVariant::VARIANT_ORIGINAL => 'url',
+		SizeVariant::VARIANT_THUMB => 'thumb_filename',
+		SizeVariant::VARIANT_THUMB2X => 'thumb_filename',
+		SizeVariant::VARIANT_SMALL => 'filename',
+		SizeVariant::VARIANT_SMALL2X => 'filename',
+		SizeVariant::VARIANT_MEDIUM => 'filename',
+		SizeVariant::VARIANT_MEDIUM2X => 'filename',
+		SizeVariant::VARIANT_ORIGINAL => 'filename',
 	];
 
 	/**
@@ -68,13 +68,13 @@ class SymLink extends Model
 	 * as an indicator whether this size variant exist.
 	 */
 	const VARIANT_2_INDICATOR_FIELD = [
-		SizeVariant::VARIANT_THUMB => 'thumbUrl',           // type: string|null
+		SizeVariant::VARIANT_THUMB => 'thumb_filename',     // type: string|null
 		SizeVariant::VARIANT_THUMB2X => 'thumb2x',          // type: integer, either 0 or 1
 		SizeVariant::VARIANT_SMALL => 'small_width',        // type: int|null
 		SizeVariant::VARIANT_SMALL2X => 'small2x_width',    // type: int|null
 		SizeVariant::VARIANT_MEDIUM => 'medium_width',      // type: int|null
 		SizeVariant::VARIANT_MEDIUM2X => 'medium2x_width',  // type: int|null
-		SizeVariant::VARIANT_ORIGINAL => 'url',             // type: string|null
+		SizeVariant::VARIANT_ORIGINAL => 'filename',        // type: string|null
 	];
 
 	/**

@@ -140,18 +140,18 @@ class Archive
 
 		// determine the file based on given size
 		if ($photo->isVideo() === false) {
-			$fileName = $photo->url;
+			$fileName = $photo->filename;
 		} else {
-			$fileName = $photo->thumbUrl;
+			$fileName = $photo->thumb_filename;
 		}
 
 		switch ($kind_input) {
 			case 'FULL':
-				$path = $prefix_path . $photo->url;
+				$path = $prefix_path . $photo->filename;
 				$kind = '';
 				break;
 			case 'LIVEPHOTOVIDEO':
-				$path = $prefix_path . $photo->livePhotoUrl;
+				$path = $prefix_path . $photo->live_photo_filename;
 				$kind = '';
 				break;
 			case 'MEDIUM2X':
@@ -171,11 +171,11 @@ class Archive
 				$kind = '-' . $photo->small_width . 'x' . $photo->small_height;
 				break;
 			case 'THUMB2X':
-				$path = 'thumb/' . Helpers::ex2x($photo->thumbUrl);
+				$path = 'thumb/' . Helpers::ex2x($photo->thumb_filename);
 				$kind = '-' . SizeVariant::THUMBNAIL2X_DIM . 'x' . SizeVariant::THUMBNAIL2X_DIM;
 				break;
 			case 'THUMB':
-				$path = 'thumb/' . $photo->thumbUrl;
+				$path = 'thumb/' . $photo->thumb_filename;
 				$kind = '-' . SizeVariant::THUMBNAIL_DIM . 'x' . SizeVariant::THUMBNAIL_DIM;
 				break;
 			default:

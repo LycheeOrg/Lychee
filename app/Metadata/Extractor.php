@@ -180,7 +180,7 @@ class Extractor
 		$metadata['altitude'] = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
 		$metadata['imgDirection'] = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata['filesize'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
-		$metadata['livePhotoContentID'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
+		$metadata['live_photo_content_id'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
 
 		$taken_at = $exif->getCreationDate();

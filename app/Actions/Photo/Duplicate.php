@@ -29,7 +29,7 @@ class Duplicate
 			$duplicate->id = Helpers::generateID();
 			$duplicate->title = $photo->title;
 			$duplicate->description = $photo->description;
-			$duplicate->url = $photo->url;
+			$duplicate->filename = $photo->filename;
 			$duplicate->tags = $photo->tags;
 			$duplicate->public = $photo->public;
 			$duplicate->type = $photo->type;
@@ -50,7 +50,7 @@ class Duplicate
 			$duplicate->location = $photo->location;
 			$duplicate->taken_at = $photo->taken_at;
 			$duplicate->star = $photo->star;
-			$duplicate->thumbUrl = $photo->thumbUrl;
+			$duplicate->thumb_filename = $photo->thumb_filename;
 			$duplicate->thumb2x = $photo->thumb2x;
 			$duplicate->album_id = $albumID ?? $photo->album_id;
 			if ($duplicate->album_id === '0') {
@@ -66,9 +66,9 @@ class Duplicate
 			$duplicate->small2x_width = $photo->small2x_width;
 			$duplicate->small2x_height = $photo->small2x_height;
 			$duplicate->owner_id = $photo->owner_id;
-			$duplicate->livePhotoContentID = $photo->livePhotoContentID;
-			$duplicate->livePhotoUrl = $photo->livePhotoUrl;
-			$duplicate->livePhotoChecksum = $photo->livePhotoChecksum;
+			$duplicate->live_photo_content_id = $photo->live_photo_content_id;
+			$duplicate->live_photo_filename = $photo->live_photo_filename;
+			$duplicate->live_photo_checksum = $photo->live_photo_checksum;
 			$this->save($duplicate);
 		}
 	}

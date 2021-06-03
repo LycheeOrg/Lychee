@@ -33,9 +33,9 @@ class StrategyDuplicate extends StrategyPhotoBase
 
 	public function hydrate(Create &$create, ?Photo &$existing = null, ?array $file = null)
 	{
-		$create->photo_Url = $existing->url;
+		$create->photo_filename = $existing->filename;
 		$create->path = Storage::path($create->path_prefix . $existing->url);
-		$create->photo->thumbUrl = $existing->thumbUrl;
+		$create->photo->thumb_filename = $existing->thumb_filename;
 		$create->photo->thumb2x = $existing->thumb2x;
 		$create->photo->medium_width = $existing->medium_width;
 		$create->photo->medium_height = $existing->medium_height;
@@ -45,8 +45,8 @@ class StrategyDuplicate extends StrategyPhotoBase
 		$create->photo->small_height = $existing->small_height;
 		$create->photo->small2x_width = $existing->small2x_width;
 		$create->photo->small2x_height = $existing->small2x_height;
-		$create->photo->livePhotoUrl = $existing->livePhotoUrl;
-		$create->photo->livePhotoChecksum = $existing->livePhotoChecksum;
+		$create->photo->live_photo_filename = $existing->live_photo_filename;
+		$create->photo->live_photo_checksum = $existing->live_photo_checksum;
 		$create->photo->checksum = $existing->checksum;
 		$create->photo->type = $existing->type;
 		$create->mimeType = $create->photo->type;

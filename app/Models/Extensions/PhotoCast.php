@@ -4,7 +4,6 @@ namespace App\Models\Extensions;
 
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Photo;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
 
 trait PhotoCast
@@ -19,31 +18,30 @@ trait PhotoCast
 		return [
 			'id' => strval($this->id),
 			'title' => $this->title,
-			'description' => $this->description == null ? '' : $this->description,
+			'description' => $this->description,
 			'tags' => $this->tags,
-			'star' => Helpers::str_of_bool($this->star),
-			'public' => $this->get_public(),
+			'star' => $this->star,
+			'public' => $this->public,
 			'album' => $this->album_id !== null ? strval($this->album_id) : null,
-			'url' => ($this->type == 'raw') ? Storage::url('raw/' . $this->url) : Storage::url('big/' . $this->url),
-			'width' => $this->width !== null ? $this->width : 0,
-			'height' => $this->height !== null ? $this->height : 0,
+			'url' => $this->url,
+			'width' => $this->width,
+			'height' => $this->height,
 			'type' => $this->type,
 			'filesize' => $this->filesize,
 			'iso' => $this->iso,
 			'aperture' => $this->aperture,
 			'make' => $this->make,
 			'model' => $this->model,
-			'shutter' => $this->get_shutter_str(),
-			// We need to format the framerate (stored as focal) -> max 2 decimal digits
-			'focal' => (strpos($this->type, 'video') === 0) ? round($this->focal, 2) : $this->focal,
+			'shutter' => $this->shutter,
+			'focal' => $this->focal,
 			'lens' => $this->lens,
 			'latitude' => $this->latitude,
 			'longitude' => $this->longitude,
 			'altitude' => $this->altitude,
 			'imgDirection' => $this->imgDirection,
 			'location' => $this->location,
-			'livePhotoContentID' => $this->livePhotoContentID,
-			'livePhotoUrl' => (!empty($this->livePhotoUrl)) ? Storage::url('big/' . $this->livePhotoUrl) : null,
+			'live_photo_content_id' => $this->live_photo_content_id,
+			'live_photo_url' => $this->live_photo_url,
 			'created_at' => $this->created_at->format(\DateTimeInterface::ATOM),
 			'updated_at' => $this->updated_at->format(\DateTimeInterface::ATOM),
 			'taken_at' => (!empty($this->taken_at)) ? $this->taken_at->format(\DateTimeInterface::ATOM) : null,
@@ -70,7 +68,7 @@ trait PhotoCast
 			$thumb->thumb2x = $sym->get(SizeVariant::VARIANT_THUMB2X);
 		} else {
 			$thumb->thumb = Storage::url(
-				SizeVariant::VARIANT_2_PATH_PREFIX[SizeVariant::VARIANT_THUMB] . '/' . $this->thumbUrl
+				SizeVariant::VARIANT_2_PATH_PREFIX[SizeVariant::VARIANT_THUMB] . '/' . $this->thumb_filename
 			);
 			if ($this->thumb2x == '1') {
 				$thumb->set_thumb2x();

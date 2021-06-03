@@ -80,23 +80,23 @@ class VideoData extends Command
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
-			$url = Storage::path('big/' . $photo->url);
+			$path = Storage::path($photo->url);
 
-			if ($photo->thumbUrl != '') {
-				$thumb = Storage::path('thumb/') . $photo->thumbUrl;
+			if ($photo->thumb_url != '') {
+				$thumb = Storage::path($photo->thumb_url);
 				if (file_exists($thumb)) {
-					$urlBase = explode('.', $photo->url);
-					$thumbBase = explode('.', $photo->thumbUrl);
-					if ($urlBase[0] !== $thumbBase[0]) {
-						$photo->thumbUrl = $urlBase[0] . '.' . $thumbBase[1];
-						rename($thumb, Storage::path('thumb/') . $photo->thumbUrl);
+					$basename = explode('.', $photo->filename);
+					$thumbBasename = explode('.', $photo->thumb_filename);
+					if ($basename[0] !== $thumbBasename[0]) {
+						$photo->thumb_filename = $basename[0] . '.' . $thumbBasename[1];
+						rename($thumb, Storage::path('thumb/') . $photo->thumb_filename);
 						$this->line('Renamed thumb to match the video file');
 					}
 				}
 			}
 
-			if (file_exists($url)) {
-				$info = $this->metadataExtractor->extract($url, $photo->type);
+			if (file_exists($path)) {
+				$info = $this->metadataExtractor->extract($path, $photo->type);
 
 				$updated = false;
 				if ($photo->width == 0 && $info['width'] !== 0) {
@@ -127,7 +127,7 @@ class VideoData extends Command
 					$this->line('Updated metadata');
 				}
 
-				if ($photo->thumbUrl === '' || $photo->thumb2x === 0 || $photo->small_width === null || $photo->small2x_width === null) {
+				if ($photo->thumb_filename === '' || $photo->thumb2x === false || $photo->small_width === null || $photo->small2x_width === null) {
 					$frame_tmp = '';
 					try {
 						$frame_tmp = $this->extractVideoFrame($photo);
@@ -136,12 +136,12 @@ class VideoData extends Command
 					}
 					if ($frame_tmp !== '') {
 						$this->line('Extracted video frame for thumbnails');
-						if ($photo->thumbUrl === '' || $photo->thumb2x === 0) {
+						if ($photo->thumb_filename === '' || $photo->thumb2x === false) {
 							if (!$this->createThumb($photo, $frame_tmp)) {
 								$this->line('Could not create thumbnail for video');
 							}
-							$urlBase = explode('.', $photo->url);
-							$photo->thumbUrl = $urlBase[0] . '.jpeg';
+							$basename = explode('.', $photo->filename);
+							$photo->thumb_filename = $basename[0] . '.jpeg';
 						}
 						if ($photo->small_width === null || $photo->small2x_width === null) {
 							$this->createSmallerImages($photo, $frame_tmp);

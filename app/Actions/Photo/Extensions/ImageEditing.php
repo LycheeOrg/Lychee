@@ -107,10 +107,10 @@ trait ImageEditing
 		$height = $photo->height;
 
 		if ($frame_tmp === '') {
-			$filename = $photo->url;
+			$filename = $photo->filename;
 			$url = Storage::path('big/' . $filename);
 		} else {
-			$filename = $photo->thumbUrl;
+			$filename = $photo->thumb_filename;
 			$url = $frame_tmp;
 		}
 
@@ -163,19 +163,19 @@ trait ImageEditing
 	 */
 	public function createThumb(Photo $photo, string $frame_tmp = ''): bool
 	{
-		Logs::notice(__METHOD__, __LINE__, 'Photo URL is ' . $photo->url);
+		Logs::notice(__METHOD__, __LINE__, 'Photo filename is ' . $photo->filename);
 
-		$src = ($frame_tmp === '') ? Storage::path('big/' . $photo->url) : $frame_tmp;
-		$photoName = explode('.', $photo->url);
+		$src = ($frame_tmp === '') ? Storage::path('big/' . $photo->filename) : $frame_tmp;
+		$photoName = explode('.', $photo->filename);
 
 		$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '.jpeg'), SizeVariant::THUMBNAIL_DIM, SizeVariant::THUMBNAIL_DIM);
 
 		if (Configs::get_value('thumb_2x') === '1' && $photo->width >= SizeVariant::THUMBNAIL2X_DIM && $photo->height >= SizeVariant::THUMBNAIL2X_DIM) {
 			// Retina thumbs
 			$this->imageHandler->crop($src, Storage::path('thumb/' . $photoName[0] . '@2x.jpeg'), SizeVariant::THUMBNAIL2X_DIM, SizeVariant::THUMBNAIL2X_DIM);
-			$photo->thumb2x = 1;
+			$photo->thumb2x = true;
 		} else {
-			$photo->thumb2x = 0;
+			$photo->thumb2x = false;
 		}
 
 		return true;

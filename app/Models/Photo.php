@@ -7,7 +7,6 @@ namespace App\Models;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
-use App\Models\Extensions\PhotoGetters;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Builder;
@@ -22,13 +21,13 @@ use Illuminate\Support\Facades\Storage;
  * @property int          $id
  * @property string       $title
  * @property string|null  $description
- * @property string       $url
+ * @property string       $filename
  * @property string       $tags
- * @property int          $public
+ * @property bool         $public
  * @property int          $owner_id
  * @property string       $type
- * @property int|null     $width
- * @property int|null     $height
+ * @property int          $width
+ * @property int          $height
  * @property int          $filesize
  * @property string       $iso
  * @property string       $aperture
@@ -44,9 +43,9 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null  $location
  * @property Carbon|null  $taken_at
  * @property string|null  $taken_at_orig_tz
- * @property int          $star
- * @property string       $thumbUrl
- * @property string       $livePhotoUrl
+ * @property bool         $star
+ * @property string       $thumb_filename
+ * @property string|null  $live_photo_filename
  * @property int|null     $album_id
  * @property string       $checksum
  * @property string       $license
@@ -60,15 +59,15 @@ use Illuminate\Support\Facades\Storage;
  * @property int|null     $small_height
  * @property int|null     $small2x_width
  * @property int|null     $small2x_height
- * @property int          $thumb2x
- * @property string       $livePhotoContentID
- * @property string       $livePhotoChecksum
+ * @property bool         $thumb2x
+ * @property string|null  $live_photo_content_id
+ * @property string|null  $live_photo_checksum
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
  *
  * @method static Builder|Photo ownedBy($id)
- * @method static Builder|Photo public ()
+ * @method static Builder|Photo public()
  * @method static Builder|Photo recent()
  * @method static Builder|Photo stars()
  * @method static Builder|Photo unsorted()
@@ -105,7 +104,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Photo whereTags($value)
  * @method static Builder|Photo whereTakenAt($value)
  * @method static Builder|Photo whereThumb2x($value)
- * @method static Builder|Photo whereThumbUrl($value)
+ * @method static Builder|Photo whereThumbFilename($value)
  * @method static Builder|Photo whereTitle($value)
  * @method static Builder|Photo whereType($value)
  * @method static Builder|Photo whereUpdatedAt($value)
@@ -116,14 +115,9 @@ class Photo extends Model
 {
 	use PhotoBooleans;
 	use PhotoCast;
-	use PhotoGetters;
 	use UTCBasedTimes;
 
 	protected $casts = [
-		'public' => 'int',
-		'star' => 'int',
-		'downloadable' => 'int',
-		'share_button_visible' => 'int',
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
@@ -134,7 +128,8 @@ class Photo extends Model
 	 *               relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
-		'thumbUrl',  // serialized as part of size_variants
+		'filename',  // serialize url instead
+		'thumb_filename',  // serialized as part of size_variants
 		'small_width',  // serialized as part of size_variants
 		'small_height',  // serialized as part of size_variants
 		'small2x_width',  // serialized as part of size_variants
@@ -143,6 +138,7 @@ class Photo extends Model
 		'medium_height',  // serialized as part of size_variants
 		'medium2x_width',  // serialized as part of size_variants
 		'medium2x_height',  // serialized as part of size_variants
+		'live_photo_filename', // serialize live_photo_url instead
 	];
 
 	/**
@@ -151,7 +147,9 @@ class Photo extends Model
 	 *               from accessors
 	 */
 	protected $appends = [
-		'size_variants', // see getSizeVariantsAttribute()
+		'url',            // see getUrlAttribute()
+		'live_photo_url', // see getLivePhotoUrlAttribute()
+		'size_variants',  // see getSizeVariantsAttribute()
 	];
 
 	/**
@@ -195,29 +193,28 @@ class Photo extends Model
 		}
 
 		$error = false;
-		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
 
 		// Delete original file
 		if ($keep_original === false) {
 			// quick check...
-			if (!Storage::exists($path_prefix . $this->url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($path_prefix . $this->url));
+			if (!Storage::exists($this->url)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($this->url));
 				$error = true;
-			} elseif (!Storage::delete($path_prefix . $this->url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($path_prefix . $this->url));
+			} elseif (!Storage::delete($this->url)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($this->url));
 				$error = true;
 			}
 		}
 
 		// Delete Live Photo Video file
 		// TODO: USE STORAGE FOR DELETE
-		// check first if livePhotoUrl is available
-		if ($this->livePhotoUrl !== null) {
-			if (!Storage::exists('big/' . $this->livePhotoUrl)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path('big/' . $this->livePhotoUrl));
+		// check first if live_photo_filename is available
+		if ($this->live_photo_filename !== null) {
+			if (!Storage::exists($this->live_photo_url)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($this->live_photo_url));
 				$error = true;
-			} elseif (!Storage::delete('big/' . $this->livePhotoUrl)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path('big/' . $this->livePhotoUrl));
+			} elseif (!Storage::delete($this->live_photo_url)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($this->live_photo_url));
 				$error = true;
 			}
 		}
@@ -368,6 +365,11 @@ class Photo extends Model
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
 
+	/**
+	 * Accessor for the virtual attribute `size_variants`.
+	 *
+	 * @return SizeVariants
+	 */
 	protected function getSizeVariantsAttribute(): SizeVariants
 	{
 		if ($this->sizeVariants === null) {
@@ -375,5 +377,159 @@ class Photo extends Model
 		}
 
 		return $this->sizeVariants;
+	}
+
+	/**
+	 * Mutator for virtual attribute `size_variants`.
+	 *
+	 * Always throws an exception as a safety measurement in case someone
+	 * tries to set `size_variants` directly.
+	 *
+	 * @param SizeVariants $sizeVariants the new size variants
+	 */
+	protected function setSizeVariantsAttribute(SizeVariants $sizeVariants): void
+	{
+		throw new \BadMethodCallException('must not set size variants directly, instead use underlying attributes of relation directly');
+	}
+
+	/**
+	 * Accessor for attribute `shutter`.
+	 *
+	 * This accessor ensures that the returned string is either formatted as
+	 * a unit fraction or a decimal number irrespective of what is stored
+	 * in the database.
+	 *
+	 * Actually it would be much more efficient to write a mutator which
+	 * ensures that the string is stored correctly formatted at the DB right
+	 * from the beginning and then simply return the stored string instead of
+	 * re-format the string on every fetch.
+	 * TODO: Refactor this.
+	 *
+	 * @param string $shutter the value from the database passed in by
+	 *                        the Eloquent framework
+	 *
+	 * @return string A properly formatted shutter value
+	 */
+	protected function getShutterAttribute(string $shutter): string
+	{
+		// shutter speed needs to be processed. It is stored as a string `a/b s`
+		if ($shutter != '' && substr($shutter, 0, 2) != '1/') {
+			preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
+			if ($matches) {
+				$a = intval($matches[1]);
+				$b = intval($matches[2]);
+				if ($b != 0) {
+					try {
+						$gcd = Helpers::gcd($a, $b);
+						$a = $a / $gcd;
+						$b = $b / $gcd;
+					} catch (Exception $e) {
+						// this should not happen as we covered the case $b = 0;
+					}
+					if ($a == 1) {
+						$shutter = '1/' . $b . ' s';
+					} else {
+						$shutter = ($a / $b) . ' s';
+					}
+				}
+			}
+		}
+
+		if ($shutter == '1/1 s') {
+			$shutter = '1 s';
+		}
+
+		return $shutter;
+	}
+
+	/**
+	 * Accessor for attribute `license`.
+	 *
+	 * @param string $license the value from the database passed in by
+	 *                        the Eloquent framework
+	 *
+	 * @return string
+	 */
+	protected function getLicenseAttribute(string $license): string
+	{
+		return $license !== 'none' ? $license : Configs::get_value('default_license');
+	}
+
+	/**
+	 * Accessor for attribute `focal`.
+	 *
+	 * In case the photo is a video (why it is called a photo then, btw?), the
+	 * attribute `focal` is exploited to store the framerate and rounded
+	 * to two decimal digits.
+	 *
+	 * Again, we probably should do that when the value is set and stored,
+	 * not every time when it is read from the database.
+	 * TODO: Refactor this.
+	 *
+	 * @param string $focal the value from the database passed in by the
+	 *                      Eloquent framework
+	 *
+	 * @return string
+	 */
+	protected function getFocalAttribute(string $focal): string
+	{
+		// We need to format the framerate (stored as focal) -> max 2 decimal digits
+		return $this->isVideo() ? round($focal, 2) : $focal;
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute `url`.
+	 *
+	 * The virtual attribute `url` is the relative url of the original
+	 * image/video and depends on the attribute `filename` prepended by
+	 * either "raw" or "big".
+	 *
+	 * @return string The relative url
+	 */
+	protected function getUrlAttribute(): string
+	{
+		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
+
+		return $path_prefix . $this->filename;
+	}
+
+	/**
+	 * Mutator for the attribute `url`.
+	 *
+	 * Always throws an exception as a safety measurement in case someone
+	 * tries to set `url` directly.
+	 *
+	 * @param string $url
+	 */
+	protected function setUrlAttribute(string $url): void
+	{
+		throw new \BadMethodCallException('must not set \'url\' directly, use \'filename\' instead');
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute `live_photo_url`.
+	 *
+	 * The virtual attribute `live_photo_url` is the relative url of the live
+	 * photo and equals the attribute `live_photo_filename` prepended by
+	 * big".
+	 *
+	 * @return string|null The relative url
+	 */
+	protected function getLivePhotoUrlAttribute(): ?string
+	{
+		return empty($this->live_photo_filename) ? null : 'big/' . $this->live_photo_filename;
+	}
+
+	/**
+	 * Mutator for the attribute `url`.
+	 *
+	 * Always throws an exception as a safety measurement in case someone
+	 * tries to set `url` directly.
+	 *
+	 * @param string|null $url
+	 */
+	protected function setLivePhotoUrlAttribute(?string $url): void
+	{
+		throw new \BadMethodCallException('must not set \'live_photo_url\' directly, use \'live_photo_filename\' instead');
 	}
 }

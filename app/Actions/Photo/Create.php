@@ -79,8 +79,8 @@ class Create
 		$duplicate = $this->get_duplicate($this->photo->checksum);
 		$exists = ($duplicate !== null);
 
-		$this->photo_Url = substr($this->photo->checksum, 0, 32) . $this->extension;
-		$this->path = Storage::path($this->path_prefix . $this->photo_Url);
+		$this->photo_filename = substr($this->photo->checksum, 0, 32) . $this->extension;
+		$this->path = Storage::path($this->path_prefix . $this->photo_filename);
 		/*
 		 * ! From here we need to use a Strategy depending if we have
 		 * ! a duplicate

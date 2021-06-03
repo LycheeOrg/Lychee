@@ -218,6 +218,9 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'starred',
 		]);
+		if ($response->getStatusCode() === 500) {
+			$response->dump();
+		}
 		$response->assertStatus(200);
 		$response->assertSee($id, false);
 	}

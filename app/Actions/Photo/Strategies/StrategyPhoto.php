@@ -118,8 +118,8 @@ class StrategyPhoto extends StrategyPhotoBase
 
 			// Create Thumb
 			if ($create->kind == 'raw' && $frame_tmp == '') {
-				$create->photo->thumbUrl = '';
-				$create->photo->thumb2x = 0;
+				$create->photo->thumb_filename = '';
+				$create->photo->thumb2x = false;
 			} elseif (!in_array($create->photo->type, $create->validVideoTypes, true) || $frame_tmp !== '') {
 				if (!$this->createThumb($create->photo, $frame_tmp)) {
 					Logs::error(__METHOD__, __LINE__, 'Could not create thumbnail for photo');
@@ -127,7 +127,7 @@ class StrategyPhoto extends StrategyPhotoBase
 					throw new JsonError('Could not create thumbnail for photo!');
 				}
 
-				$create->photo->thumbUrl = basename($create->photo_Url, $create->extension) . '.jpeg';
+				$create->photo->thumb_filename = basename($create->photo_filename, $create->extension) . '.jpeg';
 
 				$this->createSmallerImages($create->photo, $frame_tmp);
 
@@ -140,13 +140,13 @@ class StrategyPhoto extends StrategyPhotoBase
 					unlink($frame_tmp);
 				}
 			} else {
-				$create->photo->thumbUrl = '';
-				$create->photo->thumb2x = 0;
+				$create->photo->thumb_filename = '';
+				$create->photo->thumb2x = false;
 			}
 		} else {
 			// We're uploading a video -> overwrite everything from partner
-			$create->livePhotoPartner->livePhotoUrl = $create->photo->url;
-			$create->livePhotoPartner->livePhotoChecksum = $create->photo->checksum;
+			$create->livePhotoPartner->live_photo_filename = $create->photo->filename;
+			$create->livePhotoPartner->live_photo_checksum = $create->photo->checksum;
 			$no_error &= $create->livePhotoPartner->save();
 			$skip_db_entry_creation = true;
 		}

@@ -75,8 +75,8 @@ class Ghostbuster extends Command
 			}
 
 			$isDeadSymlink = is_link($path . '/' . $url) && !file_exists(readlink($path . '/' . $url));
-			$photos = Photo::where(function ($query) use ($url) {
-				return $query->where('url', '=', $url)->orWhere('livePhotoUrl', '=', $url);
+			$photos = Photo::query()->where(function ($query) use ($url) {
+				return $query->where('url', '=', $url)->orWhere('live_photo_filename', '=', $url);
 			})->get();
 
 			if (count($photos) === 0 || ($isDeadSymlink && $removeDeadSymLinks)) {

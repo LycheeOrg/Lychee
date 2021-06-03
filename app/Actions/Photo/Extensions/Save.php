@@ -58,7 +58,7 @@ trait Save
 		} else {
 			Logs::error(__METHOD__, __LINE__, 'Something went wrong, error ' . $errorCode . ', ' . $e->getMessage());
 
-			throw new JsonError('Something went wrong, error' . $errorCode . ', please check the logs');
+			throw new JsonError('Something went wrong, error' . $errorCode . ', please check the logs:' . $e->getMessage());
 		}
 	}
 }
