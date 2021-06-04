@@ -34,7 +34,7 @@ class StrategyDuplicate extends StrategyPhotoBase
 	public function hydrate(Create &$create, ?Photo &$existing = null, ?array $file = null)
 	{
 		$create->photo_filename = $existing->filename;
-		$create->path = Storage::path($create->path_prefix . $existing->url);
+		$create->path = Storage::path($existing->url);
 		$create->photo->thumb_filename = $existing->thumb_filename;
 		$create->photo->thumb2x = $existing->thumb2x;
 		$create->photo->medium_width = $existing->medium_width;
