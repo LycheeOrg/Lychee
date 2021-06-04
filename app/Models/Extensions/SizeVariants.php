@@ -2,8 +2,10 @@
 
 namespace App\Models\Extensions;
 
+use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Facades\Storage;
 use JsonSerializable;
 
 /**
@@ -102,5 +104,57 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function getMedium2x(): ?SizeVariant
 	{
 		return $this->medium2x;
+	}
+
+	/**
+	 * Deletes all size variants from storage.
+	 *
+	 * @return bool True on success, false otherwise
+	 */
+	public function deleteFromStorage(): bool
+	{
+		$success = true;
+		if ($this->thumb) {
+			$success &= $this->deleteFromStorageInternal($this->thumb->getRelativePath());
+		}
+		if ($this->thumb2x) {
+			$success &= $this->deleteFromStorageInternal($this->thumb2x->getRelativePath());
+		}
+		if ($this->small) {
+			$success &= $this->deleteFromStorageInternal($this->small->getRelativePath());
+		}
+		if ($this->small2x) {
+			$success &= $this->deleteFromStorageInternal($this->small2x->getRelativePath());
+		}
+		if ($this->medium) {
+			$success &= $this->deleteFromStorageInternal($this->medium->getRelativePath());
+		}
+		if ($this->medium2x) {
+			$success &= $this->deleteFromStorageInternal($this->medium2x->getRelativePath());
+		}
+
+		return $success;
+	}
+
+	/**
+	 * Deletes a size variant from storage given its relative path.
+	 *
+	 * @param string $relativePath
+	 *
+	 * @return bool True on success, false otherwise
+	 */
+	protected function deleteFromStorageInternal(string $relativePath): bool
+	{
+		if (!Storage::exists($relativePath)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find file ' . $relativePath);
+
+			return false;
+		} elseif (!Storage::delete($relativePath)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . $relativePath);
+
+			return false;
+		}
+
+		return true;
 	}
 }

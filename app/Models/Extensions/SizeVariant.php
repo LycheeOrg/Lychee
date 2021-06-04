@@ -144,21 +144,67 @@ class SizeVariant implements Arrayable, JsonSerializable
 		return $this->type;
 	}
 
+	/**
+	 * Returns the relative path of the file as it needs to be input into
+	 * methods of {@link \Illuminate\Support\Facades\Storage}.
+	 *
+	 * @return string the relative path of the file
+	 */
+	public function getRelativePath(): string
+	{
+		return self::VARIANT_2_PATH_PREFIX[$this->type] . '/' . $this->getFilename();
+	}
+
+	/**
+	 * Returns the URL of the file as it is seen from a client's point of
+	 * view.
+	 * This is a convenient method and wraps the result of
+	 * {@link getRelativePath()} into
+	 * {@link \Illuminate\Support\Facades\Storage::url()}.
+	 *
+	 * @return string the url of the file
+	 */
 	public function getUrl(): string
 	{
-		return Storage::url(self::VARIANT_2_PATH_PREFIX[$this->type] . '/' . $this->getFilename());
+		return Storage::url($this->getRelativePath());
 	}
 
+	/**
+	 * Returns the URL of the file as it is seen from a client's point of
+	 * view.
+	 * This is a convenient method and wraps the result of
+	 * {@link getRelativePath()} into
+	 * {@link \Illuminate\Support\Facades\Storage::path()}.
+	 *
+	 * @return string the url of the file
+	 */
 	public function getPath(): string
 	{
-		return Storage::path(self::VARIANT_2_PATH_PREFIX[$this->type] . '/' . $this->getFilename());
+		return Storage::path($this->getRelativePath());
 	}
 
+	/**
+	 * Returns the width of this size variant.
+	 *
+	 * @return int the width
+	 */
 	public function getWidth(): int
 	{
 		return self::getWidthInternal($this->photo, $this->type);
 	}
 
+	/**
+	 * Returns the width of the indicated size variant and photo.
+	 *
+	 * This is an internal helper method to get the width before an object
+	 * of this class is actually constructed.
+	 * If the size variant does not exist, zero is returned.
+	 *
+	 * @param Photo  $photo the underlying {@link \App\Models\Photo} object
+	 * @param string $type  the name of the size variant
+	 *
+	 * @return int the width
+	 */
 	protected static function getWidthInternal(Photo $photo, string $type): int
 	{
 		switch ($type) {
@@ -180,11 +226,28 @@ class SizeVariant implements Arrayable, JsonSerializable
 		}
 	}
 
+	/**
+	 * Returns the height of this size variant.
+	 *
+	 * @return int the height
+	 */
 	public function getHeight(): int
 	{
 		return self::getHeightInternal($this->photo, $this->type);
 	}
 
+	/**
+	 * Returns the height of the indicated size variant and photo.
+	 *
+	 * This is an internal helper method to get the height before an object
+	 * of this class is actually constructed.
+	 * If the size variant does not exist, zero is returned.
+	 *
+	 * @param Photo  $photo the underlying {@link \App\Models\Photo} object
+	 * @param string $type  the name of the size variant
+	 *
+	 * @return int the height
+	 */
 	protected static function getHeightInternal(Photo $photo, string $type): int
 	{
 		switch ($type) {
@@ -206,6 +269,11 @@ class SizeVariant implements Arrayable, JsonSerializable
 		}
 	}
 
+	/**
+	 * Returns the base filename without any directory or alike.
+	 *
+	 * @return string the base filename
+	 */
 	public function getFilename(): string
 	{
 		$filename = $this->photo->filename;

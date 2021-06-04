@@ -132,6 +132,7 @@ class Photo extends Model
 	protected $hidden = [
 		'filename',  // serialize url instead
 		'thumb_filename',  // serialized as part of size_variants
+		'thumb2x',  // serialized as part of size_variants
 		'small_width',  // serialized as part of size_variants
 		'small_height',  // serialized as part of size_variants
 		'small2x_width',  // serialized as part of size_variants
@@ -194,17 +195,17 @@ class Photo extends Model
 			return true;
 		}
 
-		$error = false;
+		$success = true;
 
 		// Delete original file
 		if ($keep_original === false) {
 			// quick check...
 			if (!Storage::exists($this->url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($this->url));
-				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Could not find file ' . Storage::path($this->url));
+				$success = false;
 			} elseif (!Storage::delete($this->url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($this->url));
-				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . Storage::path($this->url));
+				$success = false;
 			}
 		}
 
@@ -213,78 +214,17 @@ class Photo extends Model
 		// check first if live_photo_filename is available
 		if ($this->live_photo_filename !== null) {
 			if (!Storage::exists($this->live_photo_url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find file in ' . Storage::path($this->live_photo_url));
-				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Could not find file ' . Storage::path($this->live_photo_url));
+				$success = false;
 			} elseif (!Storage::delete($this->live_photo_url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete file in ' . Storage::path($this->live_photo_url));
-				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . Storage::path($this->live_photo_url));
+				$success = false;
 			}
 		}
 
-		$sizeVariants = $this->size_variants;
+		$success &= $this->size_variants->deleteFromStorage();
 
-		// Delete medium
-		// TODO: USE STORAGE FOR DELETE
-		if (
-			$sizeVariants->getThumb() &&
-			Storage::exists($sizeVariants->getThumb()->getUrl()) &&
-			!unlink(Storage::path($sizeVariants->getThumb()->getUrl()))
-		) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/thumb/');
-			$error = true;
-		}
-
-		// TODO: USE STORAGE FOR DELETE
-		if (
-			$sizeVariants->getThumb2x() &&
-			Storage::exists($sizeVariants->getThumb2x()->getUrl()) &&
-			!unlink(Storage::path($sizeVariants->getThumb2x()->getUrl()))
-		) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/thumb/');
-			$error = true;
-		}
-
-		// TODO: USE STORAGE FOR DELETE
-		if (
-			$sizeVariants->getSmall() &&
-			Storage::exists($sizeVariants->getSmall()->getUrl()) &&
-			!unlink(Storage::path($sizeVariants->getSmall()->getUrl()))
-		) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/small/');
-			$error = true;
-		}
-
-		// TODO: USE STORAGE FOR DELETE
-		if (
-			$sizeVariants->getSmall2x() &&
-			Storage::exists($sizeVariants->getSmall2x()->getUrl()) &&
-			!unlink(Storage::path($sizeVariants->getSmall2x()->getUrl()))
-		) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/small/');
-			$error = true;
-		}
-
-		// TODO: USE STORAGE FOR DELETE
-		if (
-			$sizeVariants->getMedium() &&
-			Storage::exists($sizeVariants->getMedium()->getUrl()) &&
-			!unlink(Storage::path($sizeVariants->getMedium()->getUrl()))
-		) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete photo in uploads/medium/');
-			$error = true;
-		}
-
-		// TODO: USE STORAGE FOR DELETE
-		if (
-			$sizeVariants->getMedium2x() &&
-			Storage::exists($sizeVariants->getMedium2x()->getUrl()) &&
-			!unlink(Storage::path($sizeVariants->getMedium2x()->getUrl()))
-		) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete high-res photo in uploads/medium/');
-			$error = true;
-		}
-
-		return !$error;
+		return $success;
 	}
 
 	/**
@@ -557,7 +497,7 @@ class Photo extends Model
 	 * standard implementation:
 	 *
 	 *  - If the image must not be downloaded at full resolution and a medium
-	 *    sized variant does exist, the url to the original size is removed.
+	 *    sized variant exist, then url to the original size is removed.
 	 *
 	 * @return array
 	 */
