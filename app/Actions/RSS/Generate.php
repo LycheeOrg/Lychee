@@ -54,7 +54,7 @@ class Generate
 
 		$this->symLinkFunctions->getUrl($photo_model, $photo_array);
 
-		$photo_array['url'] = $photo_array['url'] ?: ($photo_array['medium2x'] ?: $photo_array['medium']);
+		$photo_array['url'] = $photo_array['url'] ?: ($photo_array['size_variants']['medium2x'] ? $photo_array['size_variants']['medium2x']['url'] : $photo_array['size_variants']['medium']['url']);
 		// TODO: this will need to be fixed for s3 and when the upload folder is NOT the Lychee folder.
 		$enclosure = $this->make_enclosure($photo_array);
 
