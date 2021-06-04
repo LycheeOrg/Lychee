@@ -39,24 +39,16 @@ class Generate
 		return $enclosure;
 	}
 
-	private function create_link(Photo $photo_model, array &$photo_array)
+	private function create_link(Photo $photo_model): string
 	{
 		if ($photo_model->album_id != null) {
-			if (!$photo_model->album->is_full_photo_visible()) {
-				$photo_model->downgrade($photo_array);
-			}
-
 			return '#' . $photo_model->album_id . '/' . $photo_model->id;
-		}
-
-		if (Configs::get_value('full_photo', '1') != '1') {
-			$photo_model->downgrade($photo_array);
 		}
 
 		return 'view?p=' . $photo_model->id;
 	}
 
-	private function toFeedItem(Photo $photo_model)
+	private function toFeedItem(Photo $photo_model): FeedItem
 	{
 		$photo_array = $photo_model->toReturnArray();
 
@@ -66,7 +58,7 @@ class Generate
 		// TODO: this will need to be fixed for s3 and when the upload folder is NOT the Lychee folder.
 		$enclosure = $this->make_enclosure($photo_array);
 
-		$id = $this->create_link($photo_model, $photo_array);
+		$id = $this->create_link($photo_model);
 
 		return FeedItem::create([
 			'id' => url('/' . $id),

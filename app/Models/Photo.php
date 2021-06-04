@@ -445,6 +445,11 @@ class Photo extends Model
 	/**
 	 * Accessor for attribute `license`.
 	 *
+	 * If the photo has an explicitly set license, that license is returned.
+	 * Else, either the licence of the album is returned (if the photo is
+	 * part of an album) or the default license of the application-wide
+	 * setting is returned.
+	 *
 	 * @param string $license the value from the database passed in by
 	 *                        the Eloquent framework
 	 *
@@ -452,7 +457,14 @@ class Photo extends Model
 	 */
 	protected function getLicenseAttribute(string $license): string
 	{
-		return $license !== 'none' ? $license : Configs::get_value('default_license');
+		if ($license !== 'none') {
+			return $license;
+		}
+		if ($this->album_id != null) {
+			return $this->album->get_license();
+		}
+
+		return Configs::get_value('default_license');
 	}
 
 	/**
@@ -531,5 +543,40 @@ class Photo extends Model
 	protected function setLivePhotoUrlAttribute(?string $url): void
 	{
 		throw new \BadMethodCallException('must not set \'live_photo_url\' directly, use \'live_photo_filename\' instead');
+	}
+
+	/**
+	 * Serializes the model into an array.
+	 *
+	 * This method is also invoked by Eloquent when someone invokes
+	 * {@link Model::toJson()} or {@link Model::jsonSerialize()}.
+	 *
+	 * This method does some post-processing on the result of the
+	 * standard implementation:
+	 *
+	 *  - If the image must not be downloaded at full resolution and a medium
+	 *    sized variant does exist, the url to the original size is removed.
+	 *
+	 * @return array
+	 */
+	public function toArray(): array
+	{
+		$result = parent::toArray();
+		// Downgrades the accessible resolution of a photo
+		// The decision logic here is a merge of three formerly independent
+		// (and slightly different) approaches
+		if (
+			!AccessControl::is_current_user($this->owner_id) &&
+			$this->isVideo() === false &&
+			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
+			(
+				($this->album_id != null && !$this->album->is_full_photo_visible()) ||
+				($this->album_id == null && Configs::get_value('full_photo', '1') != '1')
+			)
+		) {
+			unset($result['url']);
+		}
+
+		return $result;
 	}
 }

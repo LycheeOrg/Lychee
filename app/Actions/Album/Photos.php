@@ -2,7 +2,6 @@
 
 namespace App\Actions\Album;
 
-use App\Facades\AccessControl;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
@@ -67,14 +66,8 @@ class Photos
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->toReturnArray();
-			if ($photo['license'] === 'none') {
-				$photo['license'] = $album->get_license();
-			}
 
 			$this->symLinkFunctions->getUrl($photo_model, $photo);
-			if (!AccessControl::is_current_user($photo_model->owner_id) && !$album->is_full_photo_visible()) {
-				$photo_model->downgrade($photo);
-			}
 
 			// Set previous and next photoID for navigation purposes
 			$photo['previousPhoto'] = $previousPhotoID;

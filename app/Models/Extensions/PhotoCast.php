@@ -77,19 +77,4 @@ trait PhotoCast
 
 		return $thumb;
 	}
-
-	/**
-	 * Downgrade the quality of the pictures.
-	 *
-	 * @param array $return
-	 */
-	public function downgrade(array &$return)
-	{
-		if (
-			$this->isVideo() === false &&
-			($return['sizeVariants']['medium2x'] !== null || $return['sizeVariants']['medium'] !== null)
-		) {
-			$return['url'] = '';
-		}
-	}
 }
