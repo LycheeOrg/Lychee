@@ -46,7 +46,7 @@ class PhotosRotateTest extends TestCase
 			'id' => $id,
 			'filesize' => 21104156,
 			'width' => 6720,
-			'sizeVariants' => [
+			'size_variants' => [
 				'small' => [
 					'width' => 540,
 					'height' => 360,
@@ -81,7 +81,7 @@ class PhotosRotateTest extends TestCase
 			'id' => $id,
 			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
 			'width' => 4480,
-			'sizeVariants' => [
+			'size_variants' => [
 				'small' => [
 					'width' => 240,
 					'height' => 360,
@@ -104,7 +104,7 @@ class PhotosRotateTest extends TestCase
 			'id' => $id,
 			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
 			'width' => 6720,
-			'sizeVariants' => [
+			'size_variants' => [
 				'small' => [
 					'width' => 540,
 					'height' => 360,

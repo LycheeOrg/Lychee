@@ -74,7 +74,7 @@ class GeoDataTest extends TestCase
 				'public' => '0',
 				'downloadable' => '1',
 				'share_button_visible' => '1',
-				'sizeVariants' => [
+				'size_variants' => [
 					'thumb' => [
 						'width' => 200,
 						'height' => 200,

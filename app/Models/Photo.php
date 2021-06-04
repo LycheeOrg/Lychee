@@ -5,6 +5,8 @@
 namespace App\Models;
 
 use App\Casts\DateTimeWithTimezoneCast;
+use App\Facades\Helpers;
+use App\Facades\AccessControl;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\SizeVariants;

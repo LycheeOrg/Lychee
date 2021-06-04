@@ -120,7 +120,7 @@ class PhotosTest extends TestCase
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',
 			'width' => 6720,
-			'sizeVariants' => [
+			'size_variants' => [
 				'small' => [
 					'width' => 540,
 					'height' => 360,
