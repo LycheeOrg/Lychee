@@ -4,27 +4,12 @@ namespace App\Actions\Search;
 
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Facades\AccessControl;
-use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 
 class PhotoSearch
 {
-	/**
-	 * @var SymLinkFunctions
-	 */
-	private $symLinkFunctions;
-
-	/**
-	 * @param SymLinkFunctions $symLinkFunctions
-	 */
-	public function __construct(
-		SymLinkFunctions $symLinkFunctions
-	) {
-		$this->symLinkFunctions = $symLinkFunctions;
-	}
-
 	private function unsorted_or_public(Builder $query)
 	{
 		if (AccessControl::is_admin()) {
@@ -64,10 +49,7 @@ class PhotoSearch
 
 		return $photos->map(
 			function ($photo) {
-				$photo_array = $photo->toReturnArray();
-				$this->symLinkFunctions->getUrl($photo, $photo_array);
-
-				return $photo_array;
+				return $photo->toReturnArray();
 			}
 		);
 	}

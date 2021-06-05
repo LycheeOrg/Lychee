@@ -8,7 +8,6 @@ use App\Actions\Photo\Archive;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
-use App\Actions\Photo\Prepare;
 use App\Actions\Photo\Random;
 use App\Actions\Photo\SetAlbum;
 use App\Actions\Photo\SetDescription;
@@ -56,12 +55,12 @@ class PhotoController extends Controller
 	 *
 	 * @return ?array
 	 */
-	public function get(PhotoIDRequest $request, Prepare $prepare)
+	public function get(PhotoIDRequest $request): ?array
 	{
 		/** @var ?Photo $photo */
-		$photo = Photo::with('album')->findOrFail($request['photoID']);
+		$photo = Photo::query()->findOrFail($request['photoID']);
 
-		return $prepare->do($photo);
+		return $photo ? $photo->toReturnArray() : null;
 	}
 
 	/**

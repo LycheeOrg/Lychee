@@ -206,4 +206,28 @@ class SymLink extends Model
 
 		return parent::delete();
 	}
+
+	/**
+	 * Returns the latest symlink for the photo or creates a new one if
+	 * no previous symlink exist.
+	 *
+	 * @param Photo $photo
+	 *
+	 * @return SymLink The latest symlink for the photo
+	 */
+	public static function getLatestOrCreate(Photo $photo): SymLink
+	{
+		/** @var SymLink $symLink */
+		$symLink = self::query()
+			->where('photo_id', $photo->id)
+			->orderBy('created_at', 'DESC')
+			->first();
+		if ($symLink == null) {
+			$symLink = new SymLink();
+			$symLink->set($photo);
+			$symLink->save();
+		}
+
+		return $symLink;
+	}
 }

@@ -2,22 +2,12 @@
 
 namespace App\Actions\Album;
 
-use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Collection;
 
 class Photos
 {
-	/** @var SymLinkFunctions */
-	private $symLinkFunctions;
-
-	public function __construct(SymLinkFunctions $symLinkFunctions)
-	{
-		$this->symLinkFunctions = $symLinkFunctions;
-	}
-
 	/**
 	 * take a $photo_sql query and return an array containing their pictures.
 	 *
@@ -66,8 +56,6 @@ class Photos
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->toReturnArray();
-
-			$this->symLinkFunctions->getUrl($photo_model, $photo);
 
 			// Set previous and next photoID for navigation purposes
 			$photo['previousPhoto'] = $previousPhotoID;

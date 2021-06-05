@@ -2,7 +2,6 @@
 
 namespace App\Actions\Album\Extensions;
 
-use App\ModelFunctions\SymLinkFunctions;
 use Illuminate\Database\Eloquent\Builder;
 
 trait LocationData
@@ -17,8 +16,6 @@ trait LocationData
 	 */
 	public function photosLocationData(Builder $photos_sql)
 	{
-		$symLinkFunctions = resolve(SymLinkFunctions::class);
-
 		$return_photos = [];
 		$photo_counter = 0;
 		$photos = $photos_sql
@@ -30,12 +27,7 @@ trait LocationData
 		* @var Photo
 		*/
 		foreach ($photos as $photo_model) {
-			$photo = $photo_model->toReturnArray();
-			$symLinkFunctions->getUrl($photo_model, $photo);
-
-			// Add to return
-			$return_photos[$photo_counter] = $photo;
-
+			$return_photos[$photo_counter] = $photo_model->toReturnArray();
 			$photo_counter++;
 		}
 

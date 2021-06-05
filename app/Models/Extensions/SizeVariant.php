@@ -2,8 +2,11 @@
 
 namespace App\Models\Extensions;
 
+use App\Facades\AccessControl;
 use App\Facades\Helpers;
+use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\SymLink;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
@@ -166,7 +169,23 @@ class SizeVariant implements Arrayable, JsonSerializable
 	 */
 	public function getUrl(): string
 	{
-		return Storage::url($this->getShortPath());
+		if (
+			AccessControl::is_current_user($this->photo->owner_id) ||
+			Storage::getDefaultDriver() == 's3' ||
+			Configs::get_value('SL_enable', '0') == '0'
+		) {
+			return Storage::url($this->getShortPath());
+		}
+
+		$symLink = SymLink::getLatestOrCreate($this->photo);
+
+		// TODO: Fix this before pull request.
+		// Don't use the symbolic drive outside of the SymLink class.
+		// The problem is that the SymLink class uses the attribute "url" for
+		// something which is not an URL.
+		return Storage::drive('symbolic')->url(
+			$symLink->{SymLink::VARIANT_2_SYM_PATH_FIELD[$this->type]}
+		);
 	}
 
 	/**

@@ -487,14 +487,31 @@ class Photo extends Model
 	 *
 	 * Returns the URL of the original file as it is seen from a client's
 	 * point of view.
-	 * This is a convenient method and wraps {@link Photo::$short_path} into
+	 * **Note:** This is more than just a simple convenient method which wraps
+	 * {@link Photo::$short_path} into
 	 * {@link \Illuminate\Support\Facades\Storage::url()}.
+	 * This method returns a randomized URL to the photo if the sym-link
+	 * feature is enabled and the storage implementation allows sym-linking.
 	 *
-	 * @return string the url of the file
+	 * @return string the url to the original size variant
 	 */
 	protected function getUrlAttribute(): string
 	{
-		return Storage::url($this->short_path);
+		if (
+			AccessControl::is_current_user($this->owner_id) ||
+			Storage::getDefaultDriver() == 's3' ||
+			Configs::get_value('SL_enable', '0') == '0'
+		) {
+			return Storage::url($this->short_path);
+		}
+
+		$symLink = SymLink::getLatestOrCreate($this);
+
+		// TODO: Fix this before pull request.
+		// Don't use the symbolic drive outside of the SymLink class.
+		// The problem is that the SymLink class uses the attribute "url" for
+		// something which is not an URL.
+		return Storage::drive('symbolic')->url($symLink->url);
 	}
 
 	/**
@@ -605,11 +622,8 @@ class Photo extends Model
 	 * This method is also invoked by Eloquent when someone invokes
 	 * {@link Model::toJson()} or {@link Model::jsonSerialize()}.
 	 *
-	 * This method does some post-processing on the result of the
-	 * standard implementation:
-	 *
-	 *  - If the image must not be downloaded at full resolution and a medium
-	 *    sized variant exist, then url to the original size is removed.
+	 * This method removes the URL to the full resolution of a photo, if the
+	 * client is not allowed to see that.
 	 *
 	 * @return array
 	 */

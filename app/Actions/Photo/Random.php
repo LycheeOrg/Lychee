@@ -6,7 +6,7 @@ use App\Actions\Albums\Extensions\PublicIds;
 use App\Exceptions\JsonError;
 use App\SmartAlbums\StarredAlbum;
 
-class Random extends SymLinker
+class Random
 {
 	public function do(): array
 	{
@@ -19,9 +19,6 @@ class Random extends SymLinker
 			throw new JsonError('no pictures found!');
 		}
 
-		$return = $photo->toReturnArray();
-		$this->symLinkFunctions->getUrl($photo, $return);
-
-		return $return;
+		return $photo->toReturnArray();
 	}
 }
