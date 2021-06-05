@@ -66,21 +66,21 @@ class Ghostbuster extends Command
 		}
 
 		$path = Storage::path('big');
-		$files = array_slice(scandir($path), 2);
+		$filenames = array_slice(scandir($path), 2);
 		$total = 0;
 
-		foreach ($files as $url) {
-			if ($url == 'index.html') {
+		foreach ($filenames as $filename) {
+			if ($filename == 'index.html') {
 				continue;
 			}
 
-			$isDeadSymlink = is_link($path . '/' . $url) && !file_exists(readlink($path . '/' . $url));
-			$photos = Photo::query()->where(function ($query) use ($url) {
-				return $query->where('url', '=', $url)->orWhere('live_photo_filename', '=', $url);
+			$isDeadSymlink = is_link($path . '/' . $filename) && !file_exists(readlink($path . '/' . $filename));
+			$photos = Photo::query()->where(function ($query) use ($filename) {
+				return $query->where('filename', '=', $filename)->orWhere('live_photo_filename', '=', $filename);
 			})->get();
 
 			if (count($photos) === 0 || ($isDeadSymlink && $removeDeadSymLinks)) {
-				$photoName = explode('.', $url);
+				$photoName = explode('.', $filename);
 
 				$to_delete = [];
 				$to_delete[] = 'thumb/' . $photoName[0] . '.jpeg';
@@ -93,11 +93,11 @@ class Ghostbuster extends Command
 				$to_delete[] = 'medium/' . $photoName[0] . '@2x.jpeg';
 
 				// for normal pictures
-				$to_delete[] = 'small/' . $url;
-				$to_delete[] = 'small/' . Helpers::ex2x($url);
-				$to_delete[] = 'medium/' . $url;
-				$to_delete[] = 'medium/' . Helpers::ex2x($url);
-				$to_delete[] = 'big/' . $url;
+				$to_delete[] = 'small/' . $filename;
+				$to_delete[] = 'small/' . Helpers::ex2x($filename);
+				$to_delete[] = 'medium/' . $filename;
+				$to_delete[] = 'medium/' . Helpers::ex2x($filename);
+				$to_delete[] = 'big/' . $filename;
 
 				foreach ($to_delete as $del) {
 					$delete = 0;
@@ -125,17 +125,18 @@ class Ghostbuster extends Command
 				}
 
 				if ($isDeadSymlink && $removeDeadSymLinks) {
+					/** @var Photo $photo */
 					foreach ($photos as $photo) {
 						if ($dryrun) {
-							$this->line(str_pad($photo->url, 50) . $this->col->red(' photo will be removed') . '.');
+							$this->line(str_pad($photo->short_path, 50) . $this->col->red(' photo will be removed') . '.');
 						} else {
 							// Laravel apparently doesn't think dead symlinks 'exist', so manually remove the original here.
-							unlink($path . '/' . $url);
+							unlink($path . '/' . $filename);
 
 							$photo->predelete();
 							$photo->delete();
 
-							$this->line($this->col->red('removed photo: ') . $photo->url);
+							$this->line($this->col->red('removed photo: ') . $photo->short_path);
 						}
 					}
 				}

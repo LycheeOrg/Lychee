@@ -80,23 +80,24 @@ class VideoData extends Command
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
-			$path = Storage::path($photo->url);
+			$fullPath = $photo->full_path;
 
-			if ($photo->thumb_url != '') {
-				$thumb = Storage::path($photo->thumb_url);
-				if (file_exists($thumb)) {
+			if ($photo->thumb_filename != '') {
+				$thumb = $photo->size_variants->getThumb();
+				$thumbFullPath = $thumb->getFullPath();
+				if (file_exists($thumbFullPath)) {
 					$basename = explode('.', $photo->filename);
 					$thumbBasename = explode('.', $photo->thumb_filename);
 					if ($basename[0] !== $thumbBasename[0]) {
 						$photo->thumb_filename = $basename[0] . '.' . $thumbBasename[1];
-						rename($thumb, Storage::path('thumb/') . $photo->thumb_filename);
+						rename($thumbFullPath, Storage::path('thumb/') . $photo->thumb_filename);
 						$this->line('Renamed thumb to match the video file');
 					}
 				}
 			}
 
-			if (file_exists($path)) {
-				$info = $this->metadataExtractor->extract($path, $photo->type);
+			if (file_exists($fullPath)) {
+				$info = $this->metadataExtractor->extract($fullPath, $photo->type);
 
 				$updated = false;
 				if ($photo->width == 0 && $info['width'] !== 0) {

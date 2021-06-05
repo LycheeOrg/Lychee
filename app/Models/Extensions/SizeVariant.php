@@ -145,12 +145,12 @@ class SizeVariant implements Arrayable, JsonSerializable
 	}
 
 	/**
-	 * Returns the relative path of the file as it needs to be input into
+	 * Returns the short path of the file as it needs to be input into
 	 * methods of {@link \Illuminate\Support\Facades\Storage}.
 	 *
-	 * @return string the relative path of the file
+	 * @return string the short path of the file
 	 */
-	public function getRelativePath(): string
+	public function getShortPath(): string
 	{
 		return self::VARIANT_2_PATH_PREFIX[$this->type] . '/' . $this->getFilename();
 	}
@@ -159,28 +159,28 @@ class SizeVariant implements Arrayable, JsonSerializable
 	 * Returns the URL of the file as it is seen from a client's point of
 	 * view.
 	 * This is a convenient method and wraps the result of
-	 * {@link getRelativePath()} into
+	 * {@link getShortPath()} into
 	 * {@link \Illuminate\Support\Facades\Storage::url()}.
 	 *
 	 * @return string the url of the file
 	 */
 	public function getUrl(): string
 	{
-		return Storage::url($this->getRelativePath());
+		return Storage::url($this->getShortPath());
 	}
 
 	/**
-	 * Returns the URL of the file as it is seen from a client's point of
-	 * view.
+	 * Returns the full path of the file as it needs to be input into some
+	 * low-level PHP functions like `unlink`.
 	 * This is a convenient method and wraps the result of
-	 * {@link getRelativePath()} into
+	 * {@link getShortPath()} into
 	 * {@link \Illuminate\Support\Facades\Storage::path()}.
 	 *
-	 * @return string the url of the file
+	 * @return string the full path of the file
 	 */
-	public function getPath(): string
+	public function getFullPath(): string
 	{
-		return Storage::path($this->getRelativePath());
+		return Storage::path($this->getShortPath());
 	}
 
 	/**

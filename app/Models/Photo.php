@@ -5,7 +5,7 @@
 namespace App\Models;
 
 use App\Casts\DateTimeWithTimezoneCast;
-use App\Facades\Helpers;
+use App\Casts\MustNotSetCast;
 use App\Facades\AccessControl;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
@@ -24,6 +24,9 @@ use Illuminate\Support\Facades\Storage;
  * @property string       $title
  * @property string|null  $description
  * @property string       $filename
+ * @property string       $short_path
+ * @property string       $full_path
+ * @property string       $url
  * @property string       $tags
  * @property bool         $public
  * @property int          $owner_id
@@ -48,6 +51,9 @@ use Illuminate\Support\Facades\Storage;
  * @property bool         $star
  * @property string       $thumb_filename
  * @property string|null  $live_photo_filename
+ * @property string|null  $live_photo_short_path
+ * @property string|null  $live_photo_full_path
+ * @property string|null  $live_photo_url
  * @property int|null     $album_id
  * @property string       $checksum
  * @property string       $license
@@ -110,7 +116,7 @@ use Illuminate\Support\Facades\Storage;
  * @method static Builder|Photo whereTitle($value)
  * @method static Builder|Photo whereType($value)
  * @method static Builder|Photo whereUpdatedAt($value)
- * @method static Builder|Photo whereUrl($value)
+ * @method static Builder|Photo whereFilename($value)
  * @method static Builder|Photo whereWidth($value)
  */
 class Photo extends Model
@@ -123,6 +129,13 @@ class Photo extends Model
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
+		'size_variants' => MustNotSetCast::class,
+		'short_path' => MustNotSetCast::class . ':filename',
+		'full_path' => MustNotSetCast::class . ':filename',
+		'url' => MustNotSetCast::class . ':filename',
+		'live_photo_short_path' => MustNotSetCast::class . ':live_photo_filename',
+		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_filename',
+		'live_photo_url' => MustNotSetCast::class . ':live_photo_filename',
 	];
 
 	/**
@@ -130,6 +143,8 @@ class Photo extends Model
 	 *               relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
+		'album',  // do not serialize relation in order to avoid infinite loops
+		'owner',  // do not serialize relation
 		'filename',  // serialize url instead
 		'thumb_filename',  // serialized as part of size_variants
 		'thumb2x',  // serialized as part of size_variants
@@ -200,24 +215,23 @@ class Photo extends Model
 		// Delete original file
 		if ($keep_original === false) {
 			// quick check...
-			if (!Storage::exists($this->url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find file ' . Storage::path($this->url));
+			if (!Storage::exists($this->short_path)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find file ' . $this->full_path);
 				$success = false;
-			} elseif (!Storage::delete($this->url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . Storage::path($this->url));
+			} elseif (!Storage::delete($this->short_path)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . $this->full_path);
 				$success = false;
 			}
 		}
 
 		// Delete Live Photo Video file
-		// TODO: USE STORAGE FOR DELETE
 		// check first if live_photo_filename is available
 		if ($this->live_photo_filename !== null) {
-			if (!Storage::exists($this->live_photo_url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find file ' . Storage::path($this->live_photo_url));
+			if (!Storage::exists($this->live_photo_short_path)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not find file ' . $this->live_photo_full_path);
 				$success = false;
-			} elseif (!Storage::delete($this->live_photo_url)) {
-				Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . Storage::path($this->live_photo_url));
+			} elseif (!Storage::delete($this->live_photo_short_path)) {
+				Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . $this->live_photo_full_path);
 				$success = false;
 			}
 		}
@@ -322,20 +336,7 @@ class Photo extends Model
 	}
 
 	/**
-	 * Mutator for virtual attribute `size_variants`.
-	 *
-	 * Always throws an exception as a safety measurement in case someone
-	 * tries to set `size_variants` directly.
-	 *
-	 * @param SizeVariants $sizeVariants the new size variants
-	 */
-	protected function setSizeVariantsAttribute(SizeVariants $sizeVariants): void
-	{
-		throw new \BadMethodCallException('must not set size variants directly, instead use underlying attributes of relation directly');
-	}
-
-	/**
-	 * Accessor for attribute `shutter`.
+	 * Accessor for attribute {@link Photo::$shutter}.
 	 *
 	 * This accessor ensures that the returned string is either formatted as
 	 * a unit fraction or a decimal number irrespective of what is stored
@@ -432,15 +433,17 @@ class Photo extends Model
 	}
 
 	/**
-	 * Accessor for the "virtual" attribute `url`.
+	 * Accessor for the "virtual" attribute {@link Photo::$short_path}.
 	 *
-	 * The virtual attribute `url` is the relative url of the original
-	 * image/video and depends on the attribute `filename` prepended by
-	 * either "raw" or "big".
+	 * The virtual attribute `short_path` is the relative path of the original
+	 * file as it needs to be input into methods of
+	 * {@link \Illuminate\Support\Facades\Storage}.
+	 * It depends on the property {@link Photo::$filename} and is prepended by
+	 * either `raw` or `big`.
 	 *
-	 * @return string The relative url
+	 * @return string the short path of the file
 	 */
-	protected function getUrlAttribute(): string
+	protected function getShortPathAttribute(): string
 	{
 		$path_prefix = $this->type == 'raw' ? 'raw/' : 'big/';
 
@@ -448,43 +451,81 @@ class Photo extends Model
 	}
 
 	/**
-	 * Mutator for the attribute `url`.
+	 * Accessor for the "virtual" attribute {@link Photo::$full_path}.
 	 *
-	 * Always throws an exception as a safety measurement in case someone
-	 * tries to set `url` directly.
+	 * Returns the full path of the original file as it needs to be input into
+	 * some low-level PHP functions like `unlink`.
+	 * This is a convenient method and wraps {@link Photo::$short_path} into
+	 * {@link \Illuminate\Support\Facades\Storage::path()}.
 	 *
-	 * @param string $url
+	 * @return string the full path of the file
 	 */
-	protected function setUrlAttribute(string $url): void
+	protected function getFullPathAttribute(): string
 	{
-		throw new \BadMethodCallException('must not set \'url\' directly, use \'filename\' instead');
+		return Storage::path($this->short_path);
 	}
 
 	/**
-	 * Accessor for the "virtual" attribute `live_photo_url`.
+	 * Accessor for the "virtual" attribute {@link Photo::$url}.
 	 *
-	 * The virtual attribute `live_photo_url` is the relative url of the live
-	 * photo and equals the attribute `live_photo_filename` prepended by
-	 * big".
+	 * Returns the URL of the original file as it is seen from a client's
+	 * point of view.
+	 * This is a convenient method and wraps {@link Photo::$short_path} into
+	 * {@link \Illuminate\Support\Facades\Storage::url()}.
 	 *
-	 * @return string|null The relative url
+	 * @return string the url of the file
 	 */
-	protected function getLivePhotoUrlAttribute(): ?string
+	protected function getUrlAttribute(): string
+	{
+		return Storage::url($this->short_path);
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@see Photo::$live_photo_short_path}.
+	 *
+	 * The virtual attribute `live_photo_short_path` is the relative path of
+	 * the live photo file as it needs to be input into methods of
+	 * {@link \Illuminate\Support\Facades\Storage}.
+	 * It depends on the property {@link Photo::$live_photo_filename} and is
+	 * prepended by `big`.
+	 *
+	 * @return string|null The short path of the live photo
+	 */
+	protected function getLivePhotoShortPathAttribute(): ?string
 	{
 		return empty($this->live_photo_filename) ? null : 'big/' . $this->live_photo_filename;
 	}
 
 	/**
-	 * Mutator for the attribute `url`.
+	 * Accessor for the "virtual" attribute {@see Photo::$live_photo_full_path}.
 	 *
-	 * Always throws an exception as a safety measurement in case someone
-	 * tries to set `url` directly.
+	 * Returns the full path of the live photo as it needs to be input into
+	 * some low-level PHP functions like `unlink`.
+	 * This is a convenient method and wraps
+	 * {@link Photo::$live_photo_short_path} into
+	 * {@link \Illuminate\Support\Facades\Storage::path()}.
 	 *
-	 * @param string|null $url
+	 * @return string|null The full path of the live photo
 	 */
-	protected function setLivePhotoUrlAttribute(?string $url): void
+	protected function getLivePhotoFullPathAttribute(): ?string
 	{
-		throw new \BadMethodCallException('must not set \'live_photo_url\' directly, use \'live_photo_filename\' instead');
+		return empty($this->live_photo_filename) ? null : Storage::path($this->live_photo_short_path);
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@see Photo::$live_photo_url}.
+	 *
+	 * Returns the URL of the live photo as it is seen from a client's
+	 * point of view.
+	 * This is a convenient method and wraps
+	 * {@link Photo::$live_photo_short_path} into
+	 * {@link \Illuminate\Support\Facades\Storage::url()}.
+	 *
+	 * @return string the url of the file
+	 */
+	protected function getLivePhotoUrlAttribute(): ?string
+	{
+		return empty($this->live_photo_filename) ? null : Storage::url($this->live_photo_short_path);
 	}
 
 	/**

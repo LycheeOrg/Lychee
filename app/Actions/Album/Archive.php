@@ -9,7 +9,6 @@ use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
-use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -155,16 +154,15 @@ class Archive extends Action
 
 			$is_raw = ($photo->type == 'raw');
 
-			$prefix_url = $is_raw ? 'raw/' : 'big/';
-			$url = Storage::path($prefix_url . $photo->url);
+			$fullPath = $photo->full_path;
 			// Check if readable
-			if (!@is_readable($url)) {
-				Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $url);
+			if (!@is_readable($fullPath)) {
+				Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $fullPath);
 				continue;
 			}
 
 			// Get extension of image
-			$extension = Helpers::getExtension($url, false);
+			$extension = Helpers::getExtension($fullPath, false);
 
 			// Set title for photo
 			$title = str_replace($this->badChars, '', $photo->title);
@@ -198,7 +196,7 @@ class Archive extends Action
 			set_time_limit(ini_get('max_execution_time'));
 
 			// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
-			$zip->addFileFromPath($dir_name . '/' . $file, $url);
+			$zip->addFileFromPath($dir_name . '/' . $file, $fullPath);
 		} // foreach ($photos)
 
 		// Recursively compress subalbums

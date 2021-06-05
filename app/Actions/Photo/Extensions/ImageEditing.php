@@ -54,9 +54,8 @@ trait ImageEditing
 			return '';
 		}
 
-		$filename = $photo->url;
-		$url = Storage::path('raw/' . $filename);
-		$ext = pathinfo($filename)['extension'];
+		$fullPath = $photo->full_path;
+		$ext = pathinfo($fullPath, PATHINFO_EXTENSION);
 
 		// test if Imagick supports the filetype
 		// Query return file extensions as all upper case
@@ -80,9 +79,9 @@ trait ImageEditing
 		$height = $photo->height;
 
 		try {
-			$this->imageHandler->scale($url, $tmp_file, $width, $height, $resWidth, $resHeight);
+			$this->imageHandler->scale($fullPath, $tmp_file, $width, $height, $resWidth, $resHeight);
 		} catch (Exception $e) {
-			Logs::error(__METHOD__, __LINE__, 'Failed to create JPG from raw file ' . $url . $filename);
+			Logs::error(__METHOD__, __LINE__, 'Failed to create JPG from raw file ' . $fullPath);
 
 			return '';
 		}

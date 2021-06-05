@@ -115,42 +115,42 @@ class SizeVariants implements Arrayable, JsonSerializable
 	{
 		$success = true;
 		if ($this->thumb) {
-			$success &= $this->deleteFromStorageInternal($this->thumb->getRelativePath());
+			$success &= $this->deleteFromStorageInternal($this->thumb->getShortPath());
 		}
 		if ($this->thumb2x) {
-			$success &= $this->deleteFromStorageInternal($this->thumb2x->getRelativePath());
+			$success &= $this->deleteFromStorageInternal($this->thumb2x->getShortPath());
 		}
 		if ($this->small) {
-			$success &= $this->deleteFromStorageInternal($this->small->getRelativePath());
+			$success &= $this->deleteFromStorageInternal($this->small->getShortPath());
 		}
 		if ($this->small2x) {
-			$success &= $this->deleteFromStorageInternal($this->small2x->getRelativePath());
+			$success &= $this->deleteFromStorageInternal($this->small2x->getShortPath());
 		}
 		if ($this->medium) {
-			$success &= $this->deleteFromStorageInternal($this->medium->getRelativePath());
+			$success &= $this->deleteFromStorageInternal($this->medium->getShortPath());
 		}
 		if ($this->medium2x) {
-			$success &= $this->deleteFromStorageInternal($this->medium2x->getRelativePath());
+			$success &= $this->deleteFromStorageInternal($this->medium2x->getShortPath());
 		}
 
 		return $success;
 	}
 
 	/**
-	 * Deletes a size variant from storage given its relative path.
+	 * Deletes a size variant from storage given its short path.
 	 *
-	 * @param string $relativePath
+	 * @param string $shortPath
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	protected function deleteFromStorageInternal(string $relativePath): bool
+	protected function deleteFromStorageInternal(string $shortPath): bool
 	{
-		if (!Storage::exists($relativePath)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find file ' . $relativePath);
+		if (!Storage::exists($shortPath)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not find file ' . $shortPath);
 
 			return false;
-		} elseif (!Storage::delete($relativePath)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . $relativePath);
+		} elseif (!Storage::delete($shortPath)) {
+			Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . $shortPath);
 
 			return false;
 		}

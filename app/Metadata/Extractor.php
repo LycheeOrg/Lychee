@@ -67,17 +67,17 @@ class Extractor
 	/**
 	 * Extracts metadata from an image file.
 	 *
-	 * @param string $filename
+	 * @param string $fullPath
 	 * @param  string file kind
 	 *
 	 * @return array
 	 */
-	public function extract(string $filename, string $kind): array
+	public function extract(string $fullPath, string $kind): array
 	{
 		$reader = null;
 
 		// Get kind of file (photo, video, raw)
-		$extension = Helpers::getExtension($filename, false);
+		$extension = Helpers::getExtension($fullPath, false);
 
 		// check raw files
 		$is_raw = false;
@@ -116,7 +116,7 @@ class Extractor
 
 		try {
 			// this can throw an exception in the case of Exiftool adapter!
-			$exif = $reader->read($filename);
+			$exif = $reader->read($fullPath);
 		} catch (\Exception $e) {
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			$exif = false;
@@ -126,19 +126,19 @@ class Extractor
 			Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
 			// Use Php native tools
 			$reader = Reader::factory(Reader::TYPE_NATIVE);
-			$exif = $reader->read($filename);
+			$exif = $reader->read($fullPath);
 		}
 
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
 		// readlink fails if it's not a link -> we need to separate it
-		$realFile = $filename;
-		if (is_link($filename)) {
+		$realFile = $fullPath;
+		if (is_link($fullPath)) {
 			try {
 				// if readlink($filename) == False then $realFile = $filename.
 				// if readlink($filename) != False then $realFile = readlink($filename)
-				$realFile = readlink($filename) ?: $filename;
+				$realFile = readlink($fullPath) ?: $fullPath;
 			} catch (\Exception $e) {
 				Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			}

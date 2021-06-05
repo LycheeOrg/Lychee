@@ -11,7 +11,6 @@ use App\Models\Photo;
 use Exception;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
-use Illuminate\Support\Facades\Storage;
 use ImageOptimizer;
 
 trait VideoEditing
@@ -30,12 +29,11 @@ trait VideoEditing
 
 			return '';
 		}
+		$fullPath = $photo->full_path;
 		if ($photo->aperture === '') {
-			$path = Storage::path('big/' . $photo->url);
-
 			/* @var  Extractor $metadataExtractor */
 			$metadataExtractor = resolve(Extractor::class);
-			$info = $metadataExtractor->extract($path, 'video');
+			$info = $metadataExtractor->extract($fullPath, 'video');
 			$photo->aperture = $info['aperture'];
 		}
 		// we check again, just to be sure.
@@ -47,8 +45,8 @@ trait VideoEditing
 		 * ! check if we can use path instead of this ugly thing.
 		 */
 		$ffmpeg = FFMpeg::create();
-		/** @var Video */
-		$video = $ffmpeg->open(Storage::path('big/' . $photo->url));
+		/** @var \FFMpeg\Media\Video $video */
+		$video = $ffmpeg->open($fullPath);
 		if (
 			!($tmp = tempnam(sys_get_temp_dir(), 'lychee')) ||
 			!rename($tmp, $tmp . '.jpeg')
