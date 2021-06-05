@@ -100,8 +100,6 @@ class RefactorTimestampsAnew extends Migration
 	protected function fixPagesTable(): void
 	{
 		DB::table('pages')
-			->where('title', '=', 'gallery')
-			->where('link', '=', '/gallery')
 			->whereNull('created_at')
 			->update([
 				'created_at' => '2019-02-21 11:43:56',
