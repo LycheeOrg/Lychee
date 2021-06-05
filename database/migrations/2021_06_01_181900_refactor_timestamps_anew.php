@@ -99,12 +99,20 @@ class RefactorTimestampsAnew extends Migration
 	 */
 	protected function fixPagesTable(): void
 	{
+		$now = Carbon::now();
+		if (!$this->needsConversion()) {
+			$now->setTimezone('UTC');
+		}
+		$strNow = $now->format(self::SQL_DATETIME_FORMAT);
 		DB::table('pages')
 			->whereNull('created_at')
 			->update([
-				'created_at' => '2019-02-21 11:43:56',
-				'updated_at' => '2019-02-21 11:43:56',
+				'created_at' => $strNow,
+				'updated_at' => $strNow, // also set `updated_at` to ensure that `updated_at` is not before `created_at`
 			]);
+		DB::table('pages')
+			->whereNull('updated_at')
+			->update(['updated_at' => $strNow]);
 	}
 
 	/**
