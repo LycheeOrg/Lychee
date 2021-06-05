@@ -3,72 +3,36 @@
 namespace App\Actions\RSS;
 
 use App\Actions\Albums\Extensions\PublicIds;
-use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Feed\FeedItem;
 
 class Generate
 {
-	/**
-	 * @var SymLinkFunctions
-	 */
-	private $symLinkFunctions;
-
-	/**
-	 * @param SymLinkFunctions $symLinkFunctions
-	 */
-	public function __construct(
-		SymLinkFunctions $symLinkFunctions
-	) {
-		$this->symLinkFunctions = $symLinkFunctions;
-	}
-
-	private function make_enclosure(array $photo_array)
-	{
-		$enclosure = new \stdClass();
-
-		$path = Storage::path($photo_array['url']);
-		$enclosure->length = File::size($path);
-		$enclosure->mime_type = File::mimeType($path);
-		$enclosure->url = url('/' . $photo_array['url']);
-
-		return $enclosure;
-	}
-
-	private function create_link(Photo $photo_model): string
+	private function create_link_to_page(Photo $photo_model): string
 	{
 		if ($photo_model->album_id != null) {
-			return '#' . $photo_model->album_id . '/' . $photo_model->id;
+			return url('/#' . $photo_model->album_id . '/' . $photo_model->id);
 		}
 
-		return 'view?p=' . $photo_model->id;
+		return url('/view?p=' . $photo_model->id);
 	}
 
 	private function toFeedItem(Photo $photo_model): FeedItem
 	{
-		$photo_array = $photo_model->toReturnArray();
-
-		$this->symLinkFunctions->getUrl($photo_model, $photo_array);
-
-		$photo_array['url'] = $photo_array['url'] ?: ($photo_array['size_variants']['medium2x'] ? $photo_array['size_variants']['medium2x']['url'] : $photo_array['size_variants']['medium']['url']);
-		// TODO: this will need to be fixed for s3 and when the upload folder is NOT the Lychee folder.
-		$enclosure = $this->make_enclosure($photo_array);
-
-		$id = $this->create_link($photo_model);
+		$page_link = $this->create_link_to_page($photo_model);
 
 		return FeedItem::create([
-			'id' => url('/' . $id),
+			'id' => $page_link,
 			'title' => $photo_model->title,
 			'summary' => $photo_model->description,
 			'updated' => $photo_model->updated_at,
-			'link' => $photo_array['url'],
-			'enclosure' => $enclosure->url,
-			'enclosureLength' => $enclosure->length,
-			'enclosureType' => $enclosure->mime_type,
+			'link' => $page_link,
+			'enclosure' => $photo_model->url,
+			'enclosureLength' => Storage::size($photo_model->short_path),
+			'enclosureType' => $photo_model->type,
 			'author' => $photo_model->owner->username,
 		]);
 	}

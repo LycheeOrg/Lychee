@@ -7,6 +7,8 @@ namespace App\Models;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Facades\AccessControl;
+use App\Facades\Helpers;
+use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\SizeVariants;
@@ -124,6 +126,7 @@ class Photo extends Model
 	use PhotoBooleans;
 	use PhotoCast;
 	use UTCBasedTimes;
+	use HasAttributesPatch;
 
 	protected $casts = [
 		'created_at' => 'datetime',

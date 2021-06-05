@@ -9,12 +9,13 @@ use Illuminate\Database\Eloquent\Model;
  * Class MustNotSetCast.
  *
  * This cast prevents attributes from being set accidentally.
- * If there is an attempt to set the affected, an exception is thrown whose
- * error message optionally indicates an alternative attribute which might be
- * set instead.
+ * If there is an attempt to set the affected attribute, an exception is
+ * thrown whose error message optionally indicates an alternative attribute
+ * which might be set instead.
  */
 class MustNotSetCast implements CastsInboundAttributes
 {
+	/** @var string|null the name of an alternative attribute */
 	private ?string $alternative;
 
 	/**
@@ -49,7 +50,7 @@ class MustNotSetCast implements CastsInboundAttributes
 	 */
 	public function set($model, string $key, $value, array $attributes): void
 	{
-		$msg = 'must not set \'' . get_class($model) . '::$' . $key . '\' directly';
+		$msg = 'must not set read-only attribute \'' . get_class($model) . '::$' . $key . '\' directly';
 		if ($this->alternative) {
 			$msg = $msg . ', use \'' . get_class($model) . '::$' . $this->alternative . ' instead';
 		}
