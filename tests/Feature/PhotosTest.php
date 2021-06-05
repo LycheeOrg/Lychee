@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
+use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
 use Tests\Feature\Lib\AlbumsUnitTest;
@@ -95,6 +96,9 @@ class PhotosTest extends TestCase
 		/*
 		 * Check some Exif data
 		 */
+		$taken_at = Carbon::create(
+			2019, 6, 1, 1, 28, 25, '+02:00'
+		);
 		$response->assertJson([
 			'aperture' => 'f/2.8',
 			'description' => 'A night photography',
@@ -111,7 +115,8 @@ class PhotosTest extends TestCase
 			'filesize' => 21104156,
 			'star' => '1',
 			'tags' => 'night',
-			'takedate' => '01 June 2019 at 01:28',
+			'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
+			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',
 			'width' => 6720,

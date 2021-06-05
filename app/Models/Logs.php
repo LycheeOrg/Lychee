@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\UTCBasedTimes;
 use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +34,8 @@ use Illuminate\Support\Carbon;
  */
 class Logs extends Model
 {
+	use UTCBasedTimes;
+
 	/**
 	 * allow these properties to be mass assigned.
 	 */

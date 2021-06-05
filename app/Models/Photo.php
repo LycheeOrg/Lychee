@@ -4,9 +4,11 @@
 
 namespace App\Models;
 
+use App\Casts\DateTimeWithTimezoneCast;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\PhotoGetters;
+use App\Models\Extensions\UTCBasedTimes;
 use Helpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -40,15 +42,16 @@ use Storage;
  * @property float|null  $altitude
  * @property float|null  imgDirection
  * @property string|null location
- * @property Carbon|null $takestamp
+ * @property Carbon|null $taken_at
+ * @property string|null $taken_at_orig_tz
  * @property int         $star
  * @property string      $thumbUrl
  * @property string      $livePhotoUrl
  * @property int|null    $album_id
  * @property string      $checksum
  * @property string      $license
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * @property Carbon      $created_at
+ * @property Carbon      $updated_at
  * @property int|null    $medium_width
  * @property int|null    $medium_height
  * @property int|null    $medium2x_width
@@ -117,6 +120,7 @@ class Photo extends Model
 	use PhotoBooleans;
 	use PhotoCast;
 	use PhotoGetters;
+	use UTCBasedTimes;
 	const THUMBNAIL_DIM = 200;
 	const THUMBNAIL2X_DIM = 400;
 	const VARIANT_THUMB = 'thumb';
@@ -141,22 +145,14 @@ class Photo extends Model
 		self::VARIANT_ORIGINAL => 'big',
 	];
 
-	/**
-	 * This extends the date types from Model to allow coercion with Carbon object.
-	 *
-	 * @var array dates
-	 */
-	protected $dates = [
-		'created_at',
-		'updated_at',
-		'takestamp',
-	];
-
 	protected $casts = [
 		'public' => 'int',
 		'star' => 'int',
 		'downloadable' => 'int',
 		'share_button_visible' => 'int',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+		'taken_at' => DateTimeWithTimezoneCast::class,
 	];
 
 	/**

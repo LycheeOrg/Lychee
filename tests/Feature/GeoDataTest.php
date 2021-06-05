@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use AccessControl;
 use App\Models\Configs;
+use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\PhotosUnitTest;
@@ -40,8 +41,18 @@ class GeoDataTest extends TestCase
 		$response = $photos_tests->get($id, 'true');
 		$photos_tests->see_in_unsorted($id);
 		/*
-		* Check some Exif data
-		*/
+		 * Check some Exif data
+		 * The metadata extractor is unable to extract an explicit timezone
+		 * for the test file.
+		 * Hence, the attribute `taken_at` is relative to the default timezone
+		 * of the application.
+		 * Actually, the `exiftool` reports an attribute `Time Zone: +08:00`,
+		 * if the tool is invoked from the command line, but the PHP wrapper
+		 * \PHPExif\Exif does not use it.
+		 */
+		$taken_at = Carbon::create(
+			2011, 8, 17, 16, 39, 37
+		);
 		$response->assertJson(
 			[
 				'id' => $id,
@@ -58,7 +69,8 @@ class GeoDataTest extends TestCase
 				'focal' => '44 mm',
 				'altitude' => '1633.0000',
 				'license' => 'none',
-				'takedate' => '17 August 2011 at 16:39',
+				'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
+				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 				'public' => '0',
 				'downloadable' => '1',
 				'share_button_visible' => '1',

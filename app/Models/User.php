@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\UTCBasedTimes;
 use DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable;
 use DarkGhostHunter\Larapass\WebAuthnAuthentication;
 use Eloquent;
@@ -47,6 +48,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 {
 	use Notifiable;
 	use WebAuthnAuthentication;
+	use UTCBasedTimes;
 
 	/**
 	 * The attributes that are mass assignable.

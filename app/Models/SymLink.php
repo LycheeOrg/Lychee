@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\UTCBasedTimes;
 use Eloquent;
 use Exception;
 use Helpers;
@@ -44,6 +45,8 @@ use Illuminate\Support\Facades\Storage;
  */
 class SymLink extends Model
 {
+	use UTCBasedTimes;
+
 	/**
 	 * Maps a size variant to the name of the attribute (field) of App\Models\Photo which stores the original
 	 * filename.

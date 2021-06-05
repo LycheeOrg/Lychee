@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\UTCBasedTimes;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -41,6 +42,8 @@ use Illuminate\Support\Carbon;
  */
 class Page extends Model
 {
+	use UTCBasedTimes;
+
 	/**
 	 * Return the relationship between a page and its content.
 	 *
