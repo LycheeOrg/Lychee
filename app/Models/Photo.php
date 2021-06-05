@@ -75,6 +75,8 @@ use Illuminate\Support\Facades\Storage;
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
+ * @property bool         $downloadable
+ * @property bool         $share_button_visible
  *
  * @method static Builder|Photo ownedBy($id)
  * @method static Builder|Photo public()
@@ -139,6 +141,8 @@ class Photo extends Model
 		'live_photo_short_path' => MustNotSetCast::class . ':live_photo_filename',
 		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_filename',
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_filename',
+		'downloadable' => MustNotSetCast::class,
+		'share_button_visible' => MustNotSetCast::class,
 	];
 
 	/**
@@ -164,13 +168,23 @@ class Photo extends Model
 
 	/**
 	 * @var string[] The list of "virtual" attributes which do not exist as
-	 *               columns of the DB relation but shall be appended to JSON
-	 *               from accessors
+	 *               columns of the DB relation but which shall be appended to
+	 *               JSON from accessors
 	 */
 	protected $appends = [
-		'url',            // see getUrlAttribute()
-		'live_photo_url', // see getLivePhotoUrlAttribute()
-		'size_variants',  // see getSizeVariantsAttribute()
+		'url',
+		'live_photo_url',
+		'size_variants',
+		'downloadable',
+		'share_button_visible',
+	];
+
+	/**
+	 * @var string[] The list of relations which should be loaded eagerly
+	 */
+	protected $with = [
+		'album',  // the album is required anyway for access control checks
+		'owner',  // same reason as for album
 	];
 
 	/**
@@ -529,6 +543,60 @@ class Photo extends Model
 	protected function getLivePhotoUrlAttribute(): ?string
 	{
 		return empty($this->live_photo_filename) ? null : Storage::url($this->live_photo_short_path);
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@see Photo::$downloadable}.
+	 *
+	 * The photo is downloadable if the currently authenticated user is the
+	 * owner or if the photo is part of a downloadable album or if it
+	 * unsorted and unsorted photos are configured to be downloadable by
+	 * default.
+	 *
+	 * @return bool true if the photo is downloadable
+	 */
+	protected function getDownloadableAttribute(): bool
+	{
+		$default = (bool) Configs::get_value('downloadable', '0');
+
+		return AccessControl::is_current_user($this->owner_id) ||
+			($this->album_id != null && $this->album->is_downloadable()) ||
+			($this->album_id == null && $default);
+	}
+
+	/**
+	 * Accessor for the attribute {@see Photo::$public}.
+	 *
+	 * An photo is public if it is publicly visible on its own right or
+	 * because it is part of a public album.
+	 *
+	 * @param bool $value the value from the database passed in by
+	 *                    the Eloquent framework
+	 *
+	 * @return bool true if the photo is publicly visible
+	 */
+	protected function getPublicAttribute(bool $value): bool
+	{
+		return $value || ($this->album_id != null && $this->album->is_public());
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@see Photo::$share_button_visible}.
+	 *
+	 * The share button is visible if the currently authenticated user is the
+	 * owner or if the photo is part of a an album which has enabled the
+	 * share button or if the photo is unsorted and unsorted photos are
+	 * configured to be sharable by default.
+	 *
+	 * @return bool true if the share button is visible for this photo
+	 */
+	protected function getShareButtonVisibleAttribute(): bool
+	{
+		$default = (bool) Configs::get_value('share_button_visible', '0');
+
+		return AccessControl::is_current_user($this->owner_id) ||
+			($this->album_id != null && $this->album->is_share_button_visible()) ||
+			($this->album_id == null && $default);
 	}
 
 	/**
