@@ -40,7 +40,7 @@ class RemoveMaxMinTakestamps extends Migration
 			$table->timestamp(self::MAX)->nullable()->after(self::MIN);
 		});
 
-		$albums = Album::get();
+		$albums = Album::query()->withoutGlobalScopes()->get();
 		foreach ($albums as $_album) {
 			$_album->min_takestamp = $_album->get_all_photos()->whereNotNull('takestamp')->min('takestamp');
 			$_album->max_takestamp = $_album->get_all_photos()->whereNotNull('takestamp')->max('takestamp');

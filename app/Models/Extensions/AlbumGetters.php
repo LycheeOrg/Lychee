@@ -6,12 +6,13 @@ use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Albums\Extensions\PublicViewable;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait AlbumGetters
 {
 	use CustomSort;
 	use PublicViewable;
-	use AlbumQuery;
 
 	/**
 	 * given an Album return the sorting column & order for the pictures or the default ones.
@@ -48,7 +49,12 @@ trait AlbumGetters
 	}
 
 	/**
-	 * Return the list of photos.
+	 * Return a query builder or an SQL relation for the list of photos.
+	 *
+	 * See comment in {@link \App\SmartAlbums\BareSmartAlbum} why we need
+	 * an ambitious return type here.
+	 *
+	 * @return Builder|HasMany
 	 */
 	public function get_photos()
 	{
@@ -60,9 +66,10 @@ trait AlbumGetters
 	 *
 	 * @return Builder
 	 */
-	public function get_all_photos()
+	public function get_all_photos(): Builder
 	{
-		return Photo::leftJoin('albums', 'photos.album_id', '=', 'albums.id')
+		return Photo::query()
+			->leftJoin('albums', 'photos.album_id', '=', 'albums.id')
 			->select('photos.*')
 			->where('albums._lft', '>=', $this->_lft)
 			->where('albums._rgt', '<=', $this->_rgt);
@@ -75,7 +82,12 @@ trait AlbumGetters
 		} else {
 			[$sort_col, $sort_order] = $this->get_sort();
 
-			$sql = $this->get_all_photos();
+			/* @var Builder|HasMany $sql */
+			if ($this->is_smart()) {
+				$sql = $this->get_photos();
+			} else {
+				$sql = $this->get_all_photos();
+			}
 
 			//? apply safety filter : Do not leak pictures which are not ours
 			$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
@@ -102,7 +114,7 @@ trait AlbumGetters
 		$sortingCol = Configs::get_value('sorting_Albums_col');
 		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
-		$sql = self::initQuery()->where('parent_id', '=', $this->id);
+		$sql = self::query()->where('parent_id', '=', $this->id);
 		//? apply safety filter : Do not leak albums which are not visible
 		$sql = $this->publicViewable($sql);
 

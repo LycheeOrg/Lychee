@@ -3,6 +3,7 @@
 namespace App\SmartAlbums;
 
 use App\Models\Configs;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection as BaseCollection;
 
 class SmartAlbum extends BareSmartAlbum
@@ -56,7 +57,7 @@ class SmartAlbum extends BareSmartAlbum
 	/*------------------------- STRINGS --------------------------------- */
 
 	/*------------------------- GETTERS --------------------------------- */
-	public function children()
+	public function children(): ?HasMany
 	{
 		return null;
 	}
