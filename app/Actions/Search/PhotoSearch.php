@@ -64,7 +64,10 @@ class PhotoSearch
 
 		return $photos->map(
 			function ($photo) {
-				return $photo->toReturnArray();
+				$photo_array = $photo->toReturnArray();
+				$this->symLinkFunctions->getUrl($photo, $photo_array);
+
+				return $photo_array;
 			}
 		);
 	}
