@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class Icon extends Component
+class Iconic extends Component
 {
 	public $class;
 	public $icon;
@@ -14,7 +14,7 @@ class Icon extends Component
 	 *
 	 * @return void
 	 */
-	public function __construct($icon, $class)
+	public function __construct($icon, $class = '')
 	{
 		$this->class = $class;
 		$this->icon = $icon;
@@ -27,6 +27,6 @@ class Icon extends Component
 	 */
 	public function render()
 	{
-		return view('components.icon');
+		return view('components.iconic');
 	}
 }

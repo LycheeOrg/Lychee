@@ -5,10 +5,20 @@ namespace App\Http\Livewire;
 use App\Actions\Album\Photos;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Factories\AlbumFactory;
+use App\Models\Configs;
 use Livewire\Component;
 
 class Album extends Component
 {
+	const FLKR = 'flkr';
+	const MASONRY = 'masonry';
+	const SQUARE = 'square';
+
+	/**
+	 * @var string
+	 */
+	public $layout = Album::MASONRY;
+
 	/**
 	 * @var int
 	 */
@@ -48,6 +58,20 @@ class Album extends Component
 
 	public function render()
 	{
+		switch (Configs::get_value('layout')) {
+			case '0':
+				$this->layout = Album::SQUARE;
+				break;
+			case '1':
+				$this->layout = Album::FLKR;
+				break;
+			case '2':
+				$this->layout = Album::MASONRY;
+				break;
+			default:
+				$this->layout = Album::FLKR;
+		}
+
 		if ($this->album->smart) {
 			$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
 			$this->album->setAlbumIDs($publicAlbums);
