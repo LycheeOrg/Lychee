@@ -6,7 +6,7 @@ use Illuminate\Database\Migrations\Migration;
 
 class FixTakedate extends Migration
 {
-	private const TAKEDATE = 'takedate';
+	private const TAKESTAMP = 'takestamp';
 	private const TAKEN_AT = 'taken_at';
 
 	/**
@@ -16,8 +16,8 @@ class FixTakedate extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('value', '=', self::TAKEDATE)->update(['value' => self::TAKEN_AT]);
-		Album::where('sorting_col', '=', self::TAKEDATE)->update(['sorting_col' => self::TAKEN_AT]);
+		Configs::where('value', '=', self::TAKESTAMP)->update(['value' => self::TAKEN_AT]);
+		Album::where('sorting_col', '=', self::TAKESTAMP)->update(['sorting_col' => self::TAKEN_AT]);
 	}
 
 	/**
@@ -27,7 +27,7 @@ class FixTakedate extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('value', '=', self::TAKEN_AT)->update(['value' => self::TAKEDATE]);
-		Album::where('sorting_col', '=', self::TAKEN_AT)->update(['sorting_col' => self::TAKEDATE]);
+		Configs::where('value', '=', self::TAKEN_AT)->update(['value' => self::TAKESTAMP]);
+		Album::where('sorting_col', '=', self::TAKEN_AT)->update(['sorting_col' => self::TAKESTAMP]);
 	}
 }
