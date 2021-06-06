@@ -23,7 +23,6 @@ class AddShareButtonVisibleOption extends Migration
 
 		Album::query()
 			->withoutGlobalScopes()
-			->where('id', '>', 1)
 			->where('public', '=', 1)
 			->update([
 				'share_button_visible' => true,
