@@ -153,14 +153,12 @@ class PhotosTest extends TestCase
 		$photos_tests->dont_see_in_unsorted($id);
 
 		$photos_tests->duplicate($id, 'true');
-		$response = $albums_tests->get($albumID, '', 'true');
-		$content = $response->getContent();
-		$array_content = json_decode($content);
-		$this->assertEquals(2, count($array_content->photos));
+		$album = $this->asObject($albums_tests->get($albumID, '', 'true'));
+		$this->assertEquals(2, count($album->photos));
 
 		$ids = [];
-		$ids[0] = $array_content->photos[0]->id;
-		$ids[1] = $array_content->photos[1]->id;
+		$ids[0] = $album->photos[0]->id;
+		$ids[1] = $album->photos[1]->id;
 		$photos_tests->delete($ids[0], 'true');
 		$photos_tests->get($id[0], 'false');
 
@@ -178,10 +176,8 @@ class PhotosTest extends TestCase
 		// delete the picture after displaying it
 		$photos_tests->delete($ids[1], 'true');
 		$photos_tests->get($id[1], 'false');
-		$response = $albums_tests->get($albumID, '', 'true');
-		$content = $response->getContent();
-		$array_content = json_decode($content);
-		$this->assertEquals(0, count($array_content->photos));
+		$album = $this->asObject($albums_tests->get($albumID, '', 'true'));
+		$this->assertEquals(0, count($album->photos));
 
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');
@@ -204,6 +200,61 @@ class PhotosTest extends TestCase
 		$response->assertOk();
 		$response->assertSee('true');
 
+		AccessControl::logout();
+	}
+
+	/**
+	 * Test live photo upload.
+	 *
+	 * @return void
+	 */
+	public function testLivePhotoUpload()
+	{
+		$photos_tests = new PhotosUnitTest($this);
+
+		AccessControl::log_as_id(0);
+		// MUST use exiftool to get live photo metadata
+		$init_config_value = Configs::get_value('has_exiftool');
+
+		// we set the value to 2to force the check.
+		Configs::set('has_exiftool', '2');
+
+		if (Configs::hasExiftool()) {
+			/*
+			* Make a copy of the image because import deletes the file and we want to be
+			* able to use the test on a local machine and not just in CI.
+			*/
+			copy('tests/Feature/train.jpg', 'public/uploads/import/train.jpg');
+			copy('tests/Feature/train.mov', 'public/uploads/import/train.mov');
+
+			$photo_file = new UploadedFile(
+				'public/uploads/import/train.jpg',
+				'train.jpg',
+				'image/jpeg',
+				null,
+				true
+			);
+
+			$video_file = new UploadedFile(
+				'public/uploads/import/train.mov',
+				'train.mov',
+				'video/quicktime',
+				null,
+				true
+			);
+
+			$photo_id = $photos_tests->upload($photo_file);
+			$video_id = $photos_tests->upload($video_file);
+
+			$photo = $this->asObject($photos_tests->get($photo_id, 'true'));
+
+			$this->assertEquals($photo_id, $video_id);
+			$this->assertEquals($photo->livePhotoContentID, 'E905E6C6-C747-4805-942F-9904A0281F02');
+			$this->assertStringEndsWith('.mov', $photo->livePhotoUrl);
+		} else {
+			$this->markTestSkipped('Exiftool is not available. Test Skipped.');
+		}
+		Configs::set('has_exiftool', $init_config_value);
 		AccessControl::logout();
 	}
 
@@ -281,5 +332,12 @@ class PhotosTest extends TestCase
 		Configs::set('import_via_symlink', $init_config_value);
 
 		AccessControl::logout();
+	}
+
+	private function asObject($response)
+	{
+		$content = $response->getContent();
+
+		return json_decode($content);
 	}
 }
