@@ -12,7 +12,7 @@ use Exception;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use Illuminate\Support\Facades\Storage;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+use ImageOptimizer;
 
 trait VideoEditing
 {
