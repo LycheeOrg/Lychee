@@ -347,4 +347,8 @@ class Photo extends Model
 
 		return ($sql->count() == 0) ? false : $sql->first();
 	}
+
+	protected function getSizeVariantsAttribute()
+	{
+	}
 }
