@@ -16,6 +16,9 @@ return [
 			/*
 			 * The feed will be available on this url.
 			 */
+			// ! This is due to Spacie fucking up... See here: spatie/laravel-feed#151
+			// Hopefully this will be fixed soon...
+			// ? Correct value should be '/feed'
 			'url' => '',
 
 			'title' => 'Latest pictures',
