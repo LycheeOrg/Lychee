@@ -37,6 +37,7 @@ class ViewController extends Controller
 			'p' => 'required',
 		]);
 
+		/** @var Photo $photo */
 		$photo = Photo::find($request->get('p'));
 
 		if ($photo == null) {
@@ -64,7 +65,7 @@ class ViewController extends Controller
 		}
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		$rss_enable = (Configs::get_value('rss_enable', '0') == '1') ? true : false;
+		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
 
 		$url = config('app.url') . $request->server->get('REQUEST_URI');
 		$picture = config('app.url') . '/uploads/' . $dir . '/' . $photo->url;

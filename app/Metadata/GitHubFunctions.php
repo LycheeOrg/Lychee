@@ -5,11 +5,11 @@ namespace App\Metadata;
 use App;
 use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
+use App\Facades\Helpers;
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Config;
 use Exception;
-use Helpers;
 
 class GitHubFunctions
 {

@@ -2,7 +2,7 @@
 
 namespace App\Actions\WebAuth;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Facades\WebAuthn;
 

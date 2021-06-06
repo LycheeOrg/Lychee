@@ -2,14 +2,16 @@
 
 namespace App\Actions\Album;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Photo;
+use Illuminate\Database\Eloquent\Collection;
 
 class Photos
 {
-	/** @var SymLinkFunction */
+	/** @var SymLinkFunctions */
 	private $symLinkFunctions;
 
 	public function __construct(SymLinkFunctions $symLinkFunctions)
@@ -24,7 +26,7 @@ class Photos
 	 *
 	 * @return array
 	 */
-	public function get(Album $album)
+	public function get(Album $album): array
 	{
 		[$sortingCol, $sortingOrder] = $album->get_sort();
 		$photos_sql = $album->get_photos();
@@ -61,6 +63,7 @@ class Photos
 			array_multisort($values, $sortingOrder === 'ASC' ? SORT_ASC : SORT_DESC, SORT_NATURAL | SORT_FLAG_CASE, $keys, SORT_ASC, $photos);
 		}
 
+		/** @var Photo $photo_model */
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
 			$photo = $photo_model->toReturnArray();
@@ -93,7 +96,7 @@ class Photos
 	}
 
 	/**
-	 * Set up the wrap arround of the photos if setting is true and if there are enough pictures.
+	 * Set up the wrap around of the photos if setting is true and if there are enough pictures.
 	 */
 	private function wrapAroundPhotos(array &$return_photos): void
 	{

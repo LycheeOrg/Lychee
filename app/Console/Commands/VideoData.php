@@ -8,7 +8,7 @@ use App\Actions\Photo\Extensions\VideoEditing;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class VideoData extends Command
 {
@@ -33,7 +33,7 @@ class VideoData extends Command
 	/**
 	 * @var Extractor
 	 */
-	private $metadataExtractor;
+	private Extractor $metadataExtractor;
 
 	/**
 	 * Create a new command instance.
@@ -77,6 +77,7 @@ class VideoData extends Command
 			return 0;
 		}
 
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
 			$url = Storage::path('big/' . $photo->url);

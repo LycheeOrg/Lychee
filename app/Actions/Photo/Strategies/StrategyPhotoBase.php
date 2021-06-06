@@ -2,10 +2,10 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use AccessControl;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Metadata;
 use App\Contracts\AddPhotoStrategyInterface;
+use App\Facades\AccessControl;
 use App\Models\Photo;
 
 abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
@@ -50,7 +50,7 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 		$create->info = $info;
 	}
 
-	public function getMetadata($file, $path, $kind, $extension)
+	public function getMetadata($file, $path, $kind, $extension): array
 	{
 		// forward call to trait.
 		return $this->getFileMetadata($file, $path, $kind, $extension);
@@ -74,7 +74,8 @@ abstract class StrategyPhotoBase implements AddPhotoStrategyInterface
 			// Todo: We need to search for pairs (Video + Photo)
 			// Photo+Photo or Video+Video does not work
 
-			$livePhotoPartner = Photo::where('livePhotoContentID', '=', $create->photo->livePhotoContentID)
+			$livePhotoPartner = Photo::query()
+				->where('livePhotoContentID', '=', $create->photo->livePhotoContentID)
 				->where('album_id', '=', $create->photo->album_id)
 				->whereNull('livePhotoUrl')->first();
 		}

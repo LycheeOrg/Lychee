@@ -2,9 +2,9 @@
 
 namespace App\Models\Extensions;
 
-use AccessControl;
+use App\Facades\AccessControl;
+use App\Facades\Helpers;
 use App\SmartAlbums\TagAlbum;
-use Helpers;
 
 trait AlbumCast
 {

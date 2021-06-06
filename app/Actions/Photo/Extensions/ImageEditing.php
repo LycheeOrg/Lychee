@@ -2,11 +2,11 @@
 
 namespace App\Actions\Photo\Extensions;
 
+use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use Exception;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
 
 trait ImageEditing
@@ -57,7 +57,7 @@ trait ImageEditing
 		$url = Storage::path('raw/' . $filename);
 		$ext = pathinfo($filename)['extension'];
 
-		// test if Imagaick supports the filetype
+		// test if Imagick supports the filetype
 		// Query return file extensions as all upper case
 		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
 			Logs::notice(__METHOD__, __LINE__, 'Filetype ' . $ext . ' not supported by Imagick.');
@@ -160,7 +160,7 @@ trait ImageEditing
 	 *
 	 * @return bool returns true when successful
 	 */
-	public function createThumb(Photo $photo, string $frame_tmp = '')
+	public function createThumb(Photo $photo, string $frame_tmp = ''): bool
 	{
 		Logs::notice(__METHOD__, __LINE__, 'Photo URL is ' . $photo->url);
 

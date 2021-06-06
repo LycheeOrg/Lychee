@@ -6,12 +6,12 @@
 
 namespace App\Http\Controllers\Administration;
 
-use AccessControl;
 use App\Actions\Diagnostics\Configuration;
 use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
 use Illuminate\View\View;
 

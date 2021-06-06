@@ -11,10 +11,10 @@ use App\Actions\Photo\Extensions\Save;
 use App\Actions\Photo\Extensions\VideoEditing;
 use App\Actions\Photo\Strategies\StrategyDuplicate;
 use App\Actions\Photo\Strategies\StrategyPhoto;
-use App\Http\Livewire\Album;
+use App\Facades\Helpers;
+use App\Models\Album;
 use App\Models\Logs;
 use App\Models\Photo;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
 
 class Create
@@ -27,33 +27,21 @@ class Create
 	use Save;
 	use VideoEditing;
 
-	/** @var int */
-	public $public;
-	/** @var int */
-	public $star;
-	/** @var int|null */
-	public $albumID;
-	/** @var Album|null */
-	public $parentAlbum;
-	/** @var Photo */
-	public $photo;
-	/** @var string */
-	public $photo_Url;
-	/** @var string */
-	public $kind;
-	/** @var string */
-	public $extension;
-	/** @var string */
-	public $path_prefix;
-	/** @var string */
-	public $tmp_name;
-	/** @var string */
-	public $mimeType;
-	/** @var array */
-	public $info;
-	public $livePhotoPartner;
-	/** @var bool */
-	public $is_uploaded;
+	public bool $public;
+	public bool $star;
+	public ?int $albumID;
+	public ?Album $parentAlbum = null;
+	public ?Photo $photo = null;
+	public string $photo_filename;
+	public string $kind;
+	public string $extension;
+	public string $path_prefix;
+	public string $path;
+	public string $tmp_name;
+	public string $mimeType;
+	public array $info = [];
+	public ?Photo $livePhotoPartner = null;
+	public bool $is_uploaded;
 
 	public function add(
 		array $file,

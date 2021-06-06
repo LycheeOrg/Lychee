@@ -4,7 +4,7 @@ namespace App\ModelFunctions;
 
 use App\Exceptions\NotInCacheException;
 use App\Models\Logs;
-use Cache;
+use Illuminate\Support\Facades\Cache;
 use Psr\SimpleCache\InvalidArgumentException;
 
 class JsonRequestFunctions
@@ -33,8 +33,8 @@ class JsonRequestFunctions
 	private function cache()
 	{
 		try {
-			Cache::set($this->url, $this->raw, now()->addDays($this->ttl));
-			Cache::set($this->url . '_age', now(), now()->addDays($this->ttl));
+			Cache::put($this->url, $this->raw, now()->addDays($this->ttl));
+			Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
 		} catch (InvalidArgumentException $e) {
 			Logs::error(
 				__METHOD__,

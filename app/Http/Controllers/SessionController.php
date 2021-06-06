@@ -4,14 +4,14 @@
 
 namespace App\Http\Controllers;
 
-use AccessControl;
+use App\Facades\AccessControl;
+use App\Facades\Helpers;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
-use Helpers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;

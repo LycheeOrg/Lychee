@@ -2,8 +2,8 @@
 
 namespace App\Actions\Search;
 
-use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
+use App\Facades\AccessControl;
 use App\Models\Album;
 use Illuminate\Database\Eloquent\Builder;
 

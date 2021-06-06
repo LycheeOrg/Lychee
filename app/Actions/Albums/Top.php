@@ -2,8 +2,8 @@
 
 namespace App\Actions\Albums;
 
-use AccessControl;
 use App\Actions\Albums\Extensions\TopQuery;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Extensions\CustomSort;
 use Illuminate\Support\Collection as BaseCollection;

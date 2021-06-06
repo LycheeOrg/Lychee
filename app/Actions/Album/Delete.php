@@ -2,7 +2,7 @@
 
 namespace App\Actions\Album;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Support\Facades\Schema;

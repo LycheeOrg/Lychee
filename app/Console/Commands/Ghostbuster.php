@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
+use App\Facades\Helpers;
 use App\Models\Photo;
-use Helpers;
 use Illuminate\Console\Command;
 use Storage;
 

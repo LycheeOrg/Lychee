@@ -5,11 +5,11 @@ namespace App\Actions\Photo;
 use App\Actions\Photo\Extensions\Checksum;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\ImageEditing;
+use App\Facades\Helpers;
 use App\Image\ImageHandlerInterface;
 use App\Metadata\Extractor;
 use App\Models\Logs;
 use App\Models\Photo;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
 
 class Rotate
@@ -152,8 +152,10 @@ class Rotate
 		$photo->save();
 
 		// Deal with duplicates.  We simply update all of them to match.
-		Photo::where('checksum', $photo->checksum)->where('id', '<>', $photo->id)->update(
-			[
+		Photo::query()
+			->where('checksum', $photo->checksum)
+			->where('id', '<>', $photo->id)
+			->update([
 				'url' => $photo->url,
 				'width' => $photo->width,
 				'height' => $photo->height,
@@ -168,8 +170,7 @@ class Rotate
 				'medium_height' => $photo->medium_height,
 				'medium2x_width' => $photo->medium2x_width,
 				'medium2x_height' => $photo->medium2x_height,
-			]
-		);
+			]);
 
 		return true;
 	}

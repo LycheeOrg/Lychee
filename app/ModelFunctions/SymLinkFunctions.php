@@ -2,7 +2,7 @@
 
 namespace App\ModelFunctions;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SymLink;
@@ -92,7 +92,9 @@ class SymLinkFunctions
 	 */
 	public function remove_outdated()
 	{
-		$symlinks = SymLink::where('created_at', '<', now()->subDays(intval(Configs::get_value('SL_life_time_days', '3')))->toDateTimeString())->get();
+		$symlinks = SymLink::query()
+			->where('created_at', '<', now()->subDays(intval(Configs::get_value('SL_life_time_days', '3')))->toDateTimeString())
+			->get();
 		$success = true;
 		foreach ($symlinks as $symlink) {
 			// it may be faster to just do the unlink and then one query for all the delete.

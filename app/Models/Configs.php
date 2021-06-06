@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Facades\Helpers;
 use App\Models\Extensions\ConfigsHas;
 use Exception;
-use Helpers;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;

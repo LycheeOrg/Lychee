@@ -2,8 +2,8 @@
 
 namespace App\Actions\Search;
 
-use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
+use App\Facades\AccessControl;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;

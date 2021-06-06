@@ -4,7 +4,7 @@
 
 namespace App\Http\Middleware;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use Closure;
 use Illuminate\Http\Request;
 

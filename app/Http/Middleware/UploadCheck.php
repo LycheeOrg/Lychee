@@ -4,7 +4,7 @@
 
 namespace App\Http\Middleware;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Logs;
