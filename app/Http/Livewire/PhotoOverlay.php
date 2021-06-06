@@ -71,9 +71,9 @@ class PhotoOverlay extends Component
 
 		$this->type = $this->checkOverlayType();
 		$this->description = $this->photo_data['description'];
-		if ($this->photo_data['takedate'] !== '') {
+		if ($this->photo_data['taken_at'] !== '') {
 			$this->camera_date = true;
-			$this->date = $this->photo_data['takedate'];
+			$this->date = $this->photo_data['taken_at'];
 		} else {
 			$this->camera_date = false;
 			$this->date = $this->data['sysdate'];

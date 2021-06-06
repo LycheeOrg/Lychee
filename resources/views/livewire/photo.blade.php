@@ -21,14 +21,14 @@
 		/>
 @else
 	@if ($data['livePhotoUrl'] === "" || $data['livePhotoUrl'] === null)
-		@if ($data['medium'] !== "")
+		@if ($data['sizeVariants']['medium'] !== null)
 			<img
 				id='image'
 				class='{{ $visibleControls === true ? "" : "full" }}'
-				src='{{ URL::asset($data['medium']) }}'
-				@if ($data['medium2x'] !== "")
-					srcset='{{ URL::asset($data['medium']) }} {{ intval($data['medium_dim']) }}w,
-					{{ URL::asset($data['medium2x']) }} {{ intval($data['medium2x_dim']) }}w'
+				src='{{ URL::asset($data['sizeVariants']['medium']['url']) }}'
+				@if ($data['sizeVariants']['medium2x'] !== null)
+					srcset='{{ URL::asset($data['sizeVariants']['medium']['url']) }} {{ $data['sizeVariants']['medium']['width'] }}w,
+					{{ URL::asset($data['sizeVariants']['medium2x']['url']) }} {{ $data['sizeVariants']['medium2x']['width'] }}w'
 				@endif
 				data-tabindex='{{ Helpers::data_index() }}'
 				/>
@@ -53,7 +53,7 @@
 			id='livephoto'
 			data-live-photo
 			data-proactively-loads-video='true'
-			data-photo-src='{{ URL::asset($data['medium']) }}'
+			data-photo-src='{{ URL::asset($data['sizeVariants']['medium']['url']) }}'
 			data-video-src='{{ URL::asset($data['livePhotoUrl']) }}'
 			style='width: {{ $medium_width }}px; height: {{ $medium_height }}px'
 			data-tabindex='{{ Helpers::data_index() }}'
