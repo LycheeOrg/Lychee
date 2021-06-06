@@ -2,7 +2,7 @@
 
 namespace App\SmartAlbums;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Support\Carbon;
@@ -28,20 +28,14 @@ use Illuminate\Support\Collection as BaseCollection;
  */
 class BareSmartAlbum extends Album
 {
-	/**
-	 * @var Carbon
-	 */
-	public $created_at = null;
+	public Carbon $created_at;
+
+	public Carbon $updated_at;
 
 	/**
-	 * @var Carbon
+	 * @var BaseCollection[int]
 	 */
-	public $updated_at = null;
-
-	/**
-	 * @var Collection[int]
-	 */
-	protected $albumIds = null;
+	protected BaseCollection $albumIds;
 
 	public function __construct()
 	{
@@ -55,7 +49,7 @@ class BareSmartAlbum extends Album
 	/**
 	 * Set a restriction on the available albums.
 	 *
-	 * @param Collection[int] $albumIds
+	 * @param BaseCollection[int] $albumIds
 	 *
 	 * @return void
 	 */

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Extensions;
 
+use App\Facades\Helpers;
 use App\Metadata\Extractor;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Configs;
@@ -10,9 +11,8 @@ use App\Models\Photo;
 use Exception;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
-use Helpers;
 use Illuminate\Support\Facades\Storage;
-use ImageOptimizer;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 trait VideoEditing
 {

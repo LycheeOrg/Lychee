@@ -2,7 +2,7 @@
 
 namespace App\Actions\Photo;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
 
