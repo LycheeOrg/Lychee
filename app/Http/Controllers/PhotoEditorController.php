@@ -4,7 +4,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Photo\Prepare;
 use App\Actions\Photo\Rotate;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
 use App\Models\Configs;
@@ -19,7 +18,7 @@ class PhotoEditorController extends Controller
 	 *
 	 * @return array|string
 	 */
-	public function rotate(PhotoIDRequest $request, Rotate $rotate, Prepare $prepare)
+	public function rotate(PhotoIDRequest $request, Rotate $rotate)
 	{
 		if (!Configs::get_value('editor_enabled', '0')) {
 			return 'false';
@@ -27,12 +26,13 @@ class PhotoEditorController extends Controller
 
 		$request->validate(['direction' => 'integer|required']);
 
+		/** @var Photo $photo */
 		$photo = Photo::findOrFail($request['photoID']);
 
 		if (!$rotate->do($photo, intval($request['direction']))) {
 			return 'false';
 		}
 
-		return $prepare->do($photo);
+		return $photo->toReturnArray();
 	}
 }
