@@ -249,8 +249,8 @@ class PhotosTest extends TestCase
 			$photo = $this->asObject($photos_tests->get($photo_id, 'true'));
 
 			$this->assertEquals($photo_id, $video_id);
-			$this->assertEquals($photo->livePhotoContentID, 'E905E6C6-C747-4805-942F-9904A0281F02');
-			$this->assertStringEndsWith('.mov', $photo->livePhotoUrl);
+			$this->assertEquals($photo->live_photo_content_id, 'E905E6C6-C747-4805-942F-9904A0281F02');
+			$this->assertStringEndsWith('.mov', $photo->live_photo_url);
 		} else {
 			$this->markTestSkipped('Exiftool is not available. Test Skipped.');
 		}

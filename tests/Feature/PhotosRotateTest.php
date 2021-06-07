@@ -64,6 +64,9 @@ class PhotosRotateTest extends TestCase
 			'photoID' => $id,
 			'direction' => 1,
 		]);
+		if ($response->getStatusCode() == 500) {
+			$response->dump();
+		}
 		$response->assertStatus(200);
 		$response->assertSee('false', false);
 
