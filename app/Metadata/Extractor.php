@@ -23,7 +23,7 @@ class Extractor
 			'height' => 0,
 			'title' => '',
 			'description' => '',
-			'orientation' => '',
+			'orientation' => 1,
 			'iso' => '',
 			'aperture' => '',
 			'make' => '',
@@ -56,19 +56,33 @@ class Extractor
 	public function filesize(string $path): int
 	{
 		return (int) filesize($path);
-		/*$size = $filesize_raw / 1024;
-		if ($size >= 1024) {
-			$metadata['filesize'] = round($size / 1024, 1) . ' MB';
-		} else {
-			$metadata['filesize'] = round($size, 1) . ' KB';
-		}*/
 	}
 
 	/**
-	 * Extracts metadata from an image file.
+	 * Extracts metadata from a file.
 	 *
-	 * @param string $fullPath
-	 * @param  string file kind
+	 * **Warning:**
+	 *
+	 * The parameter `$kind` is enum-like parameter and accepts the values
+	 * `photo`, `video` or `raw` (see
+	 * {@link \App\Actions\Photo\Extensions\Checks::file_kind}).
+	 * In other words `kind` is a coarsening of the mime type of a file, but
+	 * not identical to the mime type.
+	 * See {@link \App\Actions\Photo\Create::add()} which sets `$kind` to the
+	 * result of {@link \App\Actions\Photo\Extensions\Checks::file_kind()}.
+	 * However, there are at least three other occurrences where this method
+	 * is called and the full mime type is passed as the second parameter:
+	 * see {@link \App\Console\Commands\ExifLens::handle()},
+	 * {@link \App\Console\Commands\Takedate::handle()} and
+	 * {@link \App\Console\Commands\VideoData::handle()}.
+	 *
+	 * IMHO, there is an amazing number of places which somehow deal with
+	 * "mime type-ish" sort of values with subtle differences.
+	 *
+	 * TODO: Thoroughly refactor this.
+	 *
+	 * @param string $fullPath the full path to the file
+	 * @param string $kind     the kind of file either 'image', 'video' or 'raw'
 	 *
 	 * @return array
 	 */
@@ -168,7 +182,7 @@ class Extractor
 		$metadata['height'] = ($exif->getHeight() !== false) ? $exif->getHeight() : 0;
 		$metadata['title'] = ($exif->getTitle() !== false) ? $exif->getTitle() : '';
 		$metadata['description'] = ($exif->getDescription() !== false) ? $exif->getDescription() : '';
-		$metadata['orientation'] = ($exif->getOrientation() !== false) ? $exif->getOrientation() : '';
+		$metadata['orientation'] = ($exif->getOrientation() !== false) ? $exif->getOrientation() : 1;
 		$metadata['iso'] = ($exif->getIso() !== false) ? $exif->getIso() : '';
 		$metadata['make'] = ($exif->getMake() !== false) ? $exif->getMake() : '';
 		$metadata['model'] = ($exif->getCamera() !== false) ? $exif->getCamera() : '';

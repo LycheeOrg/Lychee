@@ -1,36 +1,67 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Models\Extensions;
 
-use App\Facades\Helpers;
+use App\Models\Photo;
+use App\Models\SizeVariant;
+use Illuminate\Contracts\Support\Arrayable;
+use JsonSerializable;
 
-class Thumb
+class Thumb implements Arrayable, JsonSerializable
 {
-	public $thumb = '';
-	public $type = '';
-	public $thumb2x = '';
-	public $id = null;
+	protected int $id;
+	protected string $type;
+	protected ?string $thumbUrl;
+	protected ?string $thumb2xUrl;
 
-	public function __construct(string $type, int $id)
+	public function __construct(int $id, string $type, ?string $thumbUrl, ?string $thumb2xUrl = null)
 	{
-		$this->type = $type;
 		$this->id = $id;
+		$this->type = $type;
+		$this->thumbUrl = $thumbUrl;
+		$this->thumb2xUrl = $thumb2xUrl;
 	}
 
-	public function set_thumb2x(): void
+	public static function createFromPhoto(?Photo $photo): ?Thumb
 	{
-		$this->thumb2x = Helpers::ex2x($this->thumb);
+		if (!$photo) {
+			return null;
+		}
+		$thumb = $photo->size_variants->getSizeVariant(SizeVariant::THUMB);
+		$thumb2x = $photo->size_variants->getSizeVariant(SizeVariant::THUMB2X);
+
+		return new self(
+			$photo->id,
+			$photo->type,
+			$thumb ? $thumb->url : null,
+			$thumb2x ? $thumb2x->url : null
+		);
 	}
 
+	/**
+	 * Serializes this object into an array.
+	 *
+	 * @return array The serialized properties of this object
+	 */
 	public function toArray(): array
 	{
 		return [
-			'id' => strval($this->id),
+			'id' => $this->id,
 			'type' => $this->type,
-			'thumb' => $this->thumb,
-			'thumb2x' => $this->thumb2x,
+			'thumb' => $this->thumbUrl,
+			'thumb2x' => $this->thumb2xUrl,
 		];
+	}
+
+	/**
+	 * Serializes this object into an array.
+	 *
+	 * @return array The serialized properties of this object
+	 *
+	 * @see SizeVariants::toArray()
+	 */
+	public function jsonSerialize(): array
+	{
+		return $this->toArray();
 	}
 }

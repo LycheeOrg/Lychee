@@ -5,6 +5,7 @@ namespace App\Actions\Import;
 use App\Actions\Album\Create;
 use App\Actions\Import\Extensions\ImportPhoto;
 use App\Actions\Photo\Extensions\Constants;
+use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
@@ -243,7 +244,13 @@ class Exec
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
 				try {
-					if ($this->photo($file, $this->delete_imported, $this->import_via_symlink, $albumID, $this->skip_duplicates, $this->resync_metadata) === false) {
+					if (
+						$this->photo(
+							$file,
+							$albumID,
+							new ImportMode($this->delete_imported, $this->import_via_symlink, $this->skip_duplicates, $this->resync_metadata)
+						) === false
+					) {
 						$this->status_error($file, 'Could not import file');
 						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					}

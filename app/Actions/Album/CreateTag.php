@@ -2,21 +2,18 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\Album\Extensions\StoreAlbum;
 use App\Facades\AccessControl;
 use App\Models\Album;
 
 class CreateTag extends Action
 {
-	use StoreAlbum;
-
 	/**
 	 * Create a new smart album based on tags.
 	 *
 	 * @param string $title
 	 * @param string $show_tags
 	 *
-	 * @return Album|Response
+	 * @return Album
 	 */
 	public function create(string $title, string $show_tags): Album
 	{
@@ -27,7 +24,10 @@ class CreateTag extends Action
 
 		$album->smart = true;
 		$album->showtags = $show_tags;
+		if (!$album->save()) {
+			throw new \RuntimeException('could not persist album tot DB');
+		}
 
-		return $this->store_album($album);
+		return $album;
 	}
 }

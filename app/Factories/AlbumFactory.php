@@ -4,7 +4,6 @@
 
 namespace App\Factories;
 
-use App\Facades\Helpers;
 use App\Models\Album;
 use App\SmartAlbums\TagAlbum;
 
@@ -55,7 +54,6 @@ class AlbumFactory
 	public function makeFromTitle(string $title): Album
 	{
 		$album = new Album();
-		$album->id = Helpers::generateID();
 		$album->title = $title;
 		$album->description = '';
 

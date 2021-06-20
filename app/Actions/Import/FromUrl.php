@@ -5,6 +5,7 @@ namespace App\Actions\Import;
 use App\Actions\Import\Extensions\Checks;
 use App\Actions\Import\Extensions\ImportPhoto;
 use App\Actions\Photo\Extensions\Constants;
+use App\Actions\Photo\Strategies\ImportMode;
 use App\Facades\Helpers;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Storage;
@@ -55,7 +56,7 @@ class FromUrl
 			}
 
 			// Import photo
-			if (!$this->photo($tmp_name, true, false, $albumId)) {
+			if (!$this->photo($tmp_name, $albumId, new ImportMode(true))) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
 			}

@@ -2,14 +2,11 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\Album\Extensions\StoreAlbum;
 use App\Facades\AccessControl;
 use App\Models\Album;
 
 class Create extends Action
 {
-	use StoreAlbum;
-
 	/**
 	 * @param string $albumID
 	 *
@@ -20,8 +17,11 @@ class Create extends Action
 		$album = $this->albumFactory->makeFromTitle($title);
 
 		$this->set_parent($album, $parent_id);
+		if (!$album->save()) {
+			throw new \RuntimeException('could not persist album tot DB');
+		}
 
-		return $this->store_album($album);
+		return $album;
 	}
 
 	/**

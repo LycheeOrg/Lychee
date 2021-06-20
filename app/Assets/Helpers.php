@@ -3,7 +3,6 @@
 namespace App\Assets;
 
 use App\Exceptions\DivideByZeroException;
-use App\Models\Configs;
 use Illuminate\Support\Facades\File;
 use WhichBrowser\Parser as BrowserParser;
 
@@ -53,36 +52,6 @@ class Helpers
 		$result = new BrowserParser(getallheaders(), ['cache' => app('cache.store')]);
 
 		return $result->getType();
-	}
-
-	/*
-	 * Generate an id from current microtime.
-	 *
-	 * @return string generated ID
-	 */
-	public function generateID(): string
-	{
-		// Generate id based on the current microtime
-
-		if (
-			PHP_INT_MAX == 2147483647
-			|| Configs::get_value('force_32bit_ids', '0') === '1'
-		) {
-			// For 32-bit installations, we can only afford to store the
-			// full seconds in id.  The calling code needs to be able to
-			// handle duplicate ids.  Note that this also exposes us to
-			// the year 2038 problem.
-			$id = sprintf('%010d', microtime(true));
-		} else {
-			// Ensure 4 digits after the decimal point, 15 characters
-			// total (including the decimal point), 0-padded on the
-			// left if needed (shouldn't be needed unless we move back in
-			// time :-) )
-			$id = sprintf('%015.4f', microtime(true));
-			$id = str_replace('.', '', $id);
-		}
-
-		return $id;
 	}
 
 	/**
@@ -206,19 +175,6 @@ class Helpers
 	public function str_of_bool(bool $b): string
 	{
 		return $b ? '1' : '0';
-	}
-
-	/**
-	 * Given a filename generate the @2x corresponding filename.
-	 * This is used for thumbs, small and medium.
-	 */
-	public function ex2x(string $filename): string
-	{
-		$filename2x = explode('.', $filename);
-
-		return (count($filename2x) === 2) ?
-			$filename2x[0] . '@2x.' . $filename2x[1] :
-			$filename2x[0] . '@2x';
 	}
 
 	/**

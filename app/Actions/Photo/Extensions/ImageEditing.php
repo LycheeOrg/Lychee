@@ -4,12 +4,17 @@ namespace App\Actions\Photo\Extensions;
 
 use App\Facades\Helpers;
 use App\Models\Configs;
-use App\Models\Extensions\SizeVariant;
 use App\Models\Logs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * Trait ImageEditing.
+ *
+ * @deprecated
+ */
 trait ImageEditing
 {
 	/**
@@ -20,7 +25,7 @@ trait ImageEditing
 	 */
 	public function createSmallerImages(Photo $photo, string $frame_tmp = '')
 	{
-		if ($frame_tmp === '' || $photo->type == 'raw') {
+		if ($frame_tmp === '' || $photo->isRaw()) {
 			// Create medium file for normal photos and for raws
 			$mediumMaxWidth = intval(Configs::get_value('medium_max_width'));
 			$mediumMaxHeight = intval(Configs::get_value('medium_max_height'));

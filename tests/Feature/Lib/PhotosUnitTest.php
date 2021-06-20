@@ -32,12 +32,11 @@ class PhotosUnitTest
 	/**
 	 * Try upload a picture.
 	 *
-	 * @param TestCase     $testcase
 	 * @param UploadedFile $file
 	 *
-	 * @return string (id of the picture)
+	 * @return int the id of the photo
 	 */
-	public function upload(UploadedFile &$file)
+	public function upload(UploadedFile &$file): int
 	{
 		$response = $this->testCase->post(
 			'/api/Photo::add',
@@ -49,10 +48,10 @@ class PhotosUnitTest
 		if ($response->getStatusCode() === 500) {
 			$response->dump();
 		}
-		$response->assertStatus(200);
+		$response->assertSuccessful();
 		$response->assertDontSee('Error');
 
-		return $response->getContent();
+		return $response->decodeResponseJson()->offsetGet('id');
 	}
 
 	/**
@@ -118,18 +117,17 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * is ID visible in unsorted ?
+	 * is photto ID visible in unsorted ?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param int $photoID
 	 */
-	protected function see_in_unsorted(string $id)
+	protected function see_in_unsorted(int $photoID)
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($id, false);
+		$response->assertSee(strval($photoID), false);
 	}
 
 	/**

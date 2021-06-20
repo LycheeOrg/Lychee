@@ -136,7 +136,7 @@ class Archive
 
 		$title = str_replace($this->badChars, '', $photo->title) ?: 'Untitled';
 
-		$prefix_path = $photo->type == 'raw' ? 'raw/' : 'big/';
+		$prefix_path = $photo->isRaw() ? 'raw/' : 'big/';
 
 		// determine the file based on given size
 		if ($photo->isVideo() === false) {
@@ -195,7 +195,7 @@ class Archive
 
 		// Get extension of image
 		$extension = '';
-		if ($photo->type != 'raw') {
+		if (!$photo->isRaw()) {
 			$extension = Helpers::getExtension($fullpath, false);
 		}
 

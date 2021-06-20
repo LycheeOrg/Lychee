@@ -39,7 +39,7 @@ class Rotate
 			return false;
 		}
 
-		if ($photo->type == 'raw') {
+		if ($photo->isRaw()) {
 			Logs::error(__METHOD__, __LINE__, 'Trying to rotate a raw file');
 
 			return false;

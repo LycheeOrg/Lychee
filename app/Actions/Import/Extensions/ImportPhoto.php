@@ -3,48 +3,30 @@
 namespace App\Actions\Import\Extensions;
 
 use App\Actions\Photo\Create;
+use App\Actions\Photo\Strategies\ImportMode;
+use App\Actions\Photo\Strategies\SourceFileInfo;
 
 trait ImportPhoto
 {
 	/**
 	 * Creates an array similar to a file upload array and adds the photo to Lychee.
 	 *
-	 * @param $path
-	 * @param bool $delete_imported
-	 * @param bool $import_via_symlink
-	 * @param int  $albumID
-	 * @param bool $skip_duplicates
-	 * @param bool $resync_metadata
+	 * @param string          $path
+	 * @param int             $albumID
+	 * @param ImportMode|null $importMode
 	 *
 	 * @return bool returns true when photo import was successful
 	 */
-	public function photo($path, $delete_imported, $import_via_symlink, $albumID = 0, $skip_duplicates = false, $resync_metadata = false)
+	public function photo(
+		string $path,
+		int $albumID = 0,
+		?ImportMode $importMode = null): bool
 	{
 		// No need to validate photo type and extension in this function.
-		// $photo->add will take care of it.
-		$mime = mime_content_type($path);
-
-		$nameFile = [];
-		$nameFile['name'] = $path;
-		$nameFile['type'] = $mime;
-		$nameFile['tmp_name'] = $path;
-
-		$create = resolve(Create::class);
-
-		// avoid incompatible settings (delete originals takes precedence over symbolic links)
-		if ($delete_imported) {
-			$import_via_symlink = false;
-		}
-		// (re-syncing metadata makes no sense when importing duplicates)
-		if (!$skip_duplicates) {
-			$resync_metadata = false;
-		}
-
-		if ($create->add($nameFile, $albumID, $delete_imported, $skip_duplicates, $import_via_symlink, $resync_metadata) === false) {
-			// @codeCoverageIgnoreStart
-			return false;
-			// @codeCoverageIgnoreEnd
-		}
+		// $create->add will take care of it.
+		$sourceFileInfo = new SourceFileInfo($path, mime_content_type($path), $path);
+		$create = new Create($importMode);
+		$create->add($sourceFileInfo, $albumID);
 
 		return true;
 	}

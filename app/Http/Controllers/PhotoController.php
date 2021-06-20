@@ -16,6 +16,7 @@ use App\Actions\Photo\SetPublic;
 use App\Actions\Photo\SetStar;
 use App\Actions\Photo\SetTags;
 use App\Actions\Photo\SetTitle;
+use App\Actions\Photo\Strategies\SourceFileInfo;
 use App\Exceptions\JsonError;
 use App\Exceptions\JsonWarning;
 use App\Facades\Helpers;
@@ -23,11 +24,11 @@ use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
 use App\ModelFunctions\SymLinkFunctions;
-use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -94,15 +95,13 @@ class PhotoController extends Controller
 		}
 
 		// Only process the first photo in the array
+		/** @var UploadedFile $file */
 		$file = $request->file('0');
-
-		$nameFile = [];
-		$nameFile['name'] = $file->getClientOriginalName();
-		$nameFile['type'] = $file->getMimeType();
-		$nameFile['tmp_name'] = $file->getPathName();
+		$sourceFileInfo = new SourceFileInfo($file->getClientOriginalName(), $file->getMimeType(), $file->getPathName());
 
 		try {
-			$res = $create->add($nameFile, $request['albumID'], false, (Configs::get_value('skip_duplicates', '0') === '1'));
+			$albumID = $request['albumID'] ? intval($request['albumID']) : 0;
+			$res = $create->add($sourceFileInfo, $albumID);
 		} catch (JsonWarning $e) {
 			$res = $e->render();
 		} catch (JsonError $e) {
@@ -240,7 +239,7 @@ class PhotoController extends Controller
 	{
 		$request->validate(['albumID' => 'string']);
 
-		$duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ?? null);
+		$duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ? intval($request['albumID']) : null);
 
 		return 'true';
 	}

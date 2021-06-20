@@ -171,11 +171,10 @@ class GdHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function autoRotate(string $path, array $info, bool $pretend = false): array
+	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
 	{
 		$image = imagecreatefromjpeg($path);
 
-		$orientation = isset($info['orientation']) && $info['orientation'] !== '' ? $info['orientation'] : 1;
 		$rotate = $orientation !== 1;
 
 		$dimensions = $this->autoRotateInternal($image, $orientation);

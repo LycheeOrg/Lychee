@@ -30,7 +30,7 @@ class SmartFactory
 	/**
 	 * Factory method.
 	 */
-	public function make(string $kind): SmartAlbum
+	public function make(string $kind): ?SmartAlbum
 	{
 		if ($this->is_smart($kind)) {
 			return resolve($this->base_smarts[$kind]);

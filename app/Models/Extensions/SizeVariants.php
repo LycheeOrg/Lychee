@@ -2,34 +2,28 @@
 
 namespace App\Models\Extensions;
 
-use App\Models\Logs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Facades\Storage;
 use JsonSerializable;
 
 /**
  * Class SizeVariants.
- *
- * The original size is not stored in this sub-array but on the root level of the JSON response
- * TODO: Maybe harmonize and put original variant into this array, too? This would also avoid an ugly if-branch in SymLink#override.
  */
 class SizeVariants implements Arrayable, JsonSerializable
 {
+	const NAMES = [
+		SizeVariant::THUMB => 'thumb',
+		SizeVariant::THUMB2X => 'thumb2x',
+		SizeVariant::SMALL => 'small',
+		SizeVariant::SMALL2X => 'small2x',
+		SizeVariant::MEDIUM => 'medium',
+		SizeVariant::MEDIUM2X => 'medium2x',
+		SizeVariant::ORIGINAL => 'original',
+	];
+
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
-	/** @var SizeVariant The thumbnail variant */
-	private SizeVariant $thumb;
-	/** @var SizeVariant|null The larger version of the thumbnail variant */
-	private ?SizeVariant $thumb2x;
-	/** @var SizeVariant|null The small variant */
-	private ?SizeVariant $small;
-	/** @var SizeVariant|null The larger version of the smaller variant */
-	private ?SizeVariant $small2x;
-	/** @var SizeVariant|null The medium variant */
-	private ?SizeVariant $medium;
-	/** @var SizeVariant|null The larger version of the medium variant */
-	private ?SizeVariant $medium2x;
 
 	/**
 	 * SizeVariants constructor.
@@ -39,12 +33,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function __construct(Photo $photo)
 	{
 		$this->photo = $photo;
-		$this->thumb = SizeVariant::createSizeVariant($photo, SizeVariant::VARIANT_THUMB);
-		$this->thumb2x = SizeVariant::createSizeVariant($photo, SizeVariant::VARIANT_THUMB2X);
-		$this->small = SizeVariant::createSizeVariant($photo, SizeVariant::VARIANT_SMALL);
-		$this->small2x = SizeVariant::createSizeVariant($photo, SizeVariant::VARIANT_SMALL2X);
-		$this->medium = SizeVariant::createSizeVariant($photo, SizeVariant::VARIANT_MEDIUM);
-		$this->medium2x = SizeVariant::createSizeVariant($photo, SizeVariant::VARIANT_MEDIUM2X);
+		$this->namingStrategy = null;
 	}
 
 	/**
@@ -54,14 +43,17 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 */
 	public function toArray(): array
 	{
-		return [
-			SizeVariant::VARIANT_THUMB => $this->thumb ? $this->thumb->toArray() : null,
-			SizeVariant::VARIANT_THUMB2X => $this->thumb2x ? $this->thumb2x->toArray() : null,
-			SizeVariant::VARIANT_SMALL => $this->small ? $this->small->toArray() : null,
-			SizeVariant::VARIANT_SMALL2X => $this->small2x ? $this->small2x->toArray() : null,
-			SizeVariant::VARIANT_MEDIUM => $this->medium ? $this->medium->toArray() : null,
-			SizeVariant::VARIANT_MEDIUM2X => $this->medium2x ? $this->medium2x->toArray() : null,
-		];
+		$result = [];
+		/**
+		 * @var int    $variant
+		 * @var string $name
+		 */
+		foreach (self::NAMES as $variant => $name) {
+			$sv = $this->getSizeVariant($variant);
+			$result[$name] = $sv ? $sv->toArray() : null;
+		}
+
+		return $result;
 	}
 
 	/**
@@ -76,85 +68,73 @@ class SizeVariants implements Arrayable, JsonSerializable
 		return $this->toArray();
 	}
 
-	public function getThumb(): SizeVariant
+	/**
+	 * Returns the requested size variant of the photo.
+	 *
+	 * @param int $sizeVariant The type of the size variant
+	 *
+	 * @return SizeVariant|null The size variant
+	 */
+	public function getSizeVariant(int $sizeVariant): ?SizeVariant
 	{
-		return $this->thumb;
-	}
-
-	public function getThumb2x(): ?SizeVariant
-	{
-		return $this->thumb2x;
-	}
-
-	public function getSmall(): ?SizeVariant
-	{
-		return $this->small;
-	}
-
-	public function getSmall2x(): ?SizeVariant
-	{
-		return $this->small2x;
-	}
-
-	public function getMedium(): ?SizeVariant
-	{
-		return $this->medium;
-	}
-
-	public function getMedium2x(): ?SizeVariant
-	{
-		return $this->medium2x;
+		return $this->photo
+			->size_variants()
+			->where('size_variant', '=', $sizeVariant)
+			->first();
 	}
 
 	/**
-	 * Deletes all size variants from storage.
+	 * Creates a new instance of {@link \App\Models\SizeVariant} for the
+	 * associated photo and persist it to DB.
+	 *
+	 * @param int    $sizeVariant the type of the desired size variant
+	 * @param string $shortPath   the short path of the media file this size variant shall point to
+	 * @param int    $width       the width of the size variant
+	 * @param int    $height      the height of the size variant
+	 *
+	 * @return SizeVariant The newly created and persisted size variant
+	 */
+	public function createSizeVariant(int $sizeVariant, string $shortPath, int $width, int $height): SizeVariant
+	{
+		if (!$this->photo->exists) {
+			throw new \LogicException('cannot create a size variant for a photo whose id is not yet persisted to DB');
+		}
+		/** @var SizeVariant $result */
+		$result = $this->photo->size_variants()->make();
+		$result->size_variant = $sizeVariant;
+		$result->short_path = $shortPath;
+		$result->width = $width;
+		$result->height = $height;
+		if (!$result->save()) {
+			throw new \RuntimeException('could not persist size variant');
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Deletes all size variants incl. the files from storage.
+	 *
+	 * @param bool $keepOriginalFile if true, the original size variant is
+	 *                               still removed from the DB and the model,
+	 *                               but the media file is kept
+	 * @param bool $keepAllFiles     if true, the all size variants are still
+	 *                               removed from the DB and the model, but
+	 *                               the media files are kept
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function deleteFromStorage(): bool
+	public function delete(bool $keepOriginalFile = false, bool $keepAllFiles = false): bool
 	{
 		$success = true;
-		if ($this->thumb) {
-			$success &= $this->deleteFromStorageInternal($this->thumb->getShortPath());
-		}
-		if ($this->thumb2x) {
-			$success &= $this->deleteFromStorageInternal($this->thumb2x->getShortPath());
-		}
-		if ($this->small) {
-			$success &= $this->deleteFromStorageInternal($this->small->getShortPath());
-		}
-		if ($this->small2x) {
-			$success &= $this->deleteFromStorageInternal($this->small2x->getShortPath());
-		}
-		if ($this->medium) {
-			$success &= $this->deleteFromStorageInternal($this->medium->getShortPath());
-		}
-		if ($this->medium2x) {
-			$success &= $this->deleteFromStorageInternal($this->medium2x->getShortPath());
+		foreach (self::NAMES as $variant => $name) {
+			$sv = $this->getSizeVariant($variant);
+			if ($sv) {
+				$keepFile = (($variant === SizeVariant::ORIGINAL) && $keepOriginalFile) || $keepAllFiles;
+				$success &= $sv->delete($keepFile);
+			}
 		}
 
 		return $success;
-	}
-
-	/**
-	 * Deletes a size variant from storage given its short path.
-	 *
-	 * @param string $shortPath
-	 *
-	 * @return bool True on success, false otherwise
-	 */
-	protected function deleteFromStorageInternal(string $shortPath): bool
-	{
-		if (!Storage::exists($shortPath)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find file ' . $shortPath);
-
-			return false;
-		} elseif (!Storage::delete($shortPath)) {
-			Logs::error(__METHOD__, __LINE__, 'Could not delete file ' . $shortPath);
-
-			return false;
-		}
-
-		return true;
 	}
 }

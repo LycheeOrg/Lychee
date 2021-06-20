@@ -2,13 +2,10 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Photo\Extensions\Save;
 use App\Models\Photo;
 
 class Delete
 {
-	use Save;
-
 	public function do(array $photoIds)
 	{
 		$photos = Photo::whereIn('id', $photoIds)->get();

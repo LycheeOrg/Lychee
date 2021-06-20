@@ -13,6 +13,11 @@ use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use ImageOptimizer;
 
+/**
+ * Trait VideoEditing.
+ *
+ * @deprecated
+ */
 trait VideoEditing
 {
 	use Checks;
@@ -155,7 +160,7 @@ trait VideoEditing
 			fclose($fp);
 			fclose($fp_video);
 
-			// Save file path; Checksum calclation not needed since
+			// Save file path; Checksum calculation not needed since
 			// we do not perform matching for Google Motion Photos (as for iOS Live Photos)
 			$photo->live_photo_filename = $filename_video_mov;
 		} catch (Exception $exception) {

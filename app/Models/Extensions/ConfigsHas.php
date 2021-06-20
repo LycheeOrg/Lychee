@@ -27,7 +27,7 @@ trait ConfigsHas
 	/**
 	 * @return bool returns the Exiftool setting
 	 */
-	public static function hasExiftool()
+	public static function hasExiftool(): bool
 	{
 		// has_exiftool has the following values:
 		// 0: No Exiftool
@@ -62,9 +62,9 @@ trait ConfigsHas
 	}
 
 	/**
-	 * @return bool returns the Exiftool setting
+	 * @return bool returns the FFMpeg setting
 	 */
-	public static function hasFFmpeg()
+	public static function hasFFmpeg(): bool
 	{
 		// has_ffmpeg has the following values:
 		// 0: No ffmpeg

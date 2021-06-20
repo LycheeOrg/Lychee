@@ -104,7 +104,7 @@ trait AlbumGetters
 				->first();
 		}
 
-		return optional($cover)->toThumb();
+		return Thumb::createFromPhoto($cover);
 	}
 
 	public function get_children()

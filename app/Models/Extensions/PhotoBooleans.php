@@ -9,36 +9,26 @@ trait PhotoBooleans
 	use Constants;
 
 	/**
-	 * Check if a photo already exists in the database via its checksum.
-	 *
-	 * ! Does not require the Photo Object. Should be moved.
-	 *
-	 * @param string $checksum
-	 * @param $photoID
-	 *
-	 * @return Photo|bool|Builder|Model|object
-	 */
-	public function isDuplicate(string $checksum, $photoID = null)
-	{
-		$sql = $this->where(function ($q) use ($checksum) {
-			$q->where('checksum', '=', $checksum)
-				->orWhere('livePhotoChecksum', '=', $checksum);
-		});
-		if (isset($photoID)) {
-			$sql = $sql->where('id', '<>', $photoID);
-		}
-
-		return $sql->first() ?? false;
-	}
-
-	/**
 	 * We are checking if the beginning of the type string is
 	 * video.
 	 *
-	 * type contains the mime informations
+	 * type contains the mime information
 	 */
 	public function isVideo(): bool
 	{
+		if (empty($this->type)) {
+			throw new \BadFunctionCallException('Photo::isVideo() must not be called before Photo::$type has been set');
+		}
+
 		return $this->isValidVideoType($this->type);
+	}
+
+	public function isRaw(): bool
+	{
+		if (empty($this->type)) {
+			throw new \BadFunctionCallException('Photo::isRaw() must not be called before Photo::$type has been set');
+		}
+
+		return $this->type == 'raw';
 	}
 }

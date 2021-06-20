@@ -203,6 +203,9 @@ class AlbumsUnitTest
 	protected function see_in_albums(string $id)
 	{
 		$response = $this->testCase->json('POST', '/api/Albums::get', []);
+		if ($response->getStatusCode() !== 200) {
+			$response->dump();
+		}
 		$response->assertOk();
 		$response->assertSee($id, false);
 	}
@@ -358,6 +361,10 @@ class AlbumsUnitTest
 			'albumID' => $id,
 			'show_tags' => $tags,
 		]);
+
+		if ($response->getStatusCode() !== 200) {
+			$response->dump();
+		}
 
 		$response->assertOk();
 		$response->assertSee($result);

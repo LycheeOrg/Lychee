@@ -11,6 +11,7 @@ use App\Models\Extensions\AlbumGetters;
 use App\Models\Extensions\AlbumSetters;
 use App\Models\Extensions\AlbumStringify;
 use App\Models\Extensions\CustomSort;
+use App\Models\Extensions\HasTimeBasedID;
 use App\Models\Extensions\NodeTrait;
 use App\Models\Extensions\UTCBasedTimes;
 use Exception;
@@ -82,6 +83,14 @@ class Album extends Model implements AlbumInterface
 	use AlbumSetters;
 	use CustomSort;
 	use UTCBasedTimes;
+	use HasTimeBasedID;
+
+	/**
+	 * Indicates if the model's primary key is auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = false;
 
 	protected $casts
 	= [
