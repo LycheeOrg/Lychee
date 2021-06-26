@@ -84,11 +84,15 @@ trait HasTimeBasedID
 	public function save(array $options = []): bool
 	{
 		$result = false;
+		$retryCounter = 5;
+		$lastException = null;
 		do {
 			$retry = false;
 			try {
+				$retryCounter--;
 				$result = parent::save();
 			} catch (QueryException $e) {
+				$lastException = $e;
 				$errorCode = $e->getCode();
 				if ($errorCode == 23000 || $errorCode == 23505) {
 					// houston, we have a duplicate entry problem
@@ -99,12 +103,16 @@ trait HasTimeBasedID
 					// Remove primary key which has been set by last attempt
 					unset($this->attributes[$this->getKeyName()]);
 				} else {
-					$msg = 'Something went wrong, error ' . $errorCode . ', ' . $e->getMessage();
-					Logs::error(__METHOD__, __LINE__, $msg);
-					throw new \RuntimeException($msg, 0, $e);
+					throw $e;
 				}
 			}
-		} while ($retry);
+		} while ($retry && $retryCounter > 0);
+
+		if ($retryCounter === 0) {
+			$msg = 'unable to persist model to DB after 5 unsuccessful attempts';
+			Logs::error(__METHOD__, __LINE__, $msg);
+			throw new \RuntimeException($msg, 0, $lastException);
+		}
 
 		return $result;
 	}

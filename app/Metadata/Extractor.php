@@ -43,6 +43,7 @@ class Extractor
 			'livePhotoContentID' => null,
 			'livePhotoStillImageTime' => null,
 			'MicroVideoOffset' => null,
+			'checksum' => null,
 		];
 	}
 
@@ -56,6 +57,25 @@ class Extractor
 	public function filesize(string $path): int
 	{
 		return (int) filesize($path);
+	}
+
+	/**
+	 * Returns the SHA-1 checksum of a file.
+	 *
+	 * @param string $path The relative file path
+	 *
+	 * @return string the checksum
+	 */
+	public function checksum(string $path): string
+	{
+		$checksum = sha1_file($path);
+		if ($checksum === false) {
+			$msg = 'Could not compute checksum for: ' . $path;
+			Logs::error(__METHOD__, __LINE__, $msg);
+			throw new \RuntimeException($msg);
+		}
+
+		return $checksum;
 	}
 
 	/**
@@ -196,6 +216,7 @@ class Extractor
 		$metadata['filesize'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
 		$metadata['live_photo_content_id'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
+		$metadata['checksum'] = $this->checksum($fullPath);
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {

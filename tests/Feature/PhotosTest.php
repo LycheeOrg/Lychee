@@ -103,23 +103,21 @@ class PhotosTest extends TestCase
 			'aperture' => 'f/2.8',
 			'description' => 'A night photography',
 			'focal' => '16 mm',
-			'height' => '4480',
 			'id' => $id,
 			'iso' => '1250',
 			'lens' => 'EF16-35mm f/2.8L USM',
 			'license' => 'reserved',
 			'make' => 'Canon',
 			'model' => 'Canon EOS R',
-			'public' => '1',
+			'public' => 1,
 			'shutter' => '30 s',
 			'filesize' => 21104156,
-			'star' => '1',
+			'star' => true,
 			'tags' => 'night',
 			'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',
-			'width' => 6720,
 			'size_variants' => [
 				'small' => [
 					'width' => 540,
@@ -128,6 +126,10 @@ class PhotosTest extends TestCase
 				'medium' => [
 					'width' => 1620,
 					'height' => 1080,
+				],
+				'original' => [
+					'width' => 6720,
+					'height' => 4480,
 				],
 			],
 		]);

@@ -78,7 +78,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function getSizeVariant(int $sizeVariant): ?SizeVariant
 	{
 		return $this->photo
-			->size_variants()
+			->size_variants_raw()
 			->where('size_variant', '=', $sizeVariant)
 			->first();
 	}
@@ -100,7 +100,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 			throw new \LogicException('cannot create a size variant for a photo whose id is not yet persisted to DB');
 		}
 		/** @var SizeVariant $result */
-		$result = $this->photo->size_variants()->make();
+		$result = $this->photo->size_variants_raw()->make();
 		$result->size_variant = $sizeVariant;
 		$result->short_path = $shortPath;
 		$result->width = $width;
@@ -134,6 +134,9 @@ class SizeVariants implements Arrayable, JsonSerializable
 				$success &= $sv->delete($keepFile);
 			}
 		}
+		// ensure that relation `size_variants_raw` is refreshed and does not
+		// contain size variant models which have been removed from DB.
+		$this->photo->refresh();
 
 		return $success;
 	}

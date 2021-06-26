@@ -435,6 +435,9 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Photo::delete', [
 			'photoIDs' => $id,
 		]);
+		if ($response->getStatusCode() === 500) {
+			$response->dump();
+		}
 		$response->assertStatus(200);
 		$response->assertSee($result, false);
 	}
@@ -474,23 +477,30 @@ class PhotosUnitTest
 	 * @param TestCase $testCase
 	 * @param string   $id
 	 * @param          $direction
-	 * @param string   $result
+	 * @param string   $assertSee
 	 *
 	 * @return TestResponse
 	 */
 	protected function rotate(
 		string $id,
 		$direction,
-		string $result = 'true',
-		int $code = 200
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
 	) {
 		$response = $this->testCase->json('POST', '/api/PhotoEditor::rotate', [
 			'photoID' => $id,
 			'direction' => $direction,
 		]);
-		$response->assertStatus($code);
-		if ($code == 200 && $result != 'true') {
-			$response->assertSee($result, false);
+		if ($response->getStatusCode() != $expectedStatusCode) {
+			var_dump($id);
+			var_dump($direction);
+			var_dump($assertSee);
+			var_dump($expectedStatusCode);
+			$response->dump();
+		}
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee);
 		}
 
 		return $response;

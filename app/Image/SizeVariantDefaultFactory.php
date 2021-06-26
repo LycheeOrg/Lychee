@@ -4,6 +4,7 @@ namespace App\Image;
 
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -11,6 +12,7 @@ use App\Models\SizeVariant;
 use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
+use Illuminate\Support\Collection;
 
 class SizeVariantDefaultFactory extends SizeVariantFactory
 {
@@ -168,81 +170,76 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	protected function createTmpPathForReference(): void
 	{
-		if (!($this->referenceFullPath = tempnam(sys_get_temp_dir(), 'lychee')) ||
-			!rename($this->referenceFullPath, $this->referenceFullPath . '.jpeg')) {
-			Logs::notice(__METHOD__, __LINE__, 'Could not create a temporary file.');
-			throw new \RuntimeException('Could not create a temporary file.');
-		}
+		$this->referenceFullPath = Helpers::createTemporaryFile('.jpeg');
 		$this->needsCleanup = true;
-		$this->referenceFullPath .= '.jpeg';
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw/video file to ' . $this->referenceFullPath);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createSizeVariants(): void
+	public function createSizeVariants(): Collection
 	{
+		$collection = new Collection();
+
 		// 1. Generate thumb
-		$this->createSizeVariantInternal(
+		$collection->add($this->createSizeVariantInternal(
 			SizeVariant::THUMB,
 			self::THUMBNAIL_DIM,
 			self::THUMBNAIL_DIM
-		);
+		));
 
 		// 2. Generate thumb2x
-		if (Configs::get_value('thumb_2x', 0) === '1' &&
-			$this->referenceWidth >= self::THUMBNAIL2X_DIM &&
-			$this->referenceHeight >= self::THUMBNAIL2X_DIM) {
-			$this->createSizeVariantInternal(
-				SizeVariant::THUMB2X,
-				self::THUMBNAIL2X_DIM,
-				self::THUMBNAIL2X_DIM
-			);
+		if ($sv = $this->createSizeVariantInternalCond(
+			SizeVariant::THUMB2X,
+			self::THUMBNAIL2X_DIM,
+			self::THUMBNAIL2X_DIM,
+			Configs::get_value('thumb_2x', 0) === '1'
+		)) {
+			$collection->add($sv);
 		}
 
 		// 3. Generate small
-		$maxWidth = intval(Configs::get_value('small_max_width', 0));
-		$maxHeight = intval(Configs::get_value('small_max_height', 0));
-		if ($this->referenceWidth > $maxWidth || $this->referenceHeight > $maxHeight) {
-			// TODO: Contrary to he condition for thumb2x we use an "OR" here. By intention?
-			$this->createSizeVariantInternal(SizeVariant::SMALL, $maxWidth, $maxHeight);
-		} else {
-			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: ' . $maxWidth . 'x' . $maxHeight . ')!');
+		if ($sv = $this->createSizeVariantInternalCond(
+			SizeVariant::SMALL,
+			$maxWidth = intval(Configs::get_value('small_max_width', 0)),
+			$maxHeight = intval(Configs::get_value('small_max_height', 0)),
+			true
+		)) {
+			$collection->add($sv);
 		}
 
 		// 4. Generate small2x
-		$maxWidth *= 2;
-		$maxHeight *= 2;
-		if (
-			Configs::get_value('small_2x') === '1' &&
-			($this->referenceWidth > $maxWidth || $this->referenceHeight > $maxHeight)
-		) {
-			$this->createSizeVariantInternal(SizeVariant::SMALL2X, $maxWidth, $maxHeight);
-		} else {
-			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: ' . $maxWidth . 'x' . $maxHeight . ')!');
+		if ($sv = $this->createSizeVariantInternalCond(
+			SizeVariant::SMALL2X,
+			2 * $maxWidth,
+			2 * $maxHeight,
+			Configs::get_value('small_2x') === '1'
+		)) {
+			$collection->add($sv);
 		}
 
 		// 5. Generate medium
-		$maxWidth = intval(Configs::get_value('medium_max_width', 0));
-		$maxHeight = intval(Configs::get_value('medium_max_height', 0));
-		if ($this->referenceWidth > $maxWidth || $this->referenceHeight > $maxHeight) {
-			$this->createSizeVariantInternal(SizeVariant::MEDIUM, $maxWidth, $maxHeight);
-		} else {
-			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: ' . $maxWidth . 'x' . $maxHeight . ')!');
+		if ($sv = $this->createSizeVariantInternalCond(
+			SizeVariant::MEDIUM,
+			$maxWidth = intval(Configs::get_value('medium_max_width', 0)),
+			$maxHeight = intval(Configs::get_value('medium_max_height', 0)),
+			true
+		)) {
+			$collection->add($sv);
 		}
 
 		// 6. Generate medium2x
-		$maxWidth *= 2;
-		$maxHeight *= 2;
-		if (
-			Configs::get_value('medium_2x') === '1' &&
-			($this->referenceWidth > $maxWidth || $this->referenceHeight > $maxHeight)
-		) {
-			$this->createSizeVariantInternal(SizeVariant::MEDIUM2X, $maxWidth, $maxHeight);
-		} else {
-			Logs::notice(__METHOD__, __LINE__, 'No resize (image is too small: ' . $maxWidth . 'x' . $maxHeight . ')!');
+		if ($sv = $this->createSizeVariantInternalCond(
+			SizeVariant::MEDIUM2X,
+			2 * $maxWidth,
+			2 * $maxHeight,
+			Configs::get_value('medium_2x') === '1'
+		)) {
+			$collection->add($sv);
 		}
+
+		return $collection;
 	}
 
 	/**
@@ -288,6 +285,31 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		);
 	}
 
+	protected function createSizeVariantInternalCond(int $sizeVariant, int $maxWidth, int $maxHeight, bool $predicate): ?SizeVariant
+	{
+		if (!$predicate) {
+			return null;
+		}
+
+		if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
+			$isLargeEnough = $this->referenceWidth > $maxWidth && $this->referenceHeight > $maxHeight;
+		} else {
+			$isLargeEnough = $this->referenceWidth > $maxWidth || $this->referenceHeight > $maxHeight;
+		}
+
+		if ($isLargeEnough) {
+			return $this->createSizeVariantInternal(
+				$sizeVariant,
+				$maxWidth,
+				$maxHeight
+			);
+		} else {
+			Logs::notice(__METHOD__, __LINE__, 'Did not create size variant ' . $sizeVariant . ';  original image is too small: ' . $maxWidth . 'x' . $maxHeight . '!');
+
+			return null;
+		}
+	}
+
 	protected function createSizeVariantInternal(int $sizeVariant, int $maxWidth, int $maxHeight): SizeVariant
 	{
 		if (empty($this->referenceFullPath)) {
@@ -296,14 +318,15 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$shortPath = $this->namingStrategy->generateShortPath($sizeVariant);
 		$sv = $this->photo->size_variants->createSizeVariant($sizeVariant, $shortPath, $maxWidth, $maxHeight);
 		if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
-			$failed = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
+			$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
 		} else {
 			$resWidth = $resHeight = 0;
-			$failed = $this->imageHandler->scale($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height, $resWidth, $resHeight);
+			$success = $this->imageHandler->scale($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height, $resWidth, $resHeight);
 			$sv->width = $resWidth;
 			$sv->height = $resHeight;
+			$sv->save();
 		}
-		if ($failed) {
+		if (!$success) {
 			Logs::error(__METHOD__, __LINE__, 'Failed to resize image: ' . $this->referenceFullPath);
 			// If scaling/cropping has failed, remove the freshly create DB entity again
 			// This will also take care of removing a potentially created file from storage

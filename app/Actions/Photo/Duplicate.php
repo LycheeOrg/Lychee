@@ -12,7 +12,7 @@ class Duplicate
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$photo->load('size_variants');
+			$photo->load('size_variants_raw');
 			$duplicate = $photo->replicate();
 			$duplicate->album_id = ($albumID === 0) ? null : $photo->album_id;
 			$duplicate->save();

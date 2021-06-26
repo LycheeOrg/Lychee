@@ -146,8 +146,8 @@ abstract class AddBaseStrategy
 		}
 
 		// Set original date
-		if ($this->parameters->info['taken_at'] !== null) {
-			@touch($targetFullPath, $this->parameters->info['taken_at']->getTimestamp());
+		if ($this->photo->taken_at !== null) {
+			@touch($targetFullPath, $this->photo->taken_at->getTimestamp());
 		}
 	}
 }

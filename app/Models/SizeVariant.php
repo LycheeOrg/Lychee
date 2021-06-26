@@ -67,6 +67,9 @@ class SizeVariant extends Model
 	protected $casts = [
 		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',
+		'width' => 'integer',
+		'height' => 'integer',
+		'size_variant' => 'integer',
 	];
 
 	/**
@@ -75,8 +78,10 @@ class SizeVariant extends Model
 	 */
 	protected $hidden = [
 		'id', // irrelevant, because a size variant is always serialized as an embedded object of its photo
-		'photo_id',  // see above
+		'photo', // see above and otherwise infinite loops will occur
+		'photo_id', // see above
 		'short_path',  // serialize url instead
+		'sym_links', // don't serialize relation of symlinks
 	];
 
 	/**

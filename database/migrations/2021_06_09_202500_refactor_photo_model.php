@@ -58,6 +58,17 @@ class RefactorPhotoModel extends Migration
 		DB::statement('ALTER TABLE photos RENAME COLUMN "livePhotoContentID" TO live_photo_content_id');
 		DB::statement('ALTER TABLE photos RENAME COLUMN "livePhotoChecksum" TO live_photo_checksum');
 
+		Schema::table('photos', function (Blueprint $table) {
+			$table->string('tags')->default('')->change();
+			$table->string('iso')->nullable(true)->change();
+			$table->string('aperture')->nullable(true)->change();
+			$table->string('make')->nullable(true)->change();
+			$table->string('model')->nullable(true)->change();
+			$table->string('lens')->nullable(true)->change();
+			$table->string('shutter')->nullable(true)->change();
+			$table->string('focal')->nullable(true)->change();
+		});
+
 		// We are brutal here and simply drop the old table, as the symlinks
 		// will be re-created on-the-fly when required
 		Schema::dropIfExists('sym_links');

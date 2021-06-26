@@ -3,7 +3,6 @@
 namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\Checks;
-use App\Actions\Photo\Extensions\Checksum;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
@@ -20,7 +19,6 @@ use App\Models\Photo;
 class Create
 {
 	use Checks;
-	use Checksum;
 	use Constants;
 
 	/** @var AddStrategyParameters the strategy parameters prepared and compiled by this class */
@@ -131,9 +129,6 @@ class Create
 				$this->strategyParameters->info['title'] = substr(basename($sourceFileInfo->getOriginalFilename(), $sourceFileInfo->getOriginalFileExtension()), 0, 98);
 			}
 		}
-
-		// Calculate checksum
-		$this->strategyParameters->info['checksum'] = $this->checksum($sourceFileInfo->getTmpFullPath());
 	}
 
 	/**

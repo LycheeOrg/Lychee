@@ -69,9 +69,9 @@ class GeoDataTest extends TestCase
 				'license' => 'none',
 				'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
 				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
-				'public' => '0',
-				'downloadable' => '1',
-				'share_button_visible' => '1',
+				'public' => 0,
+				'downloadable' => true,
+				'share_button_visible' => true,
 				'size_variants' => [
 					'thumb' => [
 						'width' => 200,

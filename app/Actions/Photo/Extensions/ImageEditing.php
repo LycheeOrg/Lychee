@@ -70,13 +70,7 @@ trait ImageEditing
 			return '';
 		}
 
-		if (!($tmp_file = tempnam(sys_get_temp_dir(), 'lychee')) ||
-			!rename($tmp_file, $tmp_file . '.jpeg')) {
-			Logs::notice(__METHOD__, __LINE__, 'Could not create a temporary file.');
-
-			return '';
-		}
-		$tmp_file .= '.jpeg';
+		$tmp_file = Helpers::createTemporaryFile('.jpeg');
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw file to ' . $tmp_file);
 
 		$resWidth = $resHeight = 0;

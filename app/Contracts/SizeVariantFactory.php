@@ -4,6 +4,7 @@ namespace App\Contracts;
 
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Support\Collection;
 
 abstract class SizeVariantFactory
 {
@@ -97,6 +98,8 @@ abstract class SizeVariantFactory
 	 * Otherwise, this method won't be able to create any size variant at all-
 	 * This method is inapt to create the original size variant.
 	 * Use {@link SizeVariantFactory::createOriginal()} for that.
+	 *
+	 * @return Collection the collection of created size variants
 	 */
-	abstract public function createSizeVariants(): void;
+	abstract public function createSizeVariants(): Collection;
 }

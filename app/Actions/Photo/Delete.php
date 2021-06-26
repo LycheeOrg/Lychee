@@ -8,15 +8,16 @@ class Delete
 {
 	public function do(array $photoIds)
 	{
-		$photos = Photo::whereIn('id', $photoIds)->get();
-
-		$no_error = true;
-
+		$photos = Photo::query()
+			->whereIn('id', $photoIds)
+			->get();
+		$success = true;
 		foreach ($photos as $photo) {
-			$no_error &= $photo->predelete();
-			$no_error &= $photo->delete();
+			// we must call delete on the model and not on the database
+			// in order to remove the files, too
+			$success &= $photo->delete();
 		}
 
-		return $no_error;
+		return $success;
 	}
 }

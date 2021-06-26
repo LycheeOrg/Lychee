@@ -42,10 +42,8 @@ class PhotosRotateTest extends TestCase
 		* Check some Exif data
 		*/
 		$response->assertJson([
-			'height' => 4480,
 			'id' => $id,
 			'filesize' => 21104156,
-			'width' => 6720,
 			'size_variants' => [
 				'small' => [
 					'width' => 540,
@@ -55,35 +53,36 @@ class PhotosRotateTest extends TestCase
 					'width' => 1620,
 					'height' => 1080,
 				],
+				'original' => [
+					'width' => 6720,
+					'height' => 4480,
+				],
 			],
 		]);
 
 		$editor_enabled_value = Configs::get_value('editor_enabled');
 		Configs::set('editor_enabled', '0');
 		$response = $this->post('/api/PhotoEditor::rotate', [
-			'photoID' => $id,
+			// somewhere in the Laravel middleware is a test which checks
+			// if `photoID` is a string; find where
+			'photoID' => (string) $id,
 			'direction' => 1,
 		]);
-		if ($response->getStatusCode() == 500) {
-			$response->dump();
-		}
-		$response->assertStatus(200);
-		$response->assertSee('false', false);
+		$response->assertStatus(422);
+		$response->assertSee('support for rotation disabled by configuration');
 
 		Configs::set('editor_enabled', '1');
-		$photos_tests->rotate('-1', 1, 'false');
-		$photos_tests->rotate($id, 'asdq', 'false', 422);
-		$photos_tests->rotate($id, '2', 'false');
+		$photos_tests->rotate('-1', 1, 200, 'false');
+		$photos_tests->rotate($id, 'asdq', 422, 'The selected direction is invalid');
+		$photos_tests->rotate($id, '2', 422, 'The selected direction is invalid');
 
 		$response = $photos_tests->rotate($id, 1);
 		/*
 		* Check some Exif data
 		*/
 		$response->assertJson([
-			'height' => 6720,
 			'id' => $id,
 			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
-			'width' => 4480,
 			'size_variants' => [
 				'small' => [
 					'width' => 240,
@@ -92,6 +91,10 @@ class PhotosRotateTest extends TestCase
 				'medium' => [
 					'width' => 720,
 					'height' => 1080,
+				],
+				'original' => [
+					'width' => 4480,
+					'height' => 6720,
 				],
 			],
 		]);
@@ -103,10 +106,8 @@ class PhotosRotateTest extends TestCase
 		*/
 		$response = $photos_tests->get($id, 'true');
 		$response->assertJson([
-			'height' => 4480,
 			'id' => $id,
 			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
-			'width' => 6720,
 			'size_variants' => [
 				'small' => [
 					'width' => 540,
@@ -115,6 +116,10 @@ class PhotosRotateTest extends TestCase
 				'medium' => [
 					'width' => 1620,
 					'height' => 1080,
+				],
+				'original' => [
+					'width' => 6720,
+					'height' => 4480,
 				],
 			],
 		]);

@@ -62,7 +62,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		}
 		$extension = $this->sourceFileInfo->getOriginalFileExtension();
 		if ($sizeVariant === SizeVariant::THUMB ||
-			$sizeVariant == SizeVariant::THUMB2X ||
+			$sizeVariant === SizeVariant::THUMB2X ||
 			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isVideo()) ||
 			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isRaw())
 		) {

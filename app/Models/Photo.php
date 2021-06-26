@@ -31,15 +31,15 @@ use Illuminate\Support\Facades\Storage;
  * @property string       $tags
  * @property int          $public
  * @property int          $owner_id
- * @property string       $type
+ * @property string|null  $type
  * @property int          $filesize
- * @property string       $iso
- * @property string       $aperture
- * @property string       $make
- * @property string       $model
- * @property string       $lens
- * @property string       $shutter
- * @property string       $focal
+ * @property string|null  $iso
+ * @property string|null  $aperture
+ * @property string|null  $make
+ * @property string|null  $model
+ * @property string|null  $lens
+ * @property string|null  $shutter
+ * @property string|null  $focal
  * @property float|null   $latitude
  * @property float|null   $longitude
  * @property float|null   $altitude
@@ -120,6 +120,7 @@ class Photo extends Model
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
 		'size_variants' => MustNotSetCast::class,
+		'size_variants_raw' => MustNotSetCast::class,
 		'short_path' => MustNotSetCast::class . ':filename',
 		'full_path' => MustNotSetCast::class . ':filename',
 		'url' => MustNotSetCast::class . ':filename',
@@ -150,6 +151,7 @@ class Photo extends Model
 	protected $hidden = [
 		'album',  // do not serialize relation in order to avoid infinite loops
 		'owner',  // do not serialize relation
+		'size_variants_raw', // do not serialize collections of size variants, but the wrapper object
 		'live_photo_filename', // serialize live_photo_url instead
 	];
 
@@ -171,7 +173,11 @@ class Photo extends Model
 	protected $with = [
 		'album',  // the album is required anyway for access control checks
 		'owner',  // same reason as for album
-		'size_variants',
+		'size_variants_raw',
+	];
+
+	protected $attributes = [
+		'tags' => '',
 	];
 
 	/**
@@ -205,7 +211,7 @@ class Photo extends Model
 		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
 
-	public function size_variants(): HasMany
+	public function size_variants_raw(): HasMany
 	{
 		return $this->hasMany(SizeVariant::class);
 	}

@@ -31,7 +31,7 @@ class AddDuplicateStrategy extends AddBaseStrategy
 			// Duplicate the existing photo, this will also duplicate all
 			// size variants without actually duplicating physical files
 			$existing = $this->photo;
-			$existing->load('size_variants');
+			$existing->load('size_variants_raw');
 			$this->photo = $existing->replicate();
 			// Adopt settings of duplicated photo acc. to target album
 			$this->photo->public = $this->parameters->public;

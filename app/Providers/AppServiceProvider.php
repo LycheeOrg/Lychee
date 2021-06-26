@@ -44,7 +44,6 @@ class AppServiceProvider extends ServiceProvider
 		CheckUpdate::class => CheckUpdate::class,
 		ApplyUpdate::class => ApplyUpdate::class,
 		SmartFactory::class => SmartFactory::class,
-		SizeVariantFactory::class => SizeVariantDefaultFactory::class,
 	];
 
 	/**
@@ -90,6 +89,11 @@ class AppServiceProvider extends ServiceProvider
 		$this->app->bind(
 			SizeVariantNamingStrategy::class,
 			SizeVariantLegacyNamingStrategy::class
+		);
+
+		$this->app->bind(
+			SizeVariantFactory::class,
+			SizeVariantDefaultFactory::class
 		);
 	}
 }
