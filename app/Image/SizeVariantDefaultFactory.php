@@ -180,63 +180,21 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	public function createSizeVariants(): Collection
 	{
+		$allVariants = [
+			SizeVariant::THUMB,
+			SizeVariant::THUMB2X,
+			SizeVariant::SMALL,
+			SizeVariant::SMALL2X,
+			SizeVariant::MEDIUM,
+			SizeVariant::MEDIUM2X,
+		];
 		$collection = new Collection();
 
-		// 1. Generate thumb
-		$collection->add($this->createSizeVariantInternal(
-			SizeVariant::THUMB,
-			self::THUMBNAIL_DIM,
-			self::THUMBNAIL_DIM
-		));
-
-		// 2. Generate thumb2x
-		if ($sv = $this->createSizeVariantInternalCond(
-			SizeVariant::THUMB2X,
-			self::THUMBNAIL2X_DIM,
-			self::THUMBNAIL2X_DIM,
-			Configs::get_value('thumb_2x', 0) === '1'
-		)) {
-			$collection->add($sv);
-		}
-
-		// 3. Generate small
-		if ($sv = $this->createSizeVariantInternalCond(
-			SizeVariant::SMALL,
-			$maxWidth = intval(Configs::get_value('small_max_width', 0)),
-			$maxHeight = intval(Configs::get_value('small_max_height', 0)),
-			true
-		)) {
-			$collection->add($sv);
-		}
-
-		// 4. Generate small2x
-		if ($sv = $this->createSizeVariantInternalCond(
-			SizeVariant::SMALL2X,
-			2 * $maxWidth,
-			2 * $maxHeight,
-			Configs::get_value('small_2x') === '1'
-		)) {
-			$collection->add($sv);
-		}
-
-		// 5. Generate medium
-		if ($sv = $this->createSizeVariantInternalCond(
-			SizeVariant::MEDIUM,
-			$maxWidth = intval(Configs::get_value('medium_max_width', 0)),
-			$maxHeight = intval(Configs::get_value('medium_max_height', 0)),
-			true
-		)) {
-			$collection->add($sv);
-		}
-
-		// 6. Generate medium2x
-		if ($sv = $this->createSizeVariantInternalCond(
-			SizeVariant::MEDIUM2X,
-			2 * $maxWidth,
-			2 * $maxHeight,
-			Configs::get_value('medium_2x') === '1'
-		)) {
-			$collection->add($sv);
+		foreach ($allVariants as $variant) {
+			$sv = $this->createSizeVariantCond($variant);
+			if ($sv) {
+				$collection->add($sv);
+			}
 		}
 
 		return $collection;
@@ -247,41 +205,28 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	public function createSizeVariant(int $sizeVariant): SizeVariant
 	{
-		switch ($sizeVariant) {
-			case SizeVariant::ORIGINAL:
-				throw new \InvalidArgumentException('createSizeVariant() must not be used to create original size, use createOriginal() instead');
-			case SizeVariant::MEDIUM2X:
-				$maxWidth = 2 * intval(Configs::get_value('medium_max_width'));
-				$maxHeight = 2 * intval(Configs::get_value('medium_max_height'));
-				break;
-			case SizeVariant::MEDIUM:
-				$maxWidth = intval(Configs::get_value('medium_max_width'));
-				$maxHeight = intval(Configs::get_value('medium_max_height'));
-				break;
-			case SizeVariant::SMALL2X:
-				$maxWidth = 2 * intval(Configs::get_value('small_max_width'));
-				$maxHeight = 2 * intval(Configs::get_value('small_max_height'));
-				break;
-			case SizeVariant::SMALL:
-				$maxWidth = intval(Configs::get_value('small_max_width'));
-				$maxHeight = intval(Configs::get_value('small_max_height'));
-				break;
-			case SizeVariant::THUMB2X:
-				$maxWidth = self::THUMBNAIL2X_DIM;
-				$maxHeight = self::THUMBNAIL2X_DIM;
-				break;
-			case SizeVariant::THUMB:
-				$maxWidth = self::THUMBNAIL_DIM;
-				$maxHeight = self::THUMBNAIL_DIM;
-				break;
-			default:
-				throw new \InvalidArgumentException('unknown size variant: ' . $sizeVariant);
+		if ($sizeVariant === SizeVariant::ORIGINAL) {
+			throw new \InvalidArgumentException('createSizeVariant() must not be used to create original size, use createOriginal() instead');
 		}
+		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
 
 		return $this->createSizeVariantInternal(
-			$sizeVariant,
-			$maxWidth,
-			$maxHeight
+			$sizeVariant, $maxWidth, $maxHeight
+		);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function createSizeVariantCond(int $sizeVariant): ?SizeVariant
+	{
+		if ($sizeVariant === SizeVariant::ORIGINAL) {
+			throw new \InvalidArgumentException('createSizeVariantCond() must not be used to create original size, use createOriginal() instead');
+		}
+		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
+
+		return $this->createSizeVariantInternalCond(
+			$sizeVariant, $maxWidth, $maxHeight, $this->isEnabledByConfiguration($sizeVariant)
 		);
 	}
 
@@ -335,6 +280,66 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		}
 
 		return $sv;
+	}
+
+	/**
+	 * Determines the maximum dimensions of the designated size variant.
+	 *
+	 * @param int $sizeVariant the size variant
+	 *
+	 * @return int[] an array with exactly two integers, the first integer is
+	 *               the width, the second integer is the height
+	 */
+	protected function getMaxDimensions(int $sizeVariant): array
+	{
+		switch ($sizeVariant) {
+			case SizeVariant::MEDIUM2X:
+				$maxWidth = 2 * intval(Configs::get_value('medium_max_width'));
+				$maxHeight = 2 * intval(Configs::get_value('medium_max_height'));
+				break;
+			case SizeVariant::MEDIUM:
+				$maxWidth = intval(Configs::get_value('medium_max_width'));
+				$maxHeight = intval(Configs::get_value('medium_max_height'));
+				break;
+			case SizeVariant::SMALL2X:
+				$maxWidth = 2 * intval(Configs::get_value('small_max_width'));
+				$maxHeight = 2 * intval(Configs::get_value('small_max_height'));
+				break;
+			case SizeVariant::SMALL:
+				$maxWidth = intval(Configs::get_value('small_max_width'));
+				$maxHeight = intval(Configs::get_value('small_max_height'));
+				break;
+			case SizeVariant::THUMB2X:
+				$maxWidth = self::THUMBNAIL2X_DIM;
+				$maxHeight = self::THUMBNAIL2X_DIM;
+				break;
+			case SizeVariant::THUMB:
+				$maxWidth = self::THUMBNAIL_DIM;
+				$maxHeight = self::THUMBNAIL_DIM;
+				break;
+			default:
+				throw new \InvalidArgumentException('unknown size variant: ' . $sizeVariant);
+		}
+
+		return [$maxWidth, $maxHeight];
+	}
+
+	protected function isEnabledByConfiguration(int $sizeVariant): bool
+	{
+		switch ($sizeVariant) {
+			case SizeVariant::MEDIUM2X:
+				return Configs::get_value('medium_2x', 0) == 1;
+			case SizeVariant::SMALL2X:
+				return Configs::get_value('small_2x', 0) == 1;
+			case SizeVariant::THUMB2X:
+				return Configs::get_value('thumb_2x', 0) == 1;
+			case SizeVariant::SMALL:
+			case SizeVariant::MEDIUM:
+			case SizeVariant::THUMB:
+				return true;
+			default:
+				throw new \InvalidArgumentException('unknown size variant: ' . $sizeVariant);
+		}
 	}
 
 	/**

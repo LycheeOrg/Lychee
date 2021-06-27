@@ -82,6 +82,32 @@ abstract class SizeVariantFactory
 	abstract public function createSizeVariant(int $sizeVariant): SizeVariant;
 
 	/**
+	 * Conditionally creates a size variant for the designated size variant.
+	 *
+	 * Contrary to {@link SizeVariantFactory::createSizeVariant()} this method
+	 * does not create a size variant of the desired type unconditionally,
+	 * but based on a decision logic which is matter of the implementing
+	 * concrete factory and may depend on application settings, supported
+	 * file formats, the dimensions of the original media, etc.
+	 *
+	 * Otherwise this methods behaves identical to
+	 * {@link SizeVariantFactory::createSizeVariant()}.
+	 * Refer there for further information.
+	 *
+	 * @param int $sizeVariant the desired size variant; admissible values
+	 *                         are:
+	 *                         {@link SizeVariant::THUMB},
+	 *                         {@link SizeVariant::THUMB2X},
+	 *                         {@link SizeVariant::SMALL},
+	 *                         {@link SizeVariant::SMALL2X},
+	 *                         {@link SizeVariant::MEDIUM} and
+	 *                         {@link SizeVariant::MEDIUM2X}
+	 *
+	 * @return SizeVariant|null the freshly created and persisted size variant
+	 */
+	abstract public function createSizeVariantCond(int $sizeVariant): ?SizeVariant;
+
+	/**
 	 * Creates a selected set of size variants.
 	 *
 	 * This method creates several size variants for the {@link Photo} object
