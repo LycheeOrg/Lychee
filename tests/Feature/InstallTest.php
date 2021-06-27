@@ -37,7 +37,20 @@ class InstallTest extends TestCase
 		/*
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
 		 */
-		$tables = ['sym_links', 'photos', 'configs', 'logs', 'migrations', 'page_contents', 'pages', 'user_album', 'users', 'albums', 'web_authn_credentials'];
+		$tables = [
+			'sym_links',
+			'size_variants',
+			'photos',
+			'configs',
+			'logs',
+			'migrations',
+			'page_contents',
+			'pages',
+			'user_album',
+			'users',
+			'albums',
+			'web_authn_credentials',
+		];
 		foreach ($tables as $table) {
 			Schema::dropIfExists($table);
 		}
