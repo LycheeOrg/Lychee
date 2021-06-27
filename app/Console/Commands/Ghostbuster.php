@@ -6,7 +6,7 @@ use App\Console\Commands\Utilities\Colorize;
 use App\Facades\Helpers;
 use App\Models\Photo;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class Ghostbuster extends Command
 {
@@ -48,15 +48,15 @@ class Ghostbuster extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
 	 */
-	public function handle()
+	public function handle(): int
 	{
 		$this->line('');
 		$removeDeadSymLinks = (bool) $this->argument('removeDeadSymLinks');
 		$dryrun = (bool) $this->argument('dryrun');
 		if ($removeDeadSymLinks) {
-			$this->line('Also parsing database for pictures where the url does not point to an existing file.');
+			$this->line('Also parsing database for pictures which point to non-existing files.');
 			$this->line($this->col->yellow('This may modify the database.'));
 			$this->line('');
 		}

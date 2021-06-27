@@ -80,19 +80,6 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		return $directory . $filename . $extension;
 	}
 
-	/**
-	 * Given a filename generate the @2x corresponding filename.
-	 * This is used for thumbs, small and medium.
-	 */
-	protected function ex2x(string $filename): string
-	{
-		$filename2x = explode('.', $filename);
-
-		return (count($filename2x) === 2) ?
-			$filename2x[0] . '@2x.' . $filename2x[1] :
-			$filename2x[0] . '@2x';
-	}
-
 	protected function generateExtension(int $sizeVariant): string
 	{
 		if ($sizeVariant === SizeVariant::THUMB ||
