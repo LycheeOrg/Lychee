@@ -2,7 +2,6 @@
 
 namespace App\Contracts;
 
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Models\Photo;
 
 /**
@@ -10,12 +9,12 @@ use App\Models\Photo;
  */
 abstract class SizeVariantNamingStrategy
 {
-	protected ?SourceFileInfo $sourceFileInfo = null;
+	protected string $fallbackExtension = '';
 	protected ?Photo $photo = null;
 
-	public function setSourceFileInfo(?SourceFileInfo $sourceFileInfo)
+	public function setFallbackExtension(string $originalExtension)
 	{
-		$this->sourceFileInfo = $sourceFileInfo;
+		$this->fallbackExtension = $originalExtension;
 	}
 
 	public function setPhoto(?Photo $photo)

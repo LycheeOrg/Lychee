@@ -2,9 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\SizeVariantFactory;
-use App\Contracts\SizeVariantNamingStrategy;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Console\Command;
@@ -79,34 +77,23 @@ class GenerateThumbs extends Command
 		$bar = $this->output->createProgressBar(count($photos));
 		$bar->start();
 
+		// Initialize factory for size variants
+		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$origSizeVariant = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
-			$origFullPath = $origSizeVariant->full_path;
-			// Initialize factory for size variants
-			$sourceFileInfo = new SourceFileInfo(
-				pathinfo($origFullPath, PATHINFO_BASENAME),
-				$photo->type,
-				$origFullPath
-			);
-			/** @var SizeVariantNamingStrategy $namingStrategy */
-			$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-			$namingStrategy->setSourceFileInfo($sourceFileInfo);
-			/** @var SizeVariantFactory $sizeVariantFactory */
-			$sizeVariantFactory = resolve(SizeVariantFactory::class);
-			$sizeVariantFactory->init($photo, $namingStrategy);
-
+			$sizeVariantFactory->init($photo);
 			$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantID);
-
 			if ($sizeVariant) {
 				$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
 			} else {
-				$this->line('   Could not create ' . $sizeVariantName . ' for ' . $photo->title . ' (' . $photo->width . 'x' . $photo->height . ').');
+				$this->line('   Could not create ' . $sizeVariantName . ' for ' . $photo->title . '.');
 			}
 			$bar->advance();
 		}
 
 		$bar->finish();
 		$this->line('  ');
+
+		return 0;
 	}
 }

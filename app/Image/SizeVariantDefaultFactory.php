@@ -36,13 +36,17 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	/**
 	 * {@inheritDoc}
 	 */
-	public function init(Photo $photo, SizeVariantNamingStrategy $namingStrategy): void
+	public function init(Photo $photo, ?SizeVariantNamingStrategy $namingStrategy = null): void
 	{
 		if ($this->photo) {
 			$this->cleanup();
 		}
 		$this->photo = $photo;
-		$this->namingStrategy = $namingStrategy;
+		if ($namingStrategy) {
+			$this->namingStrategy = $namingStrategy;
+		} elseif (!$this->namingStrategy) {
+			$this->namingStrategy = resolve(SizeVariantNamingStrategy::class);
+		}
 		// Ensure that the naming strategy is linked to this photo
 		$this->namingStrategy->setPhoto($this->photo);
 	}
@@ -208,6 +212,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($sizeVariant === SizeVariant::ORIGINAL) {
 			throw new \InvalidArgumentException('createSizeVariant() must not be used to create original size, use createOriginal() instead');
 		}
+		if (empty($this->referenceFullPath)) {
+			$this->extractReferenceImage();
+		}
 		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
 
 		return $this->createSizeVariantInternal(
@@ -223,18 +230,14 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($sizeVariant === SizeVariant::ORIGINAL) {
 			throw new \InvalidArgumentException('createSizeVariantCond() must not be used to create original size, use createOriginal() instead');
 		}
-		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
-
-		return $this->createSizeVariantInternalCond(
-			$sizeVariant, $maxWidth, $maxHeight, $this->isEnabledByConfiguration($sizeVariant)
-		);
-	}
-
-	protected function createSizeVariantInternalCond(int $sizeVariant, int $maxWidth, int $maxHeight, bool $predicate): ?SizeVariant
-	{
-		if (!$predicate) {
+		if (!$this->isEnabledByConfiguration($sizeVariant)) {
 			return null;
 		}
+		if (empty($this->referenceFullPath)) {
+			$this->extractReferenceImage();
+		}
+
+		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
 
 		if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 			$isLargeEnough = $this->referenceWidth > $maxWidth && $this->referenceHeight > $maxHeight;
@@ -257,26 +260,27 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 	protected function createSizeVariantInternal(int $sizeVariant, int $maxWidth, int $maxHeight): SizeVariant
 	{
-		if (empty($this->referenceFullPath)) {
-			$this->extractReferenceImage();
-		}
 		$shortPath = $this->namingStrategy->generateShortPath($sizeVariant);
-		$sv = $this->photo->size_variants->createSizeVariant($sizeVariant, $shortPath, $maxWidth, $maxHeight);
-		if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
-			$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
-		} else {
-			$resWidth = $resHeight = 0;
-			$success = $this->imageHandler->scale($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height, $resWidth, $resHeight);
-			$sv->width = $resWidth;
-			$sv->height = $resHeight;
-			$sv->save();
-		}
-		if (!$success) {
-			Logs::error(__METHOD__, __LINE__, 'Failed to resize image: ' . $this->referenceFullPath);
-			// If scaling/cropping has failed, remove the freshly create DB entity again
-			// This will also take care of removing a potentially created file from storage
-			$sv->delete();
-			throw new \RuntimeException('Failed to resize image: ' . $this->referenceFullPath);
+
+		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
+		if (!$sv) {
+			$sv = $this->photo->size_variants->createSizeVariant($sizeVariant, $shortPath, $maxWidth, $maxHeight);
+			if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
+				$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
+			} else {
+				$resWidth = $resHeight = 0;
+				$success = $this->imageHandler->scale($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height, $resWidth, $resHeight);
+				$sv->width = $resWidth;
+				$sv->height = $resHeight;
+				$sv->save();
+			}
+			if (!$success) {
+				Logs::error(__METHOD__, __LINE__, 'Failed to resize image: ' . $this->referenceFullPath);
+				// If scaling/cropping has failed, remove the freshly create DB entity again
+				// This will also take care of removing a potentially created file from storage
+				$sv->delete();
+				throw new \RuntimeException('Failed to resize image: ' . $this->referenceFullPath);
+			}
 		}
 
 		return $sv;

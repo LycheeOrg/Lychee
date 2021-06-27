@@ -3,10 +3,14 @@
 namespace App\Assets;
 
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Facades\Helpers;
+use App\Models\Photo;
 use App\Models\SizeVariant;
 
 class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 {
+	protected string $originalExtension = '';
+
 	/**
 	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
 	 */
@@ -29,6 +33,20 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	 */
 	const DEFAULT_EXTENSION = '.jpeg';
 
+	public function setPhoto(?Photo $photo)
+	{
+		parent::setPhoto($photo);
+		$this->originalExtension = '';
+		if ($this->photo) {
+			$sv = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+			if ($sv) {
+				if (!empty($sv->short_path)) {
+					$this->originalExtension = Helpers::getExtension($sv->short_path, false);
+				}
+			}
+		}
+	}
+
 	/**
 	 * Generates a short path for the designated size variant.
 	 *
@@ -41,11 +59,8 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		if (SizeVariant::ORIGINAL > $sizeVariant || $sizeVariant > SizeVariant::THUMB) {
 			throw new \InvalidArgumentException('invalid $sizeVariant = ' . $sizeVariant);
 		}
-		if ($this->sourceFileInfo == null || empty($this->sourceFileInfo->getOriginalFileExtension())) {
-			throw new \InvalidArgumentException('file extension of original file must not be empty');
-		}
 		if ($this->photo == null) {
-			throw new \InvalidArgumentException('file extension of original file must not be empty');
+			throw new \InvalidArgumentException('associated photo model must not be null');
 		}
 		if (empty($this->photo->checksum)) {
 			throw new \BadFunctionCallException('cannot generate short path for photo before checksum has been set');
@@ -60,14 +75,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 			$sizeVariant === SizeVariant::THUMB2X) {
 			$filename .= '@2x';
 		}
-		$extension = $this->sourceFileInfo->getOriginalFileExtension();
-		if ($sizeVariant === SizeVariant::THUMB ||
-			$sizeVariant === SizeVariant::THUMB2X ||
-			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isVideo()) ||
-			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isRaw())
-		) {
-			$extension = self::DEFAULT_EXTENSION;
-		}
+		$extension = $this->generateExtension($sizeVariant);
 
 		return $directory . $filename . $extension;
 	}
@@ -83,5 +91,24 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		return (count($filename2x) === 2) ?
 			$filename2x[0] . '@2x.' . $filename2x[1] :
 			$filename2x[0] . '@2x';
+	}
+
+	protected function generateExtension(int $sizeVariant): string
+	{
+		if ($sizeVariant === SizeVariant::THUMB ||
+			$sizeVariant === SizeVariant::THUMB2X ||
+			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isVideo()) ||
+			($sizeVariant !== SizeVariant::ORIGINAL && $this->photo->isRaw())
+		) {
+			return self::DEFAULT_EXTENSION;
+		} elseif (!empty($this->originalExtension)) {
+			return $this->originalExtension;
+		} else {
+			if (empty($this->fallbackExtension)) {
+				throw new \LogicException('file extension must not be empty');
+			}
+
+			return $this->fallbackExtension;
+		}
 	}
 }

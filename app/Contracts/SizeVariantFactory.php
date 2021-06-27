@@ -16,11 +16,16 @@ abstract class SizeVariantFactory
 	 * It is the caller's responsibility to also call
 	 * {@link SizeVariantFactory::cleanup()} when the factory is not needed
 	 * anymore.
+	 * If `$namingStrategy` equals `null`, then the default naming
+	 * strategy is used.
+	 * Typically, this requires that the original size variant of `$photo`
+	 * already exists such that the original size variant can be used to
+	 * derive the names of further size variants.
 	 *
-	 * @param Photo                     $photo
-	 * @param SizeVariantNamingStrategy $namingStrategy
+	 * @param Photo                          $photo
+	 * @param SizeVariantNamingStrategy|null $namingStrategy
 	 */
-	abstract public function init(Photo $photo, SizeVariantNamingStrategy $namingStrategy): void;
+	abstract public function init(Photo $photo, ?SizeVariantNamingStrategy $namingStrategy = null): void;
 
 	/**
 	 * Removes any temporary files which this factory may have created.

@@ -107,7 +107,7 @@ class RotateStrategy extends AddBaseStrategy
 		);
 		/** @var SizeVariantNamingStrategy $namingStrategy */
 		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		$namingStrategy->setSourceFileInfo($this->parameters->sourceFileInfo);
+		$namingStrategy->setFallbackExtension($this->parameters->sourceFileInfo->getOriginalFileExtension());
 		/** @var SizeVariantFactory $sizeVariantFactory */
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
