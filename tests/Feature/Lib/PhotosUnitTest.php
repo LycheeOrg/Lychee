@@ -46,6 +46,9 @@ class PhotosUnitTest
 				'0' => $file,
 			]
 		);
+		if ($response->getStatusCode() === 500) {
+			$response->dump();
+		}
 		$response->assertSuccessful();
 		$response->assertDontSee('Error');
 
