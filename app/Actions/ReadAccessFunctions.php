@@ -99,7 +99,7 @@ class ReadAccessFunctions
 	 *
 	 * @return bool
 	 */
-	public function photo(Photo $photo)
+	public function photo(Photo $photo): bool
 	{
 		if (AccessControl::is_current_user($photo->owner_id)) {
 			return true;

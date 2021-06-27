@@ -35,9 +35,7 @@ class PhotosRotateTest extends TestCase
 
 		$id = $photos_tests->upload($file);
 
-		$photos_tests->get($id, 'true');
-
-		$response = $photos_tests->get($id, 'true');
+		$response = $photos_tests->get($id);
 		/*
 		* Check some Exif data
 		*/
@@ -72,7 +70,7 @@ class PhotosRotateTest extends TestCase
 		$response->assertSee('support for rotation disabled by configuration');
 
 		Configs::set('editor_enabled', '1');
-		$photos_tests->rotate('-1', 1, 200, 'false');
+		$photos_tests->rotate('-1', 1, 404);
 		$photos_tests->rotate($id, 'asdq', 422, 'The selected direction is invalid');
 		$photos_tests->rotate($id, '2', 422, 'The selected direction is invalid');
 
@@ -104,7 +102,7 @@ class PhotosRotateTest extends TestCase
 		/*
 		* Check some Exif data
 		*/
-		$response = $photos_tests->get($id, 'true');
+		$response = $photos_tests->get($id);
 		$response->assertJson([
 			'id' => $id,
 			// 'filesize' => 21104156, // This changes during the image manipulation sadly.
@@ -124,7 +122,7 @@ class PhotosRotateTest extends TestCase
 			],
 		]);
 
-		$photos_tests->delete($id, 'true');
+		$photos_tests->delete($id);
 
 		// reset
 		Configs::set('editor_enabled', $editor_enabled_value);

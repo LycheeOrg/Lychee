@@ -12,7 +12,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 		parent::__construct($parameters, $existingPhoto);
 	}
 
-	public function do(): ?Photo
+	public function do(): Photo
 	{
 		$original = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
 		$ext = $this->parameters->sourceFileInfo->getOriginalFileExtension();

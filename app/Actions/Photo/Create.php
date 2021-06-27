@@ -4,13 +4,13 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\Checks;
 use App\Actions\Photo\Extensions\Constants;
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\AddDuplicateStrategy;
 use App\Actions\Photo\Strategies\AddPhotoPartnerStrategy;
 use App\Actions\Photo\Strategies\AddStandaloneStrategy;
 use App\Actions\Photo\Strategies\AddStrategyParameters;
 use App\Actions\Photo\Strategies\AddVideoPartnerStrategy;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Actions\Photo\Strategies\SourceFileInfo;
 use App\Exceptions\JsonError;
 use App\Factories\AlbumFactory;
 use App\Metadata\Extractor;
@@ -46,7 +46,7 @@ class Create
 	 * @throws \App\Exceptions\FolderIsNotWritable
 	 * @throws \App\Exceptions\JsonError
 	 */
-	public function add(SourceFileInfo $sourceFileInfo, int $albumID = 0): ?Photo
+	public function add(SourceFileInfo $sourceFileInfo, int $albumID = 0): Photo
 	{
 		// Check permissions
 		$this->checkPermissions();
@@ -156,8 +156,8 @@ class Create
 			/** @var Photo|null $livePartner */
 			$livePartner = Photo::query()
 				->where('live_photo_content_id', '=', $contentID)
-				->where('album_id', '=', intval($albumID))
-				->whereNull('live_photo_filename')->first();
+				->where('album_id', '=', $albumID)
+				->whereNull('live_photo_short_path')->first();
 		}
 		if ($livePartner != null) {
 			// if a potential partner has been found, ensure that it is of a

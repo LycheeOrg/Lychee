@@ -124,9 +124,8 @@ class Photo extends Model
 		'short_path' => MustNotSetCast::class . ':filename',
 		'full_path' => MustNotSetCast::class . ':filename',
 		'url' => MustNotSetCast::class . ':filename',
-		'live_photo_short_path' => MustNotSetCast::class . ':live_photo_filename',
-		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_filename',
-		'live_photo_url' => MustNotSetCast::class . ':live_photo_filename',
+		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
+		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
 		'downloadable' => MustNotSetCast::class,
 		'share_button_visible' => MustNotSetCast::class,
 		// the following casts should normally not be necessary
@@ -152,7 +151,7 @@ class Photo extends Model
 		'album',  // do not serialize relation in order to avoid infinite loops
 		'owner',  // do not serialize relation
 		'size_variants_raw', // do not serialize collections of size variants, but the wrapper object
-		'live_photo_filename', // serialize live_photo_url instead
+		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
 	/**
@@ -545,5 +544,27 @@ class Photo extends Model
 			})
 			->where('id', '<>', $this->id)
 			->exists();
+	}
+
+	public function replicate(array $except = null): Photo
+	{
+		$duplicate = parent::replicate($except);
+		// save duplicate so that is gets an ID
+		$duplicate->push();
+		/** @var SizeVariant $sizeVariant */
+		foreach ($this->size_variants_raw()->get() as $sizeVariant) {
+			/** @var SizeVariant $dupSizeVariant */
+			$dupSizeVariant = $duplicate->size_variants_raw()->make();
+			$dupSizeVariant->size_variant = $sizeVariant->size_variant;
+			$dupSizeVariant->short_path = $sizeVariant->short_path;
+			$dupSizeVariant->width = $sizeVariant->width;
+			$dupSizeVariant->height = $sizeVariant->height;
+			if (!$dupSizeVariant->save()) {
+				throw new \RuntimeException('could not persist size variant');
+			}
+		}
+		$duplicate->refresh();
+
+		return $duplicate;
 	}
 }

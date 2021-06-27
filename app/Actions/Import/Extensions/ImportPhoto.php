@@ -3,8 +3,8 @@
 namespace App\Actions\Import\Extensions;
 
 use App\Actions\Photo\Create;
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Actions\Photo\Strategies\SourceFileInfo;
 
 trait ImportPhoto
 {

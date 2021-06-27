@@ -2,7 +2,7 @@
 
 namespace App\Contracts;
 
-use App\Actions\Photo\Strategies\SourceFileInfo;
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Models\Photo;
 
 /**

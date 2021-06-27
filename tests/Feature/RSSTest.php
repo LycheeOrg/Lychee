@@ -68,16 +68,13 @@ class RSSTest extends TestCase
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
-		if ($response->getStatusCode() === 500) {
-			$response->dump();
-		}
 		$response->assertStatus(200);
 
 		// set picture to private
 		$photos_tests->set_public($photoID);
 
 		// move picture to album
-		$photos_tests->set_album($albumID, $photoID, 'true');
+		$photos_tests->set_album($albumID, $photoID);
 		$albums_tests->set_public($albumID, 1, 1, 1, 0, 1, 1, 'true');
 
 		// try to get the RSS feed.

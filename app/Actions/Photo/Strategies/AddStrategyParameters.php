@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Models\Album;
 use App\Models\Configs;
 

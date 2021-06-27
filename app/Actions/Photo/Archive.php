@@ -2,16 +2,17 @@
 
 namespace App\Actions\Photo;
 
+use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Actions\Photo\Extensions\Constants;
 use App\Facades\AccessControl;
-use App\Facades\Helpers;
 use App\Models\Configs;
-use App\Models\Extensions\SizeVariant;
 use App\Models\Logs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -20,7 +21,37 @@ class Archive
 {
 	use Constants;
 
-	private $badChars;
+	const LIVEPHOTOVIDEO = 'LIVEPHOTOVIDEO';
+	const FULL = 'FULL';
+	const MEDIUM2X = 'MEDIUM2X';
+	const MEDIUM = 'MEDIUM';
+	const SMALL2X = 'SMALL2X';
+	const SMALL = 'SMALL';
+	const THUMB2X = 'THUMB2X';
+	const THUMB = 'THUMB';
+
+	const VARIANTS = [
+		self::LIVEPHOTOVIDEO,
+		self::FULL,
+		self::MEDIUM2X,
+		self::MEDIUM,
+		self::SMALL2X,
+		self::SMALL,
+		self::THUMB2X,
+		self::THUMB,
+	];
+
+	const VARIANT2VARIANT = [
+		self::FULL => SizeVariant::ORIGINAL,
+		self::MEDIUM2X => SizeVariant::MEDIUM2X,
+		self::MEDIUM => SizeVariant::MEDIUM,
+		self::SMALL2X => SizeVariant::SMALL2X,
+		self::SMALL => SizeVariant::SMALL,
+		self::THUMB2X => SizeVariant::THUMB2X,
+		self::THUMB => SizeVariant::THUMB,
+	];
+
+	private array $badChars;
 
 	public function __construct()
 	{
@@ -29,74 +60,82 @@ class Archive
 	}
 
 	/**
-	 * @param string $albumID
+	 * Returns a response for a downloadable file.
 	 *
-	 * @return StreamedResponse
+	 * The file is either a media file (if the array of photo IDs contains
+	 * a single element) or a ZIP file (if the array of photo IDs contains
+	 * more than one element).
+	 *
+	 * @param int[]  $photoIDs the IDs of the photos which shall be included
+	 *                         in the response
+	 * @param string $variant  the desired variant of the photo; valid values
+	 *                         are
+	 *                         {@link Archive::LIVEPHOTOVIDEO},
+	 *                         {@link Archive::FULL},
+	 *                         {@link Archive::MEDIUM2X},
+	 *                         {@link Archive::MEDIUM},
+	 *                         {@link Archive::SMALL2X},
+	 *                         {@link Archive::SMALL},
+	 *                         {@link Archive::THUMB2X},
+	 *                         {@link Archive::THUMB}
+	 *
+	 * @return Response
 	 */
-	public function do(array $photoIDs, $kind_request)
+	public function do(array $photoIDs, string $variant): Response
 	{
 		if (count($photoIDs) === 1) {
-			$response = $this->file($photoIDs[0], $kind_request);
+			$response = $this->file($photoIDs[0], $variant);
 		} else {
-			$response = $this->zip($photoIDs, $kind_request);
+			$response = $this->zip($photoIDs, $variant);
 		}
 
 		return $response;
 	}
 
-	public function file($photoID, $kind_request)
+	protected function file($photoID, $variant): BinaryFileResponse
 	{
-		$ret = $this->extract_names($photoID, $kind_request);
-		if ($ret === null) {
-			return abort(404);
+		$archiveFileInfo = $this->extractFileInfo($photoID, $variant);
+		if ($archiveFileInfo === null) {
+			abort(404);
 		}
+		$response = new BinaryFileResponse($archiveFileInfo->getFullPath());
 
-		list($title, $kind, $extension, $url) = $ret;
-
-		// Set title for photo
-		$file = $title . $kind . $extension;
-
-		$response = new BinaryFileResponse($url);
-
-		return $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $file);
+		return $response->setContentDisposition(
+			ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+			$archiveFileInfo->getFilename()
+		);
 	}
 
-	public function zip(array $photoIDs, string $kind_request)
+	protected function zip(array $photoIDs, string $variant): StreamedResponse
 	{
-		$response = new StreamedResponse(function () use ($kind_request, $photoIDs) {
+		$response = new StreamedResponse(function () use ($variant, $photoIDs) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 			$zip = new ZipStream(null, $options);
 
-			$files = [];
+			$fileCounter = [];
 			foreach ($photoIDs as $photoID) {
-				$ret = $this->extract_names($photoID, $kind_request);
-				if ($ret == null) {
-					return abort(404);
+				$archiveFileInfo = $this->extractFileInfo($photoID, $variant);
+				if ($archiveFileInfo == null) {
+					abort(404);
 				}
-
-				list($title, $kind, $extension, $url) = $ret;
 
 				// Set title for photo
-				$file = $title . $kind . $extension;
+				$filename = $archiveFileInfo->getFilename();
 				// Check for duplicates
-				if (!empty($files)) {
-					$i = 1;
-					$tmp_file = $file;
-					while (in_array($tmp_file, $files)) {
-						// Set new title for photo
-						$tmp_file = $title . $kind . '-' . $i . $extension;
-						$i++;
-					}
-					$file = $tmp_file;
+				if (array_key_exists($filename, $fileCounter)) {
+					$cnt = $fileCounter[$filename];
+					$cnt++;
+					$fileCounter[$filename] = $cnt;
+					$filename = $archiveFileInfo->getFilename('-' . $cnt);
+				} else {
+					$fileCounter[$filename] = 1;
 				}
-				// Add to array
-				$files[] = $file;
 
 				// Reset the execution timeout for every iteration.
 				set_time_limit(ini_get('max_execution_time'));
 
-				$zip->addFileFromPath($file, $url);
+				$zip->addFileFromPath($filename, $archiveFileInfo->getFullPath());
 			} // foreach ($photoIDs)
 
 			// finish the zip stream
@@ -112,14 +151,24 @@ class Archive
 	}
 
 	/**
-	 * extract the file names.
+	 * Creates a {@link ArchiveFileInfo} for the indicated photo and variant.
 	 *
-	 * @param $photoID
-	 * @param $request
+	 * @param int    $photoID the id of the photo whose archive information
+	 *                        shall be returned
+	 * @param string $variant the desired variant of the photo; valid values
+	 *                        are
+	 *                        {@link Archive::LIVEPHOTOVIDEO},
+	 *                        {@link Archive::FULL},
+	 *                        {@link Archive::MEDIUM2X},
+	 *                        {@link Archive::MEDIUM},
+	 *                        {@link Archive::SMALL2X},
+	 *                        {@link Archive::SMALL},
+	 *                        {@link Archive::THUMB2X},
+	 *                        {@link Archive::THUMB}
 	 *
-	 * @return array|null
+	 * @return ArchiveFileInfo|null the created archive info
 	 */
-	public function extract_names($photoID, $kind_input)
+	public function extractFileInfo(int $photoID, string $variant): ?ArchiveFileInfo
 	{
 		/** @var Photo $photo */
 		$photo = Photo::with('album')->findOrFail($photoID);
@@ -134,71 +183,32 @@ class Archive
 			}
 		}
 
-		$title = str_replace($this->badChars, '', $photo->title) ?: 'Untitled';
+		$baseFilename = str_replace($this->badChars, '', $photo->title) ?: 'Untitled';
 
-		$prefix_path = $photo->isRaw() ? 'raw/' : 'big/';
-
-		// determine the file based on given size
-		if ($photo->isVideo() === false) {
-			$fileName = $photo->filename;
+		if ($variant === self::LIVEPHOTOVIDEO) {
+			$shortPath = $photo->live_photo_short_path;
+			$baseFilenameAddon = '';
+		} elseif (array_key_exists($variant, self::VARIANT2VARIANT)) {
+			$sv = $photo->size_variants->getSizeVariant(self::VARIANT2VARIANT[$variant]);
+			$shortPath = '';
+			$baseFilenameAddon = '';
+			if ($sv) {
+				$shortPath = $sv->short_path;
+				$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
+			}
 		} else {
-			$fileName = $photo->thumb_filename;
+			$msg = 'Invalid variant ' . $variant;
+			Logs::error(__METHOD__, __LINE__, $msg);
+			throw new \InvalidArgumentException($msg);
 		}
 
-		switch ($kind_input) {
-			case 'FULL':
-				$path = $prefix_path . $photo->filename;
-				$kind = '';
-				break;
-			case 'LIVEPHOTOVIDEO':
-				$path = $prefix_path . $photo->live_photo_filename;
-				$kind = '';
-				break;
-			case 'MEDIUM2X':
-				$path = 'medium/' . Helpers::ex2x($fileName);
-				$kind = '-' . $photo->medium2x_width . 'x' . $photo->medium2x_height;
-				break;
-			case 'MEDIUM':
-				$path = 'medium/' . $fileName;
-				$kind = '-' . $photo->medium_width . 'x' . $photo->medium_height;
-				break;
-			case 'SMALL2X':
-				$path = 'small/' . Helpers::ex2x($fileName);
-				$kind = '-' . $photo->small2x_width . 'x' . $photo->small2x_height;
-				break;
-			case 'SMALL':
-				$path = 'small/' . $fileName;
-				$kind = '-' . $photo->small_width . 'x' . $photo->small_height;
-				break;
-			case 'THUMB2X':
-				$path = 'thumb/' . Helpers::ex2x($photo->thumb_filename);
-				$kind = '-' . SizeVariant::THUMBNAIL2X_DIM . 'x' . SizeVariant::THUMBNAIL2X_DIM;
-				break;
-			case 'THUMB':
-				$path = 'thumb/' . $photo->thumb_filename;
-				$kind = '-' . SizeVariant::THUMBNAIL_DIM . 'x' . SizeVariant::THUMBNAIL_DIM;
-				break;
-			default:
-				Logs::error(__METHOD__, __LINE__, 'Invalid kind ' . $kind_input);
-
-				return null;
-		}
-
-		$fullpath = Storage::path($path);
-
-		// Check the file actually exists
-		if (!Storage::exists($path)) {
-			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $fullpath . ' (' . $title . ')');
+		// Check if file actually exists
+		if (empty($shortPath) || !Storage::exists($shortPath)) {
+			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $shortPath . ' (' . $baseFilename . ')');
 
 			return null;
 		}
 
-		// Get extension of image
-		$extension = '';
-		if (!$photo->isRaw()) {
-			$extension = Helpers::getExtension($fullpath, false);
-		}
-
-		return [$title, $kind, $extension, $fullpath];
+		return new ArchiveFileInfo($baseFilename, $baseFilenameAddon, Storage::path($shortPath));
 	}
 }

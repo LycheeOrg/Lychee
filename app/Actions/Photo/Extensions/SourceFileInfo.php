@@ -1,24 +1,11 @@
 <?php
 
-namespace App\Actions\Photo\Strategies;
+namespace App\Actions\Photo\Extensions;
 
 use App\Facades\Helpers;
 
 /**
  * Class SourceFileInfo.
- *
- * This class is an interim mitigation and quick replacement for an anonymous
- * array which has been passed around between
- * {@link \App\Actions\Photo\Create},
- * {@link \App\Actions\Photo\Strategies\AddDuplicateStrategy},
- * {@link \App\Actions\Photo\Strategies\AddStandaloneStrategy},
- * {@link \App\Actions\Photo\Strategies\AddBaseStrategy} and probably
- * some more classes.
- * IMHO, this class should not exist, but it is still better than passing
- * around a not type-safe array with three string values and conveys a
- * semantic meaning.
- *
- * TODO: Refactor the four classes above
  */
 class SourceFileInfo
 {

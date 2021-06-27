@@ -13,7 +13,7 @@ class AddDuplicateStrategy extends AddBaseStrategy
 		parent::__construct($parameters, $existing);
 	}
 
-	public function do(): ?Photo
+	public function do(): Photo
 	{
 		// At least update the existing photo with additional metadata if
 		// available
@@ -31,13 +31,12 @@ class AddDuplicateStrategy extends AddBaseStrategy
 			// Duplicate the existing photo, this will also duplicate all
 			// size variants without actually duplicating physical files
 			$existing = $this->photo;
-			$existing->load('size_variants_raw');
 			$this->photo = $existing->replicate();
 			// Adopt settings of duplicated photo acc. to target album
 			$this->photo->public = $this->parameters->public;
 			$this->photo->star = $this->parameters->star;
 			$this->setParentAndOwnership();
-			$this->photo->push();
+			$this->photo->save();
 		}
 
 		return $this->photo;

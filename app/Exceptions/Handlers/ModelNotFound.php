@@ -2,7 +2,10 @@
 
 namespace App\Exceptions\Handlers;
 
+use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 class ModelNotFound
@@ -15,16 +18,16 @@ class ModelNotFound
 	 *
 	 * @return bool
 	 */
-	public function check($request, Throwable $exception)
+	public function check(Request $request, Throwable $exception)
 	{
-		return $exception instanceof ModelNotFoundException;
+		return ($exception instanceof ModelNotFoundException) && ($exception->getModel() !== Photo::class);
 	}
 
 	/**
-	 * @return Response
+	 * @return JsonResponse
 	 */
 	// @codeCoverageIgnoreStart
-	public function go()
+	public function go(): JsonResponse
 	{
 		return response()->json('false', 200);
 	}

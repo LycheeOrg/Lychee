@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 
@@ -15,7 +16,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		$this->existingVideo = $existingVideo;
 	}
 
-	public function do(): ?Photo
+	public function do(): Photo
 	{
 		// First add the source file as if it was a stand-alone photo
 		// This create and persists $this->photo as a new DB entry

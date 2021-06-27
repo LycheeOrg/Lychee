@@ -50,9 +50,6 @@ class AlbumsUnitTest
 		];
 
 		$response = $this->testCase->json('POST', '/api/Album::add', $params);
-		if ($response->getStatusCode() === 500) {
-			$response->dump();
-		}
 		$response->assertStatus(200);
 		if ($result == 'true') {
 			$response->assertDontSee('false');
@@ -162,9 +159,6 @@ class AlbumsUnitTest
 			'/api/Album::get',
 			['albumID' => $id, 'password' => $password]
 		);
-		if ($response->getStatusCode() === 500) {
-			$response->dump();
-		}
 		$response->assertOk();
 		if ($result != 'true') {
 			$response->assertSee($result, false);
@@ -203,9 +197,6 @@ class AlbumsUnitTest
 	protected function see_in_albums(string $id)
 	{
 		$response = $this->testCase->json('POST', '/api/Albums::get', []);
-		if ($response->getStatusCode() !== 200) {
-			$response->dump();
-		}
 		$response->assertOk();
 		$response->assertSee($id, false);
 	}
@@ -361,11 +352,6 @@ class AlbumsUnitTest
 			'albumID' => $id,
 			'show_tags' => $tags,
 		]);
-
-		if ($response->getStatusCode() !== 200) {
-			$response->dump();
-		}
-
 		$response->assertOk();
 		$response->assertSee($result);
 	}
@@ -398,7 +384,7 @@ class AlbumsUnitTest
 		string $id,
 		string $result = 'true'
 	) {
-		$response = $this->testCase->json('POST', '/api/Album::delete', ['albumIDs' => $id]);
+		$response = $this->testCase->postJson('/api/Album::delete', ['albumIDs' => $id]);
 		$response->assertOk();
 		$response->assertSee($result, false);
 	}

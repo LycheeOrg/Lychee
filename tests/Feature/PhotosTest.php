@@ -42,7 +42,7 @@ class PhotosTest extends TestCase
 
 		$id = $photos_tests->upload($file);
 
-		$photos_tests->get($id, 'true');
+		$photos_tests->get($id);
 
 		$photos_tests->see_in_unsorted($id);
 		$photos_tests->see_in_recent($id);
@@ -54,7 +54,7 @@ class PhotosTest extends TestCase
 		$photos_tests->set_star($id);
 		$photos_tests->set_tag($id, 'night');
 		$photos_tests->set_public($id);
-		$photos_tests->set_license($id, 'WTFPL', '"Error: License not recognised!"');
+		$photos_tests->set_license($id, 'WTFPL', 422, 'The selected license is invalid');
 		$photos_tests->set_license($id, 'CC0');
 		$photos_tests->set_license($id, 'CC-BY-1.0');
 		$photos_tests->set_license($id, 'CC-BY-2.0');
@@ -90,8 +90,8 @@ class PhotosTest extends TestCase
 
 		$photos_tests->see_in_favorite($id);
 		$photos_tests->see_in_shared($id);
-		$response = $photos_tests->get($id, 'true');
-		$photos_tests->download($id, 'FULL');
+		$response = $photos_tests->get($id);
+		$photos_tests->download($id);
 
 		/*
 		 * Check some Exif data
@@ -149,20 +149,68 @@ class PhotosTest extends TestCase
 		 * We now test interaction with albums.
 		 */
 		$albumID = $albums_tests->add('0', 'test_album_2');
-		$photos_tests->set_album('-1', $id, 'false');
-		$photos_tests->set_album($albumID, $id, 'true');
+		/*
+		 * Actually, the expected status code should be 404, because neither
+		 * an album nor an photo with ID -1 exists.
+		 * However, this requires a fix of `ReadCheck` and `UploadCheck` first.
+		 * But this should be another PR.
+		 * TODO: Fix this.
+		 */
+		$photos_tests->set_album('-1', $id, 200, 'false');
+		$photos_tests->set_album($albumID, $id);
 		$albums_tests->download($albumID);
 		$photos_tests->dont_see_in_unsorted($id);
 
-		$photos_tests->duplicate($id, 'true');
+		/**
+		 * Test duplication, the duplicate should be completely identical
+		 * except for the ID.
+		 */
+		$response = $photos_tests->duplicate($id);
+		$response->assertJson([
+			'aperture' => 'f/2.8',
+			'description' => 'A night photography',
+			'focal' => '16 mm',
+			'iso' => '1250',
+			'lens' => 'EF16-35mm f/2.8L USM',
+			'license' => 'reserved',
+			'make' => 'Canon',
+			'model' => 'Canon EOS R',
+			'public' => 1,
+			'shutter' => '30 s',
+			'filesize' => 21104156,
+			'star' => true,
+			'tags' => '',
+			'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
+			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
+			'title' => "Night in Ploumanac'h",
+			'type' => 'image/jpeg',
+			'size_variants' => [
+				'small' => [
+					'width' => 540,
+					'height' => 360,
+				],
+				'medium' => [
+					'width' => 1620,
+					'height' => 1080,
+				],
+				'original' => [
+					'width' => 6720,
+					'height' => 4480,
+				],
+			],
+		]);
+
+		/**
+		 * Get album which should contain both photos.
+		 */
 		$album = $this->asObject($albums_tests->get($albumID, '', 'true'));
 		$this->assertEquals(2, count($album->photos));
 
 		$ids = [];
 		$ids[0] = $album->photos[0]->id;
 		$ids[1] = $album->photos[1]->id;
-		$photos_tests->delete($ids[0], 'true');
-		$photos_tests->get($id[0], 'false');
+		$photos_tests->delete($ids[0]);
+		$photos_tests->get($ids[0], 404);
 
 		$photos_tests->dont_see_in_recent($ids[0]);
 		$photos_tests->dont_see_in_unsorted($ids[1]);
@@ -176,8 +224,8 @@ class PhotosTest extends TestCase
 		$response->assertStatus(200);
 
 		// delete the picture after displaying it
-		$photos_tests->delete($ids[1], 'true');
-		$photos_tests->get($id[1], 'false');
+		$photos_tests->delete($ids[1]);
+		$photos_tests->get($ids[1], 404);
 		$album = $this->asObject($albums_tests->get($albumID, '', 'true'));
 		$this->assertEquals(0, count($album->photos));
 
@@ -248,7 +296,7 @@ class PhotosTest extends TestCase
 			$photo_id = $photos_tests->upload($photo_file);
 			$video_id = $photos_tests->upload($video_file);
 
-			$photo = $this->asObject($photos_tests->get($photo_id, 'true'));
+			$photo = $this->asObject($photos_tests->get($photo_id));
 
 			$this->assertEquals($photo_id, $video_id);
 			$this->assertEquals($photo->live_photo_content_id, 'E905E6C6-C747-4805-942F-9904A0281F02');
@@ -266,13 +314,20 @@ class PhotosTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		$photos_tests->wrong_upload($this);
-		$photos_tests->wrong_upload2($this);
-		$photos_tests->get('-1', 'false');
-		$photos_tests->set_description('-1', 'test', 'false');
-		$photos_tests->set_public('-1', 'false');
-		$photos_tests->set_album('-1', '-1', 'false');
-		$photos_tests->set_license('-1', 'CC0', 'false');
+		$photos_tests->wrong_upload();
+		$photos_tests->wrong_upload2();
+		$photos_tests->get('-1', 404);
+		$photos_tests->set_description('-1', 'test', 404);
+		$photos_tests->set_public('-1', 404);
+		/*
+		 * Actually, the expected status code should be 404, because neither
+		 * an album nor an photo with ID -1 exists.
+		 * However, this requires a fix of `ReadCheck` and `UploadCheck` first.
+		 * But this should be another PR.
+		 * TODO: Fix this.
+		 */
+		$photos_tests->set_album('-1', '-1', 200, 'false');
+		$photos_tests->set_license('-1', 'CC0', 404);
 
 		AccessControl::logout();
 	}
@@ -326,7 +381,7 @@ class PhotosTest extends TestCase
 		$photos = new BaseCollection($array_content->photos);
 		$this->assertEquals(Photo::recent()->count(), $photos->count());
 		$ids = $photos->skip($num_before_import)->implode('id', ',');
-		$photos_tests->delete($ids, 'true');
+		$photos_tests->delete($ids);
 
 		$this->assertEquals($num_before_import, Photo::recent()->count());
 

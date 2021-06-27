@@ -62,14 +62,10 @@ class ReadCheck
 			$photoIDs[] = $request['photoID'];
 		}
 		foreach ($photoIDs as $photoID) {
-			$photo = Photo::with('album')->find($photoID);
-			if ($photo === null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-				return response('false');
-			}
+			/** @var Photo $photo */
+			$photo = Photo::with('album')->findOrFail($photoID);
 			if ($this->readAccessFunctions->photo($photo) === false) {
-				return response('false');
+				return response('', 401);
 			}
 		}
 

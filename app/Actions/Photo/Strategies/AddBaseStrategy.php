@@ -18,7 +18,7 @@ abstract class AddBaseStrategy
 		$this->photo = $photo;
 	}
 
-	abstract public function do(): ?Photo;
+	abstract public function do(): Photo;
 
 	/**
 	 * Hydrates meta-info of the media file from the

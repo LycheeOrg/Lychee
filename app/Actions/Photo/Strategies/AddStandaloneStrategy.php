@@ -18,7 +18,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		parent::__construct($parameters, new Photo());
 	}
 
-	public function do(): ?Photo
+	public function do(): Photo
 	{
 		// Create and save "bare" photo object without size variants
 		$this->hydrateMetadata();

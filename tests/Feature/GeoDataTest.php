@@ -38,7 +38,7 @@ class GeoDataTest extends TestCase
 
 		$id = $photos_tests->upload($file);
 
-		$response = $photos_tests->get($id, 'true');
+		$response = $photos_tests->get($id);
 		$photos_tests->see_in_unsorted($id);
 		/*
 		 * Check some Exif data
@@ -92,7 +92,7 @@ class GeoDataTest extends TestCase
 		);
 
 		$albumID = $albums_tests->add('0', 'test_mongolia');
-		$photos_tests->set_album($albumID, $id, 'true');
+		$photos_tests->set_album($albumID, $id);
 		$photos_tests->dont_see_in_unsorted($id);
 		$response = $albums_tests->get($albumID, '', 'true');
 		$content = $response->getContent();
@@ -132,7 +132,7 @@ class GeoDataTest extends TestCase
 		$this->assertEquals(1, count($array_content->photos));
 		$this->assertEquals($id, $array_content->photos[0]->id);
 
-		$photos_tests->delete($id, 'true');
+		$photos_tests->delete($id);
 		$albums_tests->delete($albumID);
 
 		// reset

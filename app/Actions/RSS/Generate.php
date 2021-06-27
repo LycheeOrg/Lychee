@@ -5,6 +5,7 @@ namespace App\Actions\RSS;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Feed\FeedItem;
@@ -23,15 +24,16 @@ class Generate
 	private function toFeedItem(Photo $photo_model): FeedItem
 	{
 		$page_link = $this->create_link_to_page($photo_model);
+		$sizeVariant = $photo_model->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
 
 		return FeedItem::create([
 			'id' => $page_link,
 			'title' => $photo_model->title,
-			'summary' => $photo_model->description,
+			'summary' => $photo_model->description ?? '',
 			'updated' => $photo_model->updated_at,
 			'link' => $page_link,
-			'enclosure' => $photo_model->url,
-			'enclosureLength' => Storage::size($photo_model->short_path),
+			'enclosure' => $sizeVariant->url,
+			'enclosureLength' => Storage::size($sizeVariant->short_path),
 			'enclosureType' => $photo_model->type,
 			'author' => $photo_model->owner->username,
 		]);

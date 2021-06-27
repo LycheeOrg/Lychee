@@ -154,7 +154,7 @@ trait VideoEditing
 
 			// Save file path; Checksum calculation not needed since
 			// we do not perform matching for Google Motion Photos (as for iOS Live Photos)
-			$photo->live_photo_filename = $filename_video_mov;
+			$photo->live_photo_short_path = $uploadFolder . $filename_video_mov;
 		} catch (Exception $exception) {
 			Logs::error(__METHOD__, __LINE__, $exception->getMessage());
 

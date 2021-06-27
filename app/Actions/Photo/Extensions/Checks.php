@@ -3,7 +3,6 @@
 namespace App\Actions\Photo\Extensions;
 
 use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
-use App\Actions\Photo\Strategies\SourceFileInfo;
 use App\Exceptions\FolderIsNotWritable;
 use App\Exceptions\JsonError;
 use App\Facades\Helpers;

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Facades\Helpers;
@@ -64,7 +65,7 @@ class RotateStrategy extends AddBaseStrategy
 		$this->direction = $direction;
 	}
 
-	public function do(): ?Photo
+	public function do(): Photo
 	{
 		// Generate a temporary name for the rotated file.
 		$oldOriginalSizeVariant = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
