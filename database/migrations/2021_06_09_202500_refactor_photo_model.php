@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -53,10 +54,19 @@ class RefactorPhotoModel extends Migration
 	 */
 	public function up()
 	{
-		// Rename columns that remain in photos to proper snake_case
-		DB::statement('ALTER TABLE photos RENAME COLUMN "livePhotoUrl" TO live_photo_short_path');
-		DB::statement('ALTER TABLE photos RENAME COLUMN "livePhotoContentID" TO live_photo_content_id');
-		DB::statement('ALTER TABLE photos RENAME COLUMN "livePhotoChecksum" TO live_photo_checksum');
+		// Rename columns to proper snake_case
+		// We have to use raw DB queries here, because Laravel/Eloquent does
+		// strange and inconsistent things if a DB column uses camel case
+		$dbConnType = Config::get('database.default');
+		if ($dbConnType === 'mysql') {
+			DB::statement('ALTER TABLE photos RENAME COLUMN `livePhotoUrl` TO live_photo_short_path');
+			DB::statement('ALTER TABLE photos RENAME COLUMN `livePhotoContentID` TO live_photo_content_id');
+			DB::statement('ALTER TABLE photos RENAME COLUMN `livePhotoChecksum` TO live_photo_checksum');
+		} else {
+			DB::statement('ALTER TABLE photos RENAME COLUMN "livePhotoUrl" TO live_photo_short_path');
+			DB::statement('ALTER TABLE photos RENAME COLUMN "livePhotoContentID" TO live_photo_content_id');
+			DB::statement('ALTER TABLE photos RENAME COLUMN "livePhotoChecksum" TO live_photo_checksum');
+		}
 
 		Schema::table('photos', function (Blueprint $table) {
 			$table->string('tags')->default('')->change();
@@ -160,16 +170,16 @@ class RefactorPhotoModel extends Migration
 	 */
 	public function down()
 	{
-		// Rename columns that remained in photos back to their original name
-		Schema::table('photos', function (Blueprint $table) {
-			$table->renameColumn('live_photo_filename', 'livePhotoUrl');
-		});
-		Schema::table('photos', function (Blueprint $table) {
-			$table->renameColumn('live_photo_content_id', 'livePhotoContentID');
-		});
-		Schema::table('photos', function (Blueprint $table) {
-			$table->renameColumn('live_photo_checksum', 'livePhotoChecksum');
-		});
+		$dbConnType = Config::get('database.default');
+		if ($dbConnType === 'mysql') {
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_short_path TO `livePhotoUrl`');
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_content_id TO `livePhotoContentID`');
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_checksum TO `livePhotoChecksum`');
+		} else {
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_short_path TO "livePhotoUrl"');
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_content_id TO "livePhotoContentID"');
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_checksum TO "livePhotoChecksum"');
+		}
 
 		// Re-create the columns in photos that have been removed
 		Schema::table('photos', function (Blueprint $table) {
@@ -190,7 +200,7 @@ class RefactorPhotoModel extends Migration
 
 		DB::beginTransaction();
 
-		// TODO: Write back migration here. We have a problem, if the new URLs do not follow the old pattern.
+		// TODO: Write downgrade migration here. We have a problem, if the new URLs do not follow the old pattern.
 
 		DB::commit();
 
