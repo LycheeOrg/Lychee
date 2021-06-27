@@ -183,7 +183,7 @@ class RefactorPhotoModel extends Migration
 
 		// Re-create the columns in photos that have been removed
 		Schema::table('photos', function (Blueprint $table) {
-			$table->string('url', 100);
+			$table->string('url', 100)->default('');
 			$table->string('thumbUrl', 37)->default('');
 			$table->boolean('thumb2x')->default(false);
 			$table->integer('width')->unsigned()->nullable()->default(null);
