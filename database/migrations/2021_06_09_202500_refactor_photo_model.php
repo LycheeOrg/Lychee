@@ -204,13 +204,14 @@ class RefactorPhotoModel extends Migration
 
 		DB::commit();
 
+		// We are brutal here and simply drop the old table, as the symlinks
+		// will be re-created on-the-fly when required
+		Schema::dropIfExists('sym_links');
+
 		// Drop newly created table
 		Schema::dropIfExists('size_variants');
 
 		// Re-create table `sym_links` acc. to the old schema
-		// We are brutal here and simply drop the old table, as the symlinks
-		// will be re-created on-the-fly when required
-		Schema::dropIfExists('sym_links');
 		Schema::create('sym_links', function (Blueprint $table) {
 			$table->bigIncrements('id');
 			$table->dateTime('created_at')->nullable(false);

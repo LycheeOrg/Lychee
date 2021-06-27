@@ -540,7 +540,7 @@ class Photo extends Model
 		return self::query()
 			->where(function ($q) use ($checksum) {
 				$q->where('checksum', '=', $checksum)
-					->orWhere('livePhotoChecksum', '=', $checksum);
+					->orWhere('live_photo_checksum', '=', $checksum);
 			})
 			->where('id', '<>', $this->id)
 			->exists();

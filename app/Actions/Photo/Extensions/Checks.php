@@ -37,7 +37,7 @@ trait Checks
 		$path = Storage::path($folder);
 
 		if (Helpers::hasPermissions($path) === false) {
-			Logs::notice(__METHOD__, __LINE__, 'Skipped extaction of video from live photo, because ' . $path . ' is missing or not readable and writable.');
+			Logs::notice(__METHOD__, __LINE__, 'Skipped extraction of video from live photo, because ' . $path . ' is missing or not readable and writable.');
 			throw new FolderIsNotWritable();
 		}
 
@@ -57,7 +57,7 @@ trait Checks
 		/** @var Photo|null $photo */
 		$photo = Photo::query()
 			->where('checksum', '=', $checksum)
-			->orWhere('livePhotoChecksum', '=', $checksum)
+			->orWhere('live_photo_checksum', '=', $checksum)
 			->first();
 
 		return $photo;
