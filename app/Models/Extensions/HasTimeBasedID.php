@@ -19,10 +19,9 @@ trait HasTimeBasedID
 	{
 		static::creating(function (Model $model) {
 			$pKey = $model->getKeyName();
-			if ($model->exists || !empty($model->$pKey)) {
-				throw new \LogicException('must not create a model which already exists or has an ID');
+			if (empty($model->$pKey)) {
+				$model->generateID();
 			}
-			$model->generateID();
 
 			return true;
 		});
