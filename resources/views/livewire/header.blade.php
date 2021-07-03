@@ -30,7 +30,7 @@
 	@elseif( $mode == 'album')
     <div class="header__toolbar header__toolbar--album header__toolbar--visible">
 
-        <a wire:click="$emit('back')" wire:keydown.backspace="emit('back')" class="button" id="button_back_home" title="{{ Lang::get('CLOSE_ALBUM') }}" data-tabindex="{{ Helpers::data_index_r() }}">
+        <a wire:click="$emit('back')" class="button" id="button_back_home" title="{{ Lang::get('CLOSE_ALBUM') }}" data-tabindex="{{ Helpers::data_index_r() }}">
             <x-iconic icon="chevron-left" />
         </a>
 
@@ -84,7 +84,7 @@
 	@elseif ($mode == 'photo')
     <div class="header__toolbar header__toolbar--photo header__toolbar--visible">
 
-        <a wire:click="$emit('back')" wire:keydown.backspace="emit('back')" class="button" id="button_back" title="{{ Lang::get('CLOSE_PHOTO') }}" data-tabindex="{{ Helpers::data_index_r() }}">
+        <a wire:click="$emit('back')" class="button" id="button_back" title="{{ Lang::get('CLOSE_PHOTO') }}" data-tabindex="{{ Helpers::data_index_r() }}">
             <x-iconic icon="chevron-left" />
         </a>
 
