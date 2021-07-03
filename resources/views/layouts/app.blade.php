@@ -14,7 +14,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	
 	
-	<script src="{{ URL::asset('Lychee-front/node_modules/lazysizes/lazysizes.min.js') }}"></script>
+	<script src="{{ URL::asset('js/app.js') }}"></script>
 	
 	<link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('css/app.css')) }}">
 	{{-- <link type="text/css" rel="stylesheet" href="{{ URL::asset(Helpers::cacheBusting('dist/user.css')) }}"> --}}
