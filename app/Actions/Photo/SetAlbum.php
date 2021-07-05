@@ -2,8 +2,10 @@
 
 namespace App\Actions\Photo;
 
+use App\Actions\User\Notify;
 use App\Exceptions\JsonError;
 use App\Factories\AlbumFactory;
+use App\Models\Photo;
 
 class SetAlbum extends Setters
 {
@@ -29,6 +31,12 @@ class SetAlbum extends Setters
 			if ($album->is_smart()) {
 				throw new JsonError('Sorry, cannot Set to smart Album.');
 			}
+		}
+
+		foreach ($photoIDs as $id) {
+			$photo = Photo::find($id);
+			$notify = new Notify();
+			$notify->do($photo, $albumID);
 		}
 
 		return $this->do($photoIDs, $albumID == '0' ? null : $albumID);

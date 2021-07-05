@@ -301,6 +301,23 @@ class SettingsController extends Controller
 	}
 
 	/**
+	 * Enable sending of new photos notification emails.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function setNewPhotosNotification(Request $request)
+	{
+		$request->validate(['new_photos_notification' => 'required|string']);
+
+		return Configs::set(
+			'new_photos_notification',
+			$request['new_photos_notification']
+		) ? 'true' : 'false';
+	}
+
+	/**
 	 * take the css input text and put it into dist/user.css
 	 * this allow admins to actually personalize the look of their installation.
 	 *

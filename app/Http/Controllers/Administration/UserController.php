@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
+use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UserPostIdRequest;
 use App\Http\Requests\UserRequests\UserPostRequest;
@@ -64,5 +65,50 @@ class UserController extends Controller
 		]);
 
 		return $create->do($data) ? 'true' : 'false';
+	}
+
+	/**
+	 * Update the email of a user.
+	 * Will delete all notifications if the email is left empty.
+	 *
+	 * @param Request $request
+	 *
+	 * @return string
+	 */
+	public function updateEmail(Request $request, Save $save)
+	{
+		if ($request->email != '') {
+			$request->validate([
+				'email' => 'email|max:100',
+			]);
+		}
+
+		$id = AccessControl::id();
+		$user = User::findOrFail($id);
+
+		$user->email = $request->email;
+
+		if ($request->email = '') {
+			$user->notifications()->delete();
+		}
+
+		return $user->save() ? 'true' : 'false';
+	}
+
+	/**
+	 * Return the email address of a user.
+	 *
+	 * @return string
+	 */
+	public function getEmail()
+	{
+		$id = AccessControl::id();
+		$user = User::findOrFail($id);
+
+		if ($user->email) {
+			return json_encode($user->email);
+		} else {
+			return json_encode('');
+		}
 	}
 }
