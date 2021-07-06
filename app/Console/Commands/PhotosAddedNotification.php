@@ -8,6 +8,7 @@ use App\Models\Photo;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class PhotosAddedNotification extends Command
 {
@@ -61,8 +62,10 @@ class PhotosAddedNotification extends Command
 							];
 						}
 
+						logger(Storage::url(Photo::VARIANT_2_PATH_PREFIX[Photo::VARIANT_THUMB] . '/' . $photo->thumbUrl));
+
 						$photos[$photo->album_id]['photos'][$photo->id] = [
-							'thumb' => config('app.url') . '/uploads/thumb/' . $photo->thumbUrl,
+							'thumb' => Storage::url(Photo::VARIANT_2_PATH_PREFIX[Photo::VARIANT_THUMB] . '/' . $photo->thumbUrl),
 							'link' => config('app.url') . '/r/' . $photo->album_id . '/' . $photo->id,
 						];
 					}
@@ -71,7 +74,7 @@ class PhotosAddedNotification extends Command
 				if (count($photos) > 0) {
 					try {
 						Mail::to($user->email)->send(new PhotosAdded($photos));
-						$user->notifications()->delete();
+						// $user->notifications()->delete();
 					} catch (Exception $e) {
 						Logs::error(__METHOD__, __LINE__, 'Failed to send email notification for ' . $user->username);
 					}

@@ -17,7 +17,7 @@
 
 @foreach($album['photos'] as $key => $photo)
 <div class="" style="display:inline-block;margin-right: 3px; margin-bottom: 3px;">
-    <a href="{{ $photo['link'] }}"><img src="{{ $photo['thumb'] }}" alt="" style="max-width: 60px;" /></a>
+    <a href="{{ $photo['link'] }}"><img src="{{ asset($photo['thumb']) }}" alt="" style="max-width: 60px;" /></a>
 </div>
 @endforeach
 

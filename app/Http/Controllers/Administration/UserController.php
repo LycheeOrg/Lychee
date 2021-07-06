@@ -83,8 +83,7 @@ class UserController extends Controller
 			]);
 		}
 
-		$id = AccessControl::id();
-		$user = User::findOrFail($id);
+		$user = AccessControl::user();
 
 		$user->email = $request->email;
 
@@ -102,8 +101,7 @@ class UserController extends Controller
 	 */
 	public function getEmail()
 	{
-		$id = AccessControl::id();
-		$user = User::findOrFail($id);
+		$user = AccessControl::user();
 
 		if ($user->email) {
 			return json_encode($user->email);
