@@ -100,6 +100,11 @@ class UsersTest extends TestCase
 		 * 29. log as admin
 		 * 30. delete user
 		 * 31. log out
+		 *
+		 * 32. log as admin
+		 * 33. update email
+		 * 34. get email
+		 * 35. log out
 		 */
 
 		// 1
@@ -211,6 +216,18 @@ class UsersTest extends TestCase
 		$users_test->save($this, '-1', 'toto', 'test', '0', '1', 'false', 422);
 
 		// 31
+		$sessions_test->logout($this);
+
+		// 32
+		AccessControl::log_as_id(0);
+
+		// 33
+		$users_test->update_email($this, 'test@example.com', 'true');
+
+		// 34
+		$users_test->get_email($this, 'test@example.com');
+
+		// 35
 		$sessions_test->logout($this);
 	}
 }
