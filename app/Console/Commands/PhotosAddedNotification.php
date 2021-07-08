@@ -74,7 +74,7 @@ class PhotosAddedNotification extends Command
 				if (count($photos) > 0) {
 					try {
 						Mail::to($user->email)->send(new PhotosAdded($photos));
-						// $user->notifications()->delete();
+						$user->notifications()->delete();
 					} catch (Exception $e) {
 						Logs::error(__METHOD__, __LINE__, 'Failed to send email notification for ' . $user->username);
 					}

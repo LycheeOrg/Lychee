@@ -26,11 +26,11 @@ class Notify
 			$album_users = $album->shared_with;
 
 			$owner = User::find($album->owner_id);
-			$album_users = $album_users->push($owner);
+			$album_users->push($owner);
 
 			if ($album->owner_id != 0) {
 				$admin = User::find(0);
-				$album_users = $album_users->push($admin);
+				$album_users->push($admin);
 			}
 
 			$album_users = $album_users->unique()

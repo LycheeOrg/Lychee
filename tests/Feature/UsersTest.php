@@ -102,9 +102,11 @@ class UsersTest extends TestCase
 		 * 31. log out
 		 *
 		 * 32. log as admin
-		 * 33. update email
-		 * 34. get email
-		 * 35. log out
+		 * 33  get email => should be blank
+		 * 34. update email
+		 * 35. get email
+		 * 36  update email to blank
+		 * 37. log out
 		 */
 
 		// 1
@@ -221,13 +223,24 @@ class UsersTest extends TestCase
 		// 32
 		AccessControl::log_as_id(0);
 
+		$configs = Configs::get();
+		$store_new_photos_notification = $configs['new_photos_notification'];
+		Configs::set('new_photos_notification', '1');
+
 		// 33
-		$users_test->update_email($this, 'test@example.com', 'true');
+		$users_test->get_email($this, '');
 
 		// 34
-		$users_test->get_email($this, 'test@example.com');
+		$users_test->update_email($this, 'test@example.com', 'true');
 
 		// 35
+		$users_test->get_email($this, 'test@example.com');
+
+		// 36
+		$users_test->update_email($this, '', 'true');
+
+		// 37
 		$sessions_test->logout($this);
+		Configs::set('new_photos_notification', $store_new_photos_notification);
 	}
 }

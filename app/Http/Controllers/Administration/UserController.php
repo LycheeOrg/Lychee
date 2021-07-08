@@ -87,7 +87,7 @@ class UserController extends Controller
 
 		$user->email = $request->email;
 
-		if ($request->email = '') {
+		if (is_null($request->email)) {
 			$user->notifications()->delete();
 		}
 

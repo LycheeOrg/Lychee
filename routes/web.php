@@ -114,8 +114,8 @@ Route::post('/api/User::List', [Administration\UserController::class, 'list'])->
 Route::post('/api/User::Save', [Administration\UserController::class, 'save'])->middleware('admin');
 Route::post('/api/User::Delete', [Administration\UserController::class, 'delete'])->middleware('admin');
 Route::post('/api/User::Create', [Administration\UserController::class, 'create'])->middleware('admin');
-Route::post('/api/User::UpdateEmail', [Administration\UserController::class, 'updateEmail'])->middleware('read');
-Route::post('/api/User::GetEmail', [Administration\UserController::class, 'getEmail'])->middleware('read');
+Route::post('/api/User::UpdateEmail', [Administration\UserController::class, 'updateEmail'])->middleware('login');
+Route::post('/api/User::GetEmail', [Administration\UserController::class, 'getEmail'])->middleware('login');
 
 Route::post('/api/Logs', [Administration\LogController::class, 'display'])->middleware('admin');
 Route::post('/api/Logs::clearNoise', [Administration\LogController::class, 'clearNoise'])->middleware('admin');
