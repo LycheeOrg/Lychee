@@ -31,6 +31,7 @@ class ApplyMigration
 	 */
 	public function migrate(array &$output)
 	{
+		Artisan::call('view:clear');
 		Artisan::call('migrate', ['--force' => true]);
 		$this->str_to_array(Artisan::output(), $output);
 
