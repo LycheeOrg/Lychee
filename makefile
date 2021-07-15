@@ -34,6 +34,7 @@ dist-gen: clean composer
 	@cp -r public/web.config                Lychee/public
 	@cp -r resources                        Lychee
 	@cp -r routes                           Lychee
+	@cp -r scripts                          Lychee
 	@cp -r storage                          Lychee
 	@cp -r vendor                           Lychee 2> /dev/null || true
 	@cp -r .env.example                     Lychee
@@ -41,10 +42,7 @@ dist-gen: clean composer
 	@cp -r composer.json                    Lychee
 	@cp -r composer.lock                    Lychee
 	@cp -r index.php                        Lychee
-	@cp -r install_files.sh                 Lychee
 	@cp -r LICENSE                          Lychee
-	@cp -r post-merge                       Lychee
-	@cp -r pre-commit                       Lychee
 	@cp -r readme.md                        Lychee
 	@cp -r server.php                       Lychee
 	@cp -r simple_error_template.html       Lychee
@@ -106,7 +104,7 @@ formatting:
 	fi
 
 gen_minor:
-	php gen_release
+	php gen_release.php
 	git add database
 	git add version.md
 
@@ -114,7 +112,7 @@ release_minor: gen_minor
 	git commit -S -m "bump to version $(shell cat version.md)"
 
 gen_major:
-	php gen_release major
+	php gen_release.php major
 	git add database
 	git add version.md
 
