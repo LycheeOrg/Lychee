@@ -11,6 +11,7 @@ use App\Actions\Photo\Extensions\Save;
 use App\Actions\Photo\Extensions\VideoEditing;
 use App\Actions\Photo\Strategies\StrategyDuplicate;
 use App\Actions\Photo\Strategies\StrategyPhoto;
+use App\Actions\User\Notify;
 use App\Facades\Helpers;
 use App\Models\Album;
 use App\Models\Logs;
@@ -120,6 +121,11 @@ class Create
 
 		if ($delete_imported && !$this->is_uploaded && ($exists || !$import_via_symlink) && !@unlink($this->tmp_name)) {
 			Logs::warning(__METHOD__, __LINE__, 'Failed to delete file (' . $this->tmp_name . ')');
+		}
+
+		if ($this->albumID) {
+			$notify = new Notify();
+			$notify->do($this->photo);
 		}
 
 		return $res;

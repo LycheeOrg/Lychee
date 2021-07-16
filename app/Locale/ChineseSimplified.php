@@ -27,6 +27,7 @@ final class ChineseSimplified implements Language
 
 			'USERS' => '用户',
 			'U2F' => '通用两步验证（U2F）',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => '共享',
 			'CHANGE_LOGIN' => '修改登录信息',
 			'CHANGE_SORTING' => '修改排序',
@@ -301,6 +302,10 @@ final class ChineseSimplified implements Language
 			'U2F_AUTHENTIFICATION_SUCCESS' => '认证成功！',
 			'U2F_CREDENTIALS' => '认证信息',
 			'U2F_CREDENTIALS_DELETED' => '认证信息已删除！',
+
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => '请在下方输入你的数据库连接信息：',
 			'DB_INFO_HOST' => '数据库主机（可选）',

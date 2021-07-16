@@ -130,4 +130,44 @@ class UsersUnitTest
 			$response->assertSee($result, false);
 		}
 	}
+
+	/**
+	 * Update email on user.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $email
+	 * @param string   $result
+	 */
+	public function update_email(
+		TestCase &$testCase,
+		string $email,
+		string $result = 'true',
+		int $code = 200
+	) {
+		$response = $testCase->json('POST', '/api/User::UpdateEmail', [
+			'email' => $email,
+		]);
+		$response->assertStatus($code);
+		if ($code == 200) {
+			$response->assertSee($result, false);
+		}
+	}
+
+	/**
+	 * Get the email of a user.
+	 *
+	 * @param TestCase $testCase
+	 * @param string   $result
+	 */
+	public function get_email(
+		TestCase &$testCase,
+		string $result = 'true',
+		int $code = 200
+	) {
+		$response = $testCase->json('POST', '/api/User::GetEmail');
+		$response->assertStatus($code);
+		if ($code == 200) {
+			$response->assertSee($result, false);
+		}
+	}
 }

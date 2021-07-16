@@ -22,6 +22,7 @@ use Illuminate\Support\Carbon;
  * @property int                                                   $id
  * @property string                                                $username
  * @property string                                                $password
+ * @property string|null                                           $email
  * @property int                                                   $upload
  * @property int                                                   $lock
  * @property string|null                                           $remember_token
@@ -56,6 +57,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	protected $fillable = [
 		'username',
 		'password',
+		'email',
 	];
 
 	/**

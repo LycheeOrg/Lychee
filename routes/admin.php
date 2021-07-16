@@ -41,3 +41,4 @@ Route::post('/api/Settings::saveAll', [SettingsController::class, 'saveAll']);
 Route::post('/api/Settings::setOverlayType', [SettingsController::class, 'setImageOverlayType']);
 Route::post('/api/Settings::setNSFWVisible', [SettingsController::class, 'setNSFWVisible']);
 Route::post('/api/Settings::setDropboxKey', [SettingsController::class, 'setDropboxKey']);
+Route::post('/api/Settings::setNewPhotosNotification', [SettingsController::class, 'setNewPhotosNotification']);

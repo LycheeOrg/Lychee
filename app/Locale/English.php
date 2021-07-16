@@ -27,6 +27,7 @@ final class English implements Language
 
 			'USERS' => 'Users',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Sharing',
 			'CHANGE_LOGIN' => 'Change Login',
 			'CHANGE_SORTING' => 'Change Sorting',
@@ -300,6 +301,10 @@ final class English implements Language
 			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Enter your database connection details below:',
 			'DB_INFO_HOST' => 'Database Host (optional)',

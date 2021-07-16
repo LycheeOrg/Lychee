@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
 	 */
 	protected function schedule(Schedule $schedule)
 	{
-		// $schedule->command('inspire')->hourly();
+		$schedule->command('lychee:photos_added_notification')->weekly();
 	}
 
 	/**

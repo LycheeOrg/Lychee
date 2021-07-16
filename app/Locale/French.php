@@ -29,6 +29,7 @@ final class French implements Language
 
 			'USERS' => 'Utilisateurs',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Partage',
 			'CHANGE_LOGIN' => 'Changer le nom d\'utilisateur',
 			'CHANGE_SORTING' => 'Changer le tri',
@@ -300,6 +301,10 @@ final class French implements Language
 			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication réussie!',
 			'U2F_CREDENTIALS' => 'Clés',
 			'U2F_CREDENTIALS_DELETED' => 'Clé supprimée!',
+
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
 			'DB_INFO_HOST' => 'Hôte de la base de donnees (facultatif)',
