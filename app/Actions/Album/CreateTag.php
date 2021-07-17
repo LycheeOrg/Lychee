@@ -25,7 +25,7 @@ class CreateTag extends Action
 		$album->smart = true;
 		$album->showtags = $show_tags;
 		if (!$album->save()) {
-			throw new \RuntimeException('could not persist album tot DB');
+			throw new \RuntimeException('could not persist album to DB');
 		}
 
 		return $album;

@@ -128,7 +128,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		try {
 			// 1. Extract the video part
 			$fp = fopen($fullPathPhoto, 'r');
-			$fp_video = tmpfile(); // use a temporary file, will be delted once closed
+			$fp_video = tmpfile(); // use a temporary file, will be deleted once closed
 
 			// The MP4 file is located in the last bytes of the file
 			fseek($fp, -1 * $videoLengthBytes, SEEK_END); // It needs to be negative

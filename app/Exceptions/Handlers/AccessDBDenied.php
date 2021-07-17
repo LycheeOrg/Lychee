@@ -4,8 +4,8 @@ namespace App\Exceptions\Handlers;
 
 use App\Redirections\ToInstall;
 use Illuminate\Database\QueryException as QueryException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Throwable;
 
 class AccessDBDenied
@@ -25,10 +25,10 @@ class AccessDBDenied
 	}
 
 	/**
-	 * @return Request
+	 * @return RedirectResponse
 	 */
 	// @codeCoverageIgnoreStart
-	public function go(): Request
+	public function go(): RedirectResponse
 	{
 		return ToInstall::go();
 	}

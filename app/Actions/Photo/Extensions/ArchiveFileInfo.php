@@ -100,7 +100,7 @@ class ArchiveFileInfo
 	 */
 	public function getFilename(string $extraAddon = ''): string
 	{
-		return $this->baseFilename . $this->getBaseFileNameAddon() . $extraAddon . $this->getExtension();
+		return $this->getBaseFilename() . $this->getBaseFileNameAddon() . $extraAddon . $this->getExtension();
 	}
 
 	/**

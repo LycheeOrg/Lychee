@@ -194,7 +194,13 @@ class Archive
 			$baseFilenameAddon = '';
 			if ($sv) {
 				$shortPath = $sv->short_path;
-				$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
+				// The filename of the original size variant shall get no
+				// particular suffix but remain as is.
+				// All other size variants (i.e. the generated, smaller ones)
+				// get a size information as suffix.
+				if ($sv->size_variant !== SizeVariant::ORIGINAL) {
+					$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
+				}
 			}
 		} else {
 			$msg = 'Invalid variant ' . $variant;

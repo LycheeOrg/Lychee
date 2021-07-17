@@ -29,12 +29,17 @@ class RotateStrategy extends AddBaseStrategy
 		// duplicate, we still want to rotate it) and we want to re-sync
 		// metadata (after rotation width, height and filesize may have changed).
 		//
-		// TODO: Think again about the following potentially, undesired behaviour:
-		//
 		// In case the photo has originally been imported as an symbolic link,
 		// the photo won't be a symbolic link after rotation, but become an
 		// independent file which is detached from the original target of the
 		// symbolic link.
+		// This is by design.
+		// The two alternatives would be:
+		//  a) Rotate the original photo which the symlink points to.
+		//  b) Bail out with an error message, if the user attempts to rotate
+		//     a photo that was imported via a symlink
+		// After discussion among the developers, option a) was considered a
+		// no-go and b) was considered to be too restrictive.
 		parent::__construct(
 			new AddStrategyParameters(
 				new ImportMode(true, false, false, true)
@@ -96,7 +101,7 @@ class RotateStrategy extends AddBaseStrategy
 		// care of erasing the actual "physical" files from storage and any
 		// potential symbolic link which points to one of the original files.
 		// This will bring photo entity into the same state as it would be if
-		// we were importing an new photo.
+		// we were importing a new photo.
 		$this->photo->size_variants->delete();
 
 		// Initialize factory for size variants
@@ -113,7 +118,7 @@ class RotateStrategy extends AddBaseStrategy
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
 
 		// Create size variant for rotated original
-		// Note that his also creates a different file name than before
+		// Note that this also creates a different file name than before
 		// because the checksum of the photo has changed.
 		// Using a different filename allows to avoid caching effects.
 		// Sic! Swap width and height here, because the image has been rotated
@@ -125,7 +130,7 @@ class RotateStrategy extends AddBaseStrategy
 		try {
 			$newSizeVariants = $sizeVariantFactory->createSizeVariants();
 			// add new original size variant to collection of newly created
-			// size variant; we need this to correctly update the duplicates
+			// size variants; we need this to correctly update the duplicates
 			// below
 			$newSizeVariants->add($newOriginalSizeVariant);
 		} catch (\Throwable $t) {

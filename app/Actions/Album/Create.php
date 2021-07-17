@@ -18,7 +18,7 @@ class Create extends Action
 
 		$this->set_parent($album, $parent_id);
 		if (!$album->save()) {
-			throw new \RuntimeException('could not persist album tot DB');
+			throw new \RuntimeException('could not persist album to DB');
 		}
 
 		return $album;

@@ -19,7 +19,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 	public function do(): Photo
 	{
 		// First add the source file as if it was a stand-alone photo
-		// This create and persists $this->photo as a new DB entry
+		// This creates and persists $this->photo as a new DB entry
 		parent::do();
 
 		// Now we re-use the same strategy as if the freshly created photo

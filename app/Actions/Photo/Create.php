@@ -125,7 +125,7 @@ class Create
 		if ($this->strategyParameters->info['title'] === '') {
 			if ($this->strategyParameters->kind == 'raw') {
 				$this->strategyParameters->info['title'] = substr(basename($sourceFileInfo->getOriginalFilename()), 0, 98);
-			} elseif ($this->strategyParameters->info['title'] === '') {
+			} else {
 				$this->strategyParameters->info['title'] = substr(basename($sourceFileInfo->getOriginalFilename(), $sourceFileInfo->getOriginalFileExtension()), 0, 98);
 			}
 		}
