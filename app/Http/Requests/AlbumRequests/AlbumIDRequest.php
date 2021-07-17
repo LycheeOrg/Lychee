@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\AlbumRequests;
 
+use App\Factories\SmartFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AlbumIDRequest extends FormRequest
@@ -11,7 +12,7 @@ class AlbumIDRequest extends FormRequest
 	 *
 	 * @return bool
 	 */
-	public function authorize()
+	public function authorize(): bool
 	{
 		return true;
 	}
@@ -21,10 +22,25 @@ class AlbumIDRequest extends FormRequest
 	 *
 	 * @return array
 	 */
-	public function rules()
+	public function rules(): array
 	{
 		return [
-			'albumID' => 'required|string',
+			'albumID' => [
+				'required',
+				function (string $attribute, $value, $fail) {
+					if (
+						$value !== null &&
+						!is_numeric($value) &&
+						!array_key_exists($value, SmartFactory::BASE_SMARTS)
+					) {
+						$fail(
+							$attribute .
+							' must either be null, a numeric value or one of the pre-determined IDs ' .
+							implode(', ', array_keys(SmartFactory::BASE_SMARTS))
+						);
+					}
+				},
+			],
 		];
 	}
 }

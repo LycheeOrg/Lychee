@@ -93,7 +93,12 @@ class PhotoController extends Controller
 		/** @var UploadedFile $file */
 		$file = $request->file('0');
 		$sourceFileInfo = new SourceFileInfo($file->getClientOriginalName(), $file->getMimeType(), $file->getPathName());
-		$albumID = $request['albumID'] ? intval($request['albumID']) : 0;
+		$albumID = $request['albumID'];
+		if (empty($albumID)) {
+			$albumID = 0;
+		} elseif (is_numeric($albumID)) {
+			$albumID = intval($albumID);
+		}
 
 		return $create->add($sourceFileInfo, $albumID);
 	}

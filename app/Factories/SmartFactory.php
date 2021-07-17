@@ -15,7 +15,7 @@ class SmartFactory
 	/**
 	 * @var array
 	 */
-	public $base_smarts = [
+	const BASE_SMARTS = [
 		'unsorted' => UnsortedAlbum::class,
 		'starred' => StarredAlbum::class,
 		'public' => PublicAlbum::class,
@@ -24,7 +24,7 @@ class SmartFactory
 
 	public function is_smart($kind): bool
 	{
-		return array_key_exists($kind, $this->base_smarts);
+		return array_key_exists($kind, self::BASE_SMARTS);
 	}
 
 	/**
@@ -33,7 +33,7 @@ class SmartFactory
 	public function make(string $kind): ?SmartAlbum
 	{
 		if ($this->is_smart($kind)) {
-			return resolve($this->base_smarts[$kind]);
+			return resolve(self::BASE_SMARTS[$kind]);
 		}
 
 		if ($kind == 'tag') {
@@ -47,7 +47,7 @@ class SmartFactory
 	{
 		$smartAlbums = new Collection();
 
-		foreach ($this->base_smarts as $smart_kind => $_) {
+		foreach (self::BASE_SMARTS as $smart_kind => $_) {
 			$smartAlbums->push($this->make($smart_kind));
 		}
 

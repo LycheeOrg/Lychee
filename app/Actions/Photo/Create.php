@@ -38,15 +38,19 @@ class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param SourceFileInfo $sourceFileInfo information about source file
-	 * @param int            $albumID        the targeted parent album
+	 * @param SourceFileInfo  $sourceFileInfo information about source file
+	 * @param int|string|null $albumID        the targeted parent album either
+	 *                                        null, the id of a real album or
+	 *                                        (if it is a string) one of the
+	 *                                        array keys in
+	 *                                        {@link \App\Factories\SmartFactory::BASE_SMARTS}
 	 *
 	 * @return Photo|null the newly created or updated photo
 	 *
 	 * @throws \App\Exceptions\FolderIsNotWritable
 	 * @throws \App\Exceptions\JsonError
 	 */
-	public function add(SourceFileInfo $sourceFileInfo, int $albumID = 0): Photo
+	public function add(SourceFileInfo $sourceFileInfo, $albumID = null): Photo
 	{
 		// Check permissions
 		$this->checkPermissions();
@@ -178,21 +182,19 @@ class Create
 	 * and {@link AddStrategyParameters::$star} of
 	 * {@link Create::$strategyParameters} accordingly.
 	 *
-	 * This method seems suspicious.
-	 * As the ID which is passed in, is always an integer, the smart albums
-	 * "public" and "star" should never be selected.
-	 * TODO: Find out, what this method is actually supposed to do.
-	 *
-	 * @param int $albumID the ID of the targeted album
+	 * @param int|string|null $albumID the targeted parent album either null,
+	 *                                 the id of a real album or (if it is
+	 *                                 string) one of the array keys in
+	 *                                 {@link \App\Factories\SmartFactory::BASE_SMARTS}
 	 *
 	 * @throws JsonError
 	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
 	 */
-	protected function initParentId(int $albumID)
+	protected function initParentId($albumID = null)
 	{
 		/** @var AlbumFactory */
 		$factory = resolve(AlbumFactory::class);
-		if ($albumID != '0') {
+		if (!empty($albumID)) {
 			$album = $factory->make($albumID);
 
 			if ($album->is_tag_album()) {
