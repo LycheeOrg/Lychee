@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 
 class RefactorPhotoModel extends Migration
 {
@@ -47,6 +48,22 @@ class RefactorPhotoModel extends Migration
 		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
 	];
 
+	const VARIANT_2_WIDTH_ATTRIBUTE = [
+		'width',
+		'medium2x_width',
+		'medium_width',
+		'small2x_width',
+		'small_width',
+	];
+
+	const VARIANT_2_HEIGHT_ATTRIBUTE = [
+		'height',
+		'medium2x_height',
+		'medium_height',
+		'small2x_height',
+		'small_height',
+	];
+
 	/**
 	 * Run the migrations.
 	 *
@@ -54,9 +71,46 @@ class RefactorPhotoModel extends Migration
 	 */
 	public function up()
 	{
-		// Rename columns to proper snake_case
+		$this->upgradeInconsistentAttributes();
+		// We are brutal here and simply drop the old table, as the symlinks
+		// will be re-created on-the-fly when required
+		Schema::dropIfExists('sym_links');
+		Schema::dropIfExists('size_variants');
+		$this->createSizeVariantsTable();
+		$this->createNewSymLinksTable();
+		$this->upgradeMigration();
+		$this->sanitizePhotoTable();
+	}
+
+	/**
+	 * Reverse the migrations.
+	 *
+	 * @return void
+	 */
+	public function down()
+	{
+		$this->downgradeInconsistentAttributes();
+		$this->restorePhotoTable();
+		$this->downgradeMigration();
+		// We are brutal here and simply drop the old table, as the symlinks
+		// will be re-created on-the-fly when required
+		Schema::dropIfExists('sym_links');
+		Schema::dropIfExists('size_variants');
+		$this->createOldSymLinksTable();
+	}
+
+	/**
+	 * Removes some inconsistencies about attributes of the photo table.
+	 *
+	 *  - At the DB level only snake case should be used, because
+	 *    Laravel/Eloquent relies on this assumption.
+	 *  - Allows columns to be nullable if the value is unknown/unset.
+	 */
+	protected function upgradeInconsistentAttributes(): void
+	{
 		// We have to use raw DB queries here, because Laravel/Eloquent does
-		// strange and inconsistent things if a DB column uses camel case
+		// strange and inconsistent things if we use camel case with
+		// high-level API calls
 		$dbConnType = Config::get('database.default');
 		if ($dbConnType === 'mysql') {
 			DB::statement('ALTER TABLE photos RENAME COLUMN `livePhotoUrl` TO live_photo_short_path');
@@ -78,16 +132,37 @@ class RefactorPhotoModel extends Migration
 			$table->string('shutter')->nullable(true)->change();
 			$table->string('focal')->nullable(true)->change();
 		});
+	}
 
-		// We are brutal here and simply drop the old table, as the symlinks
-		// will be re-created on-the-fly when required
-		Schema::dropIfExists('sym_links');
-		Schema::dropIfExists('size_variants');
+	/**
+	 * Reverts {@link RefactorPhotoModel::upgradeInconsistentAttributes()}.
+	 */
+	protected function downgradeInconsistentAttributes(): void
+	{
+		$dbConnType = Config::get('database.default');
+		if ($dbConnType === 'mysql') {
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_short_path TO `livePhotoUrl`');
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_content_id TO `livePhotoContentID`');
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_checksum TO `livePhotoChecksum`');
+		} else {
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_short_path TO "livePhotoUrl"');
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_content_id TO "livePhotoContentID"');
+			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_checksum TO "livePhotoChecksum"');
+		}
+	}
 
-		// Create table size_variants
+	/**
+	 * Creates the new table size_variants.
+	 *
+	 * The table has does not possess own columns for timestamping
+	 * (`created_at` and `updated_at`) as the table is tightly coupled to its
+	 * parent table `photos` and uses the same timestamps.
+	 */
+	protected function createSizeVariantsTable(): void
+	{
 		Schema::create('size_variants', function (Blueprint $table) {
 			$table->bigIncrements('id');
-			$table->foreignId('photo_id')->nullable(false)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+			$table->foreignId('photo_id')->nullable(false)->constrained();
 			$table->unsignedInteger('size_variant')->nullable(false)->default(0)->comment('0: original, ..., 6: thumb');
 			$table->string('short_path')->nullable(false);
 			$table->integer('width')->nullable(false);
@@ -96,54 +171,53 @@ class RefactorPhotoModel extends Migration
 			// Sic! Columns `created_at` and `updated_at` left out by intention
 			// the size variants belong to their "parent" photo model and are tied to the same timestamps
 		});
+	}
 
-		// Re-create table `sym_links`
+	/**
+	 * Creates the new table `sym_links`.
+	 */
+	protected function createNewSymLinksTable(): void
+	{
 		Schema::create('sym_links', function (Blueprint $table) {
 			$table->bigIncrements('id');
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
-			$table->foreignId('size_variant_id')->nullable(false)->constrained()->cascadeOnUpdate()->cascadeOnDelete();
+			$table->foreignId('size_variant_id')->nullable(false)->constrained();
 			$table->string('short_path')->nullable(false);
 		});
+	}
 
-		DB::beginTransaction();
+	/**
+	 * Re-creates the old table `sym_links`.
+	 *
+	 * This reverts {@link RefactorPhotoModel::createNewSymLinksTable()}.
+	 * The code is mostly copied from {@link CreateSymLinksTable::up()} with
+	 * the slight modification that the timestamps are explicitly created
+	 * with type `datetime` to ensure consistency across different DB backends.
+	 */
+	protected function createOldSymLinksTable(): void
+	{
+		Schema::create('sym_links', function (Blueprint $table) {
+			$table->bigIncrements('id');
+			$table->dateTime('created_at')->nullable(false);
+			$table->dateTime('updated_at')->nullable(false);
+			$table->bigInteger('photo_id')->nullable();
+			$table->string('url')->default('');
+			$table->string('medium')->default('');
+			$table->string('medium2x')->default('');
+			$table->string('small')->default('');
+			$table->string('small2x')->default('');
+			$table->string('thumbUrl')->default('');
+			$table->string('thumb2x')->default('');
+		});
+	}
 
-		// Copy columns from `photo` to `size_variant`
-		$photos = DB::table('photos')->select([
-			'id',
-			'url',
-			'type',
-			'thumbUrl',
-			'thumb2x',
-			'width',
-			'height',
-			'small_width',
-			'small_height',
-			'small2x_width',
-			'small2x_height',
-			'medium_width',
-			'medium_height',
-			'medium2x_width',
-			'medium2x_height',
-		])->lazyById();
-
-		foreach ($photos as $photo) {
-			for ($variant = self::VARIANT_ORIGINAL; $variant <= self::VARIANT_THUMB; $variant++) {
-				if ($this->hasSizeVariant($variant, $photo)) {
-					DB::table('size_variants')->insert([
-						'photo_id' => $photo->id,
-						'size_variant' => $variant,
-						'short_path' => $this->getShortPath($variant, $photo),
-						'width' => $this->getWidth($variant, $photo),
-						'height' => $this->getHeight($variant, $photo),
-					]);
-				}
-			}
-		}
-
-		DB::commit();
-
-		// drop the obsolete columns from photos
+	/**
+	 * Removes obsolete columns from the photo table which are not required
+	 * after upgrade.
+	 */
+	protected function sanitizePhotoTable(): void
+	{
 		Schema::table('photos', function (Blueprint $table) {
 			$table->dropColumn([
 				'url',
@@ -164,123 +238,182 @@ class RefactorPhotoModel extends Migration
 	}
 
 	/**
-	 * Reverse the migrations.
+	 * Restores columns of the photo table which have been removed by the
+	 * upgrade.
 	 *
-	 * @return void
+	 * Reverts {@link RefactorPhotoModel::sanitizePhotoTable()}.
 	 */
-	public function down()
+	protected function restorePhotoTable(): void
 	{
-		$dbConnType = Config::get('database.default');
-		if ($dbConnType === 'mysql') {
-			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_short_path TO `livePhotoUrl`');
-			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_content_id TO `livePhotoContentID`');
-			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_checksum TO `livePhotoChecksum`');
-		} else {
-			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_short_path TO "livePhotoUrl"');
-			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_content_id TO "livePhotoContentID"');
-			DB::statement('ALTER TABLE photos RENAME COLUMN live_photo_checksum TO "livePhotoChecksum"');
-		}
-
-		// Re-create the columns in photos that have been removed
 		Schema::table('photos', function (Blueprint $table) {
 			$table->string('url', 100)->default('');
 			$table->string('thumbUrl', 37)->default('');
 			$table->boolean('thumb2x')->default(false);
-			$table->integer('width')->unsigned()->nullable()->default(null);
-			$table->integer('height')->unsigned()->nullable()->default(null);
-			$table->integer('small_width')->unsigned()->nullable()->default(null);
-			$table->integer('small_height')->unsigned()->nullable()->default(null);
-			$table->integer('small2x_width')->unsigned()->nullable()->default(null);
-			$table->integer('small2x_height')->unsigned()->nullable()->default(null);
-			$table->integer('medium_width')->unsigned()->nullable()->default(null);
-			$table->integer('medium_height')->unsigned()->nullable()->default(null);
-			$table->integer('medium2x_width')->unsigned()->nullable()->default(null);
-			$table->integer('medium2x_height')->unsigned()->nullable()->default(null);
+			for ($i = self::VARIANT_ORIGINAL; $i <= self::VARIANT_SMALL; $i++) {
+				$table->integer(self::VARIANT_2_WIDTH_ATTRIBUTE[$i])->unsigned()->nullable()->default(null);
+				$table->integer(self::VARIANT_2_HEIGHT_ATTRIBUTE[$i])->unsigned()->nullable()->default(null);
+			}
 		});
-
-		DB::beginTransaction();
-
-		// TODO: Write downgrade migration here. We have a problem, if the new URLs do not follow the old pattern.
-
-		DB::commit();
-
-		// We are brutal here and simply drop the old table, as the symlinks
-		// will be re-created on-the-fly when required
-		Schema::dropIfExists('sym_links');
-
-		// Drop newly created table
-		Schema::dropIfExists('size_variants');
-
-		// Re-create table `sym_links` acc. to the old schema
-		Schema::create('sym_links', function (Blueprint $table) {
-			$table->bigIncrements('id');
-			$table->dateTime('created_at')->nullable(false);
-			$table->dateTime('updated_at')->nullable(false);
-			$table->bigInteger('photo_id')->nullable();
-			$table->string('url')->default('');
-			$table->string('medium')->default('');
-			$table->string('medium2x')->default('');
-			$table->string('small')->default('');
-			$table->string('small2x')->default('');
-			$table->string('thumbUrl')->default('');
-			$table->string('thumb2x')->default('');
-		});
-	}
-
-	public function getShortPath(int $variant, object $photo): string
-	{
-		return self::VARIANT_2_PATH_PREFIX[$variant] . '/' . $this->getFilename($variant, $photo);
 	}
 
 	/**
-	 * Returns the base filename without any directory or alike.
+	 * Fills the table size_variants based on the values of the table photos.
 	 *
-	 * @param object $photo an array with columns of the old photo table
-	 *
-	 * @return string the base filename
+	 * The actual work horse of this migration.
 	 */
-	public function getFilename(int $variant, object $photo): string
+	protected function upgradeMigration(): void
 	{
-		$filename = $photo->url;
-		$thumbFilename = $photo->thumbUrl;
-		if ($this->isVideo($photo) || $this->isRaw($photo)) {
-			$filename = $thumbFilename;
-		}
-		$filename2x = $this->ex2x($filename);
-		$thumbFilename2x = $this->ex2x($thumbFilename);
+		DB::beginTransaction();
 
+		$photos = DB::table('photos')->select(array_merge([
+			'id',
+			'url',
+			'type',
+			'thumbUrl',
+			'thumb2x',
+		], self::VARIANT_2_WIDTH_ATTRIBUTE, self::VARIANT_2_HEIGHT_ATTRIBUTE
+		))->lazyById();
+
+		foreach ($photos as $photo) {
+			for ($variant = self::VARIANT_ORIGINAL; $variant <= self::VARIANT_THUMB; $variant++) {
+				if ($this->hasSizeVariant($photo, $variant)) {
+					DB::table('size_variants')->insert([
+						'photo_id' => $photo->id,
+						'size_variant' => $variant,
+						'short_path' => $this->getShortPathOfPhoto($photo, $variant),
+						'width' => $this->getWidth($photo, $variant),
+						'height' => $this->getHeight($photo, $variant),
+					]);
+				}
+			}
+		}
+
+		DB::commit();
+	}
+
+	/**
+	 * Fills the table photos based on the values of the table size_variants.
+	 *
+	 * Reverts {@link RefactorPhotoModel::upgradeMigration()}.
+	 */
+	protected function downgradeMigration(): void
+	{
+		DB::beginTransaction();
+
+		$photos = DB::table('photos')->select([
+			'id',
+			'type',
+			'checksum',
+		])->lazyById();
+
+		foreach ($photos as $photo) {
+			$update = [];
+			$sizeVariants = DB::table('size_variants')
+				->where('photo_id', '=', $photo->id)
+				->get();
+			/** @var object $sizeVariant */
+			foreach ($sizeVariants as $sizeVariant) {
+				$fileExtension = '.' . pathinfo($sizeVariant->short_path, PATHINFO_EXTENSION);
+				$expectedBasename = substr($photo->checksum, 0, 32);
+				if (
+					$sizeVariant->size_variant == self::VARIANT_THUMB2X ||
+					$sizeVariant->size_variant == self::VARIANT_SMALL2X ||
+					$sizeVariant->size_variant == self::VARIANT_MEDIUM2X
+				) {
+					$expectedBasename .= '@2x';
+				}
+				$expectedFilename = $expectedBasename . $fileExtension;
+				$expectedPathPrefix = self::VARIANT_2_PATH_PREFIX[$sizeVariant->size_variant] . '/';
+				if ($sizeVariant->size_variant == self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
+					$expectedPathPrefix = 'raw/';
+				}
+				$expectedShortPath = $expectedPathPrefix . $expectedFilename;
+
+				// Ensure that the size variant is stored at the location which
+				// is expected acc. to the old naming scheme
+				if ($sizeVariant->short_path != $expectedShortPath) {
+					Storage::move($sizeVariant->short_path, $expectedShortPath);
+				}
+
+				if ($sizeVariant->size_variant == self::VARIANT_THUMB2X) {
+					$update['thumb2x'] = true;
+				} elseif ($sizeVariant->size_variant == self::VARIANT_THUMB) {
+					$update['thumbUrl'] = $expectedFilename;
+				} else {
+					if ($sizeVariant->size_variant == self::VARIANT_ORIGINAL) {
+						$update['url'] = $expectedFilename;
+					}
+					$update[self::VARIANT_2_WIDTH_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->width;
+					$update[self::VARIANT_2_HEIGHT_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->width;
+				}
+			}
+
+			DB::table('photos')
+				->where('id', '=', $photo->id)
+				->update($update);
+		}
+		DB::commit();
+	}
+
+	/**
+	 * Returns the short path of a picture file for the designated size
+	 * variant from an old-style photo wrt. to the old naming scheme.
+	 *
+	 * @param object $photo an object with attributes of the old photo table
+	 *
+	 * @return string the short path
+	 */
+	public function getShortPathOfPhoto(object $photo, int $variant): string
+	{
+		$origFilename = $photo->url;
+		$thumbFilename = $photo->thumbUrl;
+		$thumbFilename2x = $this->add2xToFilename($thumbFilename);
+		$otherFilename = ($this->isVideo($photo) || $this->isRaw($photo)) ? $thumbFilename : $origFilename;
+		$otherFilename2x = $this->add2xToFilename($otherFilename);
 		switch ($variant) {
 			case self::VARIANT_THUMB:
-				return $thumbFilename;
+				$filename = $thumbFilename;
+				break;
 			case self::VARIANT_THUMB2X:
-				return $thumbFilename2x;
+				$filename = $thumbFilename2x;
+				break;
 			case self::VARIANT_SMALL:
 			case self::VARIANT_MEDIUM:
-			case self::VARIANT_ORIGINAL:
-				return $filename;
+				$filename = $otherFilename;
+				break;
 			case self::VARIANT_SMALL2X:
 			case self::VARIANT_MEDIUM2X:
-				return $filename2x;
+				$filename = $otherFilename2x;
+				break;
+			case self::VARIANT_ORIGINAL:
+				$filename = $origFilename;
+				break;
 			default:
 				throw new InvalidArgumentException('Invalid size variant: ' . $variant);
 		}
+		$directory = self::VARIANT_2_PATH_PREFIX[$variant] . '/';
+		if ($variant === self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
+			$directory = 'raw/';
+		}
+
+		return $directory . $filename;
 	}
 
-	public function isVideo(object $photo): bool
+	protected function isVideo(object $photo): bool
 	{
 		return in_array($photo->type, self::VALID_VIDEO_TYPES, true);
 	}
 
-	public function isRaw(object $photo): bool
+	protected function isRaw(object $photo): bool
 	{
 		return $photo->type == 'raw';
 	}
 
 	/**
-	 * Given a filename generate the @2x corresponding filename.
+	 * Given a filename generates the @2x corresponding filename.
 	 * This is used for thumbs, small and medium.
 	 */
-	public function ex2x(string $filename): string
+	protected function add2xToFilename(string $filename): string
 	{
 		$filename2x = explode('.', $filename);
 
@@ -289,7 +422,7 @@ class RefactorPhotoModel extends Migration
 			$filename2x[0] . '@2x';
 	}
 
-	public function getWidth(int $variant, object $photo): int
+	protected function getWidth(object $photo, int $variant): int
 	{
 		switch ($variant) {
 			case self::VARIANT_THUMB:
@@ -311,7 +444,7 @@ class RefactorPhotoModel extends Migration
 		}
 	}
 
-	public function getHeight(int $variant, object $photo): int
+	protected function getHeight(object $photo, int $variant): int
 	{
 		switch ($variant) {
 			case self::VARIANT_THUMB:
@@ -333,14 +466,14 @@ class RefactorPhotoModel extends Migration
 		}
 	}
 
-	public function hasSizeVariant(int $variant, object $photo): bool
+	protected function hasSizeVariant(object $photo, int $variant): bool
 	{
 		if ($variant == self::VARIANT_ORIGINAL || $variant == self::VARIANT_THUMB) {
 			return true;
 		} elseif ($variant == self::VARIANT_THUMB2X) {
 			return (bool) ($photo->thumb2x);
 		} else {
-			return $this->getWidth($variant, $photo) != 0;
+			return $this->getWidth($photo, $variant) != 0;
 		}
 	}
 }
