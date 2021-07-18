@@ -94,11 +94,6 @@ class SizeVariant extends Model
 	];
 
 	/**
-	 * @var string[] The list of relations which should be loaded eagerly
-	 */
-	protected $with = ['sym_links'];
-
-	/**
 	 * Returns the association to the photo which this size variant belongs
 	 * to.
 	 *

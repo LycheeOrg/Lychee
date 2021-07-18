@@ -16,6 +16,7 @@ use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\PhotoObserver;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -61,6 +62,7 @@ use Illuminate\Support\Facades\Storage;
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
+ * @property Collection   $size_variants_raw
  * @property bool         $downloadable
  * @property bool         $share_button_visible
  *
@@ -120,7 +122,6 @@ class Photo extends Model
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
 		'size_variants' => MustNotSetCast::class,
-		'size_variants_raw' => MustNotSetCast::class,
 		'short_path' => MustNotSetCast::class . ':filename',
 		'full_path' => MustNotSetCast::class . ':filename',
 		'url' => MustNotSetCast::class . ':filename',
@@ -169,11 +170,7 @@ class Photo extends Model
 	/**
 	 * @var string[] The list of relations which should be loaded eagerly
 	 */
-	protected $with = [
-		'album',  // the album is required anyway for access control checks
-		'owner',  // same reason as for album
-		'size_variants_raw',
-	];
+	//protected $with = ['size_variants_raw'];
 
 	protected $attributes = [
 		'tags' => '',
@@ -552,7 +549,7 @@ class Photo extends Model
 		// save duplicate so that is gets an ID
 		$duplicate->push();
 		/** @var SizeVariant $sizeVariant */
-		foreach ($this->size_variants_raw()->get() as $sizeVariant) {
+		foreach ($this->size_variants_raw as $sizeVariant) {
 			/** @var SizeVariant $dupSizeVariant */
 			$dupSizeVariant = $duplicate->size_variants_raw()->make();
 			$dupSizeVariant->size_variant = $sizeVariant->size_variant;

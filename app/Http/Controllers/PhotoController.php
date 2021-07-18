@@ -59,7 +59,9 @@ class PhotoController extends Controller
 	{
 		try {
 			/** @var Photo $photo */
-			$photo = Photo::query()->findOrFail($request['photoID']);
+			$photo = Photo::query()
+				->with('size_variants_raw')
+				->findOrFail($request['photoID']);
 		} catch (\Throwable $e) {
 			throw $e;
 		}

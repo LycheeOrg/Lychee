@@ -21,6 +21,7 @@ trait LocationData
 		$photos = $photos_sql
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')
+			->with(['album', 'size_variants_raw'])
 			->get();
 
 		/*

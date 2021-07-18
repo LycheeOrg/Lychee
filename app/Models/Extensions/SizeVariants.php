@@ -77,8 +77,21 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 */
 	public function getSizeVariant(int $sizeVariant): ?SizeVariant
 	{
+		// Sic! Search on the whole Eloquent Collection not on the database
+		// Please note, that `size_variant_raw` is called as an attribute
+		// not as a method.
+		// If it was called as a method, then the methods return type would
+		// be an HasMany object and the query would be executed on the
+		// database which is extremely inefficient, because it happens a lot
+		// of times.
+		// Moreover, calling `where` on the `HasMany`-relationship with
+		// different values would not benefit from eager loading.
+		// However, the number of size variants per photo is small (there are
+		// at most seven).
+		// So it is better to fetch all size variants once and then search
+		// on the size variants.
 		return $this->photo
-			->size_variants_raw()
+			->size_variants_raw
 			->where('size_variant', '=', $sizeVariant)
 			->first();
 	}

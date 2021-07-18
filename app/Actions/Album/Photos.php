@@ -18,7 +18,7 @@ class Photos
 	public function get(Album $album): array
 	{
 		[$sortingCol, $sortingOrder] = $album->get_sort();
-		$photos_sql = $album->get_photos();
+		$photos_sql = $album->get_photos()->with('size_variants_raw');
 
 		$previousPhotoID = '';
 		$return_photos = [];

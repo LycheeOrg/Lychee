@@ -86,6 +86,7 @@ trait AlbumGetters
 			} else {
 				$sql = $this->get_all_photos();
 			}
+			$sql->with('size_variants_raw');
 
 			//? apply safety filter : Do not leak pictures which are not ours
 			$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
