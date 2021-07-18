@@ -86,32 +86,25 @@ class VideoData extends Command
 			if (file_exists($fullPath)) {
 				$info = $this->metadataExtractor->extract($fullPath, 'video');
 
-				$updated = false;
 				if ($originalSizeVariant->width == 0 && $info['width'] !== 0) {
 					$originalSizeVariant->width = $info['width'];
-					$updated = true;
 				}
 				if ($originalSizeVariant->height == 0 && $info['height'] !== 0) {
 					$originalSizeVariant->height = $info['height'];
-					$updated = true;
 				}
 				if ($photo->focal == '' && $info['focal'] !== '') {
 					$photo->focal = $info['focal'];
-					$updated = true;
 				}
 				if ($photo->aperture == '' && $info['aperture'] !== '') {
 					$photo->aperture = $info['aperture'];
-					$updated = true;
 				}
 				if ($photo->latitude == null && $info['latitude'] !== null) {
 					$photo->latitude = $info['latitude'];
-					$updated = true;
 				}
 				if ($photo->longitude == null && $info['longitude'] !== null) {
 					$photo->longitude = $info['longitude'];
-					$updated = true;
 				}
-				if ($updated) {
+				if ($photo->isDirty()) {
 					$this->line('Updated metadata');
 				}
 
