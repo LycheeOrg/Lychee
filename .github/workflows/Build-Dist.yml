@@ -87,19 +87,7 @@ jobs:
       
       - name: Set Up imagick (php8)
         if: ${{ matrix.php-versions != '7.4' }}
-        run: |
-          git clone https://github.com/Imagick/imagick.git
-          cd imagick && phpize && ./configure && make
-          DEST=$(php -i | grep 'extension_dir => /')
-          php -i | grep 'extension_dir => /'
-          php -i | grep 'extension_dir'
-          echo $DEST
-          DEST2=$(echo "${DEST##* }")
-          echo 'Copying imagick.so to ' $DEST2
-          sudo cp modules/imagick.so $DEST2
-          echo 'Update php.ini file at ' $(echo $(php --ini | grep 'Loaded Configuration File') | awk 'NF>1{print $NF}')
-          sudo echo 'extension="imagick.so"' >> $(echo $(php --ini | grep 'Loaded Configuration File') | awk 'NF>1{print $NF}')
-          cd ..
+        run: sh scripts/install_imagick.sh
 
       - name: Install Exiftools
         run: sudo apt-get -y install libimage-exiftool-perl
