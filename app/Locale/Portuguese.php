@@ -27,6 +27,7 @@ final class Portuguese implements Language
 
 			'USERS' => 'Utilizadores',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Partilha',
 			'CHANGE_LOGIN' => 'Alterar Login',
 			'CHANGE_SORTING' => 'Alterar Ordenação',
@@ -300,6 +301,10 @@ final class Portuguese implements Language
 			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authenticação bem-sucedida!',
 			'U2F_CREDENTIALS' => 'Credenciais',
 			'U2F_CREDENTIALS_DELETED' => 'Credenciais eliminadas!',
+
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Inserir os detalhes da conecção à base de dados abaixo:',
 			'DB_INFO_HOST' => 'Host da Base de Dados (opcional)',
