@@ -14,9 +14,7 @@ class Notify
 {
 	public function do(Photo $request, $album_id = null)
 	{
-		$settings = Configs::get();
-
-		if ($settings['new_photos_notification']) {
+		if (Configs::get_Value('new_photos_notification', '0') == '1') {
 			if ($album_id) {
 				$album = Album::find($album_id);
 			} else {

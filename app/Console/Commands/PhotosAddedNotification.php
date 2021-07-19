@@ -43,9 +43,7 @@ class PhotosAddedNotification extends Command
 	 */
 	public function handle()
 	{
-		$settings = Configs::get();
-
-		if ($settings['new_photos_notification']) {
+		if (Configs::get_Value('new_photos_notification', '0') == '1') {
 			$users = User::whereNotNull('email')->get();
 
 			foreach ($users as $user) {
@@ -64,9 +62,16 @@ class PhotosAddedNotification extends Command
 
 						logger(Storage::url(Photo::VARIANT_2_PATH_PREFIX[Photo::VARIANT_THUMB] . '/' . $photo->thumbUrl));
 
+						// If the url config doesn't contain a trailing slash then add it
+						if (substr(config('app.url'), -1) == '/') {
+							$trailing_slash = '';
+						} else {
+							$trailing_slash = '/';
+						}
+
 						$photos[$photo->album_id]['photos'][$photo->id] = [
 							'thumb' => Storage::url(Photo::VARIANT_2_PATH_PREFIX[Photo::VARIANT_THUMB] . '/' . $photo->thumbUrl),
-							'link' => config('app.url') . '/r/' . $photo->album_id . '/' . $photo->id,
+							'link' => config('app.url') . $trailing_slash . 'r/' . $photo->album_id . '/' . $photo->id,
 						];
 					}
 				}

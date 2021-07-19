@@ -311,10 +311,11 @@ class SettingsController extends Controller
 	{
 		$request->validate(['new_photos_notification' => 'required|string']);
 
-		return Configs::set(
-			'new_photos_notification',
-			$request['new_photos_notification']
-		) ? 'true' : 'false';
+		if ($request['new_photos_notification'] == '1') {
+			return Configs::set('new_photos_notification', '1') ? 'true' : 'false';
+		}
+
+		return Configs::set('new_photos_notification', '0') ? 'true' : 'false';
 	}
 
 	/**
