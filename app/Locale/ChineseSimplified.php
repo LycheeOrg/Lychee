@@ -268,6 +268,7 @@ final class ChineseSimplified implements Language
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => '
 			此照片的可见性可以使用全局的 Lychee 设置进行更细致的调整。其当前的可见性仅在下方作为提示的作用而显示。',
 			'PHOTO_SHARING_CONFIRM' => '保存',
+			'PHOTO_PALETTE' => '调色板',
 
 			'LOADING' => '载入中',
 			'ERROR' => '错误',

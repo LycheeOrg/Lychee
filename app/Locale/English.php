@@ -267,6 +267,7 @@ final class English implements Language
 			'PHOTO_NO_EDIT_SHARING_TEXT' => 'Because this photo is located in a public album, it inherits that album\'s visibility settings.  Its current visibility is shown below for informational purposes only.',
 			'PHOTO_EDIT_GLOBAL_SHARING_TEXT' => 'The visibility of this photo can be fine-tuned using global Lychee settings. Its current visibility is shown below for informational purposes only.',
 			'PHOTO_SHARING_CONFIRM' => 'Save',
+			'PHOTO_PALETTE' => 'Palette',
 
 			'LOADING' => 'Loading',
 			'ERROR' => 'Error',

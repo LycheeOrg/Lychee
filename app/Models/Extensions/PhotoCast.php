@@ -84,6 +84,7 @@ trait PhotoCast
 			'taken_at_orig_tz' => $this->taken_at_orig_tz,
 			'license' => $this->license,
 			'sizeVariants' => $sizeVariants,
+			'colors' => $this->colors()->get(),
 		];
 	}
 

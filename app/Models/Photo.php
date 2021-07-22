@@ -13,6 +13,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -65,6 +66,10 @@ use Illuminate\Support\Facades\Storage;
  * @property string      $livePhotoChecksum
  * @property Album|null  $album
  * @property User        $owner
+ * @property string|null $palette
+ * @property int|null    $main_color_R
+ * @property int|null    $main_color_G
+ * @property int|null    $main_color_B
  *
  * @method static Builder|Photo ownedBy($id)
  * @method static Builder|Photo public ()
@@ -169,6 +174,16 @@ class Photo extends Model
 	public function owner(): BelongsTo
 	{
 		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
+	}
+
+	/**
+	 * Return the relationship between a Photo and its Owner.
+	 *
+	 * @return HasMany
+	 */
+	public function colors(): HasMany
+	{
+		return $this->hasMany('App\Models\Color', 'photo_id', 'id');
 	}
 
 	/**
@@ -346,5 +361,14 @@ class Photo extends Model
 		}
 
 		return ($sql->count() == 0) ? false : $sql->first();
+	}
+
+	public static function boot()
+	{
+		parent::boot();
+
+		static::deleting(function ($photo) {
+			$photo->colors()->delete();
+		});
 	}
 }

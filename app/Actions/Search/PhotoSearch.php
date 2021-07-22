@@ -50,16 +50,25 @@ class PhotoSearch
 			->where(fn ($q) => $this->unsorted_or_public($q->whereIn('album_id', $albumIDs)));
 
 		foreach ($terms as $escaped_term) {
-			$query->where(
-				fn (Builder $query) => $query->where('title', 'like', '%' . $escaped_term . '%')
-					->orWhere('description', 'like', '%' . $escaped_term . '%')
-					->orWhere('tags', 'like', '%' . $escaped_term . '%')
-					->orWhere('location', 'like', '%' . $escaped_term . '%')
-					->orWhere('model', 'like', '%' . $escaped_term . '%')
-					->orWhere('taken_at', 'like', '%' . $escaped_term . '%')
-			);
+			if (preg_match('/rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/', $escaped_term, $matchers) > 0) {
+				$r = $matchers[1];
+				$g = $matchers[2];
+				$b = $matchers[3];
+				$query->join('colors', 'photos.id', '=', 'colors.photo_id')
+					->whereBetween('colors.r', [$r - 10, $r + 10])
+					->whereBetween('colors.g', [$g - 10, $g + 10])
+					->whereBetween('colors.b', [$b - 10, $b + 10]);
+			} else {
+				$query->where(
+					fn (Builder $query) => $query->where('title', 'like', '%' . $escaped_term . '%')
+						->orWhere('description', 'like', '%' . $escaped_term . '%')
+						->orWhere('tags', 'like', '%' . $escaped_term . '%')
+						->orWhere('location', 'like', '%' . $escaped_term . '%')
+						->orWhere('model', 'like', '%' . $escaped_term . '%')
+						->orWhere('taken_at', 'like', '%' . $escaped_term . '%')
+				);
+			}
 		}
-
 		$photos = $query->get();
 
 		return $photos->map(

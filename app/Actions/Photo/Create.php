@@ -13,8 +13,10 @@ use App\Actions\Photo\Strategies\StrategyDuplicate;
 use App\Actions\Photo\Strategies\StrategyPhoto;
 use App\Facades\Helpers;
 use App\Models\Album;
+use App\Models\Color;
 use App\Models\Logs;
 use App\Models\Photo;
+use ColorThief\ColorThief;
 use Illuminate\Support\Facades\Storage;
 
 class Create
@@ -81,6 +83,7 @@ class Create
 
 		$this->photo_Url = substr($this->photo->checksum, 0, 32) . $this->extension;
 		$this->path = Storage::path($this->path_prefix . $this->photo_Url);
+
 		/*
 		 * ! From here we need to use a Strategy depending if we have
 		 * ! a duplicate
@@ -116,6 +119,22 @@ class Create
 			$res = $this->livePhotoPartner->id;
 		} else {
 			$res = $this->save($this->photo);
+		}
+
+		//extract the main color and palette
+		$palette = ColorThief::getPalette($this->path, 5);
+
+		if (!empty($palette)) {
+			foreach ($palette as $index => $value) {
+				$color = new Color([
+					'r' => $value[0],
+					'g' => $value[1],
+					'b' => $value[2],
+					'is_main' => ($index === 0 ? 1 : 0),
+					'photo_id' => $this->photo->id,
+				]);
+				$this->photo->colors()->save($color);
+			}
 		}
 
 		if ($delete_imported && !$this->is_uploaded && ($exists || !$import_via_symlink) && !@unlink($this->tmp_name)) {
