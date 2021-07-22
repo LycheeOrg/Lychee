@@ -121,6 +121,21 @@ class SizeVariants implements Arrayable, JsonSerializable
 		if (!$result->save()) {
 			throw new \RuntimeException('could not persist size variant');
 		}
+		if ($this->photo->relationLoaded('size_variants_raw')) {
+			// If the relation `size_variant_raw` has already been loaded,
+			// we must unset the cached result.
+			// Otherwise, the cached relation will not know the newly added
+			// size variant and return wrong results.
+			// Unfortunately, this will trigger a new DB query the next time
+			// when the relation is needed.
+			// This means we will have up to 7 DB query when a new photo is
+			// added (because a photo can have up to 7 different size variants).
+			// This would be so much nicer with Doctrine ;-) where we have a
+			// proper unit-of-work.
+			// We first could create everything in the object space and then
+			// sync everything to the DB when we are finished
+			$this->photo->unsetRelation('size_variants_raw');
+		}
 
 		return $result;
 	}
