@@ -48,7 +48,7 @@ class SymLink extends Model
 		'url' => MustNotSetCast::class,
 	];
 
-	public function sizeVariant(): BelongsTo
+	public function size_variant(): BelongsTo
 	{
 		return $this->belongsTo(SizeVariant::class);
 	}

@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
+use App\Assets\HasManyBidirectionally;
 use App\Casts\MustNotSetCast;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
+use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\SizeVariantObserver;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -33,6 +34,7 @@ class SizeVariant extends Model
 {
 	use UTCBasedTimes;
 	use HasAttributesPatch;
+	use HasBidirectionalRelationships;
 
 	const ORIGINAL = 0;
 	const MEDIUM2X = 1;
@@ -108,11 +110,11 @@ class SizeVariant extends Model
 	 * Returns the association to the symbolics links which point to this
 	 * size variant.
 	 *
-	 * @return HasMany
+	 * @return HasManyBidirectionally
 	 */
-	public function sym_links(): HasMany
+	public function sym_links(): HasManyBidirectionally
 	{
-		return $this->hasMany(SymLink::class);
+		return $this->hasManyBidirectionally(SymLink::class);
 	}
 
 	/**
