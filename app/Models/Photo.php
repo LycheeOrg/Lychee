@@ -4,11 +4,13 @@
 
 namespace App\Models;
 
+use App\Assets\HasManyBidirectionally;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
+use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasTimeBasedID;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\PhotoCast;
@@ -19,7 +21,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -109,6 +110,7 @@ class Photo extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasTimeBasedID;
+	use HasBidirectionalRelationships;
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -207,9 +209,9 @@ class Photo extends Model
 		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
 
-	public function size_variants_raw(): HasMany
+	public function size_variants_raw(): HasManyBidirectionally
 	{
-		return $this->hasMany(SizeVariant::class);
+		return $this->hasManyBidirectionally(SizeVariant::class);
 	}
 
 	/**

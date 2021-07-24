@@ -4,6 +4,7 @@
 
 namespace App\Models;
 
+use App\Assets\HasManyBidirectionally;
 use App\Contracts\AlbumInterface;
 use App\Models\Extensions\AlbumBooleans;
 use App\Models\Extensions\AlbumCast;
@@ -11,6 +12,7 @@ use App\Models\Extensions\AlbumGetters;
 use App\Models\Extensions\AlbumSetters;
 use App\Models\Extensions\AlbumStringify;
 use App\Models\Extensions\CustomSort;
+use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasTimeBasedID;
 use App\Models\Extensions\NodeTrait;
 use App\Models\Extensions\UTCBasedTimes;
@@ -84,6 +86,7 @@ class Album extends Model implements AlbumInterface
 	use CustomSort;
 	use UTCBasedTimes;
 	use HasTimeBasedID;
+	use HasBidirectionalRelationships;
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -151,11 +154,11 @@ class Album extends Model implements AlbumInterface
 	/**
 	 * Return the relationship between Photos and their Album.
 	 *
-	 * @return HasMany
+	 * @return HasManyBidirectionally
 	 */
-	public function photos(): HasMany
+	public function photos(): HasManyBidirectionally
 	{
-		return $this->hasMany('App\Models\Photo', 'album_id', 'id');
+		return $this->hasManyBidirectionally(Photo::class);
 	}
 
 	/**
