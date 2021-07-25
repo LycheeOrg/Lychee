@@ -6681,7 +6681,7 @@ _photo.delete = function (photoIDs) {
 		};
 
 		api.post("Photo::delete", params, function (data) {
-			if (data !== true) lychee.error(null, params, data);
+			if (data) lychee.error(null, params, data);
 		});
 	};
 
