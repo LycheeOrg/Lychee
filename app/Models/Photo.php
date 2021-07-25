@@ -13,7 +13,6 @@ use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasTimeBasedID;
 use App\Models\Extensions\PhotoBooleans;
-use App\Models\Extensions\PhotoCast;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\PhotoObserver;
@@ -106,7 +105,6 @@ use Illuminate\Support\Facades\Storage;
 class Photo extends Model
 {
 	use PhotoBooleans;
-	use PhotoCast;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasTimeBasedID;

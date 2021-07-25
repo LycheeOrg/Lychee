@@ -55,7 +55,7 @@ class Photos
 		/** @var Photo $photo_model */
 		foreach ($photos as $photo_model) {
 			// Turn data from the database into a front-end friendly format
-			$photo = $photo_model->toReturnArray();
+			$photo = $photo_model->toArray();
 
 			// Set previous and next photoID for navigation purposes
 			$photo['previousPhoto'] = $previousPhotoID;
