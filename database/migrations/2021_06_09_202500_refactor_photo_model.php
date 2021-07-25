@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\FileNotFoundException;
 
 class RefactorPhotoModel extends Migration
 {
@@ -332,7 +333,16 @@ class RefactorPhotoModel extends Migration
 				// Ensure that the size variant is stored at the location which
 				// is expected acc. to the old naming scheme
 				if ($sizeVariant->short_path != $expectedShortPath) {
-					Storage::move($sizeVariant->short_path, $expectedShortPath);
+					try {
+						Storage::move($sizeVariant->short_path, $expectedShortPath);
+					} catch (FileNotFoundException $e) {
+						// sic! just ignore
+						// This exception is thrown if there are duplicate
+						// photos which point to the same physical file.
+						// Then the file is renamed when the first occurrence
+						// of those duplicates is processed and subsequent,
+						// failing attempts to rename the file must be ignored.
+					}
 				}
 
 				if ($sizeVariant->size_variant == self::VARIANT_THUMB2X) {
@@ -344,7 +354,7 @@ class RefactorPhotoModel extends Migration
 						$update['url'] = $expectedFilename;
 					}
 					$update[self::VARIANT_2_WIDTH_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->width;
-					$update[self::VARIANT_2_HEIGHT_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->width;
+					$update[self::VARIANT_2_HEIGHT_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->height;
 				}
 			}
 
