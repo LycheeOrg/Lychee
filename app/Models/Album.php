@@ -44,13 +44,14 @@ use Illuminate\Support\Carbon;
  * @property string|null       $password
  * @property string            $license
  * @property bool              $smart
- * @property text              $showtags
+ * @property string            $showtags
  * @property Carbon            $created_at
  * @property Carbon            $updated_at
  * @property Collection[Album] $children
  * @property User              $owner
  * @property Album             $parent
  * @property Collection[Photo] $photos
+ * @property Photo|null        $cover
  *
  * @method static Builder|Album newModelQuery()
  * @method static Builder|Album newQuery()
