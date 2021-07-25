@@ -2,6 +2,7 @@
 
 namespace App\Actions\Album\Extensions;
 
+use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 
 trait LocationData
@@ -24,11 +25,9 @@ trait LocationData
 			->with(['album', 'size_variants_raw'])
 			->get();
 
-		/*
-		* @var Photo
-		*/
+		/** @var Photo $photo_model */
 		foreach ($photos as $photo_model) {
-			$return_photos[$photo_counter] = $photo_model->toReturnArray();
+			$return_photos[$photo_counter] = $photo_model->toArray();
 			$photo_counter++;
 		}
 

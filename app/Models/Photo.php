@@ -167,11 +167,6 @@ class Photo extends Model
 		'share_button_visible',
 	];
 
-	/**
-	 * @var string[] The list of relations which should be loaded eagerly
-	 */
-	//protected $with = ['size_variants_raw'];
-
 	protected $attributes = [
 		'tags' => '',
 	];

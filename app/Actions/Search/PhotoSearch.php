@@ -31,7 +31,7 @@ class PhotoSearch
 	{
 		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
 
-		$query = Photo::with('album')
+		$query = Photo::with(['album', 'size_variants_raw'])
 			->where(fn ($q) => $this->unsorted_or_public($q->whereIn('album_id', $albumIDs)));
 
 		foreach ($terms as $escaped_term) {
@@ -48,8 +48,8 @@ class PhotoSearch
 		$photos = $query->get();
 
 		return $photos->map(
-			function ($photo) {
-				return $photo->toReturnArray();
+			function (Photo $photo) {
+				return $photo->toArray();
 			}
 		);
 	}
