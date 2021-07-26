@@ -27,6 +27,7 @@ final class Polish implements Language
 
 			'USERS' => 'Użytkownicy',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Udostępnianie',
 			'CHANGE_LOGIN' => 'Zmień login',
 			'CHANGE_SORTING' => 'Zmień sortowanie',
@@ -300,6 +301,10 @@ final class Polish implements Language
 			'U2F_AUTHENTIFICATION_SUCCESS' => 'Autoryzacja pomyślna!',
 			'U2F_CREDENTIALS' => 'Dane uwierzytelniające',
 			'U2F_CREDENTIALS_DELETED' => 'Usunięto dane uwierzytelniające!',
+
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Uzupełnij dane niezbędne do połączenia z bazą danych:',
 			'DB_INFO_HOST' => 'Host (opcjonalnie)',
