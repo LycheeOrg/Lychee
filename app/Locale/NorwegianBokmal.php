@@ -27,6 +27,7 @@ final class NorwegianBokmal implements Language
 
 			'USERS' => 'Brukere',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Deling',
 			'CHANGE_LOGIN' => 'Endre Bruker',
 			'CHANGE_SORTING' => 'Endre sortering',
@@ -300,6 +301,10 @@ final class NorwegianBokmal implements Language
 			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentication successful!',
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
+
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Fyll inn detaljer om databaseforbindelsen under:',
 			'DB_INFO_HOST' => 'Database Adresse (valgfritt)',

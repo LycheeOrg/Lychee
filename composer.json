@@ -85,7 +85,7 @@
             "@install_files"
         ],
         "install_files": [
-            "sh install_files.sh"
+            "sh scripts/install_files.sh"
         ]
     },
     "config": {
