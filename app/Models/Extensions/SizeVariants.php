@@ -99,7 +99,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 
 	/**
 	 * Creates a new instance of {@link \App\Models\SizeVariant} for the
-	 * associated photo and persist it to DB.
+	 * associated photo and persists it to DB.
 	 *
 	 * @param int    $sizeVariant the type of the desired size variant
 	 * @param string $shortPath   the short path of the media file this size variant shall point to
@@ -142,7 +142,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 * @param bool $keepOriginalFile if true, the original size variant is
 	 *                               still removed from the DB and the model,
 	 *                               but the media file is kept
-	 * @param bool $keepAllFiles     if true, the all size variants are still
+	 * @param bool $keepAllFiles     if true, all size variants are still
 	 *                               removed from the DB and the model, but
 	 *                               the media files are kept
 	 *

@@ -440,11 +440,9 @@ class Photo extends Model
 	 */
 	protected function getDownloadableAttribute(): bool
 	{
-		$default = (bool) Configs::get_value('downloadable', '0');
-
 		return AccessControl::is_current_user($this->owner_id) ||
 			($this->album_id != null && $this->album->is_downloadable()) ||
-			($this->album_id == null && $default);
+			($this->album_id == null && (bool) Configs::get_value('downloadable', '0'));
 	}
 
 	/**

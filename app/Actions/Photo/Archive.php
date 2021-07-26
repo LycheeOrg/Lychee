@@ -9,6 +9,7 @@ use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -83,18 +84,23 @@ class Archive
 	 */
 	public function do(array $photoIDs, string $variant): Response
 	{
-		if (count($photoIDs) === 1) {
-			$response = $this->file($photoIDs[0], $variant);
+		/** @var Collection $photos */
+		$photos = Photo::with(['album', 'size_variants_raw'])
+			->whereIn('id', $photoIDs)
+			->get();
+
+		if ($photos->count() === 1) {
+			$response = $this->file($photos->first(), $variant);
 		} else {
-			$response = $this->zip($photoIDs, $variant);
+			$response = $this->zip($photos, $variant);
 		}
 
 		return $response;
 	}
 
-	protected function file($photoID, $variant): BinaryFileResponse
+	protected function file(Photo $photo, $variant): BinaryFileResponse
 	{
-		$archiveFileInfo = $this->extractFileInfo($photoID, $variant);
+		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
 		if ($archiveFileInfo === null) {
 			abort(404);
 		}
@@ -106,37 +112,109 @@ class Archive
 		);
 	}
 
-	protected function zip(array $photoIDs, string $variant): StreamedResponse
+	protected function zip(Collection $photos, string $variant): StreamedResponse
 	{
-		$response = new StreamedResponse(function () use ($variant, $photoIDs) {
+		$response = new StreamedResponse(function () use ($variant, $photos) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 			$zip = new ZipStream(null, $options);
 
-			$fileCounter = [];
-			foreach ($photoIDs as $photoID) {
-				$archiveFileInfo = $this->extractFileInfo($photoID, $variant);
+			// We first need to scan the whole array of files to avoid
+			// problems with duplicate file names.
+			// If a file name occurs multiple times, the files are named
+			// filename-1, filename-2, filename-3 and so on.
+			// Unfortunately, the naive approach which uses a simple online
+			// algorithm that only applies a singly pass (without look-ahead)
+			// and maintains a counter for every file name will fail, if the
+			// list of file names already contains another files which uses
+			// the same naming pattern accidentally.
+			// Assume that the album itself contains the images
+			// `my-file.jpg`, `my-file-2.jpg`, `my-file.jpg`.
+			// The naive approach would first store `my-file.jpg` and
+			// `my-file-2.jpg` (both unaltered).
+			// Both counters for `my-file.jpg` and `my-file-2.jpg` equal one
+			// because those file names are actually treated as independent
+			// file names.
+			// When the naive approach comes across the last file
+			// `my-file.jpg`, the counter for `my-file.jpg` is incremented
+			// and the file is stored as ``my-file-2.jpg`.
+			// However, this accidentally overwrite the original
+			// `my-file-2.jpg`.
+			// Long story short, if we append a counter as a suffix to a
+			// filename, we must take care that the result is not also used as
+			// a base file name.
+			// Further note, that this problem does not occur if both file
+			// names occurred multiple times.
+			// E.g., if we had
+			//   - `my-file.jpg`,
+			//   - `my-file-2.jpg`,
+			//   - `my-file.jpg` and
+			//   - `my-file-2.jpg` again,
+			// then the result would be
+			//   - `my-file-1.jpg`,
+			//   - `my-file-2-1.jpg`,
+			//   - `my-file-2.jpg` and
+			//   - `my-file-2-2.jpg`.
+			// Note that the problematic case can only occur due to a clash
+			// of file names between file names which occur multiple times
+			// (and thus are appended by a suffix) and a file name that only
+			// occurs a single time.
+			//
+			// Here, we take the following approach:
+			//
+			// We scan the list of photos once and partition the set of file
+			// names into a set of unique file names and a set of ambitious
+			// file names.
+			// In the second run, all photos with unique file names are
+			// stored under their unaltered file name.
+			// For photo with an ambiguous file name a counter for that file
+			// name is tracked and incremented.
+			// If the resulting file name accidentally equals one of the
+			// unique file names, then the counter is incremented until the
+			// next "free" file name is found.
+
+			$archiveFileInfos = [];
+			$uniqueFilenames = [];
+			$ambiguousFilenames = [];
+
+			// Partition the set
+			/** @var Photo $photo */
+			foreach ($photos as $photo) {
+				$archiveFileInfo = $this->extractFileInfo($photo, $variant);
 				if ($archiveFileInfo == null) {
 					abort(404);
 				}
-
-				// Set title for photo
+				$archiveFileInfos[] = $archiveFileInfo;
 				$filename = $archiveFileInfo->getFilename();
-				// Check for duplicates
-				if (array_key_exists($filename, $fileCounter)) {
-					$cnt = $fileCounter[$filename];
-					$cnt++;
-					$fileCounter[$filename] = $cnt;
-					$filename = $archiveFileInfo->getFilename('-' . $cnt);
+				if (array_key_exists($filename, $ambiguousFilenames)) {
+					continue;
+				} elseif (array_key_exists($filename, $uniqueFilenames)) {
+					unset($uniqueFilenames[$filename]);
+					$ambiguousFilenames[$filename] = 0;
 				} else {
-					$fileCounter[$filename] = 1;
+					$uniqueFilenames[$filename] = 0;
 				}
+			}
 
+			/** @var ArchiveFileInfo $archiveFileInfo */
+			foreach ($archiveFileInfos as $archiveFileInfo) {
+				$trueFilename = $archiveFileInfo->getFilename();
+				if (array_key_exists($trueFilename, $uniqueFilenames)) {
+					// Easy case: Unique file names are used unaltered
+					$filename = $trueFilename;
+				} else {
+					do {
+						// Append suffix for multiple copies of same file name
+						// but skip results which exist as a unique file name
+						$filename = $archiveFileInfo->getFilename(
+							'-' . ++$ambiguousFilenames[$trueFilename]
+						);
+					} while (array_key_exists($filename, $uniqueFilenames));
+				}
+				$zip->addFileFromPath($filename, $archiveFileInfo->getFullPath());
 				// Reset the execution timeout for every iteration.
 				set_time_limit(ini_get('max_execution_time'));
-
-				$zip->addFileFromPath($filename, $archiveFileInfo->getFullPath());
-			} // foreach ($photoIDs)
+			}
 
 			// finish the zip stream
 			$zip->finish();
@@ -153,7 +231,7 @@ class Archive
 	/**
 	 * Creates a {@link ArchiveFileInfo} for the indicated photo and variant.
 	 *
-	 * @param int    $photoID the id of the photo whose archive information
+	 * @param Photo  $photo   the photo whose archive information
 	 *                        shall be returned
 	 * @param string $variant the desired variant of the photo; valid values
 	 *                        are
@@ -168,11 +246,8 @@ class Archive
 	 *
 	 * @return ArchiveFileInfo|null the created archive info
 	 */
-	public function extractFileInfo(int $photoID, string $variant): ?ArchiveFileInfo
+	public function extractFileInfo(Photo $photo, string $variant): ?ArchiveFileInfo
 	{
-		/** @var Photo $photo */
-		$photo = Photo::with('album')->findOrFail($photoID);
-
 		if (!AccessControl::is_current_user($photo->owner_id)) {
 			if ($photo->album_id !== null) {
 				if (!$photo->album->is_downloadable()) {

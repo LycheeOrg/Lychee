@@ -151,8 +151,11 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	{
 		$errMsg = 'Failed to extract snapshot from video ' . $this->referenceFullPath . ' at position ' . $framePosition;
 		try {
+			$dim = $video->getStreams()->videos()->first()->getDimensions();
 			$frame = $video->frame(TimeCode::fromSeconds($framePosition));
 			$frame->save($this->referenceFullPath);
+			$this->referenceWidth = $dim->getWidth();
+			$this->referenceHeight = $dim->getHeight();
 		} catch (\RuntimeException $e) {
 			Logs::error(__METHOD__, __LINE__, $errMsg);
 			throw new \RuntimeException($errMsg, 0, $e);
@@ -168,13 +171,15 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	/**
 	 * Creates a temporary path to store the extracted reference image.
 	 *
-	 * This method modifies `referenceFullPath` and also set `needsCleanup`
+	 * This method modifies `referenceFullPath` and also sets `needsCleanup`
 	 * to true such that the file which is stored at `referenceFullPath` will
 	 * be removed by {@link SizeVariantFactory::cleanup()}.
 	 */
 	protected function createTmpPathForReference(): void
 	{
-		$this->referenceFullPath = Helpers::createTemporaryFile('.jpeg');
+		$this->referenceFullPath = Helpers::createTemporaryFile(
+			$this->namingStrategy->getDefaultExtension()
+		);
 		$this->needsCleanup = true;
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw/video file to ' . $this->referenceFullPath);
 	}
@@ -252,7 +257,11 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				$maxHeight
 			);
 		} else {
-			Logs::notice(__METHOD__, __LINE__, 'Did not create size variant ' . $sizeVariant . ';  original image is too small: ' . $maxWidth . 'x' . $maxHeight . '!');
+			Logs::notice(
+				__METHOD__,
+				__LINE__,
+				'Did not create size variant ' . $sizeVariant . ' (' . $maxWidth . 'x' . $maxHeight . '); original image is too small: ' . $this->referenceWidth . 'x' . $this->referenceHeight . '!'
+			);
 
 			return null;
 		}
@@ -276,7 +285,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			}
 			if (!$success) {
 				Logs::error(__METHOD__, __LINE__, 'Failed to resize image: ' . $this->referenceFullPath);
-				// If scaling/cropping has failed, remove the freshly create DB entity again
+				// If scaling/cropping has failed, remove the freshly created DB entity again
 				// This will also take care of removing a potentially created file from storage
 				$sv->delete();
 				throw new \RuntimeException('Failed to resize image: ' . $this->referenceFullPath);

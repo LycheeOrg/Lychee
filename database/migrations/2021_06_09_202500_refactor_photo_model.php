@@ -155,7 +155,7 @@ class RefactorPhotoModel extends Migration
 	/**
 	 * Creates the new table size_variants.
 	 *
-	 * The table has does not possess own columns for timestamping
+	 * The table does not possess own columns for timestamping
 	 * (`created_at` and `updated_at`) as the table is tightly coupled to its
 	 * parent table `photos` and uses the same timestamps.
 	 */

@@ -57,16 +57,10 @@ class PhotoController extends Controller
 	 */
 	public function get(PhotoIDRequest $request): Photo
 	{
-		try {
-			/** @var Photo $photo */
-			$photo = Photo::query()
-				->with('size_variants_raw')
-				->findOrFail($request['photoID']);
-		} catch (\Throwable $e) {
-			throw $e;
-		}
-
-		return $photo;
+		/* @var Photo $photo */
+		return Photo::query()
+			->with('size_variants_raw')
+			->findOrFail($request['photoID']);
 	}
 
 	/**

@@ -22,7 +22,6 @@ use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
-use Illuminate\Support\Env;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -53,7 +52,7 @@ class AppServiceProvider extends ServiceProvider
 	 */
 	public function boot()
 	{
-		if (Env::get('DB_LOG_SQL', false)) {
+		if (config('app.db_log_sql', false)) {
 			DB::listen(function ($query) {
 				$msg = $query->sql . ' [' . implode(', ', $query->bindings) . ']';
 				Log::info($msg);

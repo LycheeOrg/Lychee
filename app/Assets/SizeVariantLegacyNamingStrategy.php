@@ -33,7 +33,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	 */
 	const DEFAULT_EXTENSION = '.jpeg';
 
-	public function setPhoto(?Photo $photo)
+	public function setPhoto(?Photo $photo): void
 	{
 		parent::setPhoto($photo);
 		$this->originalExtension = '';
@@ -97,5 +97,10 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 
 			return $this->fallbackExtension;
 		}
+	}
+
+	public function getDefaultExtension(): string
+	{
+		return self::DEFAULT_EXTENSION;
 	}
 }

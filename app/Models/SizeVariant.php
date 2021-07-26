@@ -51,7 +51,7 @@ class SizeVariant extends Model
 	}
 
 	/**
-	 * This model has no own timestamps as it is inseparable bound to its
+	 * This model has no own timestamps as it is inseparably bound to its
 	 * parent {@link \App\Models\Photo} and uses the same timestamps.
 	 *
 	 * @var bool
@@ -124,7 +124,7 @@ class SizeVariant extends Model
 	 * {@link SizeVariant::$short_path} into
 	 * {@link \Illuminate\Support\Facades\Storage::url()}.
 	 * Based on the current application settings and the authenticated user,
-	 * this method returns a URL to a short-living symbolic link instead a
+	 * this method returns a URL to a short-living symbolic link instead of a
 	 * direct URL to the actual size variant, if the underlying storage
 	 * provides symbolic links.
 	 *

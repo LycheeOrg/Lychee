@@ -15,7 +15,12 @@ class Duplicate
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$duplicate = $photo->replicate();
-			$duplicate->album_id = ($albumID === 0) ? null : $photo->album_id;
+			if ($albumID !== null) {
+				$dstAlbumID = $albumID !== 0 ?: null;
+			} else {
+				$dstAlbumID = $photo->album_id;
+			}
+			$duplicate->album_id = $dstAlbumID;
 			$duplicate->save();
 			$duplicates->add($duplicate);
 		}

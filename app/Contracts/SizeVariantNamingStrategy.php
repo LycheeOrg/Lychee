@@ -12,12 +12,12 @@ abstract class SizeVariantNamingStrategy
 	protected string $fallbackExtension = '';
 	protected ?Photo $photo = null;
 
-	public function setFallbackExtension(string $originalExtension)
+	public function setFallbackExtension(string $fallbackExtension): void
 	{
-		$this->fallbackExtension = $originalExtension;
+		$this->fallbackExtension = $fallbackExtension;
 	}
 
-	public function setPhoto(?Photo $photo)
+	public function setPhoto(?Photo $photo): void
 	{
 		$this->photo = $photo;
 	}
@@ -30,4 +30,12 @@ abstract class SizeVariantNamingStrategy
 	 * @return string The short path
 	 */
 	abstract public function generateShortPath(int $sizeVariant): string;
+
+	/**
+	 * Returns the default extension.
+	 *
+	 * @return string the default extension (incl. a preceding dot) which is
+	 *                used by the naming strategy
+	 */
+	abstract public function getDefaultExtension(): string;
 }
