@@ -13,6 +13,20 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Adapter\Local;
+
+// TODO: Uncomment the following line, if Lychee really starts to support AWS s3.
+// The previous code already contained some first steps for S3, but relied
+// on the fact that the associated disk was called "s3".
+// This only requires a string comparison, but is not robust, because the
+// disk name can be anything (depending on what the user configures in
+// config.php), but does not say anything about the actually used
+// driver/adapter.
+// Moreover, if any user had ever tried to actually use S3, the code would
+// have crashed, because the Laravel framework would try to load the adapter
+// below, but the adapter does not exist and is not part of our Composer
+// dependencies
+//use League\Flysystem\AwsS3v3\AwsS3Adapter;
 
 /**
  * Class SizeVariant.
@@ -144,11 +158,14 @@ class SizeVariant extends Model
 		$maxLifetime = intval(Configs::get_value('SL_life_time_days', '3')) * 24 * 60 * 60;
 		$gracePeriod = $maxLifetime / 3;
 
-		if (Storage::getDefaultDriver() == 's3') {
-			return Storage::temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
-		}
+		$storageAdapter = Storage::disk()->getDriver()->getAdapter();
 
-		if (Storage::getDefaultDriver() == 'local') {
+		// TODO: Uncomment these line when Laravel really starts to support s3
+		/*if ($storageAdapter instanceof AwsS3Adapter) {
+			return Storage::temporaryUrl($this->short_path, now()->addSeconds($maxLifetime));
+		}*/
+
+		if ($storageAdapter instanceof Local) {
 			/** @var ?SymLink $symLink */
 			$symLink = $this->sym_links()->latest()->first();
 			if ($symLink == null || $symLink->created_at->isBefore(now()->subSeconds($gracePeriod))) {
@@ -159,7 +176,7 @@ class SizeVariant extends Model
 			return $symLink->url;
 		}
 
-		throw new \InvalidArgumentException('the chosen storage provider does not support the symbolic linking feature');
+		throw new \InvalidArgumentException('the chosen storage adapter "' . Storage::getDefaultDriver() . '" does not support the symbolic linking feature');
 	}
 
 	/**

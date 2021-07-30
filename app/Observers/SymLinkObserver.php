@@ -29,7 +29,9 @@ class SymLinkObserver
 		$extension = Helpers::getExtension($origFullPath);
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
 		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
-		unlink($symFullPath);
+		if (is_link($symFullPath)) {
+			unlink($symFullPath);
+		}
 		if (!symlink($origFullPath, $symFullPath)) {
 			return false;
 		}
