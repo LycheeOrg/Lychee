@@ -309,21 +309,48 @@ class RefactorPhotoModel extends Migration
 
 		foreach ($photos as $photo) {
 			$update = [];
+
+			/** @var object $originalSizeVariant */
+			$originalSizeVariant = DB::table('size_variants')
+				->where('photo_id', '=', $photo->id)
+				->where('size_variant', '=', self::VARIANT_ORIGINAL)
+				->first();
+
+			// We use the original size variant as a baseline to extract the
+			// common core of the basename of all size variants.
+			// Note: The newly introduced `SizeVariantNamingStrategy`
+			// effectively allows that each size variant uses its own file
+			// name which may be completely independent of the file names of
+			// the other size variants.
+			// However, the old code assumes that the file names follow a
+			// certain naming pattern which is built around a shared and
+			// equal part within the file's basename.
+			// Moreover, this common portion must not be longer than 32
+			// characters.
+			if ($originalSizeVariant == null) {
+				continue;
+			}
+			$expectedBasename = substr(
+				pathinfo($originalSizeVariant->short_path, PATHINFO_FILENAME),
+				0,
+				32
+			);
+
 			$sizeVariants = DB::table('size_variants')
 				->where('photo_id', '=', $photo->id)
 				->get();
 			/** @var object $sizeVariant */
 			foreach ($sizeVariants as $sizeVariant) {
 				$fileExtension = '.' . pathinfo($sizeVariant->short_path, PATHINFO_EXTENSION);
-				$expectedBasename = substr($photo->checksum, 0, 32);
 				if (
 					$sizeVariant->size_variant == self::VARIANT_THUMB2X ||
 					$sizeVariant->size_variant == self::VARIANT_SMALL2X ||
 					$sizeVariant->size_variant == self::VARIANT_MEDIUM2X
 				) {
-					$expectedBasename .= '@2x';
+					$expectedFilename = $expectedBasename . '@2x' . $fileExtension;
+				} else {
+					$expectedFilename = $expectedBasename . $fileExtension;
 				}
-				$expectedFilename = $expectedBasename . $fileExtension;
 				$expectedPathPrefix = self::VARIANT_2_PATH_PREFIX[$sizeVariant->size_variant] . '/';
 				if ($sizeVariant->size_variant == self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
 					$expectedPathPrefix = 'raw/';

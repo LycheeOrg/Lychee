@@ -244,7 +244,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
 
-		if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
+		if ($sizeVariant === SizeVariant::THUMB) {
+			$isLargeEnough = true;
+		} elseif ($sizeVariant === SizeVariant::THUMB2X) {
 			$isLargeEnough = $this->referenceWidth > $maxWidth && $this->referenceHeight > $maxHeight;
 		} else {
 			$isLargeEnough = $this->referenceWidth > $maxWidth || $this->referenceHeight > $maxHeight;
@@ -337,8 +339,30 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		return [$maxWidth, $maxHeight];
 	}
 
+	/**
+	 * Checks whether the requested size variant is enabled by configuration.
+	 *
+	 * This function always returns true, for size variants which are not
+	 * configurable and are always enabled (e.g. a thumb).
+	 * Hence, it is save to call this function for all size variants.
+	 * For size variants which may be enabled/disabled trough configuration at
+	 * runtime, the method only returns true, if a) the size variant is
+	 * enabled and b) the allowed maximum width or maximum height is not zero.
+	 * In other words, even if a size variant is enabled, this function
+	 * still returns false, if both the allowed maximum width and height
+	 * equal zero.
+	 *
+	 * @param int $sizeVariant the indicated size variant
+	 *
+	 * @return bool true, if the size variant is enabled and the allowed width
+	 *              or height is unequal to zero
+	 */
 	protected function isEnabledByConfiguration(int $sizeVariant): bool
 	{
+		list($maxWidth, $maxHeight) = $this->getMaxDimensions($sizeVariant);
+		if ($maxWidth === 0 && $maxHeight === 0) {
+			return false;
+		}
 		switch ($sizeVariant) {
 			case SizeVariant::MEDIUM2X:
 				return Configs::get_value('medium_2x', 0) == 1;

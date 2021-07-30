@@ -133,7 +133,7 @@ class SizeVariant extends Model
 	public function getUrlAttribute(): string
 	{
 		if (
-			AccessControl::is_current_user($this->photo->owner_id) ||
+			(AccessControl::is_admin() && Configs::get_value('SL_for_admin', '0') === '0') ||
 			Configs::get_value('SL_enable', '0') == '0'
 		) {
 			return Storage::url($this->short_path);
