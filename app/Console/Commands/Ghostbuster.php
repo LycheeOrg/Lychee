@@ -24,7 +24,7 @@ class Ghostbuster extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:ghostbuster {removeDeadSymLinks=0 : Removes dead symlinks and the photos pointing to them} {removeZombiePhotos=0: Removes photos pointing to non-existing files} {dryrun=1 : Dry Run default is True}';
+	protected $signature = 'lychee:ghostbuster {removeDeadSymLinks=0 : Removes dead symlinks and the photos pointing to them} {removeZombiePhotos=0 : Removes photos pointing to non-existing files} {dryrun=1 : Dry Run default is True}';
 
 	/**
 	 * The console command description.
@@ -100,7 +100,7 @@ class Ghostbuster extends Command
 
 			/** @var Collection $sizeVariants */
 			$photos = Photo::query()
-				->where('live_photo_filename', '=', $filename)
+				->where('live_photo_short_path', '=', $filename)
 				->get();
 			/** @var Collection $sizeVariants */
 			$sizeVariants = SizeVariant::query()
@@ -172,7 +172,7 @@ class Ghostbuster extends Command
 			$this->line($totalFiles . ' files would be deleted.');
 			$this->line($totalDbEntries . ' photos would be deleted or sanitized');
 			$this->line('');
-			$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster ' . ($removeDeadSymLinks ? '1' : '0') . ' 0') . "' to effectively remove the files.");
+			$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster ' . ($removeDeadSymLinks ? '1' : '0') . ' ' . ($removeZombiePhotos ? '1' : '0') . ' 0') . "' to effectively remove the files.");
 		}
 		if ($total > 0 && !$dryrun) {
 			$this->line($totalDeadSymLinks . ' dead symbolic links have been deleted.');
@@ -180,15 +180,19 @@ class Ghostbuster extends Command
 			$this->line($totalDbEntries . ' photos have been deleted or sanitized');
 		}
 
-		/** @var string[] $filenames */
-		$symLinks = $symlinkDisk->allFiles();
+		// Method $symlinkDisk->allFiles() crashes, if the scanned directory
+		// contains symbolic links.
+		// So we must use low-level methods here.
+		$symlinkDiskPath = $symlinkDisk->path('');
+		$symLinks = array_slice(scandir($symlinkDiskPath), 3);
+		/** @var string $symLink */
 		foreach ($symLinks as $symLink) {
-			$fullPath = $symlinkDisk->path($filename);
+			$fullPath = $symlinkDiskPath . $symLink;
 			$isDeadSymlink = !file_exists(readlink($fullPath));
 			if ($isDeadSymlink) {
 				// Laravel apparently doesn't think dead symlinks 'exist', so use low-level commands
 				unlink($fullPath);
-				$this->line($this->col->red('removed symbolic link: ') . $filename);
+				$this->line($this->col->red('removed symbolic link: ') . $fullPath);
 			}
 		}
 
