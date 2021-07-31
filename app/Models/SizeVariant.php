@@ -229,7 +229,17 @@ class SizeVariant extends Model
 		// Delete all symbolic links pointing to this size variant
 		// The observer for the SymLink model takes care of actually erasing
 		// the physical symbolic links from disk
-		$this->sym_links()->delete();
+		// We must not use a "mass deletion" like $this->sym_links()->delete()
+		// here, because this doesn't fire the model events and thus the
+		// observer would not delete any actual symbolic link from disk.
+		$symLinks = $this->sym_links;
+		/** @var SymLink $symLink */
+		foreach ($symLinks as $symLink) {
+			if ($symLink->delete() === false) {
+				return false;
+			}
+		}
+
 		if ($keepFile) {
 			// If short_path is the empty string, SizeVariantObserver does
 			// not erase file from disk during the erasing event

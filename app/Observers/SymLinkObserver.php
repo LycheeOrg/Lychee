@@ -54,11 +54,10 @@ class SymLinkObserver
 	 */
 	public function deleting(SymLink $symLink): bool
 	{
-		$disk = Storage::disk(SymLink::DISK_NAME);
-		if (!empty($symLink->short_path) && $disk->exists($symLink->short_path)) {
-			return $disk->delete($symLink->short_path);
-		}
+		// Laravel and Flysystem does not support symbolic links.
+		// So we must use low-level methods here.
+		$fullPath = $symLink->full_path;
 
-		return true;
+		return (!is_link($fullPath) && !file_exists($fullPath)) || (is_link($fullPath) && unlink($fullPath));
 	}
 }

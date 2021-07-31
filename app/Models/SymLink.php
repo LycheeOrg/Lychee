@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
  * @property int $size_variant_id
  * @property SizeVariant size_variant
  * @property string $short_path
+ * @property string $full_path
  * @property string $url
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -65,8 +66,33 @@ class SymLink extends Model
 		return $query->where('created_at', '<', $this->fromDateTime($expiration));
 	}
 
+	/**
+	 * Accessor for the "virtual" attribute {@link SymLink::$url}.
+	 *
+	 * Returns the URL to the symbolic link from the perspective of a
+	 * web client.
+	 * This is a convenient method and wraps {@link SymLink::$short_path}
+	 * into {@link \Illuminate\Support\Facades\Storage::url()}.
+	 *
+	 * @return string the URL to the symbolic link
+	 */
 	protected function getUrlAttribute(): string
 	{
 		return Storage::disk(self::DISK_NAME)->url($this->short_path);
+	}
+
+	/**
+	 * Accessor for the "virtual" attribute {@link SymLink::$full_path}.
+	 *
+	 * Returns the full path of the symbolic link as it needs to be input into
+	 * some low-level PHP functions like `unlink`.
+	 * This is a convenient method and wraps {@link SymLink::$short_path}
+	 * into {@link \Illuminate\Support\Facades\Storage::path()}.
+	 *
+	 * @return string the full path of the symbolic link
+	 */
+	protected function getFullPathAttribute(): string
+	{
+		return Storage::disk(self::DISK_NAME)->path($this->short_path);
 	}
 }
