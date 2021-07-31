@@ -59,7 +59,7 @@ class PhotoController extends Controller
 	{
 		/* @var Photo $photo */
 		return Photo::query()
-			->with('size_variants_raw')
+			->with(['size_variants_raw', 'size_variants_raw.sym_links'])
 			->findOrFail($request['photoID']);
 	}
 

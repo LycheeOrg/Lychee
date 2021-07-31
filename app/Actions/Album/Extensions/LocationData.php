@@ -22,7 +22,7 @@ trait LocationData
 		$photos = $photos_sql
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')
-			->with(['album', 'size_variants_raw'])
+			->with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
 			->get();
 
 		/** @var Photo $photo_model */
