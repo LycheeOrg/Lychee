@@ -2,9 +2,10 @@
 
 namespace App\Actions\Import;
 
-use App\Actions\Album\Create;
-use App\Actions\Import\Extensions\ImportPhoto;
+use App\Actions\Album\Create as AlbumCreate;
+use App\Actions\Photo\Create as PhotoCreate;
 use App\Actions\Photo\Extensions\Constants;
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
@@ -18,9 +19,9 @@ use Illuminate\Support\Facades\Storage;
 
 class Exec
 {
-	use ImportPhoto;
 	use Constants;
 
+	// TODO: Refactor this and use `ImportMode` instead of four boolean properties
 	public $skip_duplicates = false;
 	public $resync_metadata = false;
 	public $delete_imported;
@@ -244,12 +245,21 @@ class Exec
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
 				try {
+					// TODO: Refactor this, rationale see below
+					// This is not the way how `PhotoCreate` is supposed
+					// to be used.
+					// Actually, an instance of the class should only
+					// be created once using a single instance of
+					// `ImportMode` and then `PhotoCreate::add` should
+					// be called for each file.
+					$photoCreate = new PhotoCreate(new ImportMode(
+						$this->delete_imported,
+						$this->import_via_symlink,
+						$this->skip_duplicates,
+						$this->resync_metadata
+					));
 					if (
-						$this->photo(
-							$file,
-							$albumID,
-							new ImportMode($this->delete_imported, $this->import_via_symlink, $this->skip_duplicates, $this->resync_metadata)
-						) === false
+						$photoCreate->add(SourceFileInfo::createForLocalFile($file), $albumID) == null
 					) {
 						$this->status_error($file, 'Could not import file');
 						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
@@ -280,7 +290,7 @@ class Exec
 					->first();
 			}
 			if ($album === null) {
-				$create = resolve(Create::class);
+				$create = resolve(AlbumCreate::class);
 				$album = $create->create(basename($dir), $albumID);
 				// this actually should not fail.
 				if ($album === false) {

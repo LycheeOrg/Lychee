@@ -55,11 +55,6 @@ class Create
 		// Check permissions
 		$this->checkPermissions();
 
-		// If the file has been uploaded, the (temporary) source file shall be deleted
-		$this->strategyParameters->importMode->setDeleteImported(
-			is_uploaded_file($sourceFileInfo->getTmpFullPath())
-		);
-
 		// Fill in information about targeted parent album
 		$this->initParentId($albumID);
 

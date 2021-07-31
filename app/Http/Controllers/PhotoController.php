@@ -17,6 +17,7 @@ use App\Actions\Photo\SetPublic;
 use App\Actions\Photo\SetStar;
 use App\Actions\Photo\SetTags;
 use App\Actions\Photo\SetTitle;
+use App\Actions\Photo\Strategies\ImportMode;
 use App\Facades\Helpers;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
@@ -78,23 +79,28 @@ class PhotoController extends Controller
 	 * Add a function given an AlbumID.
 	 *
 	 * @param AlbumIDRequest $request
-	 * @param Create         $create
 	 *
 	 * @return Photo
 	 */
-	public function add(AlbumIDRequest $request, Create $create): Photo
+	public function add(AlbumIDRequest $request): Photo
 	{
 		$request->validate(['0' => 'required|file']);
 		// Only process the first photo in the array
 		/** @var UploadedFile $file */
 		$file = $request->file('0');
-		$sourceFileInfo = new SourceFileInfo($file->getClientOriginalName(), $file->getMimeType(), $file->getPathName());
+		$sourceFileInfo = SourceFileInfo::createForUploadedFile($file);
 		$albumID = $request['albumID'];
+
 		if (empty($albumID)) {
-			$albumID = 0;
+			$albumID = null;
 		} elseif (is_numeric($albumID)) {
 			$albumID = intval($albumID);
 		}
+		// If the file has been uploaded, the (temporary) source file shall be
+		// deleted
+		$create = new Create(new ImportMode(
+			is_uploaded_file($sourceFileInfo->getTmpFullPath())
+		));
 
 		return $create->add($sourceFileInfo, $albumID);
 	}
@@ -221,20 +227,19 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Duplicate a photo.
+	 * Duplicates a set of photos.
 	 * Only the SQL entry is duplicated for space reason.
 	 *
 	 * @param PhotoIDsRequest $request
 	 * @param Duplicate       $duplicate
 	 *
-	 * @return Photo|Collection
+	 * @return Collection the collection of duplicated photos
 	 */
-	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
+	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate): Collection
 	{
 		$request->validate(['albumID' => 'string']);
-		$duplicates = $duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ? intval($request['albumID']) : null);
 
-		return ($duplicates->count() === 1) ? $duplicates->first() : $duplicates;
+		return $duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ? intval($request['albumID']) : null);
 	}
 
 	/**

@@ -3,6 +3,8 @@
 namespace App\Actions\Photo\Extensions;
 
 use App\Facades\Helpers;
+use Illuminate\Http\UploadedFile;
+use phpDocumentor\Reflection\DocBlock\Tags\Source;
 
 /**
  * Class SourceFileInfo.
@@ -31,6 +33,32 @@ class SourceFileInfo
 		$this->originalFilename = $originalFilename;
 		$this->originalMimeType = $originalMimeType;
 		$this->tmpFullPath = $tmpFullPath;
+	}
+
+	/**
+	 * Creates a new instance which is suitable, if the source file is a
+	 * local file on the server.
+	 *
+	 * @param string $path the absolute path of the source file on the same server as Lychee is running on
+	 *
+	 * @return SourceFileInfo the new instance
+	 */
+	public static function createForLocalFile(string $path): SourceFileInfo
+	{
+		return new self($path, mime_content_type($path), $path);
+	}
+
+	/**
+	 * Creates a new instance which is suitable, if the source file is an
+	 * uploaded file from a remote HTTP client.
+	 *
+	 * @param UploadedFile $file the uploaded file
+	 *
+	 * @return SourceFileInfo the new instance
+	 */
+	public static function createForUploadedFile(UploadedFile $file): SourceFileInfo
+	{
+		return new self($file->getClientOriginalName(), $file->getMimeType(), $file->getPathName());
 	}
 
 	/**
