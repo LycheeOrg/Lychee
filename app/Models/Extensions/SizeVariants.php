@@ -151,16 +151,14 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function delete(bool $keepOriginalFile = false, bool $keepAllFiles = false): bool
 	{
 		$success = true;
-		foreach (self::NAMES as $variant => $name) {
-			$sv = $this->getSizeVariant($variant);
-			if ($sv) {
-				$keepFile = (($variant === SizeVariant::ORIGINAL) && $keepOriginalFile) || $keepAllFiles;
-				$success &= $sv->delete($keepFile);
-			}
+		/** @var SizeVariant $sv */
+		foreach ($this->photo->size_variants_raw as $sv) {
+			$keepFile = (($sv->size_variant === SizeVariant::ORIGINAL) && $keepOriginalFile) || $keepAllFiles;
+			$success &= $sv->delete($keepFile);
 		}
 		// ensure that relation `size_variants_raw` is refreshed and does not
 		// contain size variant models which have been removed from DB.
-		$this->photo->refresh();
+		$this->photo->unsetRelation('size_variants_raw');
 
 		return $success;
 	}

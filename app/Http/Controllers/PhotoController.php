@@ -233,13 +233,14 @@ class PhotoController extends Controller
 	 * @param PhotoIDsRequest $request
 	 * @param Duplicate       $duplicate
 	 *
-	 * @return Collection the collection of duplicated photos
+	 * @return Photo|Collection the duplicated photo or collection of duplicated photos
 	 */
-	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate): Collection
+	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
 	{
 		$request->validate(['albumID' => 'string']);
+		$duplicates = $duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ? intval($request['albumID']) : null);
 
-		return $duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ? intval($request['albumID']) : null);
+		return ($duplicates->count() === 1) ? $duplicates->first() : $duplicates;
 	}
 
 	/**

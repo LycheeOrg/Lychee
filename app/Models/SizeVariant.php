@@ -72,14 +72,6 @@ class SizeVariant extends Model
 	 */
 	public $timestamps = false;
 
-	/**
-	 * List of those object relations whose timestamps shall be updated when
-	 * an object of this class is modified.
-	 *
-	 * @var string[] list of object relations
-	 */
-	protected $touches = ['photo'];
-
 	protected $casts = [
 		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',

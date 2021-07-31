@@ -19,7 +19,10 @@ class Delete
 		$no_error = true;
 		// root = unsorted
 		if ($albumIDs == 'unsorted') {
-			$photos = Photo::OwnedBy(AccessControl::id())->where('album_id', '=', null)->get();
+			$photos = Photo::OwnedBy(AccessControl::id())
+				->with(['size_variants_raw', 'size_variants_raw.sym_links'])
+				->where('album_id', '=', null)
+				->get();
 
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
@@ -31,7 +34,9 @@ class Delete
 
 		$albums = Album::whereIn('id', explode(',', $albumIDs))->get();
 
-		$sqlPhoto = Photo::leftJoin('albums', 'photos.album_id', '=', 'albums.id')
+		$sqlPhoto = Photo::query()
+			->with(['size_variants_raw', 'size_variants_raw.sym_links'])
+			->leftJoin('albums', 'photos.album_id', '=', 'albums.id')
 			->select('photos.*');
 
 		foreach ($albums as $album) {

@@ -47,6 +47,15 @@ class SymLink extends Model
 		'url' => MustNotSetCast::class,
 	];
 
+	/**
+	 * @var string[] The list of attributes which exist as columns of the DB
+	 *               relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		'size_variant', // see above and otherwise infinite loops will occur
+		'size_variant_id', // see above
+	];
+
 	public function size_variant(): BelongsTo
 	{
 		return $this->belongsTo(SizeVariant::class);
