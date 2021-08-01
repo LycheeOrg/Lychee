@@ -80,6 +80,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($this->needsCleanup) {
 			@unlink($this->referenceFullPath);
 		}
+		$this->referenceFullPath = '';
 	}
 
 	/**

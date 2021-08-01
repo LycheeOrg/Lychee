@@ -62,6 +62,7 @@ class GenerateThumbs extends Command
 
 		$photos = Photo::query()
 			->where('type', 'like', 'image/%')
+			->with('size_variants_raw')
 			->whereDoesntHave('size_variants_raw', function (Builder $query) use ($sizeVariantID) {
 				$query->where('size_variant', '=', $sizeVariantID);
 			})
@@ -86,7 +87,7 @@ class GenerateThumbs extends Command
 			if ($sizeVariant) {
 				$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
 			} else {
-				$this->line('   Could not create ' . $sizeVariantName . ' for ' . $photo->title . '.');
+				$this->line('   Did not create ' . $sizeVariantName . ' for ' . $photo->title . '.');
 			}
 			$bar->advance();
 		}
