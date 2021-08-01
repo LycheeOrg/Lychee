@@ -53,7 +53,6 @@ class GitHubFunctions
 	/**
 	 * look at .git/HEAD and return the current branch.
 	 * Return false if the file is not readable.
-	 * Return master if it is CI.
 	 *
 	 * @return false|string
 	 */
