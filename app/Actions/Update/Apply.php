@@ -2,6 +2,7 @@
 
 namespace App\Actions\Update;
 
+use App\Metadata\GitHubFunctions;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -10,18 +11,19 @@ use Illuminate\Support\Facades\Config;
 
 class Apply
 {
-	/**
-	 * @var LycheeVersion
-	 */
-	private $lycheeVersion;
+	private LycheeVersion $lycheeVersion;
+	private GitHubFunctions $githubFunctions;
 
 	/**
-	 * @param LycheeVersion $lycheeVersion
+	 * @param LycheeVersion   $lycheeVersion
+	 * @param GitHubFunctions $githubFunctions
 	 */
 	public function __construct(
-		LycheeVersion $lycheeVersion
+		LycheeVersion $lycheeVersion,
+		GitHubFunctions $githubFunctions
 	) {
 		$this->lycheeVersion = $lycheeVersion;
+		$this->githubFunctions = $githubFunctions;
 	}
 
 	/**
@@ -135,7 +137,10 @@ class Apply
 	public function run()
 	{
 		$output = [];
-		if ($this->check_prod_env_allow_migration($output)) {
+		if (
+			$this->githubFunctions->is_master_branch() &&
+			$this->check_prod_env_allow_migration($output)
+		) {
 			$this->lycheeVersion->isRelease or $this->git_pull($output);
 			$this->artisan($output);
 			$this->lycheeVersion->isRelease or $this->call_composer($output);
