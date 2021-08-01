@@ -8,11 +8,6 @@ use App\Models\Photo;
 
 class AddDuplicateStrategy extends AddBaseStrategy
 {
-	public function __construct(AddStrategyParameters $parameters, Photo $existing)
-	{
-		parent::__construct($parameters, $existing);
-	}
-
 	public function do(): Photo
 	{
 		// At least update the existing photo with additional metadata if
