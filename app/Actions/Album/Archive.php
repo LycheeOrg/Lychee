@@ -9,6 +9,7 @@ use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -154,7 +155,7 @@ class Archive extends Action
 
 			$is_raw = ($photo->type == 'raw');
 
-			$fullPath = $photo->full_path;
+			$fullPath = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL)->full_path;
 			// Check if readable
 			if (!@is_readable($fullPath)) {
 				Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $fullPath);
