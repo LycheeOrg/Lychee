@@ -2,7 +2,6 @@
 
 namespace App\Metadata;
 
-use App;
 use App\Exceptions\NotInCacheException;
 use App\Exceptions\NotMasterException;
 use App\Facades\Helpers;
@@ -13,20 +12,11 @@ use Exception;
 
 class GitHubFunctions
 {
-	/**
-	 * @var string
-	 */
-	public $head;
+	public string $head;
 
-	/**
-	 * @var string
-	 */
-	public $branch;
+	public string $branch;
 
-	/**
-	 * @var GitRequest
-	 */
-	private $gitRequest;
+	private GitRequest $gitRequest;
 
 	/**
 	 * Base constructor.
@@ -55,7 +45,7 @@ class GitHubFunctions
 	 *
 	 * @return string
 	 */
-	private function trim($commit_id)
+	private function trim($commit_id): string
 	{
 		return trim(substr($commit_id, 0, 7));
 	}
@@ -67,12 +57,8 @@ class GitHubFunctions
 	 *
 	 * @return false|string
 	 */
-	public function get_current_branch()
+	public function get_current_branch(): string | false
 	{
-		if (App::runningUnitTests()) {
-			return 'master';
-		}
-
 		// @codeCoverageIgnoreStart
 		$head_file = base_path('.git/HEAD');
 		$branch_ = file_get_contents($head_file);
@@ -88,7 +74,7 @@ class GitHubFunctions
 	 *
 	 * @return false|string
 	 */
-	public function get_current_commit()
+	public function get_current_commit(): string | false
 	{
 		$file = base_path('.git/refs/heads/' . $this->branch);
 		$head_ = file_get_contents($file);
@@ -105,7 +91,7 @@ class GitHubFunctions
 	 *
 	 * @throws NotInCacheException
 	 */
-	private function get_commits(bool $cached = true)
+	private function get_commits(bool $cached = true): bool | array
 	{
 		return $this->gitRequest->get_json($cached);
 	}
@@ -124,7 +110,7 @@ class GitHubFunctions
 	 * @throws NotInCacheException
 	 * @throws NotMasterException
 	 */
-	public function count_behind(bool $cached = true)
+	public function count_behind(bool $cached = true): bool | int
 	{
 		if ($this->branch != 'master') {
 			// @codeCoverageIgnoreStart
@@ -154,7 +140,7 @@ class GitHubFunctions
 	 * @return string
 	 */
 	// @codeCoverageIgnoreStart
-	public function get_github_head()
+	public function get_github_head(): string
 	{
 		try {
 			$commits = $this->get_commits();
@@ -174,7 +160,7 @@ class GitHubFunctions
 	 *
 	 * @return string
 	 */
-	public function get_behind_text()
+	public function get_behind_text(): string
 	{
 		try {
 			$count = $this->count_behind(); // NotInCache or NotMaster
@@ -211,7 +197,7 @@ class GitHubFunctions
 	 * @throws NotMasterException
 	 * @throws NotInCacheException
 	 */
-	public function is_up_to_date(bool $cached = true)
+	public function is_up_to_date(bool $cached = true): bool
 	{
 		$count = $this->count_behind($cached);
 		if ($count === 0) {
@@ -228,7 +214,7 @@ class GitHubFunctions
 	 *
 	 * @return bool
 	 */
-	public function has_permissions()
+	public function has_permissions(): bool
 	{
 		if (!$this->branch) {
 			// @codeCoverageIgnoreStart
@@ -244,7 +230,7 @@ class GitHubFunctions
 	 *
 	 * @param $return
 	 */
-	public function checkUpdates(&$return)
+	public function checkUpdates(&$return): void
 	{
 		// add a setting to do this check only once per day ?
 		if (Configs::get_value('check_for_updates', '0') == '1') {
@@ -258,5 +244,16 @@ class GitHubFunctions
 						< $return['update_json']);
 			}
 		}
+	}
+
+	/**
+	 * Return true if the current branch is master.
+	 * This is used to avoid running git pulls on development branches during tests.
+	 *
+	 * @return bool
+	 */
+	public function is_master_branch(): bool
+	{
+		return $this->branch === 'master';
 	}
 }
