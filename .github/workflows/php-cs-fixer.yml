@@ -30,7 +30,7 @@ jobs:
           git config --global user.email "action@github.com"
           git checkout -B "${{ env.FIXER_BRANCH }}"
       - name: Apply auto-fixers
-        run: php .github/build/php-cs-fixer fix --config=.php_cs
+        run: php .github/build/php-cs-fixer fix --config=.php-cs-fixer.php
       - name: Create Fixer PR
         run: |
           if [[ -z $(git status --porcelain) ]]; then
