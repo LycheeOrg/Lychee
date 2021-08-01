@@ -27,6 +27,7 @@ final class Russian implements Language
 
 			'USERS' => 'Пользователи',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Поделиться',
 			'CHANGE_LOGIN' => 'Изменить логин',
 			'CHANGE_SORTING' => 'Порядок сортировки',
@@ -301,6 +302,10 @@ final class Russian implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Укажите данные для подключения к базе данных:',
 			'DB_INFO_HOST' => 'Сервер баз данных (не обязательно)',
 			'DB_INFO_USER' => 'Логин в БД',
@@ -414,8 +419,8 @@ final class Russian implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Подробности смотрите в консоли браузера.',
 			'UPLOAD_UNKNOWN' => 'Сервер вернул непонятный ответ. Проверьте консоль браузера.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Загрузка не удалась: сервер вернул что-то непонятное!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Lychee выполняет выгрузку.',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Импорт был завершён, но обнаружены ошибки или предупреждения. Пожалуйста, проверьте лог (Settings -> Логи).',
 			'UPLOAD_IMPORT_COMPLETE' => 'Импорт завершён',

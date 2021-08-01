@@ -27,6 +27,7 @@ final class Italian implements Language
 
 			'USERS' => 'Utenti',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Condivisione',
 			'CHANGE_LOGIN' => 'Cambia Login',
 			'CHANGE_SORTING' => 'Cambia Ordinamento',
@@ -304,6 +305,10 @@ final class Italian implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Inserisci i dati per la connessione al database di seguito:',
 			'DB_INFO_HOST' => 'Host Database (opzionale)',
 			'DB_INFO_USER' => 'Nome Utente Database',
@@ -418,8 +423,8 @@ final class Italian implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Per favore controlla la console del tuo browser per ulteriori dettagli.',
 			'UPLOAD_UNKNOWN' => 'Il server ha restituito una risposta sconosciuta. Per favore controlla la console del tuo browser per ulteriori dettagli.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Caricamneto fallito. Il server ha restituito un errore sconosciuto!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Lychee sta momentaneamente caricando!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'L\'importazione è finita, ma ha restituito errori o avvisi. Per favore controlla il log (Impostazioni -> Visualizza Log) per ulteriori dettagli.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importazione completata',

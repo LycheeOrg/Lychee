@@ -27,6 +27,7 @@ final class Swedish implements Language
 
 			'USERS' => 'Users',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Sharing',
 			'CHANGE_LOGIN' => 'Ändra inloggning',
 			'CHANGE_SORTING' => 'Ändra sortering',
@@ -301,6 +302,10 @@ final class Swedish implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Ange dina uppgifter för databasanslutninge nedan:',
 			'DB_INFO_HOST' => 'Databasens adress (valfritt)',
 			'DB_INFO_USER' => 'Databasens användarnamn',
@@ -413,8 +418,8 @@ final class Swedish implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Kontrollera din webbläsares konsoll för ytterligare information.',
 			'UPLOAD_UNKNOWN' => 'Servern returnerade ett oklart svar. Kontrollera din webbläsares konsoll för ytterligare information.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Uppladdning misslyckades. Servern returnerade ett oklart fel!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Lychee laddar för tillfället upp material!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Importeringen är avslutad, men processen gav felmeddelanden. Kontrollera logfilen (Inställningar -> Visa logfilen) för ytterligare detaljer.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importeringen klar',

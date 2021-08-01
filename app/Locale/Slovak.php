@@ -27,6 +27,7 @@ final class Slovak implements Language
 
 			'USERS' => 'Užívatelia',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Zdieľanie',
 			'CHANGE_LOGIN' => 'Zmena prihlásenia',
 			'CHANGE_SORTING' => 'Zmena zoraďovania',
@@ -305,6 +306,10 @@ final class Slovak implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Zadajte prístupové údaje k databáze:',
 			'DB_INFO_HOST' => 'Názov databázového servera (voliteľné)',
 			'DB_INFO_USER' => 'Užívateľ databázy',
@@ -420,8 +425,8 @@ final class Slovak implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Skontrolujte konzolu prehliadača, pre zistenie ďalších podrobností.',
 			'UPLOAD_UNKNOWN' => 'Server vrátil neznámu odpoveď.Skontrolujte konzolu prehliadača, pre zistenie ďalších podrobností.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Nahrávanie zlyhalo. Server ohlásil neznámu chybu!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Lychee práve nahráva!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Import je hotový, vyskytli sa ale chyby alebo varovania. Skontrolujte protokoly (Nastavenia/ Protokoly).',
 			'UPLOAD_IMPORT_COMPLETE' => 'Import hotový',

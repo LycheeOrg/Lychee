@@ -78,6 +78,10 @@ Lychee supports [Twitter Cards](https://dev.twitter.com/docs/cards) and [Open Gr
 
 Lychee uses [Imagick](https://www.imagemagick.org) when installed on your server. In this case you will benefit from a faster processing of your uploads, better looking thumbnails and intermediate sized images for small screen devices. You can disable the usage of [Imagick](https://www.imagemagick.org) in the [settings][1].
 
+### New Photos Email Notification
+
+In order to use the new photos email notification you will need to have configured the **MAIL_** variables in your .env to your mail provider & [setup cron](https://laravel.com/docs/scheduling#running-the-scheduler). Once that is complete you then toggle **Send new photos notification emails** in the [settings][1]. Your users will be able to opt-in to the email notifications by entering their email address in the **Notifications** setting in the sidebar. Photo notifications will be grouped and sent out once a week to the site admin, album owner & anyone who the album is shared with, if their email has been added. The admin or user who added the photo to an album, will not receive a email notification for the photos they added.
+
 ## Troubleshooting
 
 Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub!

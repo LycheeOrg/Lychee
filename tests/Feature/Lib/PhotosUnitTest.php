@@ -37,12 +37,12 @@ class PhotosUnitTest
 	 *
 	 * @return int the id of the photo
 	 */
-	public function upload(UploadedFile &$file): int
+	public function upload(UploadedFile &$file, string $albumID = '0'): int
 	{
 		$response = $this->testCase->post(
 			'/api/Photo::add',
 			[
-				'albumID' => '0',
+				'albumID' => $albumID,
 				'0' => $file,
 			]
 		);

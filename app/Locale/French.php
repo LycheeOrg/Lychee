@@ -29,6 +29,7 @@ final class French implements Language
 
 			'USERS' => 'Utilisateurs',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Partage',
 			'CHANGE_LOGIN' => 'Changer le nom d\'utilisateur',
 			'CHANGE_SORTING' => 'Changer le tri',
@@ -301,6 +302,10 @@ final class French implements Language
 			'U2F_CREDENTIALS' => 'Clés',
 			'U2F_CREDENTIALS_DELETED' => 'Clé supprimée!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Entrez vos identifiants de connexion à la base de données ci-dessous :',
 			'DB_INFO_HOST' => 'Hôte de la base de donnees (facultatif)',
 			'DB_INFO_USER' => 'Nom d\'utilisateur pour la base de données',
@@ -413,8 +418,8 @@ final class French implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Veuillez consulter la console de votre navigateur pour obtenir plus de détails.',
 			'UPLOAD_UNKNOWN' => 'Le serveur a retourné une reponse inconnue. Veuillez consulter la console de votre navigateur pour obtenir plus de détails.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Échec de l\'upload. Le serveur a retourné une erreur inconnue !',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Lychee est en cours de téléchargement !',
 			'UPLOAD_IMPORT_WARN_ERR' => 'L\'importation est terminée, mais des erreurs ou des avertissements ont été retournés. Veuillez consulter le fichier de Log (Paramètres -> Afficher les logs) pour obtenir plus de détails.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importation terminée',

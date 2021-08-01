@@ -11,6 +11,7 @@ use App\Actions\Photo\Strategies\AddStandaloneStrategy;
 use App\Actions\Photo\Strategies\AddStrategyParameters;
 use App\Actions\Photo\Strategies\AddVideoPartnerStrategy;
 use App\Actions\Photo\Strategies\ImportMode;
+use App\Actions\User\Notify;
 use App\Exceptions\JsonError;
 use App\Factories\AlbumFactory;
 use App\Metadata\Extractor;
@@ -96,7 +97,14 @@ class Create
 			}
 		}
 
-		return $strategy->do();
+		$photo = $strategy->do();
+
+		if ($photo->album_id) {
+			$notify = new Notify();
+			$notify->do($photo);
+		}
+
+		return $photo;
 	}
 
 	/**

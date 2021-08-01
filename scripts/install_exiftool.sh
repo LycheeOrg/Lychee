@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+mkdir -p .github/build
+cd .github/build
 wget https://exiftool.org/Image-ExifTool-11.99.tar.gz
 tar -zxvf Image-ExifTool-11.99.tar.gz
 cd Image-ExifTool-11.99

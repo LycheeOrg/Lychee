@@ -27,6 +27,7 @@ final class Greek implements Language
 
 			'USERS' => 'Χρήστες',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Κοινή χρήση',
 			'CHANGE_LOGIN' => 'Αλλαγή σύνδεσης',
 			'CHANGE_SORTING' => 'Αλλαγή Ταξινόμησης',
@@ -301,6 +302,10 @@ final class Greek implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Εισάγετε τις ρυθμίσεις της βάσης δεδομένων παρακάτω:',
 			'DB_INFO_HOST' => 'Εξυπηρετητής Βάσης Δεδομένων (προαιρετικό)',
 			'DB_INFO_USER' => 'Όνομα χρήστη Βάσης Δεδομένων',
@@ -413,8 +418,8 @@ final class Greek implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Παρακαλούμε ρίξτε μια ματιά στην κονσόλα του περιηγητή σας για περισσότερες λεπτομέρειες.',
 			'UPLOAD_UNKNOWN' => 'Ο εξυπηρετητής επέστρεψε μία άγνωστη απόκριση. Παρακαλούμε ρίξτε μια ματιά στην κονσόλα του περιηγητή σας για περισσότερες λεπτομέρειες.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Η μεταφόρτωση απέτυχε. Ο εξυπηρετητής επέστρεψε ένα άγνωστο σφάλμα!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Το Lychee αυτή τη στιγμή μεταφορτώνει!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Η εισαγωγή ολοκληρώθηκε, αλλά επέστρεψε προειδοποιήσεις ή σφάλματα. Παρακαλούμε ρίξτε μια ματία στις καταγραφές (Ρυθμίσεις -> Εμφάνιση Καταγραφών) για περισσότερες λεπτομέρειες.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Η εισαγωγή ολοκληρώθηκε',

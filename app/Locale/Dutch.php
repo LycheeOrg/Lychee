@@ -27,6 +27,7 @@ final class Dutch implements Language
 
 			'USERS' => 'Users',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Sharing',
 			'CHANGE_LOGIN' => 'Verander Login',
 			'CHANGE_SORTING' => 'Verander Sortering',
@@ -301,6 +302,10 @@ final class Dutch implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Voer je database connectie gegevens hieronder in:',
 			'DB_INFO_HOST' => 'Database Host (optioneel)',
 			'DB_INFO_USER' => 'Database Gebruikersnaam',
@@ -413,8 +418,8 @@ final class Dutch implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Kijk naar je browsers console voor meer informatie.',
 			'UPLOAD_UNKNOWN' => 'Server gaf een onbekende terugkoppeling, kijk naar je browsers console voor meer informatie.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Upload mislukt. Server gaf een onbekende error!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Lychee is aan het uploaden!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'De import is voltooid maar gaf waarschuwingen of errors terug. Kijk naar de logs (instellingen -> Show Log) for further details.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Import complete',

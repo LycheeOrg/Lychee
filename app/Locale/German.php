@@ -27,6 +27,7 @@ final class German implements Language
 
 			'USERS' => 'Benutzer',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Freigabe',
 			'CHANGE_LOGIN' => 'Anmeldung ändern',
 			'CHANGE_SORTING' => 'Sortierung ändern',
@@ -305,6 +306,10 @@ final class German implements Language
 			'U2F_AUTHENTIFICATION_SUCCESS' => 'Authentifizierung erfolgreich!',
 			'U2F_CREDENTIALS' => 'Anmeldedaten',
 			'U2F_CREDENTIALS_DELETED' => 'Anmeldedaten gelöscht!',
+
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
 
 			'DB_INFO_TITLE' => 'Geben Sie die Informationen zu Ihrer Datenbankverbindung an:',
 			'DB_INFO_HOST' => 'Name des Datenbankservers (optional)',

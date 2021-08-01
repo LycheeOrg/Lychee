@@ -44,6 +44,7 @@ class InstallTest extends TestCase
 			'configs',
 			'logs',
 			'migrations',
+			'notifications',
 			'page_contents',
 			'pages',
 			'user_album',
@@ -51,6 +52,7 @@ class InstallTest extends TestCase
 			'albums',
 			'web_authn_credentials',
 		];
+
 		foreach ($tables as $table) {
 			Schema::dropIfExists($table);
 		}

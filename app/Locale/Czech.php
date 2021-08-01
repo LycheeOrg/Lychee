@@ -27,6 +27,7 @@ final class Czech implements Language
 
 			'USERS' => 'Uživatelé',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Sdílení',
 			'CHANGE_LOGIN' => 'Změnit přihlášení',
 			'CHANGE_SORTING' => 'Změnt řazení',
@@ -305,6 +306,10 @@ final class Czech implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Níže zadejte parametry připojení k databázi:',
 			'DB_INFO_HOST' => 'Hostitel (volitelný)',
 			'DB_INFO_USER' => 'Jméno uživatele databáze',
@@ -420,8 +425,8 @@ final class Czech implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Podrobnosti získáte v konzoli svého prohlížeče.',
 			'UPLOAD_UNKNOWN' => 'Server vrátil neočkávanou dopověď. Podrobnosti získáte v konzoli svého prohlížeče.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Upload selhal. Server vrátil neznámou chybu!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Právě probíhá upload na Lychee!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Import byl dokončen s upozorněními nebo chybami. Podrobnosti si prosím prohlédněte v protokolu (Nastavení -> Protokoly).',
 			'UPLOAD_IMPORT_COMPLETE' => 'Import dokončen',

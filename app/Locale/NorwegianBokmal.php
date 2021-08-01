@@ -27,6 +27,7 @@ final class NorwegianBokmal implements Language
 
 			'USERS' => 'Brukere',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Deling',
 			'CHANGE_LOGIN' => 'Endre Bruker',
 			'CHANGE_SORTING' => 'Endre sortering',
@@ -301,6 +302,10 @@ final class NorwegianBokmal implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Fyll inn detaljer om databaseforbindelsen under:',
 			'DB_INFO_HOST' => 'Database Adresse (valgfritt)',
 			'DB_INFO_USER' => 'Database Brukernavn',
@@ -414,8 +419,8 @@ final class NorwegianBokmal implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Vennligst se konsollen i nettleseren for mer informasjon.',
 			'UPLOAD_UNKNOWN' => 'Serveren svarte med en ukjent feilmelding. Vennlist se konsollen i nettleseren for mer informasjon.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Opplasting feilet. Serveren svarte med en ukjent feil!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Lychee laster for tiden opp!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'Importeringen er ferdig, men advarsler eller feil ble returnert. Vennligst see loggen (Innstilinger -> Vis Logg) for mer informasjon.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importering fullført',

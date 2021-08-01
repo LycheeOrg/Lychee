@@ -27,6 +27,7 @@ final class ChineseTraditional implements Language
 
 			'USERS' => '使用者',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => '分享',
 			'CHANGE_LOGIN' => '修改登入訊息',
 			'CHANGE_SORTING' => '修改排序',
@@ -301,6 +302,10 @@ final class ChineseTraditional implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => '請輸入數據庫信息',
 			'DB_INFO_HOST' => '數據庫主機（選填）',
 			'DB_INFO_USER' => '數據庫用戶名',
@@ -413,8 +418,8 @@ final class ChineseTraditional implements Language
 			'UPLOAD_ERROR_CONSOLE' => '請查看瀏覽器控制台獲取詳細信息。',
 			'UPLOAD_UNKNOWN' => '伺服器傳回了未知響應。請查看瀏覽器控制台獲取詳細信息。',
 			'UPLOAD_ERROR_UNKNOWN' => '上傳失敗。伺服器回傳了一個未知錯誤！',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => 'Lychee當前正在上傳！',
 			'UPLOAD_IMPORT_WARN_ERR' => '導入成功，但返回了的警告或錯誤。請查看日誌（設置->顯示日誌）以獲取詳細信息。',
 			'UPLOAD_IMPORT_COMPLETE' => '導入完成',

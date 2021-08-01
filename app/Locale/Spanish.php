@@ -27,6 +27,7 @@ final class Spanish implements Language
 
 			'USERS' => 'Usuarios',
 			'U2F' => 'U2F',
+			'NOTIFICATIONS' => 'Notifications',
 			'SHARING' => 'Compartir',
 			'CHANGE_LOGIN' => 'Cambiar inicio de sesión',
 			'CHANGE_SORTING' => 'Cambiar clasificación',
@@ -301,6 +302,10 @@ final class Spanish implements Language
 			'U2F_CREDENTIALS' => 'Credentials',
 			'U2F_CREDENTIALS_DELETED' => 'Credentials deleted!',
 
+			'NEW_PHOTOS_NOTIFICATION' => 'Send new photos notification emails.',
+			'SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION' => 'New photos notification updated',
+			'USER_EMAIL_INSTRUCTION' => 'Add your email below to enable receiving email notifications.<br />To stop receiving emails, simply remove your email below.',
+
 			'DB_INFO_TITLE' => 'Ingrese los detalles de conexión de su base de datos a continuación:',
 			'DB_INFO_HOST' => 'Host de base de datos (opcional)',
 			'DB_INFO_USER' => 'Nombre de usuario de la base de datos',
@@ -413,8 +418,8 @@ final class Spanish implements Language
 			'UPLOAD_ERROR_CONSOLE' => 'Por favor, eche un vistazo a la consola de su navegador para más detalles.',
 			'UPLOAD_UNKNOWN' => 'El servidor devolvió una respuesta desconocida. Por favor, eche un vistazo a la consola de su navegador para más detalles.',
 			'UPLOAD_ERROR_UNKNOWN' => 'Subida fallida. ¡El servidor devolvió un error desconocido!',
-			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size limit is too small!',
-			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize limit is too small!',
+			'UPLOAD_ERROR_POSTSIZE' => 'Upload failed. The PHP post_max_size may be too small! Otherwise check the FAQ.',
+			'UPLOAD_ERROR_FILESIZE' => 'Upload failed. The PHP upload_max_filesize may be too small! Otherwise check the FAQ.',
 			'UPLOAD_IN_PROGRESS' => '¡Lychee está subiendo actualmente!',
 			'UPLOAD_IMPORT_WARN_ERR' => 'La importación ha finalizado, pero devolvió advertencias o errores. Por favor, eche un vistazo al registro (Configuración -> Mostrar registro) para obtener más detalles.',
 			'UPLOAD_IMPORT_COMPLETE' => 'Importación completa',
