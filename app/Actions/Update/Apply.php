@@ -24,6 +24,39 @@ class Apply
 		$this->lycheeVersion = $lycheeVersion;
 	}
 
+	private function check_for_master_branch(array &$output): bool
+	{
+		$command = 'git branch --no-color --show-current 2>&1';
+		$gitOutput = [];
+		$result = -1;
+		exec($command, $gitOutput, $result);
+		if ($result !== 0) {
+			$msg = 'Update not applied: `git branch` exited with error';
+			$output[] = $msg;
+			Logs::error(__METHOD__, __LINE__, $msg);
+
+			return false;
+		} elseif (count($gitOutput) !== 1) {
+			$msg = 'Update not applied: output of `git branch` has unexpected format';
+			$output[] = $msg;
+			Logs::error(__METHOD__, __LINE__, $msg);
+			foreach ($gitOutput as $gitOutputLine) {
+				$output[] = $gitOutputLine;
+				Logs::error(__METHOD__, __LINE__, $gitOutputLine);
+			}
+
+			return false;
+		} elseif ($gitOutput[0] !== 'master') {
+			$msg = 'Update not applied: current branch is not `master`, but `' . $gitOutput[0] . '`';
+			$output[] = $msg;
+			Logs::warning(__METHOD__, __LINE__, $msg);
+
+			return false;
+		}
+
+		return true;
+	}
+
 	/**
 	 * If we are in a production environment we actually require a double check..
 	 *
@@ -135,7 +168,10 @@ class Apply
 	public function run()
 	{
 		$output = [];
-		if ($this->check_prod_env_allow_migration($output)) {
+		if (
+			$this->check_for_master_branch($output) &&
+			$this->check_prod_env_allow_migration($output)
+		) {
 			$this->lycheeVersion->isRelease or $this->git_pull($output);
 			$this->artisan($output);
 			$this->lycheeVersion->isRelease or $this->call_composer($output);
