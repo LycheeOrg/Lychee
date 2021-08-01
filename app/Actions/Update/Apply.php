@@ -26,35 +26,11 @@ class Apply
 
 	private function check_for_master_branch(array &$output): bool
 	{
-		$command = 'git branch --no-color --show-current 2>&1';
-		$gitOutput = [];
-		$result = -1;
-		exec($command, $gitOutput, $result);
-		if ($result !== 0) {
-			$msg = 'Update not applied: `git branch` exited with error';
-			$output[] = $msg;
-			Logs::error(__METHOD__, __LINE__, $msg);
+		$head_file = base_path('.git/HEAD');
+		$branch = file_get_contents($head_file);
+		$branch = explode('/', $branch, 3);
 
-			return false;
-		} elseif (count($gitOutput) !== 1) {
-			$msg = 'Update not applied: output of `git branch` has unexpected format';
-			$output[] = $msg;
-			Logs::error(__METHOD__, __LINE__, $msg);
-			foreach ($gitOutput as $gitOutputLine) {
-				$output[] = $gitOutputLine;
-				Logs::error(__METHOD__, __LINE__, $gitOutputLine);
-			}
-
-			return false;
-		} elseif ($gitOutput[0] !== 'master') {
-			$msg = 'Update not applied: current branch is not `master`, but `' . $gitOutput[0] . '`';
-			$output[] = $msg;
-			Logs::warning(__METHOD__, __LINE__, $msg);
-
-			return false;
-		}
-
-		return true;
+		return trim($branch[2]) === 'master';
 	}
 
 	/**
