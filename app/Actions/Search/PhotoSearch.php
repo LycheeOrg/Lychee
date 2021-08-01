@@ -7,10 +7,11 @@ use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class PhotoSearch
 {
-	private function unsorted_or_public(Builder $query)
+	private function unsorted_or_public(Builder $query): Builder
 	{
 		if (AccessControl::is_admin()) {
 			return $query->orWhere('album_id', '=', null);
@@ -27,11 +28,11 @@ class PhotoSearch
 		return $query;
 	}
 
-	public function query(array $terms)
+	public function query(array $terms): Collection
 	{
 		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
 
-		$query = Photo::with(['album', 'size_variants_raw'])
+		$query = Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
 			->where(fn ($q) => $this->unsorted_or_public($q->whereIn('album_id', $albumIDs)));
 
 		foreach ($terms as $escaped_term) {
@@ -45,12 +46,6 @@ class PhotoSearch
 			);
 		}
 
-		$photos = $query->get();
-
-		return $photos->map(
-			function (Photo $photo) {
-				return $photo->toArray();
-			}
-		);
+		return $query->get();
 	}
 }

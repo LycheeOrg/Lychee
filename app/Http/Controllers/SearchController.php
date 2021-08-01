@@ -57,7 +57,7 @@ class SearchController extends Controller
 		// Initialize return var
 		$return = [];
 		$return['albums'] = $albumSearch->query($escaped_terms);
-		$return['photos'] = $photoSearch->query($escaped_terms);
+		$return['photos'] = $photoSearch->query($escaped_terms)->toArray();
 		$return['hash'] = md5(json_encode($return));
 
 		return $return;
