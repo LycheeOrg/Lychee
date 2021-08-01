@@ -44,7 +44,7 @@
         "barryvdh/laravel-debugbar": "^3.3",
         "barryvdh/laravel-ide-helper": "^2.6",
         "filp/whoops": "^2.5",
-        "friendsofphp/php-cs-fixer": "^2.16",
+        "friendsofphp/php-cs-fixer": "^3.0",
         "itsgoingd/clockwork": "^5.0",
         "laravel/homestead": "^11.4",
         "nunomaduro/collision": "^5.0",

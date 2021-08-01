@@ -94,7 +94,7 @@ test:
 formatting:
 	@rm .php_cs.cache 2> /dev/null || true
 	@if [ -x "vendor/bin/php-cs-fixer" ]; then \
-		./vendor/bin/php-cs-fixer fix -v --config=.php_cs; \
+		./vendor/bin/php-cs-fixer fix -v --config=.php-cs-fixer.php; \
 	else \
 		echo ""; \
 		echo "Please install php-cs-fixer:"; \

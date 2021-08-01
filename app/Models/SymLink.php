@@ -52,7 +52,7 @@ class SymLink extends Model
 	 * filename.
 	 * (Despite the attributes being named "url" they actually store filenames).
 	 */
-	const VARIANT_2_ORIGINAL_FILENAME_FIELD = [
+	public const VARIANT_2_ORIGINAL_FILENAME_FIELD = [
 		Photo::VARIANT_THUMB => 'thumbUrl',
 		Photo::VARIANT_THUMB2X => 'thumbUrl',
 		Photo::VARIANT_SMALL => 'url',
@@ -66,7 +66,7 @@ class SymLink extends Model
 	 * Maps a size variant to the name of an attribute (field) of the class App\Models\Photo which may be exploited
 	 * as an indicator whether this size variant exist.
 	 */
-	const VARIANT_2_INDICATOR_FIELD = [
+	public const VARIANT_2_INDICATOR_FIELD = [
 		Photo::VARIANT_THUMB => 'thumbUrl',           // type: string|null
 		Photo::VARIANT_THUMB2X => 'thumb2x',          // type: integer, either 0 or 1
 		Photo::VARIANT_SMALL => 'small_width',        // type: int|null
@@ -81,7 +81,7 @@ class SymLink extends Model
 	 * symlinked path.
 	 * (Despite some attributes being named "url" they actually store relative paths).
 	 */
-	const VARIANT_2_SYM_PATH_FIELD = [
+	public const VARIANT_2_SYM_PATH_FIELD = [
 		Photo::VARIANT_THUMB => 'thumbUrl',
 		Photo::VARIANT_THUMB2X => 'thumb2x',
 		Photo::VARIANT_SMALL => 'small',

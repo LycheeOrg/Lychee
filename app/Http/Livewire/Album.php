@@ -10,9 +10,9 @@ use Livewire\Component;
 
 class Album extends Component
 {
-	const FLKR = 'flkr';
-	const MASONRY = 'masonry';
-	const SQUARE = 'square';
+	public const FLKR = 'flkr';
+	public const MASONRY = 'masonry';
+	public const SQUARE = 'square';
 
 	/**
 	 * @var string

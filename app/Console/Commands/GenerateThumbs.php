@@ -14,7 +14,7 @@ class GenerateThumbs extends Command
 	/**
 	 * @var array
 	 */
-	const THUMB_TYPES = [
+	public const THUMB_TYPES = [
 		'small',
 		'small2x',
 		'medium',
