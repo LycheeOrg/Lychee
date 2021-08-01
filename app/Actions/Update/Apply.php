@@ -12,17 +12,18 @@ use Illuminate\Support\Facades\Config;
 class Apply
 {
 	private LycheeVersion $lycheeVersion;
-	private GitHubFunctions $githubFunction;
+	private GitHubFunctions $githubFunctions;
 
 	/**
-	 * @param LycheeVersion $lycheeVersion
+	 * @param LycheeVersion   $lycheeVersion
+	 * @param GitHubFunctions $githubFunctions
 	 */
 	public function __construct(
 		LycheeVersion $lycheeVersion,
-		GitHubFunctions $gitHubFunctions
+		GitHubFunctions $githubFunctions
 	) {
 		$this->lycheeVersion = $lycheeVersion;
-		$this->gitHubFunctions = $gitHubFunctions;
+		$this->githubFunctions = $githubFunctions;
 	}
 
 	/**
@@ -137,7 +138,7 @@ class Apply
 	{
 		$output = [];
 		if (
-			$this->githubFunction->is_master_branch() &&
+			$this->githubFunctions->is_master_branch() &&
 			$this->check_prod_env_allow_migration($output)
 		) {
 			$this->lycheeVersion->isRelease or $this->git_pull($output);
