@@ -10,11 +10,8 @@ use Illuminate\Support\Facades\DB;
 
 class PublicIds
 {
-	/** @var BaseCollection */
-	private $forbidden_list = null;
-
-	/** @var Album */
-	private $parent = null;
+	private ?BaseCollection $forbidden_list = null;
+	private ?Album $parent = null;
 
 	public function __construct()
 	{
@@ -31,7 +28,7 @@ class PublicIds
 	 * or public albums which are hidden
 	 * or public albums with a password.
 	 *
-	 * @param  Builder
+	 * @param Builder $query
 	 *
 	 * @return Builder
 	 */
@@ -39,25 +36,36 @@ class PublicIds
 	{
 		return $query
 			// remove NOT public
-			->where('public', '<>', '1')
+			->where('base_albums.public', '=', false)
 			// or PUBLIC BUT NOT VIEWABLE (hidden)
-			->orWhere(fn ($q) => $q->where('public', '=', '1')->where('viewable', '<>', '1'))
+			->orWhere(fn (Builder $q) => $q
+				->where('base_albums.public', '=', true)
+				->where('base_albums.viewable', '=', false)
+			)
 			// or PUBLIC BUT PASSWORD LOCKED
-			->orWhere(fn ($q) => $q->where('public', '=', '1')->where('password', '<>', ''));
+			->orWhere(fn (Builder $q) => $q
+				->where('base_albums.public', '=', true)
+				->where('base_albums.password', '<>', '')
+				->whereNotNull('base_albums.password')
+			);
 	}
 
 	private function init(): Builder
 	{
 		// unlocked albums
-		$query = DB::table('albums')->select('_lft', '_rgt')
-			->whereNotIn('id', AccessControl::get_visible_albums());
+		$query = DB::table('base_albums')
+			->join('albums', 'base_albums.id', '=', 'albums.id')
+			->select('albums._lft', 'albums._rgt')
+			->whereNotIn('albums.id', AccessControl::get_visible_albums());
 
 		if ($this->parent == null) {
 			return $query;
 		}
 
 		// add descendant constraints.
-		return $query->where('_lft', '>', $this->parent->_lft)->where('_rgt', '<', $this->parent->_rgt);
+		return $query
+			->where('albums._lft', '>', $this->parent->_lft)
+			->where('albums._rgt', '<', $this->parent->_rgt);
 	}
 
 	/**
@@ -78,7 +86,7 @@ class PublicIds
 				->pluck('album_id');
 
 			return $this->init()
-				->where('owner_id', '<>', AccessControl::id())
+				->where('base_albums.owner_id', '<>', AccessControl::id())
 				// shared are accessible
 				->whereNotIn('id', $shared_ids)
 				// remove NOT public
@@ -87,7 +95,8 @@ class PublicIds
 		}
 
 		// remove NOT public
-		return $this->init()->where(fn ($q) => $this->notPublicNotViewable($q))
+		return $this->init()
+			->where(fn ($q) => $this->notPublicNotViewable($q))
 			->get();
 	}
 
@@ -134,11 +143,11 @@ class PublicIds
 	 * => random
 	 * => RSS.
 	 *
-	 * @return Collection[int] of all recursive albums ID accessible by the current user from the top level
+	 * @return BaseCollection of all recursive albums ID accessible by the current user from the top level
 	 */
 	public function getPublicAlbumsId(): BaseCollection
 	{
-		$id_not_accessible = $this->getNotAccessible(null);
+		$id_not_accessible = $this->getNotAccessible();
 
 		return DB::table('albums')->select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
 	}
@@ -146,7 +155,7 @@ class PublicIds
 	/**
 	 * Return an array of ids of albums that are not accessible.
 	 *
-	 * @return array[int]
+	 * @return BaseCollection
 	 */
 	public function getNotAccessible(): BaseCollection
 	{
@@ -156,7 +165,7 @@ class PublicIds
 	/**
 	 * We need to refresh PublicIds in our test suite.
 	 */
-	public function refresh()
+	public function refresh(): void
 	{
 		$this->forbidden_list = null;
 	}
@@ -166,9 +175,9 @@ class PublicIds
 	/**
 	 * Setter.
 	 */
-	public function setAlbum(Album $album)
+	public function setAlbum(Album $album): void
 	{
-		if ($this->parent == $album) {
+		if ($this->parent === $album) {
 			return;
 		}
 

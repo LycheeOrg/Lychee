@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Models\Extensions\UTCBasedTimes;
 use DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable;
 use DarkGhostHunter\Larapass\WebAuthnAuthentication;
-use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -26,15 +25,12 @@ use Illuminate\Support\Carbon;
  * @property int                                                   $upload
  * @property int                                                   $lock
  * @property string|null                                           $remember_token
- * @property Carbon|null                                           $created_at
- * @property Carbon|null                                           $updated_at
- * @property Collection|Album[]                                    $albums
+ * @property Carbon                                                $created_at
+ * @property Carbon                                                $updated_at
+ * @property Collection                                            $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property Collection|Album[]                                    $shared
+ * @property Collection                                            $shared
  *
- * @method static Builder|User newModelQuery()
- * @method static Builder|User newQuery()
- * @method static Builder|User query()
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereId($value)
  * @method static Builder|User whereLock($value)
@@ -43,7 +39,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|User whereUpdatedAt($value)
  * @method static Builder|User whereUpload($value)
  * @method static Builder|User whereUsername($value)
- * @mixin Eloquent
  */
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
@@ -80,9 +75,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 *
 	 * @return HasMany
 	 */
-	public function albums()
+	public function albums(): HasMany
 	{
-		return $this->hasMany('App\Models\Album', 'owner_id', 'id');
+		return $this->hasMany('App\Models\BaseAlbumImpl', 'owner_id', 'id');
 	}
 
 	/**
@@ -90,9 +85,9 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 *
 	 * @return BelongsToMany
 	 */
-	public function shared()
+	public function shared(): BelongsToMany
 	{
-		return $this->belongsToMany('App\Models\Album', 'user_album', 'user_id', 'album_id');
+		return $this->belongsToMany('App\Models\BaseAlbumImpl', 'user_base_album', 'user_id', 'base_album_id');
 	}
 
 	public function is_admin(): bool
