@@ -28,7 +28,8 @@ class NestedSetForAlbums extends Migration
 			$table->index([self::LEFT, self::RIGHT]);
 		});
 
-		Album::fixTree();
+		// TODO: Fix me before final merge
+		//Album::fixTree();
 	}
 
 	/**
