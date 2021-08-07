@@ -16,7 +16,7 @@ class Merge extends Action
 	 */
 	public function do(string $albumID, array $albumIDs): bool
 	{
-		$album_master = $this->albumFactory->make($albumID);
+		$album_master = $this->albumFactory->findOrFail($albumID);
 		if ($album_master->is_smart()) {
 			Logs::error(__METHOD__, __LINE__, 'Merge is not possible on smart albums');
 

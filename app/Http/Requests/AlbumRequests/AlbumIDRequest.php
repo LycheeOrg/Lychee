@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\AlbumRequests;
 
-use App\Factories\SmartFactory;
+use App\Factories\AlbumFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AlbumIDRequest extends FormRequest
@@ -31,12 +31,12 @@ class AlbumIDRequest extends FormRequest
 					if (
 						$value !== null &&
 						!is_numeric($value) &&
-						!array_key_exists($value, SmartFactory::BASE_SMARTS)
+						!array_key_exists($value, AlbumFactory::BUILTIN_SMARTS)
 					) {
 						$fail(
 							$attribute .
 							' must either be null, a numeric value or one of the pre-determined IDs ' .
-							implode(', ', array_keys(SmartFactory::BASE_SMARTS))
+							implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS))
 						);
 					}
 				},

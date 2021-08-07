@@ -22,7 +22,7 @@ class SetAlbum extends Setters
 		$album = null;
 
 		if ($albumID != '0') {
-			$album = $this->albumFactory->make($albumID);
+			$album = $this->albumFactory->findOrFail($albumID);
 
 			if ($album->is_tag_album()) {
 				throw new JsonError('Sorry, cannot Set to tag Album.');

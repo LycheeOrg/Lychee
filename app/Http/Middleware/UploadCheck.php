@@ -17,8 +17,7 @@ use Illuminate\Http\Response;
 
 class UploadCheck
 {
-	/** @var AlbumFactory */
-	private $albumFactory;
+	private AlbumFactory $albumFactory;
 
 	public function __construct(AlbumFactory $albumFactory)
 	{
@@ -94,7 +93,7 @@ class UploadCheck
 
 		// Remove smart albums (they get a pass).
 		for ($i = 0; $i < count($albumIDs);) {
-			if ($this->albumFactory->is_smart($albumIDs[$i]) || $albumIDs[$i] === '0') {
+			if ($this->albumFactory->isBuiltInSmartAlbum($albumIDs[$i]) || $albumIDs[$i] === '0') {
 				array_splice($albumIDs, $i, 1);
 			} else {
 				$i++;

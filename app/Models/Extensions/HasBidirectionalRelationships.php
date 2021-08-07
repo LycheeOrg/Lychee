@@ -2,8 +2,8 @@
 
 namespace App\Models\Extensions;
 
-use App\Assets\HasManyBidirectionally;
 use App\Contracts\BidirectionalRelation;
+use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;

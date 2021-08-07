@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Album\Prepare;
 use App\Actions\Albums\Prepare as AlbumsPrepare;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Collection;
 use Response;
 
 class DemoController extends Controller
@@ -65,29 +65,19 @@ class DemoController extends Controller
 		$return_album_list['kind'] = 'albumID';
 		$return_album_list['array'] = [];
 
-		/**
-		 * @var Collection[Album]
-		 */
-		$albums = Album::where('public', '=', '1')
-			->where('viewable', '=', '1')
+		/** @var Collection $albums */
+		$albums = Album::query()
+			->where('public', '=', true)
+			->where('viewable', '=', true)
 			->get();
-		/*
-		 * @var Album
-		 */
-		$prepare = resolve(Prepare::class);
+		/** @var Album $album */
 		foreach ($albums as $album) {
 			/**
 			 * Copy paste from Album::get().
 			 */
-			// Get photos
-			// Get album information
-
-			$return_album_json = $prepare->do($album);
-
 			$return_album = [];
 			$return_album['id'] = $album->id;
-			$return_album['data'] = json_encode($return_album_json);
-
+			$return_album['data'] = json_encode($album->toArray());
 			$return_album_list['array'][] = $return_album;
 		}
 

@@ -1,10 +1,7 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Models;
 
-use App\Assets\HasManyBidirectionally;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Facades\AccessControl;
@@ -16,7 +13,8 @@ use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\PhotoObserver;
-use Illuminate\Database\Eloquent\Builder;
+use App\Relations\HasManyBidirectionally;
+use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -65,42 +63,6 @@ use Illuminate\Support\Facades\Storage;
  * @property Collection   $size_variants_raw
  * @property bool         $downloadable
  * @property bool         $share_button_visible
- *
- * @method static Builder ownedBy($id)
- * @method static Builder public()
- * @method static Builder recent()
- * @method static Builder stars()
- * @method static Builder unsorted()
- * @method static Builder whereAlbumId($value)
- * @method static Builder whereAltitude($value)
- * @method static Builder whereAperture($value)
- * @method static Builder whereChecksum($value)
- * @method static Builder whereCreatedAt($value)
- * @method static Builder whereDescription($value)
- * @method static Builder whereFocal($value)
- * @method static Builder whereId($value)
- * @method static Builder whereImgDirection($value)
- * @method static Builder whereLocation($value)
- * @method static Builder whereIso($value)
- * @method static Builder whereLatitude($value)
- * @method static Builder whereLens($value)
- * @method static Builder whereLicense($value)
- * @method static Builder whereLivePhotoChecksum($value)
- * @method static Builder whereLivePhotoContentID($value)
- * @method static Builder whereLivePhotoShortPath($value)
- * @method static Builder whereLongitude($value)
- * @method static Builder whereMake($value)
- * @method static Builder whereModel($value)
- * @method static Builder whereOwnerId($value)
- * @method static Builder wherePublic($value)
- * @method static Builder whereShutter($value)
- * @method static Builder whereFilesize($value)
- * @method static Builder whereStar($value)
- * @method static Builder whereTags($value)
- * @method static Builder whereTakenAt($value)
- * @method static Builder whereTitle($value)
- * @method static Builder whereType($value)
- * @method static Builder whereUpdatedAt($value)
  */
 class Photo extends Model
 {
@@ -180,6 +142,24 @@ class Photo extends Model
 	}
 
 	/**
+	 * Creates a new instance of {@link LinkedPhotoCollection}.
+	 *
+	 * The only difference between an ordinary {@link Collection} and a
+	 * {@link LinkedPhotoCollection} is that the latter also adds links to
+	 * the previous and next photo if the collection is serialized to JSON.
+	 * This method is called by all relations which need to create a
+	 * collection of photos.
+	 *
+	 * @param array $models a list of {@link Photo} models
+	 *
+	 * @return LinkedPhotoCollection
+	 */
+	public function newCollection(array $models = []): LinkedPhotoCollection
+	{
+		return new LinkedPhotoCollection($models);
+	}
+
+	/**
 	 * Return the relationship between a Photo and its Album.
 	 *
 	 * @return BelongsTo
@@ -202,78 +182,6 @@ class Photo extends Model
 	public function size_variants_raw(): HasManyBidirectionally
 	{
 		return $this->hasManyBidirectionally(SizeVariant::class);
-	}
-
-	/**
-	 * @param Builder $query
-	 *
-	 * @return Builder
-	 */
-	public static function set_order(Builder $query): Builder
-	{
-		$sortingCol = Configs::get_value('sorting_Photos_col');
-		if ($sortingCol !== 'title' && $sortingCol !== 'description') {
-			$query = $query->orderBy($sortingCol, Configs::get_value('sorting_Photos_order'));
-		}
-
-		return $query->orderBy('photos.id', 'ASC');
-	}
-
-	/**
-	 * Define scopes which we can directly use e.g. Photo::stars()->all().
-	 */
-
-	/**
-	 * @param Builder $query
-	 *
-	 * @return Builder
-	 */
-	public function scopeStars(Builder $query): Builder
-	{
-		return $query->where('star', '=', true);
-	}
-
-	/**
-	 * @param Builder $query
-	 *
-	 * @return Builder
-	 */
-	public function scopePublic(Builder $query): Builder
-	{
-		return $query->where('public', '=', true);
-	}
-
-	/**
-	 * @param Builder $query
-	 *
-	 * @return Builder
-	 */
-	public function scopeRecent(Builder $query): Builder
-	{
-		return $query->where('created_at', '>=', $this->fromDateTime(
-			Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))
-		));
-	}
-
-	/**
-	 * @param Builder $query
-	 *
-	 * @return Builder
-	 */
-	public function scopeUnsorted(Builder $query): Builder
-	{
-		return $query->whereNull('album_id');
-	}
-
-	/**
-	 * @param Builder $query
-	 * @param int     $ownerID
-	 *
-	 * @return Builder
-	 */
-	public function scopeOwnedBy(Builder $query, int $ownerID): Builder
-	{
-		return $ownerID == 0 ? $query : $query->where('owner_id', '=', $ownerID);
 	}
 
 	/**
@@ -362,7 +270,7 @@ class Photo extends Model
 			return $license;
 		}
 		if ($this->album_id != null) {
-			return $this->album->get_license();
+			return $this->album->license;
 		}
 
 		return Configs::get_value('default_license');
@@ -438,7 +346,7 @@ class Photo extends Model
 	protected function getDownloadableAttribute(): bool
 	{
 		return AccessControl::is_current_user($this->owner_id) ||
-			($this->album_id != null && $this->album->is_downloadable()) ||
+			($this->album_id != null && $this->album->downloadable) ||
 			($this->album_id == null && (bool) Configs::get_value('downloadable', '0'));
 	}
 
@@ -459,7 +367,7 @@ class Photo extends Model
 	 */
 	protected function getPublicAttribute(?bool $value): int
 	{
-		if ($this->album_id != null && $this->album->is_public()) {
+		if ($this->album_id != null && $this->album->public) {
 			return 2;
 		}
 
@@ -481,7 +389,7 @@ class Photo extends Model
 		$default = (bool) Configs::get_value('share_button_visible', '0');
 
 		return AccessControl::is_current_user($this->owner_id) ||
-			($this->album_id != null && $this->album->is_share_button_visible()) ||
+			($this->album_id != null && $this->album->share_button_visible) ||
 			($this->album_id == null && $default);
 	}
 
@@ -507,7 +415,7 @@ class Photo extends Model
 			$this->isVideo() === false &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
-				($this->album_id != null && !$this->album->is_full_photo_visible()) ||
+				($this->album_id != null && !$this->album->full_photo) ||
 				($this->album_id == null && Configs::get_value('full_photo', '1') != '1')
 			)
 		) {

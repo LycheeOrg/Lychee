@@ -3,9 +3,9 @@
 namespace App\Actions\Album;
 
 use App\Facades\AccessControl;
-use App\Models\Album;
+use App\Models\TagAlbum;
 
-class CreateTag extends Action
+class CreateTagAlbum extends Action
 {
 	/**
 	 * Create a new smart album based on tags.
@@ -13,17 +13,14 @@ class CreateTag extends Action
 	 * @param string $title
 	 * @param string $show_tags
 	 *
-	 * @return Album
+	 * @return TagAlbum
 	 */
-	public function create(string $title, string $show_tags): Album
+	public function create(string $title, string $show_tags): TagAlbum
 	{
-		$album = $this->albumFactory->makeFromTitle($title);
-
-		$album->parent_id = null;
+		$album = new TagAlbum();
+		$album->title = $title;
+		$album->show_tags = $show_tags;
 		$album->owner_id = AccessControl::id();
-
-		$album->smart = true;
-		$album->showtags = $show_tags;
 		if (!$album->save()) {
 			throw new \RuntimeException('could not persist album to DB');
 		}

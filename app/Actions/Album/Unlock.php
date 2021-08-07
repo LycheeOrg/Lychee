@@ -16,14 +16,14 @@ class Unlock extends Action
 	 *
 	 * @return array
 	 */
-	public function do(?string $albumid, $password): bool
+	public function do(?string $albumID, $password): bool
 	{
-		if ($this->albumFactory->is_smart($albumid)) {
+		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
 			return false;
 		}
 
-		$album = $this->albumFactory->make($albumid);
-		if ($album->is_public()) {
+		$album = $this->albumFactory->findOrFail($albumID);
+		if ($album->public) {
 			if ($album->password === '') {
 				return true;
 			}

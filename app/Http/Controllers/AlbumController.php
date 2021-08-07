@@ -1,17 +1,14 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
 use App\Actions\Album\Archive;
 use App\Actions\Album\Create;
-use App\Actions\Album\CreateTag;
+use App\Actions\Album\CreateTagAlbum;
 use App\Actions\Album\Delete;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
-use App\Actions\Album\Prepare;
 use App\Actions\Album\SetCover;
 use App\Actions\Album\SetDescription;
 use App\Actions\Album\SetLicense;
@@ -21,6 +18,7 @@ use App\Actions\Album\SetShowTags;
 use App\Actions\Album\SetSorting;
 use App\Actions\Album\SetTitle;
 use App\Actions\Album\Unlock;
+use App\Contracts\BaseAlbum;
 use App\Facades\Helpers;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
@@ -60,7 +58,7 @@ class AlbumController extends Controller
 	 *
 	 * @return false|string
 	 */
-	public function addByTags(Request $request, CreateTag $create)
+	public function addTagAlbum(Request $request, CreateTagAlbum $create)
 	{
 		$request->validate([
 			'title' => 'string|required|max:100',
@@ -75,16 +73,15 @@ class AlbumController extends Controller
 	/**
 	 * Provided an albumID, returns the album.
 	 *
-	 * @param Request $request
+	 * @param AlbumIDRequest $request
 	 *
-	 * @return array|string
+	 * @return BaseAlbum
 	 */
-	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory, Prepare $prepare)
+	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory): BaseAlbum
 	{
 		$validated = $request->validated();
-		$album = $albumFactory->make($validated['albumID']);
 
-		return $prepare->do($album);
+		return $albumFactory->findOrFail($validated['albumID']);
 	}
 
 	/**
@@ -220,19 +217,24 @@ class AlbumController extends Controller
 	/**
 	 * Delete the album and all pictures in the album.
 	 *
-	 * @param Request $request
+	 * @param AlbumIDsRequest $request
+	 * @param Delete          $delete
+	 * @param AlbumFactory    $albumFactory
 	 *
-	 * @return string
+	 * @return \Illuminate\Http\Response
 	 */
-	public function delete(AlbumIDsRequest $request, Delete $delete)
+	public function delete(AlbumIDsRequest $request, Delete $delete, AlbumFactory $albumFactory): \Illuminate\Http\Response
 	{
-		return $delete->do($request['albumIDs']) ? 'true' : 'false';
+		$delete->do(explode(',', $request['albumIDs']), $albumFactory);
+
+		return response()->noContent();
 	}
 
 	/**
 	 * Merge albums. The first of the list is the destination of the merge.
 	 *
-	 * @param Request $request
+	 * @param AlbumIDsRequest $request
+	 * @param Merge           $merge
 	 *
 	 * @return string
 	 */
@@ -249,7 +251,8 @@ class AlbumController extends Controller
 	/**
 	 * Move multiple albums into another album.
 	 *
-	 * @param Request $request
+	 * @param AlbumIDsRequest $request
+	 * @param Move            $move
 	 *
 	 * @return string
 	 */

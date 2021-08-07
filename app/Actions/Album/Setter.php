@@ -17,7 +17,7 @@ class Setter extends Action
 
 	public function do(string $albumID, ?string $value): bool
 	{
-		$album = $this->albumFactory->make($albumID);
+		$album = $this->albumFactory->findOrFail($albumID);
 
 		return $this->execute($album, $value);
 	}

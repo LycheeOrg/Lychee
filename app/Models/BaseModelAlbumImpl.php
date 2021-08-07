@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Contracts\BaseModelAlbum;
+use App\Facades\AccessControl;
+use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasTimeBasedID;
@@ -40,19 +42,19 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * their "parent" class.
  * Basically, the architecture looks like this
  *
- *        +---------+             +----------------+
- *        |  Model  |             | <<interface>>  |
- *        +---------+             | BaseModelAlbum |
- *             ^ ^ ^              +----------------+
- *             | | \                ^           ^
- *             | |  \               |           |
- *             | \   \--------------|------\    |
- *             |  \-------------\   |       \   |
- *             |               +-------+     \  |
- *             |               | Album |      | |
- *     +---------------+ <---X +-------+    +----------+
- *     | BaseAlbumImpl |                    | TagAlbum |
- *     +---------------+ <----------------X +----------+
+ *          +---------+                +----------------+
+ *          |  Model  |                | <<interface>>  |
+ *          +---------+                | BaseModelAlbum |
+ *               ^ ^ ^                 +----------------+
+ *               | | \                   ^           ^
+ *               | |  \                  |           |
+ *               | \   \-----------------|------\    |
+ *               |  \----------------\   |       \   |
+ *               |                  +-------+     \  |
+ *               |                  | Album |      | |
+ *     +--------------------+ <---X +-------+    +----------+
+ *     | BaseModelAlbumImpl |                    | TagAlbum |
+ *     +--------------------+ <----------------X +----------+
  *
  * (Note: A sideways arrow with an X, i.e. <-----X, shall denote a composite.)
  * All child classes and the this class extend
@@ -96,10 +98,11 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property User           $owner
  * @property Collection     $shared_with
  * @property string|null    $password
+ * @property bool           $has_password
  * @property string|null    $sorting_col
  * @property string|null    $sorting_order
  */
-class BaseAlbumImpl extends Model
+class BaseModelAlbumImpl extends Model
 {
 	use HasAttributesPatch;
 	use HasTimeBasedID;
@@ -128,6 +131,25 @@ class BaseAlbumImpl extends Model
 		'downloadable' => 'boolean',
 		'share_button_visible' => 'boolean',
 		'nsfw' => 'boolean',
+	];
+
+	/**
+	 * @var string[] The list of attributes which exist as columns of the DB
+	 *               relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		'album_type',  // album_type is only used internally
+		'child_class', // don't serialize child class as a relation, the attributes of the child class are flatly merged into the JSON result
+		'password',
+	];
+
+	/**
+	 * @var string[] The list of "virtual" attributes which do not exist as
+	 *               columns of the DB relation but which shall be appended to
+	 *               JSON from accessors
+	 */
+	protected $appends = [
+		'has_password',
 	];
 
 	/**
@@ -175,5 +197,65 @@ class BaseAlbumImpl extends Model
 			self::INHERITANCE_ID_COL_NAME,
 			self::INHERITANCE_ID_COL_NAME
 		);
+	}
+
+	protected function getSortingColAttribute(?string $value): ?string
+	{
+		if (empty($value) || empty($this->attributes['sorting_order'])) {
+			return Configs::get_value('sorting_Photos_col');
+		} else {
+			return $value;
+		}
+	}
+
+	protected function getSortingOrderAttribute(?string $value): ?string
+	{
+		if (empty($value) || empty($this->attributes['sorting_col'])) {
+			return Configs::get_value('sorting_Photos_order');
+		} else {
+			return $value;
+		}
+	}
+
+	protected function getFullPhotoAttribute(bool $value): bool
+	{
+		if ($this->public) {
+			return $value;
+		} else {
+			return Configs::get_value('full_photo', '1') === '1';
+		}
+	}
+
+	protected function getDownloadableAttribute(bool $value): bool
+	{
+		if ($this->public) {
+			return $value;
+		} else {
+			return Configs::get_value('downloadable', '0') === '1';
+		}
+	}
+
+	protected function getShareButtonVisibleAttribute(bool $value): bool
+	{
+		if ($this->public) {
+			return $value;
+		} else {
+			return Configs::get_value('share_button_visible', '0') === '1';
+		}
+	}
+
+	protected function getHasPasswordAttribute(?string $value): bool
+	{
+		return !empty($value);
+	}
+
+	public function toArray(): array
+	{
+		$result = parent::toArray();
+		if (AccessControl::is_logged_in()) {
+			$result['owner_name'] = $this->owner->name();
+		}
+
+		return $result;
 	}
 }

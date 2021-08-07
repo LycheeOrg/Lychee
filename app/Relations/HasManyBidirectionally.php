@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Assets;
+namespace App\Relations;
 
 use App\Contracts\BidirectionalRelation;
 use Illuminate\Database\Eloquent\Builder;

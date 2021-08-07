@@ -10,6 +10,7 @@ use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Actions\Albums\Tree;
 use App\Models\Configs;
+use Illuminate\Database\Eloquent\Collection;
 
 class AlbumsController extends Controller
 {
@@ -48,9 +49,9 @@ class AlbumsController extends Controller
 	}
 
 	/**
-	 * @return array|string returns an array of photos of all albums or false on failure
+	 * @return Collection returns a collection of public photos which have positioning data
 	 */
-	public function getPositionData(PositionData $positionData)
+	public function getPositionData(PositionData $positionData): Collection
 	{
 		return $positionData->do();
 	}

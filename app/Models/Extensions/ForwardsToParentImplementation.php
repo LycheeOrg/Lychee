@@ -2,7 +2,7 @@
 
 namespace App\Models\Extensions;
 
-use App\Models\BaseAlbumImpl;
+use App\Models\BaseModelAlbumImpl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
  *
  * This trait is supposed to be used by "child" classes of a parent-child
  * relation that follows the design pattern as described in
- * {@link \App\Models\BaseAlbumImpl}.
+ * {@link \App\Models\BaseModelAlbumImpl}.
  * This trait assumes that the using "child" classes provides a relation
  * called `base_class` which returns an instance of
  * {@link \Illuminate\Database\Eloquent\Relations\MorphOne} and refers
@@ -102,16 +102,22 @@ trait ForwardsToParentImplementation
 	/**
 	 * Delete the model from the database.
 	 *
-	 * @return bool|null
+	 * @return bool
 	 *
 	 * @throws \LogicException
 	 */
-	public function delete(): ?bool
+	public function delete(): bool
 	{
 		/** @var ?Model $base_class */
 		$base_class = $this->base_class;
 
-		if (!parent::delete()) {
+		$parentDelete = parent::delete();
+		if ($parentDelete === false) {
+			// Sic! Don't use `!$parentDelete` in condition, because we also
+			// need to proceed if `$parentDelete === null` .
+			// If Eloquent returns `null` (instead of `true`), this also
+			// indicates a success and we must go on.
+			// Eloquent, I love you .... not.
 			return false;
 		}
 
@@ -119,7 +125,10 @@ trait ForwardsToParentImplementation
 		// to avoid an infinite recursion, as the base class will also call
 		// delete() on this class
 		if ($base_class !== null && $base_class->exists) {
-			return $base_class->delete();
+			$baseDelete = $base_class->delete();
+			// Same stupidity as above, if Eloquent returns `null` this also
+			// means `true` here.
+			return is_bool($baseDelete) ? $baseDelete : true;
 		}
 
 		return true;
@@ -389,7 +398,7 @@ trait ForwardsToParentImplementation
 		// on the parent class.
 		// Only if the parent class does neither provide such an attribute,
 		// we write it to the child class.
-		/** @var BaseAlbumImpl $baseClass */
+		/** @var BaseModelAlbumImpl $baseClass */
 		$baseClass = $this->base_class;
 		if (
 			array_key_exists($key, $baseClass->getAttributes()) ||

@@ -44,7 +44,7 @@ class Create
 	 *                                        null, the id of a real album or
 	 *                                        (if it is a string) one of the
 	 *                                        array keys in
-	 *                                        {@link \App\Factories\SmartFactory::BASE_SMARTS}
+	 *                                        {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
 	 *
 	 * @return Photo|null the newly created or updated photo
 	 *
@@ -188,7 +188,7 @@ class Create
 	 * @param int|string|null $albumID the targeted parent album either null,
 	 *                                 the id of a real album or (if it is
 	 *                                 string) one of the array keys in
-	 *                                 {@link \App\Factories\SmartFactory::BASE_SMARTS}
+	 *                                 {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
 	 *
 	 * @throws JsonError
 	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
@@ -198,7 +198,7 @@ class Create
 		/** @var AlbumFactory */
 		$factory = resolve(AlbumFactory::class);
 		if (!empty($albumID)) {
-			$album = $factory->make($albumID);
+			$album = $factory->findOrFail($albumID);
 
 			if ($album->is_tag_album()) {
 				throw new JsonError('Sorry, cannot upload to Tag Album.');

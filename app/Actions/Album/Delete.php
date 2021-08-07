@@ -2,70 +2,27 @@
 
 namespace App\Actions\Album;
 
-use App\Facades\AccessControl;
-use App\Models\Album;
-use App\Models\Photo;
-use Illuminate\Support\Facades\Schema;
+use App\Contracts\BaseAlbum;
+use App\Factories\AlbumFactory;
 
 class Delete
 {
 	/**
-	 * @param string $albumID
+	 * @param array        $albumIDs
+	 * @param AlbumFactory $albumFactory
 	 *
 	 * @return bool
 	 */
-	public function do(string $albumIDs): bool
+	public function do(array $albumIDs, AlbumFactory $albumFactory): bool
 	{
-		$no_error = true;
-		// root = unsorted
-		if ($albumIDs == 'unsorted') {
-			$photos = Photo::OwnedBy(AccessControl::id())
-				->with(['size_variants_raw', 'size_variants_raw.sym_links'])
-				->where('album_id', '=', null)
-				->get();
+		$albums = $albumFactory->findWhereIDsIn($albumIDs);
+		$success = true;
 
-			/** @var Photo $photo */
-			foreach ($photos as $photo) {
-				$no_error &= $photo->delete();
-			}
-
-			return $no_error;
-		}
-
-		$albums = Album::whereIn('id', explode(',', $albumIDs))->get();
-
-		$sqlPhoto = Photo::query()
-			->with(['size_variants_raw', 'size_variants_raw.sym_links'])
-			->leftJoin('albums', 'photos.album_id', '=', 'albums.id')
-			->select('photos.*');
-
+		/** @var BaseAlbum $album */
 		foreach ($albums as $album) {
-			$sqlPhoto = $sqlPhoto->orWhere(fn ($q) => $q->where('albums._lft', '>=', $album->_lft)
-				->where('albums._rgt', '<=', $album->_rgt));
+			$success &= $album->delete();
 		}
 
-		$photos = $sqlPhoto->get();
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			$no_error &= $photo->delete();
-		}
-
-		$sql_delete = Album::query();
-
-		//! We break the tree (because delete() is broken see https://github.com/lazychaser/laravel-nestedset/issues/485)
-		Schema::disableForeignKeyConstraints();
-		foreach ($albums as $album) {
-			$sql_delete = $sql_delete->orWhere(fn ($q) => $q
-				->where('_lft', '>=', $album->_lft)->where('_rgt', '<=', $album->_rgt));
-		}
-		$sql_delete->delete();
-		Schema::enableForeignKeyConstraints();
-
-		//? We fix the tree :)
-		if (Album::isBroken()) {
-			Album::fixTree();
-		}
-
-		return $no_error;
+		return $success;
 	}
 }

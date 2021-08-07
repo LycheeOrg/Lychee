@@ -250,7 +250,7 @@ class Archive
 	{
 		if (!AccessControl::is_current_user($photo->owner_id)) {
 			if ($photo->album_id !== null) {
-				if (!$photo->album->is_downloadable()) {
+				if (!$photo->album->downloadable) {
 					return null;
 				}
 			} elseif (Configs::get_value('downloadable', '0') === '0') {

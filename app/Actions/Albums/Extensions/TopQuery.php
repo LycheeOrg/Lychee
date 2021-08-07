@@ -8,16 +8,14 @@ use Illuminate\Database\Eloquent\Builder;
 
 trait TopQuery
 {
-	use PublicViewable;
-
 	private function createTopleveAlbumsQuery(): Builder
 	{
+		$baseQuery = Album::query()->whereIsRoot();
+		$query = resolve(PublicIds::class)->publicViewable($baseQuery);
 		if (AccessControl::is_logged_in()) {
-			$baseQuery = Album::query()->whereIsRoot();
-
-			return $this->publicViewable($baseQuery)->orderBy('owner_id', 'ASC');
+			return $query->orderBy('owner_id', 'ASC');
 		}
 
-		return $this->publicViewable(Album::query()->whereIsRoot());
+		return $query;
 	}
 }

@@ -8,13 +8,13 @@ class SetSorting extends Action
 {
 	public function do(string $albumID, array $value): bool
 	{
-		if ($this->albumFactory->is_smart($albumID)) {
+		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
 			Logs::error(__METHOD__, __LINE__, 'Not applicable to smart albums.');
 
 			return false;
 		}
 
-		$album = $this->albumFactory->make($albumID);
+		$album = $this->albumFactory->findOrFail($albumID);
 		$album->sorting_col = $value['typePhotos'] ?? '';
 		$album->sorting_order = $value['orderPhotos'] ?? 'ASC';
 

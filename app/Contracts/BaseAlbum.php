@@ -2,9 +2,10 @@
 
 namespace App\Contracts;
 
-use App\Models\Photo;
+use App\Models\Extensions\Thumb;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Interface BaseAlbum.
@@ -19,12 +20,16 @@ use Illuminate\Database\Eloquent\Collection;
  * See {@link \App\Contracts\BaseModelAlbum} for the common interface of
  * all models which are persisted to DB.
  *
- * @property string     title
- * @property Collection photos
- * @property Photo      cover
- * @property bool       public
- * @property bool       full_photo
+ * @property string     $title
+ * @property Collection $photos
+ * @property Thumb|null $thumb
+ * @property bool       $public
+ * @property bool       $downloadable
+ * @property bool       $share_button_visible
  */
-interface BaseAlbum extends \JsonSerializable, Arrayable
+interface BaseAlbum extends \JsonSerializable, Arrayable, SupportsRelationships
 {
+	public function photos(): Relation;
+
+	public function delete(): bool;
 }

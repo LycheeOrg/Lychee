@@ -2,22 +2,38 @@
 
 namespace App\SmartAlbums;
 
-use App\Models\Photo;
+use App\Relations\HasManyPhotosBySmartCondition;
 use Illuminate\Database\Eloquent\Builder;
 
-class PublicAlbum extends SmartAlbum
+class PublicAlbum extends BaseSmartAlbum
 {
-	public $id = 'public';
+	private static ?self $instance = null;
+	const ID = 'public';
+	const TITLE = 'Public';
 
-	public function __construct()
+	protected function __construct()
 	{
-		parent::__construct();
-
-		$this->title = 'public';
+		parent::__construct(self::ID, self::TITLE, false);
 	}
 
-	public function get_photos(): Builder
+	public static function getInstance(): self
 	{
-		return Photo::public()->where(fn ($q) => $this->filter($q));
+		if (!self::$instance) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	public function photos(): HasManyPhotosBySmartCondition
+	{
+		// TODO: Check if the condition is actually what we want
+		// Here we only return photos which are public on their own right.
+		// This is the old behaviour, but the condition does not cover photos
+		// which are public because they are part of a public album.
+		return new HasManyPhotosBySmartCondition(
+			$this,
+			fn (Builder $q) => $q->where('public', '=', true)
+		);
 	}
 }

@@ -2,14 +2,15 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\ReadAccessFunctions;
+use App\Contracts\BaseAlbum;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\ZipStream;
@@ -28,7 +29,7 @@ class Archive extends Action
 	}
 
 	/**
-	 * @param string $albumID
+	 * @param array $albumIDs
 	 *
 	 * @return StreamedResponse
 	 */
@@ -44,16 +45,9 @@ class Archive extends Action
 			$dirs = [];
 			foreach ($albumIDs as $albumID) {
 				//! may Fail
-				$album = $this->albumFactory->make($albumID);
-
+				$album = $this->albumFactory->findOrFail($albumID);
 				$dir = $album->title;
-				if ($album->smart) {
-					$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
-					$album->setAlbumIDs($publicAlbums);
-				}
-				$photos_sql = $album->get_photos();
-
-				$this->compress_album($photos_sql, $dir, $dirs, '', $album, $albumID, $zip);
+				$this->compress_album($album->photos, $dir, $dirs, '', $album, $albumID, $zip);
 			}
 
 			// finish the zip stream
@@ -90,12 +84,12 @@ class Archive extends Action
 	 */
 	private function makeTitle(string $id)
 	{
-		if ($this->albumFactory->is_smart($id)) {
+		if ($this->albumFactory->isBuiltInSmartAlbum($id)) {
 			return $id;
 		}
 
 		//! will fail if not found
-		$album = $this->albumFactory->make($id);
+		$album = $this->albumFactory->findOrFail($id);
 
 		return str_replace($this->badChars, '', $album->title) ?: 'Untitled'; // 'Untitled' if empty string.
 	}
@@ -103,11 +97,14 @@ class Archive extends Action
 	/**
 	 * Album compression
 	 * ! include recursive call.
+	 *
+	 * @param Collection $photos
+	 * @param BaseAlbum  $album
 	 */
-	private function compress_album($photos_sql, $dir_name, &$dirs, $parent_dir, $album, $albumID, &$zip)
+	private function compress_album($photos, $dir_name, &$dirs, $parent_dir, $album, $albumID, &$zip)
 	{
-		if (!$album->is_downloadable()) {
-			if ($this->albumFactory->is_smart($albumID)) {
+		if (!$album->downloadable) {
+			if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
 				if (!AccessControl::is_logged_in()) {
 					return;
 				}
@@ -136,7 +133,6 @@ class Archive extends Action
 		}
 
 		$files = [];
-		$photos = $photos_sql->get();
 		// We don't bother with additional sorting here; who
 		// cares in what order photos are zipped?
 
@@ -148,7 +144,7 @@ class Archive extends Action
 			// in smart albums should be owned by the current user...
 			if (
 				$album->smart && !AccessControl::is_current_user($photo->owner_id) &&
-				!($photo->album_id == null ? $album->is_downloadable() : $photo->album->is_downloadable())
+				!($photo->album_id == null ? $album->downloadable : $photo->album->downloadable)
 			) {
 				continue;
 			}

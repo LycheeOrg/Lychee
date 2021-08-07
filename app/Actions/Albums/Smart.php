@@ -2,73 +2,64 @@
 
 namespace App\Actions\Albums;
 
-use AccessControl;
 use App\Actions\Albums\Extensions\PublicIds;
-use App\Actions\Albums\Extensions\TopQuery;
-use App\Factories\SmartFactory;
-use App\ModelFunctions\SymLinkFunctions;
+use App\Facades\AccessControl;
+use App\Factories\AlbumFactory;
+use App\Models\Configs;
+use App\Models\Extensions\CustomSort;
+use App\Models\TagAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
 
 class Smart
 {
-	use TopQuery;
+	use CustomSort;
 
-	/**
-	 * @var SymLinkFunctions
-	 */
-	public $symLinkFunctions;
+	private AlbumFactory $albumFactory;
+	private string $sortingCol;
+	private string $sortingOrder;
 
-	/**
-	 * @var Tag
-	 */
-	public $tag;
-
-	/**
-	 * @var SmartFactory
-	 */
-	public $smartFactory;
-
-	public function __construct(SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory, Tag $tag)
+	public function __construct(AlbumFactory $albumFactory)
 	{
-		$this->symLinkFunctions = $symLinkFunctions;
-		$this->smartFactory = $smartFactory;
-		$this->tag = $tag;
+		$this->albumFactory = $albumFactory;
+		$this->sortingCol = Configs::get_value('sorting_Albums_col');
+		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
 	}
 
 	/**
-	 * Returns an array of top-level albums and shared albums visible to
-	 * the current user.
-	 * Note: the array may include password-protected albums that are not
-	 * accessible (but are visible).
+	 * Returns the array of smart albums visible to the current user.
 	 *
-	 * @return array[Collection[Album]]|null
+	 * The array includes the built-in smart albums and the user-defined
+	 * smart albums (i.e. tag albums).
+	 * Note, the array may include password-protected albums that are visible
+	 * but not accessible.
+	 *
+	 * *WARNING:* This method has a bug.
+	 * The returned array is keyed by the albums title, but albums are not
+	 * required to have unique titles.
+	 * Hence, an album which is serialized later overwrites an earlier album
+	 * with the same title.
+	 * TODO: Check with the front-end if using title as keys is actually required.
+	 *
+	 * @return array[BaseAlbum] the array of smart albums keyed by their title
 	 */
-	public function get(): ?array
+	public function get(): array
 	{
-		/**
-		 * Initialize return var.
-		 */
 		$return = [];
-
-		/**
-		 * @var Collection[SmartAlbum]
-		 */
-		$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
-		$smartAlbums = $this->smartFactory->makeAll();
-
-		foreach ($this->tag->get() as $tagAlbum) {
-			$smartAlbums->push($tagAlbum);
-		}
-
-		/* @var SmartAlbum */
+		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums();
+		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
-			if (AccessControl::can_upload() || $smartAlbum->is_public()) {
-				$smartAlbum->setAlbumIDs($publicAlbums);
-				$return[$smartAlbum->title] = $smartAlbum->toReturnArray();
+			if (AccessControl::can_upload() || $smartAlbum->public) {
+				// TODO: Later albums with same title overwrite previous albums
+				$return[$smartAlbum->title] = $smartAlbum;
 			}
 		}
 
-		if (empty($return)) {
-			return null;
+		$tagAlbumQuery = resolve(PublicIds::class)->publicViewable(TagAlbum::query());
+		$tagAlbums = $this->customSort($tagAlbumQuery, $this->sortingCol, $this->sortingOrder);
+		/** @var TagAlbum $tagAlbum */
+		foreach ($tagAlbums as $tagAlbum) {
+			// TODO: Later albums with same title overwrite previous albums
+			$return[$tagAlbum->title] = $tagAlbum;
 		}
 
 		return $return;

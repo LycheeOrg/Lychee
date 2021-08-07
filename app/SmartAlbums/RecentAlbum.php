@@ -3,23 +3,45 @@
 namespace App\SmartAlbums;
 
 use App\Models\Configs;
-use App\Models\Photo;
+use App\Relations\HasManyPhotosBySmartCondition;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
-class RecentAlbum extends SmartAlbum
+class RecentAlbum extends BaseSmartAlbum
 {
-	public $id = 'recent';
+	private static ?self $instance = null;
+	const ID = 'recent';
+	const TITLE = 'Recent';
 
-	public function __construct()
+	protected function __construct()
 	{
-		parent::__construct();
-
-		$this->title = 'recent';
-		$this->public = Configs::get_value('public_recent', '0') === '1';
+		parent::__construct(
+			self::ID,
+			self::TITLE,
+			Configs::get_value('public_recent', '0') === '1'
+		);
 	}
 
-	public function get_photos(): Builder
+	public static function getInstance(): self
 	{
-		return Photo::recent()->where(fn ($q) => $this->filter($q));
+		if (!self::$instance) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	public function photos(): HasManyPhotosBySmartCondition
+	{
+		$strRecent = $this->fromDateTime(
+			Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))
+		);
+
+		return new HasManyPhotosBySmartCondition(
+			$this,
+			function (Builder $query) use ($strRecent) {
+				$query->where('created_at', '>=', $strRecent);
+			}
+		);
 	}
 }

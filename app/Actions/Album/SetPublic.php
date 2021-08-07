@@ -8,13 +8,13 @@ class SetPublic extends Action
 {
 	public function do(string $albumID, array $values): bool
 	{
-		if ($this->albumFactory->is_smart($albumID)) {
+		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
 			Logs::error(__METHOD__, __LINE__, 'Not applicable to smart albums.');
 
 			return false;
 		}
 
-		$album = $this->albumFactory->make($albumID);
+		$album = $this->albumFactory->findOrFail($albumID);
 
 		// Convert values
 		$album->full_photo = ($values['full_photo'] === '1' ? 1 : 0);
@@ -43,8 +43,8 @@ class SetPublic extends Action
 		}
 
 		// Reset permissions for photos
-		if ($album->public == 1) {
-			$album->photos()->update(['public' => '0']);
+		if ($album->public) {
+			$album->photos()->update(['public' => 0]);
 		}
 
 		return true;

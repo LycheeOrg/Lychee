@@ -34,7 +34,7 @@ class Fullpage extends Component
 			$this->mode = 'albums';
 		} else {
 			$this->mode = 'album';
-			$this->album = $albumFactory->make($albumId);
+			$this->album = $albumFactory->findOrFail($albumId);
 
 			if ($photoId != null) {
 				$this->mode = 'photo';

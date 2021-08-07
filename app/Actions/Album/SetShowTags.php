@@ -14,7 +14,7 @@ class SetShowTags extends Setter
 
 	public function do(string $albumID, ?string $value): bool
 	{
-		$album = $this->albumFactory->make($albumID);
+		$album = $this->albumFactory->findOrFail($albumID);
 
 		if (!$album->is_tag_album()) {
 			Logs::error(__METHOD__, __LINE__, 'Could not change show tags on non tag album');

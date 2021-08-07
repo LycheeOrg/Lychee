@@ -2,37 +2,28 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\Album\Extensions\LocationData;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Collection;
 
 class PositionData
 {
-	use LocationData;
-
 	/**
 	 * Given a list of albums, generate an array to be returned.
 	 *
-	 * @param Collection[Album] $albums
-	 *
-	 * @return array
+	 * @return Collection
 	 */
-	public function do()
+	public function do(): Collection
 	{
 		// caching to avoid further request
 		Configs::get();
+		$publicAlbumsId = resolve(PublicIds::class)->getPublicAlbumsId();
 
-		// Initialize return var
-		$return = [];
-
-		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
-
-		$query = Photo::with('album')->whereIn('album_id', $albumIDs);
-
-		$full_photo = Configs::get_value('full_photo', '1') == '1';
-		$return['photos'] = $this->photosLocationData($query, $full_photo);
-
-		return $return;
+		return Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+			->whereNotNull('latitude')
+			->whereNotNull('longitude')
+			->whereIn('album_id', $publicAlbumsId)
+			->get();
 	}
 }

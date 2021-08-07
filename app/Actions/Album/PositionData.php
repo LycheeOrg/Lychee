@@ -2,28 +2,29 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\Album\Extensions\LocationData;
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Contracts\BaseAlbum;
+use App\Models\Album;
 
 class PositionData extends Action
 {
-	use LocationData;
-
-	public function get(string $albumID, array $data)
+	public function get(string $albumID, array $data): array
 	{
-		$album = $this->albumFactory->make($albumID);
+		/** @var BaseAlbum $album */
+		$album = $this->albumFactory->findOrFail($albumID);
 
-		if ($album->smart) {
-			$album->setAlbumIDs(resolve(PublicIds::class)->getPublicAlbumsId());
-			$photos_sql = $album->get_photos();
-		} elseif ($data['includeSubAlbums']) {
-			$photos_sql = $album->get_all_photos();
+		if ($album instanceof Album && $data['includeSubAlbums']) {
+			$photoRelation = $album->all_photos();
 		} else {
-			$photos_sql = $album->get_photos();
+			$photoRelation = $album->photos();
 		}
 
-		$return['photos'] = $this->photosLocationData($photos_sql);
-		$return['id'] = strval($album->id);
+		$return['id'] = $album->id;
+		$return['photos'] = $photoRelation
+			->with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+			->whereNotNull('latitude')
+			->whereNotNull('longitude')
+			->get()
+			->toArray();
 
 		return $return;
 	}

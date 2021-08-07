@@ -2,16 +2,17 @@
 
 namespace App\Actions\Albums\Extensions;
 
+use App\Contracts\BaseAlbum;
 use App\Facades\AccessControl;
-use App\Models\Album;
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Support\Facades\DB;
 
 class PublicIds
 {
 	private ?BaseCollection $forbidden_list = null;
-	private ?Album $parent = null;
+	private ?BaseAlbum $parent = null;
 
 	public function __construct()
 	{
@@ -19,38 +20,56 @@ class PublicIds
 	}
 
 	/*------------------------------------------------------------------------------- */
+
 	/**
 	 * Queries.
 	 */
+	public function publicViewable(Builder $query): Builder
+	{
+		if (AccessControl::is_admin()) {
+			return $query;
+		}
+
+		if (AccessControl::is_logged_in()) {
+			$id = AccessControl::id();
+
+			return $query->where(fn ($query) => $query->where('owner_id', '=', $id)
+				->orWhereIn('id', DB::table('user_album')->select('album_id')->where('user_id', '=', $id))
+				->orWhere(fn ($q) => $q->where('public', '=', '1')->where('viewable', '=', '1')));
+		}
+
+		// or PUBLIC AND VIEWABLE (not hidden)
+		return $query->where('public', '=', '1')->where('viewable', '=', '1');
+	}
 
 	/**
 	 * Build a query that removes all non public albums
 	 * or public albums which are hidden
 	 * or public albums with a password.
 	 *
-	 * @param Builder $query
+	 * @param BaseBuilder $query
 	 *
-	 * @return Builder
+	 * @return BaseBuilder
 	 */
-	private function notPublicNotViewable(Builder $query): Builder
+	private function notPublicNotViewable(BaseBuilder $query): BaseBuilder
 	{
 		return $query
 			// remove NOT public
 			->where('base_albums.public', '=', false)
 			// or PUBLIC BUT NOT VIEWABLE (hidden)
-			->orWhere(fn (Builder $q) => $q
+			->orWhere(fn (BaseBuilder $q) => $q
 				->where('base_albums.public', '=', true)
 				->where('base_albums.viewable', '=', false)
 			)
 			// or PUBLIC BUT PASSWORD LOCKED
-			->orWhere(fn (Builder $q) => $q
+			->orWhere(fn (BaseBuilder $q) => $q
 				->where('base_albums.public', '=', true)
 				->where('base_albums.password', '<>', '')
 				->whereNotNull('base_albums.password')
 			);
 	}
 
-	private function init(): Builder
+	private function init(): BaseBuilder
 	{
 		// unlocked albums
 		$query = DB::table('base_albums')
@@ -81,14 +100,15 @@ class PublicIds
 		}
 
 		if (AccessControl::is_logged_in()) {
-			$shared_ids = DB::table('user_album')->select('album_id')
+			$shared_ids = DB::table('user_base_album')
+				->select('base_album_id')
 				->where('user_id', '=', AccessControl::id())
-				->pluck('album_id');
+				->pluck('base_album_id');
 
 			return $this->init()
 				->where('base_albums.owner_id', '<>', AccessControl::id())
 				// shared are accessible
-				->whereNotIn('id', $shared_ids)
+				->whereNotIn('base_albums.id', $shared_ids)
 				// remove NOT public
 				->where(fn ($q) => $this->notPublicNotViewable($q))
 				->get();
@@ -105,7 +125,7 @@ class PublicIds
 	/**
 	 * Initializers.
 	 */
-	private function initNotAccessible(?Album $parent = null): BaseCollection
+	private function initNotAccessible(?BaseAlbum $parent = null): BaseCollection
 	{
 		$this->parent = $parent;
 
@@ -149,7 +169,10 @@ class PublicIds
 	{
 		$id_not_accessible = $this->getNotAccessible();
 
-		return DB::table('albums')->select('id')->whereNotIn('id', $id_not_accessible)->pluck('id');
+		return DB::table('albums')
+			->select('id')
+			->whereNotIn('id', $id_not_accessible)
+			->pluck('id');
 	}
 
 	/**
@@ -175,7 +198,7 @@ class PublicIds
 	/**
 	 * Setter.
 	 */
-	public function setAlbum(Album $album): void
+	public function setAlbum(BaseAlbum $album): void
 	{
 		if ($this->parent === $album) {
 			return;

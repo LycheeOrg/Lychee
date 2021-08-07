@@ -5,12 +5,10 @@ namespace App\Providers;
 use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
-use App\Assets\Helpers;
-use App\Assets\SizeVariantLegacyNamingStrategy;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Factories\AlbumFactory;
 use App\Factories\LangFactory;
-use App\Factories\SmartFactory;
 use App\Image;
 use App\Image\ImageHandler;
 use App\Image\SizeVariantDefaultFactory;
@@ -22,6 +20,8 @@ use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SessionFunctions;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
+use App\Relations\Helpers;
+use App\Relations\SizeVariantLegacyNamingStrategy;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
@@ -42,7 +42,7 @@ class AppServiceProvider extends ServiceProvider
 		LycheeVersion::class => LycheeVersion::class,
 		CheckUpdate::class => CheckUpdate::class,
 		ApplyUpdate::class => ApplyUpdate::class,
-		SmartFactory::class => SmartFactory::class,
+		AlbumFactory::class => AlbumFactory::class,
 	];
 
 	/**

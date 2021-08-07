@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-use App\Assets\HasManyBidirectionally;
 use App\Casts\MustNotSetCast;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\SizeVariantObserver;
+use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;

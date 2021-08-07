@@ -3,23 +3,38 @@
 namespace App\SmartAlbums;
 
 use App\Models\Configs;
-use App\Models\Photo;
+use App\Relations\HasManyPhotosBySmartCondition;
 use Illuminate\Database\Eloquent\Builder;
 
-class StarredAlbum extends SmartAlbum
+class StarredAlbum extends BaseSmartAlbum
 {
-	public $id = 'starred';
+	private static ?self $instance = null;
+	const ID = 'starred';
+	const TITLE = 'Starred';
 
-	public function __construct()
+	protected function __construct()
 	{
-		parent::__construct();
-
-		$this->title = 'starred';
-		$this->public = Configs::get_value('public_starred', '0') === '1';
+		parent::__construct(
+			self::ID,
+			self::TITLE,
+			Configs::get_value('public_starred', '0') === '1'
+		);
 	}
 
-	public function get_photos(): Builder
+	public static function getInstance(): self
 	{
-		return Photo::stars()->where(fn ($q) => $this->filter($q));
+		if (!self::$instance) {
+			self::$instance = new self();
+		}
+
+		return self::$instance;
+	}
+
+	public function photos(): HasManyPhotosBySmartCondition
+	{
+		return new HasManyPhotosBySmartCondition(
+			$this,
+			fn (Builder $q) => $q->where('star', '=', true)
+		);
 	}
 }

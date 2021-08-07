@@ -18,7 +18,7 @@ class Move extends Action
 		// $albumID = 0 is root
 		// ! check type
 		if ($albumID != 0) {
-			$album_master = $this->albumFactory->make($albumID);
+			$album_master = $this->albumFactory->findOrFail($albumID);
 
 			if ($album_master->is_smart()) {
 				Logs::error(__METHOD__, __LINE__, 'Move is not possible on smart albums');

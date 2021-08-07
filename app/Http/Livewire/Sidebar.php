@@ -76,10 +76,10 @@ class Sidebar extends Component
 
 		$share = new \stdClass();
 		$share->title = Lang::get('ALBUM_SHARING');
-		$_public = $this->album->is_public() ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
+		$_public = $this->album->public ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
 		$_hidden = $this->album->viewable == '0' ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO'); // TODO : double check;
-		$_downloadable = $this->album->is_downloadable() ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
-		$_share_button_visible = $this->album->is_share_button_visible() ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
+		$_downloadable = $this->album->downloadable ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
+		$_share_button_visible = $this->album->share_button_visible ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
 		$_password = $this->album->password != '' ? Lang::get('ALBUM_SHR_YES') : Lang::get('ALBUM_SHR_NO');
 		$share->content = [
 			['head' => Lang::get('ALBUM_PUBLIC'), 'value' => $_public],
@@ -95,7 +95,7 @@ class Sidebar extends Component
 		$license = new \stdClass();
 		$license->title = Lang::get('ALBUM_REUSE');
 		$license->content = [
-			['head' => Lang::get('ALBUM_LICENSE'), 'value' => $this->album->get_license()],
+			['head' => Lang::get('ALBUM_LICENSE'), 'value' => $this->album->license],
 		];
 
 		$this->data = [$basic, $album, $license];

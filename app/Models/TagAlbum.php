@@ -3,18 +3,17 @@
 namespace App\Models;
 
 use App\Contracts\BaseModelAlbum;
-use App\Facades\AccessControl;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\Extensions\Thumb;
+use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Illuminate\Database\Query\Builder;
 
 /**
  * Class TagAlbum.
  *
- * @property string showtags
+ * @property string show_tags
  */
 class TagAlbum extends Model implements BaseModelAlbum
 {
@@ -29,6 +28,23 @@ class TagAlbum extends Model implements BaseModelAlbum
 	public $incrementing = false;
 
 	/**
+	 * @var string[] The list of attributes which exist as columns of the DB
+	 *               relation but shall not be serialized to JSON
+	 */
+	protected $hidden = [
+		'base_class', // don't serialize base class as a relation, the attributes of the base class are flatly merged into the JSON result
+	];
+
+	/**
+	 * @var string[] The list of "virtual" attributes which do not exist as
+	 *               columns of the DB relation but which shall be appended to
+	 *               JSON from accessors
+	 */
+	protected $appends = [
+		'thumb',
+	];
+
+	/**
 	 * Returns the relationship between this model and the implementation
 	 * of the "parent" class.
 	 *
@@ -37,43 +53,34 @@ class TagAlbum extends Model implements BaseModelAlbum
 	public function base_class(): MorphOne
 	{
 		return $this->morphOne(
-			BaseAlbumImpl::class,
-			BaseAlbumImpl::INHERITANCE_RELATION_NAME,
-			BaseAlbumImpl::INHERITANCE_DISCRIMINATOR_COL_NAME,
-			BaseAlbumImpl::INHERITANCE_ID_COL_NAME,
-			BaseAlbumImpl::INHERITANCE_ID_COL_NAME
+			BaseModelAlbumImpl::class,
+			BaseModelAlbumImpl::INHERITANCE_RELATION_NAME,
+			BaseModelAlbumImpl::INHERITANCE_DISCRIMINATOR_COL_NAME,
+			BaseModelAlbumImpl::INHERITANCE_ID_COL_NAME,
+			BaseModelAlbumImpl::INHERITANCE_ID_COL_NAME
 		);
 	}
 
-	public function getPhotosAttribute(): Collection
+	public function photos(): HasManyPhotosByTag
 	{
-		$sql = Photo::query();
-
-		$tags = explode(',', $this->showtags);
-		foreach ($tags as $tag) {
-			$sql = $sql->where('tags', 'like', '%' . trim($tag) . '%');
-		}
-
-		return $sql->where(fn ($q) => $this->filter($q))->get();
+		return new HasManyPhotosByTag($this);
 	}
 
-	protected function filter(Builder $query): Builder
+	protected function getThumbAttribute(): ?Thumb
 	{
-		if (AccessControl::is_admin()) {
-			return $query;
-		}
+		// Note, `photos()` already applies a "security filter" and
+		// only returns photos which are accessible by the current
+		// user
+		return Thumb::createFromPhotoRelation(
+			$this->photos(), $this->sorting_col, $this->sorting_order
+		);
+	}
 
-		if (AccessControl::is_logged_in()) {
-			$query = $query->where('owner_id', '=', AccessControl::id())
-				->orWhereIn('album_id', $this->albumIds);
-		} else {
-			$query = $query->whereIn('album_id', $this->albumIds);
-		}
+	public function toArray(): array
+	{
+		$result = parent::toArray();
+		$result['tag_album'] = true;
 
-		if (Configs::get_value('public_photos_hidden', '1') === '0') {
-			$query = $query->orWhere('public', '=', 1);
-		}
-
-		return $query;
+		return array_merge($result, $this->base_class->toArray());
 	}
 }
