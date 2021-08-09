@@ -29,7 +29,7 @@ class Move extends Action
 			$albumID = null;
 		}
 
-		$albums = Album::whereIn('id', $albumIDs)->get();
+		$albums = Album::query()->whereIn('id', $albumIDs)->get();
 		$no_error = true;
 
 		foreach ($albums as $album) {
@@ -39,9 +39,9 @@ class Move extends Action
 		// Tree should be updated by itself here.
 
 		if ($no_error && $album_master !== null) {
-			// updat owner
+			// update owner
 			$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
-			$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
+			$album_master->all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
 		}
 
 		return $no_error;

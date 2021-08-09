@@ -9,7 +9,7 @@ use App\Models\Photo;
 
 class SetAlbum extends Setters
 {
-	private $albumFactory;
+	private AlbumFactory $albumFactory;
 
 	public function __construct(AlbumFactory $albumFactory)
 	{

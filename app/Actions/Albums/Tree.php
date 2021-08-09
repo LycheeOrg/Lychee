@@ -7,12 +7,10 @@ use App\Actions\Albums\Extensions\TopQuery;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
-use App\Models\Extensions\CustomSort;
 
 class Tree
 {
 	use TopQuery;
-	use CustomSort;
 
 	/**
 	 * @var string

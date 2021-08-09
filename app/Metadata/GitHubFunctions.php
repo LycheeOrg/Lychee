@@ -7,8 +7,8 @@ use App\Exceptions\NotMasterException;
 use App\Facades\Helpers;
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
-use Config;
 use Exception;
+use Illuminate\Support\Facades\Config;
 
 class GitHubFunctions
 {

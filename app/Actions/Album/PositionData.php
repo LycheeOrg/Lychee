@@ -2,14 +2,12 @@
 
 namespace App\Actions\Album;
 
-use App\Contracts\BaseAlbum;
 use App\Models\Album;
 
 class PositionData extends Action
 {
 	public function get(string $albumID, array $data): array
 	{
-		/** @var BaseAlbum $album */
 		$album = $this->albumFactory->findOrFail($albumID);
 
 		if ($album instanceof Album && $data['includeSubAlbums']) {

@@ -295,7 +295,6 @@ class GdHandler implements ImageHandlerInterface
 				Logs::error(__METHOD__, __LINE__, 'Type of photo "' . $mime . '" is not supported');
 
 				return false;
-				break;
 		}
 
 		if ($image === false) {

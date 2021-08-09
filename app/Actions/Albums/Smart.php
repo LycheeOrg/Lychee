@@ -6,14 +6,11 @@ use App\Actions\Albums\Extensions\PublicIds;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
-use App\Models\Extensions\CustomSort;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
 class Smart
 {
-	use CustomSort;
-
 	private AlbumFactory $albumFactory;
 	private string $sortingCol;
 	private string $sortingOrder;

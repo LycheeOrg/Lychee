@@ -8,10 +8,7 @@ use Illuminate\Support\Collection as BaseCollection;
 
 class Prepare
 {
-	/**
-	 * @var ReadAccessFunctions
-	 */
-	private $readAccessFunctions;
+	private ReadAccessFunctions $readAccessFunctions;
 
 	public function __construct(ReadAccessFunctions $readAccessFunctions)
 	{

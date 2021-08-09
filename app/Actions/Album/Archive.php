@@ -17,8 +17,8 @@ use ZipStream\ZipStream;
 
 class Archive extends Action
 {
-	private $badChars;
-	private $readAccessFunctions;
+	private array $badChars;
+	private ReadAccessFunctions $readAccessFunctions;
 
 	public function __construct(ReadAccessFunctions $readAccessFunctions)
 	{
@@ -101,7 +101,7 @@ class Archive extends Action
 	 * @param Collection $photos
 	 * @param BaseAlbum  $album
 	 */
-	private function compress_album($photos, $dir_name, &$dirs, $parent_dir, $album, $albumID, &$zip)
+	private function compress_album($photos, $dir_name, &$dirs, $parent_dir, BaseAlbum $album, $albumID, &$zip)
 	{
 		if (!$album->downloadable) {
 			if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {

@@ -26,12 +26,12 @@ class Merge extends Action
 		$no_error = true;
 		// Merge Photos
 		if (DB::table('photos')->whereIn('album_id', $albumIDs)->count() > 0) {
-			$no_error &= Photo::whereIn('album_id', $albumIDs)->update(['album_id' => $album_master->id]);
+			$no_error &= Photo::query()->whereIn('album_id', $albumIDs)->update(['album_id' => $album_master->id]);
 		}
 
 		// Merge Sub-albums
 		// ! we have to do it via Model::save() in order to not break the tree
-		$albums = Album::whereIn('parent_id', $albumIDs)->get();
+		$albums = Album::query()->whereIn('parent_id', $albumIDs)->get();
 		foreach ($albums as $album) {
 			$album->parent_id = $album_master->id;
 			$album->save();
@@ -39,16 +39,16 @@ class Merge extends Action
 
 		// now we delete the albums
 		// ! we have to do it via Model::delete() in order to not break the tree
-		$albums = Album::whereIn('id', $albumIDs)->get();
+		$albums = Album::query()->whereIn('id', $albumIDs)->get();
 		foreach ($albums as $album) {
 			$album->delete();
 		}
 
-		if (Album::isBroken()) {
+		if (Album::query()->isBroken()) {
 			$errors = Album::countErrors();
 			$sum = $errors['oddness'] + $errors['duplicates'] + $errors['wrong_parent'] + $errors['missing_parent'];
 			Logs::warning(__FUNCTION__, __LINE__, 'Tree is broken with ' . $sum . ' errors.');
-			Album::fixTree();
+			Album::query()->fixTree();
 			Logs::notice(__FUNCTION__, __LINE__, 'Tree has been fixed.');
 		}
 

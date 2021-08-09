@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Extensions\UTCBasedTimes;
-use Eloquent;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -30,7 +29,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Logs whereText($value)
  * @method static Builder|Logs whereType($value)
  * @method static Builder|Logs whereUpdatedAt($value)
- * @mixin Eloquent
  */
 class Logs extends Model
 {

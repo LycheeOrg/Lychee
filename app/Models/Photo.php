@@ -232,7 +232,7 @@ class Photo extends Model
 						$gcd = Helpers::gcd($a, $b);
 						$a = $a / $gcd;
 						$b = $b / $gcd;
-					} catch (Exception $e) {
+					} catch (\Exception $e) {
 						// this should not happen as we covered the case $b = 0;
 					}
 					if ($a == 1) {

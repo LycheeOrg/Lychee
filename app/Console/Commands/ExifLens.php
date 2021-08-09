@@ -57,7 +57,8 @@ class ExifLens extends Command
 		set_time_limit($timeout);
 
 		// we use lens because this is the one which is most likely to be empty.
-		$photos = Photo::where('lens', '=', '')
+		$photos = Photo::query()
+			->where('lens', '=', '')
 			->whereNotIn('type', $this->getValidVideoTypes())
 			->offset($from)
 			->limit($argument)

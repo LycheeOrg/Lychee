@@ -13,7 +13,7 @@ use App\Models\Album;
  */
 class Setter extends Action
 {
-	public $property;
+	public string $property;
 
 	public function do(string $albumID, ?string $value): bool
 	{

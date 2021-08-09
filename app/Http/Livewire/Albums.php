@@ -25,9 +25,9 @@ class Albums extends Component
 	/**
 	 * Initialize component.
 	 *
-	 * @param AlbumsFunctions $albumsFunctions
-	 * @param Top             $top
-	 * @param Smart           $smart
+	 * @param Prepare $prepareAlbum
+	 * @param Top     $top
+	 * @param Smart   $smart
 	 */
 	public function mount(
 		Prepare $prepareAlbum,

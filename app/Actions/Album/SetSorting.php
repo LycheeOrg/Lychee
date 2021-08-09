@@ -2,6 +2,7 @@
 
 namespace App\Actions\Album;
 
+use App\Contracts\BaseModelAlbum;
 use App\Models\Logs;
 
 class SetSorting extends Action
@@ -14,6 +15,7 @@ class SetSorting extends Action
 			return false;
 		}
 
+		/** @var BaseModelAlbum $album */
 		$album = $this->albumFactory->findOrFail($albumID);
 		$album->sorting_col = $value['typePhotos'] ?? '';
 		$album->sorting_order = $value['orderPhotos'] ?? 'ASC';

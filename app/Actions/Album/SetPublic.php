@@ -2,6 +2,7 @@
 
 namespace App\Actions\Album;
 
+use App\Contracts\BaseModelAlbum;
 use App\Models\Logs;
 
 class SetPublic extends Action
@@ -14,6 +15,7 @@ class SetPublic extends Action
 			return false;
 		}
 
+		/** @var BaseModelAlbum $album */
 		$album = $this->albumFactory->findOrFail($albumID);
 
 		// Convert values

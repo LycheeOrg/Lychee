@@ -3,7 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\Configs;
-use App\Models\Extensions\SizeVariant;
+use App\Models\SizeVariant;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;

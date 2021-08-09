@@ -80,7 +80,7 @@ class PhotosAddedNotification extends Command
 					try {
 						Mail::to($user->email)->send(new PhotosAdded($photos));
 						$user->notifications()->delete();
-					} catch (Exception $e) {
+					} catch (\Exception $e) {
 						Logs::error(__METHOD__, __LINE__, 'Failed to send email notification for ' . $user->username);
 					}
 				}

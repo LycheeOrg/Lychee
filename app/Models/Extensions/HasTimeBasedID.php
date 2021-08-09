@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpMultipleClassDeclarationsInspection */
+
 namespace App\Models\Extensions;
 
 use App\Models\Configs;

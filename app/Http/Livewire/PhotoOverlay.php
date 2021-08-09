@@ -2,9 +2,9 @@
 
 namespace App\Http\Livewire;
 
+use App\Facades\Lang;
 use App\Models\Configs;
 use Illuminate\Support\Str;
-use Lang;
 use Livewire\Component;
 
 class PhotoOverlay extends Component

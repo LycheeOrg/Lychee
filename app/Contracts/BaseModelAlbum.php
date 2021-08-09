@@ -32,4 +32,12 @@ use Illuminate\Support\Carbon;
  */
 interface BaseModelAlbum extends BaseAlbum
 {
+	/**
+	 * Save the model to the database.
+	 *
+	 * @param array $options
+	 *
+	 * @return bool
+	 */
+	public function save(array $options = []);
 }

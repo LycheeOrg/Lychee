@@ -163,8 +163,6 @@ class Exec
 	 * @param string $path
 	 * @param int    $albumID
 	 * @param array  $ignore_list
-	 *
-	 * @throws ImagickException
 	 */
 	public function do(
 		string $path,
