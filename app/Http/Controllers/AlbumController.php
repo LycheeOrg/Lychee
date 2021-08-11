@@ -27,6 +27,7 @@ use App\Http\Requests\AlbumRequests\AlbumIDsRequest;
 use App\Models\Logs;
 use App\Response;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -223,7 +224,7 @@ class AlbumController extends Controller
 	 *
 	 * @return \Illuminate\Http\Response
 	 */
-	public function delete(AlbumIDsRequest $request, Delete $delete, AlbumFactory $albumFactory): \Illuminate\Http\Response
+	public function delete(AlbumIDsRequest $request, Delete $delete, AlbumFactory $albumFactory): IlluminateResponse
 	{
 		$delete->do(explode(',', $request['albumIDs']), $albumFactory);
 
@@ -236,16 +237,17 @@ class AlbumController extends Controller
 	 * @param AlbumIDsRequest $request
 	 * @param Merge           $merge
 	 *
-	 * @return string
+	 * @return IlluminateResponse
 	 */
-	public function merge(AlbumIDsRequest $request, Merge $merge)
+	public function merge(AlbumIDsRequest $request, Merge $merge): IlluminateResponse
 	{
 		// Convert to array
 		$albumIDs = explode(',', $request['albumIDs']);
 		// Get first albumID
-		$albumID = array_shift($albumIDs);
+		$targetAlbumID = array_shift($albumIDs);
+		$merge->do($targetAlbumID, $albumIDs);
 
-		return $merge->do($albumID, $albumIDs) ? 'true' : 'false';
+		return response()->noContent();
 	}
 
 	/**
@@ -254,17 +256,17 @@ class AlbumController extends Controller
 	 * @param AlbumIDsRequest $request
 	 * @param Move            $move
 	 *
-	 * @return string
+	 * @return IlluminateResponse
 	 */
-	public function move(AlbumIDsRequest $request, Move $move)
+	public function move(AlbumIDsRequest $request, Move $move): IlluminateResponse
 	{
 		// Convert to array
 		$albumIDs = explode(',', $request['albumIDs']);
-
 		// Get first albumID
-		$albumID = array_shift($albumIDs);
+		$targetAlbumID = array_shift($albumIDs);
+		$move->do($targetAlbumID, $albumIDs);
 
-		return $move->do($albumID, $albumIDs) ? 'true' : 'false';
+		return response()->noContent();
 	}
 
 	/**

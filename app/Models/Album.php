@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 
 /**
  * Class Album.
@@ -165,7 +166,7 @@ class Album extends Model implements BaseModelAlbum
 		if ($this->cover_id) {
 			return Thumb::createFromPhoto($this->cover);
 		}
-		// Note, `all_photos` already applies a "security filter" and
+		// Note, `all_photos` already applies a security filter and
 		// only returns photos which are accessible by the current
 		// user
 		return Thumb::createFromPhotoRelation(
@@ -273,7 +274,7 @@ class Album extends Model implements BaseModelAlbum
 			$success &= $this->forwardDelete();
 		}
 
-		/** @var \Kalnoy\Nestedset\QueryBuilder $builder */
+		/** @var NSQueryBuilder $builder */
 		$builder = Album::query();
 		if (!$skipTreeFixing && $builder->isBroken()) {
 			$builder->fixTree();

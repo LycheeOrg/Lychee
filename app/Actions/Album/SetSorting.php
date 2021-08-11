@@ -2,21 +2,11 @@
 
 namespace App\Actions\Album;
 
-use App\Contracts\BaseModelAlbum;
-use App\Models\Logs;
-
 class SetSorting extends Action
 {
 	public function do(string $albumID, array $value): bool
 	{
-		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
-			Logs::error(__METHOD__, __LINE__, 'Not applicable to smart albums.');
-
-			return false;
-		}
-
-		/** @var BaseModelAlbum $album */
-		$album = $this->albumFactory->findOrFail($albumID);
+		$album = $this->albumFactory->findModelOrFail($albumID);
 		$album->sorting_col = $value['typePhotos'] ?? '';
 		$album->sorting_order = $value['orderPhotos'] ?? 'ASC';
 

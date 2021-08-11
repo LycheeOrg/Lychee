@@ -3,7 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Facades\AccessControl;
-use App\Models\Album;
+use App\Models\BaseModelAlbumImpl;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock extends Action
@@ -13,18 +13,19 @@ class Unlock extends Action
 	 * unlocked. If yes, unlock all albums with the same password.
 	 *
 	 * @param string $albumID
+	 * @param string $password
 	 *
-	 * @return array
+	 * @return bool
 	 */
-	public function do(?string $albumID, $password): bool
+	public function do(string $albumID, string $password): bool
 	{
 		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
 			return false;
 		}
 
-		$album = $this->albumFactory->findOrFail($albumID);
+		$album = $this->albumFactory->findModelOrFail($albumID);
 		if ($album->public) {
-			if ($album->password === '') {
+			if (empty($album->password)) {
 				return true;
 			}
 			if (AccessControl::has_visible_album($album->id)) {
@@ -51,8 +52,12 @@ class Unlock extends Action
 		// browse through the hierarchy.  This should be safe as the
 		// list of such albums is not exposed to the user and is
 		// considered as the last access check criteria.
-		$albums = Album::whereNotNull('password')->where('password', '!=', '')->get();
+		$albums = BaseModelAlbumImpl::query()
+			->whereNotNull('password')
+			->where('password', '!=', '')
+			->get();
 		$albumIDs = [];
+		/** @var BaseModelAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
 				$albumIDs[] = $album->id;

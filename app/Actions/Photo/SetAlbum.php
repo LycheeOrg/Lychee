@@ -3,37 +3,23 @@
 namespace App\Actions\Photo;
 
 use App\Actions\User\Notify;
-use App\Exceptions\JsonError;
-use App\Factories\AlbumFactory;
+use App\Models\Album;
 use App\Models\Photo;
 
 class SetAlbum extends Setters
 {
-	private AlbumFactory $albumFactory;
-
-	public function __construct(AlbumFactory $albumFactory)
+	public function __construct()
 	{
 		$this->property = 'album_id';
-		$this->albumFactory = $albumFactory;
 	}
 
-	public function execute(array $photoIDs, string $albumID)
+	public function execute(array $photoIDs, string $albumID): bool
 	{
-		$album = null;
-
-		if ($albumID != '0') {
-			$album = $this->albumFactory->findOrFail($albumID);
-
-			if ($album->is_tag_album()) {
-				throw new JsonError('Sorry, cannot Set to tag Album.');
-			}
-
-			if ($album->is_smart()) {
-				throw new JsonError('Sorry, cannot Set to smart Album.');
-			}
+		if ($albumID) {
+			Album::query()->findOrFail($albumID);
 
 			foreach ($photoIDs as $id) {
-				$photo = Photo::find($id);
+				$photo = Photo::query()->find($id);
 				$notify = new Notify();
 				$notify->do($photo, $albumID);
 			}

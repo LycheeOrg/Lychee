@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Albums\Prepare as AlbumsPrepare;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Models\Album;
@@ -47,12 +46,11 @@ class DemoController extends Controller
 		$albums_controller = resolve(AlbumsController::class);
 		$top = resolve(Top::class);
 		$smart = resolve(Smart::class);
-		$prepareAlbums = resolve(AlbumsPrepare::class);
 
 		$return_albums = [];
 		$return_albums['name'] = 'Albums::get';
 		$return_albums['type'] = 'string';
-		$return_albums['data'] = json_encode($albums_controller->get($top, $smart, $prepareAlbums));
+		$return_albums['data'] = json_encode($albums_controller->get($top, $smart));
 
 		$functions[] = $return_albums;
 

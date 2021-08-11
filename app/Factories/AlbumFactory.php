@@ -3,6 +3,7 @@
 namespace App\Factories;
 
 use App\Contracts\BaseAlbum;
+use App\Contracts\BaseModelAlbum;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -31,13 +32,29 @@ class AlbumFactory
 	 * @return BaseAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
-	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
 	public function findOrFail($albumId): BaseAlbum
 	{
 		if ($this->isBuiltInSmartAlbum($albumId)) {
 			return $this->createSmartAlbum($albumId);
 		}
+
+		return $this->findModelOrFail($albumId);
+	}
+
+	/**
+	 * Returns an existing model instance of an album with the given ID or
+	 * fails with an exception.
+	 *
+	 * @param int|string $albumId the ID of the requested album
+	 *
+	 * @return BaseModelAlbum the album for the ID
+	 *
+	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
+	 * @noinspection PhpIncompatibleReturnTypeInspection
+	 */
+	public function findModelOrFail($albumId): BaseModelAlbum
+	{
 		try {
 			return Album::query()->findOrFail($albumId);
 		} catch (ModelNotFoundException $e) {

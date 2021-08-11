@@ -52,7 +52,18 @@ class Smart
 		}
 
 		$tagAlbumQuery = resolve(PublicIds::class)->publicViewable(TagAlbum::query());
-		$tagAlbums = $this->customSort($tagAlbumQuery, $this->sortingCol, $this->sortingOrder);
+		if (in_array($this->sortingCol, ['title', 'description'])) {
+			$tagAlbums = $tagAlbumQuery
+				->orderBy('id', 'ASC')
+				->get()
+				->sortBy($this->sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $this->sortingOrder === 'DESC');
+		} else {
+			$tagAlbums = $tagAlbumQuery
+				->orderBy($this->sortingCol, $this->sortingOrder)
+				->orderBy('id', 'ASC')
+				->get();
+		}
+
 		/** @var TagAlbum $tagAlbum */
 		foreach ($tagAlbums as $tagAlbum) {
 			// TODO: Later albums with same title overwrite previous albums

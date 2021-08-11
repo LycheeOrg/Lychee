@@ -15,7 +15,10 @@ use App\Actions\User\Notify;
 use App\Exceptions\JsonError;
 use App\Factories\AlbumFactory;
 use App\Metadata\Extractor;
+use App\Models\Album;
 use App\Models\Photo;
+use App\SmartAlbums\PublicAlbum;
+use App\SmartAlbums\StarredAlbum;
 
 class Create
 {
@@ -200,15 +203,15 @@ class Create
 		if (!empty($albumID)) {
 			$album = $factory->findOrFail($albumID);
 
-			if ($album->is_tag_album()) {
-				throw new JsonError('Sorry, cannot upload to Tag Album.');
-			}
-
-			if (!$album->is_smart()) {
-				$this->strategyParameters->album = $album; // we save it so we don't have to query it again later
+			if ($album instanceof Album) {
+				// we save it so we don't have to query it again later
+				$this->strategyParameters->album = $album;
+			} elseif ($album instanceof PublicAlbum) {
+				$this->strategyParameters->public = true;
+			} elseif ($album instanceof StarredAlbum) {
+				$this->strategyParameters->star = true;
 			} else {
-				$this->strategyParameters->public = ($album->id == 'public');
-				$this->strategyParameters->star = ($album->id == 'starred');
+				throw new JsonError('This album does not support uploading');
 			}
 		}
 	}

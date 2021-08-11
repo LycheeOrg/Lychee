@@ -3,18 +3,32 @@
 namespace App\Actions\Search;
 
 use App\Actions\Albums\Extensions\PublicIds;
-use App\Facades\AccessControl;
 use App\Models\Album;
+use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as BaseCollection;
 
 class AlbumSearch
 {
-	public function query(array $terms)
+	protected BaseCollection $publicAlbumIDs;
+
+	public function __construct()
 	{
-		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
+		$this->publicAlbumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
+	}
 
-		$query = Album::with(['owner'])->whereIn('id', $albumIDs);
+	public function query(array $terms): Collection
+	{
+		$albums = $this->applySearchFilter($terms, TagAlbum::query())->get();
+		$albums->push($this->applySearchFilter($terms, Album::query())->get());
 
+		return $albums;
+	}
+
+	private function applySearchFilter(array $terms, Builder $query): Builder
+	{
+		$query->whereIn('id', $this->publicAlbumIDs);
 		foreach ($terms as $term) {
 			$query->where(
 				fn (Builder $query) => $query->where('title', 'like', '%' . $term . '%')
@@ -22,16 +36,6 @@ class AlbumSearch
 			);
 		}
 
-		$albums = $query->get();
-
-		return $albums->map(function ($album_model) {
-			$album = $album_model->toReturnArray();
-
-			if (AccessControl::is_logged_in()) {
-				$album['owner'] = $album_model->owner->username;
-			}
-
-			return $album;
-		});
+		return $query;
 	}
 }

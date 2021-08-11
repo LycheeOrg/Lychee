@@ -2,21 +2,11 @@
 
 namespace App\Actions\Album;
 
-use App\Contracts\BaseModelAlbum;
-use App\Models\Logs;
-
 class SetPublic extends Action
 {
 	public function do(string $albumID, array $values): bool
 	{
-		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
-			Logs::error(__METHOD__, __LINE__, 'Not applicable to smart albums.');
-
-			return false;
-		}
-
-		/** @var BaseModelAlbum $album */
-		$album = $this->albumFactory->findOrFail($albumID);
+		$album = $this->albumFactory->findModelOrFail($albumID);
 
 		// Convert values
 		$album->full_photo = ($values['full_photo'] === '1' ? 1 : 0);

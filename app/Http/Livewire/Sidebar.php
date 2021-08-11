@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use AccessControl;
 use App\Models\Album;
 use App\Models\Photo;
+use App\Models\TagAlbum;
 use DebugBar;
 use Lang;
 use Livewire\Component;
@@ -42,7 +43,7 @@ class Sidebar extends Component
 			['head' => Lang::get('ALBUM_DESCRIPTION'), 'value' => $this->album->description];
 		}
 
-		if ($this->album->is_tag_album()) {
+		if ($this->album instanceof TagAlbum) {
 			$basic->content[] = ['head' => Lang::get('ALBUM_SHOW_TAGS'), 'value' => $this->album->showtags];
 		}
 
