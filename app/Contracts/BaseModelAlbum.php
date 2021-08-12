@@ -5,6 +5,8 @@ namespace App\Contracts;
 use App\Models\BaseModelAlbumImpl;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Carbon;
 
 /**
@@ -18,12 +20,12 @@ use Illuminate\Support\Carbon;
  * @property Carbon             $created_at
  * @property Carbon             $updated_at
  * @property string|null        $description
- * @property bool               $viewable      // rename, on different layer of this application this attribute goes by different names: "hidden", "need_direct_link", etc.
  * @property bool               $nsfw
  * @property bool               $full_photo
  * @property int                $owner_id
  * @property User               $owner
  * @property Collection         $shared_with
+ * @property bool               $requires_link
  * @property string|null        $password
  * @property bool               $has_password
  * @property string|null        $sorting_col
@@ -40,4 +42,8 @@ interface BaseModelAlbum extends BaseAlbum
 	 * @return bool
 	 */
 	public function save(array $options = []);
+
+	public function owner(): BelongsTo;
+
+	public function shared_with(): BelongsToMany;
 }

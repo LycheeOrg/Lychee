@@ -2,10 +2,10 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\ReadAccessFunctions;
 use App\Contracts\BaseAlbum;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -18,13 +18,11 @@ use ZipStream\ZipStream;
 class Archive extends Action
 {
 	private array $badChars;
-	private ReadAccessFunctions $readAccessFunctions;
 
-	public function __construct(ReadAccessFunctions $readAccessFunctions)
+	public function __construct()
 	{
 		parent::__construct();
 		// Illicit chars
-		$this->readAccessFunctions = $readAccessFunctions;
 		$this->badChars = array_merge(array_map('chr', range(0, 31)), ['<', '>', ':', '"', '/', '\\', '|', '?', '*']);
 	}
 
@@ -196,14 +194,12 @@ class Archive extends Action
 			$zip->addFileFromPath($dir_name . '/' . $file, $fullPath);
 		} // foreach ($photos)
 
-		// Recursively compress subalbums
-		if (!$album->smart) {
+		// Recursively compress sub-albums
+		if ($album instanceof Album) {
 			$subDirs = [];
 			foreach ($album->children as $subAlbum) {
-				if ($this->readAccessFunctions->album($subAlbum, true) === 1) {
-					$subSql = Photo::where('album_id', '=', $subAlbum->id);
-					$this->compress_album($subSql, $subAlbum->title, $subDirs, $dir_name, $subAlbum, $subAlbum->id, $zip);
-				}
+				$subSql = Photo::query()->where('album_id', '=', $subAlbum->id);
+				$this->compress_album($subSql, $subAlbum->title, $subDirs, $dir_name, $subAlbum, $subAlbum->id, $zip);
 			}
 		}
 	}

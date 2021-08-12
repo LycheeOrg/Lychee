@@ -26,9 +26,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool noLogin()
  * @method static bool log_as_user(string $username, string $password, string $ip)
  * @method static bool log_as_admin(string $username, string $password, string $ip)
- * @method static bool has_visible_album($albumID)
- * @method static void add_visible_albums($albumIDs)
- * @method static array get_visible_albums()
  * @method static void logout()
  */
 class AccessControl extends Facade

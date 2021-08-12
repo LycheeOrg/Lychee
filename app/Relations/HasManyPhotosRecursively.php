@@ -2,7 +2,6 @@
 
 namespace App\Relations;
 
-use App\Actions\Albums\Extensions\PublicIds;
 use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,12 +37,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	 */
 	public function addEagerConstraints(array $albums): void
 	{
-		// apply security filter : Do not leak pictures which are not ours
-		// TODO: Figure out why we test for forbidden IDs here and use a negative test, while we use allowed IDs and a positive test everywhere else
-		$forbiddenID = resolve(PublicIds::class)->getNotAccessible();
-
-		$this->query
-			->whereNotIn('photos.album_id', $forbiddenID)
+		$this->applyVisibilityFilter($this->query)
 			->where(function (Builder $q1) use ($albums) {
 				/** @var Album $album */
 				foreach ($albums as $album) {

@@ -2,10 +2,10 @@
 
 namespace App\Actions\RSS;
 
-use App\Actions\Albums\Extensions\PublicIds;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Feed\FeedItem;
@@ -41,16 +41,19 @@ class Generate
 
 	public function do()
 	{
-		$publicIds = resolve(PublicIds::class)->getNotAccessible();
 		$rss_recent = intval(Configs::get_value('rss_recent_days', '7'));
 		$rss_max = Configs::get_Value('rss_max_items', '100');
 		$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 
-		$photos = Photo::with('album', 'owner')
+		$photos = Photo::with('album', 'owner', 'size_variants_raw', 'size_variants_raw.sym_links')
 			->where('created_at', '>=', $nowMinus)
-			// we select photo which album IS PUBLICALLY ACCESSIBLE
+			// we select photo which album IS PUBLICLY ACCESSIBLE
 			// or PHOTO MARKED AS PUBLIC.
-			->where(fn ($q) => $q->whereIn('album_id', $publicIds)->orWhere('public', '=', '1'))
+			// TODO: Replace this with a proper method of a class `PhotoAuthorizationProvider` in the same spirit like `AlbumAuthorizationProvider`
+			->where(fn (Builder $q) => $q
+				->where('public', '=', true)
+				->orWhereHas('album', fn (Builder $q2) => $q2->where('public', '=', true))
+			)
 			->limit($rss_max)
 			->get();
 

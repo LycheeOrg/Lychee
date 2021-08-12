@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Lib;
 
-use App\Actions\Albums\Extensions\PublicIds;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
@@ -22,7 +21,6 @@ class AlbumsUnitTest
 	public function __call($method, $arguments)
 	{
 		if (method_exists($this, $method)) {
-			resolve(PublicIds::class)->refresh();
 			// fwrite(STDERR, print_r($method, TRUE) . "\n");
 			return call_user_func_array([$this, $method], $arguments);
 		}

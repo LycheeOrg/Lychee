@@ -2,12 +2,20 @@
 
 namespace App\Actions\Album;
 
-use App\Facades\AccessControl;
+use App\Actions\AlbumAuthorisationProvider;
 use App\Models\BaseModelAlbumImpl;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock extends Action
 {
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+	}
+
 	/**
 	 * Provided a password and an album, check if the album can be
 	 * unlocked. If yes, unlock all albums with the same password.
@@ -25,13 +33,12 @@ class Unlock extends Action
 
 		$album = $this->albumFactory->findModelOrFail($albumID);
 		if ($album->public) {
-			if (empty($album->password)) {
+			if (
+				empty($album->password) ||
+				$this->albumAuthorisationProvider->isAlbumUnlocked($album->id)
+			) {
 				return true;
 			}
-			if (AccessControl::has_visible_album($album->id)) {
-				return true;
-			}
-			$password ??= '';
 			if (Hash::check($password, $album->password)) {
 				$this->propagate($password);
 
@@ -53,17 +60,14 @@ class Unlock extends Action
 		// list of such albums is not exposed to the user and is
 		// considered as the last access check criteria.
 		$albums = BaseModelAlbumImpl::query()
+			->where('public', '=', true)
 			->whereNotNull('password')
-			->where('password', '!=', '')
 			->get();
-		$albumIDs = [];
 		/** @var BaseModelAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
-				$albumIDs[] = $album->id;
+				$this->albumAuthorisationProvider->unlockAlbum($album->id);
 			}
 		}
-
-		AccessControl::add_visible_albums($albumIDs);
 	}
 }

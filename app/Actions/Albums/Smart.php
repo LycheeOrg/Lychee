@@ -2,7 +2,7 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\AlbumAuthorisationProvider;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
@@ -11,12 +11,14 @@ use App\SmartAlbums\BaseSmartAlbum;
 
 class Smart
 {
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
 	private AlbumFactory $albumFactory;
 	private string $sortingCol;
 	private string $sortingOrder;
 
-	public function __construct(AlbumFactory $albumFactory)
+	public function __construct(AlbumFactory $albumFactory, AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 		$this->albumFactory = $albumFactory;
 		$this->sortingCol = Configs::get_value('sorting_Albums_col');
 		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
@@ -35,7 +37,7 @@ class Smart
 	 * required to have unique titles.
 	 * Hence, an album which is serialized later overwrites an earlier album
 	 * with the same title.
-	 * TODO: Check with the front-end if using title as keys is actually required.
+	 * TODO: Check with the front-end whether using title as keys is actually required.
 	 *
 	 * @return array[BaseAlbum] the array of smart albums keyed by their title
 	 */
@@ -51,7 +53,8 @@ class Smart
 			}
 		}
 
-		$tagAlbumQuery = resolve(PublicIds::class)->publicViewable(TagAlbum::query());
+		$tagAlbumQuery = $this->albumAuthorisationProvider
+			->applyVisibilityFilter(TagAlbum::query());
 		if (in_array($this->sortingCol, ['title', 'description'])) {
 			$tagAlbums = $tagAlbumQuery
 				->orderBy('id', 'ASC')

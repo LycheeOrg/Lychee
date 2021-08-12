@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Contracts\BaseModelAlbum;
 use App\Facades\AccessControl;
-use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasTimeBasedID;
@@ -90,13 +89,13 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string|null    $description
  * @property bool           $public
  * @property bool           $full_photo
- * @property bool           $viewable             // rename, on different layer of this application this attribute goes by different names: "hidden", "need_direct_link", etc.
  * @property bool           $downloadable
  * @property bool           $share_button_visible
  * @property bool           $nsfw
  * @property int            $owner_id
  * @property User           $owner
  * @property Collection     $shared_with
+ * @property bool           $requires_link
  * @property string|null    $password
  * @property bool           $has_password
  * @property string|null    $sorting_col
@@ -127,7 +126,7 @@ class BaseModelAlbumImpl extends Model
 		'updated_at' => 'datetime',
 		'public' => 'boolean',
 		'full_photo' => 'boolean',
-		'viewable' => 'boolean',
+		'requires_link' => 'boolean',
 		'downloadable' => 'boolean',
 		'share_button_visible' => 'boolean',
 		'nsfw' => 'boolean',

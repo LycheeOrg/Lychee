@@ -2,20 +2,19 @@
 
 namespace App\Actions\Search;
 
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\AlbumAuthorisationProvider;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Collection as BaseCollection;
 
 class AlbumSearch
 {
-	protected BaseCollection $publicAlbumIDs;
+	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
 
 	public function __construct()
 	{
-		$this->publicAlbumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
+		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 	}
 
 	public function query(array $terms): Collection
@@ -28,10 +27,11 @@ class AlbumSearch
 
 	private function applySearchFilter(array $terms, Builder $query): Builder
 	{
-		$query->whereIn('id', $this->publicAlbumIDs);
+		$this->albumAuthorisationProvider->applyVisibilityFilter($query);
 		foreach ($terms as $term) {
 			$query->where(
-				fn (Builder $query) => $query->where('title', 'like', '%' . $term . '%')
+				fn (Builder $query) => $query
+					->where('title', 'like', '%' . $term . '%')
 					->orWhere('description', 'like', '%' . $term . '%')
 			);
 		}

@@ -11,7 +11,7 @@ class SetPublic extends Action
 		// Convert values
 		$album->full_photo = ($values['full_photo'] === '1' ? 1 : 0);
 		$album->public = ($values['public'] === '1' ? 1 : 0);
-		$album->viewable = ($values['visible'] === '1' ? 1 : 0);
+		$album->requires_link = ($values['requires_link'] === '1' ? 1 : 0);
 		$album->nsfw = ($values['nsfw'] === '1' ? 1 : 0);
 		$album->downloadable = ($values['downloadable'] === '1' ? 1 : 0);
 		$album->share_button_visible = ($values['share_button_visible'] === '1' ? 1 : 0);

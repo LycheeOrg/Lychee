@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\BaseAlbum;
 use App\Contracts\BaseModelAlbum;
 use App\Facades\AccessControl;
@@ -14,10 +14,16 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 
 abstract class HasManyPhotos extends Relation
 {
+	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
 	protected BaseAlbum $owningAlbum;
 
 	public function __construct(BaseAlbum $owningAlbum)
 	{
+		// Sic! We must initialize attributes of this class before we call
+		// the parent constructor.
+		// The parent constructor calls `addConstraints` and thus our own
+		// attributes must be initialized by then
+		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 		$this->owningAlbum = $owningAlbum;
 		// This is a hack.
 		// The abstract class
@@ -66,28 +72,50 @@ abstract class HasManyPhotos extends Relation
 	}
 
 	/**
-	 * TODO: Figure out, why this method is not used by {@link HasManyPhotosRecursively::addEagerConstraints()}.
+	 * Restricts an album query to _visible_ photos.
+	 *
+	 * A photo is called _visible_ if the current user is allowed to see the
+	 * photo.
+	 * A photo is _visible_ if any of the following conditions hold
+	 * (OR-clause):
+	 *
+	 *  - the user is the admin
+	 *  - the user is the owner of the photo
+	 *  - the photo is part of an album which the user is allowed to access
+	 *  - the photo is unsorted (not part of any album) and the user is granted the right to upload photos
+	 *  - the photo is public and public photos are not excluded from search results
+	 *
+	 * TODO: Move this method into a `PhotoAuthorizationProvider` in the same spirit as `AlbumAuthorizationProvider`.
+	 *
+	 * TODO: This method is a duplicate of {@link \App\Actions\Search\PhotoSearch::applyVisibilityFilter()}.
 	 *
 	 * @param Builder $query
+	 *
+	 * @return Builder
 	 */
-	protected function applySecurityFilter(Builder $query): void
+	protected function applyVisibilityFilter(Builder $query): Builder
 	{
 		if (AccessControl::is_admin()) {
-			return;
+			return $query;
 		}
 
-		$publicAlbumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
+		$userID = AccessControl::id();
 
-		if (AccessControl::is_logged_in()) {
-			$query->where('owner_id', '=', AccessControl::id())
-				->orWhereIn('album_id', $publicAlbumIDs);
-		} else {
-			$query->whereIn('album_id', $publicAlbumIDs);
-		}
-
-		if (Configs::get_value('public_photos_hidden', '1') === '0') {
-			$query->orWhere('public', '=', 1);
-		}
+		// We must wrap everything into an outer query to avoid any undesired
+		// effects in case that the original query already contains an
+		// "OR"-clause.
+		return $query->where(
+			function (Builder $query2) use ($userID) {
+				$query2->where('owner_id', '=', $userID);
+				$query2->orWhereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
+				if (AccessControl::can_upload()) {
+					$query2->orWhereNull('album_id');
+				}
+				if (Configs::get_value('public_photos_hidden', '1') === '0') {
+					$query2->orWhere('public', '=', true);
+				}
+			}
+		);
 	}
 
 	/**

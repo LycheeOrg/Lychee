@@ -8,6 +8,8 @@ use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 /**
@@ -74,6 +76,27 @@ class TagAlbum extends Model implements BaseModelAlbum
 		return Thumb::createFromPhotoRelation(
 			$this->photos(), $this->sorting_col, $this->sorting_order
 		);
+	}
+
+	/**
+	 * Returns the relationship between an album and its owner.
+	 *
+	 * @return BelongsTo
+	 */
+	public function owner(): BelongsTo
+	{
+		return $this->base_class->owner();
+	}
+
+	/**
+	 * Returns the relationship between an album and all users which whom
+	 * this album is shared.
+	 *
+	 * @return BelongsToMany
+	 */
+	public function shared_with(): BelongsToMany
+	{
+		return $this->base_class->shared_with();
 	}
 
 	public function toArray(): array

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\AlbumAuthorisationProvider;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
@@ -12,6 +12,17 @@ use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Top
 {
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private string $sortingCol;
+	private string $sortingOrder;
+
+	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
+	{
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->sortingCol = Configs::get_value('sorting_Albums_col');
+		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
+	}
+
 	/**
 	 * Returns an array of top-level albums (but not tag albums) visible
 	 * to the current user.
@@ -35,25 +46,21 @@ class Top
 			'albums' => new BaseCollection(),
 			'shared_albums' => new BaseCollection(),
 		];
-		$publicIDs = resolve(PublicIds::class);
-		$sortingCol = Configs::get_value('sorting_Albums_col');
-		$sortingOrder = Configs::get_value('sorting_Albums_order');
 
 		/** @var NsQueryBuilder $query */
-		$query = Album::query();
-		// TODO: Figure out, why `Tree` removes IDs which are returned by `getNotAccessible`, but here we use `publicViewable`
-		$query = $publicIDs->publicViewable($query->whereIsRoot());
+		$query = $this->albumAuthorisationProvider
+			->applyVisibilityFilter(Album::query()->whereIsRoot());
 
-		if (in_array($sortingCol, ['title', 'description'])) {
+		if (in_array($this->sortingCol, ['title', 'description'])) {
 			/** @var NsCollection $albums */
 			$albums = $query
 				->orderBy('id', 'ASC')
 				->get()
-				->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC');
+				->sortBy($this->sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $this->sortingOrder === 'DESC');
 		} else {
 			/** @var NsCollection $albums */
 			$albums = $query
-				->orderBy($sortingCol, $sortingOrder)
+				->orderBy($this->sortingCol, $this->sortingOrder)
 				->orderBy('id', 'ASC')
 				->get();
 		}

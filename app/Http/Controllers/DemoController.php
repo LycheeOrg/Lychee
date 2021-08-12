@@ -66,7 +66,7 @@ class DemoController extends Controller
 		/** @var Collection $albums */
 		$albums = Album::query()
 			->where('public', '=', true)
-			->where('viewable', '=', true)
+			->where('requires_link', '=', false)
 			->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {

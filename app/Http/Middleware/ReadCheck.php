@@ -1,24 +1,21 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Middleware;
 
+use App\Actions\AlbumAuthorisationProvider;
 use App\Actions\ReadAccessFunctions;
-use App\Models\Logs;
 use App\Models\Photo;
 use Closure;
 use Illuminate\Http\Request;
 
 class ReadCheck
 {
-	/**
-	 * @var ReadAccessFunctions
-	 */
-	private $readAccessFunctions;
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private ReadAccessFunctions $readAccessFunctions;
 
-	public function __construct(ReadAccessFunctions $readAccessFunctions)
+	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider, ReadAccessFunctions $readAccessFunctions)
 	{
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 		$this->readAccessFunctions = $readAccessFunctions;
 	}
 
@@ -40,17 +37,8 @@ class ReadCheck
 			$albumIDs[] = $request['albumID'];
 		}
 		foreach ($albumIDs as $albumID) {
-			$sess = $this->readAccessFunctions->albumID($albumID);
-			if ($sess === 0) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-				return response('false');
-			}
-			if ($sess === 2) {
-				return response('"Warning: Album private!"');
-			}
-			if ($sess === 3) {
-				return response('"Warning: Wrong password!"');
+			if (!$this->albumAuthorisationProvider->isAccessible($albumID)) {
+				return response('false', 403);
 			}
 		}
 
@@ -65,7 +53,7 @@ class ReadCheck
 			/** @var Photo $photo */
 			$photo = Photo::with('album')->findOrFail($photoID);
 			if ($this->readAccessFunctions->photo($photo) === false) {
-				return response('', 401);
+				return response('', 403);
 			}
 		}
 

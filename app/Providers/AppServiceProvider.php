@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\AlbumAuthorisationProvider;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Assets\Helpers;
@@ -35,7 +35,6 @@ class AppServiceProvider extends ServiceProvider
 		LangFactory::class => LangFactory::class,
 		Lang::class => Lang::class,
 		Helpers::class => Helpers::class,
-		PublicIds::class => PublicIds::class,
 		SessionFunctions::class => SessionFunctions::class,
 		GitRequest::class => GitRequest::class,
 		GitHubFunctions::class => GitHubFunctions::class,
@@ -43,6 +42,7 @@ class AppServiceProvider extends ServiceProvider
 		CheckUpdate::class => CheckUpdate::class,
 		ApplyUpdate::class => ApplyUpdate::class,
 		AlbumFactory::class => AlbumFactory::class,
+		AlbumAuthorisationProvider::class => AlbumAuthorisationProvider::class,
 	];
 
 	/**

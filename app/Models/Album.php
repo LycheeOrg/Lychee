@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
@@ -209,6 +210,27 @@ class Album extends Model implements BaseModelAlbum
 	public function parent(): BelongsTo
 	{
 		return $this->belongsTo(self::class, 'parent_id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between an album and its owner.
+	 *
+	 * @return BelongsTo
+	 */
+	public function owner(): BelongsTo
+	{
+		return $this->base_class->owner();
+	}
+
+	/**
+	 * Returns the relationship between an album and all users which whom
+	 * this album is shared.
+	 *
+	 * @return BelongsToMany
+	 */
+	public function shared_with(): BelongsToMany
+	{
+		return $this->base_class->shared_with();
 	}
 
 	protected function getLicenseAttribute(string $value): string

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Lib;
 
-use App\Actions\Albums\Extensions\PublicIds;
 use App\Actions\Photo\Archive;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\TestResponse;
@@ -24,7 +23,6 @@ class PhotosUnitTest
 	public function __call($method, $arguments)
 	{
 		if (method_exists($this, $method)) {
-			resolve(PublicIds::class)->refresh();
 			// fwrite(STDERR, print_r(__CLASS__ . '\\' . $method, TRUE) . "\n");
 			return call_user_func_array([$this, $method], $arguments);
 		}

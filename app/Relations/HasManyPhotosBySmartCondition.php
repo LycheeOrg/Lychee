@@ -3,7 +3,6 @@
 namespace App\Relations;
 
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class HasManyPhotosBySmartCondition extends HasManyPhotos
@@ -21,10 +20,8 @@ class HasManyPhotosBySmartCondition extends HasManyPhotos
 	 */
 	public function addConstraints()
 	{
-		// apply security filter : Do not leak pictures which are not ours
-		$this->query->where(fn (Builder $q) => $this->applySecurityFilter($q));
-		// apply smart condition
-		$this->query->where($this->smartCondition);
+		$this->applyVisibilityFilter($this->query)
+			->where($this->smartCondition);
 	}
 
 	/**

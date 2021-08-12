@@ -2,7 +2,7 @@
 
 namespace App\Relations;
 
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\AlbumAuthorisationProvider;
 use App\Models\Album;
 use App\Models\Configs;
 use Illuminate\Database\Eloquent\Collection;
@@ -10,8 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class HasManyChildAlbums extends HasManyBidirectionally
 {
+	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+
 	public function __construct(Album $owningAlbum)
 	{
+		// Sic! We must initialize attributes of this class before we call
+		// the parent constructor.
+		// The parent constructor calls `addConstraints` and thus our own
+		// attributes must be initialized by then
+		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 		parent::__construct(
 			$owningAlbum->newQuery(),
 			$owningAlbum,
@@ -24,15 +31,13 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	public function addConstraints()
 	{
 		parent::addConstraints();
-		$publicAlbumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
-		$this->query->whereIn('id', $publicAlbumIDs);
+		$this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
 	}
 
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
-		$publicAlbumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
-		$this->query->whereIn('id', $publicAlbumIDs);
+		$this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
 	}
 
 	public function getResults()

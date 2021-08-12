@@ -36,21 +36,19 @@ class HasManyPhotosByTag extends HasManyPhotos
 	 */
 	public function addEagerConstraints(array $albums): void
 	{
-		// apply security filter : Do not leak pictures which are not ours
-		$this->query->where(fn (Builder $q) => $this->applySecurityFilter($q));
-
-		$this->query->where(function (Builder $q1) use ($albums) {
-			/** @var TagAlbum $album */
-			foreach ($albums as $album) {
-				$q1->orWhere(function (Builder $q2) use ($album) {
-					// Filter for requested tags
-					$tags = explode(',', $album->show_tags);
-					foreach ($tags as $tag) {
-						$q2->where('tags', 'like', '%' . trim($tag) . '%');
-					}
-				});
-			}
-		});
+		$this->applyVisibilityFilter($this->query)
+			->where(function (Builder $q1) use ($albums) {
+				/** @var TagAlbum $album */
+				foreach ($albums as $album) {
+					$q1->orWhere(function (Builder $q2) use ($album) {
+						// Filter for requested tags
+						$tags = explode(',', $album->show_tags);
+						foreach ($tags as $tag) {
+							$q2->where('tags', 'like', '%' . trim($tag) . '%');
+						}
+					});
+				}
+			});
 	}
 
 	/**
