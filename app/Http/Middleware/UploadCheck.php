@@ -36,7 +36,7 @@ class UploadCheck
 	{
 		// not logged!
 		if (!AccessControl::is_logged_in()) {
-			return response('false');
+			return response('', 401);
 		}
 
 		// is admin
@@ -48,23 +48,23 @@ class UploadCheck
 
 		// is not admin and does not have upload rights
 		if (!$user->upload) {
-			return response('false');
+			return response('', 403);
 		}
 
 		$ret = $this->album_check($request, $user->id);
 		if ($ret === false) {
-			return response('false');
+			return response('', 403);
 		}
 
 		$ret = $this->photo_check($request, $user->id);
 		if ($ret === false) {
-			return response('false');
+			return response('', 403);
 		}
 
 		// Only used for /api/Sharing::Delete
 		$ret = $this->share_check($request, $user->id);
 		if ($ret === false) {
-			return response('false');
+			return response('', 403);
 		}
 
 		return $next($request);
@@ -72,6 +72,8 @@ class UploadCheck
 
 	/**
 	 * Take of checking if a user can actually modify that Album.
+	 *
+	 * TODO: Migrate this to {@link \App\Actions\AlbumAuthorisationProvider}
 	 *
 	 * @param $request
 	 * @param int $user_id
@@ -104,7 +106,7 @@ class UploadCheck
 		$albumIDs = array_unique($albumIDs);
 
 		if (count($albumIDs) > 0) {
-			$count = Album::whereIn('id', $albumIDs)->where('owner_id', '=', $user_id)->count();
+			$count = Album::query()->whereIn('id', $albumIDs)->where('owner_id', '=', $user_id)->count();
 			if ($count !== count($albumIDs)) {
 				Logs::error(__METHOD__, __LINE__, 'Albums not found or ownership mismatch!');
 
@@ -117,6 +119,8 @@ class UploadCheck
 
 	/**
 	 * Check if the user is authorized to do anything to that picture.
+	 *
+	 * TODO: Migrate this to {@link \App\Actions\PhotoAuthorisationProvider}
 	 *
 	 * @param Request $request
 	 * @param int     $user_id
@@ -137,7 +141,7 @@ class UploadCheck
 		$photoIDs = array_unique($photoIDs);
 
 		if (count($photoIDs) > 0) {
-			$count = Photo::whereIn('id', $photoIDs)->where('owner_id', '=', $user_id)->count();
+			$count = Photo::query()->whereIn('id', $photoIDs)->where('owner_id', '=', $user_id)->count();
 			if ($count !== count($photoIDs)) {
 				Logs::error(__METHOD__, __LINE__, 'Photos not found or ownership mismatch!');
 
@@ -159,9 +163,9 @@ class UploadCheck
 		if ($request->has('ShareIDs')) {
 			$shareIDs = $request['ShareIDs'];
 
-			$albums = Album::whereIn('id', function (Builder $query) use ($shareIDs) {
+			$albums = Album::query()->whereIn('id', function (Builder $query) use ($shareIDs) {
 				$query->select('album_id')
-					->from('user_album')
+					->from('user_base_album')
 					->whereIn('id', explode(',', $shareIDs));
 			})->select('owner_id')->get();
 

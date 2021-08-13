@@ -19,12 +19,12 @@ class AlbumTest extends TestCase
 	public function testAddNotLogged()
 	{
 		$albums_tests = new AlbumsUnitTest($this);
-		$albums_tests->add('0', 'test_album', 'false');
+		$albums_tests->add('0', 'test_album', 401);
 
-		$albums_tests->get('recent', '', 'true');
-		$albums_tests->get('starred', '', 'true');
-		$albums_tests->get('public', '', 'true');
-		$albums_tests->get('unsorted', '', 'true');
+		$albums_tests->get('recent', '', 403);
+		$albums_tests->get('starred', '', 403);
+		$albums_tests->get('public', '', 403);
+		$albums_tests->get('unsorted', '', 403);
 	}
 
 	public function testAddReadLogged()
@@ -34,18 +34,18 @@ class AlbumTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		$albums_tests->get('recent', '', 'true');
-		$albums_tests->get('starred', '', 'true');
-		$albums_tests->get('public', '', 'true');
-		$albums_tests->get('unsorted', '', 'true');
+		$albums_tests->get('recent', '');
+		$albums_tests->get('starred', '');
+		$albums_tests->get('public', '');
+		$albums_tests->get('unsorted', '');
 
-		$albumID = $albums_tests->add('0', 'test_album', 'true');
-		$albumID2 = $albums_tests->add('0', 'test_album2', 'true');
-		$albumID3 = $albums_tests->add('0', 'test_album3', 'true');
-		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test', 'true');
+		$albumID = $albums_tests->add('0', 'test_album');
+		$albumID2 = $albums_tests->add('0', 'test_album2');
+		$albumID3 = $albums_tests->add('0', 'test_album3');
+		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test');
 
-		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag', 'true');
-		$response = $albums_tests->get($albumTagID1, '', 'true');
+		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag');
+		$response = $albums_tests->get($albumTagID1, '');
 		$response->assertSee('test, coolnewtag, secondnewtag');
 
 		$albums_tests->see_in_albums($albumID);
@@ -61,9 +61,9 @@ class AlbumTest extends TestCase
 		/*
 		 * try to get a non existing album
 		 */
-		$albums_tests->get('999', '', 'false');
+		$albums_tests->get('999', '', 401);
 
-		$response = $albums_tests->get($albumID, '', 'true');
+		$response = $albums_tests->get($albumID, '');
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => '',
@@ -80,7 +80,7 @@ class AlbumTest extends TestCase
 		/**
 		 * Let's see if the info changed.
 		 */
-		$response = $albums_tests->get($albumID, '', 'true');
+		$response = $albums_tests->get($albumID, '');
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => 'new description',
@@ -98,7 +98,7 @@ class AlbumTest extends TestCase
 		 * Let's try to get the info of the album we just created.
 		 */
 		$albums_tests->get_public($albumID, '', 'false');
-		$albums_tests->get($albumID, '', '"Warning: Album private!"');
+		$albums_tests->get($albumID, '', 403);
 
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.

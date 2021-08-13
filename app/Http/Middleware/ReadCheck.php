@@ -38,7 +38,7 @@ class ReadCheck
 		}
 		foreach ($albumIDs as $albumID) {
 			if (!$this->albumAuthorisationProvider->isAccessible($albumID)) {
-				return response('false', 403);
+				return response('', 403);
 			}
 		}
 

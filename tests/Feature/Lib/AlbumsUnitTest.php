@@ -7,41 +7,29 @@ use Tests\TestCase;
 
 class AlbumsUnitTest
 {
-	private $testCase = null;
+	private TestCase $testCase;
 
-	public function __construct(TestCase &$testCase)
+	public function __construct(TestCase $testCase)
 	{
 		$this->testCase = $testCase;
-	}
-
-	// This is called before any subsequent function call.
-	// We use it to "refresh" the PublicIds as it is a singleton,
-	// it stays the same through all the test once initialized.
-	// This is not the desired behaviour as it is re-initialized per connection.
-	public function __call($method, $arguments)
-	{
-		if (method_exists($this, $method)) {
-			// fwrite(STDERR, print_r($method, TRUE) . "\n");
-			return call_user_func_array([$this, $method], $arguments);
-		}
 	}
 
 	/**
 	 * Add an album.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $parent_id
-	 * @param string   $title
-	 * @param array    $tags
-	 * @param string   $result
+	 * @param string      $parent_id
+	 * @param string      $title
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 *
 	 * @return string
 	 */
-	protected function add(
+	public function add(
 		string $parent_id,
 		string $title,
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): string {
 		$params = [
 			'title' => $title,
 			'parent_id' => $parent_id,
@@ -51,11 +39,9 @@ class AlbumsUnitTest
 		if ($response->getStatusCode() === 500) {
 			$response->dump();
 		}
-		$response->assertStatus(200);
-		if ($result == 'true') {
-			$response->assertDontSee('false');
-		} else {
-			$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee);
 		}
 
 		return $response->getContent();
@@ -64,15 +50,13 @@ class AlbumsUnitTest
 	/**
 	 * Add an album.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $parent_id
-	 * @param string   $title
-	 * @param array    $tags
-	 * @param string   $result
+	 * @param string $title
+	 * @param string $tags
+	 * @param string $result
 	 *
 	 * @return string
 	 */
-	protected function addByTags(
+	public function addByTags(
 		string $title,
 		string $tags,
 		string $result = 'true'
@@ -96,13 +80,13 @@ class AlbumsUnitTest
 	/**
 	 * Move albums.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $ids
-	 * @param string   $result
+	 * @param string $ids
+	 * @param string $to
+	 * @param string $result
 	 *
 	 * @return string
 	 */
-	protected function move(
+	public function move(
 		string $ids,
 		string $to,
 		string $result = 'true'
@@ -128,7 +112,7 @@ class AlbumsUnitTest
 	 *
 	 * @return TestResponse
 	 */
-	protected function get_all(
+	public function get_all(
 		string $result = 'true'
 	) {
 		$response = $this->testCase->json('POST', '/api/Albums::get', []);
@@ -143,18 +127,19 @@ class AlbumsUnitTest
 	/**
 	 * Get album by ID.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $password
-	 * @param string   $result
+	 * @param string      $id
+	 * @param string      $password
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
-	protected function get(
+	public function get(
 		string $id,
 		string $password = '',
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
 		$response = $this->testCase->json(
 			'POST',
 			'/api/Album::get',
@@ -163,21 +148,20 @@ class AlbumsUnitTest
 		if ($response->getStatusCode() === 500) {
 			$response->dump();
 		}
-		$response->assertOk();
-		if ($result != 'true') {
-			$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee);
 		}
 
 		return $response;
 	}
 
 	/**
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $password
-	 * @param string   $result
+	 * @param string $id
+	 * @param string $password
+	 * @param string $result
 	 */
-	protected function get_public(
+	public function get_public(
 		string $id,
 		string $password = '',
 		string $result = 'true'
@@ -195,10 +179,9 @@ class AlbumsUnitTest
 	 * Check if we see id in the list of all visible albums
 	 * /!\ results varies depending if logged in or not !
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function see_in_albums(string $id)
+	public function see_in_albums(string $id)
 	{
 		$response = $this->testCase->json('POST', '/api/Albums::get', []);
 		$response->assertOk();
@@ -209,10 +192,9 @@ class AlbumsUnitTest
 	 * Check if we don't see id in the list of all visible albums
 	 * /!\ results varies depending if logged in or not !
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function dont_see_in_albums(string $id)
+	public function dont_see_in_albums(string $id)
 	{
 		$response = $this->testCase->json('POST', '/api/Albums::get', []);
 		$response->assertOk();
@@ -222,12 +204,11 @@ class AlbumsUnitTest
 	/**
 	 * Change title.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $title
-	 * @param string   $result
+	 * @param string $id
+	 * @param string $title
+	 * @param string $result
 	 */
-	protected function set_title(
+	public function set_title(
 		string $id,
 		string $title,
 		string $result = 'true'
@@ -244,12 +225,11 @@ class AlbumsUnitTest
 	/**
 	 * Change description.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $description
-	 * @param string   $result
+	 * @param string $id
+	 * @param string $description
+	 * @param string $result
 	 */
-	protected function set_description(
+	public function set_description(
 		string $id,
 		string $description,
 		string $result = 'true'
@@ -266,12 +246,11 @@ class AlbumsUnitTest
 	/**
 	 * Set the licence.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $license
-	 * @param string   $result
+	 * @param string $id
+	 * @param string $license
+	 * @param string $result
 	 */
-	protected function set_license(
+	public function set_license(
 		string $id,
 		string $license,
 		string $result = 'true'
@@ -287,13 +266,12 @@ class AlbumsUnitTest
 	/**
 	 * Set sorting.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $typePhotos
-	 * @param string   $orderPhotos
-	 * @param string   $result
+	 * @param string $id
+	 * @param string $typePhotos
+	 * @param string $orderPhotos
+	 * @param string $result
 	 */
-	protected function set_sorting(
+	public function set_sorting(
 		string $id,
 		string $typePhotos,
 		string $orderPhotos,
@@ -309,16 +287,16 @@ class AlbumsUnitTest
 	}
 
 	/**
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param int      $full_photo
-	 * @param int      $public
-	 * @param int      $visible
-	 * @param int      $downloadable
-	 * @param int      $share_button_visible
-	 * @param string   $result
+	 * @param string $id
+	 * @param int    $full_photo
+	 * @param int    $public
+	 * @param int    $visible
+	 * @param int    $nsfw
+	 * @param int    $downloadable
+	 * @param int    $share_button_visible
+	 * @param string $result
 	 */
-	protected function set_public(
+	public function set_public(
 		string $id,
 		int $full_photo = 1,
 		int $public = 1,
@@ -342,12 +320,11 @@ class AlbumsUnitTest
 	}
 
 	/**
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param array    $tags
-	 * @param string   $result
+	 * @param string $id
+	 * @param string $tags
+	 * @param string $result
 	 */
-	protected function set_tags(
+	public function set_tags(
 		string $id,
 		string $tags,
 		string $result = 'true'
@@ -363,11 +340,10 @@ class AlbumsUnitTest
 	/**
 	 * We only test for a code 200.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $kind
+	 * @param string $id
+	 * @param string $kind
 	 */
-	protected function download(
+	public function download(
 		string $id,
 		string $kind = 'FULL'
 	) {
@@ -380,11 +356,10 @@ class AlbumsUnitTest
 	/**
 	 * Delete.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
+	 * @param string $id
+	 * @param string $result
 	 */
-	protected function delete(
+	public function delete(
 		string $id,
 		string $result = 'true'
 	) {
@@ -396,7 +371,7 @@ class AlbumsUnitTest
 	/**
 	 * Test position data (Albums).
 	 */
-	protected function AlbumsGetPositionDataFull(
+	public function AlbumsGetPositionDataFull(
 		int $code = 200,
 		string $result = 'true'
 	) {
@@ -412,7 +387,7 @@ class AlbumsUnitTest
 	/**
 	 * Test position data (Album).
 	 */
-	protected function AlbumGetPositionDataFull(
+	public function AlbumGetPositionDataFull(
 		string $id,
 		int $code = 200,
 		string $result = 'true'
