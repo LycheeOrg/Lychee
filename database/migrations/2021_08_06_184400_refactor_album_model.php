@@ -28,6 +28,13 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedBigInteger('base_album_id')->nullable(false)->change();
 		});
 
+		Schema::table('base_albums', function (Blueprint $table) {
+			$table->renameColumn('viewable', 'requires_link');
+			$table->boolean('requires_link')->default(false)->change();
+		});
+
+		DB::update('UPDATE base_albums SET requires_link = NOT requires_link');
+
 		Schema::create('albums', function (Blueprint $table) {
 			$table->unsignedBigInteger('id')->nullable(false)->primary();
 			$table->unsignedBigInteger('parent_id')->nullable()->default(null);
@@ -153,6 +160,13 @@ class RefactorAlbumModel extends Migration
 					'showtags' => $tagAlbum->show_tags,
 				]);
 		}
+
+		DB::update('UPDATE base_albums SET requires_link = NOT requires_link');
+
+		Schema::table('base_albums', function (Blueprint $table) {
+			$table->boolean('requires_link')->default(true)->change();
+			$table->renameColumn('requires_link', 'viewable');
+		});
 
 		Schema::table('photos', function (Blueprint $table) {
 			$table->dropForeign(['album_id']);
