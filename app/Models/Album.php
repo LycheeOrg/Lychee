@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 
 /**
@@ -127,17 +126,11 @@ class Album extends Model implements BaseModelAlbum
 	 * Returns the relationship between this model and the implementation
 	 * of the "parent" class.
 	 *
-	 * @return MorphOne
+	 * @return BelongsTo
 	 */
-	public function base_class(): MorphOne
+	public function base_class(): BelongsTo
 	{
-		return $this->morphOne(
-			BaseModelAlbumImpl::class,
-			BaseModelAlbumImpl::INHERITANCE_RELATION_NAME,
-			BaseModelAlbumImpl::INHERITANCE_DISCRIMINATOR_COL_NAME,
-			BaseModelAlbumImpl::INHERITANCE_ID_COL_NAME,
-			BaseModelAlbumImpl::INHERITANCE_ID_COL_NAME
-		);
+		return $this->belongsTo(BaseModelAlbumImpl::class, 'id', 'id');
 	}
 
 	/**

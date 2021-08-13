@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
  * Class BaseAlbumImpl.
@@ -80,26 +79,25 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * but this class is not a proper parent class (it just provides an
  * implementation of it) and we need this class to be instantiable.
  *
- * @property int            $id
- * @property Carbon         $created_at
- * @property Carbon         $updated_at
- * @property string         $album_type
- * @property BaseModelAlbum $child_class
- * @property string         $title
- * @property string|null    $description
- * @property bool           $public
- * @property bool           $full_photo
- * @property bool           $downloadable
- * @property bool           $share_button_visible
- * @property bool           $nsfw
- * @property int            $owner_id
- * @property User           $owner
- * @property Collection     $shared_with
- * @property bool           $requires_link
- * @property string|null    $password
- * @property bool           $has_password
- * @property string|null    $sorting_col
- * @property string|null    $sorting_order
+ * @property int         $id
+ * @property Carbon      $created_at
+ * @property Carbon      $updated_at
+ * @property string      $album_type
+ * @property string      $title
+ * @property string|null $description
+ * @property bool        $public
+ * @property bool        $full_photo
+ * @property bool        $downloadable
+ * @property bool        $share_button_visible
+ * @property bool        $nsfw
+ * @property int         $owner_id
+ * @property User        $owner
+ * @property Collection  $shared_with
+ * @property bool        $requires_link
+ * @property string|null $password
+ * @property bool        $has_password
+ * @property string|null $sorting_col
+ * @property string|null $sorting_order
  */
 class BaseModelAlbumImpl extends Model
 {
@@ -107,10 +105,6 @@ class BaseModelAlbumImpl extends Model
 	use HasTimeBasedID;
 	use UTCBasedTimes;
 	use HasBidirectionalRelationships;
-
-	const INHERITANCE_RELATION_NAME = 'child_class';
-	const INHERITANCE_DISCRIMINATOR_COL_NAME = 'album_type';
-	const INHERITANCE_ID_COL_NAME = 'id';
 
 	protected $table = 'base_albums';
 
@@ -136,11 +130,7 @@ class BaseModelAlbumImpl extends Model
 	 * @var string[] The list of attributes which exist as columns of the DB
 	 *               relation but shall not be serialized to JSON
 	 */
-	protected $hidden = [
-		'album_type',  // album_type is only used internally
-		'child_class', // don't serialize child class as a relation, the attributes of the child class are flatly merged into the JSON result
-		'password',
-	];
+	protected $hidden = ['password'];
 
 	/**
 	 * @var string[] The list of "virtual" attributes which do not exist as
@@ -179,22 +169,6 @@ class BaseModelAlbumImpl extends Model
 			'user_base_album',
 			'base_album_id',
 			'user_id'
-		);
-	}
-
-	/**
-	 * Returns the polymorphic relationship which refers to the child
-	 * class.
-	 *
-	 * @return MorphTo
-	 */
-	public function child_class(): MorphTo
-	{
-		return $this->morphTo(
-			self::INHERITANCE_RELATION_NAME,
-			self::INHERITANCE_DISCRIMINATOR_COL_NAME,
-			self::INHERITANCE_ID_COL_NAME,
-			self::INHERITANCE_ID_COL_NAME
 		);
 	}
 

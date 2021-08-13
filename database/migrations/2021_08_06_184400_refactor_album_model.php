@@ -21,9 +21,6 @@ class RefactorAlbumModel extends Migration
 		Schema::rename('albums', 'base_albums');
 		Schema::rename('user_album', 'user_base_album');
 
-		Schema::table('base_albums', function (Blueprint $table) {
-			$table->char('album_type', 20)->nullable(false)->index();
-		});
 		Schema::table('user_base_album', function (Blueprint $table) {
 			$table->renameColumn('album_id', 'base_album_id');
 		});
@@ -62,13 +59,6 @@ class RefactorAlbumModel extends Migration
 		Schema::table('user_base_album', function (Blueprint $table) {
 			$table->foreign('base_album_id')->references('id')->on('base_albums')->cascadeOnDelete();
 		});
-
-		DB::table('base_albums')
-			->where('smart', '=', false)
-			->update(['album_type' => 'App\Models\Album']);
-		DB::table('base_albums')
-			->where('smart', '=', true)
-			->update(['album_type' => 'App\Models\TagAlbum']);
 
 		$baseAlbums = DB::table('base_albums')
 			->select([
@@ -128,13 +118,6 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedBigInteger('_rgt')->nullable()->default(null);
 		});
 
-		DB::table('base_albums')
-			->where('album_type', '=', 'App\Models\Album')
-			->update(['smart' => false]);
-		DB::table('base_albums')
-			->where('album_type', '=', 'App\Models\TagAlbum')
-			->update(['smart' => true]);
-
 		$albums = DB::table('albums')
 			->select([
 				'id',
@@ -165,7 +148,10 @@ class RefactorAlbumModel extends Migration
 		foreach ($tagAlbums as $tagAlbum) {
 			DB::table('base_albums')
 				->where('id', '=', $tagAlbum->id)
-				->update(['showtags' => $tagAlbum->show_tags]);
+				->update([
+					'smart' => true,
+					'showtags' => $tagAlbum->show_tags,
+				]);
 		}
 
 		Schema::table('photos', function (Blueprint $table) {
