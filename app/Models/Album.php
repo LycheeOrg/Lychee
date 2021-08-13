@@ -93,11 +93,7 @@ class Album extends Model implements BaseModelAlbum
 	 *               columns of the DB relation but which shall be appended to
 	 *               JSON from accessors
 	 */
-	protected $appends = [
-		'thumb',
-		'min_taken_at',
-		'max_taken_at',
-	];
+	protected $appends = ['thumb'];
 
 	/**
 	 * The relationships that should always be eagerly loaded by default.
