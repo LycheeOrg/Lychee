@@ -82,18 +82,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int         $id
  * @property Carbon      $created_at
  * @property Carbon      $updated_at
- * @property string      $album_type
  * @property string      $title
  * @property string|null $description
+ * @property int         $owner_id
+ * @property User        $owner
  * @property bool        $public
  * @property bool        $full_photo
+ * @property bool        $requires_link
  * @property bool        $downloadable
  * @property bool        $share_button_visible
  * @property bool        $nsfw
- * @property int         $owner_id
- * @property User        $owner
  * @property Collection  $shared_with
- * @property bool        $requires_link
  * @property string|null $password
  * @property bool        $has_password
  * @property string|null $sorting_col
@@ -114,6 +113,35 @@ class BaseModelAlbumImpl extends Model
 	 * @var bool
 	 */
 	public $incrementing = false;
+
+	/**
+	 * The model's attributes.
+	 *
+	 * We must list all attributes explicitly here, otherwise the attributes
+	 * of a new model will accidentally be set on the child class.
+	 * The trait {@link \App\Models\Extensions\ForwardsToParentImplementation}
+	 * only works properly, if it knows which attributes belong to the parent
+	 * class and which attributes belong to the child class.
+	 *
+	 * @var array
+	 */
+	protected $attributes = [
+		'id' => null,
+		'created_at' => null,
+		'updated_at' => null,
+		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
+		'description' => null,
+		'owner_id' => 0,
+		'public' => false,
+		'full_photo' => true,
+		'requires_link' => false,
+		'downloadable' => false,
+		'share_button_visible' => false,
+		'nsfw' => false,
+		'password' => null,
+		'sorting_col' => null,
+		'sorting_order' => null,
+	];
 
 	protected $casts = [
 		'created_at' => 'datetime',

@@ -50,6 +50,26 @@ class Album extends Model implements BaseModelAlbum
 	 */
 	public $incrementing = false;
 
+	/**
+	 * The model's attributes.
+	 *
+	 * We must list all attributes explicitly here, otherwise the attributes
+	 * of a new model will accidentally be set on the parent class.
+	 * The trait {@link \App\Models\Extensions\ForwardsToParentImplementation}
+	 * only works properly, if it knows which attributes belong to the parent
+	 * class and which attributes belong to the child class.
+	 *
+	 * @var array
+	 */
+	protected $attributes = [
+		'id' => null,
+		'parent_id' => null,
+		'license' => 'none',
+		'cover_id' => null,
+		'_lft' => null,
+		'_rgt' => null,
+	];
+
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',

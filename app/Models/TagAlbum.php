@@ -29,6 +29,22 @@ class TagAlbum extends Model implements BaseModelAlbum
 	public $incrementing = false;
 
 	/**
+	 * The model's attributes.
+	 *
+	 * We must list all attributes explicitly here, otherwise the attributes
+	 * of a new model will accidentally be set on the parent class.
+	 * The trait {@link \App\Models\Extensions\ForwardsToParentImplementation}
+	 * only works properly, if it knows which attributes belong to the parent
+	 * class and which attributes belong to the child class.
+	 *
+	 * @var array
+	 */
+	protected $attributes = [
+		'id' => null,
+		'show_tags' => null,
+	];
+
+	/**
 	 * @var string[] The list of attributes which exist as columns of the DB
 	 *               relation but shall not be serialized to JSON
 	 */
