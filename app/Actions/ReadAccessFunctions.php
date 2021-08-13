@@ -28,7 +28,7 @@ class ReadAccessFunctions
 	{
 		return
 			AccessControl::is_current_user($photo->owner_id) ||
-			$photo->public === 1 ||
+			$photo->public ||
 			$this->albumAuthorisationProvider->isAccessible($photo->album_id);
 	}
 }

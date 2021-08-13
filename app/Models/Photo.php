@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string       $title
  * @property string|null  $description
  * @property string       $tags
- * @property int          $public
+ * @property bool         $public
  * @property int          $owner_id
  * @property string|null  $type
  * @property int          $filesize
@@ -101,6 +101,7 @@ class Photo extends Model
 		'owner_id' => 'integer',
 		'star' => 'boolean',
 		'filesize' => 'integer',
+		'public' => 'boolean',
 	];
 
 	/**
@@ -351,30 +352,6 @@ class Photo extends Model
 	}
 
 	/**
-	 * Accessor for the attribute {@see Photo::$public}.
-	 *
-	 * An photo is public if it is publicly visible on its own right or
-	 * because it is part of a public album.
-	 *
-	 * @param bool|null $value the value from the database passed in by
-	 *                         the Eloquent framework
-	 *
-	 * @return int the visibility of the photo:
-	 *             a) equals 0 if the photo is not publicly visible,
-	 *             b) equals 1 if the photo is publicly visible on its own right
-	 *             c) equals 2 if the photo is publicly visible because it is
-	 *             part of a public album
-	 */
-	protected function getPublicAttribute(?bool $value): int
-	{
-		if ($this->album_id != null && $this->album->public) {
-			return 2;
-		}
-
-		return intval($value);
-	}
-
-	/**
 	 * Accessor for the "virtual" attribute {@see Photo::$share_button_visible}.
 	 *
 	 * The share button is visible if the currently authenticated user is the
@@ -407,6 +384,19 @@ class Photo extends Model
 	public function toArray(): array
 	{
 		$result = parent::toArray();
+
+		// Modify the attribute `public`
+		// The current front-end implementation does not expect an boolean
+		// but a tri-state integer acc. to the following interpretation
+		//  - 0 => the photo is not publicly visible
+		//  - 1 => the photo is publicly visible on its own right
+		//  - 2 => the photo is publicly visible because its album is public
+		if ($this->album_id != null && $this->album->public) {
+			$result['public'] = 2;
+		} else {
+			$result['public'] = $result['public'] ? 1 : 0;
+		}
+
 		// Downgrades the accessible resolution of a photo
 		// The decision logic here is a merge of three formerly independent
 		// (and slightly different) approaches
