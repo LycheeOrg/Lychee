@@ -1,10 +1,8 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
@@ -34,10 +32,10 @@ class AlbumTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		$albums_tests->get('recent', '');
-		$albums_tests->get('starred', '');
-		$albums_tests->get('public', '');
-		$albums_tests->get('unsorted', '');
+		$albums_tests->get('recent');
+		$albums_tests->get('starred');
+		$albums_tests->get('public');
+		$albums_tests->get('unsorted');
 
 		$albumID = $albums_tests->add('0', 'test_album');
 		$albumID2 = $albums_tests->add('0', 'test_album2');
@@ -45,7 +43,7 @@ class AlbumTest extends TestCase
 		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test');
 
 		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag');
-		$response = $albums_tests->get($albumTagID1, '');
+		$response = $albums_tests->get($albumTagID1);
 		$response->assertSee('test, coolnewtag, secondnewtag');
 
 		$albums_tests->see_in_albums($albumID);
@@ -63,7 +61,7 @@ class AlbumTest extends TestCase
 		 */
 		$albums_tests->get('999', '', 401);
 
-		$response = $albums_tests->get($albumID, '');
+		$response = $albums_tests->get($albumID);
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => '',
@@ -80,7 +78,7 @@ class AlbumTest extends TestCase
 		/**
 		 * Let's see if the info changed.
 		 */
-		$response = $albums_tests->get($albumID, '');
+		$response = $albums_tests->get($albumID);
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => 'new description',
@@ -97,7 +95,7 @@ class AlbumTest extends TestCase
 		/*
 		 * Let's try to get the info of the album we just created.
 		 */
-		$albums_tests->get_public($albumID, '', 'false');
+		$albums_tests->get_public($albumID, '', 403);
 		$albums_tests->get($albumID, '', 403);
 
 		/*
@@ -125,8 +123,8 @@ class AlbumTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		$albums_tests->set_description('-1', 'new description', 'false');
-		$albums_tests->set_public('-1', 1, 1, 1, 0, 1, 1, 'false');
+		$albums_tests->set_description('-1', 'new description', 401);
+		$albums_tests->set_public('-1', 1, 1, 1, 0, 1, 1, 401);
 
 		$session_tests->logout($this);
 	}
