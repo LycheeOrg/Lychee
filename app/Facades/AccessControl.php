@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Facade;
  * @internal keep the list of documented method in sync with
  * {@link \App\ModelFunctions\SessionFunctions}
  *
- * @method static void log_as_id()
+ * @method static void log_as_id(int $userId)
  * @method static bool is_logged_in()
  * @method static bool is_admin()
  * @method static bool can_upload()
