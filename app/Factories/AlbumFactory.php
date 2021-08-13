@@ -116,8 +116,12 @@ class AlbumFactory
 		return array_key_exists($albumId, self::BUILTIN_SMARTS);
 	}
 
-	protected function createSmartAlbum(string $smartAlbumId): BaseSmartAlbum
+	public function createSmartAlbum(string $smartAlbumId): BaseSmartAlbum
 	{
+		if (!$this->isBuiltInSmartAlbum($smartAlbumId)) {
+			throw new \InvalidArgumentException('given ID does not identify a smart album');
+		}
+
 		return call_user_func([self::BUILTIN_SMARTS[$smartAlbumId], 'getInstance']);
 	}
 }

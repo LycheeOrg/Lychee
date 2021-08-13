@@ -8,10 +8,7 @@ use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseModelAlbumImpl;
-use App\Models\Configs;
 use App\Models\TagAlbum;
-use App\SmartAlbums\RecentAlbum;
-use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Session;
 
@@ -319,15 +316,14 @@ class AlbumAuthorisationProvider
 	 * Note, that the logic for visibility and/or accessibility of a smart
 	 * album is identical.
 	 *
-	 * @param string $albumID
+	 * @param string $smartAlbumID
 	 *
 	 * @return bool true, if the smart album is visible/accessible by the user
 	 */
-	private function isAuthorizedForSmartAlbum(string $albumID): bool
+	private function isAuthorizedForSmartAlbum(string $smartAlbumID): bool
 	{
 		return
 			(AccessControl::is_logged_in() && AccessControl::can_upload()) ||
-			($albumID === RecentAlbum::ID && Configs::get_value('public_recent', '0') === '1') ||
-			($albumID === StarredAlbum::ID && Configs::get_value('public_starred', '0') === '1');
+			$this->albumFactory->createSmartAlbum($smartAlbumID)->public;
 	}
 }
