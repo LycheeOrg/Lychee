@@ -6,6 +6,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
+use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 
 /**
@@ -22,6 +23,7 @@ use Illuminate\Database\Eloquent\JsonEncodingException;
 abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 {
 	use HasAttributes;
+	use HidesAttributes;
 	use HasSimpleRelationships;
 	use UTCBasedTimes {
 		UTCBasedTimes::serializeDate insteadof HasAttributes;
@@ -135,6 +137,18 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	public function getKey(): string
 	{
 		return $this->attributes['id'];
+	}
+
+	/**
+	 * Determine if the model uses timestamps.
+	 *
+	 * Always returns `false`.
+	 *
+	 * @return bool
+	 */
+	public function usesTimestamps(): bool
+	{
+		return false;
 	}
 
 	/**

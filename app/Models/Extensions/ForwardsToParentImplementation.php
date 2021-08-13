@@ -162,42 +162,22 @@ trait ForwardsToParentImplementation
 		return false;
 	}
 
-	public function getFillable(): array
-	{
-		return array_merge(parent::getFillable(), $this->base_class->getFillable());
-	}
-
 	/**
-	 * Determine if any of the given attributes were changed.
+	 * Determine if the model or any of the given attribute(s) have been modified.
 	 *
-	 * @param array             $changes
+	 * Inspired by {@link \Illuminate\Database\Eloquent\Concerns\HasAttributes::isDirty()}.
+	 *
 	 * @param array|string|null $attributes
 	 *
 	 * @return bool
 	 */
-	protected function hasChanges($changes, $attributes = null)
+	public function isDirty($attributes = null)
 	{
-		return parent::hasChanges($changes, $attributes) || $this->base_class->hasChanges($changes, $attributes);
-	}
+		$baseIsDirty = $this->relationLoaded('base_class') && $this->getRelation('base_class')->isDirty();
 
-	/**
-	 * Get the attributes that have been changed since the last sync.
-	 *
-	 * @return array
-	 */
-	public function getDirty()
-	{
-		return array_merge(parent::getDirty(), $this->base_class->getDirty());
-	}
-
-	/**
-	 * Get the attributes that were changed.
-	 *
-	 * @return array
-	 */
-	public function getChanges()
-	{
-		return array_merge(parent::getChanges(), $this->base_class->getChanges());
+		return $baseIsDirty || $this->hasChanges(
+			$this->getDirty(), is_array($attributes) ? $attributes : func_get_args()
+		);
 	}
 
 	/**
@@ -252,6 +232,23 @@ trait ForwardsToParentImplementation
 			return null;
 		}
 
+		// If the primary key is requested, we must use a short cut.
+		// If the primary key of the model ist not yet set as it might be the
+		// case for new models, the implementation otherwise would fall
+		// through until the end and try to forward the call to the base class
+		// However, asking for the primary key of the base class is
+		//  a) insane, because it should be identical to the primary key of
+		//     this class, and
+		//  b) does not work, because we cannot load the base class without
+		//     knowing the primary key.
+		if ($key == $this->getKeyName()) {
+			// Sic!
+			// Don't use `$this->getKey()` because this would call
+			// `getAttribute` again and we would end up in an infinite loop.
+			// Just get the attribute directly.
+			return $this->getAttributeValue($key);
+		}
+
 		// Avoid infinite loops, see below
 		if ($key == 'base_class') {
 			return $this->getRelationValue($key);
@@ -304,7 +301,7 @@ trait ForwardsToParentImplementation
 	 * Get the value of a relationship.
 	 *
 	 * This method is heavily inspired by
-	 * {@link \Illuminate\Database\Concerns\HasAttributes::getRelationValue()}.
+	 * {@link \Illuminate\Database\Eloquent\Concerns\HasAttributes::getRelationValue()}.
 	 *
 	 * @param string $key the name of the queried relation
 	 *
@@ -312,11 +309,11 @@ trait ForwardsToParentImplementation
 	 */
 	public function getRelationValue($key)
 	{
-		// If the key already exists in the relationships array, it just means the
+		// If the key already exists in the relationships array, this means the
 		// relationship has already been loaded, so we'll just return it out of
-		// here because there is no need to query within the relations twice.
+		// here because there is no need to query the relations twice.
 		if ($this->relationLoaded($key)) {
-			return $this->relations[$key];
+			return $this->getRelation($key);
 		}
 
 		// Avoid infinite loops
@@ -326,7 +323,34 @@ trait ForwardsToParentImplementation
 		// exists.
 		// Bailing out with an exception prevents the infinite loop.
 		if ($key == 'base_class') {
-			return $this->getRelationshipFromMethod($key);
+			// If this is a newly created model, then we cannot resolve the
+			// relation to the base class from the database, because no such
+			// entity exists.
+			// In particular, calling the relation requires that this instance
+			// of a model already has a valid primary key which does not exist
+			// for a freshly created model.
+			$primaryKey = $this->getKey();
+			if (!$this->exists) {
+				if ($primaryKey) {
+					throw new \LogicException('the primary key must not be set if the model does not exist');
+				}
+				$baseModel = $this->base_class()->getRelated()->newInstance();
+				$this->setRelation('base_class', $baseModel);
+
+				return $baseModel;
+			} else {
+				// This model exists, but the relation to the base class
+				// has not yet been loaded.
+				// Load it now.
+				if (!$primaryKey) {
+					throw new \LogicException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
+				}
+				if (!method_exists($this, 'base_class')) {
+					throw new \LogicException('the model "' . get_class($this) . '" does not provide a method "base_class()", cannot load base model');
+				}
+
+				return $this->getRelationshipFromMethod('base_class');
+			}
 		}
 
 		// If the "attribute" exists as a method on the model, we will just assume
@@ -398,7 +422,7 @@ trait ForwardsToParentImplementation
 		// If we have fall through until here, we first check if the parent
 		// class provides an attribute of that name and then set the attribute
 		// on the parent class.
-		// Only if the parent class does neither provide such an attribute,
+		// Only if the parent class does provide such an attribute neither,
 		// we write it to the child class.
 		/** @var BaseModelAlbumImpl $baseClass */
 		$baseClass = $this->base_class;
