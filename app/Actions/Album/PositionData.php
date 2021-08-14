@@ -8,7 +8,9 @@ class PositionData extends Action
 {
 	public function get(string $albumID, array $data): array
 	{
-		$album = $this->albumFactory->findOrFail($albumID);
+		// Avoid to load all photos and sub-albums (if applicable), because
+		// we are only interested in a particular subset of photos.
+		$album = $this->albumFactory->findOrFail($albumID, false);
 
 		if ($album instanceof Album && $data['includeSubAlbums']) {
 			$photoRelation = $album->all_photos();

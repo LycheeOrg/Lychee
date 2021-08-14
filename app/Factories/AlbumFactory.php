@@ -27,38 +27,52 @@ class AlbumFactory
 	 * Returns an existing instance of an album with the given ID or fails
 	 * with on exception.
 	 *
-	 * @param int|string $albumId the ID of the requested album
+	 * @param int|string $albumId       the ID of the requested album
+	 * @param bool       $withRelations indicates if the relations of an
+	 *                                  album (i.e. photos and sub-albums,
+	 *                                  if applicable) shall be loaded, too.
 	 *
 	 * @return BaseAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 */
-	public function findOrFail($albumId): BaseAlbum
+	public function findOrFail($albumId, bool $withRelations = true): BaseAlbum
 	{
 		if ($this->isBuiltInSmartAlbum($albumId)) {
-			return $this->createSmartAlbum($albumId);
+			return $this->createSmartAlbum($albumId, $withRelations);
 		}
 
-		return $this->findModelOrFail($albumId);
+		return $this->findModelOrFail($albumId, $withRelations);
 	}
 
 	/**
 	 * Returns an existing model instance of an album with the given ID or
 	 * fails with an exception.
 	 *
-	 * @param int|string $albumId the ID of the requested album
+	 * @param int|string $albumId       the ID of the requested album
+	 * @param bool       $withRelations indicates if the relations of an
+	 *                                  album (i.e. photos and sub-albums,
+	 *                                  if applicable) shall be loaded, too.
 	 *
 	 * @return BaseModelAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function findModelOrFail($albumId): BaseModelAlbum
+	public function findModelOrFail($albumId, bool $withRelations = true): BaseModelAlbum
 	{
 		try {
-			return Album::query()->findOrFail($albumId);
+			if ($withRelations) {
+				return Album::query()->with(['photos', 'children'])->findOrFail($albumId);
+			} else {
+				return Album::query()->findOrFail($albumId);
+			}
 		} catch (ModelNotFoundException $e) {
-			return TagAlbum::query()->findOrFail($albumId);
+			if ($withRelations) {
+				return TagAlbum::query()->with(['photos'])->findOrFail($albumId);
+			} else {
+				return TagAlbum::query()->findOrFail($albumId);
+			}
 		}
 	}
 
@@ -116,12 +130,20 @@ class AlbumFactory
 		return array_key_exists($albumId, self::BUILTIN_SMARTS);
 	}
 
-	public function createSmartAlbum(string $smartAlbumId): BaseSmartAlbum
+	public function createSmartAlbum(string $smartAlbumId, bool $withRelations = true): BaseSmartAlbum
 	{
 		if (!$this->isBuiltInSmartAlbum($smartAlbumId)) {
 			throw new \InvalidArgumentException('given ID does not identify a smart album');
 		}
 
-		return call_user_func([self::BUILTIN_SMARTS[$smartAlbumId], 'getInstance']);
+		/** @var BaseSmartAlbum $smartAlbum */
+		$smartAlbum = call_user_func([self::BUILTIN_SMARTS[$smartAlbumId], 'getInstance']);
+		if ($withRelations) {
+			// Just try to get the photos.
+			// This loads the relation from DB and caches it.
+			$ignore = $smartAlbum->photos;
+		}
+
+		return $smartAlbum;
 	}
 }

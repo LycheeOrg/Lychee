@@ -50,6 +50,7 @@ trait ForwardsToParentImplementation
 		$this->touches = array_diff($this->touches, ['base_class']);
 		$this->appends = array_diff($this->appends, ['base_class']);
 		$this->makeHidden('base_class');
+		$this->with[] = 'base_class';
 		$this->timestamps = false;
 		$this->incrementing = false;
 	}

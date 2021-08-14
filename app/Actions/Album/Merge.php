@@ -18,7 +18,7 @@ class Merge extends Action
 	 */
 	public function do(string $albumID, array $sourceAlbumIDs): void
 	{
-		$targetAlbum = $this->albumFactory->findOrFail($albumID);
+		$targetAlbum = $this->albumFactory->findOrFail($albumID, false);
 		if (!($targetAlbum instanceof Album)) {
 			$msg = 'Merge is only possible for real albums';
 			Logs::error(__METHOD__, __LINE__, $msg);
