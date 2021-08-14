@@ -7,10 +7,10 @@ use Illuminate\Support\Facades\Facade;
 /**
  * Class Helpers.
  *
- * Provides static access to methods of {@link \App\Relations\Helpers}.
+ * Provides static access to methods of {@link \App\Assets\Helpers}.
  *
  * @internal keep the list of documented method in sync with
- * {@link \App\Relations\Helpers}
+ * {@link \App\Assets\Helpers}
  *
  * @method static string cacheBusting(string $filePath)
  * @method static string getDeviceType()
@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Facade;
  * @method static int data_index()
  * @method static int data_index_r()
  * @method static void data_index_set(int $idx = 0)
+ * @method static array get_all_licenses()
  */
 class Helpers extends Facade
 {
