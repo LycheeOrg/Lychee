@@ -46,8 +46,8 @@ class AlbumController extends Controller
 	public function add(IlluminateRequest $request, Create $create): Album
 	{
 		$request->validate([
-			'title' => 'string|required|max:100',
-			'parent_id' => 'required|nullable|numeric|integer|gte:0',
+			'title' => 'required|string|max:100',
+			'parent_id' => 'present|nullable|numeric|integer|gte:0',
 		]);
 
 		return $create->create($request['title'], $request['parent_id']);
@@ -64,7 +64,7 @@ class AlbumController extends Controller
 	public function addTagAlbum(IlluminateRequest $request, CreateTagAlbum $create): TagAlbum
 	{
 		$request->validate([
-			'title' => 'string|required|max:100',
+			'title' => 'required|string|max:100',
 			'tags' => 'string',
 		]);
 
@@ -96,7 +96,7 @@ class AlbumController extends Controller
 	 */
 	public function getPositionData(AlbumIDRequest $request, PositionData $positionData): array
 	{
-		$validated = $request->validate(['includeSubAlbums' => 'boolean|required']);
+		$validated = $request->validate(['includeSubAlbums' => 'required|boolean']);
 
 		return $positionData->get($request['albumID'], $validated);
 	}
@@ -109,7 +109,7 @@ class AlbumController extends Controller
 	 *
 	 * @return IlluminateResponse
 	 */
-	public function getPublic(AlbumIDRequest $request, Unlock $unlock): IlluminateResponse
+	public function unlock(AlbumIDRequest $request, Unlock $unlock): IlluminateResponse
 	{
 		$request->validate(['password' => 'string|nullable']);
 		$unlock->do($request['albumID'], $request['password']);
@@ -127,7 +127,7 @@ class AlbumController extends Controller
 	 */
 	public function setTitle(AlbumIDsRequest $request, SetTitle $setTitle): IlluminateResponse
 	{
-		$request->validate(['title' => 'string|required|max:100']);
+		$request->validate(['title' => 'required|string|max:100']);
 		$setTitle->do(explode(',', $request['albumIDs']), $request['title']);
 
 		return response()->noContent();
@@ -144,13 +144,13 @@ class AlbumController extends Controller
 	public function setPublic(AlbumModelIDRequest $request, SetPublic $setPublic): IlluminateResponse
 	{
 		$validated = $request->validate([
-			'public' => 'boolean|required',
-			'visible' => 'boolean|required',
-			'nsfw' => 'boolean|required',
-			'downloadable' => 'boolean|required',
-			'share_button_visible' => 'boolean|required',
-			'full_photo' => 'boolean|required',
-			'password' => 'sometimes|string|nullable',
+			'public' => 'required|boolean',
+			'visible' => 'required|boolean',
+			'nsfw' => 'required|boolean',
+			'downloadable' => 'required|boolean',
+			'share_button_visible' => 'required|boolean',
+			'full_photo' => 'required|boolean',
+			'password' => 'sometimes|nullable|string',
 		]);
 		$setPublic->do($request['albumID'], $validated);
 
@@ -183,7 +183,7 @@ class AlbumController extends Controller
 	 */
 	public function setShowTags(AlbumModelIDRequest $request, SetShowTags $setShowTags): IlluminateResponse
 	{
-		$request->validate(['show_tags' => 'string|required|max:1000']);
+		$request->validate(['show_tags' => 'required|string|max:1000']);
 		$setShowTags->do($request['albumID'], $request['show_tags']);
 
 		return response()->noContent();
@@ -200,7 +200,7 @@ class AlbumController extends Controller
 	public function setCover(AlbumModelIDRequest $request, SetCover $setCover): IlluminateResponse
 	{
 		$request->validate([
-			'photoID' => 'required|nullable|numeric|integer|gte:0',
+			'photoID' => 'present|nullable|numeric|integer|gte:0',
 		]);
 		$setCover->do($request['albumID'], $request['photoID']);
 
@@ -304,11 +304,11 @@ class AlbumController extends Controller
 	public function setSorting(AlbumModelIDRequest $request, SetSorting $setSorting): IlluminateResponse
 	{
 		$request->validate([
-			'sorting_col' => 'required|nullable|string',
-			'sorting_order' => ['required', Rule::in([null, 'ASC', 'DESC'])],
+			'sortingCol' => 'present|nullable|string',
+			'sortingOrder' => ['present', Rule::in([null, 'ASC', 'DESC'])],
 		]);
 
-		$setSorting->do($request['albumID'], $request['sorting_col'], $request['sorting_order']);
+		$setSorting->do($request['albumID'], $request['sortingCol'], $request['sortingOrder']);
 
 		return response()->noContent();
 	}

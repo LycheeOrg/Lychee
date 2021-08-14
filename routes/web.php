@@ -64,7 +64,7 @@ Route::post('/api/Albums::tree', [AlbumsController::class, 'tree']);
 
 Route::post('/api/Album::get', [AlbumController::class, 'get'])->middleware('read');
 Route::post('/api/Album::getPositionData', [AlbumController::class, 'getPositionData'])->middleware('read');
-Route::post('/api/Album::getPublic', [AlbumController::class, 'getPublic']);
+Route::post('/api/Album::unlock', [AlbumController::class, 'unlock']);
 Route::post('/api/Album::add', [AlbumController::class, 'add'])->middleware('upload');
 Route::post('/api/Album::addByTags', [AlbumController::class, 'addTagAlbum'])->middleware('upload');
 Route::post('/api/Album::setTitle', [AlbumController::class, 'setTitle'])->middleware('upload');

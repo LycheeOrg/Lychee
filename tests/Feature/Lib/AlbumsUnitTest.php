@@ -22,14 +22,14 @@ class AlbumsUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return string
+	 * @return TestResponse
 	 */
 	public function add(
 		string $parent_id,
 		string $title,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 201,
 		?string $assertSee = null
-	): string {
+	): TestResponse {
 		$params = [
 			'title' => $title,
 			'parent_id' => $parent_id,
@@ -44,7 +44,7 @@ class AlbumsUnitTest
 			$response->assertSee($assertSee);
 		}
 
-		return $response->getContent();
+		return $response;
 	}
 
 	/**
@@ -55,14 +55,14 @@ class AlbumsUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
-	 * @return string
+	 * @return TestResponse
 	 */
 	public function addByTags(
 		string $title,
 		string $tags,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 201,
 		?string $assertSee = null
-	): string {
+	): TestResponse {
 		$params = [
 			'title' => $title,
 			'tags' => $tags,
@@ -74,7 +74,7 @@ class AlbumsUnitTest
 			$response->assertSee($assertSee);
 		}
 
-		return $response->getContent();
+		return $response;
 	}
 
 	/**
@@ -138,7 +138,7 @@ class AlbumsUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
-	public function get_public(
+	public function unlock(
 		string $id,
 		string $password = '',
 		int $expectedStatusCode = 200,
@@ -146,7 +146,7 @@ class AlbumsUnitTest
 	): void {
 		$response = $this->testCase->json(
 			'POST',
-			'/api/Album::getPublic',
+			'/api/Album::unlock',
 			['albumID' => $id, 'password' => $password]
 		);
 		$response->assertStatus($expectedStatusCode);
@@ -192,7 +192,7 @@ class AlbumsUnitTest
 	public function set_title(
 		string $id,
 		string $title,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json(
@@ -217,7 +217,7 @@ class AlbumsUnitTest
 	public function set_description(
 		string $id,
 		string $description,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json(
@@ -242,7 +242,7 @@ class AlbumsUnitTest
 	public function set_license(
 		string $id,
 		string $license,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json('POST', '/api/Album::setLicense', [
@@ -259,22 +259,22 @@ class AlbumsUnitTest
 	 * Set sorting.
 	 *
 	 * @param string      $id
-	 * @param string      $typePhotos
-	 * @param string      $orderPhotos
+	 * @param string      $sortingCol
+	 * @param string      $sortingOrder
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_sorting(
 		string $id,
-		string $typePhotos,
-		string $orderPhotos,
-		int $expectedStatusCode = 200,
+		string $sortingCol,
+		string $sortingOrder,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json('POST', '/api/Album::setSorting', [
 			'albumID' => $id,
-			'typePhotos' => $typePhotos,
-			'orderPhotos' => $orderPhotos,
+			'sortingCol' => $sortingCol,
+			'sortingOrder' => $sortingOrder,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -328,7 +328,7 @@ class AlbumsUnitTest
 	public function set_tags(
 		string $id,
 		string $tags,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json('POST', '/api/Album::setShowTags', [

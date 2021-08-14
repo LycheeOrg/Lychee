@@ -25,7 +25,7 @@ class AlbumIDsRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'albumID' => [
+			'albumIDs' => [
 				'required',
 				'string',
 				function (string $attribute, $value, $fail) {
