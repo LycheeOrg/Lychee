@@ -253,6 +253,27 @@ class Album extends Model implements BaseModelAlbum
 		return $value;
 	}
 
+	/**
+	 * Checks whether this album is truly and completely empty.
+	 *
+	 * Note, that one must not use the relations {@link Album::photos()} and
+	 * {@link Album::children()} to check for emptiness.
+	 * These relations filter the results with respect to the access rights of
+	 * the current user.
+	 * In other words, {@link Album::photos()} and {@link Album::children()}
+	 * may appear to be empty, but the album is not, because the album is
+	 * still parent to photos and sub-albums invisible for the current user.
+	 *
+	 * @return bool true if this album is completely empty
+	 */
+	public function isEmpty(): bool
+	{
+		$photosCount = Photo::query()->where('album_id', '=', $this->id)->count();
+		$albumCount = Album::query()->where('parent_id', '=', $this->id)->count();
+
+		return ($photosCount + $albumCount) === 0;
+	}
+
 	public function toArray(): array
 	{
 		$result = parent::toArray();
@@ -299,17 +320,21 @@ class Album extends Model implements BaseModelAlbum
 		}
 
 		$albums = $this->children()
-			->where('owner_id', '=', AccessControl::id())
+			->whereHas(
+				'base_class',
+				fn (Builder $q) => $q->where('owner_id', '=', AccessControl::id())
+			)
 			->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			$success &= $album->delete(true);
 		}
 
-		// Ensure that no child photo nor child album has remained
-		$success &= $this->photos()->count() === 0 && $this->children()->count() === 0;
+		// Ensure that no invisible child photo nor child album have remained
+		$success &= $this->isEmpty();
 
-		// Only forward the call (i.e. actually delete this album, if everything so far has been a success
+		// Only forward the call (i.e. actually delete this album,
+		// if everything so far has been a success
 		if ($success) {
 			$success &= $this->forwardDelete();
 		}
@@ -321,5 +346,50 @@ class Album extends Model implements BaseModelAlbum
 		}
 
 		return $success;
+	}
+
+	/**
+	 * Update the tree after the node has been removed physically.
+	 *
+	 * This method is copied from
+	 * {@link \Kalnoy\Nestedset\NodeTrait::deleteDescendants()}.
+	 *
+	 * The trait {@link \Kalnoy\Nestedset\NodeTrait} installs a listener for
+	 * the event`deleted` which calls this method _after_ the node has been
+	 * deleted in order to delete the descendants.
+	 *
+	 * However, in our case the descendants are tried to be deleted _before_
+	 * the parent node is deleted to ensure that the user has sufficient
+	 * rights to delete the child nodes and to prevent that non-deletable
+	 * child nodes end up without a parent.
+	 * See {@link \App\Models\Album::delete()}.
+	 *
+	 * Hence, the default implementation
+	 * {@link \Kalnoy\Nestedset\NodeTrait::deleteDescendants()} should be
+	 * harmless.
+	 * As the descendants have already been deleted when the `deleted` event
+	 * is fired, the implementation should not find any remaining descendants
+	 * and thus the whole method should be a no-op.
+	 * But for some unintelligible reason the default implementation crashes.
+	 * More precisely, the line `$this->descendants()->{$method}();` tries
+	 * to build a query for albums and
+	 * {@link \Kalnoy\Nestedset\BaseRelation::__construct()}
+	 * throws an {@link \InvalidArgumentException} exception which
+	 * claims that {@link \App\Models\Album} was not a node.
+	 * Obviously, this is bogus ({@link \App\Models\Album} **is** a node);
+	 * in particular the same statement is executed many times without any
+	 * complains.
+	 * As a cheap work-around we simply delete the offending line, because
+	 * we know that there are not descendants left which could be deleted.
+	 */
+	protected function deleteDescendants()
+	{
+		$lft = $this->getLft();
+		$rgt = $this->getRgt();
+		$height = $rgt - $lft + 1;
+		$this->newNestedSetQuery()->makeGap($rgt + 1, -$height);
+		// In case if user wants to re-create the node
+		$this->makeRoot();
+		static::$actionsPerformed++;
 	}
 }
