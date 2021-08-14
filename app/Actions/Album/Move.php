@@ -3,7 +3,8 @@
 namespace App\Actions\Album;
 
 use App\Models\Album;
-use App\Models\Logs;
+use App\Models\BaseModelAlbumImpl;
+use App\Models\Photo;
 
 class Move extends Action
 {
@@ -19,29 +20,32 @@ class Move extends Action
 			$targetAlbumID = null;
 			$targetAlbum = null;
 		} else {
-			$targetAlbum = $this->albumFactory->findOrFail($targetAlbumID);
-			if (!($targetAlbum instanceof Album)) {
-				$msg = 'Move is only possible for real albums';
-				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new \InvalidArgumentException($msg);
-			}
+			/** @var Album $targetAlbum */
+			$targetAlbum = Album::query()->findOrFail($targetAlbumID);
 		}
 
 		$albums = Album::query()->whereIn('id', $albumIDs)->get();
 
 		// Merge source albums to target
-		// ! we have to do it via Model::save() in order to not break the tree
+		// We have to do it via Model::save() in order to not break the tree
+		/** @var Album $album */
 		foreach ($albums as $album) {
 			$album->parent_id = $targetAlbumID;
 			$album->save();
 		}
-
 		// Tree should be updated by itself here.
 
 		if ($targetAlbum) {
-			// update owner
-			$targetAlbum->descendants()->update(['owner_id' => $targetAlbum->owner_id]);
-			$targetAlbum->all_photos()->update(['owner_id' => $targetAlbum->owner_id]);
+			// Update ownership to owner of target album
+			$descendantIDs = $targetAlbum->descendants()->pluck('id');
+			// Note, the property `owner_id` is defined on the base class of
+			// all model albums.
+			// For optimization, we do not load the album models but perform
+			// the update directly on the database.
+			// Hence, we must use `BaseModelAlbumImpl`.
+			BaseModelAlbumImpl::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
+			$descendantIDs[] = $targetAlbum->getKey();
+			Photo::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
 		}
 	}
 }

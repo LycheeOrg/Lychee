@@ -2,6 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\AncestorsRelation;
 use Kalnoy\Nestedset\DescendantsRelation;
 use Kalnoy\Nestedset\NodeTrait as BaseNodeTrait;
@@ -16,6 +18,11 @@ use Kalnoy\Nestedset\QueryBuilder;
  * [PR #514](https://github.com/lazychaser/laravel-nestedset/pull/514)
  * has been merged into master of NestedSet and after the Composer
  * dependencies have been updated.
+ *
+ * @property Model      $parent
+ * @property Collection $children
+ * @property Collection $descendants
+ * @property Collection $ancestors
  */
 trait NodeTrait
 {
