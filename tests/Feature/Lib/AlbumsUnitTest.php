@@ -84,15 +84,13 @@ class AlbumsUnitTest
 	 * @param string      $to
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
-	 *
-	 * @return string
 	 */
 	public function move(
 		string $ids,
 		string $to,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
-	): string {
+	): void {
 		$response = $this->testCase->json('POST', '/api/Album::move', [
 			'albumIDs' => $to . ',' . $ids,
 		]);
@@ -100,8 +98,6 @@ class AlbumsUnitTest
 		if ($assertSee) {
 			$response->assertSee($assertSee);
 		}
-
-		return $response->getContent();
 	}
 
 	/**
