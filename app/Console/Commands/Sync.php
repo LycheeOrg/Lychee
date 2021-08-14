@@ -43,6 +43,7 @@ class Sync extends Command
 			$exec->import_via_symlink = $this->option('import_via_symlink') === '1';
 			if ($exec->import_via_symlink && $exec->delete_imported) {
 				$this->error('--delete_imported  and --import_via_symlink flags are conflicting.');
+
 				return 1;
 			}
 		} else {
@@ -50,6 +51,7 @@ class Sync extends Command
 			if ($exec->import_via_symlink && $exec->delete_imported) {
 				$this->error('--delete_imported flag and Config "import_via_symlink" setting are conflicting.');
 				$this->info('  Use --import_via_symlink=0 with --delete_imported to overwrite the Config.');
+
 				return 1;
 			}
 		}
