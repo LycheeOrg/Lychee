@@ -7,7 +7,6 @@ use App\Contracts\BaseModelAlbum;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
-use App\Models\BaseModelAlbumImpl;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Session;
@@ -58,7 +57,7 @@ class AlbumAuthorisationProvider
 			// We must wrap everything into an outer query to avoid any undesired
 			// effects in case that the original query already contains an
 			// "OR"-clause.
-			return $query->where(fn (Builder $query2) => $query2
+			return $query->whereHas('base_class', fn (Builder $query2) => $query2
 				->where('requires_link', '=', false)
 				->where('public', '=', true)
 			);
@@ -68,7 +67,8 @@ class AlbumAuthorisationProvider
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		return $query->where(
+		return $query->whereHas(
+			'base_class',
 			function (Builder $query2) use ($userID) {
 				$query2
 					->where('owner_id', '=', $userID)
@@ -139,9 +139,14 @@ class AlbumAuthorisationProvider
 					(!$album->requires_link && $album->public);
 			}
 		} else {
-			return $this->applyVisibilityFilter(
-				BaseModelAlbumImpl::query()->where('id', '=', intval($albumID))
+			$albumCount = $this->applyVisibilityFilter(
+				Album::query()->where('id', '=', intval($albumID))
 			)->count();
+			$tagAlbumCount = $this->applyVisibilityFilter(
+				TagAlbum::query()->where('id', '=', intval($albumID))
+			)->count();
+
+			return ($albumCount + $tagAlbumCount) !== 0;
 		}
 	}
 
@@ -178,7 +183,8 @@ class AlbumAuthorisationProvider
 			// We must wrap everything into an outer query to avoid any undesired
 			// effects in case that the original query already contains an
 			// "OR"-clause.
-			return $query->where(
+			return $query->whereHas(
+				'base_class',
 				function (Builder $query2) use ($unlockedAlbumIDs) {
 					$query2
 						->where(fn (Builder $q) => $q
@@ -198,7 +204,8 @@ class AlbumAuthorisationProvider
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		return $query->where(
+		return $query->whereHas(
+			'base_class',
 			function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
 				$query2
 					->where('owner_id', '=', $userID)
@@ -273,9 +280,14 @@ class AlbumAuthorisationProvider
 					($album->public && $this->isAlbumUnlocked($album->id));
 			}
 		} else {
-			return $this->applyAccessibilityFilter(
-				BaseModelAlbumImpl::query()->where('id', '=', intval($albumID))
+			$albumCount = $this->applyAccessibilityFilter(
+				Album::query()->where('id', '=', intval($albumID))
 			)->count();
+			$tagAlbumCount = $this->applyAccessibilityFilter(
+				TagAlbum::query()->where('id', '=', intval($albumID))
+			)->count();
+
+			return ($albumCount + $tagAlbumCount) !== 0;
 		}
 	}
 
@@ -316,11 +328,7 @@ class AlbumAuthorisationProvider
 	private function failForWrongQueryModel(Builder $query): void
 	{
 		$model = $query->getModel();
-		if (!(
-			$model instanceof BaseModelAlbumImpl ||
-			$model instanceof Album ||
-			$model instanceof TagAlbum
-		)) {
+		if (!($model instanceof Album || $model instanceof TagAlbum)) {
 			throw new \InvalidArgumentException('the given query must query for album');
 		}
 	}
