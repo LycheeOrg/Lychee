@@ -36,17 +36,18 @@ class HasManyPhotosByTag extends HasManyPhotos
 	 */
 	public function addEagerConstraints(array $albums): void
 	{
+		if (count($albums) !== 1) {
+			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
+		}
+		/** @var TagAlbum $album */
+		$album = $albums[0];
+		$tags = explode(',', $album->show_tags);
+
 		$this->applyVisibilityFilter($this->query)
-			->where(function (Builder $q1) use ($albums) {
-				/** @var TagAlbum $album */
-				foreach ($albums as $album) {
-					$q1->orWhere(function (Builder $q2) use ($album) {
-						// Filter for requested tags
-						$tags = explode(',', $album->show_tags);
-						foreach ($tags as $tag) {
-							$q2->where('tags', 'like', '%' . trim($tag) . '%');
-						}
-					});
+			->where(function (Builder $q) use ($tags) {
+				// Filter for requested tags
+				foreach ($tags as $tag) {
+					$q->where('tags', 'like', '%' . trim($tag) . '%');
 				}
 			});
 	}
@@ -57,15 +58,27 @@ class HasManyPhotosByTag extends HasManyPhotos
 	 * This method is called by the framework after the unified result of
 	 * photos has been fetched by {@link HasManyPhotosByTag::addEagerConstraints()}.
 	 *
-	 * @param array      $models   the list of owning albums
+	 * @param array      $albums   the list of owning albums
 	 * @param Collection $photos   collection of {@link Photo} models which needs to be mapped to the albums
 	 * @param string     $relation the name of the relation
 	 *
 	 * @return array
 	 */
-	public function match(array $models, Collection $photos, $relation): array
+	public function match(array $albums, Collection $photos, $relation): array
 	{
-		// TODO: Implement match() method.
-		throw new \BadMethodCallException('not implemented yet');
+		if (count($albums) !== 1) {
+			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
+		}
+		/** @var TagAlbum $album */
+		$album = $albums[0];
+
+		$photos->sortBy(
+			$album->sorting_col,
+			SORT_NATURAL | SORT_FLAG_CASE,
+			$album->sorting_order === 'DESC'
+		);
+		$album->setRelation($relation, $photos);
+
+		return $albums;
 	}
 }

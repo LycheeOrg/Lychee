@@ -37,15 +37,16 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	 */
 	public function addEagerConstraints(array $albums): void
 	{
+		if (count($albums) !== 1) {
+			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
+		}
+		/** @var Album $album */
+		$album = $albums[0];
+
 		$this->applyVisibilityFilter($this->query)
-			->where(function (Builder $q1) use ($albums) {
-				/** @var Album $album */
-				foreach ($albums as $album) {
-					$q1->orWhereHas('album', function (Builder $q2) use ($album) {
-						$q2->where('albums.id', '>=', $album->_lft)
-							->where('albums.id', '<=', $album->_rgt);
-					});
-				}
+			->whereHas('album', function (Builder $q) use ($album) {
+				$q->where('_lft', '>=', $album->_lft)
+					->where('_rgt', '<=', $album->_rgt);
 			});
 	}
 
@@ -63,37 +64,18 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	 */
 	public function match(array $albums, Collection $photos, $relation): array
 	{
-		// The dictionary maps album IDs to the subset of photos which are
-		// direct children
-		$dictionary = [];
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			$albumId = $photo->album_id;
-			if (array_key_exists($albumId, $dictionary)) {
-				$dictionary[$albumId][] = $photo;
-			} else {
-				$dictionary[$albumId] = [$photo];
-			}
+		if (count($albums) !== 1) {
+			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
 		}
-
 		/** @var Album $album */
-		foreach ($albums as $album) {
-			$allPhotos = $this->related->newCollection();
-			array_walk(
-				$dictionary,
-				function (array $photos, int $albumId) use ($album, $allPhotos): void {
-					if ($album->_lft <= $albumId && $albumId <= $album->_rgt) {
-						$allPhotos->merge($photos);
-					}
-				}
-			);
-			$allPhotos->sortBy(
-				$album->sorting_col,
-				SORT_NATURAL | SORT_FLAG_CASE,
-				$album->sorting_order === 'DESC'
-			);
-			$album->setRelation($relation, $allPhotos);
-		}
+		$album = $albums[0];
+
+		$photos->sortBy(
+			$album->sorting_col,
+			SORT_NATURAL | SORT_FLAG_CASE,
+			$album->sorting_order === 'DESC'
+		);
+		$album->setRelation($relation, $photos);
 
 		return $albums;
 	}
