@@ -112,14 +112,13 @@ class AlbumsUnitTest
 	 */
 	public function get(
 		string $id,
-		string $password = '',
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->json(
 			'POST',
 			'/api/Album::get',
-			['albumID' => $id, 'password' => $password]
+			['albumID' => $id]
 		);
 		if ($response->getStatusCode() === 500) {
 			$response->dump();
@@ -363,10 +362,13 @@ class AlbumsUnitTest
 	 */
 	public function delete(
 		string $id,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson('/api/Album::delete', ['albumIDs' => $id]);
+		if ($response->status() === 500) {
+			$response->dump();
+		}
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee);

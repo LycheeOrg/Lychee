@@ -17,13 +17,15 @@ class Unlock extends Action
 	}
 
 	/**
-	 * Provided a password and an album, check if the album can be
-	 * unlocked. If yes, unlock all albums with the same password.
+	 * Tries to unlock the given album with the given password.
+	 *
+	 * If the password is correct, then all albums which can be unlocked with
+	 * the same password are unlocked, too.
 	 *
 	 * @param string $albumID
 	 * @param string $password
 	 *
-	 * @return bool
+	 * @return bool true on success, false if password was wrong
 	 */
 	public function do(string $albumID, string $password): bool
 	{

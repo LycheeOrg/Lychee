@@ -19,10 +19,10 @@ class AlbumTest extends TestCase
 		$albums_tests = new AlbumsUnitTest($this);
 		$albums_tests->add('0', 'test_album', 401);
 
-		$albums_tests->get('recent', '', 403);
-		$albums_tests->get('starred', '', 403);
-		$albums_tests->get('public', '', 403);
-		$albums_tests->get('unsorted', '', 403);
+		$albums_tests->get('recent', 403);
+		$albums_tests->get('starred', 403);
+		$albums_tests->get('public', 403);
+		$albums_tests->get('unsorted', 403);
 	}
 
 	public function testAddReadLogged()
@@ -59,7 +59,7 @@ class AlbumTest extends TestCase
 		/*
 		 * try to get a non existing album
 		 */
-		$albums_tests->get('999', '', 403);
+		$albums_tests->get('999', 403);
 
 		$response = $albums_tests->get($albumID);
 		$response->assertJson([
@@ -95,8 +95,8 @@ class AlbumTest extends TestCase
 		/*
 		 * Let's try to get the info of the album we just created.
 		 */
-		$albums_tests->unlock($albumID, '', 403);
-		$albums_tests->get($albumID, '', 403);
+		$albums_tests->unlock($albumID, '', 422);
+		$albums_tests->get($albumID, 403);
 
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.

@@ -111,10 +111,12 @@ class AlbumController extends Controller
 	 */
 	public function unlock(AlbumIDRequest $request, Unlock $unlock): IlluminateResponse
 	{
-		$request->validate(['password' => 'string|nullable']);
-		$unlock->do($request['albumID'], $request['password']);
-
-		return response()->noContent();
+		$request->validate(['password' => 'required|string']);
+		if ($unlock->do($request['albumID'], $request['password'])) {
+			return response()->noContent();
+		} else {
+			return response('', 403);
+		}
 	}
 
 	/**
@@ -235,9 +237,11 @@ class AlbumController extends Controller
 	 */
 	public function delete(AlbumIDsRequest $request, Delete $delete): IlluminateResponse
 	{
-		$delete->do(explode(',', $request['albumIDs']));
-
-		return response()->noContent();
+		if ($delete->do(explode(',', $request['albumIDs']))) {
+			return response()->noContent();
+		} else {
+			return response('', 500);
+		}
 	}
 
 	/**
