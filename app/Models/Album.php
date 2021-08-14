@@ -73,6 +73,8 @@ class Album extends Model implements BaseModelAlbum
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
+		'cover_id' => 'integer',
+		'parent_id' => 'integer',
 	];
 
 	/**
@@ -255,6 +257,13 @@ class Album extends Model implements BaseModelAlbum
 	{
 		$result = parent::toArray();
 		$result['has_albums'] = !$this->isLeaf();
+
+		// The client expect the relation "children" to be named "albums".
+		// Rename it
+		if (key_exists('children', $result)) {
+			$result['albums'] = $result['children'];
+			unset($result['children']);
+		}
 
 		return array_merge($result, $this->base_class->toArray());
 	}

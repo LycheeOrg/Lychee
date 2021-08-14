@@ -152,13 +152,18 @@ class BaseModelAlbumImpl extends Model
 		'downloadable' => 'boolean',
 		'share_button_visible' => 'boolean',
 		'nsfw' => 'boolean',
+		'owner_id' => 'integer',
+		'id' => 'integer',
 	];
 
 	/**
 	 * @var string[] The list of attributes which exist as columns of the DB
 	 *               relation but shall not be serialized to JSON
 	 */
-	protected $hidden = ['password'];
+	protected $hidden = [
+		'owner',
+		'password',
+	];
 
 	/**
 	 * @var string[] The list of "virtual" attributes which do not exist as
