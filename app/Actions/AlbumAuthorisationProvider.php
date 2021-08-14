@@ -54,6 +54,16 @@ class AlbumAuthorisationProvider
 			return $query;
 		}
 
+		if (!AccessControl::is_logged_in()) {
+			// We must wrap everything into an outer query to avoid any undesired
+			// effects in case that the original query already contains an
+			// "OR"-clause.
+			return $query->where(fn (Builder $query2) => $query2
+				->where('requires_link', '=', false)
+				->where('public', '=', true)
+			);
+		}
+
 		$userID = AccessControl::id();
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
@@ -116,13 +126,18 @@ class AlbumAuthorisationProvider
 		// If we don't have a model, then use `applyVisibilityFilter` to build
 		// a query, but don't hydrate a model
 		if ($album) {
-			/** @var BaseModelAlbum $album */
-			$userID = AccessControl::id();
+			/* @var BaseModelAlbum $album */
 
-			return
-				($album->owner_id === $userID) ||
-				(!$album->requires_link && $album->shared_with()->where('user_id', '=', $userID)->count()) ||
-				(!$album->requires_link && $album->public);
+			if (!AccessControl::is_logged_in()) {
+				return !$album->requires_link && $album->public;
+			} else {
+				$userID = AccessControl::id();
+
+				return
+					($album->owner_id === $userID) ||
+					(!$album->requires_link && $album->shared_with()->where('user_id', '=', $userID)->count()) ||
+					(!$album->requires_link && $album->public);
+			}
 		} else {
 			return $this->applyVisibilityFilter(
 				BaseModelAlbumImpl::query()->where('id', '=', intval($albumID))
@@ -152,12 +167,34 @@ class AlbumAuthorisationProvider
 	public function applyAccessibilityFilter(Builder $query): Builder
 	{
 		$this->failForWrongQueryModel($query);
+
 		if (AccessControl::is_admin()) {
 			return $query;
 		}
 
-		$userID = AccessControl::id();
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
+
+		if (!AccessControl::is_logged_in()) {
+			// We must wrap everything into an outer query to avoid any undesired
+			// effects in case that the original query already contains an
+			// "OR"-clause.
+			return $query->where(
+				function (Builder $query2) use ($unlockedAlbumIDs) {
+					$query2
+						->where(fn (Builder $q) => $q
+							->where('public', '=', true)
+							->whereNull('password')
+						)
+						->orWhere(fn (Builder $q) => $q
+							->where('public', '=', true)
+							->whereIn('id', $unlockedAlbumIDs)
+						);
+				}
+			);
+		}
+
+		$userID = AccessControl::id();
+
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
@@ -220,14 +257,21 @@ class AlbumAuthorisationProvider
 		// If we don't have a model, then use `applyVisibilityFilter` to build
 		// a query, but don't hydrate a model
 		if ($album) {
-			/** @var BaseModelAlbum $album */
-			$userID = AccessControl::id();
+			/* @var BaseModelAlbum $album */
 
-			return
-				($album->owner_id === $userID) ||
-				($album->shared_with()->where('user_id', '=', $userID)->count()) ||
-				($album->public && $album->password === null) ||
-				($album->public && $this->isAlbumUnlocked($album->id));
+			if (!AccessControl::is_logged_in()) {
+				return
+					($album->public && $album->password === null) ||
+					($album->public && $this->isAlbumUnlocked($album->id));
+			} else {
+				$userID = AccessControl::id();
+
+				return
+					($album->owner_id === $userID) ||
+					($album->shared_with()->where('user_id', '=', $userID)->count()) ||
+					($album->public && $album->password === null) ||
+					($album->public && $this->isAlbumUnlocked($album->id));
+			}
 		} else {
 			return $this->applyAccessibilityFilter(
 				BaseModelAlbumImpl::query()->where('id', '=', intval($albumID))

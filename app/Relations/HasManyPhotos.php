@@ -99,6 +99,20 @@ abstract class HasManyPhotos extends Relation
 			return $query;
 		}
 
+		if (!AccessControl::is_logged_in()) {
+			// We must wrap everything into an outer query to avoid any undesired
+			// effects in case that the original query already contains an
+			// "OR"-clause.
+			return $query->where(
+				function (Builder $query2) {
+					$query2->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
+					if (Configs::get_value('public_photos_hidden', '1') === '0') {
+						$query2->orWhere('public', '=', true);
+					}
+				}
+			);
+		}
+
 		$userID = AccessControl::id();
 
 		// We must wrap everything into an outer query to avoid any undesired
