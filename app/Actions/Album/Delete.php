@@ -3,19 +3,17 @@
 namespace App\Actions\Album;
 
 use App\Contracts\BaseAlbum;
-use App\Factories\AlbumFactory;
 
-class Delete
+class Delete extends Action
 {
 	/**
-	 * @param array        $albumIDs
-	 * @param AlbumFactory $albumFactory
+	 * @param array $albumIDs
 	 *
 	 * @return bool
 	 */
-	public function do(array $albumIDs, AlbumFactory $albumFactory): bool
+	public function do(array $albumIDs): bool
 	{
-		$albums = $albumFactory->findWhereIDsIn($albumIDs);
+		$albums = $this->albumFactory->findWhereIDsIn($albumIDs);
 		$success = true;
 
 		/** @var BaseAlbum $album */

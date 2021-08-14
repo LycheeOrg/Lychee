@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\AlbumRequests;
 
+use App\Factories\AlbumFactory;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AlbumIDsRequest extends FormRequest
@@ -11,7 +12,7 @@ class AlbumIDsRequest extends FormRequest
 	 *
 	 * @return bool
 	 */
-	public function authorize()
+	public function authorize(): bool
 	{
 		return true;
 	}
@@ -24,7 +25,30 @@ class AlbumIDsRequest extends FormRequest
 	public function rules()
 	{
 		return [
-			'albumIDs' => 'required|string',
+			'albumID' => [
+				'required',
+				'string',
+				function (string $attribute, $value, $fail) {
+					$albumIDs = explode(',', $value);
+					$success = true;
+					foreach ($albumIDs as $albumID) {
+						if (
+							!is_numeric($albumID) &&
+							!array_key_exists($albumID, AlbumFactory::BUILTIN_SMARTS)
+						) {
+							$success = false;
+							break;
+						}
+					}
+					if (!$success) {
+						$fail(
+							$attribute .
+							' must be a comma-seperated string of numeric values or the built-in IDs ' .
+							implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS))
+						);
+					}
+				},
+			],
 		];
 	}
 }

@@ -35,7 +35,7 @@ class AlbumIDRequest extends FormRequest
 					) {
 						$fail(
 							$attribute .
-							' must either be null, a numeric value or one of the pre-determined IDs ' .
+							' must either be null, a numeric value or one of the built-in IDs ' .
 							implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS))
 						);
 					}

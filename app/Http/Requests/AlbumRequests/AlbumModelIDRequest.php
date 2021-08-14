@@ -4,14 +4,14 @@ namespace App\Http\Requests\AlbumRequests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class AlbumIDRequestInt extends FormRequest
+class AlbumModelIDRequest extends FormRequest
 {
 	/**
 	 * Determine if the user is authorized to make this request.
 	 *
 	 * @return bool
 	 */
-	public function authorize()
+	public function authorize(): bool
 	{
 		return true;
 	}
@@ -21,10 +21,19 @@ class AlbumIDRequestInt extends FormRequest
 	 *
 	 * @return array
 	 */
-	public function rules()
+	public function rules(): array
 	{
 		return [
-			'albumID' => 'required|integer',
+			'albumID' => [
+				'required',
+				function (string $attribute, $value, $fail) {
+					if ($value !== null && !is_numeric($value)) {
+						$fail(
+							$attribute . ' must either be null or a numeric value'
+						);
+					}
+				},
+			],
 		];
 	}
 }

@@ -71,7 +71,7 @@ class AlbumTest extends TestCase
 
 		$albums_tests->set_title($albumID, 'NEW_TEST');
 		$albums_tests->set_description($albumID, 'new description');
-		$albums_tests->set_license($albumID, 'WTFPL', '"Error: License not recognised!');
+		$albums_tests->set_license($albumID, 'WTFPL', 422);
 		$albums_tests->set_license($albumID, 'reserved');
 		$albums_tests->set_sorting($albumID, 'title', 'ASC');
 
