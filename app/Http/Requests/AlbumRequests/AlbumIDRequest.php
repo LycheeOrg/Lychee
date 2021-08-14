@@ -30,12 +30,12 @@ class AlbumIDRequest extends FormRequest
 				function (string $attribute, $value, $fail) {
 					if (
 						$value !== null &&
-						!is_numeric($value) &&
+						(filter_var($value, FILTER_VALIDATE_INT) === false || intval($value) < 0) &&
 						!array_key_exists($value, AlbumFactory::BUILTIN_SMARTS)
 					) {
 						$fail(
 							$attribute .
-							' must either be null, a numeric value or one of the built-in IDs ' .
+							' must either be null, a positive integer or one of the built-in IDs ' .
 							implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS))
 						);
 					}

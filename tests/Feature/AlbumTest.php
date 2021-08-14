@@ -123,8 +123,8 @@ class AlbumTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		$albums_tests->set_description('-1', 'new description', 401);
-		$albums_tests->set_public('-1', 1, 1, 1, 0, 1, 1, 401);
+		$albums_tests->set_description('-1', 'new description', 422);
+		$albums_tests->set_public('-1', 1, 1, 1, 0, 1, 1, 422);
 
 		$session_tests->logout($this);
 	}

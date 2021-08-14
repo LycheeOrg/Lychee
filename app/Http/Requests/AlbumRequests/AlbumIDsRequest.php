@@ -33,7 +33,7 @@ class AlbumIDsRequest extends FormRequest
 					$success = true;
 					foreach ($albumIDs as $albumID) {
 						if (
-							!is_numeric($albumID) &&
+							(filter_var($albumID, FILTER_VALIDATE_INT) === false || intval($albumID) < 0) &&
 							!array_key_exists($albumID, AlbumFactory::BUILTIN_SMARTS)
 						) {
 							$success = false;
@@ -43,7 +43,7 @@ class AlbumIDsRequest extends FormRequest
 					if (!$success) {
 						$fail(
 							$attribute .
-							' must be a comma-seperated string of numeric values or the built-in IDs ' .
+							' must be a comma-seperated string of positive integers or the built-in IDs ' .
 							implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS))
 						);
 					}

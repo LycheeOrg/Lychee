@@ -27,9 +27,12 @@ class AlbumModelIDRequest extends FormRequest
 			'albumID' => [
 				'required',
 				function (string $attribute, $value, $fail) {
-					if ($value !== null && !is_numeric($value)) {
+					if (
+						$value !== null &&
+						(filter_var($value, FILTER_VALIDATE_INT) === false || intval($value) < 0)
+					) {
 						$fail(
-							$attribute . ' must either be null or a numeric value'
+							$attribute . ' must either be null or a positive integer'
 						);
 					}
 				},
