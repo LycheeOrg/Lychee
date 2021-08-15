@@ -91,7 +91,7 @@ class GeoDataTest extends TestCase
 			]
 		);
 
-		$albumID = $albums_tests->add('0', 'test_mongolia');
+		$albumID = $albums_tests->add('0', 'test_mongolia')->offsetGet('id');
 		$photos_tests->set_album($albumID, $id);
 		$photos_tests->dont_see_in_unsorted($id);
 		$response = $albums_tests->get($albumID, '', 'true');
