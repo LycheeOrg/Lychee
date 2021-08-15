@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
 use App\Actions\Albums\PositionData;
@@ -14,9 +12,9 @@ use Illuminate\Database\Eloquent\Collection;
 class AlbumsController extends Controller
 {
 	/**
-	 * @return array|string returns an array of albums or false on failure
+	 * @return array returns an array of albums or false on failure
 	 */
-	public function get(Top $top, Smart $smart)
+	public function get(Top $top, Smart $smart): array
 	{
 		// caching to avoid further request
 		Configs::get();
@@ -33,7 +31,7 @@ class AlbumsController extends Controller
 
 		$return['albums'] = $toplevel['albums'];
 		$return['shared_albums'] = $toplevel['shared_albums'];
-		$return['smartalbums'] = $smart->get();
+		$return['smart_albums'] = $smart->get();
 
 		return $return;
 	}

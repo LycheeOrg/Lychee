@@ -38,7 +38,7 @@ class Top
 	 * Note, the array may include password-protected albums that are not
 	 * accessible (but are visible).
 	 *
-	 * @return array
+	 * @return array{albums: BaseCollection, shared_albums: BaseCollection}
 	 */
 	public function get(): array
 	{
