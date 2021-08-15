@@ -13,9 +13,20 @@ class Sync extends Command
 	/**
 	 * The name and signature of the console command.
 	 *
+	 * The placeholder %s will be filled by the constructor with the default
+	 * value from the user configuration.
+	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:sync {dir : directory to sync} {--album_id=0 : Album ID to import to} {--owner_id=0 : Owner ID of imported photos} {--resync_metadata : Re-sync metadata of existing files}  {--delete_imported : Delete the original files} {--import_via_symlink= : Imports photos from via a symlink instead of copying the files} {--not_skip_duplicates : Don\'t Skip photos and albums if they already exist in the gallery}';
+	protected $signature =
+		'lychee:sync ' .
+		'{dir : directory to sync} ' .
+		'{--album_id=0 : Album ID to import to} ' .
+		'{--owner_id=0 : Owner ID of imported photos} ' .
+		'{--resync_metadata : Re-sync metadata of existing files}  ' .
+		'{--delete_imported=%s : Delete the original files} ' .
+		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' .
+		'{--skip_duplicates=%s : Don\'t Skip photos and albums if they already exist in the gallery}';
 
 	/**
 	 * The console command description.
@@ -23,6 +34,18 @@ class Sync extends Command
 	 * @var string
 	 */
 	protected $description = 'Sync a directory to lychee';
+
+	public function __construct()
+	{
+		// Fill signature with default values from user configuration
+		$this->signature = sprintf(
+			$this->signature,
+			Configs::get_value('delete_imported', '0'),
+			Configs::get_value('import_via_symlink', '0'),
+			Configs::get_value('skip_duplicates', '0')
+		);
+		parent::__construct();
+	}
 
 	/**
 	 * Execute the console command.
@@ -38,25 +61,17 @@ class Sync extends Command
 		// Enable CLI formatting of status
 		$exec->statusCLIFormatting = true;
 		$exec->memCheck = false;
-		$exec->delete_imported = $this->option('delete_imported');
-		if (!is_null($this->option('import_via_symlink'))) {
-			$exec->import_via_symlink = $this->option('import_via_symlink') === '1';
-			if ($exec->import_via_symlink && $exec->delete_imported) {
-				$this->error('--delete_imported  and --import_via_symlink flags are conflicting.');
-
-				return 1;
-			}
-		} else {
-			$exec->import_via_symlink = (Configs::get_value('import_via_symlink', '0') === '1');
-			if ($exec->import_via_symlink && $exec->delete_imported) {
-				$this->error('--delete_imported flag and Config "import_via_symlink" setting are conflicting.');
-				$this->info('  Use --import_via_symlink=0 with --delete_imported to overwrite the Config.');
-
-				return 1;
-			}
-		}
-		$exec->skip_duplicates = !$this->option('skip_duplicates');
 		$exec->resync_metadata = $this->option('resync_metadata');
+		$exec->delete_imported = $this->option('delete_imported') === '1';
+		$exec->import_via_symlink = $this->option('import_via_symlink') === '1';
+		$exec->skip_duplicates = $this->option('skip_duplicates') === '1';
+
+		if ($exec->import_via_symlink && $exec->delete_imported) {
+			$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
+			$this->info('  Use --import_via_symlink={0|1} and --delete-imported={0|1} explicitly to apply a conflict-free setting');
+
+			return 1;
+		}
 
 		AccessControl::log_as_id($owner_id);
 
