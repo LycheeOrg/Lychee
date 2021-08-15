@@ -410,7 +410,10 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Album::getPositionData', ['albumID' => $id, 'includeSubAlbums' => 'false']);
+		$response = $this->testCase->json('POST', '/api/Album::getPositionData', [
+			'albumID' => $id,
+			'includeSubAlbums' => false,
+		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee);

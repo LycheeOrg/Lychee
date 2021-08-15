@@ -112,9 +112,9 @@ class GeoDataTest extends TestCase
 		Configs::set('map_display', '1');
 		$this->assertEquals('1', Configs::get_value('map_display'));
 		$response = $albums_tests->AlbumsGetPositionDataFull();
-		$responseObj = json_decode($response->getContent());
-		$this->assertCount(1, $responseObj->photos);
-		$this->assertEquals($id, $responseObj->photos[0]->id);
+		$responseArr = json_decode($response->getContent());
+		$this->assertCount(1, $responseArr);
+		$this->assertEquals($id, $responseArr[0]->id);
 
 		// set to 0
 		Configs::set('map_display', '0');
