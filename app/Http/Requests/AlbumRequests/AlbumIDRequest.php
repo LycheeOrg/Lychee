@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\AlbumRequests;
 
-use App\Factories\AlbumFactory;
+use App\Rules\AlbumIDRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AlbumIDRequest extends FormRequest
@@ -24,23 +24,6 @@ class AlbumIDRequest extends FormRequest
 	 */
 	public function rules(): array
 	{
-		return [
-			'albumID' => [
-				'required',
-				function (string $attribute, $value, $fail) {
-					if (
-						$value !== null &&
-						(filter_var($value, FILTER_VALIDATE_INT) === false || intval($value) < 0) &&
-						!array_key_exists($value, AlbumFactory::BUILTIN_SMARTS)
-					) {
-						$fail(
-							$attribute .
-							' must either be null, a positive integer or one of the built-in IDs ' .
-							implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS))
-						);
-					}
-				},
-			],
-		];
+		return ['albumID' => ['required', new AlbumIDRule()]];
 	}
 }

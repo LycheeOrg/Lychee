@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\AlbumRequests;
 
-use App\Factories\AlbumFactory;
+use App\Rules\AlbumIDListRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AlbumIDsRequest extends FormRequest
@@ -22,33 +22,8 @@ class AlbumIDsRequest extends FormRequest
 	 *
 	 * @return array
 	 */
-	public function rules()
+	public function rules(): array
 	{
-		return [
-			'albumIDs' => [
-				'required',
-				'string',
-				function (string $attribute, $value, $fail) {
-					$albumIDs = explode(',', $value);
-					$success = true;
-					foreach ($albumIDs as $albumID) {
-						if (
-							(filter_var($albumID, FILTER_VALIDATE_INT) === false || intval($albumID) < 0) &&
-							!array_key_exists($albumID, AlbumFactory::BUILTIN_SMARTS)
-						) {
-							$success = false;
-							break;
-						}
-					}
-					if (!$success) {
-						$fail(
-							$attribute .
-							' must be a comma-seperated string of positive integers or the built-in IDs ' .
-							implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS))
-						);
-					}
-				},
-			],
-		];
+		return ['albumIDs' => ['required', new AlbumIDListRule()]];
 	}
 }

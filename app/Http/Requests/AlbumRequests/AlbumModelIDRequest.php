@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\AlbumRequests;
 
+use App\Rules\ModelIDRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AlbumModelIDRequest extends FormRequest
@@ -23,20 +24,6 @@ class AlbumModelIDRequest extends FormRequest
 	 */
 	public function rules(): array
 	{
-		return [
-			'albumID' => [
-				'required',
-				function (string $attribute, $value, $fail) {
-					if (
-						$value !== null &&
-						(filter_var($value, FILTER_VALIDATE_INT) === false || intval($value) < 0)
-					) {
-						$fail(
-							$attribute . ' must either be null or a positive integer'
-						);
-					}
-				},
-			],
-		];
+		return ['albumID' => ['required', new ModelIDRule()]];
 	}
 }
