@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\PhotosUnitTest;
@@ -20,7 +20,7 @@ class PhotosRotateTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		/*
-		* Make a copy of the image because import deletes the file and we want to be
+		* Make a copy of the image because import deletes the file, and we want to be
 		* able to use the test on a local machine and not just in CI.
 		*/
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
@@ -70,7 +70,7 @@ class PhotosRotateTest extends TestCase
 		$response->assertSee('support for rotation disabled by configuration');
 
 		Configs::set('editor_enabled', '1');
-		$photos_tests->rotate('-1', 1, 404);
+		$photos_tests->rotate('-1', 1, 422);
 		$photos_tests->rotate($id, 'asdq', 422, 'The selected direction is invalid');
 		$photos_tests->rotate($id, '2', 422, 'The selected direction is invalid');
 

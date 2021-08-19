@@ -294,12 +294,12 @@ class AlbumsUnitTest
 	 */
 	public function set_public(
 		string $id,
-		int $full_photo = 1,
-		int $public = 1,
-		int $visible = 1,
-		int $nsfw = 0,
-		int $downloadable = 1,
-		int $share_button_visible = 1,
+		bool $full_photo = true,
+		bool $public = true,
+		bool $visible = true,
+		bool $nsfw = false,
+		bool $downloadable = true,
+		bool $share_button_visible = true,
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): void {

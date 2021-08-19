@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
 use Carbon\Carbon;
@@ -27,7 +27,7 @@ class PhotosTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		/*
-		 * Make a copy of the image because import deletes the file and we want to be
+		 * Make a copy of the image because import deletes the file, and we want to be
 		 * able to use the test on a local machine and not just in CI.
 		 */
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
@@ -148,15 +148,8 @@ class PhotosTest extends TestCase
 		/**
 		 * We now test interaction with albums.
 		 */
-		$albumID = $albums_tests->add('0', 'test_album_2');
-		/*
-		 * Actually, the expected status code should be 404, because neither
-		 * an album nor an photo with ID -1 exists.
-		 * However, this requires a fix of `ReadCheck` and `UploadCheck` first.
-		 * But this should be another PR.
-		 * TODO: Fix this.
-		 */
-		$photos_tests->set_album('-1', $id, 200, 'false');
+		$albumID = $albums_tests->add('0', 'test_album_2')->offsetGet('id');
+		$photos_tests->set_album('-1', $id, 422);
 		$photos_tests->set_album($albumID, $id);
 		$albums_tests->download($albumID);
 		$photos_tests->dont_see_in_unsorted($id);
@@ -203,8 +196,8 @@ class PhotosTest extends TestCase
 		/**
 		 * Get album which should contain both photos.
 		 */
-		$album = $this->asObject($albums_tests->get($albumID, '', 'true'));
-		$this->assertEquals(2, count($album->photos));
+		$album = $this->asObject($albums_tests->get($albumID));
+		$this->assertCount(2, $album->photos);
 
 		$ids = [];
 		$ids[0] = $album->photos[0]->id;
@@ -215,7 +208,7 @@ class PhotosTest extends TestCase
 		$photos_tests->dont_see_in_recent($ids[0]);
 		$photos_tests->dont_see_in_unsorted($ids[1]);
 
-		$albums_tests->set_public($albumID, 1, 1, 1, 0, 1, 1, 'true');
+		$albums_tests->set_public($albumID);
 
 		/**
 		 * Actually try to display the picture.
@@ -226,15 +219,15 @@ class PhotosTest extends TestCase
 		// delete the picture after displaying it
 		$photos_tests->delete($ids[1]);
 		$photos_tests->get($ids[1], 404);
-		$album = $this->asObject($albums_tests->get($albumID, '', 'true'));
-		$this->assertEquals(0, count($album->photos));
+		$album = $this->asObject($albums_tests->get($albumID));
+		$this->assertCount(0, $album->photos);
 
 		// save initial value
 		$init_config_value = Configs::get_value('gen_demo_js');
 
 		// set to 0
 		Configs::set('gen_demo_js', '1');
-		$this->assertEquals(Configs::get_value('gen_demo_js'), '1');
+		$this->assertEquals('1', Configs::get_value('gen_demo_js'));
 
 		// check redirection
 		$response = $this->get('/demo');
@@ -271,7 +264,7 @@ class PhotosTest extends TestCase
 
 		if (Configs::hasExiftool()) {
 			/*
-			* Make a copy of the image because import deletes the file and we want to be
+			* Make a copy of the image because import deletes the file, and we want to be
 			* able to use the test on a local machine and not just in CI.
 			*/
 			copy('tests/Feature/train.jpg', 'public/uploads/import/train.jpg');
@@ -299,7 +292,7 @@ class PhotosTest extends TestCase
 			$photo = $this->asObject($photos_tests->get($photo_id));
 
 			$this->assertEquals($photo_id, $video_id);
-			$this->assertEquals($photo->live_photo_content_id, 'E905E6C6-C747-4805-942F-9904A0281F02');
+			$this->assertEquals('E905E6C6-C747-4805-942F-9904A0281F02', $photo->live_photo_content_id);
 			$this->assertStringEndsWith('.mov', $photo->live_photo_url);
 		} else {
 			$this->markTestSkipped('Exiftool is not available. Test Skipped.');
@@ -341,8 +334,8 @@ class PhotosTest extends TestCase
 		// set to 0
 		Configs::set('SL_enable', '1');
 		Configs::set('SL_for_admin', '1');
-		$this->assertEquals(Configs::get_value('SL_enable'), '1');
-		$this->assertEquals(Configs::get_value('SL_for_admin'), '1');
+		$this->assertEquals('1', Configs::get_value('SL_enable'));
+		$this->assertEquals('1', Configs::get_value('SL_for_admin'));
 
 		// just redo the test above :'D
 		$this->testUpload();
@@ -364,7 +357,7 @@ class PhotosTest extends TestCase
 
 		// enable import via symlink option
 		Configs::set('import_via_symlink', '1');
-		$this->assertEquals(Configs::get_value('import_via_symlink'), '1');
+		$this->assertEquals('1', Configs::get_value('import_via_symlink'));
 
 		$num_before_import = Photo::recent()->count();
 

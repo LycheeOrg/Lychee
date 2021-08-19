@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
 use App\Actions\Photo\Archive;
@@ -27,6 +25,7 @@ use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Logs;
 use App\Models\Photo;
+use App\Rules\ModelIDRule;
 use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -192,7 +191,7 @@ class PhotoController extends Controller
 	 */
 	public function setAlbum(PhotoIDsRequest $request, SetAlbum $setAlbum): string
 	{
-		$request->validate(['albumID' => 'required|string']);
+		$request->validate(['albumID' => ['required', new ModelIDRule()]]);
 
 		return $setAlbum->execute(explode(',', $request['photoIDs']), $request['albumID']) ? 'true' : 'false';
 	}
