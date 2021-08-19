@@ -47,9 +47,11 @@ class InstallTest extends TestCase
 			'notifications',
 			'page_contents',
 			'pages',
-			'user_album',
-			'users',
+			'user_base_album',
+			'tag_albums',
 			'albums',
+			'base_albums',
+			'users',
 			'web_authn_credentials',
 		];
 
