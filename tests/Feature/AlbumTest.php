@@ -124,7 +124,7 @@ class AlbumTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		$albums_tests->set_description('-1', 'new description', 422);
-		$albums_tests->set_public('-1', 1, 1, 1, 0, 1, 1, 422);
+		$albums_tests->set_public('-1', true, true, false, false, true, true, 422);
 
 		$session_tests->logout($this);
 	}

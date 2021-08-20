@@ -89,8 +89,8 @@ abstract class AddBaseStrategy
 		if ($this->photo->altitude === null && !empty($this->parameters->info['altitude'])) {
 			$this->photo->altitude = floatval($this->parameters->info['altitude']);
 		}
-		if ($this->photo->imgDirection === null && !empty($this->parameters->info['imgDirection'])) {
-			$this->photo->imgDirection = floatval($this->parameters->info['imgDirection']);
+		if ($this->photo->img_direction === null && !empty($this->parameters->info['imgDirection'])) {
+			$this->photo->img_direction = floatval($this->parameters->info['imgDirection']);
 		}
 		if (empty($this->photo->location) && !empty($this->parameters->info['location'])) {
 			$this->photo->location = $this->parameters->info['location'];

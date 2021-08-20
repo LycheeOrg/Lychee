@@ -147,7 +147,7 @@ class AlbumController extends Controller
 	{
 		$validated = $request->validate([
 			'public' => 'required|boolean',
-			'visible' => 'required|boolean',
+			'requires_link' => 'required|boolean',
 			'nsfw' => 'required|boolean',
 			'downloadable' => 'required|boolean',
 			'share_button_visible' => 'required|boolean',

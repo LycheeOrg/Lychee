@@ -42,7 +42,7 @@ use Illuminate\Support\Facades\Storage;
  * @property float|null   $latitude
  * @property float|null   $longitude
  * @property float|null   $altitude
- * @property float|null   $imgDirection
+ * @property float|null   $img_direction
  * @property string|null  $location
  * @property Carbon|null  $taken_at
  * @property string|null  $taken_at_orig_tz

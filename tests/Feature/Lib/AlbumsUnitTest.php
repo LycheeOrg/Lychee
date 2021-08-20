@@ -285,7 +285,7 @@ class AlbumsUnitTest
 	 * @param string      $id
 	 * @param int         $full_photo
 	 * @param int         $public
-	 * @param int         $visible
+	 * @param int         $requiresLink
 	 * @param int         $nsfw
 	 * @param int         $downloadable
 	 * @param int         $share_button_visible
@@ -296,18 +296,18 @@ class AlbumsUnitTest
 		string $id,
 		bool $full_photo = true,
 		bool $public = true,
-		bool $visible = true,
+		bool $requiresLink = false,
 		bool $nsfw = false,
 		bool $downloadable = true,
 		bool $share_button_visible = true,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json('POST', '/api/Album::setPublic', [
 			'full_photo' => $full_photo,
 			'albumID' => $id,
 			'public' => $public,
-			'visible' => $visible,
+			'requires_link' => $requiresLink,
 			'nsfw' => $nsfw,
 			'downloadable' => $downloadable,
 			'share_button_visible' => $share_button_visible,

@@ -310,17 +310,10 @@ class PhotosTest extends TestCase
 		$photos_tests->wrong_upload();
 		$photos_tests->wrong_upload2();
 		$photos_tests->get('-1', 404);
-		$photos_tests->set_description('-1', 'test', 404);
-		$photos_tests->set_public('-1', 404);
-		/*
-		 * Actually, the expected status code should be 404, because neither
-		 * an album nor an photo with ID -1 exists.
-		 * However, this requires a fix of `ReadCheck` and `UploadCheck` first.
-		 * But this should be another PR.
-		 * TODO: Fix this.
-		 */
-		$photos_tests->set_album('-1', '-1', 200, 'false');
-		$photos_tests->set_license('-1', 'CC0', 404);
+		$photos_tests->set_description('-1', 'test', 422);
+		$photos_tests->set_public('-1', 422);
+		$photos_tests->set_album('-1', '-1', 422);
+		$photos_tests->set_license('-1', 'CC0', 422);
 
 		AccessControl::logout();
 	}

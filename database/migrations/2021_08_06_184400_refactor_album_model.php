@@ -102,6 +102,7 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedBigInteger('_rgt')->nullable()->default(null);
 			// Indices and constraint definitions
 			$table->primary('id');
+			//$table->index(['_lft', '_rgt']);
 			$table->foreign('id')->references('id')->on('base_albums');
 			$table->foreign('parent_id')->references('id')->on('albums');
 			// Sic!
@@ -161,9 +162,18 @@ class RefactorAlbumModel extends Migration
 			$table->string('type', 30)->nullable(false);
 			$table->unsignedBigInteger('filesize')->nullable(false)->default(0);
 			$table->string('checksum', 40)->nullable(false);
+			$table->string('live_photo_short_path')->nullable()->default(null);
+			$table->string('live_photo_content_id')->nullable()->default(null);
+			$table->string('live_photo_checksum', 40)->nullable()->default(null);
 			// Indices and constraint definitions
 			$table->foreign('owner_id')->references('id')->on('users');
 			$table->foreign('album_id')->references('id')->on('albums');
+			$table->index('created_at');
+			$table->index('updated_at');
+			$table->index('taken_at');
+			$table->index('checksum');
+			$table->index('live_photo_content_id');
+			$table->index('live_photo_checksum');
 		});
 
 		Schema::create('size_variants', function (Blueprint $table) {
@@ -190,6 +200,8 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedBigInteger('size_variant_id')->nullable(false);
 			$table->string('short_path')->nullable(false);
 			// Indices and constraint definitions
+			$table->index('created_at');
+			$table->index('updated_at');
 			$table->foreign('size_variant_id')->references('id')->on('size_variants');
 		});
 
@@ -197,8 +209,8 @@ class RefactorAlbumModel extends Migration
 			// We cannot create this foreign constraint on the table albums
 			// when it is created, because we have a circular foreign
 			// constraint between `photos` and `albums`.
-			// Photos point to albums via `album_id` and albums point to
-			// photos via `cover_id`.
+			// `photos` points to albums via `album_id` and `albums` points to
+			// `photos` via `cover_id`.
 			// To break up that circular dependencies, we set the constraint on
 			// `cover_id` here.
 			// This has no effect for SQLite :-(
@@ -289,6 +301,9 @@ class RefactorAlbumModel extends Migration
 				'type' => $oldPhoto->type,
 				'filesize' => $oldPhoto->filesize,
 				'checksum' => $oldPhoto->checksum,
+				'live_photo_short_path' => $oldPhoto->live_photo_short_path,
+				'live_photo_content_id' => $oldPhoto->live_photo_content_id,
+				'live_photo_checksum' => $oldPhoto->live_photo_checksum,
 			]);
 		}
 

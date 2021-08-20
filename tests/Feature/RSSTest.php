@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
 use Tests\Feature\Lib\AlbumsUnitTest;
@@ -18,7 +18,7 @@ class RSSTest extends TestCase
 
 		// set to 0
 		Configs::set('rss_enable', '0');
-		$this->assertEquals(Configs::get_value('rss_enable'), '0');
+		$this->assertEquals('0', Configs::get_value('rss_enable'));
 
 		// check redirection
 		$response = $this->get('/feed');
@@ -36,7 +36,7 @@ class RSSTest extends TestCase
 		// set to 0
 		Configs::set('rss_enable', '1');
 		Configs::set('full_photo', '0');
-		$this->assertEquals(Configs::get_value('rss_enable'), '1');
+		$this->assertEquals('1', Configs::get_value('rss_enable'));
 
 		// check redirection
 		$response = $this->get('/feed');
@@ -75,7 +75,7 @@ class RSSTest extends TestCase
 
 		// move picture to album
 		$photos_tests->set_album($albumID, $photoID);
-		$albums_tests->set_public($albumID, 1, 1, 1, 0, 1, 1, 'true');
+		$albums_tests->set_public($albumID);
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
