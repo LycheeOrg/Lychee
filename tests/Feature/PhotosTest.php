@@ -4,8 +4,10 @@ namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
+use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection as BaseCollection;
 use Tests\Feature\Lib\AlbumsUnitTest;
@@ -14,6 +16,8 @@ use Tests\TestCase;
 
 class PhotosTest extends TestCase
 {
+	use UTCBasedTimes;
+
 	/**
 	 * Test photo operations.
 	 *
@@ -352,7 +356,14 @@ class PhotosTest extends TestCase
 		Configs::set('import_via_symlink', '1');
 		$this->assertEquals('1', Configs::get_value('import_via_symlink'));
 
-		$num_before_import = Photo::recent()->count();
+		$strRecent = $this->fromDateTime(
+			Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))
+		);
+		$recentFilter = function (Builder $query) use ($strRecent) {
+			$query->where('created_at', '>=', $strRecent);
+		};
+
+		$num_before_import = Photo::query()->where($recentFilter)->count();
 
 		// upload the photo
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
@@ -361,15 +372,14 @@ class PhotosTest extends TestCase
 		// check if the file is still there (without symlinks the photo would have been deleted)
 		$this->assertEquals(true, file_exists('public/uploads/import/night.jpg'));
 
-		$response = $albums_tests->get('recent', '', 'true');
-		$content = $response->getContent();
-		$array_content = json_decode($content);
-		$photos = new BaseCollection($array_content->photos);
-		$this->assertEquals(Photo::recent()->count(), $photos->count());
+		$response = $albums_tests->get('recent');
+		$responseObj = json_decode($response->getContent());
+		$photos = new BaseCollection($responseObj->photos);
+		$this->assertEquals(Photo::query()->where($recentFilter)->count(), $photos->count());
 		$ids = $photos->skip($num_before_import)->implode('id', ',');
 		$photos_tests->delete($ids);
 
-		$this->assertEquals($num_before_import, Photo::recent()->count());
+		$this->assertEquals($num_before_import, Photo::query()->where($recentFilter)->count());
 
 		// set back to initial value
 		Configs::set('import_via_symlink', $init_config_value);
