@@ -36,12 +36,9 @@ class AlbumsUnitTest
 		];
 
 		$response = $this->testCase->json('POST', '/api/Album::add', $params);
-		if ($response->getStatusCode() === 500) {
-			$response->dump();
-		}
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
@@ -71,7 +68,7 @@ class AlbumsUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::addByTags', $params);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
@@ -96,7 +93,7 @@ class AlbumsUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -120,12 +117,9 @@ class AlbumsUnitTest
 			'/api/Album::get',
 			['albumID' => $id]
 		);
-		if ($response->getStatusCode() === 500) {
-			$response->dump();
-		}
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
@@ -150,7 +144,7 @@ class AlbumsUnitTest
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -201,7 +195,7 @@ class AlbumsUnitTest
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -226,7 +220,7 @@ class AlbumsUnitTest
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -250,7 +244,7 @@ class AlbumsUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -277,7 +271,7 @@ class AlbumsUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -314,7 +308,7 @@ class AlbumsUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -336,7 +330,7 @@ class AlbumsUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -366,12 +360,9 @@ class AlbumsUnitTest
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson('/api/Album::delete', ['albumIDs' => $id]);
-		if ($response->status() === 500) {
-			$response->dump();
-		}
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -390,7 +381,7 @@ class AlbumsUnitTest
 		$response = $this->testCase->json('POST', '/api/Albums::getPositionData', []);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
@@ -416,7 +407,7 @@ class AlbumsUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;

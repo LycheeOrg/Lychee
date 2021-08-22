@@ -69,7 +69,7 @@ class RefactorAlbumModel extends Migration
 
 		// Step 2
 		// Recreate tables in correct order so that foreign keys can
-		// immediately be created.
+		// be created immediately.
 
 		Schema::create('base_albums', function (Blueprint $table) {
 			// Column definitions
@@ -126,10 +126,10 @@ class RefactorAlbumModel extends Migration
 			// Column definitions
 			$table->bigIncrements('id')->nullable(false);
 			$table->unsignedInteger('user_id')->nullable(false);
-			$table->unsignedBigInteger('album_id')->nullable(false);
+			$table->unsignedBigInteger('base_album_id')->nullable(false);
 			// Indices and constraint definitions
 			$table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
-			$table->foreign('album_id')->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
+			$table->foreign('base_album_id')->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
 		});
 
 		Schema::create('photos', function (Blueprint $table) {

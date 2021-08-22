@@ -11,23 +11,22 @@ class ListShare
 	public function do(int $UserId): array
 	{
 		// prepare query
-		$shared_query = DB::table('user_album')
-			->select(
-				'user_album.id',
+		$shared_query = DB::table('user_base_album')
+			->select([
+				'user_base_album.id',
 				'user_id',
-				'album_id',
+				'base_album_id',
 				'username',
 				'title',
-				'parent_id'
-			)
+			])
 			->join('users', 'user_id', 'users.id')
-			->join('albums', 'album_id', 'albums.id');
+			->join('base_albums', 'base_album_id', 'base_albums.id');
 
 		$albums_query = Album::select(['id', 'title', 'parent_id']);
 
 		// apply filter
 		if ($UserId != 0) {
-			$shared_query = $shared_query->where('albums.owner_id', '=', $UserId);
+			$shared_query = $shared_query->where('base_albums.owner_id', '=', $UserId);
 			$albums_query = $albums_query->where('owner_id', '=', $UserId);
 		}
 
@@ -35,12 +34,12 @@ class ListShare
 		$shared = $shared_query->orderBy('title', 'ASC')
 			->orderBy('username', 'ASC')
 			->get()
-			->each(function (&$s) {
+			->each(function ($s) {
 				$s->album_id = strval($s->album_id);
 				$s->title = Album::getFullPath($s);
 			});
 
-		$albums = $albums_query->get()->each(function (&$album) {
+		$albums = $albums_query->get()->each(function ($album) {
 			$album->title = Album::getFullPath($album);
 		});
 

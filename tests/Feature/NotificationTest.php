@@ -34,17 +34,17 @@ class NotificationTest extends TestCase
 
 	public function testSetupUserEmail()
 	{
-		$users_test = new UsersUnitTest();
-		$sessions_test = new SessionUnitTest();
+		$users_test = new UsersUnitTest($this);
+		$sessions_test = new SessionUnitTest($this);
 
 		// add email to admin
 		AccessControl::log_as_id(0);
-		$users_test->update_email($this, 'test@test.com');
+		$users_test->update_email('test@test.com');
 
 		// add new user
-		$users_test->add($this, 'uploader', 'uploader', '1', '0');
+		$users_test->add('uploader', 'uploader', '1', '0');
 
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 	}
 
 	/**
@@ -52,12 +52,12 @@ class NotificationTest extends TestCase
 	 */
 	public function testUploadAndNotify()
 	{
-		$sessions_test = new SessionUnitTest();
+		$sessions_test = new SessionUnitTest($this);
 		$albums_tests = new AlbumsUnitTest($this);
 		$photos_tests = new PhotosUnitTest($this);
 
 		// login as new user
-		$sessions_test->login($this, 'uploader', 'uploader');
+		$sessions_test->login('uploader', 'uploader');
 
 		// add new album
 		$albumID = $albums_tests->add('0', 'test_album')->offsetGet('id');
@@ -78,7 +78,7 @@ class NotificationTest extends TestCase
 		$albums_tests->delete($albumID);
 
 		// logout
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 	}
 
 	public function testMailNotifications()
@@ -99,7 +99,7 @@ class NotificationTest extends TestCase
 			],
 		];
 
-		Mail::fake('test@test.com')->send(new PhotosAdded($photos));
+		Mail::fake()->send(new PhotosAdded($photos));
 
 		Mail::assertSent(PhotosAdded::class);
 
@@ -108,15 +108,15 @@ class NotificationTest extends TestCase
 
 	public function testClearNotifications()
 	{
-		$users_test = new UsersUnitTest();
-		$sessions_test = new SessionUnitTest();
+		$users_test = new UsersUnitTest($this);
+		$sessions_test = new SessionUnitTest($this);
 
 		// remove user, email & notifications
 		AccessControl::log_as_id(0);
 
-		$users_test->update_email($this, '');
+		$users_test->update_email('');
 
-		$response = $users_test->list($this, 'true');
+		$response = $users_test->list();
 		$t = json_decode($response->getContent());
 		$user_id = end($t)->id;
 		$response->assertJsonFragment([
@@ -126,8 +126,8 @@ class NotificationTest extends TestCase
 			'lock' => 0,
 		]);
 
-		$users_test->delete($this, $user_id, 'true');
+		$users_test->delete($user_id);
 
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 	}
 }

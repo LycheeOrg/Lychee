@@ -6,6 +6,7 @@ use App\Exceptions\Handlers\AccessDBDenied;
 use App\Exceptions\Handlers\ApplyComposer;
 use App\Exceptions\Handlers\InvalidPayload;
 use App\Exceptions\Handlers\NoEncryptionKey;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;

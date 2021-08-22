@@ -91,7 +91,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
@@ -232,7 +232,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -258,7 +258,7 @@ class PhotosUnitTest
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -279,7 +279,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -303,7 +303,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -326,7 +326,7 @@ class PhotosUnitTest
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -352,7 +352,7 @@ class PhotosUnitTest
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -378,7 +378,7 @@ class PhotosUnitTest
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -401,7 +401,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
@@ -441,7 +441,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 	}
 
@@ -471,7 +471,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response->streamedContent();
@@ -499,7 +499,7 @@ class PhotosUnitTest
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
-			$response->assertSee($assertSee);
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
