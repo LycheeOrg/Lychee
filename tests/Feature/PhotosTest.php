@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Facades\AccessControl;
 use App\Models\Configs;
-use App\Models\Extensions\UTCBasedTimes;
 use App\Models\Photo;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -16,8 +15,6 @@ use Tests\TestCase;
 
 class PhotosTest extends TestCase
 {
-	use UTCBasedTimes;
-
 	/**
 	 * Test photo operations.
 	 *
@@ -356,9 +353,10 @@ class PhotosTest extends TestCase
 		Configs::set('import_via_symlink', '1');
 		$this->assertEquals('1', Configs::get_value('import_via_symlink'));
 
-		$strRecent = $this->fromDateTime(
-			Carbon::now()->subDays(intval(Configs::get_value('recent_age', '1')))
-		);
+		$strRecent = Carbon::now()
+			->subDays(intval(Configs::get_value('recent_age', '1')))
+			->setTimezone('UTC')
+			->format('Y-m-d H:i:s');
 		$recentFilter = function (Builder $query) use ($strRecent) {
 			$query->where('created_at', '>=', $strRecent);
 		};
