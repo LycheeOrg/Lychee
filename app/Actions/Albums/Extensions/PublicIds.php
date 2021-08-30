@@ -106,17 +106,15 @@ class PublicIds
 		$directly = $this->getDirectlyNotAccessible();
 
 		if ($directly->count() > 0) {
-			$sql = DB::table('albums')->select('id');
 			// fix "General error: 1 Expression tree is too large (maximum depth 1000)"
-			$i = 0;
+			$chunks = $directly->chunk(999);
 			$forbidden_list = collect();
-			foreach ($directly as $alb) {
-				$sql = $sql->orWhereBetween('_lft', [$alb->_lft, $alb->_rgt]);
-				if (++$i > 99) {
-					$forbidden_list = $forbidden_list->concat($sql->pluck('id'));
-					$sql = DB::table('albums')->select('id');
-					$i = 0;
+			foreach ($chunks as $chunk) {
+				$sql = DB::table('albums')->select('id');
+				foreach ($chunk as $alb) {
+					$sql = $sql->orWhereBetween('_lft', [$alb->_lft, $alb->_rgt]);
 				}
+				$forbidden_list = $forbidden_list->concat($sql->pluck('id'));
 			}
 
 			$this->forbidden_list = $forbidden_list;
