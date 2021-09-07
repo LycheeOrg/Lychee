@@ -29,7 +29,7 @@ class Tree
 
 		/** @var NsQueryBuilder $query */
 		$query = $this->albumAuthorisationProvider
-			->applyVisibilityFilter(Album::query()->whereIsRoot());
+			->applyVisibilityFilter(Album::query());
 
 		if (in_array($this->sortingCol, ['title', 'description'])) {
 			/** @var NsCollection $albums */
