@@ -920,12 +920,12 @@ album.add = function () {
 		}
 
 		api.post("Album::add", params, function (_data) {
-			if (_data !== false && isNumber(_data)) {
+			if (_data && isNumber(_data.id)) {
 				if (IDs != null && callback != null) {
 					callback(IDs, _data, false); // we do not confirm
 				} else {
 					albums.refresh();
-					lychee.goto(_data);
+					lychee.goto(_data.id);
 				}
 			} else {
 				lychee.error(null, params, _data);
@@ -970,9 +970,9 @@ album.addByTags = function () {
 			var isNumber = function isNumber(n) {
 				return !isNaN(parseInt(n, 10)) && isFinite(n);
 			};
-			if (_data !== false && isNumber(_data)) {
+			if (_data && isNumber(_data.id)) {
 				albums.refresh();
-				lychee.goto(_data);
+				lychee.goto(_data.id);
 			} else {
 				lychee.error(null, params, _data);
 			}
@@ -1307,13 +1307,13 @@ album.setPublic = function (albumID, e) {
 			if ($(this).prop("checked") === true) {
 				$(".basicModal .choice input").attr("disabled", false);
 
-				if (album.json.public === "1") {
+				if (album.json.public) {
 					// Initialize options based on album settings.
-					if (album.json.full_photo !== null && album.json.full_photo === "1") $('.basicModal .choice input[name="full_photo"]').prop("checked", true);
-					if (album.json.visible === "0") $('.basicModal .choice input[name="hidden"]').prop("checked", true);
-					if (album.json.downloadable === "1") $('.basicModal .choice input[name="downloadable"]').prop("checked", true);
-					if (album.json.share_button_visible === "1") $('.basicModal .choice input[name="share_button_visible"]').prop("checked", true);
-					if (album.json.password === "1") {
+					if (album.json.full_photo) $('.basicModal .choice input[name="full_photo"]').prop("checked", true);
+					if (album.json.requires_link) $('.basicModal .choice input[name="hidden"]').prop("checked", true);
+					if (album.json.downloadable) $('.basicModal .choice input[name="downloadable"]').prop("checked", true);
+					if (album.json.share_button_visible) $('.basicModal .choice input[name="share_button_visible"]').prop("checked", true);
+					if (album.json.has_password) {
 						$('.basicModal .choice input[name="password"]').prop("checked", true);
 						$('.basicModal .choice input[name="passwordtext"]').show();
 					}
@@ -1335,13 +1335,13 @@ album.setPublic = function (albumID, e) {
 			}
 		});
 
-		if (album.json.nsfw === "1") {
+		if (album.json.nsfw) {
 			$('.basicModal .switch input[name="nsfw"]').prop("checked", true);
 		} else {
 			$('.basicModal .switch input[name="nsfw"]').prop("checked", false);
 		}
 
-		if (album.json.public === "1") {
+		if (album.json.public) {
 			$('.basicModal .switch input[name="public"]').click();
 		} else {
 			$(".basicModal .choice input").attr("disabled", true);
@@ -1357,55 +1357,31 @@ album.setPublic = function (albumID, e) {
 	albums.refresh();
 
 	// Set public
-	if ($('.basicModal .switch input[name="nsfw"]:checked').length === 1) {
-		album.json.nsfw = "1";
-	} else {
-		album.json.nsfw = "0";
-	}
+	album.json.nsfw = $('.basicModal .switch input[name="nsfw"]:checked').length === 1;
 
 	// Set public
-	if ($('.basicModal .switch input[name="public"]:checked').length === 1) {
-		album.json.public = "1";
-	} else {
-		album.json.public = "0";
-	}
+	album.json.public = $('.basicModal .switch input[name="public"]:checked').length === 1;
 
 	// Set full photo
-	if ($('.basicModal .choice input[name="full_photo"]:checked').length === 1) {
-		album.json.full_photo = "1";
-	} else {
-		album.json.full_photo = "0";
-	}
+	album.json.full_photo = $('.basicModal .choice input[name="full_photo"]:checked').length === 1;
 
 	// Set visible
-	if ($('.basicModal .choice input[name="hidden"]:checked').length === 1) {
-		album.json.visible = "0";
-	} else {
-		album.json.visible = "1";
-	}
+	album.json.requires_link = $('.basicModal .choice input[name="hidden"]:checked').length === 1;
 
 	// Set downloadable
-	if ($('.basicModal .choice input[name="downloadable"]:checked').length === 1) {
-		album.json.downloadable = "1";
-	} else {
-		album.json.downloadable = "0";
-	}
+	album.json.downloadable = $('.basicModal .choice input[name="downloadable"]:checked').length === 1;
 
 	// Set share_button_visible
-	if ($('.basicModal .choice input[name="share_button_visible"]:checked').length === 1) {
-		album.json.share_button_visible = "1";
-	} else {
-		album.json.share_button_visible = "0";
-	}
+	album.json.share_button_visible = $('.basicModal .choice input[name="share_button_visible"]:checked').length === 1;
 
 	// Set password
 	var oldPassword = album.json.password;
 	if ($('.basicModal .choice input[name="password"]:checked').length === 1) {
 		password = $('.basicModal .choice input[name="passwordtext"]').val();
-		album.json.password = "1";
+		album.json.has_password = true;
 	} else {
 		password = "";
-		album.json.password = "0";
+		album.json.has_password = false;
 	}
 
 	// Modal input has been processed, now it can be closed
@@ -1426,7 +1402,7 @@ album.setPublic = function (albumID, e) {
 		full_photo: album.json.full_photo,
 		public: album.json.public,
 		nsfw: album.json.nsfw,
-		visible: album.json.visible,
+		requires_link: album.json.requires_link,
 		downloadable: album.json.downloadable,
 		share_button_visible: album.json.share_button_visible
 	};
@@ -1536,7 +1512,7 @@ album.shareUsers = function (albumID, e) {
 };
 
 album.setNSFW = function (albumID, e) {
-	album.json.nsfw = album.json.nsfw === "0" ? "1" : "0";
+	album.json.nsfw = !album.json.nsfw;
 
 	view.album.nsfw();
 
@@ -1554,7 +1530,7 @@ album.setNSFW = function (albumID, e) {
 };
 
 album.share = function (service) {
-	if (album.json.hasOwnProperty("share_button_visible") && album.json.share_button_visible !== "1") {
+	if (album.json.hasOwnProperty("share_button_visible") && !album.json.share_button_visible) {
 		return;
 	}
 
@@ -1885,7 +1861,7 @@ albums.load = function () {
 			var waitTime = void 0;
 
 			// Smart Albums
-			if (data.smartalbums != null) albums._createSmartAlbums(data.smartalbums);
+			if (data.smart_albums != null) albums._createSmartAlbums(data.smart_albums);
 
 			albums.json = data;
 
@@ -2045,7 +2021,7 @@ albums.getByID = function (albumID) {
 
 	if (json === undefined && albums.json.shared_albums !== null) $.each(albums.json.shared_albums, func);
 
-	if (json === undefined && albums.json.smartalbums !== null) $.each(albums.json.smartalbums, func);
+	if (json === undefined && albums.json.smart_albums !== null) $.each(albums.json.smart_albums, func);
 
 	return json;
 };
@@ -2081,10 +2057,10 @@ albums.deleteByID = function (albumID) {
 	}
 
 	if (deleted === false) {
-		if (!albums.json.smartalbums) return undefined;
-		$.each(albums.json.smartalbums, function (i) {
-			if (parseInt(albums.json.smartalbums[i].id) === parseInt(albumID)) {
-				delete albums.json.smartalbums[i];
+		if (!albums.json.smart_albums) return undefined;
+		$.each(albums.json.smart_albums, function (i) {
+			if (parseInt(albums.json.smart_albums[i].id) === parseInt(albumID)) {
+				delete albums.json.smart_albums[i];
 				deleted = true;
 				return false; // stop the loop
 			}
@@ -2917,7 +2893,7 @@ contextMenu.photoMore = function (photoID, e) {
 	// a) We are allowed to upload to the album
 	// b) the photo is explicitly marked as downloadable (v4-only)
 	// c) or, the album is explicitly marked as downloadable
-	var showDownload = album.isUploadable() || (_photo.json.hasOwnProperty("downloadable") ? _photo.json.downloadable === "1" : album.json && album.json.downloadable && album.json.downloadable === "1");
+	var showDownload = album.isUploadable() || (_photo.json.hasOwnProperty("downloadable") ? _photo.json.downloadable === "1" : album.json && album.json.downloadable && album.json.downloadable);
 	var showFull = _photo.json.size_variants.original.url && _photo.json.size_variants.original.url !== "";
 
 	var items = [{ title: build.iconic("fullscreen-enter") + lychee.locale["FULL_PHOTO"], visible: !!showFull, fn: function fn() {
@@ -3107,7 +3083,7 @@ contextMenu.shareAlbum = function (albumID, e) {
 		title: build.iconic("link-intact") + lychee.locale["DIRECT_LINK"],
 		fn: function fn() {
 			var url = lychee.getBaseUrl() + "r/" + albumID;
-			if (album.json.password === "1") {
+			if (album.json.has_password) {
 				// Copy the url with prefilled password param
 				url += "?password=";
 			}
@@ -3436,7 +3412,7 @@ header.setMode = function (mode) {
 
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
-			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && album.json.downloadable === "0") {
+			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && !album.json.downloadable) {
 				var _e9 = $("#button_archive");
 				_e9.hide();
 				tabindex.makeUnfocusable(_e9);
@@ -3446,7 +3422,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e10);
 			}
 
-			if (album.json && album.json.hasOwnProperty("share_button_visible") && album.json.share_button_visible !== "1") {
+			if (album.json && album.json.hasOwnProperty("share_button_visible") && !album.json.share_button_visible) {
 				var _e11 = $("#button_share_album");
 				_e11.hide();
 				tabindex.makeUnfocusable(_e11);
@@ -3581,7 +3557,7 @@ header.setMode = function (mode) {
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$("#button_more").show();
 			tabindex.makeFocusable($("#button_more"));
-			if (!(album.isUploadable() || (_photo.json.hasOwnProperty("downloadable") ? _photo.json.downloadable === "1" : album.json && album.json.downloadable && album.json.downloadable === "1")) && !(_photo.json.size_variants.original.url && _photo.json.size_variants.original.url !== "")) {
+			if (!(album.isUploadable() || (_photo.json.hasOwnProperty("downloadable") ? _photo.json.downloadable === "1" : album.json && album.json.downloadable)) && !(_photo.json.size_variants.original.url && _photo.json.size_variants.original.url !== "")) {
 				var _e28 = $("#button_more");
 				_e28.hide();
 				tabindex.makeUnfocusable(_e28);
@@ -6901,16 +6877,16 @@ _photo.setPublic = function (photoID, e) {
 
 		$('.basicModal .switch input[name="public"]').prop("checked", true);
 		if (album.json) {
-			if (album.json.full_photo !== null && album.json.full_photo === "1") {
+			if (album.json.full_photo) {
 				$('.basicModal .choice input[name="full_photo"]').prop("checked", true);
 			}
 			// Photos in public albums are never hidden as such.  It's the
 			// album that's hidden.  Or is that distinction irrelevant to end
 			// users?
-			if (album.json.downloadable === "1") {
+			if (album.json.downloadable) {
 				$('.basicModal .choice input[name="downloadable"]').prop("checked", true);
 			}
-			if (album.json.password === "1") {
+			if (album.json.has_password) {
 				$('.basicModal .choice input[name="password"]').prop("checked", true);
 			}
 		}
@@ -7073,11 +7049,11 @@ _photo.editTags = function (photoIDs) {
 
 _photo.setTags = function (photoIDs, tags) {
 	if (!photoIDs) return false;
-	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
+	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
 
 	// Parse tags
-	tags = tags.replace(/(\ ,\ )|(\ ,)|(,\ )|(,{1,}\ {0,})|(,$|^,)/g, ",");
-	tags = tags.replace(/,$|^,|(\ ){0,}$/g, "");
+	tags = tags.replace(/( , )|( ,)|(, )|(,+ *)|(,$|^,)/g, ",");
+	tags = tags.replace(/,$|^,|( )*$/g, "");
 
 	if (visible.photo()) {
 		_photo.json.tags = tags;
@@ -7096,9 +7072,9 @@ _photo.setTags = function (photoIDs, tags) {
 	api.post("Photo::setTags", params, function (data) {
 		if (data !== true) {
 			lychee.error(null, params, data);
-		} else if (albums.json && albums.json.smartalbums) {
-			$.each(Object.entries(albums.json.smartalbums), function () {
-				if (this.length == 2 && this[1]["tag_album"] === "1") {
+		} else if (albums.json && albums.json.smart_albums) {
+			$.each(Object.entries(albums.json.smart_albums), function () {
+				if (this.length === 2 && this[1]["tag_album"] === true) {
 					// If we have any tag albums, force a refresh.
 					albums.refresh();
 					return false;
@@ -9726,33 +9702,32 @@ view.albums = {
 			var sharedData = "";
 
 			// Smart Albums
-			if (albums.json.smartalbums != null) {
+			if (albums.json.smart_albums != null) {
 				if (lychee.publicMode === false) {
 					smartData = build.divider(lychee.locale["SMART_ALBUMS"]);
 				}
-				if (albums.json.smartalbums.unsorted) {
-					albums.parse(albums.json.smartalbums.unsorted);
-					smartData += build.album(albums.json.smartalbums.unsorted);
+				if (albums.json.smart_albums.unsorted) {
+					albums.parse(albums.json.smart_albums.unsorted);
+					smartData += build.album(albums.json.smart_albums.unsorted);
 				}
-				if (albums.json.smartalbums.public) {
-					albums.parse(albums.json.smartalbums.public);
-					smartData += build.album(albums.json.smartalbums.public);
+				if (albums.json.smart_albums.public) {
+					albums.parse(albums.json.smart_albums.public);
+					smartData += build.album(albums.json.smart_albums.public);
 				}
-				if (albums.json.smartalbums.starred) {
-					albums.parse(albums.json.smartalbums.starred);
-					smartData += build.album(albums.json.smartalbums.starred);
+				if (albums.json.smart_albums.starred) {
+					albums.parse(albums.json.smart_albums.starred);
+					smartData += build.album(albums.json.smart_albums.starred);
 				}
-				if (albums.json.smartalbums.recent) {
-					albums.parse(albums.json.smartalbums.recent);
-					smartData += build.album(albums.json.smartalbums.recent);
+				if (albums.json.smart_albums.recent) {
+					albums.parse(albums.json.smart_albums.recent);
+					smartData += build.album(albums.json.smart_albums.recent);
 				}
 
-				Object.entries(albums.json.smartalbums).forEach(function (_ref) {
+				Object.entries(albums.json.smart_albums).forEach(function (_ref) {
 					var _ref2 = _slicedToArray(_ref, 2),
-					    albumName = _ref2[0],
 					    albumData = _ref2[1];
 
-					if (albumData["tag_album"] === "1") {
+					if (albumData["tag_album"] === true) {
 						albums.parse(albumData);
 						smartData += build.album(albumData);
 					}
@@ -9870,7 +9845,7 @@ view.album = {
 				return;
 			}
 
-			if (album.json.nsfw && album.json.nsfw === "1" && !lychee.nsfw_unlocked_albums.includes(album.json.id)) {
+			if (album.json.nsfw && !lychee.nsfw_unlocked_albums.includes(album.json.id)) {
 				$("#sensitive_warning").show();
 			} else {
 				$("#sensitive_warning").hide();
@@ -10083,11 +10058,14 @@ view.album = {
 				}
 				var ratio = [];
 				$.each(album.json.photos, function (i) {
-					ratio[i] = this.height > 0 ? this.width / this.height : 1;
+					var height = this.size_variants.original.height;
+					var width = this.size_variants.original.width;
+					ratio[i] = height > 0 ? width / height : 1;
+
 					if (this.type && this.type.indexOf("video") > -1) {
 						// Video.  If there's no small and medium, we have
 						// to fall back to the square thumb.
-						if (this.small === "" && this.medium === "") {
+						if (this.size_variants.small === null && this.size_variants.medium === null) {
 							ratio[i] = 1;
 						}
 					}
@@ -10196,8 +10174,8 @@ view.album = {
 	public: function _public() {
 		$("#button_visibility_album, #button_sharing_album_users").removeClass("active--not-hidden active--hidden");
 
-		if (album.json.public === "1") {
-			if (album.json.visible === "0") {
+		if (album.json.public) {
+			if (album.json.requires_link) {
 				$("#button_visibility_album, #button_sharing_album_users").addClass("active--hidden");
 			} else {
 				$("#button_visibility_album, #button_sharing_album_users").addClass("active--not-hidden");
@@ -10212,11 +10190,11 @@ view.album = {
 	},
 
 	hidden: function hidden() {
-		if (album.json.visible === "1") _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_NO"]);else _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_YES"]);
+		if (album.json.requires_link) _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("hidden", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	nsfw: function nsfw() {
-		if (album.json.nsfw === "1") {
+		if (album.json.nsfw) {
 			// Sensitive
 			$("#button_nsfw_album").addClass("active").attr("title", lychee.locale["ALBUM_UNMARK_NSFW"]);
 		} else {
@@ -10226,15 +10204,15 @@ view.album = {
 	},
 
 	downloadable: function downloadable() {
-		if (album.json.downloadable === "1") _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_NO"]);
+		if (album.json.downloadable) _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("downloadable", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	shareButtonVisible: function shareButtonVisible() {
-		if (album.json.share_button_visible === "1") _sidebar.changeAttr("share_button_visible", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("share_button_visible", lychee.locale["ALBUM_SHR_NO"]);
+		if (album.json.share_button_visible) _sidebar.changeAttr("share_button_visible", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("share_button_visible", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	password: function password() {
-		if (album.json.password === "1") _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_NO"]);
+		if (album.json.has_password) _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_YES"]);else _sidebar.changeAttr("password", lychee.locale["ALBUM_SHR_NO"]);
 	},
 
 	sidebar: function sidebar() {

@@ -32,14 +32,7 @@ class Smart
 	 * Note, the array may include password-protected albums that are visible
 	 * but not accessible.
 	 *
-	 * *WARNING:* This method has a bug.
-	 * The returned array is keyed by the albums title, but albums are not
-	 * required to have unique titles.
-	 * Hence, an album which is serialized later overwrites an earlier album
-	 * with the same title.
-	 * TODO: Check with the front-end whether using title as keys is actually required.
-	 *
-	 * @return array[BaseAlbum] the array of smart albums keyed by their title
+	 * @return array[BaseAlbum] the array of smart albums
 	 */
 	public function get(): array
 	{
@@ -48,8 +41,7 @@ class Smart
 		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
 			if (AccessControl::can_upload() || $smartAlbum->public) {
-				// TODO: Later albums with same title overwrite previous albums
-				$return[$smartAlbum->title] = $smartAlbum;
+				$return[$smartAlbum->id] = $smartAlbum;
 			}
 		}
 
@@ -69,8 +61,7 @@ class Smart
 
 		/** @var TagAlbum $tagAlbum */
 		foreach ($tagAlbums as $tagAlbum) {
-			// TODO: Later albums with same title overwrite previous albums
-			$return[$tagAlbum->title] = $tagAlbum;
+			$return[$tagAlbum->id] = $tagAlbum;
 		}
 
 		return $return;

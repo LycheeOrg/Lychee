@@ -1113,7 +1113,7 @@ header.setMode = function (mode) {
 
 			// Hide download button when album empty or we are not allowed to
 			// upload to it and it's not explicitly marked as downloadable.
-			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && album.json.downloadable === "0") {
+			if (!album.json || album.json.photos === false && album.json.albums && album.json.albums.length === 0 || !album.isUploadable() && !album.json.downloadable) {
 				var _e8 = $("#button_archive");
 				_e8.hide();
 				tabindex.makeUnfocusable(_e8);
@@ -1123,7 +1123,7 @@ header.setMode = function (mode) {
 				tabindex.makeFocusable(_e9);
 			}
 
-			if (album.json && album.json.hasOwnProperty("share_button_visible") && album.json.share_button_visible !== "1") {
+			if (album.json && album.json.hasOwnProperty("share_button_visible") && !album.json.share_button_visible) {
 				var _e10 = $("#button_share_album");
 				_e10.hide();
 				tabindex.makeUnfocusable(_e10);
@@ -1258,7 +1258,7 @@ header.setMode = function (mode) {
 			// Hide More menu if empty (see contextMenu.photoMore)
 			$("#button_more").show();
 			tabindex.makeFocusable($("#button_more"));
-			if (!(album.isUploadable() || (photo.json.hasOwnProperty("downloadable") ? photo.json.downloadable === "1" : album.json && album.json.downloadable && album.json.downloadable === "1")) && !(photo.json.size_variants.original.url && photo.json.size_variants.original.url !== "")) {
+			if (!(album.isUploadable() || (photo.json.hasOwnProperty("downloadable") ? photo.json.downloadable === "1" : album.json && album.json.downloadable)) && !(photo.json.size_variants.original.url && photo.json.size_variants.original.url !== "")) {
 				var _e27 = $("#button_more");
 				_e27.hide();
 				tabindex.makeUnfocusable(_e27);
