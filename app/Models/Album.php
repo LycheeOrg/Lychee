@@ -122,7 +122,7 @@ class Album extends Model implements BaseModelAlbum
 			$builder->addSelect([
 				'max_taken_at' => Photo::query()
 					->select('taken_at')
-					->leftJoin('albums as a', 'a.id', '=', 'album_id')
+					->join('albums as a', 'a.id', '=', 'album_id')
 					->whereColumn('a._lft', '>=', 'albums._lft')
 					->whereColumn('a._rgt', '<=', 'albums._rgt')
 					->whereNotNull('taken_at')
@@ -130,7 +130,7 @@ class Album extends Model implements BaseModelAlbum
 					->limit(1),
 				'min_taken_at' => Photo::query()
 					->select('taken_at')
-					->leftJoin('albums as a', 'a.id', '=', 'album_id')
+					->join('albums as a', 'a.id', '=', 'album_id')
 					->whereColumn('a._lft', '>=', 'albums._lft')
 					->whereColumn('a._rgt', '<=', 'albums._rgt')
 					->whereNotNull('taken_at')
