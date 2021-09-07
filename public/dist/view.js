@@ -68,8 +68,9 @@ api.isTimeout = function (errorThrown, jqXHR) {
 	return false;
 };
 
-api.post = function (fn, params, callback) {
+api.post = function (fn, params, successCallback) {
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	var errorCallback = arguments[4];
 
 	loadingBar.show();
 
@@ -86,10 +87,15 @@ api.post = function (fn, params, callback) {
 			return false;
 		}
 
-		callback(data);
+		successCallback(data);
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
+		if (errorCallback) {
+			var isHandled = errorCallback(jqXHR);
+			if (isHandled) return;
+		}
+		// Call global error handler for unhandled errors
 		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
 	};
 
@@ -536,7 +542,7 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject6, data.nsfw === "1" ? "badge--nsfw" : "", build.iconic("warning"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.password === "1" ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album === "1" ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject6, data.nsfw === "1" ? "badge--nsfw" : "", build.iconic("warning"), data.star === "1" ? "badge--star" : "", build.iconic("star"), data.recent === "1" ? "badge--visible badge--list" : "", build.iconic("clock"), data.public === "1" ? "badge--visible" : "", data.visible === "1" ? "badge--not--hidden" : "badge--hidden", build.iconic("eye"), data.unsorted === "1" ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.hasOwnProperty("has_albums") && data.has_albums === "1") {
@@ -915,7 +921,7 @@ header.bind = function () {
 		contextMenu.photoMore(photo.getID(), e);
 	});
 	header.dom("#button_move_album").on(eventName, function (e) {
-		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParent() != "");
+		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParentID() != null);
 	});
 	header.dom("#button_nsfw_album").on(eventName, function (e) {
 		album.setNSFW(album.getID());
@@ -948,7 +954,7 @@ header.bind = function () {
 		if (!album.json.parent_id) {
 			lychee.goto();
 		} else {
-			lychee.goto(album.getParent());
+			lychee.goto(album.getParentID());
 		}
 	});
 	header.dom("#button_back").on(eventName, function () {
@@ -1686,78 +1692,13 @@ sidebar.createStructure.album = function (album) {
 
 	var editable = album.isUploadable();
 	var structure = {};
-	var _public = "";
-	var hidden = "";
-	var downloadable = "";
-	var share_button_visible = "";
-	var password = "";
+	var _public = data.public ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var requiresLink = data.requires_link ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var downloadable = data.downloadable ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var shareButtonVisible = data.share_button_visible ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
+	var hasPassword = data.has_password ? lychee.locale["ALBUM_SHR_YES"] : lychee.locale["ALBUM_SHR_NO"];
 	var license = "";
 	var sorting = "";
-
-	// Set value for public
-	switch (data.public) {
-		case "0":
-			_public = lychee.locale["ALBUM_SHR_NO"];
-			break;
-		case "1":
-			_public = lychee.locale["ALBUM_SHR_YES"];
-			break;
-		default:
-			_public = "-";
-			break;
-	}
-
-	// Set value for hidden
-	switch (data.visible) {
-		case "0":
-			hidden = lychee.locale["ALBUM_SHR_YES"];
-			break;
-		case "1":
-			hidden = lychee.locale["ALBUM_SHR_NO"];
-			break;
-		default:
-			hidden = "-";
-			break;
-	}
-
-	// Set value for downloadable
-	switch (data.downloadable) {
-		case "0":
-			downloadable = lychee.locale["ALBUM_SHR_NO"];
-			break;
-		case "1":
-			downloadable = lychee.locale["ALBUM_SHR_YES"];
-			break;
-		default:
-			downloadable = "-";
-			break;
-	}
-
-	// Set value for share_button_visible
-	switch (data.share_button_visible) {
-		case "0":
-			share_button_visible = lychee.locale["ALBUM_SHR_NO"];
-			break;
-		case "1":
-			share_button_visible = lychee.locale["ALBUM_SHR_YES"];
-			break;
-		default:
-			share_button_visible = "-";
-			break;
-	}
-
-	// Set value for password
-	switch (data.password) {
-		case "0":
-			password = lychee.locale["ALBUM_SHR_NO"];
-			break;
-		case "1":
-			password = lychee.locale["ALBUM_SHR_YES"];
-			break;
-		default:
-			password = "-";
-			break;
-	}
 
 	// Set license string
 	switch (data.license) {
@@ -1818,11 +1759,11 @@ sidebar.createStructure.album = function (album) {
 	structure.share = {
 		title: lychee.locale["ALBUM_SHARING"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: _public }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: hidden }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: downloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: share_button_visible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: password }]
+		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: _public }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: downloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: shareButtonVisible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
 	};
 
-	if (data.owner != null) {
-		structure.share.rows.push({ title: lychee.locale["ALBUM_OWNER"], kind: "owner", value: data.owner });
+	if (data.owner_name != null) {
+		structure.share.rows.push({ title: lychee.locale["ALBUM_OWNER"], kind: "owner", value: data.owner_name });
 	}
 
 	structure.license = {
