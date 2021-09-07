@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Collection;
 /**
  * Class LinkedPhotoCollection.
  *
- * If this instance is serialized to JSON, the each element the result array
- * contains two JSON attributes which link to the previous and next element.
+ * If serialized to JSON, each element of the resulting array contains two
+ * JSON attributes which link to the previous and next element.
  */
 class LinkedPhotoCollection extends Collection
 {
@@ -23,13 +23,13 @@ class LinkedPhotoCollection extends Collection
 			/** @var Photo $photo */
 			$photo = $photos[$i];
 			$photos[$i] = $photo->toArray();
-			$photos[$i]['previousPhoto'] = $i > 0 ? $photos[$i - 1]['id'] : null;
-			$photos[$i]['nextPhoto'] = $i + 1 < $count ? $photos[$i + 1]->id : null;
+			$photos[$i]['previous_photo_id'] = $i > 0 ? $photos[$i - 1]['id'] : null;
+			$photos[$i]['next_photo_id'] = $i + 1 < $count ? $photos[$i + 1]->id : null;
 		}
 
 		if ($count > 1 && Configs::get_value('photos_wraparound', '1') === '1') {
-			$photos[0]['previousPhoto'] = $photos[$count - 1]['id'];
-			$photos[$count - 1]['nextPhoto'] = $photos[0]['id'];
+			$photos[0]['previous_photo_id'] = $photos[$count - 1]['id'];
+			$photos[$count - 1]['next_photo_id'] = $photos[0]['id'];
 		}
 
 		return $photos;

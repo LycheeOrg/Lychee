@@ -714,7 +714,7 @@ album.getByID = function (photoID) {
 
 	if (photoID == null || !album.json || !album.json.photos) {
 		lychee.error("Error: Album json not found !");
-		return undefined;
+		return null;
 	}
 
 	var i = 0;
@@ -726,7 +726,7 @@ album.getByID = function (photoID) {
 	}
 
 	lychee.error("Error: photo " + photoID + " not found !");
-	return undefined;
+	return null;
 };
 
 album.getSubByID = function (albumID) {
@@ -1600,7 +1600,7 @@ album.delete = function (albumIDs) {
 	var msg = "";
 
 	if (!albumIDs) return false;
-	if (albumIDs instanceof Array === false) albumIDs = [albumIDs];
+	if (!(albumIDs instanceof Array)) albumIDs = [albumIDs];
 
 	action.fn = function () {
 		basicModal.close();
@@ -1627,7 +1627,7 @@ album.delete = function (albumIDs) {
 				}
 			}
 
-			if (data !== true) lychee.error(null, params, data);
+			if (typeof data !== "undefined") lychee.error(null, params, data);
 		});
 	};
 
@@ -6464,8 +6464,8 @@ _photo.cycle_display_overlay = function () {
 // Preload the next and previous photos for better response time
 _photo.preloadNextPrev = function (photoID) {
 	if (album.json && album.json.photos && album.getByID(photoID)) {
-		var previousPhotoID = album.getByID(photoID).previousPhoto;
-		var nextPhotoID = album.getByID(photoID).nextPhoto;
+		var previousPhotoID = album.getByID(photoID).previous_photo_id;
+		var nextPhotoID = album.getByID(photoID).next_photo_id;
 		var imgs = $("img#image");
 		var isUsing2xCurrently = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");
 
@@ -6517,10 +6517,10 @@ _photo.preloadNextPrev = function (photoID) {
 			}
 		};
 
-		if (nextPhotoID && nextPhotoID !== "") {
+		if (nextPhotoID) {
 			preload(nextPhotoID);
 		}
-		if (previousPhotoID && previousPhotoID !== "") {
+		if (previousPhotoID) {
 			preload(previousPhotoID);
 		}
 	}
@@ -6549,7 +6549,7 @@ _photo.updateSizeLivePhotoDuringAnimation = function () {
 };
 
 _photo.previous = function (animate) {
-	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).previousPhoto !== "") {
+	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).previous_photo_id !== null) {
 		var delay = 0;
 
 		if (animate === true) {
@@ -6566,13 +6566,13 @@ _photo.previous = function (animate) {
 		setTimeout(function () {
 			if (_photo.getID() === false) return false;
 			_photo.LivePhotosObject = null;
-			lychee.goto(album.getID() + "/" + album.getByID(_photo.getID()).previousPhoto, false);
+			lychee.goto(album.getID() + "/" + album.getByID(_photo.getID()).previous_photo_id, false);
 		}, delay);
 	}
 };
 
 _photo.next = function (animate) {
-	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).nextPhoto !== "") {
+	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).next_photo_id !== null) {
 		var delay = 0;
 
 		if (animate === true) {
@@ -6589,7 +6589,7 @@ _photo.next = function (animate) {
 		setTimeout(function () {
 			if (_photo.getID() === false) return false;
 			_photo.LivePhotosObject = null;
-			lychee.goto(album.getID() + "/" + album.getByID(_photo.getID()).nextPhoto, false);
+			lychee.goto(album.getID() + "/" + album.getByID(_photo.getID()).next_photo_id, false);
 		}, delay);
 	}
 };
@@ -6601,33 +6601,34 @@ _photo.delete = function (photoIDs) {
 	var photoTitle = "";
 
 	if (!photoIDs) return false;
-	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
+	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
 
 	if (photoIDs.length === 1) {
 		// Get title if only one photo is selected
-		if (visible.photo()) photoTitle = _photo.json.title;else photoTitle = album.getByID(photoIDs).title;
+		if (visible.photo()) photoTitle = _photo.json.title;else photoTitle = album.getByID(photoIDs[0]).title;
 
 		// Fallback for photos without a title
 		if (photoTitle === "") photoTitle = lychee.locale["UNTITLED"];
 	}
 
 	action.fn = function () {
-		var nextPhoto = "";
-		var previousPhoto = "";
+		var nextPhotoID = null;
+		var previousPhotoID = null;
 
 		basicModal.close();
 
 		photoIDs.forEach(function (id, index) {
 			// Change reference for the next and previous photo
-			if (album.getByID(id).nextPhoto !== "" || album.getByID(id).previousPhoto !== "") {
-				nextPhoto = album.getByID(id).nextPhoto;
-				previousPhoto = album.getByID(id).previousPhoto;
+			var curPhoto = album.getByID(id);
+			if (curPhoto.next_photo_id !== null || curPhoto.previous_photo_id !== null) {
+				nextPhotoID = curPhoto.next_photo_id;
+				previousPhotoID = curPhoto.previous_photo_id;
 
-				if (previousPhoto !== "") {
-					album.getByID(previousPhoto).nextPhoto = nextPhoto;
+				if (previousPhotoID !== null) {
+					album.getByID(previousPhotoID).next_photo_id = nextPhotoID;
 				}
-				if (nextPhoto !== "") {
-					album.getByID(nextPhoto).previousPhoto = previousPhoto;
+				if (nextPhotoID !== null) {
+					album.getByID(nextPhotoID).previous_photo_id = previousPhotoID;
 				}
 			}
 
@@ -6641,10 +6642,10 @@ _photo.delete = function (photoIDs) {
 		// next photo is not the current one. Also try the previous one.
 		// Show album otherwise.
 		if (visible.photo()) {
-			if (nextPhoto !== "" && nextPhoto !== _photo.getID()) {
-				lychee.goto(album.getID() + "/" + nextPhoto);
-			} else if (previousPhoto !== "" && previousPhoto !== _photo.getID()) {
-				lychee.goto(album.getID() + "/" + previousPhoto);
+			if (nextPhotoID !== null && nextPhotoID !== _photo.getID()) {
+				lychee.goto(album.getID() + "/" + nextPhotoID);
+			} else if (previousPhotoID !== null && previousPhotoID !== _photo.getID()) {
+				lychee.goto(album.getID() + "/" + previousPhotoID);
 			} else {
 				lychee.goto(album.getID());
 			}
@@ -6771,23 +6772,24 @@ _photo.copyTo = function (photoIDs, albumID) {
 };
 
 _photo.setAlbum = function (photoIDs, albumID) {
-	var nextPhoto = "";
-	var previousPhoto = "";
+	var nextPhotoID = null;
+	var previousPhotoID = null;
 
 	if (!photoIDs) return false;
-	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
+	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
 
 	photoIDs.forEach(function (id, index) {
 		// Change reference for the next and previous photo
-		if (album.getByID(id).nextPhoto !== "" || album.getByID(id).previousPhoto !== "") {
-			nextPhoto = album.getByID(id).nextPhoto;
-			previousPhoto = album.getByID(id).previousPhoto;
+		var curPhoto = album.getByID(id);
+		if (curPhoto.next_photo_id !== null || curPhoto.previous_photo_id !== null) {
+			nextPhotoID = curPhoto.next_photo_id;
+			previousPhotoID = curPhoto.previous_photo_id;
 
-			if (previousPhoto !== "") {
-				album.getByID(previousPhoto).nextPhoto = nextPhoto;
+			if (previousPhotoID !== null) {
+				album.getByID(previousPhotoID).next_photo_id = nextPhotoID;
 			}
-			if (nextPhoto !== "") {
-				album.getByID(nextPhoto).previousPhoto = previousPhoto;
+			if (nextPhotoID !== null) {
+				album.getByID(nextPhotoID).previous_photo_id = previousPhotoID;
 			}
 		}
 
@@ -6801,10 +6803,10 @@ _photo.setAlbum = function (photoIDs, albumID) {
 	// next photo is not the current one. Also try the previous one.
 	// Show album otherwise.
 	if (visible.photo()) {
-		if (nextPhoto !== "" && nextPhoto !== _photo.getID()) {
-			lychee.goto(album.getID() + "/" + nextPhoto);
-		} else if (previousPhoto !== "" && previousPhoto !== _photo.getID()) {
-			lychee.goto(album.getID() + "/" + previousPhoto);
+		if (nextPhotoID !== null && nextPhotoID !== _photo.getID()) {
+			lychee.goto(album.getID() + "/" + nextPhotoID);
+		} else if (previousPhotoID !== null && previousPhotoID !== _photo.getID()) {
+			lychee.goto(album.getID() + "/" + previousPhotoID);
 		} else {
 			lychee.goto(album.getID());
 		}
@@ -10377,8 +10379,8 @@ view.photo = {
 		var $nextArrow = lychee.imageview.find("a#next");
 		var $previousArrow = lychee.imageview.find("a#previous");
 		var photoID = _photo.getID();
-		var hasNext = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).nextPhoto != null && album.getByID(photoID).nextPhoto !== "";
-		var hasPrevious = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).previousPhoto != null && album.getByID(photoID).previousPhoto !== "";
+		var hasNext = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).next_photo_id !== null;
+		var hasPrevious = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).previous_photo_id !== null;
 
 		var img = $("img#image");
 		if (img.length > 0) {
@@ -10402,7 +10404,7 @@ view.photo = {
 		if (hasNext === false || lychee.viewMode === true) {
 			$nextArrow.hide();
 		} else {
-			var nextPhotoID = album.getByID(photoID).nextPhoto;
+			var nextPhotoID = album.getByID(photoID).next_photo_id;
 			var nextPhoto = album.getByID(nextPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
@@ -10418,7 +10420,7 @@ view.photo = {
 		if (hasPrevious === false || lychee.viewMode === true) {
 			$previousArrow.hide();
 		} else {
-			var previousPhotoID = album.getByID(photoID).previousPhoto;
+			var previousPhotoID = album.getByID(photoID).previous_photo_id;
 			var previousPhoto = album.getByID(previousPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
