@@ -19,7 +19,7 @@ class PhotoSearch
 	}
 
 	/**
-	 * Restricts an album query to _visible_ photos.
+	 * Restricts a photo query to _visible_ photos.
 	 *
 	 * A photo is called _visible_ if the current user is allowed to see the
 	 * photo.

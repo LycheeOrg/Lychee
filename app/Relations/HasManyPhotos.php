@@ -12,6 +12,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 
+/**
+ * Common base class of all photo relations for albums which are not the
+ * direct parent of the queried photos, but include the photo due to some
+ * indirect condition.
+ */
 abstract class HasManyPhotos extends Relation
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
@@ -44,6 +49,12 @@ abstract class HasManyPhotos extends Relation
 		// As a work-around we store the owning album in our own attribute
 		// `$owningAlbum` and always use that instead of `$parent`.
 		parent::__construct(
+			// Sic! We also must load the album eagerly.
+			// This relation is not used by albums which own the queried
+			// photos, but by albums which only include the photos due to some
+			// indirect condition.
+			// Hence, the actually owning albums of the photos are not
+			// necessarily loaded.
 			Photo::query()->with(['album', 'size_variants_raw', 'size_variants_raw.sym_links']),
 			new DummyModel()
 		);
@@ -72,7 +83,7 @@ abstract class HasManyPhotos extends Relation
 	}
 
 	/**
-	 * Restricts an album query to _visible_ photos.
+	 * Restricts a photo query to _visible_ photos.
 	 *
 	 * A photo is called _visible_ if the current user is allowed to see the
 	 * photo.

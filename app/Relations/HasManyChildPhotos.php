@@ -6,6 +6,7 @@ use App\Actions\AlbumAuthorisationProvider;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -22,7 +23,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		// attributes must be initialized by then
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 		parent::__construct(
-			$owningAlbum->newQuery(),
+			Photo::query(),
 			$owningAlbum,
 			'album_id',
 			'id',
@@ -148,7 +149,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
-				$childrenOfModel->sortBy($model->sorting_col, SORT_NATURAL | SORT_FLAG_CASE, $model->sorting_order === 'DESC');
+				$childrenOfModel = $childrenOfModel->sortBy($model->sorting_col, SORT_NATURAL | SORT_FLAG_CASE, $model->sorting_order === 'DESC');
 				$model->setRelation($relation, $childrenOfModel);
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the

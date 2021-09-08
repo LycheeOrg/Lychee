@@ -30,8 +30,10 @@ class HasManyChildAlbums extends HasManyBidirectionally
 
 	public function addConstraints()
 	{
-		parent::addConstraints();
-		$this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
+		if (static::$constraints) {
+			parent::addConstraints();
+			$this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
+		}
 	}
 
 	public function addEagerConstraints(array $models)

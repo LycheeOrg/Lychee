@@ -8,8 +8,8 @@ use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\NodeTrait;
 use App\Models\Extensions\Thumb;
-use App\Relations\HasManyBidirectionally;
 use App\Relations\HasManyChildAlbums;
+use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -155,11 +155,11 @@ class Album extends Model implements BaseModelAlbum
 	 * Return the relationship between this album and photos which are
 	 * direct children of this album.
 	 *
-	 * @return HasManyBidirectionally
+	 * @return HasManyChildPhotos
 	 */
-	public function photos(): HasManyBidirectionally
+	public function photos(): HasManyChildPhotos
 	{
-		return $this->hasManyBidirectionally(Photo::class);
+		return new HasManyChildPhotos($this);
 	}
 
 	/**
