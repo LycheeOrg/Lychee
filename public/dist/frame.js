@@ -950,7 +950,8 @@ api.post = function (fn, params, successCallback) {
 	var ajaxParams = {
 		type: "POST",
 		url: api_url,
-		data: params,
+		contentType: "application/json",
+		data: JSON.stringify(params),
 		dataType: "json",
 		success: success,
 		error: error

@@ -45,9 +45,9 @@ class AlbumsController extends Controller
 	}
 
 	/**
-	 * @return Collection returns a collection of public photos which have positioning data
+	 * @return array returns an array of visible photos which have positioning data
 	 */
-	public function getPositionData(PositionData $positionData): Collection
+	public function getPositionData(PositionData $positionData): array
 	{
 		return $positionData->do();
 	}

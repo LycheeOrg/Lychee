@@ -445,7 +445,8 @@ api.post = function (fn, params, successCallback) {
 	var ajaxParams = {
 		type: "POST",
 		url: api_url,
-		data: params,
+		contentType: "application/json",
+		data: JSON.stringify(params),
 		dataType: "json",
 		success: success,
 		error: error
@@ -5813,56 +5814,27 @@ mapview.open = function () {
 		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 		if (_albumID !== "" && _albumID !== null) {
-			// _ablumID has been to a specific album
+			// _albumID has been specified
 			var _params = {
 				albumID: _albumID,
-				includeSubAlbums: _includeSubAlbums,
-				password: ""
+				includeSubAlbums: _includeSubAlbums
 			};
 
 			api.post("Album::getPositionData", _params, function (data) {
-				if (data === "Warning: Wrong password!") {
-					password.getDialog(_albumID, function () {
-						_params.password = password.value;
-
-						api.post("Album::getPositionData", _params, function (_data) {
-							addPhotosToMap(_data);
-							mapview.title(_albumID, _data.title);
-						});
-					});
-				} else {
-					addPhotosToMap(data);
-					mapview.title(_albumID, data.title);
-				}
+				addPhotosToMap(data);
+				mapview.title(_albumID, data.title);
 			});
 		} else {
 			// AlbumID is empty -> fetch all photos of all albums
-			// _ablumID has been to a specific album
-			var _params2 = {
-				includeSubAlbums: _includeSubAlbums,
-				password: ""
-			};
-
-			api.post("Albums::getPositionData", _params2, function (data) {
-				if (data === "Warning: Wrong password!") {
-					password.getDialog(_albumID, function () {
-						_params2.password = password.value;
-
-						api.post("Albums::getPositionData", _params2, function (_data) {
-							addPhotosToMap(_data);
-							mapview.title(_albumID, _data.title);
-						});
-					});
-				} else {
-					addPhotosToMap(data);
-					mapview.title(_albumID, data.title);
-				}
+			api.post("Albums::getPositionData", {}, function (data) {
+				addPhotosToMap(data);
+				mapview.title(_albumID, data.title);
 			});
 		}
 	};
 
-	// If subalbums not being included and album.json already has all data
-	// -> we can reuse it
+	// If sub-albums are not requested and album.json already has all data,
+	// we reuse it
 	if (lychee.map_include_subalbums === false && album.json !== null && album.json.photos !== null) {
 		addPhotosToMap(album.json);
 	} else {

@@ -6,7 +6,6 @@ use App\Actions\AlbumAuthorisationProvider;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 
 class PositionData
 {
@@ -22,14 +21,20 @@ class PositionData
 	/**
 	 * Given a list of albums, generate an array to be returned.
 	 *
-	 * @return Collection
+	 * @return array
 	 */
-	public function do(): Collection
+	public function do(): array
 	{
-		return Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+		$result = [];
+		$result['id'] = null;
+		$result['title'] = null;
+		$result['photos'] = Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
 			->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q))
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')
-			->get();
+			->get()
+			->toArray();
+
+		return $result;
 	}
 }
