@@ -7,6 +7,7 @@ use App\Contracts\BaseModelAlbum;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
+use App\Models\BaseModelAlbumImpl;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Session;
@@ -49,6 +50,8 @@ class AlbumAuthorisationProvider
 	public function applyVisibilityFilter(Builder $query): Builder
 	{
 		$this->failForWrongQueryModel($query);
+		$model = $query->getModel();
+
 		if (AccessControl::is_admin()) {
 			return $query;
 		}
@@ -57,34 +60,57 @@ class AlbumAuthorisationProvider
 			// We must wrap everything into an outer query to avoid any undesired
 			// effects in case that the original query already contains an
 			// "OR"-clause.
-			return $query->whereHas('base_class', fn (Builder $query2) => $query2
-				->where('requires_link', '=', false)
-				->where('public', '=', true)
-			);
+			// The sub-query only uses properties (i.e. columns) which are
+			// defined on the common base model for all albums.
+			$visibilitySubQuery = function (Builder $query2) {
+				$query2
+					->where('requires_link', '=', false)
+					->where('public', '=', true);
+			};
+
+			if ($model instanceof BaseModelAlbumImpl) {
+				// If the queried model is the base class, we can directly
+				// apply the sub-query
+				return $query->where($visibilitySubQuery);
+			} else {
+				// If the queried model is not the base class, but a derived one,
+				// we must apply the sub-query to the relation.
+				return $query->whereHas('base_class', $visibilitySubQuery);
+			}
 		}
 
 		$userID = AccessControl::id();
+
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		return $query->whereHas(
-			'base_class',
-			function (Builder $query2) use ($userID) {
-				$query2
-					->where('owner_id', '=', $userID)
-					->orWhere(fn (Builder $q) => $q
-						->where('requires_link', '=', false)
-						->whereHas(
-							'shared_with',
-							fn (Builder $q2) => $q2->where('user_id', '=', $userID)
-						)
+		// The sub-query only uses properties (i.e. columns) which are
+		// defined on the common base model for all albums.
+		$visibilitySubQuery = function (Builder $query2) use ($userID) {
+			$query2
+				->where('owner_id', '=', $userID)
+				->orWhere(fn (Builder $q) => $q
+					->where('requires_link', '=', false)
+					->whereHas(
+						'shared_with',
+						fn (Builder $q2) => $q2->where('user_id', '=', $userID)
 					)
-					->orWhere(fn (Builder $q) => $q
-						->where('requires_link', '=', false)
-						->where('public', '=', true)
-					);
-			}
-		);
+				)
+				->orWhere(fn (Builder $q) => $q
+					->where('requires_link', '=', false)
+					->where('public', '=', true)
+				);
+		};
+
+		if ($model instanceof BaseModelAlbumImpl) {
+			// If the queried model is the base class, we can directly
+			// apply the sub-query
+			return $query->where($visibilitySubQuery);
+		} else {
+			// If the queried model is not the base class, but a derived one,
+			// we must apply the sub-query to the relation.
+			return $query->whereHas('base_class', $visibilitySubQuery);
+		}
 	}
 
 	/**
@@ -139,14 +165,9 @@ class AlbumAuthorisationProvider
 					(!$album->requires_link && $album->public);
 			}
 		} else {
-			$albumCount = $this->applyVisibilityFilter(
-				Album::query()->where('id', '=', intval($albumID))
-			)->count();
-			$tagAlbumCount = $this->applyVisibilityFilter(
-				TagAlbum::query()->where('id', '=', intval($albumID))
-			)->count();
-
-			return ($albumCount + $tagAlbumCount) !== 0;
+			return $this->applyVisibilityFilter(
+				BaseModelAlbumImpl::query()->where('id', '=', intval($albumID))
+			)->count() !== 0;
 		}
 	}
 
@@ -172,6 +193,7 @@ class AlbumAuthorisationProvider
 	public function applyAccessibilityFilter(Builder $query): Builder
 	{
 		$this->failForWrongQueryModel($query);
+		$model = $query->getModel();
 
 		if (AccessControl::is_admin()) {
 			return $query;
@@ -180,40 +202,14 @@ class AlbumAuthorisationProvider
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 
 		if (!AccessControl::is_logged_in()) {
-			// We must wrap everything into an outer query to avoid any undesired
+			// We must wrap everything into an inner query to avoid any undesired
 			// effects in case that the original query already contains an
 			// "OR"-clause.
-			return $query->whereHas(
-				'base_class',
-				function (Builder $query2) use ($unlockedAlbumIDs) {
-					$query2
-						->where(fn (Builder $q) => $q
-							->where('public', '=', true)
-							->whereNull('password')
-						)
-						->orWhere(fn (Builder $q) => $q
-							->where('public', '=', true)
-							->whereIn('id', $unlockedAlbumIDs)
-						);
-				}
-			);
-		}
-
-		$userID = AccessControl::id();
-
-		// We must wrap everything into an outer query to avoid any undesired
-		// effects in case that the original query already contains an
-		// "OR"-clause.
-		return $query->whereHas(
-			'base_class',
-			function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
+			// The sub-query only uses properties (i.e. columns) which are
+			// defined on the common base model for all albums.
+			$accessibilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs) {
 				$query2
-					->where('owner_id', '=', $userID)
-					->orWhereHas(
-						'shared_with',
-						fn (Builder $q) => $q->where('user_id', '=', $userID)
-					)
-					->orWhere(fn (Builder $q) => $q
+					->where(fn (Builder $q) => $q
 						->where('public', '=', true)
 						->whereNull('password')
 					)
@@ -221,8 +217,52 @@ class AlbumAuthorisationProvider
 						->where('public', '=', true)
 						->whereIn('id', $unlockedAlbumIDs)
 					);
+			};
+
+			if ($model instanceof BaseModelAlbumImpl) {
+				// If the queried model is the base class, we can directly
+				// apply the sub-query
+				return $query->where($accessibilitySubQuery);
+			} else {
+				// If the queried model is not the base class, but a derived one,
+				// we must apply the sub-query to the relation.
+				return $query->whereHas('base_class', $accessibilitySubQuery);
 			}
-		);
+		}
+
+		$userID = AccessControl::id();
+
+		// We must wrap everything into an outer query to avoid any undesired
+		// effects in case that the original query already contains an
+		// "OR"-clause.
+		// The sub-query only uses properties (i.e. columns) which are
+		// defined on the common base model for all albums.
+		$accessibilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
+			$query2
+				->where('owner_id', '=', $userID)
+				->orWhereHas(
+					'shared_with',
+					fn (Builder $q) => $q->where('user_id', '=', $userID)
+				)
+				->orWhere(fn (Builder $q) => $q
+					->where('public', '=', true)
+					->whereNull('password')
+				)
+				->orWhere(fn (Builder $q) => $q
+					->where('public', '=', true)
+					->whereIn('id', $unlockedAlbumIDs)
+				);
+		};
+
+		if ($model instanceof BaseModelAlbumImpl) {
+			// If the queried model is the base class, we can directly
+			// apply the sub-query
+			return $query->where($accessibilitySubQuery);
+		} else {
+			// If the queried model is not the base class, but a derived one,
+			// we must apply the sub-query to the relation.
+			return $query->whereHas('base_class', $accessibilitySubQuery);
+		}
 	}
 
 	/**
@@ -280,14 +320,9 @@ class AlbumAuthorisationProvider
 					($album->public && $this->isAlbumUnlocked($album->id));
 			}
 		} else {
-			$albumCount = $this->applyAccessibilityFilter(
-				Album::query()->where('id', '=', intval($albumID))
-			)->count();
-			$tagAlbumCount = $this->applyAccessibilityFilter(
-				TagAlbum::query()->where('id', '=', intval($albumID))
-			)->count();
-
-			return ($albumCount + $tagAlbumCount) !== 0;
+			return $this->applyAccessibilityFilter(
+				BaseModelAlbumImpl::query()->where('id', '=', intval($albumID))
+			)->count() !== 0;
 		}
 	}
 
@@ -328,7 +363,7 @@ class AlbumAuthorisationProvider
 	private function failForWrongQueryModel(Builder $query): void
 	{
 		$model = $query->getModel();
-		if (!($model instanceof Album || $model instanceof TagAlbum)) {
+		if (!($model instanceof Album || $model instanceof TagAlbum || $model instanceof BaseModelAlbumImpl)) {
 			throw new \InvalidArgumentException('the given query must query for album');
 		}
 	}
