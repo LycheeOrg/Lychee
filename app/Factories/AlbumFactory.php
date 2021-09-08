@@ -63,7 +63,7 @@ class AlbumFactory
 	{
 		try {
 			if ($withRelations) {
-				return Album::query()->with(['photos', 'children'])->findOrFail($albumId);
+				return Album::query()->with(['photos', 'children', 'photos.size_variants_raw'])->findOrFail($albumId);
 			} else {
 				return Album::query()->findOrFail($albumId);
 			}
