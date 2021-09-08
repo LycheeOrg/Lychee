@@ -312,9 +312,11 @@ class AlbumController extends Controller
 			'sortingOrder' => ['present', Rule::in([null, 'ASC', 'DESC'])],
 		]);
 
-		$setSorting->do($request['albumID'], $request['sortingCol'], $request['sortingOrder']);
-
-		return response()->noContent();
+		if ($setSorting->do($request['albumID'], $request['sortingCol'], $request['sortingOrder'])) {
+			return response()->noContent();
+		} else {
+			return response('', 500);
+		}
 	}
 
 	/**

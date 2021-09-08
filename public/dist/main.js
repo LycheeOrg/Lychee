@@ -1246,24 +1246,20 @@ album.setSorting = function (albumID) {
 	};
 
 	var action = function action(data) {
-		var typePhotos = data.sortingCol;
-		var orderPhotos = data.sortingOrder;
+		var sortingCol = data.sortingCol;
+		var sortingOrder = data.sortingOrder;
 
 		basicModal.close();
 
 		var params = {
 			albumID: albumID,
-			typePhotos: typePhotos,
-			orderPhotos: orderPhotos
+			sortingCol: sortingCol,
+			sortingOrder: sortingOrder
 		};
 
 		api.post("Album::setSorting", params, function (_data) {
-			if (_data !== true) {
-				lychee.error(null, params, _data);
-			} else {
-				if (visible.album()) {
-					album.reload();
-				}
+			if (visible.album()) {
+				album.reload();
 			}
 		});
 	};
