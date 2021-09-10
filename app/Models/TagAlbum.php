@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Contracts\BaseModelAlbum;
+use App\Contracts\BaseAlbum;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\TagAlbumBuilder;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @property string show_tags
  */
-class TagAlbum extends Model implements BaseModelAlbum
+class TagAlbum extends Model implements BaseAlbum
 {
 	use HasBidirectionalRelationships;
 	use ForwardsToParentImplementation;
@@ -76,7 +76,7 @@ class TagAlbum extends Model implements BaseModelAlbum
 	 */
 	public function base_class(): BelongsTo
 	{
-		return $this->belongsTo(BaseModelAlbumImpl::class, 'id', 'id');
+		return $this->belongsTo(BaseAlbumImpl::class, 'id', 'id');
 	}
 
 	public function photos(): HasManyPhotosByTag

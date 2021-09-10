@@ -2,8 +2,8 @@
 
 namespace App\Factories;
 
+use App\Contracts\AbstractAlbum;
 use App\Contracts\BaseAlbum;
-use App\Contracts\BaseModelAlbum;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -32,11 +32,11 @@ class AlbumFactory
 	 *                                  album (i.e. photos and sub-albums,
 	 *                                  if applicable) shall be loaded, too.
 	 *
-	 * @return BaseAlbum the album for the ID
+	 * @return AbstractAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 */
-	public function findOrFail($albumId, bool $withRelations = true): BaseAlbum
+	public function findOrFail($albumId, bool $withRelations = true): AbstractAlbum
 	{
 		if ($this->isBuiltInSmartAlbum($albumId)) {
 			return $this->createSmartAlbum($albumId, $withRelations);
@@ -54,12 +54,12 @@ class AlbumFactory
 	 *                                  album (i.e. photos and sub-albums,
 	 *                                  if applicable) shall be loaded, too.
 	 *
-	 * @return BaseModelAlbum the album for the ID
+	 * @return BaseAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function findModelOrFail($albumId, bool $withRelations = true): BaseModelAlbum
+	public function findModelOrFail($albumId, bool $withRelations = true): BaseAlbum
 	{
 		try {
 			if ($withRelations) {
@@ -77,14 +77,14 @@ class AlbumFactory
 	}
 
 	/**
-	 * Returns a collection of {@link BaseAlbum} instances whose IDs are
+	 * Returns a collection of {@link AbstractAlbum} instances whose IDs are
 	 * contained in the given set of IDs.
 	 *
 	 * @param array $albumIDs a list of IDs; a mix of integer IDs (for
 	 *                        proper models) and string IDs (for built-in
 	 *                        smart albums) is acceptable
 	 *
-	 * @return Collection a possibly empty list of {@link BaseAlbum}
+	 * @return Collection a possibly empty list of {@link AbstractAlbum}
 	 */
 	public function findWhereIDsIn(array $albumIDs): Collection
 	{

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Album;
 
-use App\Contracts\BaseAlbum;
+use App\Contracts\AbstractAlbum;
 
 class Delete extends Action
 {
@@ -16,7 +16,7 @@ class Delete extends Action
 		$albums = $this->albumFactory->findWhereIDsIn($albumIDs);
 		$success = true;
 
-		/** @var BaseAlbum $album */
+		/** @var AbstractAlbum $album */
 		foreach ($albums as $album) {
 			$success &= $album->delete();
 		}

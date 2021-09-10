@@ -2,12 +2,12 @@
 
 namespace App\Actions;
 
+use App\Contracts\AbstractAlbum;
 use App\Contracts\BaseAlbum;
-use App\Contracts\BaseModelAlbum;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
-use App\Models\BaseModelAlbumImpl;
+use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Session;
@@ -68,7 +68,7 @@ class AlbumAuthorisationProvider
 					->where('public', '=', true);
 			};
 
-			if ($model instanceof BaseModelAlbumImpl) {
+			if ($model instanceof BaseAlbumImpl) {
 				// If the queried model is the base class, we can directly
 				// apply the sub-query
 				return $query->where($visibilitySubQuery);
@@ -102,7 +102,7 @@ class AlbumAuthorisationProvider
 				);
 		};
 
-		if ($model instanceof BaseModelAlbumImpl) {
+		if ($model instanceof BaseAlbumImpl) {
 			// If the queried model is the base class, we can directly
 			// apply the sub-query
 			return $query->where($visibilitySubQuery);
@@ -127,7 +127,7 @@ class AlbumAuthorisationProvider
 	 *     - the album is the album of recent photos and public by configuration, or
 	 *     - the album is the album of starred photos and public by configuration
 	 *
-	 * @param string|int|BaseAlbum|null $album
+	 * @param string|int|AbstractAlbum|null $album
 	 *
 	 * @return bool
 	 */
@@ -138,7 +138,7 @@ class AlbumAuthorisationProvider
 			return AccessControl::is_logged_in();
 		}
 
-		/** @var ?BaseAlbum $album */
+		/** @var ?AbstractAlbum $album */
 		/** @var int|string $albumID */
 		list($albumID, $album) = $this->disassembleAlbumParameter($album);
 
@@ -152,7 +152,7 @@ class AlbumAuthorisationProvider
 		// If we don't have a model, then use `applyVisibilityFilter` to build
 		// a query, but don't hydrate a model
 		if ($album) {
-			/* @var BaseModelAlbum $album */
+			/* @var BaseAlbum $album */
 
 			if (!AccessControl::is_logged_in()) {
 				return !$album->requires_link && $album->public;
@@ -166,7 +166,7 @@ class AlbumAuthorisationProvider
 			}
 		} else {
 			return $this->applyVisibilityFilter(
-				BaseModelAlbumImpl::query()->where('id', '=', intval($albumID))
+				BaseAlbumImpl::query()->where('id', '=', intval($albumID))
 			)->count() !== 0;
 		}
 	}
@@ -219,7 +219,7 @@ class AlbumAuthorisationProvider
 					);
 			};
 
-			if ($model instanceof BaseModelAlbumImpl) {
+			if ($model instanceof BaseAlbumImpl) {
 				// If the queried model is the base class, we can directly
 				// apply the sub-query
 				return $query->where($accessibilitySubQuery);
@@ -254,7 +254,7 @@ class AlbumAuthorisationProvider
 				);
 		};
 
-		if ($model instanceof BaseModelAlbumImpl) {
+		if ($model instanceof BaseAlbumImpl) {
 			// If the queried model is the base class, we can directly
 			// apply the sub-query
 			return $query->where($accessibilitySubQuery);
@@ -279,7 +279,7 @@ class AlbumAuthorisationProvider
 	 *     - the album is the album of recent photos and public by configuration, or
 	 *     - the album is the album of starred photos and public by configuration
 	 *
-	 * @param string|int|BaseAlbum|null $album
+	 * @param string|int|AbstractAlbum|null $album
 	 *
 	 * @return bool
 	 */
@@ -290,7 +290,7 @@ class AlbumAuthorisationProvider
 			return AccessControl::is_logged_in();
 		}
 
-		/** @var ?BaseAlbum $album */
+		/** @var ?AbstractAlbum $album */
 		/** @var int|string $albumID */
 		list($albumID, $album) = $this->disassembleAlbumParameter($album);
 
@@ -304,7 +304,7 @@ class AlbumAuthorisationProvider
 		// If we don't have a model, then use `applyVisibilityFilter` to build
 		// a query, but don't hydrate a model
 		if ($album) {
-			/* @var BaseModelAlbum $album */
+			/* @var BaseAlbum $album */
 
 			if (!AccessControl::is_logged_in()) {
 				return
@@ -321,7 +321,7 @@ class AlbumAuthorisationProvider
 			}
 		} else {
 			return $this->applyAccessibilityFilter(
-				BaseModelAlbumImpl::query()->where('id', '=', intval($albumID))
+				BaseAlbumImpl::query()->where('id', '=', intval($albumID))
 			)->count() !== 0;
 		}
 	}
@@ -363,7 +363,7 @@ class AlbumAuthorisationProvider
 	private function failForWrongQueryModel(Builder $query): void
 	{
 		$model = $query->getModel();
-		if (!($model instanceof Album || $model instanceof TagAlbum || $model instanceof BaseModelAlbumImpl)) {
+		if (!($model instanceof Album || $model instanceof TagAlbum || $model instanceof BaseAlbumImpl)) {
 			throw new \InvalidArgumentException('the given query must query for album');
 		}
 	}
@@ -378,18 +378,18 @@ class AlbumAuthorisationProvider
 	 *    result is `[$in, null]`, i.e. the input parameter is returned as
 	 *    the ID of an album
 	 *  - if an albums is passed in, i.e. if `$in` is an instance of
-	 *    {@link BaseAlbum}, then the result is `[$in->id, $in]`, i.e. the
+	 *    {@link AbstractAlbum}, then the result is `[$in->id, $in]`, i.e. the
 	 *   input parameter is returned as the album and the ID is extracted.
 	 *
 	 * Note, this method never loads any model from database.
 	 *
-	 * @param string|int|BaseAlbum|null $in
+	 * @param string|int|AbstractAlbum|null $in
 	 *
 	 * @return array an array with [albumID, album]
 	 */
 	private function disassembleAlbumParameter($in): array
 	{
-		if ($in instanceof BaseAlbum) {
+		if ($in instanceof AbstractAlbum) {
 			return [$in->id, $in];
 		} else {
 			return [$in ?: 0, null];

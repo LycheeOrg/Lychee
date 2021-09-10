@@ -2,34 +2,50 @@
 
 namespace App\Contracts;
 
-use App\Models\Extensions\Thumb;
-use Illuminate\Contracts\Support\Arrayable;
+use App\Models\BaseAlbumImpl;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\Relation;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
 
 /**
  * Interface BaseAlbum.
  *
- * This is the common interface with the minimal set of functions which is
- * provided by *all* albums even the true smart albums like the album
- * of recent photos, starred photos etc. which exist purely virtual and are
- * not persisted to DB.
- * Hence, this interface does *not* declares properties which are typical
- * for persistable models like `created_at`, etc., because the the built-in
- * smart models exist "forever".
- * See {@link \App\Contracts\BaseModelAlbum} for the common interface of
- * all models which are persisted to DB.
+ * This is the common interface for all albums which can be created and
+ * deleted by a user at runtime or more accurately which can be persisted
+ * to the DB.
  *
- * @property string     $title
- * @property Collection $photos
- * @property Thumb|null $thumb
- * @property bool       $public
- * @property bool       $downloadable
- * @property bool       $share_button_visible
+ * @property int           $id
+ * @property Carbon        $created_at
+ * @property Carbon        $updated_at
+ * @property string|null   $description
+ * @property bool          $nsfw
+ * @property bool          $full_photo
+ * @property int           $owner_id
+ * @property User          $owner
+ * @property Collection    $shared_with
+ * @property bool          $requires_link
+ * @property string|null   $password
+ * @property bool          $has_password
+ * @property Carbon|null   $min_taken_at
+ * @property Carbon|null   $max_taken_at
+ * @property string|null   $sorting_col
+ * @property string|null   $sorting_order
+ * @property BaseAlbumImpl $base_class
  */
-interface BaseAlbum extends \JsonSerializable, Arrayable, SupportsRelationships
+interface BaseAlbum extends AbstractAlbum
 {
-	public function photos(): Relation;
+	/**
+	 * Save the model to the database.
+	 *
+	 * @param array $options
+	 *
+	 * @return bool
+	 */
+	public function save(array $options = []);
 
-	public function delete(): bool;
+	public function owner(): BelongsTo;
+
+	public function shared_with(): BelongsToMany;
 }

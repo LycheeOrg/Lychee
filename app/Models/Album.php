@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Contracts\BaseModelAlbum;
+use App\Contracts\BaseAlbum;
 use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\ForwardsToParentImplementation;
@@ -33,7 +33,7 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * @property int        $_lft
  * @property int        $_rgt
  */
-class Album extends Model implements BaseModelAlbum
+class Album extends Model implements BaseAlbum
 {
 	use NodeTrait;
 	use HasBidirectionalRelationships;
@@ -108,7 +108,7 @@ class Album extends Model implements BaseModelAlbum
 	 */
 	public function base_class(): BelongsTo
 	{
-		return $this->belongsTo(BaseModelAlbumImpl::class, 'id', 'id');
+		return $this->belongsTo(BaseAlbumImpl::class, 'id', 'id');
 	}
 
 	/**

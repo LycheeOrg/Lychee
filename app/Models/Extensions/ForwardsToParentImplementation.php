@@ -4,7 +4,7 @@
 
 namespace App\Models\Extensions;
 
-use App\Models\BaseModelAlbumImpl;
+use App\Models\BaseAlbumImpl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -14,7 +14,7 @@ use Illuminate\Support\Str;
  *
  * This trait is supposed to be used by "child" classes of a parent-child
  * relation that follows the design pattern as described in
- * {@link \App\Models\BaseModelAlbumImpl}.
+ * {@link \App\Models\BaseAlbumImpl}.
  * This trait assumes that the using "child" classes provides a relation
  * called `base_class` which returns an instance of
  * {@link \Illuminate\Database\Eloquent\Relations\MorphOne} and refers
@@ -425,7 +425,7 @@ trait ForwardsToParentImplementation
 		// on the parent class.
 		// Only if the parent class does provide such an attribute neither,
 		// we write it to the child class.
-		/** @var BaseModelAlbumImpl $baseClass */
+		/** @var BaseAlbumImpl $baseClass */
 		$baseClass = $this->base_class;
 		if (
 			array_key_exists($key, $baseClass->getAttributes()) ||

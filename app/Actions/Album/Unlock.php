@@ -3,7 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Actions\AlbumAuthorisationProvider;
-use App\Models\BaseModelAlbumImpl;
+use App\Models\BaseAlbumImpl;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock extends Action
@@ -61,11 +61,11 @@ class Unlock extends Action
 		// browse through the hierarchy.  This should be safe as the
 		// list of such albums is not exposed to the user and is
 		// considered as the last access check criteria.
-		$albums = BaseModelAlbumImpl::query()
+		$albums = BaseAlbumImpl::query()
 			->where('public', '=', true)
 			->whereNotNull('password')
 			->get();
-		/** @var BaseModelAlbumImpl $album */
+		/** @var BaseAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
 				$this->albumAuthorisationProvider->unlockAlbum($album->id);

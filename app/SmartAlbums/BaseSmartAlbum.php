@@ -3,7 +3,7 @@
 namespace App\SmartAlbums;
 
 use App\Casts\MustNotSetCast;
-use App\Contracts\BaseAlbum;
+use App\Contracts\AbstractAlbum;
 use App\Models\Configs;
 use App\Models\Extensions\Thumb;
 
@@ -18,7 +18,7 @@ use App\Models\Extensions\Thumb;
  *
  * @property string $id
  */
-abstract class BaseSmartAlbum extends FakeModel implements BaseAlbum
+abstract class BaseSmartAlbum extends FakeModel implements AbstractAlbum
 {
 	protected $casts = [
 		'public' => MustNotSetCast::class,

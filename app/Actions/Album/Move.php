@@ -3,7 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Models\Album;
-use App\Models\BaseModelAlbumImpl;
+use App\Models\BaseAlbumImpl;
 use App\Models\Photo;
 
 class Move extends Action
@@ -42,8 +42,8 @@ class Move extends Action
 			// all model albums.
 			// For optimization, we do not load the album models but perform
 			// the update directly on the database.
-			// Hence, we must use `BaseModelAlbumImpl`.
-			BaseModelAlbumImpl::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
+			// Hence, we must use `BaseAlbumImpl`.
+			BaseAlbumImpl::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
 			$descendantIDs[] = $targetAlbum->getKey();
 			Photo::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
 		}

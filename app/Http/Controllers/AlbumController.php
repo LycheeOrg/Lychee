@@ -18,7 +18,7 @@ use App\Actions\Album\SetShowTags;
 use App\Actions\Album\SetSorting;
 use App\Actions\Album\SetTitle;
 use App\Actions\Album\Unlock;
-use App\Contracts\BaseAlbum;
+use App\Contracts\AbstractAlbum;
 use App\Facades\Helpers;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
@@ -77,9 +77,9 @@ class AlbumController extends Controller
 	 * @param AlbumIDRequest $request
 	 * @param AlbumFactory   $albumFactory
 	 *
-	 * @return BaseAlbum
+	 * @return AbstractAlbum
 	 */
-	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory): BaseAlbum
+	public function get(AlbumIDRequest $request, AlbumFactory $albumFactory): AbstractAlbum
 	{
 		$validated = $request->validated();
 

@@ -2,7 +2,7 @@
 
 namespace App\Actions\Album;
 
-use App\Contracts\BaseAlbum;
+use App\Contracts\AbstractAlbum;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Album;
@@ -96,10 +96,10 @@ class Archive extends Action
 	 * Album compression
 	 * ! include recursive call.
 	 *
-	 * @param Collection $photos
-	 * @param BaseAlbum  $album
+	 * @param Collection    $photos
+	 * @param AbstractAlbum $album
 	 */
-	private function compress_album($photos, $dir_name, &$dirs, $parent_dir, BaseAlbum $album, $albumID, &$zip)
+	private function compress_album($photos, $dir_name, &$dirs, $parent_dir, AbstractAlbum $album, $albumID, &$zip)
 	{
 		if (!$album->downloadable) {
 			if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {

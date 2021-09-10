@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Contracts\BaseAlbum;
+use App\Contracts\AbstractAlbum;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Photo;
@@ -16,7 +16,7 @@ class Fullpage extends Component
 	 */
 	public $mode;
 	public ?Photo $photo = null;
-	public ?BaseAlbum $album = null;
+	public ?AbstractAlbum $album = null;
 
 	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
 

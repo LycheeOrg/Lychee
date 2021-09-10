@@ -2,12 +2,12 @@
 
 namespace App\Actions\Album;
 
-use App\Models\BaseModelAlbumImpl;
+use App\Models\BaseAlbumImpl;
 
 class SetTitle extends Setters
 {
 	public function __construct()
 	{
-		parent::__construct(BaseModelAlbumImpl::query(), 'title');
+		parent::__construct(BaseAlbumImpl::query(), 'title');
 	}
 }

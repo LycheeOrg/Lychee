@@ -3,8 +3,8 @@
 namespace App\Relations;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\AbstractAlbum;
 use App\Contracts\BaseAlbum;
-use App\Contracts\BaseModelAlbum;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -20,9 +20,9 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 abstract class HasManyPhotos extends Relation
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
-	protected BaseAlbum $owningAlbum;
+	protected AbstractAlbum $owningAlbum;
 
-	public function __construct(BaseAlbum $owningAlbum)
+	public function __construct(AbstractAlbum $owningAlbum)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
@@ -74,7 +74,7 @@ abstract class HasManyPhotos extends Relation
 	 */
 	public function initRelation(array $models, $relation): array
 	{
-		/** @var BaseAlbum $model */
+		/** @var AbstractAlbum $model */
 		foreach ($models as $model) {
 			$model->setRelation($relation, $this->related->newCollection());
 		}
@@ -158,7 +158,7 @@ abstract class HasManyPhotos extends Relation
 	 */
 	public function getResults(): Collection
 	{
-		if ($this->owningAlbum instanceof BaseModelAlbum) {
+		if ($this->owningAlbum instanceof BaseAlbum) {
 			$sortingCol = $this->owningAlbum->sorting_col;
 			$sortingOrder = $this->owningAlbum->sorting_order;
 		} else {

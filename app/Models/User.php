@@ -77,7 +77,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	 */
 	public function albums(): HasMany
 	{
-		return $this->hasMany('App\Models\BaseModelAlbumImpl', 'owner_id', 'id');
+		return $this->hasMany('App\Models\BaseAlbumImpl', 'owner_id', 'id');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function shared(): BelongsToMany
 	{
 		return $this->belongsToMany(
-			BaseModelAlbumImpl::class,
+			BaseAlbumImpl::class,
 			'user_base_album',
 			'user_id',
 			'base_album_id'

@@ -7,7 +7,7 @@ namespace App\Http\Middleware;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
-use App\Models\BaseModelAlbumImpl;
+use App\Models\BaseAlbumImpl;
 use App\Models\Logs;
 use App\Models\Photo;
 use Closure;
@@ -107,7 +107,7 @@ class UploadCheck
 		$albumIDs = array_unique($albumIDs);
 
 		if (count($albumIDs) > 0) {
-			$count = BaseModelAlbumImpl::query()->whereIn('id', $albumIDs)->where('owner_id', '=', $user_id)->count();
+			$count = BaseAlbumImpl::query()->whereIn('id', $albumIDs)->where('owner_id', '=', $user_id)->count();
 			if ($count !== count($albumIDs)) {
 				Logs::error(__METHOD__, __LINE__, 'Albums not found or ownership mismatch!');
 

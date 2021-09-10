@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Contracts\BaseModelAlbum;
+use App\Contracts\BaseAlbum;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -40,26 +40,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * their "parent" class.
  * Basically, the architecture looks like this
  *
- *          +---------+                +----------------+
- *          |  Model  |                | <<interface>>  |
- *          +---------+                | BaseModelAlbum |
- *               ^ ^ ^                 +----------------+
- *               | | \                   ^           ^
- *               | |  \                  |           |
- *               | \   \-----------------|------\    |
- *               |  \----------------\   |       \   |
- *               |                  +-------+     \  |
- *               |                  | Album |      | |
- *     +--------------------+ <---X +-------+    +----------+
- *     | BaseModelAlbumImpl |                    | TagAlbum |
- *     +--------------------+ <----------------X +----------+
+ *       +---------+             +-----------------+
+ *       |  Model  |             |  <<interface>>  |
+ *       +---------+             |    BaseAlbum    |
+ *          ^ ^ ^                +-----------------+
+ *          | | \                   ^           ^
+ *          | |  \                  |           |
+ *          | \   \-----------------|------\    |
+ *          |  \----------------\   |       \   |
+ *          |                  +-------+     \  |
+ *          |                  | Album |      | |
+ *     +---------------+ <---X +-------+    +----------+
+ *     | BaseAlbumImpl |                    | TagAlbum |
+ *     +---------------+ <----------------X +----------+
  *
  * (Note: A sideways arrow with an X, i.e. <-----X, shall denote a composite.)
  * All child classes and the this class extend
  * {@link \Illuminate\Database\Eloquent\Model}, because they map to a single
  * DB table.
  * All methods and properties which are common to any sort of peristable
- * album is declared in the interface {@link \App\Contracts\BaseModelAlbum}
+ * album is declared in the interface {@link \App\Contracts\BaseAlbum}
  * and thus {@link \App\Models\Album} and {@link \App\Models\TagAlbum}
  * realize it.
  * However, for any method which is implemented identically for all
@@ -67,13 +67,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * the child classes forward the call to this class via the composite.
  * For this reason, this class is called `BaseAlbumImpl` like _implementation_.
  * Also note, that this class does not realize
- * {@link \App\Contracts\BaseModelAlbum} intentionally.
- * The interface {@link \App\Contracts\BaseModelAlbum} requires methods from
+ * {@link \App\Contracts\BaseAlbum} intentionally.
+ * The interface {@link \App\Contracts\BaseAlbum} requires methods from
  * albums which this class cannot implement reasonably, because the
  * implementation depends on the specific sub-type of album and thus must
  * be implemented by the child classes.
  * For example, every album contains photos and thus must provide
- * {@link \App\Contracts\BaseAlbum::$photos}, but the way how an album
+ * {@link \App\Contracts\AbstractAlbum::$photos}, but the way how an album
  * defines its collection of photos is specific for the album.
  * Normally, a proper parent class would use abstract methods for these cases,
  * but this class is not a proper parent class (it just provides an
@@ -98,7 +98,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $sorting_col
  * @property string|null $sorting_order
  */
-class BaseModelAlbumImpl extends Model
+class BaseAlbumImpl extends Model
 {
 	use HasAttributesPatch;
 	use HasTimeBasedID;
