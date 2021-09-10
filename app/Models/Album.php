@@ -7,7 +7,6 @@ use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
-use App\Models\Extensions\NodeTrait;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
@@ -19,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Kalnoy\Nestedset\NodeTrait;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 
 /**
