@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\BaseModelAlbum;
 use App\Facades\AccessControl;
+use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\NodeTrait;
@@ -101,44 +102,6 @@ class Album extends Model implements BaseModelAlbum
 	 * The relationships that should always be eagerly loaded by default.
 	 */
 	protected $with = ['cover'];
-
-	/**
-	 * This method is called by the framework after the model has been
-	 * booted.
-	 *
-	 * This method alters the default query builder for this model and
-	 * adds a "scope" to the query builder in order to add the "virtual"
-	 * columns `max_taken_at` and `min_taken_at` to every query.
-	 */
-	protected static function booted()
-	{
-		parent::booted();
-		// Normally "scopes" are used to restrict the result of the query
-		// to a particular subset through adding additional WHERE-clauses
-		// to the default query.
-		// However, "scopes" can be used to manipulate the query in any way.
-		// Here we add to additional "virtual" columns to the query.
-		static::addGlobalScope('add_minmax_taken_at', function (Builder $builder) {
-			$builder->addSelect([
-				'max_taken_at' => Photo::query()
-					->select('taken_at')
-					->join('albums as a', 'a.id', '=', 'album_id')
-					->whereColumn('a._lft', '>=', 'albums._lft')
-					->whereColumn('a._rgt', '<=', 'albums._rgt')
-					->whereNotNull('taken_at')
-					->orderBy('taken_at', 'desc')
-					->limit(1),
-				'min_taken_at' => Photo::query()
-					->select('taken_at')
-					->join('albums as a', 'a.id', '=', 'album_id')
-					->whereColumn('a._lft', '>=', 'albums._lft')
-					->whereColumn('a._rgt', '<=', 'albums._rgt')
-					->whereNotNull('taken_at')
-					->orderBy('taken_at', 'asc')
-					->limit(1),
-			]);
-		});
-	}
 
 	/**
 	 * Returns the relationship between this model and the implementation
@@ -391,5 +354,13 @@ class Album extends Model implements BaseModelAlbum
 		// In case if user wants to re-create the node
 		$this->makeRoot();
 		static::$actionsPerformed++;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function newEloquentBuilder($query): AlbumBuilder
+	{
+		return new AlbumBuilder($query);
 	}
 }
