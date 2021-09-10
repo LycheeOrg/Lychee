@@ -5,9 +5,9 @@ namespace App\Models;
 use App\Contracts\BaseModelAlbum;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyPhotosByTag;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -46,6 +46,11 @@ class TagAlbum extends Model implements BaseModelAlbum
 		'show_tags' => null,
 	];
 
+	protected $casts = [
+		'min_taken_at' => 'datetime',
+		'max_taken_at' => 'datetime',
+	];
+
 	/**
 	 * @var string[] The list of attributes which exist as columns of the DB
 	 *               relation but shall not be serialized to JSON
@@ -62,52 +67,6 @@ class TagAlbum extends Model implements BaseModelAlbum
 	protected $appends = [
 		'thumb',
 	];
-
-	/**
-	 * This method is called by the framework after the model has been
-	 * booted.
-	 *
-	 * This method alters the default query builder for this model and
-	 * adds a "scope" to the query builder in order to add the "virtual"
-	 * columns `max_taken_at` and `min_taken_at` to every query.
-	 */
-	protected static function booted()
-	{
-		parent::booted();
-		// Normally "scopes" are used to restrict the result of the query
-		// to a particular subset through adding additional WHERE-clauses
-		// to the default query.
-		// However, "scopes" can be used to manipulate the query in any way.
-		// Here we add to additional "virtual" columns to the query.
-		//
-		// As the sorting logic also expects tag albums to provide the columns
-		// max_taken_at and min_taken_at, we add it here, but the columns
-		// always have null values.
-		// We do not support these columns, because we cannot properly query
-		// for those columns on the database level.
-		// If we wanted to do so, we had to query for the photos which are
-		// included in the album in a similar way as in
-		// `HasManyPhotosByTag::addEagerConstraints()`.
-		// However, this method utilizes the PHP methods `explode` and `trim`
-		// to assemble an SQL query based on the value of the column
-		// `show_tags`.
-		// If we wanted to write a single SQL query, we would need to perform
-		// this string manipulation on the DB layer.
-		// This is impossible with standard SQL grammar.
-		// In order to solve this problem, we would need a proper table `tags`.
-		// Both tables `tag_albums` and `photos` would have a (m:n)-relation
-		// with `tags`.
-		// Then we could use a proper JOIN clause here.
-		// But this is another pull request.
-		// TODO: Fix it.
-		static::addGlobalScope('add_minmax_taken_at', function (Builder $builder) {
-			$builder->addSelect([
-				$builder->getQuery()->from . '.*',
-				DB::raw('null as max_taken_at'),
-				DB::raw('null as min_taken_at'),
-			]);
-		});
-	}
 
 	/**
 	 * Returns the relationship between this model and the implementation
@@ -162,5 +121,13 @@ class TagAlbum extends Model implements BaseModelAlbum
 		$result['tag_album'] = true;
 
 		return array_merge($result, $this->base_class->toArray());
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function newEloquentBuilder($query): TagAlbumBuilder
+	{
+		return new TagAlbumBuilder($query);
 	}
 }

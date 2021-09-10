@@ -21,7 +21,7 @@ use Illuminate\Support\Str;
  * to the implementation of the "parent" class.
  * This trait forwards calls to properties and relations which are not
  * defined by the "child" class to the "parent" class and therewith
- * mimicks a behaviour as if the properties and relations of the parent
+ * mimics a behaviour as if the properties and relations of the parent
  * class were actually inherited by the "child" class.
  * Moreover, this trait ensures that the parent class is saved/created before
  * the child class is saved/created and that the (inherited) timestamp of
@@ -72,7 +72,7 @@ trait ForwardsToParentImplementation
 		if ($base_class->exists) {
 			throw new \LogicException('cannot create a child class whose base class already exists');
 		}
-		// Save and therewith create the base base
+		// Save and therewith create the base class
 		if (!$base_class->save()) {
 			return false;
 		}
@@ -203,7 +203,7 @@ trait ForwardsToParentImplementation
 	 *  2. A final call which forwards to the implementation of the base class
 	 *     at the end, if the default code of
 	 *     {@link \Illuminate\Database\Concerns\HasAttributes::getAttribute()}
-	 *     would have fallen trough.
+	 *     would have fallen through.
 	 *  3. While the middle part is basically a copy of the original code,
 	 *     we had to tweak it slightly.
 	 *     The original code calls `getRelationValue`, if the `$key` is not
@@ -233,7 +233,7 @@ trait ForwardsToParentImplementation
 			return null;
 		}
 
-		// If the primary key is requested, we must use a short cut.
+		// If the primary key is requested, we must use a shortcut.
 		// If the primary key of the model ist not yet set as it might be the
 		// case for new models, the implementation otherwise would fall
 		// through until the end and try to forward the call to the base class
@@ -448,7 +448,7 @@ trait ForwardsToParentImplementation
 	 */
 	public function offsetUnset($offset)
 	{
-		// Prevent that the base class is unset from the set of relations
+		// Prevent that the base model is unset from the set of relations
 		if ($offset == 'base_class') {
 			return;
 		}

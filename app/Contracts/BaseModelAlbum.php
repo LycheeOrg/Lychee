@@ -28,6 +28,8 @@ use Illuminate\Support\Carbon;
  * @property bool               $requires_link
  * @property string|null        $password
  * @property bool               $has_password
+ * @property Carbon|null        $min_taken_at
+ * @property Carbon|null        $max_taken_at
  * @property string|null        $sorting_col
  * @property string|null        $sorting_order
  * @property BaseModelAlbumImpl $base_class

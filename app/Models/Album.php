@@ -11,7 +11,6 @@ use App\Models\Extensions\Thumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -24,17 +23,15 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 /**
  * Class Album.
  *
- * @property int|null    $parent_id
- * @property Album|null  $parent
- * @property Collection  $children
- * @property Collection  $all_photos
- * @property string      $license
- * @property int|null    $cover_id
- * @property Photo|null  $cover
- * @property Carbon|null $min_taken_at
- * @property Carbon|null $max_taken_at
- * @property int         $_lft
- * @property int         $_rgt
+ * @property int|null   $parent_id
+ * @property Album|null $parent
+ * @property Collection $children
+ * @property Collection $all_photos
+ * @property string     $license
+ * @property int|null   $cover_id
+ * @property Photo|null $cover
+ * @property int        $_lft
+ * @property int        $_rgt
  */
 class Album extends Model implements BaseModelAlbum
 {
