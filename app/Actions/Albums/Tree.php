@@ -6,6 +6,7 @@ use App\Actions\AlbumAuthorisationProvider;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Extensions\SortingDecorator;
 use Illuminate\Database\Eloquent\Collection;
 use Kalnoy\Nestedset\Collection as NsCollection;
 use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
@@ -30,20 +31,10 @@ class Tree
 		/** @var NsQueryBuilder $query */
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query());
-
-		if (in_array($this->sortingCol, ['title', 'description'])) {
-			/** @var NsCollection $albums */
-			$albums = $query
-				->orderBy('id', 'ASC')
-				->get()
-				->sortBy($this->sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $this->sortingOrder === 'DESC');
-		} else {
-			/** @var NsCollection $albums */
-			$albums = $query
-				->orderBy($this->sortingCol, $this->sortingOrder)
-				->orderBy('id', 'ASC')
-				->get();
-		}
+		$albums = (new SortingDecorator($query))
+			->orderBy('id')
+			->orderBy($this->sortingCol, $this->sortingOrder)
+			->get();
 
 		if (AccessControl::is_logged_in()) {
 			$id = AccessControl::id();

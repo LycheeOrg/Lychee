@@ -4,6 +4,7 @@ namespace App\Relations;
 
 use App\Actions\PhotoAuthorisationProvider;
 use App\Models\Album;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -48,20 +49,10 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		$sortingCol = $this->parent->sorting_col;
-		$sortingOrder = $this->parent->sorting_order;
-
-		if (in_array($sortingCol, ['title', 'description'])) {
-			return $this->query
-				->orderBy('id', 'ASC')
-				->get()
-				->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC');
-		} else {
-			return $this->query
-				->orderBy($sortingCol, $sortingOrder)
-				->orderBy('id', 'ASC')
-				->get();
-		}
+		return (new SortingDecorator($this->query))
+			->orderBy('id')
+			->orderBy($this->parent->sorting_col, $this->parent->sorting_order)
+			->get();
 	}
 
 	/**

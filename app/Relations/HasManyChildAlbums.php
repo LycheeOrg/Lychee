@@ -5,12 +5,15 @@ namespace App\Relations;
 use App\Actions\AlbumAuthorisationProvider;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Extensions\SortingDecorator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class HasManyChildAlbums extends HasManyBidirectionally
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private string $sortingCol;
+	private string $sortingOrder;
 
 	public function __construct(Album $owningAlbum)
 	{
@@ -19,6 +22,8 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->sortingCol = Configs::get_value('sorting_Albums_col');
+		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
 		parent::__construct(
 			$owningAlbum->newQuery(),
 			$owningAlbum,
@@ -48,20 +53,10 @@ class HasManyChildAlbums extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		$sortingCol = Configs::get_value('sorting_Albums_col');
-		$sortingOrder = Configs::get_value('sorting_Albums_order');
-
-		if (!in_array($sortingCol, ['title', 'description'])) {
-			return $this->query
-				->orderBy($sortingCol, $sortingOrder)
-				->orderBy('id', 'ASC')
-				->get();
-		} else {
-			return $this->query
-				->orderBy('id', 'ASC')
-				->get()
-				->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC');
-		}
+		return (new SortingDecorator($this->query))
+			->orderBy('id')
+			->orderBy($this->sortingCol, $this->sortingOrder)
+			->get();
 	}
 
 	/**

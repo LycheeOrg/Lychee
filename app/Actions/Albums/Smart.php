@@ -6,6 +6,7 @@ use App\Actions\AlbumAuthorisationProvider;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 
@@ -47,17 +48,10 @@ class Smart
 
 		$tagAlbumQuery = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(TagAlbum::query());
-		if (in_array($this->sortingCol, ['title', 'description'])) {
-			$tagAlbums = $tagAlbumQuery
-				->orderBy('id', 'ASC')
-				->get()
-				->sortBy($this->sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $this->sortingOrder === 'DESC');
-		} else {
-			$tagAlbums = $tagAlbumQuery
-				->orderBy($this->sortingCol, $this->sortingOrder)
-				->orderBy('id', 'ASC')
-				->get();
-		}
+		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
+			->orderBy('id')
+			->orderBy($this->sortingCol, $this->sortingOrder)
+			->get();
 
 		/** @var TagAlbum $tagAlbum */
 		foreach ($tagAlbums as $tagAlbum) {
