@@ -310,7 +310,7 @@ class PhotosTest extends TestCase
 
 		$photos_tests->wrong_upload();
 		$photos_tests->wrong_upload2();
-		$photos_tests->get('-1', 404);
+		$photos_tests->get('-1', 422);
 		$photos_tests->set_description('-1', 'test', 422);
 		$photos_tests->set_public('-1', 422);
 		$photos_tests->set_album('-1', '-1', 422);

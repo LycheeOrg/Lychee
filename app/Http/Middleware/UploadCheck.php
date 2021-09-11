@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Middleware;
 
 use App\Facades\AccessControl;
@@ -11,10 +9,8 @@ use App\Models\BaseAlbumImpl;
 use App\Models\Logs;
 use App\Models\Photo;
 use Closure;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class UploadCheck
 {
@@ -76,12 +72,12 @@ class UploadCheck
 	 *
 	 * TODO: Migrate this to {@link \App\Actions\AlbumAuthorisationProvider}
 	 *
-	 * @param $request
-	 * @param int $user_id
+	 * @param Request $request
+	 * @param int     $user_id
 	 *
-	 * @return ResponseFactory|Response|mixed
+	 * @return bool
 	 */
-	public function album_check(Request $request, int $user_id)
+	private function album_check(Request $request, int $user_id): bool
 	{
 		$albumIDs = [];
 		if ($request->has('albumIDs')) {
@@ -126,9 +122,9 @@ class UploadCheck
 	 * @param Request $request
 	 * @param int     $user_id
 	 *
-	 * @return ResponseFactory|Response|mixed
+	 * @return bool
 	 */
-	public function photo_check(Request $request, int $user_id)
+	private function photo_check(Request $request, int $user_id): bool
 	{
 		$photoIDs = [];
 		if ($request->has('photoIDs')) {
@@ -159,7 +155,7 @@ class UploadCheck
 	 *
 	 * @return bool
 	 */
-	public function share_check(Request $request, int $user_id)
+	private function share_check(Request $request, int $user_id): bool
 	{
 		if ($request->has('ShareIDs')) {
 			$shareIDs = $request['ShareIDs'];
@@ -186,6 +182,8 @@ class UploadCheck
 			Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
 
 			return false;
+		} else {
+			return true;
 		}
 	}
 }

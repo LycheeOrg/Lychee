@@ -57,9 +57,9 @@ class AlbumTest extends TestCase
 		$albums_tests->move($albumID3, '0');
 
 		/*
-		 * try to get a non existing album
+		 * try to get a non-existing album
 		 */
-		$albums_tests->get('999', 403);
+		$albums_tests->get('999', 404);
 
 		$response = $albums_tests->get($albumID);
 		$response->assertJson([

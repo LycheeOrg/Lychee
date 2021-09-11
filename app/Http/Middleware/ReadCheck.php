@@ -3,20 +3,19 @@
 namespace App\Http\Middleware;
 
 use App\Actions\AlbumAuthorisationProvider;
-use App\Actions\ReadAccessFunctions;
-use App\Models\Photo;
+use App\Actions\PhotoAuthorisationProvider;
 use Closure;
 use Illuminate\Http\Request;
 
 class ReadCheck
 {
 	private AlbumAuthorisationProvider $albumAuthorisationProvider;
-	private ReadAccessFunctions $readAccessFunctions;
+	private PhotoAuthorisationProvider $photoAuthorisationProvider;
 
-	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider, ReadAccessFunctions $readAccessFunctions)
+	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider, PhotoAuthorisationProvider $photoAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
-		$this->readAccessFunctions = $readAccessFunctions;
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 	}
 
 	/**
@@ -50,9 +49,7 @@ class ReadCheck
 			$photoIDs[] = $request['photoID'];
 		}
 		foreach ($photoIDs as $photoID) {
-			/** @var Photo $photo */
-			$photo = Photo::with('album')->findOrFail($photoID);
-			if ($this->readAccessFunctions->photo($photo) === false) {
+			if (!$this->photoAuthorisationProvider->isVisible($photoID)) {
 				return response('', 403);
 			}
 		}

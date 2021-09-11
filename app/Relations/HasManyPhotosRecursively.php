@@ -43,7 +43,8 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		/** @var Album $album */
 		$album = $albums[0];
 
-		$this->applyVisibilityFilter($this->query)
+		$this->photoAuthorisationProvider
+			->applyVisibilityFilter($this->query)
 			->whereHas('album', function (Builder $q) use ($album) {
 				$q->where('_lft', '>=', $album->_lft)
 					->where('_rgt', '<=', $album->_rgt);

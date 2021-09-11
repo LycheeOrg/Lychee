@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Actions\PhotoAuthorisationProvider;
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
 use App\Assets\Helpers;
@@ -43,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
 		ApplyUpdate::class => ApplyUpdate::class,
 		AlbumFactory::class => AlbumFactory::class,
 		AlbumAuthorisationProvider::class => AlbumAuthorisationProvider::class,
+		PhotoAuthorisationProvider::class => PhotoAuthorisationProvider::class,
 	];
 
 	/**

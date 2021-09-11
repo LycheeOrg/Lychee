@@ -127,30 +127,57 @@ class AlbumAuthorisationProvider
 	 *     - the album is the album of recent photos and public by configuration, or
 	 *     - the album is the album of starred photos and public by configuration
 	 *
-	 * @param string|int|AbstractAlbum|null $album
+	 * Note, this method tries to minimize DB queries and any overhead due
+	 * to hydration of models.
+	 * If an actual instance of a {@link AbstractAlbum} model is passed in,
+	 * then the DB won't be queried at all, because all checks are performed
+	 * on the values of the already hydrated model.
+	 * If an ID is passed, then the method runs a very efficient COUNT
+	 * query on the DB.
+	 * In particular, no {@link Album} nor {@link TagAlbum} model is hydrated
+	 * to avoid any overhead.
+	 *
+	 * Tips for usage:
+	 *  - If you already have a {@link AbstractAlbum} instance, pass that.
+	 *    This is most efficient.
+	 *  - If you do not have a {@link AbstractAlbum} instance, but you will
+	 *    need one later anyway, then use {@link AlbumFactory} to first fetch
+	 *    the album from DB and pass the album.
+	 *    This avoids a second DB query later.
+	 *  - If you do not have a {@link AbstractAlbum} instance, and you won't
+	 *    need one later, simply pass the ID of the album.
+	 *    This avoids the overhead of model hydration.
+	 *
+	 * @param string|int|AbstractAlbum|null $albumModelOrID
 	 *
 	 * @return bool
 	 */
-	public function isVisible($album): bool
+	public function isVisible($albumModelOrID): bool
 	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+
 		// deal with root album first
-		if (empty($album)) {
+		if (empty($albumModelOrID)) {
 			return AccessControl::is_logged_in();
 		}
 
 		/** @var ?AbstractAlbum $album */
 		/** @var int|string $albumID */
-		list($albumID, $album) = $this->disassembleAlbumParameter($album);
+		list($albumID, $album) = $this->disassembleAlbumParameter($albumModelOrID);
 
 		// Deal with built-in smart albums
 		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
 			return $this->isAuthorizedForSmartAlbum($albumID);
 		}
 
-		// Deal with albums that are real models.
-		// If we already have a model, then avoid an unnecessary DB query.
-		// If we don't have a model, then use `applyVisibilityFilter` to build
-		// a query, but don't hydrate a model
+		// Deal with albums that are actual models.
+		// If we already have an instance of a model, then avoid an unnecessary
+		// DB query.
+		// We perform the visibility checks directly on the album model.
+		// The semantics of these checks must be kept in sync with the
+		// checks in `applyVisibilityFilter`.
 		if ($album) {
 			/* @var BaseAlbum $album */
 
@@ -165,6 +192,9 @@ class AlbumAuthorisationProvider
 					(!$album->requires_link && $album->public);
 			}
 		} else {
+			// If we don't have an instance of a model, then use
+			// `applyVisibilityFilter` to build a query, but don't hydrate a
+			// model
 			return $this->applyVisibilityFilter(
 				BaseAlbumImpl::query()->where('id', '=', intval($albumID))
 			)->count() !== 0;
@@ -266,8 +296,7 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * Checks whether the album with the given ID is visible for the current
-	 * user.
+	 * Checks whether the album is accessible by the current user.
 	 *
 	 * For real albums (i.e. albums that are stored in the DB), see
 	 * {@link AlbumAuthorisationProvider::applyVisibilityFilter()} for a
@@ -279,30 +308,57 @@ class AlbumAuthorisationProvider
 	 *     - the album is the album of recent photos and public by configuration, or
 	 *     - the album is the album of starred photos and public by configuration
 	 *
-	 * @param string|int|AbstractAlbum|null $album
+	 * Note, this method tries to minimize DB queries and any overhead due
+	 * to hydration of models.
+	 * If an actual instance of a {@link AbstractAlbum} model is passed in,
+	 * then the DB won't be queried at all, because all checks are performed
+	 * on the values of the already hydrated model.
+	 * If an ID is passed, then the method runs a very efficient COUNT
+	 * query on the DB.
+	 * In particular, no {@link Album} nor {@link TagAlbum} model is hydrated
+	 * to avoid any overhead.
+	 *
+	 * Tips for usage:
+	 *  - If you already have a {@link AbstractAlbum} instance, pass that.
+	 *    This is most efficient.
+	 *  - If you do not have a {@link AbstractAlbum} instance, but you will
+	 *    need one later anyway, then use {@link AlbumFactory} to first fetch
+	 *    the album from DB and pass the album.
+	 *    This avoids a second DB query later.
+	 *  - If you do not have a {@link AbstractAlbum} instance, and you won't
+	 *    need one later, simply pass the ID of the album.
+	 *    This avoids the overhead of model hydration.
+	 *
+	 * @param string|int|AbstractAlbum|null $albumModelOrID
 	 *
 	 * @return bool
 	 */
-	public function isAccessible($album): bool
+	public function isAccessible($albumModelOrID): bool
 	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+
 		// deal with root album first
-		if (empty($album)) {
+		if (empty($albumModelOrID)) {
 			return AccessControl::is_logged_in();
 		}
 
 		/** @var ?AbstractAlbum $album */
 		/** @var int|string $albumID */
-		list($albumID, $album) = $this->disassembleAlbumParameter($album);
+		list($albumID, $album) = $this->disassembleAlbumParameter($albumModelOrID);
 
 		// Deal with built-in smart albums
 		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
 			return $this->isAuthorizedForSmartAlbum($albumID);
 		}
 
-		// Deal with albums that are real models.
-		// If we already have a model, then avoid an unnecessary DB query.
-		// If we don't have a model, then use `applyVisibilityFilter` to build
-		// a query, but don't hydrate a model
+		// Deal with albums that are actual models.
+		// If we already have an instance of a model, then avoid an unnecessary
+		// DB query.
+		// We perform the accessibility checks directly on the album model.
+		// The semantics of these checks must be kept in sync with the
+		// checks in `applyAccessibilityFilter`.
 		if ($album) {
 			/* @var BaseAlbum $album */
 
@@ -320,6 +376,9 @@ class AlbumAuthorisationProvider
 					($album->public && $this->isAlbumUnlocked($album->id));
 			}
 		} else {
+			// If we don't have an instance of a model, then use
+			// `applyAccessibilityFilter` to build a query, but don't hydrate
+			// a model
 			return $this->applyAccessibilityFilter(
 				BaseAlbumImpl::query()->where('id', '=', intval($albumID))
 			)->count() !== 0;
@@ -364,7 +423,7 @@ class AlbumAuthorisationProvider
 	{
 		$model = $query->getModel();
 		if (!($model instanceof Album || $model instanceof TagAlbum || $model instanceof BaseAlbumImpl)) {
-			throw new \InvalidArgumentException('the given query must query for album');
+			throw new \InvalidArgumentException('the given query does not query for albums');
 		}
 	}
 
@@ -379,7 +438,7 @@ class AlbumAuthorisationProvider
 	 *    the ID of an album
 	 *  - if an albums is passed in, i.e. if `$in` is an instance of
 	 *    {@link AbstractAlbum}, then the result is `[$in->id, $in]`, i.e. the
-	 *   input parameter is returned as the album and the ID is extracted.
+	 *    input parameter is returned as the album and the ID is extracted.
 	 *
 	 * Note, this method never loads any model from database.
 	 *
