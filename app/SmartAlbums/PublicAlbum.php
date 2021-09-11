@@ -40,7 +40,7 @@ class PublicAlbum extends BaseSmartAlbum
 		// which are public because they are part of a public album.
 		return new HasManyPhotosBySmartCondition(
 			$this,
-			fn (Builder $q) => $q->where('public', '=', true)
+			fn (Builder $q) => $q->where('is_public', '=', true)
 		);
 	}
 }

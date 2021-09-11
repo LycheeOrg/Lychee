@@ -51,8 +51,8 @@ class Generate
 			// or PHOTO MARKED AS PUBLIC.
 			// TODO: Replace this with a proper method of a class `PhotoAuthorizationProvider` in the same spirit like `AlbumAuthorizationProvider`
 			->where(fn (Builder $q) => $q
-				->where('public', '=', true)
-				->orWhereHas('album', fn (Builder $q2) => $q2->where('public', '=', true))
+				->where('is_public', '=', true)
+				->orWhereHas('album', fn (Builder $q2) => $q2->where('is_public', '=', true))
 			)
 			->limit($rss_max)
 			->get();

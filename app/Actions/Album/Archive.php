@@ -101,7 +101,7 @@ class Archive extends Action
 	 */
 	private function compress_album($photos, $dir_name, &$dirs, $parent_dir, AbstractAlbum $album, $albumID, &$zip)
 	{
-		if (!$album->downloadable) {
+		if (!$album->is_downloadable) {
 			if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
 				if (!AccessControl::is_logged_in()) {
 					return;
@@ -142,7 +142,7 @@ class Archive extends Action
 			// in smart albums should be owned by the current user...
 			if (
 				$album->smart && !AccessControl::is_current_user($photo->owner_id) &&
-				!($photo->album_id == null ? $album->downloadable : $photo->album->downloadable)
+				!($photo->album_id == null ? $album->is_downloadable : $photo->album->is_downloadable)
 			) {
 				continue;
 			}

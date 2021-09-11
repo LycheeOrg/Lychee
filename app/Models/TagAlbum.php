@@ -11,7 +11,6 @@ use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class TagAlbum.
@@ -118,7 +117,7 @@ class TagAlbum extends Model implements BaseAlbum
 	public function toArray(): array
 	{
 		$result = parent::toArray();
-		$result['tag_album'] = true;
+		$result['is_tag_album'] = true;
 
 		return array_merge($result, $this->base_class->toArray());
 	}

@@ -41,7 +41,7 @@ class Smart
 		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums();
 		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
-			if (AccessControl::can_upload() || $smartAlbum->public) {
+			if (AccessControl::can_upload() || $smartAlbum->is_public) {
 				$return[$smartAlbum->id] = $smartAlbum;
 			}
 		}

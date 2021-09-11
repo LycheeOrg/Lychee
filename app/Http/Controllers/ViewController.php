@@ -49,11 +49,11 @@ class ViewController extends Controller
 		// TODO: Instead of re-coding the logic here whether an photo is visible or not, the query for a photo above, should be filtered with `PhotoAuthorisationProvider`
 
 		// is the picture public ?
-		$public = $photo->public;
+		$public = $photo->is_public;
 
 		// is the album (if exist) public ?
 		if ($photo->album_id != null) {
-			$public = $photo->album->public || $public;
+			$public = $photo->album->is_public || $public;
 		}
 		// return 403 if not allowed
 		if (!$public) {

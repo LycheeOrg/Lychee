@@ -12,8 +12,8 @@ class AddStrategyParameters
 
 	// Information about intended parent album
 	public ?Album $album = null;
-	public bool $public = false;
-	public bool $star = false;
+	public bool $is_public = false;
+	public bool $is_starred = false;
 
 	// Information about source file
 	public string $kind = '';

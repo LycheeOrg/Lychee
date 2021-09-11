@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Contracts\BaseAlbum;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -55,10 +54,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  *     +---------------+ <----------------X +----------+
  *
  * (Note: A sideways arrow with an X, i.e. <-----X, shall denote a composite.)
- * All child classes and the this class extend
+ * All child classes and this class extend
  * {@link \Illuminate\Database\Eloquent\Model}, because they map to a single
  * DB table.
- * All methods and properties which are common to any sort of peristable
+ * All methods and properties which are common to any sort of persistable
  * album is declared in the interface {@link \App\Contracts\BaseAlbum}
  * and thus {@link \App\Models\Album} and {@link \App\Models\TagAlbum}
  * realize it.
@@ -86,12 +85,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $description
  * @property int         $owner_id
  * @property User        $owner
- * @property bool        $public
- * @property bool        $full_photo
+ * @property bool        $is_public
+ * @property bool        $grants_full_photo
  * @property bool        $requires_link
- * @property bool        $downloadable
- * @property bool        $share_button_visible
- * @property bool        $nsfw
+ * @property bool        $is_downloadable
+ * @property bool        $is_share_button_visible
+ * @property bool        $is_nsfw
  * @property Collection  $shared_with
  * @property string|null $password
  * @property bool        $has_password
@@ -132,12 +131,12 @@ class BaseAlbumImpl extends Model
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
 		'description' => null,
 		'owner_id' => 0,
-		'public' => false,
-		'full_photo' => true,
+		'is_public' => false,
+		'grants_full_photo' => true,
 		'requires_link' => false,
-		'downloadable' => false,
-		'share_button_visible' => false,
-		'nsfw' => false,
+		'is_downloadable' => false,
+		'is_share_button_visible' => false,
+		'is_nsfw' => false,
 		'password' => null,
 		'sorting_col' => null,
 		'sorting_order' => null,
@@ -146,12 +145,12 @@ class BaseAlbumImpl extends Model
 	protected $casts = [
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
-		'public' => 'boolean',
-		'full_photo' => 'boolean',
+		'is_public' => 'boolean',
+		'grants_full_photo' => 'boolean',
 		'requires_link' => 'boolean',
-		'downloadable' => 'boolean',
-		'share_button_visible' => 'boolean',
-		'nsfw' => 'boolean',
+		'is_downloadable' => 'boolean',
+		'is_share_button_visible' => 'boolean',
+		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
 		'id' => 'integer',
 	];
@@ -223,27 +222,27 @@ class BaseAlbumImpl extends Model
 		}
 	}
 
-	protected function getFullPhotoAttribute(bool $value): bool
+	protected function getGrantsFullPhotoAttribute(bool $value): bool
 	{
-		if ($this->public) {
+		if ($this->is_public) {
 			return $value;
 		} else {
 			return Configs::get_value('full_photo', '1') === '1';
 		}
 	}
 
-	protected function getDownloadableAttribute(bool $value): bool
+	protected function getIsDownloadableAttribute(bool $value): bool
 	{
-		if ($this->public) {
+		if ($this->is_public) {
 			return $value;
 		} else {
 			return Configs::get_value('downloadable', '0') === '1';
 		}
 	}
 
-	protected function getShareButtonVisibleAttribute(bool $value): bool
+	protected function getIsShareButtonVisibleAttribute(bool $value): bool
 	{
-		if ($this->public) {
+		if ($this->is_public) {
 			return $value;
 		} else {
 			return Configs::get_value('share_button_visible', '0') === '1';

@@ -60,7 +60,7 @@ class AlbumAuthorisationProvider
 			$visibilitySubQuery = function (Builder $query2) {
 				$query2
 					->where('requires_link', '=', false)
-					->where('public', '=', true);
+					->where('is_public', '=', true);
 			};
 
 			if ($model instanceof BaseAlbumImpl) {
@@ -93,7 +93,7 @@ class AlbumAuthorisationProvider
 				)
 				->orWhere(fn (Builder $q) => $q
 					->where('requires_link', '=', false)
-					->where('public', '=', true)
+					->where('is_public', '=', true)
 				);
 		};
 
@@ -177,14 +177,14 @@ class AlbumAuthorisationProvider
 			/* @var BaseAlbum $album */
 
 			if (!AccessControl::is_logged_in()) {
-				return !$album->requires_link && $album->public;
+				return !$album->requires_link && $album->is_public;
 			} else {
 				$userID = AccessControl::id();
 
 				return
 					($album->owner_id === $userID) ||
 					(!$album->requires_link && $album->shared_with()->where('user_id', '=', $userID)->count()) ||
-					(!$album->requires_link && $album->public);
+					(!$album->requires_link && $album->is_public);
 			}
 		} else {
 			// If we don't have an instance of a model, then use
@@ -235,11 +235,11 @@ class AlbumAuthorisationProvider
 			$accessibilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs) {
 				$query2
 					->where(fn (Builder $q) => $q
-						->where('public', '=', true)
+						->where('is_public', '=', true)
 						->whereNull('password')
 					)
 					->orWhere(fn (Builder $q) => $q
-						->where('public', '=', true)
+						->where('is_public', '=', true)
 						->whereIn('id', $unlockedAlbumIDs)
 					);
 			};
@@ -270,11 +270,11 @@ class AlbumAuthorisationProvider
 					fn (Builder $q) => $q->where('user_id', '=', $userID)
 				)
 				->orWhere(fn (Builder $q) => $q
-					->where('public', '=', true)
+					->where('is_public', '=', true)
 					->whereNull('password')
 				)
 				->orWhere(fn (Builder $q) => $q
-					->where('public', '=', true)
+					->where('is_public', '=', true)
 					->whereIn('id', $unlockedAlbumIDs)
 				);
 		};
@@ -359,16 +359,16 @@ class AlbumAuthorisationProvider
 
 			if (!AccessControl::is_logged_in()) {
 				return
-					($album->public && $album->password === null) ||
-					($album->public && $this->isAlbumUnlocked($album->id));
+					($album->is_public && $album->password === null) ||
+					($album->is_public && $this->isAlbumUnlocked($album->id));
 			} else {
 				$userID = AccessControl::id();
 
 				return
 					($album->owner_id === $userID) ||
 					($album->shared_with()->where('user_id', '=', $userID)->count()) ||
-					($album->public && $album->password === null) ||
-					($album->public && $this->isAlbumUnlocked($album->id));
+					($album->is_public && $album->password === null) ||
+					($album->is_public && $this->isAlbumUnlocked($album->id));
 			}
 		} else {
 			// If we don't have an instance of a model, then use
@@ -518,6 +518,6 @@ class AlbumAuthorisationProvider
 	{
 		return
 			(AccessControl::is_logged_in() && AccessControl::can_upload()) ||
-			$this->albumFactory->createSmartAlbum($smartAlbumID)->public;
+			$this->albumFactory->createSmartAlbum($smartAlbumID)->is_public;
 	}
 }

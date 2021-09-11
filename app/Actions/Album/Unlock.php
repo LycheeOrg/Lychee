@@ -34,7 +34,7 @@ class Unlock extends Action
 		}
 
 		$album = $this->albumFactory->findModelOrFail($albumID);
-		if ($album->public) {
+		if ($album->is_public) {
 			if (
 				empty($album->password) ||
 				$this->albumAuthorisationProvider->isAlbumUnlocked($album->id)
@@ -62,7 +62,7 @@ class Unlock extends Action
 		// list of such albums is not exposed to the user and is
 		// considered as the last access check criteria.
 		$albums = BaseAlbumImpl::query()
-			->where('public', '=', true)
+			->where('is_public', '=', true)
 			->whereNotNull('password')
 			->get();
 		/** @var BaseAlbumImpl $album */

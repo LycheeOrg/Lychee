@@ -23,9 +23,9 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property string     $title
  * @property Collection $photos
  * @property Thumb|null $thumb
- * @property bool       $public
- * @property bool       $downloadable
- * @property bool       $share_button_visible
+ * @property bool       $is_public
+ * @property bool       $is_downloadable
+ * @property bool       $is_share_button_visible
  */
 interface AbstractAlbum extends \JsonSerializable, Arrayable, SupportsRelationships
 {

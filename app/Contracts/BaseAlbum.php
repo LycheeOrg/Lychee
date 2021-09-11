@@ -20,8 +20,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon        $created_at
  * @property Carbon        $updated_at
  * @property string|null   $description
- * @property bool          $nsfw
- * @property bool          $full_photo
+ * @property bool          $is_nsfw
+ * @property bool          $grants_full_photo
  * @property int           $owner_id
  * @property User          $owner
  * @property Collection    $shared_with

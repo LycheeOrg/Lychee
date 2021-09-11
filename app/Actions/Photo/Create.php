@@ -207,9 +207,9 @@ class Create
 				// we save it so we don't have to query it again later
 				$this->strategyParameters->album = $album;
 			} elseif ($album instanceof PublicAlbum) {
-				$this->strategyParameters->public = true;
+				$this->strategyParameters->is_public = true;
 			} elseif ($album instanceof StarredAlbum) {
-				$this->strategyParameters->star = true;
+				$this->strategyParameters->is_starred = true;
 			} else {
 				throw new JsonError('This album does not support uploading');
 			}

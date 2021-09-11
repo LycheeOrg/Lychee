@@ -9,12 +9,12 @@ class SetPublic extends Action
 		$album = $this->albumFactory->findModelOrFail($albumID);
 
 		// Convert values
-		$album->full_photo = ($values['full_photo'] === '1' ? 1 : 0);
-		$album->public = ($values['public'] === '1' ? 1 : 0);
-		$album->requires_link = ($values['requires_link'] === '1' ? 1 : 0);
-		$album->nsfw = ($values['nsfw'] === '1' ? 1 : 0);
-		$album->downloadable = ($values['downloadable'] === '1' ? 1 : 0);
-		$album->share_button_visible = ($values['share_button_visible'] === '1' ? 1 : 0);
+		$album->grants_full_photo = $values['grants_full_photo'];
+		$album->is_public = $values['is_public'];
+		$album->requires_link = $values['requires_link'];
+		$album->is_nsfw = $values['is_nsfw'];
+		$album->is_downloadable = $values['is_downloadable'];
+		$album->is_share_button_visible = $values['is_share_button_visible'];
 
 		// Set password if provided
 		if (array_key_exists('password', $values)) {
@@ -35,8 +35,8 @@ class SetPublic extends Action
 		}
 
 		// Reset permissions for photos
-		if ($album->public) {
-			$album->photos()->update(['public' => 0]);
+		if ($album->is_public) {
+			$album->photos()->update(['is_public' => false]);
 		}
 
 		return true;

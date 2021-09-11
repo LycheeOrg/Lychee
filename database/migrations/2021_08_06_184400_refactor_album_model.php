@@ -79,12 +79,12 @@ class RefactorAlbumModel extends Migration
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable()->default(null);
 			$table->unsignedBigInteger('owner_id')->nullable(false)->default(0);
-			$table->boolean('public')->nullable(false)->default(false);
-			$table->boolean('full_photo')->nullable(false)->default(true);
+			$table->boolean('is_public')->nullable(false)->default(false);
+			$table->boolean('grants_full_photo')->nullable(false)->default(true);
 			$table->boolean('requires_link')->nullable(false)->default(false);
-			$table->boolean('downloadable')->nullable(false)->default(false);
-			$table->boolean('share_button_visible')->nullable(false)->default(false);
-			$table->boolean('nsfw')->nullable(false)->default(false);
+			$table->boolean('is_downloadable')->nullable(false)->default(false);
+			$table->boolean('is_share_button_visible')->nullable(false)->default(false);
+			$table->boolean('is_nsfw')->nullable(false)->default(false);
 			$table->string('password', 100)->nullable()->default(null);
 			$table->string('sorting_col', 30)->nullable()->default(null);
 			$table->string('sorting_order', 4)->nullable()->default(null);
@@ -143,8 +143,8 @@ class RefactorAlbumModel extends Migration
 			$table->text('description')->nullable()->default(null);
 			$table->text('tags')->nullable()->default(null);
 			$table->string('license', 20)->nullable(false)->default('none');
-			$table->boolean('public')->nullable(false)->default(false);
-			$table->boolean('star')->nullable(false)->default(false);
+			$table->boolean('is_public')->nullable(false)->default(false);
+			$table->boolean('is_starred')->nullable(false)->default(false);
 			$table->string('iso')->nullable()->default(null);
 			$table->string('make')->nullable()->default(null);
 			$table->string('model')->nullable()->default(null);
@@ -223,6 +223,17 @@ class RefactorAlbumModel extends Migration
 		DB::beginTransaction();
 
 		$oldAlbums = DB::table('albums_tmp')->lazyById();
+		$mapSorting = function (?string $sortingCol): ?string {
+			if (empty($sortingCol)) {
+				return null;
+			} elseif ($sortingCol === 'public') {
+				return 'is_public';
+			} elseif ($sortingCol === 'star') {
+				return 'is_starred';
+			} else {
+				return $sortingCol;
+			}
+		};
 		foreach ($oldAlbums as $oldAlbum) {
 			DB::table('base_albums')->insert([
 				'id' => $oldAlbum->id,
@@ -231,14 +242,14 @@ class RefactorAlbumModel extends Migration
 				'title' => $oldAlbum->title,
 				'description' => $oldAlbum->description,
 				'owner_id' => $oldAlbum->owner_id,
-				'public' => $oldAlbum->public,
-				'full_photo' => $oldAlbum->full_photo,
-				'requires_link' => !($oldAlbum->vieable),
-				'downloadable' => $oldAlbum->downloadable,
-				'share_button_visible' => $oldAlbum->share_button_visible,
-				'nsfw' => $oldAlbum->nsfw,
+				'is_public' => $oldAlbum->public,
+				'grants_full_photo' => $oldAlbum->full_photo,
+				'requires_link' => !($oldAlbum->viewable),
+				'is_downloadable' => $oldAlbum->downloadable,
+				'is_share_button_visible' => $oldAlbum->share_button_visible,
+				'is_nsfw' => $oldAlbum->nsfw,
 				'password' => empty($oldAlbum->password) ? null : $oldAlbum->password,
-				'sorting_col' => empty($oldAlbum->sorting_col) ? null : $oldAlbum->sorting_col,
+				'sorting_col' => $mapSorting($oldAlbum->sorting_col),
 				'sorting_order' => empty($oldAlbum->sorting_col) ? null : $oldAlbum->sorting_order,
 			]);
 
@@ -283,8 +294,8 @@ class RefactorAlbumModel extends Migration
 				'description' => empty($oldPhoto->description) ? null : $oldPhoto->description,
 				'tags' => empty($oldPhoto->tags) ? null : $oldPhoto->tags,
 				'license' => $oldPhoto->license,
-				'public' => $oldPhoto->public,
-				'star' => $oldPhoto->star,
+				'is_public' => $oldPhoto->public,
+				'is_starred' => $oldPhoto->star,
 				'make' => empty($oldPhoto->make) ? null : $oldPhoto->make,
 				'model' => empty($oldPhoto->model) ? null : $oldPhoto->model,
 				'lens' => empty($oldPhoto->lens) ? null : $oldPhoto->lens,
@@ -318,6 +329,26 @@ class RefactorAlbumModel extends Migration
 				'height' => $oldSizeVariant->height,
 			]);
 		}
+
+		// Update the configuration of default ordering to the new column names
+		DB::table('configs')
+			->where('key', '=', 'sorting_Photos_col')
+			->update(['type_range' => 'id|taken_at|title|description|is_public|is_starred|type']);
+		DB::table('configs')
+			->where('key', '=', 'sorting_Photos_col')
+			->where('value', '=', 'public')
+			->update(['value' => 'is_public']);
+		DB::table('configs')
+			->where('key', '=', 'sorting_Photos_col')
+			->where('value', '=', 'star')
+			->update(['value' => 'is_starred']);
+		DB::table('configs')
+			->where('key', '=', 'sorting_Albums_col')
+			->update(['type_range' => 'id|title|description|is_public|max_taken_at|min_taken_at|created_at']);
+		DB::table('configs')
+			->where('key', '=', 'sorting_Albums_col')
+			->where('value', '=', 'public')
+			->update(['value' => 'is_public']);
 
 		DB::commit();
 

@@ -8,6 +8,6 @@ class SetNSFW extends Setter
 {
 	public function __construct()
 	{
-		parent::__construct(BaseAlbumImpl::query(), 'nsfw');
+		parent::__construct(BaseAlbumImpl::query(), 'is_nsfw');
 	}
 }

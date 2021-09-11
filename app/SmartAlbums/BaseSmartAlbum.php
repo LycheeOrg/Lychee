@@ -2,7 +2,6 @@
 
 namespace App\SmartAlbums;
 
-use App\Casts\MustNotSetCast;
 use App\Contracts\AbstractAlbum;
 use App\Models\Configs;
 use App\Models\Extensions\Thumb;
@@ -20,26 +19,32 @@ use App\Models\Extensions\Thumb;
  */
 abstract class BaseSmartAlbum extends FakeModel implements AbstractAlbum
 {
+	/**
+	 * Note, due to Laravel's stupidity and PHP type mangling, boolean values
+	 * always need an explicit cast, even if they are already stored as proper
+	 * booleans in `$this->attributes`. :-(
+	 * Otherwise, a `false` value will be reported as `null`. Yikes!
+	 *
+	 * @var string[] the list of attributes which needs casting to the correct
+	 *               type when their getter is invoked
+	 */
 	protected $casts = [
-		'public' => MustNotSetCast::class,
-		'downloadable' => MustNotSetCast::class,
-		'share_button_visible' => MustNotSetCast::class,
+		'is_public' => 'boolean',
+		'is_downloadable' => 'boolean',
+		'is_share_button_visible' => 'boolean',
 	];
 
 	protected $appends = [
-		'public',
-		'downloadable',
-		'share_button_visible',
 		'thumb',
 	];
 
-	protected function __construct(string $id, string $title, bool $public)
+	protected function __construct(string $id, string $title, bool $isPublic)
 	{
 		$this->attributes['id'] = $id;
 		$this->attributes['title'] = $title;
-		$this->attributes['public'] = $public;
-		$this->attributes['downloadable'] = Configs::get_value('downloadable', '0') === '1';
-		$this->attributes['share_button_visible'] = Configs::get_value('share_button_visible', '0') === '1';
+		$this->attributes['is_public'] = $isPublic;
+		$this->attributes['is_downloadable'] = Configs::get_value('downloadable', '0') === '1';
+		$this->attributes['is_share_button_visible'] = Configs::get_value('share_button_visible', '0') === '1';
 	}
 
 	protected function getThumbAttribute(): ?Thumb

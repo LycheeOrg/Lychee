@@ -43,8 +43,8 @@ class Photo extends Component
 		$this->title = $data['title'];
 		$this->takedate = $data['taken_at'];
 		$this->created_at = $data['created_at'];
-		$this->star = $data['star'];
-		$this->public = $data['public'];
+		$this->is_starred = $data['is_starred'];
+		$this->is_public = $data['is_public'];
 
 		$isVideo = Str::contains($data['type'], 'video');
 		$isRaw = Str::contains($data['type'], 'raw');

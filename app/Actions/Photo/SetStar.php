@@ -6,6 +6,6 @@ class SetStar extends Toggles
 {
 	public function __construct()
 	{
-		$this->property = 'star';
+		$this->property = 'is_starred';
 	}
 }

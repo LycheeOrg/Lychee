@@ -52,7 +52,7 @@ class PhotoAuthorisationProvider
 				function (Builder $query2) {
 					$query2->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
 					if (Configs::get_value('public_photos_hidden', '1') === '0') {
-						$query2->orWhere('public', '=', true);
+						$query2->orWhere('is_public', '=', true);
 					}
 				}
 			);
@@ -71,7 +71,7 @@ class PhotoAuthorisationProvider
 					$query2->orWhereNull('album_id');
 				}
 				if (Configs::get_value('public_photos_hidden', '1') === '0') {
-					$query2->orWhere('public', '=', true);
+					$query2->orWhere('is_public', '=', true);
 				}
 			}
 		);
@@ -134,13 +134,13 @@ class PhotoAuthorisationProvider
 			$albumModelOrID = $photo->relationLoaded('album') ? $photo->album : $photo->album_id;
 			if (!AccessControl::is_logged_in()) {
 				return
-					($photo->public && Configs::get_value('public_photos_hidden', '1') === '0') ||
+					($photo->is_public && Configs::get_value('public_photos_hidden', '1') === '0') ||
 					$this->albumAuthorisationProvider->isAccessible($albumModelOrID);
 			} else {
 				return
 					AccessControl::is_current_user($photo->owner_id) ||
 					(AccessControl::can_upload() || empty($albumModelOrID)) ||
-					($photo->public && Configs::get_value('public_photos_hidden', '1') === '0') ||
+					($photo->is_public && Configs::get_value('public_photos_hidden', '1') === '0') ||
 					$this->albumAuthorisationProvider->isAccessible($albumModelOrID);
 			}
 		} else {

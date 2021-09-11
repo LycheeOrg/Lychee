@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string       $title
  * @property string|null  $description
  * @property string       $tags
- * @property bool         $public
+ * @property bool         $is_public
  * @property int          $owner_id
  * @property string|null  $type
  * @property int          $filesize
@@ -46,7 +46,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null  $location
  * @property Carbon|null  $taken_at
  * @property string|null  $taken_at_orig_tz
- * @property bool         $star
+ * @property bool         $is_starred
  * @property string|null  $live_photo_short_path
  * @property string|null  $live_photo_full_path
  * @property string|null  $live_photo_url
@@ -61,8 +61,8 @@ use Illuminate\Support\Facades\Storage;
  * @property User         $owner
  * @property SizeVariants $size_variants
  * @property Collection   $size_variants_raw
- * @property bool         $downloadable
- * @property bool         $share_button_visible
+ * @property bool         $is_downloadable
+ * @property bool         $is_share_button_visible
  */
 class Photo extends Model
 {
@@ -86,22 +86,13 @@ class Photo extends Model
 		'size_variants' => MustNotSetCast::class,
 		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
-		'downloadable' => MustNotSetCast::class,
-		'share_button_visible' => MustNotSetCast::class,
-		// the following casts should normally not be necessary
-		// but some code (where?, probably in the area of albums) assigns
-		// string/integer values to these attributes
-		// (instead of integer/booleans)
-		// Consequently, the PHPunit tests fail, because the tests - for
-		// example - check for `owner_id === 42` but gets `owner_id="42"` and
-		// then the test fails.
-		// Here we enforce correct types during JSON serialization.
-		// TODO: Find the code which actually assigns values of wrong type and fix the error at its root
+		'is_downloadable' => MustNotSetCast::class,
+		'is_share_button_visible' => MustNotSetCast::class,
 		'id' => 'integer',
 		'owner_id' => 'integer',
-		'star' => 'boolean',
+		'is_starred' => 'boolean',
 		'filesize' => 'integer',
-		'public' => 'boolean',
+		'is_public' => 'boolean',
 	];
 
 	/**
@@ -123,8 +114,8 @@ class Photo extends Model
 	protected $appends = [
 		'live_photo_url',
 		'size_variants',
-		'downloadable',
-		'share_button_visible',
+		'is_downloadable',
+		'is_share_button_visible',
 	];
 
 	protected $attributes = [
@@ -335,38 +326,38 @@ class Photo extends Model
 	}
 
 	/**
-	 * Accessor for the "virtual" attribute {@see Photo::$downloadable}.
+	 * Accessor for the "virtual" attribute {@see Photo::$is_downloadable}.
 	 *
 	 * The photo is downloadable if the currently authenticated user is the
-	 * owner or if the photo is part of a downloadable album or if it
+	 * owner or if the photo is part of a downloadable album or if it is
 	 * unsorted and unsorted photos are configured to be downloadable by
 	 * default.
 	 *
 	 * @return bool true if the photo is downloadable
 	 */
-	protected function getDownloadableAttribute(): bool
+	protected function getIsDownloadableAttribute(): bool
 	{
 		return AccessControl::is_current_user($this->owner_id) ||
-			($this->album_id != null && $this->album->downloadable) ||
+			($this->album_id != null && $this->album->is_downloadable) ||
 			($this->album_id == null && (bool) Configs::get_value('downloadable', '0'));
 	}
 
 	/**
-	 * Accessor for the "virtual" attribute {@see Photo::$share_button_visible}.
+	 * Accessor for the "virtual" attribute {@see Photo::$is_share_button_visible}.
 	 *
 	 * The share button is visible if the currently authenticated user is the
-	 * owner or if the photo is part of a an album which has enabled the
+	 * owner or if the photo is part of an album which has enabled the
 	 * share button or if the photo is unsorted and unsorted photos are
 	 * configured to be sharable by default.
 	 *
 	 * @return bool true if the share button is visible for this photo
 	 */
-	protected function getShareButtonVisibleAttribute(): bool
+	protected function getIsShareButtonVisibleAttribute(): bool
 	{
 		$default = (bool) Configs::get_value('share_button_visible', '0');
 
 		return AccessControl::is_current_user($this->owner_id) ||
-			($this->album_id != null && $this->album->share_button_visible) ||
+			($this->album_id != null && $this->album->is_share_button_visible) ||
 			($this->album_id == null && $default);
 	}
 
@@ -386,15 +377,15 @@ class Photo extends Model
 		$result = parent::toArray();
 
 		// Modify the attribute `public`
-		// The current front-end implementation does not expect an boolean
+		// The current front-end implementation does not expect a boolean
 		// but a tri-state integer acc. to the following interpretation
 		//  - 0 => the photo is not publicly visible
 		//  - 1 => the photo is publicly visible on its own right
 		//  - 2 => the photo is publicly visible because its album is public
-		if ($this->album_id != null && $this->album->public) {
-			$result['public'] = 2;
+		if ($this->album_id != null && $this->album->is_public) {
+			$result['is_public'] = 2;
 		} else {
-			$result['public'] = $result['public'] ? 1 : 0;
+			$result['is_public'] = $result['is_public'] ? 1 : 0;
 		}
 
 		// Downgrades the accessible resolution of a photo
@@ -405,7 +396,7 @@ class Photo extends Model
 			$this->isVideo() === false &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
-				($this->album_id != null && !$this->album->full_photo) ||
+				($this->album_id != null && !$this->album->grants_full_photo) ||
 				($this->album_id == null && Configs::get_value('full_photo', '1') != '1')
 			)
 		) {

@@ -298,13 +298,13 @@ class AlbumsUnitTest
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json('POST', '/api/Album::setPublic', [
-			'full_photo' => $full_photo,
+			'grants_full_photo' => $full_photo,
 			'albumID' => $id,
-			'public' => $public,
+			'is_public' => $public,
 			'requires_link' => $requiresLink,
-			'nsfw' => $nsfw,
-			'downloadable' => $downloadable,
-			'share_button_visible' => $share_button_visible,
+			'is_nsfw' => $nsfw,
+			'is_downloadable' => $downloadable,
+			'is_share_button_visible' => $share_button_visible,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {

@@ -146,12 +146,12 @@ class AlbumController extends Controller
 	public function setPublic(AlbumModelIDRequest $request, SetPublic $setPublic): IlluminateResponse
 	{
 		$validated = $request->validate([
-			'public' => 'required|boolean',
+			'is_public' => 'required|boolean',
 			'requires_link' => 'required|boolean',
-			'nsfw' => 'required|boolean',
-			'downloadable' => 'required|boolean',
-			'share_button_visible' => 'required|boolean',
-			'full_photo' => 'required|boolean',
+			'is_nsfw' => 'required|boolean',
+			'is_downloadable' => 'required|boolean',
+			'is_share_button_visible' => 'required|boolean',
+			'grants_full_photo' => 'required|boolean',
 			'password' => 'sometimes|nullable|string',
 		]);
 		$setPublic->do($request['albumID'], $validated);
@@ -308,7 +308,16 @@ class AlbumController extends Controller
 	public function setSorting(AlbumModelIDRequest $request, SetSorting $setSorting): IlluminateResponse
 	{
 		$request->validate([
-			'sortingCol' => 'present|nullable|string',
+			'sortingCol' => ['present', Rule::in([
+				null,
+				'id',
+				'taken_at',
+				'title',
+				'description',
+				'is_public',
+				'is_starred',
+				'type',
+			])],
 			'sortingOrder' => ['present', Rule::in([null, 'ASC', 'DESC'])],
 		]);
 
