@@ -154,6 +154,45 @@ class PhotoAuthorisationProvider
 	}
 
 	/**
+	 * Checks whether the photos with the given IDs are editable by the
+	 * current user.
+	 *
+	 * A photo is called _editable_ if the current user is allowed to edit
+	 * the photo's properties.
+	 * An photo is _editable_ if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 *  - the user is an admin
+	 *  - the user is the owner of the photo
+	 *
+	 * @param int[] $photoIDs
+	 *
+	 * @return bool
+	 */
+	public function areEditable(array $photoIDs): bool
+	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+		if (!AccessControl::is_logged_in()) {
+			return false;
+		}
+
+		$userID = AccessControl::id();
+		// Since we count the result we need to ensure that there are no
+		// duplicates.
+		$photoIDs = array_unique($photoIDs);
+		if (count($photoIDs) > 0) {
+			return Photo::query()
+				->whereIn('id', $photoIDs)
+				->where('owner_id', '=', $userID)
+				->count() === count($photoIDs);
+		}
+
+		return true;
+	}
+
+	/**
 	 * Throws an exception if the given query does not query for a photo.
 	 *
 	 * @throws \InvalidArgumentException

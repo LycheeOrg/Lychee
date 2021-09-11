@@ -2,23 +2,26 @@
 
 namespace App\Http\Middleware;
 
+use App\Actions\AlbumAuthorisationProvider;
+use App\Actions\PhotoAuthorisationProvider;
 use App\Facades\AccessControl;
-use App\Factories\AlbumFactory;
 use App\Models\Album;
-use App\Models\BaseAlbumImpl;
 use App\Models\Logs;
-use App\Models\Photo;
 use Closure;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 
 class UploadCheck
 {
-	private AlbumFactory $albumFactory;
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private PhotoAuthorisationProvider $photoAuthorisationProvider;
 
-	public function __construct(AlbumFactory $albumFactory)
-	{
-		$this->albumFactory = $albumFactory;
+	public function __construct(
+		AlbumAuthorisationProvider $albumAuthorisationProvider,
+		PhotoAuthorisationProvider $photoAuthorisationProvider
+	) {
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 	}
 
 	/**
@@ -48,7 +51,7 @@ class UploadCheck
 			return response('', 403);
 		}
 
-		$ret = $this->album_check($request, $user->id);
+		$ret = $this->album_check($request);
 		if ($ret === false) {
 			return response('', 403);
 		}
@@ -70,14 +73,11 @@ class UploadCheck
 	/**
 	 * Take of checking if a user can actually modify that Album.
 	 *
-	 * TODO: Migrate this to {@link \App\Actions\AlbumAuthorisationProvider}
-	 *
 	 * @param Request $request
-	 * @param int     $user_id
 	 *
 	 * @return bool
 	 */
-	private function album_check(Request $request, int $user_id): bool
+	private function album_check(Request $request): bool
 	{
 		$albumIDs = [];
 		if ($request->has('albumIDs')) {
@@ -90,41 +90,17 @@ class UploadCheck
 			$albumIDs[] = $request['parent_id'];
 		}
 
-		// Remove smart albums (they get a pass).
-		for ($i = 0; $i < count($albumIDs);) {
-			if ($this->albumFactory->isBuiltInSmartAlbum($albumIDs[$i]) || $albumIDs[$i] === '0') {
-				array_splice($albumIDs, $i, 1);
-			} else {
-				$i++;
-			}
-		}
-
-		// Since we count the result we need to ensure no duplicates.
-		$albumIDs = array_unique($albumIDs);
-
-		if (count($albumIDs) > 0) {
-			$count = BaseAlbumImpl::query()->whereIn('id', $albumIDs)->where('owner_id', '=', $user_id)->count();
-			if ($count !== count($albumIDs)) {
-				Logs::error(__METHOD__, __LINE__, 'Albums not found or ownership mismatch!');
-
-				return false;
-			}
-		}
-
-		return true;
+		return $this->albumAuthorisationProvider->areEditable($albumIDs);
 	}
 
 	/**
 	 * Check if the user is authorized to do anything to that picture.
 	 *
-	 * TODO: Migrate this to {@link \App\Actions\PhotoAuthorisationProvider}
-	 *
 	 * @param Request $request
-	 * @param int     $user_id
 	 *
 	 * @return bool
 	 */
-	private function photo_check(Request $request, int $user_id): bool
+	private function photo_check(Request $request): bool
 	{
 		$photoIDs = [];
 		if ($request->has('photoIDs')) {
@@ -134,19 +110,7 @@ class UploadCheck
 			$photoIDs[] = $request['photoID'];
 		}
 
-		// Since we count the result we need to ensure no duplicates.
-		$photoIDs = array_unique($photoIDs);
-
-		if (count($photoIDs) > 0) {
-			$count = Photo::query()->whereIn('id', $photoIDs)->where('owner_id', '=', $user_id)->count();
-			if ($count !== count($photoIDs)) {
-				Logs::error(__METHOD__, __LINE__, 'Photos not found or ownership mismatch!');
-
-				return false;
-			}
-		}
-
-		return true;
+		return $this->photoAuthorisationProvider->areEditable($photoIDs);
 	}
 
 	/**

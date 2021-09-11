@@ -14,11 +14,6 @@ use Illuminate\Support\Facades\Session;
 
 /**
  * Class AlbumAuthorisationProvider.
- *
- * An album is called _accessible_ if the current user may browse into
- * it, i.e. if the current user may open it and see its content.
- * If the current user actually sees some content additionally depends
- * on whether the content itself is visible.
  */
 class AlbumAuthorisationProvider
 {
@@ -410,6 +405,59 @@ class AlbumAuthorisationProvider
 	private function getUnlockedAlbumIDs(): array
 	{
 		return Session::get(self::UNLOCKED_ALBUMS_SESSION_KEY, []);
+	}
+
+	/**
+	 * Checks whether the albums with the given IDs are editable by the
+	 * current user.
+	 *
+	 * An album is called _editable_ if the current user is allowed to edit
+	 * the album's properties.
+	 * This is also covers adding new photos to an album.
+	 * An album is _editable_ if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 *  - the user is an admin
+	 *  - the user has the upload privilege and is the owner of the album
+	 *
+	 * Note about built-in smart albums:
+	 * The built-in smart albums (starred, public, recent, unsorted) do not
+	 * have any editable properties.
+	 * Hence, it is pointless whether a smart album is editable or not.
+	 * In order to silently ignore/skip this condition for smart albums,
+	 * this method always returns `true` for a smart album.
+	 *
+	 * @param array<mixed, string|int> $albumIDs
+	 *
+	 * @return bool
+	 */
+	public function areEditable(array $albumIDs): bool
+	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+		if (!AccessControl::is_logged_in()) {
+			return false;
+		}
+
+		$user = AccessControl::user();
+
+		if (!$user->upload) {
+			return false;
+		}
+
+		// Remove smart albums (they get a pass).
+		// Since we count the result we need to ensure that there are no
+		// duplicates.
+		$albumIDs = array_diff(array_unique($albumIDs), array_keys(AlbumFactory::BUILTIN_SMARTS));
+		if (count($albumIDs) > 0) {
+			return BaseAlbumImpl::query()
+				->whereIn('id', $albumIDs)
+				->where('owner_id', '=', $user->id)
+				->count() === count($albumIDs);
+		}
+
+		return true;
 	}
 
 	/**
