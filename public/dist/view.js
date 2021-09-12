@@ -388,12 +388,6 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 	};
 
 	api.post("Photo::get", params, function (data) {
-		if (data === "Warning: Photo private!" || data === "Warning: Wrong password!") {
-			$("body").append(build.no_content("question-mark")).removeClass("view");
-			header.dom().remove();
-			return false;
-		}
-
 		photo.json = data;
 
 		// Set title

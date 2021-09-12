@@ -246,9 +246,9 @@ class BaseAlbumImpl extends Model
 		}
 	}
 
-	protected function getHasPasswordAttribute(?string $value): bool
+	protected function getHasPasswordAttribute(): bool
 	{
-		return !empty($value);
+		return !empty($this->password);
 	}
 
 	public function toArray(): array

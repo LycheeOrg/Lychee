@@ -805,25 +805,6 @@ album.load = function (albumID) {
 	};
 
 	var processData = function processData(data) {
-		if (data === "Warning: Wrong password!") {
-			// User hit Cancel at the password prompt
-			return false;
-		}
-
-		if (data === "Warning: Album private!") {
-			if (document.location.hash.replace("#", "").split("/")[1] !== undefined) {
-				// Display photo only
-				lychee.setMode("view");
-				lychee.footer_hide();
-			} else {
-				// Album not public
-				lychee.content.show();
-				lychee.footer_show();
-				if (!visible.albums() && !visible.album()) lychee.goto();
-			}
-			return false;
-		}
-
 		album.json = data;
 
 		if (refresh === false) {
@@ -861,7 +842,24 @@ album.load = function (albumID) {
 	};
 
 	api.post("Album::get", params, function (data) {
-		if (data === "Warning: Wrong password!") {
+		processData(data);
+
+		tabindex.makeFocusable(lychee.content);
+
+		if (lychee.active_focus_on_page_load) {
+			// Put focus on first element - either album or photo
+			first_album = $(".album:first");
+			if (first_album.length !== 0) {
+				first_album.focus();
+			} else {
+				first_photo = $(".photo:first");
+				if (first_photo.length !== 0) {
+					first_photo.focus();
+				}
+			}
+		}
+	}, null, function (jqXHR) {
+		if (jqXHR.status === 403) {
 			password.getDialog(albumID, function () {
 				params.password = password.value;
 
@@ -870,24 +868,9 @@ album.load = function (albumID) {
 					processData(_data);
 				});
 			});
-		} else {
-			processData(data);
-
-			tabindex.makeFocusable(lychee.content);
-
-			if (lychee.active_focus_on_page_load) {
-				// Put focus on first element - either album or photo
-				first_album = $(".album:first");
-				if (first_album.length !== 0) {
-					first_album.focus();
-				} else {
-					first_photo = $(".photo:first");
-					if (first_photo.length !== 0) {
-						first_photo.focus();
-					}
-				}
-			}
+			return true;
 		}
+		return false;
 	});
 };
 
@@ -6368,17 +6351,6 @@ _photo.load = function (photoID, albumID, autoplay) {
 	};
 
 	api.post("Photo::get", params, function (data) {
-		if (data === "Warning: Photo private!") {
-			lychee.content.show();
-			lychee.goto();
-			return false;
-		}
-
-		if (data === "Warning: Wrong password!") {
-			checkPasswd();
-			return false;
-		}
-
 		_photo.json = data;
 		_photo.json.original_album = _photo.json.album;
 		_photo.json.album = albumID;
