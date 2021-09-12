@@ -408,7 +408,7 @@ class RefactorAlbumModel extends Migration
 			$table->decimal('latitude', 10, 8)->nullable()->default(null);
 			$table->decimal('longitude', 11, 8)->nullable()->default(null);
 			$table->decimal('altitude', 10, 4)->nullable()->default(null);
-			$table->decimal('img_direction', 10, 4)->nullable()->default(null);
+			$table->decimal('imgDirection', 10, 4)->nullable()->default(null);
 			$table->string('location')->nullable()->default(null);
 			$table->dateTime('taken_at')->nullable(true)->default(null)->comment('relative to UTC');
 			$table->string('taken_at_orig_tz', 31)->nullable(true)->default(null)->comment('the timezone at which the photo has originally been taken');
@@ -560,7 +560,7 @@ class RefactorAlbumModel extends Migration
 				'latitude' => $photo->latitude,
 				'longitude' => $photo->longitude,
 				'altitude' => $photo->altitude,
-				'img_direction' => $photo->img_direction,
+				'img_direction' => $photo->imgDirection,
 				'location' => empty($photo->location) ? null : $photo->location,
 				'taken_at' => $photo->taken_at,
 				'taken_at_orig_tz' => $photo->taken_at_orig_tz,
@@ -676,7 +676,7 @@ class RefactorAlbumModel extends Migration
 				'latitude' => $photo->latitude,
 				'longitude' => $photo->longitude,
 				'altitude' => $photo->altitude,
-				'img_direction' => $photo->img_direction,
+				'imgDirection' => $photo->img_direction,
 				'location' => empty($photo->location) ? null : $photo->location,
 				'taken_at' => $photo->taken_at,
 				'taken_at_orig_tz' => $photo->taken_at_orig_tz,
