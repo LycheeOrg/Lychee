@@ -194,7 +194,7 @@ class RefactorAlbumModel extends Migration
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
 			$table->string('title', 100)->nullable(false);
-			$table->text('description')->nullable()->default(null);
+			$table->text('description')->nullable();
 			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
 			$table->boolean('is_public')->nullable(false)->default(false);
 			$table->boolean('grants_full_photo')->nullable(false)->default(true);
@@ -278,7 +278,7 @@ class RefactorAlbumModel extends Migration
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
 			$table->string('title', 100)->nullable(false);
-			$table->text('description')->nullable()->default(null);
+			$table->text('description')->nullable();
 			$table->string('license', 20)->nullable(false)->default('none');
 			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
 			$table->boolean('smart')->nullable(false)->default(false);
@@ -341,7 +341,7 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedInteger('owner_id')->unsinged()->nullable(false)->default(0);
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
-			$table->text('description')->nullable()->default(null);
+			$table->text('description')->nullable();
 			$table->text('tags')->nullable()->default(null);
 			$table->string('license', 20)->nullable(false)->default('none');
 			$table->boolean('is_public')->nullable(false)->default(false);
@@ -393,7 +393,7 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
-			$table->text('description')->default('');
+			$table->text('description')->nullable();
 			$table->text('tags')->nullable(false)->default('');
 			$table->string('license', 20)->nullable(false)->default('none');
 			$table->boolean('public')->nullable(false)->default(false);
@@ -560,7 +560,7 @@ class RefactorAlbumModel extends Migration
 				'latitude' => $photo->latitude,
 				'longitude' => $photo->longitude,
 				'altitude' => $photo->altitude,
-				'img_direction' => $photo->imgDirection,
+				'img_direction' => empty($photo->imgDirection) ? null : $photo->focal,
 				'location' => empty($photo->location) ? null : $photo->location,
 				'taken_at' => $photo->taken_at,
 				'taken_at_orig_tz' => $photo->taken_at_orig_tz,

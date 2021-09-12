@@ -6603,9 +6603,7 @@ _photo.delete = function (photoIDs) {
 			photoIDs: photoIDs.join()
 		};
 
-		api.post("Photo::delete", params, function (data) {
-			if (data) lychee.error(null, params, data);
-		});
+		api.post("Photo::delete", params, null);
 	};
 
 	if (photoIDs.length === 1) {
@@ -8293,12 +8291,12 @@ _sidebar.createStructure.photo = function (data) {
 				value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + "m" : ""
 			}, { title: lychee.locale["PHOTO_LOCATION"], kind: "location", value: data.location ? data.location : "" }]
 		};
-		if (data.imgDirection) {
+		if (data.img_direction) {
 			// No point in display sub-degree precision.
 			structure.location.rows.push({
 				title: lychee.locale["PHOTO_IMGDIRECTION"],
 				kind: "imgDirection",
-				value: Math.round(data.imgDirection).toString() + "°"
+				value: Math.round(data.img_direction).toString() + "°"
 			});
 		}
 	} else {
@@ -10329,7 +10327,7 @@ view.photo = {
 				attribution: map_provider_layer_attribution[lychee.map_provider].attribution
 			}).addTo(mymap);
 
-			if (!lychee.map_display_direction || !_photo.json.imgDirection || _photo.json.imgDirection === "") {
+			if (!lychee.map_display_direction || !_photo.json.img_direction) {
 				// Add Marker to map, direction is not set
 				L.marker([_photo.json.latitude, _photo.json.longitude]).addTo(mymap);
 			} else {
@@ -10341,7 +10339,7 @@ view.photo = {
 					iconAnchor: [50, 49] // point of the icon which will correspond to marker's location
 				});
 				var marker = L.marker([_photo.json.latitude, _photo.json.longitude], { icon: viewDirectionIcon }).addTo(mymap);
-				marker.setRotationAngle(_photo.json.imgDirection);
+				marker.setRotationAngle(_photo.json.img_direction);
 			}
 		}
 	},
