@@ -138,10 +138,13 @@ class RefactorAlbumModel extends Migration
 			// We must remove any foreign link from `albums` to `photos` to
 			// break up circular dependencies.
 			$this->dropForeignIfExist($table, 'albums_cover_id_foreign');
+			$this->dropForeignIfExist($table, 'albums_parent_id_foreign');
 			$this->dropIndexIfExist($table, 'albums__lft__rgt_index');
 		});
 		Schema::rename('albums', 'albums_tmp');
 		Schema::table('photos', function (Blueprint $table) {
+			$this->dropForeignIfExist($table, 'photos_album_id_foreign');
+			$this->dropForeignIfExist($table, 'photos_owner_id_foreign');
 			$this->dropIndexIfExist($table, 'photos_created_at_index');
 			$this->dropIndexIfExist($table, 'photos_updated_at_index');
 			$this->dropIndexIfExist($table, 'photos_taken_at_index');
@@ -153,6 +156,7 @@ class RefactorAlbumModel extends Migration
 		});
 		Schema::rename('photos', 'photos_tmp');
 		Schema::table('size_variants', function (Blueprint $table) {
+			$this->dropForeignIfExist($table, 'size_variants_photo_id_foreign');
 			$this->dropUniqueIfExist($table, 'size_variants_photo_id_size_variant_unique');
 		});
 		Schema::rename('size_variants', 'size_variants_tmp');
@@ -191,7 +195,7 @@ class RefactorAlbumModel extends Migration
 			$table->dateTime('updated_at')->nullable(false);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable()->default(null);
-			$table->unsignedBigInteger('owner_id')->nullable(false)->default(0);
+			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
 			$table->boolean('is_public')->nullable(false)->default(false);
 			$table->boolean('grants_full_photo')->nullable(false)->default(true);
 			$table->boolean('requires_link')->nullable(false)->default(false);
@@ -276,7 +280,7 @@ class RefactorAlbumModel extends Migration
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable()->default(null);
 			$table->string('license', 20)->nullable(false)->default('none');
-			$table->unsignedBigInteger('owner_id')->nullable(false)->default(0);
+			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
 			$table->boolean('smart')->nullable(false)->default(false);
 			$table->text('showtags')->nullable();
 			$table->boolean('public')->nullable(false)->default(false);
@@ -316,7 +320,7 @@ class RefactorAlbumModel extends Migration
 		Schema::create('user_' . $name, function (Blueprint $table) use ($name) {
 			// Column definitions
 			$table->bigIncrements('id')->nullable(false);
-			$table->integer('user_id')->unsigned()->nullable(false);
+			$table->unsignedInteger('user_id')->nullable(false);
 			$table->unsignedBigInteger($name . '_id')->nullable(false);
 			// Indices and constraint definitions
 			$table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
@@ -334,7 +338,7 @@ class RefactorAlbumModel extends Migration
 			$table->bigIncrements('id')->nullable(false);
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
-			$table->integer('owner_id')->unsinged()->nullable(false)->default(0);
+			$table->unsignedInteger('owner_id')->unsinged()->nullable(false)->default(0);
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable()->default(null);
@@ -386,7 +390,7 @@ class RefactorAlbumModel extends Migration
 			$table->bigIncrements('id')->nullable(false);
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
-			$table->integer('owner_id')->unsigned()->nullable(false)->default(0);
+			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->default('');
