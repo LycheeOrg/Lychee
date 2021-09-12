@@ -44,20 +44,20 @@ class RemoveMaxMinTakestamps extends Migration
 			->select(['id'])
 			->addSelect([
 				'min_takestamp' => DB::table('photos')
-					->select('takenstamp')
+					->select('takestamp')
 					->join('albums as a', 'a.id', '=', 'album_id')
 					->whereColumn('a._lft', '>=', 'albums._lft')
 					->whereColumn('a._rgt', '<=', 'albums._rgt')
-					->whereNotNull('takenstamp')
-					->orderBy('takenstamp', 'asc')
+					->whereNotNull('takestamp')
+					->orderBy('takestamp', 'asc')
 					->limit(1),
 				'max_takestamp' => DB::table('photos')
-					->select('takenstamp')
+					->select('takestamp')
 					->join('albums as a', 'a.id', '=', 'album_id')
 					->whereColumn('a._lft', '>=', 'albums._lft')
 					->whereColumn('a._rgt', '<=', 'albums._rgt')
-					->whereNotNull('takenstamp')
-					->orderBy('takenstamp', 'desc')
+					->whereNotNull('takestamp')
+					->orderBy('takestamp', 'desc')
 					->limit(1),
 			])
 			->get();
