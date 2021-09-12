@@ -316,7 +316,7 @@ class RefactorAlbumModel extends Migration
 		Schema::create('user_' . $name, function (Blueprint $table) use ($name) {
 			// Column definitions
 			$table->bigIncrements('id')->nullable(false);
-			$table->unsignedInteger('user_id')->nullable(false);
+			$table->integer('user_id')->unsigned()->nullable(false);
 			$table->unsignedBigInteger($name . '_id')->nullable(false);
 			// Indices and constraint definitions
 			$table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
@@ -334,7 +334,7 @@ class RefactorAlbumModel extends Migration
 			$table->bigIncrements('id')->nullable(false);
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
-			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
+			$table->integer('owner_id')->unsinged()->nullable(false)->default(0);
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable()->default(null);
@@ -386,7 +386,7 @@ class RefactorAlbumModel extends Migration
 			$table->bigIncrements('id')->nullable(false);
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
-			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
+			$table->integer('owner_id')->unsigned()->nullable(false)->default(0);
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->default('');
