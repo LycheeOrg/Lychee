@@ -413,7 +413,7 @@ api.isTimeout = function (errorThrown, jqXHR) {
 
 api.post = function (fn, params, successCallback) {
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-	var errorCallback = arguments[4];
+	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
 	loadingBar.show();
 
@@ -430,7 +430,7 @@ api.post = function (fn, params, successCallback) {
 			return false;
 		}
 
-		successCallback(data);
+		if (successCallback) successCallback(data);
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
@@ -1415,9 +1415,7 @@ album.setPublic = function (albumID, e) {
 		params.password = password;
 	}
 
-	api.post("Album::setPublic", params, function (data) {
-		if (data !== true) lychee.error(null, params, data);
-	});
+	api.post("Album::setPublic", params, null);
 };
 
 album.shareUsers = function (albumID, e) {
