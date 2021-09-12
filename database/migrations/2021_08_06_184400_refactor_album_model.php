@@ -104,7 +104,6 @@ class RefactorAlbumModel extends Migration
 		$this->createPhotoTableDown();
 		$this->createSizeVariantTable();
 		$this->createSymLinkTable();
-		$this->createRemainingForeignConstraints();
 
 		// Step 2
 		// Happy copying :(
