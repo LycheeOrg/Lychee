@@ -296,7 +296,6 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedBigInteger('_rgt')->nullable()->default(null);
 			// Indices and constraint definitions
 			$table->foreign('parent_id')->references('id')->on('albums');
-			$table->foreign('owner_id')->references('id')->on('users');
 			$table->index(['_lft', '_rgt']);
 		});
 	}
@@ -418,7 +417,6 @@ class RefactorAlbumModel extends Migration
 			$table->string('live_photo_content_id')->nullable()->default(null);
 			$table->string('live_photo_checksum', 40)->nullable()->default(null);
 			// Indices and constraint definitions
-			$table->foreign('owner_id')->references('id')->on('users');
 			$table->foreign('album_id')->references('id')->on('albums');
 			$table->index('created_at');
 			$table->index('updated_at');
