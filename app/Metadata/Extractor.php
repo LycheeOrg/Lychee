@@ -194,7 +194,7 @@ class Extractor
 			//  b) The timezone of the server which is running the Lychee
 			//     backend
 			//  c) The timezone of the beholder who is looking at the photo
-			//     with his/her web browser
+			//     with his/her/their web browser
 			//
 			// **Notes about a):**
 			//
