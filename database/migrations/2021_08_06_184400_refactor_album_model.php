@@ -342,7 +342,7 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable();
-			$table->text('tags')->nullable()->default(null);
+			$table->text('tags')->nullable();
 			$table->string('license', 20)->nullable(false)->default('none');
 			$table->boolean('is_public')->nullable(false)->default(false);
 			$table->boolean('is_starred')->nullable(false)->default(false);
@@ -394,7 +394,7 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable();
-			$table->text('tags')->nullable(false)->default('');
+			$table->string('tags')->nullable(false)->default('');
 			$table->string('license', 20)->nullable(false)->default('none');
 			$table->boolean('public')->nullable(false)->default(false);
 			$table->boolean('star')->nullable(false)->default(false);
