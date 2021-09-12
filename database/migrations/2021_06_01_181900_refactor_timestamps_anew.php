@@ -173,6 +173,15 @@ class RefactorTimestampsAnew extends Migration
 				self::UPDATED_AT_COL_NAME => $updated_at,
 			]);
 		}
+		DB::table($tableName)
+			->whereNull(self::CREATED_AT_COL_NAME)
+			->update([
+				self::CREATED_AT_COL_NAME => $nowString,
+				self::UPDATED_AT_COL_NAME => $nowString,
+			]);
+		DB::table($tableName)
+			->whereNull(self::UPDATED_AT_COL_NAME)
+			->update([self::UPDATED_AT_COL_NAME => $nowString]);
 		DB::commit();
 		// Make the new columns non-nullable
 		Schema::table($tableName, function (Blueprint $table) {
