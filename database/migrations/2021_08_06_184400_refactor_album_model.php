@@ -522,8 +522,8 @@ class RefactorAlbumModel extends Migration
 					'parent_id' => $album->parent_id,
 					'license' => $album->license,
 					'cover_id' => $album->cover_id,
-					'_lft' => $album->_lft,
-					'_rgt' => $album->_rgt,
+					'_lft' => $album->_lft ?? 0,
+					'_rgt' => $album->_rgt ?? 0,
 				]);
 			}
 		}
