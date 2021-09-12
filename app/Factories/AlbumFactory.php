@@ -106,13 +106,17 @@ class AlbumFactory
 	/**
 	 * Returns a collection of {@link \App\SmartAlbums\BaseSmartAlbum} with one instance for each built-in smart album.
 	 *
+	 * @param bool $withRelations Eagerly loads the relation
+	 *                            {@link BaseSmartAlbum::photos()}
+	 *                            for each smart album
+	 *
 	 * @return Collection
 	 */
-	public function getAllBuiltInSmartAlbums(): Collection
+	public function getAllBuiltInSmartAlbums(bool $withRelations = true): Collection
 	{
 		$smartAlbums = new Collection();
 		foreach (self::BUILTIN_SMARTS as $smartAlbumId => $smartAlbumClass) {
-			$smartAlbums->push($this->createSmartAlbum($smartAlbumId));
+			$smartAlbums->push($this->createSmartAlbum($smartAlbumId, $withRelations));
 		}
 
 		return $smartAlbums;
@@ -130,6 +134,16 @@ class AlbumFactory
 		return array_key_exists($albumId, self::BUILTIN_SMARTS);
 	}
 
+	/**
+	 * Returns the instance of the built-in smart album with the designed ID.
+	 *
+	 * @param string $smartAlbumId  the ID of the smart album
+	 * @param bool   $withRelations Eagerly loads the relation
+	 *                              {@link BaseSmartAlbum::photos()}
+	 *                              for the smart album
+	 *
+	 * @return BaseSmartAlbum
+	 */
 	public function createSmartAlbum(string $smartAlbumId, bool $withRelations = true): BaseSmartAlbum
 	{
 		if (!$this->isBuiltInSmartAlbum($smartAlbumId)) {

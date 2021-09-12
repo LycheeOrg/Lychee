@@ -38,7 +38,9 @@ class Smart
 	public function get(): array
 	{
 		$return = [];
-		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums();
+		// Do not eagerly load the relation `photos` for each smart album.
+		// On the albums overview, we only need a thumbnail for each album.
+		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums(false);
 		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
 			if (AccessControl::can_upload() || $smartAlbum->is_public) {
