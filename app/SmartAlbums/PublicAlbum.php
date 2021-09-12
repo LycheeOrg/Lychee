@@ -38,6 +38,10 @@ class PublicAlbum extends BaseSmartAlbum
 		// Here we only return photos which are public on their own right.
 		// This is the old behaviour, but the condition does not cover photos
 		// which are public because they are part of a public album.
+		// We probably should use
+		// `PhotoAuthorisationProvider::applyPublicFilter()`
+		// here.
+		// This would also return consistent results with the RSS feed.
 		return new HasManyPhotosBySmartCondition(
 			$this,
 			fn (Builder $q) => $q->where('is_public', '=', true)

@@ -17,6 +17,43 @@ class PhotoAuthorisationProvider
 	}
 
 	/**
+	 * Restricts a photo query to _public_ photos.
+	 *
+	 * A photo is called _public_ if an anonymous (unauthenticated) user is
+	 * allowed to see it.
+	 * A photo is _visible_ if any of the following conditions hold
+	 * (OR-clause):
+	 *
+	 *  - the photo itself is public on its own right
+	 *  - the photo is part of a public album
+	 *
+	 * Note: This query also included photos which are part of public, but
+	 * password-protected albums.
+	 * Do we really want this?
+	 * At the moment this method is used by
+	 * {@link \App\Actions\RSS\Generate::do()}.
+	 * Hence, this might leak thumbnails of photos to individuals who have
+	 * subscribed to the RSS feed, but do not know the correct password for
+	 * a password-protected album.
+	 * Moreover, this filter does not take the configuration parameter
+	 * `public_photos_hidden` into account.
+	 * In summary, the result of this filter is very different from the
+	 * result of {@link PhotoAuthorisationProvider::applyVisibilityFilter()}
+	 * for an anonymous user.
+	 * However, the logic here resembles the old behaviour.
+	 * TODO: Re-consider if we really want it this way?
+	 */
+	public function applyPublicFilter(Builder $query): Builder
+	{
+		$this->failForWrongQueryModel($query);
+
+		return $query->where(fn (Builder $q) => $q
+			->where('is_public', '=', true)
+			->orWhereHas('album', fn (Builder $q2) => $q2->where('is_public', '=', true))
+		);
+	}
+
+	/**
 	 * Restricts a photo query to _visible_ photos.
 	 *
 	 * A photo is called _visible_ if the current user is allowed to see the

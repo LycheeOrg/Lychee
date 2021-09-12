@@ -2,16 +2,23 @@
 
 namespace App\Actions\RSS;
 
+use App\Actions\PhotoAuthorisationProvider;
 use App\Models\Configs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Feed\FeedItem;
 
 class Generate
 {
+	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+
+	public function __construct(PhotoAuthorisationProvider $photoAuthorisationProvider)
+	{
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
+	}
+
 	private function create_link_to_page(Photo $photo_model): string
 	{
 		if ($photo_model->album_id != null) {
@@ -45,15 +52,11 @@ class Generate
 		$rss_max = Configs::get_Value('rss_max_items', '100');
 		$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 
-		$photos = Photo::with('album', 'owner', 'size_variants_raw', 'size_variants_raw.sym_links')
-			->where('created_at', '>=', $nowMinus)
-			// we select photo which album IS PUBLICLY ACCESSIBLE
-			// or PHOTO MARKED AS PUBLIC.
-			// TODO: Replace this with a proper method of a class `PhotoAuthorizationProvider` in the same spirit like `AlbumAuthorizationProvider`
-			->where(fn (Builder $q) => $q
-				->where('is_public', '=', true)
-				->orWhereHas('album', fn (Builder $q2) => $q2->where('is_public', '=', true))
+		$photos = $this->photoAuthorisationProvider
+			->applyPublicFilter(
+				Photo::with('album', 'owner', 'size_variants_raw', 'size_variants_raw.sym_links')
 			)
+			->where('created_at', '>=', $nowMinus)
 			->limit($rss_max)
 			->get();
 
