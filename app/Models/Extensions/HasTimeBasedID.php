@@ -6,7 +6,6 @@ namespace App\Models\Extensions;
 
 use App\Models\Configs;
 use App\Models\Logs;
-use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -52,14 +51,6 @@ trait HasTimeBasedID
 	/**
 	 * Set a given attribute on the model.
 	 *
-	 * Actually, this method should override
-	 * {@link HasAttributes::setAttribute()} in order to prevent setting of
-	 * the primary key by application code.
-	 * However, {@link AlbumCast::toTagAlbum()} does it nonetheless, so we
-	 * don't throw an exception until that method is fixed.
-	 *
-	 * TODO: Fix {@link AlbumCast::toTagAlbum()}.
-	 *
 	 * @param string $key   name of attribute which is being set
 	 * @param mixed  $value value of attribute
 	 *
@@ -67,10 +58,9 @@ trait HasTimeBasedID
 	 */
 	public function setAttribute($key, $value)
 	{
-		// TODO: Uncomment the following lines, after AlbumCast::toTagAlbum() has been fixed
-		/*if ($key == $this->getKeyName()) {
+		if ($key == $this->getKeyName()) {
 			throw new \InvalidArgumentException('must not set primary key explicitly, primary key will be set on first insert');
-		}*/
+		}
 
 		return parent::setAttribute($key, $value);
 	}
