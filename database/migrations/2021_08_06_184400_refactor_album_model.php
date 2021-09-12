@@ -137,9 +137,7 @@ class RefactorAlbumModel extends Migration
 		Schema::table('albums', function (Blueprint $table) {
 			// We must remove any foreign link from `albums` to `photos` to
 			// break up circular dependencies.
-			if ($this->driverName !== 'sqlite') {
-				$table->dropForeign('albums_cover_id_foreign');
-			}
+			$this->dropForeignIfExist($table, 'albums_cover_id_foreign');
 			$this->dropIndexIfExist($table, 'albums__lft__rgt_index');
 		});
 		Schema::rename('albums', 'albums_tmp');
@@ -223,8 +221,8 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedBigInteger('parent_id')->nullable()->default(null);
 			$table->string('license', 20)->nullable(false)->default('none');
 			$table->unsignedBigInteger('cover_id')->nullable()->default(null);
-			$table->unsignedBigInteger('_lft')->nullable()->default(null);
-			$table->unsignedBigInteger('_rgt')->nullable()->default(null);
+			$table->unsignedBigInteger('_lft')->nullable(false)->default(0);
+			$table->unsignedBigInteger('_rgt')->nullable(false)->default(0);
 			// Indices and constraint definitions
 			$table->primary('id');
 			$table->index(['_lft', '_rgt']);
@@ -775,6 +773,23 @@ class RefactorAlbumModel extends Migration
 		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
 			$table->dropUnique($indexName);
+		}
+	}
+
+	/**
+	 * A helper function that allows to drop an index if exists.
+	 *
+	 * @param Blueprint $table
+	 * @param string    $indexName
+	 */
+	private function dropForeignIfExist(Blueprint $table, string $indexName)
+	{
+		if ($this->driverName === 'sqlite') {
+			return;
+		}
+		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
+		if ($doctrineTable->hasForeignKey($indexName)) {
+			$table->dropForeign($indexName);
 		}
 	}
 }
