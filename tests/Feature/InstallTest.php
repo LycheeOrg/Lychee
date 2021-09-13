@@ -1,10 +1,9 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
@@ -20,7 +19,8 @@ class InstallTest extends TestCase
 		/*
 		 * Get previous config
 		 */
-		$admin = User::find(0);
+		/** @var User $admin */
+		$admin = User::query()->find(0);
 
 		touch(base_path('.NO_SECURE_KEY'));
 		$response = $this->get('install/');
@@ -37,6 +37,8 @@ class InstallTest extends TestCase
 		/*
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
 		 */
+
+		// The order is important: referring tables must be deleted first, referred tables last
 		$tables = [
 			'sym_links',
 			'size_variants',
@@ -54,6 +56,14 @@ class InstallTest extends TestCase
 			'users',
 			'web_authn_credentials',
 		];
+
+		if (Schema::connection(null)->getConnection()->getDriverName() !== 'sqlite') {
+			// We must remove the foreign constraint from `albums` to `photos` to
+			// break up circular dependencies.
+			Schema::table('albums', function (Blueprint $table) {
+				$table->dropForeign('albums_cover_id_foreign');
+			});
+		}
 
 		foreach ($tables as $table) {
 			Schema::dropIfExists($table);

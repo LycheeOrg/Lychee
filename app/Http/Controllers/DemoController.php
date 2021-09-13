@@ -7,8 +7,10 @@ use App\Actions\Albums\Top;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Response;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Response;
 
 class DemoController extends Controller
 {
@@ -19,7 +21,7 @@ class DemoController extends Controller
 	 *
 	 * Call /demo and use the generated code to replace the api.post() function
 	 *
-	 * @return \Illuminate\Http\Response|string
+	 * @return Response|RedirectResponse
 	 */
 	public function js()
 	{
@@ -65,13 +67,16 @@ class DemoController extends Controller
 
 		/** @var Collection $albums */
 		$albums = Album::query()
-			->where('is_public', '=', true)
-			->where('requires_link', '=', false)
-			->get();
+			->with(['photos', 'photos.size_variants_raw', 'photos.size_variants_raw.sym_links'])
+			->whereHas('base_class', function (Builder $query) {
+				$query
+					->where('is_public', '=', true)
+					->where('requires_link', '=', false);
+			})->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			/**
-			 * Copy paste from Album::get().
+			 * Copied and pasted from Album::get().
 			 */
 			$return_album = [];
 			$return_album['id'] = $album->id;
@@ -107,7 +112,7 @@ class DemoController extends Controller
 		$functions[] = $return_photo_list;
 
 		$contents = view('demo', ['functions' => $functions]);
-		$response = Response::make($contents, 200);
+		$response = \response($contents, 200);
 		$response->header('Content-Type', 'text/plain');
 
 		return $response;
