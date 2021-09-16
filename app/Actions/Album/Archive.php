@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
+use App\Contracts\BaseAlbum;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Album;
@@ -10,21 +11,23 @@ use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use ZipStream\Exception\FileNotFoundException;
+use ZipStream\Exception\FileNotReadableException;
 use ZipStream\ZipStream;
 
 class Archive extends Action
 {
-	private array $badChars;
-
-	public function __construct()
-	{
-		parent::__construct();
-		// Illicit chars
-		$this->badChars = array_merge(array_map('chr', range(0, 31)), ['<', '>', ':', '"', '/', '\\', '|', '?', '*']);
-	}
+	const BAD_CHARS = [
+		"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
+		"\x08", "\x09", "\x0a", "\x0b", "\x0c", "\x0d", "\x0e", "\x0f",
+		"\x10", "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
+		"\x18", "\x19", "\x1a", "\x1b", "\x1c", "\x1d", "\x1e", "\x1f",
+		'<', '>', ':', '"', '/', '\\', '|', '?', '*',
+	];
 
 	/**
 	 * @param array $albumIDs
@@ -33,19 +36,16 @@ class Archive extends Action
 	 */
 	public function do(array $albumIDs): StreamedResponse
 	{
-		$zipTitle = $this->setTitle($albumIDs);
+		$albums = $this->albumFactory->findWhereIDsIn($albumIDs);
 
-		$response = new StreamedResponse(function () use ($albumIDs) {
+		$response = new StreamedResponse(function () use ($albums) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 			$zip = new ZipStream(null, $options);
 
-			$dirs = [];
-			foreach ($albumIDs as $albumID) {
-				//! may Fail
-				$album = $this->albumFactory->findOrFail($albumID);
-				$dir = $album->title;
-				$this->compress_album($album->photos, $dir, $dirs, '', $album, $albumID, $zip);
+			$usedDirNames = [];
+			foreach ($albums as $album) {
+				$this->compressAlbum($album, $usedDirNames, null, $zip);
 			}
 
 			// finish the zip stream
@@ -53,8 +53,13 @@ class Archive extends Action
 		});
 
 		// Set file type and destination
+		$zipTitle = self::createZipTitle($albums);
+		$disposition = HeaderUtils::makeDisposition(
+			HeaderUtils::DISPOSITION_ATTACHMENT,
+			$zipTitle . '.zip',
+			mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip'
+		);
 		$response->headers->set('Content-Type', 'application/x-zip');
-		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, $zipTitle . '.zip', mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip');
 		$response->headers->set('Content-Disposition', $disposition);
 
 		// Disable caching
@@ -66,89 +71,93 @@ class Archive extends Action
 	}
 
 	/**
-	 * Set the Archive title.
+	 * Create the title of the ZIP archive.
 	 */
-	private function setTitle(array $albumIDs)
+	private static function createZipTitle(Collection $albums): string
 	{
-		if (count($albumIDs) === 1) {
-			return $this->makeTitle($albumIDs[0]);
-		}
-
-		return 'Albums';
+		return $albums->containsOneItem() ?
+			self::createValidTitle($albums->first()->title) :
+			'Albums';
 	}
 
 	/**
-	 * Given an ID return the desired title (may need refactor).
-	 */
-	private function makeTitle(string $id)
-	{
-		if ($this->albumFactory->isBuiltInSmartAlbum($id)) {
-			return $id;
-		}
-
-		//! will fail if not found
-		$album = $this->albumFactory->findOrFail($id);
-
-		return str_replace($this->badChars, '', $album->title) ?: 'Untitled'; // 'Untitled' if empty string.
-	}
-
-	/**
-	 * Album compression
-	 * ! include recursive call.
+	 * Creates a title which only contains valid characters.
 	 *
-	 * @param Collection    $photos
-	 * @param AbstractAlbum $album
+	 * Removes all invalid characters from the given title.
+	 * If the title happens to become the empty string after removing all
+	 * illegal characters, the fixed string 'Untitled'  is returned.
+	 *
+	 * @param string $title the title with possibly invalid characters
+	 *
+	 * @return string the title without any invalid characters
 	 */
-	private function compress_album($photos, $dir_name, &$dirs, $parent_dir, AbstractAlbum $album, $albumID, &$zip)
+	private static function createValidTitle(string $title): string
 	{
-		if (!$album->is_downloadable) {
-			if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
-				if (!AccessControl::is_logged_in()) {
-					return;
-				}
-			} elseif (!AccessControl::is_current_user($album->owner_id)) {
-				return;
-			}
-		}
+		return str_replace(self::BAD_CHARS, '', $title) ?? 'Untitled';
+	}
 
-		$dir_name = str_replace($this->badChars, '', $dir_name) ?: 'Untitled';
-
-		// Check for duplicates
-		if (!empty($dirs)) {
+	/**
+	 * Returns a unique string.
+	 *
+	 * Returns the input value `$str` possibly augmented by a counter
+	 * suffix `-<n>` such that the returned value is not contained in the
+	 * input array `$used`.
+	 * The method adds the return value to `$used`.
+	 *
+	 * @param string $str  the input string which shall be made unique
+	 * @param array  $used an input array of previously used strings;
+	 *                     the output array will contain the result value
+	 *
+	 * @return string the unique string
+	 */
+	private function makeUnique(string $str, array &$used): string
+	{
+		if (!empty($used)) {
 			$i = 1;
-			$tmp_dir = $dir_name;
-			while (in_array($tmp_dir, $dirs)) {
-				// Set new directory name
-				$tmp_dir = $dir_name . '-' . $i;
+			$tmp = $str;
+			while (in_array($tmp, $used)) {
+				$tmp = $str . '-' . $i;
 				$i++;
 			}
-			$dir_name = $tmp_dir;
+			$str = $tmp;
 		}
-		$dirs[] = $dir_name;
+		$used[] = $str;
 
-		if ($parent_dir !== '') {
-			$dir_name = $parent_dir . '/' . $dir_name;
+		return $str;
+	}
+
+	/**
+	 * Compresses an album recursively.
+	 *
+	 * @param AbstractAlbum $album            the album which shall be added
+	 *                                        to the archive
+	 * @param array         $usedDirNames     the list of already used
+	 *                                        directory names on the same level
+	 *                                        as `$album`
+	 *                                        ("siblings" of `$album`)
+	 * @param string|null   $fullNameOfParent the fully qualified path name
+	 *                                        of the parent directory
+	 * @param ZipStream     $zip              the archive
+	 *
+	 * @throws FileNotFoundException
+	 * @throws FileNotReadableException
+	 */
+	private function compressAlbum(AbstractAlbum $album, array &$usedDirNames, ?string $fullNameOfParent, ZipStream $zip): void
+	{
+		if (!self::isArchivable($album)) {
+			return;
 		}
 
-		$files = [];
-		// We don't bother with additional sorting here; who
-		// cares in what order photos are zipped?
+		$fullNameOfDirectory = $this->makeUnique(self::createValidTitle($album->title), $usedDirNames);
+		if (!empty($fullNameOfParent)) {
+			$fullNameOfDirectory = $fullNameOfParent . '/' . $fullNameOfDirectory;
+		}
+
+		$usedFileNames = [];
+		$photos = $album->photos;
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			// For photos in smart or tag albums, skip the ones that are not
-			// downloadable based on their actual parent album.  The test for
-			// album_id == null shouldn't really be needed as all such photos
-			// in smart albums should be owned by the current user...
-			if (
-				$album->smart && !AccessControl::is_current_user($photo->owner_id) &&
-				!($photo->album_id == null ? $album->is_downloadable : $photo->album->is_downloadable)
-			) {
-				continue;
-			}
-
-			$is_raw = ($photo->type == 'raw');
-
 			$fullPath = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL)->full_path;
 			// Check if readable
 			if (!@is_readable($fullPath)) {
@@ -156,51 +165,38 @@ class Archive extends Action
 				continue;
 			}
 
-			// Get extension of image
-			$extension = Helpers::getExtension($fullPath, false);
-
 			// Set title for photo
-			$title = str_replace($this->badChars, '', $photo->title);
-			if (!isset($title) || $title === '') {
-				$title = 'Untitled';
-			}
-
-			$file = $title . ($is_raw ? '' : $extension);
-
-			// Check for duplicates
-			if (!empty($files)) {
-				$i = 1;
-				$tmp_file = $file;
-				$pos = strrpos($tmp_file, '.');
-				while (in_array($tmp_file, $files)) {
-					// Set new title for photo
-					if ($pos !== false) {
-						$tmp_file = substr_replace($file, '-' . $i, $pos, 0);
-					} else {
-						// No extension.
-						$tmp_file = $file . '-' . $i;
-					}
-					$i++;
-				}
-				$file = $tmp_file;
-			}
-			// Add to array
-			$files[] = $file;
+			$extension = Helpers::getExtension($fullPath, false);
+			$fileBaseName = $this->makeUnique(self::createValidTitle($photo->title), $usedFileNames);
+			$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $extension;
 
 			// Reset the execution timeout for every iteration.
 			set_time_limit(ini_get('max_execution_time'));
-
-			// add a file named 'some_image.jpg' from a local file 'path/to/image.jpg'
-			$zip->addFileFromPath($dir_name . '/' . $file, $fullPath);
-		} // foreach ($photos)
+			$zip->addFileFromPath($fileName, $fullPath);
+		}
 
 		// Recursively compress sub-albums
 		if ($album instanceof Album) {
 			$subDirs = [];
-			foreach ($album->children as $subAlbum) {
-				$subSql = Photo::query()->where('album_id', '=', $subAlbum->id);
-				$this->compress_album($subSql, $subAlbum->title, $subDirs, $dir_name, $subAlbum, $subAlbum->id, $zip);
+			$subAlbums = $album->children;
+			foreach ($subAlbums as $subAlbum) {
+				$this->compressAlbum($subAlbum, $subDirs, $fullNameOfDirectory, $zip);
 			}
 		}
+	}
+
+	/**
+	 * Tests whether the given album may be archived by the current user.
+	 *
+	 * @param AbstractAlbum $album
+	 *
+	 * @return bool
+	 */
+	private static function isArchivable(AbstractAlbum $album): bool
+	{
+		return
+			$album->is_downloadable ||
+			($album instanceof BaseSmartAlbum && AccessControl::is_logged_in()) ||
+			($album instanceof BaseAlbum && AccessControl::is_current_user($album->owner_id));
 	}
 }
