@@ -7,7 +7,6 @@ use App\Actions\Photo\Create as PhotoCreate;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
 use App\Models\Album;
@@ -263,9 +262,7 @@ class Exec
 						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					}
 				} catch (PhotoSkippedException $e) {
-					$this->status_error($file, 'Skipped duplicate');
-				} catch (PhotoResyncedException $e) {
-					$this->status_error($file, 'Skipped duplicate (resynced metadata)');
+					$this->status_error($file, $e->getMessage());
 				} catch (Exception $e) {
 					$this->status_error($file, 'Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');

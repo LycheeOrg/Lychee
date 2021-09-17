@@ -2,15 +2,10 @@
 
 namespace App\Exceptions;
 
-use Throwable;
-
-class PhotoSkippedException extends JsonWarning
+class PhotoSkippedException extends BaseException
 {
-	public function __construct(
-		$message,
-		$code = 0,
-		Throwable $previous = null
-	) {
-		parent::__construct($message, $code, $previous);
+	public function __construct()
+	{
+		parent::__construct(409, 'The photo has been skipped');
 	}
 }
