@@ -117,14 +117,10 @@ class Helpers
 	{
 		// Check if the given path is readable and writable
 		// Both functions are also verifying that the path exists
-		if (
-			file_exists($path) === true && is_readable($path) === true
-			&& is_writeable($path) === true
-		) {
-			return true;
-		}
-
-		return false;
+		return
+			file_exists($path) &&
+			is_readable($path) &&
+			is_writeable($path);
 	}
 
 	/**

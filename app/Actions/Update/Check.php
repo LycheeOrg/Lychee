@@ -6,8 +6,7 @@ use App\Exceptions\ExecNotAvailableException;
 use App\Exceptions\GitNotAvailableException;
 use App\Exceptions\GitNotExecutableException;
 use App\Exceptions\NoOnlineUpdateException;
-use App\Exceptions\NotInCacheException;
-use App\Exceptions\NotMasterException;
+use App\Exceptions\VersionControlException;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
@@ -16,23 +15,14 @@ use Exception;
 
 class Check
 {
-	/**
-	 * @var GitHubFunctions
-	 */
-	private $gitHubFunctions;
-
-	/**
-	 * @var GitRequest
-	 */
-	private $gitRequest;
-
-	/**
-	 * @var LycheeVersion
-	 */
-	private $lycheeVersion;
+	private GitHubFunctions $gitHubFunctions;
+	private GitRequest $gitRequest;
+	private LycheeVersion $lycheeVersion;
 
 	/**
 	 * @param GitHubFunctions $gitHubFunctions
+	 * @param GitRequest      $gitRequest
+	 * @param LycheeVersion   $lycheeVersion
 	 */
 	public function __construct(
 		GitHubFunctions $gitHubFunctions,
@@ -45,12 +35,14 @@ class Check
 	}
 
 	/**
+	 * Returns true or throws an exception.
+	 *
 	 * @throws NoOnlineUpdateException
 	 * @throws GitNotAvailableException
 	 * @throws ExecNotAvailableException
 	 * @throws GitNotExecutableException
 	 */
-	public function canUpdate()
+	public function canUpdate(): bool
 	{
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
 		if ($this->lycheeVersion->isRelease) {
@@ -81,11 +73,11 @@ class Check
 	}
 
 	/**
-	 * Cath the Exception and return the boolean equivalent.
+	 * Catch the Exception and return the boolean equivalent.
 	 *
 	 * @return bool
 	 */
-	private function canUpdateBool()
+	private function canUpdateBool(): bool
 	{
 		try {
 			return $this->canUpdate();
@@ -101,10 +93,9 @@ class Check
 	 *
 	 * @return bool
 	 *
-	 * @throws NotMasterException
-	 * @throws NotInCacheException
+	 * @throws VersionControlException
 	 */
-	private function forget_and_check()
+	private function forget_and_check(): bool
 	{
 		$this->gitRequest->clear_cache();
 
@@ -114,10 +105,9 @@ class Check
 	/**
 	 * Check for updates, return text or an exception if not possible.
 	 *
-	 * @throws NotMasterException
-	 * @throws NotInCacheException
+	 * @throws VersionControlException
 	 */
-	public function getText()
+	public function getText(): string
 	{
 		$up_to_date = $this->forget_and_check();
 
@@ -133,12 +123,11 @@ class Check
 	/**
 	 * Check for updates, returns the code
 	 * 0 - Not Master
-	 * 1 - Not in cache
-	 * 1 - Up to date
+	 * 1 - Up-to-date
 	 * 2 - Not up to date.
 	 * 3 - Require migration.
 	 */
-	public function getCode()
+	public function getCode(): int
 	{
 		if ($this->lycheeVersion->isRelease) {
 			// @codeCoverageIgnoreStart
@@ -159,15 +148,11 @@ class Check
 					return 1;
 				}
 				// @codeCoverageIgnoreEnd
-			} catch (NotInCacheException $e) {
-				return 1;
-				// @codeCoverageIgnoreStart
-			} catch (NotMasterException $e) {
+			} catch (VersionControlException $e) {
 				return 0;
 			}
 		}
 
 		return 0;
-		// @codeCoverageIgnoreEnd
 	}
 }

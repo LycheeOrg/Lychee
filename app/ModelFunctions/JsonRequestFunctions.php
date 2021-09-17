@@ -2,46 +2,30 @@
 
 namespace App\ModelFunctions;
 
-use App\Exceptions\NotInCacheException;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Cache;
-use Psr\SimpleCache\InvalidArgumentException;
 
 class JsonRequestFunctions
 {
-	private $url;
+	private string $url;
 	private $json;
-	private $raw;
-	private $ttl;
+	private ?string $raw;
+	private int $ttl;
 
 	/**
 	 * JsonRequestFunctions constructor.
 	 *
-	 * @param string $url Url to request / cache
-	 * @param int    $ttl Time To Live of the cache in DAYS
+	 * @param string $url URL to request/cache
+	 * @param int    $ttl Time-to-live of the cache in DAYS
+	 *
+	 * @throws \JsonException thrown, if cached JSON result could not be decoded
 	 */
 	public function __construct(string $url, int $ttl = 1)
 	{
 		$this->url = $url;
-		$this->json = json_decode(Cache::get($url));
+		$this->json = json_decode(Cache::get($url), false, 512, JSON_THROW_ON_ERROR);
+		$this->raw = null;
 		$this->ttl = $ttl;
-	}
-
-	/**
-	 * Cache the result of the request.
-	 */
-	private function cache()
-	{
-		try {
-			Cache::put($this->url, $this->raw, now()->addDays($this->ttl));
-			Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
-		} catch (InvalidArgumentException $e) {
-			Logs::error(
-				__METHOD__,
-				__LINE__,
-				'Could not set in the cache'
-			);
-		}
 	}
 
 	/**
@@ -70,7 +54,7 @@ class JsonRequestFunctions
 	 *
 	 * @return string
 	 */
-	public function get_age_text()
+	public function get_age_text(): string
 	{
 		$age = $this->get_age();
 		if (!$age) {
@@ -92,9 +76,14 @@ class JsonRequestFunctions
 	}
 
 	/**
-	 * make the query and cache the result.
+	 * Runs the HTTP query and caches the result.
 	 *
-	 * @return false|array
+	 * @return mixed the type of the response depends on the content of the
+	 *               HTTP response and may be anything: a primitive type,
+	 *               an array or an object
+	 *
+	 * @throws \JsonException    thrown, if JSON response could not be decoded
+	 * @throws \RuntimeException thrown, if response could not be read
 	 */
 	private function get()
 	{
@@ -109,36 +98,52 @@ class JsonRequestFunctions
 		];
 		$context = stream_context_create($opts);
 
-		/* @var string|false $json */
-		$this->raw = @file_get_contents($this->url, false, $context);
-
-		if ($this->raw != false) {
-			$this->cache();
-			$this->json = json_decode($this->raw);
-
-			return $this->json;
+		$this->raw = file_get_contents($this->url, false, $context);
+		if ($this->raw === false) {
+			$this->raw = null;
+			$this->json = null;
+			$msg = 'Could not read "' . $this->url . '"';
+			Logs::notice(__METHOD__, __LINE__, $msg);
+			throw new \RuntimeException($msg);
 		}
-		// @codeCoverageIgnoreStart
-		Logs::notice(__METHOD__, __LINE__, 'Could not access: ' . $this->url);
-		$this->raw = null;
-		$this->json = null;
 
-		return false;
-		// @codeCoverageIgnoreEnd
+		try {
+			Cache::put($this->url, $this->raw, now()->addDays($this->ttl));
+			Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
+		} catch (\InvalidArgumentException $e) {
+			Logs::error(__METHOD__, __LINE__, 'Could not cache the result of the JSON query');
+		}
+
+		try {
+			$this->json = json_decode($this->raw, false, 512, JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			$this->json = null;
+			throw $e;
+		}
+
+		return $this->json;
 	}
 
 	/**
-	 * Return the JSON.
+	 * Returns the decoded JSON response.
 	 *
-	 * @param bool $cached
+	 * @param bool $cached if true, the JSON response is not fetched but
+	 *                     served from cache
 	 *
-	 * @return false|json
+	 * @return mixed the type of the response depends on the content of the
+	 *               HTTP response and may be anything: a primitive type,
+	 *               an array or an object
+	 *
+	 * @throws \RuntimeException thrown, if `$cashed === true` but the cache
+	 *                           has been empty
+	 * @throws \JsonException    thrown, if the JSON response could not be
+	 *                           decoded
 	 */
 	public function get_json(bool $cached = false)
 	{
 		if ($cached) {
-			if (!$this->json) {
-				throw new NotInCacheException();
+			if ($this->json === null) {
+				throw new \RuntimeException('JSON is not in cache');
 			}
 
 			return $this->json;

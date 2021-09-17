@@ -6,32 +6,24 @@ use App\Models\Configs;
 
 class LycheeVersion
 {
-	/**
-	 * @var GitHubFunctions
-	 */
-	private $gitHubFunctions;
+	private GitHubFunctions $gitHubFunctions;
 
-	/**
-	 * @var bool
-	 */
-	public $isRelease;
+	public bool $isRelease;
 
 	/**
 	 * true if phpunit is present in vendor/bin/
-	 * We use this to dertermine if composer install or composer install --no-dev was used.
-	 *
-	 * @var bool
+	 * We use this to determine if composer install or composer install --no-dev was used.
 	 */
-	public $phpUnit;
+	public bool $phpUnit;
 
 	/**
 	 * Base constructor.
 	 *
 	 * @param GitHubFunctions
 	 */
-	public function __construct(GitHubFunctions $githubFunctions)
+	public function __construct(GitHubFunctions $gitHubFunctions)
 	{
-		$this->gitHubFunctions = $githubFunctions;
+		$this->gitHubFunctions = $gitHubFunctions;
 		$this->isRelease = $this->fetchReleaseInfo();
 		$this->phpUnit = $this->fetchComposerInfo();
 	}
@@ -40,7 +32,7 @@ class LycheeVersion
 	 * Returns true if we are using the release channel
 	 * Returns false if we are using the git channel.
 	 */
-	private function fetchReleaseInfo()
+	private function fetchReleaseInfo(): bool
 	{
 		return !file_exists(base_path('.git'));
 	}
@@ -49,7 +41,7 @@ class LycheeVersion
 	 * Returns true if we are using the release channel
 	 * Returns false if we are using the git channel.
 	 */
-	private function fetchComposerInfo()
+	private function fetchComposerInfo(): bool
 	{
 		return file_exists(base_path('vendor/bin/phpunit'));
 	}
@@ -57,9 +49,9 @@ class LycheeVersion
 	/**
 	 * Return asked information.
 	 *
-	 * @return array
+	 * @return array{channel: string, composer: string, DB: }
 	 */
-	public function get()
+	public function get(): array
 	{
 		$versions = [];
 		$versions['channel'] = $this->isRelease ? 'release' : 'git';
@@ -73,7 +65,7 @@ class LycheeVersion
 	/**
 	 * Format the version : number (commit id).
 	 */
-	public function format(array $info)
+	public function format(array $info): string
 	{
 		$ret = $info['version'];
 		$ret .= (isset($info['commit']) ? ' (' . $info['commit'] . ')' : '');
@@ -83,11 +75,11 @@ class LycheeVersion
 	}
 
 	/**
-	 * @param string $version in the shape of xxyyzz
+	 * @param string $version in the shape of xx.yy.zz
 	 *
 	 * @return string xx.yy.zz
 	 */
-	public function format_version(string $version)
+	public function format_version(string $version): string
 	{
 		return implode('.', array_map('intval', str_split($version, 2)));
 	}
@@ -95,9 +87,9 @@ class LycheeVersion
 	/**
 	 * Return the info about the database.
 	 *
-	 * @return array
+	 * @return array{version: string}
 	 */
-	public function getDBVersion()
+	public function getDBVersion(): array
 	{
 		return ['version' => $this->format_version(Configs::get_value('version', '040000'))];
 	}
@@ -105,9 +97,9 @@ class LycheeVersion
 	/**
 	 * Return the info about the version.md file.
 	 *
-	 * @return array
+	 * @return array{version: string}
 	 */
-	public function getFileVersion()
+	public function getFileVersion(): array
 	{
 		return ['version' => rtrim(@file_get_contents(base_path('version.md')))];
 	}
@@ -115,22 +107,18 @@ class LycheeVersion
 	/**
 	 * Return the information with respect to Lychee.
 	 *
-	 * @return array
+	 * @return array{version: string, commit: string, additional: string}
 	 */
-	private function getLycheeVersion()
+	private function getLycheeVersion(): array
 	{
 		if ($this->isRelease) {
-			// @codeCoverageIgnoreStart
 			return $this->getFileVersion();
-			// @codeCoverageIgnoreEnd
 		}
 
-		$branch = $this->gitHubFunctions->branch;
-		$commit = $this->gitHubFunctions->head;
-		if (!$commit && !$branch) {
-			// @codeCoverageIgnoreStart
+		$branch = $this->gitHubFunctions->getBranch();
+		$commit = $this->gitHubFunctions->getHead();
+		if (empty($commit) && empty($branch)) {
 			return ['version' => 'No git data found.'];
-			// @codeCoverageIgnoreEnd
 		}
 
 		return ['version' => $branch, 'commit' => $commit, 'additional' => $this->gitHubFunctions->get_behind_text()];

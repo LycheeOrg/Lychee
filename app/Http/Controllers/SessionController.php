@@ -97,9 +97,7 @@ class SessionController extends Controller
 		$return['update_json'] = 0;
 		$return['update_available'] = false;
 
-		$this->gitHubFunctions->checkUpdates($return);
-
-		return $return;
+		return array_merge($return, $this->gitHubFunctions->checkUpdates());
 	}
 
 	/**
