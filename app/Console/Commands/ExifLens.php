@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Console\Commands;
 
 use App\Actions\Photo\Extensions\Constants;

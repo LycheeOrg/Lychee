@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Middleware;
 
 use App\Http\Middleware\Checks\IsInstalled;

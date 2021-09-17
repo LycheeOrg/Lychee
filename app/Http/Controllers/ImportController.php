@@ -1,9 +1,5 @@
 <?php
 
-/** @noinspection PhpComposerExtensionStubsInspection */
-
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
 use App\Actions\Import\FromServer;

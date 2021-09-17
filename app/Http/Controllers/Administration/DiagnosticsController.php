@@ -1,9 +1,5 @@
 <?php
 
-/** @noinspection PhpComposerExtensionStubsInspection */
-
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Diagnostics\Configuration;
