@@ -2,9 +2,9 @@
 
 namespace App\Actions\Photo\Extensions;
 
+use App\Exceptions\ExternalComponentMissingException;
 use App\Facades\Helpers;
 use Illuminate\Http\UploadedFile;
-use phpDocumentor\Reflection\DocBlock\Tags\Source;
 
 /**
  * Class SourceFileInfo.
@@ -55,10 +55,16 @@ class SourceFileInfo
 	 * @param UploadedFile $file the uploaded file
 	 *
 	 * @return SourceFileInfo the new instance
+	 *
+	 * @throws ExternalComponentMissingException
 	 */
 	public static function createForUploadedFile(UploadedFile $file): SourceFileInfo
 	{
-		return new self($file->getClientOriginalName(), $file->getMimeType(), $file->getPathName());
+		try {
+			return new self($file->getClientOriginalName(), $file->getMimeType(), $file->getPathName());
+		} catch (\LogicException $e) {
+			throw new ExternalComponentMissingException('MIME component not installed', $e);
+		}
 	}
 
 	/**

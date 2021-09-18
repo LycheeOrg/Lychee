@@ -2,22 +2,23 @@
 
 namespace App\Actions\Photo;
 
-use App\Exceptions\JsonError;
 use App\Models\Photo;
 use App\SmartAlbums\StarredAlbum;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Random
 {
+	/**
+	 * @return Photo
+	 *
+	 * @throws ModelNotFoundException
+	 */
 	public function do(): Photo
 	{
-		$starred = StarredAlbum::getInstance();
-		/** @var Photo $photo */
-		$photo = $starred->photos()->inRandomOrder()->first();
-
-		if ($photo == null) {
-			throw new JsonError('no pictures found!');
-		}
-
-		return $photo;
+		/* @noinspection PhpIncompatibleReturnTypeInspection */
+		return StarredAlbum::getInstance()
+			->photos()
+			->inRandomOrder()
+			->firstOrFail();
 	}
 }

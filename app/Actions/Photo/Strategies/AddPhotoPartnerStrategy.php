@@ -3,6 +3,8 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Photo\Extensions\SourceFileInfo;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 
@@ -16,6 +18,12 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		$this->existingVideo = $existingVideo;
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 */
 	public function do(): Photo
 	{
 		// First add the source file as if it was a stand-alone photo

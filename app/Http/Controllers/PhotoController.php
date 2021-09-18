@@ -16,8 +16,12 @@ use App\Actions\Photo\SetStar;
 use App\Actions\Photo\SetTags;
 use App\Actions\Photo\SetTitle;
 use App\Actions\Photo\Strategies\ImportMode;
+use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
-use App\Exceptions\JsonError;
+use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
@@ -26,7 +30,7 @@ use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Rules\ModelIDRule;
-use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -52,9 +56,12 @@ class PhotoController extends Controller
 	 * @param PhotoIDRequest $request
 	 *
 	 * @return Photo
+	 *
+	 * @throws ModelNotFoundException
 	 */
 	public function get(PhotoIDRequest $request): Photo
 	{
+		/* @noinspection PhpIncompatibleReturnTypeInspection */
 		return Photo::query()
 			->with(['size_variants_raw', 'size_variants_raw.sym_links'])
 			->findOrFail($request['photoID']);
@@ -68,7 +75,7 @@ class PhotoController extends Controller
 	 *
 	 * @return Photo
 	 *
-	 * @throws JsonError
+	 * @throws ModelNotFoundException
 	 */
 	public function getRandom(Random $random): Photo
 	{
@@ -83,7 +90,10 @@ class PhotoController extends Controller
 	 * @return Photo
 	 *
 	 * @throws InsufficientFilesystemPermissions
-	 * @throws JsonError
+	 * @throws ModelDBException
+	 * @throws InvalidPropertyException
+	 * @throws MediaFileOperationException
+	 * @throws ExternalComponentMissingException
 	 */
 	public function add(AlbumIDRequest $request): Photo
 	{
@@ -143,6 +153,8 @@ class PhotoController extends Controller
 	 * @param SetDescription $setDescription
 	 *
 	 * @return string
+	 *
+	 * @throws ModelNotFoundException
 	 */
 	public function setDescription(PhotoIDRequest $request, SetDescription $setDescription): string
 	{
@@ -188,6 +200,8 @@ class PhotoController extends Controller
 	 * @param SetAlbum        $setAlbum
 	 *
 	 * @return string
+	 *
+	 * @throws ModelNotFoundException
 	 */
 	public function setAlbum(PhotoIDsRequest $request, SetAlbum $setAlbum): string
 	{
@@ -202,9 +216,11 @@ class PhotoController extends Controller
 	 * @param PhotoIDRequest $request
 	 * @param SetLicense     $setLicense
 	 *
-	 * @return IlluminateResponse
+	 * @return void
+	 *
+	 * @throws ModelNotFoundException
 	 */
-	public function setLicense(PhotoIDRequest $request, SetLicense $setLicense): IlluminateResponse
+	public function setLicense(PhotoIDRequest $request, SetLicense $setLicense): void
 	{
 		$licenses = Helpers::get_all_licenses();
 		$request->validate([
@@ -216,8 +232,6 @@ class PhotoController extends Controller
 		]);
 
 		$setLicense->do($request['photoID'], $request['license']);
-
-		return response()->noContent();
 	}
 
 	/**
@@ -226,13 +240,13 @@ class PhotoController extends Controller
 	 * @param PhotoIDsRequest $request
 	 * @param Delete          $delete
 	 *
-	 * @return IlluminateResponse
+	 * @return void
+	 *
+	 * @throws ModelDBException
 	 */
-	public function delete(PhotoIDsRequest $request, Delete $delete): IlluminateResponse
+	public function delete(PhotoIDsRequest $request, Delete $delete): void
 	{
 		$delete->do(explode(',', $request['photoIDs']));
-
-		return response()->noContent();
 	}
 
 	/**
@@ -243,6 +257,8 @@ class PhotoController extends Controller
 	 * @param Duplicate       $duplicate
 	 *
 	 * @return Photo|Collection the duplicated photo or collection of duplicated photos
+	 *
+	 * @throws ModelDBException
 	 */
 	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
 	{
@@ -258,23 +274,29 @@ class PhotoController extends Controller
 	 * @param PhotoIDsRequest $request
 	 * @param Archive         $archive
 	 *
-	 * @return SymfonyResponse|string
+	 * @return SymfonyResponse
 	 */
-	public function getArchive(PhotoIDsRequest $request, Archive $archive)
+	public function getArchive(PhotoIDsRequest $request, Archive $archive): SymfonyResponse
 	{
 		if (Storage::getDefaultDriver() === 's3') {
 			Logs::error(__METHOD__, __LINE__, 'getArchive not implemented for S3');
 
-			return 'false';
+			return new SymfonyResponse('getArchive not implemented for S3', SymfonyResponse::HTTP_NOT_IMPLEMENTED);
 		}
 
 		$request->validate([
-			'kind' => 'nullable|string',
+			'kind' => [Rule::in(Archive::VARIANTS)],
 		]);
 
 		$photoIDs = explode(',', $request['photoIDs']);
 
-		$response = $archive->do($photoIDs, $request['kind']);
+		try {
+			$response = $archive->do($photoIDs, $request['kind']);
+		} catch (InvalidSizeVariantException $ignored) {
+			// In theory Archive::do may throw this exception,
+			// but will never do so, because we validated the input
+			$response = new SymfonyResponse(null, SymfonyResponse::HTTP_NO_CONTENT);
+		}
 
 		// Disable caching
 		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -287,12 +309,12 @@ class PhotoController extends Controller
 	/**
 	 * GET to manually clear the symlinks.
 	 *
-	 * @return string
+	 * @return void
 	 *
-	 * @throws \Exception
+	 * @throws ModelDBException
 	 */
-	public function clearSymLink(): string
+	public function clearSymLink(): void
 	{
-		return $this->symLinkFunctions->clearSymLink();
+		$this->symLinkFunctions->clearSymLink();
 	}
 }

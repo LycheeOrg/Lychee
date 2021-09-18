@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
-use App\Exceptions\JsonError;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UserPostIdRequest;
 use App\Http\Requests\UserRequests\UserPostRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Http\Response as IlluminateResponse;
 
@@ -28,16 +30,18 @@ class UserController extends Controller
 	 * @param UserPostRequest $request
 	 * @param Save            $save
 	 *
-	 * @return IlluminateResponse
+	 * @return User
 	 *
-	 * @throws JsonError
+	 * @throws InvalidPropertyException
+	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
 	 */
-	public function save(UserPostRequest $request, Save $save): IlluminateResponse
+	public function save(UserPostRequest $request, Save $save): User
 	{
 		/** @var User $user */
 		$user = User::query()->findOrFail($request['id']);
 
-		return $save->do($user, $request->all()) ? response()->noContent() : response('', 500);
+		return $save->do($user, $request->all());
 	}
 
 	/**
@@ -46,13 +50,23 @@ class UserController extends Controller
 	 *
 	 * @param UserPostIdRequest $request
 	 *
-	 * @return IlluminateResponse
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
 	 */
-	public function delete(UserPostIdRequest $request): IlluminateResponse
+	public function delete(UserPostIdRequest $request): void
 	{
 		$user = User::query()->findOrFail($request['id']);
 
-		return $user->delete() ? response()->noContent() : response('', 500);
+		try {
+			$success = $user->delete();
+		} catch (\Throwable $e) {
+			throw ModelDBException::create('user', 'delete', $e);
+		}
+		if (!$success) {
+			throw ModelDBException::create('user', 'delete');
+		}
 	}
 
 	/**
@@ -63,7 +77,8 @@ class UserController extends Controller
 	 *
 	 * @return User
 	 *
-	 * @throws JsonError
+	 * @throws InvalidPropertyException
+	 * @throws ModelDBException
 	 */
 	public function create(IlluminateRequest $request, Create $create): User
 	{

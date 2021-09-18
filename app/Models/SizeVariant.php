@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\MustNotSetCast;
+use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -198,13 +199,13 @@ class SizeVariant extends Model
 	 *                         {@link SizeVariant::THUMB2X},
 	 *                         {@link SizeVariant::THUMB}
 	 *
-	 * @throws \InvalidArgumentException thrown if `$sizeVariant` is
-	 *                                   out-of-bounds
+	 * @throws InvalidSizeVariantException thrown if `$sizeVariant` is
+	 *                                     out-of-bounds
 	 */
 	public function setSizeVariantAttribute(int $sizeVariant): void
 	{
 		if (self::ORIGINAL > $sizeVariant || $sizeVariant > self::THUMB) {
-			throw new \InvalidArgumentException('passed size variant ' . $sizeVariant . ' out-of-range');
+			throw new InvalidSizeVariantException('passed size variant ' . $sizeVariant . ' out-of-range');
 		}
 		$this->attributes['size_variant'] = $sizeVariant;
 	}

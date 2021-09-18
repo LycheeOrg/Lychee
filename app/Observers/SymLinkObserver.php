@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Exceptions\InsufficientEntropyException;
 use App\Facades\Helpers;
 use App\Models\SymLink;
 use Illuminate\Support\Facades\Storage;
@@ -18,16 +19,20 @@ class SymLinkObserver
 	 *
 	 * @param SymLink $symLink The symbolic link to be created
 	 *
-	 * @throws \Exception Thrown, if this method could not gather enough
-	 *                    entropy for a salt
+	 * @return bool True, if the framework may continue with creation,
+	 *              false otherwise
 	 *
-	 * @return bool True, if the framework may continue with creation, false otherwise
+	 * @throws InsufficientEntropyException
 	 */
 	public function creating(SymLink $symLink): bool
 	{
 		$origFullPath = $symLink->size_variant->full_path;
 		$extension = Helpers::getExtension($origFullPath);
-		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
+		try {
+			$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
+		} catch (\Exception $e) {
+			throw new InsufficientEntropyException($e);
+		}
 		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
 		if (is_link($symFullPath)) {
 			unlink($symFullPath);

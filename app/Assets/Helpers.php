@@ -2,6 +2,7 @@
 
 namespace App\Assets;
 
+use App\Exceptions\Internal\ZeroModuloException;
 use App\Models\Logs;
 use Illuminate\Support\Facades\File;
 use WhichBrowser\Parser as BrowserParser;
@@ -176,12 +177,12 @@ class Helpers
 	 *
 	 * @return int
 	 *
-	 * @throws \RuntimeException
+	 * @throws ZeroModuloException
 	 */
 	public function gcd(int $a, int $b): int
 	{
 		if ($b == 0) {
-			throw new \RuntimeException('Module by zero error');
+			throw new ZeroModuloException();
 		}
 
 		return ($a % $b) ? $this->gcd($b, $a % $b) : $b;

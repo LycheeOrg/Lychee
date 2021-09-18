@@ -2,6 +2,7 @@
 
 namespace App\Actions\Album;
 
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Album;
 
@@ -12,14 +13,21 @@ class Create extends Action
 	 * @param int    $parent_id
 	 *
 	 * @return Album
+	 *
+	 * @throws ModelDBException
 	 */
 	public function create(string $title, int $parent_id): Album
 	{
-		$album = new Album();
-		$album->title = $title;
-		$this->set_parent($album, $parent_id);
-		if (!$album->save()) {
-			throw new \RuntimeException('could not persist album to DB');
+		try {
+			$album = new Album();
+			$album->title = $title;
+			$this->set_parent($album, $parent_id);
+			$success = $album->save();
+		} catch (\Throwable $e) {
+			throw ModelDBException::create('album', 'create', $e);
+		}
+		if (!$success) {
+			throw ModelDBException::create('album', 'create');
 		}
 
 		return $album;
@@ -40,7 +48,7 @@ class Create extends Action
 		if ($parent !== null) {
 			$album->parent_id = $parent->id;
 
-			// Admin can add subalbums to other users' albums.  Make sure that
+			// Admin can add sub-albums to other users' albums.  Make sure that
 			// the ownership stays with that user.
 			$album->owner_id = $parent->owner_id;
 		} else {

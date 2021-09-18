@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -232,7 +233,7 @@ class PhotoAuthorisationProvider
 	/**
 	 * Throws an exception if the given query does not query for a photo.
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidQueryModelException
 	 *
 	 * @param Builder $query
 	 */
@@ -240,7 +241,7 @@ class PhotoAuthorisationProvider
 	{
 		$model = $query->getModel();
 		if (!($model instanceof Photo)) {
-			throw new \InvalidArgumentException('the given query does not query for photos');
+			throw new InvalidQueryModelException('photo');
 		}
 	}
 

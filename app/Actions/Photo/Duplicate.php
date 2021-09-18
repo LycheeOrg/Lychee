@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
 
@@ -21,23 +22,40 @@ class Duplicate
 	 * @param int|null $albumID  the optional ID of the destination album
 	 *
 	 * @return Collection the duplicates
+	 *
+	 * @throws ModelDBException
 	 */
 	public function do(array $photoIds, ?int $albumID): Collection
 	{
 		$duplicates = new Collection();
-		$photos = Photo::query()->whereIn('id', $photoIds)->get();
+		try {
+			$photos = Photo::query()->whereIn('id', $photoIds)->get();
+		} catch (\InvalidArgumentException $ignored) {
+			// In theory whereIn may throw this exception,
+			// but will never do so for array operands.
+			return $duplicates;
+		}
 
+		$success = true;
+		$lastException = null;
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$duplicate = $photo->replicate();
-			if ($albumID !== null) {
-				$dstAlbumID = $albumID !== 0 ? $albumID : null;
-			} else {
-				$dstAlbumID = $photo->album_id;
+			try {
+				$duplicate = $photo->replicate();
+				if ($albumID !== null) {
+					$dstAlbumID = $albumID !== 0 ? $albumID : null;
+				} else {
+					$dstAlbumID = $photo->album_id;
+				}
+				$duplicate->album_id = $dstAlbumID;
+				$success &= $duplicate->save();
+				$duplicates->add($duplicate);
+			} catch (\Throwable $e) {
+				$lastException = $e;
 			}
-			$duplicate->album_id = $dstAlbumID;
-			$duplicate->save();
-			$duplicates->add($duplicate);
+		}
+		if (!$success || $lastException !== null) {
+			throw ModelDBException::create('photo', 'duplicate', $lastException);
 		}
 
 		return $duplicates;

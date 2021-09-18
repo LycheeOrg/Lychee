@@ -16,13 +16,13 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class UnauthenticatedException extends BaseException
 {
-	public function __construct(\Throwable $previous = null)
+	public function __construct(string $msg = 'User is not authenticated', \Throwable $previous = null)
 	{
 		// Note: Due to historic reasons the name of the HTTP Status Code 401
 		// is "unauthorized", but actually means "unauthenticated".
 		// So it is correct, to use HTTP_UNAUTHORIZED here.
 		// Side remark: If one wants to express that a user is unauthorized,
 		// the HTTP Status Code would equal 403 (HTTP_FORBIDDEN).
-		parent::__construct(Response::HTTP_UNAUTHORIZED, 'Request Session data while not being logged in.', $previous);
+		parent::__construct(Response::HTTP_UNAUTHORIZED, $msg, $previous);
 	}
 }

@@ -2,7 +2,8 @@
 
 namespace App\Actions\Photo\Strategies;
 
-use App\Exceptions\JsonError;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -18,6 +19,12 @@ abstract class AddBaseStrategy
 		$this->photo = $photo;
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 */
 	abstract public function do(): Photo;
 
 	/**
@@ -116,7 +123,7 @@ abstract class AddBaseStrategy
 	 *
 	 * @param string $targetFullPath the path of the final destination
 	 *
-	 * @throws JsonError
+	 * @throws MediaFileOperationException
 	 */
 	protected function putSourceIntoFinalDestination(string $targetFullPath): void
 	{
@@ -128,7 +135,7 @@ abstract class AddBaseStrategy
 			if (!rename($tmpFullPath, $targetFullPath)) {
 				$msg = 'Could not move photo from "' . $tmpFullPath . '" to "' . $targetFullPath . '"';
 				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new JsonError('$msg');
+				throw new MediaFileOperationException($msg);
 			}
 		} else {
 			// Check if the user wants to create symlinks instead of copying the photo
@@ -136,18 +143,18 @@ abstract class AddBaseStrategy
 				if (!symlink($tmpFullPath, $targetFullPath)) {
 					$msg = 'Could not create symbolic link at "' . $targetFullPath . '" for photo at "' . $tmpFullPath . '"';
 					Logs::error(__METHOD__, __LINE__, $msg);
-					throw new JsonError($msg);
+					throw new MediaFileOperationException($msg);
 				}
 			} elseif (!copy($tmpFullPath, $targetFullPath)) {
 				$msg = 'Could not copy photo from "' . $tmpFullPath . '" to "' . $targetFullPath . '"';
 				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new JsonError($msg);
+				throw new MediaFileOperationException($msg);
 			}
 		}
 
 		// Set original date
 		if ($this->photo->taken_at !== null) {
-			@touch($targetFullPath, $this->photo->taken_at->getTimestamp());
+			touch($targetFullPath, $this->photo->taken_at->getTimestamp());
 		}
 	}
 }

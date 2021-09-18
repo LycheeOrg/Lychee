@@ -4,6 +4,8 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Image\ImageHandlerInterface;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Logs;
@@ -18,6 +20,12 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		parent::__construct($parameters, new Photo());
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
+	 */
 	public function do(): Photo
 	{
 		// Create and save "bare" photo object without size variants
@@ -25,7 +33,14 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->photo->is_public = $this->parameters->is_public;
 		$this->photo->is_starred = $this->parameters->is_starred;
 		$this->setParentAndOwnership();
-		$this->photo->save();
+		try {
+			$success = $this->photo->save();
+		} catch (\Throwable $e) {
+			throw ModelDBException::create('photo', 'create', $e);
+		}
+		if (!$success) {
+			throw ModelDBException::create('photo', 'create');
+		}
 
 		// Initialize factory for size variants
 		/** @var SizeVariantNamingStrategy $namingStrategy */
@@ -81,37 +96,46 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 * values after rotation.
 	 *
 	 * @param SizeVariant $original the original size variant
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	protected function normalizeOrientation(SizeVariant $original): void
 	{
-		$orientation = $this->parameters->info['orientation'];
-		$fullPath = $original->full_path;
-		if ($this->photo->type === 'image/jpeg' && $orientation != 1) {
-			// If we are importing via symlink, we don't actually overwrite
-			// the source but we still need to fix the dimensions.
-			/** @var ImageHandlerInterface $imageHandler */
-			$imageHandler = resolve(ImageHandlerInterface::class);
-			$newDim = $imageHandler->autoRotate(
-				$fullPath,
-				$orientation,
-				$this->parameters->importMode->shallImportViaSymlink()
-			);
+		try {
+			$orientation = $this->parameters->info['orientation'];
+			$fullPath = $original->full_path;
+			if ($this->photo->type === 'image/jpeg' && $orientation != 1) {
+				// If we are importing via symlink, we don't actually overwrite
+				// the source, but we still need to fix the dimensions.
+				/** @var ImageHandlerInterface $imageHandler */
+				$imageHandler = resolve(ImageHandlerInterface::class);
+				$newDim = $imageHandler->autoRotate(
+					$fullPath,
+					$orientation,
+					$this->parameters->importMode->shallImportViaSymlink()
+				);
 
-			if ($newDim !== [false, false]) {
-				$original->width = $newDim['width'];
-				$original->height = $newDim['height'];
-				// If the image has actually been rotated, the size may
-				// have changed.
-				$this->photo->filesize = (int) filesize($fullPath);
+				if ($newDim !== [false, false]) {
+					$original->width = $newDim['width'];
+					$original->height = $newDim['height'];
+					// If the image has actually been rotated, the size may
+					// have changed.
+					$this->photo->filesize = (int) filesize($fullPath);
+				}
 			}
-		}
 
-		// Set original date
-		if ($this->parameters->info['taken_at'] !== null) {
-			@touch($fullPath, $this->parameters->info['taken_at']->getTimestamp());
+			// Set original date
+			if ($this->parameters->info['taken_at'] !== null) {
+				touch($fullPath, $this->parameters->info['taken_at']->getTimestamp());
+			}
+		} catch (\Throwable $e) {
+			throw new MediaFileOperationException('Could not normalize orientation of image', $e);
 		}
 	}
 
+	/**
+	 * @throws MediaFileOperationException
+	 */
 	protected function handleGoogleMotionPicture(): void
 	{
 		if (empty($this->parameters->info['MicroVideoOffset'])) {
@@ -158,7 +182,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->photo->live_photo_short_path = $shortPathVideo;
 		} catch (\Throwable $e) {
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
-			throw new \RuntimeException('unable to extract video from Google Motion Picture', 0, $e);
+			throw new MediaFileOperationException('Unable to extract video from Google Motion Picture', $e);
 		}
 	}
 }

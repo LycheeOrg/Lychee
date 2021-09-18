@@ -2,6 +2,13 @@
 
 namespace App\Contracts;
 
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Support\Collection;
@@ -54,6 +61,9 @@ abstract class SizeVariantFactory
 	 * @param int $height the height of the original size variant
 	 *
 	 * @return SizeVariant the freshly created and persisted size variant
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 * @throws ModelDBException
 	 */
 	abstract public function createOriginal(int $width, int $height): SizeVariant;
 
@@ -83,6 +93,14 @@ abstract class SizeVariantFactory
 	 *                         {@link SizeVariant::MEDIUM2X}
 	 *
 	 * @return SizeVariant the freshly created and persisted size variant
+	 *
+	 * @throws ConfigurationException
+	 * @throws ExternalComponentMissingException
+	 * @throws IllegalOrderOfOperationException
+	 * @throws InvalidSizeVariantException
+	 * @throws MediaFileOperationException
+	 * @throws MediaFileUnsupportedException
+	 * @throws ModelDBException
 	 */
 	abstract public function createSizeVariant(int $sizeVariant): SizeVariant;
 
@@ -95,7 +113,7 @@ abstract class SizeVariantFactory
 	 * concrete factory and may depend on application settings, supported
 	 * file formats, the dimensions of the original media, etc.
 	 *
-	 * Otherwise this methods behaves identical to
+	 * Otherwise, this method behaves identical to
 	 * {@link SizeVariantFactory::createSizeVariant()}.
 	 * Refer there for further information.
 	 *
@@ -109,6 +127,14 @@ abstract class SizeVariantFactory
 	 *                         {@link SizeVariant::MEDIUM2X}
 	 *
 	 * @return SizeVariant|null the freshly created and persisted size variant
+	 *
+	 * @throws ConfigurationException
+	 * @throws ExternalComponentMissingException
+	 * @throws InvalidSizeVariantException
+	 * @throws MediaFileOperationException
+	 * @throws IllegalOrderOfOperationException
+	 * @throws ModelDBException
+	 * @throws MediaFileUnsupportedException
 	 */
 	abstract public function createSizeVariantCond(int $sizeVariant): ?SizeVariant;
 
@@ -131,6 +157,14 @@ abstract class SizeVariantFactory
 	 * Use {@link SizeVariantFactory::createOriginal()} for that.
 	 *
 	 * @return Collection the collection of created size variants
+	 *
+	 * @throws ConfigurationException
+	 * @throws ExternalComponentMissingException
+	 * @throws IllegalOrderOfOperationException
+	 * @throws InvalidSizeVariantException
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 * @throws MediaFileUnsupportedException
 	 */
 	abstract public function createSizeVariants(): Collection;
 }

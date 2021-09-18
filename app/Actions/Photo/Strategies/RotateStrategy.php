@@ -5,6 +5,10 @@ namespace App\Actions\Photo\Strategies;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\Internal\InvalidRotationDirectionException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
+use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Image\ImageHandlerInterface;
 use App\Metadata\Extractor;
@@ -16,6 +20,15 @@ class RotateStrategy extends AddBaseStrategy
 {
 	protected int $direction;
 
+	/**
+	 * @param Photo $photo
+	 * @param int   $direction
+	 *
+	 * @throws MediaFileUnsupportedException     thrown, if $photo cannot be
+	 *                                           rotated
+	 * @throws InvalidRotationDirectionException thrown if $direction does
+	 *                                           neither equal -1 nor 1
+	 */
 	public function __construct(Photo $photo, int $direction)
 	{
 		// We exploit the "add strategy" here, because rotation of a photo
@@ -49,27 +62,33 @@ class RotateStrategy extends AddBaseStrategy
 		if ($photo->isVideo()) {
 			$msg = 'Trying to rotate a video';
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new MediaFileUnsupportedException($msg);
 		}
 		if ($photo->live_photo_short_path !== null) {
 			$msg = 'Trying to rotate a live photo';
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new MediaFileUnsupportedException($msg);
 		}
 		if ($photo->isRaw()) {
 			$msg = 'Trying to rotate a raw file';
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new MediaFileUnsupportedException($msg);
 		}
 		// direction is valid?
 		if (($direction != 1) && ($direction != -1)) {
 			$msg = 'Direction must be 1 or -1';
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new InvalidRotationDirectionException();
 		}
 		$this->direction = $direction;
 	}
 
+	/**
+	 * @return Photo
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 */
 	public function do(): Photo
 	{
 		// Generate a temporary name for the rotated file.
@@ -87,7 +106,7 @@ class RotateStrategy extends AddBaseStrategy
 		if ($imageHandler->rotate($oldOriginalFullPath, ($this->direction == 1) ? 90 : -90, $tmpFullPath) === false) {
 			$msg = 'Failed to rotate ' . $oldOriginalFullPath;
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg);
+			throw new MediaFileOperationException($msg);
 		}
 
 		// The file size and checksum may have changed after the rotation.
@@ -95,7 +114,14 @@ class RotateStrategy extends AddBaseStrategy
 		$metadataExtractor = resolve(Extractor::class);
 		$this->photo->filesize = $metadataExtractor->filesize($tmpFullPath);
 		$this->photo->checksum = $metadataExtractor->checksum($tmpFullPath);
-		$this->photo->save();
+		try {
+			$success = $this->photo->save();
+		} catch (\Throwable $e) {
+			throw ModelDBException::create('photo', 'update', $e);
+		}
+		if (!$success) {
+			throw ModelDBException::create('photo', 'update');
+		}
 
 		// Delete all size variants from current photo, this will also take
 		// care of erasing the actual "physical" files from storage and any
@@ -120,7 +146,7 @@ class RotateStrategy extends AddBaseStrategy
 		// Create size variant for rotated original
 		// Note that this also creates a different file name than before
 		// because the checksum of the photo has changed.
-		// Using a different filename allows to avoid caching effects.
+		// Using a different filename allows avoiding caching effects.
 		// Sic! Swap width and height here, because the image has been rotated
 		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth);
 		$this->putSourceIntoFinalDestination($newOriginalSizeVariant->full_path);
@@ -150,6 +176,8 @@ class RotateStrategy extends AddBaseStrategy
 		$duplicates = Photo::query()
 			->where('checksum', $oldChecksum)
 			->get();
+		$success = true;
+		$lastException = null;
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
 			$duplicate->filesize = $this->photo->filesize;
@@ -179,7 +207,14 @@ class RotateStrategy extends AddBaseStrategy
 					);
 				}
 			}
-			$duplicate->save();
+			try {
+				$success &= $duplicate->save();
+			} catch (\Throwable $e) {
+				$lastException = $e;
+			}
+		}
+		if (!$success || $lastException !== null) {
+			throw ModelDBException::create('photo', 'update', $lastException);
 		}
 
 		return $this->photo;

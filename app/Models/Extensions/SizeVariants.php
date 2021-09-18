@@ -2,6 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Support\Arrayable;
@@ -34,7 +36,6 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function __construct(Photo $photo)
 	{
 		$this->photo = $photo;
-		$this->namingStrategy = null;
 	}
 
 	/**
@@ -102,25 +103,34 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 * associated photo and persists it to DB.
 	 *
 	 * @param int    $sizeVariant the type of the desired size variant
-	 * @param string $shortPath   the short path of the media file this size variant shall point to
+	 * @param string $shortPath   the short path of the media file this size
+	 *                            variant shall point to
 	 * @param int    $width       the width of the size variant
 	 * @param int    $height      the height of the size variant
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
+	 *
+	 * @throws IllegalOrderOfOperationException
+	 * @throws ModelDBException
 	 */
 	public function createSizeVariant(int $sizeVariant, string $shortPath, int $width, int $height): SizeVariant
 	{
 		if (!$this->photo->exists) {
-			throw new \LogicException('cannot create a size variant for a photo whose id is not yet persisted to DB');
+			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
 		}
-		/** @var SizeVariant $result */
-		$result = $this->photo->size_variants_raw()->make();
-		$result->size_variant = $sizeVariant;
-		$result->short_path = $shortPath;
-		$result->width = $width;
-		$result->height = $height;
-		if (!$result->save()) {
-			throw new \RuntimeException('could not persist size variant');
+		try {
+			/** @var SizeVariant $result */
+			$result = $this->photo->size_variants_raw()->make();
+			$result->size_variant = $sizeVariant;
+			$result->short_path = $shortPath;
+			$result->width = $width;
+			$result->height = $height;
+			$success = $result->save();
+		} catch (\Throwable $e) {
+			throw ModelDBException::create('size variant', 'create', $e);
+		}
+		if (!$success) {
+			throw ModelDBException::create('size variant', 'create');
 		}
 		if ($this->photo->relationLoaded('size_variants_raw')) {
 			// If the relation `size_variant_raw` has already been loaded,
@@ -146,20 +156,28 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *                               removed from the DB and the model, but
 	 *                               the media files are kept
 	 *
-	 * @return bool True on success, false otherwise
+	 * @return void
+	 *
+	 * @throws ModelDBException
 	 */
-	public function delete(bool $keepOriginalFile = false, bool $keepAllFiles = false): bool
+	public function delete(bool $keepOriginalFile = false, bool $keepAllFiles = false): void
 	{
 		$success = true;
+		$lastException = null;
 		/** @var SizeVariant $sv */
 		foreach ($this->photo->size_variants_raw as $sv) {
 			$keepFile = (($sv->size_variant === SizeVariant::ORIGINAL) && $keepOriginalFile) || $keepAllFiles;
-			$success &= $sv->delete($keepFile);
+			try {
+				$success &= $sv->delete($keepFile);
+			} catch (\Throwable $e) {
+				$lastException = $e;
+			}
+		}
+		if (!$success || $lastException !== null) {
+			throw ModelDBException::create('size variant', 'delete', $lastException);
 		}
 		// ensure that relation `size_variants_raw` is refreshed and does not
 		// contain size variant models which have been removed from DB.
 		$this->photo->unsetRelation('size_variants_raw');
-
-		return $success;
 	}
 }

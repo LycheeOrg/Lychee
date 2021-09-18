@@ -4,6 +4,7 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Actions\Photo\Extensions\Constants;
+use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -81,6 +82,8 @@ class Archive
 	 *                         {@link Archive::THUMB}
 	 *
 	 * @return Response
+	 *
+	 * @throws InvalidSizeVariantException
 	 */
 	public function do(array $photoIDs, string $variant): Response
 	{
@@ -98,6 +101,14 @@ class Archive
 		return $response;
 	}
 
+	/**
+	 * @param Photo $photo
+	 * @param $variant
+	 *
+	 * @return BinaryFileResponse
+	 *
+	 * @throws InvalidSizeVariantException
+	 */
 	protected function file(Photo $photo, $variant): BinaryFileResponse
 	{
 		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
@@ -112,6 +123,14 @@ class Archive
 		);
 	}
 
+	/**
+	 * @param Collection $photos
+	 * @param string     $variant
+	 *
+	 * @return StreamedResponse
+	 *
+	 * @throws InvalidSizeVariantException
+	 */
 	protected function zip(Collection $photos, string $variant): StreamedResponse
 	{
 		$response = new StreamedResponse(function () use ($variant, $photos) {
@@ -245,8 +264,10 @@ class Archive
 	 *                        {@link Archive::THUMB}
 	 *
 	 * @return ArchiveFileInfo|null the created archive info
+	 *
+	 * @throws InvalidSizeVariantException
 	 */
-	public function extractFileInfo(Photo $photo, string $variant): ?ArchiveFileInfo
+	protected function extractFileInfo(Photo $photo, string $variant): ?ArchiveFileInfo
 	{
 		if (!AccessControl::is_current_user($photo->owner_id)) {
 			if ($photo->album_id !== null) {
@@ -278,9 +299,9 @@ class Archive
 				}
 			}
 		} else {
-			$msg = 'Invalid variant ' . $variant;
+			$msg = 'Invalid size variant ' . $variant;
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \InvalidArgumentException($msg);
+			throw new InvalidSizeVariantException($msg);
 		}
 
 		// Check if file actually exists

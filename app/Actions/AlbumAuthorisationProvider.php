@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\BaseAlbum;
+use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
@@ -463,7 +464,7 @@ class AlbumAuthorisationProvider
 	/**
 	 * Throws an exception if the given query does not query for an album.
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws InvalidQueryModelException
 	 *
 	 * @param Builder $query
 	 */
@@ -471,7 +472,7 @@ class AlbumAuthorisationProvider
 	{
 		$model = $query->getModel();
 		if (!($model instanceof Album || $model instanceof TagAlbum || $model instanceof BaseAlbumImpl)) {
-			throw new \InvalidArgumentException('the given query does not query for albums');
+			throw new InvalidQueryModelException('album');
 		}
 	}
 

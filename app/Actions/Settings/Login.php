@@ -2,51 +2,72 @@
 
 namespace App\Actions\Settings;
 
-use App\Exceptions\JsonError;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthenticatedException;
 use App\Facades\AccessControl;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class Login
 {
 	/**
-	 * @throws JsonError
+	 * @throws ModelDBException
+	 * @throws UnauthenticatedException
+	 * @throws ModelNotFoundException
+	 * @throws InvalidPropertyException
 	 */
-	public function do(Request $request)
+	public function do(Request $request): void
 	{
 		$oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
 		$oldUsername = $request->has('oldUsername') ? $request['oldUsername'] : '';
 
 		if (Legacy::SetPassword($request)) {
-			return true;
+			return;
 		}
 
 		// > 4.0.8
-		$adminUser = User::find(0);
+		/** @var User $adminUser */
+		$adminUser = User::query()->find(0);
 		if ($adminUser->password === '' && $adminUser->username === '') {
-			$adminUser->username = bcrypt($request['username']);
-			$adminUser->password = bcrypt($request['password']);
-			$adminUser->save();
+			try {
+				$adminUser->username = bcrypt($request['username']);
+				$adminUser->password = bcrypt($request['password']);
+				$success = $adminUser->save();
+			} catch (\Throwable $e) {
+				throw ModelDBException::create('user', 'update', $e);
+			}
+			if (!$success) {
+				throw ModelDBException::create('user', 'update');
+			}
 			AccessControl::login($adminUser);
 
-			return true;
+			return;
 		}
 
 		if (AccessControl::is_admin()) {
 			if ($adminUser->password === '' || Hash::check($oldPassword, $adminUser->password)) {
-				$adminUser->username = bcrypt($request['username']);
-				$adminUser->password = bcrypt($request['password']);
-				$adminUser->save();
+				try {
+					$adminUser->username = bcrypt($request['username']);
+					$adminUser->password = bcrypt($request['password']);
+					$success = $adminUser->save();
+				} catch (\Throwable $e) {
+					throw ModelDBException::create('user', 'update', $e);
+				}
+				if (!$success) {
+					throw ModelDBException::create('user', 'update');
+				}
 				unset($adminUser);
 
-				return true;
+				return;
 			}
 			unset($adminUser);
 
-			throw new JsonError('Current password entered incorrectly!');
+			throw new UnauthenticatedException('Password is invalid');
 		}
 
 		// is this necessary ?
@@ -54,32 +75,37 @@ class Login
 			$id = AccessControl::id();
 
 			// this is probably sensitive to timing attacks...
-			$user = User::findOrFail($id);
+			/** @var User $user */
+			$user = User::query()->findOrFail($id);
 
 			if ($user->lock) {
 				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change his identity from ' . $request->ip());
-				throw new JsonError('Locked account!');
+				throw new UnauthenticatedException('Account is locked');
 			}
 
-			if (User::where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
+			if (User::query()->where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip());
 
-				throw new JsonError('Username already exists.');
+				throw new InvalidPropertyException('Username already exists.');
 			}
 
 			if ($user->username == $oldUsername && Hash::check($oldPassword, $user->password)) {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for (' . $request['username'] . ') from ' . $request->ip());
 
-				$user->username = $request['username'];
-				$user->password = bcrypt($request['password']);
-
-				return $user->save();
+				try {
+					$user->username = $request['username'];
+					$user->password = bcrypt($request['password']);
+					$success = $user->save();
+				} catch (\Throwable $e) {
+					throw ModelDBException::create('user', 'save', $e);
+				}
+				if (!$success) {
+					throw ModelDBException::create('user', 'save');
+				}
 			}
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity from ' . $request->ip());
 
-			throw new JsonError('Old username or password entered incorrectly!');
+			throw new UnauthenticatedException('Previous username or password are invalid');
 		}
-
-		return false;
 	}
 }

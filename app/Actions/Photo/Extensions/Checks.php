@@ -3,13 +3,12 @@
 namespace App\Actions\Photo\Extensions;
 
 use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
+use App\Exceptions\ExternalComponentMissingException;
 use App\Exceptions\InsufficientFilesystemPermissions;
-use App\Exceptions\JsonError;
-use App\Facades\Helpers;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
-use Illuminate\Support\Facades\Storage;
 
 trait Checks
 {
@@ -18,7 +17,7 @@ trait Checks
 	/**
 	 * @throws InsufficientFilesystemPermissions
 	 */
-	public function checkPermissions()
+	public function checkPermissions(): void
 	{
 		$errors = [];
 		$check = new BasicPermissionCheck();
@@ -32,18 +31,6 @@ trait Checks
 		}
 	}
 
-	public function folderPermission($folder)
-	{
-		$path = Storage::path($folder);
-
-		if (Helpers::hasPermissions($path) === false) {
-			Logs::notice(__METHOD__, __LINE__, 'Skipped extraction of video from live photo, because ' . $path . ' is missing or not readable and writable.');
-			throw new InsufficientFilesystemPermissions('Skipped extraction of video from live photo, because ' . $path . ' is missing or not readable and writable.');
-		}
-
-		return $path;
-	}
-
 	/**
 	 * Check if a picture has a duplicate
 	 * We compare the checksum to the other Photos or LivePhotos.
@@ -54,17 +41,21 @@ trait Checks
 	 */
 	public function get_duplicate(string $checksum): ?Photo
 	{
-		/** @var Photo|null $photo */
-		$photo = Photo::query()
-			->where('checksum', '=', $checksum)
-			->orWhere('live_photo_checksum', '=', $checksum)
-			->first();
-
-		return $photo;
+		try {
+			/* @noinspection PhpIncompatibleReturnTypeInspection */
+			return Photo::query()
+				->where('checksum', '=', $checksum)
+				->orWhere('live_photo_checksum', '=', $checksum)
+				->first();
+		} catch (\InvalidArgumentException $ignored) {
+			// In theory `orWhere` may throw this exception,
+			// but will never do so for string operands
+			return null;
+		}
 	}
 
 	/**
-	 * Returns the kind of a media file.
+	 * Returns the kind of media file.
 	 *
 	 * The kind is one out of:
 	 *
@@ -77,7 +68,8 @@ trait Checks
 	 *
 	 * @return string either `'photo'`, `'video'` or `'raw'`
 	 *
-	 * @throws JsonError thrown if it is something else
+	 * @throws MediaFileUnsupportedException
+	 * @throws ExternalComponentMissingException
 	 */
 	public function file_kind(SourceFileInfo $sourceFileInfo): string
 	{
@@ -101,15 +93,15 @@ trait Checks
 		// maybe we don't have a photo
 		if (!function_exists('exif_imagetype')) {
 			Logs::error(__METHOD__, __LINE__, 'EXIF library not loaded. Make sure exif is enabled in php.ini');
-			throw new JsonError('EXIF library not loaded on the server!');
+			throw new ExternalComponentMissingException('EXIF library not loaded on the server!');
 		}
 
-		$type = @exif_imagetype($sourceFileInfo->getTmpFullPath());
+		$type = exif_imagetype($sourceFileInfo->getTmpFullPath());
 		if (in_array($type, $this->validTypes, true)) {
 			return 'photo';
 		}
 
 		Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $sourceFileInfo->getOriginalFilename());
-		throw new JsonError('Photo type not supported!');
+		throw new MediaFileUnsupportedException('Photo type not supported!');
 	}
 }

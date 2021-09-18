@@ -2,6 +2,7 @@
 
 namespace App\ModelFunctions;
 
+use App\Exceptions\Internal\JsonRequestFailedException;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Cache;
 
@@ -18,14 +19,18 @@ class JsonRequestFunctions
 	 * @param string $url URL to request/cache
 	 * @param int    $ttl Time-to-live of the cache in DAYS
 	 *
-	 * @throws \JsonException thrown, if cached JSON result could not be decoded
+	 * @throws JsonRequestFailedException
 	 */
 	public function __construct(string $url, int $ttl = 1)
 	{
-		$this->url = $url;
-		$this->json = json_decode(Cache::get($url), false, 512, JSON_THROW_ON_ERROR);
-		$this->raw = null;
-		$this->ttl = $ttl;
+		try {
+			$this->url = $url;
+			$this->json = json_decode(Cache::get($url), false, 512, JSON_THROW_ON_ERROR);
+			$this->raw = null;
+			$this->ttl = $ttl;
+		} catch (\JsonException $e) {
+			throw new JsonRequestFailedException('Could not decode JSON', $e);
+		}
 	}
 
 	/**
@@ -82,8 +87,7 @@ class JsonRequestFunctions
 	 *               HTTP response and may be anything: a primitive type,
 	 *               an array or an object
 	 *
-	 * @throws \JsonException    thrown, if JSON response could not be decoded
-	 * @throws \RuntimeException thrown, if response could not be read
+	 * @throws JsonRequestFailedException
 	 */
 	private function get()
 	{
@@ -104,21 +108,17 @@ class JsonRequestFunctions
 			$this->json = null;
 			$msg = 'Could not read "' . $this->url . '"';
 			Logs::notice(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg);
+			throw new JsonRequestFailedException($msg);
 		}
 
-		try {
-			Cache::put($this->url, $this->raw, now()->addDays($this->ttl));
-			Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
-		} catch (\InvalidArgumentException $e) {
-			Logs::error(__METHOD__, __LINE__, 'Could not cache the result of the JSON query');
-		}
+		Cache::put($this->url, $this->raw, now()->addDays($this->ttl));
+		Cache::put($this->url . '_age', now(), now()->addDays($this->ttl));
 
 		try {
 			$this->json = json_decode($this->raw, false, 512, JSON_THROW_ON_ERROR);
 		} catch (\JsonException $e) {
 			$this->json = null;
-			throw $e;
+			throw new JsonRequestFailedException('Could not read "' . $this->url . '"', $e);
 		}
 
 		return $this->json;
@@ -134,18 +134,11 @@ class JsonRequestFunctions
 	 *               HTTP response and may be anything: a primitive type,
 	 *               an array or an object
 	 *
-	 * @throws \RuntimeException thrown, if `$cashed === true` but the cache
-	 *                           has been empty
-	 * @throws \JsonException    thrown, if the JSON response could not be
-	 *                           decoded
+	 * @throws JsonRequestFailedException
 	 */
 	public function get_json(bool $cached = false)
 	{
-		if ($cached) {
-			if ($this->json === null) {
-				throw new \RuntimeException('JSON is not in cache');
-			}
-
+		if ($cached && $this->json !== null) {
 			return $this->json;
 		}
 

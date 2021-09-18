@@ -12,7 +12,10 @@ use App\Actions\Photo\Strategies\AddStrategyParameters;
 use App\Actions\Photo\Strategies\AddVideoPartnerStrategy;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
-use App\Exceptions\JsonError;
+use App\Exceptions\InsufficientFilesystemPermissions;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
 use App\Factories\AlbumFactory;
 use App\Metadata\Extractor;
 use App\Models\Album;
@@ -51,22 +54,26 @@ class Create
 	 *
 	 * @return Photo|null the newly created or updated photo
 	 *
-	 * @throws \App\Exceptions\InsufficientFilesystemPermissions
-	 * @throws \App\Exceptions\JsonError
+	 * @throws InsufficientFilesystemPermissions
+	 * @throws InvalidPropertyException
+	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
 	public function add(SourceFileInfo $sourceFileInfo, $albumID = null): Photo
 	{
 		// Check permissions
+		// throws InsufficientFilesystemPermissions
 		$this->checkPermissions();
 
 		// Fill in information about targeted parent album
+		// throws InvalidPropertyException
 		$this->initParentId($albumID);
 
 		// Fill in information about source file
 		$this->strategyParameters->kind = $this->file_kind($sourceFileInfo);
 		$this->strategyParameters->sourceFileInfo = $sourceFileInfo;
 
-		// Fill in meta data extracted from source file
+		// Fill in metadata extracted from source file
 		$this->loadFileMetadata($sourceFileInfo);
 
 		// Look up potential duplicates/partners in order to select the
@@ -79,7 +86,8 @@ class Create
 		);
 
 		/*
-		 * From here we need to use a strategy depending if we have
+		 * From here on, we need to use a strategy depending on the situation
+		 * of the file:
 		 *
 		 *  - a duplicate
 		 *  - a "stand-alone" media file (i.e. a photo or video without a partner)
@@ -115,8 +123,6 @@ class Create
 	 * {@link AddStrategyParameters::$info} of {@link Create::$strategyParameters}.
 	 *
 	 * @param SourceFileInfo $sourceFileInfo information about the source file
-	 *
-	 * @throws JsonError
 	 */
 	protected function loadFileMetadata(SourceFileInfo $sourceFileInfo)
 	{
@@ -193,8 +199,7 @@ class Create
 	 *                                 string) one of the array keys in
 	 *                                 {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
 	 *
-	 * @throws JsonError
-	 * @throws \Illuminate\Contracts\Container\BindingResolutionException
+	 * @throws InvalidPropertyException
 	 */
 	protected function initParentId($albumID = null)
 	{
@@ -204,14 +209,14 @@ class Create
 			$album = $factory->findOrFail($albumID);
 
 			if ($album instanceof Album) {
-				// we save it so we don't have to query it again later
+				// we save it, so we don't have to query it again later
 				$this->strategyParameters->album = $album;
 			} elseif ($album instanceof PublicAlbum) {
 				$this->strategyParameters->is_public = true;
 			} elseif ($album instanceof StarredAlbum) {
 				$this->strategyParameters->is_starred = true;
 			} else {
-				throw new JsonError('This album does not support uploading');
+				throw new InvalidPropertyException('The given parent album does not support uploading');
 			}
 		}
 	}

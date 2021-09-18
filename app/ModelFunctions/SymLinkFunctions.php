@@ -2,6 +2,7 @@
 
 namespace App\ModelFunctions;
 
+use App\Exceptions\ModelDBException;
 use App\Models\SymLink;
 
 class SymLinkFunctions
@@ -9,19 +10,23 @@ class SymLinkFunctions
 	/**
 	 * Clear the table of existing SymLinks.
 	 *
-	 * @return string
-	 *
-	 * @throws \Exception
+	 * @throws ModelDBException
 	 */
-	public function clearSymLink(): string
+	public function clearSymLink(): void
 	{
 		$symlinks = SymLink::all();
-		$no_error = true;
+		$success = true;
+		$lastException = null;
 		foreach ($symlinks as $symlink) {
-			$no_error &= $symlink->delete();
+			try {
+				$success &= $symlink->delete();
+			} catch (\Throwable $e) {
+				$lastException = $e;
+			}
 		}
-
-		return $no_error ? 'true' : 'false';
+		if (!$success || $lastException !== null) {
+			throw ModelDBException::create('symbolic link', 'delete', $lastException);
+		}
 	}
 
 	/**

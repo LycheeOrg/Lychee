@@ -2,6 +2,7 @@
 
 namespace App\Metadata;
 
+use App\Exceptions\Internal\JsonRequestFailedException;
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
 use Illuminate\Support\Facades\Config;
@@ -12,7 +13,7 @@ class GitRequest extends JsonRequestFunctions
 	 * we just override the constructor,
 	 * The rest is handled directly by the parent class.
 	 *
-	 * @throws \JsonException
+	 * @throws JsonRequestFailedException
 	 */
 	public function __construct()
 	{

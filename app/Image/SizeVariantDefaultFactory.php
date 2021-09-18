@@ -4,12 +4,21 @@ namespace App\Image;
 
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
+use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use FFMpeg\Coordinate\TimeCode;
+use FFMpeg\Exception\ExecutableNotFoundException;
+use FFMpeg\Exception\InvalidArgumentException;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use Illuminate\Support\Collection;
@@ -51,6 +60,13 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$this->namingStrategy->setPhoto($this->photo);
 	}
 
+	/**
+	 * @throws ExternalComponentMissingException
+	 * @throws ConfigurationException
+	 * @throws MediaFileOperationException
+	 * @throws IllegalOrderOfOperationException
+	 * @throws MediaFileUnsupportedException
+	 */
 	protected function extractReferenceImage(): void
 	{
 		$original = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
@@ -58,8 +74,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			$this->extractReferenceFromRaw($original->full_path, $original->width, $original->height);
 		} elseif ($this->photo->isVideo()) {
 			if (empty($this->photo->aperture)) {
-				Logs::error(__METHOD__, __LINE__, 'Media file is reported to be a video, but aperture (aka duration) has not been extracted');
-				throw new \RuntimeException('Media file is reported to be a video, but aperture (aka duration) has not been extracted');
+				$msg = 'Media file is reported to be a video, but aperture (aka duration) has not been extracted';
+				Logs::error(__METHOD__, __LINE__, $msg);
+				throw new MediaFileOperationException($msg);
 			}
 			$position = floatval($this->photo->aperture) / 2;
 			$this->extractReferenceFromVideo($original->full_path, $position);
@@ -78,7 +95,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$this->photo = null;
 		$this->namingStrategy = null;
 		if ($this->needsCleanup) {
-			@unlink($this->referenceFullPath);
+			unlink($this->referenceFullPath);
 		}
 		$this->referenceFullPath = '';
 	}
@@ -89,6 +106,10 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 * @param string $fullPath The full path to the original (raw) file
 	 * @param int    $width    The original width
 	 * @param int    $height   The original height
+	 *
+	 * @throws ExternalComponentMissingException
+	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
 	 */
 	protected function extractReferenceFromRaw(string $fullPath, int $width, int $height): void
 	{
@@ -96,7 +117,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if (!Configs::hasImagick()) {
 			$msg = 'Saving JPG of raw file failed: Imagick not installed.';
 			Logs::notice(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg);
+			throw new ExternalComponentMissingException($msg);
 		}
 		$ext = pathinfo($fullPath, PATHINFO_EXTENSION);
 		// test if Imagick supports the filetype
@@ -104,7 +125,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
 			$msg = 'Filetype ' . $ext . ' not supported by Imagick.';
 			Logs::notice(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg);
+			throw new MediaFileUnsupportedException($msg);
 		}
 		$this->createTmpPathForReference();
 		try {
@@ -112,7 +133,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		} catch (\Throwable $e) {
 			$msg = 'Failed to create JPG from raw file ' . $fullPath;
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg, 0, $e);
+			throw new MediaFileOperationException($msg, $e);
 		}
 	}
 
@@ -120,21 +141,30 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 * Extracts a reference image from a video file at the given position.
 	 *
 	 * @param string $fullPath
-	 * @param float  $framePosition The temporal position in seconds of the frame to be extracted
+	 * @param float  $framePosition The temporal position in seconds of the
+	 *                              frame to be extracted
+	 *
+	 * @throws ConfigurationException
+	 * @throws ExternalComponentMissingException
+	 * @throws MediaFileOperationException
 	 */
 	protected function extractReferenceFromVideo(string $fullPath, float $framePosition): void
 	{
 		if (!Configs::hasFFmpeg()) {
-			Logs::notice(__METHOD__, __LINE__, 'Failed to extract reference image from video as FFmpeg is unavailable');
-			throw new \RuntimeException('Failed to extract reference image from video as FFmpeg is unavailable');
+			Logs::notice(__METHOD__, __LINE__, 'FFmpeg is disabled by configuration');
+			throw new ConfigurationException('FFmpeg is disabled by configuration');
 		}
-		$this->createTmpPathForReference();
-		$ffmpeg = FFMpeg::create();
-		/** @var Video $video */
-		$video = $ffmpeg->open($fullPath);
 		try {
+			$this->createTmpPathForReference();
+			$ffmpeg = FFMpeg::create();
+			/** @var Video $video */
+			$video = $ffmpeg->open($fullPath);
 			$this->extractFrame($video, $framePosition);
-		} catch (\RuntimeException $e) {
+		} catch (ExecutableNotFoundException $e) {
+			throw new ExternalComponentMissingException('FFmpeg not found', $e);
+		} catch (InvalidArgumentException $e) {
+			throw new MediaFileOperationException('FFmpeg could not open media file', $e);
+		} catch (MediaFileOperationException $e) {
 			Logs::notice(__METHOD__, __LINE__, 'Fallback: Try to extract snapshot at position 0');
 			$this->extractFrame($video, 0);
 		}
@@ -146,7 +176,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 * @param Video $video         the video object
 	 * @param float $framePosition the position in seconds
 	 *
-	 * @throws \RuntimeException thrown, if FFmpeg failed to extract a frame
+	 * @throws MediaFileOperationException thrown, if FFmpeg failed to extract a frame
 	 */
 	protected function extractFrame(Video $video, float $framePosition): void
 	{
@@ -157,12 +187,12 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			$frame->save($this->referenceFullPath);
 			$this->referenceWidth = $dim->getWidth();
 			$this->referenceHeight = $dim->getHeight();
-		} catch (\RuntimeException $e) {
+		} catch (\Throwable $e) {
 			Logs::error(__METHOD__, __LINE__, $errMsg);
-			throw new \RuntimeException($errMsg, 0, $e);
+			throw new MediaFileOperationException($errMsg, $e);
 		}
 		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) == 0) {
-			throw new \RuntimeException($errMsg);
+			throw new MediaFileOperationException($errMsg);
 		}
 		if (Configs::get_value('lossless_optimization')) {
 			ImageOptimizer::optimize($this->referenceFullPath);
@@ -216,7 +246,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	public function createSizeVariant(int $sizeVariant): SizeVariant
 	{
 		if ($sizeVariant === SizeVariant::ORIGINAL) {
-			throw new \InvalidArgumentException('createSizeVariant() must not be used to create original size, use createOriginal() instead');
+			throw new InvalidSizeVariantException('createSizeVariant() must not be used to create original size, use createOriginal() instead');
 		}
 		if (empty($this->referenceFullPath)) {
 			$this->extractReferenceImage();
@@ -234,7 +264,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	public function createSizeVariantCond(int $sizeVariant): ?SizeVariant
 	{
 		if ($sizeVariant === SizeVariant::ORIGINAL) {
-			throw new \InvalidArgumentException('createSizeVariantCond() must not be used to create original size, use createOriginal() instead');
+			throw new InvalidSizeVariantException('createSizeVariantCond() must not be used to create original size, use createOriginal() instead');
 		}
 		if (!$this->isEnabledByConfiguration($sizeVariant)) {
 			return null;
@@ -270,6 +300,11 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		}
 	}
 
+	/**
+	 * @throws ModelDBException
+	 * @throws IllegalOrderOfOperationException
+	 * @throws MediaFileOperationException
+	 */
 	protected function createSizeVariantInternal(int $sizeVariant, int $maxWidth, int $maxHeight): SizeVariant
 	{
 		$shortPath = $this->namingStrategy->generateShortPath($sizeVariant);
@@ -290,8 +325,13 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				Logs::error(__METHOD__, __LINE__, 'Failed to resize image: ' . $this->referenceFullPath);
 				// If scaling/cropping has failed, remove the freshly created DB entity again
 				// This will also take care of removing a potentially created file from storage
-				$sv->delete();
-				throw new \RuntimeException('Failed to resize image: ' . $this->referenceFullPath);
+				try {
+					$sv->delete();
+				} catch (\Throwable $ignored) {
+					// We are already in an (outer) error handling, we cannot
+					// do anything about this inner problem
+				}
+				throw new MediaFileOperationException('Failed to resize image: ' . $this->referenceFullPath);
 			}
 		}
 
@@ -305,6 +345,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 *
 	 * @return int[] an array with exactly two integers, the first integer is
 	 *               the width, the second integer is the height
+	 *
+	 * @throws InvalidSizeVariantException
 	 */
 	protected function getMaxDimensions(int $sizeVariant): array
 	{
@@ -334,7 +376,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 				$maxHeight = self::THUMBNAIL_DIM;
 				break;
 			default:
-				throw new \InvalidArgumentException('unknown size variant: ' . $sizeVariant);
+				throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant);
 		}
 
 		return [$maxWidth, $maxHeight];
@@ -345,10 +387,13 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 *
 	 * This function always returns true, for size variants which are not
 	 * configurable and are always enabled (e.g. a thumb).
-	 * Hence, it is save to call this function for all size variants.
+	 * Hence, it is safe to call this function for all size variants.
 	 * For size variants which may be enabled/disabled trough configuration at
-	 * runtime, the method only returns true, if a) the size variant is
-	 * enabled and b) the allowed maximum width or maximum height is not zero.
+	 * runtime, the method only returns true, if
+	 *
+	 *  1. the size variant is enabled, and
+	 *  2. the allowed maximum width or maximum height is not zero.
+	 *
 	 * In other words, even if a size variant is enabled, this function
 	 * still returns false, if both the allowed maximum width and height
 	 * equal zero.
@@ -357,6 +402,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 *
 	 * @return bool true, if the size variant is enabled and the allowed width
 	 *              or height is unequal to zero
+	 *
+	 * @throws InvalidSizeVariantException
 	 */
 	protected function isEnabledByConfiguration(int $sizeVariant): bool
 	{
@@ -376,7 +423,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			case SizeVariant::THUMB:
 				return true;
 			default:
-				throw new \InvalidArgumentException('unknown size variant: ' . $sizeVariant);
+				throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant);
 		}
 	}
 
