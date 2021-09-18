@@ -15,7 +15,7 @@ class SetNSFW extends Setter
 	public function do(string $albumID, ?string $_): bool
 	{
 		if ($this->albumFactory->is_smart($albumID)) {
-			Logs::warning(__FUNCTION__, __LINE__, 'NSFW tag is not possible on smart albums.');
+			Logs::warning(__METHOD__, __LINE__, 'NSFW tag is not possible on smart albums.');
 
 			return false;
 		}

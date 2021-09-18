@@ -47,9 +47,9 @@ class Merge extends Action
 		if (Album::isBroken()) {
 			$errors = Album::countErrors();
 			$sum = $errors['oddness'] + $errors['duplicates'] + $errors['wrong_parent'] + $errors['missing_parent'];
-			Logs::warning(__FUNCTION__, __LINE__, 'Tree is broken with ' . $sum . ' errors.');
+			Logs::warning(__METHOD__, __LINE__, 'Tree is broken with ' . $sum . ' errors.');
 			Album::fixTree();
-			Logs::notice(__FUNCTION__, __LINE__, 'Tree has been fixed.');
+			Logs::notice(__METHOD__, __LINE__, 'Tree has been fixed.');
 		}
 
 		$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
