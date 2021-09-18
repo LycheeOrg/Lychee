@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
+use App\Exceptions\InvalidPropertyException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
@@ -210,37 +211,42 @@ class Photo extends Model
 	 */
 	protected function getShutterAttribute(?string $shutter): string
 	{
-		if (empty($shutter)) {
-			return '';
-		}
-		// shutter speed needs to be processed. It is stored as a string `a/b s`
-		if (substr($shutter, 0, 2) != '1/') {
-			preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
-			if ($matches) {
-				$a = intval($matches[1]);
-				$b = intval($matches[2]);
-				if ($b != 0) {
-					try {
-						$gcd = Helpers::gcd($a, $b);
-						$a = $a / $gcd;
-						$b = $b / $gcd;
-					} catch (\Exception $e) {
-						// this should not happen as we covered the case $b = 0;
-					}
-					if ($a == 1) {
-						$shutter = '1/' . $b . ' s';
-					} else {
-						$shutter = ($a / $b) . ' s';
+		try {
+			if (empty($shutter)) {
+				return '';
+			}
+			// shutter speed needs to be processed. It is stored as a string `a/b s`
+			if (substr($shutter, 0, 2) != '1/') {
+				preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
+				if ($matches) {
+					$a = intval($matches[1]);
+					$b = intval($matches[2]);
+					if ($b != 0) {
+						try {
+							$gcd = Helpers::gcd($a, $b);
+							$a = $a / $gcd;
+							$b = $b / $gcd;
+						} catch (\Exception $e) {
+							// this should not happen as we covered the case $b = 0;
+						}
+						if ($a == 1) {
+							$shutter = '1/' . $b . ' s';
+						} else {
+							$shutter = ($a / $b) . ' s';
+						}
 					}
 				}
 			}
-		}
 
-		if ($shutter == '1/1 s') {
-			$shutter = '1 s';
-		}
+			if ($shutter == '1/1 s') {
+				$shutter = '1 s';
+			}
 
-		return $shutter;
+			return $shutter;
+		} catch (\RuntimeException $e) {
+			// gcd throws a runtime exception, if the divisor equals 0
+			throw new InvalidPropertyException('Could not get shutter of photo', $e);
+		}
 	}
 
 	/**

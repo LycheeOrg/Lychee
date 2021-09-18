@@ -3,7 +3,7 @@
 namespace App\Actions\Photo\Extensions;
 
 use App\Actions\Diagnostics\Checks\BasicPermissionCheck;
-use App\Exceptions\FolderIsNotWritable;
+use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\JsonError;
 use App\Facades\Helpers;
 use App\Models\Configs;
@@ -16,7 +16,7 @@ trait Checks
 	use Constants;
 
 	/**
-	 * @throws FolderIsNotWritable
+	 * @throws InsufficientFilesystemPermissions
 	 */
 	public function checkPermissions()
 	{
@@ -28,7 +28,7 @@ trait Checks
 			foreach ($errors as $error) {
 				Logs::error(__METHOD__, __LINE__, $error);
 			}
-			throw new FolderIsNotWritable();
+			throw new InsufficientFilesystemPermissions('An upload-folder is missing or not readable and writable');
 		}
 	}
 
@@ -38,7 +38,7 @@ trait Checks
 
 		if (Helpers::hasPermissions($path) === false) {
 			Logs::notice(__METHOD__, __LINE__, 'Skipped extraction of video from live photo, because ' . $path . ' is missing or not readable and writable.');
-			throw new FolderIsNotWritable();
+			throw new InsufficientFilesystemPermissions('Skipped extraction of video from live photo, because ' . $path . ' is missing or not readable and writable.');
 		}
 
 		return $path;

@@ -2,10 +2,9 @@
 
 namespace App\Actions\Update;
 
-use App\Exceptions\ExecNotAvailableException;
-use App\Exceptions\GitNotAvailableException;
-use App\Exceptions\GitNotExecutableException;
-use App\Exceptions\NoOnlineUpdateException;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\VersionControlException;
 use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
@@ -37,10 +36,9 @@ class Check
 	/**
 	 * Returns true or throws an exception.
 	 *
-	 * @throws NoOnlineUpdateException
-	 * @throws GitNotAvailableException
-	 * @throws ExecNotAvailableException
-	 * @throws GitNotExecutableException
+	 * @throws ConfigurationException
+	 * @throws ExternalComponentMissingException
+	 * @throws InsufficientFilesystemPermissions
 	 */
 	public function canUpdate(): bool
 	{
@@ -52,20 +50,17 @@ class Check
 		}
 
 		if (Configs::get_value('allow_online_git_pull', '0') == '0') {
-			throw new NoOnlineUpdateException();
+			throw new ConfigurationException('Online updates are disabled by configuration');
 		}
 
-		// When going with the CI, .git is always executable and exec is also available
+		// When going with the CI, .git is always executable
 		// @codeCoverageIgnoreStart
-		if (!function_exists('exec')) {
-			throw new ExecNotAvailableException();
-		}
 		if (exec('command -v git') == '') {
-			throw new GitNotAvailableException();
+			throw new ExternalComponentMissingException('git (software) is not available.');
 		}
 
 		if (!$this->gitHubFunctions->has_permissions()) {
-			throw new GitNotExecutableException();
+			throw new InsufficientFilesystemPermissions(base_path('.git') . ' (and subdirectories) are not executable, check the permissions');
 		}
 		// @codeCoverageIgnoreEnd
 

@@ -2,7 +2,6 @@
 
 namespace App\Assets;
 
-use App\Exceptions\DivideByZeroException;
 use App\Models\Logs;
 use Illuminate\Support\Facades\File;
 use WhichBrowser\Parser as BrowserParser;
@@ -177,12 +176,12 @@ class Helpers
 	 *
 	 * @return int
 	 *
-	 * @throws DivideByZeroException
+	 * @throws \RuntimeException
 	 */
 	public function gcd(int $a, int $b): int
 	{
 		if ($b == 0) {
-			throw new DivideByZeroException();
+			throw new \RuntimeException('Module by zero error');
 		}
 
 		return ($a % $b) ? $this->gcd($b, $a % $b) : $b;

@@ -51,7 +51,7 @@ class Create
 	 *
 	 * @return Photo|null the newly created or updated photo
 	 *
-	 * @throws \App\Exceptions\FolderIsNotWritable
+	 * @throws \App\Exceptions\InsufficientFilesystemPermissions
 	 * @throws \App\Exceptions\JsonError
 	 */
 	public function add(SourceFileInfo $sourceFileInfo, $albumID = null): Photo

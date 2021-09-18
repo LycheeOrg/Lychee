@@ -16,7 +16,7 @@ use App\Actions\Photo\SetStar;
 use App\Actions\Photo\SetTags;
 use App\Actions\Photo\SetTitle;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Exceptions\FolderIsNotWritable;
+use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\JsonError;
 use App\Facades\Helpers;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
@@ -82,7 +82,7 @@ class PhotoController extends Controller
 	 *
 	 * @return Photo
 	 *
-	 * @throws FolderIsNotWritable
+	 * @throws InsufficientFilesystemPermissions
 	 * @throws JsonError
 	 */
 	public function add(AlbumIDRequest $request): Photo

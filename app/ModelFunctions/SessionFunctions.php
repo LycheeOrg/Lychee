@@ -2,7 +2,7 @@
 
 namespace App\ModelFunctions;
 
-use App\Exceptions\NotLoggedInException;
+use App\Exceptions\UnauthenticatedException;
 use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
@@ -58,7 +58,7 @@ class SessionFunctions
 	public function id(): int
 	{
 		if (!Session::get('login')) {
-			throw new NotLoggedInException();
+			throw new UnauthenticatedException();
 		}
 
 		return Session::get('UserID');
