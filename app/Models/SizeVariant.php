@@ -7,6 +7,7 @@ use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\SizeVariantObserver;
 use App\Relations\HasManyBidirectionally;
@@ -50,6 +51,9 @@ class SizeVariant extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
+	use ThrowsConsistentExceptions;
+
+	protected string $friendlyModelName = 'size variant';
 
 	const ORIGINAL = 0;
 	const MEDIUM2X = 1;
@@ -215,7 +219,10 @@ class SizeVariant extends Model
 	 *
 	 * @param bool $keepFile If true, the associated file is not removed from storage
 	 *
-	 * @return bool True on success, false otherwise
+	 * @return bool Always true
+	 *
+	 * @throws \LogicException
+	 * @throws \RuntimeException
 	 */
 	public function delete(bool $keepFile = false): bool
 	{
@@ -228,9 +235,7 @@ class SizeVariant extends Model
 		$symLinks = $this->sym_links;
 		/** @var SymLink $symLink */
 		foreach ($symLinks as $symLink) {
-			if ($symLink->delete() === false) {
-				return false;
-			}
+			$symLink->delete();
 		}
 
 		if ($keepFile) {

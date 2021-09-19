@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
+use App\Exceptions\ModelDBException;
 use App\Models\Extensions\Thumb;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
@@ -31,5 +32,10 @@ interface AbstractAlbum extends \JsonSerializable, Arrayable, SupportsRelationsh
 {
 	public function photos(): Relation;
 
+	/**
+	 * @return bool always return true
+	 *
+	 * @throws ModelDBException thrown on failure
+	 */
 	public function delete(): bool;
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Facades\Helpers;
 use App\Models\Extensions\ConfigsHas;
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -35,6 +36,9 @@ use Illuminate\Database\QueryException;
 class Configs extends Model
 {
 	use ConfigsHas;
+	use ThrowsConsistentExceptions;
+
+	protected string $friendlyModelName = 'config';
 
 	/**
 	 * The attributes that are mass assignable.

@@ -114,14 +114,7 @@ class RotateStrategy extends AddBaseStrategy
 		$metadataExtractor = resolve(Extractor::class);
 		$this->photo->filesize = $metadataExtractor->filesize($tmpFullPath);
 		$this->photo->checksum = $metadataExtractor->checksum($tmpFullPath);
-		try {
-			$success = $this->photo->save();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('photo', 'update', $e);
-		}
-		if (!$success) {
-			throw ModelDBException::create('photo', 'update');
-		}
+		$this->photo->save();
 
 		// Delete all size variants from current photo, this will also take
 		// care of erasing the actual "physical" files from storage and any
@@ -174,10 +167,8 @@ class RotateStrategy extends AddBaseStrategy
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
-			->where('checksum', $oldChecksum)
-			->get();
-		$success = true;
-		$lastException = null;
+				->where('checksum', $oldChecksum)
+				->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
 			$duplicate->filesize = $this->photo->filesize;
@@ -207,14 +198,7 @@ class RotateStrategy extends AddBaseStrategy
 					);
 				}
 			}
-			try {
-				$success &= $duplicate->save();
-			} catch (\Throwable $e) {
-				$lastException = $e;
-			}
-		}
-		if (!$success || $lastException !== null) {
-			throw ModelDBException::create('photo', 'update', $lastException);
+			$duplicate->save();
 		}
 
 		return $this->photo;

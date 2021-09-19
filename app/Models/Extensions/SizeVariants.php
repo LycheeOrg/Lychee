@@ -118,20 +118,13 @@ class SizeVariants implements Arrayable, JsonSerializable
 		if (!$this->photo->exists) {
 			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
 		}
-		try {
-			/** @var SizeVariant $result */
-			$result = $this->photo->size_variants_raw()->make();
-			$result->size_variant = $sizeVariant;
-			$result->short_path = $shortPath;
-			$result->width = $width;
-			$result->height = $height;
-			$success = $result->save();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('size variant', 'create', $e);
-		}
-		if (!$success) {
-			throw ModelDBException::create('size variant', 'create');
-		}
+		/** @var SizeVariant $result */
+		$result = $this->photo->size_variants_raw()->make();
+		$result->size_variant = $sizeVariant;
+		$result->short_path = $shortPath;
+		$result->width = $width;
+		$result->height = $height;
+		$result->save();
 		if ($this->photo->relationLoaded('size_variants_raw')) {
 			// If the relation `size_variant_raw` has already been loaded,
 			// ensure that the newly created size variant is inserted into
@@ -162,19 +155,14 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 */
 	public function delete(bool $keepOriginalFile = false, bool $keepAllFiles = false): void
 	{
-		$success = true;
-		$lastException = null;
 		/** @var SizeVariant $sv */
 		foreach ($this->photo->size_variants_raw as $sv) {
 			$keepFile = (($sv->size_variant === SizeVariant::ORIGINAL) && $keepOriginalFile) || $keepAllFiles;
 			try {
-				$success &= $sv->delete($keepFile);
+				$sv->delete($keepFile);
 			} catch (\Throwable $e) {
-				$lastException = $e;
+				throw ModelDBException::create('size variant', 'delete', $e);
 			}
-		}
-		if (!$success || $lastException !== null) {
-			throw ModelDBException::create('size variant', 'delete', $lastException);
 		}
 		// ensure that relation `size_variants_raw` is refreshed and does not
 		// contain size variant models which have been removed from DB.

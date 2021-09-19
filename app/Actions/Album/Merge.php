@@ -28,6 +28,7 @@ class Merge extends Action
 		// Merge sub-albums of source albums into target
 		// ! we have to do it via Model::save() in order to not break the tree
 		$albums = Album::query()->whereIn('parent_id', $sourceAlbumIDs)->get();
+		/** @var Album $album */
 		foreach ($albums as $album) {
 			$album->parent_id = $targetAlbum->id;
 			$album->save();
@@ -36,6 +37,7 @@ class Merge extends Action
 		// Now we delete the source albums
 		// ! we have to do it via Model::delete() in order to not break the tree
 		$albums = Album::query()->whereIn('id', $sourceAlbumIDs)->get();
+		/** @var Album $album */
 		foreach ($albums as $album) {
 			$album->delete();
 		}

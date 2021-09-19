@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,6 +34,9 @@ use Illuminate\Support\Carbon;
 class Logs extends Model
 {
 	use UTCBasedTimes;
+	use ThrowsConsistentExceptions;
+
+	protected string $friendlyModelName = 'log entry';
 
 	/**
 	 * allow these properties to be mass assigned.

@@ -33,14 +33,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->photo->is_public = $this->parameters->is_public;
 		$this->photo->is_starred = $this->parameters->is_starred;
 		$this->setParentAndOwnership();
-		try {
-			$success = $this->photo->save();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('photo', 'create', $e);
-		}
-		if (!$success) {
-			throw ModelDBException::create('photo', 'create');
-		}
+		$this->photo->save();
 
 		// Initialize factory for size variants
 		/** @var SizeVariantNamingStrategy $namingStrategy */
@@ -89,7 +82,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	/**
 	 * Correct orientation of original size variant based on EXIF data.
 	 *
-	 * The method does not actual modify the underlying file if it is only a
+	 * The method does not actually modify the underlying file if it is only a
 	 * symlink.
 	 * This method also updated the attributes {@link SizeVariant::$width},
 	 * {@link SizeVariant::$height} and {@link Photo::$filesize} to the new

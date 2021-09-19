@@ -28,14 +28,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 		$dstFullPath = substr($original->full_path, 0, -strlen($ext)) . $ext;
 		$this->putSourceIntoFinalDestination($dstFullPath);
 		$this->photo->live_photo_short_path = $dstShortPath;
-		try {
-			$success = $this->photo->save();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('photo', 'create', $e);
-		}
-		if (!$success) {
-			throw ModelDBException::create('photo', 'create');
-		}
+		$this->photo->save();
 
 		return $this->photo;
 	}

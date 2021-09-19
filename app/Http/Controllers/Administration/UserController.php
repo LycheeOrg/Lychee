@@ -57,16 +57,9 @@ class UserController extends Controller
 	 */
 	public function delete(UserPostIdRequest $request): void
 	{
+		/** @var User $user */
 		$user = User::query()->findOrFail($request['id']);
-
-		try {
-			$success = $user->delete();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('user', 'delete', $e);
-		}
-		if (!$success) {
-			throw ModelDBException::create('user', 'delete');
-		}
+		$user->delete();
 	}
 
 	/**

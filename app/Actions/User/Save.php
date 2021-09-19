@@ -21,21 +21,19 @@ class Save
 		) {
 			throw new InvalidPropertyException('username not unique');
 		}
-
 		try {
-			$user->username = $data['username'];
-			$user->upload = ($data['upload'] == '1');
-			$user->lock = ($data['lock'] == '1');
-			if (isset($data['password'])) {
-				$user->password = bcrypt($data['password']);
-			}
-			$success = $user->save();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('user', 'update', $e);
+			$hashedPassword = bcrypt($data['password']);
+		} catch (\InvalidArgumentException $e) {
+			throw new InvalidPropertyException('Could not hash password');
 		}
-		if (!$success) {
-			throw ModelDBException::create('user', 'update');
+
+		$user->username = $data['username'];
+		$user->upload = ($data['upload'] == '1');
+		$user->lock = ($data['lock'] == '1');
+		if (isset($data['password'])) {
+			$user->password = $hashedPassword;
 		}
+		$user->save();
 
 		return $user;
 	}

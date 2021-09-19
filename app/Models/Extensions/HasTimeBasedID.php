@@ -4,8 +4,12 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\TimeBasedIdException;
+use App\Exceptions\ModelDBException;
 use App\Models\Configs;
 use App\Models\Logs;
+use Illuminate\Database\Eloquent\InvalidCastException;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -42,6 +46,8 @@ trait HasTimeBasedID
 	 * Set whether IDs are incrementing.
 	 *
 	 * @param bool $value
+	 *
+	 * @throws \BadMethodCallException
 	 */
 	public function setIncrementing($value)
 	{
@@ -55,6 +61,10 @@ trait HasTimeBasedID
 	 * @param mixed  $value value of attribute
 	 *
 	 * @return mixed
+	 *
+	 * @throws \InvalidArgumentException
+	 * @throws InvalidCastException
+	 * @throws JsonEncodingException
 	 */
 	public function setAttribute($key, $value)
 	{
@@ -70,46 +80,53 @@ trait HasTimeBasedID
 	 *
 	 * @param array $options
 	 *
-	 * @return bool
+	 * @return bool always returns true
+	 *
+	 * @throws ModelDBException thrown on failure
 	 */
 	public function save(array $options = []): bool
 	{
-		$result = false;
 		$retryCounter = 5;
-		$lastException = null;
 		do {
-			$retry = false;
+			$parentException = null;
+			$parentErrorCode = 0;
 			try {
 				$retryCounter--;
-				$result = parent::save();
-			} catch (QueryException $e) {
-				$lastException = $e;
-				$errorCode = $e->getCode();
-				if ($errorCode == 23000 || $errorCode == 23505) {
-					// houston, we have a duplicate entry problem
-					// Our ids are based on current system time, so
-					// wait randomly up to 1s before retrying.
-					usleep(rand(0, 1000000));
-					$retry = true;
-					// Remove primary key which has been set by last attempt
-					unset($this->attributes[$this->getKeyName()]);
-				} else {
-					throw $e;
+				if (!parent::save($options)) {
+					$parentException = new \RuntimeException('Eloquent\Model::save() returned false');
+					$parentErrorCode = $parentException->getCode();
 				}
+			} catch (\Throwable $e) {
+				$parentException = $e;
+				$parentErrorCode = $e->getCode();
 			}
-		} while ($retry && $retryCounter > 0);
+
+			if (
+				$parentException instanceof QueryException &&
+				($parentErrorCode == 23000 || $parentErrorCode == 23505)
+			) {
+				// houston, we have a duplicate entry problem
+				// Our ids are based on current system time, so
+				// wait randomly up to 1s before retrying.
+				usleep(rand(0, 1000000));
+				// Remove primary key which has been set by last attempt
+				unset($this->attributes[$this->getKeyName()]);
+			} else {
+				throw ModelDBException::create($this->friendlyModelName, $this->wasRecentlyCreated ? 'create' : 'update', $parentException);
+			}
+		} while ($retryCounter > 0);
 
 		if ($retryCounter === 0) {
 			$msg = 'unable to persist model to DB after 5 unsuccessful attempts';
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg, 0, $lastException);
+			throw ModelDBException::create($this->friendlyModelName, 'create', new TimeBasedIdException($msg));
 		}
 
-		return $result;
+		return true;
 	}
 
 	/**
-	 * Generates an ID for the primary key from current microtime.
+	 * Generates an ID for the primary key from current micro-time.
 	 */
 	public function generateID(): void
 	{

@@ -4,7 +4,9 @@ namespace App\Models;
 
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
+use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
@@ -12,12 +14,14 @@ use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasTimeBasedID;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\SizeVariants;
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\PhotoObserver;
 use App\Relations\HasManyBidirectionally;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -70,8 +74,12 @@ class Photo extends Model
 	use PhotoBooleans;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
-	use HasTimeBasedID;
+	use HasTimeBasedID, ThrowsConsistentExceptions {
+		HasTimeBasedID::save insteadof ThrowsConsistentExceptions;
+	}
 	use HasBidirectionalRelationships;
+
+	protected string $friendlyModelName = 'photo';
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -243,8 +251,8 @@ class Photo extends Model
 			}
 
 			return $shutter;
-		} catch (\RuntimeException $e) {
-			// gcd throws a runtime exception, if the divisor equals 0
+		} catch (ZeroModuloException $e) {
+			// gcd throws ZeroModuloException, if the divisor equals 0
 			throw new InvalidPropertyException('Could not get shutter of photo', $e);
 		}
 	}
@@ -428,6 +436,10 @@ class Photo extends Model
 			->exists();
 	}
 
+	/**
+	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
+	 */
 	public function replicate(array $except = null): Photo
 	{
 		$duplicate = parent::replicate($except);
@@ -442,9 +454,7 @@ class Photo extends Model
 			$dupSizeVariant->short_path = $sizeVariant->short_path;
 			$dupSizeVariant->width = $sizeVariant->width;
 			$dupSizeVariant->height = $sizeVariant->height;
-			if (!$dupSizeVariant->save()) {
-				throw new \RuntimeException('could not persist size variant');
-			}
+			$dupSizeVariant->save();
 		}
 		$duplicate->refresh();
 

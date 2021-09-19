@@ -6,6 +6,7 @@ use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\HasTimeBasedID;
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -100,9 +101,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class BaseAlbumImpl extends Model
 {
 	use HasAttributesPatch;
-	use HasTimeBasedID;
+	use HasTimeBasedID, ThrowsConsistentExceptions {
+		HasTimeBasedID::save insteadof ThrowsConsistentExceptions;
+	}
 	use UTCBasedTimes;
 	use HasBidirectionalRelationships;
+
+	protected string $friendlyModelName = 'base album';
 
 	protected $table = 'base_albums';
 

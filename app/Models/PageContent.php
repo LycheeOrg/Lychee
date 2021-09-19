@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -33,6 +34,10 @@ use Markdown;
  */
 class PageContent extends Model
 {
+	use ThrowsConsistentExceptions;
+
+	protected string $friendlyModelName = 'page content';
+
 	/**
 	 * Return content.
 	 * It can be an image -> create a img tag, `content` is the url of the image

@@ -50,7 +50,11 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		// Delete the existing video from whom we have stolen the video file
 		// `delete()` also takes care of erasing all other size variants
 		// from storage
-		$this->existingVideo->delete();
+		try {
+			$this->existingVideo->delete();
+		} catch (\LogicException | \RuntimeException $e) {
+			throw new ModelDBException('photo', 'delete', $e);
+		}
 
 		return $this->photo;
 	}

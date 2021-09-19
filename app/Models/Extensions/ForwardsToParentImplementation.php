@@ -4,8 +4,12 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\ModelDBException;
 use App\Models\BaseAlbumImpl;
+use Illuminate\Contracts\Encryption\EncryptException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\InvalidCastException;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -61,6 +65,8 @@ trait ForwardsToParentImplementation
 	 * @param Builder $query
 	 *
 	 * @return bool
+	 *
+	 * @throws \LogicException
 	 */
 	protected function performInsert(Builder $query): bool
 	{
@@ -91,10 +97,9 @@ trait ForwardsToParentImplementation
 	 */
 	protected function performUpdate(Builder $query): bool
 	{
-		/** @var Model $base_class */
 		$base_class = $this->base_class;
 		// touch() also indirectly saves the base_class hence any other
-		// attributes which require an updated are also saved
+		// attributes which require an update are also saved
 		if (!$base_class->touch()) {
 			return false;
 		}
@@ -105,33 +110,50 @@ trait ForwardsToParentImplementation
 	/**
 	 * Delete the model from the database.
 	 *
-	 * @return bool
+	 * @return bool always returns true
 	 *
-	 * @throws \LogicException
+	 * @throws ModelDBException thrown on failure
 	 */
 	public function delete(): bool
 	{
-		/** @var ?Model $base_class */
-		$base_class = $this->base_class;
+		/** @var ?Model $baseClass */
+		$baseClass = $this->base_class;
 
-		$parentDelete = parent::delete();
-		if ($parentDelete === false) {
+		$parentException = null;
+		try {
 			// Sic! Don't use `!$parentDelete` in condition, because we also
 			// need to proceed if `$parentDelete === null` .
 			// If Eloquent returns `null` (instead of `true`), this also
 			// indicates a success and we must go on.
 			// Eloquent, I love you .... not.
-			return false;
+			$parentResult = parent::delete();
+			if ($parentResult !== true && $parentResult !== null) {
+				$parentException = new \RuntimeException('Eloquent\Model::delete() returned neither returned true nor null');
+			}
+		} catch (\Throwable $e) {
+			$parentException = $e;
+		}
+		if ($parentException) {
+			throw ModelDBException::create($this->friendlyModelName, 'delete', $parentException);
 		}
 
 		// We must explicitly check if the base_class still exists in order
 		// to avoid an infinite recursion, as the base class will also call
 		// delete() on this class
-		if ($base_class !== null && $base_class->exists) {
-			$baseDelete = $base_class->delete();
-			// Same stupidity as above, if Eloquent returns `null` this also
-			// means `true` here.
-			return is_bool($baseDelete) ? $baseDelete : true;
+		if ($baseClass !== null && $baseClass->exists) {
+			$baseException = null;
+			try {
+				$baseResult = $baseClass->delete();
+				// Same idiocracy as above
+				if ($baseResult !== true && $baseResult !== null) {
+					$baseException = new \RuntimeException('Eloquent\Model::delete() returned neither returned true nor null');
+				}
+			} catch (\Throwable $e) {
+				$baseException = $e;
+			}
+			if ($baseException) {
+				throw ModelDBException::create($this->friendlyModelName, 'delete', $baseException);
+			}
 		}
 
 		return true;
@@ -226,6 +248,9 @@ trait ForwardsToParentImplementation
 	 * @param string $key the name of the queried attribute or relation
 	 *
 	 * @return mixed the value of the attribute or relation
+	 *
+	 * @throws \LogicException
+	 * @throws InvalidCastException
 	 */
 	public function getAttribute($key)
 	{
@@ -238,9 +263,10 @@ trait ForwardsToParentImplementation
 		// case for new models, the implementation otherwise would fall
 		// through until the end and try to forward the call to the base class
 		// However, asking for the primary key of the base class is
-		//  a) insane, because it should be identical to the primary key of
+		//
+		//  1. insane, because it should be identical to the primary key of
 		//     this class, and
-		//  b) does not work, because we cannot load the base class without
+		//  2. does not work, because we cannot load the base class without
 		//     knowing the primary key.
 		if ($key == $this->getKeyName()) {
 			// Sic!
@@ -307,6 +333,8 @@ trait ForwardsToParentImplementation
 	 * @param string $key the name of the queried relation
 	 *
 	 * @return mixed the value of the relation if it could be loaded
+	 *
+	 * @throws \LogicException
 	 */
 	public function getRelationValue($key)
 	{
@@ -382,6 +410,11 @@ trait ForwardsToParentImplementation
 	 * @param mixed  $value
 	 *
 	 * @return mixed
+	 *
+	 * @throws InvalidCastException
+	 * @throws JsonEncodingException
+	 * @throws EncryptException
+	 * @throws \InvalidArgumentException
 	 */
 	public function setAttribute($key, $value)
 	{

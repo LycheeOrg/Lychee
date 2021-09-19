@@ -15,13 +15,9 @@ class Delete extends Action
 	public function do(array $albumIDs): void
 	{
 		$albums = $this->albumFactory->findWhereIDsIn($albumIDs);
-		$success = true;
 		/** @var AbstractAlbum $album */
 		foreach ($albums as $album) {
-			$success &= $album->delete();
-		}
-		if (!$success) {
-			throw ModelDBException::create('albums', 'delete');
+			$album->delete();
 		}
 	}
 }

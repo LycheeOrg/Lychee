@@ -18,17 +18,10 @@ class Create extends Action
 	 */
 	public function create(string $title, int $parent_id): Album
 	{
-		try {
-			$album = new Album();
-			$album->title = $title;
-			$this->set_parent($album, $parent_id);
-			$success = $album->save();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('album', 'create', $e);
-		}
-		if (!$success) {
-			throw ModelDBException::create('album', 'create');
-		}
+		$album = new Album();
+		$album->title = $title;
+		$this->set_parent($album, $parent_id);
+		$album->save();
 
 		return $album;
 	}

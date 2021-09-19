@@ -2,9 +2,11 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Exceptions\ModelDBException;
 use App\Exceptions\PhotoSkippedException;
 use App\Models\Logs;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AddDuplicateStrategy extends AddBaseStrategy
 {
@@ -13,6 +15,11 @@ class AddDuplicateStrategy extends AddBaseStrategy
 		parent::__construct($parameters, $existing);
 	}
 
+	/**
+	 * @throws PhotoSkippedException
+	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
+	 */
 	public function do(): Photo
 	{
 		// At least update the existing photo with additional metadata if

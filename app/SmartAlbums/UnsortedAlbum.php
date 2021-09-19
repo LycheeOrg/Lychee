@@ -46,24 +46,25 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 * "Deletes" the album of unsorted photos.
 	 *
 	 * Actually, the album itself is not deleted, because it is built-in.
-	 * But all photos within the album which are owned by the currnt user
+	 * But all photos within the album which are owned by the current user
 	 * are deleted.
 	 *
 	 * @return bool
+	 *
+	 * @throws \LogicException
+	 * @throws \RuntimeException
 	 */
 	public function delete(): bool
 	{
-		$success = true;
-
 		$photos = $this->photos()
 			->where('owner_id', '=', AccessControl::id())
 			->get();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// This also takes care of proper deletion of physical files from disk
-			$success &= $photo->delete();
+			$photo->delete();
 		}
 
-		return $success;
+		return true;
 	}
 }

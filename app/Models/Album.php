@@ -7,6 +7,7 @@ use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
@@ -37,9 +38,12 @@ class Album extends Model implements BaseAlbum
 {
 	use NodeTrait;
 	use HasBidirectionalRelationships;
-	use ForwardsToParentImplementation {
-		delete as private forwardDelete;
+	use ForwardsToParentImplementation, ThrowsConsistentExceptions {
+		ForwardsToParentImplementation::delete insteadof ThrowsConsistentExceptions;
+		ForwardsToParentImplementation::delete as private parentDelete;
 	}
+
+	protected string $friendlyModelName = 'album';
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -265,18 +269,19 @@ class Album extends Model implements BaseAlbum
 	 * @param bool $skipTreeFixing
 	 *
 	 * @return bool
+	 *
+	 * @throws \LogicException
+	 * @throws \RuntimeException
 	 */
 	public function delete(bool $skipTreeFixing = false): bool
 	{
-		$success = true;
-
 		$photos = $this->photos()
 			->where('owner_id', '=', AccessControl::id())
 			->get();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// This also takes care of proper deletion of physical files from disk
-			$success &= $photo->delete();
+			$photo->delete();
 		}
 
 		$albums = $this->children()
@@ -287,16 +292,15 @@ class Album extends Model implements BaseAlbum
 			->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {
-			$success &= $album->delete(true);
+			$album->delete(true);
 		}
 
-		// Ensure that no invisible child photo nor child album have remained
-		$success &= $this->isEmpty();
-
-		// Only forward the call (i.e. actually delete this album,
-		// if everything so far has been a success
-		if ($success) {
-			$success &= $this->forwardDelete();
+		// Only forward the call to the parent implementation
+		// (i.e. actually delete this album),
+		// if no invisible child photos nor inaccessible child albums have
+		// remained
+		if ($this->isEmpty()) {
+			$this->parentDelete();
 		}
 
 		/** @var NSQueryBuilder $builder */
@@ -305,7 +309,7 @@ class Album extends Model implements BaseAlbum
 			$builder->fixTree();
 		}
 
-		return $success;
+		return true;
 	}
 
 	/**

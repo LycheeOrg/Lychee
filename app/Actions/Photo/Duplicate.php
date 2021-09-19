@@ -4,6 +4,7 @@ namespace App\Actions\Photo;
 
 use App\Exceptions\ModelDBException;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 
 class Duplicate
@@ -30,17 +31,8 @@ class Duplicate
 		$duplicates = new Collection();
 		try {
 			$photos = Photo::query()->whereIn('id', $photoIds)->get();
-		} catch (\InvalidArgumentException $ignored) {
-			// In theory whereIn may throw this exception,
-			// but will never do so for array operands.
-			return $duplicates;
-		}
-
-		$success = true;
-		$lastException = null;
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			try {
+			/** @var Photo $photo */
+			foreach ($photos as $photo) {
 				$duplicate = $photo->replicate();
 				if ($albumID !== null) {
 					$dstAlbumID = $albumID !== 0 ? $albumID : null;
@@ -48,14 +40,14 @@ class Duplicate
 					$dstAlbumID = $photo->album_id;
 				}
 				$duplicate->album_id = $dstAlbumID;
-				$success &= $duplicate->save();
+				$duplicate->save();
 				$duplicates->add($duplicate);
-			} catch (\Throwable $e) {
-				$lastException = $e;
 			}
-		}
-		if (!$success || $lastException !== null) {
-			throw ModelDBException::create('photo', 'duplicate', $lastException);
+		} catch (\InvalidArgumentException $ignored) {
+			// In theory whereIn may throw this exception,
+			// but will never do so for array operands.
+			return $duplicates;
+		} catch (ModelNotFoundException $e) {
 		}
 
 		return $duplicates;

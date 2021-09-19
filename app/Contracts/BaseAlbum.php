@@ -2,6 +2,7 @@
 
 namespace App\Contracts;
 
+use App\Exceptions\ModelDBException;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -37,13 +38,15 @@ use Illuminate\Support\Carbon;
 interface BaseAlbum extends AbstractAlbum
 {
 	/**
-	 * Save the model to the database.
+	 * Saves the model to the database.
 	 *
 	 * @param array $options
 	 *
-	 * @return bool
+	 * @return bool always returns true
+	 *
+	 * @throws ModelDBException thrown on failure
 	 */
-	public function save(array $options = []);
+	public function save(array $options = []): bool;
 
 	public function owner(): BelongsTo;
 

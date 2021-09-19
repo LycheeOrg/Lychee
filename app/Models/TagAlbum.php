@@ -6,6 +6,7 @@ use App\Contracts\BaseAlbum;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\TagAlbumBuilder;
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class TagAlbum extends Model implements BaseAlbum
 {
 	use HasBidirectionalRelationships;
-	use ForwardsToParentImplementation;
+	use ForwardsToParentImplementation, ThrowsConsistentExceptions {
+		ForwardsToParentImplementation::delete insteadof ThrowsConsistentExceptions;
+		ForwardsToParentImplementation::delete as private parentDelete;
+	}
+
+	protected string $friendlyModelName = 'tag album';
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.

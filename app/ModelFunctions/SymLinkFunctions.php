@@ -10,39 +10,32 @@ class SymLinkFunctions
 	/**
 	 * Clear the table of existing SymLinks.
 	 *
+	 * @return void
+	 *
 	 * @throws ModelDBException
 	 */
 	public function clearSymLink(): void
 	{
-		$symlinks = SymLink::all();
-		$success = true;
-		$lastException = null;
-		foreach ($symlinks as $symlink) {
-			try {
-				$success &= $symlink->delete();
-			} catch (\Throwable $e) {
-				$lastException = $e;
-			}
-		}
-		if (!$success || $lastException !== null) {
-			throw ModelDBException::create('symbolic link', 'delete', $lastException);
+		$symLinks = SymLink::all();
+		/** @var SymLink $symLink */
+		foreach ($symLinks as $symLink) {
+			$symLink->delete();
 		}
 	}
 
 	/**
 	 * Remove outdated SymLinks.
 	 *
-	 * @return bool
+	 * @return void
+	 *
+	 * @throws ModelDBException
 	 */
-	public function remove_outdated()
+	public function remove_outdated(): void
 	{
-		$symlinks = SymLink::expired()->get();
-		$success = true;
-		/** @var SymLink $symlink */
-		foreach ($symlinks as $symlink) {
-			$success &= $symlink->delete();
+		$symLinks = SymLink::expired()->get();
+		/** @var SymLink $symLink */
+		foreach ($symLinks as $symLink) {
+			$symLink->delete();
 		}
-
-		return $success;
 	}
 }

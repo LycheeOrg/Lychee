@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\MustNotSetCast;
 use App\Models\Extensions\HasAttributesPatch;
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\SymLinkObserver;
 use Illuminate\Database\Eloquent\Builder;
@@ -32,6 +33,9 @@ class SymLink extends Model
 	use Notifiable;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
+	use ThrowsConsistentExceptions;
+
+	protected string $friendlyModelName = 'symbolic link';
 
 	const DISK_NAME = 'symbolic';
 

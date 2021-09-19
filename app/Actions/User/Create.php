@@ -17,19 +17,12 @@ class Create
 		if (User::query()->where('username', '=', $data['username'])->count()) {
 			throw new InvalidPropertyException('username not unique');
 		}
-		try {
-			$user = new User();
-			$user->upload = ($data['upload'] == '1');
-			$user->lock = ($data['lock'] == '1');
-			$user->username = $data['username'];
-			$user->password = bcrypt($data['password']);
-			$success = $user->save();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('user', 'create', $e);
-		}
-		if (!$success) {
-			throw ModelDBException::create('user', 'create');
-		}
+		$user = new User();
+		$user->upload = ($data['upload'] == '1');
+		$user->lock = ($data['lock'] == '1');
+		$user->username = $data['username'];
+		$user->password = bcrypt($data['password']);
+		$user->save();
 
 		return $user;
 	}

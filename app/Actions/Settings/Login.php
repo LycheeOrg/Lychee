@@ -26,6 +26,13 @@ class Login
 		$oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
 		$oldUsername = $request->has('oldUsername') ? $request['oldUsername'] : '';
 
+		try {
+			$hashedUsername = bcrypt($request['username']);
+			$hashedPassword = bcrypt($request['password']);
+		} catch (\InvalidArgumentException $e) {
+			throw new InvalidPropertyException('Could not hash username or password', $e);
+		}
+
 		if (Legacy::SetPassword($request)) {
 			return;
 		}
@@ -34,16 +41,9 @@ class Login
 		/** @var User $adminUser */
 		$adminUser = User::query()->find(0);
 		if ($adminUser->password === '' && $adminUser->username === '') {
-			try {
-				$adminUser->username = bcrypt($request['username']);
-				$adminUser->password = bcrypt($request['password']);
-				$success = $adminUser->save();
-			} catch (\Throwable $e) {
-				throw ModelDBException::create('user', 'update', $e);
-			}
-			if (!$success) {
-				throw ModelDBException::create('user', 'update');
-			}
+			$adminUser->username = $hashedUsername;
+			$adminUser->password = $hashedPassword;
+			$adminUser->save();
 			AccessControl::login($adminUser);
 
 			return;
@@ -51,16 +51,9 @@ class Login
 
 		if (AccessControl::is_admin()) {
 			if ($adminUser->password === '' || Hash::check($oldPassword, $adminUser->password)) {
-				try {
-					$adminUser->username = bcrypt($request['username']);
-					$adminUser->password = bcrypt($request['password']);
-					$success = $adminUser->save();
-				} catch (\Throwable $e) {
-					throw ModelDBException::create('user', 'update', $e);
-				}
-				if (!$success) {
-					throw ModelDBException::create('user', 'update');
-				}
+				$adminUser->username = $hashedUsername;
+				$adminUser->password = $hashedPassword;
+				$adminUser->save();
 				unset($adminUser);
 
 				return;
@@ -91,17 +84,9 @@ class Login
 
 			if ($user->username == $oldUsername && Hash::check($oldPassword, $user->password)) {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for (' . $request['username'] . ') from ' . $request->ip());
-
-				try {
-					$user->username = $request['username'];
-					$user->password = bcrypt($request['password']);
-					$success = $user->save();
-				} catch (\Throwable $e) {
-					throw ModelDBException::create('user', 'save', $e);
-				}
-				if (!$success) {
-					throw ModelDBException::create('user', 'save');
-				}
+				$user->username = $request['username'];
+				$user->password = $hashedPassword;
+				$user->save();
 			}
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity from ' . $request->ip());
 

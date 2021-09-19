@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -41,6 +42,9 @@ use Illuminate\Support\Carbon;
 class Page extends Model
 {
 	use UTCBasedTimes;
+	use ThrowsConsistentExceptions;
+
+	protected string $friendlyModelName = 'page';
 
 	/**
 	 * Return the relationship between a page and its content.

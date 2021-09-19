@@ -20,18 +20,11 @@ class CreateTagAlbum extends Action
 	 */
 	public function create(string $title, string $show_tags): TagAlbum
 	{
-		try {
-			$album = new TagAlbum();
-			$album->title = $title;
-			$album->show_tags = $show_tags;
-			$album->owner_id = AccessControl::id();
-			$success = $album->save();
-		} catch (\Throwable $e) {
-			throw ModelDBException::create('tag album', 'create', $e);
-		}
-		if (!$success) {
-			throw ModelDBException::create('tag album', 'create');
-		}
+		$album = new TagAlbum();
+		$album->title = $title;
+		$album->show_tags = $show_tags;
+		$album->owner_id = AccessControl::id();
+		$album->save();
 
 		return $album;
 	}
