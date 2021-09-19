@@ -2,13 +2,17 @@
 
 namespace App\Metadata;
 
+use App\Exceptions\ExternalComponentFailedException;
 use App\Models\Configs;
 use App\Models\Logs;
+use Geocoder\Exception\Exception as GeocoderException;
 use Geocoder\Provider\Cache\ProviderCache;
 use Geocoder\Provider\Nominatim\Nominatim;
 use Geocoder\Query\ReverseQuery;
 use Geocoder\StatefulGeocoder;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\HandlerStack;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\Cache;
 use Spatie\GuzzleRateLimiterMiddleware\RateLimiterMiddleware;
 use Spatie\GuzzleRateLimiterMiddleware\Store;
@@ -18,31 +22,39 @@ class Geodecoder
 	/**
 	 * Get http provider with caching.
 	 *
-	 * @return mixed Geocoder Provider
+	 * @return ProviderCache Geocoder Provider
+	 *
+	 * @throws ExternalComponentFailedException
 	 */
-	public static function getGeocoderProvider()
+	public static function getGeocoderProvider(): ProviderCache
 	{
-		$stack = HandlerStack::create();
-		$stack->push(RateLimiterMiddleware::perSecond(1));
+		try {
+			$stack = HandlerStack::create();
+			$stack->push(RateLimiterMiddleware::perSecond(1));
 
-		$httpClient = new \GuzzleHttp\Client([
-			'handler' => $stack,
-			'timeout' => Configs::get_value('location_decoding_timeout'),
-		]);
+			$httpClient = new \GuzzleHttp\Client([
+				'handler' => $stack,
+				'timeout' => Configs::get_value('location_decoding_timeout'),
+			]);
 
-		$httpAdapter = new \Http\Adapter\Guzzle7\Client($httpClient);
+			$httpAdapter = new \Http\Adapter\Guzzle7\Client($httpClient);
 
-		$provider = new Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', config('app.name'));
+			$provider = new Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', config('app.name'));
 
-		return new ProviderCache($provider, app('cache.store'));
+			return new ProviderCache($provider, app('cache.store'));
+		} catch (GeocoderException | GuzzleException | \RuntimeException | BindingResolutionException | \InvalidArgumentException $e) {
+			throw new ExternalComponentFailedException('Could not create geocoder provider', $e);
+		}
 	}
 
 	/**
 	 * Decode GPS coordinates into location.
 	 *
-	 * @return string location
+	 * @return string|null location
+	 *
+	 * @throws ExternalComponentFailedException
 	 */
-	public static function decodeLocation($latitude, $longitude)
+	public static function decodeLocation($latitude, $longitude): ?string
 	{
 		// User does not want to decode location data
 		if (Configs::get_value('location_decoding') == false) {
@@ -60,9 +72,9 @@ class Geodecoder
 	/**
 	 * Wrapper to decode GPS coordinates into location.
 	 *
-	 * @return string location
+	 * @return string|null location
 	 */
-	public static function decodeLocation_core($latitude, $longitude, $cachedProvider)
+	public static function decodeLocation_core($latitude, $longitude, $cachedProvider): ?string
 	{
 		$geocoder = new StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
 		try {
@@ -77,9 +89,9 @@ class Geodecoder
 
 			return $result_list->first()->getDisplayName();
 			// @codeCoverageIgnoreStart
-		} catch (\Exception $exception) {
+		} catch (GeocoderException $e) {
 			Logs::warning(__METHOD__, __LINE__, 'Decoding of location failed!');
-			Logs::warning(__METHOD__, __LINE__, $exception->getMessage());
+			Logs::warning(__METHOD__, __LINE__, $e->getMessage());
 
 			return null;
 		}

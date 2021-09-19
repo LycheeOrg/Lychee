@@ -3,7 +3,9 @@
 namespace App\Assets;
 
 use App\Exceptions\Internal\ZeroModuloException;
+use App\Exceptions\MediaFileOperationException;
 use App\Models\Logs;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
 use WhichBrowser\Parser as BrowserParser;
 
@@ -47,6 +49,8 @@ class Helpers
 	 * appliance, gps, car, pos, bot, projector.
 	 *
 	 * @return string
+	 *
+	 * @throws BindingResolutionException
 	 */
 	public function getDeviceType(): string
 	{
@@ -155,6 +159,8 @@ class Helpers
 	 * @param string $extension the desired file extension, must include a starting dot
 	 *
 	 * @return string the path to the newly created file
+	 *
+	 * @throws MediaFileOperationException
 	 */
 	public function createTemporaryFile(string $extension): string
 	{
@@ -162,7 +168,7 @@ class Helpers
 			!rename($result, $result . $extension)) {
 			$msg = 'Could not create a temporary file.';
 			Logs::notice(__METHOD__, __LINE__, $msg);
-			throw new \RuntimeException($msg);
+			throw new MediaFileOperationException($msg);
 		}
 
 		return $result . $extension;

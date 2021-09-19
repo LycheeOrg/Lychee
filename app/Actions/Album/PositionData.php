@@ -2,10 +2,16 @@
 
 namespace App\Actions\Album;
 
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Models\Album;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PositionData extends Action
 {
+	/**
+	 * @throws ModelNotFoundException
+	 * @throws InvalidSmartIdException
+	 */
 	public function get(string $albumID, array $data): array
 	{
 		// Avoid loading all photos and sub-albums of an album, because we are

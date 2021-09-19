@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Contracts\ExternalLycheeException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
@@ -39,7 +40,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * or
  * {@link \Illuminate\Foundation\Exceptions\Handler::prepareResponse()}).
  */
-abstract class BaseException extends HttpException
+abstract class LycheeBaseException extends HttpException implements ExternalLycheeException
 {
 	/**
 	 * Constructor.

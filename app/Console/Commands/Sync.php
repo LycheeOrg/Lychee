@@ -3,10 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
+use App\Contracts\ExternalLycheeException;
+use App\Exceptions\UnexpectedException;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Sync extends Command
 {
@@ -27,31 +30,41 @@ class Sync extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @param Exec $exec
+	 *
+	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
-	public function handle(Exec $exec)
+	public function handle(Exec $exec): int
 	{
-		$this->info('Start syncing.');
-		$directory = $this->argument('dir');
-		$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-		$album_id = (int) $this->option('album_id'); // in case no ID provided -> import to root folder
-
-		// Enable CLI formatting of status
-		$exec->statusCLIFormatting = true;
-		$exec->memCheck = false;
-		$exec->delete_imported = false; // we want to sync -> do not delete imported files
-		$exec->import_via_symlink = (Configs::get_value('import_via_symlink', '0') === '1');
-		$exec->skip_duplicates = true;
-		$exec->resync_metadata = $this->option('resync_metadata');
-
-		AccessControl::log_as_id($owner_id);
-
 		try {
-			$exec->do($directory, $album_id);
-		} catch (Exception $e) {
-			$this->error($e);
-		}
+			$this->info('Start syncing.');
+			$directory = $this->argument('dir');
+			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
+			$album_id = (int) $this->option('album_id'); // in case no ID provided -> import to root folder
 
-		$this->info('Done syncing.');
+			// Enable CLI formatting of status
+			$exec->statusCLIFormatting = true;
+			$exec->memCheck = false;
+			$exec->delete_imported = false; // we want to sync -> do not delete imported files
+			$exec->import_via_symlink = (Configs::get_value('import_via_symlink', '0') === '1');
+			$exec->skip_duplicates = true;
+			$exec->resync_metadata = $this->option('resync_metadata');
+
+			AccessControl::log_as_id($owner_id);
+
+			try {
+				$exec->do($directory, $album_id);
+			} catch (Exception $e) {
+				$this->error($e);
+			}
+
+			$this->info('Done syncing.');
+
+			return 0;
+		} catch (SymfonyConsoleException $e) {
+			throw new UnexpectedException($e);
+		}
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -25,16 +26,22 @@ class TagAlbumBuilder extends Builder
 	 * @param array|string $columns
 	 *
 	 * @return Model[]|static[]
+	 *
+	 * @throws QueryBuilderException
 	 */
 	public function getModels($columns = ['*'])
 	{
 		$baseQuery = $this->getQuery();
 		if ($columns == ['*'] && ($baseQuery->columns == ['*'] || $baseQuery->columns == null)) {
-			$this->addSelect([
-				$baseQuery->from . '.*',
-				DB::raw('null as max_taken_at'),
-				DB::raw('null as min_taken_at'),
-			]);
+			try {
+				$this->addSelect([
+					$baseQuery->from . '.*',
+					DB::raw('null as max_taken_at'),
+					DB::raw('null as min_taken_at'),
+				]);
+			} catch (\InvalidArgumentException $e) {
+				throw new QueryBuilderException($e);
+			}
 		}
 
 		return parent::getModels($columns);

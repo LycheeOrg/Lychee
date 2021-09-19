@@ -4,7 +4,12 @@ namespace App\Actions\Photo;
 
 use App\Actions\Photo\Extensions\ArchiveFileInfo;
 use App\Actions\Photo\Extensions\Constants;
+use App\Contracts\LycheeException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\MediaFileMissingException;
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -13,6 +18,7 @@ use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
@@ -83,14 +89,19 @@ class Archive
 	 *
 	 * @return Response
 	 *
-	 * @throws InvalidSizeVariantException
+	 * @throws LycheeException
+	 * @throws FileException
 	 */
 	public function do(array $photoIDs, string $variant): Response
 	{
-		/** @var Collection $photos */
-		$photos = Photo::with(['album', 'size_variants_raw'])
-			->whereIn('id', $photoIDs)
-			->get();
+		try {
+			/** @var Collection $photos */
+			$photos = Photo::with(['album', 'size_variants_raw'])
+				->whereIn('id', $photoIDs)
+				->get();
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 
 		if ($photos->count() === 1) {
 			$response = $this->file($photos->first(), $variant);
@@ -107,15 +118,17 @@ class Archive
 	 *
 	 * @return BinaryFileResponse
 	 *
-	 * @throws InvalidSizeVariantException
+	 * @throws LycheeException
+	 * @throws FileException
 	 */
 	protected function file(Photo $photo, $variant): BinaryFileResponse
 	{
 		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
-		if ($archiveFileInfo === null) {
-			abort(404);
+		try {
+			$response = new BinaryFileResponse($archiveFileInfo->getFullPath());
+		} catch (\InvalidArgumentException $e) {
+			throw new FrameworkException('Symfony\'s response component', $e);
 		}
-		$response = new BinaryFileResponse($archiveFileInfo->getFullPath());
 
 		return $response->setContentDisposition(
 			ResponseHeaderBag::DISPOSITION_ATTACHMENT,
@@ -129,11 +142,11 @@ class Archive
 	 *
 	 * @return StreamedResponse
 	 *
-	 * @throws InvalidSizeVariantException
+	 * @throws FrameworkException
 	 */
 	protected function zip(Collection $photos, string $variant): StreamedResponse
 	{
-		$response = new StreamedResponse(function () use ($variant, $photos) {
+		$responseGenerator = function () use ($variant, $photos) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 			$zip = new ZipStream(null, $options);
@@ -200,9 +213,6 @@ class Archive
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				$archiveFileInfo = $this->extractFileInfo($photo, $variant);
-				if ($archiveFileInfo == null) {
-					abort(404);
-				}
 				$archiveFileInfos[] = $archiveFileInfo;
 				$filename = $archiveFileInfo->getFilename();
 				if (array_key_exists($filename, $ambiguousFilenames)) {
@@ -237,12 +247,24 @@ class Archive
 
 			// finish the zip stream
 			$zip->finish();
-		});
+		};
 
-		// Set file type and destination
-		$response->headers->set('Content-Type', 'application/x-zip');
-		$disposition = HeaderUtils::makeDisposition(HeaderUtils::DISPOSITION_ATTACHMENT, 'Photos.zip');
-		$response->headers->set('Content-Disposition', $disposition);
+		try {
+			$response = new StreamedResponse($responseGenerator);
+			$disposition = HeaderUtils::makeDisposition(
+				HeaderUtils::DISPOSITION_ATTACHMENT,
+				'Photos.zip'
+			);
+			$response->headers->set('Content-Type', 'application/x-zip');
+			$response->headers->set('Content-Disposition', $disposition);
+
+			// Disable caching
+			$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+			$response->headers->set('Pragma', 'no-cache');
+			$response->headers->set('Expires', '0');
+		} catch (\InvalidArgumentException $e) {
+			throw new FrameworkException('Symfony\'s response component', $e);
+		}
 
 		return $response;
 	}
@@ -263,19 +285,21 @@ class Archive
 	 *                        {@link Archive::THUMB2X},
 	 *                        {@link Archive::THUMB}
 	 *
-	 * @return ArchiveFileInfo|null the created archive info
+	 * @return ArchiveFileInfo the created archive info
 	 *
 	 * @throws InvalidSizeVariantException
+	 * @throws UnauthorizedException
+	 * @throws MediaFileMissingException
 	 */
-	protected function extractFileInfo(Photo $photo, string $variant): ?ArchiveFileInfo
+	protected function extractFileInfo(Photo $photo, string $variant): ArchiveFileInfo
 	{
 		if (!AccessControl::is_current_user($photo->owner_id)) {
 			if ($photo->album_id !== null) {
 				if (!$photo->album->is_downloadable) {
-					return null;
+					throw new UnauthorizedException('User is not allowed to download the image');
 				}
 			} elseif (Configs::get_value('downloadable', '0') === '0') {
-				return null;
+				throw new UnauthorizedException('Permission to download is disabled by configuration');
 			}
 		}
 
@@ -293,7 +317,7 @@ class Archive
 				// The filename of the original size variant shall get no
 				// particular suffix but remain as is.
 				// All other size variants (i.e. the generated, smaller ones)
-				// get a size information as suffix.
+				// get size information as suffix.
 				if ($sv->size_variant !== SizeVariant::ORIGINAL) {
 					$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
 				}
@@ -307,8 +331,7 @@ class Archive
 		// Check if file actually exists
 		if (empty($shortPath) || !Storage::exists($shortPath)) {
 			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $shortPath . ' (' . $baseFilename . ')');
-
-			return null;
+			throw new MediaFileMissingException();
 		}
 
 		return new ArchiveFileInfo($baseFilename, $baseFilenameAddon, Storage::path($shortPath));

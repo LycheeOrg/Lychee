@@ -7,12 +7,12 @@ use App\Actions\Photo\Create as PhotoCreate;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
+use App\Exceptions\ModelDBException;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
-use Exception;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 
@@ -159,14 +159,16 @@ class Exec
 	}
 
 	/**
-	 * @param string $path
-	 * @param int    $albumID
-	 * @param array  $ignore_list
+	 * @param string          $path
+	 * @param int|string|null $albumID
+	 * @param array|null      $ignore_list
+	 *
+	 * @throws ModelDBException
 	 */
 	public function do(
 		string $path,
 		$albumID,
-		$ignore_list = null
+		array $ignore_list = null
 	) {
 		// Parse path
 		$origPath = $path;
@@ -263,7 +265,7 @@ class Exec
 					}
 				} catch (PhotoSkippedException $e) {
 					$this->status_error($file, $e->getMessage());
-				} catch (Exception $e) {
+				} catch (\Throwable $e) {
 					$this->status_error($file, 'Could not import file');
 					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 				}

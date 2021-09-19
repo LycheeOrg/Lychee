@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
  * This also includes corner cases where the user is only involved very
  * indirectly, e.g. if the user uploads a photo with broken MIME data.
  */
-class InvalidPropertyException extends BaseException
+class InvalidPropertyException extends LycheeBaseException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

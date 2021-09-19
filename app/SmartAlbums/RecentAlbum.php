@@ -4,6 +4,8 @@ namespace App\SmartAlbums;
 
 use App\Models\Configs;
 use App\Relations\HasManyPhotosBySmartCondition;
+use Carbon\Exceptions\InvalidFormatException;
+use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
@@ -38,6 +40,10 @@ class RecentAlbum extends BaseSmartAlbum
 		return self::$instance;
 	}
 
+	/**
+	 * @throws InvalidFormatException
+	 * @throws InvalidTimeZoneException
+	 */
 	public function photos(): HasManyPhotosBySmartCondition
 	{
 		$strRecent = $this->fromDateTime(

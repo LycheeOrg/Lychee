@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Returns status code 412 (Precondition failed) to an HTTP client.
  */
-class ConfigurationException extends BaseException
+class ConfigurationException extends LycheeBaseException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

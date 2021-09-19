@@ -3,6 +3,7 @@
 namespace App\Models\Extensions;
 
 use Carbon\CarbonInterface;
+use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use InvalidArgumentException;
@@ -26,9 +27,9 @@ use InvalidArgumentException;
  * This means the database configuration for MySQL should explicitly include
  * the option `'timezone' => '+00:00'` and the configuration for PostgreSQL
  * should explicitly include the option `'timezone => 'UTC'`.
- * Otherwise those RDBM system interpret a SQL datetime string without an
+ * Otherwise, those RDBM system interpret an SQL datetime string without an
  * explicit timezone relative to their own default timezone.
- * The default timezone of the database connection might or might or might not
+ * The default timezone of the database connection might or might not
  * be UTC and might or might not be equal to the default timezone of the PHP
  * application.
  * Hence, it is always a good thing to set the timezone of the database
@@ -70,7 +71,9 @@ trait UTCBasedTimes
 	 *
 	 * @param mixed $value
 	 *
-	 * @return ?string
+	 * @return string|null
+	 *
+	 * @throws InvalidTimeZoneException
 	 */
 	public function fromDateTime($value): ?string
 	{
@@ -123,6 +126,8 @@ trait UTCBasedTimes
 	 * @param mixed $value
 	 *
 	 * @return Carbon|null
+	 *
+	 * @throws InvalidTimeZoneException
 	 */
 	public function asDateTime($value): ?Carbon
 	{
@@ -174,7 +179,7 @@ trait UTCBasedTimes
 
 		// Finally, we will just assume this date is in the format used by default on
 		// the database connection and use that format to create the Carbon object
-		// that is returned back out to the developers after we convert it here.
+		// that is returned to the caller after we convert it here.
 		// Applied patch: Use 'UTC' as the default timezone for string
 		// formats which do not include timezone information.
 		// Note that the timezone parameter is ignored for formats which
@@ -187,7 +192,7 @@ trait UTCBasedTimes
 				// If the timezone is different to UTC, we don't set it, because then
 				// the timezone came from the input string.
 				// If the timezone equals UTC, then we assume that no explicit timezone
-				// information has been given and we set it to the application's
+				// information has been given, and we set it to the application's
 				// default time zone.
 				// This is a no-op, if the application's default timezone equals 'UTC'
 				// anyway.
@@ -199,7 +204,7 @@ trait UTCBasedTimes
 			return $result;
 		} catch (InvalidArgumentException $e) {
 			// If the specified format did not mach, don't throw an exception,
-			// but try to parse the value using an best-effort approach, see below
+			// but try to parse the value using a best-effort approach, see below
 		}
 
 		// Might throw an InvalidArgumentException if no recognized format is found,

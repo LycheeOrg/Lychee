@@ -2,7 +2,9 @@
 
 namespace App\Actions;
 
+use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -43,15 +45,25 @@ class PhotoAuthorisationProvider
 	 * for an anonymous user.
 	 * However, the logic here resembles the old behaviour.
 	 * TODO: Re-consider if we really want it this way?
+	 *
+	 * @param Builder $query
+	 *
+	 * @return Builder
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function applyPublicFilter(Builder $query): Builder
 	{
 		$this->failForWrongQueryModel($query);
 
-		return $query->where(fn (Builder $q) => $q
-			->where('is_public', '=', true)
-			->orWhereHas('album', fn (Builder $q2) => $q2->where('is_public', '=', true))
-		);
+		try {
+			return $query->where(fn (Builder $q) => $q
+				->where('is_public', '=', true)
+				->orWhereHas('album', fn (Builder $q2) => $q2->where('is_public', '=', true))
+			);
+		} catch (\RuntimeException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
 	/**
@@ -73,6 +85,8 @@ class PhotoAuthorisationProvider
 	 * @param Builder $query
 	 *
 	 * @return Builder
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function applyVisibilityFilter(Builder $query): Builder
 	{
@@ -86,14 +100,18 @@ class PhotoAuthorisationProvider
 			// We must wrap everything into an outer query to avoid any undesired
 			// effects in case that the original query already contains an
 			// "OR"-clause.
-			return $query->where(
-				function (Builder $query2) {
-					$query2->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
-					if (Configs::get_value('public_photos_hidden', '1') === '0') {
-						$query2->orWhere('is_public', '=', true);
+			try {
+				return $query->where(
+					function (Builder $query2) {
+						$query2->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
+						if (Configs::get_value('public_photos_hidden', '1') === '0') {
+							$query2->orWhere('is_public', '=', true);
+						}
 					}
-				}
-			);
+				);
+			} catch (\InvalidArgumentException | \RuntimeException $e) {
+				throw new QueryBuilderException($e);
+			}
 		}
 
 		$userID = AccessControl::id();
@@ -103,13 +121,17 @@ class PhotoAuthorisationProvider
 		// "OR"-clause.
 		return $query->where(
 			function (Builder $query2) use ($userID) {
-				$query2->where('owner_id', '=', $userID);
-				$query2->orWhereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
-				if (AccessControl::can_upload()) {
-					$query2->orWhereNull('album_id');
-				}
-				if (Configs::get_value('public_photos_hidden', '1') === '0') {
-					$query2->orWhere('is_public', '=', true);
+				try {
+					$query2->where('owner_id', '=', $userID);
+					$query2->orWhereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
+					if (AccessControl::can_upload()) {
+						$query2->orWhereNull('album_id');
+					}
+					if (Configs::get_value('public_photos_hidden', '1') === '0') {
+						$query2->orWhere('is_public', '=', true);
+					}
+				} catch (\InvalidArgumentException | \RuntimeException $e) {
+					throw new QueryBuilderException($e);
 				}
 			}
 		);
@@ -144,6 +166,8 @@ class PhotoAuthorisationProvider
 	 * @param int|Photo $photoModelOrID
 	 *
 	 * @return bool
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function isVisible($photoModelOrID): bool
 	{
@@ -206,6 +230,8 @@ class PhotoAuthorisationProvider
 	 * @param int[] $photoIDs
 	 *
 	 * @return bool
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function areEditable(array $photoIDs): bool
 	{
@@ -221,10 +247,14 @@ class PhotoAuthorisationProvider
 		// duplicates.
 		$photoIDs = array_unique($photoIDs);
 		if (count($photoIDs) > 0) {
-			return Photo::query()
-				->whereIn('id', $photoIDs)
-				->where('owner_id', '=', $userID)
-				->count() === count($photoIDs);
+			try {
+				return Photo::query()
+						->whereIn('id', $photoIDs)
+						->where('owner_id', '=', $userID)
+						->count() === count($photoIDs);
+			} catch (\InvalidArgumentException $e) {
+				throw new QueryBuilderException($e);
+			}
 		}
 
 		return true;

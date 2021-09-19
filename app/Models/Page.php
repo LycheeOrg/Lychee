@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Builder;
@@ -13,31 +14,28 @@ use Illuminate\Support\Carbon;
 /**
  * App\Page.
  *
- * @property int                      $id
- * @property string                   $title
- * @property string                   $menu_title
- * @property int                      $in_menu
- * @property int                      $enabled
- * @property string                   $link
- * @property int                      $order
- * @property Carbon|null              $created_at
- * @property Carbon|null              $updated_at
- * @property Collection|PageContent[] $content
+ * @property int         $id
+ * @property string      $title
+ * @property string      $menu_title
+ * @property int         $in_menu
+ * @property int         $enabled
+ * @property string      $link
+ * @property int         $order
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Collection  $content
  *
- * @method static Builder|Page enabled()
- * @method static Builder|Page menu()
- * @method static Builder|Page newModelQuery()
- * @method static Builder|Page newQuery()
- * @method static Builder|Page query()
- * @method static Builder|Page whereCreatedAt($value)
- * @method static Builder|Page whereEnabled($value)
- * @method static Builder|Page whereId($value)
- * @method static Builder|Page whereInMenu($value)
- * @method static Builder|Page whereLink($value)
- * @method static Builder|Page whereMenuTitle($value)
- * @method static Builder|Page whereOrder($value)
- * @method static Builder|Page whereTitle($value)
- * @method static Builder|Page whereUpdatedAt($value)
+ * @method static Builder enabled()
+ * @method static Builder menu()
+ * @method static Builder whereCreatedAt($value)
+ * @method static Builder whereEnabled($value)
+ * @method static Builder whereId($value)
+ * @method static Builder whereInMenu($value)
+ * @method static Builder whereLink($value)
+ * @method static Builder whereMenuTitle($value)
+ * @method static Builder whereOrder($value)
+ * @method static Builder whereTitle($value)
+ * @method static Builder whereUpdatedAt($value)
  */
 class Page extends Model
 {
@@ -50,10 +48,18 @@ class Page extends Model
 	 * Return the relationship between a page and its content.
 	 *
 	 * @return HasMany
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function content()
+	public function content(): HasMany
 	{
-		return $this->hasMany('App\Models\PageContent', 'page_id', 'id')->orderBy('order', 'ASC');
+		try {
+			return $this
+				->hasMany('App\Models\PageContent', 'page_id', 'id')
+				->orderBy('order');
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
 	/**
@@ -61,22 +67,39 @@ class Page extends Model
 	 */
 
 	/**
-	 * @param $query
+	 * @param Builder $query
 	 *
-	 * @return mixed
+	 * @return Builder
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function scopeMenu(Builder $query)
+	public function scopeMenu(Builder $query): Builder
 	{
-		return $query->where('in_menu', true)->where('enabled', true)->orderBy('order', 'ASC');
+		try {
+			return $query
+			->where('in_menu', true)
+			->where('enabled', true)
+			->orderBy('order');
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
 	/**
-	 * @param $query
+	 * @param Builder $query
 	 *
-	 * @return mixed
+	 * @return Builder
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function scopeEnabled(Builder $query)
+	public function scopeEnabled(Builder $query): Builder
 	{
-		return $query->where('enabled', true)->orderBy('order', 'ASC');
+		try {
+			return $query
+			->where('enabled', true)
+			->orderBy('order');
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Internal;
 
-class InvalidRotationDirectionException extends \InvalidArgumentException
+class InvalidRotationDirectionException extends LycheeDomainException
 {
 	public function __construct()
 	{

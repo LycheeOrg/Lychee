@@ -27,7 +27,7 @@ class DBExists
 	 *
 	 * @return mixed
 	 */
-	public function handle($request, Closure $next)
+	public function handle(Request $request, Closure $next)
 	{
 		if (!$this->existsDB->assert()) {
 			return ToInstall::go();

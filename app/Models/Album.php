@@ -3,6 +3,10 @@
 namespace App\Models;
 
 use App\Contracts\BaseAlbum;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\ForwardsToParentImplementation;
@@ -33,6 +37,8 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * @property Photo|null $cover
  * @property int        $_lft
  * @property int        $_rgt
+ *
+ * @method static NSQueryBuilder query()
  */
 class Album extends Model implements BaseAlbum
 {
@@ -137,6 +143,9 @@ class Album extends Model implements BaseAlbum
 		return new HasManyPhotosRecursively($this);
 	}
 
+	/**
+	 * @throws InvalidPropertyException
+	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
 		if ($this->cover_id) {
@@ -268,10 +277,10 @@ class Album extends Model implements BaseAlbum
 	 *
 	 * @param bool $skipTreeFixing
 	 *
-	 * @return bool
+	 * @return bool always returns true
 	 *
-	 * @throws \LogicException
-	 * @throws \RuntimeException
+	 * @throws ModelDBException
+	 * @throws InternalLycheeException
 	 */
 	public function delete(bool $skipTreeFixing = false): bool
 	{
@@ -284,12 +293,16 @@ class Album extends Model implements BaseAlbum
 			$photo->delete();
 		}
 
-		$albums = $this->children()
-			->whereHas(
-				'base_class',
-				fn (Builder $q) => $q->where('owner_id', '=', AccessControl::id())
-			)
-			->get();
+		try {
+			$albums = $this->children()
+				->whereHas(
+					'base_class',
+					fn (Builder $q) => $q->where('owner_id', '=', AccessControl::id())
+				)
+				->get();
+		} catch (\RuntimeException $e) {
+			throw new QueryBuilderException($e);
+		}
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			$album->delete(true);

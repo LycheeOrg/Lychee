@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Internal;
 
-class ZeroModuloException extends \InvalidArgumentException
+class ZeroModuloException extends LycheeDomainException
 {
 	public function __construct()
 	{

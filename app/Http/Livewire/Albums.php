@@ -4,25 +4,25 @@ namespace App\Http\Livewire;
 
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
+use App\Contracts\InternalLycheeException;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Livewire\Component;
 
 class Albums extends Component
 {
-	public $albums;
-	public $smartalbums;
-	public $shared_albums;
-
-	/** @var Top */
-	private $top;
-
-	/** @var Smart */
-	private $smart;
+	public array $albums;
+	public array $smartalbums;
+	public array $shared_albums;
+	private Top $top;
+	private Smart $smart;
 
 	/**
 	 * Initialize component.
 	 *
 	 * @param Top   $top
 	 * @param Smart $smart
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function mount(
 		Top $top,
@@ -42,6 +42,8 @@ class Albums extends Component
 
 	/**
 	 * Render component.
+	 *
+	 * @throws BindingResolutionException
 	 */
 	public function render()
 	{

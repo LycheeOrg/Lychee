@@ -21,17 +21,14 @@ use Illuminate\Database\QueryException;
  * @property int         $confidentiality
  * @property string      $description
  *
- * @method static Builder|Configs admin()
- * @method static Builder|Configs info()
- * @method static Builder|Configs newModelQuery()
- * @method static Builder|Configs newQuery()
- * @method static Builder|Configs public ()
- * @method static Builder|Configs query()
- * @method static Builder|Configs whereCat($value)
- * @method static Builder|Configs whereConfidentiality($value)
- * @method static Builder|Configs whereId($value)
- * @method static Builder|Configs whereKey($value)
- * @method static Builder|Configs whereValue($value)
+ * @method static Builder admin()
+ * @method static Builder info()
+ * @method static Builder public ()
+ * @method static Builder whereCat($value)
+ * @method static Builder whereConfidentiality($value)
+ * @method static Builder whereId($value)
+ * @method static Builder whereKey($value)
+ * @method static Builder whereValue($value)
  */
 class Configs extends Model
 {

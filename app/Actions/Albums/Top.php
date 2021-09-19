@@ -3,6 +3,7 @@
 namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
@@ -30,7 +31,7 @@ class Top
 	 * If the user is authenticated, then the result differentiates between
 	 * albums which are owned by the user and "shared" albums which the
 	 * user does not own, but is allowed to see.
-	 * The term "shared album" might be a little bit misleading here.
+	 * The term "shared album" might be a little misleading here.
 	 * Albums which are owned by the user himself may also be shared (with
 	 * other users.)
 	 * Actually, in this context "shared albums" means "foreign albums".
@@ -39,6 +40,8 @@ class Top
 	 * accessible (but are visible).
 	 *
 	 * @return array{albums: BaseCollection, shared_albums: BaseCollection}
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function get(): array
 	{

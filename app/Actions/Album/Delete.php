@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\ModelDBException;
 
 class Delete extends Action
@@ -11,6 +12,7 @@ class Delete extends Action
 	 * @param array $albumIDs
 	 *
 	 * @throws ModelDBException
+	 * @throws InvalidSmartIdException
 	 */
 	public function do(array $albumIDs): void
 	{

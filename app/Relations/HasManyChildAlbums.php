@@ -3,9 +3,12 @@
 namespace App\Relations;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
@@ -33,6 +36,9 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		);
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function addConstraints()
 	{
 		if (static::$constraints) {
@@ -41,12 +47,18 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		}
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
 		$this->albumAuthorisationProvider->applyVisibilityFilter($this->query);
 	}
 
+	/**
+	 * @throws InvalidOrderDirectionException
+	 */
 	public function getResults()
 	{
 		if (is_null($this->getParentKey())) {
@@ -67,6 +79,8 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	 * @param string     $relation the name of the relation from the parent to the child models
 	 *
 	 * @return array
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{

@@ -12,16 +12,19 @@ use App\Actions\Photo\Strategies\AddStrategyParameters;
 use App\Actions\Photo\Strategies\AddVideoPartnerStrategy;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
-use App\Exceptions\InsufficientFilesystemPermissions;
+use App\Contracts\LycheeException;
+use App\Exceptions\ExternalComponentFailedException;
+use App\Exceptions\ExternalComponentMissingException;
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\ModelDBException;
 use App\Factories\AlbumFactory;
 use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Create
 {
@@ -54,10 +57,8 @@ class Create
 	 *
 	 * @return Photo|null the newly created or updated photo
 	 *
-	 * @throws InsufficientFilesystemPermissions
-	 * @throws InvalidPropertyException
-	 * @throws ModelDBException
-	 * @throws MediaFileOperationException
+	 * @throws ModelNotFoundException
+	 * @throws LycheeException
 	 */
 	public function add(SourceFileInfo $sourceFileInfo, $albumID = null): Photo
 	{
@@ -123,8 +124,14 @@ class Create
 	 * {@link AddStrategyParameters::$info} of {@link Create::$strategyParameters}.
 	 *
 	 * @param SourceFileInfo $sourceFileInfo information about the source file
+	 *
+	 * @return void
+	 *
+	 * @throws ExternalComponentMissingException
+	 * @throws MediaFileOperationException
+	 * @throws ExternalComponentFailedException
 	 */
-	protected function loadFileMetadata(SourceFileInfo $sourceFileInfo)
+	protected function loadFileMetadata(SourceFileInfo $sourceFileInfo): void
 	{
 		/* @var  Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
@@ -200,6 +207,8 @@ class Create
 	 *                                 {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
 	 *
 	 * @throws InvalidPropertyException
+	 * @throws ModelNotFoundException
+	 * @throws InvalidSmartIdException
 	 */
 	protected function initParentId($albumID = null)
 	{

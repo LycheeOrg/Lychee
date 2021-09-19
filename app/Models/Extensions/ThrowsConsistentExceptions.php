@@ -57,7 +57,7 @@ trait ThrowsConsistentExceptions
 			// Sic! Don't use `!$parentDelete` in condition, because we also
 			// need to proceed if `$parentDelete === null` .
 			// If Eloquent returns `null` (instead of `true`), this also
-			// indicates a success and we must go on.
+			// indicates a success, and we must go on.
 			// Eloquent, I love you .... not.
 			$result = parent::delete();
 			if ($result !== true && $result !== null) {

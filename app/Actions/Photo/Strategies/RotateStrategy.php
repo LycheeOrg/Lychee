@@ -3,12 +3,13 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Photo\Extensions\SourceFileInfo;
+use App\Contracts\LycheeException;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidRotationDirectionException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Image\ImageHandlerInterface;
 use App\Metadata\Extractor;
@@ -28,6 +29,7 @@ class RotateStrategy extends AddBaseStrategy
 	 *                                           rotated
 	 * @throws InvalidRotationDirectionException thrown if $direction does
 	 *                                           neither equal -1 nor 1
+	 * @throws IllegalOrderOfOperationException
 	 */
 	public function __construct(Photo $photo, int $direction)
 	{
@@ -42,17 +44,17 @@ class RotateStrategy extends AddBaseStrategy
 		// duplicate, we still want to rotate it) and we want to re-sync
 		// metadata (after rotation width, height and filesize may have changed).
 		//
-		// In case the photo has originally been imported as an symbolic link,
+		// In case the photo has originally been imported as a symbolic link,
 		// the photo won't be a symbolic link after rotation, but become an
 		// independent file which is detached from the original target of the
 		// symbolic link.
 		// This is by design.
 		// The two alternatives would be:
-		//  a) Rotate the original photo which the symlink points to.
-		//  b) Bail out with an error message, if the user attempts to rotate
+		//  1. Rotate the original photo which the symlink points to.
+		//  2. Bail out with an error message, if the user attempts to rotate
 		//     a photo that was imported via a symlink
-		// After discussion among the developers, option a) was considered a
-		// no-go and b) was considered to be too restrictive.
+		// After discussion among the developers, option 1 was considered a
+		// no-go and 2 was considered to be too restrictive.
 		parent::__construct(
 			new AddStrategyParameters(
 				new ImportMode(true, false, false, true)
@@ -86,8 +88,7 @@ class RotateStrategy extends AddBaseStrategy
 	/**
 	 * @return Photo
 	 *
-	 * @throws MediaFileOperationException
-	 * @throws ModelDBException
+	 * @throws LycheeException
 	 */
 	public function do(): Photo
 	{
@@ -178,9 +179,11 @@ class RotateStrategy extends AddBaseStrategy
 			// Due to rotation the number and type of size variants may have
 			// changed, too.
 			// So we actually have to do a 3-way merge and update:
-			// a) delete size variants of the duplicates which do not exist
-			// anymore, b) update size variants of the duplicates which
-			// still exist and c) add new size variants to duplicates which
+			//  1. delete size variants of the duplicates which do not exist
+			//     anymore,
+			//  2. update size variants of the duplicates which still exist,
+			//     and
+			//  3. add new size variants to duplicates which
 			// haven't existed before.
 			// For simplicity, we simply delete all size variants of the
 			// duplicates and re-create them.

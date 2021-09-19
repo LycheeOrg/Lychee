@@ -3,6 +3,7 @@
 namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
@@ -24,6 +25,9 @@ class Tree
 		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function get(): array
 	{
 		$return = [];
@@ -31,6 +35,7 @@ class Tree
 		/** @var NsQueryBuilder $query */
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query());
+		/** @var NsCollection $albums */
 		$albums = (new SortingDecorator($query))
 			->orderBy('id')
 			->orderBy($this->sortingCol, $this->sortingOrder)

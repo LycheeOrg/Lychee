@@ -4,6 +4,7 @@ namespace App\Factories;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\BaseAlbum;
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -34,7 +35,9 @@ class AlbumFactory
 	 *
 	 * @return AbstractAlbum the album for the ID
 	 *
-	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
+	 * @throws ModelNotFoundException  thrown, if no album with the given ID exists
+	 * @throws InvalidSmartIdException should not be thrown; otherwise this
+	 *                                 indicates an internal bug
 	 */
 	public function findOrFail($albumId, bool $withRelations = true): AbstractAlbum
 	{
@@ -85,6 +88,9 @@ class AlbumFactory
 	 *                        smart albums) is acceptable
 	 *
 	 * @return Collection a possibly empty list of {@link AbstractAlbum}
+	 *
+	 * @throws InvalidSmartIdException should not be thrown; otherwise this
+	 *                                 indicates an internal bug
 	 */
 	public function findWhereIDsIn(array $albumIDs): Collection
 	{
@@ -104,13 +110,16 @@ class AlbumFactory
 	}
 
 	/**
-	 * Returns a collection of {@link \App\SmartAlbums\BaseSmartAlbum} with one instance for each built-in smart album.
+	 * Returns a collection of {@link \App\SmartAlbums\BaseSmartAlbum} with
+	 * one instance for each built-in smart album.
 	 *
 	 * @param bool $withRelations Eagerly loads the relation
 	 *                            {@link BaseSmartAlbum::photos()}
 	 *                            for each smart album
 	 *
 	 * @return Collection
+	 *
+	 * @throws InvalidSmartIdException
 	 */
 	public function getAllBuiltInSmartAlbums(bool $withRelations = true): Collection
 	{
@@ -143,11 +152,13 @@ class AlbumFactory
 	 *                              for the smart album
 	 *
 	 * @return BaseSmartAlbum
+	 *
+	 * @throws InvalidSmartIdException
 	 */
 	public function createSmartAlbum(string $smartAlbumId, bool $withRelations = true): BaseSmartAlbum
 	{
 		if (!$this->isBuiltInSmartAlbum($smartAlbumId)) {
-			throw new \InvalidArgumentException('given ID does not identify a smart album');
+			throw new InvalidSmartIdException($smartAlbumId);
 		}
 
 		/** @var BaseSmartAlbum $smartAlbum */

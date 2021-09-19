@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class PhotosAddedNotification extends Command
 {
@@ -31,7 +32,7 @@ class PhotosAddedNotification extends Command
 	/**
 	 * Create a new command instance.
 	 *
-	 * @return void
+	 * @throws SymfonyConsoleException
 	 */
 	public function __construct()
 	{

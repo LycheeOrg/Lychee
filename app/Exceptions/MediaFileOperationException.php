@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
  * The type and format of a media file should be validated first and the
  * application should throw an {@link MediaFileUnsupportedException} instead.
  */
-class MediaFileOperationException extends BaseException
+class MediaFileOperationException extends LycheeBaseException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

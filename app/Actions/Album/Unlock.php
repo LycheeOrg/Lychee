@@ -4,6 +4,7 @@ namespace App\Actions\Album;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Models\BaseAlbumImpl;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 
 class Unlock extends Action
@@ -26,6 +27,8 @@ class Unlock extends Action
 	 * @param string $password
 	 *
 	 * @return bool true on success, false if password was wrong
+	 *
+	 * @throws ModelNotFoundException
 	 */
 	public function do(string $albumID, string $password): bool
 	{

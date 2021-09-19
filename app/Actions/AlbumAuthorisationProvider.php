@@ -4,7 +4,10 @@ namespace App\Actions;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\BaseAlbum;
+use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
+use App\Exceptions\Internal\InvalidSmartIdException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
@@ -42,6 +45,8 @@ class AlbumAuthorisationProvider
 	 * @param Builder $query
 	 *
 	 * @return Builder
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function applyVisibilityFilter(Builder $query): Builder
 	{
@@ -71,7 +76,11 @@ class AlbumAuthorisationProvider
 			} else {
 				// If the queried model is not the base class, but a derived one,
 				// we must apply the sub-query to the relation.
-				return $query->whereHas('base_class', $visibilitySubQuery);
+				try {
+					return $query->whereHas('base_class', $visibilitySubQuery);
+				} catch (\RuntimeException $e) {
+					throw new QueryBuilderException($e);
+				}
 			}
 		}
 
@@ -83,19 +92,23 @@ class AlbumAuthorisationProvider
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
 		$visibilitySubQuery = function (Builder $query2) use ($userID) {
-			$query2
-				->where('owner_id', '=', $userID)
-				->orWhere(fn (Builder $q) => $q
-					->where('requires_link', '=', false)
-					->whereHas(
-						'shared_with',
-						fn (Builder $q2) => $q2->where('user_id', '=', $userID)
+			try {
+				$query2
+					->where('owner_id', '=', $userID)
+					->orWhere(fn (Builder $q) => $q
+						->where('requires_link', '=', false)
+						->whereHas(
+							'shared_with',
+							fn (Builder $q2) => $q2->where('user_id', '=', $userID)
+						)
 					)
-				)
-				->orWhere(fn (Builder $q) => $q
-					->where('requires_link', '=', false)
-					->where('is_public', '=', true)
-				);
+					->orWhere(fn (Builder $q) => $q
+						->where('requires_link', '=', false)
+						->where('is_public', '=', true)
+					);
+			} catch (\InvalidArgumentException | \RuntimeException $e) {
+				throw new QueryBuilderException($e);
+			}
 		};
 
 		if ($model instanceof BaseAlbumImpl) {
@@ -105,7 +118,11 @@ class AlbumAuthorisationProvider
 		} else {
 			// If the queried model is not the base class, but a derived one,
 			// we must apply the sub-query to the relation.
-			return $query->whereHas('base_class', $visibilitySubQuery);
+			try {
+				return $query->whereHas('base_class', $visibilitySubQuery);
+			} catch (\RuntimeException $e) {
+				throw new QueryBuilderException($e);
+			}
 		}
 	}
 
@@ -147,6 +164,8 @@ class AlbumAuthorisationProvider
 	 * @param string|int|AbstractAlbum|null $albumModelOrID
 	 *
 	 * @return bool
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function isVisible($albumModelOrID): bool
 	{
@@ -215,6 +234,8 @@ class AlbumAuthorisationProvider
 	 * @param Builder $query
 	 *
 	 * @return Builder
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function applyAccessibilityFilter(Builder $query): Builder
 	{
@@ -234,15 +255,19 @@ class AlbumAuthorisationProvider
 			// The sub-query only uses properties (i.e. columns) which are
 			// defined on the common base model for all albums.
 			$accessibilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs) {
-				$query2
-					->where(fn (Builder $q) => $q
-						->where('is_public', '=', true)
-						->whereNull('password')
-					)
-					->orWhere(fn (Builder $q) => $q
-						->where('is_public', '=', true)
-						->whereIn('id', $unlockedAlbumIDs)
-					);
+				try {
+					$query2
+						->where(fn (Builder $q) => $q
+							->where('is_public', '=', true)
+							->whereNull('password')
+						)
+						->orWhere(fn (Builder $q) => $q
+							->where('is_public', '=', true)
+							->whereIn('id', $unlockedAlbumIDs)
+						);
+				} catch (\InvalidArgumentException $e) {
+					throw new QueryBuilderException($e);
+				}
 			};
 
 			if ($model instanceof BaseAlbumImpl) {
@@ -252,7 +277,11 @@ class AlbumAuthorisationProvider
 			} else {
 				// If the queried model is not the base class, but a derived one,
 				// we must apply the sub-query to the relation.
-				return $query->whereHas('base_class', $accessibilitySubQuery);
+				try {
+					return $query->whereHas('base_class', $accessibilitySubQuery);
+				} catch (\RuntimeException $e) {
+					throw new QueryBuilderException($e);
+				}
 			}
 		}
 
@@ -264,20 +293,24 @@ class AlbumAuthorisationProvider
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
 		$accessibilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
-			$query2
-				->where('owner_id', '=', $userID)
-				->orWhereHas(
-					'shared_with',
-					fn (Builder $q) => $q->where('user_id', '=', $userID)
-				)
-				->orWhere(fn (Builder $q) => $q
-					->where('is_public', '=', true)
-					->whereNull('password')
-				)
-				->orWhere(fn (Builder $q) => $q
-					->where('is_public', '=', true)
-					->whereIn('id', $unlockedAlbumIDs)
-				);
+			try {
+				$query2
+					->where('owner_id', '=', $userID)
+					->orWhereHas(
+						'shared_with',
+						fn (Builder $q) => $q->where('user_id', '=', $userID)
+					)
+					->orWhere(fn (Builder $q) => $q
+						->where('is_public', '=', true)
+						->whereNull('password')
+					)
+					->orWhere(fn (Builder $q) => $q
+						->where('is_public', '=', true)
+						->whereIn('id', $unlockedAlbumIDs)
+					);
+			} catch (\InvalidArgumentException | \RuntimeException $e) {
+				throw new QueryBuilderException($e);
+			}
 		};
 
 		if ($model instanceof BaseAlbumImpl) {
@@ -287,7 +320,11 @@ class AlbumAuthorisationProvider
 		} else {
 			// If the queried model is not the base class, but a derived one,
 			// we must apply the sub-query to the relation.
-			return $query->whereHas('base_class', $accessibilitySubQuery);
+			try {
+				return $query->whereHas('base_class', $accessibilitySubQuery);
+			} catch (\RuntimeException $e) {
+				throw new QueryBuilderException($e);
+			}
 		}
 	}
 
@@ -328,6 +365,8 @@ class AlbumAuthorisationProvider
 	 * @param string|int|AbstractAlbum|null $albumModelOrID
 	 *
 	 * @return bool
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function isAccessible($albumModelOrID): bool
 	{
@@ -431,6 +470,8 @@ class AlbumAuthorisationProvider
 	 * @param array<mixed, string|int> $albumIDs
 	 *
 	 * @return bool
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function areEditable(array $albumIDs): bool
 	{
@@ -452,10 +493,14 @@ class AlbumAuthorisationProvider
 		// duplicates.
 		$albumIDs = array_diff(array_unique($albumIDs), array_keys(AlbumFactory::BUILTIN_SMARTS));
 		if (count($albumIDs) > 0) {
-			return BaseAlbumImpl::query()
-				->whereIn('id', $albumIDs)
-				->where('owner_id', '=', $user->id)
-				->count() === count($albumIDs);
+			try {
+				return BaseAlbumImpl::query()
+						->whereIn('id', $albumIDs)
+						->where('owner_id', '=', $user->id)
+						->count() === count($albumIDs);
+			} catch (\InvalidArgumentException $e) {
+				throw new QueryBuilderException($e);
+			}
 		}
 
 		return true;
@@ -514,6 +559,8 @@ class AlbumAuthorisationProvider
 	 * @param string $smartAlbumID
 	 *
 	 * @return bool true, if the smart album is visible/accessible by the user
+	 *
+	 * @throws InvalidSmartIdException
 	 */
 	private function isAuthorizedForSmartAlbum(string $smartAlbumID): bool
 	{

@@ -4,6 +4,8 @@ namespace App\Http\Middleware;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Actions\PhotoAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\UnauthorizedException;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -25,8 +27,11 @@ class ReadCheck
 	 * @param Closure $next
 	 *
 	 * @return mixed
+	 *
+	 * @throws InternalLycheeException
+	 * @throws UnauthorizedException
 	 */
-	public function handle($request, Closure $next)
+	public function handle(Request $request, Closure $next)
 	{
 		$albumIDs = [];
 		if ($request->has('albumIDs')) {
@@ -37,7 +42,7 @@ class ReadCheck
 		}
 		foreach ($albumIDs as $albumID) {
 			if (!$this->albumAuthorisationProvider->isAccessible($albumID)) {
-				return response('', 403);
+				throw new UnauthorizedException();
 			}
 		}
 
@@ -50,7 +55,7 @@ class ReadCheck
 		}
 		foreach ($photoIDs as $photoID) {
 			if (!$this->photoAuthorisationProvider->isVisible($photoID)) {
-				return response('', 403);
+				throw new UnauthorizedException();
 			}
 		}
 

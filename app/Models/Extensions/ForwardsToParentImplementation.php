@@ -4,6 +4,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\ModelDBException;
 use App\Models\BaseAlbumImpl;
 use Illuminate\Contracts\Encryption\EncryptException;
@@ -415,6 +416,7 @@ trait ForwardsToParentImplementation
 	 * @throws JsonEncodingException
 	 * @throws EncryptException
 	 * @throws \InvalidArgumentException
+	 * @throws NotImplementedException
 	 */
 	public function setAttribute($key, $value)
 	{

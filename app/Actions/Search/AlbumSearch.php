@@ -3,6 +3,8 @@
 namespace App\Actions\Search;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,6 +19,9 @@ class AlbumSearch
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function query(array $terms): Collection
 	{
 		$albums = $this->applySearchFilter($terms, TagAlbum::query())->get();
@@ -25,15 +30,22 @@ class AlbumSearch
 		return $albums;
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	private function applySearchFilter(array $terms, Builder $query): Builder
 	{
 		$this->albumAuthorisationProvider->applyVisibilityFilter($query);
-		foreach ($terms as $term) {
-			$query->where(
-				fn (Builder $query) => $query
-					->where('title', 'like', '%' . $term . '%')
-					->orWhere('description', 'like', '%' . $term . '%')
-			);
+		try {
+			foreach ($terms as $term) {
+				$query->where(
+					fn (Builder $query) => $query
+						->where('title', 'like', '%' . $term . '%')
+						->orWhere('description', 'like', '%' . $term . '%')
+				);
+			}
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
 		}
 
 		return $query;

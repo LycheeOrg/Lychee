@@ -207,7 +207,7 @@ class PhotoController extends Controller
 	{
 		$request->validate(['albumID' => ['required', new ModelIDRule()]]);
 
-		return $setAlbum->execute(explode(',', $request['photoIDs']), $request['albumID']) ? 'true' : 'false';
+		return $setAlbum->do(explode(',', $request['photoIDs']), $request['albumID']) ? 'true' : 'false';
 	}
 
 	/**

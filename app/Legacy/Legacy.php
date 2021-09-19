@@ -2,6 +2,8 @@
 
 namespace App\Legacy;
 
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\InvalidPropertyException;
 use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Hash;
@@ -12,18 +14,38 @@ use Illuminate\Support\Facades\Session;
  */
 class Legacy
 {
+	/**
+	 * @throws QueryBuilderException
+	 */
 	public static function resetAdmin(): void
 	{
-		Configs::where('key', '=', 'username')->orWhere('key', '=', 'password')->update(['value' => '']);
+		try {
+			Configs::query()
+				->where('key', '=', 'username')
+				->orWhere('key', '=', 'password')
+				->update(['value' => '']);
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
-	public static function SetPassword($request)
+	/**
+	 * @throws InvalidPropertyException
+	 */
+	public static function SetPassword($request): bool
 	{
 		$configs = Configs::get();
-		if (Configs::get('version', '040000') < '040008') {
+		try {
+			$hashedUsername = bcrypt($request['username']);
+			$hashedPassword = bcrypt($request['password']);
+		} catch (\InvalidArgumentException $e) {
+			throw new InvalidPropertyException('Could not hash username or password', $e);
+		}
+
+		if (Configs::get_value('version', '040000') < '040008') {
 			if ($configs['password'] === '' && $configs['username'] === '') {
-				Configs::set('username', bcrypt($request['username']));
-				Configs::set('password', bcrypt($request['password']));
+				Configs::set('username', $hashedUsername);
+				Configs::set('password', $hashedPassword);
 
 				return true;
 			}

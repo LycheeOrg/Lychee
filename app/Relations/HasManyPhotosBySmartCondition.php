@@ -2,6 +2,8 @@
 
 namespace App\Relations;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\NotImplementedException;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -17,6 +19,8 @@ class HasManyPhotosBySmartCondition extends HasManyPhotos
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function addConstraints()
 	{
@@ -27,17 +31,21 @@ class HasManyPhotosBySmartCondition extends HasManyPhotos
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws NotImplementedException
 	 */
 	public function addEagerConstraints(array $models)
 	{
-		throw new \BadMethodCallException('built-in smart albums do not support eager loading (they are no models)');
+		throw new NotImplementedException('built-in smart albums do not support eager loading (they are no models)');
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws NotImplementedException
 	 */
 	public function match(array $models, Collection $results, $relation)
 	{
-		throw new \BadMethodCallException('built-in smart albums do not support eager loading (they are no models)');
+		throw new NotImplementedException('built-in smart albums do not support eager loading (they are no models)');
 	}
 }

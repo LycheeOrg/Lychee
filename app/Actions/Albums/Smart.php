@@ -3,6 +3,7 @@
 namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
@@ -34,6 +35,8 @@ class Smart
 	 * but not accessible.
 	 *
 	 * @return array[BaseAlbum] the array of smart albums
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function get(): array
 	{

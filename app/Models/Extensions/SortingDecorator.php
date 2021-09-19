@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -22,19 +23,33 @@ class SortingDecorator
 	/** @var array{column: string, direction:string}[] */
 	protected array $postponedSortBy = [];
 
+	/**
+	 * @throws InvalidOrderDirectionException
+	 */
 	public function orderBy($column, $direction = 'asc'): SortingDecorator
 	{
 		$direction = strtolower($direction);
 		if (in_array($column, self::POSTPONE_COLUMNS)) {
 			if (!in_array($direction, ['asc', 'desc'], true)) {
-				throw new \InvalidArgumentException('Order direction must be "asc" or "desc".');
+				throw new InvalidOrderDirectionException();
 			}
 			$this->postponedSortBy[] = [
 				'column' => $column,
 				'direction' => $direction,
 			];
 		} else {
-			$this->baseBuilder = $this->baseBuilder->orderBy($column, $direction);
+			try {
+				$this->baseBuilder = $this->baseBuilder->orderBy($column, $direction);
+			} catch (\InvalidArgumentException $e) {
+				// Sic! In theory, `\InvalidArgumentException` should be thrown
+				// if the *type* of argument differs from the expected type
+				// (e.g. a method gets pass an integer, but requires a string).
+				// If the *value* is invalid, the method should throw a
+				// `\InvalidDomainException`.
+				// But Eloquent throws `\InvalidArgumentException` if the
+				// direction does neither equal "asc" nor "desc".
+				throw new InvalidOrderDirectionException();
+			}
 		}
 
 		return $this;

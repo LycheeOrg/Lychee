@@ -3,8 +3,10 @@
 namespace App\Actions\Photo;
 
 use App\Actions\User\Notify;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class SetAlbum extends Setters
 {
@@ -13,7 +15,11 @@ class SetAlbum extends Setters
 		$this->property = 'album_id';
 	}
 
-	public function execute(array $photoIDs, string $albumID): bool
+	/**
+	 * @throws ModelNotFoundException
+	 * @throws QueryBuilderException
+	 */
+	public function do(array $photoIDs, ?string $albumID): bool
 	{
 		if ($albumID) {
 			Album::query()->findOrFail($albumID);
@@ -25,6 +31,6 @@ class SetAlbum extends Setters
 			}
 		}
 
-		return $this->do($photoIDs, $albumID == '0' ? null : $albumID);
+		return parent::do($photoIDs, $albumID == '0' ? null : $albumID);
 	}
 }

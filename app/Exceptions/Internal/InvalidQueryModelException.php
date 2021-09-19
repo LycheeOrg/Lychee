@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Internal;
 
-class InvalidQueryModelException extends \InvalidArgumentException
+class InvalidQueryModelException extends LycheeInvalidArgumentException
 {
 	public function __construct(string $modelName)
 	{

@@ -2,7 +2,9 @@
 
 namespace App\Actions\Photo;
 
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * This class is used to toggle a boolean property of a SINGLE photo.
@@ -13,18 +15,26 @@ use App\Models\Photo;
  */
 class Toggle
 {
-	public $property;
+	public string $property;
 
+	/**
+	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
+	 */
 	public function do(string $photoID): bool
 	{
-		$photo = Photo::findOrFail($photoID);
+		/** @var Photo $photo */
+		$photo = Photo::query()->findOrFail($photoID);
 
 		return $this->execute($photo);
 	}
 
+	/**
+	 * @throws ModelDBException
+	 */
 	public function execute(Photo $photo): bool
 	{
-		$photo->{$this->property} = $photo->{$this->property} != 1 ? 1 : 0;
+		$photo->{$this->property} = !($photo->{$this->property});
 
 		return $photo->save();
 	}

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Photo;
 
 /**
@@ -12,10 +13,19 @@ use App\Models\Photo;
  */
 class Setters
 {
-	public $property;
+	public string $property;
 
+	/**
+	 * @throws QueryBuilderException
+	 */
 	public function do(array $photoIDs, ?string $value): bool
 	{
-		return Photo::query()->whereIn('id', $photoIDs)->update([$this->property => $value]);
+		try {
+			return Photo::query()
+				->whereIn('id', $photoIDs)
+				->update([$this->property => $value]);
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 }

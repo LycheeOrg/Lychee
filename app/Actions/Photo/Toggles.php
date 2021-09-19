@@ -2,6 +2,8 @@
 
 namespace App\Actions\Photo;
 
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 
 /**
@@ -14,15 +16,21 @@ class Toggles
 {
 	public string $property;
 
-	public function do(array $photoIDs): bool
+	/**
+	 * @throws ModelDBException
+	 * @throws QueryBuilderException
+	 */
+	public function do(array $photoIDs): void
 	{
-		$photos = Photo::query()->whereIn('id', $photoIDs)->get();
-		$no_error = true;
+		try {
+			$photos = Photo::query()->whereIn('id', $photoIDs)->get();
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$photo->{$this->property} = !($photo->{$this->property});
-			$no_error &= $photo->save();
+			$photo->save();
 		}
-
-		return $no_error;
 	}
 }

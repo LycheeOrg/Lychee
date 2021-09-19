@@ -2,9 +2,11 @@
 
 namespace App\ModelFunctions;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Models\Configs;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 
 class ConfigFunctions
 {
@@ -39,12 +41,20 @@ class ConfigFunctions
 	/**
 	 * Returns the public settings of Lychee (served to diagnostics).
 	 *
-	 * @return array
+	 * @return Collection
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function min_info()
+	public function min_info(): Collection
 	{
-		// Execute query
-		return Configs::info()->orderBy('id', 'ASC')->get()->pluck('value', 'key');
+		try {
+			return Configs::info()
+				->orderBy('id', 'ASC')
+				->get()
+				->pluck('value', 'key');
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
 	/**
@@ -52,7 +62,7 @@ class ConfigFunctions
 	 *
 	 * @return array
 	 */
-	public function public()
+	public function public(): array
 	{
 		// Execute query
 		$return = Configs::public()->pluck('value', 'key')->all();

@@ -2,9 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Contracts\ExternalLycheeException;
+use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
+use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Takedate extends Command
 {
@@ -30,74 +33,91 @@ class Takedate extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @param Extractor $metadataExtractor
+	 *
+	 * @return int
+	 *
+	 * @throws ExternalLycheeException
 	 */
-	public function handle(Extractor $metadataExtractor)
+	public function handle(Extractor $metadataExtractor): int
 	{
-		$argument = $this->argument('nb');
-		$from = $this->argument('from');
-		$timeout = $this->argument('tm');
-		$timestamps = $this->option('timestamp');
-		$force = $this->option('force');
-		set_time_limit($timeout);
+		try {
+			$argument = $this->argument('nb');
+			$from = $this->argument('from');
+			$timeout = $this->argument('tm');
+			$timestamps = $this->option('timestamp');
+			$force = $this->option('force');
+			set_time_limit($timeout);
 
-		if ($argument == 0) {
-			$argument = PHP_INT_MAX;
-		}
-		if ($force) {
-			$photos = Photo::offset($from)->limit($argument)->get();
-		} else {
-			$photos = Photo::whereNull('taken_at')->offset($from)->limit($argument)->get();
-		}
-		if (count($photos) == 0) {
-			$this->line('No pictures require takedate updates.');
-
-			return false;
-		}
-
-		$i = $from - 1;
-		/* @var Photo $photo */
-		foreach ($photos as $photo) {
-			$fullPath = $photo->full_path;
-			$i++;
-			if (!file_exists($fullPath)) {
-				$this->line($i . ': File ' . $fullPath . ' not found for ' . $photo->title . '.');
-				continue;
+			if ($argument == 0) {
+				$argument = PHP_INT_MAX;
 			}
-			$info = $metadataExtractor->extract($fullPath, $photo->type);
-			/* @var \DateTime $stamp */
-			$stamp = $info['taken_at'];
-			if ($stamp != null) {
-				if ($stamp == $photo->takestamp) {
-					$this->line($i . ': Takestamp up to date for ' . $photo->title);
+			if ($force) {
+				$photos = Photo::query()
+					->offset($from)
+					->limit($argument)
+					->get();
+			} else {
+				$photos = Photo::query()
+					->whereNull('taken_at')
+					->offset($from)
+					->limit($argument)
+					->get();
+			}
+			if (count($photos) == 0) {
+				$this->line('No pictures require takedate updates.');
+
+				return false;
+			}
+
+			$i = $from - 1;
+			/* @var Photo $photo */
+			foreach ($photos as $photo) {
+				$fullPath = $photo->full_path;
+				$i++;
+				if (!file_exists($fullPath)) {
+					$this->line($i . ': File ' . $fullPath . ' not found for ' . $photo->title . '.');
 					continue;
 				}
-				$photo->taken_at = $stamp;
-				if ($photo->save()) {
-					$this->line($i . ': Takestamp updated to ' . $stamp->format('d M Y \a\t H:i') . ' for ' . $photo->title);
-				} else {
-					$this->line($i . ': Failed to update takestamp for ' . $photo->title);
+				$info = $metadataExtractor->extract($fullPath, $photo->type);
+				/* @var \DateTime $stamp */
+				$stamp = $info['taken_at'];
+				if ($stamp != null) {
+					if ($stamp == $photo->takestamp) {
+						$this->line($i . ': Takestamp up to date for ' . $photo->title);
+						continue;
+					}
+					$photo->taken_at = $stamp;
+					if ($photo->save()) {
+						$this->line($i . ': Takestamp updated to ' . $stamp->format('d M Y \a\t H:i') . ' for ' . $photo->title);
+					} else {
+						$this->line($i . ': Failed to update takestamp for ' . $photo->title);
+					}
+					continue;
 				}
-				continue;
+				if (!$timestamps) {
+					$this->line($i . ': Failed to get Takestamp data for ' . $photo->title . '.');
+					continue;
+				}
+				if (is_link($fullPath)) {
+					$fullPath = readlink($fullPath);
+				}
+				$created_at = filemtime($fullPath);
+				if ($created_at == $photo->created_at->timestamp) {
+					$this->line($i . ': Created_at up to date for ' . $photo->title);
+					continue;
+				}
+				$photo->created_at->setTimestamp($created_at);
+				if ($photo->save()) {
+					$this->line($i . ': Created_at updated to ' . $photo->created_at->format('d M Y \a\t H:i') . ' for ' . $photo->title);
+				} else {
+					$this->line($i . ': Failed to update created_at for ' . $photo->title);
+				}
 			}
-			if (!$timestamps) {
-				$this->line($i . ': Failed to get Takestamp data for ' . $photo->title . '.');
-				continue;
-			}
-			if (is_link($fullPath)) {
-				$fullPath = readlink($fullPath);
-			}
-			$created_at = filemtime($fullPath);
-			if ($created_at == $photo->created_at->timestamp) {
-				$this->line($i . ': Created_at up to date for ' . $photo->title);
-				continue;
-			}
-			$photo->created_at->setTimestamp($created_at);
-			if ($photo->save()) {
-				$this->line($i . ': Created_at updated to ' . $photo->created_at->format('d M Y \a\t H:i') . ' for ' . $photo->title);
-			} else {
-				$this->line($i . ': Failed to update created_at for ' . $photo->title);
-			}
+
+			return 0;
+		} catch (SymfonyConsoleException $e) {
+			throw new UnexpectedException($e);
 		}
 	}
 }

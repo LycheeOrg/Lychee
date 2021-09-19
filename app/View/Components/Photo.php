@@ -4,6 +4,7 @@ namespace App\View\Components;
 
 use App\Models\Configs;
 use App\Models\SizeVariant;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use Illuminate\View\Component;
@@ -119,6 +120,8 @@ class Photo extends Component
 	 * Get the view / contents that represent the component.
 	 *
 	 * @return \Illuminate\Contracts\View\View|\Closure|string
+	 *
+	 * @throws BindingResolutionException
 	 */
 	public function render()
 	{

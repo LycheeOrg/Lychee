@@ -3,7 +3,10 @@
 namespace App\Models;
 
 use App\Casts\MustNotSetCast;
+use App\Exceptions\ConfigurationException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -12,6 +15,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\SizeVariantObserver;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
@@ -51,7 +55,9 @@ class SizeVariant extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
-	use ThrowsConsistentExceptions;
+	use ThrowsConsistentExceptions {
+		ThrowsConsistentExceptions::delete as private internalDelete;
+	}
 
 	protected string $friendlyModelName = 'size variant';
 
@@ -63,10 +69,18 @@ class SizeVariant extends Model
 	const THUMB2X = 5;
 	const THUMB = 6;
 
+	/**
+	 * @throws MassAssignmentException
+	 * @throws FrameworkException
+	 */
 	public function __construct(array $attributes = [])
 	{
 		parent::__construct($attributes);
-		$this->registerObserver(SizeVariantObserver::class);
+		try {
+			$this->registerObserver(SizeVariantObserver::class);
+		} catch (\RuntimeException $e) {
+			throw new FrameworkException('Laravel\'s observer component', $e);
+		}
 	}
 
 	/**
@@ -140,6 +154,8 @@ class SizeVariant extends Model
 	 * provides symbolic links.
 	 *
 	 * @return string the url of the size variant
+	 *
+	 * @throws ConfigurationException
 	 */
 	public function getUrlAttribute(): string
 	{
@@ -173,7 +189,7 @@ class SizeVariant extends Model
 			return $symLink->url;
 		}
 
-		throw new \InvalidArgumentException('the chosen storage adapter "' . Storage::getDefaultDriver() . '" does not support the symbolic linking feature');
+		throw new ConfigurationException('the chosen storage adapter "' . Storage::getDefaultDriver() . '" does not support the symbolic linking feature');
 	}
 
 	/**
@@ -221,8 +237,7 @@ class SizeVariant extends Model
 	 *
 	 * @return bool Always true
 	 *
-	 * @throws \LogicException
-	 * @throws \RuntimeException
+	 * @throws ModelDBException
 	 */
 	public function delete(bool $keepFile = false): bool
 	{
@@ -244,6 +259,6 @@ class SizeVariant extends Model
 			$this->attributes['short_path'] = '';
 		}
 
-		return parent::delete();
+		return $this->internalDelete();
 	}
 }

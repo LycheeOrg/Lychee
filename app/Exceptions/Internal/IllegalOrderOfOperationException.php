@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Internal;
 
-class IllegalOrderOfOperationException extends \LogicException
+class IllegalOrderOfOperationException extends LycheeLogicException
 {
 	public function __construct(string $msg)
 	{

@@ -17,11 +17,16 @@ class Create
 		if (User::query()->where('username', '=', $data['username'])->count()) {
 			throw new InvalidPropertyException('username not unique');
 		}
+		try {
+			$hashedPassword = bcrypt($data['password']);
+		} catch (\InvalidArgumentException $e) {
+			throw new InvalidPropertyException('Could not hash password', $e);
+		}
 		$user = new User();
 		$user->upload = ($data['upload'] == '1');
 		$user->lock = ($data['lock'] == '1');
 		$user->username = $data['username'];
-		$user->password = bcrypt($data['password']);
+		$user->password = $hashedPassword;
 		$user->save();
 
 		return $user;

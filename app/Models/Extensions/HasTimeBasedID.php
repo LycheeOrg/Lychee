@@ -4,10 +4,12 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\Internal\TimeBasedIdException;
 use App\Exceptions\ModelDBException;
 use App\Models\Configs;
 use App\Models\Logs;
+use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\Eloquent\Model;
@@ -47,11 +49,11 @@ trait HasTimeBasedID
 	 *
 	 * @param bool $value
 	 *
-	 * @throws \BadMethodCallException
+	 * @throws NotImplementedException
 	 */
 	public function setIncrementing($value)
 	{
-		throw new \BadMethodCallException('must not call setIncrementing for a model which uses the trait HasTimeBasedID');
+		throw new NotImplementedException('must not call setIncrementing for a model which uses the trait HasTimeBasedID');
 	}
 
 	/**
@@ -62,14 +64,15 @@ trait HasTimeBasedID
 	 *
 	 * @return mixed
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws NotImplementedException
 	 * @throws InvalidCastException
 	 * @throws JsonEncodingException
+	 * @throws InvalidTimeZoneException
 	 */
 	public function setAttribute($key, $value)
 	{
 		if ($key == $this->getKeyName()) {
-			throw new \InvalidArgumentException('must not set primary key explicitly, primary key will be set on first insert');
+			throw new NotImplementedException('must not set primary key explicitly, primary key will be set on first insert');
 		}
 
 		return parent::setAttribute($key, $value);

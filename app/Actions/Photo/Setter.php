@@ -2,7 +2,9 @@
 
 namespace App\Actions\Photo;
 
+use App\Exceptions\ModelDBException;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * This class is used to set a property of a SINGLE photo.
@@ -13,8 +15,12 @@ use App\Models\Photo;
  */
 class Setter
 {
-	public $property;
+	public string $property;
 
+	/**
+	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
+	 */
 	public function do(string $photoID, string $value): bool
 	{
 		/** @var Photo $photo */
@@ -23,6 +29,9 @@ class Setter
 		return $this->execute($photo, $value);
 	}
 
+	/**
+	 * @throws ModelDBException
+	 */
 	public function execute(Photo $photo, $value): bool
 	{
 		$photo->{$this->property} = $value;

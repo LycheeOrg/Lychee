@@ -2,6 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\QueryBuilder;
@@ -25,31 +27,37 @@ class AlbumBuilder extends QueryBuilder
 	 * @param array|string $columns
 	 *
 	 * @return Model[]|static[]
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function getModels($columns = ['*'])
 	{
-		$baseQuery = $this->getQuery();
-		if ($columns == ['*'] && ($baseQuery->columns == ['*'] || $baseQuery->columns == null)) {
-			$this->addSelect([
-				'min_taken_at' => Photo::query()
-					->select('taken_at')
-					->join('albums as a', 'a.id', '=', 'album_id')
-					->whereColumn('a._lft', '>=', 'albums._lft')
-					->whereColumn('a._rgt', '<=', 'albums._rgt')
-					->whereNotNull('taken_at')
-					->orderBy('taken_at', 'asc')
-					->limit(1),
-				'max_taken_at' => Photo::query()
-					->select('taken_at')
-					->join('albums as a', 'a.id', '=', 'album_id')
-					->whereColumn('a._lft', '>=', 'albums._lft')
-					->whereColumn('a._rgt', '<=', 'albums._rgt')
-					->whereNotNull('taken_at')
-					->orderBy('taken_at', 'desc')
-					->limit(1),
-			]);
-		}
+		try {
+			$baseQuery = $this->getQuery();
+			if ($columns == ['*'] && ($baseQuery->columns == ['*'] || $baseQuery->columns == null)) {
+				$this->addSelect([
+					'min_taken_at' => Photo::query()
+						->select('taken_at')
+						->join('albums as a', 'a.id', '=', 'album_id')
+						->whereColumn('a._lft', '>=', 'albums._lft')
+						->whereColumn('a._rgt', '<=', 'albums._rgt')
+						->whereNotNull('taken_at')
+						->orderBy('taken_at', 'asc')
+						->limit(1),
+					'max_taken_at' => Photo::query()
+						->select('taken_at')
+						->join('albums as a', 'a.id', '=', 'album_id')
+						->whereColumn('a._lft', '>=', 'albums._lft')
+						->whereColumn('a._rgt', '<=', 'albums._rgt')
+						->whereNotNull('taken_at')
+						->orderBy('taken_at', 'desc')
+						->limit(1),
+				]);
+			}
 
-		return parent::getModels($columns);
+			return parent::getModels($columns);
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 }

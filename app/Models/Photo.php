@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
@@ -20,6 +22,7 @@ use App\Observers\PhotoObserver;
 use App\Relations\HasManyBidirectionally;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -136,10 +139,18 @@ class Photo extends Model
 	 */
 	protected ?SizeVariants $sizeVariants = null;
 
+	/**
+	 * @throws MassAssignmentException
+	 * @throws FrameworkException
+	 */
 	public function __construct(array $attributes = [])
 	{
 		parent::__construct($attributes);
-		$this->registerObserver(PhotoObserver::class);
+		try {
+			$this->registerObserver(PhotoObserver::class);
+		} catch (\RuntimeException $e) {
+			throw new FrameworkException('Laravel\'s observer component', $e);
+		}
 	}
 
 	/**
@@ -216,6 +227,8 @@ class Photo extends Model
 	 *                         the Eloquent framework
 	 *
 	 * @return string A properly formatted shutter value
+	 *
+	 * @throws InvalidPropertyException
 	 */
 	protected function getShutterAttribute(?string $shutter): string
 	{
@@ -297,6 +310,8 @@ class Photo extends Model
 	 *                       Eloquent framework
 	 *
 	 * @return string
+	 *
+	 * @throws IllegalOrderOfOperationException
 	 */
 	protected function getFocalAttribute(?string $focal): string
 	{
@@ -385,6 +400,8 @@ class Photo extends Model
 	 * client is not allowed to see that.
 	 *
 	 * @return array
+	 *
+	 * @throws IllegalOrderOfOperationException
 	 */
 	public function toArray(): array
 	{

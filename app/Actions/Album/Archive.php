@@ -4,6 +4,8 @@ namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\BaseAlbum;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Album;
@@ -33,12 +35,15 @@ class Archive extends Action
 	 * @param array $albumIDs
 	 *
 	 * @return StreamedResponse
+	 *
+	 * @throws FrameworkException
+	 * @throws InvalidSmartIdException
 	 */
 	public function do(array $albumIDs): StreamedResponse
 	{
 		$albums = $this->albumFactory->findWhereIDsIn($albumIDs);
 
-		$response = new StreamedResponse(function () use ($albums) {
+		$responseGenerator = function () use ($albums) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
 			$zip = new ZipStream(null, $options);
@@ -50,22 +55,27 @@ class Archive extends Action
 
 			// finish the zip stream
 			$zip->finish();
-		});
+		};
 
-		// Set file type and destination
-		$zipTitle = self::createZipTitle($albums);
-		$disposition = HeaderUtils::makeDisposition(
-			HeaderUtils::DISPOSITION_ATTACHMENT,
-			$zipTitle . '.zip',
-			mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip'
-		);
-		$response->headers->set('Content-Type', 'application/x-zip');
-		$response->headers->set('Content-Disposition', $disposition);
+		try {
+			$response = new StreamedResponse($responseGenerator);
+			// Set file type and destination
+			$zipTitle = self::createZipTitle($albums);
+			$disposition = HeaderUtils::makeDisposition(
+				HeaderUtils::DISPOSITION_ATTACHMENT,
+				$zipTitle . '.zip',
+				mb_check_encoding($zipTitle, 'ASCII') ? '' : 'Album.zip'
+			);
+			$response->headers->set('Content-Type', 'application/x-zip');
+			$response->headers->set('Content-Disposition', $disposition);
 
-		// Disable caching
-		$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
-		$response->headers->set('Pragma', 'no-cache');
-		$response->headers->set('Expires', '0');
+			// Disable caching
+			$response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate');
+			$response->headers->set('Pragma', 'no-cache');
+			$response->headers->set('Expires', '0');
+		} catch (\InvalidArgumentException $e) {
+			throw new FrameworkException('Symfony\'s response component', $e);
+		}
 
 		return $response;
 	}

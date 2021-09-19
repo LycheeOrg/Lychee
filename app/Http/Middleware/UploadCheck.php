@@ -4,6 +4,10 @@ namespace App\Http\Middleware;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Actions\PhotoAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnauthenticatedException;
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Logs;
@@ -31,12 +35,16 @@ class UploadCheck
 	 * @param Closure $next
 	 *
 	 * @return mixed
+	 *
+	 * @throws InternalLycheeException
+	 * @throws UnauthorizedException
+	 * @throws UnauthenticatedException
 	 */
 	public function handle(Request $request, Closure $next)
 	{
 		// not logged!
 		if (!AccessControl::is_logged_in()) {
-			return response('', 401);
+			throw new UnauthenticatedException();
 		}
 
 		// is admin
@@ -48,23 +56,23 @@ class UploadCheck
 
 		// is not admin and does not have upload rights
 		if (!$user->upload) {
-			return response('', 403);
+			throw new UnauthorizedException();
 		}
 
 		$ret = $this->album_check($request);
 		if ($ret === false) {
-			return response('', 403);
+			throw new UnauthorizedException();
 		}
 
-		$ret = $this->photo_check($request, $user->id);
+		$ret = $this->photo_check($request);
 		if ($ret === false) {
-			return response('', 403);
+			throw new UnauthorizedException();
 		}
 
 		// Only used for /api/Sharing::Delete
 		$ret = $this->share_check($request, $user->id);
 		if ($ret === false) {
-			return response('', 403);
+			throw new UnauthorizedException();
 		}
 
 		return $next($request);
@@ -76,6 +84,8 @@ class UploadCheck
 	 * @param Request $request
 	 *
 	 * @return bool
+	 *
+	 * @throws InternalLycheeException
 	 */
 	private function album_check(Request $request): bool
 	{
@@ -99,6 +109,8 @@ class UploadCheck
 	 * @param Request $request
 	 *
 	 * @return bool
+	 *
+	 * @throws InternalLycheeException
 	 */
 	private function photo_check(Request $request): bool
 	{
@@ -118,17 +130,23 @@ class UploadCheck
 	 * @param int     $user_id
 	 *
 	 * @return bool
+	 *
+	 * @throws QueryBuilderException
 	 */
 	private function share_check(Request $request, int $user_id): bool
 	{
 		if ($request->has('ShareIDs')) {
 			$shareIDs = $request['ShareIDs'];
 
-			$albums = Album::query()->whereIn('id', function (Builder $query) use ($shareIDs) {
-				$query->select('album_id')
-					->from('user_base_album')
-					->whereIn('id', explode(',', $shareIDs));
-			})->select('owner_id')->get();
+			try {
+				$albums = Album::query()->whereIn('id', function (Builder $query) use ($shareIDs) {
+					$query->select('album_id')
+						->from('user_base_album')
+						->whereIn('id', explode(',', $shareIDs));
+				})->select('owner_id')->get();
+			} catch (\InvalidArgumentException $e) {
+				throw new QueryBuilderException($e);
+			}
 
 			if ($albums == null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');

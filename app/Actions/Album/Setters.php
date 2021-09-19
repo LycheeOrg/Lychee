@@ -2,6 +2,7 @@
 
 namespace App\Actions\Album;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -31,11 +32,17 @@ class Setters extends Action
 	/**
 	 * @param array $albumIDs the IDs of the albums
 	 * @param mixed $value    the value to be set
+	 *
+	 * @throws QueryBuilderException
 	 */
 	public function do(array $albumIDs, $value): void
 	{
-		$this->query
-			->whereIn('id', $albumIDs)
-			->update([$this->property => $value]);
+		try {
+			$this->query
+				->whereIn('id', $albumIDs)
+				->update([$this->property => $value]);
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 }

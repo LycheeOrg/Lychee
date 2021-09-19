@@ -3,18 +3,20 @@
 namespace App\SmartAlbums;
 
 use App\Models\Extensions\UTCBasedTimes;
+use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Concerns\HasAttributes;
 use Illuminate\Database\Eloquent\Concerns\HidesAttributes;
+use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 
 /**
  * Class FakeModel.
  *
- * This class mimics some of the behaviour of
+ * This class mimics some behaviour of
  * {@link \Illuminate\Database\Eloquent\Model}.
- * The main difference is that a fake model does not actually exists on the
+ * The main difference is that a fake model does not actually exist on the
  * DB layer and thus cannot be loaded, saved, refreshed, etc.
  * However, it enables to use the smart albums which extend
  * {@link \App\SmartAlbums\BaseSmartAlbum} as if they were real models.
@@ -82,7 +84,7 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	/**
 	 * "Deletes" a fake model.
 	 *
-	 * As a fake model does not actually exists on the DB layer,
+	 * As a fake model does not actually exist on the DB layer,
 	 * it is a logical programming error to do so.
 	 * Hence, this implementation always returns false.
 	 *
@@ -159,6 +161,8 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	 * @param string $key
 	 *
 	 * @return mixed
+	 *
+	 * @throws InvalidCastException
 	 */
 	public function __get(string $key)
 	{
@@ -174,6 +178,10 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	 * @param mixed  $value
 	 *
 	 * @return void
+	 *
+	 * @throws InvalidCastException
+	 * @throws JsonEncodingException
+	 * @throws InvalidTimeZoneException
 	 */
 	public function __set(string $key, $value)
 	{
@@ -188,6 +196,8 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	 * @param string $offset
 	 *
 	 * @return bool
+	 *
+	 * @throws InvalidCastException
 	 */
 	public function offsetExists(string $offset): bool
 	{
@@ -202,6 +212,8 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	 * @param string $offset
 	 *
 	 * @return mixed
+	 *
+	 * @throws InvalidCastException
 	 */
 	public function offsetGet(string $offset)
 	{
@@ -217,6 +229,10 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	 * @param mixed  $value
 	 *
 	 * @return void
+	 *
+	 * @throws InvalidCastException
+	 * @throws JsonEncodingException
+	 * @throws InvalidTimeZoneException
 	 */
 	public function offsetSet(string $offset, $value): void
 	{
@@ -245,6 +261,8 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	 * @param string $key
 	 *
 	 * @return bool
+	 *
+	 * @throws InvalidCastException
 	 */
 	public function __isset(string $key): bool
 	{
@@ -274,6 +292,8 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	 * @param array  $parameters
 	 *
 	 * @return mixed
+	 *
+	 * @throws \BadMethodCallException
 	 */
 	public function __call(string $method, array $parameters)
 	{
@@ -294,6 +314,8 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	 * Copied and pasted from {@link \Illuminate\Database\Eloquent\Model::__toString()}.
 	 *
 	 * @return string
+	 *
+	 * @throws JsonEncodingException
 	 */
 	public function __toString(): string
 	{

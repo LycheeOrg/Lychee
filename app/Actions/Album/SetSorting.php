@@ -2,8 +2,15 @@
 
 namespace App\Actions\Album;
 
+use App\Exceptions\ModelDBException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 class SetSorting extends Action
 {
+	/**
+	 * @throws ModelDBException
+	 * @throws ModelNotFoundException
+	 */
 	public function do(string $albumID, ?string $sortingCol, ?string $sortingOrder): bool
 	{
 		$album = $this->albumFactory->findModelOrFail($albumID);

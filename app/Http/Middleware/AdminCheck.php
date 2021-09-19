@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Http\Middleware\Checks\IsInstalled;
 use Closure;
@@ -26,6 +27,8 @@ class AdminCheck
 	 * @param Closure $next
 	 *
 	 * @return mixed
+	 *
+	 * @throws UnauthorizedException
 	 */
 	public function handle($request, Closure $next)
 	{
@@ -34,7 +37,7 @@ class AdminCheck
 		}
 
 		if (!AccessControl::is_admin()) {
-			return response('false');
+			throw new UnauthorizedException('Admin privileges required');
 		}
 
 		return $next($request);

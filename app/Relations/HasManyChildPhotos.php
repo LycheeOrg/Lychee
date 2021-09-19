@@ -3,10 +3,14 @@
 namespace App\Relations;
 
 use App\Actions\PhotoAuthorisationProvider;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
+use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\Model;
 
 class HasManyChildPhotos extends HasManyBidirectionally
@@ -29,6 +33,9 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		);
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function addConstraints()
 	{
 		if (static::$constraints) {
@@ -37,12 +44,18 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		}
 	}
 
+	/**
+	 * @throws InternalLycheeException
+	 */
 	public function addEagerConstraints(array $models)
 	{
 		parent::addEagerConstraints($models);
 		$this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
 	}
 
+	/**
+	 * @throws InvalidOrderDirectionException
+	 */
 	public function getResults()
 	{
 		if (is_null($this->getParentKey())) {
@@ -63,6 +76,10 @@ class HasManyChildPhotos extends HasManyBidirectionally
 	 * @param string     $relation the name of the relation from the parent to the child models
 	 *
 	 * @return array
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws \LogicException
+	 * @throws InvalidCastException
 	 */
 	public function match(array $models, Collection $results, $relation): array
 	{

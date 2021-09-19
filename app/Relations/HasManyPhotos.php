@@ -5,6 +5,7 @@ namespace App\Relations;
 use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\BaseAlbum;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
@@ -93,6 +94,8 @@ abstract class HasManyPhotos extends Relation
 	 * the DB.
 	 *
 	 * @return Collection
+	 *
+	 * @throws InvalidOrderDirectionException
 	 */
 	public function getResults(): Collection
 	{

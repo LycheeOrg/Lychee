@@ -2,6 +2,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Exceptions\InvalidPropertyException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Support\Arrayable;
@@ -34,19 +35,26 @@ class Thumb implements Arrayable, JsonSerializable
 	 * @param string   $sortingOrder  the sorting order either 'ASC' or 'DESC'
 	 *
 	 * @return Thumb|null the created thumbnail; null if the relation is empty
+	 *
+	 * @throws InvalidPropertyException thrown, if $sortingOrder neither
+	 *                                  equals `desc` nor `asc`
 	 */
 	public static function createFromPhotoRelation(Relation $photoRelation, string $sortingCol, string $sortingOrder): ?Thumb
 	{
-		/** @var Photo|null $cover */
-		$cover = $photoRelation
-			->without(['album'])
-			->orderBy('is_starred', 'DESC')
-			->orderBy($sortingCol, $sortingOrder)
-			->orderBy('id', 'ASC')
-			->select(['id', 'type'])
-			->first();
+		try {
+			/** @var Photo|null $cover */
+			$cover = $photoRelation
+				->without(['album'])
+				->orderBy('is_starred', 'DESC')
+				->orderBy($sortingCol, $sortingOrder)
+				->orderBy('id', 'ASC')
+				->select(['id', 'type'])
+				->first();
 
-		return self::createFromPhoto($cover);
+			return self::createFromPhoto($cover);
+		} catch (\InvalidArgumentException $e) {
+			throw new InvalidPropertyException('Sorting order invalid', $e);
+		}
 	}
 
 	/**

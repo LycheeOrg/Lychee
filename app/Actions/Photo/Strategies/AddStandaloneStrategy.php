@@ -45,7 +45,13 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
 
-		// Create size variant for original
+		/**
+		 * Create size variant for original
+		 * Exception `IllegalOrderOfOperations` is never thrown, because we
+		 * have saved the photo above.
+		 *
+		 * @noinspection PhpUnhandledExceptionInspection
+		 */
 		$original = $sizeVariantFactory->createOriginal(
 			$this->parameters->info['width'],
 			$this->parameters->info['height']

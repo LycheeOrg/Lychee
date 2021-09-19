@@ -7,8 +7,11 @@ use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
+use App\Contracts\LycheeException;
+use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Facades\Helpers;
 use App\Models\Logs;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
 
 class FromUrl
@@ -16,17 +19,24 @@ class FromUrl
 	use Constants;
 	use Checks;
 
+	/**
+	 * @throws InsufficientFilesystemPermissions
+	 */
 	public function __construct()
 	{
 		$this->checkPermissions();
 	}
 
+	/**
+	 * @throws LycheeException
+	 * @throws ModelNotFoundException
+	 */
 	public function do(array $urls, $albumId): bool
 	{
 		$error = false;
 		$create = new Create(new ImportMode(true));
 
-		foreach ($urls as &$url) {
+		foreach ($urls as $url) {
 			// Reset the execution timeout for every iteration.
 			set_time_limit(ini_get('max_execution_time'));
 

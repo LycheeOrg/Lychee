@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\BaseAlbum;
+use App\Exceptions\InvalidPropertyException;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\TagAlbumBuilder;
@@ -89,6 +90,9 @@ class TagAlbum extends Model implements BaseAlbum
 		return new HasManyPhotosByTag($this);
 	}
 
+	/**
+	 * @throws InvalidPropertyException
+	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
 		// Note, `photos()` already applies a "security filter" and

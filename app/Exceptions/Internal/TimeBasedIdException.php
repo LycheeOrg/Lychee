@@ -2,7 +2,9 @@
 
 namespace App\Exceptions\Internal;
 
-class TimeBasedIdException extends \RuntimeException
+use App\Contracts\InternalLycheeException;
+
+class TimeBasedIdException extends \RuntimeException implements InternalLycheeException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{

@@ -2,8 +2,17 @@
 
 namespace App\Actions\Album;
 
+use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\ModelDBException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 class SetPublic extends Action
 {
+	/**
+	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
+	 * @throws InvalidPropertyException
+	 */
 	public function do(string $albumID, array $values): bool
 	{
 		$album = $this->albumFactory->findModelOrFail($albumID);
@@ -19,10 +28,13 @@ class SetPublic extends Action
 		// Set password if provided
 		if (array_key_exists('password', $values)) {
 			// password is provided => there is a change
-
-			if (isset($values['password'])) {
+			if ($values['password'] !== null) {
 				// password is not null => we update the value with the hash
-				$album->password = bcrypt($values['password']);
+				try {
+					$album->password = bcrypt($values['password']);
+				} catch (\InvalidArgumentException $e) {
+					throw new InvalidPropertyException('Could not hash password', $e);
+				}
 			} else {
 				// we remove the password
 				$album->password = null;

@@ -3,6 +3,7 @@
 namespace App\SmartAlbums;
 
 use App\Contracts\AbstractAlbum;
+use App\Exceptions\InvalidPropertyException;
 use App\Models\Configs;
 use App\Models\Extensions\Thumb;
 
@@ -47,6 +48,9 @@ abstract class BaseSmartAlbum extends FakeModel implements AbstractAlbum
 		$this->attributes['is_share_button_visible'] = Configs::get_value('share_button_visible', '0') === '1';
 	}
 
+	/**
+	 * @throws InvalidPropertyException
+	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
 		// Note, `photos()` already applies a "security filter" and

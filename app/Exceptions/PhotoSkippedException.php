@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Returns status code 409 (Conflict) to an HTTP client.
  */
-class PhotoSkippedException extends BaseException
+class PhotoSkippedException extends LycheeBaseException
 {
 	public function __construct(\Throwable $previous = null)
 	{

@@ -5,15 +5,15 @@ namespace App\Exceptions;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * UnknownException.
+ * UnexpectedException.
  *
  * Last resort when nothing else matches.
  * Returns status code 500 (Internal Server Error) to an HTTP client.
  */
-class UnknownException extends BaseException
+class UnexpectedException extends LycheeBaseException
 {
 	public function __construct(\Throwable $previous = null)
 	{
-		parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, 'Unknown Lychee exception', $previous);
+		parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, 'Unknown Lychee exception (this is probably a bug)', $previous);
 	}
 }

@@ -3,9 +3,13 @@
 namespace App\Redirections;
 
 use Illuminate\Http\RedirectResponse;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class ToInstall implements Redirection
 {
+	/**
+	 * @throws RouteNotFoundException
+	 */
 	public static function go(): RedirectResponse
 	{
 		// we remove installed.log in order to be able to access the install menu.

@@ -2,6 +2,7 @@
 
 namespace App\SmartAlbums;
 
+use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Photo;
 use App\Relations\HasManyPhotosBySmartCondition;
@@ -51,8 +52,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 *
 	 * @return bool
 	 *
-	 * @throws \LogicException
-	 * @throws \RuntimeException
+	 * @throws ModelDBException
 	 */
 	public function delete(): bool
 	{

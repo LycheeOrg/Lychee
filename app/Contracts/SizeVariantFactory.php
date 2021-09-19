@@ -2,13 +2,6 @@
 
 namespace App\Contracts;
 
-use App\Exceptions\ConfigurationException;
-use App\Exceptions\ExternalComponentMissingException;
-use App\Exceptions\Internal\IllegalOrderOfOperationException;
-use App\Exceptions\Internal\InvalidSizeVariantException;
-use App\Exceptions\MediaFileOperationException;
-use App\Exceptions\MediaFileUnsupportedException;
-use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Support\Collection;
@@ -62,8 +55,7 @@ abstract class SizeVariantFactory
 	 *
 	 * @return SizeVariant the freshly created and persisted size variant
 	 *
-	 * @throws IllegalOrderOfOperationException
-	 * @throws ModelDBException
+	 * @throws LycheeException
 	 */
 	abstract public function createOriginal(int $width, int $height): SizeVariant;
 
@@ -94,13 +86,7 @@ abstract class SizeVariantFactory
 	 *
 	 * @return SizeVariant the freshly created and persisted size variant
 	 *
-	 * @throws ConfigurationException
-	 * @throws ExternalComponentMissingException
-	 * @throws IllegalOrderOfOperationException
-	 * @throws InvalidSizeVariantException
-	 * @throws MediaFileOperationException
-	 * @throws MediaFileUnsupportedException
-	 * @throws ModelDBException
+	 * @throws LycheeException
 	 */
 	abstract public function createSizeVariant(int $sizeVariant): SizeVariant;
 
@@ -128,13 +114,7 @@ abstract class SizeVariantFactory
 	 *
 	 * @return SizeVariant|null the freshly created and persisted size variant
 	 *
-	 * @throws ConfigurationException
-	 * @throws ExternalComponentMissingException
-	 * @throws InvalidSizeVariantException
-	 * @throws MediaFileOperationException
-	 * @throws IllegalOrderOfOperationException
-	 * @throws ModelDBException
-	 * @throws MediaFileUnsupportedException
+	 * @throws LycheeException
 	 */
 	abstract public function createSizeVariantCond(int $sizeVariant): ?SizeVariant;
 
@@ -158,13 +138,7 @@ abstract class SizeVariantFactory
 	 *
 	 * @return Collection the collection of created size variants
 	 *
-	 * @throws ConfigurationException
-	 * @throws ExternalComponentMissingException
-	 * @throws IllegalOrderOfOperationException
-	 * @throws InvalidSizeVariantException
-	 * @throws MediaFileOperationException
-	 * @throws ModelDBException
-	 * @throws MediaFileUnsupportedException
+	 * @throws LycheeException
 	 */
 	abstract public function createSizeVariants(): Collection;
 }

@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Casts\MustNotSetCast;
+use App\Exceptions\Internal\FrameworkException;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\SymLinkObserver;
+use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
@@ -39,10 +42,18 @@ class SymLink extends Model
 
 	const DISK_NAME = 'symbolic';
 
+	/**
+	 * @throws MassAssignmentException
+	 * @throws FrameworkException
+	 */
 	public function __construct(array $attributes = [])
 	{
 		parent::__construct($attributes);
-		$this->registerObserver(SymLinkObserver::class);
+		try {
+			$this->registerObserver(SymLinkObserver::class);
+		} catch (\RuntimeException $e) {
+			throw new FrameworkException('Laravel\'s observer component', $e);
+		}
 	}
 
 	protected $casts = [
@@ -71,6 +82,8 @@ class SymLink extends Model
 	 * @param Builder $query the unscoped query
 	 *
 	 * @return Builder the scoped query
+	 *
+	 * @throws InvalidTimeZoneException
 	 */
 	public function scopeExpired(Builder $query): Builder
 	{
@@ -88,10 +101,16 @@ class SymLink extends Model
 	 * into {@link \Illuminate\Support\Facades\Storage::url()}.
 	 *
 	 * @return string the URL to the symbolic link
+	 *
+	 * @throws FrameworkException
 	 */
 	protected function getUrlAttribute(): string
 	{
-		return Storage::disk(self::DISK_NAME)->url($this->short_path);
+		try {
+			return Storage::disk(self::DISK_NAME)->url($this->short_path);
+		} catch (\RuntimeException $e) {
+			throw new FrameworkException('Laravel\'s storage component', $e);
+		}
 	}
 
 	/**

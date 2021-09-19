@@ -2,6 +2,8 @@
 
 namespace App\Relations;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\NotImplementedException;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -18,6 +20,10 @@ class HasManyPhotosByTag extends HasManyPhotos
 	 *
 	 * This method is called by the framework, if the photos of a
 	 * single tag albums are fetched.
+	 *
+	 * @return void
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function addConstraints(): void
 	{
@@ -29,15 +35,19 @@ class HasManyPhotosByTag extends HasManyPhotos
 	 *
 	 * This method is called by the framework, if the related photos of a
 	 * list of owning albums are fetched.
-	 * The the unified result of the query is mapped to the specific albums
+	 * The unified result of the query is mapped to the specific albums
 	 * by {@link HasManyPhotosByTag::match()}.
 	 *
 	 * @param array $albums an array of {@link \App\Models\TagAlbum} whose photos are loaded
+	 *
+	 * @return void
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function addEagerConstraints(array $albums): void
 	{
 		if (count($albums) !== 1) {
-			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
+			throw new NotImplementedException('eagerly fetching all photos of an album is not implemented for multiple albums');
 		}
 		/** @var TagAlbum $album */
 		$album = $albums[0];
@@ -64,11 +74,13 @@ class HasManyPhotosByTag extends HasManyPhotos
 	 * @param string     $relation the name of the relation
 	 *
 	 * @return array
+	 *
+	 * @throws NotImplementedException
 	 */
 	public function match(array $albums, Collection $photos, $relation): array
 	{
 		if (count($albums) !== 1) {
-			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
+			throw new NotImplementedException('eagerly fetching all photos of an album is not implemented for multiple albums');
 		}
 		/** @var TagAlbum $album */
 		$album = $albums[0];
