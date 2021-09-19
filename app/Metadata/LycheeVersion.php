@@ -101,7 +101,7 @@ class LycheeVersion
 	 */
 	public function getFileVersion(): array
 	{
-		return ['version' => rtrim(@file_get_contents(base_path('version.md')))];
+		return ['version' => rtrim(file_get_contents(base_path('version.md')))];
 	}
 
 	/**

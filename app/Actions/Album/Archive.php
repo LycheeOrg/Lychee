@@ -160,7 +160,7 @@ class Archive extends Action
 		foreach ($photos as $photo) {
 			$fullPath = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL)->full_path;
 			// Check if readable
-			if (!@is_readable($fullPath)) {
+			if (!is_readable($fullPath)) {
 				Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $fullPath);
 				continue;
 			}

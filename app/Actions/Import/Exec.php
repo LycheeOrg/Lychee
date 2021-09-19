@@ -239,7 +239,7 @@ class Exec
 			}
 			$extension = Helpers::getExtension($file, true);
 			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
-			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
+			if (exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
 				try {
 					// TODO: Refactor this, rationale see below

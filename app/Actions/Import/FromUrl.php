@@ -41,7 +41,7 @@ class FromUrl
 			}
 
 			// Verify image
-			$type = @exif_imagetype($url);
+			$type = exif_imagetype($url);
 			if (!$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported (' . $url . ')');
@@ -50,7 +50,7 @@ class FromUrl
 
 			$filename = pathinfo($url, PATHINFO_FILENAME) . $extension;
 			$tmp_name = Storage::path('import/' . $filename);
-			if (@copy($url, $tmp_name) === false) {
+			if (copy($url, $tmp_name) === false) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not copy file (' . $url . ') to temp-folder (' . $tmp_name . ')');
 				continue;

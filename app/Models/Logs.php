@@ -90,7 +90,7 @@ class Logs extends Model
 			'text' => $text,
 		]);
 
-		return @$log->save();
+		return $log->save();
 	}
 
 	/**
@@ -111,6 +111,6 @@ class Logs extends Model
 			'text' => $text,
 		]);
 
-		return @$log->save();
+		return $log->save();
 	}
 }

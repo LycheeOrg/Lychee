@@ -67,7 +67,7 @@ class ApplyMigration
 		// @codeCoverageIgnoreEnd
 
 		// key is generated, we can safely remove that file (in theory)
-		@unlink(base_path('.NO_SECURE_KEY'));
+		unlink(base_path('.NO_SECURE_KEY'));
 
 		return false;
 	}
