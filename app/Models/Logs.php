@@ -3,9 +3,6 @@
 namespace App\Models;
 
 use App\Models\Extensions\UTCBasedTimes;
-use Eloquent;
-use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
@@ -19,22 +16,32 @@ use Illuminate\Support\Carbon;
  * @property string      $text
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- *
- * @method static Builder|Logs newModelQuery()
- * @method static Builder|Logs newQuery()
- * @method static Builder|Logs query()
- * @method static Builder|Logs whereCreatedAt($value)
- * @method static Builder|Logs whereFunction($value)
- * @method static Builder|Logs whereId($value)
- * @method static Builder|Logs whereLine($value)
- * @method static Builder|Logs whereText($value)
- * @method static Builder|Logs whereType($value)
- * @method static Builder|Logs whereUpdatedAt($value)
- * @mixin Eloquent
  */
 class Logs extends Model
 {
 	use UTCBasedTimes;
+
+	const SEVERITY_EMERGENCY = 0;
+	const SEVERITY_ALERT = 1;
+	const SEVERITY_CRITICAL = 2;
+	const SEVERITY_ERROR = 3;
+	const SEVERITY_WARNING = 4;
+	const SEVERITY_NOTICE = 5;
+	const SEVERITY_INFO = 6;
+	const SEVERITY_DEBUG = 7;
+
+	const SEVERITY_2_STRING = [
+		self::SEVERITY_EMERGENCY => 'emergency',
+		self::SEVERITY_ALERT => 'alert',
+		self::SEVERITY_CRITICAL => 'critical',
+		self::SEVERITY_ERROR => 'error',
+		self::SEVERITY_WARNING => 'warning',
+		self::SEVERITY_NOTICE => 'notice',
+		self::SEVERITY_INFO => 'info',
+		self::SEVERITY_DEBUG => 'debug',
+	];
+
+	const MAX_METHOD_LENGTH = 100;
 
 	/**
 	 * allow these properties to be mass assigned.
@@ -47,72 +54,79 @@ class Logs extends Model
 	];
 
 	/**
-	 * Create a notice entry in the Log database.
+	 * Logs a notification.
 	 *
-	 * @param string $function
-	 * @param string $line
-	 * @param string $text
-	 *
-	 * @return bool returns true when successful
+	 * @param string $method the name of the method which triggers the log
+	 *                       (use the magic constant `__METHOD__`, neither
+	 *                       `__FUNCTION__` nor `__FILE__`)
+	 * @param int    $line   the line which triggers the log
+	 * @param string $msg    the message to log
 	 */
-	public static function notice(string $function, string $line, string $text = '')
+	public static function notice(string $method, int $line, string $msg): void
 	{
-		$log = self::create([
-			'type' => 'notice',
-			'function' => $function,
-			'line' => $line,
-			'text' => $text,
-		]);
+		self::log(self::SEVERITY_NOTICE, $method, $line, $msg);
+	}
+
+	/**
+	 * Logs a warning.
+	 *
+	 * @param string $method the name of the method which triggers the log
+	 *                       (use the magic constant `__METHOD__`, neither
+	 *                       `__FUNCTION__` nor `__FILE__`)
+	 * @param int    $line   the line which triggers the log
+	 * @param string $msg    the message to log
+	 */
+	public static function warning(string $method, int $line, string $msg): void
+	{
+		self::log(self::SEVERITY_WARNING, $method, $line, $msg);
+	}
+
+	/**
+	 * Logs an error.
+	 *
+	 * @param string $method the name of the method which triggers the log
+	 *                       (use the magic constant `__METHOD__`, neither
+	 *                       `__FUNCTION__` nor `__FILE__`)
+	 * @param int    $line   the line which triggers the log
+	 * @param string $msg    the message to log
+	 */
+	public static function error(string $method, int $line, string $msg): void
+	{
+		self::log(self::SEVERITY_ERROR, $method, $line, $msg);
+	}
+
+	/**
+	 * Writes a log entry.
+	 *
+	 * @param int    $severity the severity of the incident, must be one out
+	 *                         of {@link Logs::SEVERITY_EMERGENCY},
+	 *                         {@link Logs::SEVERITY_ALERT},
+	 *                         {@link Logs::SEVERITY_CRITICAL},
+	 *                         {@link Logs::SEVERITY_ERROR},
+	 *                         {@link Logs::SEVERITY_WARNING},
+	 *                         {@link Logs::SEVERITY_NOTICE},
+	 *                         {@link Logs::SEVERITY_INFO} or
+	 *                         {@link Logs::SEVERITY_DEBUG}
+	 * @param string $method   the name of the method which triggers the log
+	 *                         (use the magic constant `__METHOD__`, neither
+	 *                         `__FUNCTION__` nor `__FILE__`)
+	 * @param int    $line     the line which triggers the log
+	 * @param string $msg      the message to log
+	 */
+	public static function log(int $severity, string $method, int $line, string $msg): void
+	{
 		try {
+			if (strlen($method) > self::MAX_METHOD_LENGTH) {
+				$method = '...' . substr($method, 3, self::MAX_METHOD_LENGTH - 3);
+			}
+			$log = new static([
+				'type' => self::SEVERITY_2_STRING[$severity],
+				'function' => $method,
+				'line' => $line,
+				'text' => $msg,
+			]);
 			$log->save();
-			// @codeCoverageIgnoreStart
-		} catch (Exception $e) {
-			return false;
+		} catch (\Throwable $ignored) {
 		}
-		// @codeCoverageIgnoreEnd
-
-		return true;
-	}
-
-	/**
-	 * Create a warning entry in the Log database.
-	 *
-	 * @param string $function
-	 * @param string $line
-	 * @param string $text
-	 *
-	 * @return bool returns true when successful
-	 */
-	public static function warning(string $function, string $line, string $text = '')
-	{
-		$log = self::create([
-			'type' => 'warning',
-			'function' => $function,
-			'line' => $line,
-			'text' => $text,
-		]);
-
-		return @$log->save();
-	}
-
-	/**
-	 * create an error entry in the database.
-	 *
-	 * @param string $function
-	 * @param string $line
-	 * @param string $text
-	 *
-	 * @return bool returns true when successful
-	 */
-	public static function error(string $function, string $line, string $text = '')
-	{
-		$log = self::create([
-			'type' => 'error',
-			'function' => $function,
-			'line' => $line,
-			'text' => $text,
-		]);
-
-		return @$log->save();
 	}
 }
