@@ -25,7 +25,7 @@ trait PhotoCast
 			$filename = $this->url;
 		}
 		$filename2x = ($filename !== '') ? Helpers::ex2x($filename) : '';
-		$thumbFileName2x = $this->thumb2x === '1' ? Helpers::ex2x($this->thumbUrl) : null;
+		$thumbFileName2x = $this->thumb2x === 1 ? Helpers::ex2x($this->thumbUrl) : null;
 
 		// The original size is not stored in this sub-array but on the root level of the JSON response
 		// TODO: Maybe harmonize and put original variant into this array, too? This would also avoid an ugly if branch in SymLink#override.
@@ -130,7 +130,7 @@ trait PhotoCast
 			$thumb->thumb = Storage::url(
 				Photo::VARIANT_2_PATH_PREFIX[Photo::VARIANT_THUMB] . '/' . $this->thumbUrl
 			);
-			if ($this->thumb2x == '1') {
+			if ($this->thumb2x === 1) {
 				$thumb->set_thumb2x();
 			}
 		}

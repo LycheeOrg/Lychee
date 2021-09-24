@@ -142,7 +142,7 @@ class SymLink extends Model
 		$this->updated_at = $now;
 
 		foreach (self::VARIANT_2_INDICATOR_FIELD as $variant => $indicator_field) {
-			if ($photo->{$indicator_field} != null && $photo->{$indicator_field} != 0 && $photo->{$indicator_field} != '') {
+			if ($photo->{$indicator_field} !== null && $photo->{$indicator_field} !== 0 && $photo->{$indicator_field} !== '') {
 				$this->create($photo, $variant, strval($now));
 			}
 		}
