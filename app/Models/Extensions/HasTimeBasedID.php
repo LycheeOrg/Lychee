@@ -22,6 +22,8 @@ use Illuminate\Database\QueryException;
  */
 trait HasTimeBasedID
 {
+	abstract protected function friendlyModelName(): string;
+
 	public static function bootHasTimeBasedID()
 	{
 		static::creating(function (Model $model) {
@@ -115,14 +117,14 @@ trait HasTimeBasedID
 				// Remove primary key which has been set by last attempt
 				unset($this->attributes[$this->getKeyName()]);
 			} else {
-				throw ModelDBException::create($this->friendlyModelName, $this->wasRecentlyCreated ? 'create' : 'update', $parentException);
+				throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'create' : 'update', $parentException);
 			}
 		} while ($retryCounter > 0);
 
 		if ($retryCounter === 0) {
 			$msg = 'unable to persist model to DB after 5 unsuccessful attempts';
 			Logs::error(__METHOD__, __LINE__, $msg);
-			throw ModelDBException::create($this->friendlyModelName, 'create', new TimeBasedIdException($msg));
+			throw ModelDBException::create($this->friendlyModelName(), 'create', new TimeBasedIdException($msg));
 		}
 
 		return true;

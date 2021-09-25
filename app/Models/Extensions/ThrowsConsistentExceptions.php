@@ -9,17 +9,16 @@ use App\Exceptions\ModelDBException;
  *
  * This trait wraps some Eloquent model methods to make error handling
  * more consistent.
- * Some Eloquent methods report error conditions by using `false` as the
- * return value or throwing an exception.
+ * Some Eloquent methods report error conditions by using a mix of returning
+ * `false` or throwing an exception.
  * This makes proper error handling a tedious task, because we always have
- * to check for two possible conditions and possible duplicate the error
- * handler.
- * This model unifies the error handling and also throws an exception when
- * the parent method would return `false`.
+ * to check for two possible conditions.
+ * This model unifies error reporting and also throws an exception when
+ * the original parent method would return `false`.
  */
 trait ThrowsConsistentExceptions
 {
-	protected string $friendlyModelName = 'unknown model';
+	abstract protected function friendlyModelName(): string;
 
 	/**
 	 * @param array $options
@@ -27,6 +26,8 @@ trait ThrowsConsistentExceptions
 	 * @return bool always return true
 	 *
 	 * @throws ModelDBException thrown on failure
+	 *
+	 * @noinspection PhpMultipleClassDeclarationsInspection
 	 */
 	public function save(array $options = []): bool
 	{
@@ -39,7 +40,7 @@ trait ThrowsConsistentExceptions
 			$parentException = $e;
 		}
 		if ($parentException) {
-			throw ModelDBException::create($this->friendlyModelName, $this->wasRecentlyCreated ? 'create' : 'update', $parentException);
+			throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'create' : 'update', $parentException);
 		}
 
 		return true;
@@ -49,6 +50,8 @@ trait ThrowsConsistentExceptions
 	 * @return bool always return true
 	 *
 	 * @throws ModelDBException thrown on failure
+	 *
+	 * @noinspection PhpMultipleClassDeclarationsInspection
 	 */
 	public function delete(): bool
 	{
@@ -67,7 +70,7 @@ trait ThrowsConsistentExceptions
 			$parentException = $e;
 		}
 		if ($parentException) {
-			throw ModelDBException::create($this->friendlyModelName, 'delete', $parentException);
+			throw ModelDBException::create($this->friendlyModelName(), 'delete', $parentException);
 		}
 
 		return true;

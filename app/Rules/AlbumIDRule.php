@@ -8,12 +8,7 @@ use Illuminate\Contracts\Validation\Rule;
 class AlbumIDRule implements Rule
 {
 	/**
-	 * Determine if the validation rule passes.
-	 *
-	 * @param string $attribute
-	 * @param mixed  $value
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
 	public function passes($attribute, $value): bool
 	{
@@ -24,9 +19,7 @@ class AlbumIDRule implements Rule
 	}
 
 	/**
-	 * Get the validation error message.
-	 *
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function message(): string
 	{

@@ -36,7 +36,7 @@ class Logs extends Model
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
 
-	protected string $friendlyModelName = 'log entry';
+	const FRIENDLY_MODEL_NAME = 'log entry';
 
 	/**
 	 * allow these properties to be mass assigned.
@@ -116,5 +116,10 @@ class Logs extends Model
 		]);
 
 		return $log->save();
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

@@ -11,12 +11,11 @@ class SetSorting extends Action
 	 * @throws ModelDBException
 	 * @throws ModelNotFoundException
 	 */
-	public function do(string $albumID, ?string $sortingCol, ?string $sortingOrder): bool
+	public function do(string $albumID, ?string $sortingCol, ?string $sortingOrder): void
 	{
 		$album = $this->albumFactory->findModelOrFail($albumID);
 		$album->sorting_col = $sortingCol;
 		$album->sorting_order = $sortingOrder;
-
-		return $album->save();
+		$album->save();
 	}
 }

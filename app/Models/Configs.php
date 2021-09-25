@@ -35,7 +35,7 @@ class Configs extends Model
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
 
-	protected string $friendlyModelName = 'config';
+	const FRIENDLY_MODEL_NAME = 'config';
 
 	/**
 	 * The attributes that are mass assignable.
@@ -273,5 +273,10 @@ class Configs extends Model
 	public function scopeAdmin(Builder $query)
 	{
 		return $query->where('confidentiality', '<=', 3);
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

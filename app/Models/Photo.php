@@ -82,7 +82,7 @@ class Photo extends Model
 	}
 	use HasBidirectionalRelationships;
 
-	protected string $friendlyModelName = 'photo';
+	const FRIENDLY_MODEL_NAME = 'photo';
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -476,5 +476,10 @@ class Photo extends Model
 		$duplicate->refresh();
 
 		return $duplicate;
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

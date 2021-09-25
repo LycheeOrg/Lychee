@@ -34,6 +34,8 @@ use Illuminate\Support\Str;
  */
 trait ForwardsToParentImplementation
 {
+	abstract protected function friendlyModelName(): string;
+
 	/**
 	 * "Constructor" of trait.
 	 *
@@ -135,7 +137,7 @@ trait ForwardsToParentImplementation
 			$parentException = $e;
 		}
 		if ($parentException) {
-			throw ModelDBException::create($this->friendlyModelName, 'delete', $parentException);
+			throw ModelDBException::create($this->friendlyModelName(), 'delete', $parentException);
 		}
 
 		// We must explicitly check if the base_class still exists in order
@@ -153,7 +155,7 @@ trait ForwardsToParentImplementation
 				$baseException = $e;
 			}
 			if ($baseException) {
-				throw ModelDBException::create($this->friendlyModelName, 'delete', $baseException);
+				throw ModelDBException::create($this->friendlyModelName(), 'delete', $baseException);
 			}
 		}
 

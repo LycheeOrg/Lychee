@@ -36,7 +36,7 @@ class PageContent extends Model
 {
 	use ThrowsConsistentExceptions;
 
-	protected string $friendlyModelName = 'page content';
+	const FRIENDLY_MODEL_NAME = 'page content';
 
 	/**
 	 * Return content.
@@ -57,5 +57,10 @@ class PageContent extends Model
 		}
 
 		return $return;
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

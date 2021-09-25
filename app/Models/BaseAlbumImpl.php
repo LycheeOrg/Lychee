@@ -107,7 +107,7 @@ class BaseAlbumImpl extends Model
 	use UTCBasedTimes;
 	use HasBidirectionalRelationships;
 
-	protected string $friendlyModelName = 'base album';
+	const FRIENDLY_MODEL_NAME = 'base album';
 
 	protected $table = 'base_albums';
 
@@ -264,5 +264,10 @@ class BaseAlbumImpl extends Model
 		}
 
 		return $result;
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

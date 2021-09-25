@@ -19,7 +19,7 @@ class SetAlbum extends Setters
 	 * @throws ModelNotFoundException
 	 * @throws QueryBuilderException
 	 */
-	public function do(array $photoIDs, ?string $albumID): bool
+	public function do(array $photoIDs, ?string $albumID): void
 	{
 		if ($albumID) {
 			Album::query()->findOrFail($albumID);
@@ -31,6 +31,6 @@ class SetAlbum extends Setters
 			}
 		}
 
-		return parent::do($photoIDs, $albumID == '0' ? null : $albumID);
+		parent::do($photoIDs, $albumID == '0' ? null : $albumID);
 	}
 }

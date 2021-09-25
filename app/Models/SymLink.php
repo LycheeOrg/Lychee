@@ -38,7 +38,7 @@ class SymLink extends Model
 	use HasAttributesPatch;
 	use ThrowsConsistentExceptions;
 
-	protected string $friendlyModelName = 'symbolic link';
+	const FRIENDLY_MODEL_NAME = 'symbolic link';
 
 	const DISK_NAME = 'symbolic';
 
@@ -126,5 +126,10 @@ class SymLink extends Model
 	protected function getFullPathAttribute(): string
 	{
 		return Storage::disk(self::DISK_NAME)->path($this->short_path);
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

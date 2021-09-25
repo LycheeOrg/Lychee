@@ -27,7 +27,7 @@ class TagAlbum extends Model implements BaseAlbum
 		ForwardsToParentImplementation::delete as private parentDelete;
 	}
 
-	protected string $friendlyModelName = 'tag album';
+	const FRIENDLY_MODEL_NAME = 'tag album';
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -138,5 +138,10 @@ class TagAlbum extends Model implements BaseAlbum
 	public function newEloquentBuilder($query): TagAlbumBuilder
 	{
 		return new TagAlbumBuilder($query);
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

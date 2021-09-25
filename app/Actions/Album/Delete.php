@@ -9,7 +9,7 @@ use App\Exceptions\ModelDBException;
 class Delete extends Action
 {
 	/**
-	 * @param array $albumIDs
+	 * @param int[] $albumIDs
 	 *
 	 * @throws ModelDBException
 	 * @throws InvalidSmartIdException

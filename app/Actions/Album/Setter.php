@@ -33,12 +33,12 @@ class Setter extends Action
 	}
 
 	/**
-	 * @param string $albumID the ID of the album
-	 * @param mixed  $value   the value to be set
+	 * @param int   $albumID the ID of the album
+	 * @param mixed $value   the value to be set
 	 *
 	 * @throws ModelNotFoundException
 	 */
-	public function do(string $albumID, $value): void
+	public function do(int $albumID, $value): void
 	{
 		if ($this->query
 				->where('id', '=', $albumID)

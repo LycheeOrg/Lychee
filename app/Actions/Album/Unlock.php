@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Actions\AlbumAuthorisationProvider;
+use App\Exceptions\UnauthorizedException;
 use App\Models\BaseAlbumImpl;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
@@ -23,35 +24,30 @@ class Unlock extends Action
 	 * If the password is correct, then all albums which can be unlocked with
 	 * the same password are unlocked, too.
 	 *
-	 * @param string $albumID
+	 * @param int    $albumID
 	 * @param string $password
 	 *
-	 * @return bool true on success, false if password was wrong
-	 *
 	 * @throws ModelNotFoundException
+	 * @throws UnauthorizedException
 	 */
-	public function do(string $albumID, string $password): bool
+	public function do(int $albumID, string $password): void
 	{
-		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
-			return false;
-		}
-
 		$album = $this->albumFactory->findModelOrFail($albumID);
 		if ($album->is_public) {
 			if (
 				empty($album->password) ||
 				$this->albumAuthorisationProvider->isAlbumUnlocked($album->id)
 			) {
-				return true;
+				return;
 			}
 			if (Hash::check($password, $album->password)) {
 				$this->propagate($password);
 
-				return true;
+				return;
 			}
 		}
 
-		return false;
+		throw new UnauthorizedException('Password is invalid');
 	}
 
 	/**

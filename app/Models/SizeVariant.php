@@ -59,7 +59,7 @@ class SizeVariant extends Model
 		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
 
-	protected string $friendlyModelName = 'size variant';
+	const FRIENDLY_MODEL_NAME = 'size variant';
 
 	const ORIGINAL = 0;
 	const MEDIUM2X = 1;
@@ -260,5 +260,10 @@ class SizeVariant extends Model
 		}
 
 		return $this->internalDelete();
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

@@ -42,7 +42,7 @@ class Page extends Model
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
 
-	protected string $friendlyModelName = 'page';
+	const FRIENDLY_MODEL_NAME = 'page';
 
 	/**
 	 * Return the relationship between a page and its content.
@@ -101,5 +101,10 @@ class Page extends Model
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

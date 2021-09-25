@@ -8,9 +8,27 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SortingDecorator
 {
+	const COLUMN_ID = 'id';
+	const COLUMN_TAKEN_AT = 'taken_at';
+	const COLUMN_TITLE = 'title';
+	const COLUMN_DESCRIPTION = 'description';
+	const COLUMN_IS_PUBLIC = 'is_public';
+	const COLUMN_IS_STARRED = 'is_starred';
+	const COLUMN_TYPE = 'type';
+
+	const COLUMNS = [
+		self::COLUMN_ID,
+		self::COLUMN_TAKEN_AT,
+		self::COLUMN_TITLE,
+		self::COLUMN_DESCRIPTION,
+		self::COLUMN_IS_PUBLIC,
+		self::COLUMN_IS_STARRED,
+		self::COLUMN_TYPE,
+	];
+
 	const POSTPONE_COLUMNS = [
-		'title',
-		'description',
+		self::COLUMN_TITLE,
+		self::COLUMN_DESCRIPTION,
 	];
 
 	protected Builder $baseBuilder;
@@ -24,9 +42,21 @@ class SortingDecorator
 	protected array $postponedSortBy = [];
 
 	/**
+	 * @param string $column    the column acc. to which the result shall be
+	 *                          sorted; must either be
+	 *                          {@link SortingDecorator::COLUMN_ID},
+	 *                          {@link SortingDecorator::COLUMN_TAKEN_AT},
+	 *                          {@link SortingDecorator::COLUMN_TITLE},
+	 *                          {@link SortingDecorator::COLUMN_DESCRIPTION},
+	 *                          {@link SortingDecorator::COLUMN_IS_PUBLIC},
+	 *                          {@link SortingDecorator::COLUMN_IS_STARRED}, or
+	 *                          {@link SortingDecorator::COLUMN_TYPE},
+	 * @param string $direction the order direction must be either `'asc'` or
+	 *                          `'desc'`
+	 *
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function orderBy($column, $direction = 'asc'): SortingDecorator
+	public function orderBy(string $column, string $direction = 'asc'): SortingDecorator
 	{
 		$direction = strtolower($direction);
 		if (in_array($column, self::POSTPONE_COLUMNS)) {

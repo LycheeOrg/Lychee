@@ -49,7 +49,7 @@ class Album extends Model implements BaseAlbum
 		ForwardsToParentImplementation::delete as private parentDelete;
 	}
 
-	protected string $friendlyModelName = 'album';
+	const FRIENDLY_MODEL_NAME = 'album';
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -376,5 +376,10 @@ class Album extends Model implements BaseAlbum
 	public function newEloquentBuilder($query): AlbumBuilder
 	{
 		return new AlbumBuilder($query);
+	}
+
+	protected function friendlyModelName(): string
+	{
+		return self::FRIENDLY_MODEL_NAME;
 	}
 }

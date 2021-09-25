@@ -6,28 +6,35 @@ use Illuminate\Contracts\Validation\Rule;
 
 class ModelIDRule implements Rule
 {
+	protected bool $isNullable;
+
+	public function __construct(bool $isNullable)
+	{
+		$this->isNullable = $isNullable;
+	}
+
 	/**
-	 * Determine if the validation rule passes.
-	 *
-	 * @param string $attribute
-	 * @param mixed  $value
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
 	public function passes($attribute, $value): bool
 	{
 		return
-			$value === null ||
-			(filter_var($value, FILTER_VALIDATE_INT) !== false && intval($value) >= 0);
+			(
+				$value === null &&
+				$this->isNullable
+			) || (
+				filter_var($value, FILTER_VALIDATE_INT) !== false &&
+				intval($value) > 0
+			);
 	}
 
 	/**
-	 * Get the validation error message.
-	 *
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function message(): string
 	{
-		return ':attribute must either be null or an positive integer.';
+		return ':attribute must be' .
+			($this->isNullable ? ' either null or' : '') .
+			' a positive integer';
 	}
 }
