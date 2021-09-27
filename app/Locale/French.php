@@ -70,7 +70,7 @@ final class French implements Language
 
 			'SHARING_ALBUM_USERS' => 'Partager l’album avec des utilisateurs',
 			'WAIT_FETCH_DATA' => 'Merci de patienter que les données soient récupérées…',
-			'SHARING_ALBUM_USERS_NO_USERS' => "Il n'y pas d'utilisateurs avec qui partager cet album",
+			'SHARING_ALBUM_USERS_NO_USERS' => 'Il n’y pas d’utilisateurs avec qui partager cet album',
 			'SHARING_ALBUM_USERS_LONG_MESSAGE' => 'Sélectionner les utilisateurs avec qui partager cet album',
 
 			'DELETE_ALBUM_QUESTION' => 'Supprimer l’album et ses photos',
@@ -274,7 +274,7 @@ final class French implements Language
 			'ERROR_TEXT' => 'Il semble qu’une erreur soit survenue. Veuillez rafraichir la page et réessayer !',
 			'ERROR_DB_1' => 'Connexion impossible à la base de données car l’accès a été refusé. Vérifiez votre nom d’hôte, nom d’utilisateur et mot de passe, et assurez-vous que l’accès est autorisé à partir de votre emplacement actuel.',
 			'ERROR_DB_2' => 'Impossible de creer la base de données. Verifiez votre nom d’hôte, nom d’utilisateur et mot de passe, et assurez-vous que l’utilisateur specifié est autorisé à modifier et ajouter du contenu dans la base de données.',
-			'ERROR_CONFIG_FILE' => "Impossible d’enregistrer cette configuration. Permission refusée dans <b>'data/'</b>. Veuillez paramétrer les droits de lecture, d’ecriture et d’exécution pour les autres utilisateurs dans <b>'data/'</b> et <b>'uploads/'</b>. Consultez le fichier Readme pour obtenir plus d’information.",
+			'ERROR_CONFIG_FILE' => 'Impossible d’enregistrer cette configuration. Permission refusée dans <b>«data/»</b>. Veuillez paramétrer les droits de lecture, d’ecriture et d’exécution pour les autres utilisateurs dans <b>«data/»</b> et <b>«uploads/»</b>. Consultez le fichier Readme pour obtenir plus d’information.',
 			'ERROR_UNKNOWN' => 'Une erreur inattendue est survenue. Veuillez réessayer et vérifier votre installation et votre serveur. Consultez le fichier Readme pour obtenir plus d’information.',
 			'ERROR_LOGIN' => 'Impossible d’enregistrer les informations de connexion. Veuillez réessayer avec un autre nom d’utilisateur et mot de passe.',
 			'ERROR_MAP_DEACTIVATED' => 'La carte a été désactivée dans les paramètres.',
@@ -360,7 +360,7 @@ final class French implements Language
 			'SORT_CHANGE' => 'Modifier le tri',
 
 			'DROPBOX_TITLE' => 'Définir une clé Dropbox',
-			'DROPBOX_TEXT' => "Pour pouvoir importer des photos à partir de votre Dropbox, vous aurez besoin d’une clé d’application \"drop-ins\" valide à créer sur <a href='https://www.dropbox.com/developers/apps/create'>leur site</a>. Générez votre clé personnelle et puis entrez-la ci-dessous:",
+			'DROPBOX_TEXT' => 'Pour pouvoir importer des photos à partir de votre Dropbox, vous aurez besoin d’une clé d’application «drop-ins» valide à créer sur <a href="https://www.dropbox.com/developers/apps/create\">leur site</a>. Générez votre clé personnelle et puis entrez-la ci-dessous:',
 
 			'LANG_TEXT' => 'Remplacer la langue de Lychee par :',
 			'LANG_TITLE' => 'Changer la langue',
