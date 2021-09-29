@@ -53,6 +53,7 @@ abstract class BaseApiRequest extends FormRequest
 	 * @throws BindingResolutionException
 	 * @throws ValidationException
 	 * @throws UnauthorizedException
+	 * @throws BadRequestException
 	 */
 	public function validateResolved(): void
 	{
@@ -140,6 +141,20 @@ abstract class BaseApiRequest extends FormRequest
 	protected function authorizePhotoVisible(int $photoID): bool
 	{
 		return $this->photoAuthorisationProvider->isVisible($photoID);
+	}
+
+	/**
+	 * Determines of the user is authorized to modify the designated photos.
+	 *
+	 * @param int[] $photoIDs the IDs of the photos
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 *
+	 * @throws InternalLycheeException
+	 */
+	protected function authorizePhotoWrite(array $photoIDs): bool
+	{
+		return $this->photoAuthorisationProvider->areEditable($photoIDs);
 	}
 
 	/**

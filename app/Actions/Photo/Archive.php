@@ -90,7 +90,6 @@ class Archive
 	 * @return Response
 	 *
 	 * @throws LycheeException
-	 * @throws FileException
 	 */
 	public function do(array $photoIDs, string $variant): Response
 	{
@@ -119,21 +118,22 @@ class Archive
 	 * @return BinaryFileResponse
 	 *
 	 * @throws LycheeException
-	 * @throws FileException
 	 */
 	protected function file(Photo $photo, $variant): BinaryFileResponse
 	{
 		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
 		try {
 			$response = new BinaryFileResponse($archiveFileInfo->getFullPath());
-		} catch (\InvalidArgumentException $e) {
+		} catch (\InvalidArgumentException | FileException $e) {
 			throw new FrameworkException('Symfony\'s response component', $e);
 		}
 
-		return $response->setContentDisposition(
+		$response->setContentDisposition(
 			ResponseHeaderBag::DISPOSITION_ATTACHMENT,
 			$archiveFileInfo->getFilename()
 		);
+
+		return $response;
 	}
 
 	/**

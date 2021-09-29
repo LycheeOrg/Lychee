@@ -18,10 +18,10 @@ class Setters
 	/**
 	 * @throws QueryBuilderException
 	 */
-	public function do(array $photoIDs, ?string $value): bool
+	public function do(array $photoIDs, ?string $value): void
 	{
 		try {
-			return Photo::query()
+			Photo::query()
 				->whereIn('id', $photoIDs)
 				->update([$this->property => $value]);
 		} catch (\InvalidArgumentException $e) {

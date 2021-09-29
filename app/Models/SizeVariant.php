@@ -189,7 +189,7 @@ class SizeVariant extends Model
 			return $symLink->url;
 		}
 
-		throw new ConfigurationException('the chosen storage adapter "' . Storage::getDefaultDriver() . '" does not support the symbolic linking feature');
+		throw new ConfigurationException('the chosen storage adapter "' . get_class($storageAdapter) . '" does not support the symbolic linking feature');
 	}
 
 	/**
