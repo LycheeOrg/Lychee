@@ -78,7 +78,7 @@ Route::post('/api/Album::merge', [AlbumController::class, 'merge'])->middleware(
 Route::post('/api/Album::move', [AlbumController::class, 'move'])->middleware('upload');
 Route::post('/api/Album::setLicense', [AlbumController::class, 'setLicense'])->middleware('upload');
 Route::post('/api/Album::setSorting', [AlbumController::class, 'setSorting'])->middleware('upload');
-Route::get('/api/Album::getArchive', [AlbumController::class, 'getArchive'])->middleware('read');
+Route::get('/api/Album::getArchive', [AlbumController::class, 'getArchive'])->middleware('local_storage');
 
 Route::post('/api/Frame::getSettings', [FrameController::class, 'getSettings']);
 

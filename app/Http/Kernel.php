@@ -64,7 +64,7 @@ class Kernel extends HttpKernel
 	/**
 	 * The application's route middleware.
 	 *
-	 * These middleware may be assigned to groups or used individually.
+	 * These middlewares may be assigned to groups or used individually.
 	 *
 	 * @var array
 	 */
@@ -85,5 +85,6 @@ class Kernel extends HttpKernel
 		'upload' => \App\Http\Middleware\UploadCheck::class,
 		'installed' => \App\Http\Middleware\DBExists::class,
 		'migrated' => \App\Http\Middleware\MigrationCheck::class,
+		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,
 	];
 }
