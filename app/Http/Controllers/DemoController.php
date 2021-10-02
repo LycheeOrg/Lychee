@@ -4,13 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
+use App\Contracts\LycheeException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class DemoController extends Controller
 {
@@ -22,6 +27,11 @@ class DemoController extends Controller
 	 * Call /demo and use the generated code to replace the api.post() function
 	 *
 	 * @return Response|RedirectResponse
+	 *
+	 * @throws LycheeException
+	 * @throws BindingResolutionException
+	 * @throws RouteNotFoundException
+	 * @throws ModelNotFoundException
 	 */
 	public function js()
 	{
@@ -65,14 +75,18 @@ class DemoController extends Controller
 		$return_album_list['kind'] = 'albumID';
 		$return_album_list['array'] = [];
 
-		/** @var Collection $albums */
-		$albums = Album::query()
-			->with(['photos', 'photos.size_variants_raw', 'photos.size_variants_raw.sym_links'])
-			->whereHas('base_class', function (Builder $query) {
-				$query
-					->where('is_public', '=', true)
-					->where('requires_link', '=', false);
-			})->get();
+		try {
+			/** @var Collection $albums */
+			$albums = Album::query()
+				->with(['photos', 'photos.size_variants_raw', 'photos.size_variants_raw.sym_links'])
+				->whereHas('base_class', function (Builder $query) {
+					$query
+						->where('is_public', '=', true)
+						->where('requires_link', '=', false);
+				})->get();
+		} catch (\RuntimeException $e) {
+			throw new QueryBuilderException($e);
+		}
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			/**
