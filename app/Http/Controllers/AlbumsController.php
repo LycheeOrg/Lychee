@@ -6,13 +6,15 @@ use App\Actions\Albums\PositionData;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Actions\Albums\Tree;
+use App\Contracts\LycheeException;
 use App\Models\Configs;
-use Illuminate\Database\Eloquent\Collection;
 
 class AlbumsController extends Controller
 {
 	/**
 	 * @return array returns an array of albums or false on failure
+	 *
+	 * @throws LycheeException
 	 */
 	public function get(Top $top, Smart $smart): array
 	{
@@ -38,6 +40,8 @@ class AlbumsController extends Controller
 
 	/**
 	 * @return array as the full tree of visible albums
+	 *
+	 * @throws LycheeException
 	 */
 	public function tree(Tree $tree): array
 	{
@@ -46,6 +50,8 @@ class AlbumsController extends Controller
 
 	/**
 	 * @return array returns an array of visible photos which have positioning data
+	 *
+	 * @throws LycheeException
 	 */
 	public function getPositionData(PositionData $positionData): array
 	{
