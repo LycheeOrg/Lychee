@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Facade;
  *
  * Provides static access to methods of {@link \App\Assets\Helpers}.
  *
- * @internal keep the list of documented method in sync with
- * {@link \App\Assets\Helpers}
+ * Keep the list of documented method in sync with {@link \App\Assets\Helpers}.
  *
  * @method static string cacheBusting(string $filePath)
  * @method static string getDeviceType()
