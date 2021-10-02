@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Models\Configs;
-use App\Models\Logs;
 use App\Models\Photo;
-use Illuminate\Http\Request;
+use App\Models\SizeVariant;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
 
@@ -13,7 +15,7 @@ class ViewController extends Controller
 {
 	/**
 	 * Just the constructor
-	 * This also shows how to apply a middlewear directly in a controller.
+	 * This also shows how to apply a middleware directly in a controller.
 	 *
 	 * ViewController constructor.
 	 */
@@ -25,55 +27,28 @@ class ViewController extends Controller
 	/**
 	 * View is only used when sharing a single picture.
 	 *
-	 * @param Request $request
+	 * @param GetPhotoRequest $request
 	 *
-	 * @return View|void
+	 * @return View
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws BindingResolutionException
 	 */
-	public function view(Request $request)
+	public function view(GetPhotoRequest $request): View
 	{
-		$request->validate([
-			'p' => 'required',
-		]);
-
 		/** @var Photo $photo */
-		$photo = Photo::find($request->get('p'));
+		$photo = Photo::query()->findOrFail($request->photoID());
 
-		if ($photo == null) {
-			Logs::error(__METHOD__, __LINE__, 'Could not find photo in database');
-
-			return abort(404);
-		}
-
-		// TODO: Instead of re-coding the logic here whether an photo is visible or not, the query for a photo above, should be filtered with `PhotoAuthorisationProvider`
-
-		// is the picture public ?
-		$public = $photo->is_public;
-
-		// is the album (if exist) public ?
-		if ($photo->album_id != null) {
-			$public = $photo->album->is_public || $public;
-		}
-		// return 403 if not allowed
-		if (!$public) {
-			return abort(403);
-		}
-
-		// TODO: Refactor this
-		// Don't build the URL and paths manually, but use the appropriate
-		// methods of $photo.
-		// Don't rely on hard-coded path prefixes like "medium" or "big".
-		// Hopefully, this code goes away with the new Livewire frontend
-		if ($photo->size_variants->getMedium()) {
-			$dir = 'medium';
-		} else {
-			$dir = 'big';
+		$sizeVariant = $photo->size_variants->getSizeVariant(SizeVariant::MEDIUM);
+		if ($sizeVariant === null) {
+			$sizeVariant = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
 		}
 
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
 
 		$url = config('app.url') . $request->server->get('REQUEST_URI');
-		$picture = config('app.url') . '/uploads/' . $dir . '/' . $photo->filename;
+		$picture = $sizeVariant->url;
 
 		return view('view', [
 			'url' => $url,
