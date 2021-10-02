@@ -20,18 +20,12 @@ class Exec
 {
 	use Constants;
 
-	// TODO: Refactor this and use `ImportMode` instead of four boolean properties
-	public $skip_duplicates = false;
-	public $resync_metadata = false;
-	public $delete_imported;
-	public $import_via_symlink;
-
-	public $memCheck = true;
-	public $statusCLIFormatting = false;
-	public $memLimit;
-	public $memWarningGiven = false;
-
-	private $raw_formats = [];
+	public ImportMode $importMode;
+	public bool $memCheck = true;
+	public bool $statusCLIFormatting = false;
+	public int $memLimit = 0;
+	public bool $memWarningGiven = false;
+	private array $raw_formats;
 
 	public function __construct()
 	{
@@ -82,7 +76,7 @@ class Exec
 		$this->status_update('Problem: ' . $path . ': ' . $msg);
 	}
 
-	private function parsePath(string &$path, string $origPath)
+	private function parsePath(string &$path, string $origPath): bool
 	{
 		if (!isset($path)) {
 			// @codeCoverageIgnoreStart
@@ -251,12 +245,7 @@ class Exec
 					// be created once using a single instance of
 					// `ImportMode` and then `PhotoCreate::add` should
 					// be called for each file.
-					$photoCreate = new PhotoCreate(new ImportMode(
-						$this->delete_imported,
-						$this->import_via_symlink,
-						$this->skip_duplicates,
-						$this->resync_metadata
-					));
+					$photoCreate = new PhotoCreate($this->importMode);
 					if (
 						$photoCreate->add(SourceFileInfo::createForLocalFile($file), $albumID) == null
 					) {
@@ -280,8 +269,9 @@ class Exec
 		foreach ($dirs as $dir) {
 			// Folder
 			$album = null;
-			if ($this->skip_duplicates) {
-				$album = Album::where('parent_id', '=', $albumID == 0 ? null : $albumID)
+			if ($this->importMode->shallSkipDuplicates()) {
+				$album = Album::query()
+					->where('parent_id', '=', $albumID == 0 ? null : $albumID)
 					->where('title', '=', basename($dir))
 					->get()
 					->first();
@@ -310,7 +300,7 @@ class Exec
 	 *
 	 * @return bool
 	 */
-	private function check_file_matches_pattern(string $pattern, string $filename)
+	private function check_file_matches_pattern(string $pattern, string $filename): bool
 	{
 		// This function checks if the given filename matches the pattern allowing for
 		// star as wildcard (as in *.jpg)
@@ -327,7 +317,7 @@ class Exec
 	 *
 	 * @return string
 	 */
-	private function preg_quote_callback_fct(array $my_array)
+	private function preg_quote_callback_fct(array $my_array): string
 	{
 		return preg_quote($my_array[1], '/');
 	}

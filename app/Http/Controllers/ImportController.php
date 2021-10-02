@@ -4,47 +4,83 @@ namespace App\Http\Controllers;
 
 use App\Actions\Import\FromServer;
 use App\Actions\Import\FromUrl;
-use App\Http\Requests\ImportRequests\ImportServerRequest;
-use App\Http\Requests\ImportRequests\ImportUrlRequest;
+use App\Exceptions\MassImportException;
+use App\Exceptions\UnauthorizedException;
+use App\Facades\AccessControl;
+use App\Http\Requests\Import\ImportFromUrlRequest;
+use App\Http\Requests\Import\ImportServerRequest;
+use App\Models\Photo;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
-use ImagickException;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
+/**
+ * Class ImportController.
+ *
+ * This controller handles requests to import photos from a sequence of
+ * URLs or from a local path on the server.
+ *
+ * Note, the return types of the methods is quite differently.
+ * Both methods may take some time to finish, if the number of photos is large.
+ * While {@link ImportController::server()} returns a streamed response with
+ * intermediate updates, {@link ImportController::url} returns an atomic
+ * response at the end.
+ * The former approach appears to be more appropriate in order to avoid
+ * timeout errors at the client side.
+ * While {@link ImportController::url} returns a well-formed and
+ * syntactically valid JSON response which is a properly serialized collection
+ * of the imported photos, {@link ImportController::server()} just streams
+ * the terminal output of the command line.
+ * The latter cannot properly be interpreted by web-clients client which
+ * expect a proper JSON response.
+ * Actually, both methods should be re-factored such that their return
+ * types are consistent and the best of both worlds: a streamed collection.
+ * In other words, the streamed response should immediately send back a
+ * `[`-character to the client (the beginning of the collection), then
+ * send back a JSONized {@link Photo} as soon as it has been imported
+ * (element of the collection, and send a final `]`-character (the end of
+ * the collection).
+ *
+ * TODO: Refactor this, see problem description above.
+ */
 class ImportController extends Controller
 {
 	/**
-	 * @param ImportUrlRequest $request
+	 * @param ImportFromUrlRequest $request
+	 * @param FromUrl              $fromUrl
 	 *
-	 * @return false|string
+	 * @return Collection<Photo>
+	 *
+	 * @throws MassImportException
 	 */
-	public function url(ImportUrlRequest $request, FromUrl $fromUrl)
+	public function url(ImportFromUrlRequest $request, FromUrl $fromUrl): Collection
 	{
-		// Parse URLs
-		$urls = $request['url'];
-		$urls = str_replace(' ', '%20', $urls);
-		$urls = explode(',', $urls);
-
-		return $fromUrl->do($urls, $request['albumID']) ? 'true' : 'false';
+		return $fromUrl->do($request->urls(), $request->albumID());
 	}
 
 	/**
 	 * @param ImportServerRequest $request
+	 * @param FromServer          $fromServer
 	 *
-	 * @return bool|string
-	 *
-	 * @throws ImagickException
+	 * @return StreamedResponse
 	 */
-	public function server(ImportServerRequest $request, FromServer $fromServer)
+	public function server(ImportServerRequest $request, FromServer $fromServer): StreamedResponse
 	{
-		$validated = $request->validated();
 		Session::forget('cancel');
 
-		return $fromServer->do($validated);
+		return $fromServer->do(
+			$request->path(), $request->albumID(), $request->importMode()
+		);
 	}
 
-	public function serverCancel()
+	/**
+	 * @throws UnauthorizedException
+	 */
+	public function serverCancel(): void
 	{
+		if (!AccessControl::is_admin()) {
+			throw new UnauthorizedException('Admin privileges required');
+		}
 		Session::put('cancel', true);
-
-		return 'true';
 	}
 }

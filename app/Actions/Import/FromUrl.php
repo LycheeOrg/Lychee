@@ -7,11 +7,14 @@ use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Contracts\LycheeException;
 use App\Exceptions\InsufficientFilesystemPermissions;
+use App\Exceptions\MassImportException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Facades\Helpers;
 use App\Models\Logs;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Photo;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 
 class FromUrl
@@ -28,12 +31,17 @@ class FromUrl
 	}
 
 	/**
-	 * @throws LycheeException
-	 * @throws ModelNotFoundException
+	 * @param string[]        $urls
+	 * @param int|string|null $albumId
+	 *
+	 * @return Collection<Photo> the collection of imported photos
+	 *
+	 * @throws MassImportException
 	 */
-	public function do(array $urls, $albumId): bool
+	public function do(array $urls, $albumId): Collection
 	{
-		$error = false;
+		$result = new Collection();
+		$exceptions = [];
 		$create = new Create(new ImportMode(true));
 
 		foreach ($urls as $url) {
@@ -45,34 +53,49 @@ class FromUrl
 			// Verify extension
 			$extension = Helpers::getExtension($url, true);
 			if (!$this->isValidExtension($extension)) {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Photo format not supported (' . $url . ')');
+				$msg = 'Photo format not supported (' . $url . ')';
+				$exceptions[] = new MediaFileUnsupportedException($msg);
+				Logs::error(__METHOD__, __LINE__, $msg);
 				continue;
 			}
 
 			// Verify image
 			$type = exif_imagetype($url);
 			if (!$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Photo type not supported (' . $url . ')');
+				$msg = 'Photo format not supported (' . $url . ')';
+				$exceptions[] = new MediaFileUnsupportedException($msg);
+				Logs::error(__METHOD__, __LINE__, $msg);
 				continue;
 			}
 
 			$filename = pathinfo($url, PATHINFO_FILENAME) . $extension;
 			$tmp_name = Storage::path('import/' . $filename);
-			if (copy($url, $tmp_name) === false) {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not copy file (' . $url . ') to temp-folder (' . $tmp_name . ')');
+			try {
+				if (copy($url, $tmp_name) === false) {
+					throw new \RuntimeException('copy returned false');
+				}
+			} catch (\Throwable $e) {
+				$msg = 'Could not copy file (' . $url . ') to temp-folder (' . $tmp_name . ')';
+				$exceptions[] = new MediaFileOperationException($msg);
+				Logs::error(__METHOD__, __LINE__, $msg);
 				continue;
 			}
 
 			// Import photo
-			if ($create->add(SourceFileInfo::createForLocalFile($tmp_name), $albumId) == null) {
-				$error = true;
+			try {
+				$result->add(
+					$create->add(SourceFileInfo::createForLocalFile($tmp_name), $albumId)
+				);
+			} catch (\Throwable $e) {
+				$exceptions[] = $e;
 				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
 			}
 		}
 
-		return !$error;
+		if (count($exceptions) !== 0) {
+			throw new MassImportException($exceptions);
+		}
+
+		return $result;
 	}
 }
