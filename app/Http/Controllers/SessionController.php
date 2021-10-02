@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\UnauthenticatedException;
+use App\Exceptions\VersionControlException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Facades\Lang;
@@ -11,7 +13,7 @@ use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
-use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 
@@ -33,9 +35,12 @@ class SessionController extends Controller
 	/**
 	 * First function being called via AJAX.
 	 *
-	 * @return IlluminateResponse|array (array containing config information or killing the session)
+	 * @return array
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws VersionControlException
 	 */
-	public function init()
+	public function init(): array
 	{
 		$logged_in = AccessControl::is_logged_in();
 
@@ -59,19 +64,18 @@ class SessionController extends Controller
 
 				$return['config']['location'] = base_path('public/');
 			} else {
-				$user = User::query()->find($user_id);
-
-				if ($user == null) {
-					Logs::notice(__METHOD__, __LINE__, 'UserID ' . $user_id . ' not found!');
-
-					return $this->logout();
-				} else {
+				try {
+					/** @var User $user */
+					$user = User::query()->findorFail($user_id);
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
-
 					$return['config'] = $this->configFunctions->public();
 					$return['lock'] = ($user->lock == '1');         // can user change his password
 					$return['upload'] = ($user->upload == '1');     // can user upload ?
 					$return['username'] = $user->username;
+				} catch (ModelNotFoundException $e) {
+					Logs::notice(__METHOD__, __LINE__, 'UserID ' . $user_id . ' not found!');
+					$this->logout();
+					throw $e;
 				}
 			}
 
@@ -92,7 +96,7 @@ class SessionController extends Controller
 		$return['config_device'] = $this->configFunctions->get_config_device($deviceType);
 
 		// we also return the local
-		$return['locale'] = Lang::get_lang(Configs::get_value('lang'));
+		$return['locale'] = Lang::get_lang();
 
 		$return['update_json'] = 0;
 		$return['update_available'] = false;
@@ -105,47 +109,49 @@ class SessionController extends Controller
 	 *
 	 * @param UsernamePasswordRequest $request
 	 *
-	 * @return IlluminateResponse
+	 * @return void
+	 *
+	 * @throws UnauthenticatedException
 	 */
-	public function login(UsernamePasswordRequest $request): IlluminateResponse
+	public function login(UsernamePasswordRequest $request): void
 	{
 		// No login
 		if (AccessControl::noLogin() === true) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
-			return response()->noContent();
+			return;
 		}
 
 		// this is probably sensitive to timing attacks...
-		if (AccessControl::log_as_admin($request['username'], $request['password'], $request->ip()) === true) {
-			return response()->noContent();
+		if (AccessControl::log_as_admin($request->username(), $request->password(), $request->ip()) === true) {
+			return;
 		}
 
-		if (AccessControl::log_as_user($request['username'], $request['password'], $request->ip()) === true) {
-			return response()->noContent();
+		if (AccessControl::log_as_user($request->username(), $request->password(), $request->ip()) === true) {
+			return;
 		}
 
-		Logs::error(__METHOD__, __LINE__, 'User (' . $request['username'] . ') has tried to log in from ' . $request->ip());
+		Logs::error(__METHOD__, __LINE__, 'User (' . $request->username() . ') has tried to log in from ' . $request->ip());
 
-		return response('', 401);
+		throw new UnauthenticatedException('Unknown user or invalid password');
 	}
 
 	/**
-	 * Unset the session values.
+	 * Unsets the session values.
 	 *
-	 * @return IlluminateResponse
+	 * @return void
 	 */
-	public function logout(): IlluminateResponse
+	public function logout(): void
 	{
 		Session::flush();
-
-		return response()->noContent();
 	}
 
 	/**
-	 * Show the session values.
+	 * Shows the session values.
+	 *
+	 * @return void
 	 */
-	public function show()
+	public function show(): void
 	{
 		dd(Session::all());
 	}

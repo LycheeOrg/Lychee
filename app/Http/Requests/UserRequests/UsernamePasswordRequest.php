@@ -2,30 +2,44 @@
 
 namespace App\Http\Requests\UserRequests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Contracts\HasPassword;
+use App\Http\Requests\Contracts\HasUsername;
+use App\Http\Requests\Traits\HasPasswordTrait;
+use App\Http\Requests\Traits\HasUsernameTrait;
+use App\Rules\PasswordRule;
+use App\Rules\UsernameRule;
 
-class UsernamePasswordRequest extends FormRequest
+class UsernamePasswordRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
+	use HasUsernameTrait;
+	use HasPasswordTrait;
+
 	/**
-	 * Determine if the user is authorized to make this request.
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function authorize()
+	public function authorize(): bool
 	{
 		return true;
 	}
 
 	/**
-	 * Get the validation rules that apply to the request.
-	 *
-	 * @return array
+	 * {@inheritDoc}
 	 */
-	public function rules()
+	public function rules(): array
 	{
 		return [
-			'username' => 'required|string',
-			'password' => 'required|string',
+			HasUsername::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
+			HasPassword::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 		];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function processValidatedValues(array $values, array $files): void
+	{
+		$this->username = $values[HasUsername::USERNAME_ATTRIBUTE];
+		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE];
 	}
 }

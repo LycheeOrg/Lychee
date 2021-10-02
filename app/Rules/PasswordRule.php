@@ -6,6 +6,6 @@ class PasswordRule extends StringRule
 {
 	public function __construct(bool $isNullable)
 	{
-		parent::__construct($isNullable, 50);
+		parent::__construct($isNullable, 100);
 	}
 }
