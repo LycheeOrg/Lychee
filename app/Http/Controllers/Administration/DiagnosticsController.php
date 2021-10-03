@@ -7,8 +7,10 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Contracts\LycheeException;
 use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\View\View;
 
 class DiagnosticsController extends Controller
@@ -17,8 +19,10 @@ class DiagnosticsController extends Controller
 	 * Return the requested information.
 	 *
 	 * @return array
+	 *
+	 * @throws LycheeException
 	 */
-	private function get_data()
+	private function get_data(): array
 	{
 		$errors = resolve(Errors::class)->get();
 
@@ -41,9 +45,13 @@ class DiagnosticsController extends Controller
 	 * This function return the Diagnostic data as an JSON array.
 	 * should be used for AJAX request.
 	 *
+	 * @param CheckUpdate $checkUpdate
+	 *
 	 * @return array
+	 *
+	 * @throws LycheeException
 	 */
-	public function get(CheckUpdate $checkUpdate)
+	public function get(CheckUpdate $checkUpdate): array
 	{
 		$ret = $this->get_data();
 		$ret['update'] = $checkUpdate->getCode();
@@ -55,8 +63,11 @@ class DiagnosticsController extends Controller
 	 * Return the diagnostic information as a page.
 	 *
 	 * @return View
+	 *
+	 * @throws BindingResolutionException
+	 * @throws LycheeException
 	 */
-	public function show()
+	public function show(): View
 	{
 		return view('diagnostics', $this->get_data());
 	}
@@ -67,7 +78,7 @@ class DiagnosticsController extends Controller
 	 *
 	 * @return array
 	 */
-	public function get_size()
+	public function get_size(): array
 	{
 		$infos = ['You must be logged in to see this.'];
 		if (AccessControl::is_admin() || AccessControl::noLogin()) {

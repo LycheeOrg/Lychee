@@ -13,11 +13,8 @@ class Info
 {
 	use Line;
 
-	/** @var LycheeVersion */
-	private $lycheeVersion;
-
-	/** @var array */
-	private $versions;
+	private LycheeVersion $lycheeVersion;
+	private array $versions;
 
 	public function __construct(LycheeVersion $lycheeVersion)
 	{
@@ -48,10 +45,7 @@ class Info
 			$imagick = '-';
 			// @codeCoverageIgnoreEnd
 		}
-		if (
-			!isset($imagickVersion, $imagickVersion['versionNumber'])
-			|| $imagickVersion === ''
-		) {
+		if (!isset($imagickVersion, $imagickVersion['versionNumber'])) {
 			// @codeCoverageIgnoreStart
 			$imagickVersion = '-';
 		// @codeCoverageIgnoreEnd
@@ -94,7 +88,6 @@ class Info
 					break;
 			}
 		} catch (QueryException $e) {
-			$errors[] = 'Error: ' . $e->getMessage();
 			$dbtype = 'Unknown SQL';
 			$dbver = 'unknown';
 		}

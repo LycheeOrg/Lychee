@@ -6,8 +6,7 @@ use App\Factories\DiagnosticsChecksFactory;
 
 class Errors
 {
-	/** @var DiagnosticsChecksFactory */
-	private $diagnosticsChecksFactory;
+	private DiagnosticsChecksFactory $diagnosticsChecksFactory;
 
 	public function __construct(DiagnosticsChecksFactory $diagnosticsChecksFactory)
 	{

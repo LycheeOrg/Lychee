@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Administration;
 
+use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\ModelDBException;
 use App\Http\Controllers\Controller;
 use App\Models\Configs;
 use App\Models\Logs;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -13,51 +17,58 @@ class LogController extends Controller
 	/**
 	 * @param string $order
 	 *
-	 * @return mixed
+	 * @return Collection<Logs>
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function list($order = 'DESC')
+	public function list(string $order = 'desc'): Collection
 	{
-		return Logs::orderBy('id', $order)->limit(intval(Configs::get_value('log_max_num_line', 1000)))->get();
+		try {
+			return Logs::query()
+				->orderBy('id', $order)
+				->limit(intval(Configs::get_value('log_max_num_line', 1000)))
+				->get();
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
 	/**
 	 * display the Logs.
 	 *
-	 * @return View|string
+	 * @return View
+	 *
+	 * @throws BindingResolutionException
+	 * @throws QueryBuilderException
 	 */
-	public function display()
+	public function display(): View
 	{
-		if (Logs::count() == 0) {
-			return 'Everything looks fine, Lychee has not reported any problems!';
-		} else {
-			$logs = $this->list();
-
-			return view('logs.list', ['logs' => $logs]);
-		}
+		return view('logs.list', ['logs' => $this->list()]);
 	}
 
 	/**
 	 * Empty the log table.
 	 *
-	 * @return string
+	 * @return void
 	 */
-	public static function clear()
+	public static function clear(): void
 	{
 		DB::table('logs')->truncate();
-
-		return 'Log cleared';
 	}
 
 	/**
 	 * This function does pretty much the same as clear but only does it on notice
-	 * and also keeps the log of the loggin attempts.
+	 * and also keeps the log of the log-in attempts.
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws ModelDBException
 	 */
-	public static function clearNoise()
+	public static function clearNoise(): void
 	{
-		Logs::where('function', '!=', 'App\Http\Controllers\SessionController::login')->where('type', '=', 'notice')->delete();
-
-		return 'Log Noise cleared';
+		Logs::query()
+			->where('function', '!=', 'App\Http\Controllers\SessionController::login')
+			->where('type', '=', 'notice')
+			->delete();
 	}
 }
