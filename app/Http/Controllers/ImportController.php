@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Actions\Import\FromServer;
 use App\Actions\Import\FromUrl;
 use App\Exceptions\MassImportException;
-use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Http\Requests\Import\ImportFromUrlRequest;
 use App\Http\Requests\Import\ImportServerRequest;
 use App\Models\Photo;
@@ -74,13 +72,10 @@ class ImportController extends Controller
 	}
 
 	/**
-	 * @throws UnauthorizedException
+	 * @return void
 	 */
 	public function serverCancel(): void
 	{
-		if (!AccessControl::is_admin()) {
-			throw new UnauthorizedException('Admin privileges required');
-		}
 		Session::put('cancel', true);
 	}
 }

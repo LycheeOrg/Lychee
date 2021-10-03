@@ -107,8 +107,8 @@ Route::post('/api/Sharing::Delete', [Administration\SharingController::class, 'd
 Route::post('/api/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
 
 Route::post('/api/Import::url', [ImportController::class, 'url']);
-Route::post('/api/Import::server', [ImportController::class, 'server']);
-Route::post('/api/Import::serverCancel', [ImportController::class, 'serverCancel']);
+Route::post('/api/Import::server', [ImportController::class, 'server'])->middleware('admin');
+Route::post('/api/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
 
 Route::post('/api/Diagnostics', [Administration\DiagnosticsController::class, 'get']);
 Route::post('/api/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'get_size']);
