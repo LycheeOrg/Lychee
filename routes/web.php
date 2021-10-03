@@ -110,28 +110,10 @@ Route::post('/api/Import::url', [ImportController::class, 'url']);
 Route::post('/api/Import::server', [ImportController::class, 'server']);
 Route::post('/api/Import::serverCancel', [ImportController::class, 'serverCancel']);
 
-Route::post('/api/User::List', [Administration\UserController::class, 'list'])->middleware('upload');
-Route::post('/api/User::Save', [Administration\UserController::class, 'save'])->middleware('admin');
-Route::post('/api/User::Delete', [Administration\UserController::class, 'delete'])->middleware('admin');
-Route::post('/api/User::Create', [Administration\UserController::class, 'create'])->middleware('admin');
-Route::post('/api/User::UpdateEmail', [Administration\UserController::class, 'updateEmail'])->middleware('login');
-Route::post('/api/User::GetEmail', [Administration\UserController::class, 'getEmail'])->middleware('login');
-
-Route::post('/api/Logs', [Administration\LogController::class, 'display'])->middleware('admin');
-Route::post('/api/Logs::clearNoise', [Administration\LogController::class, 'clearNoise'])->middleware('admin');
 Route::post('/api/Diagnostics', [Administration\DiagnosticsController::class, 'get']);
 Route::post('/api/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'get_size']);
 
-Route::get('/Logs', [Administration\LogController::class, 'display'])->middleware('admin');
-Route::get('/api/Logs::clear', [Administration\LogController::class, 'clear'])->middleware('admin');
 Route::get('/Diagnostics', [Administration\DiagnosticsController::class, 'show']);
-
-Route::get('/Update', [Administration\UpdateController::class, 'apply'])->middleware('admin');
-Route::post('/api/Update::Apply', [Administration\UpdateController::class, 'apply'])->middleware('admin');
-Route::post('/api/Update::Check', [Administration\UpdateController::class, 'check'])->middleware('admin');
-
-// unused
-Route::post('/api/Logs::clear', [Administration\LogController::class, 'clear'])->middleware('admin');
 
 Route::post('/api/search', [SearchController::class, 'search']);
 

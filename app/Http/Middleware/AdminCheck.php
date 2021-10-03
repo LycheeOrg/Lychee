@@ -10,10 +10,7 @@ use Illuminate\Http\Request;
 
 class AdminCheck
 {
-	/**
-	 * @var IsInstalled
-	 */
-	private $isInstalled;
+	private IsInstalled $isInstalled;
 
 	public function __construct(IsInstalled $isInstalled)
 	{
@@ -30,7 +27,7 @@ class AdminCheck
 	 *
 	 * @throws UnauthorizedException
 	 */
-	public function handle($request, Closure $next)
+	public function handle(Request $request, Closure $next)
 	{
 		if (!$this->isInstalled->assert()) {
 			return $next($request);
