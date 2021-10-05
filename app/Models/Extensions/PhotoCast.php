@@ -69,7 +69,7 @@ trait PhotoCast
 			'model' => $this->model,
 			'shutter' => $this->get_shutter_str(),
 			// We need to format the framerate (stored as focal) -> max 2 decimal digits
-			'focal' => (strpos($this->type, 'video') === 0) ? round($this->focal, 2) : $this->focal,
+			'focal' => (strpos($this->type, 'video') === 0) ? round(floatval($this->focal), 2) : $this->focal,
 			'lens' => $this->lens,
 			'latitude' => $this->latitude,
 			'longitude' => $this->longitude,
