@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\Update\Apply as ApplyUpdate;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Contracts\LycheeException;
+use App\Exceptions\VersionControlException;
 use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
 use App\Http\Middleware\Checks\IsMigrated;
-use App\Response;
-use Exception;
 use Illuminate\Http\Request;
 
 /**
@@ -20,39 +20,42 @@ class UpdateController extends Controller
 	 * Return if up to date or the number of commits behind
 	 * This invalidates the cache for the url.
 	 *
-	 * @return string
+	 * @param CheckUpdate $checkUpdate
+	 *
+	 * @return array{updateStatus: string}
+	 *
+	 * @throws VersionControlException
 	 */
-	public function check(CheckUpdate $checkUpdate)
+	public function check(CheckUpdate $checkUpdate): array
 	{
-		try {
-			return Response::json($checkUpdate->getText());
-			// @codeCoverageIgnoreStart
-		} catch (Exception $e) {
-			return Response::error($e->getMessage()); // Not master
-		}
-		// @codeCoverageIgnoreEnd
+		return ['updateStatus' => $checkUpdate->getText()];
 	}
 
 	/**
-	 * This requires a php to have a shell access.
-	 * This method execute the update (git pull).
+	 * This requires PHP to have shell access.
+	 * This method executes the update (git pull).
 	 *
-	 * @return array|string
+	 * @param CheckUpdate $checkUpdate
+	 * @param ApplyUpdate $applyUpdate
+	 *
+	 * @return array{updateMsgs: array<string>}
+	 *
+	 * @throws LycheeException
 	 */
-	public function apply(CheckUpdate $checkUpdate, ApplyUpdate $applyUpdate)
+	public function apply(CheckUpdate $checkUpdate, ApplyUpdate $applyUpdate): array
 	{
-		try {
-			$checkUpdate->canUpdate();
-			// @codeCoverageIgnoreStart
-		} catch (Exception $e) {
-			return Response::error($e->getMessage());
-		}
-		// @codeCoverageIgnoreEnd
+		$checkUpdate->assertUpdatability();
 
-		// @codeCoverageIgnoreStart
-		return $applyUpdate->run();
+		return ['updateMsgs' => $applyUpdate->run()];
 	}
 
+	/**
+	 * Who calls this method under what circumstances?
+	 * It does not seem to be used by the front-end.
+	 * Why do we check for admin authentication explicitly here?
+	 *
+	 * TODO: Clean up this method and also return a consistent return type/value after we figured out under what circumstances this method is called.
+	 */
 	public function force(Request $request, IsMigrated $isMigrated, ApplyUpdate $applyUpdate)
 	{
 		if ($isMigrated->assert()) {

@@ -128,13 +128,13 @@ class Apply
 	}
 
 	/**
-	 * Apply the migration:
+	 * Applies the migration:
 	 * 1. git pull
 	 * 2. artisan migrate.
 	 *
-	 * @return array
+	 * @return array<string> The per-line console output
 	 */
-	public function run()
+	public function run(): array
 	{
 		$output = [];
 		if (

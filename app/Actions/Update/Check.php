@@ -10,7 +10,6 @@ use App\Metadata\GitHubFunctions;
 use App\Metadata\GitRequest;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
-use Exception;
 
 class Check
 {
@@ -34,18 +33,20 @@ class Check
 	}
 
 	/**
-	 * Returns true or throws an exception.
+	 * Ensures that Lychee can be updated or throws an exception otherwise.
+	 *
+	 * @return void
 	 *
 	 * @throws ConfigurationException
 	 * @throws ExternalComponentMissingException
 	 * @throws InsufficientFilesystemPermissions
 	 */
-	public function canUpdate(): bool
+	public function assertUpdatability(): void
 	{
 		// we bypass this because we don't care about the other conditions as they don't apply to the release
 		if ($this->lycheeVersion->isRelease) {
 			// @codeCoverageIgnoreStart
-			return true;
+			return;
 			// @codeCoverageIgnoreEnd
 		}
 
@@ -61,24 +62,6 @@ class Check
 
 		if (!$this->gitHubFunctions->has_permissions()) {
 			throw new InsufficientFilesystemPermissions(base_path('.git') . ' (and subdirectories) are not executable, check the permissions');
-		}
-		// @codeCoverageIgnoreEnd
-
-		return true;
-	}
-
-	/**
-	 * Catch the Exception and return the boolean equivalent.
-	 *
-	 * @return bool
-	 */
-	private function canUpdateBool(): bool
-	{
-		try {
-			return $this->canUpdate();
-			// @codeCoverageIgnoreStart
-		} catch (Exception $e) {
-			return false;
 		}
 		// @codeCoverageIgnoreEnd
 	}
@@ -132,22 +115,17 @@ class Check
 			// @codeCoverageIgnoreEnd
 		}
 
-		$update = $this->canUpdateBool();
-
-		if ($update) {
-			try {
-				// @codeCoverageIgnoreStart
-				if (!$this->gitHubFunctions->is_up_to_date()) {
-					return 2;
-				} else {
-					return 1;
-				}
-				// @codeCoverageIgnoreEnd
-			} catch (VersionControlException $e) {
-				return 0;
+		try {
+			$this->assertUpdatability();
+			// @codeCoverageIgnoreStart
+			if (!$this->gitHubFunctions->is_up_to_date()) {
+				return 2;
+			} else {
+				return 1;
 			}
+			// @codeCoverageIgnoreEnd
+		} catch (\Exception $e) {
+			return 0;
 		}
-
-		return 0;
 	}
 }
