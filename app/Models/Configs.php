@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Exceptions\Internal\InvalidConfigOption;
+use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Models\Extensions\ConfigsHas;
 use App\Models\Extensions\ThrowsConsistentExceptions;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
  * App\Configs.
@@ -49,8 +50,12 @@ class Configs extends Model
 	 */
 	public $timestamps = false;
 
-	/** We define this as a singleton */
-	private static $cache = null;
+	/**
+	 * We define this as a singleton.
+	 *
+	 * @var array<Configs>
+	 */
+	private static array $cache = [];
 
 	/**
 	 * Sanity check.
@@ -59,7 +64,7 @@ class Configs extends Model
 	 *
 	 * @return string
 	 */
-	public function sanity($value)
+	public function sanity($value): string
 	{
 		if (!defined('INT')) {
 			define('INT', 'int');
@@ -96,13 +101,13 @@ class Configs extends Model
 						. ' in database, expected ' . implode(
 							' or ',
 							$val_range[$this->type_range]
-						) . ', got ' . ($value ? $value : 'NULL');
+						) . ', got ' . ($value ?: 'NULL');
 				}
 				break;
 			case LICENSE:
 				if (!in_array($value, Helpers::get_all_licenses())) {
 					$message = 'Error: Wrong property for ' . $this->key
-						. ' in database, expected a valide license, got ' . ($value ? $value : 'NULL');
+						. ' in database, expected a valid license, got ' . ($value ?: 'NULL');
 				}
 				break;
 			default:
@@ -110,7 +115,7 @@ class Configs extends Model
 				if (!in_array($value, $values)) {
 					$message = 'Error: Wrong property for ' . $this->key
 						. ' in database, expected ' . implode(' or ', $values)
-						. ', got ' . ($value ? $value : 'NULL');
+						. ', got ' . ($value ?: 'NULL');
 				}
 				break;
 		}
@@ -123,14 +128,14 @@ class Configs extends Model
 	 *
 	 * @return array
 	 */
-	public static function get()
+	public static function get(): array
 	{
 		if (self::$cache) {
 			return self::$cache;
 		}
 
 		try {
-			$query = Configs::select([
+			$query = Configs::query()->select([
 				'key',
 				'value',
 			]);
@@ -140,13 +145,11 @@ class Configs extends Model
 			$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
 
 			self::$cache = $return;
-		} catch (Exception $e) {
-			self::$cache = null;
-
-			return null;
+		} catch (\Exception $e) {
+			self::$cache = [];
 		}
 
-		return $return;
+		return self::$cache;
 	}
 
 	/**
@@ -160,29 +163,14 @@ class Configs extends Model
 	public static function get_value(string $key, $default = null)
 	{
 		if (!self::$cache) {
-			/*
-			 * try is here because when composer does the package discovery it
-			 * looks at AppServiceProvider which register a singleton with:
-			 * $compressionQuality = Configs::get_value('compression_quality', 90);
-			 *
-			 * this will fail for sure as the config table does not exist yet
-			 */
-			try {
-				self::get();
-			} catch (QueryException $e) {
-				return $default;
-			}
+			self::get();
 		}
 
 		if (!isset(self::$cache[$key])) {
 			/*
 			 * For some reason the $default is not returned above...
 			 */
-			try {
-				Logs::notice(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
-			} catch (Exception $e) {
-				// yeah we do nothing because we cannot do anything in that case ...  :p
-			}
+			Logs::notice(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
 
 			return $default;
 		}
@@ -197,44 +185,39 @@ class Configs extends Model
 	 * @param string $key
 	 * @param $value
 	 *
-	 * @return bool returns true when successful
+	 * @return void
+	 *
+	 * @throws InvalidConfigOption
 	 */
-	public static function set(string $key, $value)
+	public static function set(string $key, $value): void
 	{
-		$config = Configs::where('key', '=', $key)->first();
-
-		// first() may return null, fixup 'Creating default object from empty value' error
-		// we also log a warning
-		if ($config == null) {
-			Logs::warning(__METHOD__, __LINE__, 'key ' . $key . ' not found!');
-
-			return true;
-		}
-
-		/**
-		 * Sanity check. :).
-		 */
-		$message = $config->sanity($value);
-		if ($message != '') {
-			Logs::error(__METHOD__, __LINE__, $message);
-
-			return false;
-		}
-
-		$config->value = $value;
-
 		try {
+			/** @var Configs $config */
+			$config = Configs::query()
+				->where('key', '=', $key)
+				->firstOrFail();
+
+			/**
+			 * Sanity check. :).
+			 */
+			$message = $config->sanity($value);
+			if ($message != '') {
+				Logs::error(__METHOD__, __LINE__, $message);
+				throw new InvalidConfigOption($message);
+			}
+			$config->value = $value;
 			$config->save();
-		} catch (Exception $e) {
+		} catch (ModelNotFoundException $e) {
+			$msg = 'key ' . $key . ' not found!';
+			Logs::warning(__METHOD__, __LINE__, $msg);
+			throw new InvalidConfigOption($msg, $e);
+		} catch (ModelDBException $e) {
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
-
-			return false;
+			throw new InvalidConfigOption('Could not save configuration', $e);
+		} finally {
+			// invalidate cache.
+			self::$cache = [];
 		}
-
-		// invalidate cache.
-		self::$cache = null;
-
-		return true;
 	}
 
 	/**
@@ -242,11 +225,11 @@ class Configs extends Model
 	 */
 
 	/**
-	 * @param $query
+	 * @param Builder $query
 	 *
-	 * @return mixed
+	 * @return Builder
 	 */
-	public function scopePublic(Builder $query)
+	public function scopePublic(Builder $query): Builder
 	{
 		return $query->where('confidentiality', '=', 0);
 	}
@@ -254,11 +237,11 @@ class Configs extends Model
 	/**
 	 * Logged user can see.
 	 *
-	 * @param $query
+	 * @param Builder $query
 	 *
-	 * @return mixed
+	 * @return Builder
 	 */
-	public function scopeInfo(Builder $query)
+	public function scopeInfo(Builder $query): Builder
 	{
 		return $query->where('confidentiality', '<=', 2);
 	}
@@ -266,11 +249,11 @@ class Configs extends Model
 	/**
 	 * Only admin can see.
 	 *
-	 * @param $query
+	 * @param Builder $query
 	 *
-	 * @return mixed
+	 * @return Builder
 	 */
-	public function scopeAdmin(Builder $query)
+	public function scopeAdmin(Builder $query): Builder
 	{
 		return $query->where('confidentiality', '<=', 3);
 	}

@@ -11,8 +11,8 @@ use App\Http\Requests\Traits\HasAlbumModelIDTrait;
 use App\Http\Requests\Traits\HasSortingColumnTrait;
 use App\Http\Requests\Traits\HasSortingOrderTrait;
 use App\Rules\ModelIDRule;
-use App\Rules\SortingRule;
-use Illuminate\Validation\Rule;
+use App\Rules\OrderRule;
+use App\Rules\PhotoSortingRule;
 
 class SetAlbumSortingRequest extends BaseApiRequest implements HasAlbumModelID, HasSortingColumn, HasSortingOrder
 {
@@ -35,10 +35,10 @@ class SetAlbumSortingRequest extends BaseApiRequest implements HasAlbumModelID, 
 	{
 		return [
 			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
-			HasSortingColumn::SORTING_COLUMN_ATTRIBUTE => ['present', new SortingRule()],
+			HasSortingColumn::SORTING_COLUMN_ATTRIBUTE => ['present', new PhotoSortingRule()],
 			HasSortingOrder::SORTING_ORDER_ATTRIBUTE => [
 				'required_with:' . HasSortingColumn::SORTING_COLUMN_ATTRIBUTE,
-				Rule::in([null, 'ASC', 'DESC']),
+				new OrderRule(true),
 			],
 		];
 	}

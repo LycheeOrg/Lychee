@@ -15,7 +15,7 @@ class ConfigFunctions
 	 *
 	 * @return array
 	 */
-	public function get_pages_infos()
+	public function get_pages_infos(): array
 	{
 		$infos = [
 			'owner' => Configs::get_value('landing_owner'),
@@ -76,7 +76,7 @@ class ConfigFunctions
 	 *
 	 * @return array
 	 */
-	public function admin()
+	public function admin(): array
 	{
 		// Execute query
 		$return = Configs::admin()->pluck('value', 'key')->all();
@@ -93,7 +93,7 @@ class ConfigFunctions
 	 *
 	 * @param array $return
 	 */
-	public function sanity(array &$return)
+	public function sanity(array &$return): void
 	{
 		try {
 			$configs = Configs::all(['key', 'value', 'type_range']);
@@ -109,7 +109,7 @@ class ConfigFunctions
 		}
 	}
 
-	public function get_config_device(string $device)
+	public function get_config_device(string $device): array
 	{
 		$true = true;
 		$false = false;

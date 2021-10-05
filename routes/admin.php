@@ -38,7 +38,7 @@ Route::post('/api/Settings::setDefaultLicense', [SettingsController::class, 'set
 Route::post('/api/Settings::setMapDisplay', [SettingsController::class, 'setMapDisplay']);
 Route::post('/api/Settings::setMapDisplayPublic', [SettingsController::class, 'setMapDisplayPublic']);
 Route::post('/api/Settings::setMapProvider', [SettingsController::class, 'setMapProvider']);
-Route::post('/api/Settings::setMapIncludeSubalbums', [SettingsController::class, 'setMapIncludeSubalbums']);
+Route::post('/api/Settings::setMapIncludeSubAlbums', [SettingsController::class, 'setMapIncludeSubAlbums']);
 Route::post('/api/Settings::setLocationDecoding', [SettingsController::class, 'setLocationDecoding']);
 Route::post('/api/Settings::setLocationShow', [SettingsController::class, 'setLocationShow']);
 Route::post('/api/Settings::setLocationShowPublic', [SettingsController::class, 'setLocationShowPublic']);
