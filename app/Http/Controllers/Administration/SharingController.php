@@ -3,20 +3,27 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Sharing\ListShare;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Sharing\DeleteSharingRequest;
+use App\Http\Requests\Sharing\SetSharingRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
 class SharingController extends Controller
 {
 	/**
-	 * Return the list of current sharing rights.
+	 * Returns the list of sharing permissions wrt. the authenticated user.
+	 *
+	 * @param ListShare $listShare
 	 *
 	 * @return array
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function listSharing(ListShare $listShare)
+	public function listSharing(ListShare $listShare): array
 	{
 		return $listShare->do(AccessControl::id());
 	}
@@ -24,24 +31,27 @@ class SharingController extends Controller
 	/**
 	 * Add a sharing between selected users and selected albums.
 	 *
-	 * @param Request $request
+	 * @param SetSharingRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function add(Request $request)
+	public function add(SetSharingRequest $request): void
 	{
-		$request->validate([
-			'UserIDs' => 'string|required',
-			'albumIDs' => 'string|required',
-		]);
+		try {
+			/** @var Collection<User> $users */
+			$users = User::query()
+				->whereIn('id', $request->userIDs())
+				->get();
 
-		$users = User::whereIn('id', explode(',', $request['UserIDs']))->get();
-
-		foreach ($users as $user) {
-			$user->shared()->sync(explode(',', $request['albumIDs']), false);
+			/** @var User $user */
+			foreach ($users as $user) {
+				$user->shared()->sync($request->albumIDs(), false);
+			}
+		} catch (\Exception $e) {
+			throw new QueryBuilderException($e);
 		}
-
-		return 'true';
 	}
 
 	/**
@@ -51,19 +61,20 @@ class SharingController extends Controller
 	 *
 	 * FIXME: make sure that the Lychee-front is sending the correct ShareIDs
 	 *
-	 * @param Request $request
+	 * @param DeleteSharingRequest $request
 	 *
-	 * @return string
+	 * @return void
+	 *
+	 * @throws QueryBuilderException
 	 */
-	public function delete(Request $request)
+	public function delete(DeleteSharingRequest $request): void
 	{
-		$request->validate([
-			'ShareIDs' => 'string|required',
-		]);
-
-		DB::table('user_album')
-			->whereIn('id', explode(',', $request['ShareIDs']))->delete();
-
-		return 'true';
+		try {
+			DB::table('user_base_album')
+				->whereIn('id', $request->shareIDs())
+				->delete();
+		} catch (\Exception $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 }

@@ -2,18 +2,18 @@
 
 namespace App\Http\Requests\Traits;
 
-trait HasPhotoIDsTrait
+trait HasUserIDsTrait
 {
 	/**
 	 * @var array<int>
 	 */
-	protected array $photoIDs = [];
+	protected array $userIDs = [];
 
 	/**
 	 * @return array<int>
 	 */
-	public function photoIDs(): array
+	public function userIDs(): array
 	{
-		return $this->photoIDs;
+		return $this->userIDs;
 	}
 }
