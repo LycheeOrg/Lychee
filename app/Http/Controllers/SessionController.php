@@ -7,7 +7,7 @@ use App\Exceptions\VersionControlException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Facades\Lang;
-use App\Http\Requests\UserRequests\UsernamePasswordRequest;
+use App\Http\Requests\Session\LoginRequest;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
@@ -107,13 +107,13 @@ class SessionController extends Controller
 	/**
 	 * Login tentative.
 	 *
-	 * @param UsernamePasswordRequest $request
+	 * @param LoginRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws UnauthenticatedException
 	 */
-	public function login(UsernamePasswordRequest $request): void
+	public function login(LoginRequest $request): void
 	{
 		// No login
 		if (AccessControl::noLogin() === true) {

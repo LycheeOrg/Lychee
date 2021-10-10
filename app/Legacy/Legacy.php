@@ -2,8 +2,8 @@
 
 namespace App\Legacy;
 
+use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\InvalidPropertyException;
 use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Hash;
@@ -30,17 +30,11 @@ class Legacy
 	}
 
 	/**
-	 * @throws InvalidPropertyException
+	 * @throws InvalidConfigOption
 	 */
-	public static function SetPassword($request): bool
+	public static function SetPassword(string $hashedUsername, string $hashedPassword): bool
 	{
 		$configs = Configs::get();
-		try {
-			$hashedUsername = bcrypt($request['username']);
-			$hashedPassword = bcrypt($request['password']);
-		} catch (\InvalidArgumentException $e) {
-			throw new InvalidPropertyException('Could not hash username or password', $e);
-		}
 
 		if (Configs::get_value('version', '040000') < '040008') {
 			if ($configs['password'] === '' && $configs['username'] === '') {

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\UserRequests;
+namespace App\Http\Requests\Session;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPassword;
@@ -10,7 +10,7 @@ use App\Http\Requests\Traits\HasUsernameTrait;
 use App\Rules\PasswordRule;
 use App\Rules\UsernameRule;
 
-class UsernamePasswordRequest extends BaseApiRequest implements HasUsername, HasPassword
+class LoginRequest extends BaseApiRequest implements HasUsername, HasPassword
 {
 	use HasUsernameTrait;
 	use HasPasswordTrait;

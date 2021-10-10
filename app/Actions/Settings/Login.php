@@ -2,6 +2,7 @@
 
 namespace App\Actions\Settings;
 
+use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
@@ -10,7 +11,6 @@ use App\Legacy\Legacy;
 use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class Login
@@ -20,20 +20,18 @@ class Login
 	 * @throws UnauthenticatedException
 	 * @throws ModelNotFoundException
 	 * @throws InvalidPropertyException
+	 * @throws InvalidConfigOption
 	 */
-	public function do(Request $request): void
+	public function do(string $username, string $password, ?string $oldUsername, ?string $oldPassword, string $ip): void
 	{
-		$oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';
-		$oldUsername = $request->has('oldUsername') ? $request['oldUsername'] : '';
-
 		try {
-			$hashedUsername = bcrypt($request['username']);
-			$hashedPassword = bcrypt($request['password']);
+			$hashedUsername = bcrypt($username);
+			$hashedPassword = bcrypt($password);
 		} catch (\InvalidArgumentException $e) {
 			throw new InvalidPropertyException('Could not hash username or password', $e);
 		}
 
-		if (Legacy::SetPassword($request)) {
+		if (Legacy::SetPassword($hashedUsername, $hashedPassword)) {
 			return;
 		}
 
@@ -72,23 +70,32 @@ class Login
 			$user = User::query()->findOrFail($id);
 
 			if ($user->lock) {
-				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change his identity from ' . $request->ip());
+				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change his identity from ' . $ip);
 				throw new UnauthenticatedException('Account is locked');
 			}
 
-			if (User::query()->where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip());
+			if (User::query()->where('username', '=', $username)->where('id', '!=', $id)->count()) {
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity to ' . $username . ' from ' . $ip);
 
 				throw new InvalidPropertyException('Username already exists.');
 			}
 
-			if ($user->username == $oldUsername && Hash::check($oldPassword, $user->password)) {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for (' . $request['username'] . ') from ' . $request->ip());
-				$user->username = $request['username'];
+			// TODO: This looks suspicious.
+			// A user can only change the username/password of the currently
+			// authenticated user (see above, we use `AccessControl::id()` and
+			// query for the currently authenticated user).
+			// In other words, a user can only change the username of his/her
+			// own account.
+			// Why should an authenticated user (who knows his/her own username
+			// anyway) use a wrong old username?
+			// This does not seem to make any sense.
+			if ($user->username === $oldUsername && Hash::check($oldPassword, $user->password)) {
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for (' . $username . ') from ' . $ip);
+				$user->username = $username;
 				$user->password = $hashedPassword;
 				$user->save();
 			}
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity from ' . $request->ip());
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity from ' . $ip);
 
 			throw new UnauthenticatedException('Previous username or password are invalid');
 		}

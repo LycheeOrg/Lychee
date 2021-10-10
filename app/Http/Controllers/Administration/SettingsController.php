@@ -9,7 +9,7 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UserRequests\UsernamePasswordRequest;
+use App\Http\Requests\Settings\ChangeLoginRequest;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Rules\AlbumSortingRule;
@@ -32,17 +32,21 @@ class SettingsController extends Controller
 	 * To be noted this function will change the CONFIG table if used by admin
 	 * or the USER table if used by any other user
 	 *
-	 * @param UsernamePasswordRequest $request
-	 * @param Login                   $login
+	 * @param ChangeLoginRequest $request
+	 * @param Login              $login
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function setLogin(UsernamePasswordRequest $request, Login $login): void
+	public function setLogin(ChangeLoginRequest $request, Login $login): void
 	{
-		$login->do($request);
+		$login->do(
+			$request->username(), $request->password(),
+			$request->oldUsername(), $request->oldPassword(),
+			$request->ip()
+		);
 	}
 
 	/**
@@ -117,7 +121,7 @@ class SettingsController extends Controller
 	 */
 	public function setDropboxKey(Request $request): void
 	{
-		$validated = $request->validate(['key' => 'present|string|nullable']);
+		$validated = $request->validate(['key' => 'required|string|nullable']);
 		Configs::set('dropbox_key', $validated['key']);
 	}
 
