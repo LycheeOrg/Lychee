@@ -21,7 +21,7 @@ class PhotoAuthorisationProvider
 	 *
 	 * A photo is called _public_ if an anonymous (unauthenticated) user is
 	 * allowed to see it.
-	 * A photo is _visible_ if any of the following conditions hold
+	 * A photo is _public_ if any of the following conditions hold
 	 * (OR-clause):
 	 *
 	 *  - the photo itself is public on its own right
@@ -115,7 +115,7 @@ class PhotoAuthorisationProvider
 	}
 
 	/**
-	 * Checks whether the photo is accessible by the current user.
+	 * Checks whether the photo is visible by the current user.
 	 *
 	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
 	 * specification of the rules when a photo is visible.
@@ -156,7 +156,7 @@ class PhotoAuthorisationProvider
 
 		// If we already have an instance of a model, then avoid an
 		// unnecessary DB query.
-		// We perform the accessibility checks directly on the photo model.
+		// We perform the visibility checks directly on the photo model.
 		// The semantics of these checks must be kept in sync with the
 		// checks in `applyVisibilityFilter`.
 		if ($photo) {
@@ -196,7 +196,7 @@ class PhotoAuthorisationProvider
 	 *
 	 * A photo is called _editable_ if the current user is allowed to edit
 	 * the photo's properties.
-	 * An photo is _editable_ if any of the following conditions hold
+	 * A photo is _editable_ if any of the following conditions hold
 	 * (OR-clause)
 	 *
 	 *  - the user is an admin

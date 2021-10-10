@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * of recent photos, starred photos etc. which exist purely virtual and are
  * not persisted to DB.
  * Hence, this interface does *not* declares properties which are typical
- * for persistable models like `created_at`, etc., because the the built-in
+ * for persistable models like `created_at`, etc., because the built-in
  * smart models exist "forever".
  * See {@link \App\Contracts\BaseAlbum} for the common interface of
  * all models which are persisted to DB.

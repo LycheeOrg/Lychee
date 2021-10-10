@@ -294,11 +294,11 @@ class AlbumAuthorisationProvider
 	 * Checks whether the album is accessible by the current user.
 	 *
 	 * For real albums (i.e. albums that are stored in the DB), see
-	 * {@link AlbumAuthorisationProvider::applyVisibilityFilter()} for a
-	 * specification of the rules when an album is visible.
+	 * {@link AlbumAuthorisationProvider::applyAccessibilityFilter()} for a
+	 * specification of the rules when an album is accessible.
 	 * In other cases, the following holds:
-	 *  - the root album is visible if and only if the user is authenticated
-	 *  - the built-in smart albums are visible, if
+	 *  - the root album is accessible if and only if the user is authenticated
+	 *  - the built-in smart albums are accessible, if
 	 *     - the user is authenticated and is granted the right of uploading, or
 	 *     - the album is the album of recent photos and public by configuration, or
 	 *     - the album is the album of starred photos and public by configuration
@@ -413,7 +413,7 @@ class AlbumAuthorisationProvider
 	 *
 	 * An album is called _editable_ if the current user is allowed to edit
 	 * the album's properties.
-	 * This is also covers adding new photos to an album.
+	 * This also covers adding new photos to an album.
 	 * An album is _editable_ if any of the following conditions hold
 	 * (OR-clause)
 	 *
@@ -484,7 +484,7 @@ class AlbumAuthorisationProvider
 	 *  - if an ID is passed in, i.e. if `$in` is an integer or string, the
 	 *    result is `[$in, null]`, i.e. the input parameter is returned as
 	 *    the ID of an album
-	 *  - if an albums is passed in, i.e. if `$in` is an instance of
+	 *  - if an album is passed in, i.e. if `$in` is an instance of
 	 *    {@link AbstractAlbum}, then the result is `[$in->id, $in]`, i.e. the
 	 *    input parameter is returned as the album and the ID is extracted.
 	 *

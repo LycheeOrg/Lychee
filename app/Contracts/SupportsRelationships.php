@@ -13,7 +13,7 @@ namespace App\Contracts;
  * or uses the trait
  * {@link \App\SmartAlbums\HasSimpleRelationships}
  * automatically fulfills the requirements of this interface.
- * We use need this interface, because {@link \App\SmartAlbums\BaseSmartAlbum}
+ * We need this interface, because {@link \App\SmartAlbums\BaseSmartAlbum}
  * and its child classes also support relationships with photos, but are not
  * true models.
  */

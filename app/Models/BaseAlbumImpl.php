@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Class BaseAlbumImpl.
  *
  * This class contains the shared implementation of {@link \App\Models\Album}
- * and {@link \App\Models\TagAlbum} which normally would be but into a common
+ * and {@link \App\Models\TagAlbum} which normally would be put into a common
  * parent class.
  * However, Eloquent does not provide mapping of class inheritance to table
  * inheritance.
@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Hence, we take the second best approach here: using composites.
  * The actual child classes {@link \App\Models\Album} and
  * {@link \App\Models\TagAlbum} both extend
- * {@link \Illuminate\Database\Eloquent\Model} and are a composites which
+ * {@link \Illuminate\Database\Eloquent\Model} and are composites which
  * use this class as "building block".
  * This means instead of inheriting from this class, {@link \App\Models\Album}
  * and {@link \App\Models\TagAlbum} hold a reference to the implementation of
@@ -186,7 +186,7 @@ class BaseAlbumImpl extends Model
 	}
 
 	/**
-	 * Returns the relationship between an album and all users which whom
+	 * Returns the relationship between an album and all users with whom
 	 * this album is shared.
 	 *
 	 * @return BelongsToMany

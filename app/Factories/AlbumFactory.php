@@ -25,7 +25,7 @@ class AlbumFactory
 
 	/**
 	 * Returns an existing instance of an album with the given ID or fails
-	 * with on exception.
+	 * with an exception.
 	 *
 	 * @param int|string $albumId       the ID of the requested album
 	 * @param bool       $withRelations indicates if the relations of an
@@ -135,7 +135,7 @@ class AlbumFactory
 	}
 
 	/**
-	 * Returns the instance of the built-in smart album with the designed ID.
+	 * Returns the instance of the built-in smart album with the designated ID.
 	 *
 	 * @param string $smartAlbumId  the ID of the smart album
 	 * @param bool   $withRelations Eagerly loads the relation
