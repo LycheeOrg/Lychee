@@ -4,37 +4,43 @@ namespace App\Actions\User;
 
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
+use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Models\User;
 
 class Save
 {
 	/**
-	 * @throws ModelDBException
+	 * @param User        $user
+	 * @param string      $username
+	 * @param string|null $password  see {@link HasPasswordTrait::password()} for the difference between the values `''` and `null`
+	 * @param bool        $mayUpload
+	 * @param bool        $isLocked
+	 *
+	 * @return void
+	 *
 	 * @throws InvalidPropertyException
+	 * @throws ModelDBException
 	 */
-	public function do(User $user, array $data): User
+	public function do(User $user, string $username, ?string $password, bool $mayUpload, bool $isLocked): void
 	{
 		if (User::query()
-			->where('username', '=', $data['username'])
-			->where('id', '!=', $data['id'])
+			->where('username', '=', $username)
+			->where('id', '!=', $user->id)
 			->count()
 		) {
 			throw new InvalidPropertyException('username not unique');
 		}
-		try {
-			$hashedPassword = bcrypt($data['password']);
-		} catch (\InvalidArgumentException $e) {
-			throw new InvalidPropertyException('Could not hash password');
-		}
 
-		$user->username = $data['username'];
-		$user->upload = ($data['upload'] == '1');
-		$user->lock = ($data['lock'] == '1');
-		if (isset($data['password'])) {
-			$user->password = $hashedPassword;
+		$user->username = $username;
+		$user->upload = $mayUpload;
+		$user->lock = $isLocked;
+		if ($password !== null) {
+			try {
+				$user->password = bcrypt($password);
+			} catch (\InvalidArgumentException $e) {
+				throw new InvalidPropertyException('Could not hash password');
+			}
 		}
 		$user->save();
-
-		return $user;
 	}
 }

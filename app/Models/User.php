@@ -23,14 +23,14 @@ use Illuminate\Support\Carbon;
  * @property string                                                $username
  * @property string                                                $password
  * @property string|null                                           $email
- * @property int                                                   $upload
- * @property int                                                   $lock
+ * @property bool                                                  $upload
+ * @property bool                                                  $lock
  * @property string|null                                           $remember_token
  * @property Carbon                                                $created_at
  * @property Carbon                                                $updated_at
- * @property Collection                                            $albums
+ * @property Collection<Album>                                     $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property Collection                                            $shared
+ * @property Collection<BaseAlbumImpl>                             $shared
  *
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereId($value)
@@ -70,8 +70,8 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	protected $casts = [
-		'upload' => 'int',
-		'lock' => 'int',
+		'upload' => 'bool',
+		'lock' => 'bool',
 	];
 
 	/**

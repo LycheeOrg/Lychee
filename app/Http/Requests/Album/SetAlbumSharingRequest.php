@@ -63,7 +63,7 @@ class SetAlbumSharingRequest extends BaseApiRequest implements HasAlbumModelID
 			self::GRANTS_FULL_PHOTO_ATTRIBUTE => static::toBoolean($values[self::GRANTS_FULL_PHOTO_ATTRIBUTE]),
 		];
 		if (array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values)) {
-			$this->shareSettings[] = $values[HasPassword::PASSWORD_ATTRIBUTE];
+			$this->shareSettings[HasPassword::PASSWORD_ATTRIBUTE] = $values[HasPassword::PASSWORD_ATTRIBUTE];
 		}
 	}
 

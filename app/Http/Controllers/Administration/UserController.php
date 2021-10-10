@@ -4,22 +4,43 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UserRequests\UserPostIdRequest;
-use App\Http\Requests\UserRequests\UserPostRequest;
+use App\Http\Requests\User\AddUserRequest;
+use App\Http\Requests\User\SetEmailRequest;
+use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
+use App\Rules\ModelIDRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request as IlluminateRequest;
-use Illuminate\Http\Response as IlluminateResponse;
 
 class UserController extends Controller
 {
+	/**
+	 * @return Collection<User>
+	 *
+	 * @throws UnauthorizedException
+	 */
 	public function list(): Collection
 	{
+		// TODO: Add a comment why we want this check.
+		// IMHO, this check does not make much sense.
+		// Why is the privilege to upload photos a sufficient condition to
+		// see the list of users?
+		// IMHO, these privileges should be unrelated.
+		// If we only wanted to grant the privilege to admins, then we could
+		// simply remove this check here and change the middleware in
+		// `routes/admin.php`.
+		$user = AccessControl::user();
+		if (!AccessControl::is_admin() && !$user->upload) {
+			throw new UnauthorizedException();
+		}
+
 		return User::query()->where('id', '>', 0)->get();
 	}
 
@@ -27,104 +48,101 @@ class UserController extends Controller
 	 * Save modification done to a user.
 	 * Note that an admin can change the password of a user at will.
 	 *
-	 * @param UserPostRequest $request
-	 * @param Save            $save
+	 * @param SetUserSettingsRequest $request
+	 * @param Save                   $save
 	 *
-	 * @return User
+	 * @return void
 	 *
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 * @throws ModelNotFoundException
 	 */
-	public function save(UserPostRequest $request, Save $save): User
+	public function save(SetUserSettingsRequest $request, Save $save): void
 	{
 		/** @var User $user */
-		$user = User::query()->findOrFail($request['id']);
-
-		return $save->do($user, $request->all());
+		$user = User::query()->findOrFail($request->userID());
+		$save->do($user, $request->username(), $request->password(), $request->mayUpload(), $request->isLocked());
 	}
 
 	/**
-	 * Delete a user.
+	 * Deletes a user.
 	 * FIXME: What happen to the albums owned ?
 	 *
-	 * @param UserPostIdRequest $request
+	 * @param IlluminateRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws ModelDBException
 	 * @throws ModelNotFoundException
 	 */
-	public function delete(UserPostIdRequest $request): void
+	public function delete(IlluminateRequest $request): void
 	{
+		$validated = $request->validate([
+			'id' => ['required', new ModelIDRule(false)],
+		]);
+
 		/** @var User $user */
-		$user = User::query()->findOrFail($request['id']);
+		$user = User::query()->findOrFail($validated['id']);
 		$user->delete();
 	}
 
 	/**
 	 * Create a new user.
 	 *
-	 * @param IlluminateRequest $request
-	 * @param Create            $create
+	 * @param AddUserRequest $request
+	 * @param Create         $create
 	 *
 	 * @return User
 	 *
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
 	 */
-	public function create(IlluminateRequest $request, Create $create): User
+	public function create(AddUserRequest $request, Create $create): User
 	{
-		$data = $request->validate([
-			'username' => 'required|string|max:100',
-			'password' => 'required|string|max:50',
-			'upload' => 'required',
-			'lock' => 'required',
-		]);
-
-		return $create->do($data);
+		return $create->do($request->username(), $request->password(), $request->mayUpload(), $request->isLocked());
 	}
 
 	/**
-	 * Update the email of a user.
-	 * Will delete all notifications if the email is left empty.
+	 * Updates the email address of the currently authenticated user.
+	 * Deletes all notifications if the email address is empty.
 	 *
-	 * @param IlluminateRequest $request
+	 * TODO: Why is this an independent request? IMHO this should be combined with the other user settings.
 	 *
-	 * @return IlluminateResponse
+	 * @param SetEmailRequest $request
+	 *
+	 * @return void
+	 *
+	 * @throws ModelDBException
+	 * @throws QueryBuilderException
 	 */
-	public function updateEmail(IlluminateRequest $request): IlluminateResponse
+	public function updateEmail(SetEmailRequest $request): void
 	{
-		if ($request->email != '') {
-			$request->validate([
-				'email' => 'email|max:100',
-			]);
+		try {
+			$user = AccessControl::user();
+			$user->email = $request->email();
+
+			if (is_null($request->email())) {
+				$user->notifications()->delete();
+			}
+
+			$user->save();
+		} catch (\InvalidArgumentException $e) {
+			// possibly thrown by ->notifications()
+			throw new QueryBuilderException($e);
 		}
-
-		$user = AccessControl::user();
-
-		$user->email = $request->email;
-
-		if (is_null($request->email)) {
-			$user->notifications()->delete();
-		}
-
-		return $user->save() ? response()->noContent() : response('', 500);
 	}
 
 	/**
-	 * Return the email address of a user.
+	 * Returns the email address of the currently authenticated user.
 	 *
-	 * @return string
+	 * TODO: Why is this an independent request? IMHO this should be combined with the GET request for the other user settings (see session init)
+	 *
+	 * @return array{email: ?string}
 	 */
-	public function getEmail(): string
+	public function getEmail(): array
 	{
-		$user = AccessControl::user();
-
-		if ($user->email) {
-			return json_encode($user->email);
-		} else {
-			return json_encode('');
-		}
+		return [
+			'email' => AccessControl::user()->email,
+		];
 	}
 }

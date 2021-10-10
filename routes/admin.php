@@ -54,7 +54,8 @@ Route::get('/Update', [UpdateController::class, 'apply']);
 Route::post('/api/Update::Apply', [UpdateController::class, 'apply']);
 Route::post('/api/Update::Check', [UpdateController::class, 'check']);
 
-Route::post('/api/User::List', [UserController::class, 'list'])->withoutMiddleware([AdminCheck::class])->middleware('upload');
+// For the first line below, refer to the comment in `UserController::list`.
+Route::post('/api/User::List', [UserController::class, 'list'])->withoutMiddleware([AdminCheck::class]);
 Route::post('/api/User::Save', [UserController::class, 'save']);
 Route::post('/api/User::Delete', [UserController::class, 'delete']);
 Route::post('/api/User::Create', [UserController::class, 'create']);
