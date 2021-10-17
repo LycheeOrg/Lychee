@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\ImageEditing;
 use App\Actions\Photo\Extensions\VideoEditing;
+use App\Image\ImageHandlerInterface;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
@@ -15,6 +16,8 @@ class VideoData extends Command
 	use Constants;
 	use VideoEditing;
 	use ImageEditing;
+
+	public $imageHandler;
 
 	/**
 	 * The name and signature of the console command.
@@ -46,6 +49,7 @@ class VideoData extends Command
 	{
 		parent::__construct();
 
+		$this->imageHandler = app(ImageHandlerInterface::class);
 		$this->metadataExtractor = $metadataExtractor;
 	}
 
