@@ -19,16 +19,15 @@ class AlbumSearch
 
 	public function query(array $terms): Collection
 	{
-		$albums = $this->createTagAlbumQuery($terms)->get();
-		$albums->push($this->createAlbumQuery($terms)->get());
-
-		return $albums;
+		return $this->createTagAlbumQuery($terms)->get()->concat($this->createAlbumQuery($terms)->get());
 	}
 
 	private function createAlbumQuery($terms): Builder
 	{
-		$albumQuery = Album::query();
-		$this->addSearchCondition($terms, $albumQuery);
+		$albumQuery = Album::query()
+			->whereHas('base_class', function (Builder $baseQuery) use ($terms) {
+				$this->addSearchCondition($terms, $baseQuery);
+			});
 		$this->albumAuthorisationProvider->applyBrowsabilityFilter($albumQuery);
 
 		return $albumQuery;
@@ -36,9 +35,11 @@ class AlbumSearch
 
 	private function createTagAlbumQuery(array $terms): Builder
 	{
-		$albumQuery = TagAlbum::query();
-		$this->albumAuthorisationProvider->applyVisibilityFilter($albumQuery);
-		$this->addSearchCondition($terms, $albumQuery);
+		$albumQuery = TagAlbum::query()
+			->whereHas('base_class', function (Builder $baseQuery) use ($terms) {
+				$this->albumAuthorisationProvider->applyVisibilityFilter($baseQuery);
+				$this->addSearchCondition($terms, $baseQuery);
+			});
 
 		return $albumQuery;
 	}
