@@ -44,7 +44,7 @@ class HasManyPhotosByTag extends HasManyPhotos
 		$tags = explode(',', $album->show_tags);
 
 		$this->photoAuthorisationProvider
-			->applyVisibilityFilter($this->query)
+			->applySearchabilityFilter($this->query)
 			->where(function (Builder $q) use ($tags) {
 				// Filter for requested tags
 				foreach ($tags as $tag) {

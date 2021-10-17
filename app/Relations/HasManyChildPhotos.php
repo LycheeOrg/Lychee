@@ -2,7 +2,6 @@
 
 namespace App\Relations;
 
-use App\Actions\PhotoAuthorisationProvider;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
@@ -11,15 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class HasManyChildPhotos extends HasManyBidirectionally
 {
-	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
-
 	public function __construct(Album $owningAlbum)
 	{
-		// Sic! We must initialize attributes of this class before we call
-		// the parent constructor.
-		// The parent constructor calls `addConstraints` and thus our own
-		// attributes must be initialized by then
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
 		parent::__construct(
 			Photo::query(),
 			$owningAlbum,
@@ -27,20 +19,6 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			'id',
 			'album'
 		);
-	}
-
-	public function addConstraints()
-	{
-		if (static::$constraints) {
-			parent::addConstraints();
-			$this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
-		}
-	}
-
-	public function addEagerConstraints(array $models)
-	{
-		parent::addEagerConstraints($models);
-		$this->photoAuthorisationProvider->applyVisibilityFilter($this->query);
 	}
 
 	public function getResults()

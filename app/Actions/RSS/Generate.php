@@ -53,7 +53,7 @@ class Generate
 		$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
 
 		$photos = $this->photoAuthorisationProvider
-			->applyPublicFilter(
+			->applySearchabilityFilter(
 				Photo::with('album', 'owner', 'size_variants_raw', 'size_variants_raw.sym_links')
 			)
 			->where('created_at', '>=', $nowMinus)

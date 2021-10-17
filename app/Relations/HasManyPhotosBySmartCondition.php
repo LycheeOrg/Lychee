@@ -21,7 +21,7 @@ class HasManyPhotosBySmartCondition extends HasManyPhotos
 	public function addConstraints()
 	{
 		$this->photoAuthorisationProvider
-			->applyVisibilityFilter($this->query)
+			->applySearchabilityFilter($this->query)
 			->where($this->smartCondition);
 	}
 

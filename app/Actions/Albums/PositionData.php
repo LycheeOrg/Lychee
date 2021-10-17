@@ -29,7 +29,7 @@ class PositionData
 		$result['id'] = null;
 		$result['title'] = null;
 		$result['photos'] = Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
-			->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q))
+			->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyBrowsabilityFilter($q))
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')
 			->get()

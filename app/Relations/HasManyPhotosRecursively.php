@@ -4,7 +4,6 @@ namespace App\Relations;
 
 use App\Models\Album;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class HasManyPhotosRecursively extends HasManyPhotos
@@ -33,22 +32,16 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	 * The the unified result of the query is mapped to the specific albums
 	 * by {@link HasManyPhotosRecursively::match()}.
 	 *
-	 * @param array $albums an array of {@link \App\Models\Album} whose photos are loaded
+	 * @param array<Album> $albums an array of {@link \App\Models\Album} whose photos are loaded
 	 */
 	public function addEagerConstraints(array $albums): void
 	{
 		if (count($albums) !== 1) {
 			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
 		}
-		/** @var Album $album */
-		$album = $albums[0];
 
 		$this->photoAuthorisationProvider
-			->applyVisibilityFilter($this->query)
-			->whereHas('album', function (Builder $q) use ($album) {
-				$q->where('_lft', '>=', $album->_lft)
-					->where('_rgt', '<=', $album->_rgt);
-			});
+			->applySearchabilityFilter($this->query, $albums[0]);
 	}
 
 	/**
