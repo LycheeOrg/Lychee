@@ -11,6 +11,7 @@ use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
 
 /**
  * Class AlbumAuthorisationProvider.
@@ -265,11 +266,15 @@ class AlbumAuthorisationProvider
 			throw new \InvalidArgumentException('the given query does not query for albums');
 		}
 
+		$target = $query->getQuery()->from;
+		if (Str::contains($target, ' as ')) {
+			$target = Str::after($target, ' as ');
+		}
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		// Sub-query for blocked albums
-		$blockedAlbums = function (BaseBuilder $builder) use ($origin, $unlockedAlbumIDs, $userID) {
+		$blockedAlbums = function (BaseBuilder $builder) use ($target, $origin, $unlockedAlbumIDs, $userID) {
 			// There are inner albums ...
 			$builder->from('albums', 'inner');
 			// ... on the path from the origin ...
@@ -282,13 +287,12 @@ class AlbumAuthorisationProvider
 					->where('inner._lft', '>', $origin->_lft)
 					->where('inner._rgt', '<', $origin->_rgt);
 			}
-			// ... to the child ...
+			// ... to the target ...
 			$builder
-				// (We must include the final child into the list of
-				// inner nodes, because we must also check if the child final
-				// child is blocked.)
-				->whereColumn('inner._lft', '<=', 'child._lft')
-				->whereColumn('inner._rgt', '>=', 'child._rgt');
+				// (We must include the target into the list of inner nodes,
+				// because we must also check if the target is blocked.)
+				->whereColumn('inner._lft', '<=', $target . '._lft')
+				->whereColumn('inner._rgt', '>=', $target . '._rgt');
 			// ... which are blocked.
 			$builder
 				->where(fn (BaseBuilder $q) => $q
@@ -314,27 +318,21 @@ class AlbumAuthorisationProvider
 			}
 		};
 
-		// Create a new album query ...
-		$finalQuery = Album::query()
-			// ... which eagerly loads the same relations as the original query ...
-			->setEagerLoads($query->getEagerLoads())
-			// ..., wraps the original query ...
-			->fromSub($query->toBase(), 'child');
-		// ... and ensures that only those albums of the original query are
+		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist ...
 		if ($origin) {
-			$finalQuery
+			$query
 				// (We include the origin here, because we want the
 				// origin to be browsable from itself)
-				->where('child._lft', '>=', $origin->_lft)
-				->where('child._rgt', '<=', $origin->_rgt);
+				->where('_lft', '>=', $origin->_lft)
+				->where('_rgt', '<=', $origin->_rgt);
 		}
 		// ... such that there are no blocked albums on the path to the album.
 		if (!AccessControl::is_admin()) {
-			$finalQuery->whereNotExists($blockedAlbums);
+			$query->whereNotExists($blockedAlbums);
 		}
 
-		return $finalQuery;
+		return $query;
 	}
 
 	/**
