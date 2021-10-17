@@ -276,7 +276,9 @@ class AlbumAuthorisationProvider
 		// Sub-query for blocked albums
 		$blockedAlbums = function (BaseBuilder $builder) use ($target, $origin, $unlockedAlbumIDs, $userID) {
 			// There are inner albums ...
-			$builder->from('albums', 'inner');
+			$builder
+				->from('albums', 'inner')
+				->join('base_albums', 'base_albums.id', '=', 'inner.id');
 			// ... on the path from the origin ...
 			if ($origin) {
 				$builder
@@ -296,22 +298,23 @@ class AlbumAuthorisationProvider
 			// ... which are blocked.
 			$builder
 				->where(fn (BaseBuilder $q) => $q
-					->where('inner.requires_link', '=', true)
-					->orWhere('inner.is_public', '=', false)
-					->orWhereNotNull('inner.password')
+					->where('base_albums.requires_link', '=', true)
+					->orWhere('base_albums.is_public', '=', false)
+					->orWhereNotNull('base_albums.password')
 				)
 				->where(fn (BaseBuilder $q) => $q
-					->where('inner.requires_link', '=', true)
-					->orWhere('inner.is_public', '=', false)
-					->orWhereNotIn('inner.id', $unlockedAlbumIDs)
+					->where('base_albums.requires_link', '=', true)
+					->orWhere('base_albums.is_public', '=', false)
+					->orWhereNotIn('base_albums.id', $unlockedAlbumIDs)
 				);
 			if ($userID !== null) {
 				$builder
-					->where('inner.owner_id', '<>', $userID)
+					->where('base_albums.owner_id', '<>', $userID)
 					->where(fn (BaseBuilder $q) => $q
-						->where('inner.requires_link', '=', true)
+						->where('base_albums.requires_link', '=', true)
 						->orWhereNotExists(fn (BaseBuilder $q2) => $q2
 							->from('user_base_album')
+							->whereColumn('base_album_id', '=', 'base_albums.id')
 							->where('user_id', '=', $userID)
 						)
 					);
