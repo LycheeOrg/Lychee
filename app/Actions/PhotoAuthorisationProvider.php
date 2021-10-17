@@ -67,6 +67,27 @@ class PhotoAuthorisationProvider
 			->count() !== 0;
 	}
 
+	/**
+	 * Restricts a photo query to _searchable_ photos.
+	 *
+	 * A photo is _searchable_ if at least one of the following conditions
+	 * hold:
+	 *
+	 *  - it is member of a _browsable_ album, or
+	 *  - the currently authenticated user is allowed to upload photos and the photo is unsorted
+	 *  - the photo is public and searching through public photos is enabled
+	 *
+	 * See {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+	 * for a definition of a browsable album.
+	 *
+	 * The search result is restricted to photos in albums which are below
+	 * `$origin`.
+	 *
+	 * @param Builder    $query  the photo query which shall be restricted
+	 * @param Album|null $origin the optional top album which is used as a search base
+	 *
+	 * @return Builder the restricted photo query
+	 */
 	public function applySearchabilityFilter(Builder $query, ?Album $origin = null): Builder
 	{
 		if (!($query->getModel() instanceof Photo)) {
@@ -74,35 +95,50 @@ class PhotoAuthorisationProvider
 		}
 
 		if (AccessControl::is_admin()) {
-			return $query->whereHas('album',
-				fn (Builder $q) => $this->albumAuthorisationProvider->applyBrowsabilityFilter($q, $origin)
-			);
+			// If origin is set, also restrict the search result for admin
+			// to photos which are in albums below origin.
+			// This is not a security filter, but simply functional.
+			// Note: For non-admin user (see below) this condition is part of
+			// `applyBrowsabilityFilter`.
+			// Technically, we could use `applyBrowsabilityFilter` here, too,
+			// but we do not for performance reasons.
+			// As we know that an admin can browse every album, we do not need
+			// the complexity of `applyBrowsabilityFilter`.
+			if ($origin) {
+				$query->whereHas('album', function (Builder $q) use ($origin) {
+					$q->where('_lft', '>=', $origin->_lft)
+						->where('_rgt', '<=', $origin->_rgt);
+				});
+			}
+
+			return $query;
 		}
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
-		$arePublicPhotosSearchable = Configs::get_value('public_photos_hidden', '1') === '1';
-		$maySeeUnsorted = AccessControl::can_upload();
+		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
+		$maySearchUnsorted = AccessControl::can_upload();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$searchabilitySubQuery = function (Builder $query2) use ($userID, $arePublicPhotosSearchable, $maySeeUnsorted, $origin) {
+		$searchabilitySubQuery = function (Builder $query2) use ($userID, $maySearchPublic, $maySearchUnsorted, $origin) {
 			$query2
 				// The following line might let the runtime explode.
-				// The browsability filter is invoked for every album of every
+				// If the query planner of the DBMS is really bad, then the
+				// browsability filter is invoked for every album of every
 				// photo of the result, even if many photos are in the same
 				// album.
 				// This is a drawback of `->whereHas` which compiles into
 				// a `WHERE EXISTS (subquery)` clause.
-				// TODO: Rewrite to `->whereDoesntHave` and a a filter function which returns blocked albums
+				// TODO: Rewrite to `->whereDoesntHave` and a a filter function which returns blocked albums, if this query turns out to be too slow
 				->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyBrowsabilityFilter($q, $origin));
-			if ($arePublicPhotosSearchable) {
+			if ($maySearchPublic) {
 				$query2->orWhere('is_public', '=', true);
 			}
 			if ($userID !== null) {
 				$query2->orWhere('owner_id', '=', $userID);
 			}
-			if ($maySeeUnsorted) {
+			if ($maySearchUnsorted) {
 				$query2->orWhereNull('album_id');
 			}
 		};

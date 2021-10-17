@@ -259,6 +259,11 @@ class AlbumAuthorisationProvider
 	 * In other words for a flat tree (all result nodes are direct children
 	 * of the origin), the runtime is O(n), but for a high tree (the nodes are
 	 * basically a sequence), the runtime is O(n²).
+	 *
+	 * @param Builder    $query  the album query which shall be restricted
+	 * @param Album|null $origin the optional top album which is used as a search base
+	 *
+	 * @return Builder the restricted album query
 	 */
 	public function applyBrowsabilityFilter(Builder $query, ?Album $origin = null): Builder
 	{
