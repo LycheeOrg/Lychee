@@ -265,10 +265,6 @@ class AlbumAuthorisationProvider
 			throw new \InvalidArgumentException('the given query does not query for albums');
 		}
 
-		if (AccessControl::is_admin()) {
-			return $query;
-		}
-
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
@@ -334,7 +330,9 @@ class AlbumAuthorisationProvider
 				->where('child._rgt', '<=', $origin->_rgt);
 		}
 		// ... such that there are no blocked albums on the path to the album.
-		$finalQuery->whereNotExists($blockedAlbums);
+		if (!AccessControl::is_admin()) {
+			$finalQuery->whereNotExists($blockedAlbums);
+		}
 
 		return $finalQuery;
 	}

@@ -74,7 +74,9 @@ class PhotoAuthorisationProvider
 		}
 
 		if (AccessControl::is_admin()) {
-			return $query;
+			return $query->whereHas('album',
+				fn (Builder $q) => $this->albumAuthorisationProvider->applyBrowsabilityFilter($q, $origin)
+			);
 		}
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
