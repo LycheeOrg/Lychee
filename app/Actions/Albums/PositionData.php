@@ -2,18 +2,17 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\AlbumAuthorisationProvider;
+use App\Actions\PhotoAuthorisationProvider;
 use App\Models\Configs;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Builder;
 
 class PositionData
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
 
 	public function __construct()
 	{
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
 		// caching to avoid further request
 		Configs::get();
 	}
@@ -28,12 +27,11 @@ class PositionData
 		$result = [];
 		$result['id'] = null;
 		$result['title'] = null;
-		$result['photos'] = Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
-			->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyBrowsabilityFilter($q))
-			->whereNotNull('latitude')
-			->whereNotNull('longitude')
-			->get()
-			->toArray();
+		$result['photos'] = $this->photoAuthorisationProvider->applySearchabilityFilter(
+			Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+				->whereNotNull('latitude')
+				->whereNotNull('longitude')
+		)->get()->toArray();
 
 		return $result;
 	}
