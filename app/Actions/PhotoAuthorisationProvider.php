@@ -18,7 +18,7 @@ class PhotoAuthorisationProvider
 	}
 
 	/**
-	 * Checks whether the photo is visible by the current user.
+	 * Restricts a photo query to _visible_ photos.
 	 *
 	 * A photo is called _visible_ if the current user is allowed to see the
 	 * photo.
@@ -33,19 +33,24 @@ class PhotoAuthorisationProvider
 	 *    the right to upload photos
 	 *  - the photo is public
 	 *
-	 * @param int $photoID
+	 * @param Builder $query
 	 *
-	 * @return bool
+	 * @return Builder
 	 */
-	public function isVisible(int $photoID): bool
+	public function applyVisibilityFilter(Builder $query): Builder
 	{
 		if (AccessControl::is_admin()) {
-			return true;
+			return $query;
 		}
+
+		$this->failForWrongQueryModel($query);
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySeeUnsorted = AccessControl::can_upload();
 
+		// We must wrap everything into an outer query to avoid any undesired
+		// effects in case that the original query already contains an
+		// "OR"-clause.
 		$visibilitySubQuery = function (Builder $query2) use ($userID, $maySeeUnsorted) {
 			$query2
 				->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q))
@@ -58,13 +63,30 @@ class PhotoAuthorisationProvider
 			}
 		};
 
-		// If we don't have an instance of a model, then use
-		// `applyVisibilityFilter` to build a query, but don't hydrate a
-		// model
-		return Photo::query()
-			->where('id', '=', $photoID)
-			->where($visibilitySubQuery)
-			->count() !== 0;
+		return $query->where($visibilitySubQuery);
+	}
+
+	/**
+	 * Checks whether the photo is visible by the current user.
+	 *
+	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
+	 * specification of the rules when a photo is visible.
+	 *
+	 * @param int $photoID
+	 *
+	 * @return bool
+	 */
+	public function isVisible(int $photoID): bool
+	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+
+		// We use `applyVisibilityFilter` to build a query, but don't hydrate
+		// a model
+		return $this->applyVisibilityFilter(
+				Photo::query()->where('id', '=', $photoID)
+			)->count() !== 0;
 	}
 
 	/**
@@ -90,9 +112,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function applySearchabilityFilter(Builder $query, ?Album $origin = null): Builder
 	{
-		if (!($query->getModel() instanceof Photo)) {
-			throw new \InvalidArgumentException('the given query does not query for photos');
-		}
+		$this->failForWrongQueryModel($query);
 
 		if (AccessControl::is_admin()) {
 			// If origin is set, also restrict the search result for admin
@@ -186,5 +206,20 @@ class PhotoAuthorisationProvider
 		}
 
 		return true;
+	}
+
+	/**
+	 * Throws an exception if the given query does not query for a photo.
+	 *
+	 * @throws \InvalidArgumentException
+	 *
+	 * @param Builder $query
+	 */
+	private function failForWrongQueryModel(Builder $query): void
+	{
+		$model = $query->getModel();
+		if (!($model instanceof Photo)) {
+			throw new \InvalidArgumentException('the given query does not query for photos');
+		}
 	}
 }
