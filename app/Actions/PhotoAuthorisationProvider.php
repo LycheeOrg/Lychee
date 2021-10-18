@@ -44,22 +44,17 @@ class PhotoAuthorisationProvider
 		}
 
 		$this->failForWrongQueryModel($query);
-
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
-		$maySeeUnsorted = AccessControl::can_upload();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$visibilitySubQuery = function (Builder $query2) use ($userID, $maySeeUnsorted) {
+		$visibilitySubQuery = function (Builder $query2) use ($userID) {
 			$query2
 				->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q))
 				->orWhere('is_public', '=', true);
 			if ($userID !== null) {
 				$query2->orWhere('owner_id', '=', $userID);
-			}
-			if ($maySeeUnsorted) {
-				$query2->orWhereNull('album_id');
 			}
 		};
 
@@ -136,12 +131,11 @@ class PhotoAuthorisationProvider
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
-		$maySearchUnsorted = AccessControl::can_upload();
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
-		$searchabilitySubQuery = function (Builder $query2) use ($userID, $maySearchPublic, $maySearchUnsorted, $origin) {
+		$searchabilitySubQuery = function (Builder $query2) use ($userID, $maySearchPublic, $origin) {
 			$query2
 				// The following line might let the runtime explode.
 				// If the query planner of the DBMS is really bad, then the
@@ -157,9 +151,6 @@ class PhotoAuthorisationProvider
 			}
 			if ($userID !== null) {
 				$query2->orWhere('owner_id', '=', $userID);
-			}
-			if ($maySearchUnsorted) {
-				$query2->orWhereNull('album_id');
 			}
 		};
 

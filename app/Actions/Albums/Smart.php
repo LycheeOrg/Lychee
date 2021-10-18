@@ -3,7 +3,6 @@
 namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
-use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
@@ -43,7 +42,7 @@ class Smart
 		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums(false);
 		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
-			if (AccessControl::can_upload() || $smartAlbum->is_public) {
+			if ($this->albumAuthorisationProvider->isAuthorizedForSmartAlbum($smartAlbum)) {
 				$return[$smartAlbum->id] = $smartAlbum;
 			}
 		}

@@ -8,6 +8,7 @@ use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\TagAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Session;
@@ -204,7 +205,9 @@ class AlbumAuthorisationProvider
 
 		// Deal with built-in smart albums
 		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
-			return $this->isAuthorizedForSmartAlbum($albumID);
+			return $this->isAuthorizedForSmartAlbum(
+				$this->albumFactory->createSmartAlbum($albumID)
+			);
 		}
 
 		// Use `applyAccessibilityFilter` to build a query, but don't hydrate
@@ -445,14 +448,14 @@ class AlbumAuthorisationProvider
 	 * Note, that the logic for visibility and/or accessibility of a smart
 	 * album is identical.
 	 *
-	 * @param string $smartAlbumID
+	 * @param BaseSmartAlbum $smartAlbum
 	 *
 	 * @return bool true, if the smart album is visible/accessible by the user
 	 */
-	private function isAuthorizedForSmartAlbum(string $smartAlbumID): bool
+	public function isAuthorizedForSmartAlbum(BaseSmartAlbum $smartAlbum): bool
 	{
 		return
 			(AccessControl::is_logged_in() && AccessControl::can_upload()) ||
-			$this->albumFactory->createSmartAlbum($smartAlbumID)->is_public;
+			$smartAlbum->is_public;
 	}
 }
