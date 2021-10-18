@@ -329,6 +329,14 @@ class AlbumAuthorisationProvider
 			}
 		};
 
+		// Ensure that only columns of album are selected, if no specific
+		// columns are yet set
+		// Otherwise we cannot add a JOIN clause below without accidentally
+		// adding all columns of the join, too.
+		if (empty($query->columns)) {
+			$query->select([$target . '.*']);
+		}
+
 		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist ...
 		if ($origin) {
@@ -340,7 +348,29 @@ class AlbumAuthorisationProvider
 		}
 		// ... such that there are no blocked albums on the path to the album.
 		if (!AccessControl::is_admin()) {
-			$query->whereNotExists($blockedAlbums);
+			$query
+				->join('base_albums as target_base_albums', 'target_base_albums.id', '=', $target . '.id')
+				// ... s
+				->where(function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
+					$query2
+						->where(fn (Builder $q) => $q
+							->where('target_base_albums.is_public', '=', true)
+							->whereNull('target_base_albums.password')
+						)
+						->orWhere(fn (Builder $q) => $q
+							->where('target_base_albums.is_public', '=', true)
+							->whereIn('target_base_albums.id', $unlockedAlbumIDs)
+						);
+					if ($userID !== null) {
+						$query2
+							->orWhere('target_base_albums.owner_id', '=', $userID)
+							->orWhereHas(
+								'shared_with',
+								fn (Builder $q) => $q->where('user_id', '=', $userID)
+							);
+					}
+				})
+				->whereNotExists($blockedAlbums);
 		}
 
 		return $query;
