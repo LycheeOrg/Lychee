@@ -2,14 +2,23 @@
 
 namespace App\Relations;
 
+use App\Actions\AlbumAuthorisationProvider;
 use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
 
 class HasManyPhotosRecursively extends HasManyPhotos
 {
+	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	protected $emptyResult = false;
+
 	public function __construct(Album $owningAlbum)
 	{
+		// Sic! We must initialize attributes of this class before we call
+		// the parent constructor.
+		// The parent constructor calls `addConstraints` and thus our own
+		// attributes must be initialized by then
+		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 		parent::__construct($owningAlbum);
 	}
 
@@ -40,8 +49,36 @@ class HasManyPhotosRecursively extends HasManyPhotos
 			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
 		}
 
-		$this->photoAuthorisationProvider
-			->applySearchabilityFilter($this->query, $albums[0]);
+		if ($this->albumAuthorisationProvider->isAccessible($albums[0])) {
+			$this->photoAuthorisationProvider
+				->applySearchabilityFilter($this->query, $albums[0]);
+		} else {
+			// If $albums[0] is not accessible, then the relation has to return
+			// an empty result.
+			// We explicitly keep track of this case to by-bass an actual DB query.
+			// See {@link get()} and {@link getResults()}.
+			$this->emptyResult = true;
+			// The next line is just a safety measure, in case someone does
+			// not call the native methods of the relation class, but tries to
+			// by-pass the relation class and to invoke the underlying query
+			// directly.
+			$this->query = $this->related->newModelQuery()->whereRaw('1 = 0');
+		}
+	}
+
+	/**
+	 * @param array|string[] $columns
+	 *
+	 * @return Collection<Photo>
+	 */
+	public function get($columns = ['*']): Collection
+	{
+		return $this->emptyResult ? $this->related->newCollection() : parent::get($columns);
+	}
+
+	public function getResults(): Collection
+	{
+		return $this->emptyResult ? $this->related->newCollection() : parent::getResults();
 	}
 
 	/**

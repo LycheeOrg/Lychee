@@ -101,10 +101,10 @@ class PhotoAuthorisationProvider
 	 * `$origin`.
 	 *
 	 * **Attention**:
-	 * For efficiency reasons this method does not check, if `$origin` itself
+	 * For efficiency reasons this method does not check if `$origin` itself
 	 * is accessible.
-	 * The method assumes, simply assume that, if you have an album model,
-	 * the user has already legitimately got there.
+	 * The method simply assumes that the user has already legitimately
+	 * accessed the origin album, if the caller provides an album model.
 	 *
 	 * @param Builder    $query  the photo query which shall be restricted
 	 * @param Album|null $origin the optional top album which is used as a search base

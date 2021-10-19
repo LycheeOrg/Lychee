@@ -232,7 +232,8 @@ class AlbumAuthorisationProvider
 			return
 				($album->owner_id === $userID) ||
 				($album->is_public && $album->password === null) ||
-				($album->is_public && $this->isAlbumUnlocked($album->id)($album->shared_with()->where('user_id', '=', $userID)->count()));
+				($album->is_public && $this->isAlbumUnlocked($album->id)) ||
+				($album->shared_with()->where('user_id', '=', $userID)->count());
 		}
 	}
 
@@ -246,6 +247,12 @@ class AlbumAuthorisationProvider
 	 * origin must be browsable, too.
 	 * Please note, that the origin is not necessarily identical to the root
 	 * album.
+	 *
+	 * **Attention**:
+	 * For efficiency reasons this method does not check if `$origin` itself
+	 * is accessible.
+	 * The method simply assumes that the user has already legitimately
+	 * accessed the origin album, if the caller provides an album model.
 	 *
 	 * A "mathematical" definition follows:
 	 *
@@ -291,17 +298,6 @@ class AlbumAuthorisationProvider
 	{
 		if (!($query->getModel() instanceof Album)) {
 			throw new \InvalidArgumentException('the given query does not query for albums');
-		}
-
-		// Shortcut:
-		// If the origin is not accessible, then return a simple query which
-		// always returns the empty set.
-		if ($origin !== null && !$this->isAccessible($origin)) {
-			$query->wheres = [];
-			$query->bindings['where'] = [];
-			$query->whereRaw('0 = 1');
-
-			return $query;
 		}
 
 		$target = $query->getQuery()->from;
