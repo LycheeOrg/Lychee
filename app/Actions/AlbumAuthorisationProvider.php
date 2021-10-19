@@ -196,7 +196,7 @@ class AlbumAuthorisationProvider
 	 *
 	 * @return bool
 	 */
-	public function isAccessible($albumID): bool
+	public function isAccessibleByID($albumID): bool
 	{
 		// the admin may access everything, the root album may be access by everybody
 		if (AccessControl::is_admin() || empty($albumID)) {
@@ -215,6 +215,25 @@ class AlbumAuthorisationProvider
 		return $this->applyAccessibilityFilter(
 			BaseAlbumImpl::query()->where('id', '=', intval($albumID))
 		)->count() !== 0;
+	}
+
+	public function isAccessible(Album $album): bool
+	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+		if (!AccessControl::is_logged_in()) {
+			return
+				($album->is_public && $album->password === null) ||
+				($album->is_public && $this->isAlbumUnlocked($album->id));
+		} else {
+			$userID = AccessControl::id();
+
+			return
+				($album->owner_id === $userID) ||
+				($album->is_public && $album->password === null) ||
+				($album->is_public && $this->isAlbumUnlocked($album->id)($album->shared_with()->where('user_id', '=', $userID)->count()));
+		}
 	}
 
 	/**
@@ -274,6 +293,17 @@ class AlbumAuthorisationProvider
 			throw new \InvalidArgumentException('the given query does not query for albums');
 		}
 
+		// Shortcut:
+		// If the origin is not accessible, then return a simple query which
+		// always returns the empty set.
+		if ($origin !== null && !$this->isAccessible($origin)) {
+			$query->wheres = [];
+			$query->bindings['where'] = [];
+			$query->whereRaw('0 = 1');
+
+			return $query;
+		}
+
 		$target = $query->getQuery()->from;
 		if (Str::contains($target, ' as ')) {
 			$target = Str::after($target, ' as ');
@@ -329,14 +359,6 @@ class AlbumAuthorisationProvider
 			}
 		};
 
-		// Ensure that only columns of album are selected, if no specific
-		// columns are yet set
-		// Otherwise we cannot add a JOIN clause below without accidentally
-		// adding all columns of the join, too.
-		if (empty($query->columns)) {
-			$query->select([$target . '.*']);
-		}
-
 		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist ...
 		if ($origin) {
@@ -348,29 +370,7 @@ class AlbumAuthorisationProvider
 		}
 		// ... such that there are no blocked albums on the path to the album.
 		if (!AccessControl::is_admin()) {
-			$query
-				->join('base_albums as target_base_albums', 'target_base_albums.id', '=', $target . '.id')
-				// ... s
-				->where(function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
-					$query2
-						->where(fn (Builder $q) => $q
-							->where('target_base_albums.is_public', '=', true)
-							->whereNull('target_base_albums.password')
-						)
-						->orWhere(fn (Builder $q) => $q
-							->where('target_base_albums.is_public', '=', true)
-							->whereIn('target_base_albums.id', $unlockedAlbumIDs)
-						);
-					if ($userID !== null) {
-						$query2
-							->orWhere('target_base_albums.owner_id', '=', $userID)
-							->orWhereHas(
-								'shared_with',
-								fn (Builder $q) => $q->where('user_id', '=', $userID)
-							);
-					}
-				})
-				->whereNotExists($blockedAlbums);
+			$query->whereNotExists($blockedAlbums);
 		}
 
 		return $query;

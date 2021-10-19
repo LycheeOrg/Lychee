@@ -36,7 +36,7 @@ class ReadCheck
 			$albumIDs[] = $request['albumID'];
 		}
 		foreach ($albumIDs as $albumID) {
-			if (!$this->albumAuthorisationProvider->isAccessible($albumID)) {
+			if (!$this->albumAuthorisationProvider->isAccessibleByID($albumID)) {
 				return response('', 403);
 			}
 		}

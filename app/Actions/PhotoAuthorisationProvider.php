@@ -100,6 +100,12 @@ class PhotoAuthorisationProvider
 	 * The search result is restricted to photos in albums which are below
 	 * `$origin`.
 	 *
+	 * **Attention**:
+	 * For efficiency reasons this method does not check, if `$origin` itself
+	 * is accessible.
+	 * The method assumes, simply assume that, if you have an album model,
+	 * the user has already legitimately got there.
+	 *
 	 * @param Builder    $query  the photo query which shall be restricted
 	 * @param Album|null $origin the optional top album which is used as a search base
 	 *
