@@ -533,7 +533,7 @@ class RefactorAlbumModel extends Migration
 		foreach ($userAlbumRelations as $userAlbumRelation) {
 			DB::table('user_base_album')->insert([
 				'id' => $userAlbumRelation->id,
-				'user_id' => $userAlbumRelation->owner_id,
+				'user_id' => $userAlbumRelation->user_id,
 				'base_album_id' => $userAlbumRelation->album_id,
 			]);
 		}
@@ -651,7 +651,7 @@ class RefactorAlbumModel extends Migration
 		foreach ($userBaseAlbumRelations as $userBaseAlbumRelation) {
 			DB::table('user_album')->insert([
 				'id' => $userBaseAlbumRelation->id,
-				'user_id' => $userBaseAlbumRelation->owner_id,
+				'user_id' => $userBaseAlbumRelation->user_id,
 				'album_id' => $userBaseAlbumRelation->base_album_id,
 			]);
 		}
