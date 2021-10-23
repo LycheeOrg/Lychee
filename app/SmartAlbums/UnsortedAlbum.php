@@ -38,7 +38,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	{
 		return new HasManyPhotosBySmartCondition(
 			$this,
-			fn (Builder $q) => $q->whereNull('album_id')
+			fn (Builder $q) => $q->whereNull('photos.album_id')
 		);
 	}
 

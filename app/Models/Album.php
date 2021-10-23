@@ -142,7 +142,7 @@ class Album extends Model implements BaseAlbum
 		// only returns photos which are accessible by the current
 		// user
 		return Thumb::createFromPhotoRelation(
-			$this->all_photos(), $this->sorting_col, $this->sorting_order
+			$this->all_photos(), 'photos.' . $this->sorting_col, $this->sorting_order
 		);
 	}
 
@@ -271,7 +271,7 @@ class Album extends Model implements BaseAlbum
 		$success = true;
 
 		$photos = $this->photos()
-			->where('owner_id', '=', AccessControl::id())
+			->where('photos.owner_id', '=', AccessControl::id())
 			->get();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {

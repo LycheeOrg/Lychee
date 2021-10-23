@@ -32,7 +32,8 @@ class ListShare
 		}
 
 		// get arrays
-		$shared = $shared_query->orderBy('title', 'ASC')
+		$shared = $shared_query
+			->orderBy('title', 'ASC')
 			->orderBy('username', 'ASC')
 			->get()
 			->each(function ($share) {

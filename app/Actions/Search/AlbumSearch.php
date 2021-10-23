@@ -25,9 +25,9 @@ class AlbumSearch
 	private function createAlbumQuery($terms): Builder
 	{
 		$albumQuery = Album::query()
-			->whereHas('base_class', function (Builder $baseQuery) use ($terms) {
-				$this->addSearchCondition($terms, $baseQuery);
-			});
+			->select(['albums.*'])
+			->join('base_albums', 'base_albums.id', '=', 'albums.id');
+		$this->addSearchCondition($terms, $albumQuery);
 		$this->albumAuthorisationProvider->applyBrowsabilityFilter($albumQuery);
 
 		return $albumQuery;
@@ -35,11 +35,12 @@ class AlbumSearch
 
 	private function createTagAlbumQuery(array $terms): Builder
 	{
-		$albumQuery = TagAlbum::query()
-			->whereHas('base_class', function (Builder $baseQuery) use ($terms) {
-				$this->albumAuthorisationProvider->applyVisibilityFilter($baseQuery);
-				$this->addSearchCondition($terms, $baseQuery);
-			});
+		// Note: `applyVisibilityFilter` already adds a JOIN clause with `base_albums`.
+		// No need to add a second JOIN clause.
+		$albumQuery = $this->albumAuthorisationProvider->applyVisibilityFilter(
+			TagAlbum::query()
+		);
+		$this->addSearchCondition($terms, $albumQuery);
 
 		return $albumQuery;
 	}
@@ -49,8 +50,8 @@ class AlbumSearch
 		foreach ($terms as $term) {
 			$query->where(
 				fn (Builder $query) => $query
-					->where('title', 'like', '%' . $term . '%')
-					->orWhere('description', 'like', '%' . $term . '%')
+					->where('base_albums.title', 'like', '%' . $term . '%')
+					->orWhere('base_albums.description', 'like', '%' . $term . '%')
 			);
 		}
 

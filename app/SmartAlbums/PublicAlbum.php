@@ -44,7 +44,7 @@ class PublicAlbum extends BaseSmartAlbum
 		// This would also return consistent results with the RSS feed.
 		return new HasManyPhotosBySmartCondition(
 			$this,
-			fn (Builder $q) => $q->where('is_public', '=', true)
+			fn (Builder $q) => $q->where('photos.is_public', '=', true)
 		);
 	}
 }

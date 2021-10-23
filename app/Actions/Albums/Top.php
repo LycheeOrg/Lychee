@@ -51,7 +51,6 @@ class Top
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query()->whereIsRoot());
 		$albums = (new SortingDecorator($query))
-			->orderBy('id')
 			->orderBy($this->sortingCol, $this->sortingOrder)
 			->get();
 

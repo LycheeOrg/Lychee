@@ -12,7 +12,6 @@ use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Str;
 
 /**
  * Class AlbumAuthorisationProvider.
@@ -46,8 +45,7 @@ class AlbumAuthorisationProvider
 	 */
 	public function applyVisibilityFilter(Builder $query): Builder
 	{
-		$this->failForWrongQueryModel($query);
-		$model = $query->getModel();
+		$this->prepareModelQueryOrFail($query);
 
 		if (AccessControl::is_admin()) {
 			return $query;
@@ -63,33 +61,20 @@ class AlbumAuthorisationProvider
 		$visibilitySubQuery = function (Builder $query2) use ($userID) {
 			$query2
 				->where(fn (Builder $q) => $q
-					->where('requires_link', '=', false)
-					->where('is_public', '=', true)
+					->where('base_albums.requires_link', '=', false)
+					->where('base_albums.is_public', '=', true)
 			);
 			if ($userID !== null) {
 				$query2
-					->orWhere('owner_id', '=', $userID)
+					->orWhere('base_albums.owner_id', '=', $userID)
 					->orWhere(fn (Builder $q) => $q
-						->where('requires_link', '=', false)
-						->whereHas(
-							'shared_with',
-							fn (Builder $q2) => $q2->where('user_id', '=', $userID)
-						)
+						->where('base_albums.requires_link', '=', false)
+						->where('user_base_album.user_id', '=', $userID)
 					);
 			}
 		};
 
-		// The sub-query only uses properties (i.e. columns) which are
-		// defined on the common base model for all albums.
-		if ($model instanceof BaseAlbumImpl) {
-			// If the queried model is the base class, we can directly
-			// apply the sub-query
-			return $query->where($visibilitySubQuery);
-		} else {
-			// If the queried model is not the base class, but a derived one,
-			// we must apply the sub-query to the relation.
-			return $query->whereHas('base_class', $visibilitySubQuery);
-		}
+		return $query->where($visibilitySubQuery);
 	}
 
 	/**
@@ -113,49 +98,58 @@ class AlbumAuthorisationProvider
 	 */
 	public function applyAccessibilityFilter(Builder $query): Builder
 	{
-		$this->failForWrongQueryModel($query);
+		$this->prepareModelQueryOrFail($query);
 
 		if (AccessControl::is_admin()) {
 			return $query;
 		}
 
+		return $query->where(
+			fn (Builder $q) => $this->appendAccessibilityConditions($q)
+		);
+	}
+
+	/**
+	 * Adds the conditions of an accessible album to the query.
+	 *
+	 * **Attention:** This method is only meant for internal use by
+	 * this class or {@link PhotoAuthorisationProvider}.
+	 * Use {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}
+	 * if called from other places instead.
+	 *
+	 * This method adds the WHERE conditions without any further pre-cautions.
+	 * The method silently assumes that the SELECT clause contains the tables
+	 * `base_albums` and `user_base_album`.
+	 * Moreover, the raw OR-clauses are added.
+	 * They are not wrapped into a nesting braces `()`.
+	 *
+	 * @param Builder $query
+	 *
+	 * @return Builder
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function appendAccessibilityConditions(Builder $query): Builder
+	{
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
-		// We must wrap everything into an inner query to avoid any undesired
-		// effects in case that the original query already contains an
-		// "OR"-clause.
-		$accessibilitySubQuery = function (Builder $query2) use ($unlockedAlbumIDs, $userID) {
-			$query2
-				->where(fn (Builder $q) => $q
-					->where('is_public', '=', true)
-					->whereNull('password')
-				)
-				->orWhere(fn (Builder $q) => $q
-					->where('is_public', '=', true)
-					->whereIn('id', $unlockedAlbumIDs)
-				);
-			if ($userID !== null) {
-				$query2
-					->orWhere('owner_id', '=', $userID)
-					->orWhereHas(
-						'shared_with',
-						fn (Builder $q) => $q->where('user_id', '=', $userID)
-					);
-			}
-		};
-
-		// The sub-query only uses properties (i.e. columns) which are
-		// defined on the common base model for all albums.
-		if ($query->getModel() instanceof BaseAlbumImpl) {
-			// If the queried model is the base class, we can directly
-			// apply the sub-query
-			return $query->where($accessibilitySubQuery);
-		} else {
-			// If the queried model is not the base class, but a derived one,
-			// we must apply the sub-query to the relation.
-			return $query->whereHas('base_class', $accessibilitySubQuery);
+		$query
+			->orWhere(fn (Builder $q) => $q
+				->where('base_albums.is_public', '=', true)
+				->whereNull('base_albums.password')
+			)
+			->orWhere(fn (Builder $q) => $q
+				->where('base_albums.is_public', '=', true)
+				->whereIn('base_albums.id', $unlockedAlbumIDs)
+			);
+		if ($userID !== null) {
+			$query
+				->orWhere('base_albums.owner_id', '=', $userID)
+				->orWhere('user_base_album.user_id', '=', $userID);
 		}
+
+		return $query;
 	}
 
 	/**
@@ -213,7 +207,7 @@ class AlbumAuthorisationProvider
 		// Use `applyAccessibilityFilter` to build a query, but don't hydrate
 		// a model
 		return $this->applyAccessibilityFilter(
-			BaseAlbumImpl::query()->where('id', '=', intval($albumID))
+			BaseAlbumImpl::query()->where('base_albums.id', '=', intval($albumID))
 		)->count() !== 0;
 	}
 
@@ -296,64 +290,10 @@ class AlbumAuthorisationProvider
 	 */
 	public function applyBrowsabilityFilter(Builder $query, ?Album $origin = null): Builder
 	{
-		if (!($query->getModel() instanceof Album)) {
+		$table = $query->getQuery()->from;
+		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
 			throw new \InvalidArgumentException('the given query does not query for albums');
 		}
-
-		$target = $query->getQuery()->from;
-		if (Str::contains($target, ' as ')) {
-			$target = Str::after($target, ' as ');
-		}
-		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
-
-		// Sub-query for blocked albums
-		$blockedAlbums = function (BaseBuilder $builder) use ($target, $origin, $unlockedAlbumIDs, $userID) {
-			// There are inner albums ...
-			$builder
-				->from('albums', 'inner')
-				->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id');
-			// ... on the path from the origin ...
-			if ($origin) {
-				$builder
-					// (We must exclude the origin as an inner node
-					// because the origin might have set "require_link", but
-					// we do not care, because the user has already got
-					// somehow into the origin)
-					->where('inner._lft', '>', $origin->_lft)
-					->where('inner._rgt', '<', $origin->_rgt);
-			}
-			// ... to the target ...
-			$builder
-				// (We must include the target into the list of inner nodes,
-				// because we must also check if the target is blocked.)
-				->whereColumn('inner._lft', '<=', $target . '._lft')
-				->whereColumn('inner._rgt', '>=', $target . '._rgt');
-			// ... which are blocked.
-			$builder
-				->where(fn (BaseBuilder $q) => $q
-					->where('inner_base_albums.requires_link', '=', true)
-					->orWhere('inner_base_albums.is_public', '=', false)
-					->orWhereNotNull('inner_base_albums.password')
-				)
-				->where(fn (BaseBuilder $q) => $q
-					->where('inner_base_albums.requires_link', '=', true)
-					->orWhere('inner_base_albums.is_public', '=', false)
-					->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
-				);
-			if ($userID !== null) {
-				$builder
-					->where('inner_base_albums.owner_id', '<>', $userID)
-					->where(fn (BaseBuilder $q) => $q
-						->where('inner_base_albums.requires_link', '=', true)
-						->orWhereNotExists(fn (BaseBuilder $q2) => $q2
-							->from('user_base_album', 'user_inner_base_album')
-							->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
-							->where('user_inner_base_album.user_id', '=', $userID)
-						)
-					);
-			}
-		};
 
 		// Ensures that only those albums of the original query are
 		// returned for which a path from the origin to the album exist ...
@@ -361,15 +301,92 @@ class AlbumAuthorisationProvider
 			$query
 				// (We include the origin here, because we want the
 				// origin to be browsable from itself)
-				->where('_lft', '>=', $origin->_lft)
-				->where('_rgt', '<=', $origin->_rgt);
+				->where('albums._lft', '>=', $origin->_lft)
+				->where('albums._rgt', '<=', $origin->_rgt);
 		}
 		// ... such that there are no blocked albums on the path to the album.
 		if (!AccessControl::is_admin()) {
-			$query->whereNotExists($blockedAlbums);
+			$query->whereNotExists(
+				fn (BaseBuilder $q) => $this->appendBlockedAlbumsCondition($q, $origin)
+			);
 		}
 
 		return $query;
+	}
+
+	/**
+	 * Adds the conditions of an accessible album to the query.
+	 *
+	 * **Attention:** This method is only meant for internal use by
+	 * this class or {@link PhotoAuthorisationProvider}.
+	 * Use {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+	 * if called from other places instead.
+	 *
+	 * This method adds the WHERE conditions without any further pre-cautions.
+	 * The method silently assumes that the passed query builder is used
+	 * within an outer query whose SELECT clause contains the table
+	 * `albums`.
+	 * Moreover, the raw clauses are added.
+	 * They are not wrapped into a nesting braces `()`.
+	 *
+	 * @param BaseBuilder $builder
+	 * @param Album|null  $origin
+	 *
+	 * @return BaseBuilder
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function appendBlockedAlbumsCondition(BaseBuilder $builder, ?Album $origin = null): BaseBuilder
+	{
+		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
+		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		// There are inner albums ...
+		$builder
+			->from('albums', 'inner')
+			->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id');
+		// ... on the path from the origin ...
+		if ($origin) {
+			$builder
+				// (We must exclude the origin as an inner node
+				// because the origin might have set "require_link", but
+				// we do not care, because the user has already got
+				// somehow into the origin)
+				->where('inner._lft', '>', $origin->_lft)
+				->where('inner._rgt', '<', $origin->_rgt);
+		}
+		// ... to the target ...
+		$builder
+			// (We must include the target into the list of inner nodes,
+			// because we must also check if the target is blocked.)
+			->whereColumn('inner._lft', '<=', 'albums._lft')
+			->whereColumn('inner._rgt', '>=', 'albums._rgt');
+		// ... which are blocked.
+		$builder
+			->where(fn (BaseBuilder $q) => $q
+				->where('inner_base_albums.requires_link', '=', true)
+				->orWhere('inner_base_albums.is_public', '=', false)
+				->orWhereNotNull('inner_base_albums.password')
+			)
+			->where(fn (BaseBuilder $q) => $q
+				->where('inner_base_albums.requires_link', '=', true)
+				->orWhere('inner_base_albums.is_public', '=', false)
+				->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
+			);
+		if ($userID !== null) {
+			$builder
+				->where('inner_base_albums.owner_id', '<>', $userID)
+				->where(fn (BaseBuilder $q) => $q
+					->where('inner_base_albums.requires_link', '=', true)
+					->orWhereNotExists(fn (BaseBuilder $q2) => $q2
+						->from('user_base_album', 'user_inner_base_album')
+						->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
+						->where('user_inner_base_album.user_id', '=', $userID)
+					)
+				);
+		}
+
+		return $builder;
 	}
 
 	/**
@@ -444,8 +461,8 @@ class AlbumAuthorisationProvider
 		$albumIDs = array_diff(array_unique($albumIDs), array_keys(AlbumFactory::BUILTIN_SMARTS));
 		if (count($albumIDs) > 0) {
 			return BaseAlbumImpl::query()
-				->whereIn('id', $albumIDs)
-				->where('owner_id', '=', $user->id)
+				->whereIn('base_albums.id', $albumIDs)
+				->where('base_albums.owner_id', '=', $user->id)
 				->count() === count($albumIDs);
 		}
 
@@ -459,12 +476,34 @@ class AlbumAuthorisationProvider
 	 *
 	 * @param Builder $query
 	 */
-	private function failForWrongQueryModel(Builder $query): void
+	private function prepareModelQueryOrFail(Builder $query): void
 	{
 		$model = $query->getModel();
-		if (!($model instanceof Album || $model instanceof TagAlbum || $model instanceof BaseAlbumImpl)) {
+		$table = $query->getQuery()->from;
+		if (
+			!(
+				$model instanceof Album ||
+				$model instanceof TagAlbum ||
+				$model instanceof BaseAlbumImpl
+			) ||
+			$table !== $model->getTable()
+		) {
 			throw new \InvalidArgumentException('the given query does not query for albums');
 		}
+
+		// Ensure that only columns of the targeted model are selected,
+		// if no specific columns are yet set.
+		// Otherwise, we cannot add a JOIN clause below
+		// without accidentally adding all columns of the join, too.
+		if (empty($query->columns)) {
+			$query->select([$table . '.*']);
+		}
+
+		if ($model instanceof Album || $model instanceof TagAlbum) {
+			$query->join('base_albums', 'base_albums.id', '=', $table . '.id');
+		}
+
+		$query->leftJoin('user_base_album', 'user_base_album.base_album_id', '=', 'base_albums.id');
 	}
 
 	/**

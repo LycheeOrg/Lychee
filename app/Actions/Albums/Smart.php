@@ -50,7 +50,6 @@ class Smart
 		$tagAlbumQuery = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(TagAlbum::query());
 		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
-			->orderBy('id')
 			->orderBy($this->sortingCol, $this->sortingOrder)
 			->get();
 

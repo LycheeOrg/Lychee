@@ -89,7 +89,7 @@ class TagAlbum extends Model implements BaseAlbum
 		// only returns photos which are accessible by the current
 		// user
 		return Thumb::createFromPhotoRelation(
-			$this->photos(), $this->sorting_col, $this->sorting_order
+			$this->photos(), 'photos.' . $this->sorting_col, $this->sorting_order
 		);
 	}
 

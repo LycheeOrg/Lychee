@@ -54,7 +54,6 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		}
 
 		return (new SortingDecorator($this->query))
-			->orderBy('id')
 			->orderBy($this->sortingCol, $this->sortingOrder)
 			->get();
 	}

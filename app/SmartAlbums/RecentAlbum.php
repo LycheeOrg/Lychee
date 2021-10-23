@@ -47,7 +47,7 @@ class RecentAlbum extends BaseSmartAlbum
 		return new HasManyPhotosBySmartCondition(
 			$this,
 			function (Builder $query) use ($strRecent) {
-				$query->where('created_at', '>=', $strRecent);
+				$query->where('photos.created_at', '>=', $strRecent);
 			}
 		);
 	}

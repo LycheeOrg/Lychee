@@ -41,7 +41,7 @@ class StarredAlbum extends BaseSmartAlbum
 	{
 		return new HasManyPhotosBySmartCondition(
 			$this,
-			fn (Builder $q) => $q->where('is_starred', '=', true)
+			fn (Builder $q) => $q->where('photos.is_starred', '=', true)
 		);
 	}
 }

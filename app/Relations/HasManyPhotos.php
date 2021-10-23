@@ -105,8 +105,7 @@ abstract class HasManyPhotos extends Relation
 		}
 
 		return (new SortingDecorator($this->query))
-			->orderBy('id')
-			->orderBy($sortingCol, $sortingOrder)
+			->orderBy('photos.' . $sortingCol, $sortingOrder)
 			->get();
 	}
 }

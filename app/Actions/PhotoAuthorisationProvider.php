@@ -7,6 +7,7 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 
 class PhotoAuthorisationProvider
 {
@@ -39,22 +40,22 @@ class PhotoAuthorisationProvider
 	 */
 	public function applyVisibilityFilter(Builder $query): Builder
 	{
+		$this->prepareModelQueryOrFail($query);
+
 		if (AccessControl::is_admin()) {
 			return $query;
 		}
 
-		$this->failForWrongQueryModel($query);
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		// We must wrap everything into an outer query to avoid any undesired
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		$visibilitySubQuery = function (Builder $query2) use ($userID) {
-			$query2
-				->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q))
-				->orWhere('is_public', '=', true);
+			$this->albumAuthorisationProvider->appendAccessibilityConditions($query2);
+			$query2->orWhere('photos.is_public', '=', true);
 			if ($userID !== null) {
-				$query2->orWhere('owner_id', '=', $userID);
+				$query2->orWhere('photos.owner_id', '=', $userID);
 			}
 		};
 
@@ -80,7 +81,7 @@ class PhotoAuthorisationProvider
 		// We use `applyVisibilityFilter` to build a query, but don't hydrate
 		// a model
 		return $this->applyVisibilityFilter(
-				Photo::query()->where('id', '=', $photoID)
+				Photo::query()->where('photos.id', '=', $photoID)
 			)->count() !== 0;
 	}
 
@@ -113,56 +114,36 @@ class PhotoAuthorisationProvider
 	 */
 	public function applySearchabilityFilter(Builder $query, ?Album $origin = null): Builder
 	{
-		$this->failForWrongQueryModel($query);
+		$this->prepareModelQueryOrFail($query);
+
+		// If origin is set, also restrict the search result for admin
+		// to photos which are in albums below origin.
+		// This is not a security filter, but simply functional.
+		if ($origin) {
+			$query
+				->where('albums._lft', '>=', $origin->_lft)
+				->where('albums._rgt', '<=', $origin->_rgt);
+		}
 
 		if (AccessControl::is_admin()) {
-			// If origin is set, also restrict the search result for admin
-			// to photos which are in albums below origin.
-			// This is not a security filter, but simply functional.
-			// Note: For non-admin user (see below) this condition is part of
-			// `applyBrowsabilityFilter`.
-			// Technically, we could use `applyBrowsabilityFilter` here, too,
-			// but we do not for performance reasons.
-			// As we know that an admin can browse every album, we do not need
-			// the complexity of `applyBrowsabilityFilter`.
-			if ($origin) {
-				$query->whereHas('album', function (Builder $q) use ($origin) {
-					$q->where('_lft', '>=', $origin->_lft)
-						->where('_rgt', '<=', $origin->_rgt);
-				});
-			}
-
 			return $query;
 		}
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
 
-		// We must wrap everything into an outer query to avoid any undesired
-		// effects in case that the original query already contains an
-		// "OR"-clause.
 		$searchabilitySubQuery = function (Builder $query2) use ($userID, $maySearchPublic, $origin) {
-			$query2
-				// The following line might let the runtime explode.
-				// If the query planner of the DBMS is really bad, then the
-				// browsability filter is invoked for every album of every
-				// photo of the result, even if many photos are in the same
-				// album.
-				// This is a drawback of `->whereHas` which compiles into
-				// a `WHERE EXISTS (subquery)` clause.
-				// TODO: Rewrite to `->whereDoesntHave` and a a filter function which returns blocked albums, if this query turns out to be too slow
-				->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyBrowsabilityFilter($q, $origin));
+			$query2->whereNotExists(
+				fn (BaseBuilder $q) => $this->albumAuthorisationProvider->appendBlockedAlbumsCondition($q, $origin)
+			);
 			if ($maySearchPublic) {
-				$query2->orWhere('is_public', '=', true);
+				$query2->orWhere('photos.is_public', '=', true);
 			}
 			if ($userID !== null) {
-				$query2->orWhere('owner_id', '=', $userID);
+				$query2->orWhere('photos.owner_id', '=', $userID);
 			}
 		};
 
-		// We must wrap everything into an outer query to avoid any undesired
-		// effects in case that the original query already contains an
-		// "OR"-clause.
 		return $query->where($searchabilitySubQuery);
 	}
 
@@ -197,8 +178,8 @@ class PhotoAuthorisationProvider
 		$photoIDs = array_unique($photoIDs);
 		if (count($photoIDs) > 0) {
 			return Photo::query()
-				->whereIn('id', $photoIDs)
-				->where('owner_id', '=', $userID)
+				->whereIn('photos.id', $photoIDs)
+				->where('photos.owner_id', '=', $userID)
 				->count() === count($photoIDs);
 		}
 
@@ -212,11 +193,23 @@ class PhotoAuthorisationProvider
 	 *
 	 * @param Builder $query
 	 */
-	private function failForWrongQueryModel(Builder $query): void
+	private function prepareModelQueryOrFail(Builder $query): void
 	{
 		$model = $query->getModel();
-		if (!($model instanceof Photo)) {
+		$table = $query->getQuery()->from;
+		if (!($model instanceof Photo && $table === 'photos')) {
 			throw new \InvalidArgumentException('the given query does not query for photos');
 		}
+		// Ensure that only columns of the photos are selected,
+		// if no specific columns are yet set.
+		// Otherwise, we cannot add a JOIN clause below
+		// without accidentally adding all columns of the join, too.
+		if (empty($query->columns)) {
+			$query->select(['photos.*']);
+		}
+		$query
+			->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
+			->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id')
+			->leftJoin('user_base_album', 'user_base_album.base_album_id', '=', 'photos.album_id');
 	}
 }

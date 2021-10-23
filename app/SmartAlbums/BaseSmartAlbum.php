@@ -54,7 +54,7 @@ abstract class BaseSmartAlbum extends FakeModel implements AbstractAlbum
 		// user
 		return Thumb::createFromPhotoRelation(
 			$this->photos(),
-			Configs::get_value('sorting_Photos_col'),
+			'photos.' . Configs::get_value('sorting_Photos_col'),
 			Configs::get_value('sorting_Photos_order')
 		);
 	}

@@ -7,7 +7,6 @@ use App\Actions\Albums\Top;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -67,12 +66,12 @@ class DemoController extends Controller
 
 		/** @var Collection $albums */
 		$albums = Album::query()
+			->select(['albums.*'])
 			->with(['photos', 'photos.size_variants_raw', 'photos.size_variants_raw.sym_links'])
-			->whereHas('base_class', function (Builder $query) {
-				$query
-					->where('is_public', '=', true)
-					->where('requires_link', '=', false);
-			})->get();
+			->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('base_albums.is_public', '=', true)
+			->where('base_albums.requires_link', '=', false)
+			->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			/**

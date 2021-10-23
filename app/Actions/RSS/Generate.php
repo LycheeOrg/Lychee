@@ -56,7 +56,7 @@ class Generate
 			->applySearchabilityFilter(
 				Photo::with('album', 'owner', 'size_variants_raw', 'size_variants_raw.sym_links')
 			)
-			->where('created_at', '>=', $nowMinus)
+			->where('photos.created_at', '>=', $nowMinus)
 			->limit($rss_max)
 			->get();
 

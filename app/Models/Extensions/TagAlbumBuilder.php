@@ -29,9 +29,15 @@ class TagAlbumBuilder extends Builder
 	public function getModels($columns = ['*'])
 	{
 		$baseQuery = $this->getQuery();
-		if ($columns == ['*'] && ($baseQuery->columns == ['*'] || $baseQuery->columns == null)) {
+		if (empty($baseQuery->columns)) {
+			$this->select([$baseQuery->from . '.*']);
+		}
+
+		if (
+			($columns == ['*'] || $columns == ['tag_albums.*']) &&
+			($baseQuery->columns == ['*'] || $baseQuery->columns == ['tag_albums.*'])
+		) {
 			$this->addSelect([
-				$baseQuery->from . '.*',
 				DB::raw('null as max_taken_at'),
 				DB::raw('null as min_taken_at'),
 			]);

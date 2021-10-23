@@ -40,10 +40,9 @@ class Thumb implements Arrayable, JsonSerializable
 		/** @var Photo|null $cover */
 		$cover = $photoRelation
 			->without(['album'])
-			->orderBy('is_starred', 'DESC')
+			->orderBy('photos.is_starred', 'DESC')
 			->orderBy($sortingCol, $sortingOrder)
-			->orderBy('id', 'ASC')
-			->select(['id', 'type'])
+			->select(['photos.id', 'photos.type'])
 			->first();
 
 		return self::createFromPhoto($cover);

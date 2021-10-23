@@ -29,7 +29,10 @@ class AlbumBuilder extends QueryBuilder
 	public function getModels($columns = ['*'])
 	{
 		$baseQuery = $this->getQuery();
-		if ($columns == ['*'] && ($baseQuery->columns == ['*'] || $baseQuery->columns == null)) {
+		if (
+			($columns == ['*'] || $columns == ['albums.*']) &&
+			($baseQuery->columns == ['*'] || $baseQuery->columns == ['albums.*'] || $baseQuery->columns == null)
+		) {
 			$this->addSelect([
 				'min_taken_at' => Photo::query()
 					->select('taken_at')

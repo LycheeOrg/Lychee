@@ -50,8 +50,7 @@ class HasManyChildPhotos extends HasManyBidirectionally
 		}
 
 		return (new SortingDecorator($this->query))
-			->orderBy('id')
-			->orderBy($this->parent->sorting_col, $this->parent->sorting_order)
+			->orderBy('photos.' . $this->parent->sorting_col, $this->parent->sorting_order)
 			->get();
 	}
 

@@ -47,7 +47,6 @@ class Tree
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query());
 		$albums = (new SortingDecorator($query))
-			->orderBy('id')
 			->orderBy($this->sortingCol, $this->sortingOrder)
 			->get();
 
