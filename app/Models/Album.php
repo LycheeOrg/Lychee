@@ -7,7 +7,7 @@ use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
-use App\Models\Extensions\Thumb;
+use App\Relations\HasAlbumThumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
@@ -89,16 +89,9 @@ class Album extends Model implements BaseAlbum
 	];
 
 	/**
-	 * @var string[] The list of "virtual" attributes which do not exist as
-	 *               columns of the DB relation but which shall be appended to
-	 *               JSON from accessors
-	 */
-	protected $appends = ['thumb'];
-
-	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['cover'];
+	protected $with = ['cover', 'thumb'];
 
 	/**
 	 * Returns the relationship between this model and the implementation
@@ -133,17 +126,9 @@ class Album extends Model implements BaseAlbum
 		return new HasManyPhotosRecursively($this);
 	}
 
-	protected function getThumbAttribute(): ?Thumb
+	public function thumb(): HasAlbumThumb
 	{
-		if ($this->cover_id) {
-			return Thumb::createFromPhoto($this->cover);
-		}
-		// Note, `all_photos` already applies a security filter and
-		// only returns photos which are accessible by the current
-		// user
-		return Thumb::createFromPhotoRelation(
-			$this->all_photos(), 'photos.' . $this->sorting_col, $this->sorting_order
-		);
+		return new HasAlbumThumb($this);
 	}
 
 	/**
