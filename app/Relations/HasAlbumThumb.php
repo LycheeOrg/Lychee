@@ -6,9 +6,9 @@ use App\Actions\AlbumAuthorisationProvider;
 use App\Actions\PhotoAuthorisationProvider;
 use App\Facades\AccessControl;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\Thumb;
 use App\Models\Photo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -43,29 +43,83 @@ class HasAlbumThumb extends Relation
 	}
 
 	/**
-	 * Todo.
+	 * Builds a query to eagerly load the thumbnails of a sequence of albums.
 	 *
-	 * The query used in the method is wrong.
-	 * It does neither order nor limit the `JOIN`-clause.
-	 * Here is a corrected version (without the WHERE `IN`-clause).
+	 * Note, the query is not as efficient as it could be, but it is the
+	 * best query we can construct which is portable to MySQL, PostgreSQl and
+	 * SQLite.
+	 * The inefficiency comes from the inner, correlated value sub-query
+	 * `bestPhotoIDSelect`.
+	 * This value query refers the outer query through `covered_albums` and
+	 * thus needs to be executed for every result.
+	 * Moreover, the temporary query table `$album2Cover` is an in-memory
+	 * table and thus does not provide any indexes.
+	 *
+	 * A faster approach would be to first JOIN the tables, then sort the
+	 * result and finally pick the first result of each group based on
+	 * identical `covered_album_id`.
+	 * The approach "join first (with everything), filter last" is faster,
+	 * because the DBMS can use its indexes.
+	 *
+	 * For PostgreSQL we could use the `DISTINCT ON`-clause to achieve the
+	 * result:
+	 *
+	 *     SELECT DISTINCT ON (covered_album_id)
+	 *       covered_albums.id AS covered_album_id,
+	 *       photos.id         AS id,
+	 *       photos.type       AS type
+	 *     FROM covered_albums
+	 *     LEFT JOIN
+	 *       (
+	 *         photos
+	 *         LEFT JOIN albums
+	 *         ON (albums.id = photos.album_id)
+	 *       )
+	 *     ON (
+	 *       albums._lft >= covered_albums._lft AND
+	 *       albums._rgt <= covered_albums._rgt AND
+	 *       "complicated seachability filter goes here"
+	 *     )
+	 *     WHERE covered_albums.id IN $albumKeys
+	 *     ORDER BY album_id ASC, photos.is_starred DESC, photos.created_at DESC
+	 *
+	 * For PostgreSQL see ["SELECT - DISTINCT Clause"](https://www.postgresql.org/docs/13/sql-select.html#SQL-DISTINCT).
+	 *
+	 * But `DISTINCT ON` is neither provided by MySQL and SQLite.
+	 * For the latter two, the following non-SQL-conformant query could be
+	 * used:
 	 *
 	 *     SELECT
-	 *       album_cover.album_id AS album_id,
-	 *       album_cover.cover_id AS cover_id,
-	 *       photos.type AS cover_type
-	 *     FROM (
-	 *       SELECT
-	 *         covered_albums.id AS album_id, (
-	 *           SELECT p.id
-	 *           FROM photos AS p
-	 *           LEFT JOIN albums AS a ON (a.id = p.album_id)
-	 *           WHERE a._lft >= covered_albums._lft AND a._rgt <= covered_albums._rgt
-	 *           ORDER BY p.is_starred DESC, p.created_at DESC
-	 *           LIMIT 1
-	 *         ) AS cover_id
-	 *       FROM albums AS covered_albums
-	 *     ) AS album_cover
-	 *     LEFT JOIN photos ON (photos.id = album_cover.cover_id);.
+	 *       covered_albums.id  AS covered_album_id,
+	 *       photos.id          AS id,
+	 *       photos.type        AS type
+	 *     FROM covered_albums
+	 *     LEFT JOIN
+	 *       (
+	 *         photos
+	 *         LEFT JOIN albums
+	 *         ON (albums.id = photos.album_id)
+	 *       )
+	 *     ON (
+	 *       albums._lft >= covered_albums._lft AND
+	 *       albums._rgt <= covered_albums._rgt AND
+	 *       "complicated seachability filter goes here"
+	 *     )
+	 *     WHERE covered_albums.id IN $albumKeys
+	 *     ORDER BY album_id ASC, photos.is_starred DESC, photos.created_at DESC
+	 *     GROUP BY album_id
+	 *
+	 * Instead of enforcing distinct results for `covered_album_id`, the result
+	 * is grouped by `covered_album_id`.
+	 * Note that this is not SQL-compliant, because the `SELECT` clause
+	 * contains two columns (`photo.id` and `photo.type`) which are neither
+	 * part of the `GROUP BY`-clause nor aggregates.
+	 * However, MySQL and SQLite relax this constraint and return the
+	 * column values of the first row of a group.
+	 * This is exactly the specified behaviour of `DISTINCT ON`.
+	 * For SQLite see "[Quirks, Caveats, and Gotchas In SQLite, Sec. 6](https://www.sqlite.org/quirks.html)"
+	 *
+	 * TODO: If the following query is too slow for large installation, we must write two seperate implementations for PostgreSQL and MySQL/SQLite as outlined above.
 	 *
 	 * @param array<Album> $models
 	 */
@@ -73,98 +127,44 @@ class HasAlbumThumb extends Relation
 	{
 		$albumKeys = $this->getKeys($models);
 
-		if (AccessControl::is_admin()) {
-			$bestChildPhoto = function (BaseBuilder $builder) use ($albumKeys) {
-				$builder
-					->from('albums as covered_albums')
-					->select(['covered_albums.id AS album_id'])
-					->addSelect(['photo_id' => Photo::query()
-						->from('photos')
-						->select(['photos.id AS photo_id'])
-						->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
-						->whereColumn('albums._lft', '>=', 'covered_albums._lft')
-						->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
-						->orderBy('photos.is_starred', 'desc')
-						->orderBy('photos.created_at', 'desc')
-						->limit(1),
-					])
-					->whereIn('covered_albums.id', $albumKeys);
-			};
-		} else {
-			$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
-			$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
-			$unlockedAlbumIDs = [];
-
-			// TODO: Use the searchability/browsability methods here. To this end the parameter `origin` needs to support outer columns
-			$bestChildPhoto = function (BaseBuilder $builder) use ($albumKeys, $userID, $maySearchPublic, $unlockedAlbumIDs) {
-				$builder
-					->from('albums as covered_albums')
-					->select(['covered_albums.id AS album_id'])
-					->addSelect(['photo_id' => Photo::query()
-						->from('photos')
-						->select(['photos.id AS photo_id'])
-						->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
-						->whereColumn('albums._lft', '>=', 'covered_albums._lft')
-						->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
-						->where(function ($query2) use ($userID, $maySearchPublic, $unlockedAlbumIDs) {
-							$query2->whereNotExists(function (BaseBuilder $query3) use ($userID, $unlockedAlbumIDs) {
-								$query3
-									->from('albums', 'inner')
-									->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id')
-									->whereColumn('inner._lft', '>', 'covered_albums._lft')
-									->whereColumn('inner._rgt', '<', 'covered_albums._rgt')
-									->whereColumn('inner._lft', '<=', 'albums._lft')
-									->whereColumn('inner._rgt', '>=', 'albums._rgt')
-									->where(fn (BaseBuilder $q) => $q
-										->where('inner_base_albums.requires_link', '=', true)
-										->orWhere('inner_base_albums.is_public', '=', false)
-										->orWhereNotNull('inner_base_albums.password')
-									)
-									->where(fn (BaseBuilder $q) => $q
-										->where('inner_base_albums.requires_link', '=', true)
-										->orWhere('inner_base_albums.is_public', '=', false)
-										->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
-									);
-								if ($userID !== null) {
-									$query3
-										->where('inner_base_albums.owner_id', '<>', $userID)
-										->where(fn (BaseBuilder $q) => $q
-											->where('inner_base_albums.requires_link', '=', true)
-											->orWhereNotExists(fn (BaseBuilder $q2) => $q2
-												->from('user_base_album', 'user_inner_base_album')
-												->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
-												->where('user_inner_base_album.user_id', '=', $userID)
-											)
-										);
-								}
-							});
-							if ($maySearchPublic) {
-								$query2->orWhere('photos.is_public', '=', true);
-							}
-							if ($userID !== null) {
-								$query2->orWhere('photos.owner_id', '=', $userID);
-							}
-						})
-						->orderBy('photos.is_starred', 'desc')
-						->orderBy('photos.created_at', 'desc')
-						->limit(1),
-					])
-					->whereIn('covered_albums.id', $albumKeys);
-			};
+		$bestPhotoIDSelect = Photo::query()
+			->select(['photos.id AS photo_id'])
+			->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
+			->whereColumn('albums._lft', '>=', 'covered_albums._lft')
+			->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
+			->orderBy('photos.is_starred', 'desc')
+			->orderBy('photos.created_at', 'desc')
+			->limit(1);
+		if (!AccessControl::is_admin()) {
+			$bestPhotoIDSelect->where(function (Builder $query2) {
+				$this->photoAuthorisationProvider->appendSearchabilityConditions(
+					$query2,
+					'covered_albums._lft',
+					'covered_albums._rgt'
+				);
+			});
 		}
+
+		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys) {
+			$builder
+				->from('albums as covered_albums')
+				->select(['covered_albums.id AS album_id'])
+				->addSelect(['photo_id' => $bestPhotoIDSelect])
+				->whereIn('covered_albums.id', $albumKeys);
+		};
 
 		$this->query
 			->select([
 				'covers.id as id',
 				'covers.type as type',
-				'best_child_photo.album_id as covered_album_id',
+				'album_2_cover.album_id as covered_album_id',
 			])
-			->from($bestChildPhoto, 'best_child_photo')
+			->from($album2Cover, 'album_2_cover')
 			->join(
 				'photos as covers',
 				'covers.id',
 				'=',
-				'best_child_photo.photo_id'
+				'album_2_cover.photo_id'
 			);
 	}
 
