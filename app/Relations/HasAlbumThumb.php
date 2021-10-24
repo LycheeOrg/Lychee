@@ -27,7 +27,7 @@ class HasAlbumThumb extends Relation
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
 		parent::__construct(
-			Photo::query()->with(['size_variants_raw', 'size_variants_raw.sym_links'])->select(['photos.id', 'photos.type']),
+			Photo::query()->with(['size_variants_raw', 'size_variants_raw.sym_links']),
 			$parent
 		);
 	}
@@ -37,11 +37,8 @@ class HasAlbumThumb extends Relation
 		if (static::$constraints) {
 			/** @var Album $album */
 			$album = $this->parent;
-
 			$this->photoAuthorisationProvider
-				->applySearchabilityFilter($this->query, $album)
-				->orderBy('photos.is_starred', 'desc')
-				->orderBy('photos.' . $album->sorting_col, $album->sorting_order);
+				->applySearchabilityFilter($this->query, $album);
 		}
 	}
 
@@ -81,14 +78,14 @@ class HasAlbumThumb extends Relation
 				$builder
 					->from('albums as covered_albums')
 					->select(['covered_albums.id AS album_id'])
-					->addSelect(['cover_id' => Photo::query()
-						->from('photos AS covers')
-						->select(['covers.id AS cover_id'])
-						->leftJoin('albums AS direct_parents', 'direct_parents.id', '=', 'covers.album_id')
-						->whereColumn('direct_parents._lft', '>=', 'covered_albums._lft')
-						->whereColumn('direct_parents._rgt', '<=', 'covered_albums._rgt')
-						->orderBy('covers.is_starred', 'desc')
-						->orderBy('covers.created_at', 'desc')
+					->addSelect(['photo_id' => Photo::query()
+						->from('photos')
+						->select(['photos.id AS photo_id'])
+						->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
+						->whereColumn('albums._lft', '>=', 'covered_albums._lft')
+						->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
+						->orderBy('photos.is_starred', 'desc')
+						->orderBy('photos.created_at', 'desc')
 						->limit(1),
 					])
 					->whereIn('covered_albums.id', $albumKeys);
@@ -103,12 +100,12 @@ class HasAlbumThumb extends Relation
 				$builder
 					->from('albums as covered_albums')
 					->select(['covered_albums.id AS album_id'])
-					->addSelect(['cover_id' => Photo::query()
-						->from('photos AS covers')
-						->select(['covers.id AS cover_id'])
-						->leftJoin('albums AS direct_parents', 'direct_parents.id', '=', 'covers.album_id')
-						->whereColumn('direct_parents._lft', '>=', 'covered_albums._lft')
-						->whereColumn('direct_parents._rgt', '<=', 'covered_albums._rgt')
+					->addSelect(['photo_id' => Photo::query()
+						->from('photos')
+						->select(['photos.id AS photo_id'])
+						->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
+						->whereColumn('albums._lft', '>=', 'covered_albums._lft')
+						->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
 						->where(function ($query2) use ($userID, $maySearchPublic, $unlockedAlbumIDs) {
 							$query2->whereNotExists(function (BaseBuilder $query3) use ($userID, $unlockedAlbumIDs) {
 								$query3
@@ -116,8 +113,8 @@ class HasAlbumThumb extends Relation
 									->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id')
 									->whereColumn('inner._lft', '>', 'covered_albums._lft')
 									->whereColumn('inner._rgt', '<', 'covered_albums._rgt')
-									->whereColumn('inner._lft', '<=', 'direct_parents._lft')
-									->whereColumn('inner._rgt', '>=', 'direct_parents._rgt')
+									->whereColumn('inner._lft', '<=', 'albums._lft')
+									->whereColumn('inner._rgt', '>=', 'albums._rgt')
 									->where(fn (BaseBuilder $q) => $q
 										->where('inner_base_albums.requires_link', '=', true)
 										->orWhere('inner_base_albums.is_public', '=', false)
@@ -148,8 +145,8 @@ class HasAlbumThumb extends Relation
 								$query2->orWhere('photos.owner_id', '=', $userID);
 							}
 						})
-						->orderBy('covers.is_starred', 'desc')
-						->orderBy('covers.created_at', 'desc')
+						->orderBy('photos.is_starred', 'desc')
+						->orderBy('photos.created_at', 'desc')
 						->limit(1),
 					])
 					->whereIn('covered_albums.id', $albumKeys);
@@ -157,9 +154,18 @@ class HasAlbumThumb extends Relation
 		}
 
 		$this->query
-			->addSelect(['best_child_photo.album_id as covered_album_id'])
+			->select([
+				'covers.id as id',
+				'covers.type as type',
+				'best_child_photo.album_id as covered_album_id',
+			])
 			->from($bestChildPhoto, 'best_child_photo')
-			->join('photos', 'photos.id', '=', 'best_child_photo.cover_id');
+			->join(
+				'photos as covers',
+				'covers.id',
+				'=',
+				'best_child_photo.photo_id'
+			);
 	}
 
 	/**
@@ -219,7 +225,11 @@ class HasAlbumThumb extends Relation
 		}
 
 		/** @var Photo|null $cover */
-		$cover = $this->query->first();
+		$cover = $this->query
+			->select(['photos.id', 'photos.type'])
+			->orderBy('photos.is_starred', 'desc')
+			->orderBy('photos.' . $album->sorting_col, $album->sorting_order)
+			->first();
 
 		return Thumb::createFromPhoto($cover);
 	}
