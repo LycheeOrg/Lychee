@@ -127,24 +127,65 @@ class PhotoAuthorisationProvider
 
 		if (AccessControl::is_admin()) {
 			return $query;
+		} else {
+			return $query->where(function (Builder $query) use ($origin) {
+				$this->appendSearchabilityConditions(
+					$query,
+					$origin ? $origin->_lft : null,
+					$origin ? $origin->_rgt : null
+				);
+			});
 		}
+	}
 
+	/**
+	 * Adds the conditions of _searchable_ photos to the query.
+	 *
+	 * **Attention:** This method is only meant for internal use.
+	 * Use {@link PhotoAuthorisationProvider::applySearchabilityFilter()}
+	 * if called from other places instead.
+	 *
+	 * This method adds the WHERE conditions without any further pre-cautions.
+	 * The method silently assumes that the SELECT clause contains the tables
+	 *
+	 *  - **`albums`**.
+	 *
+	 * See {@link AlbumAuthorisationProvider::applySearchabilityFilter()}
+	 * for a definition of a searchable photos.
+	 *
+	 * Moreover, the raw clauses are added.
+	 * They are not wrapped into a nesting braces `()`.
+	 *
+	 * @param Builder         $query       the photo query which shall be
+	 *                                     restricted
+	 * @param int|string|null $originLeft  optionally constraints the search
+	 *                                     base; an integer value is
+	 *                                     interpreted a raw left bound of the
+	 *                                     search base; a string value is
+	 *                                     interpreted as a reference to a
+	 *                                     column which shall be used as a
+	 *                                     left bound
+	 * @param int|string|null $originRight like `$originLeft` but for the
+	 *                                     right bound
+	 *
+	 * @return Builder the restricted photo query
+	 */
+	public function appendSearchabilityConditions(Builder $query, $originLeft, $originRight): Builder
+	{
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
 
-		$searchabilitySubQuery = function (Builder $query2) use ($userID, $maySearchPublic, $origin) {
-			$query2->whereNotExists(
-				fn (BaseBuilder $q) => $this->albumAuthorisationProvider->appendBlockedAlbumsCondition($q, $origin)
-			);
-			if ($maySearchPublic) {
-				$query2->orWhere('photos.is_public', '=', true);
-			}
-			if ($userID !== null) {
-				$query2->orWhere('photos.owner_id', '=', $userID);
-			}
-		};
+		$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
+			$this->albumAuthorisationProvider->appendBlockedAlbumsCondition($q, $originLeft, $originRight);
+		});
+		if ($maySearchPublic) {
+			$query->orWhere('photos.is_public', '=', true);
+		}
+		if ($userID !== null) {
+			$query->orWhere('photos.owner_id', '=', $userID);
+		}
 
-		return $query->where($searchabilitySubQuery);
+		return $query;
 	}
 
 	/**

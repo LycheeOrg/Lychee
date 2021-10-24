@@ -73,6 +73,8 @@ class Album extends Model implements BaseAlbum
 		'max_taken_at' => 'datetime',
 		'cover_id' => 'integer',
 		'parent_id' => 'integer',
+		'_lft' => 'integer',
+		'_rgt' => 'integer',
 	];
 
 	/**

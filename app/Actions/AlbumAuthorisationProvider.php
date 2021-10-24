@@ -307,14 +307,19 @@ class AlbumAuthorisationProvider
 				->where('albums._lft', '>=', $origin->_lft)
 				->where('albums._rgt', '<=', $origin->_rgt);
 		}
-		// ... such that there are no blocked albums on the path to the album.
-		if (!AccessControl::is_admin()) {
-			$query->whereNotExists(
-				fn (BaseBuilder $q) => $this->appendBlockedAlbumsCondition($q, $origin)
-			);
-		}
 
-		return $query;
+		// ... such that there are no blocked albums on the path to the album.
+		if (AccessControl::is_admin()) {
+			return $query;
+		} else {
+			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {
+				$this->appendBlockedAlbumsCondition(
+					$q,
+					$origin ? $origin->_lft : null,
+					$origin ? $origin->_rgt : null,
+				);
+			});
+		}
 	}
 
 	/**
@@ -334,15 +339,28 @@ class AlbumAuthorisationProvider
 	 * Moreover, the raw clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
-	 * @param BaseBuilder $builder
-	 * @param Album|null  $origin
+	 * @param BaseBuilder     $builder     the album query which shall be
+	 *                                     restricted
+	 * @param int|string|null $originLeft  optionally constraints the search
+	 *                                     base; an integer value is
+	 *                                     interpreted a raw left bound of the
+	 *                                     search base; a string value is
+	 *                                     interpreted as a reference to a
+	 *                                     column which shall be used as a
+	 *                                     left bound
+	 * @param int|string|null $originRight like `$originLeft` but for the
+	 *                                     right bound
 	 *
 	 * @return BaseBuilder
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function appendBlockedAlbumsCondition(BaseBuilder $builder, ?Album $origin = null): BaseBuilder
+	public function appendBlockedAlbumsCondition(BaseBuilder $builder, $originLeft, $originRight): BaseBuilder
 	{
+		if (gettype($originLeft) !== gettype($originRight)) {
+			throw new \InvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');
+		}
+
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
@@ -351,14 +369,18 @@ class AlbumAuthorisationProvider
 			->from('albums', 'inner')
 			->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id');
 		// ... on the path from the origin ...
-		if ($origin) {
+		if (is_int($originLeft)) {
+			// (We must exclude the origin as an inner node
+			// because the origin might have set "require_link", but
+			// we do not care, because the user has already got
+			// somehow into the origin)
 			$builder
-				// (We must exclude the origin as an inner node
-				// because the origin might have set "require_link", but
-				// we do not care, because the user has already got
-				// somehow into the origin)
-				->where('inner._lft', '>', $origin->_lft)
-				->where('inner._rgt', '<', $origin->_rgt);
+				->where('inner._lft', '>', $originLeft)
+				->where('inner._rgt', '<', $originRight);
+		} elseif (is_string($originLeft)) {
+			$builder
+				->whereColumn('inner._lft', '>', $originLeft)
+				->whereColumn('inner._rgt', '<', $originRight);
 		}
 		// ... to the target ...
 		$builder
