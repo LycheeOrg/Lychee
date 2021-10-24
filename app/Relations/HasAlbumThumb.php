@@ -12,7 +12,6 @@ use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
-use Illuminate\Database\Query\JoinClause;
 
 class HasAlbumThumb extends Relation
 {
@@ -75,14 +74,24 @@ class HasAlbumThumb extends Relation
 	 */
 	public function addEagerConstraints(array $models): void
 	{
+		$albumKeys = $this->getKeys($models);
+
 		if (AccessControl::is_admin()) {
-			$photoJoin = function (JoinClause $join) {
-				$join
-					->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
-					->whereColumn('albums._lft', '>=', 'covered_albums._lft')
-					->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
-					->orderBy('photos.is_starred', 'desc')
-					->limit(1);
+			$bestChildPhoto = function (BaseBuilder $builder) use ($albumKeys) {
+				$builder
+					->from('albums as covered_albums')
+					->select(['covered_albums.id AS album_id'])
+					->addSelect(['cover_id' => Photo::query()
+						->from('photos AS covers')
+						->select(['covers.id AS cover_id'])
+						->leftJoin('albums AS direct_parents', 'direct_parents.id', '=', 'covers.album_id')
+						->whereColumn('direct_parents._lft', '>=', 'covered_albums._lft')
+						->whereColumn('direct_parents._rgt', '<=', 'covered_albums._rgt')
+						->orderBy('covers.is_starred', 'desc')
+						->orderBy('covers.created_at', 'desc')
+						->limit(1),
+					])
+					->whereIn('covered_albums.id', $albumKeys);
 			};
 		} else {
 			$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
@@ -90,60 +99,67 @@ class HasAlbumThumb extends Relation
 			$unlockedAlbumIDs = [];
 
 			// TODO: Use the searchability/browsability methods here. To this end the parameter `origin` needs to support outer columns
-			$photoJoin = function (JoinClause $join) use ($userID, $maySearchPublic, $unlockedAlbumIDs) {
-				$join
-					->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
-					->whereColumn('albums._lft', '>=', 'covered_albums._lft')
-					->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
-					->where(function ($query2) use ($userID, $maySearchPublic, $unlockedAlbumIDs) {
-						$query2->whereNotExists(function (BaseBuilder $query3) use ($userID, $unlockedAlbumIDs) {
-							$query3
-								->from('albums', 'inner')
-								->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id')
-								->whereColumn('inner._lft', '>', 'covered_albums._lft')
-								->whereColumn('inner._rgt', '<', 'covered_albums._rgt')
-								->whereColumn('inner._lft', '<=', 'albums._lft')
-								->whereColumn('inner._rgt', '>=', 'albums._rgt')
-								->where(fn (BaseBuilder $q) => $q
-									->where('inner_base_albums.requires_link', '=', true)
-									->orWhere('inner_base_albums.is_public', '=', false)
-									->orWhereNotNull('inner_base_albums.password')
-								)
-								->where(fn (BaseBuilder $q) => $q
-									->where('inner_base_albums.requires_link', '=', true)
-									->orWhere('inner_base_albums.is_public', '=', false)
-									->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
-								);
-							if ($userID !== null) {
+			$bestChildPhoto = function (BaseBuilder $builder) use ($albumKeys, $userID, $maySearchPublic, $unlockedAlbumIDs) {
+				$builder
+					->from('albums as covered_albums')
+					->select(['covered_albums.id AS album_id'])
+					->addSelect(['cover_id' => Photo::query()
+						->from('photos AS covers')
+						->select(['covers.id AS cover_id'])
+						->leftJoin('albums AS direct_parents', 'direct_parents.id', '=', 'covers.album_id')
+						->whereColumn('direct_parents._lft', '>=', 'covered_albums._lft')
+						->whereColumn('direct_parents._rgt', '<=', 'covered_albums._rgt')
+						->where(function ($query2) use ($userID, $maySearchPublic, $unlockedAlbumIDs) {
+							$query2->whereNotExists(function (BaseBuilder $query3) use ($userID, $unlockedAlbumIDs) {
 								$query3
-									->where('inner_base_albums.owner_id', '<>', $userID)
+									->from('albums', 'inner')
+									->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id')
+									->whereColumn('inner._lft', '>', 'covered_albums._lft')
+									->whereColumn('inner._rgt', '<', 'covered_albums._rgt')
+									->whereColumn('inner._lft', '<=', 'direct_parents._lft')
+									->whereColumn('inner._rgt', '>=', 'direct_parents._rgt')
 									->where(fn (BaseBuilder $q) => $q
 										->where('inner_base_albums.requires_link', '=', true)
-										->orWhereNotExists(fn (BaseBuilder $q2) => $q2
-											->from('user_base_album', 'user_inner_base_album')
-											->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
-											->where('user_inner_base_album.user_id', '=', $userID)
-										)
+										->orWhere('inner_base_albums.is_public', '=', false)
+										->orWhereNotNull('inner_base_albums.password')
+									)
+									->where(fn (BaseBuilder $q) => $q
+										->where('inner_base_albums.requires_link', '=', true)
+										->orWhere('inner_base_albums.is_public', '=', false)
+										->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
 									);
+								if ($userID !== null) {
+									$query3
+										->where('inner_base_albums.owner_id', '<>', $userID)
+										->where(fn (BaseBuilder $q) => $q
+											->where('inner_base_albums.requires_link', '=', true)
+											->orWhereNotExists(fn (BaseBuilder $q2) => $q2
+												->from('user_base_album', 'user_inner_base_album')
+												->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
+												->where('user_inner_base_album.user_id', '=', $userID)
+											)
+										);
+								}
+							});
+							if ($maySearchPublic) {
+								$query2->orWhere('photos.is_public', '=', true);
 							}
-						});
-						if ($maySearchPublic) {
-							$query2->orWhere('photos.is_public', '=', true);
-						}
-						if ($userID !== null) {
-							$query2->orWhere('photos.owner_id', '=', $userID);
-						}
-					})
-					->orderBy('photos.is_starred', 'desc')
-					->limit(1);
+							if ($userID !== null) {
+								$query2->orWhere('photos.owner_id', '=', $userID);
+							}
+						})
+						->orderBy('covers.is_starred', 'desc')
+						->orderBy('covers.created_at', 'desc')
+						->limit(1),
+					])
+					->whereIn('covered_albums.id', $albumKeys);
 			};
 		}
 
 		$this->query
-			->addSelect(['covered_albums.id as covered_album_id'])
-			->from('albums', 'covered_albums')
-			->leftJoin('photos', $photoJoin)
-			->whereIn('covered_albums.id', $this->getKeys($models));
+			->addSelect(['best_child_photo.album_id as covered_album_id'])
+			->from($bestChildPhoto, 'best_child_photo')
+			->join('photos', 'photos.id', '=', 'best_child_photo.cover_id');
 	}
 
 	/**
