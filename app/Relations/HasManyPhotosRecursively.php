@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Collection;
 class HasManyPhotosRecursively extends HasManyPhotos
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
-	protected $emptyResult = false;
 
 	public function __construct(Album $owningAlbum)
 	{
@@ -51,36 +50,19 @@ class HasManyPhotosRecursively extends HasManyPhotos
 			throw new \InvalidArgumentException('eagerly fetching all photos of an album is only implemented for a single album at once');
 		}
 
-		if ($this->albumAuthorisationProvider->isAccessible($albums[0])) {
-			$this->photoAuthorisationProvider
-				->applySearchabilityFilter($this->query, $albums[0]);
-		} else {
-			// If $albums[0] is not accessible, then the relation has to return
-			// an empty result.
-			// We explicitly keep track of this case to by-bass an actual DB query.
-			// See {@link get()} and {@link getResults()}.
-			$this->emptyResult = true;
-			// The next line is just a safety measure, in case someone does
-			// not call the native methods of the relation class, but tries to
-			// by-pass the relation class and to invoke the underlying query
-			// directly.
-			$this->query = $this->related->newModelQuery()->whereRaw('1 = 0');
-		}
-	}
-
-	/**
-	 * @param array|string[] $columns
-	 *
-	 * @return Collection<Photo>
-	 */
-	public function get($columns = ['*']): Collection
-	{
-		return $this->emptyResult ? $this->related->newCollection() : parent::get($columns);
+		$this->photoAuthorisationProvider
+			->applySearchabilityFilter($this->query, $albums[0]);
 	}
 
 	public function getResults(): Collection
 	{
-		return $this->emptyResult ? $this->related->newCollection() : parent::getResults();
+		/** @var Album $album */
+		$album = $this->parent;
+		if ($album === null || !$this->albumAuthorisationProvider->isAccessible($album)) {
+			return $this->related->newCollection();
+		} else {
+			return parent::getResults();
+		}
 	}
 
 	/**
@@ -103,12 +85,16 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		/** @var Album $album */
 		$album = $albums[0];
 
-		$photos->sortBy(
-			$album->sorting_col,
-			SORT_NATURAL | SORT_FLAG_CASE,
-			$album->sorting_order === 'DESC'
-		);
-		$album->setRelation($relation, $photos);
+		if (!$this->albumAuthorisationProvider->isAccessible($album)) {
+			$album->setRelation($relation, $this->related->newCollection());
+		} else {
+			$sortedPhotos = $photos->sortBy(
+				$album->sorting_col,
+				SORT_NATURAL | SORT_FLAG_CASE,
+				$album->sorting_order === 'DESC'
+			);
+			$album->setRelation($relation, $sortedPhotos);
+		}
 
 		return $albums;
 	}
