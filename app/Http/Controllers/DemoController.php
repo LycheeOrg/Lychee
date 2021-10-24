@@ -99,7 +99,7 @@ class DemoController extends Controller
 			foreach ($album->photos as $photo) {
 				$return_photo = [];
 				$return_photo_json = $photo->toArray();
-				$return_photo_json['original_album'] = $return_photo_json['album'];
+				$return_photo_json['original_album'] = $return_photo_json['album_id'];
 				$return_photo_json['album'] = $album->id;
 				$return_photo['id'] = $photo->id;
 				$return_photo['data'] = json_encode($return_photo_json);
