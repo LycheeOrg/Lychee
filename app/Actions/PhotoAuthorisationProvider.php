@@ -52,7 +52,7 @@ class PhotoAuthorisationProvider
 		// effects in case that the original query already contains an
 		// "OR"-clause.
 		$visibilitySubQuery = function (Builder $query2) use ($userID) {
-			$this->albumAuthorisationProvider->appendAccessibilityConditions($query2);
+			$this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery());
 			$query2->orWhere('photos.is_public', '=', true);
 			if ($userID !== null) {
 				$query2->orWhere('photos.owner_id', '=', $userID);
@@ -130,7 +130,7 @@ class PhotoAuthorisationProvider
 		} else {
 			return $query->where(function (Builder $query) use ($origin) {
 				$this->appendSearchabilityConditions(
-					$query,
+					$query->getQuery(),
 					$origin ? $origin->_lft : null,
 					$origin ? $origin->_rgt : null
 				);
@@ -170,7 +170,7 @@ class PhotoAuthorisationProvider
 	 *
 	 * @return Builder the restricted photo query
 	 */
-	public function appendSearchabilityConditions(Builder $query, $originLeft, $originRight): Builder
+	public function appendSearchabilityConditions(BaseBuilder $query, $originLeft, $originRight): BaseBuilder
 	{
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';

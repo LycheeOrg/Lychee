@@ -105,7 +105,7 @@ class AlbumAuthorisationProvider
 		}
 
 		return $query->where(
-			fn (Builder $q) => $this->appendAccessibilityConditions($q)
+			fn (Builder $q) => $this->appendAccessibilityConditions($q->getQuery())
 		);
 	}
 
@@ -132,17 +132,17 @@ class AlbumAuthorisationProvider
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function appendAccessibilityConditions(Builder $query): Builder
+	public function appendAccessibilityConditions(BaseBuilder $query): BaseBuilder
 	{
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
 		$query
-			->orWhere(fn (Builder $q) => $q
+			->orWhere(fn (BaseBuilder $q) => $q
 				->where('base_albums.is_public', '=', true)
 				->whereNull('base_albums.password')
 			)
-			->orWhere(fn (Builder $q) => $q
+			->orWhere(fn (BaseBuilder $q) => $q
 				->where('base_albums.is_public', '=', true)
 				->whereIn('base_albums.id', $unlockedAlbumIDs)
 			);

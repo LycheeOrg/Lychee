@@ -119,7 +119,7 @@ class HasAlbumThumb extends Relation
 	 * This is exactly the specified behaviour of `DISTINCT ON`.
 	 * For SQLite see "[Quirks, Caveats, and Gotchas In SQLite, Sec. 6](https://www.sqlite.org/quirks.html)"
 	 *
-	 * TODO: If the following query is too slow for large installation, we must write two seperate implementations for PostgreSQL and MySQL/SQLite as outlined above.
+	 * TODO: If the following query is too slow for large installation, we must write two separate implementations for PostgreSQL and MySQL/SQLite as outlined above.
 	 *
 	 * @param array<Album> $models
 	 */
@@ -138,7 +138,7 @@ class HasAlbumThumb extends Relation
 		if (!AccessControl::is_admin()) {
 			$bestPhotoIDSelect->where(function (Builder $query2) {
 				$this->photoAuthorisationProvider->appendSearchabilityConditions(
-					$query2,
+					$query2->getQuery(),
 					'covered_albums._lft',
 					'covered_albums._rgt'
 				);
@@ -148,8 +148,13 @@ class HasAlbumThumb extends Relation
 		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys) {
 			$builder
 				->from('albums as covered_albums')
+				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id')
+				->leftJoin('user_base_album', 'user_base_album.base_album_id', '=', 'covered_albums.id')
 				->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
+				->where(function (BaseBuilder $q) {
+					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
+				})
 				->whereIn('covered_albums.id', $albumKeys);
 		};
 
