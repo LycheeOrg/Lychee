@@ -119,7 +119,10 @@ class AlbumAuthorisationProvider
 	 *
 	 * This method adds the WHERE conditions without any further pre-cautions.
 	 * The method silently assumes that the SELECT clause contains the tables
-	 * `base_albums` and `user_base_album`.
+	 *
+	 *  - **`base_albums`** and
+	 *  - **`user_base_album`**.
+	 *
 	 * Moreover, the raw OR-clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
@@ -325,7 +328,9 @@ class AlbumAuthorisationProvider
 	 * This method adds the WHERE conditions without any further pre-cautions.
 	 * The method silently assumes that the passed query builder is used
 	 * within an outer query whose SELECT clause contains the table
-	 * `albums`.
+	 *
+	 *  - **`albums`**.
+	 *
 	 * Moreover, the raw clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *

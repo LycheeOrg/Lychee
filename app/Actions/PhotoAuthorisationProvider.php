@@ -40,7 +40,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function applyVisibilityFilter(Builder $query): Builder
 	{
-		$this->prepareModelQueryOrFail($query);
+		$this->prepareModelQueryOrFail($query, false, true, true);
 
 		if (AccessControl::is_admin()) {
 			return $query;
@@ -114,7 +114,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function applySearchabilityFilter(Builder $query, ?Album $origin = null): Builder
 	{
-		$this->prepareModelQueryOrFail($query);
+		$this->prepareModelQueryOrFail($query, true, false, false);
 
 		// If origin is set, also restrict the search result for admin
 		// to photos which are in albums below origin.
@@ -189,11 +189,12 @@ class PhotoAuthorisationProvider
 	/**
 	 * Throws an exception if the given query does not query for a photo.
 	 *
-	 * @throws \InvalidArgumentException
-	 *
-	 * @param Builder $query
+	 * @param Builder $query         the query to prepare
+	 * @param bool    $addAlbums     if true, joins photo query with (parent) albums
+	 * @param bool    $addBaseAlbums if true, joins photos query with (parent) base albums
+	 * @param bool    $addShares     if true, joins photo query with user share table of (parent) album
 	 */
-	private function prepareModelQueryOrFail(Builder $query): void
+	private function prepareModelQueryOrFail(Builder $query, bool $addAlbums, bool $addBaseAlbums, bool $addShares): void
 	{
 		$model = $query->getModel();
 		$table = $query->getQuery()->from;
@@ -207,9 +208,14 @@ class PhotoAuthorisationProvider
 		if (empty($query->columns)) {
 			$query->select(['photos.*']);
 		}
-		$query
-			->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
-			->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id')
-			->leftJoin('user_base_album', 'user_base_album.base_album_id', '=', 'photos.album_id');
+		if ($addAlbums) {
+			$query->leftJoin('albums', 'albums.id', '=', 'photos.album_id');
+		}
+		if ($addBaseAlbums) {
+			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
+		}
+		if ($addShares) {
+			$query->leftJoin('user_base_album', 'user_base_album.base_album_id', '=', 'photos.album_id');
+		}
 	}
 }
