@@ -2,7 +2,6 @@
 
 namespace App\Actions;
 
-use App\Contracts\AbstractAlbum;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
@@ -162,32 +161,11 @@ class AlbumAuthorisationProvider
 	 * {@link AlbumAuthorisationProvider::applyAccessibilityFilter()} for a
 	 * specification of the rules when an album is accessible.
 	 * In other cases, the following holds:
-	 *  - the root album is accessible if and only if the user is authenticated
+	 *  - the root album is accessible by everybody
 	 *  - the built-in smart albums are accessible, if
 	 *     - the user is authenticated and is granted the right of uploading, or
 	 *     - the album is the album of recent photos and public by configuration, or
 	 *     - the album is the album of starred photos and public by configuration
-	 *
-	 * Note, this method tries to minimize DB queries and any overhead due
-	 * to hydration of models.
-	 * If an actual instance of a {@link AbstractAlbum} model is passed in,
-	 * then the DB won't be queried at all, because all checks are performed
-	 * on the values of the already hydrated model.
-	 * If an ID is passed, then the method runs a very efficient COUNT
-	 * query on the DB.
-	 * In particular, no {@link Album} nor {@link TagAlbum} model is hydrated
-	 * to avoid any overhead.
-	 *
-	 * Tips for usage:
-	 *  - If you already have a {@link AbstractAlbum} instance, pass that.
-	 *    This is most efficient.
-	 *  - If you do not have a {@link AbstractAlbum} instance, but you will
-	 *    need one later anyway, then use {@link AlbumFactory} to first fetch
-	 *    the album from DB and pass the album.
-	 *    This avoids a second DB query later.
-	 *  - If you do not have a {@link AbstractAlbum} instance, and you won't
-	 *    need one later, simply pass the ID of the album.
-	 *    This avoids the overhead of model hydration.
 	 *
 	 * @param string|int|null $albumID
 	 *
@@ -195,7 +173,7 @@ class AlbumAuthorisationProvider
 	 */
 	public function isAccessibleByID($albumID): bool
 	{
-		// the admin may access everything, the root album may be access by everybody
+		// the admin may access everything, the root album may be accessed by everybody
 		if (AccessControl::is_admin() || empty($albumID)) {
 			return true;
 		}
@@ -278,9 +256,9 @@ class AlbumAuthorisationProvider
 	 *
 	 * Note that the worst case efficiency of this query is O(n²), if n is
 	 * the number of query results.
-	 * The query does "not know" that albums are organized in a tree structure
+	 * The query does not "know" that albums are organized in a tree structure
 	 * and thus re-examines the entire path for each album in the result and
-	 * does not take a short-cut for sub-paths which has already been examined
+	 * does not take a short-cut for sub-paths which have already been examined
 	 * earlier.
 	 * In other words for a flat tree (all result nodes are direct children
 	 * of the origin), the runtime is O(n), but for a high tree (the nodes are

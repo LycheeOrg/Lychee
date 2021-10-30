@@ -39,7 +39,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	 *
 	 * This method is called by the framework, if the related photos of a
 	 * list of owning albums are fetched.
-	 * The the unified result of the query is mapped to the specific albums
+	 * The unified result of the query is mapped to the specific albums
 	 * by {@link HasManyPhotosRecursively::match()}.
 	 *
 	 * @param array<Album> $albums an array of {@link \App\Models\Album} whose photos are loaded

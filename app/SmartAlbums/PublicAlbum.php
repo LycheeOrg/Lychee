@@ -24,9 +24,9 @@ class PublicAlbum extends BaseSmartAlbum
 		// Actually, this statement is only needed due to testing.
 		// The same instance of this class is used for all tests, because
 		// the singleton stays alive during tests.
-		// This implies that the relation of photos is never be reloaded
+		// This implies that the relation of photos is never reloaded
 		// but remains constant during all tests (it equals the empty set)
-		// and the tests fails.
+		// and the tests fail.
 		self::$instance->unsetRelation('photos');
 
 		return self::$instance;

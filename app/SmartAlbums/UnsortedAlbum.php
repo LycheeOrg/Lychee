@@ -46,7 +46,7 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 * "Deletes" the album of unsorted photos.
 	 *
 	 * Actually, the album itself is not deleted, because it is built-in.
-	 * But all photos within the album which are owned by the currnt user
+	 * But all photos within the album which are owned by the current user
 	 * are deleted.
 	 *
 	 * @return bool

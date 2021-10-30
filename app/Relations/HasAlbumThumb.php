@@ -85,7 +85,7 @@ class HasAlbumThumb extends Relation
 	 *
 	 * For PostgreSQL see ["SELECT - DISTINCT Clause"](https://www.postgresql.org/docs/13/sql-select.html#SQL-DISTINCT).
 	 *
-	 * But `DISTINCT ON` is neither provided by MySQL and SQLite.
+	 * But `DISTINCT ON` is provided by neither MySQL nor SQLite.
 	 * For the latter two, the following non-SQL-conformant query could be
 	 * used:
 	 *

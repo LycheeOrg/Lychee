@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\JsonEncodingException;
  *
  * This class mimics some of the behaviour of
  * {@link \Illuminate\Database\Eloquent\Model}.
- * The main difference is that a fake model does not actually exists on the
+ * The main difference is that a fake model does not actually exist on the
  * DB layer and thus cannot be loaded, saved, refreshed, etc.
  * However, it enables to use the smart albums which extend
  * {@link \App\SmartAlbums\BaseSmartAlbum} as if they were real models.
@@ -82,7 +82,7 @@ abstract class FakeModel implements Arrayable, \JsonSerializable, Jsonable
 	/**
 	 * "Deletes" a fake model.
 	 *
-	 * As a fake model does not actually exists on the DB layer,
+	 * As a fake model does not actually exist on the DB layer,
 	 * it is a logical programming error to do so.
 	 * Hence, this implementation always returns false.
 	 *

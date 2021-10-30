@@ -10,8 +10,8 @@ use App\Models\Extensions\Thumb;
  * Class BaseSmartAlbum.
  *
  * The common base class for all built-in smart albums which can neither
- * be created nor deleted, but always exists.
- * Photos cannot explicitly be added or removed from these albums.
+ * be created nor deleted, but always exist.
+ * Smart albums are never explicit "parent albums" of photos.
  * Photos belong to these albums due to certain properties like being
  * starred, being recently added, etc.
  *

@@ -151,12 +151,12 @@ class PhotoAuthorisationProvider
 	 *  - **`albums`**.
 	 *
 	 * See {@link AlbumAuthorisationProvider::applySearchabilityFilter()}
-	 * for a definition of a searchable photos.
+	 * for a definition of a searchable photo.
 	 *
 	 * Moreover, the raw clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
-	 * @param Builder         $query       the photo query which shall be
+	 * @param BaseBuilder     $query       the photo query which shall be
 	 *                                     restricted
 	 * @param int|string|null $originLeft  optionally constraints the search
 	 *                                     base; an integer value is
