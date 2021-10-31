@@ -4,12 +4,9 @@ namespace App\Models;
 
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\ForwardsToParentImplementation;
-use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyPhotosByTag;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class TagAlbum.
@@ -18,15 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  */
 class TagAlbum extends BaseAlbum
 {
-	use HasBidirectionalRelationships;
 	use ForwardsToParentImplementation;
-
-	/**
-	 * Indicates if the model's primary key is auto-incrementing.
-	 *
-	 * @var bool
-	 */
-	public $incrementing = false;
 
 	/**
 	 * The model's attributes.
@@ -66,17 +55,6 @@ class TagAlbum extends BaseAlbum
 		'thumb',
 	];
 
-	/**
-	 * Returns the relationship between this model and the implementation
-	 * of the "parent" class.
-	 *
-	 * @return BelongsTo
-	 */
-	public function base_class(): BelongsTo
-	{
-		return $this->belongsTo(BaseAlbumImpl::class, 'id', 'id');
-	}
-
 	public function photos(): HasManyPhotosByTag
 	{
 		return new HasManyPhotosByTag($this);
@@ -88,7 +66,7 @@ class TagAlbum extends BaseAlbum
 		// only returns photos which are accessible by the current
 		// user
 
-		// TODO: Convert in proper relation
+		// TODO: Convert to proper relation
 
 		/** @var Photo|null $cover */
 		$cover = $this->photos()
@@ -101,33 +79,12 @@ class TagAlbum extends BaseAlbum
 		return Thumb::createFromPhoto($cover);
 	}
 
-	/**
-	 * Returns the relationship between an album and its owner.
-	 *
-	 * @return BelongsTo
-	 */
-	public function owner(): BelongsTo
-	{
-		return $this->base_class->owner();
-	}
-
-	/**
-	 * Returns the relationship between an album and all users which whom
-	 * this album is shared.
-	 *
-	 * @return BelongsToMany
-	 */
-	public function shared_with(): BelongsToMany
-	{
-		return $this->base_class->shared_with();
-	}
-
 	public function toArray(): array
 	{
 		$result = parent::toArray();
 		$result['is_tag_album'] = true;
 
-		return array_merge($result, $this->base_class->toArray());
+		return $result;
 	}
 
 	/**

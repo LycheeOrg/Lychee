@@ -39,9 +39,51 @@ use Illuminate\Support\Carbon;
  */
 abstract class BaseAlbum extends Model implements AbstractAlbum
 {
-	abstract public function owner(): BelongsTo;
+	use HasBidirectionalRelationships;
 
-	abstract public function shared_with(): BelongsToMany;
+	/**
+	 * Indicates if the model's primary key is auto-incrementing.
+	 *
+	 * @var bool
+	 */
+	public $incrementing = false;
+
+	/**
+	 * Returns the relationship between this model and the implementation
+	 * of the "parent" class.
+	 *
+	 * @return BelongsTo
+	 */
+	public function base_class(): BelongsTo
+	{
+		return $this->belongsTo(BaseAlbumImpl::class, 'id', 'id');
+	}
+
+	/**
+	 * Returns the relationship between an album and its owner.
+	 *
+	 * @return BelongsTo
+	 */
+	public function owner(): BelongsTo
+	{
+		return $this->base_class->owner();
+	}
+
+	/**
+	 * Returns the relationship between an album and all users which whom
+	 * this album is shared.
+	 *
+	 * @return BelongsToMany
+	 */
+	public function shared_with(): BelongsToMany
+	{
+		return $this->base_class->shared_with();
+	}
 
 	abstract public function photos(): Relation;
+
+	public function toArray(): array
+	{
+		return array_merge(parent::toArray(), $this->base_class->toArray());
+	}
 }

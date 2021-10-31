@@ -6,7 +6,6 @@ use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\ForwardsToParentImplementation;
-use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Relations\HasAlbumThumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
@@ -14,7 +13,6 @@ use App\Relations\HasManyPhotosRecursively;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Kalnoy\Nestedset\NodeTrait;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
@@ -35,17 +33,9 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 class Album extends BaseAlbum
 {
 	use NodeTrait;
-	use HasBidirectionalRelationships;
 	use ForwardsToParentImplementation {
 		delete as private forwardDelete;
 	}
-
-	/**
-	 * Indicates if the model's primary key is auto-incrementing.
-	 *
-	 * @var bool
-	 */
-	public $incrementing = false;
 
 	/**
 	 * The model's attributes.
@@ -95,17 +85,6 @@ class Album extends BaseAlbum
 	protected $with = ['cover', 'thumb'];
 
 	/**
-	 * Returns the relationship between this model and the implementation
-	 * of the "parent" class.
-	 *
-	 * @return BelongsTo
-	 */
-	public function base_class(): BelongsTo
-	{
-		return $this->belongsTo(BaseAlbumImpl::class, 'id', 'id');
-	}
-
-	/**
 	 * Return the relationship between this album and photos which are
 	 * direct children of this album.
 	 *
@@ -135,13 +114,6 @@ class Album extends BaseAlbum
 	/**
 	 * Return the relationship between an album and its sub albums.
 	 *
-	 * Note: Actually, the return type should be non-nullable.
-	 * However, {@link \App\SmartAlbums\BareSmartAlbum} extends this class and
-	 * {@link \App\SmartAlbums\SmartAlbum::children()} cannot return an
-	 * correctly instantiated object of `HasMany` but must return `null`,
-	 * because a `SmartAlbum` is not a real Eloquent model and does not exist
-	 * as a database entity.
-	 *
 	 * @return HasManyChildAlbums
 	 */
 	public function children(): HasManyChildAlbums
@@ -167,27 +139,6 @@ class Album extends BaseAlbum
 	public function parent(): BelongsTo
 	{
 		return $this->belongsTo(self::class, 'parent_id', 'id');
-	}
-
-	/**
-	 * Returns the relationship between an album and its owner.
-	 *
-	 * @return BelongsTo
-	 */
-	public function owner(): BelongsTo
-	{
-		return $this->base_class->owner();
-	}
-
-	/**
-	 * Returns the relationship between an album and all users which whom
-	 * this album is shared.
-	 *
-	 * @return BelongsToMany
-	 */
-	public function shared_with(): BelongsToMany
-	{
-		return $this->base_class->shared_with();
 	}
 
 	protected function getLicenseAttribute(string $value): string
@@ -232,7 +183,7 @@ class Album extends BaseAlbum
 			unset($result['children']);
 		}
 
-		return array_merge($result, $this->base_class->toArray());
+		return $result;
 	}
 
 	/**
@@ -326,7 +277,7 @@ class Album extends BaseAlbum
 	 * in particular the same statement is executed many times without any
 	 * complains.
 	 * As a cheap work-around we simply delete the offending line, because
-	 * we know that there are not descendants left which could be deleted.
+	 * we know that there are no descendants left which could be deleted.
 	 */
 	protected function deleteDescendants()
 	{
