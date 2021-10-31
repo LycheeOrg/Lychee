@@ -84,7 +84,7 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
           tools: pecl, composer
-      
+
       - name: Set Up imagick (php8)
         if: ${{ matrix.php-versions != '7.4' }}
         run: sh scripts/install_imagick.sh
@@ -104,7 +104,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction --no-dev
+        run: composer install --prefer-dist --no-interaction --no-dev -o
 
       - name: Build Dist
         run: |
