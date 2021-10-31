@@ -22,7 +22,7 @@ class HasManyPhotosByTag extends HasManyPhotos
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
-			$this->addEagerConstraints([$this->owningAlbum]);
+			$this->addEagerConstraints([$this->parent]);
 		}
 	}
 

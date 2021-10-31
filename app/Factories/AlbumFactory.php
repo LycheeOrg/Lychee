@@ -3,8 +3,8 @@
 namespace App\Factories;
 
 use App\Contracts\AbstractAlbum;
-use App\Contracts\BaseAlbum;
 use App\Models\Album;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;

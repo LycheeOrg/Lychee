@@ -1,12 +1,15 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Models\Extensions;
 
+use App\Contracts\AbstractAlbum;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
 
 /**
@@ -34,18 +37,11 @@ use Illuminate\Support\Carbon;
  * @property string|null   $sorting_order
  * @property BaseAlbumImpl $base_class
  */
-interface BaseAlbum extends AbstractAlbum
+abstract class BaseAlbum extends Model implements AbstractAlbum
 {
-	/**
-	 * Save the model to the database.
-	 *
-	 * @param array $options
-	 *
-	 * @return bool
-	 */
-	public function save(array $options = []);
+	abstract public function owner(): BelongsTo;
 
-	public function owner(): BelongsTo;
+	abstract public function shared_with(): BelongsToMany;
 
-	public function shared_with(): BelongsToMany;
+	abstract public function photos(): Relation;
 }

@@ -4,8 +4,8 @@ namespace App\Contracts;
 
 use App\Models\Extensions\Thumb;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\Relation;
 
 /**
  * Interface BaseAlbum.
@@ -27,9 +27,6 @@ use Illuminate\Database\Eloquent\Relations\Relation;
  * @property bool       $is_downloadable
  * @property bool       $is_share_button_visible
  */
-interface AbstractAlbum extends \JsonSerializable, Arrayable, SupportsRelationships
+interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
 {
-	public function photos(): Relation;
-
-	public function delete(): bool;
 }

@@ -5,7 +5,6 @@ namespace App\Models\Extensions;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Relations\Relation;
 use JsonSerializable;
 
 class Thumb implements Arrayable, JsonSerializable
@@ -21,31 +20,6 @@ class Thumb implements Arrayable, JsonSerializable
 		$this->type = $type;
 		$this->thumbUrl = $thumbUrl;
 		$this->thumb2xUrl = $thumb2xUrl;
-	}
-
-	/**
-	 * Creates a thumb by using the best rated photo from the given relation.
-	 *
-	 * Note, this method assumes that the relation is already restricted
-	 * such that it only returns photos which the current user may see.
-	 *
-	 * @param Relation $photoRelation the relation to photos which might be used to pick a thumb
-	 * @param string   $sortingCol    the name of the column which shall be used to sort
-	 * @param string   $sortingOrder  the sorting order either 'ASC' or 'DESC'
-	 *
-	 * @return Thumb|null the created thumbnail; null if the relation is empty
-	 */
-	public static function createFromPhotoRelation(Relation $photoRelation, string $sortingCol, string $sortingOrder): ?Thumb
-	{
-		/** @var Photo|null $cover */
-		$cover = $photoRelation
-			->without(['album'])
-			->orderBy('photos.is_starred', 'DESC')
-			->orderBy($sortingCol, $sortingOrder)
-			->select(['photos.id', 'photos.type'])
-			->first();
-
-		return self::createFromPhoto($cover);
 	}
 
 	/**

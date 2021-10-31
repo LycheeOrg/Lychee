@@ -2,13 +2,12 @@
 
 namespace App\Models;
 
-use App\Contracts\BaseAlbum;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyPhotosByTag;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -17,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  *
  * @property string show_tags
  */
-class TagAlbum extends Model implements BaseAlbum
+class TagAlbum extends BaseAlbum
 {
 	use HasBidirectionalRelationships;
 	use ForwardsToParentImplementation;
@@ -88,9 +87,18 @@ class TagAlbum extends Model implements BaseAlbum
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
 		// user
-		return Thumb::createFromPhotoRelation(
-			$this->photos(), 'photos.' . $this->sorting_col, $this->sorting_order
-		);
+
+		// TODO: Convert in proper relation
+
+		/** @var Photo|null $cover */
+		$cover = $this->photos()
+			->without(['album'])
+			->orderBy('photos.is_starred', 'DESC')
+			->orderBy('photos.' . $this->sorting_col, $this->sorting_order)
+			->select(['photos.id', 'photos.type'])
+			->first();
+
+		return Thumb::createFromPhoto($cover);
 	}
 
 	/**

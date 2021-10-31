@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use App\Contracts\BaseAlbum;
 use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Relations\HasAlbumThumb;
@@ -13,7 +13,6 @@ use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -33,7 +32,7 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * @property int        $_lft
  * @property int        $_rgt
  */
-class Album extends Model implements BaseAlbum
+class Album extends BaseAlbum
 {
 	use NodeTrait;
 	use HasBidirectionalRelationships;

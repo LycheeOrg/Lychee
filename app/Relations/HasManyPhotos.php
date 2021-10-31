@@ -3,9 +3,7 @@
 namespace App\Relations;
 
 use App\Actions\PhotoAuthorisationProvider;
-use App\Contracts\AbstractAlbum;
-use App\Contracts\BaseAlbum;
-use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,16 +17,14 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 abstract class HasManyPhotos extends Relation
 {
 	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
-	protected AbstractAlbum $owningAlbum;
 
-	public function __construct(AbstractAlbum $owningAlbum)
+	public function __construct(BaseAlbum $owningAlbum)
 	{
 		// Sic! We must initialize attributes of this class before we call
 		// the parent constructor.
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
-		$this->owningAlbum = $owningAlbum;
 		// This is a hack.
 		// The abstract class
 		// {@link \Illuminate\Database\Eloquent\Relations\Relation}
@@ -55,7 +51,7 @@ abstract class HasManyPhotos extends Relation
 			// Hence, the actually owning albums of the photos are not
 			// necessarily loaded.
 			Photo::query()->with(['album', 'size_variants_raw', 'size_variants_raw.sym_links']),
-			new DummyModel()
+			$owningAlbum
 		);
 	}
 
@@ -73,7 +69,7 @@ abstract class HasManyPhotos extends Relation
 	 */
 	public function initRelation(array $models, $relation): array
 	{
-		/** @var AbstractAlbum $model */
+		/** @var BaseAlbum $model */
 		foreach ($models as $model) {
 			$model->setRelation($relation, $this->related->newCollection());
 		}
@@ -96,16 +92,11 @@ abstract class HasManyPhotos extends Relation
 	 */
 	public function getResults(): Collection
 	{
-		if ($this->owningAlbum instanceof BaseAlbum) {
-			$sortingCol = $this->owningAlbum->sorting_col;
-			$sortingOrder = $this->owningAlbum->sorting_order;
-		} else {
-			$sortingCol = Configs::get_value('sorting_Photos_col');
-			$sortingOrder = Configs::get_value('sorting_Photos_order');
-		}
+		/** @var BaseAlbum $album */
+		$album = $this->parent;
 
 		return (new SortingDecorator($this->query))
-			->orderBy('photos.' . $sortingCol, $sortingOrder)
+			->orderBy('photos.' . $album->sorting_col, $album->sorting_order)
 			->get();
 	}
 }
