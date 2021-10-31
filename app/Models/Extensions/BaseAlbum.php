@@ -40,6 +40,7 @@ use Illuminate\Support\Carbon;
 abstract class BaseAlbum extends Model implements AbstractAlbum
 {
 	use HasBidirectionalRelationships;
+	use ForwardsToParentImplementation;
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.

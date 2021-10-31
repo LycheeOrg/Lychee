@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Extensions\BaseAlbum;
-use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyPhotosByTag;
@@ -15,8 +14,6 @@ use App\Relations\HasManyPhotosByTag;
  */
 class TagAlbum extends BaseAlbum
 {
-	use ForwardsToParentImplementation;
-
 	/**
 	 * The model's attributes.
 	 *

@@ -2,20 +2,16 @@
 
 namespace App\Models;
 
-use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
-use App\Models\Extensions\ForwardsToParentImplementation;
 use App\Relations\HasAlbumThumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
-use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 
 /**
  * Class Album.
@@ -30,12 +26,9 @@ use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
  * @property int        $_lft
  * @property int        $_rgt
  */
-class Album extends BaseAlbum
+class Album extends BaseAlbum implements Node
 {
 	use NodeTrait;
-	use ForwardsToParentImplementation {
-		delete as private forwardDelete;
-	}
 
 	/**
 	 * The model's attributes.
@@ -85,6 +78,22 @@ class Album extends BaseAlbum
 	protected $with = ['cover', 'thumb'];
 
 	/**
+	 * The "booted" method of the model.
+	 *
+	 * @return void
+	 */
+	protected static function booted()
+	{
+		static::deleting(function (Album $album) {
+			$album->refreshNode();
+			$result = $album->deleteAllPhotosRecursively();
+			$album->deleteDescendants();
+
+			return $result;
+		});
+	}
+
+	/**
 	 * Return the relationship between this album and photos which are
 	 * direct children of this album.
 	 *
@@ -112,7 +121,7 @@ class Album extends BaseAlbum
 	}
 
 	/**
-	 * Return the relationship between an album and its sub albums.
+	 * Return the relationship between an album and its sub-albums.
 	 *
 	 * @return HasManyChildAlbums
 	 */
@@ -131,16 +140,6 @@ class Album extends BaseAlbum
 		return $this->hasOne(Photo::class, 'id', 'cover_id');
 	}
 
-	/**
-	 * Return the relationship between an album and its parent.
-	 *
-	 * @return BelongsTo
-	 */
-	public function parent(): BelongsTo
-	{
-		return $this->belongsTo(self::class, 'parent_id', 'id');
-	}
-
 	protected function getLicenseAttribute(string $value): string
 	{
 		if ($value === 'none') {
@@ -148,27 +147,6 @@ class Album extends BaseAlbum
 		}
 
 		return $value;
-	}
-
-	/**
-	 * Checks whether this album is truly and completely empty.
-	 *
-	 * Note, that one must not use the relations {@link Album::photos()} and
-	 * {@link Album::children()} to check for emptiness.
-	 * These relations filter the results with respect to the access rights of
-	 * the current user.
-	 * In other words, {@link Album::photos()} and {@link Album::children()}
-	 * may appear to be empty, but the album is not, because the album is
-	 * still parent to photos and sub-albums invisible for the current user.
-	 *
-	 * @return bool true if this album is completely empty
-	 */
-	public function isEmpty(): bool
-	{
-		$photosCount = Photo::query()->where('album_id', '=', $this->id)->count();
-		$albumCount = Album::query()->where('parent_id', '=', $this->id)->count();
-
-		return ($photosCount + $albumCount) === 0;
 	}
 
 	public function toArray(): array
@@ -186,108 +164,17 @@ class Album extends BaseAlbum
 		return $result;
 	}
 
-	/**
-	 * Recursively deletes the album incl. potential sub-albums and photos.
-	 *
-	 * Note, this method only deletes albums and photos which are owned by
-	 * the current user.
-	 * If the album is not empty (after all sub-albums and photos which have
-	 * been owned by the user have been deleted), the album is not deleted.
-	 *
-	 * Note, the parameter `$skipTreeFixing` should not be used by an external
-	 * caller (but left equal to its default `false`).
-	 * This flag is only internally used by this method for better performance
-	 * and skips rebuilding the tree after each recursion step.
-	 *
-	 * @param bool $skipTreeFixing
-	 *
-	 * @return bool
-	 */
-	public function delete(bool $skipTreeFixing = false): bool
+	public function deleteAllPhotosRecursively(): bool
 	{
 		$success = true;
-
-		$photos = $this->photos()
-			->where('photos.owner_id', '=', AccessControl::id())
-			->get();
+		$photos = $this->all_photos()->lazy();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// This also takes care of proper deletion of physical files from disk
 			$success &= $photo->delete();
 		}
 
-		$albums = $this->children()
-			->whereHas(
-				'base_class',
-				fn (Builder $q) => $q->where('owner_id', '=', AccessControl::id())
-			)
-			->get();
-		/** @var Album $album */
-		foreach ($albums as $album) {
-			$success &= $album->delete(true);
-		}
-
-		// Ensure that no invisible child photo nor child album have remained
-		$success &= $this->isEmpty();
-
-		// Only forward the call (i.e. actually delete this album,
-		// if everything so far has been a success
-		if ($success) {
-			$success &= $this->forwardDelete();
-		}
-
-		/** @var NSQueryBuilder $builder */
-		$builder = Album::query();
-		if (!$skipTreeFixing && $builder->isBroken()) {
-			$builder->fixTree();
-		}
-
 		return $success;
-	}
-
-	/**
-	 * Update the tree after the node has been removed physically.
-	 *
-	 * This method is copied from
-	 * {@link \Kalnoy\Nestedset\NodeTrait::deleteDescendants()}.
-	 *
-	 * The trait {@link \Kalnoy\Nestedset\NodeTrait} installs a listener for
-	 * the event`deleted` which calls this method _after_ the node has been
-	 * deleted in order to delete the descendants.
-	 *
-	 * However, in our case the descendants are tried to be deleted _before_
-	 * the parent node is deleted to ensure that the user has sufficient
-	 * rights to delete the child nodes and to prevent that non-deletable
-	 * child nodes end up without a parent.
-	 * See {@link \App\Models\Album::delete()}.
-	 *
-	 * Hence, the default implementation
-	 * {@link \Kalnoy\Nestedset\NodeTrait::deleteDescendants()} should be
-	 * harmless.
-	 * As the descendants have already been deleted when the `deleted` event
-	 * is fired, the implementation should not find any remaining descendants
-	 * and thus the whole method should be a no-op.
-	 * But for some unintelligible reason the default implementation crashes.
-	 * More precisely, the line `$this->descendants()->{$method}();` tries
-	 * to build a query for albums and
-	 * {@link \Kalnoy\Nestedset\BaseRelation::__construct()}
-	 * throws an {@link \InvalidArgumentException} exception which
-	 * claims that {@link \App\Models\Album} was not a node.
-	 * Obviously, this is bogus ({@link \App\Models\Album} **is** a node);
-	 * in particular the same statement is executed many times without any
-	 * complains.
-	 * As a cheap work-around we simply delete the offending line, because
-	 * we know that there are no descendants left which could be deleted.
-	 */
-	protected function deleteDescendants()
-	{
-		$lft = $this->getLft();
-		$rgt = $this->getRgt();
-		$height = $rgt - $lft + 1;
-		$this->newNestedSetQuery()->makeGap($rgt + 1, -$height);
-		// In case if user wants to re-create the node
-		$this->makeRoot();
-		static::$actionsPerformed++;
 	}
 
 	/**
