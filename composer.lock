@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dda91d1d04955b9eb0f82895eb4a0687",
+    "content-hash": "ee52c4ae7007ed73aa5da31148c47e26",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -4564,16 +4564,16 @@
         },
         {
             "name": "spatie/laravel-feed",
-            "version": "3.2.1",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-feed.git",
-                "reference": "f0d15c878220a69db0f1f94cc2113a0e0e3358dd"
+                "reference": "1a9cbeb21de25b8a4f6a30ddc53e038fb5ae1651"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-feed/zipball/f0d15c878220a69db0f1f94cc2113a0e0e3358dd",
-                "reference": "f0d15c878220a69db0f1f94cc2113a0e0e3358dd",
+                "url": "https://api.github.com/repos/spatie/laravel-feed/zipball/1a9cbeb21de25b8a4f6a30ddc53e038fb5ae1651",
+                "reference": "1a9cbeb21de25b8a4f6a30ddc53e038fb5ae1651",
                 "shasum": ""
             },
             "require": {
@@ -4636,7 +4636,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-feed/issues",
-                "source": "https://github.com/spatie/laravel-feed/tree/3.2.1"
+                "source": "https://github.com/spatie/laravel-feed/tree/3.2.0"
             },
             "funding": [
                 {
@@ -4644,7 +4644,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-05-27T06:44:53+00:00"
+            "time": "2021-05-17T21:00:38+00:00"
         },
         {
             "name": "spatie/laravel-image-optimizer",
