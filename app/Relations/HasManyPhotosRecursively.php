@@ -92,7 +92,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 				$album->sorting_col,
 				SORT_NATURAL | SORT_FLAG_CASE,
 				$album->sorting_order === 'DESC'
-			);
+			)->values();
 			$album->setRelation($relation, $sortedPhotos);
 		}
 
