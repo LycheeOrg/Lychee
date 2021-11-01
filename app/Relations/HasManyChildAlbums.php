@@ -81,15 +81,15 @@ class HasManyChildAlbums extends HasManyBidirectionally
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
-				$sortedChildrenOfModel = $childrenOfModel
+				$childrenOfModel = $childrenOfModel
 					->sortBy($sortingCol, SORT_NATURAL | SORT_FLAG_CASE, $sortingOrder === 'DESC')
 					->values();
-				$model->setRelation($relation, $sortedChildrenOfModel);
+				$model->setRelation($relation, $childrenOfModel);
 				// This is the newly added code which sets this method apart
 				// from the original method and additionally sets the
 				// reverse link
 				/** @var Model $childModel */
-				foreach ($sortedChildrenOfModel as $childModel) {
+				foreach ($childrenOfModel as $childModel) {
 					$childModel->setRelation($this->foreignMethodName, $model);
 				}
 			}

@@ -75,12 +75,12 @@ class HasManyPhotosByTag extends HasManyPhotos
 		/** @var TagAlbum $album */
 		$album = $albums[0];
 
-		$sortedPhotos = $photos->sortBy(
+		$photos = $photos->sortBy(
 			$album->sorting_col,
 			SORT_NATURAL | SORT_FLAG_CASE,
 			$album->sorting_order === 'DESC'
 		)->values();
-		$album->setRelation($relation, $sortedPhotos);
+		$album->setRelation($relation, $photos);
 
 		return $albums;
 	}

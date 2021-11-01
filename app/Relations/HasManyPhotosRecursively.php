@@ -88,12 +88,12 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		if (!$this->albumAuthorisationProvider->isAccessible($album)) {
 			$album->setRelation($relation, $this->related->newCollection());
 		} else {
-			$sortedPhotos = $photos->sortBy(
+			$photos = $photos->sortBy(
 				$album->sorting_col,
 				SORT_NATURAL | SORT_FLAG_CASE,
 				$album->sorting_order === 'DESC'
 			)->values();
-			$album->setRelation($relation, $sortedPhotos);
+			$album->setRelation($relation, $photos);
 		}
 
 		return $albums;

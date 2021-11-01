@@ -50,13 +50,13 @@ class SortingDecorator
 			key($this->postponedSortBy) !== null && $criterion = current($this->postponedSortBy);
 			prev($this->postponedSortBy)
 		) {
-			$sortedResult = $result->sortBy(
+			$result = $result->sortBy(
 				$criterion['column'],
 				SORT_NATURAL | SORT_FLAG_CASE,
 				$criterion['direction'] === 'desc'
 			)->values();
 		}
 
-		return $sortedResult;
+		return $result;
 	}
 }
