@@ -5,6 +5,9 @@ namespace App\Models\Extensions;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use JsonSerializable;
 
 class Thumb implements Arrayable, JsonSerializable
@@ -20,6 +23,44 @@ class Thumb implements Arrayable, JsonSerializable
 		$this->type = $type;
 		$this->thumbUrl = $thumbUrl;
 		$this->thumb2xUrl = $thumb2xUrl;
+	}
+
+	/**
+	 * Restricts the given relation for size variants such that only the
+	 * necessary variants for a thumbnail are selected.
+	 *
+	 * @param HasMany $relation
+	 *
+	 * @return HasMany
+	 */
+	public static function sizeVariantsFilter(HasMany $relation): HasMany
+	{
+		return $relation->whereIn('size_variant', [SizeVariant::THUMB, SizeVariant::THUMB2X]);
+	}
+
+	/**
+	 * Creates a thumb by using the best rated photo from the given queryable.
+	 *
+	 * Note, this method assumes that the relation is already restricted
+	 * such that it only returns photos which the current user may see.
+	 *
+	 * @param Relation|Builder $photoQueryable the relation to or query for {@link Photo} which is used to pick a thumb
+	 * @param string           $sortingCol     the name of the column which shall be used to sort
+	 * @param string           $sortingOrder   the sorting order either 'ASC' or 'DESC'
+	 *
+	 * @return Thumb|null the created thumbnail; null if the relation is empty
+	 */
+	public static function createFromQueryable($photoQueryable, string $sortingCol, string $sortingOrder): ?Thumb
+	{
+		/** @var Photo|null $cover */
+		$cover = $photoQueryable
+			->withOnly(['size_variants_raw' => fn (HasMany $r) => self::sizeVariantsFilter($r)])
+			->orderBy('photos.is_starred', 'DESC')
+			->orderBy('photos.' . $sortingCol, $sortingOrder)
+			->select(['photos.id', 'photos.type'])
+			->first();
+
+		return self::createFromPhoto($cover);
 	}
 
 	/**

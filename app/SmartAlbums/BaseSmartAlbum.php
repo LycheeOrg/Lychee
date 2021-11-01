@@ -78,23 +78,16 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected function getThumbAttribute(): ?Thumb
 	{
 		if (!isset($this->thumb)) {
-			/**
+			/*
 			 * Note, `photos()` already applies a "security filter" and
 			 * only returns photos which are accessible by the current
 			 * user.
-			 *
-			 * @var Photo|null $cover
 			 */
-			$cover = $this->photos()
-				->without(['album'])
-				->orderBy('photos.is_starred', 'desc')
-				->orderBy(
-					'photos.' . Configs::get_value('sorting_Photos_col'),
-					Configs::get_value('sorting_Photos_order')
-				)
-				->select(['photos.id', 'photos.type'])
-				->first();
-			$this->thumb = Thumb::createFromPhoto($cover);
+			$this->thumb = Thumb::createFromQueryable(
+				$this->photos(),
+				Configs::get_value('sorting_Photos_col'),
+				Configs::get_value('sorting_Photos_order')
+			);
 		}
 
 		return $this->thumb;

@@ -11,6 +11,7 @@ use App\Models\Extensions\Thumb;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 
@@ -32,18 +33,30 @@ class HasAlbumThumb extends Relation
 		$this->sortingCol = Configs::get_value('sorting_Photos_col');
 		$this->sortingOrder = Configs::get_value('sorting_Photos_order');
 		parent::__construct(
-			Photo::query()->with(['size_variants_raw', 'size_variants_raw.sym_links']),
+			Photo::query()->with(['size_variants_raw' => fn (HasMany $r) => Thumb::sizeVariantsFilter($r)]),
 			$parent
 		);
 	}
 
+	/**
+	 * Adds the constraints for a single album.
+	 *
+	 * If the album has set an explicit cover, then we simply search for that
+	 * photo.
+	 * Else, we search for all photos which are (recursive) descendants of the
+	 * given album.
+	 */
 	public function addConstraints(): void
 	{
 		if (static::$constraints) {
 			/** @var Album $album */
 			$album = $this->parent;
-			$this->photoAuthorisationProvider
-				->applySearchabilityFilter($this->query, $album);
+			if ($album->cover_id) {
+				$this->where('photos.id', '=', $album->cover_id);
+			} else {
+				$this->photoAuthorisationProvider
+					->applySearchabilityFilter($this->query, $album);
+			}
 		}
 	}
 
@@ -130,11 +143,20 @@ class HasAlbumThumb extends Relation
 	 */
 	public function addEagerConstraints(array $models): void
 	{
-		$albumKeys = $this->getKeys($models);
+		// We only use those `Album` models which have not set an explicit
+		// cover.
+		// Albums with explicit covers are treated separately in
+		// method `match`.
+		$albumKeys = collect($models)
+			->whereNull('cover_id')
+			->unique('id', true)
+			->sortBy('id')
+			->map(fn (Album $album) => $album->getKey())
+			->values();
 
 		$bestPhotoIDSelect = Photo::query()
 			->select(['photos.id AS photo_id'])
-			->leftJoin('albums', 'albums.id', '=', 'photos.album_id')
+			->join('albums', 'albums.id', '=', 'photos.album_id')
 			->whereColumn('albums._lft', '>=', 'covered_albums._lft')
 			->whereColumn('albums._rgt', '<=', 'covered_albums._rgt')
 			->orderBy('photos.is_starred', 'desc')
@@ -214,7 +236,13 @@ class HasAlbumThumb extends Relation
 		/** @var Album $album */
 		foreach ($models as $album) {
 			$albumID = $album->id;
-			if (isset($dictionary[$albumID])) {
+			if ($album->cover_id) {
+				// We do not execute a query, if `cover_id` is set, because
+				// `Album`always eagerly loads its cover and hence, we already
+				// have it.
+				// See {@link Album::with}
+				$album->setRelation($relation, Thumb::createFromPhoto($album->cover));
+			} elseif (isset($dictionary[$albumID])) {
 				/** @var Photo $cover */
 				$cover = reset($dictionary[$albumID]);
 				$album->setRelation($relation, Thumb::createFromPhoto($cover));
@@ -234,13 +262,16 @@ class HasAlbumThumb extends Relation
 			return null;
 		}
 
-		/** @var Photo|null $cover */
-		$cover = $this->query
-			->select(['photos.id', 'photos.type'])
-			->orderBy('photos.is_starred', 'desc')
-			->orderBy('photos.' . $this->sortingCol, $this->sortingOrder)
-			->first();
-
-		return Thumb::createFromPhoto($cover);
+		// We do not execute a query, if `cover_id` is set, because `Album`
+		// is always eagerly loaded with its cover and hence, we already
+		// have it.
+		// See {@link Album::with}
+		if ($album->cover_id) {
+			return Thumb::createFromPhoto($album->cover);
+		} else {
+			return Thumb::createFromQueryable(
+				$this->query, $this->sortingCol, $this->sortingOrder
+			);
+		}
 	}
 }

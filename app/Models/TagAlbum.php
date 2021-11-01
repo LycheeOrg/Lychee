@@ -57,23 +57,37 @@ class TagAlbum extends BaseAlbum
 		return new HasManyPhotosByTag($this);
 	}
 
+	/**
+	 * Returns the value for the virtual attribute {@link TagAlbum::$thumb}.
+	 *
+	 * Note, opposed to {@link Album} the thumbnail of a tag album cannot be
+	 * converted into a proper relation (cp. {@link Album::thumb()}).
+	 * However, doing so would enable to eagerly load all thumbs of all
+	 * tag albums at once (using a single query) and cache the result.
+	 * This would speed up rendering the root album.
+	 * The main obstacle is the way how tags of photos and tags of albums
+	 * are matched to each other.
+	 * At the moment this requires string operations on the PHP level and
+	 * the SQL query for each tag album has an individual number of
+	 * `WHERE`-clauses which is specific for the particular
+	 * tag album (cp. {@link HasManyPhotosByTag::addEagerConstraints()}).
+	 * Hence, it is not possible to construct a single SQL query which fetches
+	 * the photos for multiple tag albums.
+	 * However, this would be possible if we had a proper `tags` table and
+	 * two n:m-relations between photos and tags and tags and albums.
+	 * This would allow to create a single `JOIN`-query for all tag albums.
+	 *
+	 * @return Thumb|null
+	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
 		// user
 
-		// TODO: Convert to proper relation
-
-		/** @var Photo|null $cover */
-		$cover = $this->photos()
-			->without(['album'])
-			->orderBy('photos.is_starred', 'DESC')
-			->orderBy('photos.' . $this->sorting_col, $this->sorting_order)
-			->select(['photos.id', 'photos.type'])
-			->first();
-
-		return Thumb::createFromPhoto($cover);
+		return Thumb::createFromQueryable(
+			$this->photos(), $this->sorting_col, $this->sorting_order
+		);
 	}
 
 	public function toArray(): array
