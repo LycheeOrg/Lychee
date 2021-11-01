@@ -51,10 +51,10 @@ class UnsortedAlbum extends BaseSmartAlbum
 	public function delete(): bool
 	{
 		$success = true;
-
-		$photos = $this->photos()
-			->where('owner_id', '=', AccessControl::id())
-			->get();
+		if (!AccessControl::is_admin()) {
+			$this->photos()->where('owner_id', '=', AccessControl::id());
+		}
+		$photos = $this->photos()->get();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// This also takes care of proper deletion of physical files from disk

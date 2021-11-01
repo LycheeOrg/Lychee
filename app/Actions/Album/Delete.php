@@ -3,6 +3,8 @@
 namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
+use App\Models\Extensions\BaseAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 
 class Delete extends Action
 {
@@ -18,7 +20,9 @@ class Delete extends Action
 
 		/** @var AbstractAlbum $album */
 		foreach ($albums as $album) {
-			$success &= $album->delete();
+			if ($album instanceof BaseAlbum || $album instanceof UnsortedAlbum) {
+				$success &= $album->delete();
+			}
 		}
 
 		return $success;

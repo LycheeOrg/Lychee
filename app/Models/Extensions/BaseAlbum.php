@@ -71,7 +71,7 @@ abstract class BaseAlbum extends Model implements AbstractAlbum
 	}
 
 	/**
-	 * Returns the relationship between an album and all users which whom
+	 * Returns the relationship between an album and all users with whom
 	 * this album is shared.
 	 *
 	 * @return BelongsToMany

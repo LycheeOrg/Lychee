@@ -36,7 +36,7 @@ trait ForwardsToParentImplementation
 	 *
 	 *  1. the relation to the base class is not touched if the child class is
 	 *     saved, because the internal mechanism of Eloquent always touches
-	 *     the relation after the saving the child, but we need it the inverse
+	 *     the relation after saving the child, but we need it in inverse
 	 *     order.
 	 *  2. the relation to the base class is hidden from the default
 	 *     serialization to JSON, because we don't want the base class to
@@ -94,7 +94,7 @@ trait ForwardsToParentImplementation
 		/** @var Model $base_class */
 		$base_class = $this->base_class;
 		// touch() also indirectly saves the base_class hence any other
-		// attributes which require an updated are also saved
+		// attributes which require an update are also saved
 		if (!$base_class->touch()) {
 			return false;
 		}
@@ -210,7 +210,7 @@ trait ForwardsToParentImplementation
 	 *     an attribute, but we had to inline the code of `getRelationValue`
 	 *     here due to two reasons:
 	 *
-	 *      1. This trait also overwrite `getRelationValue` such that
+	 *      1. This trait also overwrites `getRelationValue` such that
 	 *         `getRelationValue` checks for a relation on both the child
 	 *         and the parent model.
 	 *         But here, we only must check on the child model, so we must
@@ -234,9 +234,9 @@ trait ForwardsToParentImplementation
 		}
 
 		// If the primary key is requested, we must use a shortcut.
-		// If the primary key of the model ist not yet set as it might be the
+		// If the primary key of the model is not yet set as it might be the
 		// case for new models, the implementation otherwise would fall
-		// through until the end and try to forward the call to the base class
+		// through until the end and try to forward the call to the base class.
 		// However, asking for the primary key of the base class is
 		//  a) insane, because it should be identical to the primary key of
 		//     this class, and
@@ -245,7 +245,7 @@ trait ForwardsToParentImplementation
 		if ($key == $this->getKeyName()) {
 			// Sic!
 			// Don't use `$this->getKey()` because this would call
-			// `getAttribute` again and we would end up in an infinite loop.
+			// `getAttribute` again, and we would end up in an infinite loop.
 			// Just get the attribute directly.
 			return $this->getAttributeValue($key);
 		}
@@ -255,8 +255,8 @@ trait ForwardsToParentImplementation
 			return $this->getRelationValue($key);
 		}
 
-		// If the attribute exists in the attribute array or has a "get" mutator we will
-		// get the attribute's value.
+		// If the attribute exists in the attribute array or has a "get"
+		// mutator we will get the attribute's value.
 		// Otherwise, we will proceed as if the developers
 		// are asking for a relationship's value. This covers both types of values.
 		if (array_key_exists($key, $this->attributes) ||
@@ -288,7 +288,7 @@ trait ForwardsToParentImplementation
 			return $this->getRelationshipFromMethod($key);
 		}
 
-		// If we have fall through until here, the using "child" class has
+		// If we have fallen through until here, the using "child" class has
 		// no matching property nor relation.
 		// So we try the implementation of the "parent" class.
 		// Note, that his will load the relation of the parent class, if it
@@ -362,7 +362,7 @@ trait ForwardsToParentImplementation
 			return $this->getRelationshipFromMethod($key);
 		}
 
-		// If we have fall through until here, the using "child" class has
+		// If we have fallen through until here, the using "child" class has
 		// no matching property nor relation.
 		// So we try the implementation of the "parent" class.
 		// Note, that his will load the relation of the parent class, if it
@@ -393,7 +393,7 @@ trait ForwardsToParentImplementation
 		}
 
 		// If an attribute is listed as a "date", we'll convert it from a DateTime
-		// instance into a form proper for storage on the database tables using
+		// instance into a form proper for storage in the database tables using
 		// the connection grammar's date format. We will auto set the values.
 		elseif ($value && $this->isDateAttribute($key)) {
 			$value = $this->fromDateTime($value);
@@ -420,10 +420,10 @@ trait ForwardsToParentImplementation
 			$value = $this->castAttributeAsEncryptedString($key, $value);
 		}
 
-		// If we have fall through until here, we first check if the parent
+		// If we have fallen through until here, we first check if the parent
 		// class provides an attribute of that name and then set the attribute
 		// on the parent class.
-		// Only if the parent class does provide such an attribute neither,
+		// Only if the parent class does not provide such an attribute either,
 		// we write it to the child class.
 		/** @var BaseAlbumImpl $baseClass */
 		$baseClass = $this->base_class;

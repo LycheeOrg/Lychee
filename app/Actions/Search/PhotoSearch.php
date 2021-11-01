@@ -11,9 +11,9 @@ class PhotoSearch
 {
 	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
 
-	public function __construct()
+	public function __construct(PhotoAuthorisationProvider $photoAuthorisationProvider)
 	{
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 	}
 
 	public function query(array $terms): Collection

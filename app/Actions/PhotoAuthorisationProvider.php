@@ -30,8 +30,6 @@ class PhotoAuthorisationProvider
 	 *  - the user is the owner of the photo
 	 *  - the photo is part of an album which the user is allowed to access
 	 *    (cp. {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}.
-	 *  - the photo is unsorted (not part of any album) and the user is granted
-	 *    the right to upload photos
 	 *  - the photo is public
 	 *
 	 * @param Builder $query

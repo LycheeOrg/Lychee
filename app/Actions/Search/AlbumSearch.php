@@ -12,9 +12,9 @@ class AlbumSearch
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
 
-	public function __construct()
+	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 	}
 
 	public function query(array $terms): Collection

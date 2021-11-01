@@ -84,7 +84,7 @@ class AlbumFactory
 	 *                        proper models) and string IDs (for built-in
 	 *                        smart albums) is acceptable
 	 *
-	 * @return Collection a possibly empty list of {@link AbstractAlbum}
+	 * @return Collection<AbstractAlbum> a possibly empty list of {@link AbstractAlbum}
 	 */
 	public function findWhereIDsIn(array $albumIDs): Collection
 	{

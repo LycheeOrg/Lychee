@@ -138,27 +138,27 @@ class RefactorAlbumModel extends Migration
 		Schema::table('albums', function (Blueprint $table) {
 			// We must remove any foreign link from `albums` to `photos` to
 			// break up circular dependencies.
-			$this->dropForeignIfExist($table, 'albums_cover_id_foreign');
-			$this->dropForeignIfExist($table, 'albums_parent_id_foreign');
-			$this->dropIndexIfExist($table, 'albums__lft__rgt_index');
+			$this->dropForeignIfExists($table, 'albums_cover_id_foreign');
+			$this->dropForeignIfExists($table, 'albums_parent_id_foreign');
+			$this->dropIndexIfExists($table, 'albums__lft__rgt_index');
 		});
 		Schema::rename('albums', 'albums_tmp');
 		Schema::table('photos', function (Blueprint $table) {
-			$this->dropForeignIfExist($table, 'photos_album_id_foreign');
-			$this->dropForeignIfExist($table, 'photos_owner_id_foreign');
-			$this->dropIndexIfExist($table, 'photos_created_at_index');
-			$this->dropIndexIfExist($table, 'photos_updated_at_index');
-			$this->dropIndexIfExist($table, 'photos_taken_at_index');
-			$this->dropIndexIfExist($table, 'photos_checksum_index');
-			$this->dropIndexIfExist($table, 'photos_live_photo_content_id_index');
-			$this->dropIndexIfExist($table, 'photos_live_photo_checksum_index');
-			$this->dropIndexIfExist($table, 'photos_is_public_index');
-			$this->dropIndexIfExist($table, 'photos_is_starred_index');
+			$this->dropForeignIfExists($table, 'photos_album_id_foreign');
+			$this->dropForeignIfExists($table, 'photos_owner_id_foreign');
+			$this->dropIndexIfExists($table, 'photos_created_at_index');
+			$this->dropIndexIfExists($table, 'photos_updated_at_index');
+			$this->dropIndexIfExists($table, 'photos_taken_at_index');
+			$this->dropIndexIfExists($table, 'photos_checksum_index');
+			$this->dropIndexIfExists($table, 'photos_live_photo_content_id_index');
+			$this->dropIndexIfExists($table, 'photos_live_photo_checksum_index');
+			$this->dropIndexIfExists($table, 'photos_is_public_index');
+			$this->dropIndexIfExists($table, 'photos_is_starred_index');
 		});
 		Schema::rename('photos', 'photos_tmp');
 		Schema::table('size_variants', function (Blueprint $table) {
-			$this->dropForeignIfExist($table, 'size_variants_photo_id_foreign');
-			$this->dropUniqueIfExist($table, 'size_variants_photo_id_size_variant_unique');
+			$this->dropForeignIfExists($table, 'size_variants_photo_id_foreign');
+			$this->dropUniqueIfExists($table, 'size_variants_photo_id_size_variant_unique');
 		});
 		Schema::rename('size_variants', 'size_variants_tmp');
 		Schema::drop('sym_links');
@@ -761,7 +761,7 @@ class RefactorAlbumModel extends Migration
 	 * @param Blueprint $table
 	 * @param string    $indexName
 	 */
-	private function dropIndexIfExist(Blueprint $table, string $indexName)
+	private function dropIndexIfExists(Blueprint $table, string $indexName)
 	{
 		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
@@ -775,7 +775,7 @@ class RefactorAlbumModel extends Migration
 	 * @param Blueprint $table
 	 * @param string    $indexName
 	 */
-	private function dropUniqueIfExist(Blueprint $table, string $indexName)
+	private function dropUniqueIfExists(Blueprint $table, string $indexName)
 	{
 		$doctrineTable = $this->schemaManager->listTableDetails($table->getTable());
 		if ($doctrineTable->hasIndex($indexName)) {
@@ -789,7 +789,7 @@ class RefactorAlbumModel extends Migration
 	 * @param Blueprint $table
 	 * @param string    $indexName
 	 */
-	private function dropForeignIfExist(Blueprint $table, string $indexName)
+	private function dropForeignIfExists(Blueprint $table, string $indexName)
 	{
 		if ($this->driverName === 'sqlite') {
 			return;
