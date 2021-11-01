@@ -2440,7 +2440,7 @@ build.tags = function (tags) {
 		a_class = a_class + " search";
 	}
 
-	if (tags !== "") {
+	if (typeof tags === "string" && tags !== "") {
 		tags = tags.split(",");
 
 		tags.forEach(function (tag, index) {
@@ -6967,7 +6967,11 @@ _photo.editTags = function (photoIDs) {
 	}
 
 	// Improve tags
-	oldTags = oldTags.replace(/,/g, ", ");
+	if (typeof oldTags === "string" && oldTags !== "") {
+		oldTags = oldTags.replace(/,/g, ", ");
+	} else {
+		oldTags = "";
+	}
 
 	var action = function action(data) {
 		basicModal.close();

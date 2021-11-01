@@ -812,7 +812,7 @@ build.tags = function (tags) {
 		a_class = a_class + " search";
 	}
 
-	if (tags !== "") {
+	if (typeof tags === "string" && tags !== "") {
 		tags = tags.split(",");
 
 		tags.forEach(function (tag, index) {
