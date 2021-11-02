@@ -43,7 +43,7 @@ class LogFunctions extends AbstractLogger
 		// debug_backtrace return the backtrace of all the function calls
 		// we want to know who called us, because log is being called by the AbstractLogger,
 		// we need to go one step further
-		$fun = $dbt[2]['function'] ?? $dbt[1]['function'] ?? __FUNCTION__;
+		$fun = $dbt[2]['function'] ?? $dbt[1]['function'] ?? __METHOD__;
 		$line = $dbt[2]['line'] ?? $dbt[1]['line'] ?? __LINE__;
 		if ($this->is_stringable($message)) {
 			$text = $this->interpolate($message, $context);

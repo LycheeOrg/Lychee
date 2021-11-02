@@ -78,7 +78,7 @@ class SessionController extends Controller
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 
 					$return['config'] = $this->configFunctions->public();
-					$return['lock'] = ($user->lock == '1');         // can user change his password
+					$return['lock'] = ($user->lock == '1');         // can user change their password
 					$return['upload'] = ($user->upload == '1');     // can user upload ?
 					$return['username'] = $user->username;
 				}
