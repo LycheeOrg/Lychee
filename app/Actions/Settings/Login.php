@@ -57,25 +57,25 @@ class Login
 			$user = User::findOrFail($id);
 
 			if ($user->lock) {
-				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change his identity from ' . $request->ip());
+				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change their identity from ' . $request->ip());
 				throw new JsonError('Locked account!');
 			}
 
 			if (User::where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity to ' . $request['username'] . ' from ' . $request->ip());
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $request['username'] . ' from ' . $request->ip());
 
 				throw new JsonError('Username already exists.');
 			}
 
 			if ($user->username == $oldUsername && Hash::check($oldPassword, $user->password)) {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for (' . $request['username'] . ') from ' . $request->ip());
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed their identity for (' . $request['username'] . ') from ' . $request->ip());
 
 				$user->username = $request['username'];
 				$user->password = bcrypt($request['password']);
 
 				return $user->save();
 			}
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity from ' . $request->ip());
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $request->ip());
 
 			throw new JsonError('Old username or password entered incorrectly!');
 		}

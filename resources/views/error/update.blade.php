@@ -103,9 +103,20 @@
                 @csrf
                 <input name="username" type="text" placeholder="admin username">
                 <input name="password" type="password" placeholder="admin password">
-                <button type="submit">Migrate!</button>
+                <button type="submit" class="submit">Migrate!</button>
             </form>
         </div>
     </div>
+	<script>
+	document.addEventListener("DOMContentLoaded", function(event) {
+		document.querySelector("form").addEventListener("submit", function(e){
+			document.querySelector("form").hidden = true;
+			var text = document.createElement("div");
+			text.innerHTML = "Migration started. <b>DO NOT REFRESH THE PAGE</b>.";
+			document.querySelector(".form").appendChild(text);
+			// e.preventDefault();    //stop form from submitting
+		});
+	});
+	</script>
 </body>
 </html>
