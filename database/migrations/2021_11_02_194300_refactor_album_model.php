@@ -561,7 +561,7 @@ class RefactorAlbumModel extends Migration
 				'latitude' => $photo->latitude,
 				'longitude' => $photo->longitude,
 				'altitude' => $photo->altitude,
-				'img_direction' => empty($photo->imgDirection) ? null : $photo->focal,
+				'img_direction' => empty($photo->imgDirection) ? null : $photo->imgDirection,
 				'location' => empty($photo->location) ? null : $photo->location,
 				'taken_at' => $photo->taken_at,
 				'taken_at_orig_tz' => $photo->taken_at_orig_tz,
