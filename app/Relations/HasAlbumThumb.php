@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Database\Query\JoinClause;
 
 class HasAlbumThumb extends Relation
 {
@@ -172,12 +173,22 @@ class HasAlbumThumb extends Relation
 			});
 		}
 
-		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys) {
+		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		$album2Cover = function (BaseBuilder $builder) use ($bestPhotoIDSelect, $albumKeys, $userID) {
 			$builder
 				->from('albums as covered_albums')
-				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id')
-				->leftJoin('user_base_album', 'user_base_album.base_album_id', '=', 'covered_albums.id')
-				->select(['covered_albums.id AS album_id'])
+				->join('base_albums', 'base_albums.id', '=', 'covered_albums.id');
+			if ($userID !== null) {
+				$builder->leftJoin('user_base_album',
+					function (JoinClause $join) use ($userID) {
+						$join
+							->on('user_base_album.base_album_id', '=', 'base_albums.id')
+							->where('user_base_album.user_id', '=', $userID);
+					}
+				);
+			}
+			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
 				->where(function (BaseBuilder $q) {
 					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);

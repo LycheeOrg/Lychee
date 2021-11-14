@@ -8,6 +8,7 @@ use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Database\Query\JoinClause;
 
 class PhotoAuthorisationProvider
 {
@@ -240,6 +241,19 @@ class PhotoAuthorisationProvider
 		if (!($model instanceof Photo && $table === 'photos')) {
 			throw new \InvalidArgumentException('the given query does not query for photos');
 		}
+
+		// We must only add the share, i.e. left join with `user_base_album`,
+		// if and only if we restrict the eventual query to the ID of the
+		// authenticated user by a `WHERE`-clause.
+		// If we were doing a left join unconditionally, then some
+		// photos might appear multiple times as part of the result
+		// because the parent album of a photo might be shared with more than
+		// one user.
+		// Hence, we must restrict the `LEFT JOIN` to the user ID which
+		// is also used in the outer `WHERE`-clause.
+		// See `applyVisibilityFilter`.
+		$addShares = $addShares && AccessControl::is_logged_in();
+
 		// Ensure that only columns of the photos are selected,
 		// if no specific columns are yet set.
 		// Otherwise, we cannot add a JOIN clause below
@@ -254,7 +268,14 @@ class PhotoAuthorisationProvider
 			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
 		}
 		if ($addShares) {
-			$query->leftJoin('user_base_album', 'user_base_album.base_album_id', '=', 'photos.album_id');
+			$userID = AccessControl::id();
+			$query->leftJoin('user_base_album',
+				function (JoinClause $join) use ($userID) {
+					$join
+						->on('user_base_album.base_album_id', '=', 'base_albums.id')
+						->where('user_base_album.user_id', '=', $userID);
+				}
+			);
 		}
 	}
 }

@@ -10,6 +10,7 @@ use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Session;
 
 /**
@@ -508,7 +509,25 @@ class AlbumAuthorisationProvider
 			$query->join('base_albums', 'base_albums.id', '=', $table . '.id');
 		}
 
-		$query->leftJoin('user_base_album', 'user_base_album.base_album_id', '=', 'base_albums.id');
+		if (AccessControl::is_logged_in()) {
+			$userID = AccessControl::id();
+			// We must left join with `user_base_album` if and only if we
+			// restrict the eventual query to the ID of the authenticated
+			// user by a `WHERE`-clause.
+			// If we were doing a left join unconditionally, then some
+			// albums might appear multiple times as part of the result
+			// because an album might be shared with more than one user.
+			// Hence, we must restrict the `LEFT JOIN` to the user ID which
+			// is also used in the outer `WHERE`-clause.
+			// See `applyVisibilityFilter` and `appendAccessibilityConditions`.
+			$query->leftJoin('user_base_album',
+				function (JoinClause $join) use ($userID) {
+					$join
+						->on('user_base_album.base_album_id', '=', 'base_albums.id')
+						->where('user_base_album.user_id', '=', $userID);
+				}
+			);
+		}
 	}
 
 	/**
