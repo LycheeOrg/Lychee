@@ -42,6 +42,7 @@ Lychee/*
 _ide*
 
 .php_cs.cache
+.php-cs-fixer.cache
 
 *.log
 package-lock.json
