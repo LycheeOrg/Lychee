@@ -59,7 +59,7 @@ jobs:
 
       - name: Setup cache environment
         id: extcache
-        uses: shivammathur/cache-extensions@v1
+        uses: shivammathur/cache-extensions@v1.6.2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
@@ -73,7 +73,7 @@ jobs:
           restore-keys: ${{ steps.extcache.outputs.key }}
 
       - name: Cache Composer Dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2.1.6
         with:
           path: ~/.composer/cache/files
           key: dependencies-composer-${{ hashFiles('composer.json') }}
