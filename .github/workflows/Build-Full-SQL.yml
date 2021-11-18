@@ -108,7 +108,7 @@ jobs:
         run: composer install --prefer-dist --no-interaction
 
       - name: Check Syntax
-        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
+        run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
       - name: setup MySQL Database
         if: ${{ matrix.sql-versions == 'mysql' }}
