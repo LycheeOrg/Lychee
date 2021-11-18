@@ -56,7 +56,7 @@ class GitHubFunctions
 	 *
 	 * @return false|string
 	 */
-	public function get_current_branch(): string | false
+	public function get_current_branch(): string|false
 	{
 		// @codeCoverageIgnoreStart
 		$head_file = base_path('.git/HEAD');
@@ -73,7 +73,7 @@ class GitHubFunctions
 	 *
 	 * @return false|string
 	 */
-	public function get_current_commit(): string | false
+	public function get_current_commit(): string|false
 	{
 		$file = base_path('.git/refs/heads/' . $this->branch);
 		$head_ = file_get_contents($file);
@@ -90,7 +90,7 @@ class GitHubFunctions
 	 *
 	 * @throws NotInCacheException
 	 */
-	private function get_commits(bool $cached = true): bool | array
+	private function get_commits(bool $cached = true): bool|array
 	{
 		return $this->gitRequest->get_json($cached);
 	}
@@ -109,7 +109,7 @@ class GitHubFunctions
 	 * @throws NotInCacheException
 	 * @throws NotMasterException
 	 */
-	public function count_behind(bool $cached = true): bool | int
+	public function count_behind(bool $cached = true): bool|int
 	{
 		if ($this->branch != 'master') {
 			// @codeCoverageIgnoreStart
