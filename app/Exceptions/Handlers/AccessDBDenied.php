@@ -4,8 +4,8 @@ namespace App\Exceptions\Handlers;
 
 use App\Redirections\ToInstall;
 use Illuminate\Database\QueryException as QueryException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Throwable;
 
 class AccessDBDenied
@@ -18,17 +18,17 @@ class AccessDBDenied
 	 *
 	 * @return bool
 	 */
-	public function check($request, Throwable $exception)
+	public function check(Request $request, Throwable $exception)
 	{
 		// encryption key does not exist, we need to run the installation
 		return $exception instanceof QueryException && (strpos($exception->getMessage(), 'Access denied') !== false);
 	}
 
 	/**
-	 * @return Response
+	 * @return RedirectResponse
 	 */
 	// @codeCoverageIgnoreStart
-	public function go()
+	public function go(): RedirectResponse
 	{
 		return ToInstall::go();
 	}

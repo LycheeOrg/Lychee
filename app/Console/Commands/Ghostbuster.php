@@ -3,10 +3,12 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
-use App\Facades\Helpers;
 use App\Models\Photo;
+use App\Models\SizeVariant;
+use App\Models\SymLink;
 use Illuminate\Console\Command;
-use Storage;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class Ghostbuster extends Command
 {
@@ -22,7 +24,7 @@ class Ghostbuster extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'lychee:ghostbuster {removeDeadSymLinks=0 : Remove Photos with dead symlinks} {dryrun=1 : Dry Run default is True}';
+	protected $signature = 'lychee:ghostbuster {removeDeadSymLinks=0 : Removes dead symlinks and the photos pointing to them} {removeZombiePhotos=0 : Removes photos pointing to non-existing files} {dryrun=1 : Dry Run default is True}';
 
 	/**
 	 * The console command description.
@@ -48,15 +50,27 @@ class Ghostbuster extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
 	 */
-	public function handle()
+	public function handle(): int
 	{
-		$this->line('');
 		$removeDeadSymLinks = (bool) $this->argument('removeDeadSymLinks');
+		$removeZombiePhotos = (bool) $this->argument('removeZombiePhotos');
 		$dryrun = (bool) $this->argument('dryrun');
+		$uploadDisk = Storage::disk();
+		$symlinkDisk = Storage::disk(SymLink::DISK_NAME);
+		$isLocalDisk = ($uploadDisk->getDriver()->getAdapter() instanceof \League\Flysystem\Adapter\Local);
+
+		$this->line('');
+
+		if ($removeDeadSymLinks && !$isLocalDisk) {
+			$this->line($this->col->yellow('Removal of dead symlinks requested, but filesystem does not support symlinks.'));
+			$this->line('Proceeding as if removeDeadSymlinks was not set.');
+			$this->line('');
+			$removeDeadSymLinks = false;
+		}
 		if ($removeDeadSymLinks) {
-			$this->line('Also parsing database for pictures where the url does not point to an existing file.');
+			$this->line('Also parsing database for pictures which point to non-existing files.');
 			$this->line($this->col->yellow('This may modify the database.'));
 			$this->line('');
 		}
@@ -65,104 +79,120 @@ class Ghostbuster extends Command
 			$this->line('');
 		}
 
-		$path = Storage::path('big');
-		$files = array_slice(scandir($path), 2);
-		$total = 0;
+		/** @var string[] $filenames */
+		$filenames = $uploadDisk->allFiles();
 
-		foreach ($files as $url) {
-			if ($url == 'index.html') {
+		$totalDeadSymLinks = 0;
+		$totalFiles = 0;
+		$totalDbEntries = 0;
+
+		/** @var string $filename */
+		foreach ($filenames as $filename) {
+			if (str_contains($filename, 'index.html')) {
 				continue;
 			}
 
-			$isDeadSymlink = is_link($path . '/' . $url) && !file_exists(readlink($path . '/' . $url));
-			$photos = Photo::where(function ($query) use ($url) {
-				return $query->where('url', '=', $url)->orWhere('livePhotoUrl', '=', $url);
-			})->get();
+			$isDeadSymlink = false;
+			if ($isLocalDisk) {
+				$fullPath = $uploadDisk->path($filename);
+				$isDeadSymlink = is_link($fullPath) && !file_exists(readlink($fullPath));
+			}
 
-			if (count($photos) === 0 || ($isDeadSymlink && $removeDeadSymLinks)) {
-				$photoName = explode('.', $url);
+			/** @var Collection $sizeVariants */
+			$photos = Photo::query()
+				->where('live_photo_short_path', '=', $filename)
+				->get();
+			/** @var Collection $sizeVariants */
+			$sizeVariants = SizeVariant::query()
+				->with('photo')
+				->where('short_path', '=', $filename)
+				->get();
 
-				$to_delete = [];
-				$to_delete[] = 'thumb/' . $photoName[0] . '.jpeg';
-				$to_delete[] = 'thumb/' . $photoName[0] . '@2x.jpeg';
-
-				// for videos
-				$to_delete[] = 'small/' . $photoName[0] . '.jpeg';
-				$to_delete[] = 'small/' . $photoName[0] . '@2x.jpeg';
-				$to_delete[] = 'medium/' . $photoName[0] . '.jpeg';
-				$to_delete[] = 'medium/' . $photoName[0] . '@2x.jpeg';
-
-				// for normal pictures
-				$to_delete[] = 'small/' . $url;
-				$to_delete[] = 'small/' . Helpers::ex2x($url);
-				$to_delete[] = 'medium/' . $url;
-				$to_delete[] = 'medium/' . Helpers::ex2x($url);
-				$to_delete[] = 'big/' . $url;
-
-				foreach ($to_delete as $del) {
-					$delete = 0;
-					if (Storage::exists($del)) {
-						$delete = 1;
-					} elseif (file_exists($path . '/' . $del)) {
-						// symbolic link...
-						$delete = 2;
+			if ($isDeadSymlink && $removeDeadSymLinks) {
+				$totalDeadSymLinks++;
+				if ($dryrun) {
+					$this->line(str_pad($filename, 50) . $this->col->red(' is dead symlink and would be removed') . '.');
+				} else {
+					// Laravel apparently doesn't think dead symlinks 'exist', so use low-level commands
+					unlink($uploadDisk->path($filename));
+					$this->line(str_pad($filename, 50) . $this->col->red(' removed') . '.');
+					$totalDbEntries += $sizeVariants->count() + $photos->count();
+					/** @var SizeVariant $sizeVariant */
+					foreach ($sizeVariants as $sizeVariant) {
+						$sizeVariant->photo->delete();
 					}
-
-					if ($delete > 0) {
-						$total++;
-						if ($dryrun) {
-							$this->line(str_pad($del, 50) . $this->col->red(' file will be removed') . '.');
-						} else {
-							if ($delete == 1) {
-								Storage::delete($del);
-							} else {
-								// symbolic link
-								unlink($path . '/' . $del);
-							}
-							$this->line($this->col->red('removed file: ') . $del);
-						}
+					/** @var Photo $photo */
+					foreach ($photos as $photo) {
+						$photo->live_photo_short_path = null;
+						$photo->save();
 					}
 				}
-
-				if ($isDeadSymlink && $removeDeadSymLinks) {
-					foreach ($photos as $photo) {
-						if ($dryrun) {
-							$this->line(str_pad($photo->url, 50) . $this->col->red(' photo will be removed') . '.');
-						} else {
-							// Laravel apparently doesn't think dead symlinks 'exist', so manually remove the original here.
-							unlink($path . '/' . $url);
-
-							$photo->predelete();
-							$photo->delete();
-
-							$this->line($this->col->red('removed photo: ') . $photo->url);
-						}
-					}
+			} elseif ($photos->count() + $sizeVariants->count() === 0) {
+				// Remove orphaned files
+				$totalFiles++;
+				if ($dryrun) {
+					$this->line(str_pad($filename, 50) . $this->col->red(' would be removed') . '.');
+				} else {
+					$uploadDisk->delete($filename);
+					$this->line(str_pad($filename, 50) . $this->col->red(' removed') . '.');
 				}
 			}
 		}
 		$this->line('');
 
+		if ($removeZombiePhotos) {
+			$sizeVariants = SizeVariant::query()
+				->with('photo')
+				->get();
+			/** @var SizeVariant $sizeVariant */
+			foreach ($sizeVariants as $sizeVariant) {
+				if ($uploadDisk->exists($sizeVariant->short_path)) {
+					continue;
+				}
+				$totalDbEntries++;
+				if ($dryrun) {
+					$this->line(str_pad($filename, 50) . $this->col->red(' does not exist and photo would be removed') . '.');
+				} else {
+					if ($sizeVariant->size_variant == SizeVariant::ORIGINAL) {
+						$sizeVariant->photo->delete();
+					} else {
+						$sizeVariant->delete();
+					}
+					$this->line(str_pad($filename, 50) . $this->col->red(' removed') . '.');
+				}
+			}
+		}
+
+		$total = $totalDeadSymLinks + $totalFiles + $totalDbEntries;
 		if ($total == 0) {
 			$this->line($this->col->green('No pictures found to be deleted'));
 		}
 		if ($total > 0 && $dryrun) {
-			$this->line($total . ' pictures will be deleted.');
+			$this->line($totalDeadSymLinks . ' dead symbolic links would be deleted.');
+			$this->line($totalFiles . ' files would be deleted.');
+			$this->line($totalDbEntries . ' photos would be deleted or sanitized');
 			$this->line('');
-			$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster ' . ($removeDeadSymLinks ? '1' : '0') . ' 0') . "' to effectively remove the files.");
+			$this->line("Rerun the command '" . $this->col->yellow('php artisan lychee:ghostbuster ' . ($removeDeadSymLinks ? '1' : '0') . ' ' . ($removeZombiePhotos ? '1' : '0') . ' 0') . "' to effectively remove the files.");
 		}
 		if ($total > 0 && !$dryrun) {
-			$this->line($total . ' pictures have been deleted.');
+			$this->line($totalDeadSymLinks . ' dead symbolic links have been deleted.');
+			$this->line($totalFiles . ' files have been deleted.');
+			$this->line($totalDbEntries . ' photos have been deleted or sanitized');
 		}
 
-		$sym_dir = Storage::drive('symbolic')->path('');
-		$syms = array_slice(scandir($sym_dir), 3);
-
-		foreach ($syms as $sym) {
-			$link_path = $sym_dir . $sym;
-			if (!file_exists(readlink($link_path))) {
-				unlink($link_path);
-				$this->line($this->col->red('removed symbolic link: ') . $link_path);
+		// Method $symlinkDisk->allFiles() crashes, if the scanned directory
+		// contains symbolic links.
+		// So we must use low-level methods here.
+		$symlinkDiskPath = $symlinkDisk->path('');
+		$symLinks = array_slice(scandir($symlinkDiskPath), 3);
+		/** @var string $symLink */
+		foreach ($symLinks as $symLink) {
+			$fullPath = $symlinkDiskPath . $symLink;
+			$isDeadSymlink = !file_exists(readlink($fullPath));
+			if ($isDeadSymlink) {
+				// Laravel apparently doesn't think dead symlinks 'exist', so use low-level commands
+				unlink($fullPath);
+				$this->line($this->col->red('removed symbolic link: ') . $fullPath);
 			}
 		}
 

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Extensions\UTCBasedTimes;
-use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -38,7 +37,6 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Page whereOrder($value)
  * @method static Builder|Page whereTitle($value)
  * @method static Builder|Page whereUpdatedAt($value)
- * @mixin Eloquent
  */
 class Page extends Model
 {

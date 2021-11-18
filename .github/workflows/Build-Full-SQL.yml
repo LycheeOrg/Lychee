@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.operating-system }}
     # We want to run on external PRs, but not on our own internal PRs as they'll be run by the push to the branch.
     if: (github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository)
-    
+
     # Service containers to run with `container-job`
     services:
       # Label used to access the service container
@@ -85,7 +85,7 @@ jobs:
           extensions: ${{ env.extensions }}
           coverage: xdebug
           tools: pecl, composer
-      
+
       - name: Set Up imagick (php8)
         run: sh scripts/install_imagick.sh
 
@@ -104,7 +104,7 @@ jobs:
           restore-keys: ${{ runner.os }}-composer-
 
       - name: Install Composer dependencies
-        run: composer install --prefer-dist --no-interaction
+        run: composer install --prefer-dist --no-interaction -o
 
       - name: Check Syntax
         if: ${{ matrix.php-versions != '8.0' }}
@@ -137,7 +137,7 @@ jobs:
         run: |
           php artisan key:generate
           php artisan migrate
-      
+
       - name: Apply tests
         run: XDEBUG_MODE=coverage vendor/bin/phpunit --verbose
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b55780b199b829b46c62aef2dc933b40",
+    "content-hash": "44f6ec3e20dc31763e2f2ff74b08e68c",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -1974,69 +1974,6 @@
             "time": "2021-10-06T17:43:30+00:00"
         },
         {
-            "name": "kalnoy/nestedset",
-            "version": "v6.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/lazychaser/laravel-nestedset.git",
-                "reference": "f5351234588a20b14134980552b1bf6dccb3e733"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/lazychaser/laravel-nestedset/zipball/f5351234588a20b14134980552b1bf6dccb3e733",
-                "reference": "f5351234588a20b14134980552b1bf6dccb3e733",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/database": "^7.0|^8.0",
-                "illuminate/events": "^7.0|^8.0",
-                "illuminate/support": "^7.0|^8.0",
-                "php": ">=7.1.3"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "7.*"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "v5.0.x-dev"
-                },
-                "laravel": {
-                    "providers": [
-                        "Kalnoy\\Nestedset\\NestedSetServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Kalnoy\\Nestedset\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alexander Kalnoy",
-                    "email": "lazychaser@gmail.com"
-                }
-            ],
-            "description": "Nested Set Model for Laravel 5.7 and up",
-            "keywords": [
-                "database",
-                "hierarchy",
-                "laravel",
-                "nested sets",
-                "nsm"
-            ],
-            "support": {
-                "issues": "https://github.com/lazychaser/laravel-nestedset/issues",
-                "source": "https://github.com/lazychaser/laravel-nestedset/tree/v6.0.0"
-            },
-            "time": "2021-05-28T07:08:55+00:00"
-        },
-        {
             "name": "laravel/framework",
             "version": "v8.72.0",
             "source": {
@@ -2756,6 +2693,69 @@
                 }
             ],
             "time": "2021-10-20T02:27:35+00:00"
+        },
+        {
+            "name": "lychee-org/nestedset",
+            "version": "v5.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LycheeOrg/laravel-nestedset.git",
+                "reference": "b7eeae616be15c1e808840f1a58757417c3c84e1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/b7eeae616be15c1e808840f1a58757417c3c84e1",
+                "reference": "b7eeae616be15c1e808840f1a58757417c3c84e1",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "~5.7.0|~5.8.0|^6.0|^7.0|^8.0",
+                "illuminate/events": "~5.7.0|~5.8.0|^6.0|^7.0|^8.0",
+                "illuminate/support": "~5.7.0|~5.8.0|^6.0|^7.0|^8.0",
+                "php": ">=7.1.3"
+            },
+            "require-dev": {
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "^9.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "v5.0.x-dev"
+                },
+                "laravel": {
+                    "providers": [
+                        "Kalnoy\\Nestedset\\NestedSetServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Kalnoy\\Nestedset\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alexander Kalnoy",
+                    "email": "lazychaser@gmail.com"
+                }
+            ],
+            "description": "Nested Set Model for Laravel 5.7 and up (fork with patches for Lychee)",
+            "keywords": [
+                "database",
+                "hierarchy",
+                "laravel",
+                "nested sets",
+                "nsm"
+            ],
+            "support": {
+                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v5.0.7"
+            },
+            "time": "2021-11-01T13:30:21+00:00"
         },
         {
             "name": "lychee-org/php-exif",
@@ -4649,28 +4649,28 @@
         },
         {
             "name": "spatie/laravel-feed",
-            "version": "4.0.5",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-feed.git",
-                "reference": "c099583fc75f744fab72b8dcab06cdb3058e5451"
+                "reference": "1a9cbeb21de25b8a4f6a30ddc53e038fb5ae1651"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-feed/zipball/c099583fc75f744fab72b8dcab06cdb3058e5451",
-                "reference": "c099583fc75f744fab72b8dcab06cdb3058e5451",
+                "url": "https://api.github.com/repos/spatie/laravel-feed/zipball/1a9cbeb21de25b8a4f6a30ddc53e038fb5ae1651",
+                "reference": "1a9cbeb21de25b8a4f6a30ddc53e038fb5ae1651",
                 "shasum": ""
             },
             "require": {
-                "illuminate/contracts": "^8.0",
-                "illuminate/http": "^8.0",
-                "illuminate/support": "^8.0",
-                "php": "^8.0",
-                "spatie/laravel-package-tools": "^1.9"
+                "illuminate/contracts": "^7.0|^8.0",
+                "illuminate/http": "^7.0|^8.0",
+                "illuminate/support": "^7.0|^8.0",
+                "php": "^7.4|^8.0",
+                "spatie/laravel-package-tools": "^1.5"
             },
             "require-dev": {
-                "orchestra/testbench": "^6.0",
-                "phpunit/phpunit": "^9.4",
+                "orchestra/testbench": "^5.0|^6.0",
+                "phpunit/phpunit": "^9.3",
                 "spatie/phpunit-snapshot-assertions": "^4.2",
                 "spatie/test-time": "^1.2"
             },
@@ -4709,11 +4709,6 @@
                     "email": "sebastian@spatie.be",
                     "homepage": "https://spatie.be",
                     "role": "Developer"
-                },
-                {
-                    "name": "Patrick Organ",
-                    "homepage": "https://github.com/patinthehat",
-                    "role": "Developer"
                 }
             ],
             "description": "Generate rss feeds",
@@ -4725,19 +4720,16 @@
                 "spatie"
             ],
             "support": {
-                "source": "https://github.com/spatie/laravel-feed/tree/4.0.5"
+                "issues": "https://github.com/spatie/laravel-feed/issues",
+                "source": "https://github.com/spatie/laravel-feed/tree/3.2.0"
             },
             "funding": [
-                {
-                    "url": "https://spatie.be/open-source/support-us",
-                    "type": "custom"
-                },
                 {
                     "url": "https://github.com/spatie",
                     "type": "github"
                 }
             ],
-            "time": "2021-10-14T09:26:01+00:00"
+            "time": "2021-05-17T21:00:38+00:00"
         },
         {
             "name": "spatie/laravel-image-optimizer",

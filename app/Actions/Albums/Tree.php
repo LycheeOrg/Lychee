@@ -2,30 +2,24 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\Albums\Extensions\PublicIds;
-use App\Actions\Albums\Extensions\TopQuery;
+use App\Actions\AlbumAuthorisationProvider;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
-use App\Models\Extensions\CustomSort;
+use App\Models\Extensions\SortingDecorator;
+use Illuminate\Database\Eloquent\Collection;
+use Kalnoy\Nestedset\Collection as NsCollection;
+use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Tree
 {
-	use TopQuery;
-	use CustomSort;
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private string $sortingCol;
+	private string $sortingOrder;
 
-	/**
-	 * @var string
-	 */
-	private $sortingCol;
-
-	/**
-	 * @var string
-	 */
-	private $sortingOrder;
-
-	public function __construct()
+	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 		$this->sortingCol = Configs::get_value('sorting_Albums_col');
 		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
 	}
@@ -33,37 +27,49 @@ class Tree
 	public function get(): array
 	{
 		$return = [];
-		$PublicIds = resolve(PublicIds::class);
 
-		$sql = Album::query()
-			->where('smart', '=', false)
-			->whereNotIn('id', $PublicIds->getNotAccessible())
-			->orderBy('owner_id', 'ASC');
-		$albumCollection = $this->customSort($sql, $this->sortingCol, $this->sortingOrder);
+		/**
+		 * Note, strictly speaking
+		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * would be the correct function in order to scope the query below,
+		 * because we only want albums which are browsable.
+		 * But
+		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * is rather slow for large sets of albums.
+		 * Luckily, {@link AlbumAuthorisationProvider::applyVisibilityFilter()}
+		 * is sufficient here, although it does only consider an album's
+		 * visibility locally.
+		 * We rely on `->toTree` below to remove albums which are not
+		 * reachable.
+		 *
+		 * @var NsQueryBuilder $query
+		 */
+		$query = $this->albumAuthorisationProvider
+			->applyVisibilityFilter(Album::query());
+		$albums = (new SortingDecorator($query))
+			->orderBy($this->sortingCol, $this->sortingOrder)
+			->get();
 
 		if (AccessControl::is_logged_in()) {
 			$id = AccessControl::id();
-			list($albumCollection, $albums_shared) = $albumCollection->partition(fn ($album) => $album->owner_id == $id);
-			$return['shared_albums'] = $this->prepare($albums_shared->toTree());
+			/** @var NsCollection $sharedAlbums */
+			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id == $id);
+			$return['shared_albums'] = $this->toArray($sharedAlbums->toTree());
 		}
 
-		$return['albums'] = $this->prepare($albumCollection->toTree());
+		$return['albums'] = $this->toArray($albums->toTree());
 
 		return $return;
 	}
 
-	private function prepare($albums)
+	private function toArray(Collection $albums): array
 	{
-		return $albums->map(function ($album) {
-			$ret = [
-				'id' => strval($album->id),
-				'title' => $album->title,
-				'parent_id' => strval($album->parent_id),
-				'thumb' => optional($album->get_thumb())->toArray(),
-			];
-			$ret['albums'] = $this->prepare($album->children);
-
-			return $ret;
-		});
+		return $albums->map(fn (Album $album) => [
+			'id' => $album->id,
+			'title' => $album->title,
+			'thumb' => optional($album->thumb)->toArray(),
+			'parent_id' => $album->parent_id,
+			'albums' => $this->toArray($album->children),
+		])->all();
 	}
 }

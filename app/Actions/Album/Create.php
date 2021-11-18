@@ -2,26 +2,27 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\Album\Extensions\StoreAlbum;
 use App\Facades\AccessControl;
 use App\Models\Album;
 
 class Create extends Action
 {
-	use StoreAlbum;
-
 	/**
-	 * @param string $albumID
+	 * @param string $title
+	 * @param int    $parent_id
 	 *
-	 * @return Album|SmartAlbum|Response
+	 * @return Album
 	 */
 	public function create(string $title, int $parent_id): Album
 	{
-		$album = $this->albumFactory->makeFromTitle($title);
-
+		$album = new Album();
+		$album->title = $title;
 		$this->set_parent($album, $parent_id);
+		if (!$album->save()) {
+			throw new \RuntimeException('could not persist album to DB');
+		}
 
-		return $this->store_album($album);
+		return $album;
 	}
 
 	/**
@@ -29,13 +30,11 @@ class Create extends Action
 	 *
 	 * @param Album $album
 	 * @param int   $parent_id
-	 * @param int   $user_id
-	 *
-	 * @return Album
 	 */
-	private function set_parent(Album &$album, int $parent_id): void
+	private function set_parent(Album $album, int $parent_id): void
 	{
-		$parent = Album::find($parent_id);
+		/** @var Album|null $parent */
+		$parent = Album::query()->find($parent_id);
 
 		// we get the parent if it exists.
 		if ($parent !== null) {

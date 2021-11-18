@@ -64,19 +64,13 @@ class ImageHandler implements ImageHandlerInterface
 	}
 
 	/**
-	 * Rotates and flips a photo based on its EXIF orientation.
-	 *
-	 * @param string $path
-	 * @param array  $info
-	 * @param bool   $pretend
-	 *
-	 * @return array
+	 * {@inheritDoc}
 	 */
-	public function autoRotate(string $path, array $info, bool $pretend = false): array
+	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
 	{
 		$i = 0;
 		$ret = [false, false];
-		while ($i < count($this->engines) && ($ret = $this->engines[$i]->autoRotate($path, $info, $pretend)) == [false, false]) {
+		while ($i < count($this->engines) && ($ret = $this->engines[$i]->autoRotate($path, $orientation, $pretend)) == [false, false]) {
 			$i++;
 		}
 

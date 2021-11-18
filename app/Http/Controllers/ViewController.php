@@ -46,19 +46,26 @@ class ViewController extends Controller
 			return abort(404);
 		}
 
+		// TODO: Instead of re-coding the logic here whether an photo is visible or not, the query for a photo above, should be filtered with `PhotoAuthorisationProvider`
+
 		// is the picture public ?
-		$public = $photo->public == '1';
+		$public = $photo->is_public;
 
 		// is the album (if exist) public ?
 		if ($photo->album_id != null) {
-			$public = $photo->album->public == '1' || $public;
+			$public = $photo->album->is_public || $public;
 		}
 		// return 403 if not allowed
 		if (!$public) {
 			return abort(403);
 		}
 
-		if ($photo->medium == '1') {
+		// TODO: Refactor this
+		// Don't build the URL and paths manually, but use the appropriate
+		// methods of $photo.
+		// Don't rely on hard-coded path prefixes like "medium" or "big".
+		// Hopefully, this code goes away with the new Livewire frontend
+		if ($photo->size_variants->getMedium()) {
 			$dir = 'medium';
 		} else {
 			$dir = 'big';
@@ -68,7 +75,7 @@ class ViewController extends Controller
 		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
 
 		$url = config('app.url') . $request->server->get('REQUEST_URI');
-		$picture = config('app.url') . '/uploads/' . $dir . '/' . $photo->url;
+		$picture = config('app.url') . '/uploads/' . $dir . '/' . $photo->filename;
 
 		return view('view', [
 			'url' => $url,

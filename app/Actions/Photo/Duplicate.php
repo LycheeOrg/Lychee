@@ -2,74 +2,44 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Photo\Extensions\Save;
-use App\Facades\Helpers;
-use App\Factories\AlbumFactory;
 use App\Models\Photo;
+use Illuminate\Support\Collection;
 
 class Duplicate
 {
-	use Save;
-
-	private $albumFactory;
-
-	public function __construct(AlbumFactory $albumFactory)
+	/**
+	 * Duplicates a set of photos.
+	 *
+	 * If the ID of the destination album is not given, each photo is
+	 * duplicated within its current album.
+	 * Note, this implies that photos may be duplicated within different
+	 * albums, if the original photos reside in different albums.
+	 * If the ID of a destination album is given, then all duplicates are
+	 * created in the destination album (this resembles a "copy-to" semantic).
+	 *
+	 * @param array    $photoIds the IDs of the source photos
+	 * @param int|null $albumID  the optional ID of the destination album
+	 *
+	 * @return Collection the duplicates
+	 */
+	public function do(array $photoIds, ?int $albumID): Collection
 	{
-		$this->albumFactory = $albumFactory;
-	}
-
-	public function do(array $photoIds, ?string $albumID)
-	{
+		$duplicates = new Collection();
 		$photos = Photo::query()->whereIn('id', $photoIds)->get();
 
-		$duplicate = null;
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$duplicate = new Photo();
-			$duplicate->id = Helpers::generateID();
-			$duplicate->title = $photo->title;
-			$duplicate->description = $photo->description;
-			$duplicate->url = $photo->url;
-			$duplicate->tags = $photo->tags;
-			$duplicate->public = $photo->public;
-			$duplicate->type = $photo->type;
-			$duplicate->width = $photo->width;
-			$duplicate->height = $photo->height;
-			$duplicate->filesize = $photo->filesize;
-			$duplicate->iso = $photo->iso;
-			$duplicate->aperture = $photo->aperture;
-			$duplicate->make = $photo->make;
-			$duplicate->model = $photo->model;
-			$duplicate->lens = $photo->lens;
-			$duplicate->shutter = $photo->shutter;
-			$duplicate->focal = $photo->focal;
-			$duplicate->latitude = $photo->latitude;
-			$duplicate->longitude = $photo->longitude;
-			$duplicate->altitude = $photo->altitude;
-			$duplicate->imgDirection = $photo->imgDirection;
-			$duplicate->location = $photo->location;
-			$duplicate->taken_at = $photo->taken_at;
-			$duplicate->star = $photo->star;
-			$duplicate->thumbUrl = $photo->thumbUrl;
-			$duplicate->thumb2x = $photo->thumb2x;
-			$duplicate->album_id = $albumID ?? $photo->album_id;
-			if ($duplicate->album_id === '0') {
-				$duplicate->album_id = null;
+			$duplicate = $photo->replicate();
+			if ($albumID !== null) {
+				$dstAlbumID = $albumID !== 0 ? $albumID : null;
+			} else {
+				$dstAlbumID = $photo->album_id;
 			}
-			$duplicate->checksum = $photo->checksum;
-			$duplicate->medium_width = $photo->medium_width;
-			$duplicate->medium_height = $photo->medium_height;
-			$duplicate->medium2x_width = $photo->medium2x_width;
-			$duplicate->medium2x_height = $photo->medium2x_height;
-			$duplicate->small_width = $photo->small_width;
-			$duplicate->small_height = $photo->small_height;
-			$duplicate->small2x_width = $photo->small2x_width;
-			$duplicate->small2x_height = $photo->small2x_height;
-			$duplicate->owner_id = $photo->owner_id;
-			$duplicate->livePhotoContentID = $photo->livePhotoContentID;
-			$duplicate->livePhotoUrl = $photo->livePhotoUrl;
-			$duplicate->livePhotoChecksum = $photo->livePhotoChecksum;
-			$this->save($duplicate);
+			$duplicate->album_id = $dstAlbumID;
+			$duplicate->save();
+			$duplicates->add($duplicate);
 		}
+
+		return $duplicates;
 	}
 }

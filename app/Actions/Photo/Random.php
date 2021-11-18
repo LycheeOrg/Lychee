@@ -2,29 +2,22 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Albums\Extensions\PublicIds;
 use App\Exceptions\JsonError;
+use App\Models\Photo;
 use App\SmartAlbums\StarredAlbum;
 
-class Random extends SymLinker
+class Random
 {
-	public function do(): array
+	public function do(): Photo
 	{
-		// here we need to refine.
-		$starred = new StarredAlbum();
-		$starred->setAlbumIDs(resolve(PublicIds::class)->getPublicAlbumsId());
-		$photo = $starred->get_photos()->inRandomOrder()->first();
+		$starred = StarredAlbum::getInstance();
+		/** @var Photo $photo */
+		$photo = $starred->photos()->inRandomOrder()->first();
 
 		if ($photo == null) {
 			throw new JsonError('no pictures found!');
 		}
 
-		$return = $photo->toReturnArray();
-		$this->symLinkFunctions->getUrl($photo, $return);
-		if ($photo->album_id !== null && !$photo->album->is_full_photo_visible()) {
-			$photo->downgrade($return);
-		}
-
-		return $return;
+		return $photo;
 	}
 }

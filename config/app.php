@@ -108,6 +108,20 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
+	| Log DB SQL statements
+	|--------------------------------------------------------------------------
+	|
+	| If set to true, all SQL statements will be logged to a text file below
+	| storage.
+	| Only use it for debugging and development purposes as it slows down
+	| the performance of the application
+	|
+	*/
+
+	'db_log_sql' => env('DB_LOG_SQL', false),
+
+	/*
+	|--------------------------------------------------------------------------
 	| Encryption Key
 	|--------------------------------------------------------------------------
 	|

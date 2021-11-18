@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\ImportRequests;
 
+use App\Rules\AlbumIDRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ImportUrlRequest extends FormRequest
@@ -25,7 +26,7 @@ class ImportUrlRequest extends FormRequest
 	{
 		return [
 			'url' => 'string|required',
-			'albumID' => 'string|required',
+			'albumID' => ['required', new AlbumIDRule()],
 		];
 	}
 }

@@ -200,7 +200,6 @@ final class Italian implements Language
 			'PHOTO_ABOUT' => 'Informazioni',
 			'PHOTO_BASICS' => 'Base',
 			'PHOTO_TITLE' => 'Titolo',
-			'PHOTO_NEW_TITLE' => 'Inserire un nuovo titolo per questa foto:',
 			'PHOTO_SET_TITLE' => 'Imposta Titolo',
 			'PHOTO_UPLOADED' => 'Caricata',
 			'PHOTO_DESCRIPTION' => 'Descrizione',

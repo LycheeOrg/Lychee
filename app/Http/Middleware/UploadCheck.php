@@ -1,28 +1,27 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Middleware;
 
+use App\Actions\AlbumAuthorisationProvider;
+use App\Actions\PhotoAuthorisationProvider;
 use App\Facades\AccessControl;
-use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Logs;
-use App\Models\Photo;
 use Closure;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 
 class UploadCheck
 {
-	/** @var AlbumFactory */
-	private $albumFactory;
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private PhotoAuthorisationProvider $photoAuthorisationProvider;
 
-	public function __construct(AlbumFactory $albumFactory)
-	{
-		$this->albumFactory = $albumFactory;
+	public function __construct(
+		AlbumAuthorisationProvider $albumAuthorisationProvider,
+		PhotoAuthorisationProvider $photoAuthorisationProvider
+	) {
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 	}
 
 	/**
@@ -37,7 +36,7 @@ class UploadCheck
 	{
 		// not logged!
 		if (!AccessControl::is_logged_in()) {
-			return response('false');
+			return response('', 401);
 		}
 
 		// is admin
@@ -49,23 +48,23 @@ class UploadCheck
 
 		// is not admin and does not have upload rights
 		if (!$user->upload) {
-			return response('false');
+			return response('', 403);
 		}
 
-		$ret = $this->album_check($request, $user->id);
+		$ret = $this->album_check($request);
 		if ($ret === false) {
-			return response('false');
+			return response('', 403);
 		}
 
 		$ret = $this->photo_check($request, $user->id);
 		if ($ret === false) {
-			return response('false');
+			return response('', 403);
 		}
 
 		// Only used for /api/Sharing::Delete
 		$ret = $this->share_check($request, $user->id);
 		if ($ret === false) {
-			return response('false');
+			return response('', 403);
 		}
 
 		return $next($request);
@@ -74,12 +73,11 @@ class UploadCheck
 	/**
 	 * Take of checking if a user can actually modify that Album.
 	 *
-	 * @param $request
-	 * @param int $user_id
+	 * @param Request $request
 	 *
-	 * @return ResponseFactory|Response|mixed
+	 * @return bool
 	 */
-	public function album_check(Request $request, int $user_id)
+	private function album_check(Request $request): bool
 	{
 		$albumIDs = [];
 		if ($request->has('albumIDs')) {
@@ -92,39 +90,17 @@ class UploadCheck
 			$albumIDs[] = $request['parent_id'];
 		}
 
-		// Remove smart albums (they get a pass).
-		for ($i = 0; $i < count($albumIDs);) {
-			if ($this->albumFactory->is_smart($albumIDs[$i]) || $albumIDs[$i] === '0') {
-				array_splice($albumIDs, $i, 1);
-			} else {
-				$i++;
-			}
-		}
-
-		// Since we count the result we need to ensure no duplicates.
-		$albumIDs = array_unique($albumIDs);
-
-		if (count($albumIDs) > 0) {
-			$count = Album::whereIn('id', $albumIDs)->where('owner_id', '=', $user_id)->count();
-			if ($count !== count($albumIDs)) {
-				Logs::error(__METHOD__, __LINE__, 'Albums not found or ownership mismatch!');
-
-				return false;
-			}
-		}
-
-		return true;
+		return $this->albumAuthorisationProvider->areEditable($albumIDs);
 	}
 
 	/**
 	 * Check if the user is authorized to do anything to that picture.
 	 *
 	 * @param Request $request
-	 * @param int     $user_id
 	 *
-	 * @return ResponseFactory|Response|mixed
+	 * @return bool
 	 */
-	public function photo_check(Request $request, int $user_id)
+	private function photo_check(Request $request): bool
 	{
 		$photoIDs = [];
 		if ($request->has('photoIDs')) {
@@ -134,19 +110,7 @@ class UploadCheck
 			$photoIDs[] = $request['photoID'];
 		}
 
-		// Since we count the result we need to ensure no duplicates.
-		$photoIDs = array_unique($photoIDs);
-
-		if (count($photoIDs) > 0) {
-			$count = Photo::whereIn('id', $photoIDs)->where('owner_id', '=', $user_id)->count();
-			if ($count !== count($photoIDs)) {
-				Logs::error(__METHOD__, __LINE__, 'Photos not found or ownership mismatch!');
-
-				return false;
-			}
-		}
-
-		return true;
+		return $this->photoAuthorisationProvider->areEditable($photoIDs);
 	}
 
 	/**
@@ -155,14 +119,14 @@ class UploadCheck
 	 *
 	 * @return bool
 	 */
-	public function share_check(Request $request, int $user_id)
+	private function share_check(Request $request, int $user_id): bool
 	{
 		if ($request->has('ShareIDs')) {
 			$shareIDs = $request['ShareIDs'];
 
-			$albums = Album::whereIn('id', function (Builder $query) use ($shareIDs) {
+			$albums = Album::query()->whereIn('id', function (Builder $query) use ($shareIDs) {
 				$query->select('album_id')
-					->from('user_album')
+					->from('user_base_album')
 					->whereIn('id', explode(',', $shareIDs));
 			})->select('owner_id')->get();
 
@@ -182,6 +146,8 @@ class UploadCheck
 			Logs::error(__METHOD__, __LINE__, 'Album ownership mismatch!');
 
 			return false;
+		} else {
+			return true;
 		}
 	}
 }

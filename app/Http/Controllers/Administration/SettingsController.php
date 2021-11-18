@@ -5,6 +5,7 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Settings\Login;
+use App\Exceptions\JsonError;
 use App\Facades\Helpers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
@@ -25,11 +26,14 @@ class SettingsController extends Controller
 	 * To be noted this function will change the CONFIG table if used by admin
 	 * or the USER table if used by any other user
 	 *
-	 * @param Request $request
+	 * @param UsernamePasswordRequest $request
+	 * @param Login                   $login
 	 *
 	 * @return string
+	 *
+	 * @throws JsonError
 	 */
-	public function setLogin(UsernamePasswordRequest $request, Login $login)
+	public function setLogin(UsernamePasswordRequest $request, Login $login): string
 	{
 		return $login->do($request) ? 'true' : 'false';
 	}

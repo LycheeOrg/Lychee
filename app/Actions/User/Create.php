@@ -7,9 +7,12 @@ use App\Models\User;
 
 class Create
 {
-	public function do(array $data): bool
+	/**
+	 * @throws JsonError
+	 */
+	public function do(array $data): User
 	{
-		if (User::where('username', '=', $data['username'])->count()) {
+		if (User::query()->where('username', '=', $data['username'])->count()) {
 			throw new JsonError('username must be unique');
 		}
 
@@ -18,7 +21,10 @@ class Create
 		$user->lock = ($data['lock'] == '1');
 		$user->username = $data['username'];
 		$user->password = bcrypt($data['password']);
+		if (!$user->save()) {
+			throw new \RuntimeException('could not save new user');
+		}
 
-		return @$user->save();
+		return $user;
 	}
 }

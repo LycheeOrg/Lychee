@@ -3,21 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Actions\Photo\Extensions\Constants;
-use App\Actions\Photo\Extensions\ImageEditing;
-use App\Actions\Photo\Extensions\VideoEditing;
-use App\Image\ImageHandlerInterface;
+use App\Contracts\SizeVariantFactory;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Storage;
 
 class VideoData extends Command
 {
 	use Constants;
-	use VideoEditing;
-	use ImageEditing;
-
-	public $imageHandler;
 
 	/**
 	 * The name and signature of the console command.
@@ -49,16 +43,15 @@ class VideoData extends Command
 	{
 		parent::__construct();
 
-		$this->imageHandler = app(ImageHandlerInterface::class);
 		$this->metadataExtractor = $metadataExtractor;
 	}
 
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
 	 */
-	public function handle()
+	public function handle(): int
 	{
 		set_time_limit($this->argument('timeout'));
 
@@ -70,7 +63,8 @@ class VideoData extends Command
 			)
 		);
 
-		$photos = Photo::whereIn('type', $this->getValidVideoTypes())
+		$photos = Photo::query()
+			->whereIn('type', $this->getValidVideoTypes())
 			->where('width', '=', 0)
 			->take($this->argument('count'))
 			->get();
@@ -81,83 +75,48 @@ class VideoData extends Command
 			return 0;
 		}
 
+		// Initialize factory for size variants
+		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
-			$url = Storage::path('big/' . $photo->url);
+			$originalSizeVariant = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+			$fullPath = $originalSizeVariant->full_path;
 
-			if ($photo->thumbUrl != '') {
-				$thumb = Storage::path('thumb/') . $photo->thumbUrl;
-				if (file_exists($thumb)) {
-					$urlBase = explode('.', $photo->url);
-					$thumbBase = explode('.', $photo->thumbUrl);
-					if ($urlBase[0] !== $thumbBase[0]) {
-						$photo->thumbUrl = $urlBase[0] . '.' . $thumbBase[1];
-						rename($thumb, Storage::path('thumb/') . $photo->thumbUrl);
-						$this->line('Renamed thumb to match the video file');
-					}
+			if (file_exists($fullPath)) {
+				$info = $this->metadataExtractor->extract($fullPath, 'video');
+
+				if ($originalSizeVariant->width == 0 && $info['width'] !== 0) {
+					$originalSizeVariant->width = $info['width'];
 				}
-			}
-
-			if (file_exists($url)) {
-				$info = $this->metadataExtractor->extract($url, $photo->type);
-
-				$updated = false;
-				if ($photo->width == 0 && $info['width'] !== 0) {
-					$photo->width = $info['width'];
-					$updated = true;
-				}
-				if ($photo->height == 0 && $info['height'] !== 0) {
-					$photo->height = $info['height'];
-					$updated = true;
+				if ($originalSizeVariant->height == 0 && $info['height'] !== 0) {
+					$originalSizeVariant->height = $info['height'];
 				}
 				if ($photo->focal == '' && $info['focal'] !== '') {
 					$photo->focal = $info['focal'];
-					$updated = true;
 				}
 				if ($photo->aperture == '' && $info['aperture'] !== '') {
 					$photo->aperture = $info['aperture'];
-					$updated = true;
 				}
 				if ($photo->latitude == null && $info['latitude'] !== null) {
 					$photo->latitude = $info['latitude'];
-					$updated = true;
 				}
 				if ($photo->longitude == null && $info['longitude'] !== null) {
 					$photo->longitude = $info['longitude'];
-					$updated = true;
 				}
-				if ($updated) {
+				if ($photo->isDirty()) {
 					$this->line('Updated metadata');
 				}
 
-				if ($photo->thumbUrl === '' || $photo->thumb2x === 0 || $photo->small_width === null || $photo->small2x_width === null) {
-					$frame_tmp = '';
-					try {
-						$frame_tmp = $this->extractVideoFrame($photo);
-					} catch (\Exception $exception) {
-						$this->line($exception->getMessage());
-					}
-					if ($frame_tmp !== '') {
-						$this->line('Extracted video frame for thumbnails');
-						if ($photo->thumbUrl === '' || $photo->thumb2x === 0) {
-							if (!$this->createThumb($photo, $frame_tmp)) {
-								$this->line('Could not create thumbnail for video');
-							}
-							$urlBase = explode('.', $photo->url);
-							$photo->thumbUrl = $urlBase[0] . '.jpeg';
-						}
-						if ($photo->small_width === null || $photo->small2x_width === null) {
-							$this->createSmallerImages($photo, $frame_tmp);
-						}
-						unlink($frame_tmp);
-					}
-				}
+				$sizeVariantFactory->init($photo);
+				$sizeVariantFactory->createSizeVariants();
 			} else {
 				$this->line('File does not exist');
 			}
 
 			$photo->save();
 		}
+
+		return 0;
 	}
 }

@@ -2,24 +2,23 @@
 
 namespace App\Actions\Photo;
 
-use App\Actions\Photo\Extensions\Save;
 use App\Models\Photo;
 
 class Delete
 {
-	use Save;
-
-	public function do(array $photoIds)
+	public function do(array $photoIds): void
 	{
-		$photos = Photo::whereIn('id', $photoIds)->get();
-
-		$no_error = true;
-
+		$photos = Photo::query()
+			->with(['size_variants_raw', 'size_variants_raw.sym_links'])
+			->whereIn('id', $photoIds)
+			->get();
+		$success = true;
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$no_error &= $photo->predelete();
-			$no_error &= $photo->delete();
+			// we must call delete on the model and not on the database
+			// in order to remove the files, too
+			$success &= $photo->delete();
 		}
-
-		return $no_error;
+		abort_if(!$success, 500, 'could not delete photo(s)');
 	}
 }

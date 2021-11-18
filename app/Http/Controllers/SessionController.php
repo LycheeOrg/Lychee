@@ -1,33 +1,24 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
+use App\Facades\Lang;
 use App\Http\Requests\UserRequests\UsernamePasswordRequest;
 use App\Metadata\GitHubFunctions;
 use App\ModelFunctions\ConfigFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
-use Lang;
 
 class SessionController extends Controller
 {
-	/**
-	 * @var ConfigFunctions
-	 */
-	private $configFunctions;
-
-	/**
-	 * @var GitHubFunctions
-	 */
-	private $gitHubFunctions;
+	private ConfigFunctions $configFunctions;
+	private GitHubFunctions $gitHubFunctions;
 
 	/**
 	 * @param ConfigFunctions $configFunctions
@@ -42,7 +33,7 @@ class SessionController extends Controller
 	/**
 	 * First function being called via AJAX.
 	 *
-	 * @return array|bool (array containing config information or killing the session)
+	 * @return IlluminateResponse|array (array containing config information or killing the session)
 	 */
 	public function init()
 	{
@@ -56,7 +47,7 @@ class SessionController extends Controller
 
 		// Check if login credentials exist and login if they don't
 		if (AccessControl::noLogin() === true || $logged_in === true) {
-			// we the the UserID (it is set to 0 if there is no login/password = admin)
+			// we set the user ID (it is set to 0 if there is no login/password = admin)
 			$user_id = AccessControl::id();
 
 			if ($user_id == 0) {
@@ -68,7 +59,7 @@ class SessionController extends Controller
 
 				$return['config']['location'] = base_path('public/');
 			} else {
-				$user = User::find($user_id);
+				$user = User::query()->find($user_id);
 
 				if ($user == null) {
 					Logs::notice(__METHOD__, __LINE__, 'UserID ' . $user_id . ' not found!');
@@ -84,7 +75,7 @@ class SessionController extends Controller
 				}
 			}
 
-			// here we say whether we looged in because there is no login/password or if we actually entered a login/password
+			// here we say whether we logged in because there is no login/password or if we actually entered a login/password
 			$return['config']['login'] = $logged_in;
 			$return['config']['lang_available'] = Lang::get_lang_available();
 		} else {
@@ -114,43 +105,43 @@ class SessionController extends Controller
 	/**
 	 * Login tentative.
 	 *
-	 * @param Request $request
+	 * @param UsernamePasswordRequest $request
 	 *
-	 * @return string
+	 * @return IlluminateResponse
 	 */
-	public function login(UsernamePasswordRequest $request)
+	public function login(UsernamePasswordRequest $request): IlluminateResponse
 	{
 		// No login
 		if (AccessControl::noLogin() === true) {
 			Logs::warning(__METHOD__, __LINE__, 'DEFAULT LOGIN!');
 
-			return 'true';
+			return response()->noContent();
 		}
 
 		// this is probably sensitive to timing attacks...
 		if (AccessControl::log_as_admin($request['username'], $request['password'], $request->ip()) === true) {
-			return 'true';
+			return response()->noContent();
 		}
 
 		if (AccessControl::log_as_user($request['username'], $request['password'], $request->ip()) === true) {
-			return 'true';
+			return response()->noContent();
 		}
 
 		Logs::error(__METHOD__, __LINE__, 'User (' . $request['username'] . ') has tried to log in from ' . $request->ip());
 
-		return 'false';
+		return response('', 401);
 	}
 
 	/**
 	 * Unset the session values.
 	 *
-	 * @return bool returns true when logout was successful
+	 * @return IlluminateResponse
 	 */
-	public function logout()
+	public function logout(): IlluminateResponse
 	{
 		Session::flush();
 
-		return 'true';
+		return response()->noContent();
 	}
 
 	/**

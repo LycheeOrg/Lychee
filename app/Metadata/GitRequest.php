@@ -4,7 +4,7 @@ namespace App\Metadata;
 
 use App\ModelFunctions\JsonRequestFunctions;
 use App\Models\Configs;
-use Config;
+use Illuminate\Support\Facades\Config;
 
 class GitRequest extends JsonRequestFunctions
 {

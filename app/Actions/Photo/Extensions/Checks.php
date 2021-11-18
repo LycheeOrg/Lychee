@@ -37,7 +37,7 @@ trait Checks
 		$path = Storage::path($folder);
 
 		if (Helpers::hasPermissions($path) === false) {
-			Logs::notice(__METHOD__, __LINE__, 'Skipped extaction of video from live photo, because ' . $path . ' is missing or not readable and writable.');
+			Logs::notice(__METHOD__, __LINE__, 'Skipped extraction of video from live photo, because ' . $path . ' is missing or not readable and writable.');
 			throw new FolderIsNotWritable();
 		}
 
@@ -48,30 +48,40 @@ trait Checks
 	 * Check if a picture has a duplicate
 	 * We compare the checksum to the other Photos or LivePhotos.
 	 *
-	 * @return false|Photo
+	 * @param string $checksum
+	 *
+	 * @return ?Photo
 	 */
-	public function get_duplicate($checksum, $photoID = null)
+	public function get_duplicate(string $checksum): ?Photo
 	{
-		return Photo::where(function ($q) use ($checksum) {
-			$q->where('checksum', '=', $checksum)
-				->orWhere('livePhotoChecksum', '=', $checksum);
-		})->where('id', '<>', $photoID)->first();
+		/** @var Photo|null $photo */
+		$photo = Photo::query()
+			->where('checksum', '=', $checksum)
+			->orWhere('live_photo_checksum', '=', $checksum)
+			->first();
+
+		return $photo;
 	}
 
 	/**
-	 * Returns 'photo' if it is a photo
-	 * Returns 'video' if it is a video
-	 * Returns 'raw' if it is an accepted file (we only check extensions).
+	 * Returns the kind of a media file.
 	 *
-	 * @throws 'error message' if it is something else
+	 * The kind is one out of:
 	 *
-	 * @param $file
-	 * @param $extension
+	 *  - `'photo'` if the media file is a photo
+	 *  - `'video'` if the media file is a video
+	 *  - `'raw'` if the media file is an accepted file, but none of the other
+	 *    two kinds (we only check extensions).
 	 *
-	 * @return string
+	 * @param SourceFileInfo $sourceFileInfo information about source file
+	 *
+	 * @return string either `'photo'`, `'video'` or `'raw'`
+	 *
+	 * @throws JsonError thrown if it is something else
 	 */
-	public function file_type($file, string $extension)
+	public function file_kind(SourceFileInfo $sourceFileInfo): string
 	{
+		$extension = $sourceFileInfo->getOriginalFileExtension();
 		// check raw files
 		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
 		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
@@ -79,7 +89,7 @@ trait Checks
 		}
 
 		if (in_array(strtolower($extension), $this->validExtensions, true)) {
-			$mimeType = $file['type'];
+			$mimeType = $sourceFileInfo->getOriginalMimeType();
 			if (in_array($mimeType, $this->validVideoTypes, true)) {
 				return 'video';
 			}
@@ -94,12 +104,12 @@ trait Checks
 			throw new JsonError('EXIF library not loaded on the server!');
 		}
 
-		$type = @exif_imagetype($file['tmp_name']);
+		$type = @exif_imagetype($sourceFileInfo->getTmpFullPath());
 		if (in_array($type, $this->validTypes, true)) {
 			return 'photo';
 		}
 
-		Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $file['name']);
+		Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $sourceFileInfo->getOriginalFilename());
 		throw new JsonError('Photo type not supported!');
 	}
 }
