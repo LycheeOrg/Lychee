@@ -38,7 +38,7 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-20.04]
-        php-versions: ['8.0']
+        php-versions: ['8.0', '8.1']
         sql-versions: ['mysql', 'postgresql', 'sqlite']
 
     name: PHP ${{ matrix.php-versions }} - ${{ matrix.sql-versions }}
@@ -59,7 +59,7 @@ jobs:
 
       - name: Setup cache environment
         id: extcache
-        uses: shivammathur/cache-extensions@v1
+        uses: shivammathur/cache-extensions@1.6.2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
@@ -73,20 +73,19 @@ jobs:
           restore-keys: ${{ steps.extcache.outputs.key }}
 
       - name: Cache Composer Dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2.1.6
         with:
           path: ~/.composer/cache/files
           key: dependencies-composer-${{ hashFiles('composer.json') }}
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@2.12.0
+        uses: shivammathur/setup-php@2.15.0
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
           tools: pecl, composer
       
       - name: Set Up imagick (php8)
-        if: ${{ matrix.php-versions != '7.4' }}
         run: sh scripts/install_imagick.sh
 
       - name: Install Exiftools
