@@ -87,7 +87,6 @@ jobs:
           tools: pecl, composer
       
       - name: Set Up imagick (php8)
-        if: ${{ matrix.php-versions != '7.4' }}
         run: sh scripts/install_imagick.sh
 
       - name: Install Exiftools
@@ -108,7 +107,13 @@ jobs:
         run: composer install --prefer-dist --no-interaction
 
       - name: Check Syntax
+        if: ${{ matrix.php-versions != '8.0' }}
+        continue-on-error: true
         run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
+
+      - name: Check Syntax
+        if: ${{ matrix.php-versions == '8.0' }}
+        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
 
       - name: setup MySQL Database
         if: ${{ matrix.sql-versions == 'mysql' }}
