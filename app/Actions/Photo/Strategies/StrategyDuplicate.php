@@ -28,7 +28,7 @@ class StrategyDuplicate extends StrategyPhotoBase
 
 	public function storeFile(Create $create)
 	{
-		Logs::notice(__FILE__, __LINE__, 'Nothing to store, image is a duplicate');
+		Logs::notice(__METHOD__, __LINE__, 'Nothing to store, image is a duplicate');
 	}
 
 	public function hydrate(Create &$create, ?Photo &$existing = null, ?array $file = null)
@@ -92,6 +92,6 @@ class StrategyDuplicate extends StrategyPhotoBase
 
 	public function generate_thumbs(Create &$create, bool &$skip_db_entry_creation, bool &$no_error)
 	{
-		Logs::notice(__FILE__, __LINE__, 'Nothing to generate, image is a duplicate');
+		Logs::notice(__METHOD__, __LINE__, 'Nothing to generate, image is a duplicate');
 	}
 }

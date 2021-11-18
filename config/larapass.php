@@ -61,7 +61,7 @@ return [
 	|
 	| Authentication can be tied to the current device (like when using Windows
 	| Hello or Touch ID) or a cross-platform device (like USB Key). When this
-	| is "null" the user will decide where to store his authentication info.
+	| is "null" the user will decide where to store their authentication info.
 	|
 	| Supported: "null", "cross-platform", "platform".
 	|

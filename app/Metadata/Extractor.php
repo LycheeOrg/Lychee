@@ -185,8 +185,6 @@ class Extractor
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {
-			$taken_at = Carbon::instance($taken_at);
-
 			// There are three different timezone which needs to considered:
 			//
 			//  a) The original timezone of the location where the photo has
@@ -194,7 +192,7 @@ class Extractor
 			//  b) The timezone of the server which is running the Lychee
 			//     backend
 			//  c) The timezone of the beholder who is looking at the photo
-			//     with his/her web browser
+			//     with his/her/their web browser
 			//
 			// **Notes about a):**
 			//
@@ -360,7 +358,7 @@ class Extractor
 					// so neither of the two conditions above should trigger.
 				}
 			}
-			$metadata['taken_at'] = $taken_at;
+			$metadata['taken_at'] = Carbon::instance($taken_at);
 		} else {
 			$metadata['taken_at'] = null;
 		}
