@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b55780b199b829b46c62aef2dc933b40",
+    "content-hash": "1a6990425c8cdd6d97b39db146f820f1",
     "packages": [
         {
             "name": "alchemy/binary-driver",
