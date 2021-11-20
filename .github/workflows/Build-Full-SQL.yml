@@ -141,9 +141,10 @@ jobs:
           touch database/database.sqlite
           cp .github/workflows/.env.sqlite .env
 
-      - name: Generate secure key & Migrate
+      - name: Generate secure key & Optimize application & Migrate
         run: |
           php artisan key:generate
+          php artisan optimize
           php artisan migrate
 
       - name: Apply tests
