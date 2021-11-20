@@ -84,7 +84,7 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
           tools: pecl, composer
-      
+
       - name: Set Up imagick (php8)
         if: ${{ matrix.php-versions != '7.4' }}
         run: sh scripts/install_imagick.sh
@@ -129,10 +129,11 @@ jobs:
           touch database/database.sqlite
           cp .github/workflows/.env.sqlite Lychee/.env
 
-      - name: Generate secure key & Migrate & go backward
+      - name: Generate secure key & Optimize application & Migrate & go backward
         run: |
           cd Lychee
           pwd
           php artisan key:generate
+          php artisan optimize
           php artisan migrate
           php artisan migrate:rollback
