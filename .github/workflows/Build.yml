@@ -93,7 +93,9 @@ jobs:
       
       - name: Set Up imagick & Exiftools
         run: |
-          sh scripts/install_imagick.sh
+          sudo apt-get update
+          sudo apt-get -y install php-imagick
+          # sh scripts/install_imagick.sh
           sudo apt-get -y install libimage-exiftool-perl
 
       - name: Get composer cache directory
