@@ -5,9 +5,13 @@ on:
   push:
     paths-ignore:
       - '**/*.md'
+      - 'public/dist/*.js'
+      - 'public/dist/**/*.js'
   pull_request:
     paths-ignore:
       - '**/*.md'
+      - 'public/dist/*.js'
+      - 'public/dist/**/*.js'
 
 jobs:
   tests:
