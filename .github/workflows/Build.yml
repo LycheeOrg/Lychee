@@ -94,7 +94,7 @@ jobs:
       - name: Set Up imagick & Exiftools
         run: |
           sudo apt-get update
-          sudo apt-get -y install php-imagick
+          sudo apt-get -y --fix-broken install php8.0-imagick
           # sh scripts/install_imagick.sh
           sudo apt-get -y install libimage-exiftool-perl
 

@@ -66,7 +66,7 @@ class DemoController extends Controller
 		$return_album_list['array'] = [];
 
 		/**
-		 * @var Collection[Album]
+		 * @var Collection<Album>
 		 */
 		$albums = Album::where('public', '=', '1')
 			->where('viewable', '=', '1')

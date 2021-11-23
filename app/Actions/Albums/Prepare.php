@@ -21,7 +21,7 @@ class Prepare
 	/**
 	 * Given a list of albums, generate an array to be returned.
 	 *
-	 * @param BaseCollection[Album] $albums
+	 * @param BaseCollection<Album> $albums
 	 *
 	 * @return array
 	 */

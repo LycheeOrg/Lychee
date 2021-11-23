@@ -26,28 +26,28 @@ use Illuminate\Support\Carbon;
 /**
  * App\Album.
  *
- * @property int         $id
- * @property string      $title
- * @property int         $owner_id
- * @property int|null    $parent_id
- * @property string      $description
- * @property Carbon|null $min_taken_at
- * @property Carbon|null $max_taken_at
- * @property int         $public
- * @property int         $full_photo
- * @property int         $viewable
- * @property int         $downloadable
- * @property int         $share_button_visible
- * @property string|null $password
- * @property string      $license
- * @property bool        $smart
- * @property text        $showtags
- * @property Carbon      $created_at
- * @property Carbon      $updated_at
- * @property Collection[Album] $children
- * @property User  $owner
- * @property Album $parent
- * @property Collection[Photo] $photos
+ * @property int               $id
+ * @property string            $title
+ * @property int               $owner_id
+ * @property int|null          $parent_id
+ * @property string            $description
+ * @property Carbon|null       $min_taken_at
+ * @property Carbon|null       $max_taken_at
+ * @property int               $public
+ * @property int               $full_photo
+ * @property int               $viewable
+ * @property int               $downloadable
+ * @property int               $share_button_visible
+ * @property string|null       $password
+ * @property string            $license
+ * @property bool              $smart
+ * @property text              $showtags
+ * @property Carbon            $created_at
+ * @property Carbon            $updated_at
+ * @property Collection<Album> $children
+ * @property User              $owner
+ * @property Album             $parent
+ * @property Collection<Photo> $photos
  *
  * @method static Builder|Album newModelQuery()
  * @method static Builder|Album newQuery()

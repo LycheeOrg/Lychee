@@ -28,7 +28,7 @@ class AlbumsController extends Controller
 			'shared_albums' => null,
 		];
 
-		// $toplevel containts Collection[Album] accessible at the root: albums shared_albums.
+		// $toplevel containts Collection<Album> accessible at the root: albums shared_albums.
 		$toplevel = $top->get();
 
 		$return['albums'] = $prepareAlbums->do($toplevel['albums']);
