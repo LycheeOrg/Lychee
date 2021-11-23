@@ -104,7 +104,7 @@ formatting:
 	fi
 
 gen_minor:
-	php gen_release.php
+	php scripts/gen_release.php
 	git add database
 	git add version.md
 
@@ -112,7 +112,7 @@ release_minor: gen_minor
 	git commit -S -m "bump to version $(shell cat version.md)"
 
 gen_major:
-	php gen_release.php major
+	php scripts/gen_release.php major
 	git add database
 	git add version.md
 
