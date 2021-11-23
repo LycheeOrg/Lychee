@@ -40,7 +40,7 @@ class Smart
 	 * Note: the array may include password-protected albums that are not
 	 * accessible (but are visible).
 	 *
-	 * @return array[Collection<Album>]|null
+	 * @return array<Collection<Album>>|null
 	 */
 	public function get(): ?array
 	{
