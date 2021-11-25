@@ -48,9 +48,8 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 			$errors[]
 				= 'Warning: You may experience problems when uploading a photos of large size. Take a look in the FAQ for details.';
 		}
-		if (
-			intval(ini_get('max_execution_time')) < 200
-		) {
+		$max_execution_time = intval(ini_get('max_execution_time'));
+		if (0 < $max_execution_time && $max_execution_time < 200) {
 			$errors[]
 				= 'Warning: You may experience problems when uploading a large amount of photos. Take a look in the FAQ for details.';
 		}
