@@ -17,15 +17,12 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 		$size = intval($size);
 
 		switch ($last) {
-			case 'G':
 			case 'g':
 				$size *= 1024;
 				// no break
-			case 'M':
 			case 'm':
 				$size *= 1024;
 				// no break
-			case 'K':
 			case 'k':
 				$size *= 1024;
 		}
