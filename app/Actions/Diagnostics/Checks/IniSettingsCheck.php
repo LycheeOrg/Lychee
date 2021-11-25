@@ -73,5 +73,10 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 			$errors[]
 				= 'Warning: exec function has been disabled. You may experience some error 500, please report them to us.';
 		}
+
+		if (empty(ini_get('user_agent'))) {
+			$errors[]
+				= 'Warning: php_agent is not set. You may experiences problems when importing images via URL.';
+		}
 	}
 }
