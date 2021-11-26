@@ -165,128 +165,134 @@ class Exec
 	 * @throws ImagickException
 	 */
 	public function do(
-		string $path,
+		string $path_list,
 		$albumID,
 		$ignore_list = null
 	) {
-		// Parse path
-		$origPath = $path;
+		
+		$paths = explode(',', $path_list);
+		
+		foreach ($paths as $path)
+		{
+			// Parse path
+			$origPath = $path;
 
-		if (!$this->parsePath($path, $origPath)) {
-			return;
-		}
-
-		// We process breadth-first: first all the files in a directory,
-		// then the subdirectories.  This way, if the process fails along the
-		// way, it's much easier for the user to figure out what was imported
-		// and what was not.
-
-		// Update ignore list
-		$ignore_list = $this->setUpIgnoreList($path, $ignore_list);
-
-		$files = glob($path . '/*');
-		$filesTotal = count($files);
-		$filesCount = 0;
-		$dirs = [];
-		$lastStatus = microtime(true);
-
-		// Add '%' at end for CLI output
-		$percent_symbol = ($this->statusCLIFormatting) ? '%' : '';
-
-		$this->status_progress($origPath, '0' . $percent_symbol);
-		foreach ($files as $file) {
-			// re-read session in case cancelling import was requested
-			session()->start();
-			if (Session::has('cancel')) {
-				Session::forget('cancel');
-				$this->status_error($origPath, 'Import cancelled');
-				Logs::warning(__METHOD__, __LINE__, 'Import cancelled');
-
+			if (!$this->parsePath($path, $origPath)) {
 				return;
 			}
-			// Reset the execution timeout for every iteration.
-			set_time_limit(ini_get('max_execution_time'));
 
-			// Report if we might be running out of memory.
-			$this->memWarningCheck();
+			// We process breadth-first: first all the files in a directory,
+			// then the subdirectories.  This way, if the process fails along the
+			// way, it's much easier for the user to figure out what was imported
+			// and what was not.
 
-			// Generate the status at most once a second, except for 0% and
-			// 100%, which are always generated.
-			$time = microtime(true);
-			if ($time - $lastStatus >= 1) {
-				$this->status_progress($origPath, intval($filesCount / $filesTotal * 100) . $percent_symbol);
-				$lastStatus = $time;
-			}
+			// Update ignore list
+			$ignore_list = $this->setUpIgnoreList($path, $ignore_list);
 
-			// Let's check if we should ignore the file
-			if ($this->checkAgainstIgnoreList($file, $ignore_list)) {
-				$filesTotal--;
-				continue;
-			}
+			$files = glob($path . '/*');
+			$filesTotal = count($files);
+			$filesCount = 0;
+			$dirs = [];
+			$lastStatus = microtime(true);
 
-			if (is_dir($file)) {
-				$dirs[] = $file;
-				$filesTotal--;
-				continue;
-			}
+			// Add '%' at end for CLI output
+			$percent_symbol = ($this->statusCLIFormatting) ? '%' : '';
 
-			$filesCount++;
-			// It is possible to move a file because of directory permissions but
-			// the file may still be unreadable by the user
-			if (!is_readable($file)) {
-				$this->status_error($file, 'Could not read file');
-				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
-				continue;
-			}
-			$extension = Helpers::getExtension($file, true);
-			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
-			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
-				// Photo or Video
-				try {
-					if ($this->photo($file, $this->delete_imported, $this->import_via_symlink, $albumID, $this->skip_duplicates, $this->resync_metadata) === false) {
+			$this->status_progress($origPath, '0' . $percent_symbol);
+			foreach ($files as $file) {
+				// re-read session in case cancelling import was requested
+				session()->start();
+				if (Session::has('cancel')) {
+					Session::forget('cancel');
+					$this->status_error($origPath, 'Import cancelled');
+					Logs::warning(__METHOD__, __LINE__, 'Import cancelled');
+
+					return;
+				}
+				// Reset the execution timeout for every iteration.
+				set_time_limit(ini_get('max_execution_time'));
+
+				// Report if we might be running out of memory.
+				$this->memWarningCheck();
+
+				// Generate the status at most once a second, except for 0% and
+				// 100%, which are always generated.
+				$time = microtime(true);
+				if ($time - $lastStatus >= 1) {
+					$this->status_progress($origPath, intval($filesCount / $filesTotal * 100) . $percent_symbol);
+					$lastStatus = $time;
+				}
+
+				// Let's check if we should ignore the file
+				if ($this->checkAgainstIgnoreList($file, $ignore_list)) {
+					$filesTotal--;
+					continue;
+				}
+
+				if (is_dir($file)) {
+					$dirs[] = $file;
+					$filesTotal--;
+					continue;
+				}
+
+				$filesCount++;
+				// It is possible to move a file because of directory permissions but
+				// the file may still be unreadable by the user
+				if (!is_readable($file)) {
+					$this->status_error($file, 'Could not read file');
+					Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
+					continue;
+				}
+				$extension = Helpers::getExtension($file, true);
+				$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
+				if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
+					// Photo or Video
+					try {
+						if ($this->photo($file, $this->delete_imported, $this->import_via_symlink, $albumID, $this->skip_duplicates, $this->resync_metadata) === false) {
+							$this->status_error($file, 'Could not import file');
+							Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
+						}
+					} catch (PhotoSkippedException $e) {
+						$this->status_error($file, 'Skipped duplicate');
+					} catch (PhotoResyncedException $e) {
+						$this->status_error($file, 'Skipped duplicate (resynced metadata)');
+					} catch (Exception $e) {
 						$this->status_error($file, 'Could not import file');
 						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 					}
-				} catch (PhotoSkippedException $e) {
-					$this->status_error($file, 'Skipped duplicate');
-				} catch (PhotoResyncedException $e) {
-					$this->status_error($file, 'Skipped duplicate (resynced metadata)');
-				} catch (Exception $e) {
-					$this->status_error($file, 'Could not import file');
-					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
+				} else {
+					$this->status_error($file, 'Unsupported file type');
+					Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
 				}
-			} else {
-				$this->status_error($file, 'Unsupported file type');
-				Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
 			}
-		}
-		$this->status_progress($origPath, '100' . $percent_symbol);
+			$this->status_progress($origPath, '100' . $percent_symbol);
 
-		// Album creation
-		foreach ($dirs as $dir) {
-			// Folder
-			$album = null;
-			if ($this->skip_duplicates) {
-				$album = Album::where('parent_id', '=', $albumID == 0 ? null : $albumID)
-					->where('title', '=', basename($dir))
-					->get()
-					->first();
-			}
-			if ($album === null) {
-				$create = resolve(Create::class);
-				$album = $create->create(basename($dir), $albumID);
-				// this actually should not fail.
-				if ($album === false) {
-					// @codeCoverageIgnoreStart
-
-					$this->status_error(basename($dir), ': Could not create album');
-					Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
-					continue;
+			// Album creation
+			foreach ($dirs as $dir) {
+				// Folder
+				$album = null;
+				if ($this->skip_duplicates) {
+					$album = Album::where('parent_id', '=', $albumID == 0 ? null : $albumID)
+						->where('title', '=', basename($dir))
+						->get()
+						->first();
 				}
-				// @codeCoverageIgnoreEnd
+				if ($album === null) {
+					$create = resolve(Create::class);
+					$album = $create->create(basename($dir), $albumID);
+					// this actually should not fail.
+					if ($album === false) {
+						// @codeCoverageIgnoreStart
+
+						$this->status_error(basename($dir), ': Could not create album');
+						Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
+						continue;
+					}
+					// @codeCoverageIgnoreEnd
+				}
+				$newAlbumID = $album->id;
+				$this->do($dir . '/', $newAlbumID, $ignore_list);
 			}
-			$newAlbumID = $album->id;
-			$this->do($dir . '/', $newAlbumID, $ignore_list);
 		}
 	}
 
