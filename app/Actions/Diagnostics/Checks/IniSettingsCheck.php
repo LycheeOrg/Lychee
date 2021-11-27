@@ -76,7 +76,7 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 
 		if (empty(ini_get('user_agent'))) {
 			$errors[]
-				= 'Warning: user_agent for PHP is not set. You may experiences problems when importing images via URL.';
+				= 'Warning: user_agent for PHP is not set. You may experience problems when importing images via URL.';
 		}
 	}
 }
