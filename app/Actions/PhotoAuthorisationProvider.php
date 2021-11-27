@@ -90,8 +90,8 @@ class PhotoAuthorisationProvider
 	 * A photo is _searchable_ if at least one of the following conditions
 	 * hold:
 	 *
-	 *  - it is member of a _browsable_ album, or
-	 *  - the currently authenticated user is allowed to upload photos and the photo is unsorted
+	 *  - the photo is part of an album which the user is allowed to browse
+	 *  - the user is the owner of the photo
 	 *  - the photo is public and searching through public photos is enabled
 	 *
 	 * See {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
