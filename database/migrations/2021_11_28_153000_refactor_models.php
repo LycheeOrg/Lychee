@@ -1,12 +1,15 @@
 <?php
 
+use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\NodeTrait;
+use League\Flysystem\FileNotFoundException;
 
 /**
  * Migration for new architecture of albums.
@@ -56,11 +59,86 @@ use Kalnoy\Nestedset\NodeTrait;
  * (At least, if we want to keep foreign constraints in SQLite.)
  * Yikes! :-(
  */
-class RefactorAlbumModel extends Migration
+class RefactorModels extends Migration
 {
 	private string $driverName;
 	private AbstractSchemaManager $schemaManager;
+	const THUMBNAIL_DIM = 200;
+	const THUMBNAIL2X_DIM = 400;
 
+	const VARIANT_ORIGINAL = 0;
+	const VARIANT_MEDIUM2X = 1;
+	const VARIANT_MEDIUM = 2;
+	const VARIANT_SMALL2X = 3;
+	const VARIANT_SMALL = 4;
+	const VARIANT_THUMB2X = 5;
+	const VARIANT_THUMB = 6;
+
+	/**
+	 * Maps a size variant (0...6) to the path prefix (directory) where the
+	 * file for that size variant is stored.
+	 */
+	const VARIANT_2_PATH_PREFIX = [
+		'big',
+		'medium',
+		'medium',
+		'small',
+		'small',
+		'thumb',
+		'thumb',
+	];
+
+	const VALID_VIDEO_TYPES = [
+		'video/mp4',
+		'video/mpeg',
+		'image/x-tga', // mpg; will be corrected by the metadata extractor
+		'video/ogg',
+		'video/webm',
+		'video/quicktime',
+		'video/x-ms-asf', // wmv file
+		'video/x-ms-wmv', // wmv file
+		'video/x-msvideo', // Avi
+		'video/x-m4v', // Avi
+		'application/octet-stream', // Some mp4 files; will be corrected by the metadata extractor
+	];
+
+	/**
+	 * Maps a size variant (0...4) to the name of the (old) attribute which
+	 * stores the width of that size variant.
+	 * Note: No attribute is defined for the size variants 5 and 6 (`thumb2x`
+	 * and `thumb`), because their width is not stored as an attribute but
+	 * hard-coded.
+	 * See {@link RefactorModels::THUMBNAIL2X_DIM} and
+	 * {@link RefactorModels::THUMBNAIL_DIM}.
+	 */
+	const VARIANT_2_WIDTH_ATTRIBUTE = [
+		'width',
+		'medium2x_width',
+		'medium_width',
+		'small2x_width',
+		'small_width',
+	];
+
+	/**
+	 * Maps a size variant (0...4) to the name of the (old) attribute which
+	 * stores the height of that size variant.
+	 * Note: No attribute is defined for the size variants 5 and 6 (`thumb2x`
+	 * and `thumb`), because their width is not stored as an attribute but
+	 * hard-coded.
+	 * See {@link RefactorModels::THUMBNAIL2X_DIM} and
+	 * {@link RefactorModels::THUMBNAIL_DIM}.
+	 */
+	const VARIANT_2_HEIGHT_ATTRIBUTE = [
+		'height',
+		'medium2x_height',
+		'medium_height',
+		'small2x_height',
+		'small_height',
+	];
+
+	/**
+	 * @throws DBALException
+	 */
 	public function __construct()
 	{
 		$connection = Schema::connection(null)->getConnection();
@@ -68,8 +146,13 @@ class RefactorAlbumModel extends Migration
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function up()
 	{
+		Schema::drop('sym_links');
+
 		// Step 1
 		// Create tables in correct order so that foreign keys can
 		// be created immediately.
@@ -79,8 +162,8 @@ class RefactorAlbumModel extends Migration
 		$this->createTagAlbumTable();
 		$this->createUserAlbumTable(true);
 		$this->createPhotoTableUp();
-		$this->createSizeVariantTable();
-		$this->createSymLinkTable();
+		$this->createSizeVariantTableUp();
+		$this->createSymLinkTableUp();
 		$this->createRemainingForeignConstraints();
 
 		// Step 2
@@ -95,8 +178,13 @@ class RefactorAlbumModel extends Migration
 		$this->dropTemporarilyRenamedTables();
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	public function down()
 	{
+		Schema::drop('sym_links');
+
 		// Step 1
 		// Create tables in correct order so that foreign keys can
 		// be created immediately.
@@ -104,8 +192,7 @@ class RefactorAlbumModel extends Migration
 		$this->createAlbumTableDown();
 		$this->createUserAlbumTable(false);
 		$this->createPhotoTableDown();
-		$this->createSizeVariantTable();
-		$this->createSymLinkTable();
+		$this->createSymLinkTableDown();
 
 		// Step 2
 		// Happy copying :(
@@ -116,6 +203,7 @@ class RefactorAlbumModel extends Migration
 
 		// Step 3
 		Schema::drop('user_base_album');
+		Schema::drop('size_variants');
 		$this->dropTemporarilyRenamedTables();
 		Schema::drop('tag_albums');
 		Schema::drop('base_albums');
@@ -151,17 +239,13 @@ class RefactorAlbumModel extends Migration
 			$this->dropIndexIfExists($table, 'photos_taken_at_index');
 			$this->dropIndexIfExists($table, 'photos_checksum_index');
 			$this->dropIndexIfExists($table, 'photos_live_photo_content_id_index');
+			$this->dropIndexIfExists($table, 'photos_livephotocontentid_index');
 			$this->dropIndexIfExists($table, 'photos_live_photo_checksum_index');
+			$this->dropIndexIfExists($table, 'photos_livephotochecksum_index');
 			$this->dropIndexIfExists($table, 'photos_is_public_index');
 			$this->dropIndexIfExists($table, 'photos_is_starred_index');
 		});
 		Schema::rename('photos', 'photos_tmp');
-		Schema::table('size_variants', function (Blueprint $table) {
-			$this->dropForeignIfExists($table, 'size_variants_photo_id_foreign');
-			$this->dropUniqueIfExists($table, 'size_variants_photo_id_size_variant_unique');
-		});
-		Schema::rename('size_variants', 'size_variants_tmp');
-		Schema::drop('sym_links');
 	}
 
 	/**
@@ -176,7 +260,6 @@ class RefactorAlbumModel extends Migration
 		// We must remove any foreign link from `albums` to `photos` to
 		// break up circular dependencies.
 		DB::table('albums_tmp')->update(['cover_id' => null]);
-		Schema::drop('size_variants_tmp');
 		Schema::drop('photos_tmp');
 		Schema::drop('albums_tmp');
 	}
@@ -338,7 +421,7 @@ class RefactorAlbumModel extends Migration
 			$table->bigIncrements('id')->nullable(false);
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
-			$table->unsignedInteger('owner_id')->unsinged()->nullable(false)->default(0);
+			$table->unsignedInteger('owner_id')->unsigned()->nullable(false)->default(0);
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable();
@@ -393,7 +476,7 @@ class RefactorAlbumModel extends Migration
 			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
 			$table->unsignedBigInteger('album_id')->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
-			$table->text('description')->nullable();
+			$table->text('description')->nullable(true);
 			$table->string('tags')->nullable(false)->default('');
 			$table->string('license', 20)->nullable(false)->default('none');
 			$table->boolean('public')->nullable(false)->default(false);
@@ -413,23 +496,30 @@ class RefactorAlbumModel extends Migration
 			$table->dateTime('taken_at')->nullable(true)->default(null)->comment('relative to UTC');
 			$table->string('taken_at_orig_tz', 31)->nullable(true)->default(null)->comment('the timezone at which the photo has originally been taken');
 			$table->string('type', 30)->nullable(false);
+			$table->string('url', 100)->default('');
 			$table->unsignedBigInteger('filesize')->nullable(false)->default(0);
 			$table->string('checksum', 40)->nullable(false);
-			$table->string('live_photo_short_path')->nullable()->default(null);
-			$table->string('live_photo_content_id')->nullable()->default(null);
-			$table->string('live_photo_checksum', 40)->nullable()->default(null);
+			for ($i = self::VARIANT_ORIGINAL; $i <= self::VARIANT_SMALL; $i++) {
+				$table->integer(self::VARIANT_2_WIDTH_ATTRIBUTE[$i])->unsigned()->nullable()->default(null);
+				$table->integer(self::VARIANT_2_HEIGHT_ATTRIBUTE[$i])->unsigned()->nullable()->default(null);
+			}
+			$table->boolean('thumb2x')->default(false);
+			$table->string('thumbUrl', 37)->default('');
+			$table->string('livePhotoUrl')->nullable()->default(null);
+			$table->string('livePhotoContentID')->nullable()->default(null);
+			$table->string('livePhotoChecksum', 40)->nullable()->default(null);
 			// Indices and constraint definitions
 			$table->foreign('album_id')->references('id')->on('albums');
 			$table->index('created_at');
 			$table->index('updated_at');
 			$table->index('taken_at');
 			$table->index('checksum');
-			$table->index('live_photo_content_id');
-			$table->index('live_photo_checksum');
+			$table->index('livePhotoContentID');
+			$table->index('livePhotoChecksum');
 		});
 	}
 
-	private function createSizeVariantTable(): void
+	private function createSizeVariantTableUp(): void
 	{
 		Schema::create('size_variants', function (Blueprint $table) {
 			// Column definitions
@@ -448,7 +538,7 @@ class RefactorAlbumModel extends Migration
 		});
 	}
 
-	private function createSymLinkTable(): void
+	private function createSymLinkTableUp(): void
 	{
 		Schema::create('sym_links', function (Blueprint $table) {
 			// Column definitions
@@ -461,6 +551,28 @@ class RefactorAlbumModel extends Migration
 			$table->index('created_at');
 			$table->index('updated_at');
 			$table->foreign('size_variant_id')->references('id')->on('size_variants');
+		});
+	}
+
+	private function createSymLinkTableDown(): void
+	{
+		Schema::create('sym_links', function (Blueprint $table) {
+			// Column definitions
+			$table->bigIncrements('id')->nullable(false);
+			$table->dateTime('created_at')->nullable(false);
+			$table->dateTime('updated_at')->nullable(false);
+			$table->unsignedBigInteger('photo_id')->nullable(false);
+			$table->string('url')->default('');
+			$table->string('medium')->default('');
+			$table->string('medium2x')->default('');
+			$table->string('small')->default('');
+			$table->string('small2x')->default('');
+			$table->string('thumbUrl')->default('');
+			$table->string('thumb2x')->default('');
+			// Indices and constraint definitions
+			$table->index('created_at');
+			$table->index('updated_at');
+			$table->foreign('photo_id')->references('id')->on('photos');
 		});
 	}
 
@@ -477,6 +589,9 @@ class RefactorAlbumModel extends Migration
 		});
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	private function upgradeCopy(): void
 	{
 		$albums = DB::table('albums_tmp')->lazyById();
@@ -568,25 +683,28 @@ class RefactorAlbumModel extends Migration
 				'type' => $photo->type,
 				'filesize' => $photo->filesize,
 				'checksum' => $photo->checksum,
-				'live_photo_short_path' => $photo->live_photo_short_path,
-				'live_photo_content_id' => $photo->live_photo_content_id,
-				'live_photo_checksum' => $photo->live_photo_checksum,
+				'live_photo_short_path' => $photo->livePhotoUrl,
+				'live_photo_content_id' => $photo->livePhotoContentID,
+				'live_photo_checksum' => $photo->livePhotoChecksum,
 			]);
-		}
 
-		$sizeVariants = DB::table('size_variants_tmp')->lazyById();
-		foreach ($sizeVariants as $sizeVariant) {
-			DB::table('size_variants')->insert([
-				'id' => $sizeVariant->id,
-				'photo_id' => $sizeVariant->photo_id,
-				'size_variant' => $sizeVariant->size_variant,
-				'short_path' => $sizeVariant->short_path,
-				'width' => $sizeVariant->width,
-				'height' => $sizeVariant->height,
-			]);
+			for ($variant = self::VARIANT_ORIGINAL; $variant <= self::VARIANT_THUMB; $variant++) {
+				if ($this->hasSizeVariant($photo, $variant)) {
+					DB::table('size_variants')->insert([
+						'photo_id' => $photo->id,
+						'size_variant' => $variant,
+						'short_path' => $this->getShortPathOfPhoto($photo, $variant),
+						'width' => $this->getWidth($photo, $variant),
+						'height' => $this->getHeight($photo, $variant),
+					]);
+				}
+			}
 		}
 	}
 
+	/**
+	 * @throws InvalidArgumentException
+	 */
 	private function downgradeCopy(): void
 	{
 		$baseAlbums = DB::table('base_albums')->lazyById();
@@ -658,7 +776,7 @@ class RefactorAlbumModel extends Migration
 
 		$photos = DB::table('photos_tmp')->lazyById();
 		foreach ($photos as $photo) {
-			DB::table('photos')->insert([
+			$photoAttributes = [
 				'id' => $photo->id,
 				'created_at' => $photo->created_at,
 				'updated_at' => $photo->updated_at,
@@ -686,27 +804,105 @@ class RefactorAlbumModel extends Migration
 				'type' => $photo->type,
 				'filesize' => $photo->filesize,
 				'checksum' => $photo->checksum,
-				'live_photo_short_path' => $photo->live_photo_short_path,
-				'live_photo_content_id' => $photo->live_photo_content_id,
-				'live_photo_checksum' => $photo->live_photo_checksum,
-			]);
-		}
+				'livePhotoUrl' => $photo->live_photo_short_path,
+				'livePhotoContentID' => $photo->live_photo_content_id,
+				'livePhotoChecksum' => $photo->live_photo_checksum,
+			];
 
-		$sizeVariants = DB::table('size_variants_tmp')->lazyById();
-		foreach ($sizeVariants as $sizeVariant) {
-			DB::table('size_variants')->insert([
-				'id' => $sizeVariant->id,
-				'photo_id' => $sizeVariant->photo_id,
-				'size_variant' => $sizeVariant->size_variant,
-				'short_path' => $sizeVariant->short_path,
-				'width' => $sizeVariant->width,
-				'height' => $sizeVariant->height,
-			]);
+			// Get all size variants for the photo and explicitly extract
+			// the size variant "original".
+			// If there are no size variants at all or a size variant
+			// "original" does not exist, continue.
+			// Note, this is actually an error, because there must not
+			// be any photo without at least a size variant "original".
+			$sizeVariants = DB::table('size_variants')
+				->where('photo_id', '=', $photo->id)
+				->orderBy('size_variant')
+				->get();
+			if ($sizeVariants->isEmpty()) {
+				continue;
+			}
+			$originalSizeVariant = $sizeVariants->first();
+			if ($originalSizeVariant->size_variant != self::VARIANT_ORIGINAL) {
+				continue;
+			}
+
+			// We use the original size variant as a baseline to extract the
+			// common core of the basename of all size variants.
+			// Note: The newly introduced `SizeVariantNamingStrategy`
+			// effectively allows that each size variant uses its own file
+			// name which may be completely independent of the file names of
+			// the other size variants.
+			// However, the old code assumes that the file names follow a
+			// certain naming pattern which is built around a shared and
+			// equal part within the file's basename.
+			// Moreover, this common portion must not be longer than 32
+			// characters.
+			$expectedBasename = substr(
+				pathinfo($originalSizeVariant->short_path, PATHINFO_FILENAME),
+				0,
+				32
+			);
+
+			/**
+			 * Iterate over all size variants and ensure that they are named
+			 * as expected by the old naming scheme.
+			 *
+			 * @var object $sizeVariant
+			 */
+			foreach ($sizeVariants as $sizeVariant) {
+				$fileExtension = '.' . pathinfo($sizeVariant->short_path, PATHINFO_EXTENSION);
+				if (
+					$sizeVariant->size_variant == self::VARIANT_THUMB2X ||
+					$sizeVariant->size_variant == self::VARIANT_SMALL2X ||
+					$sizeVariant->size_variant == self::VARIANT_MEDIUM2X
+				) {
+					$expectedFilename = $expectedBasename . '@2x' . $fileExtension;
+				} else {
+					$expectedFilename = $expectedBasename . $fileExtension;
+				}
+				$expectedPathPrefix = self::VARIANT_2_PATH_PREFIX[$sizeVariant->size_variant] . '/';
+				if ($sizeVariant->size_variant == self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
+					$expectedPathPrefix = 'raw/';
+				}
+				$expectedShortPath = $expectedPathPrefix . $expectedFilename;
+
+				// Ensure that the size variant is stored at the location which
+				// is expected acc. to the old naming scheme
+				if ($sizeVariant->short_path != $expectedShortPath) {
+					try {
+						Storage::move($sizeVariant->short_path, $expectedShortPath);
+					} catch (FileNotFoundException $e) {
+						// sic! just ignore
+						// This exception is thrown if there are duplicate
+						// photos which point to the same physical file.
+						// Then the file is renamed when the first occurrence
+						// of those duplicates is processed and subsequent,
+						// failing attempts to rename the file must be ignored.
+					}
+				}
+
+				if ($sizeVariant->size_variant == self::VARIANT_THUMB2X) {
+					$photoAttributes['thumb2x'] = true;
+				} elseif ($sizeVariant->size_variant == self::VARIANT_THUMB) {
+					$photoAttributes['thumbUrl'] = $expectedFilename;
+				} else {
+					if ($sizeVariant->size_variant == self::VARIANT_ORIGINAL) {
+						$photoAttributes['url'] = $expectedFilename;
+					}
+					$photoAttributes[self::VARIANT_2_WIDTH_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->width;
+					$photoAttributes[self::VARIANT_2_HEIGHT_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->height;
+				}
+			}
+
+			DB::table('photos')->insert($photoAttributes);
 		}
 	}
 
 	/**
 	 * Upgrades the configuration of default ordering to the new column names.
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	private function upgradeConfig(): void
 	{
@@ -732,6 +928,8 @@ class RefactorAlbumModel extends Migration
 
 	/**
 	 * Downgrades the configuration of default ordering to the new column names.
+	 *
+	 * @throws InvalidArgumentException
 	 */
 	private function downgradeConfig(): void
 	{
@@ -756,10 +954,145 @@ class RefactorAlbumModel extends Migration
 	}
 
 	/**
+	 * Returns the short path of a picture file for the designated size
+	 * variant from an old-style photo wrt. to the old naming scheme.
+	 *
+	 * @param object $photo an object with attributes of the old photo table
+	 *
+	 * @return string the short path
+	 *
+	 * @throws InvalidArgumentException
+	 */
+	public function getShortPathOfPhoto(object $photo, int $variant): string
+	{
+		$origFilename = $photo->url;
+		$thumbFilename = $photo->thumbUrl;
+		$thumbFilename2x = $this->add2xToFilename($thumbFilename);
+		$otherFilename = ($this->isVideo($photo) || $this->isRaw($photo)) ? $thumbFilename : $origFilename;
+		$otherFilename2x = $this->add2xToFilename($otherFilename);
+		switch ($variant) {
+			case self::VARIANT_THUMB:
+				$filename = $thumbFilename;
+				break;
+			case self::VARIANT_THUMB2X:
+				$filename = $thumbFilename2x;
+				break;
+			case self::VARIANT_SMALL:
+			case self::VARIANT_MEDIUM:
+				$filename = $otherFilename;
+				break;
+			case self::VARIANT_SMALL2X:
+			case self::VARIANT_MEDIUM2X:
+				$filename = $otherFilename2x;
+				break;
+			case self::VARIANT_ORIGINAL:
+				$filename = $origFilename;
+				break;
+			default:
+				throw new InvalidArgumentException('Invalid size variant: ' . $variant);
+		}
+		$directory = self::VARIANT_2_PATH_PREFIX[$variant] . '/';
+		if ($variant === self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
+			$directory = 'raw/';
+		}
+
+		return $directory . $filename;
+	}
+
+	protected function isVideo(object $photo): bool
+	{
+		return in_array($photo->type, self::VALID_VIDEO_TYPES, true);
+	}
+
+	protected function isRaw(object $photo): bool
+	{
+		return $photo->type == 'raw';
+	}
+
+	/**
+	 * Given a filename generates the @2x corresponding filename.
+	 * This is used for thumbs, small and medium.
+	 */
+	protected function add2xToFilename(string $filename): string
+	{
+		$filename2x = explode('.', $filename);
+
+		return (count($filename2x) === 2) ?
+			$filename2x[0] . '@2x.' . $filename2x[1] :
+			$filename2x[0] . '@2x';
+	}
+
+	/**
+	 * @throws InvalidArgumentException
+	 */
+	protected function getWidth(object $photo, int $variant): int
+	{
+		switch ($variant) {
+			case self::VARIANT_THUMB:
+				return self::THUMBNAIL_DIM;
+			case self::VARIANT_THUMB2X:
+				return self::THUMBNAIL2X_DIM;
+			case self::VARIANT_SMALL:
+				return $photo->small_width ?: 0;
+			case self::VARIANT_SMALL2X:
+				return $photo->small2x_width ?: 0;
+			case self::VARIANT_MEDIUM:
+				return $photo->medium_width ?: 0;
+			case self::VARIANT_MEDIUM2X:
+				return $photo->medium2x_width ?: 0;
+			case self::VARIANT_ORIGINAL:
+				return $photo->width;
+			default:
+				throw new InvalidArgumentException('Invalid size variant: ' . $variant);
+		}
+	}
+
+	/**
+	 * @throws InvalidArgumentException
+	 */
+	protected function getHeight(object $photo, int $variant): int
+	{
+		switch ($variant) {
+			case self::VARIANT_THUMB:
+				return self::THUMBNAIL_DIM;
+			case self::VARIANT_THUMB2X:
+				return self::THUMBNAIL2X_DIM;
+			case self::VARIANT_SMALL:
+				return $photo->small_height ?: 0;
+			case self::VARIANT_SMALL2X:
+				return $photo->small2x_height ?: 0;
+			case self::VARIANT_MEDIUM:
+				return $photo->medium_height ?: 0;
+			case self::VARIANT_MEDIUM2X:
+				return $photo->medium2x_height ?: 0;
+			case self::VARIANT_ORIGINAL:
+				return $photo->height;
+			default:
+				throw new InvalidArgumentException('Invalid size variant: ' . $variant);
+		}
+	}
+
+	/**
+	 * @throws InvalidArgumentException
+	 */
+	protected function hasSizeVariant(object $photo, int $variant): bool
+	{
+		if ($variant == self::VARIANT_ORIGINAL || $variant == self::VARIANT_THUMB) {
+			return true;
+		} elseif ($variant == self::VARIANT_THUMB2X) {
+			return (bool) ($photo->thumb2x);
+		} else {
+			return $this->getWidth($photo, $variant) != 0;
+		}
+	}
+
+	/**
 	 * A helper function that allows to drop an index if exists.
 	 *
 	 * @param Blueprint $table
 	 * @param string    $indexName
+	 *
+	 * @throws DBALException
 	 */
 	private function dropIndexIfExists(Blueprint $table, string $indexName)
 	{
@@ -774,6 +1107,8 @@ class RefactorAlbumModel extends Migration
 	 *
 	 * @param Blueprint $table
 	 * @param string    $indexName
+	 *
+	 * @throws DBALException
 	 */
 	private function dropUniqueIfExists(Blueprint $table, string $indexName)
 	{
@@ -788,6 +1123,8 @@ class RefactorAlbumModel extends Migration
 	 *
 	 * @param Blueprint $table
 	 * @param string    $indexName
+	 *
+	 * @throws DBALException
 	 */
 	private function dropForeignIfExists(Blueprint $table, string $indexName)
 	{
