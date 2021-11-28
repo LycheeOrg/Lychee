@@ -375,7 +375,9 @@ $(document).ready(function () {
 	});
 
 	// Infobox
-	header.dom("#button_info").on("click", sidebar.toggle);
+	header.dom("#button_info").on("click", function () {
+		sidebar.toggle(true);
+	});
 
 	// Load photo
 	loadPhotoInfo(photoID);
@@ -900,8 +902,12 @@ header.bind = function () {
 		multiselect.bind();
 		lychee.load();
 	});
-	header.dom("#button_info_album").on(eventName, sidebar.toggle);
-	header.dom("#button_info").on(eventName, sidebar.toggle);
+	header.dom("#button_info_album").on(eventName, function () {
+		sidebar.toggle(true);
+	});
+	header.dom("#button_info").on(eventName, function () {
+		sidebar.toggle(true);
+	});
 	header.dom(".button--map-albums").on(eventName, function () {
 		lychee.gotoMap();
 	});
@@ -1162,20 +1168,29 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_sharing_album_users, #button_move_album"));
 			} else if (album.isTagAlbum()) {
 				$("#button_info_album").show();
-				$("#button_nsfw_album, #button_move_album").hide();
+				if (sidebar.keepSidebarVisible() && !visible.sidebar()) sidebar.toggle(false);
+				$("#button_move_album").hide();
 				$(".button_add, .header__divider", ".header__toolbar--album").hide();
 				tabindex.makeFocusable($("#button_info_album"));
-				tabindex.makeUnfocusable($("#button_nsfw_album, #button_move_album"));
+				tabindex.makeUnfocusable($("#button_move_album"));
 				tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
 				if (album.isUploadable()) {
-					$("#button_visibility_album, #button_sharing_album_users, #button_trash_album").show();
-					tabindex.makeFocusable($("#button_visibility_album, #button_sharing_album_users, #button_trash_album"));
+					$("#button_nsfw_album, #button_visibility_album, #button_sharing_album_users, #button_trash_album").show();
+					tabindex.makeFocusable($("#button_nsfw_album, #button_visibility_album, #button_sharing_album_users, #button_trash_album"));
+					if ($("#button_visibility_album").is(":hidden")) {
+						// This can happen with narrow screens.  In that
+						// case we re-enable the add button which will
+						// contain the overflow items.
+						$(".button_add, .header__divider", ".header__toolbar--album").show();
+						tabindex.makeFocusable($(".button_add, .header__divider", ".header__toolbar--album"));
+					}
 				} else {
-					$("#button_visibility_album, #button_sharing_album_users, #button_trash_album").hide();
-					tabindex.makeUnfocusable($("#button_visibility_album, #button_sharing_album_users, #button_trash_album"));
+					$("#button_nsfw_album, #button_visibility_album, #button_sharing_album_users, #button_trash_album").hide();
+					tabindex.makeUnfocusable($("#button_nsfw_album, #button_visibility_album, #button_sharing_album_users, #button_trash_album"));
 				}
 			} else {
 				$("#button_info_album").show();
+				if (sidebar.keepSidebarVisible() && !visible.sidebar()) sidebar.toggle(false);
 				tabindex.makeFocusable($("#button_info_album"));
 				if (album.isUploadable()) {
 					$("#button_nsfw_album, #button_trash_album, #button_move_album, #button_visibility_album, #button_sharing_album_users, .button_add, .header__divider", ".header__toolbar--album").show();
@@ -1473,7 +1488,12 @@ sidebar.triggerSearch = function (search_string) {
 	lychee.goto("search/" + encodeURIComponent(search_string));
 };
 
-sidebar.toggle = function () {
+sidebar.keepSidebarVisible = function () {
+	var v = sessionStorage.getItem("keepSidebarVisible");
+	return v !== null ? v === "true" : false;
+};
+
+sidebar.toggle = function (is_user_initiated) {
 	if (visible.sidebar() || visible.sidebarbutton()) {
 		header.dom(".button--info").toggleClass("active");
 		lychee.content.toggleClass("content--sidebar");
@@ -1481,6 +1501,8 @@ sidebar.toggle = function () {
 		if (typeof view !== "undefined") view.album.content.justify();
 		sidebar.dom().toggleClass("active");
 		photo.updateSizeLivePhotoDuringAnimation();
+
+		if (is_user_initiated) sessionStorage.setItem("keepSidebarVisible", visible.sidebar());
 
 		return true;
 	}
