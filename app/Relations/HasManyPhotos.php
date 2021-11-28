@@ -50,7 +50,7 @@ abstract class HasManyPhotos extends Relation
 			// indirect condition.
 			// Hence, the actually owning albums of the photos are not
 			// necessarily loaded.
-			Photo::query()->with(['album', 'size_variants_raw', 'size_variants_raw.sym_links']),
+			Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links']),
 			$owningAlbum
 		);
 	}

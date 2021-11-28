@@ -42,7 +42,7 @@ use League\Flysystem\Adapter\Local;
  * @property string full_path
  * @property int width
  * @property int height
- * @property Collection sym_links
+ * @property Collection<SymLink> sym_links
  */
 class SizeVariant extends Model
 {
@@ -73,11 +73,13 @@ class SizeVariant extends Model
 	public $timestamps = false;
 
 	protected $casts = [
+		'id' => 'integer',
+		'photo_id' => 'integer',
+		'size_variant' => 'integer',
 		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',
 		'width' => 'integer',
 		'height' => 'integer',
-		'size_variant' => 'integer',
 	];
 
 	/**

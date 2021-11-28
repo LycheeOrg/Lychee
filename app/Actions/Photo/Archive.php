@@ -85,7 +85,7 @@ class Archive
 	public function do(array $photoIDs, string $variant): Response
 	{
 		/** @var Collection $photos */
-		$photos = Photo::with(['album', 'size_variants_raw'])
+		$photos = Photo::with(['album', 'size_variants'])
 			->whereIn('id', $photoIDs)
 			->get();
 

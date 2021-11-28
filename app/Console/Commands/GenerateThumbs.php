@@ -62,8 +62,8 @@ class GenerateThumbs extends Command
 
 		$photos = Photo::query()
 			->where('type', 'like', 'image/%')
-			->with('size_variants_raw')
-			->whereDoesntHave('size_variants_raw', function (Builder $query) use ($sizeVariantID) {
+			->with('size_variants')
+			->whereDoesntHave('size_variants', function (Builder $query) use ($sizeVariantID) {
 				$query->where('size_variant', '=', $sizeVariantID);
 			})
 			->take($this->argument('amount'))

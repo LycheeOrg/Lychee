@@ -55,7 +55,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	{
 		return $this->photoAuthorisationProvider
 			->applySearchabilityFilter(
-				Photo::query()->with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+				Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
 			)->where($this->smartPhotoCondition);
 	}
 

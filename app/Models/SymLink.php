@@ -42,6 +42,8 @@ class SymLink extends Model
 	}
 
 	protected $casts = [
+		'id' => 'integer',
+		'size_variant_id' => 'integer',
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'url' => MustNotSetCast::class,

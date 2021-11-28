@@ -34,7 +34,7 @@ class HasAlbumThumb extends Relation
 		$this->sortingCol = Configs::get_value('sorting_Photos_col');
 		$this->sortingOrder = Configs::get_value('sorting_Photos_order');
 		parent::__construct(
-			Photo::query()->with(['size_variants_raw' => fn (HasMany $r) => Thumb::sizeVariantsFilter($r)]),
+			Photo::query()->with(['size_variants' => fn (HasMany $r) => Thumb::sizeVariantsFilter($r)]),
 			$parent
 		);
 	}

@@ -13,28 +13,74 @@ use JsonSerializable;
  */
 class SizeVariants implements Arrayable, JsonSerializable
 {
-	const NAMES = [
-		SizeVariant::THUMB => 'thumb',
-		SizeVariant::THUMB2X => 'thumb2x',
-		SizeVariant::SMALL => 'small',
-		SizeVariant::SMALL2X => 'small2x',
-		SizeVariant::MEDIUM => 'medium',
-		SizeVariant::MEDIUM2X => 'medium2x',
-		SizeVariant::ORIGINAL => 'original',
-	];
-
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
+
+	private ?SizeVariant $original = null;
+	private ?SizeVariant $medium2x = null;
+	private ?SizeVariant $medium = null;
+	private ?SizeVariant $small2x = null;
+	private ?SizeVariant $small = null;
+	private ?SizeVariant $thumb2x = null;
+	private ?SizeVariant $thumb = null;
 
 	/**
 	 * SizeVariants constructor.
 	 *
-	 * @param Photo $photo the parent object this object is tied to
+	 * @param Photo                        $photo        the parent object
+	 *                                                   this object is tied to
+	 * @param Collection<SizeVariant>|null $sizeVariants a collection of size
+	 *                                                   variants
 	 */
-	public function __construct(Photo $photo)
+	public function __construct(Photo $photo, ?Collection $sizeVariants = null)
 	{
 		$this->photo = $photo;
 		$this->namingStrategy = null;
+		if ($sizeVariants) {
+			/** @var SizeVariant $sizeVariant */
+			foreach ($sizeVariants as $sizeVariant) {
+				$this->add($sizeVariant);
+			}
+		}
+	}
+
+	public function add(SizeVariant $sizeVariant): void
+	{
+		if ($sizeVariant->photo_id !== $this->photo->id) {
+			throw new \UnexpectedValueException('ID of owning photo does not match');
+		}
+		$sizeVariant->setRelation('photo', $this->photo);
+
+		switch ($sizeVariant->size_variant) {
+			case SizeVariant::ORIGINAL:
+				$ref = &$this->original;
+				break;
+			case SizeVariant::MEDIUM2X:
+				$ref = &$this->medium2x;
+				break;
+			case SizeVariant::MEDIUM:
+				$ref = &$this->medium;
+				break;
+			case SizeVariant::SMALL2X:
+				$ref = &$this->small2x;
+				break;
+			case SizeVariant::SMALL:
+				$ref = &$this->small;
+				break;
+			case SizeVariant::THUMB2X:
+				$ref = &$this->thumb2x;
+				break;
+			case SizeVariant::THUMB:
+				$ref = &$this->thumb;
+				break;
+			default:
+				throw new \UnexpectedValueException('size variant ' . $sizeVariant . 'invalid');
+		}
+
+		if ($ref && $ref->id !== $sizeVariant->id) {
+			throw new \UnexpectedValueException('Another size variant of the same type has already been added');
+		}
+		$ref = $sizeVariant;
 	}
 
 	/**
@@ -44,17 +90,15 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 */
 	public function toArray(): array
 	{
-		$result = [];
-		/**
-		 * @var int    $variant
-		 * @var string $name
-		 */
-		foreach (self::NAMES as $variant => $name) {
-			$sv = $this->getSizeVariant($variant);
-			$result[$name] = $sv ? $sv->toArray() : null;
-		}
-
-		return $result;
+		return [
+			'original' => $this->original->toArray(),
+			'medium2x' => $this->medium2x ? $this->medium2x->toArray() : null,
+			'medium' => $this->medium ? $this->medium->toArray() : null,
+			'small2x' => $this->small2x ? $this->small2x->toArray() : null,
+			'small' => $this->small ? $this->small->toArray() : null,
+			'thumb2x' => $this->thumb2x ? $this->thumb2x->toArray() : null,
+			'thumb' => $this->thumb->toArray(),
+		];
 	}
 
 	/**
@@ -78,23 +122,39 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 */
 	public function getSizeVariant(int $sizeVariant): ?SizeVariant
 	{
-		// Sic! Search on the whole Eloquent Collection not on the database
-		// Please note, that `size_variant_raw` is called as an attribute
-		// not as a method.
-		// If it was called as a method, then the methods return type would
-		// be an HasMany object and the query would be executed on the
-		// database which is extremely inefficient, because it happens a lot
-		// of times.
-		// Moreover, calling `where` on the `HasMany`-relationship with
-		// different values would not benefit from eager loading.
-		// However, the number of size variants per photo is small (there are
-		// at most seven).
-		// So it is better to fetch all size variants once and then search
-		// on the size variants.
-		return $this->photo
-			->size_variants_raw
-			->where('size_variant', '=', $sizeVariant)
-			->first();
+		switch ($sizeVariant) {
+			case SizeVariant::ORIGINAL:
+				return $this->original;
+			case SizeVariant::MEDIUM2X:
+				return $this->medium2x;
+			case SizeVariant::MEDIUM:
+				return $this->medium;
+			case SizeVariant::SMALL2X:
+				return $this->small2x;
+			case SizeVariant::SMALL:
+				return $this->small;
+			case SizeVariant::THUMB2X:
+				return $this->thumb2x;
+			case SizeVariant::THUMB:
+				return $this->thumb;
+			default:
+				throw new \UnexpectedValueException('size variant ' . $sizeVariant . 'invalid');
+		}
+	}
+
+	public function getOriginal(): ?SizeVariant
+	{
+		return $this->original;
+	}
+
+	public function getThumb2x(): ?SizeVariant
+	{
+		return $this->thumb2x;
+	}
+
+	public function getThumb(): ?SizeVariant
+	{
+		return $this->thumb;
 	}
 
 	/**
@@ -108,13 +168,14 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
 	 */
-	public function createSizeVariant(int $sizeVariant, string $shortPath, int $width, int $height): SizeVariant
+	public function create(int $sizeVariant, string $shortPath, int $width, int $height): SizeVariant
 	{
 		if (!$this->photo->exists) {
 			throw new \LogicException('cannot create a size variant for a photo whose id is not yet persisted to DB');
 		}
 		/** @var SizeVariant $result */
-		$result = $this->photo->size_variants_raw()->make();
+		$result = new SizeVariant();
+		$result->photo_id = $this->photo->id;
 		$result->size_variant = $sizeVariant;
 		$result->short_path = $shortPath;
 		$result->width = $width;
@@ -122,16 +183,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 		if (!$result->save()) {
 			throw new \RuntimeException('could not persist size variant');
 		}
-		if ($this->photo->relationLoaded('size_variants_raw')) {
-			// If the relation `size_variant_raw` has already been loaded,
-			// ensure that the newly created size variant is inserted into
-			// the cached result, too.
-			// Otherwise, the cached relation will not know the newly added
-			// size variant and return wrong results.
-			/** @var Collection $collection */
-			$collection = $this->photo->getRelation('size_variants_raw');
-			$collection->add($result);
-		}
+		$this->add($result);
 
 		return $result;
 	}
@@ -148,18 +200,46 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *
 	 * @return bool True on success, false otherwise
 	 */
-	public function delete(bool $keepOriginalFile = false, bool $keepAllFiles = false): bool
+	public function deleteAll(bool $keepOriginalFile = false, bool $keepAllFiles = false): bool
 	{
 		$success = true;
-		/** @var SizeVariant $sv */
-		foreach ($this->photo->size_variants_raw as $sv) {
-			$keepFile = (($sv->size_variant === SizeVariant::ORIGINAL) && $keepOriginalFile) || $keepAllFiles;
-			$success &= $sv->delete($keepFile);
-		}
-		// ensure that relation `size_variants_raw` is refreshed and does not
-		// contain size variant models which have been removed from DB.
-		$this->photo->unsetRelation('size_variants_raw');
+		$success &= $this->original->delete($keepOriginalFile || $keepAllFiles);
+		$this->original = null;
+		$success &= !$this->medium2x || $this->medium2x->delete($keepAllFiles);
+		$this->medium2x = null;
+		$success &= !$this->medium || $this->medium->delete($keepAllFiles);
+		$this->medium = null;
+		$success &= !$this->small2x || $this->small2x->delete($keepAllFiles);
+		$this->small2x = null;
+		$success &= !$this->small || $this->small->delete($keepAllFiles);
+		$this->small = null;
+		$success &= !$this->thumb2x || $this->thumb2x->delete($keepAllFiles);
+		$this->thumb2x = null;
+		$success &= $this->thumb->delete($keepAllFiles);
+		$this->thumb = null;
 
 		return $success;
+	}
+
+	public function replicate(Photo $duplicatePhoto): SizeVariants
+	{
+		$duplicate = new SizeVariants($duplicatePhoto);
+		$duplicate->namingStrategy = $this->namingStrategy;
+		$this->replicateSizeVariant($duplicate, $this->original);
+		$this->replicateSizeVariant($duplicate, $this->medium2x);
+		$this->replicateSizeVariant($duplicate, $this->medium);
+		$this->replicateSizeVariant($duplicate, $this->small2x);
+		$this->replicateSizeVariant($duplicate, $this->small);
+		$this->replicateSizeVariant($duplicate, $this->thumb2x);
+		$this->replicateSizeVariant($duplicate, $this->thumb);
+
+		return $duplicate;
+	}
+
+	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $sizeVariant): void
+	{
+		if ($sizeVariant !== null) {
+			$duplicate->create($sizeVariant->size_variant, $sizeVariant->short_path, $sizeVariant->width, $sizeVariant->height);
+		}
 	}
 }

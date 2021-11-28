@@ -4,7 +4,6 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 
 class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 {
@@ -34,7 +33,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		$parameters->sourceFileInfo = new SourceFileInfo(
 			$this->existingVideo->title,
 			$this->existingVideo->type,
-			$this->existingVideo->size_variants->getSizeVariant(SizeVariant::ORIGINAL)->full_path
+			$this->existingVideo->size_variants->getOriginal()->full_path
 		);
 		$videoStrategy = new AddVideoPartnerStrategy($parameters, $this->photo);
 		$videoStrategy->do();

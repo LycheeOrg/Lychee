@@ -10,7 +10,6 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -158,7 +157,7 @@ class Archive extends Action
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$fullPath = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL)->full_path;
+			$fullPath = $photo->size_variants->getOriginal()->full_path;
 			// Check if readable
 			if (!@is_readable($fullPath)) {
 				Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $fullPath);

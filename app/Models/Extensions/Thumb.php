@@ -54,7 +54,7 @@ class Thumb implements Arrayable, JsonSerializable
 	{
 		/** @var Photo|null $cover */
 		$cover = $photoQueryable
-			->withOnly(['size_variants_raw' => fn (HasMany $r) => self::sizeVariantsFilter($r)])
+			->withOnly(['size_variants' => fn (HasMany $r) => self::sizeVariantsFilter($r)])
 			->orderBy('photos.is_starred', 'DESC')
 			->orderBy('photos.' . $sortingCol, $sortingOrder)
 			->select(['photos.id', 'photos.type'])
@@ -75,8 +75,8 @@ class Thumb implements Arrayable, JsonSerializable
 		if (!$photo) {
 			return null;
 		}
-		$thumb = $photo->size_variants->getSizeVariant(SizeVariant::THUMB);
-		$thumb2x = $photo->size_variants->getSizeVariant(SizeVariant::THUMB2X);
+		$thumb = $photo->size_variants->getThumb();
+		$thumb2x = $photo->size_variants->getThumb2x();
 
 		return new self(
 			$photo->id,

@@ -67,7 +67,7 @@ class DemoController extends Controller
 		/** @var Collection $albums */
 		$albums = Album::query()
 			->select(['albums.*'])
-			->with(['photos', 'photos.size_variants_raw', 'photos.size_variants_raw.sym_links'])
+			->with(['photos', 'photos.size_variants', 'photos.size_variants.sym_links'])
 			->join('base_albums', 'base_albums.id', '=', 'albums.id')
 			->where('base_albums.is_public', '=', true)
 			->where('base_albums.requires_link', '=', false)

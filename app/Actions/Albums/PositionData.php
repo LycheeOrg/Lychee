@@ -28,7 +28,7 @@ class PositionData
 		$result['id'] = null;
 		$result['title'] = null;
 		$result['photos'] = $this->photoAuthorisationProvider->applySearchabilityFilter(
-			Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+			Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
 				->whereNotNull('latitude')
 				->whereNotNull('longitude')
 		)->get()->toArray();

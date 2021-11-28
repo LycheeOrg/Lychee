@@ -56,7 +56,7 @@ class PhotoController extends Controller
 	public function get(PhotoIDRequest $request): Photo
 	{
 		return Photo::query()
-			->with(['size_variants_raw', 'size_variants_raw.sym_links'])
+			->with(['size_variants', 'size_variants.sym_links'])
 			->findOrFail($request['photoID']);
 	}
 

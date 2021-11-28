@@ -9,7 +9,7 @@ class Delete
 	public function do(array $photoIds): void
 	{
 		$photos = Photo::query()
-			->with(['size_variants_raw', 'size_variants_raw.sym_links'])
+			->with(['size_variants', 'size_variants.sym_links'])
 			->whereIn('id', $photoIds)
 			->get();
 		$success = true;

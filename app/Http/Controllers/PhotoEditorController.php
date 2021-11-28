@@ -32,7 +32,9 @@ class PhotoEditorController extends Controller
 			],
 		]);
 		/** @var Photo $photo */
-		$photo = Photo::query()->findOrFail($request['photoID']);
+		$photo = Photo::query()
+			->with(['size_variants'])
+			->findOrFail($request['photoID']);
 
 		return $rotate->do($photo, intval($request['direction']));
 	}

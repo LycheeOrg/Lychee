@@ -26,7 +26,7 @@ class PhotoObserver
 		}
 		$success = true;
 		// Delete all size variants
-		$success &= $photo->size_variants->delete($keepFiles, $keepFiles);
+		$success &= $photo->size_variants->deleteAll($keepFiles, $keepFiles);
 		// Delete Live Photo Video file
 		if (!$keepFiles && !empty($photo->live_photo_short_path) && Storage::exists($photo->live_photo_short_path)) {
 			$success &= Storage::delete($photo->live_photo_short_path);

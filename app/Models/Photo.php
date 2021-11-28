@@ -13,7 +13,7 @@ use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Observers\PhotoObserver;
-use App\Relations\HasManyBidirectionally;
+use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -60,7 +60,6 @@ use Illuminate\Support\Facades\Storage;
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
- * @property Collection   $size_variants_raw
  * @property bool         $is_downloadable
  * @property bool         $is_share_button_visible
  */
@@ -83,7 +82,6 @@ class Photo extends Model
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
-		'size_variants' => MustNotSetCast::class,
 		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
 		'is_downloadable' => MustNotSetCast::class,
@@ -102,7 +100,6 @@ class Photo extends Model
 	protected $hidden = [
 		'album',  // do not serialize relation in order to avoid infinite loops
 		'owner',  // do not serialize relation
-		'size_variants_raw', // do not serialize collections of size variants, but the wrapper object
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
@@ -113,7 +110,6 @@ class Photo extends Model
 	 */
 	protected $appends = [
 		'live_photo_url',
-		'size_variants',
 		'is_downloadable',
 		'is_share_button_visible',
 	];
@@ -121,11 +117,6 @@ class Photo extends Model
 	protected $attributes = [
 		'tags' => '',
 	];
-
-	/**
-	 * @var SizeVariants|null caches the size variants associated to this class, once they have been created by {@link getSizeVariantsAttribute()}
-	 */
-	protected ?SizeVariants $sizeVariants = null;
 
 	public function __construct(array $attributes = [])
 	{
@@ -171,23 +162,9 @@ class Photo extends Model
 		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
 
-	public function size_variants_raw(): HasManyBidirectionally
+	public function size_variants(): HasManySizeVariants
 	{
-		return $this->hasManyBidirectionally(SizeVariant::class);
-	}
-
-	/**
-	 * Accessor for the virtual attribute `size_variants`.
-	 *
-	 * @return SizeVariants
-	 */
-	protected function getSizeVariantsAttribute(): SizeVariants
-	{
-		if ($this->sizeVariants === null) {
-			$this->sizeVariants = new SizeVariants($this);
-		}
-
-		return $this->sizeVariants;
+		return new HasManySizeVariants($this);
 	}
 
 	/**
@@ -425,22 +402,21 @@ class Photo extends Model
 	public function replicate(array $except = null): Photo
 	{
 		$duplicate = parent::replicate($except);
-		$duplicate->unsetRelations();
-		// save duplicate so that is gets an ID
+		// A photo has the following relations: (parent) album, owner and
+		// size_variants.
+		// While the duplicate may keep the relation to the same album and
+		// each photo requires an individual set of size variants.
+		// Se we unset the relation and explicitly duplicate the size variants.
+		$duplicate->unsetRelation('size_variants');
+		// save duplicate so that the photo gets an ID
 		$duplicate->save();
-		/** @var SizeVariant $sizeVariant */
-		foreach ($this->size_variants_raw as $sizeVariant) {
-			/** @var SizeVariant $dupSizeVariant */
-			$dupSizeVariant = $duplicate->size_variants_raw()->make();
-			$dupSizeVariant->size_variant = $sizeVariant->size_variant;
-			$dupSizeVariant->short_path = $sizeVariant->short_path;
-			$dupSizeVariant->width = $sizeVariant->width;
-			$dupSizeVariant->height = $sizeVariant->height;
-			if (!$dupSizeVariant->save()) {
-				throw new \RuntimeException('could not persist size variant');
-			}
+
+		$areSizeVariantsOriginallyLoaded = $this->relationLoaded('size_variants');
+		// Duplicate the size variants of this instance for the duplicate
+		$duplicatedSizeVariants = $this->size_variants->replicate($duplicate);
+		if ($areSizeVariantsOriginallyLoaded) {
+			$duplicate->setRelation('size_variants', $duplicatedSizeVariants);
 		}
-		$duplicate->refresh();
 
 		return $duplicate;
 	}

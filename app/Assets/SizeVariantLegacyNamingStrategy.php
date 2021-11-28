@@ -38,7 +38,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 		parent::setPhoto($photo);
 		$this->originalExtension = '';
 		if ($this->photo) {
-			$sv = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+			$sv = $this->photo->size_variants->getOriginal();
 			if ($sv) {
 				if (!empty($sv->short_path)) {
 					$this->originalExtension = Helpers::getExtension($sv->short_path, false);

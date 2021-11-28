@@ -6,7 +6,6 @@ use App\Actions\Photo\Extensions\Constants;
 use App\Contracts\SizeVariantFactory;
 use App\Metadata\Extractor;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 
 class VideoData extends Command
@@ -64,6 +63,7 @@ class VideoData extends Command
 		);
 
 		$photos = Photo::query()
+			->with(['size_variants'])
 			->whereIn('type', $this->getValidVideoTypes())
 			->where('width', '=', 0)
 			->take($this->argument('count'))
@@ -80,7 +80,7 @@ class VideoData extends Command
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
-			$originalSizeVariant = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+			$originalSizeVariant = $photo->size_variants->getOriginal();
 			$fullPath = $originalSizeVariant->full_path;
 
 			if (file_exists($fullPath)) {

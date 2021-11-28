@@ -25,7 +25,9 @@ class Duplicate
 	public function do(array $photoIds, ?int $albumID): Collection
 	{
 		$duplicates = new Collection();
-		$photos = Photo::query()->whereIn('id', $photoIds)->get();
+		$photos = Photo::query()
+			->with(['size_variants'])
+			->whereIn('id', $photoIds)->get();
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {

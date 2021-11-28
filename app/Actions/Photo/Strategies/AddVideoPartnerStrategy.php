@@ -3,7 +3,6 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Models\Photo;
-use App\Models\SizeVariant;
 
 class AddVideoPartnerStrategy extends AddBaseStrategy
 {
@@ -14,7 +13,7 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 
 	public function do(): Photo
 	{
-		$original = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+		$original = $this->photo->size_variants->getOriginal();
 		$ext = $this->parameters->sourceFileInfo->getOriginalFileExtension();
 		$dstShortPath = substr($original->short_path, 0, -strlen($ext)) . $ext;
 		$dstFullPath = substr($original->full_path, 0, -strlen($ext)) . $ext;

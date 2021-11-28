@@ -51,6 +51,7 @@ class Album extends BaseAlbum implements Node
 	];
 
 	protected $casts = [
+		'id' => 'integer',
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
 		'cover_id' => 'integer',

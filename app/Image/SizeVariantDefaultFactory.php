@@ -53,7 +53,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 	protected function extractReferenceImage(): void
 	{
-		$original = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+		$original = $this->photo->size_variants->getOriginal();
 		if ($this->photo->isRaw()) {
 			$this->extractReferenceFromRaw($original->full_path, $original->width, $original->height);
 		} elseif ($this->photo->isVideo()) {
@@ -276,7 +276,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
 		if (!$sv) {
-			$sv = $this->photo->size_variants->createSizeVariant($sizeVariant, $shortPath, $maxWidth, $maxHeight);
+			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight);
 			if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 				$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
 			} else {
@@ -385,7 +385,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	public function createOriginal(int $width, int $height): SizeVariant
 	{
-		return $this->photo->size_variants->createSizeVariant(
+		return $this->photo->size_variants->create(
 			SizeVariant::ORIGINAL,
 			$this->namingStrategy->generateShortPath(SizeVariant::ORIGINAL),
 			$width,

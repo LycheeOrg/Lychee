@@ -19,7 +19,7 @@ class PhotoSearch
 	public function query(array $terms): Collection
 	{
 		$query = $this->photoAuthorisationProvider->applySearchabilityFilter(
-			Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+			Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
 		);
 
 		foreach ($terms as $term) {

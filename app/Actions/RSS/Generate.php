@@ -5,7 +5,6 @@ namespace App\Actions\RSS;
 use App\Actions\PhotoAuthorisationProvider;
 use App\Models\Configs;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Feed\FeedItem;
@@ -31,7 +30,7 @@ class Generate
 	private function toFeedItem(Photo $photo_model): FeedItem
 	{
 		$page_link = $this->create_link_to_page($photo_model);
-		$sizeVariant = $photo_model->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+		$sizeVariant = $photo_model->size_variants->getOriginal();
 
 		return FeedItem::create([
 			'id' => $page_link,
@@ -54,7 +53,7 @@ class Generate
 
 		$photos = $this->photoAuthorisationProvider
 			->applySearchabilityFilter(
-				Photo::with('album', 'owner', 'size_variants_raw', 'size_variants_raw.sym_links')
+				Photo::with('album', 'owner', 'size_variants', 'size_variants.sym_links')
 			)
 			->where('photos.created_at', '>=', $nowMinus)
 			->limit($rss_max)

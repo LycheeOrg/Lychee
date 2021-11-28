@@ -31,6 +31,7 @@ class TagAlbum extends BaseAlbum
 	];
 
 	protected $casts = [
+		'id' => 'integer',
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
 	];

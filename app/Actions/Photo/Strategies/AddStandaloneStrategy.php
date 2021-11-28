@@ -119,7 +119,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		}
 
 		$videoLengthBytes = intval($this->parameters->info['MicroVideoOffset']);
-		$original = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+		$original = $this->photo->size_variants->getOriginal();
 		$shortPathPhoto = $original->short_path;
 		$fullPathPhoto = $original->full_path;
 		$shortPathVideo = pathinfo($shortPathPhoto, PATHINFO_FILENAME) . '.mov';
