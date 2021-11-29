@@ -46,12 +46,12 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 			$this->convert_size(ini_get('post_max_size')) < $this->convert_size('100M')
 		) {
 			$errors[]
-				= 'Warning: You may experience problems when uploading a photos of large size. Take a look in the FAQ for details.';
+				= 'Warning: You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.';
 		}
 		$max_execution_time = intval(ini_get('max_execution_time'));
 		if (0 < $max_execution_time && $max_execution_time < 200) {
 			$errors[]
-				= 'Warning: You may experience problems when uploading a large amount of photos. Take a look in the FAQ for details.';
+				= 'Warning: You may experience problems when uploading a photo of large size or handling many/large albums. Take a look in the FAQ for details.';
 		}
 		if (empty(ini_get('allow_url_fopen'))) {
 			$errors[]
