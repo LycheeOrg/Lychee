@@ -35,7 +35,6 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function __construct(Photo $photo, ?Collection $sizeVariants = null)
 	{
 		$this->photo = $photo;
-		$this->namingStrategy = null;
 		if ($sizeVariants) {
 			/** @var SizeVariant $sizeVariant */
 			foreach ($sizeVariants as $sizeVariant) {
@@ -91,13 +90,13 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function toArray(): array
 	{
 		return [
-			'original' => $this->original->toArray(),
+			'original' => $this->original ? $this->original->toArray() : null,
 			'medium2x' => $this->medium2x ? $this->medium2x->toArray() : null,
 			'medium' => $this->medium ? $this->medium->toArray() : null,
 			'small2x' => $this->small2x ? $this->small2x->toArray() : null,
 			'small' => $this->small ? $this->small->toArray() : null,
 			'thumb2x' => $this->thumb2x ? $this->thumb2x->toArray() : null,
-			'thumb' => $this->thumb->toArray(),
+			'thumb' => $this->thumb ? $this->thumb->toArray() : null,
 		];
 	}
 
@@ -203,7 +202,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function deleteAll(bool $keepOriginalFile = false, bool $keepAllFiles = false): bool
 	{
 		$success = true;
-		$success &= $this->original->delete($keepOriginalFile || $keepAllFiles);
+		$success &= !$this->original || $this->original->delete($keepOriginalFile || $keepAllFiles);
 		$this->original = null;
 		$success &= !$this->medium2x || $this->medium2x->delete($keepAllFiles);
 		$this->medium2x = null;
@@ -215,7 +214,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 		$this->small = null;
 		$success &= !$this->thumb2x || $this->thumb2x->delete($keepAllFiles);
 		$this->thumb2x = null;
-		$success &= $this->thumb->delete($keepAllFiles);
+		$success &= !$this->thumb || $this->thumb->delete($keepAllFiles);
 		$this->thumb = null;
 
 		return $success;
@@ -224,7 +223,6 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function replicate(Photo $duplicatePhoto): SizeVariants
 	{
 		$duplicate = new SizeVariants($duplicatePhoto);
-		$duplicate->namingStrategy = $this->namingStrategy;
 		$this->replicateSizeVariant($duplicate, $this->original);
 		$this->replicateSizeVariant($duplicate, $this->medium2x);
 		$this->replicateSizeVariant($duplicate, $this->medium);
