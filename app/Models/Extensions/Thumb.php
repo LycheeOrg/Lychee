@@ -35,7 +35,7 @@ class Thumb implements Arrayable, JsonSerializable
 	 */
 	public static function sizeVariantsFilter(HasMany $relation): HasMany
 	{
-		return $relation->whereIn('size_variant', [SizeVariant::THUMB, SizeVariant::THUMB2X]);
+		return $relation->whereIn('type', [SizeVariant::THUMB, SizeVariant::THUMB2X]);
 	}
 
 	/**

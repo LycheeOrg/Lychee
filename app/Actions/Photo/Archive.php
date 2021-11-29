@@ -273,7 +273,7 @@ class Archive
 				// particular suffix but remain as is.
 				// All other size variants (i.e. the generated, smaller ones)
 				// get a size information as suffix.
-				if ($sv->size_variant !== SizeVariant::ORIGINAL) {
+				if ($sv->type !== SizeVariant::ORIGINAL) {
 					$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
 				}
 			}

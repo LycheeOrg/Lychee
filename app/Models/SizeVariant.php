@@ -33,15 +33,15 @@ use League\Flysystem\Adapter\Local;
  *
  * Describes a size variant of a photo.
  *
- * @property int id
- * @property int photo_id
- * @property Photo photo
- * @property int size_variant
- * @property string short_path
- * @property string url
- * @property string full_path
- * @property int width
- * @property int height
+ * @property int                 id
+ * @property int                 photo_id
+ * @property Photo               photo
+ * @property int                 type
+ * @property string              short_path
+ * @property string              url
+ * @property string              full_path
+ * @property int                 width
+ * @property int                 height
  * @property Collection<SymLink> sym_links
  */
 class SizeVariant extends Model
@@ -75,7 +75,7 @@ class SizeVariant extends Model
 	protected $casts = [
 		'id' => 'integer',
 		'photo_id' => 'integer',
-		'size_variant' => 'integer',
+		'type' => 'integer',
 		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',
 		'width' => 'integer',
@@ -189,26 +189,26 @@ class SizeVariant extends Model
 	}
 
 	/**
-	 * Mutator of the attribute {@link SizeVariant::$size_variant}.
+	 * Mutator of the attribute {@link SizeVariant::$type}.
 	 *
-	 * @param int $sizeVariant the size variant; allowed values are
-	 *                         {@link SizeVariant::ORIGINAL},
-	 *                         {@link SizeVariant::MEDIUM2X},
-	 *                         {@link SizeVariant::MEDIUM},
-	 *                         {@link SizeVariant::SMALL2X},
-	 *                         {@link SizeVariant::SMALL},
-	 *                         {@link SizeVariant::THUMB2X},
-	 *                         {@link SizeVariant::THUMB}
+	 * @param int $sizeVariantType the type of size variant; allowed values are
+	 *                             {@link SizeVariant::ORIGINAL},
+	 *                             {@link SizeVariant::MEDIUM2X},
+	 *                             {@link SizeVariant::MEDIUM},
+	 *                             {@link SizeVariant::SMALL2X},
+	 *                             {@link SizeVariant::SMALL},
+	 *                             {@link SizeVariant::THUMB2X}, and
+	 *                             {@link SizeVariant::THUMB}
 	 *
 	 * @throws \InvalidArgumentException thrown if `$sizeVariant` is
 	 *                                   out-of-bounds
 	 */
-	public function setSizeVariantAttribute(int $sizeVariant): void
+	public function setSizeVariantAttribute(int $sizeVariantType): void
 	{
-		if (self::ORIGINAL > $sizeVariant || $sizeVariant > self::THUMB) {
-			throw new \InvalidArgumentException('passed size variant ' . $sizeVariant . ' out-of-range');
+		if (self::ORIGINAL > $sizeVariantType || $sizeVariantType > self::THUMB) {
+			throw new \InvalidArgumentException('passed size variant ' . $sizeVariantType . ' out-of-range');
 		}
-		$this->attributes['size_variant'] = $sizeVariant;
+		$this->attributes['type'] = $sizeVariantType;
 	}
 
 	/**

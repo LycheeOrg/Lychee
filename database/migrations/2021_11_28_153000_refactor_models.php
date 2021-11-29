@@ -525,12 +525,12 @@ class RefactorModels extends Migration
 			// Column definitions
 			$table->bigIncrements('id')->nullable(false);
 			$table->unsignedBigInteger('photo_id')->nullable(false);
-			$table->unsignedInteger('size_variant')->nullable(false)->default(0)->comment('0: original, ..., 6: thumb');
+			$table->unsignedInteger('type')->nullable(false)->default(0)->comment('0: original, ..., 6: thumb');
 			$table->string('short_path')->nullable(false);
 			$table->integer('width')->nullable(false);
 			$table->integer('height')->nullable(false);
 			// Indices and constraint definitions
-			$table->unique(['photo_id', 'size_variant']);
+			$table->unique(['photo_id', 'type']);
 			$table->foreign('photo_id')->references('id')->on('photos');
 			// Sic!
 			// Columns `created_at` and `updated_at` left out by intention.
@@ -688,14 +688,14 @@ class RefactorModels extends Migration
 				'live_photo_checksum' => $photo->livePhotoChecksum,
 			]);
 
-			for ($variant = self::VARIANT_ORIGINAL; $variant <= self::VARIANT_THUMB; $variant++) {
-				if ($this->hasSizeVariant($photo, $variant)) {
+			for ($variantType = self::VARIANT_ORIGINAL; $variantType <= self::VARIANT_THUMB; $variantType++) {
+				if ($this->hasSizeVariant($photo, $variantType)) {
 					DB::table('size_variants')->insert([
 						'photo_id' => $photo->id,
-						'size_variant' => $variant,
-						'short_path' => $this->getShortPathOfPhoto($photo, $variant),
-						'width' => $this->getWidth($photo, $variant),
-						'height' => $this->getHeight($photo, $variant),
+						'type' => $variantType,
+						'short_path' => $this->getShortPathOfPhoto($photo, $variantType),
+						'width' => $this->getWidth($photo, $variantType),
+						'height' => $this->getHeight($photo, $variantType),
 					]);
 				}
 			}
@@ -817,13 +817,13 @@ class RefactorModels extends Migration
 			// be any photo without at least a size variant "original".
 			$sizeVariants = DB::table('size_variants')
 				->where('photo_id', '=', $photo->id)
-				->orderBy('size_variant')
+				->orderBy('type')
 				->get();
 			if ($sizeVariants->isEmpty()) {
 				continue;
 			}
 			$originalSizeVariant = $sizeVariants->first();
-			if ($originalSizeVariant->size_variant != self::VARIANT_ORIGINAL) {
+			if ($originalSizeVariant->type != self::VARIANT_ORIGINAL) {
 				continue;
 			}
 
@@ -853,16 +853,16 @@ class RefactorModels extends Migration
 			foreach ($sizeVariants as $sizeVariant) {
 				$fileExtension = '.' . pathinfo($sizeVariant->short_path, PATHINFO_EXTENSION);
 				if (
-					$sizeVariant->size_variant == self::VARIANT_THUMB2X ||
-					$sizeVariant->size_variant == self::VARIANT_SMALL2X ||
-					$sizeVariant->size_variant == self::VARIANT_MEDIUM2X
+					$sizeVariant->type == self::VARIANT_THUMB2X ||
+					$sizeVariant->type == self::VARIANT_SMALL2X ||
+					$sizeVariant->type == self::VARIANT_MEDIUM2X
 				) {
 					$expectedFilename = $expectedBasename . '@2x' . $fileExtension;
 				} else {
 					$expectedFilename = $expectedBasename . $fileExtension;
 				}
-				$expectedPathPrefix = self::VARIANT_2_PATH_PREFIX[$sizeVariant->size_variant] . '/';
-				if ($sizeVariant->size_variant == self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
+				$expectedPathPrefix = self::VARIANT_2_PATH_PREFIX[$sizeVariant->type] . '/';
+				if ($sizeVariant->type == self::VARIANT_ORIGINAL && $this->isRaw($photo)) {
 					$expectedPathPrefix = 'raw/';
 				}
 				$expectedShortPath = $expectedPathPrefix . $expectedFilename;
@@ -882,16 +882,16 @@ class RefactorModels extends Migration
 					}
 				}
 
-				if ($sizeVariant->size_variant == self::VARIANT_THUMB2X) {
+				if ($sizeVariant->type == self::VARIANT_THUMB2X) {
 					$photoAttributes['thumb2x'] = true;
-				} elseif ($sizeVariant->size_variant == self::VARIANT_THUMB) {
+				} elseif ($sizeVariant->type == self::VARIANT_THUMB) {
 					$photoAttributes['thumbUrl'] = $expectedFilename;
 				} else {
-					if ($sizeVariant->size_variant == self::VARIANT_ORIGINAL) {
+					if ($sizeVariant->type == self::VARIANT_ORIGINAL) {
 						$photoAttributes['url'] = $expectedFilename;
 					}
-					$photoAttributes[self::VARIANT_2_WIDTH_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->width;
-					$photoAttributes[self::VARIANT_2_HEIGHT_ATTRIBUTE[$sizeVariant->size_variant]] = $sizeVariant->height;
+					$photoAttributes[self::VARIANT_2_WIDTH_ATTRIBUTE[$sizeVariant->type]] = $sizeVariant->width;
+					$photoAttributes[self::VARIANT_2_HEIGHT_ATTRIBUTE[$sizeVariant->type]] = $sizeVariant->height;
 				}
 			}
 
@@ -1075,14 +1075,14 @@ class RefactorModels extends Migration
 	/**
 	 * @throws InvalidArgumentException
 	 */
-	protected function hasSizeVariant(object $photo, int $variant): bool
+	protected function hasSizeVariant(object $photo, int $variantType): bool
 	{
-		if ($variant == self::VARIANT_ORIGINAL || $variant == self::VARIANT_THUMB) {
+		if ($variantType == self::VARIANT_ORIGINAL || $variantType == self::VARIANT_THUMB) {
 			return true;
-		} elseif ($variant == self::VARIANT_THUMB2X) {
+		} elseif ($variantType == self::VARIANT_THUMB2X) {
 			return (bool) ($photo->thumb2x);
 		} else {
-			return $this->getWidth($photo, $variant) != 0;
+			return $this->getWidth($photo, $variantType) != 0;
 		}
 	}
 

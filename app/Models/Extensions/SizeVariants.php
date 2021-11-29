@@ -50,7 +50,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 		}
 		$sizeVariant->setRelation('photo', $this->photo);
 
-		switch ($sizeVariant->size_variant) {
+		switch ($sizeVariant->type) {
 			case SizeVariant::ORIGINAL:
 				$ref = &$this->original;
 				break;
@@ -115,13 +115,21 @@ class SizeVariants implements Arrayable, JsonSerializable
 	/**
 	 * Returns the requested size variant of the photo.
 	 *
-	 * @param int $sizeVariant The type of the size variant
+	 * @param int $sizeVariantType the type of the size variant; allowed
+	 *                             values are:
+	 *                             {@link SizeVariant::ORIGINAL},
+	 *                             {@link SizeVariant::MEDIUM2X},
+	 *                             {@link SizeVariant::MEDIUM2},
+	 *                             {@link SizeVariant::SMALL2X},
+	 *                             {@link SizeVariant::SMALL},
+	 *                             {@link SizeVariant::THUMB2X}, and
+	 *                             {@link SizeVariant::THUMB}
 	 *
 	 * @return SizeVariant|null The size variant
 	 */
-	public function getSizeVariant(int $sizeVariant): ?SizeVariant
+	public function getSizeVariant(int $sizeVariantType): ?SizeVariant
 	{
-		switch ($sizeVariant) {
+		switch ($sizeVariantType) {
 			case SizeVariant::ORIGINAL:
 				return $this->original;
 			case SizeVariant::MEDIUM2X:
@@ -137,7 +145,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 			case SizeVariant::THUMB:
 				return $this->thumb;
 			default:
-				throw new \UnexpectedValueException('size variant ' . $sizeVariant . 'invalid');
+				throw new \UnexpectedValueException('size variant ' . $sizeVariantType . 'invalid');
 		}
 	}
 
@@ -160,14 +168,23 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 * Creates a new instance of {@link \App\Models\SizeVariant} for the
 	 * associated photo and persists it to DB.
 	 *
-	 * @param int    $sizeVariant the type of the desired size variant
-	 * @param string $shortPath   the short path of the media file this size variant shall point to
-	 * @param int    $width       the width of the size variant
-	 * @param int    $height      the height of the size variant
+	 * @param int    $sizeVariantType the type of the desired size variant;
+	 *                                allowed values are:
+	 *                                {@link SizeVariant::ORIGINAL},
+	 *                                {@link SizeVariant::MEDIUM2X},
+	 *                                {@link SizeVariant::MEDIUM2},
+	 *                                {@link SizeVariant::SMALL2X},
+	 *                                {@link SizeVariant::SMALL},
+	 *                                {@link SizeVariant::THUMB2X}, and
+	 *                                {@link SizeVariant::THUMB}
+	 * @param string $shortPath       the short path of the media file this
+	 *                                size variant shall point to
+	 * @param int    $width           the width of the size variant
+	 * @param int    $height          the height of the size variant
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
 	 */
-	public function create(int $sizeVariant, string $shortPath, int $width, int $height): SizeVariant
+	public function create(int $sizeVariantType, string $shortPath, int $width, int $height): SizeVariant
 	{
 		if (!$this->photo->exists) {
 			throw new \LogicException('cannot create a size variant for a photo whose id is not yet persisted to DB');
@@ -175,7 +192,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 		/** @var SizeVariant $result */
 		$result = new SizeVariant();
 		$result->photo_id = $this->photo->id;
-		$result->size_variant = $sizeVariant;
+		$result->type = $sizeVariantType;
 		$result->short_path = $shortPath;
 		$result->width = $width;
 		$result->height = $height;
@@ -237,7 +254,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant !== null) {
-			$duplicate->create($sizeVariant->size_variant, $sizeVariant->short_path, $sizeVariant->width, $sizeVariant->height);
+			$duplicate->create($sizeVariant->type, $sizeVariant->short_path, $sizeVariant->width, $sizeVariant->height);
 		}
 	}
 }

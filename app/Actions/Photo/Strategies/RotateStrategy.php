@@ -172,7 +172,7 @@ class RotateStrategy extends AddBaseStrategy
 				/** @var SizeVariant $newSizeVariant */
 				foreach ($newSizeVariants as $newSizeVariant) {
 					$duplicate->size_variants->create(
-						$newSizeVariant->size_variant,
+						$newSizeVariant->type,
 						$newSizeVariant->short_path,
 						$newSizeVariant->width,
 						$newSizeVariant->height
