@@ -185,10 +185,10 @@ class Photo extends Model
 	 *
 	 * @return string A properly formatted shutter value
 	 */
-	protected function getShutterAttribute(?string $shutter): string
+	protected function getShutterAttribute(?string $shutter): ?string
 	{
 		if (empty($shutter)) {
-			return '';
+			return null;
 		}
 		// shutter speed needs to be processed. It is stored as a string `a/b s`
 		if (substr($shutter, 0, 2) != '1/') {
@@ -261,10 +261,10 @@ class Photo extends Model
 	 *
 	 * @return string
 	 */
-	protected function getFocalAttribute(?string $focal): string
+	protected function getFocalAttribute(?string $focal): ?string
 	{
 		if (empty($focal)) {
-			return '';
+			return null;
 		}
 		// We need to format the framerate (stored as focal) -> max 2 decimal digits
 		return $this->isVideo() ? round($focal, 2) : $focal;
