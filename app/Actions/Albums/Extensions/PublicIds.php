@@ -64,7 +64,7 @@ class PublicIds
 	 * Return a collection of Album that are not directly accessible by visibility criteria
 	 * ! we do not include password protected albums from other users.
 	 *
-	 * @return BaseCollection<(_lft, _rgt)>
+	 * @return BaseCollection<array{_lft: int, _rgt: int}>
 	 */
 	private function getDirectlyNotAccessible(): BaseCollection
 	{
