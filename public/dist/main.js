@@ -1008,7 +1008,7 @@ album.setShowTags = function (albumID) {
 		};
 
 		api.post("Album::setShowTags", params, function (_data) {
-			if (_data !== true) {
+			if (_data) {
 				lychee.error(null, params, _data);
 			} else {
 				album.reload();
@@ -1097,7 +1097,7 @@ album.setTitle = function (albumIDs) {
 		};
 
 		api.post("Album::setTitle", params, function (_data) {
-			if (_data !== true) {
+			if (_data) {
 				lychee.error(null, params, _data);
 			}
 		});
@@ -1141,7 +1141,7 @@ album.setDescription = function (albumID) {
 		};
 
 		api.post("Album::setDescription", params, function (_data) {
-			if (_data !== true) {
+			if (_data) {
 				lychee.error(null, params, _data);
 			}
 		});
@@ -1173,7 +1173,7 @@ album.toggleCover = function (photoID) {
 	};
 
 	api.post("Album::setCover", params, function (data) {
-		if (data !== true) {
+		if (data) {
 			lychee.error(null, params, data);
 		} else {
 			view.album.content.cover(photoID);
@@ -1201,7 +1201,7 @@ album.setLicense = function (albumID) {
 		};
 
 		api.post("Album::setLicense", params, function (_data) {
-			if (_data !== true) {
+			if (_data) {
 				lychee.error(null, params, _data);
 			} else {
 				if (visible.album()) {
@@ -1513,7 +1513,7 @@ album.setNSFW = function (albumID, e) {
 	};
 
 	api.post("Album::setNSFW", params, function (data) {
-		if (data !== true) {
+		if (data) {
 			lychee.error(null, params, data);
 		} else {
 			albums.refresh();
@@ -1682,7 +1682,7 @@ album.merge = function (albumIDs, albumID) {
 		};
 
 		api.post("Album::merge", params, function (data) {
-			if (data !== true) {
+			if (data) {
 				lychee.error(null, params, data);
 			} else {
 				album.reload();
@@ -1722,7 +1722,7 @@ album.setAlbum = function (albumIDs, albumID) {
 		};
 
 		api.post("Album::move", params, function (data) {
-			if (data !== true) {
+			if (data) {
 				lychee.error(null, params, data);
 			} else {
 				album.reload();
@@ -6292,7 +6292,7 @@ notifications.update = function (params) {
 	}
 
 	api.post("User::UpdateEmail", params, function (data) {
-		if (data !== true) {
+		if (data) {
 			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
 		} else {
@@ -7137,7 +7137,7 @@ _photo.setLicense = function (photoID) {
 		};
 
 		api.post("Photo::setLicense", params, function (_data) {
-			if (_data !== true) {
+			if (_data) {
 				lychee.error(null, params, _data);
 			} else {
 				// update the photo JSON and reload the license in the sidebar
@@ -9549,7 +9549,7 @@ users.update = function (params) {
 	}
 
 	api.post("User::Save", params, function (data) {
-		if (data !== true) {
+		if (data) {
 			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
 		} else {
