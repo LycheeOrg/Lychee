@@ -6,6 +6,7 @@ namespace App\Models\Extensions;
 
 use App\Models\Configs;
 use App\Models\Logs;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
 
@@ -16,18 +17,6 @@ use Illuminate\Database\QueryException;
  */
 trait HasTimeBasedID
 {
-	public static function bootHasTimeBasedID()
-	{
-		static::creating(function (Model $model) {
-			$pKey = $model->getKeyName();
-			if (empty($model->$pKey)) {
-				$model->generateID();
-			}
-
-			return true;
-		});
-	}
-
 	/**
 	 * Get the value indicating whether the IDs are incrementing.
 	 *
@@ -66,22 +55,40 @@ trait HasTimeBasedID
 	}
 
 	/**
-	 * Saves the model to the database.
+	 * Performs the `INSERT` operation of the model.
 	 *
-	 * @param array $options
+	 * This method also tries to create a unique, time-based ID.
+	 * The method is mostly copied & pasted from {@link Model::performInsert()}
+	 * with adoptions regarding key generation.
+	 *
+	 * @param Builder $query
 	 *
 	 * @return bool
 	 */
-	public function save(array $options = []): bool
+	protected function performInsert(Builder $query): bool
 	{
+		if ($this->fireModelEvent('creating') === false) {
+			return false;
+		}
+
+		// First we'll need to create a fresh query instance and touch the creation and
+		// update timestamps on this model, which are maintained by us for developer
+		// convenience. After, we will just continue saving these model instances.
+		if ($this->usesTimestamps()) {
+			$this->updateTimestamps();
+		}
+
 		$result = false;
 		$retryCounter = 5;
 		$lastException = null;
+
 		do {
 			$retry = false;
 			try {
 				$retryCounter--;
-				$result = parent::save();
+				$this->generateKey();
+				$attributes = $this->getAttributesForInsert();
+				$result = $query->insert($attributes);
 			} catch (QueryException $e) {
 				$lastException = $e;
 				$errorCode = $e->getCode();
@@ -91,8 +98,6 @@ trait HasTimeBasedID
 					// wait randomly up to 1s before retrying.
 					usleep(rand(0, 1000000));
 					$retry = true;
-					// Remove primary key which has been set by last attempt
-					unset($this->attributes[$this->getKeyName()]);
 				} else {
 					throw $e;
 				}
@@ -105,13 +110,20 @@ trait HasTimeBasedID
 			throw new \RuntimeException($msg, 0, $lastException);
 		}
 
+		// We will go ahead and set the exists property to true, so that it is set when
+		// the created event is fired, just in case the developer tries to update it
+		// during the event. This will allow them to do so and run an update here.
+		$this->exists = true;
+		$this->wasRecentlyCreated = true;
+		$this->fireModelEvent('created', false);
+
 		return $result;
 	}
 
 	/**
 	 * Generates an ID for the primary key from current microtime.
 	 */
-	public function generateID(): void
+	private function generateKey(): void
 	{
 		if (
 			PHP_INT_MAX == 2147483647
