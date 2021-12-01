@@ -12,7 +12,6 @@ use App\Models\Extensions\HasTimeBasedID;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Observers\PhotoObserver;
 use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
@@ -117,12 +116,6 @@ class Photo extends Model
 	protected $attributes = [
 		'tags' => '',
 	];
-
-	public function __construct(array $attributes = [])
-	{
-		parent::__construct($attributes);
-		$this->registerObserver(PhotoObserver::class);
-	}
 
 	/**
 	 * Creates a new instance of {@link LinkedPhotoCollection}.
@@ -386,7 +379,7 @@ class Photo extends Model
 	/**
 	 * @return bool true if another DB entry exists for the same photo
 	 */
-	public function hasDuplicate(): bool
+	protected function hasDuplicate(): bool
 	{
 		$checksum = $this->checksum;
 
@@ -419,5 +412,27 @@ class Photo extends Model
 		}
 
 		return $duplicate;
+	}
+
+	public function delete(): bool
+	{
+		$keepFiles = $this->hasDuplicate();
+		if ($keepFiles) {
+			Logs::notice(__METHOD__, __LINE__, $this->id . ' is a duplicate, files are not deleted!');
+		}
+		$success = true;
+		// Delete all size variants
+		$success &= $this->size_variants->deleteAll($keepFiles, $keepFiles);
+		// Delete Live Photo Video file
+		$livePhotoShortPath = $this->live_photo_short_path;
+		if (!$keepFiles && !empty($livePhotoShortPath) && Storage::exists($livePhotoShortPath)) {
+			$success &= Storage::delete($livePhotoShortPath);
+		}
+
+		if (!$success) {
+			return false;
+		}
+
+		return parent::delete() !== false;
 	}
 }
