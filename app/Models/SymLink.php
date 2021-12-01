@@ -9,7 +9,6 @@ use App\Observers\SymLinkObserver;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,7 +28,6 @@ use Illuminate\Support\Facades\Storage;
  */
 class SymLink extends Model
 {
-	use Notifiable;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 
