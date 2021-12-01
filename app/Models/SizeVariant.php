@@ -7,7 +7,6 @@ use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Observers\SizeVariantObserver;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -57,12 +56,6 @@ class SizeVariant extends Model
 	const SMALL = 4;
 	const THUMB2X = 5;
 	const THUMB = 6;
-
-	public function __construct(array $attributes = [])
-	{
-		parent::__construct($attributes);
-		$this->registerObserver(SizeVariantObserver::class);
-	}
 
 	/**
 	 * This model has no own timestamps as it is inseparably bound to its
@@ -221,11 +214,11 @@ class SizeVariant extends Model
 	public function delete(bool $keepFile = false): bool
 	{
 		// Delete all symbolic links pointing to this size variant
-		// The observer for the SymLink model takes care of actually erasing
-		// the physical symbolic links from disk
+		// The SymLink model takes care of actually erasing
+		// the physical symbolic links from disk.
 		// We must not use a "mass deletion" like $this->sym_links()->delete()
-		// here, because this doesn't fire the model events and thus the
-		// observer would not delete any actual symbolic link from disk.
+		// here, because this doesn't invoke the method `delete` on the model
+		// and thus the would not delete any actual symbolic link from disk.
 		$symLinks = $this->sym_links;
 		/** @var SymLink $symLink */
 		foreach ($symLinks as $symLink) {
@@ -234,12 +227,17 @@ class SizeVariant extends Model
 			}
 		}
 
-		if ($keepFile) {
-			// If short_path is the empty string, SizeVariantObserver does
-			// not erase file from disk during the erasing event
-			$this->attributes['short_path'] = '';
+		// Delete the actual media file
+		if (!$keepFile) {
+			$disk = Storage::disk();
+			$shortPath = $this->short_path;
+			if (!empty($shortPath) && $disk->exists($shortPath)) {
+				if ($disk->delete($shortPath) === false) {
+					return false;
+				}
+			}
 		}
 
-		return parent::delete();
+		return parent::delete() !== false;
 	}
 }
