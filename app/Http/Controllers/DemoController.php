@@ -64,7 +64,7 @@ class DemoController extends Controller
 		$return_album_list['kind'] = 'albumID';
 		$return_album_list['array'] = [];
 
-		/** @var Collection $albums */
+		/** @var Collection<Album> $albums */
 		$albums = Album::query()
 			->select(['albums.*'])
 			->with(['photos', 'photos.size_variants', 'photos.size_variants.sym_links'])

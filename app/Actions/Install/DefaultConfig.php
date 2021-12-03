@@ -15,7 +15,7 @@ class DefaultConfig
 			| by looping through the array and run "extension_loaded" on it.
 			|
 			*/
-		'core' => ['minPhpVersion' => '7.4.0'],
+		'core' => ['minPhpVersion' => '8.0.0'],
 
 		'requirements' => [
 			'php' => [
@@ -26,7 +26,6 @@ class DefaultConfig
 				'JSON',
 				'exif',
 				'gd',
-				'intl',
 			],
 			'apache' => ['mod_rewrite'],
 		],

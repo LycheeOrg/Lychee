@@ -16,15 +16,15 @@ use Kalnoy\Nestedset\NodeTrait;
 /**
  * Class Album.
  *
- * @property int|null   $parent_id
- * @property Album|null $parent
- * @property Collection $children
- * @property Collection $all_photos
- * @property string     $license
- * @property int|null   $cover_id
- * @property Photo|null $cover
- * @property int        $_lft
- * @property int        $_rgt
+ * @property int|null          $parent_id
+ * @property Album|null        $parent
+ * @property Collection<Album> $children
+ * @property Collection<Photo> $all_photos
+ * @property string            $license
+ * @property int|null          $cover_id
+ * @property Photo|null        $cover
+ * @property int               $_lft
+ * @property int               $_rgt
  */
 class Album extends BaseAlbum implements Node
 {

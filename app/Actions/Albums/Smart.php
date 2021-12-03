@@ -32,7 +32,7 @@ class Smart
 	 * Note, the array may include password-protected albums that are visible
 	 * but not accessible.
 	 *
-	 * @return array[BaseAlbum] the array of smart albums
+	 * @return BaseAlbum[] the array of smart albums
 	 */
 	public function get(): array
 	{

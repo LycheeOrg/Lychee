@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 
 class DateTimeWithTimezoneCast implements CastsAttributes
 {
-	const TZ_ATTRIBUTE_SUFFIX = '_orig_tz';
+	public const TZ_ATTRIBUTE_SUFFIX = '_orig_tz';
 
 	/**
 	 * Cast the given value into a Carbon object which respects the timezone

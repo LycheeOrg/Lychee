@@ -7,7 +7,6 @@ use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Actions\Albums\Tree;
 use App\Models\Configs;
-use Illuminate\Database\Eloquent\Collection;
 
 class AlbumsController extends Controller
 {
@@ -26,7 +25,7 @@ class AlbumsController extends Controller
 			'shared_albums' => null,
 		];
 
-		// $toplevel contains Collection[Album] accessible at the root: albums shared_albums.
+		// $toplevel contains Collection<Album> accessible at the root: albums shared_albums.
 		$toplevel = $top->get();
 
 		$return['albums'] = $toplevel['albums'];

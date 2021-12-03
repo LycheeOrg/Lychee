@@ -17,15 +17,12 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 		$size = intval($size);
 
 		switch ($last) {
-			case 'G':
 			case 'g':
 				$size *= 1024;
 				// no break
-			case 'M':
 			case 'm':
 				$size *= 1024;
 				// no break
-			case 'K':
 			case 'k':
 				$size *= 1024;
 		}
@@ -49,13 +46,12 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 			$this->convert_size(ini_get('post_max_size')) < $this->convert_size('100M')
 		) {
 			$errors[]
-				= 'Warning: You may experience problems when uploading a photos of large size. Take a look in the FAQ for details.';
+				= 'Warning: You may experience problems when uploading a photo of large size. Take a look in the FAQ for details.';
 		}
-		if (
-			intval(ini_get('max_execution_time')) < 200
-		) {
+		$max_execution_time = intval(ini_get('max_execution_time'));
+		if (0 < $max_execution_time && $max_execution_time < 200) {
 			$errors[]
-				= 'Warning: You may experience problems when uploading a large amount of photos. Take a look in the FAQ for details.';
+				= 'Warning: You may experience problems when uploading a photo of large size or handling many/large albums. Take a look in the FAQ for details.';
 		}
 		if (empty(ini_get('allow_url_fopen'))) {
 			$errors[]
@@ -76,6 +72,11 @@ class IniSettingsCheck implements DiagnosticCheckInterface
 		if (!function_exists('exec')) {
 			$errors[]
 				= 'Warning: exec function has been disabled. You may experience some error 500, please report them to us.';
+		}
+
+		if (empty(ini_get('user_agent'))) {
+			$errors[]
+				= 'Warning: user_agent for PHP is not set. You may experience problems when importing images via URL.';
 		}
 	}
 }
