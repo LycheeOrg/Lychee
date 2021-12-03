@@ -63,22 +63,22 @@ class RefactorModels extends Migration
 {
 	private string $driverName;
 	private AbstractSchemaManager $schemaManager;
-	const THUMBNAIL_DIM = 200;
-	const THUMBNAIL2X_DIM = 400;
+	public const THUMBNAIL_DIM = 200;
+	public const THUMBNAIL2X_DIM = 400;
 
-	const VARIANT_ORIGINAL = 0;
-	const VARIANT_MEDIUM2X = 1;
-	const VARIANT_MEDIUM = 2;
-	const VARIANT_SMALL2X = 3;
-	const VARIANT_SMALL = 4;
-	const VARIANT_THUMB2X = 5;
-	const VARIANT_THUMB = 6;
+	public const VARIANT_ORIGINAL = 0;
+	public const VARIANT_MEDIUM2X = 1;
+	public const VARIANT_MEDIUM = 2;
+	public const VARIANT_SMALL2X = 3;
+	public const VARIANT_SMALL = 4;
+	public const VARIANT_THUMB2X = 5;
+	public const VARIANT_THUMB = 6;
 
 	/**
 	 * Maps a size variant (0...6) to the path prefix (directory) where the
 	 * file for that size variant is stored.
 	 */
-	const VARIANT_2_PATH_PREFIX = [
+	public const VARIANT_2_PATH_PREFIX = [
 		'big',
 		'medium',
 		'medium',
@@ -88,7 +88,7 @@ class RefactorModels extends Migration
 		'thumb',
 	];
 
-	const VALID_VIDEO_TYPES = [
+	public const VALID_VIDEO_TYPES = [
 		'video/mp4',
 		'video/mpeg',
 		'image/x-tga', // mpg; will be corrected by the metadata extractor
@@ -111,7 +111,7 @@ class RefactorModels extends Migration
 	 * See {@link RefactorModels::THUMBNAIL2X_DIM} and
 	 * {@link RefactorModels::THUMBNAIL_DIM}.
 	 */
-	const VARIANT_2_WIDTH_ATTRIBUTE = [
+	public const VARIANT_2_WIDTH_ATTRIBUTE = [
 		'width',
 		'medium2x_width',
 		'medium_width',
@@ -128,7 +128,7 @@ class RefactorModels extends Migration
 	 * See {@link RefactorModels::THUMBNAIL2X_DIM} and
 	 * {@link RefactorModels::THUMBNAIL_DIM}.
 	 */
-	const VARIANT_2_HEIGHT_ATTRIBUTE = [
+	public const VARIANT_2_HEIGHT_ATTRIBUTE = [
 		'height',
 		'medium2x_height',
 		'medium_height',

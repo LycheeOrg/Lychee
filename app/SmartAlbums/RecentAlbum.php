@@ -9,8 +9,8 @@ use Illuminate\Support\Carbon;
 class RecentAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	const ID = 'recent';
-	const TITLE = 'Recent';
+	public const ID = 'recent';
+	public const TITLE = 'Recent';
 
 	protected function __construct()
 	{

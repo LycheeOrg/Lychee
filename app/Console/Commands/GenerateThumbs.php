@@ -13,7 +13,7 @@ class GenerateThumbs extends Command
 	/**
 	 * @var array
 	 */
-	const SIZE_VARIANTS = [
+	public const SIZE_VARIANTS = [
 		'small' => SizeVariant::SMALL,
 		'small2x' => SizeVariant::SMALL2X,
 		'medium' => SizeVariant::MEDIUM,

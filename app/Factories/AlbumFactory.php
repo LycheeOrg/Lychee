@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
 
 class AlbumFactory
 {
-	const BUILTIN_SMARTS = [
+	public const BUILTIN_SMARTS = [
 		UnsortedAlbum::ID => UnsortedAlbum::class,
 		StarredAlbum::ID => StarredAlbum::class,
 		PublicAlbum::ID => PublicAlbum::class,

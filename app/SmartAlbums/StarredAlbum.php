@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Builder;
 class StarredAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	const ID = 'starred';
-	const TITLE = 'Starred';
+	public const ID = 'starred';
+	public const TITLE = 'Starred';
 
 	protected function __construct()
 	{
