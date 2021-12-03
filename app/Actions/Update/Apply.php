@@ -26,11 +26,15 @@ class Apply
 		$this->githubFunctions = $githubFunctions;
 	}
 
-	/**
-	 * If we are in a production environment we actually require a double check..
-	 *
-	 * @param array $output
-	 */
+	private function check_for_master_branch(array &$output): bool
+	{
+		$head_file = base_path('.git/HEAD');
+		$branch = file_get_contents($head_file);
+		$branch = explode('/', $branch, 3);
+
+		return trim($branch[2]) === 'master';
+	}
+
 	private function check_prod_env_allow_migration(array &$output)
 	{
 		if (Config::get('app.env') == 'production') {

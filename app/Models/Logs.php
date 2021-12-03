@@ -21,16 +21,16 @@ class Logs extends Model
 {
 	use UTCBasedTimes;
 
-	const SEVERITY_EMERGENCY = 0;
-	const SEVERITY_ALERT = 1;
-	const SEVERITY_CRITICAL = 2;
-	const SEVERITY_ERROR = 3;
-	const SEVERITY_WARNING = 4;
-	const SEVERITY_NOTICE = 5;
-	const SEVERITY_INFO = 6;
-	const SEVERITY_DEBUG = 7;
+	public const SEVERITY_EMERGENCY = 0;
+	public const SEVERITY_ALERT = 1;
+	public const SEVERITY_CRITICAL = 2;
+	public const SEVERITY_ERROR = 3;
+	public const SEVERITY_WARNING = 4;
+	public const SEVERITY_NOTICE = 5;
+	public const SEVERITY_INFO = 6;
+	public const SEVERITY_DEBUG = 7;
 
-	const SEVERITY_2_STRING = [
+	public const SEVERITY_2_STRING = [
 		self::SEVERITY_EMERGENCY => 'emergency',
 		self::SEVERITY_ALERT => 'alert',
 		self::SEVERITY_CRITICAL => 'critical',
@@ -41,7 +41,7 @@ class Logs extends Model
 		self::SEVERITY_DEBUG => 'debug',
 	];
 
-	const MAX_METHOD_LENGTH = 100;
+	public const MAX_METHOD_LENGTH = 100;
 
 	/**
 	 * allow these properties to be mass assigned.

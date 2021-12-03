@@ -64,7 +64,7 @@ class PublicIds
 	 * Return a collection of Album that are not directly accessible by visibility criteria
 	 * ! we do not include password protected albums from other users.
 	 *
-	 * @return BaseCollection[(_lft, _rgt)]
+	 * @return BaseCollection<array{_lft: int, _rgt: int}>
 	 */
 	private function getDirectlyNotAccessible(): BaseCollection
 	{
@@ -134,7 +134,7 @@ class PublicIds
 	 * => random
 	 * => RSS.
 	 *
-	 * @return Collection[int] of all recursive albums ID accessible by the current user from the top level
+	 * @return BaseCollection<int> of all recursive albums ID accessible by the current user from the top level
 	 */
 	public function getPublicAlbumsId(): BaseCollection
 	{
@@ -146,7 +146,7 @@ class PublicIds
 	/**
 	 * Return an array of ids of albums that are not accessible.
 	 *
-	 * @return array[int]
+	 * @return BaseCollection<int>
 	 */
 	public function getNotAccessible(): BaseCollection
 	{

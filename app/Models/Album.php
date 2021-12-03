@@ -44,10 +44,10 @@ use Illuminate\Support\Carbon;
  * @property text              $showtags
  * @property Carbon            $created_at
  * @property Carbon            $updated_at
- * @property Collection[Album] $children
+ * @property Collection<Album> $children
  * @property User              $owner
  * @property Album             $parent
- * @property Collection[Photo] $photos
+ * @property Collection<Photo> $photos
  *
  * @method static Builder|Album newModelQuery()
  * @method static Builder|Album newQuery()

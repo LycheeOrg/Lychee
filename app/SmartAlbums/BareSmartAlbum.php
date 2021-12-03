@@ -33,7 +33,7 @@ class BareSmartAlbum extends Album
 	public Carbon $updated_at;
 
 	/**
-	 * @var BaseCollection[int]
+	 * @var BaseCollection<int>
 	 */
 	protected BaseCollection $albumIds;
 
@@ -49,7 +49,7 @@ class BareSmartAlbum extends Album
 	/**
 	 * Set a restriction on the available albums.
 	 *
-	 * @param BaseCollection[int] $albumIds
+	 * @param BaseCollection<int> $albumIds
 	 *
 	 * @return void
 	 */

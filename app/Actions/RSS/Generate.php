@@ -76,7 +76,7 @@ class Generate
 			'enclosure' => $enclosure->url,
 			'enclosureLength' => $enclosure->length,
 			'enclosureType' => $enclosure->mime_type,
-			'author' => $photo_model->owner->username,
+			'authorName' => $photo_model->owner->name(),
 		]);
 	}
 

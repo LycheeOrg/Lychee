@@ -35,7 +35,7 @@ class Top
 	 * Note: the array may include password-protected albums that are not
 	 * accessible (but are visible).
 	 *
-	 * @return array[Collection[Album]]
+	 * @return array[Collection<Album>]
 	 */
 	public function get(): array
 	{

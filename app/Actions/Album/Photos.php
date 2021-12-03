@@ -36,7 +36,7 @@ class Photos
 		$photo_counter = 0;
 
 		/**
-		 * @var Collection[Photo]
+		 * @var Collection<Photo>
 		 */
 		$photos = $album->customSort($photos_sql, $sortingCol, $sortingOrder);
 

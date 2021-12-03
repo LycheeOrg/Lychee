@@ -14,7 +14,7 @@ class PositionData
 	/**
 	 * Given a list of albums, generate an array to be returned.
 	 *
-	 * @param Collection[Album] $albums
+	 * @param Collection<Album> $albums
 	 *
 	 * @return array
 	 */
