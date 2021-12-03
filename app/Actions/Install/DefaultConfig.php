@@ -26,7 +26,6 @@ class DefaultConfig
 				'JSON',
 				'exif',
 				'gd',
-				'intl',
 			],
 			'apache' => ['mod_rewrite'],
 		],
