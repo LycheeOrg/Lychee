@@ -2,73 +2,38 @@
 
 namespace App\Actions\Search;
 
-use App\Actions\Albums\Extensions\PublicIds;
-use App\Facades\AccessControl;
-use App\ModelFunctions\SymLinkFunctions;
-use App\Models\Configs;
+use App\Actions\PhotoAuthorisationProvider;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 class PhotoSearch
 {
-	/**
-	 * @var SymLinkFunctions
-	 */
-	private $symLinkFunctions;
+	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
 
-	/**
-	 * @param SymLinkFunctions $symLinkFunctions
-	 */
-	public function __construct(
-		SymLinkFunctions $symLinkFunctions
-	) {
-		$this->symLinkFunctions = $symLinkFunctions;
+	public function __construct(PhotoAuthorisationProvider $photoAuthorisationProvider)
+	{
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 	}
 
-	private function unsorted_or_public(Builder $query)
+	public function query(array $terms): Collection
 	{
-		if (AccessControl::is_admin()) {
-			return $query->orWhere('album_id', '=', null);
-		}
+		$query = $this->photoAuthorisationProvider->applySearchabilityFilter(
+			Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
+		);
 
-		if (AccessControl::can_upload()) {
-			$query = $query->orWhere(fn ($q) => $q->where('album_id', '=', null)->where('owner_id', '=', AccessControl::id()));
-		}
-
-		if (Configs::get_value('public_photos_hidden', '1') === '0') {
-			$query = $query->orWhere('public', '=', 1);
-		}
-
-		return $query;
-	}
-
-	public function query(array $terms)
-	{
-		$albumIDs = resolve(PublicIds::class)->getPublicAlbumsId();
-
-		$query = Photo::with('album')
-			->where(fn ($q) => $this->unsorted_or_public($q->whereIn('album_id', $albumIDs)));
-
-		foreach ($terms as $escaped_term) {
+		foreach ($terms as $term) {
 			$query->where(
-				fn (Builder $query) => $query->where('title', 'like', '%' . $escaped_term . '%')
-					->orWhere('description', 'like', '%' . $escaped_term . '%')
-					->orWhere('tags', 'like', '%' . $escaped_term . '%')
-					->orWhere('location', 'like', '%' . $escaped_term . '%')
-					->orWhere('model', 'like', '%' . $escaped_term . '%')
-					->orWhere('taken_at', 'like', '%' . $escaped_term . '%')
+				fn (Builder $query) => $query
+					->where('title', 'like', '%' . $term . '%')
+					->orWhere('description', 'like', '%' . $term . '%')
+					->orWhere('tags', 'like', '%' . $term . '%')
+					->orWhere('location', 'like', '%' . $term . '%')
+					->orWhere('model', 'like', '%' . $term . '%')
+					->orWhere('taken_at', 'like', '%' . $term . '%')
 			);
 		}
 
-		$photos = $query->get();
-
-		return $photos->map(
-			function ($photo) {
-				$photo_array = $photo->toReturnArray();
-				$this->symLinkFunctions->getUrl($photo, $photo_array);
-
-				return $photo_array;
-			}
-		);
+		return $query->get();
 	}
 }

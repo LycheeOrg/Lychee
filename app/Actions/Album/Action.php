@@ -6,10 +6,7 @@ use App\Factories\AlbumFactory;
 
 class Action
 {
-	/**
-	 * @var AlbumFactory
-	 */
-	protected $albumFactory;
+	protected AlbumFactory $albumFactory;
 
 	public function __construct()
 	{

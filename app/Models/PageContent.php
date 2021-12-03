@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
@@ -31,7 +30,6 @@ use Markdown;
  * @method static Builder|PageContent wherePageId($value)
  * @method static Builder|PageContent whereType($value)
  * @method static Builder|PageContent whereUpdatedAt($value)
- * @mixin Eloquent
  */
 class PageContent extends Model
 {

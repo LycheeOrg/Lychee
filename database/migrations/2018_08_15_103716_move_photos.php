@@ -24,59 +24,62 @@ class MovePhotos extends Migration
 				$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->orderBy('id', 'asc')->orderBy('album', 'asc')->get();
 				$id = 0;
 				foreach ($results as $result) {
-					$photo = new Photo();
+					$photoAttributes = [];
 					$id = Helpers::trancateIf32($result->id, $id);
-					$photo->id = $id;
+					$photoAttributes['id'] = $id;
 					if ($result->album == 0) {
-						$photo->album_id = null;
+						$photoAttributes['album_id'] = null;
 					} else {
-						$photo->album_id = Helpers::trancateIf32($result->album, 0);
+						$photoAttributes['album_id'] = Helpers::trancateIf32($result->album, 0);
 					}
-					$photo->title = $result->title;
-					$photo->description = $result->description;
-					$photo->url = $result->url;
-					$photo->tags = $result->tags;
-					$photo->public = $result->public;
-					$photo->type = $result->type;
-					$photo->width = $result->width;
-					$photo->height = $result->height;
-					$photo->size = $result->size;
-					$photo->iso = $result->iso;
-					$photo->aperture = $result->aperture;
-					$photo->make = $result->make;
-					$photo->lens = $result->lens ?? '';
-					$photo->model = $result->model;
-					$photo->shutter = $result->shutter;
-					$photo->focal = $result->focal;
-					$photo->takestamp = ($result->takestamp == 0 || $result->takestamp == null) ? null : date('Y-m-d H:i:s', $result->takestamp);
-					$photo->star = $result->star;
-					$photo->thumbUrl = $result->thumbUrl;
+					$photoAttributes['title'] = $result->title;
+					$photoAttributes['description'] = $result->description;
+					$photoAttributes['url'] = $result->url;
+					$photoAttributes['tags'] = $result->tags;
+					$photoAttributes['public'] = $result->public;
+					$photoAttributes['type'] = $result->type;
+					$photoAttributes['width'] = $result->width;
+					$photoAttributes['height'] = $result->height;
+					$photoAttributes['size'] = $result->size;
+					$photoAttributes['iso'] = $result->iso;
+					$photoAttributes['aperture'] = $result->aperture;
+					$photoAttributes['make'] = $result->make;
+					$photoAttributes['lens'] = $result->lens ?? '';
+					$photoAttributes['model'] = $result->model;
+					$photoAttributes['shutter'] = $result->shutter;
+					$photoAttributes['focal'] = $result->focal;
+					$photoAttributes['takestamp'] = ($result->takestamp == 0 || $result->takestamp == null) ? null : date('Y-m-d H:i:s', $result->takestamp);
+					$photoAttributes['star'] = $result->star;
+					$photoAttributes['thumbUrl'] = $result->thumbUrl;
 					$thumbUrl2x = explode('.', $result->thumbUrl);
 					if (count($thumbUrl2x) < 2) {
-						$photo->thumb2x = 0;
+						$photoAttributes['thumb2x'] = 0;
 					} else {
 						$thumbUrl2x = $thumbUrl2x[0] . '@2x.' . $thumbUrl2x[1];
 						if (!Storage::exists('thumb/' . $thumbUrl2x)) {
-							$photo->thumb2x = 0;
+							$photoAttributes['thumb2x'] = 0;
 						} else {
-							$photo->thumb2x = 1;
+							$photoAttributes['thumb2x'] = 1;
 						}
 					}
-					$photo->checksum = $result->checksum;
-					if (Storage::exists('medium/' . $photo->url)) {
-						list($width, $height) = getimagesize(Storage::path('medium/' . $photo->url));
-						$photo->medium = $width . 'x' . $height;
+					$photoAttributes['checksum'] = $result->checksum;
+					if (Storage::exists('medium/' . $photoAttributes['url'])) {
+						list($width, $height) = getimagesize(Storage::path('medium/' . $photoAttributes['url']));
+						$photoAttributes['medium'] = $width . 'x' . $height;
 					} else {
-						$photo->medium = '';
+						$photoAttributes['medium'] = '';
 					}
-					if (Storage::exists('small/' . $photo->url)) {
-						list($width, $height) = getimagesize(Storage::path('small/' . $photo->url));
+					if (Storage::exists('small/' . $photoAttributes['url'])) {
+						list($width, $height) = getimagesize(Storage::path('small/' . $photoAttributes['url']));
 						$result->small = $width . 'x' . $height;
 					} else {
 						$result->small = '';
 					}
-					$photo->license = $result->license ?? 'none';
-					$photo->save();
+					$photoAttributes['license'] = $result->license ?? 'none';
+
+					$photoModel = new Photo();
+					$photoModel->setRawAttributes($photoAttributes);
+					$photoModel->save();
 				}
 			} else {
 				Logs::notice(__FUNCTION__, __LINE__, env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos does not exist!');

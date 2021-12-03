@@ -31,7 +31,6 @@ use Illuminate\Database\QueryException;
  * @method static Builder|Configs whereId($value)
  * @method static Builder|Configs whereKey($value)
  * @method static Builder|Configs whereValue($value)
- * @mixin Eloquent
  */
 class Configs extends Model
 {

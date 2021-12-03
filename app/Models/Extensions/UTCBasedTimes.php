@@ -75,7 +75,7 @@ trait UTCBasedTimes
 	public function fromDateTime($value): ?string
 	{
 		// If $value is already an instance of Carbon, the method returns a
-		// deep copy, hence it is save to change the timezone below without
+		// deep copy, hence it is safe to change the timezone below without
 		// altering the original object
 		$carbonTime = $this->asDateTime($value);
 		if (empty($carbonTime)) {

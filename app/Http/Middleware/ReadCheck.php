@@ -1,25 +1,21 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Middleware;
 
-use App\Actions\ReadAccessFunctions;
-use App\Models\Logs;
-use App\Models\Photo;
+use App\Actions\AlbumAuthorisationProvider;
+use App\Actions\PhotoAuthorisationProvider;
 use Closure;
 use Illuminate\Http\Request;
 
 class ReadCheck
 {
-	/**
-	 * @var ReadAccessFunctions
-	 */
-	private $readAccessFunctions;
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private PhotoAuthorisationProvider $photoAuthorisationProvider;
 
-	public function __construct(ReadAccessFunctions $readAccessFunctions)
+	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider, PhotoAuthorisationProvider $photoAuthorisationProvider)
 	{
-		$this->readAccessFunctions = $readAccessFunctions;
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 	}
 
 	/**
@@ -40,17 +36,8 @@ class ReadCheck
 			$albumIDs[] = $request['albumID'];
 		}
 		foreach ($albumIDs as $albumID) {
-			$sess = $this->readAccessFunctions->albumID($albumID);
-			if ($sess === 0) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified album');
-
-				return response('false');
-			}
-			if ($sess === 2) {
-				return response('"Warning: Album private!"');
-			}
-			if ($sess === 3) {
-				return response('"Warning: Wrong password!"');
+			if (!$this->albumAuthorisationProvider->isAccessibleByID($albumID)) {
+				return response('', 403);
 			}
 		}
 
@@ -62,14 +49,8 @@ class ReadCheck
 			$photoIDs[] = $request['photoID'];
 		}
 		foreach ($photoIDs as $photoID) {
-			$photo = Photo::with('album')->find($photoID);
-			if ($photo === null) {
-				Logs::error(__METHOD__, __LINE__, 'Could not find specified photo');
-
-				return response('false');
-			}
-			if ($this->readAccessFunctions->photo($photo) === false) {
-				return response('false');
+			if (!$this->photoAuthorisationProvider->isVisible($photoID)) {
+				return response('', 403);
 			}
 		}
 

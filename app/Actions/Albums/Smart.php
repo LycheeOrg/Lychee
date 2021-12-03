@@ -2,73 +2,60 @@
 
 namespace App\Actions\Albums;
 
-use AccessControl;
-use App\Actions\Albums\Extensions\PublicIds;
-use App\Actions\Albums\Extensions\TopQuery;
-use App\Factories\SmartFactory;
-use App\ModelFunctions\SymLinkFunctions;
+use App\Actions\AlbumAuthorisationProvider;
+use App\Factories\AlbumFactory;
+use App\Models\Configs;
+use App\Models\Extensions\SortingDecorator;
+use App\Models\TagAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
 
 class Smart
 {
-	use TopQuery;
+	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private AlbumFactory $albumFactory;
+	private string $sortingCol;
+	private string $sortingOrder;
 
-	/**
-	 * @var SymLinkFunctions
-	 */
-	public $symLinkFunctions;
-
-	/**
-	 * @var Tag
-	 */
-	public $tag;
-
-	/**
-	 * @var SmartFactory
-	 */
-	public $smartFactory;
-
-	public function __construct(SymLinkFunctions $symLinkFunctions, SmartFactory $smartFactory, Tag $tag)
+	public function __construct(AlbumFactory $albumFactory, AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
-		$this->symLinkFunctions = $symLinkFunctions;
-		$this->smartFactory = $smartFactory;
-		$this->tag = $tag;
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->albumFactory = $albumFactory;
+		$this->sortingCol = Configs::get_value('sorting_Albums_col');
+		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
 	}
 
 	/**
-	 * Returns an array of top-level albums and shared albums visible to
-	 * the current user.
-	 * Note: the array may include password-protected albums that are not
-	 * accessible (but are visible).
+	 * Returns the array of smart albums visible to the current user.
 	 *
-	 * @return array<Collection<Album>>|null
+	 * The array includes the built-in smart albums and the user-defined
+	 * smart albums (i.e. tag albums).
+	 * Note, the array may include password-protected albums that are visible
+	 * but not accessible.
+	 *
+	 * @return BaseAlbum[] the array of smart albums
 	 */
-	public function get(): ?array
+	public function get(): array
 	{
-		/**
-		 * Initialize return var.
-		 */
 		$return = [];
-
-		/**
-		 * @var Collection<SmartAlbum>
-		 */
-		$publicAlbums = resolve(PublicIds::class)->getPublicAlbumsId();
-		$smartAlbums = $this->smartFactory->makeAll();
-
-		foreach ($this->tag->get() as $tagAlbum) {
-			$smartAlbums->push($tagAlbum);
-		}
-
-		/* @var SmartAlbum */
+		// Do not eagerly load the relation `photos` for each smart album.
+		// On the albums overview, we only need a thumbnail for each album.
+		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums(false);
+		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
-			if (AccessControl::can_upload() || $smartAlbum->is_public()) {
-				$smartAlbum->setAlbumIDs($publicAlbums);
-				$return[$smartAlbum->title] = $smartAlbum->toReturnArray();
+			if ($this->albumAuthorisationProvider->isAuthorizedForSmartAlbum($smartAlbum)) {
+				$return[$smartAlbum->id] = $smartAlbum;
 			}
 		}
 
-		if (empty($return)) {
-			return null;
+		$tagAlbumQuery = $this->albumAuthorisationProvider
+			->applyVisibilityFilter(TagAlbum::query());
+		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
+			->orderBy($this->sortingCol, $this->sortingOrder)
+			->get();
+
+		/** @var TagAlbum $tagAlbum */
+		foreach ($tagAlbums as $tagAlbum) {
+			$return[$tagAlbum->id] = $tagAlbum;
 		}
 
 		return $return;

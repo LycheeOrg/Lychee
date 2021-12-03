@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\AlbumRequests;
 
+use App\Rules\AlbumIDListRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AlbumIDsRequest extends FormRequest
@@ -11,7 +12,7 @@ class AlbumIDsRequest extends FormRequest
 	 *
 	 * @return bool
 	 */
-	public function authorize()
+	public function authorize(): bool
 	{
 		return true;
 	}
@@ -21,10 +22,8 @@ class AlbumIDsRequest extends FormRequest
 	 *
 	 * @return array
 	 */
-	public function rules()
+	public function rules(): array
 	{
-		return [
-			'albumIDs' => 'required|string',
-		];
+		return ['albumIDs' => ['required', new AlbumIDListRule()]];
 	}
 }

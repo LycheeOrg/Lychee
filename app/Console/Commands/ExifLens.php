@@ -8,7 +8,6 @@ use App\Actions\Photo\Extensions\Constants;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
-use Storage;
 
 class ExifLens extends Command
 {
@@ -58,7 +57,8 @@ class ExifLens extends Command
 		set_time_limit($timeout);
 
 		// we use lens because this is the one which is most likely to be empty.
-		$photos = Photo::where('lens', '=', '')
+		$photos = Photo::query()
+			->where('lens', '=', '')
 			->whereNotIn('type', $this->getValidVideoTypes())
 			->offset($from)
 			->limit($argument)
@@ -70,10 +70,11 @@ class ExifLens extends Command
 		}
 
 		$i = $from;
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$url = Storage::path('big/' . $photo->url);
-			if (file_exists($url)) {
-				$info = $this->metadataExtractor->extract($url, $photo->type);
+			$fullPath = $photo->full_path;
+			if (file_exists($fullPath)) {
+				$info = $this->metadataExtractor->extract($fullPath, $photo->type);
 				$updated = false;
 				if ($photo->filesize == '' && $info['filesize'] != '') {
 					$photo->filesize = $info['filesize'];

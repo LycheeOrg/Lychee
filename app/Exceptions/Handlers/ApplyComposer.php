@@ -6,7 +6,6 @@ use ErrorException;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
 use Throwable;
 
 class ApplyComposer
@@ -19,16 +18,16 @@ class ApplyComposer
 	 *
 	 * @return bool
 	 */
-	public function check($request, Throwable $exception)
+	public function check(Request $request, Throwable $exception)
 	{
 		return $exception instanceof ErrorException && (strpos($exception->getFile(), 'laravel/framework/src/Illuminate/Routing/Router.php') !== false);
 	}
 
 	/**
-	 * @return Response|View
+	 * @return Response
 	 */
 	// @codeCoverageIgnoreStart
-	public function go()
+	public function go(): Response
 	{
 		return response()->view('error.error', ['code' => '500', 'message' => 'Missing dependency, please do: <code>composer install --no-dev</code><br>(or use the release channel.)']);
 	}

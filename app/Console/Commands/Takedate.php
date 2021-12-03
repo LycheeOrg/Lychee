@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Metadata\Extractor;
 use App\Models\Photo;
 use Illuminate\Console\Command;
-use Storage;
 
 class Takedate extends Command
 {
@@ -59,13 +58,13 @@ class Takedate extends Command
 		$i = $from - 1;
 		/* @var Photo $photo */
 		foreach ($photos as $photo) {
-			$url = Storage::path('big/' . $photo->url);
+			$fullPath = $photo->full_path;
 			$i++;
-			if (!file_exists($url)) {
-				$this->line($i . ': File ' . $url . ' not found for ' . $photo->title . '.');
+			if (!file_exists($fullPath)) {
+				$this->line($i . ': File ' . $fullPath . ' not found for ' . $photo->title . '.');
 				continue;
 			}
-			$info = $metadataExtractor->extract($url, $photo->type);
+			$info = $metadataExtractor->extract($fullPath, $photo->type);
 			/* @var \DateTime $stamp */
 			$stamp = $info['taken_at'];
 			if ($stamp != null) {
@@ -85,10 +84,10 @@ class Takedate extends Command
 				$this->line($i . ': Failed to get Takestamp data for ' . $photo->title . '.');
 				continue;
 			}
-			if (is_link($url)) {
-				$url = readlink($url);
+			if (is_link($fullPath)) {
+				$fullPath = readlink($fullPath);
 			}
-			$created_at = filemtime($url);
+			$created_at = filemtime($fullPath);
 			if ($created_at == $photo->created_at->timestamp) {
 				$this->line($i . ': Created_at up to date for ' . $photo->title);
 				continue;

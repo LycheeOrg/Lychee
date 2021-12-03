@@ -7,42 +7,55 @@ use Tests\TestCase;
 
 class SessionUnitTest
 {
-	/**
-	 * Logging in.
-	 *
-	 * @param TestCase $testCase
-	 * @param string   $username
-	 * @param string   $password
-	 * @param string   $result
-	 */
-	public function login(
-		TestCase &$testCase,
-		string $username,
-		string $password,
-		string $result = 'true'
-	) {
-		$response = $testCase->json('POST', '/api/Session::login', [
-			'username' => $username,
-			'password' => $password,
-		]);
-		$response->assertOk();
-		$response->assertSee($result, false);
+	private TestCase $testCase;
+
+	public function __construct(TestCase $testCase)
+	{
+		$this->testCase = $testCase;
 	}
 
 	/**
-	 * @param TestCase $testCase
-	 * @param string   $result
+	 * Logging in.
+	 *
+	 * @param string      $username
+	 * @param string      $password
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
+	 */
+	public function login(
+		string $username,
+		string $password,
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->json('POST', '/api/Session::login', [
+			'username' => $username,
+			'password' => $password,
+		]);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
+	}
+
+	/**
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
 	public function init(
-		TestCase &$testCase,
-		string $result = 'true'
-	) {
-		$response = $testCase->json('POST', '/api/Session::init', []);
-		$response->assertStatus(200);
-		if ($result != 'true') {
-			$response->assertSee($result, false);
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->json('POST', '/api/Session::init', []);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
@@ -51,62 +64,75 @@ class SessionUnitTest
 	/**
 	 * Logging out.
 	 *
-	 * @param TestCase $testCase
+	 * @return TestResponse
 	 */
-	public function logout(TestCase &$testCase)
+	public function logout(): TestResponse
 	{
-		$response = $testCase->json('POST', '/api/Session::logout');
-		$response->assertOk();
-		$response->assertSee('true');
+		$response = $this->testCase->json('POST', '/api/Session::logout');
+		$response->assertSuccessful();
+
+		return $response;
 	}
 
 	/**
 	 * Set a new login and password.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $login
-	 * @param string   $password
-	 * @param string   $result
+	 * @param string      $login
+	 * @param string      $password
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
 	 */
 	public function set_new(
-		TestCase &$testCase,
 		string $login,
 		string $password,
-		string $result = 'true'
-	) {
-		$response = $testCase->json('POST', '/api/Settings::setLogin', [
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->json('POST', '/api/Settings::setLogin', [
 			'username' => $login,
 			'password' => $password,
 		]);
-		$response->assertOk();
-		$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
 	}
 
 	/**
 	 * Set a new login and password.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $login
-	 * @param string   $password
-	 * @param string   $oldUsername
-	 * @param string   $oldPassword
-	 * @param string   $result
+	 * @param string      $login
+	 * @param string      $password
+	 * @param string      $oldUsername
+	 * @param string      $oldPassword
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
 	 */
 	public function set_old(
-		TestCase &$testCase,
 		string $login,
 		string $password,
 		string $oldUsername,
 		string $oldPassword,
-		string $result = 'true'
-	) {
-		$response = $testCase->json('POST', '/api/Settings::setLogin', [
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
+		$response = $this->testCase->json('POST', '/api/Settings::setLogin', [
 			'username' => $login,
 			'password' => $password,
 			'oldUsername' => $oldUsername,
 			'oldPassword' => $oldPassword,
 		]);
-		$response->assertOk();
-		$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
 	}
 }

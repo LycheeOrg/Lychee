@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\PhotoRequests;
 
+use App\Rules\ModelIDListRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class PhotoIDsRequest extends FormRequest
@@ -11,7 +12,7 @@ class PhotoIDsRequest extends FormRequest
 	 *
 	 * @return bool
 	 */
-	public function authorize()
+	public function authorize(): bool
 	{
 		return true;
 	}
@@ -21,10 +22,8 @@ class PhotoIDsRequest extends FormRequest
 	 *
 	 * @return array
 	 */
-	public function rules()
+	public function rules(): array
 	{
-		return [
-			'photoIDs' => 'required|string',
-		];
+		return ['photoIDs' => ['required', new ModelIDListRule()]];
 	}
 }

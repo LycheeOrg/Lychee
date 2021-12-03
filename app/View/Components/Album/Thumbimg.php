@@ -32,6 +32,7 @@ class Thumbimg extends Component
 	 */
 	public function render()
 	{
+		// TODO: Don't hardcode paths
 		if ($this->thumb == 'uploads/thumb/' && $this->isVideo) {
 			return view('components.album.thumb-play');
 		}

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Models\Configs;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
@@ -23,7 +23,7 @@ class GeoDataTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		/*
-		* Make a copy of the image because import deletes the file and we want to be
+		* Make a copy of the image because import deletes the file, and we want to be
 		* able to use the test on a local machine and not just in CI.
 		*/
 		copy('tests/Feature/mongolia.jpeg', 'public/uploads/import/mongolia.jpeg');
@@ -38,7 +38,7 @@ class GeoDataTest extends TestCase
 
 		$id = $photos_tests->upload($file);
 
-		$response = $photos_tests->get($id, 'true');
+		$response = $photos_tests->get($id);
 		$photos_tests->see_in_unsorted($id);
 		/*
 		 * Check some Exif data
@@ -57,8 +57,6 @@ class GeoDataTest extends TestCase
 			[
 				'id' => $id,
 				'title' => 'mongolia',
-				'width' => '1280',
-				'height' => '850',
 				'type' => 'image/jpeg',
 				'filesize' => 201316,
 				'iso' => '200',
@@ -71,10 +69,10 @@ class GeoDataTest extends TestCase
 				'license' => 'none',
 				'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
 				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
-				'public' => '0',
-				'downloadable' => '1',
-				'share_button_visible' => '1',
-				'sizeVariants' => [
+				'is_public' => 0,
+				'is_downloadable' => true,
+				'is_share_button_visible' => true,
+				'size_variants' => [
 					'thumb' => [
 						'width' => 200,
 						'height' => 200,
@@ -85,18 +83,21 @@ class GeoDataTest extends TestCase
 					],
 					'medium' => null,
 					'medium2x' => null,
+					'original' => [
+						'width' => 1280,
+						'height' => 850,
+					],
 				],
 			]
 		);
 
-		$albumID = $albums_tests->add('0', 'test_mongolia');
-		$photos_tests->set_album($albumID, $id, 'true');
+		$albumID = $albums_tests->add('0', 'test_mongolia')->offsetGet('id');
+		$photos_tests->set_album($albumID, $id);
 		$photos_tests->dont_see_in_unsorted($id);
-		$response = $albums_tests->get($albumID, '', 'true');
-		$content = $response->getContent();
-		$array_content = json_decode($content);
-		$this->assertEquals(1, count($array_content->photos));
-		$this->assertEquals($id, $array_content->photos[0]->id);
+		$response = $albums_tests->get($albumID);
+		$responseObj = json_decode($response->getContent());
+		$this->assertCount(1, $responseObj->photos);
+		$this->assertEquals($id, $responseObj->photos[0]->id);
 
 		// now we test position Data
 		// save initial value
@@ -104,33 +105,33 @@ class GeoDataTest extends TestCase
 
 		// set to 0
 		Configs::set('map_display', '0');
-		$this->assertEquals(Configs::get_value('map_display'), '0');
-		$albums_tests->AlbumsGetPositionDataFull(200); // we need to fix this
+		$this->assertEquals('0', Configs::get_value('map_display'));
+		$albums_tests->AlbumsGetPositionDataFull(); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
-		$this->assertEquals(Configs::get_value('map_display'), '1');
-		$response = $albums_tests->AlbumsGetPositionDataFull(200);
-		$content = $response->getContent();
-		$array_content = json_decode($content);
-		$this->assertEquals(1, count($array_content->photos));
-		$this->assertEquals($id, $array_content->photos[0]->id);
+		$this->assertEquals('1', Configs::get_value('map_display'));
+		$response = $albums_tests->AlbumsGetPositionDataFull();
+		$responseObj = json_decode($response->getContent());
+		$this->assertObjectHasAttribute('photos', $responseObj);
+		$this->assertCount(1, $responseObj->photos);
+		$this->assertEquals($id, $responseObj->photos[0]->id);
 
 		// set to 0
 		Configs::set('map_display', '0');
-		$this->assertEquals(Configs::get_value('map_display'), '0');
-		$albums_tests->AlbumGetPositionDataFull($albumID, 200); // we need to fix this
+		$this->assertEquals('0', Configs::get_value('map_display'));
+		$albums_tests->AlbumGetPositionDataFull($albumID); // we need to fix this
 
 		// set to 1
 		Configs::set('map_display', '1');
-		$this->assertEquals(Configs::get_value('map_display'), '1');
-		$response = $albums_tests->AlbumGetPositionDataFull($albumID, 200);
-		$content = $response->getContent();
-		$array_content = json_decode($content);
-		$this->assertEquals(1, count($array_content->photos));
-		$this->assertEquals($id, $array_content->photos[0]->id);
+		$this->assertEquals('1', Configs::get_value('map_display'));
+		$response = $albums_tests->AlbumGetPositionDataFull($albumID);
+		$responseObj = json_decode($response->getContent());
+		$this->assertObjectHasAttribute('photos', $responseObj);
+		$this->assertCount(1, $responseObj->photos);
+		$this->assertEquals($id, $responseObj->photos[0]->id);
 
-		$photos_tests->delete($id, 'true');
+		$photos_tests->delete($id);
 		$albums_tests->delete($albumID);
 
 		// reset

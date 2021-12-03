@@ -2,207 +2,148 @@
 
 namespace App\Models;
 
+use App\Casts\MustNotSetCast;
 use App\Facades\Helpers;
+use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\UTCBasedTimes;
-use Eloquent;
-use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
 /**
  * App\SymLink.
  *
- * @method static Builder|SymLink newModelQuery()
- * @method static Builder|SymLink newQuery()
- * @method static Builder|SymLink query()
- * @mixin Eloquent
+ * @property int $id
+ * @property int $size_variant_id
+ * @property SizeVariant size_variant
+ * @property string $short_path
+ * @property string $full_path
+ * @property string $url
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  *
- * @property int         $id
- * @property int|null    $photo_id
- * @property string      $url
- * @property string      $medium
- * @property string      $medium2x
- * @property string      $small
- * @property string      $small2x
- * @property string      $thumbUrl
- * @property string      $thumb2x
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- *
- * @method static Builder|SymLink whereCreatedAt($value)
- * @method static Builder|SymLink whereId($value)
- * @method static Builder|SymLink whereMedium($value)
- * @method static Builder|SymLink whereMedium2x($value)
- * @method static Builder|SymLink wherePhotoId($value)
- * @method static Builder|SymLink whereSmall($value)
- * @method static Builder|SymLink whereSmall2x($value)
- * @method static Builder|SymLink whereThumb2x($value)
- * @method static Builder|SymLink whereThumbUrl($value)
- * @method static Builder|SymLink whereUpdatedAt($value)
- * @method static Builder|SymLink whereUrl($value)
+ * @method static Builder expired()
  */
 class SymLink extends Model
 {
 	use UTCBasedTimes;
+	use HasAttributesPatch;
 
-	/**
-	 * Maps a size variant to the name of the attribute (field) of App\Models\Photo which stores the original
-	 * filename.
-	 * (Despite the attributes being named "url" they actually store filenames).
-	 */
-	public const VARIANT_2_ORIGINAL_FILENAME_FIELD = [
-		Photo::VARIANT_THUMB => 'thumbUrl',
-		Photo::VARIANT_THUMB2X => 'thumbUrl',
-		Photo::VARIANT_SMALL => 'url',
-		Photo::VARIANT_SMALL2X => 'url',
-		Photo::VARIANT_MEDIUM => 'url',
-		Photo::VARIANT_MEDIUM2X => 'url',
-		Photo::VARIANT_ORIGINAL => 'url',
+	const DISK_NAME = 'symbolic';
+
+	protected $casts = [
+		'id' => 'integer',
+		'size_variant_id' => 'integer',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+		'url' => MustNotSetCast::class,
 	];
 
 	/**
-	 * Maps a size variant to the name of an attribute (field) of the class App\Models\Photo which may be exploited
-	 * as an indicator whether this size variant exist.
+	 * @var string[] The list of attributes which exist as columns of the DB
+	 *               relation but shall not be serialized to JSON
 	 */
-	public const VARIANT_2_INDICATOR_FIELD = [
-		Photo::VARIANT_THUMB => 'thumbUrl',           // type: string|null
-		Photo::VARIANT_THUMB2X => 'thumb2x',          // type: integer, either 0 or 1
-		Photo::VARIANT_SMALL => 'small_width',        // type: int|null
-		Photo::VARIANT_SMALL2X => 'small2x_width',    // type: int|null
-		Photo::VARIANT_MEDIUM => 'medium_width',      // type: int|null
-		Photo::VARIANT_MEDIUM2X => 'medium2x_width',  // type: int|null
-		Photo::VARIANT_ORIGINAL => 'url',             // type: string|null
+	protected $hidden = [
+		'size_variant', // see above and otherwise infinite loops will occur
+		'size_variant_id', // see above
 	];
 
-	/**
-	 * Maps a size variant to the name of the attribute (field) of this class/database table which stores the
-	 * symlinked path.
-	 * (Despite some attributes being named "url" they actually store relative paths).
-	 */
-	public const VARIANT_2_SYM_PATH_FIELD = [
-		Photo::VARIANT_THUMB => 'thumbUrl',
-		Photo::VARIANT_THUMB2X => 'thumb2x',
-		Photo::VARIANT_SMALL => 'small',
-		Photo::VARIANT_SMALL2X => 'small2x',
-		Photo::VARIANT_MEDIUM => 'medium',
-		Photo::VARIANT_MEDIUM2X => 'medium2x',
-		Photo::VARIANT_ORIGINAL => 'url',
-	];
-
-	/**
-	 * Generate a sym link.
-	 * The salt is important in order to remove the deterministic side of the address.
-	 *
-	 * @param Photo  $photo       The original photo
-	 * @param string $sizeVariant An enum-like attribute which indicates what size variant shall be sym-linked.
-	 *                            Allowed values are defined as constants in class Photo.
-	 * @param string $salt
-	 */
-	private function create(Photo $photo, string $sizeVariant, string $salt)
+	public function size_variant(): BelongsTo
 	{
-		// in case of video and raw we always need to use the field 'thumbUrl' for anything which is not the original size
-		$originalFieldName = ($sizeVariant != Photo::VARIANT_ORIGINAL && ($photo->isVideo() || $photo->type == 'raw')) ?
-			self::VARIANT_2_ORIGINAL_FILENAME_FIELD[Photo::VARIANT_THUMB] :
-			self::VARIANT_2_ORIGINAL_FILENAME_FIELD[$sizeVariant];
-		$originalFileName = (substr($sizeVariant, -2, 2) == '2x') ? Helpers::ex2x($photo->$originalFieldName) : $photo->$originalFieldName;
-
-		if ($photo->type == 'raw' && $sizeVariant == Photo::VARIANT_ORIGINAL) {
-			$originalPath = Storage::path('raw/' . $originalFileName);
-		} else {
-			$originalPath = Storage::path(Photo::VARIANT_2_PATH_PREFIX[$sizeVariant] . '/' . $originalFileName);
-		}
-		$extension = Helpers::getExtension($originalPath);
-		$symFilename = hash('sha256', $salt . '|' . $originalPath) . $extension;
-		$symPath = Storage::drive('symbolic')->path($symFilename);
-
-		try {
-			// in theory we should be safe...
-			symlink($originalPath, $symPath);
-		} catch (Exception $exception) {
-			unlink($symPath);
-			symlink($originalPath, $symPath);
-		}
-		$this->{self::VARIANT_2_SYM_PATH_FIELD[$sizeVariant]} = $symFilename;
+		return $this->belongsTo(SizeVariant::class);
 	}
 
 	/**
-	 * Set up a link.
+	 * Scopes the passed query to all outdated symlinks.
 	 *
-	 * @param Photo $photo
+	 * @param Builder $query the unscoped query
+	 *
+	 * @return Builder the scoped query
 	 */
-	public function set(Photo $photo)
+	public function scopeExpired(Builder $query): Builder
 	{
-		$this->photo_id = $photo->id;
-		$this->timestamps = false;
-		// we set up the created_at
-		$now = now();
-		$this->created_at = $now;
-		$this->updated_at = $now;
+		$expiration = now()->subDays(intval(Configs::get_value('SL_life_time_days', '3')));
 
-		foreach (self::VARIANT_2_INDICATOR_FIELD as $variant => $indicator_field) {
-			if ($photo->{$indicator_field} !== null && $photo->{$indicator_field} !== 0 && $photo->{$indicator_field} !== '') {
-				$this->create($photo, $variant, strval($now));
-			}
-		}
+		return $query->where('created_at', '<', $this->fromDateTime($expiration));
 	}
 
 	/**
-	 * Given the return array of a photo, override the link provided.
+	 * Accessor for the "virtual" attribute {@link SymLink::$url}.
 	 *
-	 * @param array $return The serialization of a photo as returned by Photo#toReturnArray()
+	 * Returns the URL to the symbolic link from the perspective of a
+	 * web client.
+	 * This is a convenient method and wraps {@link SymLink::$short_path}
+	 * into {@link \Illuminate\Support\Facades\Storage::url()}.
+	 *
+	 * @return string the URL to the symbolic link
 	 */
-	public function override(array &$return)
+	protected function getUrlAttribute(): string
 	{
-		foreach (self::VARIANT_2_SYM_PATH_FIELD as $variant => $field) {
-			if ($this->$field != '') {
-				// TODO: This could be avoided, if the original variant was also serialized into the sub-array 'sizeVariants', see comment in PhotoCast#toReturnArray
-				if ($variant == Photo::VARIANT_ORIGINAL) {
-					$return['url'] = Storage::drive('symbolic')->url($this->$field);
-				} else {
-					$return['sizeVariants'][$variant]['url'] = Storage::drive('symbolic')->url($this->$field);
-				}
-			}
-		}
+		return Storage::disk(self::DISK_NAME)->url($this->short_path);
 	}
 
 	/**
-	 * Returns the relative symlinked path of a particular size variant, if it exists.
+	 * Accessor for the "virtual" attribute {@link SymLink::$full_path}.
 	 *
-	 * @param string $sizeVariant An enum-like attribute which indicates what size variant shall be sym-linked.
-	 *                            Allowed values are defined as constants in class Photo.
+	 * Returns the full path of the symbolic link as it needs to be input into
+	 * some low-level PHP functions like `unlink`.
+	 * This is a convenient method and wraps {@link SymLink::$short_path}
+	 * into {@link \Illuminate\Support\Facades\Storage::path()}.
 	 *
-	 * @return string Relative path to symbolic link or the empty string ('')
+	 * @return string the full path of the symbolic link
 	 */
-	public function get(string $sizeVariant): string
+	protected function getFullPathAttribute(): string
 	{
-		$field = self::VARIANT_2_SYM_PATH_FIELD[$sizeVariant];
-		if ($this->$field != '') {
-			return Storage::drive('symbolic')->url($this->$field);
-		} else {
-			return '';
-		}
+		return Storage::disk(self::DISK_NAME)->path($this->short_path);
 	}
 
 	/**
-	 * before deleting we actually unlink the symlinks.
+	 * Performs the `INSERT` operation of the model and creates an actual
+	 * symbolic link on disk.
 	 *
-	 * @return bool|null
+	 * If this method cannot create the symbolic link, then this method
+	 * cancels the insert operation.
+	 *
+	 * @param Builder $query
+	 *
+	 * @return bool
 	 */
-	public function delete()
+	protected function performInsert(Builder $query): bool
 	{
-		foreach (self::VARIANT_2_SYM_PATH_FIELD as $variant => $field) {
-			if ($this->$field != '') {
-				$path = Storage::drive('symbolic')->path($this->$field);
-				try {
-					unlink($path);
-				} catch (Exception $e) {
-					Logs::error(__METHOD__, __LINE__, 'could not unlink ' . $path);
-				}
-			}
+		$origFullPath = $this->size_variant->full_path;
+		$extension = Helpers::getExtension($origFullPath);
+		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
+		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
+		if (is_link($symFullPath)) {
+			unlink($symFullPath);
+		}
+		if (!symlink($origFullPath, $symFullPath)) {
+			return false;
+		}
+		$this->short_path = $symShortPath;
+
+		return parent::performInsert($query);
+	}
+
+	/**
+	 * Deletes the model from the database and the symbolic link from storage.
+	 *
+	 * If this method cannot delete the symbolic link, then this method
+	 * cancels the delete operation.
+	 *
+	 * @return bool
+	 */
+	public function delete(): bool
+	{
+		$fullPath = $this->full_path;
+		// Laravel and Flysystem does not support symbolic links.
+		// So we must use low-level methods here.
+		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath)) && !is_link($fullPath)) {
+			return false;
 		}
 
-		return parent::delete();
+		return parent::delete() !== false;
 	}
 }

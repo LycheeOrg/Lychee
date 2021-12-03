@@ -12,6 +12,9 @@ use Illuminate\Support\Facades\Hash;
 
 class Login
 {
+	/**
+	 * @throws JsonError
+	 */
 	public function do(Request $request)
 	{
 		$oldPassword = $request->has('oldPassword') ? $request['oldPassword'] : '';

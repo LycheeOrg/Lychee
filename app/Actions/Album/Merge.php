@@ -5,56 +5,58 @@ namespace App\Actions\Album;
 use App\Models\Album;
 use App\Models\Logs;
 use App\Models\Photo;
-use Illuminate\Support\Facades\DB;
+use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 
 class Merge extends Action
 {
 	/**
-	 * @param string $albumID
+	 * Merges the content of the given source albums (photos and sub-albums)
+	 * into the target.
 	 *
-	 * @return bool
+	 * @param string $albumID
+	 * @param array  $sourceAlbumIDs
 	 */
-	public function do(string $albumID, array $albumIDs): bool
+	public function do(string $albumID, array $sourceAlbumIDs): void
 	{
-		$album_master = $this->albumFactory->make($albumID);
-		if ($album_master->is_smart()) {
-			Logs::error(__METHOD__, __LINE__, 'Merge is not possible on smart albums');
-
-			return false;
+		$targetAlbum = $this->albumFactory->findOrFail($albumID, false);
+		if (!($targetAlbum instanceof Album)) {
+			$msg = 'Merge is only possible for real albums';
+			Logs::error(__METHOD__, __LINE__, $msg);
+			throw new \InvalidArgumentException($msg);
 		}
 
-		$no_error = true;
-		// Merge Photos
-		if (DB::table('photos')->whereIn('album_id', $albumIDs)->count() > 0) {
-			$no_error &= Photo::whereIn('album_id', $albumIDs)->update(['album_id' => $album_master->id]);
-		}
+		// Merge photos of source albums into target
+		Photo::query()
+			->whereIn('album_id', $sourceAlbumIDs)
+			->update(['album_id' => $targetAlbum->id]);
 
-		// Merge Sub-albums
+		// Merge sub-albums of source albums into target
 		// ! we have to do it via Model::save() in order to not break the tree
-		$albums = Album::whereIn('parent_id', $albumIDs)->get();
+		$albums = Album::query()->whereIn('parent_id', $sourceAlbumIDs)->get();
 		foreach ($albums as $album) {
-			$album->parent_id = $album_master->id;
+			$album->parent_id = $targetAlbum->id;
 			$album->save();
 		}
 
-		// now we delete the albums
+		// Now we delete the source albums
 		// ! we have to do it via Model::delete() in order to not break the tree
-		$albums = Album::whereIn('id', $albumIDs)->get();
+		$albums = Album::query()->whereIn('id', $sourceAlbumIDs)->get();
 		foreach ($albums as $album) {
 			$album->delete();
 		}
 
-		if (Album::isBroken()) {
-			$errors = Album::countErrors();
+		/** @var NSQueryBuilder $q */
+		$q = Album::query();
+		if ($q->isBroken()) {
+			$errors = $q->countErrors();
 			$sum = $errors['oddness'] + $errors['duplicates'] + $errors['wrong_parent'] + $errors['missing_parent'];
 			Logs::warning(__METHOD__, __LINE__, 'Tree is broken with ' . $sum . ' errors.');
-			Album::fixTree();
+			$q->fixTree();
 			Logs::notice(__METHOD__, __LINE__, 'Tree has been fixed.');
 		}
 
-		$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
-		$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
-
-		return $no_error;
+		// Reset ownership
+		$targetAlbum->descendants()->update(['owner_id' => $targetAlbum->owner_id]);
+		$targetAlbum->all_photos()->update(['owner_id' => $targetAlbum->owner_id]);
 	}
 }

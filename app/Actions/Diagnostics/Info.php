@@ -4,8 +4,8 @@ namespace App\Actions\Diagnostics;
 
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
-use Config;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Imagick;
 

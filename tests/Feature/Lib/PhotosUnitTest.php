@@ -2,45 +2,30 @@
 
 namespace Tests\Feature\Lib;
 
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Actions\Photo\Archive;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class PhotosUnitTest
 {
-	private $testCase = null;
+	private TestCase $testCase;
 
-	public function __construct(TestCase &$testCase)
+	public function __construct(TestCase $testCase)
 	{
 		$this->testCase = $testCase;
-	}
-
-	// This is called before any subsequent function call.
-	// We use it to "refresh" the PublicIds as it is a singleton,
-	// it stays the same through all the test once initialized.
-	// This is not the desired behaviour as it is re-initialized per connection.
-	public function __call($method, $arguments)
-	{
-		if (method_exists($this, $method)) {
-			resolve(PublicIds::class)->refresh();
-			// fwrite(STDERR, print_r(__CLASS__ . '\\' . $method, TRUE) . "\n");
-			return call_user_func_array([$this, $method], $arguments);
-		}
 	}
 
 	/**
 	 * Try upload a picture.
 	 *
-	 * @param TestCase     $testcase
 	 * @param UploadedFile $file
+	 * @param string       $albumID
 	 *
-	 * @return string (id of the picture)
+	 * @return int the id of the photo
 	 */
-	public function upload(
-		UploadedFile &$file,
-		$albumID = '0'
-	) {
+	public function upload(UploadedFile $file, string $albumID = '0'): int
+	{
 		$response = $this->testCase->post(
 			'/api/Photo::add',
 			[
@@ -48,93 +33,90 @@ class PhotosUnitTest
 				'0' => $file,
 			]
 		);
-		$response->assertStatus(200);
+
+		$response->assertSuccessful();
 		$response->assertDontSee('Error');
 
-		return $response->getContent();
+		return $response->offsetGet('id');
 	}
 
 	/**
-	 * Try uploading a picture without the file argument (will trigger the validate).
-	 *
-	 * @param TestCase $testcase
+	 * Try uploading a picture without the file argument (will trigger the validation).
 	 */
-	protected function wrong_upload()
+	public function wrong_upload(): void
 	{
-		$response = $this->testCase->post(
+		$response = $this->testCase->postJson(
 			'/api/Photo::add',
 			[
 				'albumID' => '0',
 			]
 		);
-		$response->assertStatus(200);
-		$response->assertSee('"Error: validation failed"', false);
+
+		$response->assertStatus(422);
+		$response->assertSee('The 0 field is required');
 	}
 
 	/**
-	 * Try uploading a picture without the file type (will trigger the hasfile).
-	 *
-	 * @param TestCase $testcase
+	 * Try uploading a picture which is not a file (will trigger the validation).
 	 */
-	protected function wrong_upload2()
+	public function wrong_upload2(): void
 	{
-		$response = $this->testCase->post(
+		$response = $this->testCase->postJson(
 			'/api/Photo::add',
 			[
 				'albumID' => '0',
 				'0' => '1',
 			]
 		);
-		$response->assertStatus(200);
-		$response->assertSee('"Error: missing files"', false);
+		$response->assertStatus(422);
+		$response->assertSee('The 0 must be a file');
 	}
 
 	/**
 	 * Get a photo given a photo id.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $photo_id
-	 * @param string   $result
+	 * @param string      $photo_id
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
-	protected function get(
+	public function get(
 		string $photo_id,
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
 		$response = $this->testCase->json('POST', '/api/Photo::get', [
 			'photoID' => $photo_id,
 		]);
-		$response->assertStatus(200);
-		if ($result != 'true') {
-			$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;
 	}
 
 	/**
-	 * is ID visible in unsorted ?
+	 * is photo with given ID visible in unsorted?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param int $photoID
 	 */
-	protected function see_in_unsorted(string $id)
+	public function see_in_unsorted(int $photoID): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
 		$response->assertStatus(200);
-		$response->assertSee($id, false);
+		$response->assertSee(strval($photoID), false);
 	}
 
 	/**
-	 * is ID NOT visible in unsorted ?
+	 * is photo with given ID NOT visible in unsorted?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function dont_see_in_unsorted(string $id)
+	public function dont_see_in_unsorted(string $id): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'unsorted',
@@ -144,12 +126,11 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * is ID visible in recent ?
+	 * is photo with given ID visible in recent?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function see_in_recent(string $id)
+	public function see_in_recent(string $id): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'recent',
@@ -159,12 +140,11 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * is ID NOT visible in recent ?
+	 * is photo with given ID NOT visible in recent?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function dont_see_in_recent(string $id)
+	public function dont_see_in_recent(string $id): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'recent',
@@ -174,12 +154,11 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * is ID visible in shared ?
+	 * is photo with given ID visible in shared?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function see_in_shared(string $id)
+	public function see_in_shared(string $id): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'public',
@@ -189,12 +168,11 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * is ID NOT visible in shared ?
+	 * is photo with given ID NOT visible in shared?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function dont_see_in_shared(string $id)
+	public function dont_see_in_shared(string $id): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'public',
@@ -204,12 +182,11 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * is ID visible in favorite ?
+	 * is photo with given ID visible in favorite?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function see_in_favorite(string $id)
+	public function see_in_favorite(string $id): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'starred',
@@ -219,12 +196,11 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * is ID NOT visible in favorite ?
+	 * is photo with given ID NOT visible in favorite ?
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
+	 * @param string $id
 	 */
-	protected function dont_see_in_favorite(string $id)
+	public function dont_see_in_favorite(string $id): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'starred',
@@ -236,16 +212,17 @@ class PhotosUnitTest
 	/**
 	 * Set Title.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $title
-	 * @param string   $result
+	 * @param string      $id
+	 * @param string      $title
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 */
-	protected function set_title(
+	public function set_title(
 		string $id,
 		string $title,
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 200,
+		?string $assertSee = 'true'
+	): void {
 		/**
 		 * Try to set the title.
 		 */
@@ -253,162 +230,193 @@ class PhotosUnitTest
 			'title' => $title,
 			'photoIDs' => $id,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 	}
 
 	/**
 	 * Set Description.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $description
-	 * @param string   $result
+	 * @param string      $id
+	 * @param string      $description
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 */
-	protected function set_description(
+	public function set_description(
 		string $id,
 		string $description,
-		string $result = 'true'
-	) {
-		/**
-		 * Try to set the description.
-		 */
-		$response = $this->testCase->json('POST', '/api/Photo::setDescription', [
-			'description' => $description,
-			'photoID' => $id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Photo::setDescription', [
+				'description' => $description,
+				'photoID' => $id,
+			]
+		);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 	}
 
 	/**
 	 * Set Star.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
+	 * @param string      $id
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 */
-	protected function set_star(
+	public function set_star(
 		string $id,
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 200,
+		?string $assertSee = 'true'
+	): void {
 		$response = $this->testCase->json('POST', '/api/Photo::setStar', [
 			'photoIDs' => $id,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 	}
 
 	/**
 	 * Set tags.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $tags
-	 * @param string   $result
+	 * @param string      $id
+	 * @param string      $tags
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 */
-	protected function set_tag(
+	public function set_tag(
 		string $id,
 		string $tags,
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 200,
+		?string $assertSee = 'true'
+	): void {
 		$response = $this->testCase->json('POST', '/api/Photo::setTags', [
 			'photoIDs' => $id,
 			'tags' => $tags,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 	}
 
 	/**
 	 * Set public.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
+	 * @param string      $id
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 */
-	protected function set_public(
+	public function set_public(
 		string $id,
-		string $result = 'true'
-	) {
-		$response = $this->testCase->json('POST', '/api/Photo::setPublic', [
-			'photoID' => $id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Photo::setPublic', [
+				'photoID' => $id,
+			]
+		);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 	}
 
 	/**
 	 * Set license.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $license
-	 * @param string   $result
+	 * @param string      $id
+	 * @param string      $license
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 */
-	protected function set_license(
+	public function set_license(
 		string $id,
 		string $license,
-		string $result = 'true'
-	) {
-		$response = $this->testCase->json('POST', '/api/Photo::setLicense', [
-			'photoID' => $id,
-			'license' => $license,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Photo::setLicense', [
+				'photoID' => $id,
+				'license' => $license,
+			]
+		);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 	}
 
 	/**
 	 * Set Album.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $album_id
-	 * @param string   $id
-	 * @param string   $result
+	 * @param string      $album_id
+	 * @param string      $id
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 */
-	protected function set_album(
+	public function set_album(
 		string $album_id,
 		string $id,
-		string $result = 'true'
-	) {
-		$response = $this->testCase->json('POST', '/api/Photo::setAlbum', [
-			'photoIDs' => $id,
-			'albumID' => $album_id,
-		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): void {
+		$response = $this->testCase->postJson(
+			'/api/Photo::setAlbum', [
+				'photoIDs' => $id,
+				'albumID' => $album_id,
+			]
+		);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 	}
 
 	/**
 	 * Duplicate a picture.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
+	 * @param string      $id
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
+	 *
+	 * @return TestResponse
 	 */
-	protected function duplicate(
+	public function duplicate(
 		string $id,
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 201,
+		?string $assertSee = null
+	): TestResponse {
 		$response = $this->testCase->json('POST', '/api/Photo::duplicate', [
 			'photoIDs' => $id,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
+
+		return $response;
 	}
 
 	/**
 	 * We only test for a code 200.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $kind
+	 * @param string $id
+	 * @param string $kind
 	 */
-	protected function download(
+	public function download(
 		string $id,
-		string $kind = 'FULL'
-	) {
+		string $kind = Archive::FULL
+	): void {
 		$response = $this->testCase->call('GET', '/api/Photo::getArchive', [
 			'photoIDs' => $id,
 			'kind' => $kind,
@@ -419,46 +427,52 @@ class PhotosUnitTest
 	/**
 	 * Delete a picture.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param string   $result
+	 * @param string      $id
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 */
-	protected function delete(
+	public function delete(
 		string $id,
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
+	): void {
 		$response = $this->testCase->json('POST', '/api/Photo::delete', [
 			'photoIDs' => $id,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 	}
 
 	/**
 	 * Import a picture.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $path
-	 * @param string   $delete_imported
-	 * @param string   $album_id
-	 * @param string   $result
+	 * @param string      $path
+	 * @param string      $delete_imported
+	 * @param string      $album_id
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 *
 	 * @return string
 	 */
-	protected function import(
+	public function import(
 		string $path,
 		string $delete_imported = '0',
 		string $album_id = '0',
-		string $result = 'true'
-	) {
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): string {
 		$response = $this->testCase->json('POST', '/api/Import::server', [
 			'function' => 'Import::server',
 			'albumID' => $album_id,
 			'path' => $path,
 			'delete_imported' => $delete_imported,
 		]);
-		$response->assertStatus(200);
-		$response->assertSee('');
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
+		}
 
 		return $response->streamedContent();
 	}
@@ -466,26 +480,26 @@ class PhotosUnitTest
 	/**
 	 * Rotate a picture.
 	 *
-	 * @param TestCase $testCase
-	 * @param string   $id
-	 * @param          $direction
-	 * @param string   $result
+	 * @param string      $id
+	 * @param string      $direction
+	 * @param int         $expectedStatusCode
+	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
-	protected function rotate(
+	public function rotate(
 		string $id,
-		$direction,
-		string $result = 'true',
-		int $code = 200
-	) {
+		string $direction,
+		int $expectedStatusCode = 200,
+		?string $assertSee = null
+	): TestResponse {
 		$response = $this->testCase->json('POST', '/api/PhotoEditor::rotate', [
 			'photoID' => $id,
 			'direction' => $direction,
 		]);
-		$response->assertStatus($code);
-		if ($code == 200 && $result != 'true') {
-			$response->assertSee($result, false);
+		$response->assertStatus($expectedStatusCode);
+		if ($assertSee) {
+			$response->assertSee($assertSee, false);
 		}
 
 		return $response;

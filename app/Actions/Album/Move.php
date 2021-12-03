@@ -3,47 +3,49 @@
 namespace App\Actions\Album;
 
 use App\Models\Album;
-use App\Models\Logs;
+use App\Models\BaseAlbumImpl;
+use App\Models\Photo;
 
 class Move extends Action
 {
 	/**
-	 * @param string $albumID
+	 * Moves the given albums into the target.
 	 *
-	 * @return bool
+	 * @param string $targetAlbumID
+	 * @param array  $albumIDs
 	 */
-	public function do(string $albumID, array $albumIDs): bool
+	public function do(string $targetAlbumID, array $albumIDs): void
 	{
-		$album_master = null;
-		// $albumID = 0 is root
-		// ! check type
-		if ($albumID != 0) {
-			$album_master = $this->albumFactory->make($albumID);
-
-			if ($album_master->is_smart()) {
-				Logs::error(__METHOD__, __LINE__, 'Move is not possible on smart albums');
-
-				return false;
-			}
+		if (empty($targetAlbumID)) {
+			$targetAlbumID = null;
+			$targetAlbum = null;
 		} else {
-			$albumID = null;
+			/** @var Album $targetAlbum */
+			$targetAlbum = Album::query()->findOrFail($targetAlbumID);
 		}
 
-		$albums = Album::whereIn('id', $albumIDs)->get();
-		$no_error = true;
+		$albums = Album::query()->whereIn('id', $albumIDs)->get();
 
+		// Merge source albums to target
+		// We have to do it via Model::save() in order to not break the tree
+		/** @var Album $album */
 		foreach ($albums as $album) {
-			$album->parent_id = $albumID;
-			$no_error &= $album->save();
+			$album->parent_id = $targetAlbumID;
+			$album->save();
 		}
 		// Tree should be updated by itself here.
 
-		if ($no_error && $album_master !== null) {
-			// updat owner
-			$album_master->descendants()->update(['owner_id' => $album_master->owner_id]);
-			$album_master->get_all_photos()->update(['photos.owner_id' => $album_master->owner_id]);
+		if ($targetAlbum) {
+			// Update ownership to owner of target album
+			$descendantIDs = $targetAlbum->descendants()->pluck('id');
+			// Note, the property `owner_id` is defined on the base class of
+			// all model albums.
+			// For optimization, we do not load the album models but perform
+			// the update directly on the database.
+			// Hence, we must use `BaseAlbumImpl`.
+			BaseAlbumImpl::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
+			$descendantIDs[] = $targetAlbum->getKey();
+			Photo::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
 		}
-
-		return $no_error;
 	}
 }

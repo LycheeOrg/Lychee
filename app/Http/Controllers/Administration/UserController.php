@@ -4,18 +4,21 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
+use App\Exceptions\JsonError;
 use App\Facades\AccessControl;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserRequests\UserPostIdRequest;
 use App\Http\Requests\UserRequests\UserPostRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request as IlluminateRequest;
+use Illuminate\Http\Response as IlluminateResponse;
 
 class UserController extends Controller
 {
-	public function list()
+	public function list(): Collection
 	{
-		return User::where('id', '>', 0)->get();
+		return User::query()->where('id', '>', 0)->get();
 	}
 
 	/**
@@ -23,14 +26,18 @@ class UserController extends Controller
 	 * Note that an admin can change the password of a user at will.
 	 *
 	 * @param UserPostRequest $request
+	 * @param Save            $save
 	 *
-	 * @return string
+	 * @return IlluminateResponse
+	 *
+	 * @throws JsonError
 	 */
-	public function save(UserPostRequest $request, Save $save)
+	public function save(UserPostRequest $request, Save $save): IlluminateResponse
 	{
-		$user = User::findOrFail($request['id']);
+		/** @var User $user */
+		$user = User::query()->findOrFail($request['id']);
 
-		return $save->do($user, $request->all()) ? 'true' : 'false';
+		return $save->do($user, $request->all()) ? response()->noContent() : response('', 500);
 	}
 
 	/**
@@ -39,23 +46,26 @@ class UserController extends Controller
 	 *
 	 * @param UserPostIdRequest $request
 	 *
-	 * @return string
+	 * @return IlluminateResponse
 	 */
-	public function delete(UserPostIdRequest $request)
+	public function delete(UserPostIdRequest $request): IlluminateResponse
 	{
-		$user = User::findOrFail($request['id']);
+		$user = User::query()->findOrFail($request['id']);
 
-		return $user->delete() ? 'true' : 'false';
+		return $user->delete() ? response()->noContent() : response('', 500);
 	}
 
 	/**
 	 * Create a new user.
 	 *
-	 * @param Request $request
+	 * @param IlluminateRequest $request
+	 * @param Create            $create
 	 *
-	 * @return string
+	 * @return User
+	 *
+	 * @throws JsonError
 	 */
-	public function create(Request $request, Create $create)
+	public function create(IlluminateRequest $request, Create $create): User
 	{
 		$data = $request->validate([
 			'username' => 'required|string|max:100',
@@ -64,18 +74,18 @@ class UserController extends Controller
 			'lock' => 'required',
 		]);
 
-		return $create->do($data) ? 'true' : 'false';
+		return $create->do($data);
 	}
 
 	/**
 	 * Update the email of a user.
 	 * Will delete all notifications if the email is left empty.
 	 *
-	 * @param Request $request
+	 * @param IlluminateRequest $request
 	 *
-	 * @return string
+	 * @return IlluminateResponse
 	 */
-	public function updateEmail(Request $request, Save $save)
+	public function updateEmail(IlluminateRequest $request): IlluminateResponse
 	{
 		if ($request->email != '') {
 			$request->validate([
@@ -91,7 +101,7 @@ class UserController extends Controller
 			$user->notifications()->delete();
 		}
 
-		return $user->save() ? 'true' : 'false';
+		return $user->save() ? response()->noContent() : response('', 500);
 	}
 
 	/**
@@ -99,7 +109,7 @@ class UserController extends Controller
 	 *
 	 * @return string
 	 */
-	public function getEmail()
+	public function getEmail(): string
 	{
 		$user = AccessControl::user();
 

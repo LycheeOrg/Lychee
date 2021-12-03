@@ -4,9 +4,9 @@ namespace App\Exceptions\Handlers;
 
 use App\Redirections\ToInstall;
 use Exception;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
 use RuntimeException;
 use Throwable;
 
@@ -20,14 +20,14 @@ class NoEncryptionKey
 	 *
 	 * @return bool
 	 */
-	public function check($request, Throwable $exception)
+	public function check(Request $request, Throwable $exception)
 	{
 		// encryption key does not exist, we need to run the installation
 		return $exception instanceof RuntimeException && $exception->getMessage() === 'No application encryption key has been specified.';
 	}
 
 	/**
-	 * @return Response|View
+	 * @return Response|RedirectResponse
 	 */
 	// @codeCoverageIgnoreStart
 	public function go()
