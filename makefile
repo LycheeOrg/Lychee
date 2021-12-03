@@ -103,6 +103,9 @@ formatting:
 		echo ""; \
 	fi
 
+phpstan:
+	vendor/bin/phpstan analyze
+
 gen_minor:
 	php scripts/gen_release.php
 	git add database

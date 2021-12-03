@@ -49,6 +49,7 @@
         "itsgoingd/clockwork": "^5.0",
         "laravel/homestead": "^12.8",
         "nunomaduro/collision": "^5.0",
+        "phpstan/phpstan": "^1.2",
         "phpunit/phpunit": "^9"
     },
     "conflict": {
