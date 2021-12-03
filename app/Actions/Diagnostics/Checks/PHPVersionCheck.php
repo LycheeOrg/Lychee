@@ -16,15 +16,10 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 		// 28 Nov 2019	 => 7.4 = RELEASED   => 7.3 = WARNING
 		// 26 Nov 2020	 => 8.0 = RELEASED   => 7.4 = WARNING
 		// 6 Dec 2020	 => 7.3 = DEPRECATED = ERROR
-		// 28 Nov 2021	 => 7.4 = DEPRECATED = ERROR
+		//! 25 Nov 2021	 => 8.1 = Released   => 8.0 = WARNING & 7.4 = ERROR
 		$php_error = 8;
 		$php_warning = 8;
 		$php_latest = 8.1;
-
-		//! 25 Nov 2021	 => 8.1 = Released   => 8.0 = WARNING
-		// $php_error = 8;
-		// $php_warning = 8.1;
-		// $php_latest = 8.1;
 
 		//! 26 Nov 2022	 => 8.0 = DEPRECATED = ERROR
 		// $php_error = 8.1;
@@ -39,7 +34,7 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 			$errors[] = 'Error: Upgrade to PHP ' . $php_warning . ' or higher';
 		}
 
-		if (floatval(phpversion()) < $php_warning) {
+		if (floatval(phpversion()) < $php_warning && $php_error < $php_warning) {
 			$errors[] = 'Warning: Upgrade to PHP ' . $php_latest . ' or higher';
 		}
 
@@ -49,7 +44,7 @@ class PHPVersionCheck implements DiagnosticCheckInterface
 		}
 
 		// Extensions
-		$extensions = ['session', 'exif', 'mbstring', 'gd', 'PDO', 'json', 'zip', 'intl'];
+		$extensions = ['session', 'exif', 'mbstring', 'gd', 'PDO', 'json', 'zip'];
 
 		foreach ($extensions as $extension) {
 			if (!extension_loaded($extension)) {
