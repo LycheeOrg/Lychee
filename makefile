@@ -105,6 +105,8 @@ formatting:
 
 phpstan:
 	vendor/bin/phpstan analyze
+phpstan-hard:
+	vendor/bin/phpstan analyze -l 8
 
 gen_minor:
 	php scripts/gen_release.php

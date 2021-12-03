@@ -50,6 +50,8 @@
         "laravel/homestead": "^12.8",
         "nunomaduro/collision": "^5.0",
         "phpstan/phpstan": "^1.2",
+        "phpstan/phpstan-deprecation-rules": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.1",
         "phpunit/phpunit": "^9"
     },
     "conflict": {
