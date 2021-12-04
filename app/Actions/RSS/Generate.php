@@ -41,7 +41,7 @@ class Generate
 			'enclosure' => $sizeVariant->url,
 			'enclosureLength' => Storage::size($sizeVariant->short_path),
 			'enclosureType' => $photo_model->type,
-			'author' => $photo_model->owner->username,
+			'authorName' => $photo_model->owner->username,
 		]);
 	}
 
