@@ -1,9 +1,22 @@
+includes:
+	- vendor/nunomaduro/larastan/extension.neon
+	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
+	- vendor/phpstan/phpstan-strict-rules/rules.neon
+
+services:
+	-
+		class: PHPStan\Rules\StrictCalls\StrictFunctionCallsRule
+		tags:
+			- phpstan.rules.rule
+
+	-
+		class: PHPStan\Rules\SwitchConditions\MatchingTypeInSwitchCaseConditionRule
+		tags:
+			- phpstan.rules.rule
+
 parameters:
 	level: 1
 	paths:
 		- app
 	ignoreErrors:
-		- '#Call to static method notice\(\)#'
-includes:
-	- vendor/phpstan/phpstan-deprecation-rules/rules.neon
-	- vendor/phpstan/phpstan-strict-rules/rules.neon
+		- '#Short ternary operator is not allowed#'
