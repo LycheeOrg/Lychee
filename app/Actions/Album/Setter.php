@@ -36,7 +36,7 @@ class Setter extends Action
 	 * @param string $albumID the ID of the album
 	 * @param mixed  $value   the value to be set
 	 */
-	public function do(string $albumID, $value): void
+	public function do(string $albumID, mixed $value): void
 	{
 		if ($this->query
 				->where('id', '=', $albumID)

@@ -32,7 +32,7 @@ class Setters extends Action
 	 * @param array $albumIDs the IDs of the albums
 	 * @param mixed $value    the value to be set
 	 */
-	public function do(array $albumIDs, $value): void
+	public function do(array $albumIDs, mixed $value): void
 	{
 		$this->query
 			->whereIn('id', $albumIDs)

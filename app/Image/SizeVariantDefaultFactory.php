@@ -364,20 +364,14 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($maxWidth === 0 && $maxHeight === 0) {
 			return false;
 		}
-		switch ($sizeVariant) {
-			case SizeVariant::MEDIUM2X:
-				return Configs::get_value('medium_2x', 0) == 1;
-			case SizeVariant::SMALL2X:
-				return Configs::get_value('small_2x', 0) == 1;
-			case SizeVariant::THUMB2X:
-				return Configs::get_value('thumb_2x', 0) == 1;
-			case SizeVariant::SMALL:
-			case SizeVariant::MEDIUM:
-			case SizeVariant::THUMB:
-				return true;
-			default:
-				throw new \InvalidArgumentException('unknown size variant: ' . $sizeVariant);
-		}
+
+		return match ($sizeVariant) {
+			SizeVariant::MEDIUM2X => Configs::get_value('medium_2x', 0) == 1,
+			SizeVariant::SMALL2X => Configs::get_value('small_2x', 0) == 1,
+			SizeVariant::THUMB2X => Configs::get_value('thumb_2x', 0) == 1,
+			SizeVariant::SMALL, SizeVariant::MEDIUM, SizeVariant::THUMB => true,
+			default => throw new \InvalidArgumentException('unknown size variant: ' . $sizeVariant),
+		};
 	}
 
 	/**

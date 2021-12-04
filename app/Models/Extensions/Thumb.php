@@ -50,7 +50,7 @@ class Thumb implements Arrayable, JsonSerializable
 	 *
 	 * @return Thumb|null the created thumbnail; null if the relation is empty
 	 */
-	public static function createFromQueryable($photoQueryable, string $sortingCol, string $sortingOrder): ?Thumb
+	public static function createFromQueryable(Relation|Builder $photoQueryable, string $sortingCol, string $sortingOrder): ?Thumb
 	{
 		/** @var Photo|null $cover */
 		$cover = $photoQueryable
@@ -81,8 +81,8 @@ class Thumb implements Arrayable, JsonSerializable
 		return new self(
 			$photo->id,
 			$photo->type,
-			$thumb ? $thumb->url : null,
-			$thumb2x ? $thumb2x->url : null
+			$thumb?->url,
+			$thumb2x?->url
 		);
 	}
 

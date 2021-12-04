@@ -72,7 +72,7 @@ class PhotosAddedNotification extends Command
 					logger($thumbUrl);
 
 					// If the url config doesn't contain a trailing slash then add it
-					if (substr(config('app.url'), -1) == '/') {
+					if (str_ends_with(config('app.url'), '/')) {
 						$trailing_slash = '';
 					} else {
 						$trailing_slash = '/';

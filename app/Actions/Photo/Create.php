@@ -54,7 +54,7 @@ class Create
 	 * @throws \App\Exceptions\FolderIsNotWritable
 	 * @throws \App\Exceptions\JsonError
 	 */
-	public function add(SourceFileInfo $sourceFileInfo, $albumID = null): Photo
+	public function add(SourceFileInfo $sourceFileInfo, int|string $albumID = null): Photo
 	{
 		// Check permissions
 		$this->checkPermissions();
@@ -75,7 +75,7 @@ class Create
 		$livePartner = $this->findLivePartner(
 			$this->strategyParameters->info['live_photo_content_id'],
 			$this->strategyParameters->info['type'],
-			$this->strategyParameters->album ? $this->strategyParameters->album->id : null
+			$this->strategyParameters->album?->id
 		);
 
 		/*

@@ -168,11 +168,11 @@ class AlbumAuthorisationProvider
 	 *     - the album is the album of recent photos and public by configuration, or
 	 *     - the album is the album of starred photos and public by configuration
 	 *
-	 * @param string|int|null $albumID
+	 * @param int|string|null $albumID
 	 *
 	 * @return bool
 	 */
-	public function isAccessibleByID($albumID): bool
+	public function isAccessibleByID(int|string|null $albumID): bool
 	{
 		// the admin may access everything, the root album may be accessed by everybody
 		if (AccessControl::is_admin() || empty($albumID)) {
@@ -294,8 +294,8 @@ class AlbumAuthorisationProvider
 			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {
 				$this->appendBlockedAlbumsCondition(
 					$q,
-					$origin ? $origin->_lft : null,
-					$origin ? $origin->_rgt : null,
+					$origin?->_lft,
+					$origin?->_rgt,
 				);
 			});
 		}
@@ -334,7 +334,7 @@ class AlbumAuthorisationProvider
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function appendBlockedAlbumsCondition(BaseBuilder $builder, $originLeft, $originRight): BaseBuilder
+	public function appendBlockedAlbumsCondition(BaseBuilder $builder, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
 		if (gettype($originLeft) !== gettype($originRight)) {
 			throw new \InvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');

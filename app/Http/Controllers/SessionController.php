@@ -147,7 +147,7 @@ class SessionController extends Controller
 	/**
 	 * Show the session values.
 	 */
-	public function show()
+	public function show(): void
 	{
 		dd(Session::all());
 	}

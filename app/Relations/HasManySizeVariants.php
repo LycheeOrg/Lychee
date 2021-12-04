@@ -24,9 +24,9 @@ class HasManySizeVariants extends HasMany
 	/**
 	 * Get the results of the relationship.
 	 *
-	 * @return mixed
+	 * @return SizeVariants
 	 */
-	public function getResults()
+	public function getResults(): SizeVariants
 	{
 		/** @var Photo $parent */
 		$parent = $this->parent;
@@ -46,7 +46,7 @@ class HasManySizeVariants extends HasMany
 	 *
 	 * @return array
 	 */
-	public function initRelation(array $models, $relation)
+	public function initRelation(array $models, $relation): array
 	{
 		/** @var Photo $model */
 		foreach ($models as $model) {

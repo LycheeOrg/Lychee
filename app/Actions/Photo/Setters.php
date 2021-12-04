@@ -12,7 +12,7 @@ use App\Models\Photo;
  */
 class Setters
 {
-	public $property;
+	public string $property;
 
 	public function do(array $photoIDs, ?string $value): bool
 	{

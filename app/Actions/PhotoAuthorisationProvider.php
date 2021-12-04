@@ -130,8 +130,8 @@ class PhotoAuthorisationProvider
 			return $query->where(function (Builder $query) use ($origin) {
 				$this->appendSearchabilityConditions(
 					$query->getQuery(),
-					$origin ? $origin->_lft : null,
-					$origin ? $origin->_rgt : null
+					$origin?->_lft,
+					$origin?->_rgt
 				);
 			});
 		}
@@ -169,7 +169,7 @@ class PhotoAuthorisationProvider
 	 *
 	 * @return Builder the restricted photo query
 	 */
-	public function appendSearchabilityConditions(BaseBuilder $query, $originLeft, $originRight): BaseBuilder
+	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';

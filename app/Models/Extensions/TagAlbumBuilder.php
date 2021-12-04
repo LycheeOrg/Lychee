@@ -2,8 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -24,9 +24,9 @@ class TagAlbumBuilder extends Builder
 	 *
 	 * @param array|string $columns
 	 *
-	 * @return Model[]|static[]
+	 * @return TagAlbum[]
 	 */
-	public function getModels($columns = ['*'])
+	public function getModels($columns = ['*']): array
 	{
 		$baseQuery = $this->getQuery();
 		if (empty($baseQuery->columns)) {

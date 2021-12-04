@@ -45,7 +45,7 @@ trait HasTimeBasedID
 	 *
 	 * @return mixed
 	 */
-	public function setAttribute($key, $value)
+	public function setAttribute($key, $value): mixed
 	{
 		if ($key == $this->getKeyName()) {
 			throw new \InvalidArgumentException('must not set primary key explicitly, primary key will be set on first insert');

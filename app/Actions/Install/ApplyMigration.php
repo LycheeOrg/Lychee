@@ -39,7 +39,7 @@ class ApplyMigration
 		 * We also double check there is no "QueryException" in the output (just to be sure).
 		 */
 		foreach ($output as $line) {
-			if (strpos($line, 'QueryException') !== false) {
+			if (str_contains($line, 'QueryException')) {
 				// @codeCoverageIgnoreStart
 				return true;
 				// @codeCoverageIgnoreEnd

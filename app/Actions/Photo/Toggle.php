@@ -13,7 +13,7 @@ use App\Models\Photo;
  */
 class Toggle
 {
-	public $property;
+	public string $property;
 
 	public function do(string $photoID): bool
 	{

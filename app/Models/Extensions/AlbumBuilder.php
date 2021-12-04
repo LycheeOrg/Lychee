@@ -2,8 +2,8 @@
 
 namespace App\Models\Extensions;
 
+use App\Models\Album;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\QueryBuilder;
 
 /**
@@ -24,9 +24,9 @@ class AlbumBuilder extends QueryBuilder
 	 *
 	 * @param array|string $columns
 	 *
-	 * @return Model[]|static[]
+	 * @return Album[]
 	 */
-	public function getModels($columns = ['*'])
+	public function getModels($columns = ['*']): array
 	{
 		$baseQuery = $this->getQuery();
 		if (

@@ -13,7 +13,7 @@ use App\Models\Photo;
  */
 class Setter
 {
-	public $property;
+	public string $property;
 
 	public function do(string $photoID, string $value): bool
 	{

@@ -68,7 +68,7 @@ class DateTimeWithTimezoneCast implements CastsAttributes
 			throw new \InvalidArgumentException('$value must extend \DateTimeInterface');
 		}
 		$sqlDatetimeString = $model->fromDateTime($value);
-		$sqlTimezoneString = $value === null ? null : $value->getTimezone()->getName();
+		$sqlTimezoneString = $value?->getTimezone()->getName();
 		$tzKey = $key . self::TZ_ATTRIBUTE_SUFFIX;
 
 		return [

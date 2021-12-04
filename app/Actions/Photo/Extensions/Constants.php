@@ -7,7 +7,7 @@ trait Constants
 	/**
 	 * @var array
 	 */
-	public $validTypes = [
+	public array $validTypes = [
 		IMAGETYPE_JPEG,
 		IMAGETYPE_GIF,
 		IMAGETYPE_PNG,
@@ -17,7 +17,7 @@ trait Constants
 	/**
 	 * @var array
 	 */
-	public $validVideoTypes = [
+	public array $validVideoTypes = [
 		'video/mp4',
 		'video/mpeg',
 		'image/x-tga', // mpg; will be corrected by the metadata extractor
@@ -34,7 +34,7 @@ trait Constants
 	/**
 	 * @var array
 	 */
-	public $validExtensions = [
+	public array $validExtensions = [
 		'.jpg',
 		'.jpeg',
 		'.png',

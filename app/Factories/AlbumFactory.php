@@ -36,7 +36,7 @@ class AlbumFactory
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 */
-	public function findOrFail($albumId, bool $withRelations = true): AbstractAlbum
+	public function findOrFail(int|string $albumId, bool $withRelations = true): AbstractAlbum
 	{
 		if ($this->isBuiltInSmartAlbum($albumId)) {
 			return $this->createSmartAlbum($albumId, $withRelations);
@@ -59,7 +59,7 @@ class AlbumFactory
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function findModelOrFail($albumId, bool $withRelations = true): BaseAlbum
+	public function findModelOrFail(int|string $albumId, bool $withRelations = true): BaseAlbum
 	{
 		try {
 			if ($withRelations) {
@@ -129,7 +129,7 @@ class AlbumFactory
 	 *
 	 * @return bool true, if the album ID refers to a built-in smart album
 	 */
-	public function isBuiltInSmartAlbum($albumId): bool
+	public function isBuiltInSmartAlbum(int|string $albumId): bool
 	{
 		return array_key_exists($albumId, self::BUILTIN_SMARTS);
 	}

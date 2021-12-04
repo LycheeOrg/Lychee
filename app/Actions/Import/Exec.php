@@ -90,7 +90,7 @@ class Exec
 			$path = Storage::path('import');
 			// @codeCoverageIgnoreEnd
 		}
-		if (substr($path, -1) === '/') {
+		if (str_ends_with($path, '/')) {
 			$path = substr($path, 0, -1);
 		}
 		if (is_dir($path) === false) {

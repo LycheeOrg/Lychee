@@ -184,7 +184,7 @@ class Photo extends Model
 			return null;
 		}
 		// shutter speed needs to be processed. It is stored as a string `a/b s`
-		if (substr($shutter, 0, 2) != '1/') {
+		if (!str_starts_with($shutter, '1/')) {
 			preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
 			if ($matches) {
 				$a = intval($matches[1]);

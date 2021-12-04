@@ -131,7 +131,7 @@ trait ForwardsToParentImplementation
 			$baseDelete = $base_class->delete();
 			// Same stupidity as above, if Eloquent returns `null` this also
 			// means `true` here.
-			return is_bool($baseDelete) ? $baseDelete : true;
+			return $baseDelete !== false;
 		}
 
 		return true;
@@ -172,7 +172,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * @return bool
 	 */
-	public function isDirty($attributes = null)
+	public function isDirty($attributes = null): bool
 	{
 		$baseIsDirty = $this->relationLoaded('base_class') && $this->getRelation('base_class')->isDirty();
 
@@ -227,7 +227,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * @return mixed the value of the attribute or relation
 	 */
-	public function getAttribute($key)
+	public function getAttribute($key): mixed
 	{
 		if (!$key) {
 			return null;
@@ -308,7 +308,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * @return mixed the value of the relation if it could be loaded
 	 */
-	public function getRelationValue($key)
+	public function getRelationValue($key): mixed
 	{
 		// If the key already exists in the relationships array, this means the
 		// relationship has already been loaded, so we'll just return it out of
@@ -383,7 +383,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * @return mixed
 	 */
-	public function setAttribute($key, $value)
+	public function setAttribute($key, $value): mixed
 	{
 		// First we will check for the presence of a mutator for the set operation
 		// which simply lets the developers tweak the attribute as it is set on

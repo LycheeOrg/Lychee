@@ -90,13 +90,13 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function toArray(): array
 	{
 		return [
-			'original' => $this->original ? $this->original->toArray() : null,
-			'medium2x' => $this->medium2x ? $this->medium2x->toArray() : null,
-			'medium' => $this->medium ? $this->medium->toArray() : null,
-			'small2x' => $this->small2x ? $this->small2x->toArray() : null,
-			'small' => $this->small ? $this->small->toArray() : null,
-			'thumb2x' => $this->thumb2x ? $this->thumb2x->toArray() : null,
-			'thumb' => $this->thumb ? $this->thumb->toArray() : null,
+			'original' => $this->original?->toArray(),
+			'medium2x' => $this->medium2x?->toArray(),
+			'medium' => $this->medium?->toArray(),
+			'small2x' => $this->small2x?->toArray(),
+			'small' => $this->small?->toArray(),
+			'thumb2x' => $this->thumb2x?->toArray(),
+			'thumb' => $this->thumb?->toArray(),
 		];
 	}
 
@@ -129,24 +129,16 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 */
 	public function getSizeVariant(int $sizeVariantType): ?SizeVariant
 	{
-		switch ($sizeVariantType) {
-			case SizeVariant::ORIGINAL:
-				return $this->original;
-			case SizeVariant::MEDIUM2X:
-				return $this->medium2x;
-			case SizeVariant::MEDIUM:
-				return $this->medium;
-			case SizeVariant::SMALL2X:
-				return $this->small2x;
-			case SizeVariant::SMALL:
-				return $this->small;
-			case SizeVariant::THUMB2X:
-				return $this->thumb2x;
-			case SizeVariant::THUMB:
-				return $this->thumb;
-			default:
-				throw new \UnexpectedValueException('size variant ' . $sizeVariantType . 'invalid');
-		}
+		return match ($sizeVariantType) {
+			SizeVariant::ORIGINAL => $this->original,
+			SizeVariant::MEDIUM2X => $this->medium2x,
+			SizeVariant::MEDIUM => $this->medium,
+			SizeVariant::SMALL2X => $this->small2x,
+			SizeVariant::SMALL => $this->small,
+			SizeVariant::THUMB2X => $this->thumb2x,
+			SizeVariant::THUMB => $this->thumb,
+			default => throw new \UnexpectedValueException('size variant ' . $sizeVariantType . 'invalid'),
+		};
 	}
 
 	public function getOriginal(): ?SizeVariant
@@ -240,13 +232,13 @@ class SizeVariants implements Arrayable, JsonSerializable
 	public function replicate(Photo $duplicatePhoto): SizeVariants
 	{
 		$duplicate = new SizeVariants($duplicatePhoto);
-		$this->replicateSizeVariant($duplicate, $this->original);
-		$this->replicateSizeVariant($duplicate, $this->medium2x);
-		$this->replicateSizeVariant($duplicate, $this->medium);
-		$this->replicateSizeVariant($duplicate, $this->small2x);
-		$this->replicateSizeVariant($duplicate, $this->small);
-		$this->replicateSizeVariant($duplicate, $this->thumb2x);
-		$this->replicateSizeVariant($duplicate, $this->thumb);
+		static::replicateSizeVariant($duplicate, $this->original);
+		static::replicateSizeVariant($duplicate, $this->medium2x);
+		static::replicateSizeVariant($duplicate, $this->medium);
+		static::replicateSizeVariant($duplicate, $this->small2x);
+		static::replicateSizeVariant($duplicate, $this->small);
+		static::replicateSizeVariant($duplicate, $this->thumb2x);
+		static::replicateSizeVariant($duplicate, $this->thumb);
 
 		return $duplicate;
 	}
