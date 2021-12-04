@@ -16,8 +16,8 @@ use Illuminate\Support\Collection;
 
 class SizeVariantDefaultFactory extends SizeVariantFactory
 {
-	const THUMBNAIL_DIM = 200;
-	const THUMBNAIL2X_DIM = 400;
+	public const THUMBNAIL_DIM = 200;
+	public const THUMBNAIL2X_DIM = 400;
 
 	/** @var ImageHandlerInterface the image handler (gd, imagick, ...) which is used to generate image files */
 	protected ImageHandlerInterface $imageHandler;

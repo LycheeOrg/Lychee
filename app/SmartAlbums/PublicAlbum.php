@@ -24,8 +24,8 @@ use Illuminate\Database\Eloquent\Builder;
 class PublicAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	const ID = 'public';
-	const TITLE = 'Public';
+	public const ID = 'public';
+	public const TITLE = 'Public';
 
 	/**
 	 * Constructor.

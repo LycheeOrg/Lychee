@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Session;
  */
 class AlbumAuthorisationProvider
 {
-	const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
+	public const UNLOCKED_ALBUMS_SESSION_KEY = 'unlocked_albums';
 	protected AlbumFactory $albumFactory;
 
 	public function __construct(AlbumFactory $albumFactory)

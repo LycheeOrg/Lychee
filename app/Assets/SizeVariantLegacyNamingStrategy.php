@@ -14,7 +14,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	/**
 	 * Maps a size variant to the path prefix (directory) where the file for that size variant is stored.
 	 */
-	const VARIANT_2_PATH_PREFIX = [
+	public const VARIANT_2_PATH_PREFIX = [
 		SizeVariant::THUMB => 'thumb',
 		SizeVariant::THUMB2X => 'thumb',
 		SizeVariant::SMALL => 'small',
@@ -31,7 +31,7 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	 * If the original media file is a photo, then the "small" and "medium"
 	 * size variants use the same extension as the original file.
 	 */
-	const DEFAULT_EXTENSION = '.jpeg';
+	public const DEFAULT_EXTENSION = '.jpeg';
 
 	public function setPhoto(?Photo $photo): void
 	{

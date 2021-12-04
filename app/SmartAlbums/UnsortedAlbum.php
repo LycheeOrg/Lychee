@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\Builder;
 class UnsortedAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	const ID = 'unsorted';
-	const TITLE = 'Unsorted';
+	public const ID = 'unsorted';
+	public const TITLE = 'Unsorted';
 
 	public function __construct()
 	{

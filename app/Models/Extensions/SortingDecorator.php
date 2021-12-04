@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SortingDecorator
 {
-	const POSTPONE_COLUMNS = [
+	public const POSTPONE_COLUMNS = [
 		'title',
 		'description',
 	];

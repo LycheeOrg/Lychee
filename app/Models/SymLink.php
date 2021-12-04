@@ -31,7 +31,7 @@ class SymLink extends Model
 	use UTCBasedTimes;
 	use HasAttributesPatch;
 
-	const DISK_NAME = 'symbolic';
+	public const DISK_NAME = 'symbolic';
 
 	protected $casts = [
 		'id' => 'integer',

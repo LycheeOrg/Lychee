@@ -22,16 +22,16 @@ class Archive
 {
 	use Constants;
 
-	const LIVEPHOTOVIDEO = 'LIVEPHOTOVIDEO';
-	const FULL = 'FULL';
-	const MEDIUM2X = 'MEDIUM2X';
-	const MEDIUM = 'MEDIUM';
-	const SMALL2X = 'SMALL2X';
-	const SMALL = 'SMALL';
-	const THUMB2X = 'THUMB2X';
-	const THUMB = 'THUMB';
+	public const LIVEPHOTOVIDEO = 'LIVEPHOTOVIDEO';
+	public const FULL = 'FULL';
+	public const MEDIUM2X = 'MEDIUM2X';
+	public const MEDIUM = 'MEDIUM';
+	public const SMALL2X = 'SMALL2X';
+	public const SMALL = 'SMALL';
+	public const THUMB2X = 'THUMB2X';
+	public const THUMB = 'THUMB';
 
-	const VARIANTS = [
+	public const VARIANTS = [
 		self::LIVEPHOTOVIDEO,
 		self::FULL,
 		self::MEDIUM2X,
@@ -42,7 +42,7 @@ class Archive
 		self::THUMB,
 	];
 
-	const VARIANT2VARIANT = [
+	public const VARIANT2VARIANT = [
 		self::FULL => SizeVariant::ORIGINAL,
 		self::MEDIUM2X => SizeVariant::MEDIUM2X,
 		self::MEDIUM => SizeVariant::MEDIUM,

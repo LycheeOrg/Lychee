@@ -49,13 +49,13 @@ class SizeVariant extends Model
 	use HasAttributesPatch;
 	use HasBidirectionalRelationships;
 
-	const ORIGINAL = 0;
-	const MEDIUM2X = 1;
-	const MEDIUM = 2;
-	const SMALL2X = 3;
-	const SMALL = 4;
-	const THUMB2X = 5;
-	const THUMB = 6;
+	public const ORIGINAL = 0;
+	public const MEDIUM2X = 1;
+	public const MEDIUM = 2;
+	public const SMALL2X = 3;
+	public const SMALL = 4;
+	public const THUMB2X = 5;
+	public const THUMB = 6;
 
 	/**
 	 * This model has no own timestamps as it is inseparably bound to its
