@@ -594,7 +594,10 @@ class RefactorModels extends Migration
 	 */
 	private function upgradeCopy(): void
 	{
-		$albums = DB::table('albums_tmp')->lazyById();
+		// Ordering by `_lft` is important, because we must copy parent
+		// albums first.
+		// Otherwise, foreign key constraint to `parent_id` may fail.
+		$albums = DB::table('albums_tmp')->orderBy('_lft')->lazyById();
 		$mapSorting = function (?string $sortingCol): ?string {
 			if (empty($sortingCol)) {
 				return null;
@@ -631,11 +634,16 @@ class RefactorModels extends Migration
 					'show_tags' => $album->showtags,
 				]);
 			} else {
+				// Don't copy `cover_id` yet, because the photos have not been
+				// copied yet.
+				// Explicit `cover_id` needs to be set belated.
+				// Otherwise, the foreign key constraint between `cover_id`
+				// and `photos.id` fails.
 				DB::table('albums')->insert([
 					'id' => $album->id,
 					'parent_id' => $album->parent_id,
 					'license' => $album->license,
-					'cover_id' => $album->cover_id,
+					'cover_id' => null,
 					'_lft' => $album->_lft ?? 0,
 					'_rgt' => $album->_rgt ?? 0,
 				]);
@@ -699,6 +707,17 @@ class RefactorModels extends Migration
 					]);
 				}
 			}
+
+			// Restore explicit covers of albums
+			$coveredAlbums = DB::table('albums_tmp')
+				->whereNotNull('cover_id')
+				->where('smart', '=', false)
+				->lazyById();
+			foreach ($coveredAlbums as $coveredAlbum) {
+				DB::table('albums')
+					->where('id', '=', $coveredAlbum->id)
+					->update(['cover_id' => $coveredAlbum->cover_id]);
+			}
 		}
 	}
 
@@ -739,17 +758,23 @@ class RefactorModels extends Migration
 			]);
 		}
 
-		$oldAlbums = DB::table('albums_tmp')->lazyById();
-		foreach ($oldAlbums as $oldAlbum) {
+		// Ordering by `_lft` is important, because we must copy parent
+		// albums first.
+		// Otherwise, foreign key constraint to `parent_id` may fail.
+		// Also, don't copy `cover_id` yet, because the photos have not been
+		// copied yet.
+		// Explicit `cover_id` needs to be set belated.
+		$albums = DB::table('albums_tmp')->orderBy('_lft')->lazyById();
+		foreach ($albums as $album) {
 			DB::table('albums')
-				->where('id', '=', $oldAlbum->id)
+				->where('id', '=', $album->id)
 				->update([
 					'smart' => false,
-					'parent_id' => $oldAlbum->parent_id,
-					'license' => $oldAlbum->license,
-					'cover_id' => $oldAlbum->cover_id,
-					'_lft' => $oldAlbum->_lft,
-					'_rgt' => $oldAlbum->_rgt,
+					'parent_id' => $album->parent_id,
+					'license' => $album->license,
+					'cover_id' => null,
+					'_lft' => $album->_lft,
+					'_rgt' => $album->_rgt,
 				]);
 		}
 
@@ -896,6 +921,16 @@ class RefactorModels extends Migration
 			}
 
 			DB::table('photos')->insert($photoAttributes);
+		}
+
+		// Restore explicit covers of albums
+		$coveredAlbums = DB::table('albums_tmp')
+			->whereNotNull('cover_id')
+			->lazyById();
+		foreach ($coveredAlbums as $coveredAlbum) {
+			DB::table('albums')
+				->where('id', '=', $coveredAlbum->id)
+				->update(['cover_id' => $coveredAlbum->cover_id]);
 		}
 	}
 
