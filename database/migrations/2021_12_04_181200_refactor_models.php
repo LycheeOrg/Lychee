@@ -1192,4 +1192,6 @@ class RefactorAlbumModel_AlbumModel extends Model
 	use NodeTrait;
 
 	protected $table = 'albums';
+
+	public $timestamps = false;
 }
