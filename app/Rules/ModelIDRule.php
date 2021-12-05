@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Contracts\HasRandomID;
 use Illuminate\Contracts\Validation\Rule;
 
 class ModelIDRule implements Rule
@@ -16,9 +17,7 @@ class ModelIDRule implements Rule
 	 */
 	public function passes($attribute, $value): bool
 	{
-		return
-			$value === null ||
-			(filter_var($value, FILTER_VALIDATE_INT) !== false && intval($value) >= 0);
+		return $value === null || strlen($value) === HasRandomID::ID_LENGTH;
 	}
 
 	/**
@@ -28,6 +27,6 @@ class ModelIDRule implements Rule
 	 */
 	public function message(): string
 	{
-		return ':attribute must either be null or an positive integer.';
+		return ':attribute must either be null or a string with 85 characters';
 	}
 }

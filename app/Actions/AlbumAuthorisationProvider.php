@@ -398,9 +398,9 @@ class AlbumAuthorisationProvider
 	/**
 	 * Pushes an album ID onto the stack of unlocked albums.
 	 *
-	 * @param int $albumID
+	 * @param string $albumID
 	 */
-	public function unlockAlbum(int $albumID): void
+	public function unlockAlbum(string $albumID): void
 	{
 		Session::push(self::UNLOCKED_ALBUMS_SESSION_KEY, $albumID);
 	}
@@ -408,11 +408,11 @@ class AlbumAuthorisationProvider
 	/**
 	 * Check if the given album ID has previously been unlocked.
 	 *
-	 * @param int $albumID
+	 * @param string $albumID
 	 *
 	 * @return bool
 	 */
-	public function isAlbumUnlocked(int $albumID): bool
+	public function isAlbumUnlocked(string $albumID): bool
 	{
 		return in_array($albumID, $this->getUnlockedAlbumIDs());
 	}

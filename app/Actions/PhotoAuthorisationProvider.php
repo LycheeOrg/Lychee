@@ -67,11 +67,11 @@ class PhotoAuthorisationProvider
 	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
 	 * specification of the rules when a photo is visible.
 	 *
-	 * @param int $photoID
+	 * @param string $photoID
 	 *
 	 * @return bool
 	 */
-	public function isVisible(int $photoID): bool
+	public function isVisible(string $photoID): bool
 	{
 		if (AccessControl::is_admin()) {
 			return true;

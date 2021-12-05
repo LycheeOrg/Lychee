@@ -11,10 +11,10 @@ class Move extends Action
 	/**
 	 * Moves the given albums into the target.
 	 *
-	 * @param string $targetAlbumID
-	 * @param array  $albumIDs
+	 * @param string|null $targetAlbumID
+	 * @param string[]    $albumIDs
 	 */
-	public function do(string $targetAlbumID, array $albumIDs): void
+	public function do(?string $targetAlbumID, array $albumIDs): void
 	{
 		if (empty($targetAlbumID)) {
 			$targetAlbumID = null;

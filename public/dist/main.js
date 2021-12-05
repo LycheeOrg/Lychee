@@ -687,8 +687,12 @@ album.isSmartID = function (id) {
 	return id === "unsorted" || id === "starred" || id === "public" || id === "recent";
 };
 
+album.isModelID = function (id) {
+	return typeof id === "string" && id.length === 24;
+};
+
 album.getParentID = function () {
-	if (album.json == null || album.isSmartID(album.json.id) === true || !album.json.parent_id || album.json.parent_id === 0) {
+	if (album.json == null || album.isSmartID(album.json.id) === true || !album.json.parent_id) {
 		return null;
 	}
 	return album.json.parent_id;
@@ -699,10 +703,7 @@ album.getID = function () {
 
 	// this is a Lambda
 	var isID = function isID(_id) {
-		if (album.isSmartID(_id)) {
-			return true;
-		}
-		return $.isNumeric(_id);
+		return album.isSmartID(_id) || album.isModelID(_id);
 	};
 
 	if (_photo.json) id = _photo.json.album;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
@@ -711,7 +712,7 @@ album.getID = function () {
 	if (isID(id) === false) id = $(".album:hover, .album.active").attr("data-id");
 	if (isID(id) === false) id = $(".photo:hover, .photo.active").attr("data-album-id");
 
-	if (isID(id) === true) return id;else return false;
+	if (isID(id) === true) return id;else return null;
 };
 
 album.isTagAlbum = function () {
@@ -728,7 +729,7 @@ album.getByID = function (photoID) {
 
 	var i = 0;
 	while (i < album.json.photos.length) {
-		if (parseInt(album.json.photos[i].id) === parseInt(photoID)) {
+		if (album.json.photos[i].id === photoID) {
 			return album.json.photos[i];
 		}
 		i++;
@@ -748,7 +749,7 @@ album.getSubByID = function (albumID) {
 
 	var i = 0;
 	while (i < album.json.albums.length) {
-		if (parseInt(album.json.albums[i].id) === parseInt(albumID)) {
+		if (album.json.albums[i].id === albumID) {
 			return album.json.albums[i];
 		}
 		i++;
@@ -768,7 +769,7 @@ album.deleteByID = function (photoID) {
 	var deleted = false;
 
 	$.each(album.json.photos, function (i) {
-		if (parseInt(album.json.photos[i].id) === parseInt(photoID)) {
+		if (album.json.photos[i].id === photoID) {
 			album.json.photos.splice(i, 1);
 			deleted = true;
 			return false;
@@ -788,7 +789,7 @@ album.deleteSubByID = function (albumID) {
 	var deleted = false;
 
 	$.each(album.json.albums, function (i) {
-		if (parseInt(album.json.albums[i].id) === parseInt(albumID)) {
+		if (album.json.albums[i].id === albumID) {
 			album.json.albums.splice(i, 1);
 			deleted = true;
 			return false;
@@ -887,8 +888,8 @@ album.add = function () {
 	var action = function action(data) {
 		// let title = data.title;
 
-		var isNumber = function isNumber(n) {
-			return !isNaN(parseInt(n, 10)) && isFinite(n);
+		var isModelID = function isModelID(albumID) {
+			return typeof albumID === "string" && albumID.length === 24;
 		};
 
 		if (!data.title.trim()) {
@@ -900,11 +901,11 @@ album.add = function () {
 
 		var params = {
 			title: data.title,
-			parent_id: 0
+			parent_id: null
 		};
 
 		if (visible.albums() || album.isSmartID(album.json.id)) {
-			params.parent_id = 0;
+			params.parent_id = null;
 		} else if (visible.album()) {
 			params.parent_id = album.json.id;
 		} else if (visible.photo()) {
@@ -912,7 +913,7 @@ album.add = function () {
 		}
 
 		api.post("Album::add", params, function (_data) {
-			if (_data && isNumber(_data.id)) {
+			if (_data && isModelID(_data.id)) {
 				if (IDs != null && callback != null) {
 					callback(IDs, _data, false); // we do not confirm
 				} else {
@@ -959,10 +960,10 @@ album.addByTags = function () {
 		};
 
 		api.post("Album::addByTags", params, function (_data) {
-			var isNumber = function isNumber(n) {
-				return !isNaN(parseInt(n, 10)) && isFinite(n);
+			var isModelID = function isModelID(albumID) {
+				return typeof albumID === "string" && albumID.length === 24;
 			};
-			if (_data && isNumber(_data.id)) {
+			if (_data && isModelID(_data.id)) {
 				albums.refresh();
 				lychee.goto(_data.id);
 			} else {
@@ -1043,7 +1044,7 @@ album.setTitle = function (albumIDs) {
 	if (albumIDs.length === 1) {
 		// Get old title if only one album is selected
 		if (album.json) {
-			if (parseInt(album.getID()) === parseInt(albumIDs[0])) {
+			if (album.getID() === albumIDs[0]) {
 				oldTitle = album.json.title;
 			} else oldTitle = album.getSubByID(albumIDs[0]).title;
 		}
@@ -1064,7 +1065,7 @@ album.setTitle = function (albumIDs) {
 		var newTitle = data.title;
 
 		if (visible.album()) {
-			if (albumIDs.length === 1 && parseInt(album.getID()) === parseInt(albumIDs[0])) {
+			if (albumIDs.length === 1 && album.getID() === albumIDs[0]) {
 				// Rename only one album
 
 				album.json.title = newTitle;
@@ -1165,7 +1166,7 @@ album.setDescription = function (albumID) {
 album.toggleCover = function (photoID) {
 	if (!photoID) return false;
 
-	album.json.cover_id = album.json.cover_id === photoID ? "" : photoID;
+	album.json.cover_id = album.json.cover_id === photoID ? null : photoID;
 
 	var params = {
 		albumID: album.json.id,
@@ -1551,10 +1552,10 @@ album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
 	var msg = "";
 
 	if (!albumIDs) return false;
-	if (albumIDs instanceof Array === false) albumIDs = [albumIDs];
+	if (!(albumIDs instanceof Array)) albumIDs = [albumIDs];
 
 	// Get title of first album
-	if (parseInt(albumID, 10) === 0) {
+	if (albumID === null) {
 		title = lychee.locale["ROOT"];
 	} else {
 		album1 = albums.getByID(albumID);
@@ -1634,7 +1635,7 @@ album.delete = function (albumIDs) {
 
 		// Get title
 		if (album.json) {
-			if (parseInt(album.getID()) === parseInt(albumIDs[0])) {
+			if (album.getID() === albumIDs[0]) {
 				albumTitle = album.json.title;
 			} else albumTitle = album.getSubByID(albumIDs[0]).title;
 		}
@@ -1675,9 +1676,9 @@ album.merge = function (albumIDs, albumID) {
 
 	var action = function action() {
 		basicModal.close();
-		albumIDs.unshift(albumID);
 
 		var params = {
+			albumID: albumID,
 			albumIDs: albumIDs.join()
 		};
 
@@ -1715,9 +1716,9 @@ album.setAlbum = function (albumIDs, albumID) {
 
 	var action = function action() {
 		basicModal.close();
-		albumIDs.unshift(albumID);
 
 		var params = {
+			albumID: albumID,
 			albumIDs: albumIDs.join()
 		};
 
@@ -1977,7 +1978,7 @@ albums.isShared = function (albumID) {
 	var found = false;
 
 	var func = function func() {
-		if (parseInt(this.id, 10) === parseInt(albumID, 10)) {
+		if (this.id === albumID) {
 			found = true;
 			return false; // stop the loop
 		}
@@ -2001,7 +2002,7 @@ albums.getByID = function (albumID) {
 	var json = undefined;
 
 	var func = function func() {
-		if (parseInt(this.id, 10) === parseInt(albumID, 10)) {
+		if (this.id === albumID) {
 			json = this;
 			return false; // stop the loop
 		}
@@ -2031,7 +2032,7 @@ albums.deleteByID = function (albumID) {
 	var deleted = false;
 
 	$.each(albums.json.albums, function (i) {
-		if (parseInt(albums.json.albums[i].id) === parseInt(albumID)) {
+		if (albums.json.albums[i].id === albumID) {
 			albums.json.albums.splice(i, 1);
 			deleted = true;
 			return false; // stop the loop
@@ -2041,7 +2042,7 @@ albums.deleteByID = function (albumID) {
 	if (deleted === false) {
 		if (!albums.json.shared_albums) return undefined;
 		$.each(albums.json.shared_albums, function (i) {
-			if (parseInt(albums.json.shared_albums[i].id) === parseInt(albumID)) {
+			if (albums.json.shared_albums[i].id === albumID) {
 				albums.json.shared_albums.splice(i, 1);
 				deleted = true;
 				return false; // stop the loop
@@ -2052,7 +2053,7 @@ albums.deleteByID = function (albumID) {
 	if (deleted === false) {
 		if (!albums.json.smart_albums) return undefined;
 		$.each(albums.json.smart_albums, function (i) {
-			if (parseInt(albums.json.smart_albums[i].id) === parseInt(albumID)) {
+			if (albums.json.smart_albums[i].id === albumID) {
 				delete albums.json.smart_albums[i];
 				deleted = true;
 				return false; // stop the loop
@@ -2509,7 +2510,7 @@ contextMenu.add = function (e) {
 			// For tag albums the context menu is normally not used.
 			items = [];
 		}
-		if (Number.isInteger(parseInt(albumID)) || albumID === "unsorted") {
+		if (albumID.length === 24 || albumID === "unsorted") {
 			if (albumID !== "unsorted") {
 				var button_visibility_album = $("#button_visibility_album");
 				if (button_visibility_album && button_visibility_album.css("display") === "none") {
@@ -2668,7 +2669,7 @@ contextMenu.buildList = function (lists, exclude, action) {
 
 	var find = function find(excl, id) {
 		for (var _i = 0; _i < excl.length; _i++) {
-			if (parseInt(excl[_i], 10) === parseInt(id, 10)) return true;
+			if (excl[_i] === id) return true;
 		}
 		return false;
 	};
@@ -2747,7 +2748,7 @@ contextMenu.albumTitle = function (albumID, e) {
 
 		if (data.shared_albums && data.shared_albums.length > 0) {
 			items = items.concat({});
-			items = items.concat(contextMenu.buildList(data.shared_albums, albumID !== false ? [parseInt(albumID, 10)] : [], function (a) {
+			items = items.concat(contextMenu.buildList(data.shared_albums, albumID !== false ? [albumID] : [], function (a) {
 				return lychee.goto(a.id);
 			}));
 		}
@@ -2977,11 +2978,11 @@ contextMenu.photoMore = function (photoID, e) {
 };
 
 contextMenu.getSubIDs = function (albums, albumID) {
-	var ids = [parseInt(albumID, 10)];
+	var ids = [albumID];
 	var a = void 0;
 
 	for (a = 0; a < albums.length; a++) {
-		if (parseInt(albums[a].parent_id, 10) === parseInt(albumID, 10)) {
+		if (albums[a].parent_id === albumID) {
 			ids = ids.concat(contextMenu.getSubIDs(albums, albums[a].id));
 		}
 
@@ -3042,7 +3043,7 @@ contextMenu.move = function (IDs, e, callback) {
 		}
 
 		// Show Unsorted when unsorted is not the current album
-		if (display_root && album.getID() !== "0" && !visible.albums()) {
+		if (display_root && album.getID() !== null && !visible.albums()) {
 			items.unshift({});
 			items.unshift({ title: lychee.locale[kind], fn: function fn() {
 					return callback(IDs, 0);
@@ -3278,7 +3279,7 @@ header.bind = function () {
 		lychee.goto(album.getID());
 	});
 	header.dom("#button_back_map").on(eventName, function () {
-		lychee.goto(album.getID() || "");
+		lychee.goto(album.getID());
 	});
 	header.dom("#button_fs_album_enter,#button_fs_enter").on(eventName, lychee.fullscreenEnter);
 	header.dom("#button_fs_album_exit,#button_fs_exit").on(eventName, lychee.fullscreenExit).hide();
@@ -4590,19 +4591,16 @@ lychee.gotoMap = function () {
 lychee.load = function () {
 	var autoplay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
-	var albumID = "";
-	var photoID = "";
 	var hash = document.location.hash.replace("#", "").split("/");
+	var albumID = hash[0];
+	var photoID = hash[1];
 
 	contextMenu.close();
 	multiselect.close();
 	tabindex.reset();
 
-	if (hash[0] != null) albumID = hash[0];
-	if (hash[1] != null) photoID = hash[1];
-
 	if (albumID && photoID) {
-		if (albumID == "map") {
+		if (albumID === "map") {
 			// If map functionality is disabled -> do nothing
 			if (!lychee.map_display) {
 				loadingBar.show("error", lychee.locale["ERROR_MAP_DEACTIVATED"]);
@@ -4624,7 +4622,7 @@ lychee.load = function () {
 			}
 			mapview.open(albumID);
 			lychee.footer_hide();
-		} else if (albumID == "search") {
+		} else if (albumID === "search") {
 			// Search has been triggered
 			var search_string = decodeURIComponent(photoID);
 
@@ -4668,7 +4666,7 @@ lychee.load = function () {
 			lychee.footer_hide();
 		}
 	} else if (albumID) {
-		if (albumID == "map") {
+		if (albumID === "map") {
 			$(".no_content").remove();
 			// Show map of all albums
 			// If map functionality is disabled -> do nothing
@@ -4685,7 +4683,7 @@ lychee.load = function () {
 			if (visible.sidebar()) _sidebar.toggle(false);
 			mapview.open();
 			lychee.footer_hide();
-		} else if (albumID == "search") {
+		} else if (albumID === "search") {
 			// search string is empty -> do nothing
 		} else {
 			$(".no_content").remove();
@@ -6376,7 +6374,7 @@ _photo.getID = function () {
 
 	if (_photo.json) id = _photo.json.id;else id = $(".photo:hover, .photo.active").attr("data-id");
 
-	if ($.isNumeric(id) === true) return id;else return false;
+	if (typeof id === "string" && id.length === 24) return id;else return null;
 };
 
 _photo.load = function (photoID, albumID, autoplay) {
@@ -6544,7 +6542,7 @@ _photo.updateSizeLivePhotoDuringAnimation = function () {
 };
 
 _photo.previous = function (animate) {
-	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).previous_photo_id !== null) {
+	if (_photo.getID() !== null && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).previous_photo_id !== null) {
 		var delay = 0;
 
 		if (animate === true) {
@@ -6559,7 +6557,7 @@ _photo.previous = function (animate) {
 		}
 
 		setTimeout(function () {
-			if (_photo.getID() === false) return false;
+			if (_photo.getID() === null) return false;
 			_photo.LivePhotosObject = null;
 			lychee.goto(album.getID() + "/" + album.getByID(_photo.getID()).previous_photo_id, false);
 		}, delay);
@@ -6567,7 +6565,7 @@ _photo.previous = function (animate) {
 };
 
 _photo.next = function (animate) {
-	if (_photo.getID() !== false && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).next_photo_id !== null) {
+	if (_photo.getID() !== null && album.json && album.getByID(_photo.getID()) && album.getByID(_photo.getID()).next_photo_id !== null) {
 		var delay = 0;
 
 		if (animate === true) {
@@ -6582,7 +6580,7 @@ _photo.next = function (animate) {
 		}
 
 		setTimeout(function () {
-			if (_photo.getID() === false) return false;
+			if (_photo.getID() === null) return false;
 			_photo.LivePhotosObject = null;
 			lychee.goto(album.getID() + "/" + album.getByID(_photo.getID()).next_photo_id, false);
 		}, delay);
@@ -8988,7 +8986,7 @@ upload.start = {
 
 				albums.refresh();
 
-				if (album.getID() === false) lychee.goto();else album.load(albumID);
+				if (album.getID() === null) lychee.goto();else album.load(albumID);
 			};
 
 			formData.append("function", "Photo::add");
@@ -9003,8 +9001,8 @@ upload.start = {
 				var data = null;
 				var errorText = "";
 
-				var isNumber = function isNumber(n) {
-					return !isNaN(parseFloat(n)) && isFinite(n);
+				var isModelID = function isModelID(albumID) {
+					return typeof albumID === "string" && albumID.length === 24;
 				};
 
 				data = xhr.responseText;
@@ -9024,7 +9022,7 @@ upload.start = {
 				}
 
 				// Set status
-				if ((xhr.status === 200 || xhr.status === 201) && isNumber(data.id)) {
+				if ((xhr.status === 200 || xhr.status === 201) && isModelID(data.id)) {
 					// Success
 					$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
 				} else {
@@ -9120,7 +9118,7 @@ upload.start = {
 		};
 
 		if (files.length <= 0) return false;
-		if (albumID === false || visible.albums() === true) albumID = 0;
+		if (albumID === false || visible.albums() === true) albumID = null;
 
 		window.onbeforeunload = function () {
 			return lychee.locale["UPLOAD_IN_PROGRESS"];
@@ -9142,7 +9140,7 @@ upload.start = {
 
 		_url = typeof _url === "string" ? _url : "";
 
-		if (albumID === false) albumID = 0;
+		if (albumID === false) albumID = null;
 
 		var action = function action(data) {
 			var files = [];
@@ -9183,7 +9181,7 @@ upload.start = {
 
 						albums.refresh();
 
-						if (album.getID() === false) lychee.goto();else album.load(albumID);
+						if (album.getID() === null) lychee.goto();else album.load(albumID);
 					});
 				});
 			} else basicModal.error("link");
@@ -9206,7 +9204,7 @@ upload.start = {
 
 	server: function server() {
 		var albumID = album.getID();
-		if (albumID === false) albumID = 0;
+		if (albumID === false) albumID = null;
 
 		var action = function action(data) {
 			if (!data.path.trim()) {
@@ -9338,7 +9336,7 @@ upload.start = {
 
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"], encounteredProblems ? lychee.locale["UPLOAD_COMPLETE_FAILED"] : null);
 
-					if (album.getID() === false) lychee.goto();else album.load(albumID);
+					if (album.getID() === null) lychee.goto();else album.load(albumID);
 
 					if (encounteredProblems) showCloseButton();else basicModal.close();
 				}, function (event) {
@@ -9382,7 +9380,7 @@ upload.start = {
 						albums.refresh();
 						upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 
-						if (album.getID() === false) lychee.goto();else album.load(albumID);
+						if (album.getID() === null) lychee.goto();else album.load(albumID);
 
 						showCloseButton();
 
@@ -9487,7 +9485,7 @@ upload.start = {
 
 					albums.refresh();
 
-					if (album.getID() === false) lychee.goto();else album.load(albumID);
+					if (album.getID() === null) lychee.goto();else album.load(albumID);
 				});
 			});
 		};
@@ -9668,7 +9666,7 @@ view.albums = {
 			// Albums
 			if (albums.json.albums && albums.json.albums.length !== 0) {
 				$.each(albums.json.albums, function () {
-					if (!this.parent_id || this.parent_id === 0) {
+					if (!this.parent_id) {
 						albums.parse(this);
 						albumsData += build.album(this);
 					}
@@ -9684,7 +9682,7 @@ view.albums = {
 			if (albums.json.shared_albums && albums.json.shared_albums.length !== 0) {
 				for (i = 0; i < albums.json.shared_albums.length; ++i) {
 					var alb = albums.json.shared_albums[i];
-					if (!alb.parent_id || alb.parent_id === 0) {
+					if (!alb.parent_id) {
 						albums.parse(alb);
 						if (current_owner !== alb.owner_name && lychee.publicMode === false) {
 							sharedData += build.divider(alb.owner_name);

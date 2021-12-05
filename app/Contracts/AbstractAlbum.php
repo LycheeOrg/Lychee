@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
  * See {@link \App\Contracts\BaseAlbum} for the common interface of
  * all models which are persisted to DB.
  *
+ * @property string     $id
  * @property string     $title
  * @property Collection $photos
  * @property Thumb|null $thumb

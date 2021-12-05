@@ -13,8 +13,8 @@ class Merge extends Action
 	 * Merges the content of the given source albums (photos and sub-albums)
 	 * into the target.
 	 *
-	 * @param string $albumID
-	 * @param array  $sourceAlbumIDs
+	 * @param string   $albumID
+	 * @param string[] $sourceAlbumIDs
 	 */
 	public function do(string $albumID, array $sourceAlbumIDs): void
 	{

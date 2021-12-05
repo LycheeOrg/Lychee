@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Contracts\HasRandomID;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
-use App\Models\Extensions\HasTimeBasedID;
+use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
@@ -78,7 +79,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * but this class is not a proper parent class (it just provides an
  * implementation of it) and we need this class to be instantiable.
  *
- * @property int         $id
+ * @property string      $id
+ * @property int         $legacy_id
  * @property Carbon      $created_at
  * @property Carbon      $updated_at
  * @property string      $title
@@ -97,14 +99,19 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $sorting_col
  * @property string|null $sorting_order
  */
-class BaseAlbumImpl extends Model
+class BaseAlbumImpl extends Model implements HasRandomID
 {
 	use HasAttributesPatch;
-	use HasTimeBasedID;
+	use HasRandomIDAndLegacyTimeBasedID;
 	use UTCBasedTimes;
 	use HasBidirectionalRelationships;
 
 	protected $table = 'base_albums';
+
+	/**
+	 * @var string The type of the primary key
+	 */
+	protected $keyType = \App\Contracts\HasRandomID::ID_TYPE;
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -126,6 +133,7 @@ class BaseAlbumImpl extends Model
 	 */
 	protected $attributes = [
 		'id' => null,
+		HasRandomID::LEGACY_ID_NAME => null,
 		'created_at' => null,
 		'updated_at' => null,
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
@@ -143,13 +151,14 @@ class BaseAlbumImpl extends Model
 	];
 
 	protected $casts = [
+		'id' => HasRandomID::ID_TYPE,
+		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'is_public' => 'boolean',
 		'requires_link' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
-		'id' => 'integer',
 	];
 
 	/**
@@ -157,6 +166,7 @@ class BaseAlbumImpl extends Model
 	 *               relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
+		HasRandomID::LEGACY_ID_NAME,
 		'owner',
 		'password',
 	];

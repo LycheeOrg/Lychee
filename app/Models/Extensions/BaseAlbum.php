@@ -3,6 +3,7 @@
 namespace App\Models\Extensions;
 
 use App\Contracts\AbstractAlbum;
+use App\Contracts\HasRandomID;
 use App\Models\BaseAlbumImpl;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
@@ -19,7 +20,7 @@ use Illuminate\Support\Carbon;
  * deleted by a user at runtime or more accurately which can be persisted
  * to the DB.
  *
- * @property int           $id
+ * @property int           $legacy_id
  * @property Carbon        $created_at
  * @property Carbon        $updated_at
  * @property string|null   $description
@@ -37,10 +38,15 @@ use Illuminate\Support\Carbon;
  * @property string|null   $sorting_order
  * @property BaseAlbumImpl $base_class
  */
-abstract class BaseAlbum extends Model implements AbstractAlbum
+abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 {
 	use HasBidirectionalRelationships;
 	use ForwardsToParentImplementation;
+
+	/**
+	 * @var string The type of the primary key
+	 */
+	protected $keyType = HasRandomID::ID_TYPE;
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.

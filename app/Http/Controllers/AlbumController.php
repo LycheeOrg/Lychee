@@ -19,6 +19,7 @@ use App\Actions\Album\SetSorting;
 use App\Actions\Album\SetTitle;
 use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
+use App\Contracts\HasRandomID;
 use App\Facades\Helpers;
 use App\Factories\AlbumFactory;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
@@ -47,7 +48,7 @@ class AlbumController extends Controller
 	{
 		$request->validate([
 			'title' => 'required|string|max:100',
-			'parent_id' => 'present|nullable|numeric|integer|gte:0',
+			'parent_id' => 'present|nullable|string|size:' . HasRandomID::ID_LENGTH,
 		]);
 
 		return $create->create($request['title'], $request['parent_id']);
@@ -202,7 +203,7 @@ class AlbumController extends Controller
 	public function setCover(AlbumModelIDRequest $request, SetCover $setCover): IlluminateResponse
 	{
 		$request->validate([
-			'photoID' => 'present|nullable|numeric|integer|gte:0',
+			'photoID' => 'present|nullable|string|size:' . HasRandomID::ID_LENGTH,
 		]);
 		$setCover->do($request['albumID'], $request['photoID']);
 
@@ -254,10 +255,8 @@ class AlbumController extends Controller
 	 */
 	public function merge(AlbumIDsRequest $request, Merge $merge): IlluminateResponse
 	{
-		// Convert to array
+		$targetAlbumID = $request['albumID'];
 		$albumIDs = explode(',', $request['albumIDs']);
-		// Get first albumID
-		$targetAlbumID = array_shift($albumIDs);
 		$merge->do($targetAlbumID, $albumIDs);
 
 		return response()->noContent();
@@ -273,10 +272,8 @@ class AlbumController extends Controller
 	 */
 	public function move(AlbumIDsRequest $request, Move $move): IlluminateResponse
 	{
-		// Convert to array
+		$targetAlbumID = $request['albumID'];
 		$albumIDs = explode(',', $request['albumIDs']);
-		// Get first albumID
-		$targetAlbumID = array_shift($albumIDs);
 		$move->do($targetAlbumID, $albumIDs);
 
 		return response()->noContent();

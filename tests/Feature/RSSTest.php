@@ -50,7 +50,7 @@ class RSSTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		// create an album
-		$albumID = $albums_tests->add('0', 'test_album')->offsetGet('id');
+		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
 
 		// upload a picture
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');

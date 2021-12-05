@@ -4,6 +4,7 @@
 
 namespace App\Models\Extensions;
 
+use App\Contracts\HasRandomID;
 use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,7 +16,7 @@ use Illuminate\Database\QueryException;
  *
  * Inspired by https://emymbenoun.medium.com/how-to-use-uuids-instead-of-auto-increment-ids-in-your-laravel-app-2e6cc045f6c1.
  */
-trait HasTimeBasedID
+trait HasRandomIDAndLegacyTimeBasedID
 {
 	/**
 	 * Get the value indicating whether the IDs are incrementing.
@@ -49,6 +50,9 @@ trait HasTimeBasedID
 	{
 		if ($key == $this->getKeyName()) {
 			throw new \InvalidArgumentException('must not set primary key explicitly, primary key will be set on first insert');
+		}
+		if ($key == HasRandomID::LEGACY_ID_NAME) {
+			throw new \InvalidArgumentException('must not set legacy key explicitly, legacy key will be set on first insert');
 		}
 
 		return parent::setAttribute($key, $value);
@@ -125,6 +129,12 @@ trait HasTimeBasedID
 	 */
 	private function generateKey(): void
 	{
+		// URl-compatible variant of base64 encoding
+		// `+` and `/` are replaced by `-` and `_`, resp.
+		// The other characters (a-z, A-Z, 0-9) are legal within an URL.
+		// As the number of bytes is divisible by 3, no trailing `=` occurs.
+		$id = strtr(base64_encode(random_bytes(3 * HasRandomID::ID_LENGTH / 4)), '+/', '-_');
+
 		if (
 			PHP_INT_MAX == 2147483647
 			|| Configs::get_value('force_32bit_ids', '0') === '1'
@@ -133,15 +143,16 @@ trait HasTimeBasedID
 			// full seconds in id.  The calling code needs to be able to
 			// handle duplicate ids.  Note that this also exposes us to
 			// the year 2038 problem.
-			$id = sprintf('%010d', microtime(true));
+			$legacyID = sprintf('%010d', microtime(true));
 		} else {
 			// Ensure 4 digits after the decimal point, 15 characters
 			// total (including the decimal point), 0-padded on the
 			// left if needed (shouldn't be needed unless we move back in
 			// time :-) )
-			$id = sprintf('%015.4f', microtime(true));
-			$id = str_replace('.', '', $id);
+			$legacyID = sprintf('%015.4f', microtime(true));
+			$legacyID = str_replace('.', '', $legacyID);
 		}
-		$this->attributes[$this->getKeyName()] = intval($id);
+		$this->attributes[$this->getKeyName()] = $id;
+		$this->attributes[HasRandomID::LEGACY_ID_NAME] = intval($legacyID);
 	}
 }

@@ -8,12 +8,12 @@ use App\Models\Album;
 class Create extends Action
 {
 	/**
-	 * @param string $title
-	 * @param int    $parent_id
+	 * @param string      $title
+	 * @param string|null $parent_id
 	 *
 	 * @return Album
 	 */
-	public function create(string $title, int $parent_id): Album
+	public function create(string $title, ?string $parent_id = null): Album
 	{
 		$album = new Album();
 		$album->title = $title;
@@ -28,17 +28,15 @@ class Create extends Action
 	/**
 	 * Setups parent album on album structure.
 	 *
-	 * @param Album $album
-	 * @param int   $parent_id
+	 * @param Album       $album
+	 * @param string|null $parent_id
 	 */
-	private function set_parent(Album $album, int $parent_id): void
+	private function set_parent(Album $album, ?string $parent_id): void
 	{
-		/** @var Album|null $parent */
-		$parent = Album::query()->find($parent_id);
-
-		// we get the parent if it exists.
-		if ($parent !== null) {
-			$album->parent_id = $parent->id;
+		if ($parent_id !== null) {
+			/** @var Album $parent */
+			$parent = Album::query()->findOrFail($parent_id);
+			$album->parent_id = $parent_id;
 
 			// Admin can add subalbums to other users' albums.  Make sure that
 			// the ownership stays with that user.

@@ -60,7 +60,7 @@ class NotificationTest extends TestCase
 		$sessions_test->login('uploader', 'uploader');
 
 		// add new album
-		$albumID = $albums_tests->add('0', 'test_album')->offsetGet('id');
+		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
 
 		// upload photo to the album
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');

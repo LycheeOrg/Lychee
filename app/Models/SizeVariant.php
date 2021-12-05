@@ -33,7 +33,7 @@ use League\Flysystem\Adapter\Local;
  * Describes a size variant of a photo.
  *
  * @property int                 id
- * @property int                 photo_id
+ * @property string              photo_id
  * @property Photo               photo
  * @property int                 type
  * @property string              short_path
@@ -67,7 +67,6 @@ class SizeVariant extends Model
 
 	protected $casts = [
 		'id' => 'integer',
-		'photo_id' => 'integer',
 		'type' => 'integer',
 		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',

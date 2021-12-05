@@ -27,16 +27,16 @@ class AlbumFactory
 	 * Returns an existing instance of an album with the given ID or fails
 	 * with an exception.
 	 *
-	 * @param int|string $albumId       the ID of the requested album
-	 * @param bool       $withRelations indicates if the relations of an
-	 *                                  album (i.e. photos and sub-albums,
-	 *                                  if applicable) shall be loaded, too.
+	 * @param string $albumId       the ID of the requested album
+	 * @param bool   $withRelations indicates if the relations of an
+	 *                              album (i.e. photos and sub-albums,
+	 *                              if applicable) shall be loaded, too.
 	 *
 	 * @return AbstractAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 */
-	public function findOrFail(int|string $albumId, bool $withRelations = true): AbstractAlbum
+	public function findOrFail(string $albumId, bool $withRelations = true): AbstractAlbum
 	{
 		if ($this->isBuiltInSmartAlbum($albumId)) {
 			return $this->createSmartAlbum($albumId, $withRelations);
@@ -49,17 +49,17 @@ class AlbumFactory
 	 * Returns an existing model instance of an album with the given ID or
 	 * fails with an exception.
 	 *
-	 * @param int|string $albumId       the ID of the requested album
-	 * @param bool       $withRelations indicates if the relations of an
-	 *                                  album (i.e. photos and sub-albums,
-	 *                                  if applicable) shall be loaded, too.
+	 * @param string $albumId       the ID of the requested album
+	 * @param bool   $withRelations indicates if the relations of an
+	 *                              album (i.e. photos and sub-albums,
+	 *                              if applicable) shall be loaded, too.
 	 *
 	 * @return BaseAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function findModelOrFail(int|string $albumId, bool $withRelations = true): BaseAlbum
+	public function findModelOrFail(string $albumId, bool $withRelations = true): BaseAlbum
 	{
 		try {
 			if ($withRelations) {
@@ -80,9 +80,7 @@ class AlbumFactory
 	 * Returns a collection of {@link AbstractAlbum} instances whose IDs are
 	 * contained in the given set of IDs.
 	 *
-	 * @param array $albumIDs a list of IDs; a mix of integer IDs (for
-	 *                        proper models) and string IDs (for built-in
-	 *                        smart albums) is acceptable
+	 * @param string[] $albumIDs a list of IDs
 	 *
 	 * @return Collection<AbstractAlbum> a possibly empty list of {@link AbstractAlbum}
 	 */
@@ -125,11 +123,11 @@ class AlbumFactory
 	/**
 	 * Checks if the given album ID denotes one of the built-in smart albums.
 	 *
-	 * @param int|string $albumId
+	 * @param string $albumId
 	 *
 	 * @return bool true, if the album ID refers to a built-in smart album
 	 */
-	public function isBuiltInSmartAlbum(int|string $albumId): bool
+	public function isBuiltInSmartAlbum(string $albumId): bool
 	{
 		return array_key_exists($albumId, self::BUILTIN_SMARTS);
 	}

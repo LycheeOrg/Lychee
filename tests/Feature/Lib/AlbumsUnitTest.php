@@ -17,7 +17,7 @@ class AlbumsUnitTest
 	/**
 	 * Add an album.
 	 *
-	 * @param string      $parent_id
+	 * @param string|null $parent_id
 	 * @param string      $title
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
@@ -25,7 +25,7 @@ class AlbumsUnitTest
 	 * @return TestResponse
 	 */
 	public function add(
-		string $parent_id,
+		?string $parent_id,
 		string $title,
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
@@ -84,12 +84,13 @@ class AlbumsUnitTest
 	 */
 	public function move(
 		string $ids,
-		string $to,
+		?string $to,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json('POST', '/api/Album::move', [
-			'albumIDs' => $to . ',' . $ids,
+			'albumID' => $to,
+			'albumIDs' => $ids,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {

@@ -16,12 +16,12 @@ use Kalnoy\Nestedset\NodeTrait;
 /**
  * Class Album.
  *
- * @property int|null          $parent_id
+ * @property string|null       $parent_id
  * @property Album|null        $parent
  * @property Collection<Album> $children
  * @property Collection<Photo> $all_photos
  * @property string            $license
- * @property int|null          $cover_id
+ * @property string|null       $cover_id
  * @property Photo|null        $cover
  * @property int               $_lft
  * @property int               $_rgt
@@ -51,11 +51,8 @@ class Album extends BaseAlbum implements Node
 	];
 
 	protected $casts = [
-		'id' => 'integer',
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
-		'cover_id' => 'integer',
-		'parent_id' => 'integer',
 		'_lft' => 'integer',
 		'_rgt' => 'integer',
 	];

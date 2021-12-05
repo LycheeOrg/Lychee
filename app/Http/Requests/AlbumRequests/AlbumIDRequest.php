@@ -24,6 +24,6 @@ class AlbumIDRequest extends FormRequest
 	 */
 	public function rules(): array
 	{
-		return ['albumID' => ['required', new AlbumIDRule()]];
+		return ['albumID' => ['present', new AlbumIDRule()]];
 	}
 }

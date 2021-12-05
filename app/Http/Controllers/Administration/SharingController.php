@@ -35,14 +35,7 @@ class SharingController extends Controller
 			'albumIDs' => 'required',
 		]);
 
-		if (is_int($request['albumIDs'])) {
-			$albumIDs = [$request['albumIDs']];
-		} else {
-			$albumIDs = explode(',', $request['albumIDs']);
-			array_walk($albumIDs, function (&$value) {
-				$value = intval($value);
-			});
-		}
+		$albumIDs = explode(',', $request['albumIDs']);
 
 		$users = User::query()->whereIn('id', explode(',', $request['UserIDs']))->get();
 

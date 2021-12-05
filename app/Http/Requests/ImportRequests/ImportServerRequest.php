@@ -26,7 +26,7 @@ class ImportServerRequest extends FormRequest
 	{
 		return [
 			'path' => 'string|required',
-			'albumID' => ['required', new AlbumIDRule()],
+			'albumID' => ['present', new AlbumIDRule()],
 			'delete_imported' => 'int',
 			'import_via_symlink' => 'int',
 			'skip_duplicates' => 'int',

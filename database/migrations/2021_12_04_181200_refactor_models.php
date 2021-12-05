@@ -8,6 +8,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
 use League\Flysystem\FileNotFoundException;
 
@@ -74,6 +75,8 @@ class RefactorModels extends Migration
 	public const VARIANT_THUMB2X = 5;
 	public const VARIANT_THUMB = 6;
 
+	public const RANDOM_ID_LENGTH = 24;
+
 	/**
 	 * Maps a size variant (0...6) to the path prefix (directory) where the
 	 * file for that size variant is stored.
@@ -137,6 +140,26 @@ class RefactorModels extends Migration
 	];
 
 	/**
+	 * Translates album IDs.
+	 *
+	 * During upgrade the array maps legacy, time-based IDs to new, random IDs.
+	 * During downgrade the array maps random IDs to legacy, time-based IDs.
+	 *
+	 * @var array
+	 */
+	private array $albumIDCache = [];
+
+	/**
+	 * Translates photo IDs.
+	 *
+	 * During upgrade the array maps legacy, time-based IDs to new, random IDs.
+	 * During downgrade the array maps random IDs to legacy, time-based IDs.
+	 *
+	 * @var array
+	 */
+	private array $photoIDCache = [];
+
+	/**
 	 * @throws DBALException
 	 */
 	public function __construct()
@@ -160,7 +183,7 @@ class RefactorModels extends Migration
 		$this->renameTables();
 		$this->createAlbumTableUp();
 		$this->createTagAlbumTable();
-		$this->createUserAlbumTable(true);
+		$this->createUserBaseAlbumTableUp();
 		$this->createPhotoTableUp();
 		$this->createSizeVariantTableUp();
 		$this->createSymLinkTableUp();
@@ -190,7 +213,7 @@ class RefactorModels extends Migration
 		// be created immediately.
 		$this->renameTables();
 		$this->createAlbumTableDown();
-		$this->createUserAlbumTable(false);
+		$this->createUserAlbumTableDown();
 		$this->createPhotoTableDown();
 		$this->createSymLinkTableDown();
 
@@ -274,7 +297,8 @@ class RefactorModels extends Migration
 	{
 		Schema::create('base_albums', function (Blueprint $table) {
 			// Column definitions
-			$table->bigIncrements('id')->nullable(false);
+			$table->char('id', self::RANDOM_ID_LENGTH)->nullable(false);
+			$table->unsignedBigInteger('legacy_id')->nullable(false);
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
 			$table->string('title', 100)->nullable(false);
@@ -290,6 +314,8 @@ class RefactorModels extends Migration
 			$table->string('sorting_col', 30)->nullable()->default(null);
 			$table->string('sorting_order', 4)->nullable()->default(null);
 			// Indices and constraint definitions
+			$table->primary('id');
+			$table->unique('legacy_id');
 			$table->foreign('owner_id')->references('id')->on('users');
 			$table->index('is_public');
 		});
@@ -305,10 +331,10 @@ class RefactorModels extends Migration
 	{
 		Schema::create('albums', function (Blueprint $table) {
 			// Column definitions
-			$table->unsignedBigInteger('id')->nullable(false);
-			$table->unsignedBigInteger('parent_id')->nullable()->default(null);
+			$table->char('id', self::RANDOM_ID_LENGTH)->nullable(false);
+			$table->char('parent_id', self::RANDOM_ID_LENGTH)->nullable()->default(null);
 			$table->string('license', 20)->nullable(false)->default('none');
-			$table->unsignedBigInteger('cover_id')->nullable()->default(null);
+			$table->char('cover_id', self::RANDOM_ID_LENGTH)->nullable()->default(null);
 			$table->unsignedBigInteger('_lft')->nullable(false)->default(0);
 			$table->unsignedBigInteger('_rgt')->nullable(false)->default(0);
 			// Indices and constraint definitions
@@ -332,7 +358,7 @@ class RefactorModels extends Migration
 	{
 		Schema::create('tag_albums', function (Blueprint $table) {
 			// Column definitions
-			$table->unsignedBigInteger('id')->nullable(false);
+			$table->char('id', self::RANDOM_ID_LENGTH)->nullable(false);
 			$table->text('show_tags')->nullable();
 			// Indices and constraint definitions
 			$table->primary('id');
@@ -386,28 +412,40 @@ class RefactorModels extends Migration
 	}
 
 	/**
-	 * Either creates the table `user_base_album` or `user_album`.
+	 * Creates the table `user_base_album`.
 	 *
 	 * The created table is the pivot table for the (m:n)-relationship between
-	 * an owner (user) and an album.
-	 * Wrt. the new architecture, the relation links to the table
-	 * `base_albums`, wrt. to the old architecture the relation links to the
-	 * table `albums`.
-	 *
-	 * @param bool $isUp True on upgrade path, false on downgrade path
+	 * an owner (user) and a base album.
 	 */
-	private function createUserAlbumTable(bool $isUp): void
+	private function createUserBaseAlbumTableUp(): void
 	{
-		$name = $isUp ? 'base_album' : 'album';
-
-		Schema::create('user_' . $name, function (Blueprint $table) use ($name) {
+		Schema::create('user_base_album', function (Blueprint $table) {
 			// Column definitions
 			$table->bigIncrements('id')->nullable(false);
 			$table->unsignedInteger('user_id')->nullable(false);
-			$table->unsignedBigInteger($name . '_id')->nullable(false);
+			$table->char('base_album_id', self::RANDOM_ID_LENGTH)->nullable(false);
 			// Indices and constraint definitions
 			$table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
-			$table->foreign($name . '_id')->references('id')->on($name . 's')->cascadeOnUpdate()->cascadeOnDelete();
+			$table->foreign('base_album_id')->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
+		});
+	}
+
+	/**
+	 * Creates the table `user_album`.
+	 *
+	 * The created table is the pivot table for the (m:n)-relationship between
+	 * an owner (user) and an album.
+	 */
+	private function createUserAlbumTableDown(): void
+	{
+		Schema::create('user_album', function (Blueprint $table) {
+			// Column definitions
+			$table->bigIncrements('id')->nullable(false);
+			$table->unsignedInteger('user_id')->nullable(false);
+			$table->unsignedBigInteger('album_id')->nullable(false);
+			// Indices and constraint definitions
+			$table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
+			$table->foreign('album_id')->references('id')->on('albums')->cascadeOnUpdate()->cascadeOnDelete();
 		});
 	}
 
@@ -418,11 +456,12 @@ class RefactorModels extends Migration
 	{
 		Schema::create('photos', function (Blueprint $table) {
 			// Column definitions
-			$table->bigIncrements('id')->nullable(false);
+			$table->char('id', self::RANDOM_ID_LENGTH)->nullable(false);
+			$table->unsignedBigInteger('legacy_id')->nullable(false);
 			$table->dateTime('created_at')->nullable(false);
 			$table->dateTime('updated_at')->nullable(false);
 			$table->unsignedInteger('owner_id')->unsigned()->nullable(false)->default(0);
-			$table->unsignedBigInteger('album_id')->nullable()->default(null);
+			$table->char('album_id', self::RANDOM_ID_LENGTH)->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable();
 			$table->text('tags')->nullable();
@@ -450,6 +489,8 @@ class RefactorModels extends Migration
 			$table->string('live_photo_content_id')->nullable()->default(null);
 			$table->string('live_photo_checksum', 40)->nullable()->default(null);
 			// Indices and constraint definitions
+			$table->primary('id');
+			$table->unique('legacy_id');
 			$table->foreign('owner_id')->references('id')->on('users');
 			$table->foreign('album_id')->references('id')->on('albums');
 			$table->index('created_at');
@@ -524,7 +565,7 @@ class RefactorModels extends Migration
 		Schema::create('size_variants', function (Blueprint $table) {
 			// Column definitions
 			$table->bigIncrements('id')->nullable(false);
-			$table->unsignedBigInteger('photo_id')->nullable(false);
+			$table->char('photo_id', self::RANDOM_ID_LENGTH)->nullable(false);
 			$table->unsignedInteger('type')->nullable(false)->default(0)->comment('0: original, ..., 6: thumb');
 			$table->string('short_path')->nullable(false);
 			$table->integer('width')->nullable(false);
@@ -610,8 +651,12 @@ class RefactorModels extends Migration
 			}
 		};
 		foreach ($albums as $album) {
+			$newAlbumID = $this->generateKey();
+			$this->albumIDCache[strval($album->id)] = $newAlbumID;
+
 			DB::table('base_albums')->insert([
-				'id' => $album->id,
+				'id' => $newAlbumID,
+				'legacy_id' => $album->id,
 				'created_at' => $album->created_at,
 				'updated_at' => $album->updated_at,
 				'title' => $album->title,
@@ -630,7 +675,7 @@ class RefactorModels extends Migration
 
 			if ($album->smart) {
 				DB::table('tag_albums')->insert([
-					'id' => $album->id,
+					'id' => $newAlbumID,
 					'show_tags' => $album->showtags,
 				]);
 			} else {
@@ -640,8 +685,8 @@ class RefactorModels extends Migration
 				// Otherwise, the foreign key constraint between `cover_id`
 				// and `photos.id` fails.
 				DB::table('albums')->insert([
-					'id' => $album->id,
-					'parent_id' => $album->parent_id,
+					'id' => $newAlbumID,
+					'parent_id' => $album->parent_id ? $this->albumIDCache[strval($album->parent_id)] : null,
 					'license' => $album->license,
 					'cover_id' => null,
 					'_lft' => $album->_lft ?? 0,
@@ -657,18 +702,22 @@ class RefactorModels extends Migration
 			DB::table('user_base_album')->insert([
 				'id' => $userAlbumRelation->id,
 				'user_id' => $userAlbumRelation->user_id,
-				'base_album_id' => $userAlbumRelation->album_id,
+				'base_album_id' => $this->albumIDCache[strval($userAlbumRelation->album_id)],
 			]);
 		}
 
 		$photos = DB::table('photos_tmp')->lazyById();
 		foreach ($photos as $photo) {
+			$newPhotoID = $this->generateKey();
+			$this->photoIDCache[strval($photo->id)] = $newPhotoID;
+
 			DB::table('photos')->insert([
-				'id' => $photo->id,
+				'id' => $newPhotoID,
+				'legacy_id' => $photo->id,
 				'created_at' => $photo->created_at,
 				'updated_at' => $photo->updated_at,
 				'owner_id' => $photo->owner_id,
-				'album_id' => $photo->album_id,
+				'album_id' => $photo->album_id ? $this->albumIDCache[strval($photo->album_id)] : null,
 				'title' => $photo->title,
 				'description' => empty($photo->description) ? null : $photo->description,
 				'tags' => empty($photo->tags) ? null : $photo->tags,
@@ -699,7 +748,7 @@ class RefactorModels extends Migration
 			for ($variantType = self::VARIANT_ORIGINAL; $variantType <= self::VARIANT_THUMB; $variantType++) {
 				if ($this->hasSizeVariant($photo, $variantType)) {
 					DB::table('size_variants')->insert([
-						'photo_id' => $photo->id,
+						'photo_id' => $newPhotoID,
 						'type' => $variantType,
 						'short_path' => $this->getShortPathOfPhoto($photo, $variantType),
 						'width' => $this->getWidth($photo, $variantType),
@@ -715,8 +764,8 @@ class RefactorModels extends Migration
 				->lazyById();
 			foreach ($coveredAlbums as $coveredAlbum) {
 				DB::table('albums')
-					->where('id', '=', $coveredAlbum->id)
-					->update(['cover_id' => $coveredAlbum->cover_id]);
+					->where('id', '=', $this->albumIDCache[strval($coveredAlbum->id)])
+					->update(['cover_id' => $this->photoIDCache[strval($coveredAlbum->cover_id)]]);
 			}
 		}
 	}
@@ -739,8 +788,11 @@ class RefactorModels extends Migration
 			}
 		};
 		foreach ($baseAlbums as $oldBaseAlbum) {
+			$legacyAlbumID = intval($oldBaseAlbum->legacy_id);
+			$this->albumIDCache[$oldBaseAlbum->id] = $legacyAlbumID;
+
 			DB::table('albums')->insert([
-				'id' => $oldBaseAlbum->id,
+				'id' => $legacyAlbumID,
 				'created_at' => $oldBaseAlbum->created_at,
 				'updated_at' => $oldBaseAlbum->updated_at,
 				'title' => $oldBaseAlbum->title,
@@ -767,10 +819,10 @@ class RefactorModels extends Migration
 		$albums = DB::table('albums_tmp')->orderBy('_lft')->lazyById();
 		foreach ($albums as $album) {
 			DB::table('albums')
-				->where('id', '=', $album->id)
+				->where('id', '=', $this->albumIDCache[$album->id])
 				->update([
 					'smart' => false,
-					'parent_id' => $album->parent_id,
+					'parent_id' => $album->parent_id ? $this->albumIDCache[$album->parent_id] : null,
 					'license' => $album->license,
 					'cover_id' => null,
 					'_lft' => $album->_lft,
@@ -781,7 +833,7 @@ class RefactorModels extends Migration
 		$tagAlbums = DB::table('tag_albums')->lazyById();
 		foreach ($tagAlbums as $tagAlbum) {
 			DB::table('albums')
-				->where('id', '=', $tagAlbum->id)
+				->where('id', '=', $this->albumIDCache[$tagAlbum->id])
 				->update([
 					'smart' => true,
 					'showtags' => $tagAlbum->show_tags,
@@ -795,18 +847,20 @@ class RefactorModels extends Migration
 			DB::table('user_album')->insert([
 				'id' => $userBaseAlbumRelation->id,
 				'user_id' => $userBaseAlbumRelation->user_id,
-				'album_id' => $userBaseAlbumRelation->base_album_id,
+				'album_id' => $this->albumIDCache[$userBaseAlbumRelation->base_album_id],
 			]);
 		}
 
 		$photos = DB::table('photos_tmp')->lazyById();
 		foreach ($photos as $photo) {
+			$legacyPhotoID = intval($photo->legacy_id);
+			$this->photoIDCache[$photo->id] = $legacyPhotoID;
 			$photoAttributes = [
-				'id' => $photo->id,
+				'id' => $legacyPhotoID,
 				'created_at' => $photo->created_at,
 				'updated_at' => $photo->updated_at,
 				'owner_id' => $photo->owner_id,
-				'album_id' => $photo->album_id,
+				'album_id' => $photo->album_id ? $this->albumIDCache[$photo->album_id] : null,
 				'title' => $photo->title,
 				'description' => empty($photo->description) ? '' : $photo->description,
 				'tags' => empty($photo->tags) ? '' : $photo->tags,
@@ -929,8 +983,8 @@ class RefactorModels extends Migration
 			->lazyById();
 		foreach ($coveredAlbums as $coveredAlbum) {
 			DB::table('albums')
-				->where('id', '=', $coveredAlbum->id)
-				->update(['cover_id' => $coveredAlbum->cover_id]);
+				->where('id', '=', $this->albumIDCache[$coveredAlbum->id])
+				->update(['cover_id' => $this->photoIDCache[$coveredAlbum->cover_id]]);
 		}
 	}
 
@@ -1171,6 +1225,15 @@ class RefactorModels extends Migration
 			$table->dropForeign($indexName);
 		}
 	}
+
+	private function generateKey(): string
+	{
+		// URl-compatible variant of base64 encoding
+		// `+` and `/` are replaced by `-` and `_`, resp.
+		// The other characters (a-z, A-Z, 0-9) are legal within an URL.
+		// As the number of bytes is divisible by 3, no trailing `=` occurs.
+		return strtr(base64_encode(random_bytes(3 * self::RANDOM_ID_LENGTH / 4)), '+/', '-_');
+	}
 }
 
 /**
@@ -1187,11 +1250,13 @@ class RefactorModels extends Migration
  * Unfortunately, we need the `fixTree()` algorithm and there is no
  * implementation which uses low-level DB queries.
  */
-class RefactorAlbumModel_AlbumModel extends Model
+class RefactorAlbumModel_AlbumModel extends Model implements Node
 {
 	use NodeTrait;
 
 	protected $table = 'albums';
+
+	protected $keyType = 'string';
 
 	public $timestamps = false;
 }
