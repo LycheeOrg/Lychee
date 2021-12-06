@@ -339,7 +339,7 @@ class RefactorModels extends Migration
 			$table->unsignedBigInteger('_rgt')->nullable(false)->default(0);
 			// Indices and constraint definitions
 			$table->primary('id');
-			$table->index(['_lft', '_rgt']);
+			$table->index([DB::raw('_lft asc'), DB::raw('_rgt desc')], 'albums__lft__rgt__index');
 			$table->foreign('id')->references('id')->on('base_albums');
 			$table->foreign('parent_id')->references('id')->on('albums');
 			// Sic!
@@ -407,7 +407,6 @@ class RefactorModels extends Migration
 			$table->unsignedBigInteger('_rgt')->nullable()->default(null);
 			// Indices and constraint definitions
 			$table->foreign('parent_id')->references('id')->on('albums');
-			$table->index(['_lft', '_rgt']);
 		});
 	}
 
@@ -427,6 +426,9 @@ class RefactorModels extends Migration
 			// Indices and constraint definitions
 			$table->foreign('user_id')->references('id')->on('users')->cascadeOnUpdate()->cascadeOnDelete();
 			$table->foreign('base_album_id')->references('id')->on('base_albums')->cascadeOnUpdate()->cascadeOnDelete();
+			// This index is required to efficiently filter those albums
+			// which are shared with a particular user
+			$table->unique(['base_album_id', 'user_id']);
 		});
 	}
 
@@ -501,6 +503,15 @@ class RefactorModels extends Migration
 			$table->index('live_photo_checksum');
 			$table->index('is_public');
 			$table->index('is_starred');
+			// This index is needed to efficiently add the range of take dates
+			// to each album.
+			$table->index(['album_id', 'taken_at']);
+			// These indices are needed to efficiently list all photos of an
+			// album acc. to different sorting criteria
+			// Upload time, take date, is starred or is public
+			$table->index(['album_id', 'created_at']);
+			$table->index(['album_id', 'is_starred']);
+			$table->index(['album_id', 'is_public']);
 		});
 	}
 
@@ -551,12 +562,6 @@ class RefactorModels extends Migration
 			$table->string('livePhotoChecksum', 40)->nullable()->default(null);
 			// Indices and constraint definitions
 			$table->foreign('album_id')->references('id')->on('albums');
-			$table->index('created_at');
-			$table->index('updated_at');
-			$table->index('taken_at');
-			$table->index('checksum');
-			$table->index('livePhotoContentID');
-			$table->index('livePhotoChecksum');
 		});
 	}
 
@@ -592,6 +597,9 @@ class RefactorModels extends Migration
 			$table->index('created_at');
 			$table->index('updated_at');
 			$table->foreign('size_variant_id')->references('id')->on('size_variants');
+			// This index is needed to efficiently find the latest symbolic link
+			// for each size variant
+			$table->index(['size_variant_id', 'created_at']);
 		});
 	}
 
@@ -611,8 +619,6 @@ class RefactorModels extends Migration
 			$table->string('thumbUrl')->default('');
 			$table->string('thumb2x')->default('');
 			// Indices and constraint definitions
-			$table->index('created_at');
-			$table->index('updated_at');
 			$table->foreign('photo_id')->references('id')->on('photos');
 		});
 	}
