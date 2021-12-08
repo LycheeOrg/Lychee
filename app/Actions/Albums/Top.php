@@ -42,11 +42,6 @@ class Top
 	 */
 	public function get(): array
 	{
-		$return = [
-			'albums' => new BaseCollection(),
-			'shared_albums' => new BaseCollection(),
-		];
-
 		/** @var NsQueryBuilder $query */
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query()->whereIsRoot());
@@ -56,9 +51,16 @@ class Top
 
 		if (AccessControl::is_logged_in()) {
 			$id = AccessControl::id();
-			list($return['albums'], $return['shared_albums']) = $albums->partition(fn ($album) => $album->owner_id == $id);
+			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id == $id);
+			$return = [
+				'albums' => $a->values(),
+				'shared_albums' => $b->values(),
+			];
 		} else {
-			$return['albums'] = $albums;
+			$return = [
+				'albums' => $albums,
+				'shared_albums' => new BaseCollection(),
+			];
 		}
 
 		return $return;
