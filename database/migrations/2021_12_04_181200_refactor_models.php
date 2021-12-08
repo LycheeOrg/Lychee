@@ -317,7 +317,10 @@ class RefactorModels extends Migration
 			$table->primary('id');
 			$table->unique('legacy_id');
 			$table->foreign('owner_id')->references('id')->on('users');
-			$table->index('is_public');
+			// These indices are required for efficient filtering for accessible and/or visible albums
+			$table->index(['requires_link', 'is_public']); // for albums which don't require a direct link and are public
+			$table->index(['owner_id']); // for albums which are own by the currently authenticated user
+			$table->index(['is_public', 'password']); // for albums which are public and how no password
 		});
 	}
 
