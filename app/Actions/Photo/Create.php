@@ -48,19 +48,19 @@ class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param SourceFileInfo  $sourceFileInfo information about source file
-	 * @param int|string|null $albumID        the targeted parent album either
-	 *                                        null, the id of a real album or
-	 *                                        (if it is a string) one of the
-	 *                                        array keys in
-	 *                                        {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
+	 * @param SourceFileInfo $sourceFileInfo information about source file
+	 * @param string|null    $albumID        the targeted parent album either
+	 *                                       null, the id of a real album or
+	 *                                       (if it is a string) one of the
+	 *                                       array keys in
+	 *                                       {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
 	 *
-	 * @return Photo|null the newly created or updated photo
+	 * @return Photo the newly created or updated photo
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(SourceFileInfo $sourceFileInfo, $albumID = null): Photo
+	public function add(SourceFileInfo $sourceFileInfo, ?string $albumID = null): Photo
 	{
 		// Check permissions
 		// throws InsufficientFilesystemPermissions
@@ -83,7 +83,7 @@ class Create
 		$livePartner = $this->findLivePartner(
 			$this->strategyParameters->info['live_photo_content_id'],
 			$this->strategyParameters->info['type'],
-			$this->strategyParameters->album ? $this->strategyParameters->album->id : null
+			$this->strategyParameters->album?->id
 		);
 
 		/*
@@ -166,12 +166,12 @@ class Create
 	 *
 	 * @param ?string $contentID the content id to identify a matching partner
 	 * @param string  $mimeType  the mime type of the media which a partner is looked for, e.g. the returned {@link Photo} has an "opposed" mime type
-	 * @param ?int    $albumID   the album of which the partner must be member of
+	 * @param ?string $albumID   the album of which the partner must be member of
 	 *
 	 * @return Photo|null The live partner if found
 	 */
 	protected function findLivePartner(
-		?string $contentID, string $mimeType, ?int $albumID
+		?string $contentID, string $mimeType, ?string $albumID
 	): ?Photo {
 		$livePartner = null;
 		// find a potential partner which has the same content id
@@ -201,16 +201,16 @@ class Create
 	 * and {@link AddStrategyParameters::$star} of
 	 * {@link Create::$strategyParameters} accordingly.
 	 *
-	 * @param int|string|null $albumID the targeted parent album either null,
-	 *                                 the id of a real album or (if it is
-	 *                                 string) one of the array keys in
-	 *                                 {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
+	 * @param string|null $albumID the targeted parent album either null,
+	 *                             the id of a real album or (if it is
+	 *                             string) one of the array keys in
+	 *                             {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
 	 *
 	 * @throws InvalidPropertyException
 	 * @throws ModelNotFoundException
 	 * @throws InvalidSmartIdException
 	 */
-	protected function initParentId($albumID = null)
+	protected function initParentId(?string $albumID = null)
 	{
 		/** @var AlbumFactory */
 		$factory = resolve(AlbumFactory::class);

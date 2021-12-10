@@ -1,8 +1,7 @@
 <p align="center"><a href="https://lycheeorg.github.io"><img src="https://raw.githubusercontent.com/LycheeOrg/Lychee/master/Banner.png" width="400px" alt="@LycheeOrg"></a></p>
 
 [![GitHub Release][release-shield]](https://github.com/LycheeOrg/Lychee/releases)
-[![PHP 7.4][php-7.4-shield]](https://lycheeorg.github.io/docs/#server-requirements)
-[![PHP 8.0][php-8.0-shield]](https://lycheeorg.github.io/docs/#server-requirements)
+[![PHP 8.0 & 8.1][php-shield]](https://lycheeorg.github.io/docs/#server-requirements)
 [![MIT License][license-shield]](https://github.com/LycheeOrg/Lychee/blob/master/LICENSE)
 <br>
 [![Build Status][build-status-shield]](https://github.com/LycheeOrg/Lychee/actions)
@@ -84,14 +83,13 @@ In order to use the new photos email notification you will need to have configur
 
 ## Troubleshooting
 
-Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub!
+Take a look at the [Documentation](https://lycheeorg.github.io/docs/), particularly the [FAQ](https://lycheeorg.github.io/docs/faq.html) if you have problems. Discovered a bug? Please create an issue [here](https://github.com/LycheeOrg/Lychee/issues) on GitHub! You can also contact us directly on [gitter (login with your github account). &#187;](https://gitter.im/LycheeOrg/Lobby)
 
 [1]: https://lycheeorg.github.io/docs/settings.html
-[build-status-shield]: https://img.shields.io/github/workflow/status/LycheeOrg/Lychee/Build-Full-SQL
+[build-status-shield]: https://img.shields.io/github/workflow/status/LycheeOrg/Lychee/Build
 [codecov-shield]: https://codecov.io/gh/LycheeOrg/Lychee/branch/master/graph/badge.svg
 [release-shield]: https://img.shields.io/github/release-pre/LycheeOrg/Lychee.svg
-[php-7.4-shield]: https://img.shields.io/badge/PHP-7.4-blue
-[php-8.0-shield]: https://img.shields.io/badge/PHP-8.0-blue
+[php-shield]: https://img.shields.io/badge/PHP-8.0%20|%208.1-blue
 [license-shield]: https://img.shields.io/github/license/LycheeOrg/Lychee.svg
 [cii-shield]: https://img.shields.io/cii/summary/2855.svg
 [sonar-shield]: https://sonarcloud.io/api/project_badges/measure?project=LycheeOrg_Lychee-Laravel&metric=alert_status

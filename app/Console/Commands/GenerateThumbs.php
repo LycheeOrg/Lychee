@@ -17,7 +17,7 @@ class GenerateThumbs extends Command
 	/**
 	 * @var array
 	 */
-	const SIZE_VARIANTS = [
+	public const SIZE_VARIANTS = [
 		'small' => SizeVariant::SMALL,
 		'small2x' => SizeVariant::SMALL2X,
 		'medium' => SizeVariant::MEDIUM,
@@ -54,7 +54,7 @@ class GenerateThumbs extends Command
 
 				return 1;
 			}
-			$sizeVariantID = self::SIZE_VARIANTS[$sizeVariantName];
+			$sizeVariantType = self::SIZE_VARIANTS[$sizeVariantName];
 
 			set_time_limit($this->argument('timeout'));
 
@@ -69,9 +69,9 @@ class GenerateThumbs extends Command
 
 			$photos = Photo::query()
 				->where('type', 'like', 'image/%')
-				->with('size_variants_raw')
-				->whereDoesntHave('size_variants_raw', function (Builder $query) use ($sizeVariantID) {
-					$query->where('size_variant', '=', $sizeVariantID);
+				->with('size_variants')
+				->whereDoesntHave('size_variants', function (Builder $query) use ($sizeVariantType) {
+					$query->where('type', '=', $sizeVariantType);
 				})
 				->take($this->argument('amount'))
 				->get();
@@ -90,7 +90,7 @@ class GenerateThumbs extends Command
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				$sizeVariantFactory->init($photo);
-				$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantID);
+				$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
 				if ($sizeVariant) {
 					$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
 				} else {
@@ -103,7 +103,7 @@ class GenerateThumbs extends Command
 			$this->line('  ');
 
 			return 0;
-		} catch (LycheeException | SymfonyConsoleException $e) {
+		} catch (LycheeException|SymfonyConsoleException $e) {
 			if ($e instanceof ExternalLycheeException) {
 				throw $e;
 			} else {

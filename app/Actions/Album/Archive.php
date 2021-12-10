@@ -12,7 +12,6 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\HeaderUtils;
@@ -23,7 +22,7 @@ use ZipStream\ZipStream;
 
 class Archive extends Action
 {
-	const BAD_CHARS = [
+	public const BAD_CHARS = [
 		"\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07",
 		"\x08", "\x09", "\x0a", "\x0b", "\x0c", "\x0d", "\x0e", "\x0f",
 		"\x10", "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17",
@@ -168,7 +167,7 @@ class Archive extends Action
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$fullPath = $photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL)->full_path;
+			$fullPath = $photo->size_variants->getOriginal()->full_path;
 			// Check if readable
 			if (!is_readable($fullPath)) {
 				Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $fullPath);

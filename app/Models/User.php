@@ -48,7 +48,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
 
-	const FRIENDLY_MODEL_NAME = 'user';
+	public const FRIENDLY_MODEL_NAME = 'user';
 
 	/**
 	 * The attributes that are mass assignable.

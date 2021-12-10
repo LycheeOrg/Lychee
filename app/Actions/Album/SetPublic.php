@@ -50,7 +50,7 @@ class SetPublic extends Action
 
 		// Reset permissions for photos
 		if ($album->is_public) {
-			$album->photos()->update(['is_public' => false]);
+			$album->photos()->update(['photos.is_public' => false]);
 		}
 	}
 }

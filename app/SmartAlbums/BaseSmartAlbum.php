@@ -2,50 +2,86 @@
 
 namespace App\SmartAlbums;
 
+use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
+use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Configs;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Extensions\Thumb;
+use App\Models\Extensions\UTCBasedTimes;
+use App\Models\Photo;
+use App\SmartAlbums\Utils\MimicModel;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class BaseSmartAlbum.
  *
  * The common base class for all built-in smart albums which can neither
- * be created nor deleted, but always exists.
- * Photos cannot explicitly be added or removed from these albums.
+ * be created nor deleted, but always exist.
+ * Smart albums are never explicit "parent albums" of photos.
  * Photos belong to these albums due to certain properties like being
  * starred, being recently added, etc.
  *
  * @property string $id
  */
-abstract class BaseSmartAlbum extends FakeModel implements AbstractAlbum
+abstract class BaseSmartAlbum implements AbstractAlbum
 {
-	/**
-	 * Note, due to Laravel's stupidity and PHP type mangling, boolean values
-	 * always need an explicit cast, even if they are already stored as proper
-	 * booleans in `$this->attributes`. :-(
-	 * Otherwise, a `false` value will be reported as `null`. Yikes!
-	 *
-	 * @var string[] the list of attributes which needs casting to the correct
-	 *               type when their getter is invoked
-	 */
-	protected $casts = [
-		'is_public' => 'boolean',
-		'is_downloadable' => 'boolean',
-		'is_share_button_visible' => 'boolean',
-	];
+	use MimicModel;
+	use UTCBasedTimes;
 
-	protected $appends = [
-		'thumb',
-	];
+	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
+	protected string $id;
+	protected string $title;
+	protected bool $isPublic;
+	protected bool $isDownloadable;
+	protected bool $isShareButtonVisible;
+	protected ?Thumb $thumb;
+	protected Collection $photos;
+	protected \Closure $smartPhotoCondition;
 
-	protected function __construct(string $id, string $title, bool $isPublic)
+	protected function __construct(string $id, string $title, bool $isPublic, \Closure $smartCondition)
 	{
-		$this->attributes['id'] = $id;
-		$this->attributes['title'] = $title;
-		$this->attributes['is_public'] = $isPublic;
-		$this->attributes['is_downloadable'] = Configs::get_value('downloadable', '0') === '1';
-		$this->attributes['is_share_button_visible'] = Configs::get_value('share_button_visible', '0') === '1';
+		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+		$this->id = $id;
+		$this->title = $title;
+		$this->isPublic = $isPublic;
+		$this->isDownloadable = Configs::get_value('downloadable', '0') === '1';
+		$this->isShareButtonVisible = Configs::get_value('share_button_visible', '0') === '1';
+		$this->thumb = null;
+		$this->smartPhotoCondition = $smartCondition;
+	}
+
+	/**
+	 * @throws InvalidQueryModelException
+	 */
+	public function photos(): Builder
+	{
+		return $this->photoAuthorisationProvider
+			->applySearchabilityFilter(
+				Photo::query()->with(['album', 'size_variants', 'size_variants.sym_links'])
+			)->where($this->smartPhotoCondition);
+	}
+
+	/**
+	 * @throws InvalidOrderDirectionException
+	 */
+	protected function getPhotosAttribute(): Collection
+	{
+		// Cache query result for later use
+		// (this mimics the behaviour of relations of true Eloquent models)
+		if (!isset($this->photos)) {
+			$sortingCol = Configs::get_value('sorting_Photos_col');
+			$sortingOrder = Configs::get_value('sorting_Photos_order');
+
+			$this->photos = (new SortingDecorator($this->photos()))
+				->orderBy('photos.' . $sortingCol, $sortingOrder)
+				->get();
+		}
+
+		return $this->photos;
 	}
 
 	/**
@@ -53,13 +89,60 @@ abstract class BaseSmartAlbum extends FakeModel implements AbstractAlbum
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
-		// Note, `photos()` already applies a "security filter" and
-		// only returns photos which are accessible by the current
-		// user
-		return Thumb::createFromPhotoRelation(
-			$this->photos(),
-			Configs::get_value('sorting_Photos_col'),
-			Configs::get_value('sorting_Photos_order')
-		);
+		if (!isset($this->thumb)) {
+			/*
+			 * Note, `photos()` already applies a "security filter" and
+			 * only returns photos which are accessible by the current
+			 * user.
+			 */
+			$this->thumb = Thumb::createFromQueryable(
+				$this->photos(),
+				Configs::get_value('sorting_Photos_col'),
+				Configs::get_value('sorting_Photos_order')
+			);
+		}
+
+		return $this->thumb;
+	}
+
+	/**
+	 * @throws InvalidPropertyException
+	 */
+	public function toArray(): array
+	{
+		// The properties `thumb` and `photos` are intentionally treated
+		// differently.
+		//
+		//  1. The result always includes `thumb`, hence we call the
+		//     getter method to ensure that the property is initialized, if it
+		//     has not already been accessed before.
+		//  2. The result only includes the collection `photos`, if it has
+		//     already explicitly been accessed earlier and thus is initialized.
+		//
+		// Rationale:
+		//
+		//  1. This resembles the behaviour of a real Eloquent model, if the
+		//     attribute `thumb` was part of the `append`-property of model.
+		//  2. This resembles the behaviour of a real Eloquent model for
+		//     one-to-many relations.
+		//     A relation is only included in the array representation, if the
+		//     relation has been loaded.
+		//     This avoids unnecessary hydration of photos if the album is
+		//     only used within a listing of sub-albums.
+
+		$result = [
+			'id' => $this->id,
+			'title' => $this->title,
+			'is_public' => $this->isPublic,
+			'is_downloadable' => $this->isDownloadable,
+			'is_share_button_visible' => $this->isShareButtonVisible,
+			'thumb' => $this->getThumbAttribute(),
+		];
+
+		if (isset($this->photos)) {
+			$result['photos'] = $this->photos->toArray();
+		}
+
+		return $result;
 	}
 }

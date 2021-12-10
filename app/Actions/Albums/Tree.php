@@ -32,12 +32,26 @@ class Tree
 	{
 		$return = [];
 
-		/** @var NsQueryBuilder $query */
+		/**
+		 * Note, strictly speaking
+		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * would be the correct function in order to scope the query below,
+		 * because we only want albums which are browsable.
+		 * But
+		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+		 * is rather slow for large sets of albums.
+		 * Luckily, {@link AlbumAuthorisationProvider::applyVisibilityFilter()}
+		 * is sufficient here, although it does only consider an album's
+		 * visibility locally.
+		 * We rely on `->toTree` below to remove albums which are not
+		 * reachable.
+		 *
+		 * @var NsQueryBuilder $query
+		 */
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query());
 		/** @var NsCollection $albums */
 		$albums = (new SortingDecorator($query))
-			->orderBy('id')
 			->orderBy($this->sortingCol, $this->sortingOrder)
 			->get();
 

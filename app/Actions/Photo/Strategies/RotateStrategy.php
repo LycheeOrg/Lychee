@@ -93,7 +93,7 @@ class RotateStrategy extends AddBaseStrategy
 	public function do(): Photo
 	{
 		// Generate a temporary name for the rotated file.
-		$oldOriginalSizeVariant = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+		$oldOriginalSizeVariant = $this->photo->size_variants->getOriginal();
 		$oldOriginalFullPath = $oldOriginalSizeVariant->full_path;
 		$oldOriginalWidth = $oldOriginalSizeVariant->width;
 		$oldOriginalHeight = $oldOriginalSizeVariant->height;
@@ -122,7 +122,7 @@ class RotateStrategy extends AddBaseStrategy
 		// potential symbolic link which points to one of the original files.
 		// This will bring photo entity into the same state as it would be if
 		// we were importing a new photo.
-		$this->photo->size_variants->delete();
+		$this->photo->size_variants->deleteAll();
 
 		// Initialize factory for size variants
 		$this->parameters->sourceFileInfo = new SourceFileInfo(
@@ -189,12 +189,12 @@ class RotateStrategy extends AddBaseStrategy
 			// duplicates and re-create them.
 			// Deleting the size variants of the duplicates has also the
 			// advantage that the actual files are erased from storage.
-			$duplicate->size_variants->delete();
+			$duplicate->size_variants->deleteAll();
 			if ($newSizeVariants) {
 				/** @var SizeVariant $newSizeVariant */
 				foreach ($newSizeVariants as $newSizeVariant) {
-					$duplicate->size_variants->createSizeVariant(
-						$newSizeVariant->size_variant,
+					$duplicate->size_variants->create(
+						$newSizeVariant->type,
 						$newSizeVariant->short_path,
 						$newSizeVariant->width,
 						$newSizeVariant->height

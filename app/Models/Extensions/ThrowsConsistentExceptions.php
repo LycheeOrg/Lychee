@@ -33,7 +33,8 @@ trait ThrowsConsistentExceptions
 	{
 		$parentException = null;
 		try {
-			if (!parent::save($options)) {
+			// Note, `Model::save` may also return `null` which also indicates a success
+			if (parent::save($options) === false) {
 				$parentException = new \RuntimeException('Eloquent\Model::save() returned false');
 			}
 		} catch (\Throwable $e) {
@@ -63,8 +64,8 @@ trait ThrowsConsistentExceptions
 			// indicates a success, and we must go on.
 			// Eloquent, I love you .... not.
 			$result = parent::delete();
-			if ($result !== true && $result !== null) {
-				$parentException = new \RuntimeException('Eloquent\Model::delete() returned neither returned true nor null');
+			if ($result === false) {
+				$parentException = new \RuntimeException('Eloquent\Model::delete() returned false');
 			}
 		} catch (\Throwable $e) {
 			$parentException = $e;

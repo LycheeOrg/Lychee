@@ -4,16 +4,16 @@ namespace App\Models;
 
 use App\Casts\MustNotSetCast;
 use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\ModelDBException;
+use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Observers\SymLinkObserver;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -33,30 +33,19 @@ use Illuminate\Support\Facades\Storage;
  */
 class SymLink extends Model
 {
-	use Notifiable;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
-	use ThrowsConsistentExceptions;
-
-	const FRIENDLY_MODEL_NAME = 'symbolic link';
-
-	const DISK_NAME = 'symbolic';
-
-	/**
-	 * @throws MassAssignmentException
-	 * @throws FrameworkException
-	 */
-	public function __construct(array $attributes = [])
-	{
-		parent::__construct($attributes);
-		try {
-			$this->registerObserver(SymLinkObserver::class);
-		} catch (\RuntimeException $e) {
-			throw new FrameworkException('Laravel\'s observer component', $e);
-		}
+	use ThrowsConsistentExceptions {
+		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
 
+	public const FRIENDLY_MODEL_NAME = 'symbolic link';
+
+	public const DISK_NAME = 'symbolic';
+
 	protected $casts = [
+		'id' => 'integer',
+		'size_variant_id' => 'integer',
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'url' => MustNotSetCast::class,
@@ -126,6 +115,57 @@ class SymLink extends Model
 	protected function getFullPathAttribute(): string
 	{
 		return Storage::disk(self::DISK_NAME)->path($this->short_path);
+	}
+
+	/**
+	 * Performs the `INSERT` operation of the model and creates an actual
+	 * symbolic link on disk.
+	 *
+	 * If this method cannot create the symbolic link, then this method
+	 * cancels the insert operation.
+	 *
+	 * @param Builder $query
+	 *
+	 * @return bool
+	 */
+	protected function performInsert(Builder $query): bool
+	{
+		$origFullPath = $this->size_variant->full_path;
+		$extension = Helpers::getExtension($origFullPath);
+		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
+		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
+		if (is_link($symFullPath)) {
+			unlink($symFullPath);
+		}
+		if (!symlink($origFullPath, $symFullPath)) {
+			return false;
+		}
+		$this->short_path = $symShortPath;
+
+		return parent::performInsert($query);
+	}
+
+	/**
+	 * Deletes the model from the database and the symbolic link from storage.
+	 *
+	 * If this method cannot delete the symbolic link, then this method
+	 * cancels the delete operation.
+	 *
+	 * @return bool always returns true
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 */
+	public function delete(): bool
+	{
+		$fullPath = $this->full_path;
+		// Laravel and Flysystem does not support symbolic links.
+		// So we must use low-level methods here.
+		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath)) && !is_link($fullPath)) {
+			throw new MediaFileOperationException('could not delete media file: ' . $fullPath);
+		}
+
+		return $this->internalDelete();
 	}
 
 	protected function friendlyModelName(): string

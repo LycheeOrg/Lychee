@@ -20,11 +20,11 @@ class PhotosUnitTest
 	 * Try upload a picture.
 	 *
 	 * @param UploadedFile $file
-	 * @param string       $albumID
+	 * @param string|null  $albumID
 	 *
-	 * @return int the id of the photo
+	 * @return string the id of the photo
 	 */
-	public function upload(UploadedFile $file, string $albumID = '0'): int
+	public function upload(UploadedFile $file, ?string $albumID = null): string
 	{
 		$response = $this->testCase->post(
 			'/api/Photo::add',
@@ -48,7 +48,7 @@ class PhotosUnitTest
 		$response = $this->testCase->postJson(
 			'/api/Photo::add',
 			[
-				'albumID' => '0',
+				'albumID' => null,
 			]
 		);
 
@@ -64,7 +64,7 @@ class PhotosUnitTest
 		$response = $this->testCase->postJson(
 			'/api/Photo::add',
 			[
-				'albumID' => '0',
+				'albumID' => null,
 				'0' => '1',
 			]
 		);
@@ -100,15 +100,15 @@ class PhotosUnitTest
 	/**
 	 * is photo with given ID visible in unsorted?
 	 *
-	 * @param int $photoID
+	 * @param string $photoID
 	 */
-	public function see_in_unsorted(int $photoID): void
+	public function see_in_unsorted(string $photoID): void
 	{
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
 		$response->assertStatus(200);
-		$response->assertSee(strval($photoID), false);
+		$response->assertSee($photoID, false);
 	}
 
 	/**
@@ -459,7 +459,7 @@ class PhotosUnitTest
 	public function import(
 		string $path,
 		string $delete_imported = '0',
-		string $album_id = '0',
+		?string $album_id = null,
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): string {

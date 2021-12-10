@@ -3,8 +3,8 @@
 namespace App\Models\Extensions;
 
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -25,23 +25,29 @@ class TagAlbumBuilder extends Builder
 	 *
 	 * @param array|string $columns
 	 *
-	 * @return Model[]|static[]
+	 * @return TagAlbum[]
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function getModels($columns = ['*'])
+	public function getModels($columns = ['*']): array
 	{
-		$baseQuery = $this->getQuery();
-		if ($columns == ['*'] && ($baseQuery->columns == ['*'] || $baseQuery->columns == null)) {
-			try {
+		try {
+			$baseQuery = $this->getQuery();
+			if (empty($baseQuery->columns)) {
+				$this->select([$baseQuery->from . '.*']);
+			}
+
+			if (
+				($columns == ['*'] || $columns == ['tag_albums.*']) &&
+				($baseQuery->columns == ['*'] || $baseQuery->columns == ['tag_albums.*'])
+			) {
 				$this->addSelect([
-					$baseQuery->from . '.*',
 					DB::raw('null as max_taken_at'),
 					DB::raw('null as min_taken_at'),
 				]);
-			} catch (\InvalidArgumentException $e) {
-				throw new QueryBuilderException($e);
 			}
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
 		}
 
 		return parent::getModels($columns);

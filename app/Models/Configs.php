@@ -36,7 +36,7 @@ class Configs extends Model
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
 
-	const FRIENDLY_MODEL_NAME = 'config';
+	public const FRIENDLY_MODEL_NAME = 'config';
 
 	/**
 	 * The attributes that are mass assignable.
@@ -53,7 +53,7 @@ class Configs extends Model
 	/**
 	 * We define this as a singleton.
 	 *
-	 * @var array<Configs>
+	 * @var array<string, int|bool|string|null>
 	 */
 	private static array $cache = [];
 
@@ -126,7 +126,7 @@ class Configs extends Model
 	/**
 	 * Cache and return the current settings of this Lychee installation.
 	 *
-	 * @return array
+	 * @return array<string, mixed>
 	 */
 	public static function get(): array
 	{
@@ -145,7 +145,7 @@ class Configs extends Model
 			$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
 
 			self::$cache = $return;
-		} catch (\Exception $e) {
+		} catch (\Throwable) {
 			self::$cache = [];
 		}
 
@@ -155,12 +155,12 @@ class Configs extends Model
 	/**
 	 * The best way to request a value from the config...
 	 *
-	 * @param string $key
-	 * @param mixed  $default
+	 * @param string               $key
+	 * @param int|bool|string|null $default
 	 *
-	 * @return int|bool|string
+	 * @return int|bool|string|null
 	 */
-	public static function get_value(string $key, $default = null)
+	public static function get_value(string $key, int|bool|string|null $default = null): int|bool|string|null
 	{
 		if (!self::$cache) {
 			self::get();

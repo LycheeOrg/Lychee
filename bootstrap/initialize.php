@@ -1,5 +1,7 @@
 <?php
 
+ini_set('user_agent', 'Lychee/4 (https://lycheeorg.github.io/)');
+
 /*
  |--------------------------------------------------------------------------
  | If we are running Apache, mod_rewrite needs to be available

@@ -5,18 +5,22 @@ namespace App\SmartAlbums;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Photo;
-use App\Relations\HasManyPhotosBySmartCondition;
 use Illuminate\Database\Eloquent\Builder;
 
 class UnsortedAlbum extends BaseSmartAlbum
 {
 	private static ?self $instance = null;
-	const ID = 'unsorted';
-	const TITLE = 'Unsorted';
+	public const ID = 'unsorted';
+	public const TITLE = 'Unsorted';
 
 	public function __construct()
 	{
-		parent::__construct(self::ID, self::TITLE, false);
+		parent::__construct(
+			self::ID,
+			self::TITLE,
+			false,
+			fn (Builder $q) => $q->whereNull('photos.album_id')
+		);
 	}
 
 	public static function getInstance(): self
@@ -24,23 +28,16 @@ class UnsortedAlbum extends BaseSmartAlbum
 		if (!self::$instance) {
 			self::$instance = new self();
 		}
-		// Actually, this statement is only needed due to testing.
+		// The following two lines are only needed due to testing.
 		// The same instance of this class is used for all tests, because
 		// the singleton stays alive during tests.
 		// This implies that the relation of photos is never be reloaded
 		// but remains constant during all tests (it equals the empty set)
 		// and the tests fails.
-		self::$instance->unsetRelation('photos');
+		unset(self::$instance->photos);
+		unset(self::$instance->thumb);
 
 		return self::$instance;
-	}
-
-	public function photos(): HasManyPhotosBySmartCondition
-	{
-		return new HasManyPhotosBySmartCondition(
-			$this,
-			fn (Builder $q) => $q->whereNull('album_id')
-		);
 	}
 
 	/**
@@ -56,9 +53,10 @@ class UnsortedAlbum extends BaseSmartAlbum
 	 */
 	public function delete(): bool
 	{
-		$photos = $this->photos()
-			->where('owner_id', '=', AccessControl::id())
-			->get();
+		if (!AccessControl::is_admin()) {
+			$this->photos()->where('owner_id', '=', AccessControl::id());
+		}
+		$photos = $this->photos()->get();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// This also takes care of proper deletion of physical files from disk

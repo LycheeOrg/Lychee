@@ -17,11 +17,11 @@ trait HasBidirectionalRelationships
 	 *
 	 * @param string $method
 	 *
-	 * @return Collection|Model
+	 * @return mixed
 	 *
 	 * @throws \LogicException
 	 */
-	protected function getRelationshipFromMethod($method)
+	protected function getRelationshipFromMethod($method): mixed
 	{
 		// Run original code from HasAttributes::getRelationshipFromMethod
 
@@ -35,7 +35,6 @@ trait HasBidirectionalRelationships
 			throw new \LogicException(sprintf('%s::%s must return a relationship instance.', static::class, $method));
 		}
 
-		/** @var Collection|Model $result */
 		$result = $relation->getResults();
 		$this->setRelation($method, $result);
 

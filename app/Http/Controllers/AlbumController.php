@@ -106,7 +106,7 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Provided the albumID and passwords, return whether the album can be accessed or not.
+	 * Provided the albumID and password, return whether the album can be accessed or not.
 	 *
 	 * @param UnlockAlbumRequest $request
 	 * @param Unlock             $unlock

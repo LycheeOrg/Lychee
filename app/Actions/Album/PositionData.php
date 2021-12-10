@@ -28,7 +28,7 @@ class PositionData extends Action
 		$result['id'] = $album->id;
 		$result['title'] = $album->title;
 		$result['photos'] = $photoRelation
-			->with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+			->with(['album', 'size_variants', 'size_variants.sym_links'])
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')
 			->get()

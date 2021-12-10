@@ -13,9 +13,9 @@ class PhotoSearch
 {
 	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
 
-	public function __construct()
+	public function __construct(PhotoAuthorisationProvider $photoAuthorisationProvider)
 	{
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 	}
 
 	/**
@@ -23,8 +23,8 @@ class PhotoSearch
 	 */
 	public function query(array $terms): Collection
 	{
-		$query = $this->photoAuthorisationProvider->applyVisibilityFilter(
-			Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
+		$query = $this->photoAuthorisationProvider->applySearchabilityFilter(
+			Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
 		);
 
 		try {

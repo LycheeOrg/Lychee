@@ -28,10 +28,12 @@ $rules = [
 	'concat_space' => ['spacing' => 'one'],
 	'no_superfluous_phpdoc_tags' => false,
 ];
+$config = new PhpCsFixer\Config();
 
-return (new PhpCsFixer\Config())
-	->setRiskyAllowed(true)
-	->setRules($rules)
-	->setIndent("\t")
-	->setLineEnding("\n")
-	->setFinder($finder);
+$config->setRiskyAllowed(true);
+$config->setRules($rules);
+$config->setIndent("\t");
+$config->setLineEnding("\n");
+$config->setFinder($finder);
+
+return $config;

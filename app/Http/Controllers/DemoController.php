@@ -10,7 +10,6 @@ use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
@@ -76,15 +75,15 @@ class DemoController extends Controller
 		$return_album_list['array'] = [];
 
 		try {
-			/** @var Collection $albums */
+			/** @var Collection<Album> $albums */
 			$albums = Album::query()
-				->with(['photos', 'photos.size_variants_raw', 'photos.size_variants_raw.sym_links'])
-				->whereHas('base_class', function (Builder $query) {
-					$query
-						->where('is_public', '=', true)
-						->where('requires_link', '=', false);
-				})->get();
-		} catch (\RuntimeException $e) {
+				->select(['albums.*'])
+				->with(['photos', 'photos.size_variants', 'photos.size_variants.sym_links'])
+				->join('base_albums', 'base_albums.id', '=', 'albums.id')
+				->where('base_albums.is_public', '=', true)
+				->where('base_albums.requires_link', '=', false)
+				->get();
+		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
 		/** @var Album $album */
@@ -114,7 +113,7 @@ class DemoController extends Controller
 			foreach ($album->photos as $photo) {
 				$return_photo = [];
 				$return_photo_json = $photo->toArray();
-				$return_photo_json['original_album'] = $return_photo_json['album'];
+				$return_photo_json['original_album'] = $return_photo_json['album_id'];
 				$return_photo_json['album'] = $album->id;
 				$return_photo['id'] = $photo->id;
 				$return_photo['data'] = json_encode($return_photo_json);

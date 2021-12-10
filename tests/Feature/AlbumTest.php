@@ -37,9 +37,9 @@ class AlbumTest extends TestCase
 		$albums_tests->get('public');
 		$albums_tests->get('unsorted');
 
-		$albumID = $albums_tests->add('0', 'test_album')->offsetGet('id');
-		$albumID2 = $albums_tests->add('0', 'test_album2')->offsetGet('id');
-		$albumID3 = $albums_tests->add('0', 'test_album3')->offsetGet('id');
+		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
+		$albumID2 = $albums_tests->add(null, 'test_album2')->offsetGet('id');
+		$albumID3 = $albums_tests->add(null, 'test_album3')->offsetGet('id');
 		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test')->offsetGet('id');
 
 		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag');
@@ -54,12 +54,12 @@ class AlbumTest extends TestCase
 		$albums_tests->move($albumTagID1, $albumID3);
 		$albums_tests->move($albumID3, $albumID2);
 		$albums_tests->move($albumID2, $albumID);
-		$albums_tests->move($albumID3, '0');
+		$albums_tests->move($albumID3, null);
 
 		/*
 		 * try to get a non-existing album
 		 */
-		$albums_tests->get('999', 404);
+		$albums_tests->get('abcdefghijklmnopqrstuvwx', 404);
 
 		$response = $albums_tests->get($albumID);
 		$response->assertJson([

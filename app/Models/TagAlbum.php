@@ -2,39 +2,20 @@
 
 namespace App\Models;
 
-use App\Contracts\BaseAlbum;
 use App\Exceptions\InvalidPropertyException;
-use App\Models\Extensions\ForwardsToParentImplementation;
-use App\Models\Extensions\HasBidirectionalRelationships;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\TagAlbumBuilder;
-use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\Thumb;
 use App\Relations\HasManyPhotosByTag;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * Class TagAlbum.
  *
  * @property string show_tags
  */
-class TagAlbum extends Model implements BaseAlbum
+class TagAlbum extends BaseAlbum
 {
-	use HasBidirectionalRelationships;
-	use ForwardsToParentImplementation, ThrowsConsistentExceptions {
-		ForwardsToParentImplementation::delete insteadof ThrowsConsistentExceptions;
-		ForwardsToParentImplementation::delete as private parentDelete;
-	}
-
-	const FRIENDLY_MODEL_NAME = 'tag album';
-
-	/**
-	 * Indicates if the model's primary key is auto-incrementing.
-	 *
-	 * @var bool
-	 */
-	public $incrementing = false;
+	public const FRIENDLY_MODEL_NAME = 'tag album';
 
 	/**
 	 * The model's attributes.
@@ -74,23 +55,33 @@ class TagAlbum extends Model implements BaseAlbum
 		'thumb',
 	];
 
-	/**
-	 * Returns the relationship between this model and the implementation
-	 * of the "parent" class.
-	 *
-	 * @return BelongsTo
-	 */
-	public function base_class(): BelongsTo
-	{
-		return $this->belongsTo(BaseAlbumImpl::class, 'id', 'id');
-	}
-
 	public function photos(): HasManyPhotosByTag
 	{
 		return new HasManyPhotosByTag($this);
 	}
 
 	/**
+	 * Returns the value for the virtual attribute {@link TagAlbum::$thumb}.
+	 *
+	 * Note, opposed to {@link Album} the thumbnail of a tag album cannot be
+	 * converted into a proper relation (cp. {@link Album::thumb()}).
+	 * However, doing so would enable to eagerly load all thumbs of all
+	 * tag albums at once (using a single query) and cache the result.
+	 * This would speed up rendering the root album.
+	 * The main obstacle is the way how tags of photos and tags of albums
+	 * are matched to each other.
+	 * At the moment this requires string operations on the PHP level and
+	 * the SQL query for each tag album has an individual number of
+	 * `WHERE`-clauses which is specific for the particular
+	 * tag album (cp. {@link HasManyPhotosByTag::addEagerConstraints()}).
+	 * Hence, it is not possible to construct a single SQL query which fetches
+	 * the photos for multiple tag albums.
+	 * However, this would be possible if we had a proper `tags` table and
+	 * two n:m-relations between photos and tags and tags and albums.
+	 * This would allow to create a single `JOIN`-query for all tag albums.
+	 *
+	 * @return Thumb|null
+	 *
 	 * @throws InvalidPropertyException
 	 */
 	protected function getThumbAttribute(): ?Thumb
@@ -98,30 +89,9 @@ class TagAlbum extends Model implements BaseAlbum
 		// Note, `photos()` already applies a "security filter" and
 		// only returns photos which are accessible by the current
 		// user
-		return Thumb::createFromPhotoRelation(
+		return Thumb::createFromQueryable(
 			$this->photos(), $this->sorting_col, $this->sorting_order
 		);
-	}
-
-	/**
-	 * Returns the relationship between an album and its owner.
-	 *
-	 * @return BelongsTo
-	 */
-	public function owner(): BelongsTo
-	{
-		return $this->base_class->owner();
-	}
-
-	/**
-	 * Returns the relationship between an album and all users which whom
-	 * this album is shared.
-	 *
-	 * @return BelongsToMany
-	 */
-	public function shared_with(): BelongsToMany
-	{
-		return $this->base_class->shared_with();
 	}
 
 	public function toArray(): array
@@ -129,7 +99,7 @@ class TagAlbum extends Model implements BaseAlbum
 		$result = parent::toArray();
 		$result['is_tag_album'] = true;
 
-		return array_merge($result, $this->base_class->toArray());
+		return $result;
 	}
 
 	/**

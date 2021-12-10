@@ -72,7 +72,7 @@ class ShowLogs extends Command
 			$this->action_show($n, $order);
 
 			return 0;
-		} catch (SymfonyConsoleException | InternalLycheeException $e) {
+		} catch (SymfonyConsoleException|InternalLycheeException $e) {
 			throw new UnexpectedException($e);
 		}
 	}
@@ -110,15 +110,11 @@ class ShowLogs extends Command
 
 	private function color_type($type): string
 	{
-		switch ($type) {
-			case 'error  ':
-				return $this->col->red($type);
-			case 'warning':
-				return $this->col->yellow($type);
-			case 'notice ':
-				return $this->col->cyan($type);
-			default:
-				return $type;
-		}
+		return match ($type) {
+			'error  ' => $this->col->red($type),
+			'warning' => $this->col->yellow($type),
+			'notice ' => $this->col->cyan($type),
+			default => $type,
+		};
 	}
 }

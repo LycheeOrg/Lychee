@@ -8,15 +8,15 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SortingDecorator
 {
-	const COLUMN_ID = 'id';
-	const COLUMN_TAKEN_AT = 'taken_at';
-	const COLUMN_TITLE = 'title';
-	const COLUMN_DESCRIPTION = 'description';
-	const COLUMN_IS_PUBLIC = 'is_public';
-	const COLUMN_IS_STARRED = 'is_starred';
-	const COLUMN_TYPE = 'type';
+	public const COLUMN_ID = 'id';
+	public const COLUMN_TAKEN_AT = 'taken_at';
+	public const COLUMN_TITLE = 'title';
+	public const COLUMN_DESCRIPTION = 'description';
+	public const COLUMN_IS_PUBLIC = 'is_public';
+	public const COLUMN_IS_STARRED = 'is_starred';
+	public const COLUMN_TYPE = 'type';
 
-	const COLUMNS = [
+	public const COLUMNS = [
 		self::COLUMN_ID,
 		self::COLUMN_TAKEN_AT,
 		self::COLUMN_TITLE,
@@ -26,7 +26,7 @@ class SortingDecorator
 		self::COLUMN_TYPE,
 	];
 
-	const POSTPONE_COLUMNS = [
+	public const POSTPONE_COLUMNS = [
 		self::COLUMN_TITLE,
 		self::COLUMN_DESCRIPTION,
 	];
@@ -99,7 +99,7 @@ class SortingDecorator
 				$criterion['column'],
 				SORT_NATURAL | SORT_FLAG_CASE,
 				$criterion['direction'] === 'desc'
-			);
+			)->values();
 		}
 
 		return $result;

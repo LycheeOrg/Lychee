@@ -4,22 +4,23 @@ namespace App\Models;
 
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
+use App\Contracts\HasRandomID;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\InvalidPropertyException;
+use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
-use App\Models\Extensions\HasTimeBasedID;
+use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Observers\PhotoObserver;
-use App\Relations\HasManyBidirectionally;
+use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\MassAssignmentException;
@@ -32,7 +33,8 @@ use Illuminate\Support\Facades\Storage;
 /**
  * App\Photo.
  *
- * @property int          $id
+ * @property string       $id
+ * @property int          $legacy_id
  * @property string       $title
  * @property string|null  $description
  * @property string       $tags
@@ -58,7 +60,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null  $live_photo_short_path
  * @property string|null  $live_photo_full_path
  * @property string|null  $live_photo_url
- * @property int|null     $album_id
+ * @property string|null  $album_id
  * @property string       $checksum
  * @property string       $license
  * @property Carbon       $created_at
@@ -68,21 +70,26 @@ use Illuminate\Support\Facades\Storage;
  * @property Album|null   $album
  * @property User         $owner
  * @property SizeVariants $size_variants
- * @property Collection   $size_variants_raw
  * @property bool         $is_downloadable
  * @property bool         $is_share_button_visible
  */
-class Photo extends Model
+class Photo extends Model implements HasRandomID
 {
 	use PhotoBooleans;
 	use UTCBasedTimes;
 	use HasAttributesPatch;
-	use HasTimeBasedID, ThrowsConsistentExceptions {
-		HasTimeBasedID::save insteadof ThrowsConsistentExceptions;
+	use HasRandomIDAndLegacyTimeBasedID;
+	use ThrowsConsistentExceptions {
+		ThrowsConsistentExceptions::delete as private internalDelete();
 	}
 	use HasBidirectionalRelationships;
 
-	const FRIENDLY_MODEL_NAME = 'photo';
+	public const FRIENDLY_MODEL_NAME = 'photo';
+
+	/**
+	 * @var string The type of the primary key
+	 */
+	protected $keyType = 'string';
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -92,15 +99,14 @@ class Photo extends Model
 	public $incrementing = false;
 
 	protected $casts = [
+		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'taken_at' => DateTimeWithTimezoneCast::class,
-		'size_variants' => MustNotSetCast::class,
 		'live_photo_full_path' => MustNotSetCast::class . ':live_photo_short_path',
 		'live_photo_url' => MustNotSetCast::class . ':live_photo_short_path',
 		'is_downloadable' => MustNotSetCast::class,
 		'is_share_button_visible' => MustNotSetCast::class,
-		'id' => 'integer',
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
 		'filesize' => 'integer',
@@ -112,9 +118,9 @@ class Photo extends Model
 	 *               relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
+		HasRandomID::LEGACY_ID_NAME,
 		'album',  // do not serialize relation in order to avoid infinite loops
 		'owner',  // do not serialize relation
-		'size_variants_raw', // do not serialize collections of size variants, but the wrapper object
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
@@ -125,7 +131,6 @@ class Photo extends Model
 	 */
 	protected $appends = [
 		'live_photo_url',
-		'size_variants',
 		'is_downloadable',
 		'is_share_button_visible',
 	];
@@ -133,25 +138,6 @@ class Photo extends Model
 	protected $attributes = [
 		'tags' => '',
 	];
-
-	/**
-	 * @var SizeVariants|null caches the size variants associated to this class, once they have been created by {@link getSizeVariantsAttribute()}
-	 */
-	protected ?SizeVariants $sizeVariants = null;
-
-	/**
-	 * @throws MassAssignmentException
-	 * @throws FrameworkException
-	 */
-	public function __construct(array $attributes = [])
-	{
-		parent::__construct($attributes);
-		try {
-			$this->registerObserver(PhotoObserver::class);
-		} catch (\RuntimeException $e) {
-			throw new FrameworkException('Laravel\'s observer component', $e);
-		}
-	}
 
 	/**
 	 * Creates a new instance of {@link LinkedPhotoCollection}.
@@ -191,23 +177,9 @@ class Photo extends Model
 		return $this->belongsTo('App\Models\User', 'owner_id', 'id');
 	}
 
-	public function size_variants_raw(): HasManyBidirectionally
+	public function size_variants(): HasManySizeVariants
 	{
-		return $this->hasManyBidirectionally(SizeVariant::class);
-	}
-
-	/**
-	 * Accessor for the virtual attribute `size_variants`.
-	 *
-	 * @return SizeVariants
-	 */
-	protected function getSizeVariantsAttribute(): SizeVariants
-	{
-		if ($this->sizeVariants === null) {
-			$this->sizeVariants = new SizeVariants($this);
-		}
-
-		return $this->sizeVariants;
+		return new HasManySizeVariants($this);
 	}
 
 	/**
@@ -226,18 +198,18 @@ class Photo extends Model
 	 * @param ?string $shutter the value from the database passed in by
 	 *                         the Eloquent framework
 	 *
-	 * @return string A properly formatted shutter value
+	 * @return ?string A properly formatted shutter value
 	 *
 	 * @throws InvalidPropertyException
 	 */
-	protected function getShutterAttribute(?string $shutter): string
+	protected function getShutterAttribute(?string $shutter): ?string
 	{
 		try {
 			if (empty($shutter)) {
-				return '';
+				return null;
 			}
 			// shutter speed needs to be processed. It is stored as a string `a/b s`
-			if (substr($shutter, 0, 2) != '1/') {
+			if (!str_starts_with($shutter, '1/')) {
 				preg_match('/(\d+)\/(\d+) s/', $shutter, $matches);
 				if ($matches) {
 					$a = intval($matches[1]);
@@ -313,10 +285,10 @@ class Photo extends Model
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 */
-	protected function getFocalAttribute(?string $focal): string
+	protected function getFocalAttribute(?string $focal): ?string
 	{
 		if (empty($focal)) {
-			return '';
+			return null;
 		}
 		// We need to format the framerate (stored as focal) -> max 2 decimal digits
 		return $this->isVideo() ? round($focal, 2) : $focal;
@@ -440,7 +412,7 @@ class Photo extends Model
 	/**
 	 * @return bool true if another DB entry exists for the same photo
 	 */
-	public function hasDuplicate(): bool
+	protected function hasDuplicate(): bool
 	{
 		$checksum = $this->checksum;
 
@@ -454,28 +426,53 @@ class Photo extends Model
 	}
 
 	/**
-	 * @throws ModelNotFoundException
 	 * @throws ModelDBException
 	 */
 	public function replicate(array $except = null): Photo
 	{
 		$duplicate = parent::replicate($except);
-		$duplicate->unsetRelations();
-		// save duplicate so that is gets an ID
+		// A photo has the following relations: (parent) album, owner and
+		// size_variants.
+		// While the duplicate may keep the relation to the same album and
+		// each photo requires an individual set of size variants.
+		// Se we unset the relation and explicitly duplicate the size variants.
+		$duplicate->unsetRelation('size_variants');
+		// save duplicate so that the photo gets an ID
 		$duplicate->save();
-		/** @var SizeVariant $sizeVariant */
-		foreach ($this->size_variants_raw as $sizeVariant) {
-			/** @var SizeVariant $dupSizeVariant */
-			$dupSizeVariant = $duplicate->size_variants_raw()->make();
-			$dupSizeVariant->size_variant = $sizeVariant->size_variant;
-			$dupSizeVariant->short_path = $sizeVariant->short_path;
-			$dupSizeVariant->width = $sizeVariant->width;
-			$dupSizeVariant->height = $sizeVariant->height;
-			$dupSizeVariant->save();
+
+		$areSizeVariantsOriginallyLoaded = $this->relationLoaded('size_variants');
+		// Duplicate the size variants of this instance for the duplicate
+		$duplicatedSizeVariants = $this->size_variants->replicate($duplicate);
+		if ($areSizeVariantsOriginallyLoaded) {
+			$duplicate->setRelation('size_variants', $duplicatedSizeVariants);
 		}
-		$duplicate->refresh();
 
 		return $duplicate;
+	}
+
+	/**
+	 * @return bool always returns true
+	 *
+	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 */
+	public function delete(): bool
+	{
+		$keepFiles = $this->hasDuplicate();
+		if ($keepFiles) {
+			Logs::notice(__METHOD__, __LINE__, $this->id . ' is a duplicate, files are not deleted!');
+		}
+		// Delete all size variants
+		$this->size_variants->deleteAll($keepFiles, $keepFiles);
+		// Delete Live Photo Video file
+		$livePhotoShortPath = $this->live_photo_short_path;
+		if (!$keepFiles && !empty($livePhotoShortPath) && Storage::exists($livePhotoShortPath)) {
+			if (!Storage::delete($livePhotoShortPath)) {
+				throw new MediaFileOperationException('could not delete media file: ' . $livePhotoShortPath);
+			}
+		}
+
+		return $this->internalDelete();
 	}
 
 	protected function friendlyModelName(): string

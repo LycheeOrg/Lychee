@@ -25,8 +25,8 @@ use Illuminate\Support\Collection;
 
 class SizeVariantDefaultFactory extends SizeVariantFactory
 {
-	const THUMBNAIL_DIM = 200;
-	const THUMBNAIL2X_DIM = 400;
+	public const THUMBNAIL_DIM = 200;
+	public const THUMBNAIL2X_DIM = 400;
 
 	/** @var ImageHandlerInterface the image handler (gd, imagick, ...) which is used to generate image files */
 	protected ImageHandlerInterface $imageHandler;
@@ -69,7 +69,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	protected function extractReferenceImage(): void
 	{
-		$original = $this->photo->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+		$original = $this->photo->size_variants->getOriginal();
 		if ($this->photo->isRaw()) {
 			$this->extractReferenceFromRaw($original->full_path, $original->width, $original->height);
 		} elseif ($this->photo->isVideo()) {
@@ -311,7 +311,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
 		if (!$sv) {
-			$sv = $this->photo->size_variants->createSizeVariant($sizeVariant, $shortPath, $maxWidth, $maxHeight);
+			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight);
 			if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 				$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
 			} else {
@@ -387,7 +387,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 *
 	 * This function always returns true, for size variants which are not
 	 * configurable and are always enabled (e.g. a thumb).
-	 * Hence, it is safe to call this function for all size variants.
+	 * Hence, it is save to call this function for all size variants.
 	 * For size variants which may be enabled/disabled trough configuration at
 	 * runtime, the method only returns true, if
 	 *
@@ -411,20 +411,14 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if ($maxWidth === 0 && $maxHeight === 0) {
 			return false;
 		}
-		switch ($sizeVariant) {
-			case SizeVariant::MEDIUM2X:
-				return Configs::get_value('medium_2x', 0) == 1;
-			case SizeVariant::SMALL2X:
-				return Configs::get_value('small_2x', 0) == 1;
-			case SizeVariant::THUMB2X:
-				return Configs::get_value('thumb_2x', 0) == 1;
-			case SizeVariant::SMALL:
-			case SizeVariant::MEDIUM:
-			case SizeVariant::THUMB:
-				return true;
-			default:
-				throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant);
-		}
+
+		return match ($sizeVariant) {
+			SizeVariant::MEDIUM2X => Configs::get_value('medium_2x', 0) == 1,
+			SizeVariant::SMALL2X => Configs::get_value('small_2x', 0) == 1,
+			SizeVariant::THUMB2X => Configs::get_value('thumb_2x', 0) == 1,
+			SizeVariant::SMALL, SizeVariant::MEDIUM, SizeVariant::THUMB => true,
+			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant),
+		};
 	}
 
 	/**
@@ -432,7 +426,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	public function createOriginal(int $width, int $height): SizeVariant
 	{
-		return $this->photo->size_variants->createSizeVariant(
+		return $this->photo->size_variants->create(
 			SizeVariant::ORIGINAL,
 			$this->namingStrategy->generateShortPath(SizeVariant::ORIGINAL),
 			$width,

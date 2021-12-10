@@ -4,7 +4,6 @@ namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
-use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
@@ -34,7 +33,7 @@ class Smart
 	 * Note, the array may include password-protected albums that are visible
 	 * but not accessible.
 	 *
-	 * @return array[BaseAlbum] the array of smart albums
+	 * @return BaseAlbum[] the array of smart albums
 	 *
 	 * @throws InternalLycheeException
 	 */
@@ -46,7 +45,7 @@ class Smart
 		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums(false);
 		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
-			if (AccessControl::can_upload() || $smartAlbum->is_public) {
+			if ($this->albumAuthorisationProvider->isAuthorizedForSmartAlbum($smartAlbum)) {
 				$return[$smartAlbum->id] = $smartAlbum;
 			}
 		}
@@ -54,7 +53,6 @@ class Smart
 		$tagAlbumQuery = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(TagAlbum::query());
 		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
-			->orderBy('id')
 			->orderBy($this->sortingCol, $this->sortingOrder)
 			->get();
 

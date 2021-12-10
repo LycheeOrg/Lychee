@@ -56,20 +56,12 @@ class ResetAdmin extends Command
 		try {
 			Legacy::resetAdmin();
 
-			// delete to avoid collisions.
-			User::query()->where('username', '=', '')->delete();
-			User::query()->where('password', '=', '')->delete();
-			User::query()->where('id', '=', 0)->delete();
-
-			// recreate an admin user
-			$user = new User();
+			/** @var User $user */
+			$user = User::query()->findOrNew(0);
+			$user->incrementing = false; // disable auto-generation of ID
+			$user->id = 0;
 			$user->username = Configs::get_value('username', '');
 			$user->password = Configs::get_value('password', '');
-			$user->save();
-
-			// created user will have a id which is NOT 0.
-			// we want this user to have an ID of 0 as it is the ADMIN ID.
-			$user->id = 0;
 			$user->save();
 
 			$this->line($this->col->yellow('Admin username and password reset.'));

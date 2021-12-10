@@ -27,7 +27,9 @@ class HasManyPhotosByTag extends HasManyPhotos
 	 */
 	public function addConstraints(): void
 	{
-		$this->addEagerConstraints([$this->owningAlbum]);
+		if (static::$constraints) {
+			$this->addEagerConstraints([$this->parent]);
+		}
 	}
 
 	/**
@@ -54,7 +56,7 @@ class HasManyPhotosByTag extends HasManyPhotos
 		$tags = explode(',', $album->show_tags);
 
 		$this->photoAuthorisationProvider
-			->applyVisibilityFilter($this->query)
+			->applySearchabilityFilter($this->query)
 			->where(function (Builder $q) use ($tags) {
 				// Filter for requested tags
 				foreach ($tags as $tag) {
@@ -85,11 +87,11 @@ class HasManyPhotosByTag extends HasManyPhotos
 		/** @var TagAlbum $album */
 		$album = $albums[0];
 
-		$photos->sortBy(
+		$photos = $photos->sortBy(
 			$album->sorting_col,
 			SORT_NATURAL | SORT_FLAG_CASE,
 			$album->sorting_order === 'DESC'
-		);
+		)->values();
 		$album->setRelation($relation, $photos);
 
 		return $albums;

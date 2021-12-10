@@ -29,7 +29,9 @@ class PhotoEditorController extends Controller
 			throw new ConfigurationException('support for rotation disabled by configuration');
 		}
 		/** @var Photo $photo */
-		$photo = Photo::query()->findOrFail($request->photoID());
+		$photo = Photo::query()
+			->with(['size_variants'])
+			->findOrFail($request->photoID());
 
 		return $rotate->do($photo, $request->direction());
 	}

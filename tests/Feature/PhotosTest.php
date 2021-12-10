@@ -149,7 +149,7 @@ class PhotosTest extends TestCase
 		/**
 		 * We now test interaction with albums.
 		 */
-		$albumID = $albums_tests->add('0', 'test_album_2')->offsetGet('id');
+		$albumID = $albums_tests->add(null, 'test_album_2')->offsetGet('id');
 		$photos_tests->set_album('-1', $id, 422);
 		$photos_tests->set_album($albumID, $id);
 		$albums_tests->download($albumID);

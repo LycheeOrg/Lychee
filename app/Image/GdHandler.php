@@ -321,23 +321,13 @@ class GdHandler implements ImageHandlerInterface
 	 */
 	private function writeImage(string $destination, $image, int $mime, int $quality = null): bool
 	{
-		$ret = false;
-
-		switch ($mime) {
-			case IMAGETYPE_JPEG:
-			case IMAGETYPE_JPEG2000:
-				$ret = imagejpeg($image, $destination, $quality ?? $this->compressionQuality);
-				break;
-			case IMAGETYPE_PNG:
-				$ret = imagepng($image, $destination);
-				break;
-			case IMAGETYPE_GIF:
-				$ret = imagegif($image, $destination);
-				break;
-			case IMAGETYPE_WEBP:
-				$ret = imagewebp($image, $destination);
-				break;
-		}
+		$ret = match ($mime) {
+			IMAGETYPE_JPEG, IMAGETYPE_JPEG2000 => imagejpeg($image, $destination, $quality ?? $this->compressionQuality),
+			IMAGETYPE_PNG => imagepng($image, $destination),
+			IMAGETYPE_GIF => imagegif($image, $destination),
+			IMAGETYPE_WEBP => imagewebp($image, $destination),
+			default => false,
+		};
 
 		return $ret;
 	}

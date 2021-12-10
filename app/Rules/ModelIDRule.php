@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Contracts\HasRandomID;
 use Illuminate\Contracts\Validation\Rule;
 
 class ModelIDRule implements Rule
@@ -22,10 +23,7 @@ class ModelIDRule implements Rule
 			(
 				$value === null &&
 				$this->isNullable
-			) || (
-				filter_var($value, FILTER_VALIDATE_INT) !== false &&
-				intval($value) > 0
-			);
+			) || strlen($value) === HasRandomID::ID_LENGTH;
 	}
 
 	/**
@@ -35,6 +33,6 @@ class ModelIDRule implements Rule
 	{
 		return ':attribute must be' .
 			($this->isNullable ? ' either null or' : '') .
-			' a positive integer';
+			' a string with ' . HasRandomID::ID_LENGTH . ' characters';
 	}
 }

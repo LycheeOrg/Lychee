@@ -6,7 +6,6 @@ use App\Mail\PhotosAdded;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Notifications\DatabaseNotification;
@@ -58,7 +57,9 @@ class PhotosAddedNotification extends Command
 			/** @var DatabaseNotification $notification */
 			foreach ($user->unreadNotifications()->get() as $notification) {
 				/** @var Photo $photo */
-				$photo = Photo::query()->find($notification->data['id']);
+				$photo = Photo::query()
+					->with(['size_variants', 'size_variants.sym_links'])
+					->find($notification->data['id']);
 
 				if ($photo) {
 					if (!isset($photos[$photo->album_id])) {
@@ -68,11 +69,11 @@ class PhotosAddedNotification extends Command
 						];
 					}
 
-					$thumbUrl = $photo->size_variants->getSizeVariant(SizeVariant::THUMB)->url;
+					$thumbUrl = $photo->size_variants->getThumb()->url;
 					logger($thumbUrl);
 
 					// If the url config doesn't contain a trailing slash then add it
-					if (substr(config('app.url'), -1) == '/') {
+					if (str_ends_with(config('app.url'), '/')) {
 						$trailing_slash = '';
 					} else {
 						$trailing_slash = '/';

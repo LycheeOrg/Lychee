@@ -70,32 +70,33 @@ class Login
 			$user = User::query()->findOrFail($id);
 
 			if ($user->lock) {
-				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change his identity from ' . $ip);
+				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change their identity from ' . $ip);
 				throw new UnauthenticatedException('Account is locked');
 			}
 
 			if (User::query()->where('username', '=', $username)->where('id', '!=', $id)->count()) {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity to ' . $username . ' from ' . $ip);
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $username . ' from ' . $ip);
 
 				throw new InvalidPropertyException('Username already exists.');
 			}
 
 			// TODO: This looks suspicious.
-			// A user can only change the username/password of the currently
-			// authenticated user (see above, we use `AccessControl::id()` and
-			// query for the currently authenticated user).
-			// In other words, a user can only change the username of his/her
-			// own account.
-			// Why should an authenticated user (who knows his/her own username
-			// anyway) use a wrong old username?
-			// This does not seem to make any sense.
+			// Users can only change the username/password of their own
+			// account and must be authenticated in order to do so.
+			// (See above, we use `AccessControl::id()` and query for the
+			// currently authenticated user).
+			// The user name of the currently authenticated user is visible on
+			// the GUI anyway.
+			// Why do we re-check whether users have been able to correctly
+			// present their current (aka old) username again?
+			// This does not seem to make any sense security-wise.
 			if ($user->username === $oldUsername && Hash::check($oldPassword, $user->password)) {
-				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed his identity for (' . $username . ') from ' . $ip);
+				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') changed their identity for (' . $username . ') from ' . $ip);
 				$user->username = $username;
 				$user->password = $hashedPassword;
 				$user->save();
 			}
-			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change his identity from ' . $ip);
+			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $ip);
 
 			throw new UnauthenticatedException('Previous username or password are invalid');
 		}

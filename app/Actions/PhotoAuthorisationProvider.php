@@ -6,9 +6,12 @@ use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Database\Query\JoinClause;
 
 class PhotoAuthorisationProvider
 {
@@ -17,53 +20,6 @@ class PhotoAuthorisationProvider
 	public function __construct()
 	{
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
-	}
-
-	/**
-	 * Restricts a photo query to _public_ photos.
-	 *
-	 * A photo is called _public_ if an anonymous (unauthenticated) user is
-	 * allowed to see it.
-	 * A photo is _visible_ if any of the following conditions hold
-	 * (OR-clause):
-	 *
-	 *  - the photo itself is public on its own right
-	 *  - the photo is part of a public album
-	 *
-	 * Note: This query also included photos which are part of public, but
-	 * password-protected albums.
-	 * Do we really want this?
-	 * At the moment this method is used by
-	 * {@link \App\Actions\RSS\Generate::do()}.
-	 * Hence, this might leak thumbnails of photos to individuals who have
-	 * subscribed to the RSS feed, but do not know the correct password for
-	 * a password-protected album.
-	 * Moreover, this filter does not take the configuration parameter
-	 * `public_photos_hidden` into account.
-	 * In summary, the result of this filter is very different from the
-	 * result of {@link PhotoAuthorisationProvider::applyVisibilityFilter()}
-	 * for an anonymous user.
-	 * However, the logic here resembles the old behaviour.
-	 * TODO: Re-consider if we really want it this way?
-	 *
-	 * @param Builder $query
-	 *
-	 * @return Builder
-	 *
-	 * @throws InternalLycheeException
-	 */
-	public function applyPublicFilter(Builder $query): Builder
-	{
-		$this->failForWrongQueryModel($query);
-
-		try {
-			return $query->where(fn (Builder $q) => $q
-				->where('is_public', '=', true)
-				->orWhereHas('album', fn (Builder $q2) => $q2->where('is_public', '=', true))
-			);
-		} catch (\RuntimeException $e) {
-			throw new QueryBuilderException($e);
-		}
 	}
 
 	/**
@@ -78,9 +34,7 @@ class PhotoAuthorisationProvider
 	 *  - the user is the owner of the photo
 	 *  - the photo is part of an album which the user is allowed to access
 	 *    (cp. {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}.
-	 *  - the photo is unsorted (not part of any album) and the user is granted
-	 *    the right to upload photos
-	 *  - the photo is public and public photos are not hidden by config
+	 *  - the photo is public
 	 *
 	 * @param Builder $query
 	 *
@@ -90,129 +44,158 @@ class PhotoAuthorisationProvider
 	 */
 	public function applyVisibilityFilter(Builder $query): Builder
 	{
-		$this->failForWrongQueryModel($query);
+		$this->prepareModelQueryOrFail($query, false, true, true);
 
 		if (AccessControl::is_admin()) {
 			return $query;
 		}
 
-		if (!AccessControl::is_logged_in()) {
+		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		try {
 			// We must wrap everything into an outer query to avoid any undesired
 			// effects in case that the original query already contains an
 			// "OR"-clause.
-			try {
-				return $query->where(
-					function (Builder $query2) {
-						$query2->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
-						if (Configs::get_value('public_photos_hidden', '1') === '0') {
-							$query2->orWhere('is_public', '=', true);
-						}
-					}
-				);
-			} catch (\InvalidArgumentException | \RuntimeException $e) {
-				throw new QueryBuilderException($e);
-			}
-		}
-
-		$userID = AccessControl::id();
-
-		// We must wrap everything into an outer query to avoid any undesired
-		// effects in case that the original query already contains an
-		// "OR"-clause.
-		return $query->where(
-			function (Builder $query2) use ($userID) {
-				try {
-					$query2->where('owner_id', '=', $userID);
-					$query2->orWhereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q));
-					if (AccessControl::can_upload()) {
-						$query2->orWhereNull('album_id');
-					}
-					if (Configs::get_value('public_photos_hidden', '1') === '0') {
-						$query2->orWhere('is_public', '=', true);
-					}
-				} catch (\InvalidArgumentException | \RuntimeException $e) {
-					throw new QueryBuilderException($e);
+			$visibilitySubQuery = function (Builder $query2) use ($userID) {
+				$this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery());
+				$query2->orWhere('photos.is_public', '=', true);
+				if ($userID !== null) {
+					$query2->orWhere('photos.owner_id', '=', $userID);
 				}
-			}
-		);
+			};
+
+			return $query->where($visibilitySubQuery);
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
 	/**
-	 * Checks whether the photo is accessible by the current user.
+	 * Checks whether the photo is visible by the current user.
 	 *
 	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
 	 * specification of the rules when a photo is visible.
 	 *
-	 * Note, this method tries to minimize DB queries and any overhead due
-	 * to hydration of models.
-	 * If an actual instance of a {@link Photo} model is passed in, then the
-	 * DB won't be queried at all, because all checks are performed on the
-	 * values of the already hydrated model.
-	 * If an ID is passed, then the method runs a very efficient COUNT
-	 * query on the DB.
-	 * In particular, no {@link Photo} model is hydrated to avoid any
-	 * overhead.
-	 *
-	 * Tips for usage:
-	 *  - If you already have a {@link Photo} instance, pass that.
-	 *    This is most efficient.
-	 *  - If you do not have a {@link Photo} instance, but you will need one
-	 *    later anyway, then first fetch the photo from DB and pass the photo.
-	 *    This avoids a second DB query later.
-	 *  - If you do not have a {@link Photo} instance, and you won't need one
-	 *    later, simply pass the ID of the photo.
-	 *    This avoids the overhead of model hydration.
-	 *
-	 * @param int|Photo $photoModelOrID
+	 * @param string $photoID
 	 *
 	 * @return bool
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function isVisible($photoModelOrID): bool
+	public function isVisible(string $photoID): bool
 	{
 		if (AccessControl::is_admin()) {
 			return true;
 		}
 
-		/** @var ?Photo $photo */
-		/** @var int $photoID */
-		list($photoID, $photo) = $this->disassemblePhotoParameter($photoModelOrID);
-
-		// If we already have an instance of a model, then avoid an
-		// unnecessary DB query.
-		// We perform the accessibility checks directly on the photo model.
-		// The semantics of these checks must be kept in sync with the
-		// checks in `applyVisibilityFilter`.
-		if ($photo) {
-			// Again, avoid unnecessary DB queries
-			// If the album of the photo has already been loaded, we pass
-			// the instance of the model to AlbumAuthorisationProvider.
-			// (Then AlbumAuthorisationProvider won't query the DB at all.)
-			// If the album has not yet been loaded, we pass the ID of the
-			// album.
-			// (Then AlbumAuthorisationProvider must query the DB, but
-			// still avoids hydrating an actual model.)
-			$albumModelOrID = $photo->relationLoaded('album') ? $photo->album : $photo->album_id;
-			if (!AccessControl::is_logged_in()) {
-				return
-					($photo->is_public && Configs::get_value('public_photos_hidden', '1') === '0') ||
-					$this->albumAuthorisationProvider->isAccessible($albumModelOrID);
-			} else {
-				return
-					AccessControl::is_current_user($photo->owner_id) ||
-					(AccessControl::can_upload() || empty($albumModelOrID)) ||
-					($photo->is_public && Configs::get_value('public_photos_hidden', '1') === '0') ||
-					$this->albumAuthorisationProvider->isAccessible($albumModelOrID);
-			}
-		} else {
-			// If we don't have an instance of a model, then use
-			// `applyVisibilityFilter` to build a query, but don't hydrate a
-			// model
-			return $this->applyVisibilityFilter(
-				Photo::query()->where('id', '=', $photoID)
+		// We use `applyVisibilityFilter` to build a query, but don't hydrate
+		// a model
+		return $this->applyVisibilityFilter(
+				Photo::query()->where('photos.id', '=', $photoID)
 			)->count() !== 0;
+	}
+
+	/**
+	 * Restricts a photo query to _searchable_ photos.
+	 *
+	 * A photo is _searchable_ if at least one of the following conditions
+	 * hold:
+	 *
+	 *  - the photo is part of an album which the user is allowed to browse
+	 *  - the user is the owner of the photo
+	 *  - the photo is public and searching through public photos is enabled
+	 *
+	 * See {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
+	 * for a definition of a browsable album.
+	 *
+	 * The search result is restricted to photos in albums which are below
+	 * `$origin`.
+	 *
+	 * **Attention**:
+	 * For efficiency reasons this method does not check if `$origin` itself
+	 * is accessible.
+	 * The method simply assumes that the user has already legitimately
+	 * accessed the origin album, if the caller provides an album model.
+	 *
+	 * @param Builder    $query  the photo query which shall be restricted
+	 * @param Album|null $origin the optional top album which is used as a search base
+	 *
+	 * @return Builder the restricted photo query
+	 */
+	public function applySearchabilityFilter(Builder $query, ?Album $origin = null): Builder
+	{
+		$this->prepareModelQueryOrFail($query, true, false, false);
+
+		// If origin is set, also restrict the search result for admin
+		// to photos which are in albums below origin.
+		// This is not a security filter, but simply functional.
+		if ($origin) {
+			$query
+				->where('albums._lft', '>=', $origin->_lft)
+				->where('albums._rgt', '<=', $origin->_rgt);
 		}
+
+		if (AccessControl::is_admin()) {
+			return $query;
+		} else {
+			return $query->where(function (Builder $query) use ($origin) {
+				$this->appendSearchabilityConditions(
+					$query->getQuery(),
+					$origin?->_lft,
+					$origin?->_rgt
+				);
+			});
+		}
+	}
+
+	/**
+	 * Adds the conditions of _searchable_ photos to the query.
+	 *
+	 * **Attention:** This method is only meant for internal use.
+	 * Use {@link PhotoAuthorisationProvider::applySearchabilityFilter()}
+	 * if called from other places instead.
+	 *
+	 * This method adds the WHERE conditions without any further pre-cautions.
+	 * The method silently assumes that the SELECT clause contains the tables
+	 *
+	 *  - **`albums`**.
+	 *
+	 * See {@link AlbumAuthorisationProvider::applySearchabilityFilter()}
+	 * for a definition of a searchable photo.
+	 *
+	 * Moreover, the raw clauses are added.
+	 * They are not wrapped into a nesting braces `()`.
+	 *
+	 * @param BaseBuilder     $query       the photo query which shall be
+	 *                                     restricted
+	 * @param int|string|null $originLeft  optionally constraints the search
+	 *                                     base; an integer value is
+	 *                                     interpreted a raw left bound of the
+	 *                                     search base; a string value is
+	 *                                     interpreted as a reference to a
+	 *                                     column which shall be used as a
+	 *                                     left bound
+	 * @param int|string|null $originRight like `$originLeft` but for the
+	 *                                     right bound
+	 *
+	 * @return Builder the restricted photo query
+	 */
+	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
+	{
+		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
+
+		$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
+			$this->albumAuthorisationProvider->appendBlockedAlbumsCondition($q, $originLeft, $originRight);
+		});
+		if ($maySearchPublic) {
+			$query->orWhere('photos.is_public', '=', true);
+		}
+		if ($userID !== null) {
+			$query->orWhere('photos.owner_id', '=', $userID);
+		}
+
+		return $query;
 	}
 
 	/**
@@ -221,13 +204,13 @@ class PhotoAuthorisationProvider
 	 *
 	 * A photo is called _editable_ if the current user is allowed to edit
 	 * the photo's properties.
-	 * An photo is _editable_ if any of the following conditions hold
+	 * A photo is _editable_ if any of the following conditions hold
 	 * (OR-clause)
 	 *
 	 *  - the user is an admin
 	 *  - the user is the owner of the photo
 	 *
-	 * @param int[] $photoIDs
+	 * @param string[] $photoIDs
 	 *
 	 * @return bool
 	 *
@@ -249,8 +232,8 @@ class PhotoAuthorisationProvider
 		if (count($photoIDs) > 0) {
 			try {
 				return Photo::query()
-						->whereIn('id', $photoIDs)
-						->where('owner_id', '=', $userID)
+						->whereIn('photos.id', $photoIDs)
+						->where('photos.owner_id', '=', $userID)
 						->count() === count($photoIDs);
 			} catch (\InvalidArgumentException $e) {
 				throw new QueryBuilderException($e);
@@ -263,42 +246,55 @@ class PhotoAuthorisationProvider
 	/**
 	 * Throws an exception if the given query does not query for a photo.
 	 *
-	 * @throws InvalidQueryModelException
+	 * @param Builder $query         the query to prepare
+	 * @param bool    $addAlbums     if true, joins photo query with (parent) albums
+	 * @param bool    $addBaseAlbums if true, joins photos query with (parent) base albums
+	 * @param bool    $addShares     if true, joins photo query with user share table of (parent) album
 	 *
-	 * @param Builder $query
+	 * @throws InvalidQueryModelException
 	 */
-	private function failForWrongQueryModel(Builder $query): void
+	private function prepareModelQueryOrFail(Builder $query, bool $addAlbums, bool $addBaseAlbums, bool $addShares): void
 	{
 		$model = $query->getModel();
-		if (!($model instanceof Photo)) {
+		$table = $query->getQuery()->from;
+		if (!($model instanceof Photo && $table === 'photos')) {
 			throw new InvalidQueryModelException('photo');
 		}
-	}
 
-	/**
-	 * This method sorts the passed multi-typed parameter into the correct
-	 * return type.
-	 *
-	 * This method returns a pair [photoID, photo] acc. to the following rules
-	 *  - if an ID is passed in, i.e. if `$in` is an integer or string, the
-	 *    result is `[$in, null]`, i.e. the input parameter is returned as
-	 *    the ID of an album
-	 *  - if a photo is passed in, i.e. if `$in` is an instance of
-	 *    {@link Photo}, then the result is `[$in->id, $in]`, i.e. the
-	 *    input parameter is returned as the photo and the ID is extracted.
-	 *
-	 * Note, this method never loads any model from database.
-	 *
-	 * @param int|Photo $in
-	 *
-	 * @return array an array with [photoID, photo]
-	 */
-	private function disassemblePhotoParameter($in): array
-	{
-		if ($in instanceof Photo) {
-			return [$in->id, $in];
-		} else {
-			return [$in, null];
+		// We must only add the share, i.e. left join with `user_base_album`,
+		// if and only if we restrict the eventual query to the ID of the
+		// authenticated user by a `WHERE`-clause.
+		// If we were doing a left join unconditionally, then some
+		// photos might appear multiple times as part of the result
+		// because the parent album of a photo might be shared with more than
+		// one user.
+		// Hence, we must restrict the `LEFT JOIN` to the user ID which
+		// is also used in the outer `WHERE`-clause.
+		// See `applyVisibilityFilter`.
+		$addShares = $addShares && AccessControl::is_logged_in();
+
+		// Ensure that only columns of the photos are selected,
+		// if no specific columns are yet set.
+		// Otherwise, we cannot add a JOIN clause below
+		// without accidentally adding all columns of the join, too.
+		if (empty($query->columns)) {
+			$query->select(['photos.*']);
+		}
+		if ($addAlbums) {
+			$query->leftJoin('albums', 'albums.id', '=', 'photos.album_id');
+		}
+		if ($addBaseAlbums) {
+			$query->leftJoin('base_albums', 'base_albums.id', '=', 'photos.album_id');
+		}
+		if ($addShares) {
+			$userID = AccessControl::id();
+			$query->leftJoin('user_base_album',
+				function (JoinClause $join) use ($userID) {
+					$join
+						->on('user_base_album.base_album_id', '=', 'base_albums.id')
+						->where('user_base_album.user_id', '=', $userID);
+				}
+			);
 		}
 	}
 }

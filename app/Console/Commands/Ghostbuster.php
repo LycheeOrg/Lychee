@@ -158,7 +158,7 @@ class Ghostbuster extends Command
 					if ($dryrun) {
 						$this->line(str_pad($filename, 50) . $this->col->red(' does not exist and photo would be removed') . '.');
 					} else {
-						if ($sizeVariant->size_variant == SizeVariant::ORIGINAL) {
+						if ($sizeVariant->type == SizeVariant::ORIGINAL) {
 							$sizeVariant->photo->delete();
 						} else {
 							$sizeVariant->delete();
@@ -202,7 +202,7 @@ class Ghostbuster extends Command
 			}
 
 			return 0;
-		} catch (SymfonyConsoleException | \LogicException $e) {
+		} catch (SymfonyConsoleException|\LogicException $e) {
 			throw new UnexpectedException($e);
 		}
 	}

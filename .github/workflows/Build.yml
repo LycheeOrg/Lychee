@@ -1,13 +1,17 @@
-name: Build-Dist
+name: Build
 
 # Run this workflow every time a new commit pushed to your repository
 on:
   push:
     paths-ignore:
       - '**/*.md'
+      - 'public/dist/*.js'
+      - 'public/dist/**/*.js'
   pull_request:
     paths-ignore:
       - '**/*.md'
+      - 'public/dist/*.js'
+      - 'public/dist/**/*.js'
 
 jobs:
   tests:
@@ -38,13 +42,14 @@ jobs:
     strategy:
       matrix:
         operating-system: [ubuntu-20.04]
-        php-versions: ['7.4', '8.0']
-        sql-versions: ['mysql', 'postgresql', 'sqlite']
+        php-versions: ['8.0', '8.1']
+        sql-versions: ['mariadb', 'postgresql', 'sqlite']
+        mode: ['dev', 'dist']
 
-    name: PHP ${{ matrix.php-versions }} - ${{ matrix.sql-versions }}
+    name: PHP${{ matrix.php-versions }} - ${{ matrix.sql-versions }} - ${{ matrix.mode }}
 
     env:
-      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip, intl
+      extensions: bcmath, curl, dom, gd, imagick, json, libxml, mbstring, pcntl, pdo, pdo_sqlite, pdo_mysql, pdo_pgsql, pgsql, sqlite3, zip
       key: cache-v1 # can be any string, change to clear the extension cache.
 
     steps:
@@ -59,7 +64,7 @@ jobs:
 
       - name: Setup cache environment
         id: extcache
-        uses: shivammathur/cache-extensions@v1
+        uses: shivammathur/cache-extensions@1.6.2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
@@ -73,24 +78,24 @@ jobs:
           restore-keys: ${{ steps.extcache.outputs.key }}
 
       - name: Cache Composer Dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v2.1.6
         with:
           path: ~/.composer/cache/files
           key: dependencies-composer-${{ hashFiles('composer.json') }}
 
       - name: Setup PHP Action
-        uses: shivammathur/setup-php@2.8.0
+        uses: shivammathur/setup-php@2.15.0
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ${{ env.extensions }}
+          coverage: xdebug
           tools: pecl, composer
-      
-      - name: Set Up imagick (php8)
-        if: ${{ matrix.php-versions != '7.4' }}
-        run: sh scripts/install_imagick.sh
 
-      - name: Install Exiftools
-        run: sudo apt-get -y install libimage-exiftool-perl
+      - name: Set Up imagick & Exiftools
+        run: |
+          sudo apt-get update
+          sudo apt-get --fix-broken install
+          sudo apt-get -y install libimage-exiftool-perl
 
       - name: Get composer cache directory
         id: composer-cache
@@ -103,36 +108,73 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
-      - name: Install Composer dependencies
+      - name: setup Databases
+        run: |
+          sudo service mysql start
+          touch database/database.sqlite
+          mysql -uroot -proot -e 'create database homestead_test;'
+
+      # begin of DEV
+      - name: Install Composer dependencies (dev)
+        if: ${{ matrix.mode == 'dev' }}
+        run: composer install --prefer-dist --no-interaction
+
+      - name: Check Syntax
+        if: ${{ matrix.mode == 'dev' }}
+        continue-on-error: ${{ matrix.php-versions != '8.0' }}
+        run: PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --verbose --diff --dry-run
+
+      - name: copy Env
+        if: ${{ matrix.mode == 'dev' }}
+        run: |
+          cp .github/workflows/.env.${{ matrix.sql-versions }} .env
+
+      - name: Generate secure key & Optimize application & Migrate
+        if: ${{ matrix.mode == 'dev' }}
+        run: |
+          php artisan key:generate
+          php artisan optimize
+          php artisan migrate
+
+      - name: Apply tests
+        if: ${{ matrix.mode == 'dev' }}
+        run: XDEBUG_MODE=coverage vendor/bin/phpunit --verbose
+
+      - name: Codecov
+        if: ${{ matrix.mode == 'dev' }}
+        uses: codecov/codecov-action@v1
+
+      - name: Make sure we can go backward
+        if: ${{ matrix.mode == 'dev' }}
+        run: php artisan migrate:rollback
+
+      # end of DEV
+      # begin of DIST
+      - name: Install Composer dependencies (dist)
+        if: ${{ matrix.mode == 'dist' }}
         run: composer install --prefer-dist --no-interaction --no-dev
 
       - name: Build Dist
+        if: ${{ matrix.mode == 'dist' }}
         run: |
           make dist-clean
 
-      - name: setup MySQL Database
-        if: ${{ matrix.sql-versions == 'mysql' }}
+      - name: copy Env
+        if: ${{ matrix.mode == 'dist' }}
         run: |
-          sudo service mysql start
-          mysql -uroot -proot -e 'create database homestead_test;'
+          cp .github/workflows/.env.${{ matrix.sql-versions }} Lychee/.env
+
+      - name: setup MySQL Database with v3
+        if: ${{ matrix.mode == 'dist' }}
+        run: |
           mysql -uroot -proot homestead_test < .github/workflows/v3.sql
-          cp .github/workflows/.env.mariadb Lychee/.env
-
-      - name: setup PostGre Database
-        if: ${{ matrix.sql-versions == 'postgresql' }}
-        run: |
-          cp .github/workflows/.env.postgresql Lychee/.env
-
-      - name: setup SQLite Database
-        if: ${{ matrix.sql-versions == 'sqlite' }}
-        run: |
-          touch database/database.sqlite
-          cp .github/workflows/.env.sqlite Lychee/.env
 
       - name: Generate secure key & Migrate & go backward
+        if: ${{ matrix.mode == 'dist' }}
         run: |
           cd Lychee
           pwd
           php artisan key:generate
           php artisan migrate
           php artisan migrate:rollback
+      # end of DIST

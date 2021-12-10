@@ -4,18 +4,16 @@ namespace App\Models;
 
 use App\Casts\MustNotSetCast;
 use App\Exceptions\ConfigurationException;
-use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
+use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
-use App\Observers\SizeVariantObserver;
 use App\Relations\HasManyBidirectionally;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
@@ -39,16 +37,16 @@ use League\Flysystem\Adapter\Local;
  *
  * Describes a size variant of a photo.
  *
- * @property int id
- * @property int photo_id
- * @property Photo photo
- * @property int size_variant
- * @property string short_path
- * @property string url
- * @property string full_path
- * @property int width
- * @property int height
- * @property Collection sym_links
+ * @property int                 id
+ * @property string              photo_id
+ * @property Photo               photo
+ * @property int                 type
+ * @property string              short_path
+ * @property string              url
+ * @property string              full_path
+ * @property int                 width
+ * @property int                 height
+ * @property Collection<SymLink> sym_links
  */
 class SizeVariant extends Model
 {
@@ -59,29 +57,15 @@ class SizeVariant extends Model
 		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
 
-	const FRIENDLY_MODEL_NAME = 'size variant';
+	public const FRIENDLY_MODEL_NAME = 'size variant';
 
-	const ORIGINAL = 0;
-	const MEDIUM2X = 1;
-	const MEDIUM = 2;
-	const SMALL2X = 3;
-	const SMALL = 4;
-	const THUMB2X = 5;
-	const THUMB = 6;
-
-	/**
-	 * @throws MassAssignmentException
-	 * @throws FrameworkException
-	 */
-	public function __construct(array $attributes = [])
-	{
-		parent::__construct($attributes);
-		try {
-			$this->registerObserver(SizeVariantObserver::class);
-		} catch (\RuntimeException $e) {
-			throw new FrameworkException('Laravel\'s observer component', $e);
-		}
-	}
+	public const ORIGINAL = 0;
+	public const MEDIUM2X = 1;
+	public const MEDIUM = 2;
+	public const SMALL2X = 3;
+	public const SMALL = 4;
+	public const THUMB2X = 5;
+	public const THUMB = 6;
 
 	/**
 	 * This model has no own timestamps as it is inseparably bound to its
@@ -92,11 +76,12 @@ class SizeVariant extends Model
 	public $timestamps = false;
 
 	protected $casts = [
+		'id' => 'integer',
+		'type' => 'integer',
 		'full_path' => MustNotSetCast::class . ':short_path',
 		'url' => MustNotSetCast::class . ':short_path',
 		'width' => 'integer',
 		'height' => 'integer',
-		'size_variant' => 'integer',
 	];
 
 	/**
@@ -208,26 +193,26 @@ class SizeVariant extends Model
 	}
 
 	/**
-	 * Mutator of the attribute {@link SizeVariant::$size_variant}.
+	 * Mutator of the attribute {@link SizeVariant::$type}.
 	 *
-	 * @param int $sizeVariant the size variant; allowed values are
-	 *                         {@link SizeVariant::ORIGINAL},
-	 *                         {@link SizeVariant::MEDIUM2X},
-	 *                         {@link SizeVariant::MEDIUM},
-	 *                         {@link SizeVariant::SMALL2X},
-	 *                         {@link SizeVariant::SMALL},
-	 *                         {@link SizeVariant::THUMB2X},
-	 *                         {@link SizeVariant::THUMB}
+	 * @param int $sizeVariantType the type of size variant; allowed values are
+	 *                             {@link SizeVariant::ORIGINAL},
+	 *                             {@link SizeVariant::MEDIUM2X},
+	 *                             {@link SizeVariant::MEDIUM},
+	 *                             {@link SizeVariant::SMALL2X},
+	 *                             {@link SizeVariant::SMALL},
+	 *                             {@link SizeVariant::THUMB2X}, and
+	 *                             {@link SizeVariant::THUMB}
 	 *
-	 * @throws InvalidSizeVariantException thrown if `$sizeVariant` is
+	 * @throws InvalidSizeVariantException thrown if `$sizeVariantType` is
 	 *                                     out-of-bounds
 	 */
-	public function setSizeVariantAttribute(int $sizeVariant): void
+	public function setSizeVariantAttribute(int $sizeVariantType): void
 	{
-		if (self::ORIGINAL > $sizeVariant || $sizeVariant > self::THUMB) {
-			throw new InvalidSizeVariantException('passed size variant ' . $sizeVariant . ' out-of-range');
+		if (self::ORIGINAL > $sizeVariantType || $sizeVariantType > self::THUMB) {
+			throw new InvalidSizeVariantException('passed size variant ' . $sizeVariantType . ' out-of-range');
 		}
-		$this->attributes['size_variant'] = $sizeVariant;
+		$this->attributes['type'] = $sizeVariantType;
 	}
 
 	/**
@@ -237,26 +222,32 @@ class SizeVariant extends Model
 	 *
 	 * @return bool Always true
 	 *
+	 * @throws MediaFileOperationException
 	 * @throws ModelDBException
 	 */
 	public function delete(bool $keepFile = false): bool
 	{
 		// Delete all symbolic links pointing to this size variant
-		// The observer for the SymLink model takes care of actually erasing
-		// the physical symbolic links from disk
+		// The SymLink model takes care of actually erasing
+		// the physical symbolic links from disk.
 		// We must not use a "mass deletion" like $this->sym_links()->delete()
-		// here, because this doesn't fire the model events and thus the
-		// observer would not delete any actual symbolic link from disk.
+		// here, because this doesn't invoke the method `delete` on the model
+		// and thus no actual symbolic link would be deleted from disk.
 		$symLinks = $this->sym_links;
 		/** @var SymLink $symLink */
 		foreach ($symLinks as $symLink) {
 			$symLink->delete();
 		}
 
-		if ($keepFile) {
-			// If short_path is the empty string, SizeVariantObserver does
-			// not erase file from disk during the erasing event
-			$this->attributes['short_path'] = '';
+		// Delete the actual media file
+		if (!$keepFile) {
+			$disk = Storage::disk();
+			$shortPath = $this->short_path;
+			if (!empty($shortPath) && $disk->exists($shortPath)) {
+				if ($disk->delete($shortPath) === false) {
+					throw new MediaFileOperationException('Could not delete media file from disk: ' . $shortPath);
+				}
+			}
 		}
 
 		return $this->internalDelete();

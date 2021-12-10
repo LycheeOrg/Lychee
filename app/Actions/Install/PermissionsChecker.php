@@ -11,8 +11,6 @@ class PermissionsChecker
 
 	/**
 	 * Set the result array permissions and errors.
-	 *
-	 * @return mixed
 	 */
 	public function __construct()
 	{
@@ -74,11 +72,11 @@ class PermissionsChecker
 	 */
 	private function addFile($folder, $permission, $isSet)
 	{
-		array_push($this->results['permissions'], [
+		$this->results['permissions'][] = [
 			'folder' => $folder,
 			'permission' => $this->map_perm_set($permission, $isSet),
 			'isSet' => $isSet,
-		]);
+		];
 
 		// set error if $isSet is positive
 		if ($isSet > 0) {

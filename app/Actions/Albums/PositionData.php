@@ -2,19 +2,18 @@
 
 namespace App\Actions\Albums;
 
-use App\Actions\AlbumAuthorisationProvider;
+use App\Actions\PhotoAuthorisationProvider;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Configs;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Builder;
 
 class PositionData
 {
-	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
 
-	public function __construct()
+	public function __construct(PhotoAuthorisationProvider $photoAuthorisationProvider)
 	{
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->photoAuthorisationProvider = $photoAuthorisationProvider;
 		// caching to avoid further request
 		Configs::get();
 	}
@@ -28,20 +27,19 @@ class PositionData
 	 */
 	public function do(): array
 	{
-		$result = [];
-		$result['id'] = null;
-		$result['title'] = null;
 		try {
-			$result['photos'] = Photo::with(['album', 'size_variants_raw', 'size_variants_raw.sym_links'])
-				->whereHas('album', fn (Builder $q) => $this->albumAuthorisationProvider->applyAccessibilityFilter($q))
-				->whereNotNull('latitude')
-				->whereNotNull('longitude')
-				->get()
-				->toArray();
-		} catch (\RuntimeException $e) {
+			$result = [];
+			$result['id'] = null;
+			$result['title'] = null;
+			$result['photos'] = $this->photoAuthorisationProvider->applySearchabilityFilter(
+				Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
+					->whereNotNull('latitude')
+					->whereNotNull('longitude')
+			)->get()->toArray();
+
+			return $result;
+		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
-
-		return $result;
 	}
 }

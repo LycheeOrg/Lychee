@@ -2,18 +2,24 @@
 
 namespace App\Relations;
 
+use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\NotImplementedException;
-use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class HasManyPhotosRecursively extends HasManyPhotos
 {
+	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
+
 	public function __construct(Album $owningAlbum)
 	{
+		// Sic! We must initialize attributes of this class before we call
+		// the parent constructor.
+		// The parent constructor calls `addConstraints` and thus our own
+		// attributes must be initialized by then
+		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
 		parent::__construct($owningAlbum);
 	}
 
@@ -27,7 +33,9 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	 */
 	public function addConstraints(): void
 	{
-		$this->addEagerConstraints([$this->owningAlbum]);
+		if (static::$constraints) {
+			$this->addEagerConstraints([$this->parent]);
+		}
 	}
 
 	/**
@@ -38,7 +46,7 @@ class HasManyPhotosRecursively extends HasManyPhotos
 	 * The unified result of the query is mapped to the specific albums
 	 * by {@link HasManyPhotosRecursively::match()}.
 	 *
-	 * @param array $albums an array of {@link \App\Models\Album} whose photos are loaded
+	 * @param Album[] $albums an array of {@link \App\Models\Album} whose photos are loaded
 	 *
 	 * @return void
 	 *
@@ -49,18 +57,19 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		if (count($albums) !== 1) {
 			throw new NotImplementedException('eagerly fetching all photos of an album is not implemented for multiple albums');
 		}
-		/** @var Album $album */
-		$album = $albums[0];
 
-		try {
-			$this->photoAuthorisationProvider
-				->applyVisibilityFilter($this->query)
-				->whereHas('album', function (Builder $q) use ($album) {
-					$q->where('_lft', '>=', $album->_lft)
-						->where('_rgt', '<=', $album->_rgt);
-				});
-		} catch (\RuntimeException $e) {
-			throw new QueryBuilderException($e);
+		$this->photoAuthorisationProvider
+			->applySearchabilityFilter($this->query, $albums[0]);
+	}
+
+	public function getResults(): Collection
+	{
+		/** @var Album $album */
+		$album = $this->parent;
+		if ($album === null || !$this->albumAuthorisationProvider->isAccessible($album)) {
+			return $this->related->newCollection();
+		} else {
+			return parent::getResults();
 		}
 	}
 
@@ -86,12 +95,16 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		/** @var Album $album */
 		$album = $albums[0];
 
-		$photos->sortBy(
-			$album->sorting_col,
-			SORT_NATURAL | SORT_FLAG_CASE,
-			$album->sorting_order === 'DESC'
-		);
-		$album->setRelation($relation, $photos);
+		if (!$this->albumAuthorisationProvider->isAccessible($album)) {
+			$album->setRelation($relation, $this->related->newCollection());
+		} else {
+			$photos = $photos->sortBy(
+				$album->sorting_col,
+				SORT_NATURAL | SORT_FLAG_CASE,
+				$album->sorting_order === 'DESC'
+			)->values();
+			$album->setRelation($relation, $photos);
+		}
 
 		return $albums;
 	}

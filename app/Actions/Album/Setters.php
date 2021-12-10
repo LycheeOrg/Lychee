@@ -35,7 +35,7 @@ class Setters extends Action
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function do(array $albumIDs, $value): void
+	public function do(array $albumIDs, mixed $value): void
 	{
 		try {
 			$this->query

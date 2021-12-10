@@ -4,8 +4,8 @@ namespace App\Models\Extensions;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Album;
 use App\Models\Photo;
-use Illuminate\Database\Eloquent\Model;
 use Kalnoy\Nestedset\QueryBuilder;
 
 /**
@@ -26,15 +26,18 @@ class AlbumBuilder extends QueryBuilder
 	 *
 	 * @param array|string $columns
 	 *
-	 * @return Model[]|static[]
+	 * @return Album[]
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function getModels($columns = ['*'])
+	public function getModels($columns = ['*']): array
 	{
 		try {
 			$baseQuery = $this->getQuery();
-			if ($columns == ['*'] && ($baseQuery->columns == ['*'] || $baseQuery->columns == null)) {
+			if (
+				($columns == ['*'] || $columns == ['albums.*']) &&
+				($baseQuery->columns == ['*'] || $baseQuery->columns == ['albums.*'] || $baseQuery->columns == null)
+			) {
 				$this->addSelect([
 					'min_taken_at' => Photo::query()
 						->select('taken_at')

@@ -2,61 +2,36 @@
 
 namespace App\Models;
 
-use App\Contracts\BaseAlbum;
-use App\Contracts\InternalLycheeException;
-use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
-use App\Facades\AccessControl;
 use App\Models\Extensions\AlbumBuilder;
-use App\Models\Extensions\ForwardsToParentImplementation;
-use App\Models\Extensions\HasBidirectionalRelationships;
-use App\Models\Extensions\ThrowsConsistentExceptions;
-use App\Models\Extensions\Thumb;
+use App\Models\Extensions\BaseAlbum;
+use App\Relations\HasAlbumThumb;
 use App\Relations\HasManyChildAlbums;
 use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
-use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
 
 /**
  * Class Album.
  *
- * @property int|null   $parent_id
- * @property Album|null $parent
- * @property Collection $children
- * @property Collection $all_photos
- * @property string     $license
- * @property int|null   $cover_id
- * @property Photo|null $cover
- * @property int        $_lft
- * @property int        $_rgt
- *
- * @method static NSQueryBuilder query()
+ * @property string|null       $parent_id
+ * @property Album|null        $parent
+ * @property Collection<Album> $children
+ * @property Collection<Photo> $all_photos
+ * @property string            $license
+ * @property string|null       $cover_id
+ * @property Photo|null        $cover
+ * @property int               $_lft
+ * @property int               $_rgt
  */
-class Album extends Model implements BaseAlbum
+class Album extends BaseAlbum implements Node
 {
 	use NodeTrait;
-	use HasBidirectionalRelationships;
-	use ForwardsToParentImplementation, ThrowsConsistentExceptions {
-		ForwardsToParentImplementation::delete insteadof ThrowsConsistentExceptions;
-		ForwardsToParentImplementation::delete as private parentDelete;
-	}
 
-	const FRIENDLY_MODEL_NAME = 'album';
-
-	/**
-	 * Indicates if the model's primary key is auto-incrementing.
-	 *
-	 * @var bool
-	 */
-	public $incrementing = false;
+	public const FRIENDLY_MODEL_NAME = 'album';
 
 	/**
 	 * The model's attributes.
@@ -81,8 +56,8 @@ class Album extends Model implements BaseAlbum
 	protected $casts = [
 		'min_taken_at' => 'datetime',
 		'max_taken_at' => 'datetime',
-		'cover_id' => 'integer',
-		'parent_id' => 'integer',
+		'_lft' => 'integer',
+		'_rgt' => 'integer',
 	];
 
 	/**
@@ -99,27 +74,9 @@ class Album extends Model implements BaseAlbum
 	];
 
 	/**
-	 * @var string[] The list of "virtual" attributes which do not exist as
-	 *               columns of the DB relation but which shall be appended to
-	 *               JSON from accessors
-	 */
-	protected $appends = ['thumb'];
-
-	/**
 	 * The relationships that should always be eagerly loaded by default.
 	 */
-	protected $with = ['cover'];
-
-	/**
-	 * Returns the relationship between this model and the implementation
-	 * of the "parent" class.
-	 *
-	 * @return BelongsTo
-	 */
-	public function base_class(): BelongsTo
-	{
-		return $this->belongsTo(BaseAlbumImpl::class, 'id', 'id');
-	}
+	protected $with = ['cover', 'thumb'];
 
 	/**
 	 * Return the relationship between this album and photos which are
@@ -143,31 +100,13 @@ class Album extends Model implements BaseAlbum
 		return new HasManyPhotosRecursively($this);
 	}
 
-	/**
-	 * @throws InvalidPropertyException
-	 */
-	protected function getThumbAttribute(): ?Thumb
+	public function thumb(): HasAlbumThumb
 	{
-		if ($this->cover_id) {
-			return Thumb::createFromPhoto($this->cover);
-		}
-		// Note, `all_photos` already applies a security filter and
-		// only returns photos which are accessible by the current
-		// user
-		return Thumb::createFromPhotoRelation(
-			$this->all_photos(), $this->sorting_col, $this->sorting_order
-		);
+		return new HasAlbumThumb($this);
 	}
 
 	/**
-	 * Return the relationship between an album and its sub albums.
-	 *
-	 * Note: Actually, the return type should be non-nullable.
-	 * However, {@link \App\SmartAlbums\BareSmartAlbum} extends this class and
-	 * {@link \App\SmartAlbums\SmartAlbum::children()} cannot return an
-	 * correctly instantiated object of `HasMany` but must return `null`,
-	 * because a `SmartAlbum` is not a real Eloquent model and does not exist
-	 * as a database entity.
+	 * Return the relationship between an album and its sub-albums.
 	 *
 	 * @return HasManyChildAlbums
 	 */
@@ -186,37 +125,6 @@ class Album extends Model implements BaseAlbum
 		return $this->hasOne(Photo::class, 'id', 'cover_id');
 	}
 
-	/**
-	 * Return the relationship between an album and its parent.
-	 *
-	 * @return BelongsTo
-	 */
-	public function parent(): BelongsTo
-	{
-		return $this->belongsTo(self::class, 'parent_id', 'id');
-	}
-
-	/**
-	 * Returns the relationship between an album and its owner.
-	 *
-	 * @return BelongsTo
-	 */
-	public function owner(): BelongsTo
-	{
-		return $this->base_class->owner();
-	}
-
-	/**
-	 * Returns the relationship between an album and all users which whom
-	 * this album is shared.
-	 *
-	 * @return BelongsToMany
-	 */
-	public function shared_with(): BelongsToMany
-	{
-		return $this->base_class->shared_with();
-	}
-
 	protected function getLicenseAttribute(string $value): string
 	{
 		if ($value === 'none') {
@@ -224,27 +132,6 @@ class Album extends Model implements BaseAlbum
 		}
 
 		return $value;
-	}
-
-	/**
-	 * Checks whether this album is truly and completely empty.
-	 *
-	 * Note, that one must not use the relations {@link Album::photos()} and
-	 * {@link Album::children()} to check for emptiness.
-	 * These relations filter the results with respect to the access rights of
-	 * the current user.
-	 * In other words, {@link Album::photos()} and {@link Album::children()}
-	 * may appear to be empty, but the album is not, because the album is
-	 * still parent to photos and sub-albums invisible for the current user.
-	 *
-	 * @return bool true if this album is completely empty
-	 */
-	public function isEmpty(): bool
-	{
-		$photosCount = Photo::query()->where('album_id', '=', $this->id)->count();
-		$albumCount = Album::query()->where('parent_id', '=', $this->id)->count();
-
-		return ($photosCount + $albumCount) === 0;
 	}
 
 	public function toArray(): array
@@ -259,7 +146,7 @@ class Album extends Model implements BaseAlbum
 			unset($result['children']);
 		}
 
-		return array_merge($result, $this->base_class->toArray());
+		return $result;
 	}
 
 	/**
@@ -280,94 +167,38 @@ class Album extends Model implements BaseAlbum
 	 * @return bool always returns true
 	 *
 	 * @throws ModelDBException
-	 * @throws InternalLycheeException
 	 */
 	public function delete(bool $skipTreeFixing = false): bool
 	{
-		$photos = $this->photos()
-			->where('owner_id', '=', AccessControl::id())
-			->get();
+		$this->refreshNode();
+
+		// Delete all recursive child photos first
+		$photos = $this->all_photos()->lazy();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// This also takes care of proper deletion of physical files from disk
 			$photo->delete();
 		}
 
-		try {
-			$albums = $this->children()
-				->whereHas(
-					'base_class',
-					fn (Builder $q) => $q->where('owner_id', '=', AccessControl::id())
-				)
-				->get();
-		} catch (\RuntimeException $e) {
-			throw new QueryBuilderException($e);
-		}
-		/** @var Album $album */
-		foreach ($albums as $album) {
-			$album->delete(true);
-		}
+		// Delete all recursive child albums
+		// Note, although `parent::delete` also deletes all descendants,
+		// we must explicitly delete all descendants first.
+		// The implementation of the parent class is buggy.
+		// It first tries to delete the parent album and then deletes all
+		// child albums.
+		// However, this always fail due to foreign key constraints between
+		// an albums `parent_id` and the `id` of the parent.
+		// Child albums must be deleted in correct order from the leaf to the
+		// root.
+		$this->deleteDescendants();
 
-		// Only forward the call to the parent implementation
-		// (i.e. actually delete this album),
-		// if no invisible child photos nor inaccessible child albums have
-		// remained
-		if ($this->isEmpty()) {
-			$this->parentDelete();
-		}
-
-		/** @var NSQueryBuilder $builder */
-		$builder = Album::query();
-		if (!$skipTreeFixing && $builder->isBroken()) {
-			$builder->fixTree();
-		}
+		// Finally, delete the album itself
+		// Note, we need this strange condition, because `delete` may also
+		// return `null` on success, so we must explicitly test for
+		// _not `false`_.
+		parent::delete();
 
 		return true;
-	}
-
-	/**
-	 * Update the tree after the node has been removed physically.
-	 *
-	 * This method is copied from
-	 * {@link \Kalnoy\Nestedset\NodeTrait::deleteDescendants()}.
-	 *
-	 * The trait {@link \Kalnoy\Nestedset\NodeTrait} installs a listener for
-	 * the event`deleted` which calls this method _after_ the node has been
-	 * deleted in order to delete the descendants.
-	 *
-	 * However, in our case the descendants are tried to be deleted _before_
-	 * the parent node is deleted to ensure that the user has sufficient
-	 * rights to delete the child nodes and to prevent that non-deletable
-	 * child nodes end up without a parent.
-	 * See {@link \App\Models\Album::delete()}.
-	 *
-	 * Hence, the default implementation
-	 * {@link \Kalnoy\Nestedset\NodeTrait::deleteDescendants()} should be
-	 * harmless.
-	 * As the descendants have already been deleted when the `deleted` event
-	 * is fired, the implementation should not find any remaining descendants
-	 * and thus the whole method should be a no-op.
-	 * But for some unintelligible reason the default implementation crashes.
-	 * More precisely, the line `$this->descendants()->{$method}();` tries
-	 * to build a query for albums and
-	 * {@link \Kalnoy\Nestedset\BaseRelation::__construct()}
-	 * throws an {@link \InvalidArgumentException} exception which
-	 * claims that {@link \App\Models\Album} was not a node.
-	 * Obviously, this is bogus ({@link \App\Models\Album} **is** a node);
-	 * in particular the same statement is executed many times without any
-	 * complains.
-	 * As a cheap work-around we simply delete the offending line, because
-	 * we know that there are not descendants left which could be deleted.
-	 */
-	protected function deleteDescendants()
-	{
-		$lft = $this->getLft();
-		$rgt = $this->getRgt();
-		$height = $rgt - $lft + 1;
-		$this->newNestedSetQuery()->makeGap($rgt + 1, -$height);
-		// In case if user wants to re-create the node
-		$this->makeRoot();
-		static::$actionsPerformed++;
 	}
 
 	/**

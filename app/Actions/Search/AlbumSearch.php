@@ -14,9 +14,9 @@ class AlbumSearch
 {
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
 
-	public function __construct()
+	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 	}
 
 	/**
@@ -24,30 +24,60 @@ class AlbumSearch
 	 */
 	public function query(array $terms): Collection
 	{
-		$albums = $this->applySearchFilter($terms, TagAlbum::query())->get();
-		$albums->push($this->applySearchFilter($terms, Album::query())->get());
-
-		return $albums;
+		return $this->createTagAlbumQuery($terms)->get()
+			->concat($this->createAlbumQuery($terms)->get());
 	}
 
 	/**
 	 * @throws InternalLycheeException
 	 */
-	private function applySearchFilter(array $terms, Builder $query): Builder
+	private function createAlbumQuery($terms): Builder
 	{
-		$this->albumAuthorisationProvider->applyVisibilityFilter($query);
+		try {
+			$albumQuery = Album::query()
+				->select(['albums.*'])
+				->join('base_albums', 'base_albums.id', '=', 'albums.id');
+			$this->addSearchCondition($terms, $albumQuery);
+			$this->albumAuthorisationProvider->applyBrowsabilityFilter($albumQuery);
+
+			return $albumQuery;
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
+	}
+
+	/**
+	 * @throws InternalLycheeException
+	 */
+	private function createTagAlbumQuery(array $terms): Builder
+	{
+		// Note: `applyVisibilityFilter` already adds a JOIN clause with `base_albums`.
+		// No need to add a second JOIN clause.
+		$albumQuery = $this->albumAuthorisationProvider->applyVisibilityFilter(
+			TagAlbum::query()
+		);
+		$this->addSearchCondition($terms, $albumQuery);
+
+		return $albumQuery;
+	}
+
+	/**
+	 * @throws InternalLycheeException
+	 */
+	private function addSearchCondition(array $terms, Builder $query): Builder
+	{
 		try {
 			foreach ($terms as $term) {
 				$query->where(
 					fn (Builder $query) => $query
-						->where('title', 'like', '%' . $term . '%')
-						->orWhere('description', 'like', '%' . $term . '%')
+						->where('base_albums.title', 'like', '%' . $term . '%')
+						->orWhere('base_albums.description', 'like', '%' . $term . '%')
 				);
 			}
+
+			return $query;
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
-
-		return $query;
 	}
 }

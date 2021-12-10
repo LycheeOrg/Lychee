@@ -31,7 +31,7 @@ class ReadCheck
 	 * @throws InternalLycheeException
 	 * @throws UnauthorizedException
 	 */
-	public function handle(Request $request, Closure $next)
+	public function handle(Request $request, Closure $next): mixed
 	{
 		$albumIDs = [];
 		if ($request->has('albumIDs')) {
@@ -41,7 +41,7 @@ class ReadCheck
 			$albumIDs[] = $request['albumID'];
 		}
 		foreach ($albumIDs as $albumID) {
-			if (!$this->albumAuthorisationProvider->isAccessible($albumID)) {
+			if (!$this->albumAuthorisationProvider->isAccessibleByID($albumID)) {
 				throw new UnauthorizedException();
 			}
 		}

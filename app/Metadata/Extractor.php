@@ -162,7 +162,7 @@ class Extractor
 			}
 
 			$exif = $reader->read($fullPath);
-		} catch (\InvalidArgumentException | NoAdapterException $e) {
+		} catch (\InvalidArgumentException|NoAdapterException $e) {
 			throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 		} catch (\RuntimeException $e) {
 			// thrown be $reader->read if EXIF could not be extracted,
@@ -177,7 +177,7 @@ class Extractor
 				// Use Php native tools
 				$reader = Reader::factory(Reader::TYPE_NATIVE);
 				$exif = $reader->read($fullPath);
-			} catch (\InvalidArgumentException | NoAdapterException $e) {
+			} catch (\InvalidArgumentException|NoAdapterException $e) {
 				throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 			} catch (\RuntimeException $e) {
 				// thrown be $reader->read if EXIF could not be extracted,
@@ -246,7 +246,6 @@ class Extractor
 		if ($taken_at !== false) {
 			try {
 				$taken_at = Carbon::instance($taken_at);
-
 				// There are three different timezone which needs to considered:
 				//
 				//  a) The original timezone of the location where the photo has
@@ -254,7 +253,7 @@ class Extractor
 				//  b) The timezone of the server which is running the Lychee
 				//     backend
 				//  c) The timezone of the beholder who is looking at the photo
-				//     with his/her web browser
+				//     with his/her/their web browser
 				//
 				// **Notes about a):**
 				//
@@ -421,7 +420,7 @@ class Extractor
 					}
 				}
 				$metadata['taken_at'] = $taken_at;
-			} catch (InvalidTimeZoneException | InvalidFormatException $e) {
+			} catch (InvalidTimeZoneException|InvalidFormatException $e) {
 				throw new MediaFileOperationException('Could not even extract date/time from EXIF data', $e);
 			}
 		} else {

@@ -3,9 +3,9 @@
 namespace App\Factories;
 
 use App\Contracts\AbstractAlbum;
-use App\Contracts\BaseAlbum;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Models\Album;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 
 class AlbumFactory
 {
-	const BUILTIN_SMARTS = [
+	public const BUILTIN_SMARTS = [
 		UnsortedAlbum::ID => UnsortedAlbum::class,
 		StarredAlbum::ID => StarredAlbum::class,
 		PublicAlbum::ID => PublicAlbum::class,
@@ -26,12 +26,12 @@ class AlbumFactory
 
 	/**
 	 * Returns an existing instance of an album with the given ID or fails
-	 * with on exception.
+	 * with an exception.
 	 *
-	 * @param int|string $albumId       the ID of the requested album
-	 * @param bool       $withRelations indicates if the relations of an
-	 *                                  album (i.e. photos and sub-albums,
-	 *                                  if applicable) shall be loaded, too.
+	 * @param string $albumId       the ID of the requested album
+	 * @param bool   $withRelations indicates if the relations of an
+	 *                              album (i.e. photos and sub-albums,
+	 *                              if applicable) shall be loaded, too.
 	 *
 	 * @return AbstractAlbum the album for the ID
 	 *
@@ -39,7 +39,7 @@ class AlbumFactory
 	 * @throws InvalidSmartIdException should not be thrown; otherwise this
 	 *                                 indicates an internal bug
 	 */
-	public function findOrFail($albumId, bool $withRelations = true): AbstractAlbum
+	public function findOrFail(string $albumId, bool $withRelations = true): AbstractAlbum
 	{
 		if ($this->isBuiltInSmartAlbum($albumId)) {
 			return $this->createSmartAlbum($albumId, $withRelations);
@@ -52,21 +52,21 @@ class AlbumFactory
 	 * Returns an existing model instance of an album with the given ID or
 	 * fails with an exception.
 	 *
-	 * @param int|string $albumId       the ID of the requested album
-	 * @param bool       $withRelations indicates if the relations of an
-	 *                                  album (i.e. photos and sub-albums,
-	 *                                  if applicable) shall be loaded, too.
+	 * @param string $albumId       the ID of the requested album
+	 * @param bool   $withRelations indicates if the relations of an
+	 *                              album (i.e. photos and sub-albums,
+	 *                              if applicable) shall be loaded, too.
 	 *
 	 * @return BaseAlbum the album for the ID
 	 *
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function findModelOrFail($albumId, bool $withRelations = true): BaseAlbum
+	public function findModelOrFail(string $albumId, bool $withRelations = true): BaseAlbum
 	{
 		try {
 			if ($withRelations) {
-				return Album::query()->with(['photos', 'children', 'photos.size_variants_raw'])->findOrFail($albumId);
+				return Album::query()->with(['photos', 'children', 'photos.size_variants'])->findOrFail($albumId);
 			} else {
 				return Album::query()->findOrFail($albumId);
 			}
@@ -83,11 +83,10 @@ class AlbumFactory
 	 * Returns a collection of {@link AbstractAlbum} instances whose IDs are
 	 * contained in the given set of IDs.
 	 *
-	 * @param array $albumIDs a list of IDs; a mix of integer IDs (for
-	 *                        proper models) and string IDs (for built-in
-	 *                        smart albums) is acceptable
+	 * @param string[] $albumIDs a list of IDs
 	 *
-	 * @return Collection a possibly empty list of {@link AbstractAlbum}
+	 * @return Collection<AbstractAlbum> a possibly empty list of
+	 *                                   {@link AbstractAlbum}
 	 *
 	 * @throws InvalidSmartIdException should not be thrown; otherwise this
 	 *                                 indicates an internal bug
@@ -134,17 +133,17 @@ class AlbumFactory
 	/**
 	 * Checks if the given album ID denotes one of the built-in smart albums.
 	 *
-	 * @param int|string $albumId
+	 * @param string $albumId
 	 *
 	 * @return bool true, if the album ID refers to a built-in smart album
 	 */
-	public function isBuiltInSmartAlbum($albumId): bool
+	public function isBuiltInSmartAlbum(string $albumId): bool
 	{
 		return array_key_exists($albumId, self::BUILTIN_SMARTS);
 	}
 
 	/**
-	 * Returns the instance of the built-in smart album with the designed ID.
+	 * Returns the instance of the built-in smart album with the designated ID.
 	 *
 	 * @param string $smartAlbumId  the ID of the smart album
 	 * @param bool   $withRelations Eagerly loads the relation

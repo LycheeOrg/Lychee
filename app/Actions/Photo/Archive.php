@@ -29,16 +29,16 @@ class Archive
 {
 	use Constants;
 
-	const LIVEPHOTOVIDEO = 'LIVEPHOTOVIDEO';
-	const FULL = 'FULL';
-	const MEDIUM2X = 'MEDIUM2X';
-	const MEDIUM = 'MEDIUM';
-	const SMALL2X = 'SMALL2X';
-	const SMALL = 'SMALL';
-	const THUMB2X = 'THUMB2X';
-	const THUMB = 'THUMB';
+	public const LIVEPHOTOVIDEO = 'LIVEPHOTOVIDEO';
+	public const FULL = 'FULL';
+	public const MEDIUM2X = 'MEDIUM2X';
+	public const MEDIUM = 'MEDIUM';
+	public const SMALL2X = 'SMALL2X';
+	public const SMALL = 'SMALL';
+	public const THUMB2X = 'THUMB2X';
+	public const THUMB = 'THUMB';
 
-	const VARIANTS = [
+	public const VARIANTS = [
 		self::LIVEPHOTOVIDEO,
 		self::FULL,
 		self::MEDIUM2X,
@@ -49,7 +49,7 @@ class Archive
 		self::THUMB,
 	];
 
-	const VARIANT2VARIANT = [
+	public const VARIANT2VARIANT = [
 		self::FULL => SizeVariant::ORIGINAL,
 		self::MEDIUM2X => SizeVariant::MEDIUM2X,
 		self::MEDIUM => SizeVariant::MEDIUM,
@@ -95,7 +95,7 @@ class Archive
 	{
 		try {
 			/** @var Collection $photos */
-			$photos = Photo::with(['album', 'size_variants_raw'])
+			$photos = Photo::with(['album', 'size_variants'])
 				->whereIn('id', $photoIDs)
 				->get();
 		} catch (\InvalidArgumentException $e) {
@@ -124,16 +124,14 @@ class Archive
 		$archiveFileInfo = $this->extractFileInfo($photo, $variant);
 		try {
 			$response = new BinaryFileResponse($archiveFileInfo->getFullPath());
-		} catch (\InvalidArgumentException | FileException $e) {
+		} catch (\InvalidArgumentException|FileException $e) {
 			throw new FrameworkException('Symfony\'s response component', $e);
 		}
 
-		$response->setContentDisposition(
+		return $response->setContentDisposition(
 			ResponseHeaderBag::DISPOSITION_ATTACHMENT,
 			$archiveFileInfo->getFilename()
 		);
-
-		return $response;
 	}
 
 	/**
@@ -318,12 +316,12 @@ class Archive
 				// particular suffix but remain as is.
 				// All other size variants (i.e. the generated, smaller ones)
 				// get size information as suffix.
-				if ($sv->size_variant !== SizeVariant::ORIGINAL) {
+				if ($sv->type !== SizeVariant::ORIGINAL) {
 					$baseFilenameAddon = '-' . $sv->width . 'x' . $sv->height;
 				}
 			}
 		} else {
-			$msg = 'Invalid size variant ' . $variant;
+			$msg = 'Invalid type of size variant ' . $variant;
 			Logs::error(__METHOD__, __LINE__, $msg);
 			throw new InvalidSizeVariantException($msg);
 		}

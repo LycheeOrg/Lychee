@@ -36,7 +36,7 @@ class PageContent extends Model
 {
 	use ThrowsConsistentExceptions;
 
-	const FRIENDLY_MODEL_NAME = 'page content';
+	public const FRIENDLY_MODEL_NAME = 'page content';
 
 	/**
 	 * Return content.

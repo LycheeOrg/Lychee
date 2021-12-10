@@ -43,7 +43,7 @@ trait ForwardsToParentImplementation
 	 *
 	 *  1. the relation to the base class is not touched if the child class is
 	 *     saved, because the internal mechanism of Eloquent always touches
-	 *     the relation after the saving the child, but we need it the inverse
+	 *     the relation after saving the child, but we need it in inverse
 	 *     order.
 	 *  2. the relation to the base class is hidden from the default
 	 *     serialization to JSON, because we don't want the base class to
@@ -127,11 +127,11 @@ trait ForwardsToParentImplementation
 			// Sic! Don't use `!$parentDelete` in condition, because we also
 			// need to proceed if `$parentDelete === null` .
 			// If Eloquent returns `null` (instead of `true`), this also
-			// indicates a success and we must go on.
+			// indicates a success, and we must go on.
 			// Eloquent, I love you .... not.
 			$parentResult = parent::delete();
-			if ($parentResult !== true && $parentResult !== null) {
-				$parentException = new \RuntimeException('Eloquent\Model::delete() returned neither returned true nor null');
+			if ($parentResult === false) {
+				$parentException = new \RuntimeException('Eloquent\Model::delete() returned false');
 			}
 		} catch (\Throwable $e) {
 			$parentException = $e;
@@ -147,9 +147,10 @@ trait ForwardsToParentImplementation
 			$baseException = null;
 			try {
 				$baseResult = $baseClass->delete();
-				// Same idiocracy as above
-				if ($baseResult !== true && $baseResult !== null) {
-					$baseException = new \RuntimeException('Eloquent\Model::delete() returned neither returned true nor null');
+				// Same stupidity as above, if Eloquent returns `null`,
+				// this also indicates a good case.
+				if ($baseResult === false) {
+					$baseException = new \RuntimeException('Eloquent\Model::delete() returned false');
 				}
 			} catch (\Throwable $e) {
 				$baseException = $e;
@@ -197,7 +198,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * @return bool
 	 */
-	public function isDirty($attributes = null)
+	public function isDirty($attributes = null): bool
 	{
 		$baseIsDirty = $this->relationLoaded('base_class') && $this->getRelation('base_class')->isDirty();
 
@@ -235,7 +236,7 @@ trait ForwardsToParentImplementation
 	 *     an attribute, but we had to inline the code of `getRelationValue`
 	 *     here due to two reasons:
 	 *
-	 *      1. This trait also overwrite `getRelationValue` such that
+	 *      1. This trait also overwrites `getRelationValue` such that
 	 *         `getRelationValue` checks for a relation on both the child
 	 *         and the parent model.
 	 *         But here, we only must check on the child model, so we must
@@ -255,16 +256,16 @@ trait ForwardsToParentImplementation
 	 * @throws \LogicException
 	 * @throws InvalidCastException
 	 */
-	public function getAttribute($key)
+	public function getAttribute($key): mixed
 	{
 		if (!$key) {
 			return null;
 		}
 
 		// If the primary key is requested, we must use a shortcut.
-		// If the primary key of the model ist not yet set as it might be the
+		// If the primary key of the model is not yet set as it might be the
 		// case for new models, the implementation otherwise would fall
-		// through until the end and try to forward the call to the base class
+		// through until the end and try to forward the call to the base class.
 		// However, asking for the primary key of the base class is
 		//
 		//  1. insane, because it should be identical to the primary key of
@@ -274,7 +275,7 @@ trait ForwardsToParentImplementation
 		if ($key == $this->getKeyName()) {
 			// Sic!
 			// Don't use `$this->getKey()` because this would call
-			// `getAttribute` again and we would end up in an infinite loop.
+			// `getAttribute` again, and we would end up in an infinite loop.
 			// Just get the attribute directly.
 			return $this->getAttributeValue($key);
 		}
@@ -284,8 +285,8 @@ trait ForwardsToParentImplementation
 			return $this->getRelationValue($key);
 		}
 
-		// If the attribute exists in the attribute array or has a "get" mutator we will
-		// get the attribute's value.
+		// If the attribute exists in the attribute array or has a "get"
+		// mutator we will get the attribute's value.
 		// Otherwise, we will proceed as if the developers
 		// are asking for a relationship's value. This covers both types of values.
 		if (array_key_exists($key, $this->attributes) ||
@@ -317,7 +318,7 @@ trait ForwardsToParentImplementation
 			return $this->getRelationshipFromMethod($key);
 		}
 
-		// If we have fall through until here, the using "child" class has
+		// If we have fallen through until here, the using "child" class has
 		// no matching property nor relation.
 		// So we try the implementation of the "parent" class.
 		// Note, that his will load the relation of the parent class, if it
@@ -339,7 +340,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * @throws \LogicException
 	 */
-	public function getRelationValue($key)
+	public function getRelationValue($key): mixed
 	{
 		// If the key already exists in the relationships array, this means the
 		// relationship has already been loaded, so we'll just return it out of
@@ -393,7 +394,7 @@ trait ForwardsToParentImplementation
 			return $this->getRelationshipFromMethod($key);
 		}
 
-		// If we have fall through until here, the using "child" class has
+		// If we have fallen through until here, the using "child" class has
 		// no matching property nor relation.
 		// So we try the implementation of the "parent" class.
 		// Note, that his will load the relation of the parent class, if it
@@ -420,7 +421,7 @@ trait ForwardsToParentImplementation
 	 * @throws \InvalidArgumentException
 	 * @throws NotImplementedException
 	 */
-	public function setAttribute($key, $value)
+	public function setAttribute($key, $value): mixed
 	{
 		// First we will check for the presence of a mutator for the set operation
 		// which simply lets the developers tweak the attribute as it is set on
@@ -430,7 +431,7 @@ trait ForwardsToParentImplementation
 		}
 
 		// If an attribute is listed as a "date", we'll convert it from a DateTime
-		// instance into a form proper for storage on the database tables using
+		// instance into a form proper for storage in the database tables using
 		// the connection grammar's date format. We will auto set the values.
 		elseif ($value && $this->isDateAttribute($key)) {
 			$value = $this->fromDateTime($value);
@@ -457,10 +458,10 @@ trait ForwardsToParentImplementation
 			$value = $this->castAttributeAsEncryptedString($key, $value);
 		}
 
-		// If we have fall through until here, we first check if the parent
+		// If we have fallen through until here, we first check if the parent
 		// class provides an attribute of that name and then set the attribute
 		// on the parent class.
-		// Only if the parent class does provide such an attribute neither,
+		// Only if the parent class does not provide such an attribute either,
 		// we write it to the child class.
 		/** @var BaseAlbumImpl $baseClass */
 		$baseClass = $this->base_class;

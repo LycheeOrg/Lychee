@@ -42,7 +42,7 @@ class Page extends Model
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
 
-	const FRIENDLY_MODEL_NAME = 'page';
+	public const FRIENDLY_MODEL_NAME = 'page';
 
 	/**
 	 * Return the relationship between a page and its content.

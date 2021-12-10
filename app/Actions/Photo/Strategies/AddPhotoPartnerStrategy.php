@@ -6,7 +6,6 @@ use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 
 class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 {
@@ -42,7 +41,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		$parameters->sourceFileInfo = new SourceFileInfo(
 			$this->existingVideo->title,
 			$this->existingVideo->type,
-			$this->existingVideo->size_variants->getSizeVariant(SizeVariant::ORIGINAL)->full_path
+			$this->existingVideo->size_variants->getOriginal()->full_path
 		);
 		$videoStrategy = new AddVideoPartnerStrategy($parameters, $this->photo);
 		$videoStrategy->do();
@@ -52,8 +51,8 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		// from storage
 		try {
 			$this->existingVideo->delete();
-		} catch (\LogicException | \RuntimeException $e) {
-			throw new ModelDBException('photo', 'delete', $e);
+		} catch (\LogicException|\RuntimeException $e) {
+			throw ModelDBException::create('photo', 'delete', $e);
 		}
 
 		return $this->photo;

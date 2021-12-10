@@ -15,14 +15,14 @@ class Move extends Action
 	/**
 	 * Moves the given albums into the target.
 	 *
-	 * @param string $targetAlbumID
-	 * @param array  $albumIDs
+	 * @param string|null $targetAlbumID
+	 * @param string[]    $albumIDs
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws InternalLycheeException
 	 * @throws ModelDBException
 	 */
-	public function do(string $targetAlbumID, array $albumIDs): void
+	public function do(?string $targetAlbumID, array $albumIDs): void
 	{
 		if (empty($targetAlbumID)) {
 			$targetAlbumID = null;
@@ -60,9 +60,13 @@ class Move extends Action
 			// the update directly on the database.
 			// Hence, we must use `BaseAlbumImpl`.
 			try {
-				BaseAlbumImpl::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
+				BaseAlbumImpl::query()
+					->whereIn('id', $descendantIDs)
+					->update(['owner_id' => $targetAlbum->owner_id]);
 				$descendantIDs[] = $targetAlbum->getKey();
-				Photo::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
+				Photo::query()
+					->whereIn('id', $descendantIDs)
+					->update(['owner_id' => $targetAlbum->owner_id]);
 			} catch (\InvalidArgumentException $e) {
 				throw new QueryBuilderException($e);
 			}

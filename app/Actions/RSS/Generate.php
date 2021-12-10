@@ -7,7 +7,6 @@ use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Models\Configs;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use Carbon\Exceptions\InvalidFormatException;
 use Carbon\Exceptions\UnitException;
 use Illuminate\Support\Carbon;
@@ -35,7 +34,7 @@ class Generate
 	private function toFeedItem(Photo $photo_model): FeedItem
 	{
 		$page_link = $this->create_link_to_page($photo_model);
-		$sizeVariant = $photo_model->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+		$sizeVariant = $photo_model->size_variants->getOriginal();
 
 		return FeedItem::create([
 			'id' => $page_link,
@@ -46,7 +45,7 @@ class Generate
 			'enclosure' => $sizeVariant->url,
 			'enclosureLength' => Storage::size($sizeVariant->short_path),
 			'enclosureType' => $photo_model->type,
-			'author' => $photo_model->owner->username,
+			'authorName' => $photo_model->owner->username,
 		]);
 	}
 
@@ -59,15 +58,15 @@ class Generate
 		$rss_max = Configs::get_Value('rss_max_items', '100');
 		try {
 			$nowMinus = Carbon::now()->subDays($rss_recent)->toDateTimeString();
-		} catch (UnitException | InvalidFormatException $e) {
+		} catch (UnitException|InvalidFormatException $e) {
 			throw new FrameworkException('Date/Time component (Carbon)', $e);
 		}
 
 		$photos = $this->photoAuthorisationProvider
-			->applyPublicFilter(
-				Photo::with('album', 'owner', 'size_variants_raw', 'size_variants_raw.sym_links')
+			->applySearchabilityFilter(
+				Photo::with('album', 'owner', 'size_variants', 'size_variants.sym_links')
 			)
-			->where('created_at', '>=', $nowMinus)
+			->where('photos.created_at', '>=', $nowMinus)
 			->limit($rss_max)
 			->get();
 

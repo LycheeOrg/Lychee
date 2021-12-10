@@ -27,8 +27,8 @@ class ListShare
 				->join('base_albums', 'base_album_id', '=', 'base_albums.id');
 
 			$albums_query = DB::table('base_albums')
-			->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
-			->select(['base_albums.id', 'title', 'parent_id']);
+				->leftJoin('albums', 'albums.id', '=', 'base_albums.id')
+				->select(['base_albums.id', 'title', 'parent_id']);
 
 			// apply filter
 			if ($UserId != 0) {
@@ -37,12 +37,13 @@ class ListShare
 			}
 
 			// get arrays
-			$shared = $shared_query->orderBy('title', 'ASC')
-			->orderBy('username', 'ASC')
-			->get()
-			->each(function ($share) {
-				$share->album_id = intval($share->album_id);
-			});
+			$shared = $shared_query
+				->orderBy('title', 'ASC')
+				->orderBy('username', 'ASC')
+				->get()
+				->each(function ($share) {
+					$share->album_id = intval($share->album_id);
+				});
 		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}

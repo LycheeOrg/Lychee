@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\Contracts\HasRandomID;
 use App\Factories\AlbumFactory;
 use Illuminate\Contracts\Validation\Rule;
 
@@ -34,7 +35,7 @@ class AlbumIDListRule implements Rule
 	public function message(): string
 	{
 		return ':attribute ' .
-			' must be a comma-seperated string of positive integers or the built-in IDs ' .
+			' must be a comma-seperated string of strings with ' . HasRandomID::ID_LENGTH . ' characters each or the built-in IDs ' .
 			implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS));
 	}
 }

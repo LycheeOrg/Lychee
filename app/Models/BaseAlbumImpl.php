@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
+use App\Contracts\HasRandomID;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
-use App\Models\Extensions\HasTimeBasedID;
+use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Carbon;
@@ -18,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Class BaseAlbumImpl.
  *
  * This class contains the shared implementation of {@link \App\Models\Album}
- * and {@link \App\Models\TagAlbum} which normally would be but into a common
+ * and {@link \App\Models\TagAlbum} which normally would be put into a common
  * parent class.
  * However, Eloquent does not provide mapping of class inheritance to table
  * inheritance.
@@ -33,7 +34,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * Hence, we take the second best approach here: using composites.
  * The actual child classes {@link \App\Models\Album} and
  * {@link \App\Models\TagAlbum} both extend
- * {@link \Illuminate\Database\Eloquent\Model} and are a composites which
+ * {@link \Illuminate\Database\Eloquent\Model} and are composites which
  * use this class as "building block".
  * This means instead of inheriting from this class, {@link \App\Models\Album}
  * and {@link \App\Models\TagAlbum} hold a reference to the implementation of
@@ -79,7 +80,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * but this class is not a proper parent class (it just provides an
  * implementation of it) and we need this class to be instantiable.
  *
- * @property int         $id
+ * @property string      $id
+ * @property int         $legacy_id
  * @property Carbon      $created_at
  * @property Carbon      $updated_at
  * @property string      $title
@@ -98,18 +100,22 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property string|null $sorting_col
  * @property string|null $sorting_order
  */
-class BaseAlbumImpl extends Model
+class BaseAlbumImpl extends Model implements HasRandomID
 {
 	use HasAttributesPatch;
-	use HasTimeBasedID, ThrowsConsistentExceptions {
-		HasTimeBasedID::save insteadof ThrowsConsistentExceptions;
-	}
+	use HasRandomIDAndLegacyTimeBasedID;
+	use ThrowsConsistentExceptions;
 	use UTCBasedTimes;
 	use HasBidirectionalRelationships;
 
-	const FRIENDLY_MODEL_NAME = 'base album';
+	public const FRIENDLY_MODEL_NAME = 'base album';
 
 	protected $table = 'base_albums';
+
+	/**
+	 * @var string The type of the primary key
+	 */
+	protected $keyType = \App\Contracts\HasRandomID::ID_TYPE;
 
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
@@ -131,6 +137,7 @@ class BaseAlbumImpl extends Model
 	 */
 	protected $attributes = [
 		'id' => null,
+		HasRandomID::LEGACY_ID_NAME => null,
 		'created_at' => null,
 		'updated_at' => null,
 		'title' => null, // Sic! `title` is actually non-nullable, but using `null` here forces the caller to actually set a title before saving.
@@ -148,13 +155,14 @@ class BaseAlbumImpl extends Model
 	];
 
 	protected $casts = [
+		'id' => HasRandomID::ID_TYPE,
+		HasRandomID::LEGACY_ID_NAME => HasRandomID::LEGACY_ID_TYPE,
 		'created_at' => 'datetime',
 		'updated_at' => 'datetime',
 		'is_public' => 'boolean',
 		'requires_link' => 'boolean',
 		'is_nsfw' => 'boolean',
 		'owner_id' => 'integer',
-		'id' => 'integer',
 	];
 
 	/**
@@ -162,6 +170,7 @@ class BaseAlbumImpl extends Model
 	 *               relation but shall not be serialized to JSON
 	 */
 	protected $hidden = [
+		HasRandomID::LEGACY_ID_NAME,
 		'owner',
 		'password',
 	];
@@ -191,7 +200,7 @@ class BaseAlbumImpl extends Model
 	}
 
 	/**
-	 * Returns the relationship between an album and all users which whom
+	 * Returns the relationship between an album and all users with whom
 	 * this album is shared.
 	 *
 	 * @return BelongsToMany

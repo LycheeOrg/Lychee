@@ -16,8 +16,8 @@ class Merge extends Action
 	 * Merges the content of the given source albums (photos and sub-albums)
 	 * into the target.
 	 *
-	 * @param string $albumID
-	 * @param array  $sourceAlbumIDs
+	 * @param string   $albumID
+	 * @param string[] $sourceAlbumIDs
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws ModelDBException
@@ -70,9 +70,9 @@ class Merge extends Action
 				throw new QueryBuilderException($e);
 			}
 			$sum = $errors['oddness'] + $errors['duplicates'] + $errors['wrong_parent'] + $errors['missing_parent'];
-			Logs::warning(__FUNCTION__, __LINE__, 'Tree is broken with ' . $sum . ' errors.');
+			Logs::warning(__METHOD__, __LINE__, 'Tree is broken with ' . $sum . ' errors.');
 			$q->fixTree();
-			Logs::notice(__FUNCTION__, __LINE__, 'Tree has been fixed.');
+			Logs::notice(__METHOD__, __LINE__, 'Tree has been fixed.');
 		}
 
 		// Reset ownership
