@@ -651,6 +651,8 @@ class RefactorModels extends Migration
 		$mapSorting = function (?string $sortingCol): ?string {
 			if (empty($sortingCol)) {
 				return null;
+			} elseif ($sortingCol === 'id') {
+				return 'created_at';
 			} elseif ($sortingCol === 'public') {
 				return 'is_public';
 			} elseif ($sortingCol === 'star') {
@@ -788,6 +790,8 @@ class RefactorModels extends Migration
 		$mapSorting = function (?string $sortingCol): ?string {
 			if (empty($sortingCol)) {
 				return null;
+			} elseif ($sortingCol === 'created_at') {
+				return 'id';
 			} elseif ($sortingCol === 'is_public') {
 				return 'public';
 			} elseif ($sortingCol === 'is_starred') {
@@ -1006,7 +1010,11 @@ class RefactorModels extends Migration
 	{
 		DB::table('configs')
 			->where('key', '=', 'sorting_Photos_col')
-			->update(['type_range' => 'id|taken_at|title|description|is_public|is_starred|type']);
+			->update(['type_range' => 'created_at|taken_at|title|description|is_public|is_starred|type']);
+		DB::table('configs')
+			->where('key', '=', 'sorting_Photos_col')
+			->where('value', '=', 'id')
+			->update(['value' => 'created_at']);
 		DB::table('configs')
 			->where('key', '=', 'sorting_Photos_col')
 			->where('value', '=', 'public')
@@ -1017,7 +1025,11 @@ class RefactorModels extends Migration
 			->update(['value' => 'is_starred']);
 		DB::table('configs')
 			->where('key', '=', 'sorting_Albums_col')
-			->update(['type_range' => 'id|title|description|is_public|max_taken_at|min_taken_at|created_at']);
+			->update(['type_range' => 'created_at|title|description|is_public|max_taken_at|min_taken_at']);
+		DB::table('configs')
+			->where('key', '=', 'sorting_Albums_col')
+			->where('value', '=', 'id')
+			->update(['value' => 'created_at']);
 		DB::table('configs')
 			->where('key', '=', 'sorting_Albums_col')
 			->where('value', '=', 'public')
@@ -1036,6 +1048,10 @@ class RefactorModels extends Migration
 			->update(['type_range' => 'id|taken_at|title|description|public|star|type']);
 		DB::table('configs')
 			->where('key', '=', 'sorting_Photos_col')
+			->where('value', '=', 'created_at')
+			->update(['value' => 'id']);
+		DB::table('configs')
+			->where('key', '=', 'sorting_Photos_col')
 			->where('value', '=', 'is_public')
 			->update(['value' => 'public']);
 		DB::table('configs')
@@ -1044,7 +1060,11 @@ class RefactorModels extends Migration
 			->update(['value' => 'star']);
 		DB::table('configs')
 			->where('key', '=', 'sorting_Albums_col')
-			->update(['type_range' => 'id|title|description|public|max_taken_at|min_taken_at|created_at']);
+			->update(['type_range' => 'id|title|description|public|max_taken_at|min_taken_at']);
+		DB::table('configs')
+			->where('key', '=', 'sorting_Albums_col')
+			->where('value', '=', 'created_at')
+			->update(['value' => 'id']);
 		DB::table('configs')
 			->where('key', '=', 'sorting_Albums_col')
 			->where('value', '=', 'is_public')

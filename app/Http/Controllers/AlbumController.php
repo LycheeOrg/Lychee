@@ -307,7 +307,7 @@ class AlbumController extends Controller
 		$request->validate([
 			'sortingCol' => ['present', Rule::in([
 				null,
-				'id',
+				'created_at',
 				'taken_at',
 				'title',
 				'description',

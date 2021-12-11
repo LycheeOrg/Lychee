@@ -177,11 +177,7 @@ class Configs extends Model
 			/*
 			 * For some reason the $default is not returned above...
 			 */
-			try {
-				Logs::notice(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
-			} catch (Exception $e) {
-				// yeah we do nothing because we cannot do anything in that case ...  :p
-			}
+			Logs::notice(__METHOD__, __LINE__, $key . ' does not exist in config (local) !');
 
 			return $default;
 		}
@@ -198,9 +194,10 @@ class Configs extends Model
 	 *
 	 * @return bool returns true when successful
 	 */
-	public static function set(string $key, $value)
+	public static function set(string $key, $value): bool
 	{
-		$config = Configs::where('key', '=', $key)->first();
+		/** @var Configs|null $config */
+		$config = Configs::query()->where('key', '=', $key)->first();
 
 		// first() may return null, fixup 'Creating default object from empty value' error
 		// we also log a warning
