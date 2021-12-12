@@ -168,11 +168,11 @@ class AlbumAuthorisationProvider
 	 *     - the album is the album of recent photos and public by configuration, or
 	 *     - the album is the album of starred photos and public by configuration
 	 *
-	 * @param int|string|null $albumID
+	 * @param string|null $albumID
 	 *
 	 * @return bool
 	 */
-	public function isAccessibleByID(int|string|null $albumID): bool
+	public function isAccessibleByID(?string $albumID): bool
 	{
 		// the admin may access everything, the root album may be accessed by everybody
 		if (AccessControl::is_admin() || empty($albumID)) {
@@ -442,7 +442,7 @@ class AlbumAuthorisationProvider
 	 * In order to silently ignore/skip this condition for smart albums,
 	 * this method always returns `true` for a smart album.
 	 *
-	 * @param array<mixed, string|int> $albumIDs
+	 * @param string[] $albumIDs
 	 *
 	 * @return bool
 	 */

@@ -13,7 +13,7 @@ class SetAlbum extends Setters
 		$this->property = 'album_id';
 	}
 
-	public function execute(array $photoIDs, string $albumID): bool
+	public function execute(array $photoIDs, ?string $albumID): bool
 	{
 		if ($albumID) {
 			Album::query()->findOrFail($albumID);
@@ -25,6 +25,6 @@ class SetAlbum extends Setters
 			}
 		}
 
-		return $this->do($photoIDs, $albumID == '0' ? null : $albumID);
+		return $this->do($photoIDs, $albumID);
 	}
 }

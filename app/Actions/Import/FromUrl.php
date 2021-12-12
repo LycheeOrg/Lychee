@@ -21,7 +21,7 @@ class FromUrl
 		$this->checkPermissions();
 	}
 
-	public function do(array $urls, $albumId): bool
+	public function do(array $urls, ?string $albumId): bool
 	{
 		$error = false;
 		$create = new Create(new ImportMode(true));

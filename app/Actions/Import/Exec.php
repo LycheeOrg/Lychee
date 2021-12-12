@@ -160,14 +160,14 @@ class Exec
 	}
 
 	/**
-	 * @param string $path
-	 * @param int    $albumID
-	 * @param array  $ignore_list
+	 * @param string      $path
+	 * @param string|null $albumID
+	 * @param string[]    $ignore_list
 	 */
 	public function do(
 		string $path,
-		$albumID,
-		$ignore_list = null
+		?string $albumID,
+		array $ignore_list = []
 	) {
 		// Parse path
 		$origPath = $path;

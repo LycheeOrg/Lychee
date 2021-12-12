@@ -199,7 +199,7 @@ class PhotoAuthorisationProvider
 	 *  - the user is an admin
 	 *  - the user is the owner of the photo
 	 *
-	 * @param int[] $photoIDs
+	 * @param string[] $photoIDs
 	 *
 	 * @return bool
 	 */
