@@ -361,7 +361,8 @@ class PhotosTest extends TestCase
 			$query->where('created_at', '>=', $strRecent);
 		};
 
-		$num_before_import = Photo::query()->where($recentFilter)->count();
+		$ids_before_import = Photo::query()->select('id')->where($recentFilter)->pluck('id');
+		$num_before_import = $ids_before_import->count();
 
 		// upload the photo
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
@@ -372,10 +373,10 @@ class PhotosTest extends TestCase
 
 		$response = $albums_tests->get('recent');
 		$responseObj = json_decode($response->getContent());
-		$photos = new BaseCollection($responseObj->photos);
-		$this->assertEquals(Photo::query()->where($recentFilter)->count(), $photos->count());
-		$ids = $photos->skip($num_before_import)->implode('id', ',');
-		$photos_tests->delete($ids);
+		$ids_after_import = (new BaseCollection($responseObj->photos))->pluck('id');
+		$this->assertEquals(Photo::query()->where($recentFilter)->count(), $ids_after_import->count());
+		$ids_to_delete = $ids_after_import->diff($ids_before_import)->implode(',');
+		$photos_tests->delete($ids_to_delete);
 
 		$this->assertEquals($num_before_import, Photo::query()->where($recentFilter)->count());
 
