@@ -130,7 +130,7 @@ class ExifLens extends Command
 			}
 
 			return 0;
-		} catch (InvalidCastException | JsonEncodingException | \InvalidArgumentException | NotImplementedException | SymfonyConsoleException $e) {
+		} catch (InvalidCastException|JsonEncodingException|\InvalidArgumentException|NotImplementedException|SymfonyConsoleException $e) {
 			throw new UnexpectedException($e);
 		}
 	}

@@ -11,7 +11,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbumID
 {
 	use HasAlbumIDTrait;
 
-	const URL_ATTRIBUTE = 'url';
+	public const URL_ATTRIBUTE = 'url';
 
 	/**
 	 * @var string[]

@@ -8,7 +8,7 @@ use App\Models\Configs;
 
 class SearchRequest extends BaseApiRequest
 {
-	const TERM_ATTRIBUTE = 'term';
+	public const TERM_ATTRIBUTE = 'term';
 
 	/**
 	 * @var string[]

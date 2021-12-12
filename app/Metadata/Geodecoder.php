@@ -42,7 +42,7 @@ class Geodecoder
 			$provider = new Nominatim($httpAdapter, 'https://nominatim.openstreetmap.org', config('app.name'));
 
 			return new ProviderCache($provider, app('cache.store'));
-		} catch (GeocoderException | GuzzleException | \RuntimeException | BindingResolutionException | \InvalidArgumentException $e) {
+		} catch (GeocoderException|GuzzleException|\RuntimeException|BindingResolutionException|\InvalidArgumentException $e) {
 			throw new ExternalComponentFailedException('Could not create geocoder provider', $e);
 		}
 	}

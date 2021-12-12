@@ -7,7 +7,7 @@ use Illuminate\Contracts\Validation\Rule;
 
 class AlbumSortingRule implements Rule
 {
-	const COLUMNS = [
+	public const COLUMNS = [
 		'id',
 		'title',
 		'description',
