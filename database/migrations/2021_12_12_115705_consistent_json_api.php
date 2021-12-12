@@ -13,8 +13,12 @@ class ConsistentJsonApi extends Migration
 	 */
 	public function up()
 	{
+		// SQLite does not support renaming more than one column in a single
+		// schema modification,
 		Schema::table('users', function (Blueprint $table) {
 			$table->renameColumn('upload', 'may_upload');
+		});
+		Schema::table('users', function (Blueprint $table) {
 			$table->renameColumn('lock', 'is_locked');
 		});
 	}
@@ -26,8 +30,12 @@ class ConsistentJsonApi extends Migration
 	 */
 	public function down()
 	{
+		// SQLite does not support renaming more than one column in a single
+		// schema modification,
 		Schema::table('users', function (Blueprint $table) {
 			$table->renameColumn('may_upload', 'upload');
+		});
+		Schema::table('users', function (Blueprint $table) {
 			$table->renameColumn('is_locked', 'lock');
 		});
 	}
