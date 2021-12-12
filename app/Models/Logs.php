@@ -130,7 +130,7 @@ class Logs extends Model
 				'text' => $msg,
 			]);
 			$log->save();
-		} catch (\Throwable $ignored) {
+		} catch (\Throwable) {
 		}
 	}
 

@@ -31,14 +31,14 @@ class FromUrl
 	}
 
 	/**
-	 * @param string[]        $urls
-	 * @param int|string|null $albumId
+	 * @param string[]    $urls
+	 * @param string|null $albumId
 	 *
 	 * @return Collection<Photo> the collection of imported photos
 	 *
 	 * @throws MassImportException
 	 */
-	public function do(array $urls, $albumId): Collection
+	public function do(array $urls, ?string $albumId): Collection
 	{
 		$result = new Collection();
 		$exceptions = [];

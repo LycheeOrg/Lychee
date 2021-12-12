@@ -155,14 +155,14 @@ class Exec
 	/**
 	 * @param string      $path
 	 * @param string|null $albumID
-	 * @param array|null  $ignore_list
+	 * @param string[]    $ignore_list
 	 *
 	 * @throws ModelDBException
 	 */
 	public function do(
 		string $path,
 		?string $albumID,
-		array $ignore_list = null
+		array $ignore_list = []
 	) {
 		// Parse path
 		$origPath = $path;
