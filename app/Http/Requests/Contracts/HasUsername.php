@@ -4,7 +4,7 @@ namespace App\Http\Requests\Contracts;
 
 interface HasUsername
 {
-	const USERNAME_ATTRIBUTE = 'username';
+	public const USERNAME_ATTRIBUTE = 'username';
 
 	/**
 	 * @return string

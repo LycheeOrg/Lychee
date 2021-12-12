@@ -4,15 +4,14 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasAlbumModelID;
 use App\Http\Requests\Contracts\HasPhotoID;
-use App\Http\Requests\Traits\HasAlbumModelIDTrait;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasPhotoIDTrait;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDRule;
 
-class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbumModelID, HasPhotoID
+class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbumID, HasPhotoID
 {
-	use HasAlbumModelIDTrait;
+	use HasAlbumIDTrait;
 	use HasPhotoIDTrait;
 
 	/**
@@ -30,8 +29,8 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbumModelID, Ha
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
-			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['present', new ModelIDRule(true)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
 	}
 
@@ -40,7 +39,7 @@ class SetAlbumCoverRequest extends BaseApiRequest implements HasAlbumModelID, Ha
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]);
-		$this->photoID = intval($values[HasPhotoID::PHOTO_ID_ATTRIBUTE]) ?? null;
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
+		$this->photoID = $values[HasPhotoID::PHOTO_ID_ATTRIBUTE];
 	}
 }

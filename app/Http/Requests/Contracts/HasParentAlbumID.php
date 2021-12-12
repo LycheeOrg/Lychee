@@ -4,10 +4,10 @@ namespace App\Http\Requests\Contracts;
 
 interface HasParentAlbumID
 {
-	const PARENT_ID_ATTRIBUTE = 'parent_id';
+	public const PARENT_ID_ATTRIBUTE = 'parent_id';
 
 	/**
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function parentID(): ?int;
+	public function parentID(): ?string;
 }

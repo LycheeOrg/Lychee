@@ -14,11 +14,11 @@ class ImportServerRequest extends BaseApiRequest implements HasAlbumID
 {
 	use HasAlbumIDTrait;
 
-	const PATH_ATTRIBUTE = 'path';
-	const DELETE_IMPORTED_ATTRIBUTE = 'delete_imported';
-	const SKIP_DUPLICATES_ATTRIBUTE = 'skip_duplicates';
-	const IMPORT_VIA_SYMLINK_ATTRIBUTE = 'import_via_symlink';
-	const RESYNC_METADATA_ATTRIBUTE = 'resync_metadata';
+	public const PATH_ATTRIBUTE = 'path';
+	public const DELETE_IMPORTED_ATTRIBUTE = 'delete_imported';
+	public const SKIP_DUPLICATES_ATTRIBUTE = 'skip_duplicates';
+	public const IMPORT_VIA_SYMLINK_ATTRIBUTE = 'import_via_symlink';
+	public const RESYNC_METADATA_ATTRIBUTE = 'resync_metadata';
 
 	protected string $path;
 	protected ImportMode $importMode;
@@ -41,7 +41,7 @@ class ImportServerRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule()],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule()],
 			self::PATH_ATTRIBUTE => 'required|string',
 			self::DELETE_IMPORTED_ATTRIBUTE => 'sometimes|boolean',
 			self::SKIP_DUPLICATES_ATTRIBUTE => 'sometimes|boolean',

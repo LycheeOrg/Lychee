@@ -18,20 +18,20 @@ class DiagnosticsTest extends TestCase
 	public function testDiagnostics()
 	{
 		$response = $this->get('/Diagnostics');
-		$response->assertStatus(200); // code 200 something
+		$response->assertOk(); // code 200 something
 
 		AccessControl::log_as_id(0);
 
 		$response = $this->get('/Diagnostics');
-		$response->assertStatus(200); // code 200 something
+		$response->assertOk(200); // code 200 something
 
 		Configs::where('key', '=', 'lossless_optimization')->update(['value' => null]);
 
-		$response = $this->post('/api/Diagnostics');
-		$response->assertStatus(200); // code 200 something too
+		$response = $this->postJson('/api/Diagnostics');
+		$response->assertOk(); // code 200 something too
 
-		$response = $this->post('/api/Diagnostics::getSize');
-		$response->assertStatus(200); // code 200 something too
+		$response = $this->postJson('/api/Diagnostics::getSize');
+		$response->assertOk(); // code 200 something too
 
 		Configs::where('key', '=', 'lossless_optimization')->update(['value' => '1']);
 

@@ -15,13 +15,13 @@ class FromServer
 	}
 
 	/**
-	 * @param string          $path       the server path to import from
-	 * @param int|string|null $albumID    the ID of the album to import into
-	 * @param ImportMode      $importMode the import mode
+	 * @param string      $path       the server path to import from
+	 * @param string|null $albumID    the ID of the album to import into
+	 * @param ImportMode  $importMode the import mode
 	 *
 	 * @return StreamedResponse
 	 */
-	public function do(string $path, $albumID, ImportMode $importMode): StreamedResponse
+	public function do(string $path, ?string $albumID, ImportMode $importMode): StreamedResponse
 	{
 		$this->exec->importMode = $importMode;
 		$this->exec->memLimit = $this->determineMemLimit();

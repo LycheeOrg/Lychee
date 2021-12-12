@@ -4,7 +4,7 @@ namespace App\Http\Requests\Contracts;
 
 interface HasUserID
 {
-	const USER_ID_ATTRIBUTE = 'userID';
+	public const USER_ID_ATTRIBUTE = 'userID';
 
 	/**
 	 * @return int

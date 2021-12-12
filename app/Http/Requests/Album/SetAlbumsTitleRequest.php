@@ -4,14 +4,13 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
-use App\Http\Requests\Contracts\HasAlbumModelIDs;
 use App\Http\Requests\Contracts\HasTitle;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
-use App\Rules\ModelIDListRule;
+use App\Rules\RandomIDListRule;
 use App\Rules\TitleRule;
 
-class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbumModelIDs
+class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbumIDs
 {
 	use HasTitleTrait;
 	use HasAlbumIDsTrait;
@@ -30,7 +29,7 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new ModelIDListRule()],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
 			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 		];
 	}
@@ -41,7 +40,6 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->albumIDs = explode(',', $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE]);
-		array_walk($this->albumIDs, function (&$id) { $id = intval($id); });
 		$this->title = $values[HasTitle::TITLE_ATTRIBUTE];
 	}
 }

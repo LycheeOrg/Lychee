@@ -4,16 +4,15 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasAlbumModelID;
 use App\Http\Requests\Contracts\HasDescription;
-use App\Http\Requests\Traits\HasAlbumModelIDTrait;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Rules\DescriptionRule;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDRule;
 
-class SetAlbumDescriptionRequest extends BaseApiRequest implements HasAlbumModelID, HasDescription
+class SetAlbumDescriptionRequest extends BaseApiRequest implements HasAlbumID, HasDescription
 {
-	use HasAlbumModelIDTrait;
+	use HasAlbumIDTrait;
 	use HasDescriptionTrait;
 
 	/**
@@ -30,7 +29,7 @@ class SetAlbumDescriptionRequest extends BaseApiRequest implements HasAlbumModel
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasDescription::DESCRIPTION_ATTRIBUTE => ['required', new DescriptionRule()],
 		];
 	}
@@ -40,7 +39,7 @@ class SetAlbumDescriptionRequest extends BaseApiRequest implements HasAlbumModel
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]);
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
 		$this->description = $values[HasDescription::DESCRIPTION_ATTRIBUTE];
 	}
 }

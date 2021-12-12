@@ -24,7 +24,7 @@ class InstallTest extends TestCase
 
 		touch(base_path('.NO_SECURE_KEY'));
 		$response = $this->get('install/');
-		$response->assertStatus(200);
+		$response->assertOk();
 		@unlink(base_path('.NO_SECURE_KEY'));
 
 		@unlink(base_path('installed.log'));
@@ -32,7 +32,7 @@ class InstallTest extends TestCase
 		 * No installed.log: we should not be redirected to install (case where we have not done the last migration).
 		 */
 		$response = $this->get('/');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		/*
 		 * Clearing things up. We could do an Artisan migrate but this is more efficient.
@@ -80,28 +80,28 @@ class InstallTest extends TestCase
 		 * Check the welcome page.
 		 */
 		$response = $this->get('install/');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.welcome');
 
 		/**
 		 * Check the requirements page.
 		 */
 		$response = $this->get('install/req');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.requirements');
 
 		/**
 		 * Check the permissions page.
 		 */
 		$response = $this->get('install/perm');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.permissions');
 
 		/**
 		 * Check the env page.
 		 */
 		$response = $this->get('install/env');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.env');
 
 		$env = file_get_contents(base_path('.env'));
@@ -110,14 +110,14 @@ class InstallTest extends TestCase
 		 * POST '.env' the env page.
 		 */
 		$response = $this->post('install/env', ['envConfig' => $env]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.env');
 
 		/**
 		 * apply migration.
 		 */
 		$response = $this->get('install/migrate');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('install.migrate');
 
 		/**
@@ -131,7 +131,7 @@ class InstallTest extends TestCase
 		 * We now should NOT be redirected.
 		 */
 		$response = $this->get('/');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		$admin->save();
 		$admin->id = 0;

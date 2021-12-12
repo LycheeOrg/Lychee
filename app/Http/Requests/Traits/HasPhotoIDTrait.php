@@ -4,15 +4,12 @@ namespace App\Http\Requests\Traits;
 
 trait HasPhotoIDTrait
 {
-	/**
-	 * @var int|null
-	 */
-	protected ?int $photoID = null;
+	protected ?string $photoID = null;
 
 	/**
-	 * @return ?int
+	 * @return ?string
 	 */
-	public function photoID(): ?int
+	public function photoID(): ?string
 	{
 		return $this->photoID;
 	}

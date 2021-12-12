@@ -5,7 +5,7 @@ namespace App\Http\Requests\Photo;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasPhotoID;
 use App\Http\Requests\Traits\HasPhotoIDTrait;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDRule;
 
 class SetPhotoPublicRequest extends BaseApiRequest implements HasPhotoID
 {
@@ -25,7 +25,7 @@ class SetPhotoPublicRequest extends BaseApiRequest implements HasPhotoID
 	public function rules(): array
 	{
 		return [
-			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -34,6 +34,6 @@ class SetPhotoPublicRequest extends BaseApiRequest implements HasPhotoID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoID = intval($values[HasPhotoID::PHOTO_ID_ATTRIBUTE]);
+		$this->photoID = $values[HasPhotoID::PHOTO_ID_ATTRIBUTE];
 	}
 }

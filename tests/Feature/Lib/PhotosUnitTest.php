@@ -52,7 +52,7 @@ class PhotosUnitTest
 			]
 		);
 
-		$response->assertStatus(422);
+		$response->assertUnprocessable();
 		$response->assertSee('The 0 field is required');
 	}
 
@@ -68,7 +68,7 @@ class PhotosUnitTest
 				'0' => '1',
 			]
 		);
-		$response->assertStatus(422);
+		$response->assertUnprocessable();
 		$response->assertSee('The 0 must be a file');
 	}
 
@@ -107,7 +107,7 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertSee($photoID, false);
 	}
 
@@ -121,7 +121,7 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertDontSee($id, false);
 	}
 
@@ -135,7 +135,7 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'recent',
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertSee($id, false);
 	}
 
@@ -149,7 +149,7 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'recent',
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertDontSee($id, false);
 	}
 
@@ -163,7 +163,7 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'public',
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertSee($id, false);
 	}
 
@@ -177,7 +177,7 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'public',
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertDontSee($id, false);
 	}
 
@@ -191,7 +191,7 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'starred',
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertSee($id, false);
 	}
 
@@ -205,7 +205,7 @@ class PhotosUnitTest
 		$response = $this->testCase->json('POST', '/api/Album::get', [
 			'albumID' => 'starred',
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertDontSee($id, false);
 	}
 
@@ -220,8 +220,8 @@ class PhotosUnitTest
 	public function set_title(
 		string $id,
 		string $title,
-		int $expectedStatusCode = 200,
-		?string $assertSee = 'true'
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
 	): void {
 		/**
 		 * Try to set the title.
@@ -247,7 +247,7 @@ class PhotosUnitTest
 	public function set_description(
 		string $id,
 		string $description,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
@@ -271,8 +271,8 @@ class PhotosUnitTest
 	 */
 	public function set_star(
 		string $id,
-		int $expectedStatusCode = 200,
-		?string $assertSee = 'true'
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json('POST', '/api/Photo::setStar', [
 			'photoIDs' => $id,
@@ -294,8 +294,8 @@ class PhotosUnitTest
 	public function set_tag(
 		string $id,
 		string $tags,
-		int $expectedStatusCode = 200,
-		?string $assertSee = 'true'
+		int $expectedStatusCode = 204,
+		?string $assertSee = null
 	): void {
 		$response = $this->testCase->json('POST', '/api/Photo::setTags', [
 			'photoIDs' => $id,
@@ -316,7 +316,7 @@ class PhotosUnitTest
 	 */
 	public function set_public(
 		string $id,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
@@ -367,7 +367,7 @@ class PhotosUnitTest
 	public function set_album(
 		string $album_id,
 		string $id,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
@@ -421,7 +421,7 @@ class PhotosUnitTest
 			'photoIDs' => $id,
 			'kind' => $kind,
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 	}
 
 	/**
@@ -449,8 +449,8 @@ class PhotosUnitTest
 	 * Import a picture.
 	 *
 	 * @param string      $path
-	 * @param string      $delete_imported
-	 * @param string      $album_id
+	 * @param bool        $delete_imported
+	 * @param string|null $album_id
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -458,7 +458,7 @@ class PhotosUnitTest
 	 */
 	public function import(
 		string $path,
-		string $delete_imported = '0',
+		bool $delete_imported = false,
 		?string $album_id = null,
 		int $expectedStatusCode = 200,
 		?string $assertSee = null

@@ -7,7 +7,7 @@ use App\Http\Requests\Contracts\HasParentAlbumID;
 use App\Http\Requests\Contracts\HasTitle;
 use App\Http\Requests\Traits\HasParentAlbumIDTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
 
 class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbumID
@@ -29,7 +29,7 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 	public function rules(): array
 	{
 		return [
-			HasParentAlbumID::PARENT_ID_ATTRIBUTE => ['present', new ModelIDRule(true)],
+			HasParentAlbumID::PARENT_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 		];
 	}
@@ -39,7 +39,7 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->parentID = intval($values[HasParentAlbumID::PARENT_ID_ATTRIBUTE]) ?? null;
+		$this->parentID = $values[HasParentAlbumID::PARENT_ID_ATTRIBUTE];
 		$this->title = $values[HasTitle::TITLE_ATTRIBUTE];
 	}
 }

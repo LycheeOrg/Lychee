@@ -4,16 +4,15 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasAlbumModelID;
 use App\Http\Requests\Contracts\HasPassword;
-use App\Http\Requests\Traits\HasAlbumModelIDTrait;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasPasswordTrait;
-use App\Rules\ModelIDRule;
 use App\Rules\PasswordRule;
+use App\Rules\RandomIDRule;
 
-class UnlockAlbumRequest extends BaseApiRequest implements HasAlbumModelID, HasPassword
+class UnlockAlbumRequest extends BaseApiRequest implements HasAlbumID, HasPassword
 {
-	use HasAlbumModelIDTrait;
+	use HasAlbumIDTrait;
 	use HasPasswordTrait;
 
 	/**
@@ -30,7 +29,7 @@ class UnlockAlbumRequest extends BaseApiRequest implements HasAlbumModelID, HasP
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasPassword::PASSWORD_ATTRIBUTE => ['required', new PasswordRule(false)],
 		];
 	}
@@ -40,7 +39,7 @@ class UnlockAlbumRequest extends BaseApiRequest implements HasAlbumModelID, HasP
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]);
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
 		$this->password = $values[HasPassword::PASSWORD_ATTRIBUTE];
 	}
 }

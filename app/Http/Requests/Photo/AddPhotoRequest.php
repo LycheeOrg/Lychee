@@ -28,7 +28,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule()],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule()],
 			'0' => 'required|file',
 		];
 	}
@@ -45,7 +45,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
 		$this->file = $files[0];
 	}
 
-	public function file(): UploadedFile
+	public function uploadedFile(): UploadedFile
 	{
 		return $this->file;
 	}

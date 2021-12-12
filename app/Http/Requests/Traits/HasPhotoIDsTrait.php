@@ -5,12 +5,12 @@ namespace App\Http\Requests\Traits;
 trait HasPhotoIDsTrait
 {
 	/**
-	 * @var array<int>
+	 * @var string[]
 	 */
 	protected array $photoIDs = [];
 
 	/**
-	 * @return array<int>
+	 * @return string[]
 	 */
 	public function photoIDs(): array
 	{

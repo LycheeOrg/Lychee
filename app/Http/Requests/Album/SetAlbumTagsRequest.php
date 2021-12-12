@@ -4,23 +4,22 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasAlbumModelID;
 use App\Http\Requests\Contracts\HasTags;
-use App\Http\Requests\Traits\HasAlbumModelIDTrait;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDRule;
 use App\Rules\TagsRule;
 
-class SetAlbumTagsRequest extends BaseApiRequest implements HasAlbumModelID, HasTags
+class SetAlbumTagsRequest extends BaseApiRequest implements HasAlbumID, HasTags
 {
-	use HasAlbumModelIDTrait;
+	use HasAlbumIDTrait;
 	use HasTagsTrait;
 
 	/**
 	 * For historic reasons the parameter of the API is called `show_tags`
 	 * and not only `tags`; otherwise `HasTags::TAGS_ATTRIBUTE` could be used.
 	 */
-	const SHOW_TAGS_ATTRIBUTE = 'show_tags';
+	public const SHOW_TAGS_ATTRIBUTE = 'show_tags';
 
 	/**
 	 * {@inheritDoc}
@@ -36,7 +35,7 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasAlbumModelID, Has
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			self::SHOW_TAGS_ATTRIBUTE => ['required', new TagsRule(false)],
 		];
 	}
@@ -46,7 +45,7 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasAlbumModelID, Has
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]) ?? null;
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
 		$this->tags = $values[self::SHOW_TAGS_ATTRIBUTE];
 	}
 }

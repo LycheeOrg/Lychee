@@ -3,6 +3,7 @@
 namespace App\Models\Extensions;
 
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -212,25 +213,30 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
 	public function deleteAll(bool $keepOriginalFile = false, bool $keepAllFiles = false): void
 	{
-		!$this->original || $this->original->delete($keepOriginalFile || $keepAllFiles);
+		$this->original?->delete($keepOriginalFile || $keepAllFiles);
 		$this->original = null;
-		$this->medium2x || $this->medium2x->delete($keepAllFiles);
+		$this->medium2x?->delete($keepAllFiles);
 		$this->medium2x = null;
-		$this->medium || $this->medium->delete($keepAllFiles);
+		$this->medium?->delete($keepAllFiles);
 		$this->medium = null;
-		$this->small2x || $this->small2x->delete($keepAllFiles);
+		$this->small2x?->delete($keepAllFiles);
 		$this->small2x = null;
-		$this->small || $this->small->delete($keepAllFiles);
+		$this->small?->delete($keepAllFiles);
 		$this->small = null;
-		$this->thumb2x || $this->thumb2x->delete($keepAllFiles);
+		$this->thumb2x?->delete($keepAllFiles);
 		$this->thumb2x = null;
-		$this->thumb || $this->thumb->delete($keepAllFiles);
+		$this->thumb?->delete($keepAllFiles);
 		$this->thumb = null;
 	}
 
+	/**
+	 * @throws ModelDBException
+	 * @throws IllegalOrderOfOperationException
+	 */
 	public function replicate(Photo $duplicatePhoto): SizeVariants
 	{
 		$duplicate = new SizeVariants($duplicatePhoto);
@@ -245,6 +251,10 @@ class SizeVariants implements Arrayable, JsonSerializable
 		return $duplicate;
 	}
 
+	/**
+	 * @throws ModelDBException
+	 * @throws IllegalOrderOfOperationException
+	 */
 	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant !== null) {

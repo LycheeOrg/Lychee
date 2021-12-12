@@ -26,6 +26,7 @@ use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\ArchiveAlbumsRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Http\Requests\Album\GetAlbumPositionDataRequest;
+use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
@@ -76,15 +77,15 @@ class AlbumController extends Controller
 	/**
 	 * Provided an albumID, returns the album.
 	 *
-	 * @param GetAlbumPositionDataRequest $request
-	 * @param AlbumFactory                $albumFactory
+	 * @param GetAlbumRequest $request
+	 * @param AlbumFactory    $albumFactory
 	 *
 	 * @return AbstractAlbum
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function get(GetAlbumPositionDataRequest $request, AlbumFactory $albumFactory): AbstractAlbum
+	public function get(GetAlbumRequest $request, AlbumFactory $albumFactory): AbstractAlbum
 	{
 		return $albumFactory->findOrFail($request->albumID());
 	}

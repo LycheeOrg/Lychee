@@ -8,7 +8,7 @@ use App\Http\Requests\Contracts\HasPhotoID;
 use App\Http\Requests\Traits\HasDescriptionTrait;
 use App\Http\Requests\Traits\HasPhotoIDTrait;
 use App\Rules\DescriptionRule;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDRule;
 
 class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhotoID, HasDescription
 {
@@ -29,7 +29,7 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhotoID, H
 	public function rules(): array
 	{
 		return [
-			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasDescription::DESCRIPTION_ATTRIBUTE => ['required', new DescriptionRule()],
 		];
 	}
@@ -39,7 +39,7 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhotoID, H
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoID = intval($values[HasPhotoID::PHOTO_ID_ATTRIBUTE]);
+		$this->photoID = $values[HasPhotoID::PHOTO_ID_ATTRIBUTE];
 		$this->description = $values[HasDescription::DESCRIPTION_ATTRIBUTE];
 	}
 }

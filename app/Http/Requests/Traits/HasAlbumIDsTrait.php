@@ -5,12 +5,12 @@ namespace App\Http\Requests\Traits;
 trait HasAlbumIDsTrait
 {
 	/**
-	 * @var array<int|string|null>
+	 * @var string[]
 	 */
 	protected array $albumIDs = [];
 
 	/**
-	 * @return array<int|string|null>
+	 * @return string[]
 	 */
 	public function albumIDs(): array
 	{

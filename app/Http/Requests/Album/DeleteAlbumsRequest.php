@@ -4,11 +4,10 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
-use App\Http\Requests\Contracts\HasAlbumModelIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
-use App\Rules\ModelIDListRule;
+use App\Rules\AlbumIDListRule;
 
-class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumModelIDs
+class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 {
 	use HasAlbumIDsTrait;
 
@@ -26,7 +25,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumModelIDs
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new ModelIDListRule()],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new AlbumIDListRule()],
 		];
 	}
 
@@ -36,6 +35,5 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumModelIDs
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->albumIDs = explode(',', $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE]);
-		array_walk($this->albumIDs, function (&$id) { $id = intval($id); });
 	}
 }

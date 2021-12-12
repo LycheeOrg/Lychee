@@ -2,6 +2,7 @@
 
 namespace App\Actions\User;
 
+use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Http\Requests\Traits\HasPasswordTrait;
@@ -28,12 +29,12 @@ class Save
 			->where('id', '!=', $user->id)
 			->count()
 		) {
-			throw new InvalidPropertyException('username not unique');
+			throw new ConflictingPropertyException('Username already exists');
 		}
 
 		$user->username = $username;
-		$user->upload = $mayUpload;
-		$user->lock = $isLocked;
+		$user->may_upload = $mayUpload;
+		$user->is_locked = $isLocked;
 		if ($password !== null) {
 			try {
 				$user->password = bcrypt($password);

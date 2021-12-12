@@ -4,15 +4,12 @@ namespace App\Http\Requests\Traits;
 
 trait HasAlbumIDTrait
 {
-	/**
-	 * @var string|int|null
-	 */
-	protected $albumID = null;
+	protected ?string $albumID = null;
 
 	/**
-	 * @return string|int|null
+	 * @return string|null
 	 */
-	public function albumID()
+	public function albumID(): ?string
 	{
 		return $this->albumID;
 	}

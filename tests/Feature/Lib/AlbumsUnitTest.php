@@ -345,7 +345,7 @@ class AlbumsUnitTest
 		$response = $this->testCase->call('GET', '/api/Album::getArchive', [
 			'albumIDs' => $id,
 		]);
-		$response->assertStatus(200);
+		$response->assertOk();
 	}
 
 	/**

@@ -14,7 +14,7 @@ use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
-use App\Rules\ModelIDRule;
+use App\Rules\IntegerIDRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request as IlluminateRequest;
@@ -78,7 +78,7 @@ class UserController extends Controller
 	public function delete(IlluminateRequest $request): void
 	{
 		$validated = $request->validate([
-			'id' => ['required', new ModelIDRule(false)],
+			'id' => ['required', new IntegerIDRule(false)],
 		]);
 
 		/** @var User $user */

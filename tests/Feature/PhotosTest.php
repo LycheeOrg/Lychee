@@ -55,7 +55,7 @@ class PhotosTest extends TestCase
 		$photos_tests->set_star($id);
 		$photos_tests->set_tag($id, 'night');
 		$photos_tests->set_public($id);
-		$photos_tests->set_license($id, 'WTFPL', 422, 'The selected license is invalid');
+		$photos_tests->set_license($id, 'WTFPL', 422, 'The given data was invalid');
 		$photos_tests->set_license($id, 'CC0');
 		$photos_tests->set_license($id, 'CC-BY-1.0');
 		$photos_tests->set_license($id, 'CC-BY-2.0');
@@ -138,8 +138,8 @@ class PhotosTest extends TestCase
 		/**
 		 * Actually try to display the picture.
 		 */
-		$response = $this->post('/api/Photo::getRandom', []);
-		$response->assertStatus(200);
+		$response = $this->postJson('/api/Photo::getRandom', []);
+		$response->assertOk();
 
 		/*
 		 * Erase tag
@@ -214,8 +214,8 @@ class PhotosTest extends TestCase
 		/**
 		 * Actually try to display the picture.
 		 */
-		$response = $this->post('/api/Photo::getRandom', []);
-		$response->assertStatus(200);
+		$response = $this->postJson('/api/Photo::getRandom', []);
+		$response->assertOk();
 
 		// delete the picture after displaying it
 		$photos_tests->delete($ids[1]);
@@ -232,7 +232,7 @@ class PhotosTest extends TestCase
 
 		// check redirection
 		$response = $this->get('/demo');
-		$response->assertStatus(200);
+		$response->assertOk();
 		$response->assertViewIs('demo');
 
 		// set back to initial value
@@ -241,8 +241,7 @@ class PhotosTest extends TestCase
 		$albums_tests->delete($albumID);
 
 		$response = $this->get('/api/Photo::clearSymLink');
-		$response->assertOk();
-		$response->assertSee('true');
+		$response->assertNoContent();
 
 		AccessControl::logout();
 	}
@@ -361,7 +360,8 @@ class PhotosTest extends TestCase
 			$query->where('created_at', '>=', $strRecent);
 		};
 
-		$num_before_import = Photo::query()->where($recentFilter)->count();
+		$ids_before_import = Photo::query()->select('id')->where($recentFilter)->pluck('id');
+		$num_before_import = $ids_before_import->count();
 
 		// upload the photo
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
@@ -372,10 +372,10 @@ class PhotosTest extends TestCase
 
 		$response = $albums_tests->get('recent');
 		$responseObj = json_decode($response->getContent());
-		$photos = new BaseCollection($responseObj->photos);
-		$this->assertEquals(Photo::query()->where($recentFilter)->count(), $photos->count());
-		$ids = $photos->skip($num_before_import)->implode('id', ',');
-		$photos_tests->delete($ids);
+		$ids_after_import = (new BaseCollection($responseObj->photos))->pluck('id');
+		$this->assertEquals(Photo::query()->where($recentFilter)->count(), $ids_after_import->count());
+		$ids_to_delete = $ids_after_import->diff($ids_before_import)->implode(',');
+		$photos_tests->delete($ids_to_delete);
 
 		$this->assertEquals($num_before_import, Photo::query()->where($recentFilter)->count());
 

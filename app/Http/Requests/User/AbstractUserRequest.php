@@ -16,8 +16,8 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 	use HasUsernameTrait;
 	use HasPasswordTrait;
 
-	const MAY_UPLOAD_ATTRIBUTE = 'upload';
-	const IS_LOCKED_ATTRIBUTE = 'locked';
+	public const MAY_UPLOAD_ATTRIBUTE = 'may_upload';
+	public const IS_LOCKED_ATTRIBUTE = 'is_locked';
 
 	protected bool $mayUpload = false;
 	protected bool $isLocked = false;
@@ -42,8 +42,8 @@ abstract class AbstractUserRequest extends BaseApiRequest implements HasUsername
 		return [
 			HasUsername::USERNAME_ATTRIBUTE => ['required', new UsernameRule()],
 			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(false)],
-			self::MAY_UPLOAD_ATTRIBUTE => ['required|boolean'],
-			self::IS_LOCKED_ATTRIBUTE => ['required|boolean'],
+			self::MAY_UPLOAD_ATTRIBUTE => 'present|boolean',
+			self::IS_LOCKED_ATTRIBUTE => 'present|boolean',
 		];
 	}
 

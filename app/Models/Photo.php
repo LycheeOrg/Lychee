@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
-use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\InvalidPropertyException;
@@ -23,9 +22,7 @@ use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\MassAssignmentException;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -80,7 +77,7 @@ class Photo extends Model implements HasRandomID
 	use HasAttributesPatch;
 	use HasRandomIDAndLegacyTimeBasedID;
 	use ThrowsConsistentExceptions {
-		ThrowsConsistentExceptions::delete as private internalDelete();
+		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
 	use HasBidirectionalRelationships;
 

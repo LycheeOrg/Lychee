@@ -4,7 +4,7 @@ namespace App\Http\Requests\Contracts;
 
 interface HasSortingOrder
 {
-	const SORTING_ORDER_ATTRIBUTE = 'sortingOrder';
+	public const SORTING_ORDER_ATTRIBUTE = 'sortingOrder';
 
 	/**
 	 * @return string|null

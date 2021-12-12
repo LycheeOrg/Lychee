@@ -6,7 +6,6 @@ use App\Models\Extensions\ThrowsConsistentExceptions;
 use App\Models\Extensions\UTCBasedTimes;
 use DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable;
 use DarkGhostHunter\Larapass\WebAuthnAuthentication;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,23 +22,14 @@ use Illuminate\Support\Carbon;
  * @property string                                                $username
  * @property string                                                $password
  * @property string|null                                           $email
- * @property bool                                                  $upload
- * @property bool                                                  $lock
+ * @property bool                                                  $may_upload
+ * @property bool                                                  $is_locked
  * @property string|null                                           $remember_token
  * @property Carbon                                                $created_at
  * @property Carbon                                                $updated_at
  * @property Collection<Album>                                     $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property Collection<BaseAlbumImpl>                             $shared
- *
- * @method static Builder|User whereCreatedAt($value)
- * @method static Builder|User whereId($value)
- * @method static Builder|User whereLock($value)
- * @method static Builder|User wherePassword($value)
- * @method static Builder|User whereRememberToken($value)
- * @method static Builder|User whereUpdatedAt($value)
- * @method static Builder|User whereUpload($value)
- * @method static Builder|User whereUsername($value)
  */
 class User extends Authenticatable implements WebAuthnAuthenticatable
 {
@@ -70,8 +60,8 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	protected $casts = [
-		'upload' => 'bool',
-		'lock' => 'bool',
+		'may_upload' => 'bool',
+		'is_locked' => 'bool',
 	];
 
 	/**
@@ -102,11 +92,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function is_admin(): bool
 	{
 		return $this->id == 0;
-	}
-
-	public function can_upload(): bool
-	{
-		return $this->id == 0 || $this->upload;
 	}
 
 	// ! Used by Larapass

@@ -4,7 +4,7 @@ namespace App\Http\Requests\Contracts;
 
 interface HasUserIDs extends HasAlbumIDs
 {
-	const USER_IDS_ATTRIBUTE = 'userIDs';
+	public const USER_IDS_ATTRIBUTE = 'userIDs';
 
 	/**
 	 * @return int[]

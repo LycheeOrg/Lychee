@@ -4,16 +4,15 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasAlbumModelID;
 use App\Http\Requests\Contracts\HasLicense;
-use App\Http\Requests\Traits\HasAlbumModelIDTrait;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Rules\LicenseRule;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDRule;
 
-class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbumModelID, HasLicense
+class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbumID, HasLicense
 {
-	use HasAlbumModelIDTrait;
+	use HasAlbumIDTrait;
 	use HasLicenseTrait;
 
 	/**
@@ -30,7 +29,7 @@ class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbumModelID, 
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasLicense::LICENSE_ATTRIBUTE => ['required', new LicenseRule()],
 		];
 	}
@@ -40,7 +39,7 @@ class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbumModelID, 
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]);
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
 		$this->license = $values[HasLicense::LICENSE_ATTRIBUTE];
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace App\Actions\User;
 
+use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Models\User;
@@ -15,12 +16,12 @@ class Create
 	public function do(string $username, string $password, bool $mayUpload, bool $isLocked): User
 	{
 		if (User::query()->where('username', '=', $username)->count()) {
-			throw new InvalidPropertyException('username not unique');
+			throw new ConflictingPropertyException('Username already exists');
 		}
 		try {
 			$user = new User();
-			$user->upload = $mayUpload;
-			$user->lock = $isLocked;
+			$user->may_upload = $mayUpload;
+			$user->is_locked = $isLocked;
 			$user->username = $username;
 			$user->password = bcrypt($password);
 		} catch (\InvalidArgumentException $e) {

@@ -4,11 +4,11 @@ namespace App\Http\Requests\Sharing;
 
 use App\Facades\AccessControl;
 use App\Http\Requests\BaseApiRequest;
-use App\Rules\ModelIDListRule;
+use App\Rules\IntegerIDListRule;
 
 class DeleteSharingRequest extends BaseApiRequest
 {
-	const SHARE_IDS_ATTRIBUTE = 'shareIDs';
+	public const SHARE_IDS_ATTRIBUTE = 'shareIDs';
 
 	/**
 	 * @var array<int>
@@ -33,7 +33,7 @@ class DeleteSharingRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			self::SHARE_IDS_ATTRIBUTE => ['required', new ModelIDListRule()],
+			self::SHARE_IDS_ATTRIBUTE => ['required', new IntegerIDListRule()],
 		];
 	}
 

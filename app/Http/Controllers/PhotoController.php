@@ -23,6 +23,7 @@ use App\Facades\AccessControl;
 use App\Http\Requests\Photo\AddPhotoRequest;
 use App\Http\Requests\Photo\ArchivePhotosRequest;
 use App\Http\Requests\Photo\DeletePhotosRequest;
+use App\Http\Requests\Photo\DuplicatePhotosRequest;
 use App\Http\Requests\Photo\GetPhotoRequest;
 use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\SetPhotoDescriptionRequest;
@@ -95,7 +96,7 @@ class PhotoController extends Controller
 	public function add(AddPhotoRequest $request): Photo
 	{
 		$sourceFileInfo = SourceFileInfo::createForUploadedFile(
-			$request->file()
+			$request->uploadedFile()
 		);
 		// If the file has been uploaded, the (temporary) source file shall be
 		// deleted
@@ -192,14 +193,14 @@ class PhotoController extends Controller
 	 * @param MovePhotosRequest $request
 	 * @param SetAlbum          $setAlbum
 	 *
-	 * @return string
+	 * @return void
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function setAlbum(MovePhotosRequest $request, SetAlbum $setAlbum): string
+	public function setAlbum(MovePhotosRequest $request, SetAlbum $setAlbum): void
 	{
-		return $setAlbum->do($request->photoIDs(), $request->albumID());
+		$setAlbum->do($request->photoIDs(), $request->albumID());
 	}
 
 	/**
@@ -237,14 +238,14 @@ class PhotoController extends Controller
 	 * Duplicates a set of photos.
 	 * Only the SQL entry is duplicated for space reason.
 	 *
-	 * @param MovePhotosRequest $request
-	 * @param Duplicate         $duplicate
+	 * @param DuplicatePhotosRequest $request
+	 * @param Duplicate              $duplicate
 	 *
 	 * @return Photo|Collection the duplicated photo or collection of duplicated photos
 	 *
 	 * @throws ModelDBException
 	 */
-	public function duplicate(MovePhotosRequest $request, Duplicate $duplicate)
+	public function duplicate(DuplicatePhotosRequest $request, Duplicate $duplicate)
 	{
 		$duplicates = $duplicate->do($request->photoIDs(), $request->albumID());
 

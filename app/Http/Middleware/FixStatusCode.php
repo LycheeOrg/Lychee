@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+
+/**
+ * Ensures that responses with empty content return status code 204.
+ *
+ * This fixes a bug in Laravel.
+ */
+class FixStatusCode
+{
+	/**
+	 * Handle an incoming request.
+	 *
+	 * @param Request  $request
+	 * @param \Closure $next
+	 *
+	 * @return Response
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function handle(Request $request, Closure $next): Response
+	{
+		/** @var Response $response */
+		$response = $next($request);
+
+		// Note: The content is always empty for binary file or streamed
+		// responses at this stage, because their content is sent
+		// asynchronously.
+		// Hence, we must not overwrite the status code with 204 for those
+		// kinds of responses.
+		if (
+			empty($response->getContent()) &&
+			!($response instanceof BinaryFileResponse) &&
+			!($response instanceof StreamedResponse)
+		) {
+			$response->setStatusCode(Response::HTTP_NO_CONTENT);
+		}
+
+		return $response;
+	}
+}

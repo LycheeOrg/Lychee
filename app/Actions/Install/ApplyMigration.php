@@ -2,6 +2,7 @@
 
 namespace App\Actions\Install;
 
+use App\Exceptions\InstallationException;
 use Illuminate\Support\Facades\Artisan;
 
 class ApplyMigration
@@ -51,6 +52,8 @@ class ApplyMigration
 
 	/**
 	 * @return bool
+	 *
+	 * @throws InstallationException
 	 */
 	public function keyGenerate(array &$output)
 	{
@@ -67,7 +70,18 @@ class ApplyMigration
 		// @codeCoverageIgnoreEnd
 
 		// key is generated, we can safely remove that file (in theory)
-		unlink(base_path('.NO_SECURE_KEY'));
+		$filename = base_path('.NO_SECURE_KEY');
+		if (file_exists($filename)) {
+			if (is_file($filename)) {
+				try {
+					unlink($filename);
+				} catch (\Throwable $e) {
+					throw new InstallationException('Could not remove ' . $filename, $e);
+				}
+			} else {
+				throw new InstallationException('A filesystem object . ' . $filename . ' exists, but is not an ordinary file.');
+			}
+		}
 
 		return false;
 	}

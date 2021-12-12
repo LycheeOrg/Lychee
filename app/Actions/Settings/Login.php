@@ -2,10 +2,12 @@
 
 namespace App\Actions\Settings;
 
+use App\Exceptions\ConflictingPropertyException;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthenticatedException;
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Legacy\Legacy;
 use App\Models\Logs;
@@ -16,11 +18,31 @@ use Illuminate\Support\Facades\Hash;
 class Login
 {
 	/**
+	 * Changes and modifies logins in multiple ways.
+	 *
+	 * TODO: This method requires thorough refactoring, because it is a "god" method.
+	 *
+	 * This method serves three different purposes and the method tries to
+	 * "cleverly" find out which use-case is needed:
+	 *
+	 *  1. Initially setting the admin password in case no password has
+	 *     been set yet (e.g. after/during installation)
+	 *  2. Changing a user's own password by the users themselves.
+	 *  3. Changing a user's username and password for some arbitrary user
+	 *     by the administrator.
+	 *
+	 * Unfortunately, this make is rather difficult to authorize the request
+	 * beforehand (see similar remark in
+	 * {@link \App\Http\Requests\Settings\ChangeLoginRequest::authorize()}).
+	 * Hence, this method is also responsible to authorize the various
+	 * use-cases properly.
+	 *
 	 * @throws ModelDBException
 	 * @throws UnauthenticatedException
 	 * @throws ModelNotFoundException
 	 * @throws InvalidPropertyException
 	 * @throws InvalidConfigOption
+	 * @throws UnauthorizedException
 	 */
 	public function do(string $username, string $password, ?string $oldUsername, ?string $oldPassword, string $ip): void
 	{
@@ -69,15 +91,15 @@ class Login
 			/** @var User $user */
 			$user = User::query()->findOrFail($id);
 
-			if ($user->lock) {
+			if ($user->is_locked) {
 				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change their identity from ' . $ip);
-				throw new UnauthenticatedException('Account is locked');
+				throw new UnauthorizedException('Account is locked');
 			}
 
 			if (User::query()->where('username', '=', $username)->where('id', '!=', $id)->count()) {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $username . ' from ' . $ip);
 
-				throw new InvalidPropertyException('Username already exists.');
+				throw new ConflictingPropertyException('Username already exists.');
 			}
 
 			// TODO: This looks suspicious.
@@ -95,6 +117,8 @@ class Login
 				$user->username = $username;
 				$user->password = $hashedPassword;
 				$user->save();
+
+				return;
 			}
 			Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity from ' . $ip);
 

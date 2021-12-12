@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 class SetPublic extends Action
 {
 	/**
-	 * @param int                                                                                                                                                         $albumID
+	 * @param string                                                                                                                                                      $albumID
 	 * @param array{is_public: bool, requires_link: bool, is_nsfw: bool, is_downloadable: bool, is_share_button_visible: bool, grant_full_photo: bool, password: ?string} $shareSettings
 	 *
 	 * @return void
@@ -18,7 +18,7 @@ class SetPublic extends Action
 	 * @throws ModelDBException
 	 * @throws InvalidPropertyException
 	 */
-	public function do(int $albumID, array $shareSettings): void
+	public function do(string $albumID, array $shareSettings): void
 	{
 		$album = $this->albumFactory->findModelOrFail($albumID);
 

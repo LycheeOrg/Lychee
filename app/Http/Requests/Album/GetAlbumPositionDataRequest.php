@@ -11,7 +11,7 @@ class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAlbumID
 {
 	use HasAlbumIDTrait;
 
-	const INCLUDE_SUB_ALBUMS_ATTRIBUTE = 'includeSubAlbums';
+	public const INCLUDE_SUB_ALBUMS_ATTRIBUTE = 'includeSubAlbums';
 
 	protected bool $includeSubAlbums = false;
 
@@ -39,7 +39,7 @@ class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]) ?? null;
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
 		$this->includeSubAlbums = static::toBoolean($values[self::INCLUDE_SUB_ALBUMS_ATTRIBUTE]);
 	}
 

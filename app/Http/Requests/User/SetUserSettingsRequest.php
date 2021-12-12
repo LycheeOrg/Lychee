@@ -4,13 +4,13 @@ namespace App\Http\Requests\User;
 
 use App\Http\Requests\Contracts\HasUserID;
 use App\Http\Requests\Traits\HasUserIDTrait;
-use App\Rules\ModelIDRule;
+use App\Rules\IntegerIDRule;
 
 class SetUserSettingsRequest extends AbstractUserRequest implements HasUserID
 {
 	use HasUserIDTrait;
 
-	const ID_ATTRIBUTE = 'id';
+	public const ID_ATTRIBUTE = 'id';
 
 	/**
 	 * {@inheritDoc}
@@ -18,7 +18,7 @@ class SetUserSettingsRequest extends AbstractUserRequest implements HasUserID
 	public function rules(): array
 	{
 		$rules = parent::rules();
-		$rules[self::ID_ATTRIBUTE] = ['required', new ModelIDRule(false)];
+		$rules[self::ID_ATTRIBUTE] = ['required', new IntegerIDRule(false)];
 
 		return $rules;
 	}

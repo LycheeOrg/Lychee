@@ -4,10 +4,10 @@ namespace App\Http\Requests\Contracts;
 
 interface HasAlbumIDs
 {
-	const ALBUM_IDS_ATTRIBUTE = 'albumIDs';
+	public const ALBUM_IDS_ATTRIBUTE = 'albumIDs';
 
 	/**
-	 * @return array
+	 * @return string[]
 	 */
 	public function albumIDs(): array;
 }

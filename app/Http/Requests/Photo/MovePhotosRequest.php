@@ -4,17 +4,16 @@ namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasAlbumModelID;
 use App\Http\Requests\Contracts\HasPhotoIDs;
-use App\Http\Requests\Traits\HasAlbumModelIDTrait;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasPhotoIDsTrait;
-use App\Rules\ModelIDListRule;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDListRule;
+use App\Rules\RandomIDRule;
 
-class MovePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasAlbumModelID
+class MovePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasAlbumID
 {
 	use HasPhotoIDsTrait;
-	use HasAlbumModelIDTrait;
+	use HasAlbumIDTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -31,8 +30,8 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasAlbumM
 	public function rules(): array
 	{
 		return [
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => ['required', new ModelIDListRule()],
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new ModelIDRule(true)],
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
 	}
 
@@ -42,7 +41,6 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasAlbumM
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->photoIDs = explode(',', $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE]);
-		array_walk($this->photoIDs, function (&$id) { $id = intval($id); });
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]) ?? null;
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE] ?? null;
 	}
 }

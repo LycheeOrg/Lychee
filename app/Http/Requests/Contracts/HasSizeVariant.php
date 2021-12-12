@@ -15,10 +15,10 @@ interface HasSizeVariant
 	 *
 	 * TODO: Maybe rename the attribute in the back- and front-end to avoid overloading the same term.
 	 */
-	const SIZE_VARIANT_ATTRIBUTE = 'kind';
+	public const SIZE_VARIANT_ATTRIBUTE = 'kind';
 
 	/**
-	 * @return string|null
+	 * @return string
 	 */
 	public function sizeVariant(): string;
 }

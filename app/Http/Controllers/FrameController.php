@@ -50,7 +50,7 @@ class FrameController extends Controller
 			$title = Configs::get_value('site_title');
 
 			return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'rss_enable' => false]);
-		} catch (BindingResolutionException | RouteNotFoundException $e) {
+		} catch (BindingResolutionException|RouteNotFoundException $e) {
 			throw new FrameworkException('Laravel redirect or render component', $e);
 		}
 	}

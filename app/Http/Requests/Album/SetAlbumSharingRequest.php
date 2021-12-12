@@ -4,22 +4,21 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasAlbumModelID;
 use App\Http\Requests\Contracts\HasPassword;
-use App\Http\Requests\Traits\HasAlbumModelIDTrait;
-use App\Rules\ModelIDRule;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Rules\PasswordRule;
+use App\Rules\RandomIDRule;
 
-class SetAlbumSharingRequest extends BaseApiRequest implements HasAlbumModelID
+class SetAlbumSharingRequest extends BaseApiRequest implements HasAlbumID
 {
-	use HasAlbumModelIDTrait;
+	use HasAlbumIDTrait;
 
-	const IS_PUBLIC_ATTRIBUTE = 'is_public';
-	const REQUIRES_LINK_ATTRIBUTE = 'requires_link';
-	const IS_NSFW_ATTRIBUTE = 'is_nsfw';
-	const IS_DOWNLOADABLE_ATTRIBUTE = 'is_downloadable';
-	const IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE = 'is_share_button_visible';
-	const GRANTS_FULL_PHOTO_ATTRIBUTE = 'grants_full_photo';
+	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
+	public const REQUIRES_LINK_ATTRIBUTE = 'requires_link';
+	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
+	public const IS_DOWNLOADABLE_ATTRIBUTE = 'is_downloadable';
+	public const IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE = 'is_share_button_visible';
+	public const GRANTS_FULL_PHOTO_ATTRIBUTE = 'grants_full_photo';
 
 	protected array $shareSettings = [];
 
@@ -37,7 +36,7 @@ class SetAlbumSharingRequest extends BaseApiRequest implements HasAlbumModelID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(true)],
 			self::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
 			self::REQUIRES_LINK_ATTRIBUTE => 'required|boolean',
@@ -53,7 +52,7 @@ class SetAlbumSharingRequest extends BaseApiRequest implements HasAlbumModelID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]) ?? null;
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE] ?? null;
 		$this->shareSettings = [
 			self::IS_PUBLIC_ATTRIBUTE => static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]),
 			self::REQUIRES_LINK_ATTRIBUTE => static::toBoolean($values[self::REQUIRES_LINK_ATTRIBUTE]),

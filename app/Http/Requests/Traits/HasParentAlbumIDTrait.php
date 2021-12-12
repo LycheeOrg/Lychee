@@ -4,12 +4,12 @@ namespace App\Http\Requests\Traits;
 
 trait HasParentAlbumIDTrait
 {
-	protected ?int $parentID = null;
+	protected ?string $parentID = null;
 
 	/**
-	 * @return int|null
+	 * @return string|null
 	 */
-	public function parentID(): ?int
+	public function parentID(): ?string
 	{
 		return $this->parentID;
 	}

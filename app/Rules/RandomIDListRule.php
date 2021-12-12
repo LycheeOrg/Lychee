@@ -5,7 +5,7 @@ namespace App\Rules;
 use App\Contracts\HasRandomID;
 use Illuminate\Contracts\Validation\Rule;
 
-class ModelIDListRule implements Rule
+class RandomIDListRule implements Rule
 {
 	/**
 	 * {@inheritDoc}
@@ -15,14 +15,14 @@ class ModelIDListRule implements Rule
 		if (!is_string($value)) {
 			return false;
 		}
-		$modelIDs = explode(',', $value);
-		if (!is_array($modelIDs) || count($modelIDs) === 0) {
+		$randomIDs = explode(',', $value);
+		if (!is_array($randomIDs) || count($randomIDs) === 0) {
 			return false;
 		}
-		$idRule = new ModelIDRule(false);
+		$idRule = new RandomIDRule(false);
 		$success = true;
-		foreach ($modelIDs as $modelID) {
-			$success &= $idRule->passes('', $modelID);
+		foreach ($randomIDs as $randomID) {
+			$success &= $idRule->passes('', $randomID);
 		}
 
 		return $success;

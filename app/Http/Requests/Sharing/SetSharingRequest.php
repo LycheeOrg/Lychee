@@ -5,13 +5,13 @@ namespace App\Http\Requests\Sharing;
 use App\Facades\AccessControl;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
-use App\Http\Requests\Contracts\HasAlbumModelIDs;
 use App\Http\Requests\Contracts\HasUserIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
-use App\Rules\ModelIDListRule;
+use App\Rules\IntegerIDListRule;
+use App\Rules\RandomIDListRule;
 
-class SetSharingRequest extends BaseApiRequest implements HasAlbumModelIDs, HasUserIDs
+class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserIDs
 {
 	use HasAlbumIDsTrait;
 	use HasUserIDsTrait;
@@ -34,8 +34,8 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumModelIDs, HasU
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new ModelIDListRule()],
-			HasUserIDs::USER_IDS_ATTRIBUTE => ['required', new ModelIDListRule()],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
+			HasUserIDs::USER_IDS_ATTRIBUTE => ['required', new IntegerIDListRule()],
 		];
 	}
 
@@ -45,7 +45,6 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumModelIDs, HasU
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->albumIDs = explode(',', $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE]);
-		array_walk($this->albumIDs, function (&$id) { $id = intval($id); });
 		$this->userIDs = explode(',', $values[HasUserIDs::USER_IDS_ATTRIBUTE]);
 		array_walk($this->userIDs, function (&$id) { $id = intval($id); });
 	}

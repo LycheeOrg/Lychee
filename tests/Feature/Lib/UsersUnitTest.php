@@ -59,8 +59,8 @@ class UsersUnitTest
 	 *
 	 * @param string      $username
 	 * @param string      $password
-	 * @param string      $upload
-	 * @param string      $lock
+	 * @param bool        $mayUpload
+	 * @param bool        $isLocked
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -69,16 +69,16 @@ class UsersUnitTest
 	public function add(
 		string $username,
 		string $password,
-		string $upload,
-		string $lock,
+		bool $mayUpload = true,
+		bool $isLocked = false,
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->json('POST', '/api/User::Create', [
 			'username' => $username,
 			'password' => $password,
-			'upload' => $upload,
-			'lock' => $lock,
+			'may_upload' => $mayUpload,
+			'is_locked' => $isLocked,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -119,8 +119,8 @@ class UsersUnitTest
 	 * @param string      $id
 	 * @param string      $username
 	 * @param string      $password
-	 * @param string      $upload
-	 * @param string      $lock
+	 * @param bool        $mayUpload
+	 * @param bool        $isLocked
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -130,8 +130,8 @@ class UsersUnitTest
 		string $id,
 		string $username,
 		string $password,
-		string $upload,
-		string $lock,
+		bool $mayUpload = true,
+		bool $isLocked = false,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
@@ -139,8 +139,8 @@ class UsersUnitTest
 			'id' => $id,
 			'username' => $username,
 			'password' => $password,
-			'upload' => $upload,
-			'lock' => $lock,
+			'may_upload' => $mayUpload,
+			'is_locked' => $isLocked,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -160,7 +160,7 @@ class UsersUnitTest
 	 * @return TestResponse
 	 */
 	public function update_email(
-		string $email,
+		?string $email,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {

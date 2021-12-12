@@ -4,7 +4,7 @@ namespace App\Http\Requests\Contracts;
 
 interface HasSortingColumn
 {
-	const SORTING_COLUMN_ATTRIBUTE = 'sortingCol';
+	public const SORTING_COLUMN_ATTRIBUTE = 'sortingCol';
 
 	/**
 	 * @return string|null

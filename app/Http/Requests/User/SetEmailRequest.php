@@ -6,7 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 
 class SetEmailRequest extends BaseApiRequest
 {
-	const EMAIL_ATTRIBUTE = 'email';
+	public const EMAIL_ATTRIBUTE = 'email';
 
 	protected ?string $email = null;
 

@@ -456,7 +456,7 @@ class AlbumAuthorisationProvider
 	 * In order to silently ignore/skip this condition for smart albums,
 	 * this method always returns `true` for a smart album.
 	 *
-	 * @param array<mixed, string|int> $albumIDs
+	 * @param string[] $albumIDs
 	 *
 	 * @return bool
 	 *

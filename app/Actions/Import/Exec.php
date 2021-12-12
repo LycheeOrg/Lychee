@@ -153,15 +153,15 @@ class Exec
 	}
 
 	/**
-	 * @param string          $path
-	 * @param int|string|null $albumID
-	 * @param array|null      $ignore_list
+	 * @param string      $path
+	 * @param string|null $albumID
+	 * @param array|null  $ignore_list
 	 *
 	 * @throws ModelDBException
 	 */
 	public function do(
 		string $path,
-		$albumID,
+		?string $albumID,
 		array $ignore_list = null
 	) {
 		// Parse path
@@ -235,9 +235,15 @@ class Exec
 			}
 			$extension = Helpers::getExtension($file, true);
 			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
-			if (exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
-				// Photo or Video
-				try {
+			try {
+				// Note: `exif_imagetype` may also throw an exception
+				// (instead of returning `false`), if the file is too small
+				// to read enough bytes to determine the file type.
+				// So we put `exif_imagetype` last in the condition and
+				// exploit lazy evaluation of boolean terms for the case
+				// that we import a "short" raw file.
+				if ($is_raw || in_array(strtolower($extension), $this->validExtensions, true) || exif_imagetype($file) !== false) {
+					// Photo or Video
 					// TODO: Refactor this, rationale see below
 					// This is not the way how `PhotoCreate` is supposed
 					// to be used.
@@ -246,21 +252,16 @@ class Exec
 					// `ImportMode` and then `PhotoCreate::add` should
 					// be called for each file.
 					$photoCreate = new PhotoCreate($this->importMode);
-					if (
-						$photoCreate->add(SourceFileInfo::createForLocalFile($file), $albumID) == null
-					) {
-						$this->status_error($file, 'Could not import file');
-						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
-					}
-				} catch (PhotoSkippedException $e) {
-					$this->status_error($file, $e->getMessage());
-				} catch (\Throwable $e) {
-					$this->status_error($file, 'Could not import file');
-					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
+					$photoCreate->add(SourceFileInfo::createForLocalFile($file), $albumID);
+				} else {
+					$this->status_error($file, 'Unsupported file type');
+					Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
 				}
-			} else {
-				$this->status_error($file, 'Unsupported file type');
-				Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
+			} catch (PhotoSkippedException $e) {
+				$this->status_error($file, $e->getMessage());
+			} catch (\Throwable $e) {
+				$this->status_error($file, 'Could not import file');
+				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 			}
 		}
 		$this->status_progress($origPath, '100' . $percent_symbol);

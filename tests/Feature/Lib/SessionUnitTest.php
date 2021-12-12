@@ -87,7 +87,7 @@ class SessionUnitTest
 	public function set_new(
 		string $login,
 		string $password,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->json('POST', '/api/Settings::setLogin', [
@@ -119,7 +119,7 @@ class SessionUnitTest
 		string $password,
 		string $oldUsername,
 		string $oldPassword,
-		int $expectedStatusCode = 200,
+		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->json('POST', '/api/Settings::setLogin', [

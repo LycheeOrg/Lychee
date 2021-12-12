@@ -25,7 +25,7 @@ class NotificationTest extends TestCase
 		$response = $this->json('POST', '/api/Settings::setNewPhotosNotification', [
 			'new_photos_notification' => '1',
 		]);
-		$response->assertStatus(200);
+		$response->assertNoContent();
 		$this->assertEquals('1', Configs::get_value('new_photos_notification'));
 
 		// set to initial
@@ -42,7 +42,7 @@ class NotificationTest extends TestCase
 		$users_test->update_email('test@test.com');
 
 		// add new user
-		$users_test->add('uploader', 'uploader', '1', '0');
+		$users_test->add('uploader', 'uploader', true, false);
 
 		$sessions_test->logout();
 	}
@@ -122,8 +122,8 @@ class NotificationTest extends TestCase
 		$response->assertJsonFragment([
 			'id' => $user_id,
 			'username' => 'uploader',
-			'upload' => 1,
-			'lock' => 0,
+			'may_upload' => true,
+			'is_locked' => false,
 		]);
 
 		$users_test->delete($user_id);

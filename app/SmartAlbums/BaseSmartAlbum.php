@@ -66,7 +66,10 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
+	 * @return Collection<Photo>
+	 *
 	 * @throws InvalidOrderDirectionException
+	 * @throws InvalidQueryModelException
 	 */
 	protected function getPhotosAttribute(): Collection
 	{
@@ -86,6 +89,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 
 	/**
 	 * @throws InvalidPropertyException
+	 * @throws InvalidQueryModelException
 	 */
 	protected function getThumbAttribute(): ?Thumb
 	{
@@ -107,6 +111,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 
 	/**
 	 * @throws InvalidPropertyException
+	 * @throws InvalidQueryModelException
 	 */
 	public function toArray(): array
 	{

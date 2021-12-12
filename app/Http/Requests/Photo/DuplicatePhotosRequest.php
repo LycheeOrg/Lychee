@@ -3,30 +3,25 @@
 namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
+use App\Http\Requests\Contracts\HasAlbumID;
 use App\Http\Requests\Contracts\HasPhotoIDs;
-use App\Http\Requests\Contracts\HasSizeVariant;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasPhotoIDsTrait;
-use App\Http\Requests\Traits\HasSizeVariantTrait;
 use App\Rules\RandomIDListRule;
-use App\Rules\SizeVariantRule;
+use App\Rules\RandomIDRule;
 
-class ArchivePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasSizeVariant
+class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasAlbumID
 {
 	use HasPhotoIDsTrait;
-	use HasSizeVariantTrait;
+	use HasAlbumIDTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		foreach ($this->photoIDs as $photoID) {
-			if (!$this->authorizePhotoVisible($photoID)) {
-				return false;
-			}
-		}
-
-		return true;
+		return $this->authorizePhotoWrite($this->photoIDs) &&
+			$this->authorizeAlbumWrite([$this->albumID]);
 	}
 
 	/**
@@ -36,7 +31,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasSiz
 	{
 		return [
 			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
-			HasSizeVariant::SIZE_VARIANT_ATTRIBUTE => ['required', new SizeVariantRule()],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['sometimes', new RandomIDRule(false)],
 		];
 	}
 
@@ -46,6 +41,6 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasSiz
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->photoIDs = explode(',', $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE]);
-		$this->sizeVariant = $values[HasSizeVariant::SIZE_VARIANT_ATTRIBUTE];
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE] ?? null;
 	}
 }

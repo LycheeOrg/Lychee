@@ -103,22 +103,22 @@ abstract class BaseApiRequest extends FormRequest
 	/**
 	 * Determines of the user is authorized to access the designated album.
 	 *
-	 * @param string|int|null $albumID the ID of the album
+	 * @param string|null $albumID the ID of the album
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 *
 	 * @throws InternalLycheeException
 	 */
-	protected function authorizeAlbumAccess($albumID): bool
+	protected function authorizeAlbumAccess(?string $albumID): bool
 	{
-		return $this->albumAuthorisationProvider->isAccessible($albumID);
+		return $this->albumAuthorisationProvider->isAccessibleByID($albumID);
 	}
 
 	/**
 	 * Determines of the user is authorized to modify or write into the
 	 * designated albums.
 	 *
-	 * @param array $albumIDs the IDs of the albums
+	 * @param string[] $albumIDs the IDs of the albums
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 *
@@ -132,13 +132,13 @@ abstract class BaseApiRequest extends FormRequest
 	/**
 	 * Determines of the user is authorized to see the designated photo.
 	 *
-	 * @param int $photoID the ID of the photo
+	 * @param string $photoID the ID of the photo
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 *
 	 * @throws InternalLycheeException
 	 */
-	protected function authorizePhotoVisible(int $photoID): bool
+	protected function authorizePhotoVisible(string $photoID): bool
 	{
 		return $this->photoAuthorisationProvider->isVisible($photoID);
 	}
@@ -146,7 +146,7 @@ abstract class BaseApiRequest extends FormRequest
 	/**
 	 * Determines of the user is authorized to modify the designated photos.
 	 *
-	 * @param int[] $photoIDs the IDs of the photos
+	 * @param string[] $photoIDs the IDs of the photos
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 *

@@ -58,7 +58,7 @@ class SessionController extends Controller
 			if ($user_id == 0) {
 				$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 				$return['admin'] = true;
-				$return['upload'] = true; // not necessary
+				$return['may_upload'] = true; // not necessary
 
 				$return['config'] = $this->configFunctions->admin();
 
@@ -69,8 +69,8 @@ class SessionController extends Controller
 					$user = User::query()->findorFail($user_id);
 					$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDIN');
 					$return['config'] = $this->configFunctions->public();
-					$return['lock'] = ($user->lock == '1');         // can user change their password
-					$return['upload'] = ($user->upload == '1');     // can user upload ?
+					$return['is_locked'] = $user->is_locked;   // can user change their password
+					$return['may_upload'] = $user->may_upload; // can user upload ?
 					$return['username'] = $user->username;
 				} catch (ModelNotFoundException $e) {
 					Logs::notice(__METHOD__, __LINE__, 'UserID ' . $user_id . ' not found!');

@@ -4,13 +4,12 @@ namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasAlbumModelID;
-use App\Http\Requests\Traits\HasAlbumModelIDTrait;
-use App\Rules\ModelIDRule;
+use App\Http\Requests\Traits\HasAlbumIDTrait;
+use App\Rules\RandomIDRule;
 
-class SetAlbumNSFWRequest extends BaseApiRequest implements HasAlbumModelID
+class SetAlbumNSFWRequest extends BaseApiRequest implements HasAlbumID
 {
-	use HasAlbumModelIDTrait;
+	use HasAlbumIDTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -26,7 +25,7 @@ class SetAlbumNSFWRequest extends BaseApiRequest implements HasAlbumModelID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -35,6 +34,6 @@ class SetAlbumNSFWRequest extends BaseApiRequest implements HasAlbumModelID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = intval($values[HasAlbumID::ALBUM_ID_ATTRIBUTE]);
+		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
 	}
 }

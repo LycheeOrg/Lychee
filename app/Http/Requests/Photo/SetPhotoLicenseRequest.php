@@ -8,7 +8,7 @@ use App\Http\Requests\Contracts\HasPhotoID;
 use App\Http\Requests\Traits\HasLicenseTrait;
 use App\Http\Requests\Traits\HasPhotoIDTrait;
 use App\Rules\LicenseRule;
-use App\Rules\ModelIDRule;
+use App\Rules\RandomIDRule;
 
 class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhotoID, HasLicense
 {
@@ -29,7 +29,7 @@ class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhotoID, HasLi
 	public function rules(): array
 	{
 		return [
-			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['required', new ModelIDRule(false)],
+			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasLicense::LICENSE_ATTRIBUTE => ['required', new LicenseRule()],
 		];
 	}
@@ -39,7 +39,7 @@ class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhotoID, HasLi
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoID = intval($values[HasPhotoID::PHOTO_ID_ATTRIBUTE]);
+		$this->photoID = $values[HasPhotoID::PHOTO_ID_ATTRIBUTE];
 		$this->license = $values[HasLicense::LICENSE_ATTRIBUTE];
 	}
 }

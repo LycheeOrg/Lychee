@@ -17,7 +17,7 @@ class AlbumTest extends TestCase
 	public function testAddNotLogged()
 	{
 		$albums_tests = new AlbumsUnitTest($this);
-		$albums_tests->add('0', 'test_album', 401);
+		$albums_tests->add(null, 'test_album', 403);
 
 		$albums_tests->get('recent', 403);
 		$albums_tests->get('starred', 403);
@@ -90,7 +90,7 @@ class AlbumTest extends TestCase
 		/*
 		 * Flush the session to see if we can access the album
 		 */
-		$session_tests->logout($this);
+		$session_tests->logout();
 
 		/*
 		 * Let's try to get the info of the album we just created.

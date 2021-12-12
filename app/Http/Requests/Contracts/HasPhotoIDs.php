@@ -4,10 +4,10 @@ namespace App\Http\Requests\Contracts;
 
 interface HasPhotoIDs
 {
-	const PHOTO_IDS_ATTRIBUTE = 'photoIDs';
+	public const PHOTO_IDS_ATTRIBUTE = 'photoIDs';
 
 	/**
-	 * @return int[]
+	 * @return string[]
 	 */
 	public function photoIDs(): array;
 }

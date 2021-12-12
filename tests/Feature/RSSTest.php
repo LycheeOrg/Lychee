@@ -22,7 +22,7 @@ class RSSTest extends TestCase
 
 		// check redirection
 		$response = $this->get('/feed');
-		$response->assertStatus(404);
+		$response->assertStatus(412);
 
 		Configs::set('Mod_Frame', $init_config_value);
 	}
@@ -40,7 +40,7 @@ class RSSTest extends TestCase
 
 		// check redirection
 		$response = $this->get('/feed');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		// now we start adding some stuff
 		$photos_tests = new PhotosUnitTest($this);
@@ -68,7 +68,7 @@ class RSSTest extends TestCase
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		// set picture to private
 		$photos_tests->set_public($photoID);
@@ -79,7 +79,7 @@ class RSSTest extends TestCase
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
-		$response->assertStatus(200);
+		$response->assertOk();
 
 		$albums_tests->delete($albumID);
 

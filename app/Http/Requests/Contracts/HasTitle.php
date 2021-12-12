@@ -4,7 +4,7 @@ namespace App\Http\Requests\Contracts;
 
 interface HasTitle
 {
-	const TITLE_ATTRIBUTE = 'title';
+	public const TITLE_ATTRIBUTE = 'title';
 
 	/**
 	 * @return string|null

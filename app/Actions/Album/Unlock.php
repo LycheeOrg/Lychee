@@ -24,13 +24,13 @@ class Unlock extends Action
 	 * If the password is correct, then all albums which can be unlocked with
 	 * the same password are unlocked, too.
 	 *
-	 * @param int    $albumID
+	 * @param string $albumID
 	 * @param string $password
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws UnauthorizedException
 	 */
-	public function do(int $albumID, string $password): void
+	public function do(string $albumID, string $password): void
 	{
 		$album = $this->albumFactory->findModelOrFail($albumID);
 		if ($album->is_public) {
