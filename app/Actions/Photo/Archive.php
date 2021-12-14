@@ -7,7 +7,6 @@ use App\Actions\Photo\Extensions\Constants;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
-use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileMissingException;
 use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
@@ -93,14 +92,10 @@ class Archive
 	 */
 	public function do(array $photoIDs, string $variant): Response
 	{
-		try {
-			/** @var Collection $photos */
-			$photos = Photo::with(['album', 'size_variants'])
-				->whereIn('id', $photoIDs)
-				->get();
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		/** @var Collection $photos */
+		$photos = Photo::with(['album', 'size_variants'])
+			->whereIn('id', $photoIDs)
+			->get();
 
 		if ($photos->count() === 1) {
 			$response = $this->file($photos->first(), $variant);

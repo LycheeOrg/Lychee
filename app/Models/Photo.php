@@ -18,6 +18,7 @@ use App\Models\Extensions\HasRandomIDAndLegacyTimeBasedID;
 use App\Models\Extensions\PhotoBooleans;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use App\Relations\HasManySizeVariants;
 use App\Relations\LinkedPhotoCollection;
@@ -80,6 +81,7 @@ class Photo extends Model implements HasRandomID
 		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
 	use HasBidirectionalRelationships;
+	use UseFixedQueryBuilder;
 
 	public const FRIENDLY_MODEL_NAME = 'photo';
 

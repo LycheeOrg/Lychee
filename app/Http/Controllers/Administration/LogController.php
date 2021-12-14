@@ -23,14 +23,10 @@ class LogController extends Controller
 	 */
 	public function list(string $order = 'desc'): Collection
 	{
-		try {
-			return Logs::query()
-				->orderBy('id', $order)
-				->limit(intval(Configs::get_value('log_max_num_line', 1000)))
-				->get();
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		return Logs::query()
+			->orderBy('id', $order)
+			->limit(intval(Configs::get_value('log_max_num_line', 1000)))
+			->get();
 	}
 
 	/**

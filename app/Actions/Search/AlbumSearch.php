@@ -33,17 +33,13 @@ class AlbumSearch
 	 */
 	private function createAlbumQuery($terms): Builder
 	{
-		try {
-			$albumQuery = Album::query()
-				->select(['albums.*'])
-				->join('base_albums', 'base_albums.id', '=', 'albums.id');
-			$this->addSearchCondition($terms, $albumQuery);
-			$this->albumAuthorisationProvider->applyBrowsabilityFilter($albumQuery);
+		$albumQuery = Album::query()
+			->select(['albums.*'])
+			->join('base_albums', 'base_albums.id', '=', 'albums.id');
+		$this->addSearchCondition($terms, $albumQuery);
+		$this->albumAuthorisationProvider->applyBrowsabilityFilter($albumQuery);
 
-			return $albumQuery;
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		return $albumQuery;
 	}
 
 	/**
@@ -76,7 +72,7 @@ class AlbumSearch
 			}
 
 			return $query;
-		} catch (\InvalidArgumentException $e) {
+		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
 	}

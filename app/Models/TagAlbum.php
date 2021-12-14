@@ -6,15 +6,22 @@ use App\Exceptions\InvalidPropertyException;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Relations\HasManyPhotosByTag;
+use Illuminate\Database\Query\Builder as BaseBuilder;
 
 /**
  * Class TagAlbum.
  *
  * @property string show_tags
+ *
+ * @method static TagAlbumBuilder query()                       Begin querying the model.
+ * @method static TagAlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
  */
 class TagAlbum extends BaseAlbum
 {
+	use UseFixedQueryBuilder;
+
 	public const FRIENDLY_MODEL_NAME = 'tag album';
 
 	/**
@@ -103,7 +110,11 @@ class TagAlbum extends BaseAlbum
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Create a new Eloquent query builder for the model.
+	 *
+	 * @param BaseBuilder $query
+	 *
+	 * @return TagAlbumBuilder
 	 */
 	public function newEloquentBuilder($query): TagAlbumBuilder
 	{

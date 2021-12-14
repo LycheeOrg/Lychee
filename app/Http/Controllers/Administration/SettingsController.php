@@ -368,13 +368,9 @@ class SettingsController extends Controller
 	 */
 	public function getAll(): Collection
 	{
-		try {
-			return Configs::query()
-				->orderBy('cat')
-				->get();
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		return Configs::query()
+			->orderBy('cat')
+			->get();
 	}
 
 	/**

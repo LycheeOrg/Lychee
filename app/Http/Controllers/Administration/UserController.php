@@ -117,19 +117,14 @@ class UserController extends Controller
 	 */
 	public function updateEmail(SetEmailRequest $request): void
 	{
-		try {
-			$user = AccessControl::user();
-			$user->email = $request->email();
+		$user = AccessControl::user();
+		$user->email = $request->email();
 
-			if (is_null($request->email())) {
-				$user->notifications()->delete();
-			}
-
-			$user->save();
-		} catch (\InvalidArgumentException $e) {
-			// possibly thrown by ->notifications()
-			throw new QueryBuilderException($e);
+		if (is_null($request->email())) {
+			$user->notifications()->delete();
 		}
+
+		$user->save();
 	}
 
 	/**

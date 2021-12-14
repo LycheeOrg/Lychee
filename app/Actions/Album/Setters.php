@@ -3,7 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Exceptions\Internal\QueryBuilderException;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Extensions\FixedQueryBuilder;
 
 /**
  * This class updates a property of **multiple** albums at once.
@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
  */
 class Setters extends Action
 {
-	private Builder $query;
+	private FixedQueryBuilder $query;
 	private string $property;
 
 	/**
@@ -22,7 +22,7 @@ class Setters extends Action
 	 *
 	 * @param string $property the name of the property
 	 */
-	protected function __construct(Builder $query, string $property)
+	protected function __construct(FixedQueryBuilder $query, string $property)
 	{
 		parent::__construct();
 		$this->query = $query;
@@ -37,12 +37,8 @@ class Setters extends Action
 	 */
 	public function do(array $albumIDs, mixed $value): void
 	{
-		try {
-			$this->query
-				->whereIn('id', $albumIDs)
-				->update([$this->property => $value]);
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		$this->query
+			->whereIn('id', $albumIDs)
+			->update([$this->property => $value]);
 	}
 }

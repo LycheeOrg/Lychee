@@ -4,12 +4,14 @@ namespace App\Actions;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
-use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
+use App\Models\Extensions\AlbumBuilder;
+use App\Models\Extensions\FixedQueryBuilder;
+use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,13 +45,13 @@ class AlbumAuthorisationProvider
 	 *  - the album is shared with the user and the album does not require a direct link
 	 *  - the album is public and the album does not require a direct link
 	 *
-	 * @param Builder $query
+	 * @param AlbumBuilder|TagAlbumBuilder $query
 	 *
-	 * @return Builder
+	 * @return AlbumBuilder|TagAlbumBuilder
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyVisibilityFilter(Builder $query): Builder
+	public function applyVisibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|TagAlbumBuilder
 	{
 		$this->prepareModelQueryOrFail($query);
 
@@ -64,16 +66,16 @@ class AlbumAuthorisationProvider
 		// "OR"-clause.
 		// The sub-query only uses properties (i.e. columns) which are
 		// defined on the common base model for all albums.
-		$visibilitySubQuery = function (Builder $query2) use ($userID) {
+		$visibilitySubQuery = function (AlbumBuilder|TagAlbumBuilder $query2) use ($userID) {
 			$query2
-				->where(fn (Builder $q) => $q
+				->where(fn (AlbumBuilder|TagAlbumBuilder $q) => $q
 					->where('base_albums.requires_link', '=', false)
 					->where('base_albums.is_public', '=', true)
 			);
 			if ($userID !== null) {
 				$query2
 					->orWhere('base_albums.owner_id', '=', $userID)
-					->orWhere(fn (Builder $q) => $q
+					->orWhere(fn (AlbumBuilder|TagAlbumBuilder $q) => $q
 						->where('base_albums.requires_link', '=', false)
 						->where('user_base_album.user_id', '=', $userID)
 					);
@@ -98,13 +100,13 @@ class AlbumAuthorisationProvider
 	 *  - the album is public AND no password is set
 	 *  - the album is public AND has been unlocked
 	 *
-	 * @param Builder $query
+	 * @param AlbumBuilder|FixedQueryBuilder $query
 	 *
-	 * @return Builder
+	 * @return AlbumBuilder|FixedQueryBuilder
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyAccessibilityFilter(Builder $query): Builder
+	private function applyAccessibilityFilter(AlbumBuilder|FixedQueryBuilder $query): AlbumBuilder|FixedQueryBuilder
 	{
 		$this->prepareModelQueryOrFail($query);
 
@@ -134,9 +136,9 @@ class AlbumAuthorisationProvider
 	 * Moreover, the raw OR-clauses are added.
 	 * They are not wrapped into a nesting braces `()`.
 	 *
-	 * @param Builder $query
+	 * @param BaseBuilder $query
 	 *
-	 * @return Builder
+	 * @return BaseBuilder
 	 *
 	 * @throws InternalLycheeException
 	 */
@@ -162,7 +164,7 @@ class AlbumAuthorisationProvider
 			}
 
 			return $query;
-		} catch (\InvalidArgumentException $e) {
+		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
 	}
@@ -279,12 +281,12 @@ class AlbumAuthorisationProvider
 	 * of the origin), the runtime is O(n), but for a high tree (the nodes are
 	 * basically a sequence), the runtime is O(n²).
 	 *
-	 * @param Builder    $query  the album query which shall be restricted
-	 * @param Album|null $origin the optional top album which is used as a search base
+	 * @param AlbumBuilder $query  the album query which shall be restricted
+	 * @param Album|null   $origin the optional top album which is used as a search base
 	 *
-	 * @return Builder the restricted album query
+	 * @return AlbumBuilder the restricted album query
 	 */
-	public function applyBrowsabilityFilter(Builder $query, ?Album $origin = null): Builder
+	public function applyBrowsabilityFilter(AlbumBuilder $query, ?Album $origin = null): AlbumBuilder
 	{
 		$table = $query->getQuery()->from;
 		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
@@ -473,7 +475,7 @@ class AlbumAuthorisationProvider
 
 		$user = AccessControl::user();
 
-		if (!$user->upload) {
+		if (!$user->may_upload) {
 			return false;
 		}
 
@@ -482,14 +484,10 @@ class AlbumAuthorisationProvider
 		// duplicates.
 		$albumIDs = array_diff(array_unique($albumIDs), array_keys(AlbumFactory::BUILTIN_SMARTS));
 		if (count($albumIDs) > 0) {
-			try {
-				return BaseAlbumImpl::query()
-						->whereIn('base_albums.id', $albumIDs)
-						->where('base_albums.owner_id', '=', $user->id)
-						->count() === count($albumIDs);
-			} catch (\InvalidArgumentException $e) {
-				throw new QueryBuilderException($e);
-			}
+			return BaseAlbumImpl::query()
+					->whereIn('base_albums.id', $albumIDs)
+					->where('base_albums.owner_id', '=', $user->id)
+					->count() === count($albumIDs);
 		}
 
 		return true;
@@ -498,11 +496,12 @@ class AlbumAuthorisationProvider
 	/**
 	 * Throws an exception if the given query does not query for an album.
 	 *
-	 * @throws InvalidQueryModelException
+	 * @param AlbumBuilder|FixedQueryBuilder $query
 	 *
-	 * @param Builder $query
+	 * @throws QueryBuilderException
+	 * @throws InvalidQueryModelException
 	 */
-	private function prepareModelQueryOrFail(Builder $query): void
+	private function prepareModelQueryOrFail(AlbumBuilder|FixedQueryBuilder $query): void
 	{
 		$model = $query->getModel();
 		$table = $query->getQuery()->from;
@@ -560,8 +559,6 @@ class AlbumAuthorisationProvider
 	 * @param BaseSmartAlbum $smartAlbum
 	 *
 	 * @return bool true, if the smart album is visible/accessible by the user
-	 *
-	 * @throws InvalidSmartIdException
 	 */
 	public function isAuthorizedForSmartAlbum(BaseSmartAlbum $smartAlbum): bool
 	{

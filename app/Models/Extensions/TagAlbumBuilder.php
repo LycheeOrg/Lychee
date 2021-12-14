@@ -4,7 +4,6 @@ namespace App\Models\Extensions;
 
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\TagAlbum;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -18,7 +17,7 @@ use Illuminate\Support\Facades\DB;
  * used as a sub-query which will not hydrate actual models.
  * Thus, a global scope unnecessarily complicates queries in many cases.
  */
-class TagAlbumBuilder extends Builder
+class TagAlbumBuilder extends FixedQueryBuilder
 {
 	/**
 	 * Get the hydrated models without eager loading.
@@ -31,23 +30,19 @@ class TagAlbumBuilder extends Builder
 	 */
 	public function getModels($columns = ['*']): array
 	{
-		try {
-			$baseQuery = $this->getQuery();
-			if (empty($baseQuery->columns)) {
-				$this->select([$baseQuery->from . '.*']);
-			}
+		$baseQuery = $this->getQuery();
+		if (empty($baseQuery->columns)) {
+			$this->select([$baseQuery->from . '.*']);
+		}
 
-			if (
-				($columns == ['*'] || $columns == ['tag_albums.*']) &&
-				($baseQuery->columns == ['*'] || $baseQuery->columns == ['tag_albums.*'])
-			) {
-				$this->addSelect([
-					DB::raw('null as max_taken_at'),
-					DB::raw('null as min_taken_at'),
-				]);
-			}
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
+		if (
+			($columns == ['*'] || $columns == ['tag_albums.*']) &&
+			($baseQuery->columns == ['*'] || $baseQuery->columns == ['tag_albums.*'])
+		) {
+			$this->addSelect([
+				DB::raw('null as max_taken_at'),
+				DB::raw('null as min_taken_at'),
+			]);
 		}
 
 		return parent::getModels($columns);

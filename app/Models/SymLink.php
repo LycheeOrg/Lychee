@@ -9,6 +9,7 @@ use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use Carbon\Exceptions\InvalidTimeZoneException;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,6 +39,7 @@ class SymLink extends Model
 	use ThrowsConsistentExceptions {
 		ThrowsConsistentExceptions::delete as private internalDelete;
 	}
+	use UseFixedQueryBuilder;
 
 	public const FRIENDLY_MODEL_NAME = 'symbolic link';
 

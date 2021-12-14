@@ -44,7 +44,7 @@ class ListShare
 				->each(function ($share) {
 					$share->album_id = intval($share->album_id);
 				});
-		} catch (\InvalidArgumentException $e) {
+		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
 
@@ -68,7 +68,7 @@ class ListShare
 				->each(function ($user) {
 					$user->id = intval($user->id);
 				});
-		} catch (\InvalidArgumentException $e) {
+		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
 

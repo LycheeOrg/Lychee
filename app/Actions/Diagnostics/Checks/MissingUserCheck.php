@@ -17,7 +17,7 @@ class MissingUserCheck implements DiagnosticCheckInterface
 		try {
 			$album_owners = DB::table('base_albums')->select('owner_id')->groupBy('owner_id')->pluck('owner_id');
 			$photo_owners = DB::table('photos')->select('owner_id')->groupBy('owner_id')->pluck('owner_id');
-		} catch (\InvalidArgumentException $e) {
+		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
 		$owner_ids = $album_owners->concat($photo_owners)->unique()->values();

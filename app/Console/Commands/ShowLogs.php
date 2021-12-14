@@ -87,14 +87,10 @@ class ShowLogs extends Command
 		if (Logs::query()->count() == 0) {
 			$this->line($this->col->green('Everything looks fine, Lychee has not reported any problems!'));
 		} else {
-			try {
-				$logs = Logs::query()
-					->orderBy('id', $order)
-					->limit($n)
-					->get();
-			} catch (\InvalidArgumentException $e) {
-				throw new QueryBuilderException($e);
-			}
+			$logs = Logs::query()
+				->orderBy('id', $order)
+				->limit($n)
+				->get();
 			foreach ($logs->reverse() as $log) {
 				$this->line($this->col->magenta($log->created_at)
 					. ' -- '

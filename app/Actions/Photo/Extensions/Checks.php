@@ -41,17 +41,13 @@ trait Checks
 	 */
 	public function get_duplicate(string $checksum): ?Photo
 	{
-		try {
-			/* @noinspection PhpIncompatibleReturnTypeInspection */
-			return Photo::query()
-				->where('checksum', '=', $checksum)
-				->orWhere('live_photo_checksum', '=', $checksum)
-				->first();
-		} catch (\InvalidArgumentException $ignored) {
-			// In theory `orWhere` may throw this exception,
-			// but will never do so for string operands
-			return null;
-		}
+		$query = Photo::query()
+			->where('checksum', '=', $checksum)
+			->orWhere('live_photo_checksum', '=', $checksum);
+		/** @var Photo|null $photo */
+		$photo = $query->first();
+
+		return $photo;
 	}
 
 	/**

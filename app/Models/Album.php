@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Models\Extensions\AlbumBuilder;
 use App\Models\Extensions\BaseAlbum;
@@ -11,6 +12,8 @@ use App\Relations\HasManyChildPhotos;
 use App\Relations\HasManyPhotosRecursively;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Query\Builder as BaseBuilder;
+use Kalnoy\Nestedset\DescendantsRelation;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
 
@@ -26,6 +29,10 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property Photo|null        $cover
  * @property int               $_lft
  * @property int               $_rgt
+ *
+ * @method static       AlbumBuilder query()                       Begin querying the model.
+ * @method static       AlbumBuilder with(array|string $relations) Begin querying the model with eager loading.
+ * @method AlbumBuilder newQuery()                                 Get a new query builder for the model's table.
  */
 class Album extends BaseAlbum implements Node
 {
@@ -116,6 +123,22 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
+	 * Get query for descendants of the node.
+	 *
+	 * @return DescendantsRelation
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function descendants(): DescendantsRelation
+	{
+		try {
+			return new DescendantsRelation($this->newQuery(), $this);
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
+	}
+
+	/**
 	 * Return the relationship between an album and its cover.
 	 *
 	 * @return HasOne
@@ -202,7 +225,11 @@ class Album extends BaseAlbum implements Node
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Create a new Eloquent query builder for the model.
+	 *
+	 * @param BaseBuilder $query
+	 *
+	 * @return AlbumBuilder
 	 */
 	public function newEloquentBuilder($query): AlbumBuilder
 	{

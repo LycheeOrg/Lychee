@@ -39,18 +39,14 @@ class SharingController extends Controller
 	 */
 	public function add(SetSharingRequest $request): void
 	{
-		try {
-			/** @var Collection<User> $users */
-			$users = User::query()
-				->whereIn('id', $request->userIDs())
-				->get();
+		/** @var Collection<User> $users */
+		$users = User::query()
+			->whereIn('id', $request->userIDs())
+			->get();
 
-			/** @var User $user */
-			foreach ($users as $user) {
-				$user->shared()->sync($request->albumIDs(), false);
-			}
-		} catch (\Exception $e) {
-			throw new QueryBuilderException($e);
+		/** @var User $user */
+		foreach ($users as $user) {
+			$user->shared()->sync($request->albumIDs(), false);
 		}
 	}
 
@@ -73,7 +69,7 @@ class SharingController extends Controller
 			DB::table('user_base_album')
 				->whereIn('id', $request->shareIDs())
 				->delete();
-		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 			throw new QueryBuilderException($e);
 		}
 	}

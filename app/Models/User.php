@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
 use DarkGhostHunter\Larapass\Contracts\WebAuthnAuthenticatable;
 use DarkGhostHunter\Larapass\WebAuthnAuthentication;
@@ -37,6 +38,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use WebAuthnAuthentication;
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
+	use UseFixedQueryBuilder;
 
 	public const FRIENDLY_MODEL_NAME = 'user';
 

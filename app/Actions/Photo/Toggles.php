@@ -22,11 +22,7 @@ class Toggles
 	 */
 	public function do(array $photoIDs): void
 	{
-		try {
-			$photos = Photo::query()->whereIn('id', $photoIDs)->get();
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		$photos = Photo::query()->whereIn('id', $photoIDs)->get();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$photo->{$this->property} = !($photo->{$this->property});

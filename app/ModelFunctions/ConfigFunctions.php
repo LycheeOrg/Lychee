@@ -5,7 +5,6 @@ namespace App\ModelFunctions;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Models\Configs;
-use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 
 class ConfigFunctions
@@ -47,14 +46,10 @@ class ConfigFunctions
 	 */
 	public function min_info(): Collection
 	{
-		try {
-			return Configs::info()
-				->orderBy('id', 'ASC')
-				->get()
-				->pluck('value', 'key');
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		return Configs::info()
+			->orderBy('id', 'ASC')
+			->get()
+			->pluck('value', 'key');
 	}
 
 	/**
@@ -95,17 +90,13 @@ class ConfigFunctions
 	 */
 	public function sanity(array &$return): void
 	{
-		try {
-			$configs = Configs::all(['key', 'value', 'type_range']);
+		$configs = Configs::all(['key', 'value', 'type_range']);
 
-			foreach ($configs as $config) {
-				$message = $config->sanity($config->value);
-				if ($message != '') {
-					$return[] = $message;
-				}
+		foreach ($configs as $config) {
+			$message = $config->sanity($config->value);
+			if ($message != '') {
+				$return[] = $message;
 			}
-		} catch (QueryException $e) {
-			$return[] = 'Error: ' . $e->getMessage();
 		}
 	}
 

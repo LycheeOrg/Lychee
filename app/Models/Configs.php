@@ -6,8 +6,9 @@ use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\ModelDBException;
 use App\Facades\Helpers;
 use App\Models\Extensions\ConfigsHas;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
-use Illuminate\Database\Eloquent\Builder;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -22,19 +23,15 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * @property int         $confidentiality
  * @property string      $description
  *
- * @method static Builder admin()
- * @method static Builder info()
- * @method static Builder public ()
- * @method static Builder whereCat($value)
- * @method static Builder whereConfidentiality($value)
- * @method static Builder whereId($value)
- * @method static Builder whereKey($value)
- * @method static Builder whereValue($value)
+ * @method static FixedQueryBuilder info()   Starts to query the model with results scoped to confidentiality level "info".
+ * @method static FixedQueryBuilder public() Starts to query the model with results scoped to confidentiality level "public".
+ * @method static FixedQueryBuilder admin()  Starts to query the model with results scoped to confidentiality level "admin".
  */
 class Configs extends Model
 {
 	use ConfigsHas;
 	use ThrowsConsistentExceptions;
+	use UseFixedQueryBuilder;
 
 	public const FRIENDLY_MODEL_NAME = 'config';
 
@@ -225,11 +222,11 @@ class Configs extends Model
 	 */
 
 	/**
-	 * @param Builder $query
+	 * @param FixedQueryBuilder $query
 	 *
-	 * @return Builder
+	 * @return FixedQueryBuilder
 	 */
-	public function scopePublic(Builder $query): Builder
+	public function scopePublic(FixedQueryBuilder $query): FixedQueryBuilder
 	{
 		return $query->where('confidentiality', '=', 0);
 	}
@@ -237,11 +234,11 @@ class Configs extends Model
 	/**
 	 * Logged user can see.
 	 *
-	 * @param Builder $query
+	 * @param FixedQueryBuilder $query
 	 *
-	 * @return Builder
+	 * @return FixedQueryBuilder
 	 */
-	public function scopeInfo(Builder $query): Builder
+	public function scopeInfo(FixedQueryBuilder $query): FixedQueryBuilder
 	{
 		return $query->where('confidentiality', '<=', 2);
 	}
@@ -249,11 +246,11 @@ class Configs extends Model
 	/**
 	 * Only admin can see.
 	 *
-	 * @param Builder $query
+	 * @param FixedQueryBuilder $query
 	 *
-	 * @return Builder
+	 * @return FixedQueryBuilder
 	 */
-	public function scopeAdmin(Builder $query): Builder
+	public function scopeAdmin(FixedQueryBuilder $query): FixedQueryBuilder
 	{
 		return $query->where('confidentiality', '<=', 3);
 	}

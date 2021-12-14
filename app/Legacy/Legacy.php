@@ -19,14 +19,10 @@ class Legacy
 	 */
 	public static function resetAdmin(): void
 	{
-		try {
-			Configs::query()
-				->where('key', '=', 'username')
-				->orWhere('key', '=', 'password')
-				->update(['value' => '']);
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		Configs::query()
+			->where('key', '=', 'username')
+			->orWhere('key', '=', 'password')
+			->update(['value' => '']);
 	}
 
 	/**

@@ -138,15 +138,11 @@ class UploadCheck
 		if ($request->has('ShareIDs')) {
 			$shareIDs = $request['ShareIDs'];
 
-			try {
-				$albums = Album::query()->whereIn('id', function (Builder $query) use ($shareIDs) {
-					$query->select('album_id')
-						->from('user_base_album')
-						->whereIn('id', explode(',', $shareIDs));
-				})->select('owner_id')->get();
-			} catch (\InvalidArgumentException $e) {
-				throw new QueryBuilderException($e);
-			}
+			$albums = Album::query()->whereIn('id', function (Builder $query) use ($shareIDs) {
+				$query->select('album_id')
+					->from('user_base_album')
+					->whereIn('id', explode(',', $shareIDs));
+			})->select('owner_id')->get();
 
 			if ($albums == null) {
 				Logs::error(__METHOD__, __LINE__, 'Could not find specified albums');

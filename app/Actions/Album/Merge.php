@@ -3,7 +3,6 @@
 namespace App\Actions\Album;
 
 use App\Contracts\InternalLycheeException;
-use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
 use App\Models\Logs;
@@ -29,21 +28,13 @@ class Merge extends Action
 		$targetAlbum = Album::query()->findOrFail($albumID);
 
 		// Merge photos of source albums into target
-		try {
-			Photo::query()
-				->whereIn('album_id', $sourceAlbumIDs)
-				->update(['album_id' => $targetAlbum->id]);
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		Photo::query()
+			->whereIn('album_id', $sourceAlbumIDs)
+			->update(['album_id' => $targetAlbum->id]);
 
 		// Merge sub-albums of source albums into target
 		// ! we have to do it via Model::save() in order to not break the tree
-		try {
-			$albums = Album::query()->whereIn('parent_id', $sourceAlbumIDs)->get();
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		$albums = Album::query()->whereIn('parent_id', $sourceAlbumIDs)->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			$album->parent_id = $targetAlbum->id;
@@ -52,11 +43,7 @@ class Merge extends Action
 
 		// Now we delete the source albums
 		// ! we have to do it via Model::delete() in order to not break the tree
-		try {
-			$albums = Album::query()->whereIn('id', $sourceAlbumIDs)->get();
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		$albums = Album::query()->whereIn('id', $sourceAlbumIDs)->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			$album->delete();
@@ -64,11 +51,7 @@ class Merge extends Action
 
 		$q = Album::query();
 		if ($q->isBroken()) {
-			try {
-				$errors = $q->countErrors();
-			} catch (\InvalidArgumentException $e) {
-				throw new QueryBuilderException($e);
-			}
+			$errors = $q->countErrors();
 			$sum = $errors['oddness'] + $errors['duplicates'] + $errors['wrong_parent'] + $errors['missing_parent'];
 			Logs::warning(__METHOD__, __LINE__, 'Tree is broken with ' . $sum . ' errors.');
 			$q->fixTree();
@@ -76,11 +59,7 @@ class Merge extends Action
 		}
 
 		// Reset ownership
-		try {
-			$targetAlbum->descendants()->update(['owner_id' => $targetAlbum->owner_id]);
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		$targetAlbum->descendants()->update(['owner_id' => $targetAlbum->owner_id]);
 		$targetAlbum->all_photos()->update(['owner_id' => $targetAlbum->owner_id]);
 	}
 }

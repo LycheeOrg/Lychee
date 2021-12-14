@@ -8,6 +8,7 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as BaseBuilder;
@@ -33,16 +34,16 @@ class PhotoAuthorisationProvider
 	 *  - the user is the admin
 	 *  - the user is the owner of the photo
 	 *  - the photo is part of an album which the user is allowed to access
-	 *    (cp. {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}.
+	 *    (cp. {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}).
 	 *  - the photo is public
 	 *
-	 * @param Builder $query
+	 * @param FixedQueryBuilder $query
 	 *
-	 * @return Builder
+	 * @return FixedQueryBuilder
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyVisibilityFilter(Builder $query): Builder
+	public function applyVisibilityFilter(FixedQueryBuilder $query): FixedQueryBuilder
 	{
 		$this->prepareModelQueryOrFail($query, false, true, true);
 
@@ -52,22 +53,18 @@ class PhotoAuthorisationProvider
 
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
-		try {
-			// We must wrap everything into an outer query to avoid any undesired
-			// effects in case that the original query already contains an
-			// "OR"-clause.
-			$visibilitySubQuery = function (Builder $query2) use ($userID) {
-				$this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery());
-				$query2->orWhere('photos.is_public', '=', true);
-				if ($userID !== null) {
-					$query2->orWhere('photos.owner_id', '=', $userID);
-				}
-			};
+		// We must wrap everything into an outer query to avoid any undesired
+		// effects in case that the original query already contains an
+		// "OR"-clause.
+		$visibilitySubQuery = function (FixedQueryBuilder $query2) use ($userID) {
+			$this->albumAuthorisationProvider->appendAccessibilityConditions($query2->getQuery());
+			$query2->orWhere('photos.is_public', '=', true);
+			if ($userID !== null) {
+				$query2->orWhere('photos.owner_id', '=', $userID);
+			}
+		};
 
-			return $query->where($visibilitySubQuery);
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		return $query->where($visibilitySubQuery);
 	}
 
 	/**
@@ -117,12 +114,14 @@ class PhotoAuthorisationProvider
 	 * The method simply assumes that the user has already legitimately
 	 * accessed the origin album, if the caller provides an album model.
 	 *
-	 * @param Builder    $query  the photo query which shall be restricted
-	 * @param Album|null $origin the optional top album which is used as a search base
+	 * @param FixedQueryBuilder $query  the photo query which shall be restricted
+	 * @param Album|null        $origin the optional top album which is used as a search base
 	 *
-	 * @return Builder the restricted photo query
+	 * @return FixedQueryBuilder the restricted photo query
+	 *
+	 * @throws InternalLycheeException
 	 */
-	public function applySearchabilityFilter(Builder $query, ?Album $origin = null): Builder
+	public function applySearchabilityFilter(FixedQueryBuilder $query, ?Album $origin = null): FixedQueryBuilder
 	{
 		$this->prepareModelQueryOrFail($query, true, false, false);
 
@@ -178,21 +177,27 @@ class PhotoAuthorisationProvider
 	 * @param int|string|null $originRight like `$originLeft` but for the
 	 *                                     right bound
 	 *
-	 * @return Builder the restricted photo query
+	 * @return BaseBuilder the restricted photo query
+	 *
+	 * @throws QueryBuilderException
 	 */
 	public function appendSearchabilityConditions(BaseBuilder $query, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
 
-		$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
-			$this->albumAuthorisationProvider->appendBlockedAlbumsCondition($q, $originLeft, $originRight);
-		});
-		if ($maySearchPublic) {
-			$query->orWhere('photos.is_public', '=', true);
-		}
-		if ($userID !== null) {
-			$query->orWhere('photos.owner_id', '=', $userID);
+		try {
+			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
+				$this->albumAuthorisationProvider->appendBlockedAlbumsCondition($q, $originLeft, $originRight);
+			});
+			if ($maySearchPublic) {
+				$query->orWhere('photos.is_public', '=', true);
+			}
+			if ($userID !== null) {
+				$query->orWhere('photos.owner_id', '=', $userID);
+			}
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
 		}
 
 		return $query;
@@ -230,14 +235,10 @@ class PhotoAuthorisationProvider
 		// duplicates.
 		$photoIDs = array_unique($photoIDs);
 		if (count($photoIDs) > 0) {
-			try {
-				return Photo::query()
-						->whereIn('photos.id', $photoIDs)
-						->where('photos.owner_id', '=', $userID)
-						->count() === count($photoIDs);
-			} catch (\InvalidArgumentException $e) {
-				throw new QueryBuilderException($e);
-			}
+			return Photo::query()
+					->whereIn('photos.id', $photoIDs)
+					->where('photos.owner_id', '=', $userID)
+					->count() === count($photoIDs);
 		}
 
 		return true;
@@ -246,14 +247,14 @@ class PhotoAuthorisationProvider
 	/**
 	 * Throws an exception if the given query does not query for a photo.
 	 *
-	 * @param Builder $query         the query to prepare
-	 * @param bool    $addAlbums     if true, joins photo query with (parent) albums
-	 * @param bool    $addBaseAlbums if true, joins photos query with (parent) base albums
-	 * @param bool    $addShares     if true, joins photo query with user share table of (parent) album
+	 * @param FixedQueryBuilder $query         the query to prepare
+	 * @param bool              $addAlbums     if true, joins photo query with (parent) albums
+	 * @param bool              $addBaseAlbums if true, joins photos query with (parent) base albums
+	 * @param bool              $addShares     if true, joins photo query with user share table of (parent) album
 	 *
-	 * @throws InvalidQueryModelException
+	 * @throws InternalLycheeException
 	 */
-	private function prepareModelQueryOrFail(Builder $query, bool $addAlbums, bool $addBaseAlbums, bool $addShares): void
+	private function prepareModelQueryOrFail(FixedQueryBuilder $query, bool $addAlbums, bool $addBaseAlbums, bool $addShares): void
 	{
 		$model = $query->getModel();
 		$table = $query->getQuery()->from;

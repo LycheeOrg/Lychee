@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Contracts\LycheeException;
-use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -74,18 +73,14 @@ class DemoController extends Controller
 		$return_album_list['kind'] = 'albumID';
 		$return_album_list['array'] = [];
 
-		try {
-			/** @var Collection<Album> $albums */
-			$albums = Album::query()
-				->select(['albums.*'])
-				->with(['photos', 'photos.size_variants', 'photos.size_variants.sym_links'])
-				->join('base_albums', 'base_albums.id', '=', 'albums.id')
-				->where('base_albums.is_public', '=', true)
-				->where('base_albums.requires_link', '=', false)
-				->get();
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
+		/** @var Collection<Album> $albums */
+		$albums = Album::query()
+			->select(['albums.*'])
+			->with(['photos', 'photos.size_variants', 'photos.size_variants.sym_links'])
+			->join('base_albums', 'base_albums.id', '=', 'albums.id')
+			->where('base_albums.is_public', '=', true)
+			->where('base_albums.requires_link', '=', false)
+			->get();
 		/** @var Album $album */
 		foreach ($albums as $album) {
 			/**

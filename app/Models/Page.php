@@ -3,9 +3,10 @@
 namespace App\Models;
 
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\ThrowsConsistentExceptions;
+use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Models\Extensions\UTCBasedTimes;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -25,22 +26,23 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $updated_at
  * @property Collection  $content
  *
- * @method static Builder enabled()
- * @method static Builder menu()
- * @method static Builder whereCreatedAt($value)
- * @method static Builder whereEnabled($value)
- * @method static Builder whereId($value)
- * @method static Builder whereInMenu($value)
- * @method static Builder whereLink($value)
- * @method static Builder whereMenuTitle($value)
- * @method static Builder whereOrder($value)
- * @method static Builder whereTitle($value)
- * @method static Builder whereUpdatedAt($value)
+ * @method static FixedQueryBuilder enabled()
+ * @method static FixedQueryBuilder menu()
+ * @method static FixedQueryBuilder whereCreatedAt($value)
+ * @method static FixedQueryBuilder whereEnabled($value)
+ * @method static FixedQueryBuilder whereId($value)
+ * @method static FixedQueryBuilder whereInMenu($value)
+ * @method static FixedQueryBuilder whereLink($value)
+ * @method static FixedQueryBuilder whereMenuTitle($value)
+ * @method static FixedQueryBuilder whereOrder($value)
+ * @method static FixedQueryBuilder whereTitle($value)
+ * @method static FixedQueryBuilder whereUpdatedAt($value)
  */
 class Page extends Model
 {
 	use UTCBasedTimes;
 	use ThrowsConsistentExceptions;
+	use UseFixedQueryBuilder;
 
 	public const FRIENDLY_MODEL_NAME = 'page';
 
@@ -67,40 +69,32 @@ class Page extends Model
 	 */
 
 	/**
-	 * @param Builder $query
+	 * @param FixedQueryBuilder $query
 	 *
-	 * @return Builder
+	 * @return FixedQueryBuilder
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function scopeMenu(Builder $query): Builder
+	public function scopeMenu(FixedQueryBuilder $query): FixedQueryBuilder
 	{
-		try {
-			return $query
+		return $query
 			->where('in_menu', true)
 			->where('enabled', true)
 			->orderBy('order');
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
 	}
 
 	/**
-	 * @param Builder $query
+	 * @param FixedQueryBuilder $query
 	 *
-	 * @return Builder
+	 * @return FixedQueryBuilder
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function scopeEnabled(Builder $query): Builder
+	public function scopeEnabled(FixedQueryBuilder $query): FixedQueryBuilder
 	{
-		try {
-			return $query
+		return $query
 			->where('enabled', true)
 			->orderBy('order');
-		} catch (\InvalidArgumentException $e) {
-			throw new QueryBuilderException($e);
-		}
 	}
 
 	protected function friendlyModelName(): string
