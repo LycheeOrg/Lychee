@@ -122,8 +122,8 @@ class NotificationTest extends TestCase
 		$response->assertJsonFragment([
 			'id' => $user_id,
 			'username' => 'uploader',
-			'upload' => 1,
-			'lock' => 0,
+			'may_upload' => true,
+			'is_locked' => false,
 		]);
 
 		$users_test->delete($user_id);

@@ -17,8 +17,8 @@ class Create
 		}
 
 		$user = new User();
-		$user->upload = ($data['upload'] == '1');
-		$user->lock = ($data['lock'] == '1');
+		$user->may_upload = $data['may_upload'];
+		$user->is_locked = $data['is_locked'];
 		$user->username = $data['username'];
 		$user->password = bcrypt($data['password']);
 		if (!$user->save()) {

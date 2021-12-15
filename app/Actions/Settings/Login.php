@@ -54,14 +54,15 @@ class Login
 			$id = AccessControl::id();
 
 			// this is probably sensitive to timing attacks...
-			$user = User::findOrFail($id);
+			/** @var User $user */
+			$user = User::query()->findOrFail($id);
 
-			if ($user->lock) {
+			if ($user->is_locked) {
 				Logs::notice(__METHOD__, __LINE__, 'Locked user (' . $user->username . ') tried to change their identity from ' . $request->ip());
 				throw new JsonError('Locked account!');
 			}
 
-			if (User::where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
+			if (User::query()->where('username', '=', $request['username'])->where('id', '!=', $id)->count()) {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $request['username'] . ' from ' . $request->ip());
 
 				throw new JsonError('Username already exists.');

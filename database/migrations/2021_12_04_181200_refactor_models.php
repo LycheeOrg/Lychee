@@ -167,6 +167,20 @@ class RefactorModels extends Migration
 		$connection = Schema::connection(null)->getConnection();
 		$this->driverName = $connection->getDriverName();
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
+
+		// I like tools which believe to be more clever than the user :-(
+		// If you insert a row into a table with id=0, MySQL/MariaDB
+		// "auto-magically" converts 0 into the latest auto-increment value
+		// plus one.
+		// If I want a DB to use an auto-incremented value, then I do not
+		// specify a value for the ID at all, but let the DB pick one.
+		// If I insert zero, I want zero to be zero. Yikes!
+		// We need this, because our admin user uses ID 0.
+		// Now, let us get this nonsense out of MySQL's head.
+		if ($this->driverName == 'mysql') {
+			$sql_mode = DB::selectOne('SELECT @@SESSION.sql_mode AS sql_mode');
+			DB::statement('SET SESSION sql_mode=\'' . $sql_mode->sql_mode . ',NO_AUTO_VALUE_ON_ZERO\'');
+		}
 	}
 
 	/**
@@ -179,8 +193,9 @@ class RefactorModels extends Migration
 		// Step 1
 		// Create tables in correct order so that foreign keys can
 		// be created immediately.
-		$this->createBaseAlbumTable();
 		$this->renameTables();
+		$this->createUsersTableUp();
+		$this->createBaseAlbumTable();
 		$this->createAlbumTableUp();
 		$this->createTagAlbumTable();
 		$this->createUserBaseAlbumTableUp();
@@ -197,8 +212,7 @@ class RefactorModels extends Migration
 		DB::commit();
 
 		// Step 3
-		Schema::drop('user_album');
-		$this->dropTemporarilyRenamedTables();
+		$this->dropTemporaryTablesUp();
 	}
 
 	/**
@@ -212,6 +226,7 @@ class RefactorModels extends Migration
 		// Create tables in correct order so that foreign keys can
 		// be created immediately.
 		$this->renameTables();
+		$this->createUsersTableDown();
 		$this->createAlbumTableDown();
 		$this->createUserAlbumTableDown();
 		$this->createPhotoTableDown();
@@ -225,11 +240,7 @@ class RefactorModels extends Migration
 		DB::commit();
 
 		// Step 3
-		Schema::drop('user_base_album');
-		Schema::drop('size_variants');
-		$this->dropTemporarilyRenamedTables();
-		Schema::drop('tag_albums');
-		Schema::drop('base_albums');
+		$this->dropTemporaryTablesDown();
 	}
 
 	/**
@@ -269,22 +280,103 @@ class RefactorModels extends Migration
 			$this->dropIndexIfExists($table, 'photos_is_starred_index');
 		});
 		Schema::rename('photos', 'photos_tmp');
+		Schema::table('users', function (Blueprint $table) {
+			$this->dropUniqueIfExists($table, 'users_username_unique');
+			$this->dropUniqueIfExists($table, 'users_email_unique');
+		});
+		Schema::rename('users', 'users_tmp');
 	}
 
 	/**
 	 * Drops temporary tables which have been created by
-	 * {@link RefactorAlbumModel::renameTables()}.
+	 * {@link RefactorAlbumModel::renameTables()} or have become unnecessary.
 	 *
 	 * The order is important to avoid error due to unsatisfied foreign
 	 * constraints.
 	 */
-	private function dropTemporarilyRenamedTables(): void
+	private function dropTemporaryTablesUp(): void
 	{
+		Schema::drop('user_album');
 		// We must remove any foreign link from `albums` to `photos` to
 		// break up circular dependencies.
 		DB::table('albums_tmp')->update(['cover_id' => null]);
 		Schema::drop('photos_tmp');
 		Schema::drop('albums_tmp');
+		Schema::drop('users_tmp');
+	}
+
+	/**
+	 * Drops temporary tables which have been created by
+	 * {@link RefactorAlbumModel::renameTables()} or have become unnecessary.
+	 *
+	 * The order is important to avoid error due to unsatisfied foreign
+	 * constraints.
+	 */
+	private function dropTemporaryTablesDown(): void
+	{
+		Schema::drop('user_base_album');
+		Schema::drop('size_variants');
+		// We must remove any foreign link from `albums` to `photos` to
+		// break up circular dependencies.
+		DB::table('albums_tmp')->update(['cover_id' => null]);
+		Schema::drop('photos_tmp');
+		Schema::drop('albums_tmp');
+		Schema::drop('tag_albums');
+		Schema::drop('base_albums');
+		Schema::drop('users_tmp');
+	}
+
+	/**
+	 * Creates the new table `users` with improved attribute names.
+	 *
+	 * Note: Actually, renaming of the attributes `lock` to `is_locked` and
+	 * `upload` to `may_upload` should not be part of this migration, because
+	 * it is unrelated to the refactored, new architecture.
+	 * However, there will be a subsequent PR which aims at making the JSON
+	 * API more consistent and in this context this migration make sense.
+	 * Unfortunately, SQLite does not support renaming of columns in place.
+	 * Under the hood, SQLite drops the entire table and re-creates it.
+	 * But this fails, if there are foreign key constraints from other tables
+	 * to `users`.
+	 * Eventually, we would end up with re-creating the whole DB again. :-(
+	 * Hence, we bring forward this migration when we re-create the whole DB
+	 * anyway.
+	 *
+	 * @return void
+	 */
+	private function createUsersTableUp(): void
+	{
+		Schema::create('users', function (Blueprint $table) {
+			$table->increments('id');
+			$table->dateTime('created_at')->nullable(false);
+			$table->dateTime('updated_at')->nullable(false);
+			$table->string('username', 100)->nullable(false)->unique();
+			$table->string('password', 100)->nullable(true);
+			$table->string('email', 100)->nullable()->unique();
+			$table->boolean('may_upload')->nullable(false)->default(false);
+			$table->boolean('is_locked')->nullable(false)->default(false);
+			$table->rememberToken();
+		});
+	}
+
+	/**
+	 * Creates the old table `users`.
+	 *
+	 * @return void
+	 */
+	private function createUsersTableDown(): void
+	{
+		Schema::create('users', function (Blueprint $table) {
+			$table->increments('id');
+			$table->dateTime('created_at')->nullable(false);
+			$table->dateTime('updated_at')->nullable(false);
+			$table->string('username', 100)->nullable(false)->unique();
+			$table->string('password', 100)->nullable(true);
+			$table->string('email', 100)->nullable()->unique();
+			$table->boolean('upload')->nullable(false)->default(false);
+			$table->boolean('lock')->nullable(false)->default(false);
+			$table->rememberToken();
+		});
 	}
 
 	/**
@@ -644,6 +736,21 @@ class RefactorModels extends Migration
 	 */
 	private function upgradeCopy(): void
 	{
+		$users = DB::table('users_tmp')->get();
+		foreach ($users as $user) {
+			DB::table('users')->insert([
+				'id' => $user->id,
+				'created_at' => $user->created_at,
+				'updated_at' => $user->updated_at,
+				'username' => $user->username,
+				'password' => $user->password,
+				'email' => $user->email,
+				'may_upload' => $user->upload,
+				'is_locked' => $user->lock,
+				'remember_token' => $user->remember_token,
+			]);
+		}
+
 		// Ordering by `_lft` is important, because we must copy parent
 		// albums first.
 		// Otherwise, foreign key constraint to `parent_id` may fail.
@@ -786,6 +893,21 @@ class RefactorModels extends Migration
 	 */
 	private function downgradeCopy(): void
 	{
+		$users = DB::table('users_tmp')->get();
+		foreach ($users as $user) {
+			DB::table('users')->insert([
+				'id' => $user->id,
+				'created_at' => $user->created_at,
+				'updated_at' => $user->updated_at,
+				'username' => $user->username,
+				'password' => $user->password,
+				'email' => $user->email,
+				'upload' => $user->may_upload,
+				'lock' => $user->is_locked,
+				'remember_token' => $user->remember_token,
+			]);
+		}
+
 		$baseAlbums = DB::table('base_albums')->lazyById();
 		$mapSorting = function (?string $sortingCol): ?string {
 			if (empty($sortingCol)) {

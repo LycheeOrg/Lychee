@@ -47,7 +47,7 @@ class UploadCheck
 		$user = AccessControl::user();
 
 		// is not admin and does not have upload rights
-		if (!$user->upload) {
+		if (!$user->may_upload) {
 			return response('', 403);
 		}
 

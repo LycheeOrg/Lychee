@@ -1769,7 +1769,7 @@ album.isUploadable = function () {
 	if (lychee.admin) {
 		return true;
 	}
-	if (lychee.publicMode || !lychee.upload) {
+	if (lychee.publicMode || !lychee.may_upload) {
 		return false;
 	}
 
@@ -4218,8 +4218,8 @@ var lychee = {
 	api_V2: false, // enable api_V2
 	sub_albums: false, // enable sub_albums features
 	admin: false, // enable admin mode (multi-user)
-	upload: false, // enable possibility to upload (multi-user)
-	lock: false, // locked user (multi-user)
+	may_upload: false, // enable possibility to upload (multi-user)
+	is_locked: false, // locked user (multi-user)
 	username: null,
 	layout: "1", // 0: Use default, "square" layout. 1: Use Flickr-like "justified" layout. 2: Use Google-like "unjustified" layout
 	public_search: false, // display Search in publicMode
@@ -4436,9 +4436,9 @@ lychee.init = function () {
 			leftMenu.build();
 			leftMenu.bind();
 
-			lychee.upload = data.admin || data.upload;
+			lychee.may_upload = data.admin || data.may_upload;
 			lychee.admin = data.admin;
-			lychee.lock = data.lock;
+			lychee.is_locked = data.is_locked;
 			lychee.username = data.username;
 			lychee.setMode("logged_in");
 
@@ -4767,10 +4767,10 @@ lychee.setTitle = function (title, editable) {
 };
 
 lychee.setMode = function (mode) {
-	if (lychee.lock) {
+	if (lychee.is_locked) {
 		$("#button_settings_open").remove();
 	}
-	if (!lychee.upload) {
+	if (!lychee.may_upload) {
 		$("#button_sharing").remove();
 
 		$(document).off("click", ".header__title--editable").off("touchend", ".header__title--editable").off("contextmenu", ".photo").off("contextmenu", ".album").off("drop");
@@ -9536,14 +9536,14 @@ users.update = function (params) {
 	}
 
 	if ($("#UserData" + params.id + ' .choice input[name="upload"]:checked').length === 1) {
-		params.upload = "1";
+		params.may_upload = true;
 	} else {
-		params.upload = "0";
+		params.may_upload = false;
 	}
 	if ($("#UserData" + params.id + ' .choice input[name="lock"]:checked').length === 1) {
-		params.lock = "1";
+		params.is_locked = true;
 	} else {
-		params.lock = "0";
+		params.is_locked = false;
 	}
 
 	api.post("User::Save", params, function (data) {
@@ -9568,14 +9568,14 @@ users.create = function (params) {
 	}
 
 	if ($('#UserCreate .choice input[name="upload"]:checked').length === 1) {
-		params.upload = "1";
+		params.may_upload = true;
 	} else {
-		params.upload = "0";
+		params.may_upload = false;
 	}
 	if ($('#UserCreate .choice input[name="lock"]:checked').length === 1) {
-		params.lock = "1";
+		params.is_locked = true;
 	} else {
-		params.lock = "0";
+		params.is_locked = false;
 	}
 
 	api.post("User::Create", params, function () {
@@ -10772,10 +10772,10 @@ view.users = {
 				$(".users_view").append(build.user(this));
 				settings.bind("#UserUpdate" + this.id, "#UserData" + this.id, users.update);
 				settings.bind("#UserDelete" + this.id, "#UserData" + this.id, users.delete);
-				if (this.upload === 1) {
+				if (this.may_upload) {
 					$("#UserData" + this.id + ' .choice input[name="upload"]').click();
 				}
-				if (this.lock === 1) {
+				if (this.is_locked) {
 					$("#UserData" + this.id + ' .choice input[name="lock"]').click();
 				}
 			});
@@ -11099,10 +11099,10 @@ view.u2f = {
 				$.each(u2f.json, function () {
 					$(".u2f_view").append(build.u2f(this));
 					settings.bind("#CredentialDelete" + this.id, "#CredentialData" + this.id, u2f.delete);
-					// if (this.upload === 1) {
+					// if (this.may_upload) {
 					//     $('#UserData' + this.id + ' .choice input[name="upload"]').click();
 					// }
-					// if (this.lock === 1) {
+					// if (this.is_locked) {
 					//     $('#UserData' + this.id + ' .choice input[name="lock"]').click();
 					// }
 				});

@@ -70,8 +70,8 @@ class UserController extends Controller
 		$data = $request->validate([
 			'username' => 'required|string|max:100',
 			'password' => 'required|string|max:50',
-			'upload' => 'required',
-			'lock' => 'required',
+			'may_upload' => 'present|boolean',
+			'is_locked' => 'present|boolean',
 		]);
 
 		return $create->do($data);

@@ -457,7 +457,7 @@ class AlbumAuthorisationProvider
 
 		$user = AccessControl::user();
 
-		if (!$user->upload) {
+		if (!$user->may_upload) {
 			return false;
 		}
 

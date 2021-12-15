@@ -113,7 +113,7 @@ class UsersTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		// 2
-		$users_test->add('test_abcd', 'test_abcd', '1', '1');
+		$users_test->add('test_abcd', 'test_abcd', true, true);
 
 		// 3
 		$response = $users_test->list();
@@ -124,26 +124,26 @@ class UsersTest extends TestCase
 		$response->assertJsonFragment([
 			'id' => $id,
 			'username' => 'test_abcd',
-			'upload' => 1,
-			'lock' => 1,
+			'may_upload' => true,
+			'is_locked' => true,
 		]);
 
 		// 5
 		// TODO: Fix this on the server.side. The expected status code should be '409' (Conflict), not 200 (OK).
-		$users_test->add('test_abcd', 'test_abcd', '1', '1', 200, 'Error: username must be unique');
+		$users_test->add('test_abcd', 'test_abcd', true, true, 200, 'Error: username must be unique');
 
 		// 6
-		$users_test->save($id, 'test_abcde', 'testing', '0', '1');
+		$users_test->save($id, 'test_abcde', 'testing', false, true);
 
 		// 7
-		$users_test->add('test_abcd2', 'test_abcd', '1', '1');
+		$users_test->add('test_abcd2', 'test_abcd', true, true);
 		$response = $users_test->list();
 		$t = json_decode($response->getContent());
 		$id2 = end($t)->id;
 
 		// 8
 		// TODO: Fix this on the server.side. The expected status code should be '409' (Conflict), not 200 (OK).
-		$users_test->save($id2, 'test_abcde', 'testing', '0', '1', 200, 'Error: username must be unique');
+		$users_test->save($id2, 'test_abcde', 'testing', false, true, 200, 'Error: username must be unique');
 
 		// 9
 		$sessions_test->logout();
@@ -169,7 +169,7 @@ class UsersTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		// 16
-		$users_test->save($id, 'test_abcde', 'testing', '0', '0');
+		$users_test->save($id, 'test_abcde', 'testing', false, false);
 
 		// 17
 		$sessions_test->logout();
@@ -222,7 +222,7 @@ class UsersTest extends TestCase
 		$users_test->delete('0', 422);
 		// those should fail because there are no user with id -1
 		$users_test->delete('-1', 422);
-		$users_test->save('-1', 'toto', 'test', '0', '1', 422);
+		$users_test->save('-1', 'toto', 'test', false, true, 422);
 
 		// 31
 		$sessions_test->logout();
@@ -244,7 +244,7 @@ class UsersTest extends TestCase
 		$users_test->get_email();
 
 		// 36
-		$users_test->update_email('');
+		$users_test->update_email(null);
 
 		// 37
 		$sessions_test->logout();

@@ -19,17 +19,17 @@ use Illuminate\Support\Carbon;
  * App\Models\User.
  *
  * @property int                                                   $id
- * @property string                                                $username
- * @property string                                                $password
- * @property string|null                                           $email
- * @property int                                                   $upload
- * @property int                                                   $lock
- * @property string|null                                           $remember_token
  * @property Carbon                                                $created_at
  * @property Carbon                                                $updated_at
- * @property Collection                                            $albums
+ * @property string                                                $username
+ * @property string|null                                           $password
+ * @property string|null                                           $email
+ * @property bool                                                  $may_upload
+ * @property bool                                                  $is_locked
+ * @property string|null                                           $remember_token
+ * @property Collection<Album>                                     $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
- * @property Collection                                            $shared
+ * @property Collection<Album>                                     $shared
  *
  * @method static Builder|User whereCreatedAt($value)
  * @method static Builder|User whereId($value)
@@ -66,8 +66,11 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	protected $casts = [
-		'upload' => 'int',
-		'lock' => 'int',
+		'id' => 'integer',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+		'may_upload' => 'boolean',
+		'is_locked' => 'boolean',
 	];
 
 	/**
@@ -102,7 +105,7 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 
 	public function can_upload(): bool
 	{
-		return $this->id == 0 || $this->upload;
+		return $this->id == 0 || $this->may_upload;
 	}
 
 	// ! Used by Larapass
