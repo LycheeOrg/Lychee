@@ -167,20 +167,6 @@ class RefactorModels extends Migration
 		$connection = Schema::connection(null)->getConnection();
 		$this->driverName = $connection->getDriverName();
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
-
-		// I like tools which believe to be more clever than the user :-(
-		// If you insert a row into a table with id=0, MySQL/MariaDB
-		// "auto-magically" converts 0 into the latest auto-increment value
-		// plus one.
-		// If I want a DB to use an auto-incremented value, then I do not
-		// specify a value for the ID at all, but let the DB pick one.
-		// If I insert zero, I want zero to be zero. Yikes!
-		// We need this, because our admin user uses ID 0.
-		// Now, let us get this nonsense out of MySQL's head.
-		if ($this->driverName == 'mysql') {
-			$sql_mode = DB::selectOne('SELECT @@SESSION.sql_mode AS sql_mode');
-			DB::statement('SET SESSION sql_mode=\'' . $sql_mode->sql_mode . ',NO_AUTO_VALUE_ON_ZERO\'');
-		}
 	}
 
 	/**
