@@ -67,6 +67,37 @@ return [
 			'options' => extension_loaded('pdo_mysql') ? array_filter([
 				PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
 			]) : [],
+			// Ensure a deterministic SQL mode for MySQL/MariaDB.
+			// Don't rely on accidentally correct, system-wide settings of the
+			// DB service.
+			'modes' => [
+				// If strict mode is not enable, MySQL "cleverly" converts
+				// invalid data on INSERT/UPDATE/etc. to something which MySQL
+				// believes you wanted.
+				// Overflow/underflow of values is silently ignored.
+				// We want strict mode, because any error probably indicates
+				// a bug in Lychee which should be fixed.
+				'STRICT_ALL_TABLES',
+				// same as above, but for transactional storage engines, like InnoDB
+				'STRICT_TRANS_TABLES',
+				// Nomen est omen, for some versions of MySQL not included in
+				// `STRICT_ALL_TABLES` and hence must be set separately.
+				'ERROR_FOR_DIVISION_BY_ZERO',
+				// don't accept 00.00.0000 as a date
+				'NO_ZERO_DATE',
+				// don't accept dates as valid whose month or day component is
+				// zero, i.e. refuse 00.05.2021 or 13.00.2021 as invalid
+				'NO_ZERO_IN_DATE',
+				// Disable the probably most stupid feature of MySQL.
+				// If one INSERTS a DB row with id=0, then MySQL replaces the
+				// ID with latest auto-increment value plus one. WTF?!
+				// As our admin user has ID=0, we want 0 to be 0 when we
+				// insert 0 and not some "auto-magical" replacement.
+				'NO_AUTO_VALUE_ON_ZERO',
+				// Don't silently use another DB engine, if the selected
+				// DB engin (InnoDB) is not available.
+				'NO_ENGINE_SUBSTITUTION ',
+			],
 		],
 
 		'pgsql' => [
