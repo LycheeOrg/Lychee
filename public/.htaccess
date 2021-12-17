@@ -22,7 +22,7 @@
 
 Options -Indexes
 
-<IfModule mod_php7.c>
+<IfModule php_module>
 	php_value max_execution_time 200
 	php_value post_max_size 500M
 	php_value upload_max_filesize 500M
