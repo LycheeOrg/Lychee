@@ -153,7 +153,7 @@ class UsersUnitTest
 	/**
 	 * Update email on user.
 	 *
-	 * @param string      $email
+	 * @param string|null $email
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *

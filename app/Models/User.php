@@ -20,15 +20,15 @@ use Illuminate\Support\Carbon;
  * App\Models\User.
  *
  * @property int                                                   $id
+ * @property Carbon                                                $created_at
+ * @property Carbon                                                $updated_at
  * @property string                                                $username
- * @property string                                                $password
+ * @property string|null                                           $password
  * @property string|null                                           $email
  * @property bool                                                  $may_upload
  * @property bool                                                  $is_locked
  * @property string|null                                           $remember_token
- * @property Carbon                                                $created_at
- * @property Carbon                                                $updated_at
- * @property Collection<Album>                                     $albums
+ * @property Collection<BaseAlbumImpl>                             $albums
  * @property DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property Collection<BaseAlbumImpl>                             $shared
  */
@@ -62,8 +62,11 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	];
 
 	protected $casts = [
-		'may_upload' => 'bool',
-		'is_locked' => 'bool',
+		'id' => 'integer',
+		'created_at' => 'datetime',
+		'updated_at' => 'datetime',
+		'may_upload' => 'boolean',
+		'is_locked' => 'boolean',
 	];
 
 	/**
