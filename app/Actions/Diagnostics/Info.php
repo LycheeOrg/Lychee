@@ -2,6 +2,7 @@
 
 namespace App\Actions\Diagnostics;
 
+use App\DTO\LycheeChannelInfo;
 use App\Metadata\LycheeVersion;
 use App\Models\Configs;
 use Illuminate\Database\QueryException;
@@ -9,24 +10,20 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Imagick;
 
-class Info
+class Info extends Diagnostics
 {
-	use Line;
-
 	private LycheeVersion $lycheeVersion;
-	private array $versions;
 
 	public function __construct(LycheeVersion $lycheeVersion)
 	{
 		$this->lycheeVersion = $lycheeVersion;
-		$this->versions = $this->lycheeVersion->get();
 	}
 
 	/**
 	 * get the basic pieces of information of the Lychee installation
 	 * such as version number, commit id, operating system ...
 	 *
-	 * @return array
+	 * @return string[] array of messages
 	 */
 	public function get(): array
 	{
@@ -94,26 +91,41 @@ class Info
 
 		// @codeCoverageIgnoreEnd
 
+		// Format Lychee Information
+		$lycheeChannelInfo = $this->lycheeVersion->getLycheeChannelInfo();
+		switch ($lycheeChannelInfo->channelType) {
+			case LycheeChannelInfo::RELEASE_CHANNEL:
+				$lycheeChannelName = 'release';
+				$lycheeInfoString = $lycheeChannelInfo->releaseVersion->toString();
+				break;
+			case LycheeChannelInfo::GIT_CHANNEL:
+				$lycheeChannelName = 'git';
+				$lycheeInfoString = $lycheeChannelInfo->gitInfo ? $lycheeChannelInfo->gitInfo->toString() : 'No git data found.';
+				break;
+			default:
+				throw new \LogicException('unknown channel type ' . $lycheeChannelInfo->channelType);
+		}
+
 		// Output system information
-		$infos[] = $this->line('Lychee Version (' . $this->versions['channel'] . '):', $this->lycheeVersion->format($this->versions['Lychee']));
-		$infos[] = $this->line('DB Version:', $this->versions['DB']['version']);
+		$infos[] = Diagnostics::line('Lychee Version (' . $lycheeChannelName . '):', $lycheeInfoString);
+		$infos[] = Diagnostics::line('DB Version:', $this->lycheeVersion->getDBVersion()->toString());
 		$infos[] = '';
-		$infos[] = $this->line('composer install:', $this->versions['composer']);
-		$infos[] = $this->line('APP_ENV:', Config::get('app.env')); // check if production
-		$infos[] = $this->line('APP_DEBUG:', Config::get('app.debug') ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
+		$infos[] = Diagnostics::line('composer install:', $this->lycheeVersion->phpUnit ? 'dev' : '--no-dev');
+		$infos[] = Diagnostics::line('APP_ENV:', Config::get('app.env')); // check if production
+		$infos[] = Diagnostics::line('APP_DEBUG:', Config::get('app.debug') ? 'true' : 'false'); // check if debug is on (will help in case of error 500)
 		$infos[] = '';
-		$infos[] = $this->line('System:', PHP_OS);
-		$infos[] = $this->line('PHP Version:', floatval(phpversion()));
-		$infos[] = $this->line('PHP User agent:', ini_get('user_agent'));
-		$infos[] = $this->line('Max uploaded file size:', ini_get('upload_max_filesize'));
-		$infos[] = $this->line('Max post size:', ini_get('post_max_size'));
-		$infos[] = $this->line('Max execution time: ', ini_get('max_execution_time'));
-		$infos[] = $this->line($dbtype . ' Version:', $dbver);
+		$infos[] = Diagnostics::line('System:', PHP_OS);
+		$infos[] = Diagnostics::line('PHP Version:', floatval(phpversion()));
+		$infos[] = Diagnostics::line('PHP User agent:', ini_get('user_agent'));
+		$infos[] = Diagnostics::line('Max uploaded file size:', ini_get('upload_max_filesize'));
+		$infos[] = Diagnostics::line('Max post size:', ini_get('post_max_size'));
+		$infos[] = Diagnostics::line('Max execution time: ', ini_get('max_execution_time'));
+		$infos[] = Diagnostics::line($dbtype . ' Version:', $dbver);
 		$infos[] = '';
-		$infos[] = $this->line('Imagick:', $imagick);
-		$infos[] = $this->line('Imagick Active:', $settings['imagick'] ?? 'key not found in settings');
-		$infos[] = $this->line('Imagick Version:', $imagickVersion);
-		$infos[] = $this->line('GD Version:', $gdVersion['GD Version']);
+		$infos[] = Diagnostics::line('Imagick:', $imagick);
+		$infos[] = Diagnostics::line('Imagick Active:', $settings['imagick'] ?? 'key not found in settings');
+		$infos[] = Diagnostics::line('Imagick Version:', $imagickVersion);
+		$infos[] = Diagnostics::line('GD Version:', $gdVersion['GD Version']);
 
 		return $infos;
 	}

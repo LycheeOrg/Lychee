@@ -129,6 +129,8 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *                             {@link SizeVariant::THUMB}
 	 *
 	 * @return SizeVariant|null The size variant
+	 *
+	 * @throws \InvalidArgumentException thrown, of `$sizeVariantType` is out-of-range
 	 */
 	public function getSizeVariant(int $sizeVariantType): ?SizeVariant
 	{
@@ -140,7 +142,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 			SizeVariant::SMALL => $this->small,
 			SizeVariant::THUMB2X => $this->thumb2x,
 			SizeVariant::THUMB => $this->thumb,
-			default => throw new \UnexpectedValueException('size variant ' . $sizeVariantType . 'invalid'),
+			default => throw new \InvalidArgumentException('size variant ' . $sizeVariantType . 'invalid'),
 		};
 	}
 

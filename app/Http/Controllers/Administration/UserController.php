@@ -4,20 +4,22 @@ namespace App\Http\Controllers\Administration;
 
 use App\Actions\User\Create;
 use App\Actions\User\Save;
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
-use App\Rules\IntegerIDRule;
+use App\Rules\RandomIDRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request as IlluminateRequest;
+use Illuminate\Routing\Controller;
 
 class UserController extends Controller
 {
@@ -25,6 +27,7 @@ class UserController extends Controller
 	 * @return Collection<User>
 	 *
 	 * @throws UnauthorizedException
+	 * @throws QueryBuilderException
 	 */
 	public function list(): Collection
 	{
@@ -37,7 +40,7 @@ class UserController extends Controller
 		// simply remove this check here and change the middleware in
 		// `routes/admin.php`.
 		$user = AccessControl::user();
-		if (!AccessControl::is_admin() && !$user->upload) {
+		if (!AccessControl::is_admin() && !$user->may_upload) {
 			throw new UnauthorizedException();
 		}
 
@@ -78,7 +81,7 @@ class UserController extends Controller
 	public function delete(IlluminateRequest $request): void
 	{
 		$validated = $request->validate([
-			'id' => ['required', new IntegerIDRule(false)],
+			'id' => ['required', new RandomIDRule(false)],
 		]);
 
 		/** @var User $user */
@@ -112,19 +115,23 @@ class UserController extends Controller
 	 *
 	 * @return void
 	 *
+	 * @throws InternalLycheeException
 	 * @throws ModelDBException
-	 * @throws QueryBuilderException
 	 */
 	public function updateEmail(SetEmailRequest $request): void
 	{
-		$user = AccessControl::user();
-		$user->email = $request->email();
+		try {
+			$user = AccessControl::user();
+			$user->email = $request->email();
 
-		if (is_null($request->email())) {
-			$user->notifications()->delete();
+			if ($request->email() === null) {
+				$user->notifications()->delete();
+			}
+
+			$user->save();
+		} catch (\InvalidArgumentException $e) {
+			throw new FrameworkException('Laravel notification module', $e);
 		}
-
-		$user->save();
 	}
 
 	/**

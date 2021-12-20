@@ -14,6 +14,7 @@ use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Session;
 

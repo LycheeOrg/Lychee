@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Exceptions\Internal\QueryBuilderException;
-use App\Exceptions\ModelDBException;
-use App\Http\Controllers\Controller;
 use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -58,7 +57,7 @@ class LogController extends Controller
 	 *
 	 * @return void
 	 *
-	 * @throws ModelDBException
+	 * @throws QueryBuilderException
 	 */
 	public static function clearNoise(): void
 	{

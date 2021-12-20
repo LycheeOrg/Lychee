@@ -8,19 +8,18 @@ use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\Internal\InvalidConfigOption;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ChangeLoginRequest;
+use App\Http\Requests\Settings\SetSortingRequest;
 use App\Models\Configs;
 use App\Models\Logs;
-use App\Rules\AlbumSortingRule;
 use App\Rules\LicenseRule;
-use App\Rules\OrderRule;
-use App\Rules\PhotoSortingRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class SettingsController extends Controller
 {
@@ -52,25 +51,18 @@ class SettingsController extends Controller
 	/**
 	 * Define the default sorting type.
 	 *
-	 * @param Request $request
+	 * @param SetSortingRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
 	 */
-	public function setSorting(Request $request): void
+	public function setSorting(SetSortingRequest $request): void
 	{
-		$validated = $request->validate([
-			'sorting_photos_col' => ['required', new PhotoSortingRule()],
-			'sorting_photos_order' => ['required', new OrderRule(false)],
-			'sorting_albums_col' => ['required', new AlbumSortingRule()],
-			'sorting_albums_order' => ['required', new OrderRule(false)],
-		]);
-
-		Configs::set('sorting_Photos_col', $validated['sorting_photos_col']);
-		Configs::set('sorting_Photos_order', $validated['sorting_photos_order']);
-		Configs::set('sorting_Albums_col', $validated['sorting_albums_col']);
-		Configs::set('sorting_Albums_order', $validated['sorting_albums_order']);
+		Configs::set('sorting_photos_col', $request->photoSortingColumn());
+		Configs::set('sorting_photos_order', $request->photoSortingOrder());
+		Configs::set('sorting_albums_col', $request->albumSortingColumn());
+		Configs::set('sorting_albums_order', $request->albumSortingOrder());
 	}
 
 	/**
@@ -121,7 +113,7 @@ class SettingsController extends Controller
 	 */
 	public function setDropboxKey(Request $request): void
 	{
-		$validated = $request->validate(['key' => 'required|string|nullable']);
+		$validated = $request->validate(['key' => 'present|string|nullable']);
 		Configs::set('dropbox_key', $validated['key']);
 	}
 
@@ -133,6 +125,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setPublicSearch(Request $request): void
 	{
@@ -148,6 +141,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setNSFWVisible(Request $request): void
 	{
@@ -206,6 +200,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setMapDisplay(Request $request): void
 	{
@@ -221,6 +216,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setMapDisplayPublic(Request $request): void
 	{
@@ -261,6 +257,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setMapIncludeSubAlbums(Request $request): void
 	{
@@ -276,6 +273,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setLocationDecoding(Request $request): void
 	{
@@ -291,6 +289,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setLocationShow(Request $request): void
 	{
@@ -306,6 +305,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setLocationShowPublic(Request $request): void
 	{
@@ -324,6 +324,7 @@ class SettingsController extends Controller
 	 * @return void
 	 *
 	 * @throws InvalidConfigOption
+	 * @throws BadRequestException
 	 */
 	public function setNewPhotosNotification(Request $request): void
 	{

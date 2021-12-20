@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Contracts\InternalLycheeException;
 use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Http\Middleware\Checks\IsInstalled;
@@ -26,8 +27,9 @@ class AdminCheck
 	 * @return mixed
 	 *
 	 * @throws UnauthorizedException
+	 * @throws InternalLycheeException
 	 */
-	public function handle(Request $request, Closure $next)
+	public function handle(Request $request, Closure $next): mixed
 	{
 		if (!$this->isInstalled->assert()) {
 			return $next($request);

@@ -2,6 +2,9 @@
 
 namespace App\Metadata;
 
+use App\DTO\LycheeChannelInfo;
+use App\DTO\LycheeGitInfo;
+use App\DTO\Version;
 use App\Models\Configs;
 
 class LycheeVersion
@@ -47,80 +50,48 @@ class LycheeVersion
 	}
 
 	/**
-	 * Return asked information.
-	 *
-	 * @return array{channel: string, composer: string, DB: }
-	 */
-	public function get(): array
-	{
-		$versions = [];
-		$versions['channel'] = $this->isRelease ? 'release' : 'git';
-		$versions['composer'] = $this->phpUnit ? 'dev' : '--no-dev';
-		$versions['DB'] = $this->getDBVersion();
-		$versions['Lychee'] = $this->getLycheeVersion();
-
-		return $versions;
-	}
-
-	/**
-	 * Format the version : number (commit id).
-	 */
-	public function format(array $info): string
-	{
-		$ret = $info['version'];
-		$ret .= (isset($info['commit']) ? ' (' . $info['commit'] . ')' : '');
-		$ret .= $info['additional'] ?? '';
-
-		return $ret;
-	}
-
-	/**
-	 * @param string $version in the shape of xx.yy.zz
-	 *
-	 * @return string xx.yy.zz
-	 */
-	public function format_version(string $version): string
-	{
-		return implode('.', array_map('intval', str_split($version, 2)));
-	}
-
-	/**
 	 * Return the info about the database.
 	 *
-	 * @return array{version: string}
+	 * @return Version
 	 */
-	public function getDBVersion(): array
+	public function getDBVersion(): Version
 	{
-		return ['version' => $this->format_version(Configs::get_value('version', '040000'))];
+		return Version::createFromInt(
+			Configs::get_value('version', '040000')
+		);
 	}
 
 	/**
 	 * Return the info about the version.md file.
 	 *
-	 * @return array{version: string}
+	 * @return Version
 	 */
-	public function getFileVersion(): array
+	public function getFileVersion(): Version
 	{
-		return ['version' => rtrim(file_get_contents(base_path('version.md')))];
+		return Version::createFromString(
+			file_get_contents(base_path('version.md'))
+		);
 	}
 
 	/**
 	 * Return the information with respect to Lychee.
 	 *
-	 * @return array{version: string, commit: string, additional: string}
+	 * @return LycheeChannelInfo the version of lychee or null if not git data could be found
 	 */
-	private function getLycheeVersion(): array
+	public function getLycheeChannelInfo(): LycheeChannelInfo
 	{
 		if ($this->isRelease) {
-			return $this->getFileVersion();
+			return LycheeChannelInfo::createReleaseInfo($this->getFileVersion());
 		}
 
 		$branch = $this->gitHubFunctions->getBranch();
 		$commit = $this->gitHubFunctions->getHead();
 		if (empty($commit) && empty($branch)) {
-			return ['version' => 'No git data found.'];
+			return LycheeChannelInfo::createGitInfo(null);
 		}
 
-		return ['version' => $branch, 'commit' => $commit, 'additional' => $this->gitHubFunctions->get_behind_text()];
+		return LycheeChannelInfo::createGitInfo(
+			new LycheeGitInfo($branch, $commit, $this->gitHubFunctions->get_behind_text())
+		);
 	}
 }

@@ -6,6 +6,7 @@ use App\Actions\Search\AlbumSearch;
 use App\Actions\Search\PhotoSearch;
 use App\Contracts\LycheeException;
 use App\Http\Requests\Search\SearchRequest;
+use Illuminate\Routing\Controller;
 
 class SearchController extends Controller
 {

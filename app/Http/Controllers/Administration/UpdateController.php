@@ -7,9 +7,9 @@ use App\Actions\Update\Check as CheckUpdate;
 use App\Contracts\LycheeException;
 use App\Exceptions\VersionControlException;
 use App\Facades\AccessControl;
-use App\Http\Controllers\Controller;
 use App\Http\Middleware\Checks\IsMigrated;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 /**
  * Class UpdateController.

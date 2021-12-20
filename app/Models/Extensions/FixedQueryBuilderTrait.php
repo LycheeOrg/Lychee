@@ -46,6 +46,27 @@ use Illuminate\Database\Query\Expression;
 trait FixedQueryBuilderTrait
 {
 	/**
+	 * Add a basic where clause to the query.
+	 *
+	 * @param \Closure|string|array|Expression $column
+	 * @param mixed                            $operator
+	 * @param mixed                            $value
+	 * @param string                           $boolean
+	 *
+	 * @return $this
+	 *
+	 * @throws QueryBuilderException
+	 */
+	public function where($column, $operator = null, $value = null, $boolean = 'and'): static
+	{
+		try {
+			return parent::where($column, $operator, $value, $boolean);
+		} catch (\Throwable $e) {
+			throw new QueryBuilderException($e);
+		}
+	}
+
+	/**
 	 * Add a "where in" clause to the query.
 	 *
 	 * @param string $column

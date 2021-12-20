@@ -40,6 +40,7 @@ use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Models\Album;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AlbumController extends Controller

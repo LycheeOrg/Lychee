@@ -11,6 +11,7 @@ use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Controller;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class FrameController extends Controller
@@ -34,7 +35,7 @@ class FrameController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	public function init()
+	public function init(): RedirectResponse|View
 	{
 		try {
 			Configs::get();

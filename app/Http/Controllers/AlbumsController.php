@@ -8,6 +8,7 @@ use App\Actions\Albums\Top;
 use App\Actions\Albums\Tree;
 use App\Contracts\LycheeException;
 use App\Models\Configs;
+use Illuminate\Routing\Controller;
 
 class AlbumsController extends Controller
 {
@@ -21,21 +22,14 @@ class AlbumsController extends Controller
 		// caching to avoid further request
 		Configs::get();
 
-		// Initialize return var
-		$return = [
-			'smart_albums' => null,
-			'albums' => null,
-			'shared_albums' => null,
-		];
-
 		// $toplevel contains Collection<Album> accessible at the root: albums shared_albums.
 		$toplevel = $top->get();
 
-		$return['albums'] = $toplevel['albums'];
-		$return['shared_albums'] = $toplevel['shared_albums'];
-		$return['smart_albums'] = $smart->get();
-
-		return $return;
+		return [
+			'smart_albums' => $toplevel['shared_albums'],
+			'albums' => $toplevel['albums'],
+			'shared_albums' => $smart->get(),
+		];
 	}
 
 	/**

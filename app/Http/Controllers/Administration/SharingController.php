@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Sharing\ListShare;
+use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\SetSharingRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
 class SharingController extends Controller
@@ -19,11 +20,11 @@ class SharingController extends Controller
 	 *
 	 * @param ListShare $listShare
 	 *
-	 * @return array
+	 * @return Shares
 	 *
 	 * @throws QueryBuilderException
 	 */
-	public function listSharing(ListShare $listShare): array
+	public function listSharing(ListShare $listShare): Shares
 	{
 		return $listShare->do(AccessControl::id());
 	}

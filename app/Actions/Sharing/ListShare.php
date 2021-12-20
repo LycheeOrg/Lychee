@@ -2,6 +2,7 @@
 
 namespace App\Actions\Sharing;
 
+use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -9,9 +10,13 @@ use Illuminate\Support\Facades\DB;
 class ListShare
 {
 	/**
+	 * @param int $userId
+	 *
+	 * @return Shares
+	 *
 	 * @throws QueryBuilderException
 	 */
-	public function do(int $UserId): array
+	public function do(int $userId): Shares
 	{
 		try {
 			// prepare query
@@ -31,35 +36,27 @@ class ListShare
 				->select(['base_albums.id', 'title', 'parent_id']);
 
 			// apply filter
-			if ($UserId != 0) {
-				$shared_query = $shared_query->where('base_albums.owner_id', '=', $UserId);
-				$albums_query = $albums_query->where('owner_id', '=', $UserId);
+			if ($userId != 0) {
+				$shared_query = $shared_query->where('base_albums.owner_id', '=', $userId);
+				$albums_query = $albums_query->where('owner_id', '=', $userId);
 			}
 
 			// get arrays
 			$shared = $shared_query
 				->orderBy('title', 'ASC')
 				->orderBy('username', 'ASC')
-				->get()
-				->each(function ($share) {
-					$share->album_id = intval($share->album_id);
-				});
-		} catch (\Throwable $e) {
-			throw new QueryBuilderException($e);
-		}
+				->get();
 
-		$albums = $albums_query->get();
-		$this->linkAlbums($albums);
-		$albums->each(function ($album) {
-			$album->title = $this->breadcrumbPath($album);
-		});
-		$albums->each(function ($album) {
-			$album->id = intval($album->id);
-			unset($album->parent_id);
-			unset($album->parent);
-		});
+			$albums = $albums_query->get();
+			$this->linkAlbums($albums);
+			$albums->each(function ($album) {
+				$album->title = $this->breadcrumbPath($album);
+			});
+			$albums->each(function ($album) {
+				unset($album->parent_id);
+				unset($album->parent);
+			});
 
-		try {
 			$users = DB::table('users')
 				->select(['id', 'username'])
 				->where('id', '>', 0)
@@ -68,15 +65,11 @@ class ListShare
 				->each(function ($user) {
 					$user->id = intval($user->id);
 				});
-		} catch (\Throwable $e) {
+
+			return new Shares($shared, $albums, $users);
+		} catch (\InvalidArgumentException $e) {
 			throw new QueryBuilderException($e);
 		}
-
-		return [
-			'shared' => $shared,
-			'albums' => $albums,
-			'users' => $users,
-		];
 	}
 
 	private function breadcrumbPath(object $album): string

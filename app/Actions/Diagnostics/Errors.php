@@ -4,7 +4,7 @@ namespace App\Actions\Diagnostics;
 
 use App\Factories\DiagnosticsChecksFactory;
 
-class Errors
+class Errors extends Diagnostics
 {
 	private DiagnosticsChecksFactory $diagnosticsChecksFactory;
 
@@ -16,7 +16,7 @@ class Errors
 	/**
 	 * Return the list of error which are currently breaking Lychee.
 	 *
-	 * @return array
+	 * @return string[] array of messages
 	 */
 	public function get(): array
 	{

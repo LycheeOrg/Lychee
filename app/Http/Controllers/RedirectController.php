@@ -8,6 +8,7 @@ use App\Models\Configs;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class RedirectController extends Controller
 {

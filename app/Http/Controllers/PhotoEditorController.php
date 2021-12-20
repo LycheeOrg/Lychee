@@ -9,6 +9,7 @@ use App\Http\Requests\Photo\RotatePhotoRequest;
 use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Routing\Controller;
 
 class PhotoEditorController extends Controller
 {

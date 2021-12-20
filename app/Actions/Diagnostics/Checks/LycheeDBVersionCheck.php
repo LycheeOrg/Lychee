@@ -7,15 +7,7 @@ use App\Metadata\LycheeVersion;
 
 class LycheeDBVersionCheck implements DiagnosticCheckInterface
 {
-	/**
-	 * @var LycheeVersion
-	 */
-	private $lycheeVersion;
-
-	/**
-	 * @var array
-	 */
-	private $versions;
+	private LycheeVersion $lycheeVersion;
 
 	/**
 	 * @param LycheeVersion $lycheeVersion
@@ -25,14 +17,16 @@ class LycheeDBVersionCheck implements DiagnosticCheckInterface
 		LycheeVersion $lycheeVersion
 	) {
 		$this->lycheeVersion = $lycheeVersion;
-
-		$this->versions = $this->lycheeVersion->get();
 	}
 
 	public function check(array &$errors): void
 	{
-		if ($this->lycheeVersion->isRelease && $this->versions['DB']['version'] < $this->versions['Lychee']['version']) {
-			$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
+		if ($this->lycheeVersion->isRelease) {
+			$db_ver = $this->lycheeVersion->getDBVersion();
+			$file_ver = $this->lycheeVersion->getFileVersion();
+			if ($db_ver->toInteger() < $file_ver->toInteger()) {
+				$errors[] = 'Error: Database is behind file versions. Please apply the migration.';
+			}
 		}
 	}
 }

@@ -8,8 +8,11 @@ use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 class ViewController extends Controller
 {
@@ -47,7 +50,10 @@ class ViewController extends Controller
 		$title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
 		$rss_enable = Configs::get_value('rss_enable', '0') == '1';
 
-		$url = config('app.url') . $request->server->get('REQUEST_URI');
+		try {
+			$url = config('app.url') . $request->server->get('REQUEST_URI');
+		} catch (NotFoundExceptionInterface|ContainerExceptionInterface $e) {
+		}
 		$picture = $sizeVariant->url;
 
 		return view('view', [

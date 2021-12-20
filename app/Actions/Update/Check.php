@@ -109,9 +109,10 @@ class Check
 	{
 		if ($this->lycheeVersion->isRelease) {
 			// @codeCoverageIgnoreStart
-			$versions = $this->lycheeVersion->get();
+			$db_ver = $this->lycheeVersion->getDBVersion();
+			$file_ver = $this->lycheeVersion->getFileVersion();
 
-			return 3 * intval($versions['DB']['version'] < $versions['Lychee']['version']);
+			return 3 * ($db_ver->toInteger() < $file_ver->toInteger());
 			// @codeCoverageIgnoreEnd
 		}
 

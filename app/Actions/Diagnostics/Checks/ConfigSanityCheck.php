@@ -8,14 +8,10 @@ use App\Models\Configs;
 
 class ConfigSanityCheck implements DiagnosticCheckInterface
 {
-	/**
-	 * @var ConfigFunctions
-	 */
-	private $configFunctions;
+	private ConfigFunctions $configFunctions;
 
 	/**
-	 * @param ConfigFunctions $lycheeVersion
-	 * @param array caching the return of lycheeVersion->get()
+	 * @param ConfigFunctions $configFunctions
 	 */
 	public function __construct(
 		ConfigFunctions $configFunctions

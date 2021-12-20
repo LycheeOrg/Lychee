@@ -6,6 +6,7 @@ use App\Actions\RSS\Generate;
 use App\Contracts\LycheeException;
 use App\Exceptions\ConfigurationException;
 use App\Models\Configs;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 
 class RSSController extends Controller

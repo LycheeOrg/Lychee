@@ -8,6 +8,7 @@ use App\Exceptions\MassImportException;
 use App\Http\Requests\Import\ImportFromUrlRequest;
 use App\Http\Requests\Import\ImportServerRequest;
 use App\Models\Photo;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\StreamedResponse;

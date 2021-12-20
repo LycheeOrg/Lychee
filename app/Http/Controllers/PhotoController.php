@@ -35,6 +35,7 @@ use App\Http\Requests\Photo\SetPhotosTitleRequest;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
