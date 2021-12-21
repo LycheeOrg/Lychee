@@ -103,7 +103,8 @@ class Info extends Diagnostics
 				$lycheeInfoString = $lycheeChannelInfo->gitInfo ? $lycheeChannelInfo->gitInfo->toString() : 'No git data found.';
 				break;
 			default:
-				throw new \LogicException('unknown channel type ' . $lycheeChannelInfo->channelType);
+				$lycheeChannelName = 'unknown';
+				$lycheeInfoString = 'not available (this indicates an error)';
 		}
 
 		// Output system information

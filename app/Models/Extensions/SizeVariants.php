@@ -2,19 +2,19 @@
 
 namespace App\Models\Extensions;
 
+use App\DTO\DTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Collection;
-use JsonSerializable;
 
 /**
  * Class SizeVariants.
  */
-class SizeVariants implements Arrayable, JsonSerializable
+class SizeVariants extends DTO
 {
 	/** @var Photo the parent object this object is tied to */
 	private Photo $photo;
@@ -46,10 +46,17 @@ class SizeVariants implements Arrayable, JsonSerializable
 		}
 	}
 
+	/**
+	 * @param SizeVariant $sizeVariant
+	 *
+	 * @return void
+	 *
+	 * @throws LycheeInvalidArgumentException
+	 */
 	public function add(SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant->photo_id !== $this->photo->id) {
-			throw new \UnexpectedValueException('ID of owning photo does not match');
+			throw new LycheeInvalidArgumentException('ID of owning photo does not match');
 		}
 		$sizeVariant->setRelation('photo', $this->photo);
 
@@ -76,11 +83,11 @@ class SizeVariants implements Arrayable, JsonSerializable
 				$ref = &$this->thumb;
 				break;
 			default:
-				throw new \UnexpectedValueException('size variant ' . $sizeVariant . 'invalid');
+				throw new LycheeInvalidArgumentException('size variant ' . $sizeVariant . 'invalid');
 		}
 
 		if ($ref && $ref->id !== $sizeVariant->id) {
-			throw new \UnexpectedValueException('Another size variant of the same type has already been added');
+			throw new LycheeInvalidArgumentException('Another size variant of the same type has already been added');
 		}
 		$ref = $sizeVariant;
 	}
@@ -104,18 +111,6 @@ class SizeVariants implements Arrayable, JsonSerializable
 	}
 
 	/**
-	 * Serializes this object into an array.
-	 *
-	 * @return array The serialized properties of this object
-	 *
-	 * @see SizeVariants::toArray()
-	 */
-	public function jsonSerialize(): array
-	{
-		return $this->toArray();
-	}
-
-	/**
 	 * Returns the requested size variant of the photo.
 	 *
 	 * @param int $sizeVariantType the type of the size variant; allowed
@@ -129,8 +124,6 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *                             {@link SizeVariant::THUMB}
 	 *
 	 * @return SizeVariant|null The size variant
-	 *
-	 * @throws \InvalidArgumentException thrown, of `$sizeVariantType` is out-of-range
 	 */
 	public function getSizeVariant(int $sizeVariantType): ?SizeVariant
 	{
@@ -142,7 +135,6 @@ class SizeVariants implements Arrayable, JsonSerializable
 			SizeVariant::SMALL => $this->small,
 			SizeVariant::THUMB2X => $this->thumb2x,
 			SizeVariant::THUMB => $this->thumb,
-			default => throw new \InvalidArgumentException('size variant ' . $sizeVariantType . 'invalid'),
 		};
 	}
 

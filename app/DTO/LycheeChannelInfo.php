@@ -41,8 +41,7 @@ class LycheeChannelInfo extends DTO
 			self::GIT_CHANNEL => [
 				'channel' => 'git',
 				'info' => $this->gitInfo?->toArray(),
-			],
-			default => throw new \LogicException('unknown channel'),
+			]
 		};
 	}
 }

@@ -2,6 +2,8 @@
 
 namespace App\DTO;
 
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
+
 class Version extends DTO
 {
 	public int $major;
@@ -29,12 +31,12 @@ class Version extends DTO
 	 *
 	 * @return static
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws LycheeInvalidArgumentException
 	 */
 	public static function createFromInt(int $version): self
 	{
 		if (10000 > $version || $version > 999999) {
-			throw new \InvalidArgumentException('unexpected version value');
+			throw new LycheeInvalidArgumentException('unexpected version value');
 		}
 
 		return new self($version / 10000, ($version % 10000) / 100, $version % 100);
@@ -55,7 +57,7 @@ class Version extends DTO
 	 *
 	 * @return self
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws LycheeInvalidArgumentException
 	 */
 	public static function createFromString(string $version): self
 	{
@@ -69,7 +71,7 @@ class Version extends DTO
 
 			return new self(intval($exploded[0]), intval($exploded[1]), intval($exploded[2]));
 		}
-		throw new \InvalidArgumentException('unexpected version value');
+		throw new LycheeInvalidArgumentException('unexpected version value');
 	}
 
 	/**

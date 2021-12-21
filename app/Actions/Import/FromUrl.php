@@ -76,7 +76,7 @@ class FromUrl
 				}
 			} catch (\Throwable $e) {
 				$msg = 'Could not copy file (' . $url . ') to temp-folder (' . $tmp_name . ')';
-				$exceptions[] = new MediaFileOperationException($msg);
+				$exceptions[] = new MediaFileOperationException($msg, $e);
 				Logs::error(__METHOD__, __LINE__, $msg);
 				continue;
 			}

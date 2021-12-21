@@ -2,7 +2,7 @@
 
 namespace App\Exceptions\Internal;
 
-class MissingModelAttributeException extends LycheeLogicException
+class MissingModelAttributeException extends FailedModelAssumptionException
 {
 	public function __construct(string $modelName, string $attributeName)
 	{

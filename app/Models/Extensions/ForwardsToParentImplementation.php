@@ -4,6 +4,9 @@
 
 namespace App\Models\Extensions;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\FailedModelAssumptionException;
+use App\Exceptions\Internal\MissingModelMethodException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\ModelDBException;
 use App\Models\BaseAlbumImpl;
@@ -69,17 +72,17 @@ trait ForwardsToParentImplementation
 	 *
 	 * @return bool
 	 *
-	 * @throws \LogicException
+	 * @throws FailedModelAssumptionException
 	 */
 	protected function performInsert(Builder $query): bool
 	{
 		if (!$this->relationLoaded('base_class')) {
-			throw new \LogicException('cannot create a child class whose base class is not loaded');
+			throw new FailedModelAssumptionException('cannot create a child class whose base class is not loaded');
 		}
 		/** @var Model $base_class */
 		$base_class = $this->getRelation('base_class');
 		if ($base_class->exists) {
-			throw new \LogicException('cannot create a child class whose base class already exists');
+			throw new FailedModelAssumptionException('cannot create a child class whose base class already exists');
 		}
 		// Save and therewith create the base class
 		if (!$base_class->save()) {
@@ -338,7 +341,7 @@ trait ForwardsToParentImplementation
 	 *
 	 * @return mixed the value of the relation if it could be loaded
 	 *
-	 * @throws \LogicException
+	 * @throws InternalLycheeException
 	 */
 	public function getRelationValue($key): mixed
 	{
@@ -365,7 +368,7 @@ trait ForwardsToParentImplementation
 			$primaryKey = $this->getKey();
 			if (!$this->exists) {
 				if ($primaryKey) {
-					throw new \LogicException('the primary key must not be set if the model does not exist');
+					throw new FailedModelAssumptionException('the primary key must not be set if the model does not exist');
 				}
 				$baseModel = $this->base_class()->getRelated()->newInstance();
 				$this->setRelation('base_class', $baseModel);
@@ -376,10 +379,10 @@ trait ForwardsToParentImplementation
 				// has not yet been loaded.
 				// Load it now.
 				if (!$primaryKey) {
-					throw new \LogicException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
+					throw new FailedModelAssumptionException('the model allegedly exists, but we don\'t have a primary key, cannot load base model');
 				}
 				if (!method_exists($this, 'base_class')) {
-					throw new \LogicException('the model "' . get_class($this) . '" does not provide a method "base_class()", cannot load base model');
+					throw new MissingModelMethodException(get_class($this), 'base_class()');
 				}
 
 				return $this->getRelationshipFromMethod('base_class');

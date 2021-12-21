@@ -2,10 +2,16 @@
 
 namespace App\Relations;
 
+use App\Contracts\InternalLycheeException;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Models\Extensions\SizeVariants;
 use App\Models\Photo;
 use App\Models\SizeVariant;
+use Illuminate\Contracts\Encryption\EncryptException;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\InvalidCastException;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -98,13 +104,20 @@ class HasManySizeVariants extends HasMany
 	 * @param Model $model
 	 *
 	 * @return void
+	 *
+	 * @throws InternalLycheeException
 	 */
 	protected function setForeignAttributesForCreate(Model $model)
 	{
-		if (!($model instanceof SizeVariant)) {
-			throw new \InvalidArgumentException('model must be an instance of SizeVariant');
+		try {
+			if (!($model instanceof SizeVariant)) {
+				throw new LycheeInvalidArgumentException('model must be an instance of SizeVariant');
+			}
+			$model->setAttribute('photo_id', $this->getParentKey());
+			$model->setRelation('photo', $this->parent);
+		} catch (EncryptException|InvalidCastException|JsonEncodingException $e) {
+			// thrown by Eloquent\Model::setAttribute
+			throw new FrameworkException('Eloquent\'s model', $e);
 		}
-		$model->setAttribute('photo_id', $this->getParentKey());
-		$model->setRelation('photo', $this->parent);
 	}
 }

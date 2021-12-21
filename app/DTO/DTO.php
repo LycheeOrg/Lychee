@@ -4,6 +4,7 @@ namespace App\DTO;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 
 /**
  * Base class for all Data Transfer Objects (DTO).
@@ -16,27 +17,40 @@ use Illuminate\Contracts\Support\Jsonable;
 abstract class DTO implements Arrayable, Jsonable, \JsonSerializable
 {
 	/**
-	 * Convert the model instance to JSON.
+	 * Convert the instance into a JSON string.
+	 *
+	 * The error message is inspired by {@link JsonEncodingException::forModel()}.
 	 *
 	 * @param int $options
 	 *
 	 * @return string
 	 *
-	 * @throws \RuntimeException
+	 * @throws JsonEncodingException
 	 */
 	public function toJson($options = 0): string
 	{
-		$json = json_encode($this->jsonSerialize(), $options);
-
-		if (JSON_ERROR_NONE !== json_last_error()) {
-			throw new \RuntimeException('Could not serialize ' . get_class($this) . ': ' . json_last_error_msg());
+		try {
+			return json_encode($this->jsonSerialize(), $options | JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			throw new JsonEncodingException('Error encoding DTO [' . get_class($this) . ']', 0, $e);
 		}
-
-		return $json;
 	}
 
+	/**
+	 * Serializes this object into an array.
+	 *
+	 * @see Arrayable::toArray()
+	 *
+	 * @return array The serialized properties of this object
+	 *
+	 * @throws \JsonException
+	 */
 	public function jsonSerialize(): array
 	{
-		return $this->toArray();
+		try {
+			return $this->toArray();
+		} catch (\Exception $e) {
+			throw new \JsonException(get_class($this) . '::toArray() failed', 0, $e);
+		}
 	}
 }

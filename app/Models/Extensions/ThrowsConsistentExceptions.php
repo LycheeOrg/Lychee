@@ -3,6 +3,7 @@
 namespace App\Models\Extensions;
 
 use App\Exceptions\ModelDBException;
+use Illuminate\Database\Eloquent\JsonEncodingException;
 
 /**
  * Fixed Eloquent model for all Lychee models.
@@ -19,6 +20,8 @@ use App\Exceptions\ModelDBException;
 trait ThrowsConsistentExceptions
 {
 	abstract protected function friendlyModelName(): string;
+
+	abstract public function toArray(): array;
 
 	/**
 	 * @param array $options
@@ -75,5 +78,43 @@ trait ThrowsConsistentExceptions
 		}
 
 		return true;
+	}
+
+	/**
+	 * Serializes this object into an array.
+	 *
+	 * @return array The serialized properties of this object
+	 *
+	 * @throws \JsonException
+	 *
+	 * @see ThrowsConsistentExceptions::toArray()
+	 */
+	public function jsonSerialize(): array
+	{
+		try {
+			return $this->toArray();
+		} catch (\Exception $e) {
+			throw new \JsonException(get_class($this) . '::toArray() failed', 0, $e);
+		}
+	}
+
+	/**
+	 * Convert the model instance to JSON.
+	 *
+	 * The error message is inspired by {@link JsonEncodingException::forModel()}.
+	 *
+	 * @param int $options
+	 *
+	 * @return string
+	 *
+	 * @throws JsonEncodingException
+	 */
+	public function toJson($options = 0): string
+	{
+		try {
+			return json_encode($this->jsonSerialize(), $options | JSON_THROW_ON_ERROR);
+		} catch (\JsonException $e) {
+			throw new JsonEncodingException('Error encoding model [' . get_class($this) . '] with ID [' . $this->getKey() . '] to JSON', 0, $e);
+		}
 	}
 }

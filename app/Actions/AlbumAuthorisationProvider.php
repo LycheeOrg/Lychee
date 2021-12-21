@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
@@ -285,12 +286,14 @@ class AlbumAuthorisationProvider
 	 * @param Album|null   $origin the optional top album which is used as a search base
 	 *
 	 * @return AlbumBuilder the restricted album query
+	 *
+	 * @throws InternalLycheeException
 	 */
 	public function applyBrowsabilityFilter(AlbumBuilder $query, ?Album $origin = null): AlbumBuilder
 	{
 		$table = $query->getQuery()->from;
 		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
-			throw new \InvalidArgumentException('the given query does not query for albums');
+			throw new LycheeInvalidArgumentException('the given query does not query for albums');
 		}
 
 		// Ensures that only those albums of the original query are
@@ -348,67 +351,71 @@ class AlbumAuthorisationProvider
 	 *
 	 * @return BaseBuilder
 	 *
-	 * @throws \InvalidArgumentException
+	 * @throws InternalLycheeException
 	 */
 	public function appendBlockedAlbumsCondition(BaseBuilder $builder, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
 		if (gettype($originLeft) !== gettype($originRight)) {
-			throw new \InvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');
+			throw new LycheeInvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');
 		}
 
 		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
-		// There are inner albums ...
-		$builder
-			->from('albums', 'inner')
-			->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id');
-		// ... on the path from the origin ...
-		if (is_int($originLeft)) {
-			// (We must exclude the origin as an inner node
-			// because the origin might have set "require_link", but
-			// we do not care, because the user has already got
-			// somehow into the origin)
+		try {
+			// There are inner albums ...
 			$builder
-				->where('inner._lft', '>', $originLeft)
-				->where('inner._rgt', '<', $originRight);
-		} elseif (is_string($originLeft)) {
+				->from('albums', 'inner')
+				->join('base_albums as inner_base_albums', 'inner_base_albums.id', '=', 'inner.id');
+			// ... on the path from the origin ...
+			if (is_int($originLeft)) {
+				// (We must exclude the origin as an inner node
+				// because the origin might have set "require_link", but
+				// we do not care, because the user has already got
+				// somehow into the origin)
+				$builder
+					->where('inner._lft', '>', $originLeft)
+					->where('inner._rgt', '<', $originRight);
+			} elseif (is_string($originLeft)) {
+				$builder
+					->whereColumn('inner._lft', '>', $originLeft)
+					->whereColumn('inner._rgt', '<', $originRight);
+			}
+			// ... to the target ...
 			$builder
-				->whereColumn('inner._lft', '>', $originLeft)
-				->whereColumn('inner._rgt', '<', $originRight);
-		}
-		// ... to the target ...
-		$builder
-			// (We must include the target into the list of inner nodes,
-			// because we must also check if the target is blocked.)
-			->whereColumn('inner._lft', '<=', 'albums._lft')
-			->whereColumn('inner._rgt', '>=', 'albums._rgt');
-		// ... which are blocked.
-		$builder
-			->where(fn (BaseBuilder $q) => $q
-				->where('inner_base_albums.requires_link', '=', true)
-				->orWhere('inner_base_albums.is_public', '=', false)
-				->orWhereNotNull('inner_base_albums.password')
-			)
-			->where(fn (BaseBuilder $q) => $q
-				->where('inner_base_albums.requires_link', '=', true)
-				->orWhere('inner_base_albums.is_public', '=', false)
-				->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
-			);
-		if ($userID !== null) {
+				// (We must include the target into the list of inner nodes,
+				// because we must also check if the target is blocked.)
+				->whereColumn('inner._lft', '<=', 'albums._lft')
+				->whereColumn('inner._rgt', '>=', 'albums._rgt');
+			// ... which are blocked.
 			$builder
-				->where('inner_base_albums.owner_id', '<>', $userID)
 				->where(fn (BaseBuilder $q) => $q
 					->where('inner_base_albums.requires_link', '=', true)
-					->orWhereNotExists(fn (BaseBuilder $q2) => $q2
-						->from('user_base_album', 'user_inner_base_album')
-						->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
-						->where('user_inner_base_album.user_id', '=', $userID)
-					)
+					->orWhere('inner_base_albums.is_public', '=', false)
+					->orWhereNotNull('inner_base_albums.password')
+				)
+				->where(fn (BaseBuilder $q) => $q
+					->where('inner_base_albums.requires_link', '=', true)
+					->orWhere('inner_base_albums.is_public', '=', false)
+					->orWhereNotIn('inner_base_albums.id', $unlockedAlbumIDs)
 				);
-		}
+			if ($userID !== null) {
+				$builder
+					->where('inner_base_albums.owner_id', '<>', $userID)
+					->where(fn (BaseBuilder $q) => $q
+						->where('inner_base_albums.requires_link', '=', true)
+						->orWhereNotExists(fn (BaseBuilder $q2) => $q2
+							->from('user_base_album', 'user_inner_base_album')
+							->whereColumn('user_inner_base_album.base_album_id', '=', 'inner_base_albums.id')
+							->where('user_inner_base_album.user_id', '=', $userID)
+						)
+					);
+			}
 
-		return $builder;
+			return $builder;
+		} catch (\InvalidArgumentException $e) {
+			throw new QueryBuilderException($e);
+		}
 	}
 
 	/**

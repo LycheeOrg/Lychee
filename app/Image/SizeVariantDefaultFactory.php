@@ -417,7 +417,6 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			SizeVariant::SMALL2X => Configs::get_value('small_2x', 0) == 1,
 			SizeVariant::THUMB2X => Configs::get_value('thumb_2x', 0) == 1,
 			SizeVariant::SMALL, SizeVariant::MEDIUM, SizeVariant::THUMB => true,
-			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant),
 		};
 	}
 
