@@ -30,7 +30,7 @@ class IsInstalled implements MiddlewareCheck
 				// the installed.log will not be created!!!
 				Schema::hasTable('configs');
 		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Laravel framework', $e);
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
 }

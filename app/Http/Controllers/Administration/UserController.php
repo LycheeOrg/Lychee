@@ -130,7 +130,7 @@ class UserController extends Controller
 
 			$user->save();
 		} catch (\InvalidArgumentException $e) {
-			throw new FrameworkException('Laravel notification module', $e);
+			throw new FrameworkException('Laravel\'s notification module', $e);
 		}
 	}
 

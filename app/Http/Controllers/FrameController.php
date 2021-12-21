@@ -52,7 +52,7 @@ class FrameController extends Controller
 
 			return view('frame', ['locale' => $lang, 'title' => $title, 'infos' => $infos, 'rss_enable' => false]);
 		} catch (BindingResolutionException|RouteNotFoundException $e) {
-			throw new FrameworkException('Laravel redirect or render component', $e);
+			throw new FrameworkException('Laravel\'s redirect or render component', $e);
 		}
 	}
 

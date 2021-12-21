@@ -86,7 +86,7 @@ class Apply
 				$output[] = 'If you want to have composer update applied, please set the setting to 1 at your own risk.';
 			}
 		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Lychee framework', $e);
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
 

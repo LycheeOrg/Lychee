@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Install;
 
 use App\Actions\Install\ApplyMigration;
-use App\Http\Controllers\Controller;
+use App\Exceptions\InstallationException;
+use App\Exceptions\Internal\FrameworkException;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\View\View;
+use Illuminate\Routing\Controller;
 
 class MigrationController extends Controller
 {
-	/**
-	 * @var ApplyMigration
-	 */
-	protected $applyMigration;
+	protected ApplyMigration $applyMigration;
 
 	public function __construct(ApplyMigration $applyMigration)
 	{
@@ -18,40 +19,53 @@ class MigrationController extends Controller
 	}
 
 	/**
-	 * @return array
+	 * @return View
+	 *
+	 * @throws FrameworkException
 	 */
-	public function view()
+	public function view(): View
 	{
 		$output = [];
-
-		$error = $this->applyMigration->migrate($output);
-		$output[] = '';
-		if (!$error) {
-			$error = $this->applyMigration->keyGenerate($output);
-		}
-		$output[] = '';
-		if (!$error) {
+		$hasErrors = false;
+		try {
+			$this->applyMigration->migrate($output);
+			$output[] = '';
+			$this->applyMigration->keyGenerate($output);
+			$output[] = '';
 			$this->installed($output);
+		} catch (InstallationException) {
+			$hasErrors = true;
 		}
-		$error = $error ? true : null;
 
-		return view('install.migrate', [
-			'title' => 'Lychee-installer',
-			'step' => 4,
-			'lines' => $output,
-			'errors' => $error,
-		]);
+		try {
+			return view('install.migrate', [
+				'title' => 'Lychee-installer',
+				'step' => 4,
+				'lines' => $output,
+				'errors' => $hasErrors,
+			]);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s view component', $e);
+		}
 	}
 
 	/**
-	 * @param array $output
+	 * @param string[] $output list of messages
+	 *
+	 * @return void
+	 *
+	 * @throws FrameworkException
 	 */
-	public function installed(array &$output)
+	public function installed(array &$output): void
 	{
-		$dateStamp = date('Y-m-d H:i:s');
-		$message = 'Lychee INSTALLED on ' . $dateStamp;
-		file_put_contents(base_path('installed.log'), $message);
-		$output[] = $message;
-		$output[] = 'Created installed.log';
+		try {
+			$dateStamp = date('Y-m-d H:i:s');
+			$message = 'Lychee INSTALLED on ' . $dateStamp;
+			file_put_contents(base_path('installed.log'), $message);
+			$output[] = $message;
+			$output[] = 'Created installed.log';
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s container component', $e);
+		}
 	}
 }

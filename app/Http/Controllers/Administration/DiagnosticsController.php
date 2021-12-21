@@ -11,8 +11,8 @@ use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Facades\AccessControl;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
-use Illuminate\View\View;
 use Psr\Container\ContainerExceptionInterface;
 
 class DiagnosticsController extends Controller
@@ -45,7 +45,7 @@ class DiagnosticsController extends Controller
 				'configs' => $this->isAuthorized ? $configs->get() : [self::ERROR_MSG],
 			];
 		} catch (ContainerExceptionInterface $e) {
-			throw new FrameworkException('could not resolve classes', $e);
+			throw new FrameworkException('Laravel\'s container component', $e);
 		}
 	}
 
@@ -79,7 +79,7 @@ class DiagnosticsController extends Controller
 		try {
 			return view('diagnostics', $this->get_data());
 		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('could not generate view', $e);
+			throw new FrameworkException('Laravel\'s view component', $e);
 		}
 	}
 
