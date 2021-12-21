@@ -19,6 +19,19 @@ class LycheeDBVersionCheck implements DiagnosticCheckInterface
 		$this->lycheeVersion = $lycheeVersion;
 	}
 
+	/**
+	 * TBD.
+	 *
+	 * The following line of codes are duplicated in
+	 *  - {@link \App\Actions\Update\Check::getCode()}
+	 *  - {@link \App\Http\Middleware\Checks\IsMigrated::assert()}.
+	 *
+	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
+	 *
+	 * @param string[] $errors list of error messages
+	 *
+	 * @return void
+	 */
 	public function check(array &$errors): void
 	{
 		if ($this->lycheeVersion->isRelease) {

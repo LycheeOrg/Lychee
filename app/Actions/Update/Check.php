@@ -99,11 +99,21 @@ class Check
 	}
 
 	/**
-	 * Check for updates, returns the code
-	 * 0 - Not Master
-	 * 1 - Up-to-date
-	 * 2 - Not up to date.
-	 * 3 - Require migration.
+	 * Check for updates and returns the update state.
+	 *
+	 * The return codes have the following semantics:
+	 *  - `0` - Not on master branch
+	 *  - `1` - Up-to-date
+	 *  - `2` - Not up-to-date.
+	 *  - `3` - Require migration.
+	 *
+	 * The following line of codes are duplicated in
+	 *  - {@link \App\Actions\Diagnostics\Checks\LycheeDBVersionCheck::check()}
+	 *  - {@link \App\Http\Middleware\Checks\IsMigrated::assert()}.
+	 *
+	 * TODO: Probably, the whole logic around installation and updating should be re-factored. The whole code is wicked.
+	 *
+	 * @return int the update state between 0..3
 	 */
 	public function getCode(): int
 	{

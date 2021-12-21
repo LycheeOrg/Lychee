@@ -4,6 +4,9 @@ namespace App\DTO;
 
 use Illuminate\Support\Collection;
 
+/**
+ * Data Transfer Object (DTO) to transmit the list of shares to the client.
+ */
 class Shares extends DTO
 {
 	public Collection $shared;
