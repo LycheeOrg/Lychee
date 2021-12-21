@@ -35,10 +35,7 @@ class ListShare
 		$shared = $shared_query
 			->orderBy('title', 'ASC')
 			->orderBy('username', 'ASC')
-			->get()
-			->each(function ($share) {
-				$share->album_id = intval($share->album_id);
-			});
+			->get();
 
 		$albums = $albums_query->get();
 		$this->linkAlbums($albums);
@@ -46,7 +43,6 @@ class ListShare
 			$album->title = $this->breadcrumbPath($album);
 		});
 		$albums->each(function ($album) {
-			$album->id = intval($album->id);
 			unset($album->parent_id);
 			unset($album->parent);
 		});

@@ -94,11 +94,6 @@ class PhotoController extends Controller
 		$sourceFileInfo = SourceFileInfo::createForUploadedFile($file);
 		$albumID = $request['albumID'];
 
-		if (empty($albumID)) {
-			$albumID = null;
-		} elseif (is_numeric($albumID)) {
-			$albumID = intval($albumID);
-		}
 		// If the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(new ImportMode(
@@ -247,7 +242,7 @@ class PhotoController extends Controller
 	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
 	{
 		$request->validate(['albumID' => 'string']);
-		$duplicates = $duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ? intval($request['albumID']) : null);
+		$duplicates = $duplicate->do(explode(',', $request['photoIDs']), $request['albumID']);
 
 		return ($duplicates->count() === 1) ? $duplicates->first() : $duplicates;
 	}
