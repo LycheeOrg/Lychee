@@ -205,7 +205,7 @@ class AlbumAuthorisationProvider
 		// Use `applyAccessibilityFilter` to build a query, but don't hydrate
 		// a model
 		return $this->applyAccessibilityFilter(
-			BaseAlbumImpl::query()->where('base_albums.id', '=', intval($albumID))
+			BaseAlbumImpl::query()->where('base_albums.id', '=', $albumID)
 		)->count() !== 0;
 	}
 
