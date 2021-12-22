@@ -21,7 +21,18 @@ trait ThrowsConsistentExceptions
 {
 	abstract protected function friendlyModelName(): string;
 
-	abstract public function toArray(): array;
+	/**
+	 * Converts the instance into an (associative) array.
+	 *
+	 * @internal Note, that this method must not declare a return type.
+	 *           The signature of this method must be compatible to
+	 *           {@link \Illuminate\Database\Eloquent\Model::toArray()} which
+	 *           neither declares a return type.
+	 *           Otherwise, PHP will fail with a fatal parsing error.
+	 *
+	 * @return array
+	 */
+	abstract public function toArray();
 
 	/**
 	 * @param array $options
