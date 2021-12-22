@@ -2,16 +2,15 @@
 
 namespace App\Models\Extensions;
 
+use App\DTO\DTO;
 use App\Exceptions\InvalidPropertyException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
-use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
-use JsonSerializable;
 
-class Thumb implements Arrayable, JsonSerializable
+class Thumb extends DTO
 {
 	protected string $id;
 	protected string $type;
@@ -107,17 +106,5 @@ class Thumb implements Arrayable, JsonSerializable
 			'thumb' => $this->thumbUrl,
 			'thumb2x' => $this->thumb2xUrl,
 		];
-	}
-
-	/**
-	 * Serializes this object into an array.
-	 *
-	 * @return array The serialized properties of this object
-	 *
-	 * @see SizeVariants::toArray()
-	 */
-	public function jsonSerialize(): array
-	{
-		return $this->toArray();
 	}
 }
