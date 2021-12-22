@@ -2,17 +2,16 @@
 
 namespace App\Http\Middleware;
 
+use App\Contracts\LycheeException;
 use App\Http\Middleware\Checks\ExistsDB;
 use App\Redirections\ToInstall;
 use Closure;
 use Illuminate\Http\Request;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class DBExists
 {
-	/**
-	 * @var
-	 */
-	private $existsDB;
+	private ExistsDB $existsDB;
 
 	public function __construct(ExistsDB $existsDB)
 	{
@@ -26,8 +25,11 @@ class DBExists
 	 * @param Closure $next
 	 *
 	 * @return mixed
+	 *
+	 * @throws LycheeException
+	 * @throws RouteNotFoundException
 	 */
-	public function handle(Request $request, Closure $next)
+	public function handle(Request $request, Closure $next): mixed
 	{
 		if (!$this->existsDB->assert()) {
 			return ToInstall::go();
