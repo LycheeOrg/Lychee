@@ -9,7 +9,6 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
-use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Http\Requests\User\AddUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
@@ -26,24 +25,10 @@ class UserController extends Controller
 	/**
 	 * @return Collection<User>
 	 *
-	 * @throws UnauthorizedException
 	 * @throws QueryBuilderException
 	 */
 	public function list(): Collection
 	{
-		// TODO: Add a comment why we want this check.
-		// IMHO, this check does not make much sense.
-		// Why is the privilege to upload photos a sufficient condition to
-		// see the list of users?
-		// IMHO, these privileges should be unrelated.
-		// If we only wanted to grant the privilege to admins, then we could
-		// simply remove this check here and change the middleware in
-		// `routes/admin.php`.
-		$user = AccessControl::user();
-		if (!AccessControl::is_admin() && !$user->may_upload) {
-			throw new UnauthorizedException();
-		}
-
 		return User::query()->where('id', '>', 0)->get();
 	}
 
@@ -118,7 +103,7 @@ class UserController extends Controller
 	 * @throws InternalLycheeException
 	 * @throws ModelDBException
 	 */
-	public function updateEmail(SetEmailRequest $request): void
+	public function setEmail(SetEmailRequest $request): void
 	{
 		try {
 			$user = AccessControl::user();

@@ -54,10 +54,9 @@ Route::get('/Update', [UpdateController::class, 'apply']);
 Route::post('/api/Update::Apply', [UpdateController::class, 'apply']);
 Route::post('/api/Update::Check', [UpdateController::class, 'check']);
 
-// For the first line below, refer to the comment in `UserController::list`.
-Route::post('/api/User::List', [UserController::class, 'list'])->withoutMiddleware([AdminCheck::class]);
-Route::post('/api/User::Save', [UserController::class, 'save']);
-Route::post('/api/User::Delete', [UserController::class, 'delete']);
-Route::post('/api/User::Create', [UserController::class, 'create']);
-Route::post('/api/User::UpdateEmail', [UserController::class, 'updateEmail'])->withoutMiddleware([AdminCheck::class])->middleware('login');
-Route::post('/api/User::GetEmail', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class])->middleware('login');
+Route::post('/api/User::list', [UserController::class, 'list']);
+Route::post('/api/User::save', [UserController::class, 'save']);
+Route::post('/api/User::delete', [UserController::class, 'delete']);
+Route::post('/api/User::create', [UserController::class, 'create']);
+Route::post('/api/User::setEmail', [UserController::class, 'setEmail'])->withoutMiddleware([AdminCheck::class]);
+Route::post('/api/User::getEmail', [UserController::class, 'getEmail'])->withoutMiddleware([AdminCheck::class]);
