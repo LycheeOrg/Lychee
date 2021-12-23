@@ -50,12 +50,12 @@ Route::post('/api/Session::init', [SessionController::class, 'init']);
 Route::post('/api/Session::login', [SessionController::class, 'login']);
 Route::post('/api/Session::logout', [SessionController::class, 'logout']);
 
-Route::post('/api/webauthn::register/gen', [Administration\WebAuthController::class, 'GenerateRegistration']);
-Route::post('/api/webauthn::register', [Administration\WebAuthController::class, 'VerifyRegistration']);
-Route::post('/api/webauthn::login/gen', [Administration\WebAuthController::class, 'GenerateAuthentication']);
-Route::post('/api/webauthn::login', [Administration\WebAuthController::class, 'VerifyAuthentication']);
-Route::post('/api/webauthn::list', [Administration\WebAuthController::class, 'List']);
-Route::post('/api/webauthn::delete', [Administration\WebAuthController::class, 'Delete']);
+Route::post('/api/WebAuthn::register/gen', [Administration\WebAuthController::class, 'GenerateRegistration']);
+Route::post('/api/WebAuthn::register', [Administration\WebAuthController::class, 'VerifyRegistration']);
+Route::post('/api/WebAuthn::login/gen', [Administration\WebAuthController::class, 'GenerateAuthentication']);
+Route::post('/api/WebAuthn::login', [Administration\WebAuthController::class, 'VerifyAuthentication']);
+Route::post('/api/WebAuthn::list', [Administration\WebAuthController::class, 'List']);
+Route::post('/api/WebAuthn::delete', [Administration\WebAuthController::class, 'Delete']);
 
 Route::post('/api/Albums::get', [AlbumsController::class, 'get']);
 Route::post('/api/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
@@ -108,8 +108,8 @@ Route::post('/api/Import::url', [ImportController::class, 'url']);
 Route::post('/api/Import::server', [ImportController::class, 'server'])->middleware('admin');
 Route::post('/api/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
 
-Route::post('/api/Diagnostics', [Administration\DiagnosticsController::class, 'get']);
-Route::post('/api/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'get_size']);
+Route::post('/api/Diagnostics::get', [Administration\DiagnosticsController::class, 'get']);
+Route::post('/api/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'getSize']);
 
 Route::get('/Diagnostics', [Administration\DiagnosticsController::class, 'show']);
 

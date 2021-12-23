@@ -32,7 +32,7 @@ class DiagnosticsController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	private function get_data(): array
+	private function getData(): array
 	{
 		try {
 			$errors = resolve(Errors::class);
@@ -61,7 +61,7 @@ class DiagnosticsController extends Controller
 	 */
 	public function get(CheckUpdate $checkUpdate): array
 	{
-		$ret = $this->get_data();
+		$ret = $this->getData();
 		$ret['update'] = $checkUpdate->getCode();
 
 		return $ret;
@@ -77,7 +77,7 @@ class DiagnosticsController extends Controller
 	public function show(): View
 	{
 		try {
-			return view('diagnostics', $this->get_data());
+			return view('diagnostics', $this->getData());
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s view component', $e);
 		}
@@ -89,7 +89,7 @@ class DiagnosticsController extends Controller
 	 *
 	 * @return string[] list of messages
 	 */
-	public function get_size(Space $space): array
+	public function getSize(Space $space): array
 	{
 		return $this->isAuthorized ? $space->get() : [self::ERROR_MSG];
 	}

@@ -51,8 +51,8 @@ Route::post('/api/Settings::setDropboxKey', [SettingsController::class, 'setDrop
 Route::post('/api/Settings::setNewPhotosNotification', [SettingsController::class, 'setNewPhotosNotification']);
 
 Route::get('/Update', [UpdateController::class, 'apply']);
-Route::post('/api/Update::Apply', [UpdateController::class, 'apply']);
-Route::post('/api/Update::Check', [UpdateController::class, 'check']);
+Route::post('/api/Update::apply', [UpdateController::class, 'apply']);
+Route::post('/api/Update::check', [UpdateController::class, 'check']);
 
 Route::post('/api/User::list', [UserController::class, 'list']);
 Route::post('/api/User::save', [UserController::class, 'save']);
