@@ -73,7 +73,6 @@ class Kernel extends HttpKernel
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'login' => \App\Http\Middleware\LoginCheck::class,
 		'admin' => \App\Http\Middleware\AdminCheck::class,
-		'upload' => \App\Http\Middleware\UploadCheck::class,
 		'installed' => \App\Http\Middleware\DBExists::class,
 		'migrated' => \App\Http\Middleware\MigrationCheck::class,
 		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,

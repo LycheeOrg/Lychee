@@ -213,7 +213,7 @@ class PhotoAuthorisationProvider
 	 * (OR-clause)
 	 *
 	 *  - the user is an admin
-	 *  - the user is the owner of the photo
+	 *  - the user is the owner of the photo and has the upload right
 	 *
 	 * @param string[] $photoIDs
 	 *
@@ -226,7 +226,13 @@ class PhotoAuthorisationProvider
 		if (AccessControl::is_admin()) {
 			return true;
 		}
-		if (!AccessControl::is_logged_in()) {
+		if (!AccessControl::can_upload()) {
+			// Note: This tests basically prevents that an owners of photos
+			// may rotate their own photos, if they have lost the right to
+			// upload photos afterwards.
+			// If we want owners of photos to still be able to rotate their
+			// photos (even if they must not upload new photos), then the
+			// condition must be relaxed to `AccessControl::is_logged_in()`.
 			return false;
 		}
 

@@ -96,7 +96,7 @@ Route::post('/api/Photo::setLicense', [PhotoController::class, 'setLicense']);
 Route::get('/api/Photo::getArchive', [PhotoController::class, 'getArchive'])->middleware('local_storage');
 Route::get('/api/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 
-Route::post('/api/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate'])->middleware('upload');
+Route::post('/api/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
 
 Route::post('/api/Sharing::list', [Administration\SharingController::class, 'list']);
 Route::post('/api/Sharing::add', [Administration\SharingController::class, 'add']);
