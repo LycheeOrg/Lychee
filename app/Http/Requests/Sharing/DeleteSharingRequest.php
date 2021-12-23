@@ -20,11 +20,7 @@ class DeleteSharingRequest extends BaseApiRequest
 	 */
 	public function authorize(): bool
 	{
-		// This should always return true, because we already check that the
-		// request is made by an admin during authentication (see
-		// `routes/web.php`).
-		// But better safe than sorry.
-		return AccessControl::is_admin();
+		return AccessControl::can_upload();
 	}
 
 	/**

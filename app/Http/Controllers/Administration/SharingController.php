@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administration;
 use App\Actions\Sharing\ListShare;
 use App\DTO\Shares;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Http\Requests\Sharing\DeleteSharingRequest;
 use App\Http\Requests\Sharing\SetSharingRequest;
@@ -23,9 +24,16 @@ class SharingController extends Controller
 	 * @return Shares
 	 *
 	 * @throws QueryBuilderException
+	 * @throws UnauthorizedException
 	 */
-	public function listSharing(ListShare $listShare): Shares
+	public function list(ListShare $listShare): Shares
 	{
+		// Note: This test is part of the request validation for the other
+		// methods of this class.
+		if (!AccessControl::can_upload()) {
+			throw new UnauthorizedException();
+		}
+
 		return $listShare->do(AccessControl::id());
 	}
 

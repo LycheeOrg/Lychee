@@ -98,10 +98,9 @@ Route::get('/api/Photo::clearSymLink', [PhotoController::class, 'clearSymLink'])
 
 Route::post('/api/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate'])->middleware('upload');
 
-Route::post('/api/Sharing::List', [Administration\SharingController::class, 'listSharing'])->middleware('upload');
-Route::post('/api/Sharing::ListUser', [Administration\SharingController::class, 'getUserList'])->middleware('upload');
-Route::post('/api/Sharing::Add', [Administration\SharingController::class, 'add'])->middleware('upload');
-Route::post('/api/Sharing::Delete', [Administration\SharingController::class, 'delete'])->middleware('upload');
+Route::post('/api/Sharing::list', [Administration\SharingController::class, 'list']);
+Route::post('/api/Sharing::add', [Administration\SharingController::class, 'add']);
+Route::post('/api/Sharing::delete', [Administration\SharingController::class, 'delete']);
 
 Route::post('/api/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
 
