@@ -71,7 +71,6 @@ class Kernel extends HttpKernel
 		'can' => \Illuminate\Auth\Middleware\Authorize::class,
 		'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-		'login' => \App\Http\Middleware\LoginCheck::class,
 		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'installed' => \App\Http\Middleware\DBExists::class,
 		'migrated' => \App\Http\Middleware\MigrationCheck::class,
