@@ -72,7 +72,6 @@ class Kernel extends HttpKernel
 		'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'login' => \App\Http\Middleware\LoginCheck::class,
-		'read' => \App\Http\Middleware\ReadCheck::class,
 		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'upload' => \App\Http\Middleware\UploadCheck::class,
 		'installed' => \App\Http\Middleware\DBExists::class,
