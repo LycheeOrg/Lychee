@@ -31,6 +31,8 @@ trait ThrowsConsistentExceptions
 	 *           Otherwise, PHP will fail with a fatal parsing error.
 	 *
 	 * @return array
+	 *
+	 * @noinspection PhpMissingReturnTypeInspection
 	 */
 	abstract public function toArray();
 
@@ -125,7 +127,7 @@ trait ThrowsConsistentExceptions
 		try {
 			return json_encode($this->jsonSerialize(), $options | JSON_THROW_ON_ERROR);
 		} catch (\JsonException $e) {
-			throw new JsonEncodingException('Error encoding model [' . get_class($this) . '] with ID [' . $this->getKey() . '] to JSON', 0, $e);
+			throw new JsonEncodingException('Error encoding model [' . get_class($this) . '] to JSON', 0, $e);
 		}
 	}
 }
