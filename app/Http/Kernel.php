@@ -50,7 +50,7 @@ class Kernel extends HttpKernel
 		],
 
 		'install' => [
-			\App\Http\Middleware\InstalledCheck::class,
+			'installation:incomplete',
 		],
 
 		'api' => [
@@ -72,7 +72,7 @@ class Kernel extends HttpKernel
 		'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
 		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'admin' => \App\Http\Middleware\AdminCheck::class,
-		'installed' => \App\Http\Middleware\DBExists::class,
+		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'migrated' => \App\Http\Middleware\MigrationCheck::class,
 		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,
 	];
