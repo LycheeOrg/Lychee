@@ -55,19 +55,19 @@ class WebAuthController extends Controller
 	 * disableCredential(): Excludes an existing Credential ID from authentication.
 	 * getFromCredentialId(): Returns the user using the given Credential ID, if any.
 	 */
-	public function GenerateRegistration(): PublicKeyCredentialCreationOptions
+	public function generateRegistration(): PublicKeyCredentialCreationOptions
 	{
 		return $this->generateRegistration->do();
 	}
 
-	public function VerifyRegistration(Request $request): void
+	public function verifyRegistration(Request $request): void
 	{
 		$data = $request->validate($this->attestationRules());
 
 		$this->verifyRegistration->do($data);
 	}
 
-	public function GenerateAuthentication(Request $request): PublicKeyCredentialRequestOptions
+	public function generateAuthentication(Request $request): PublicKeyCredentialRequestOptions
 	{
 		return $this->generateAuthentication->do($request['user_id']);
 	}
@@ -76,19 +76,19 @@ class WebAuthController extends Controller
 	 * @throws UnauthenticatedException
 	 * @throws InvalidUserIdException
 	 */
-	public function VerifyAuthentication(Request $request): void
+	public function verifyAuthentication(Request $request): void
 	{
 		$credential = $request->validate($this->assertionRules());
 
 		$this->verifyAuthentication->do($credential);
 	}
 
-	public function List(): Collection
+	public function list(): Collection
 	{
 		return $this->listDevices->do();
 	}
 
-	public function Delete(Request $request): void
+	public function delete(Request $request): void
 	{
 		$id = $request->validate(['id' => 'required|string']);
 		$this->deleteDevices->do($id);

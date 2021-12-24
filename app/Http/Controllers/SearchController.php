@@ -23,7 +23,7 @@ class SearchController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	public function search(SearchRequest $request, AlbumSearch $albumSearch, PhotoSearch $photoSearch): array
+	public function run(SearchRequest $request, AlbumSearch $albumSearch, PhotoSearch $photoSearch): array
 	{
 		$return = [];
 		$return['albums'] = $albumSearch->query($request->terms());

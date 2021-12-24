@@ -26,7 +26,6 @@ if (config('app.env') === 'dev') {
 Route::feeds();
 
 Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['installation::complete', 'migrated']);
-Route::get('/phpinfo', [IndexController::class, 'phpinfo']);
 Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['installation::complete', 'migrated']);
 Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'force'])->name('migrate')->middleware('installation::complete');
 
@@ -46,74 +45,7 @@ Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middlewar
 
 Route::post('/php/index.php', [SessionController::class, 'init']); // entry point if options are not initialized
 
-Route::post('/api/Session::init', [SessionController::class, 'init']);
-Route::post('/api/Session::login', [SessionController::class, 'login']);
-Route::post('/api/Session::logout', [SessionController::class, 'logout']);
-
-Route::post('/api/WebAuthn::register/gen', [Administration\WebAuthController::class, 'GenerateRegistration']);
-Route::post('/api/WebAuthn::register', [Administration\WebAuthController::class, 'VerifyRegistration']);
-Route::post('/api/WebAuthn::login/gen', [Administration\WebAuthController::class, 'GenerateAuthentication']);
-Route::post('/api/WebAuthn::login', [Administration\WebAuthController::class, 'VerifyAuthentication']);
-Route::post('/api/WebAuthn::list', [Administration\WebAuthController::class, 'List']);
-Route::post('/api/WebAuthn::delete', [Administration\WebAuthController::class, 'Delete']);
-
-Route::post('/api/Albums::get', [AlbumsController::class, 'get']);
-Route::post('/api/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
-Route::post('/api/Albums::tree', [AlbumsController::class, 'tree']);
-
-Route::post('/api/Album::get', [AlbumController::class, 'get']);
-Route::post('/api/Album::getPositionData', [AlbumController::class, 'getPositionData']);
-Route::post('/api/Album::unlock', [AlbumController::class, 'unlock']);
-Route::post('/api/Album::add', [AlbumController::class, 'add']);
-Route::post('/api/Album::addByTags', [AlbumController::class, 'addTagAlbum']);
-Route::post('/api/Album::setTitle', [AlbumController::class, 'setTitle']);
-Route::post('/api/Album::setNSFW', [AlbumController::class, 'setNSFW']);
-Route::post('/api/Album::setDescription', [AlbumController::class, 'setDescription']);
-Route::post('/api/Album::setCover', [AlbumController::class, 'setCover']);
-Route::post('/api/Album::setShowTags', [AlbumController::class, 'setShowTags']);
-Route::post('/api/Album::setPublic', [AlbumController::class, 'setPublic']);
-Route::post('/api/Album::delete', [AlbumController::class, 'delete']);
-Route::post('/api/Album::merge', [AlbumController::class, 'merge']);
-Route::post('/api/Album::move', [AlbumController::class, 'move']);
-Route::post('/api/Album::setLicense', [AlbumController::class, 'setLicense']);
-Route::post('/api/Album::setSorting', [AlbumController::class, 'setSorting']);
-Route::get('/api/Album::getArchive', [AlbumController::class, 'getArchive'])->middleware('local_storage');
-
-Route::post('/api/Frame::getSettings', [FrameController::class, 'getSettings']);
-
-Route::post('/api/Photo::get', [PhotoController::class, 'get']);
-Route::post('/api/Photo::getRandom', [PhotoController::class, 'getRandom']);
-Route::post('/api/Photo::setTitle', [PhotoController::class, 'setTitle']);
-Route::post('/api/Photo::setDescription', [PhotoController::class, 'setDescription']);
-Route::post('/api/Photo::setStar', [PhotoController::class, 'setStar']);
-Route::post('/api/Photo::setPublic', [PhotoController::class, 'setPublic']);
-Route::post('/api/Photo::setAlbum', [PhotoController::class, 'setAlbum']);
-Route::post('/api/Photo::setTags', [PhotoController::class, 'setTags']);
-Route::post('/api/Photo::add', [PhotoController::class, 'add']);
-Route::post('/api/Photo::delete', [PhotoController::class, 'delete']);
-Route::post('/api/Photo::duplicate', [PhotoController::class, 'duplicate']);
-Route::post('/api/Photo::setLicense', [PhotoController::class, 'setLicense']);
-Route::get('/api/Photo::getArchive', [PhotoController::class, 'getArchive'])->middleware('local_storage');
-Route::get('/api/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
-
-Route::post('/api/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
-
-Route::post('/api/Sharing::list', [Administration\SharingController::class, 'list']);
-Route::post('/api/Sharing::add', [Administration\SharingController::class, 'add']);
-Route::post('/api/Sharing::delete', [Administration\SharingController::class, 'delete']);
-
-Route::post('/api/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
-
-Route::post('/api/Import::url', [ImportController::class, 'url']);
-Route::post('/api/Import::server', [ImportController::class, 'server'])->middleware('admin');
-Route::post('/api/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
-
-Route::post('/api/Diagnostics::get', [Administration\DiagnosticsController::class, 'get']);
-Route::post('/api/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'getSize']);
-
 Route::get('/Diagnostics', [Administration\DiagnosticsController::class, 'show']);
-
-Route::post('/api/search', [SearchController::class, 'search']);
 
 // This route NEEDS to be the last one as it will catch anything else.
 Route::get('/{page}', [PageController::class, 'page']);

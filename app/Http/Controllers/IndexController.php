@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ModelDBException;
-use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Facades\Lang;
 use App\ModelFunctions\ConfigFunctions;
 use App\ModelFunctions\SymLinkFunctions;
@@ -74,16 +72,10 @@ class IndexController extends Controller
 	 * Cannot be tested.
 	 *
 	 * @return string
-	 *
-	 * @throws UnauthorizedException
 	 */
 	// @codeCoverageIgnoreStart
 	public function phpinfo(): string
 	{
-		if (!AccessControl::is_admin()) {
-			throw new UnauthorizedException('Admin privileges required');
-		}
-
 		return (string) phpinfo();
 	}
 

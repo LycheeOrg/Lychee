@@ -29,6 +29,7 @@ class Kernel extends HttpKernel
 	 */
 	protected $middlewareGroups = [
 		'web' => [
+			'content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -39,6 +40,7 @@ class Kernel extends HttpKernel
 		],
 
 		'web-admin' => [
+			'content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -50,11 +52,13 @@ class Kernel extends HttpKernel
 		],
 
 		'web-install' => [
+			'content_type:html',
 			'installation:incomplete',
 		],
 
 		'api' => [
 			'throttle',
+			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -66,6 +70,7 @@ class Kernel extends HttpKernel
 
 		'api-admin' => [
 			'throttle',
+			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -89,5 +94,6 @@ class Kernel extends HttpKernel
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'migrated' => \App\Http\Middleware\MigrationCheck::class,
 		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,
+		'content_type' => \App\Http\Middleware\RequireContentType::class,
 	];
 }
