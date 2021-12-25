@@ -26,7 +26,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/User::List', []);
+		$response = $this->testCase->json('POST', '/api/User::list', []);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
@@ -74,7 +74,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/User::Create', [
+		$response = $this->testCase->json('POST', '/api/User::create', [
 			'username' => $username,
 			'password' => $password,
 			'may_upload' => $mayUpload,
@@ -102,7 +102,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/User::Delete', [
+		$response = $this->testCase->json('POST', '/api/User::delete', [
 			'id' => $id,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -135,7 +135,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/User::Save', [
+		$response = $this->testCase->json('POST', '/api/User::save', [
 			'id' => $id,
 			'username' => $username,
 			'password' => $password,
@@ -164,7 +164,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/User::UpdateEmail', [
+		$response = $this->testCase->json('POST', '/api/User::setEmail', [
 			'email' => $email,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -187,7 +187,7 @@ class UsersUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/User::GetEmail');
+		$response = $this->testCase->json('POST', '/api/User::getEmail');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
