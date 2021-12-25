@@ -7,13 +7,14 @@ use App\Actions\Diagnostics\Errors;
 use App\Actions\Diagnostics\Info;
 use App\Actions\Diagnostics\Space;
 use App\Actions\Update\Check as CheckUpdate;
+use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
+use App\DTO\DiagnosticInfo;
 use App\Exceptions\Internal\FrameworkException;
 use App\Facades\AccessControl;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
-use Psr\Container\ContainerExceptionInterface;
 
 class DiagnosticsController extends Controller
 {
@@ -26,45 +27,21 @@ class DiagnosticsController extends Controller
 	}
 
 	/**
-	 * Return the requested information.
-	 *
-	 * @return array{errors: string[], infos: string[], configs: string[]}
-	 *
-	 * @throws LycheeException
-	 */
-	private function getData(): array
-	{
-		try {
-			$errors = resolve(Errors::class);
-			$infos = resolve(Info::class);
-			$configs = resolve(Configuration::class);
-
-			return [
-				'errors' => $errors->get(),
-				'infos' => $this->isAuthorized ? $infos->get() : [self::ERROR_MSG],
-				'configs' => $this->isAuthorized ? $configs->get() : [self::ERROR_MSG],
-			];
-		} catch (ContainerExceptionInterface $e) {
-			throw new FrameworkException('Laravel\'s container component', $e);
-		}
-	}
-
-	/**
 	 * This function return the Diagnostic data as an JSON array.
 	 * should be used for AJAX request.
 	 *
-	 * @param CheckUpdate $checkUpdate
+	 * @param Errors        $checkErrors
+	 * @param Info          $collectInfo
+	 * @param Configuration $config
+	 * @param CheckUpdate   $checkUpdate
 	 *
-	 * @return array{errors: string[], infos: string[], configs: string[], update: int}
+	 * @return DiagnosticInfo
 	 *
-	 * @throws LycheeException
+	 * @throws InternalLycheeException
 	 */
-	public function get(CheckUpdate $checkUpdate): array
+	public function get(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): DiagnosticInfo
 	{
-		$ret = $this->getData();
-		$ret['update'] = $checkUpdate->getCode();
-
-		return $ret;
+		return new DiagnosticInfo($checkErrors->get(), $this->isAuthorized ? $collectInfo->get() : [self::ERROR_MSG], $this->isAuthorized ? $config->get() : [self::ERROR_MSG], $checkUpdate->getCode());
 	}
 
 	/**
@@ -74,10 +51,10 @@ class DiagnosticsController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	public function show(): View
+	public function show(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): View
 	{
 		try {
-			return view('diagnostics', $this->getData());
+			return view('diagnostics', $this->get($checkErrors, $collectInfo, $config, $checkUpdate));
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s view component', $e);
 		}

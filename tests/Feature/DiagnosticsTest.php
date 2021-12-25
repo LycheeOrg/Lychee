@@ -27,7 +27,7 @@ class DiagnosticsTest extends TestCase
 
 		Configs::where('key', '=', 'lossless_optimization')->update(['value' => null]);
 
-		$response = $this->postJson('/api/Diagnostics');
+		$response = $this->postJson('/api/Diagnostics::get');
 		$response->assertOk(); // code 200 something too
 
 		$response = $this->postJson('/api/Diagnostics::getSize');
