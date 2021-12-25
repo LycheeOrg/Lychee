@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Contracts\LycheeException;
+use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Http\Middleware\Checks\IsInstalled;
 use App\Redirections\ToHome;
 use App\Redirections\ToInstall;
@@ -52,12 +53,20 @@ class InstallationStatus
 	 */
 	public function handle(Request $request, Closure $next, string $requiredStatus): mixed
 	{
-		if ($requiredStatus === self::COMPLETE && !$this->isInstalled->assert()) {
-			return ToInstall::go();
-		} elseif ($requiredStatus === self::INCOMPLETE && $this->isInstalled->assert()) {
-			return ToHome::go();
+		if ($requiredStatus === self::COMPLETE) {
+			if ($this->isInstalled->assert()) {
+				return $next($request);
+			} else {
+				return ToInstall::go();
+			}
+		} elseif ($requiredStatus === self::INCOMPLETE) {
+			if ($this->isInstalled->assert()) {
+				return ToHome::go();
+			} else {
+				return $next($request);
+			}
 		} else {
-			return $next($request);
+			throw new LycheeInvalidArgumentException('$requiredStatus must either be "' . self::COMPLETE . '" or "' . self::INCOMPLETE . '"');
 		}
 	}
 }

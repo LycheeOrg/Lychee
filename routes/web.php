@@ -25,9 +25,9 @@ if (config('app.env') === 'dev') {
 
 Route::feeds();
 
-Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['installation::complete', 'migrated']);
-Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['installation::complete', 'migrated']);
-Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'force'])->name('migrate')->middleware('installation::complete');
+Route::get('/', [IndexController::class, 'show'])->name('home')->middleware(['installation:complete', 'migrated']);
+Route::get('/gallery', [IndexController::class, 'gallery'])->name('gallery')->middleware(['installation:complete', 'migrated']);
+Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::class, 'force'])->name('migrate')->middleware('installation:complete');
 
 /*
  * TODO see to add better redirection functionality later.
@@ -36,12 +36,12 @@ Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::clas
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['installation::complete', 'migrated']);
-Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['installation::complete', 'migrated']);
+Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['installation:complete', 'migrated']);
+Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['installation:complete', 'migrated']);
 
 Route::get('/view', [ViewController::class, 'view']);
 Route::get('/demo', [DemoController::class, 'js']);
-Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installation::complete', 'migrated']);
+Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installation:complete', 'migrated']);
 
 Route::post('/php/index.php', [SessionController::class, 'init']); // entry point if options are not initialized
 
