@@ -396,7 +396,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Photo::duplicate', [
+		$response = $this->testCase->postJson('/api/Photo::duplicate', [
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -417,10 +417,11 @@ class PhotosUnitTest
 		string $id,
 		string $kind = Archive::FULL
 	): void {
-		$response = $this->testCase->call('GET', '/api/Photo::getArchive', [
-			'photoIDs' => $id,
-			'kind' => $kind,
-		]);
+		$response = $this->testCase->json(
+			'GET',
+			'/api/Photo::getArchive',
+			['photoIDs' => $id, 'kind' => $kind],
+			['Accept' => '*/*']);
 		$response->assertOk();
 	}
 
@@ -436,7 +437,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json('POST', '/api/Photo::delete', [
+		$response = $this->testCase->postJson('/api/Photo::delete', [
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -463,7 +464,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): string {
-		$response = $this->testCase->json('POST', '/api/Import::server', [
+		$response = $this->testCase->postJson('/api/Import::server', [
 			'function' => 'Import::server',
 			'albumID' => $album_id,
 			'path' => $path,
@@ -493,7 +494,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/PhotoEditor::rotate', [
+		$response = $this->testCase->postJson('/api/PhotoEditor::rotate', [
 			'photoID' => $id,
 			'direction' => $direction,
 		]);

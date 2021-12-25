@@ -189,8 +189,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json(
-			'POST',
+		$response = $this->testCase->postJson(
 			'/api/Album::setTitle',
 			['albumIDs' => $id, 'title' => $title]
 		);
@@ -214,8 +213,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json(
-			'POST',
+		$response = $this->testCase->postJson(
 			'/api/Album::setDescription',
 			['albumID' => $id, 'description' => $description]
 		);
@@ -239,7 +237,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json('POST', '/api/Album::setLicense', [
+		$response = $this->testCase->postJson('/api/Album::setLicense', [
 			'albumID' => $id,
 			'license' => $license,
 		]);
@@ -265,7 +263,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json('POST', '/api/Album::setSorting', [
+		$response = $this->testCase->postJson('/api/Album::setSorting', [
 			'albumID' => $id,
 			'sortingCol' => $sortingCol,
 			'sortingOrder' => $sortingOrder,
@@ -298,7 +296,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json('POST', '/api/Album::setPublic', [
+		$response = $this->testCase->postJson('/api/Album::setPublic', [
 			'grants_full_photo' => $full_photo,
 			'albumID' => $id,
 			'is_public' => $public,
@@ -325,7 +323,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json('POST', '/api/Album::setShowTags', [
+		$response = $this->testCase->postJson('/api/Album::setShowTags', [
 			'albumID' => $id,
 			'show_tags' => $tags,
 		]);
@@ -342,9 +340,11 @@ class AlbumsUnitTest
 	 */
 	public function download(string $id): void
 	{
-		$response = $this->testCase->call('GET', '/api/Album::getArchive', [
-			'albumIDs' => $id,
-		]);
+		$response = $this->testCase->json(
+			'GET',
+			'/api/Album::getArchive',
+			['albumIDs' => $id],
+			['Accept' => '*/*']);
 		$response->assertOk();
 	}
 
@@ -379,7 +379,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Albums::getPositionData', []);
+		$response = $this->testCase->postJson('/api/Albums::getPositionData', []);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
@@ -402,7 +402,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Album::getPositionData', [
+		$response = $this->testCase->postJson('/api/Album::getPositionData', [
 			'albumID' => $id,
 			'includeSubAlbums' => false,
 		]);

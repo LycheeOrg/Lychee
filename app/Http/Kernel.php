@@ -29,7 +29,7 @@ class Kernel extends HttpKernel
 	 */
 	protected $middlewareGroups = [
 		'web' => [
-			'content_type:html',
+			'content_type:html,any',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -40,7 +40,7 @@ class Kernel extends HttpKernel
 		],
 
 		'web-admin' => [
-			'content_type:html',
+			'content_type:html,any',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -52,13 +52,13 @@ class Kernel extends HttpKernel
 		],
 
 		'web-install' => [
-			'content_type:html',
+			'content_type:html,any',
 			'installation:incomplete',
 		],
 
 		'api' => [
 			'throttle',
-			'content_type:json',
+			'content_type:json,json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -70,7 +70,7 @@ class Kernel extends HttpKernel
 
 		'api-admin' => [
 			'throttle',
-			'content_type:json',
+			'content_type:json,json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
