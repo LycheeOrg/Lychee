@@ -26,7 +26,7 @@ class PhotosUnitTest
 	 */
 	public function upload(UploadedFile $file, ?string $albumID = null): string
 	{
-		$response = $this->testCase->post(
+		$response = $this->testCase->postJson(
 			'/api/Photo::add',
 			[
 				'albumID' => $albumID,
