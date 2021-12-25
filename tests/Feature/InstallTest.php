@@ -27,6 +27,7 @@ class InstallTest extends TestCase
 		$response->assertOk();
 		@unlink(base_path('.NO_SECURE_KEY'));
 
+		// TODO: Why does a `git pull` delete `installed.log`? This test needs to be discussed with @ildyria
 		@unlink(base_path('installed.log'));
 		/**
 		 * No installed.log: we should not be redirected to install (case where we have not done the last migration).
