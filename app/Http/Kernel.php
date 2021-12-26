@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpFullyQualifiedNameUsageInspection */
+
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -9,7 +11,7 @@ class Kernel extends HttpKernel
 	/**
 	 * The application's global HTTP middleware stack.
 	 *
-	 * These middleware are run during every request to your application.
+	 * These middlewares are run during every request to your application.
 	 *
 	 * @var array
 	 */
@@ -29,7 +31,7 @@ class Kernel extends HttpKernel
 	 */
 	protected $middlewareGroups = [
 		'web' => [
-			'content_type:html,any',
+			'accept_content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -40,7 +42,7 @@ class Kernel extends HttpKernel
 		],
 
 		'web-admin' => [
-			'content_type:html,any',
+			'accept_content_type:html',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -52,13 +54,13 @@ class Kernel extends HttpKernel
 		],
 
 		'web-install' => [
-			'content_type:html,any',
+			'accept_content_type:html',
 			'installation:incomplete',
 		],
 
 		'api' => [
-			'throttle',
-			'content_type:json,json',
+			'accept_content_type:json',
+			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -69,8 +71,8 @@ class Kernel extends HttpKernel
 		],
 
 		'api-admin' => [
-			'throttle',
-			'content_type:json,json',
+			'accept_content_type:json',
+			'content_type:json',
 			\Illuminate\Cookie\Middleware\EncryptCookies::class,
 			\Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
 			\Illuminate\Session\Middleware\StartSession::class,
@@ -90,11 +92,11 @@ class Kernel extends HttpKernel
 	 * @var array
 	 */
 	protected $routeMiddleware = [
-		'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
 		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
 		'migrated' => \App\Http\Middleware\MigrationCheck::class,
 		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,
-		'content_type' => \App\Http\Middleware\RequireContentType::class,
+		'content_type' => \App\Http\Middleware\ContentType::class,
+		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
 	];
 }
