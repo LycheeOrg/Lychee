@@ -240,7 +240,7 @@ class PhotosTest extends TestCase
 
 		$albums_tests->delete($albumID);
 
-		$response = $this->get('/api/Photo::clearSymLink');
+		$response = $this->getJson('/api/Photo::clearSymLink');
 		$response->assertNoContent();
 
 		AccessControl::logout();

@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Facades\AccessControl;
-use App\ModelFunctions\SessionFunctions;
 use App\Models\User;
 use DarkGhostHunter\Larapass\Eloquent\WebAuthnCredential;
 use Tests\TestCase;
@@ -17,14 +16,12 @@ class WebAuthTest extends TestCase
 	 */
 	public function testWebAuthTest()
 	{
-		$sessionFunctions = new SessionFunctions();
-
 		AccessControl::log_as_id(0);
 
-		$response = $this->postJson('/api/webauthn::register/gen');
+		$response = $this->postJson('/api/WebAuthn::register/gen');
 		$response->assertOk();
 
-		$response = $this->postJson('/api/webauthn::register', [
+		$response = $this->postJson('/api/WebAuthn::register', [
 			'id' => '-PhslGzltOv3nJ0j8Or1AuNHh9kgmMQmOdM0A7eF7yJcAuSZzFa9YhSHfrYvyllhNUhuIMTE6hFYA3Ef7gCOwg',
 			'rawId' => '+PhslGzltOv3nJ0j8Or1AuNHh9kgmMQmOdM0A7eF7yJcAuSZzFa9YhSHfrYvyllhNUhuIMTE6hFYA3Ef7gCOwg==',
 			'response' => [
@@ -35,12 +32,12 @@ class WebAuthTest extends TestCase
 		]);
 		$response->assertForbidden();
 
-		$sessionFunctions->logout();
+		AccessControl::logout();
 
-		$response = $this->postJson('/api/webauthn::login/gen', ['user_id' => 0]);
+		$response = $this->postJson('/api/WebAuthn::login/gen', ['user_id' => 0]);
 		$response->assertOk();
 
-		$response = $this->postJson('/api/webauthn::login', [
+		$response = $this->postJson('/api/WebAuthn::login', [
 			'id' => 'jQJF5u0Fn-MsdabIxKJoxc19XSLXDCSDqs4g8TV1rXXXBDSEoT6LeRN60CfxZskRxq15EEl43OIbPluD7dVT0A',
 			'rawId' => 'jQJF5u0Fn+MsdabIxKJoxc19XSLXDCSDqs4g8TV1rXXXBDSEoT6LeRN60CfxZskRxq15EEl43OIbPluD7dVT0A==',
 			'response' => [
@@ -55,7 +52,7 @@ class WebAuthTest extends TestCase
 
 		AccessControl::log_as_id(0);
 
-		$response = $this->postJson('/api/webauthn::list');
+		$response = $this->postJson('/api/WebAuthn::list');
 		$response->assertOk(); // code 200 something
 
 		$key = new WebAuthnCredential([
@@ -72,12 +69,12 @@ class WebAuthTest extends TestCase
 		$user = User::query()->find(0);
 		$user->webAuthnCredentials()->save($key);
 
-		$response = $this->postJson('/api/webauthn::delete', ['id' => '1234']);
+		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
 		$response->assertNoContent();
 
-		$sessionFunctions->logout();
+		AccessControl::logout();
 
-		$response = $this->postJson('/api/webauthn::delete', ['id' => '1234']);
+		$response = $this->postJson('/api/WebAuthn::delete', ['id' => '1234']);
 		$response->assertUnauthorized();
 	}
 }

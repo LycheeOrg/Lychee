@@ -13,10 +13,10 @@ class UpdateTest extends TestCase
 		$response = $this->get('/Update', []);
 		$response->assertForbidden();
 
-		$response = $this->postJson('/api/Update::Apply', []);
+		$response = $this->postJson('/api/Update::apply', []);
 		$response->assertForbidden();
 
-		$response = $this->postJson('/api/Update::Check', []);
+		$response = $this->postJson('/api/Update::check', []);
 		$response->assertForbidden();
 	}
 
@@ -27,7 +27,7 @@ class UpdateTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		Configs::set('allow_online_git_pull', '0');
-		$response = $this->postJson('/api/Update::Apply', []);
+		$response = $this->postJson('/api/Update::apply', []);
 		$response->assertStatus(412);
 		$response->assertSee('Online updates are disabled by configuration');
 
@@ -36,10 +36,10 @@ class UpdateTest extends TestCase
 		$response = $this->get('/Update', []);
 		$response->assertOk();
 
-		$response = $this->postJson('/api/Update::Apply', []);
+		$response = $this->postJson('/api/Update::apply', []);
 		$response->assertOk();
 
-		$response = $this->postJson('/api/Update::Check', []);
+		$response = $this->postJson('/api/Update::check', []);
 		if ($response->status() === 500) {
 			$response->assertSee('Branch is not master, cannot compare');
 		} else {
