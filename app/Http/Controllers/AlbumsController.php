@@ -26,9 +26,9 @@ class AlbumsController extends Controller
 		$toplevel = $top->get();
 
 		return [
-			'smart_albums' => $toplevel['shared_albums'],
+			'smart_albums' => $smart->get(),
 			'albums' => $toplevel['albums'],
-			'shared_albums' => $smart->get(),
+			'shared_albums' => $toplevel['shared_albums'],
 		];
 	}
 

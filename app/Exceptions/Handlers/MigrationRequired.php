@@ -45,7 +45,7 @@ class MigrationRequired implements HttpExceptionHandler
 	{
 		try {
 			return response()->view('error.update', [
-				'code' => $e->getCode(),
+				'code' => $e->getStatusCode(),
 				'message' => $e->getMessage(),
 			]);
 		} catch (\Throwable) {
