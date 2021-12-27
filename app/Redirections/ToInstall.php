@@ -6,6 +6,7 @@ use App\Exceptions\InstallationException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class ToInstall implements Redirection
@@ -32,7 +33,7 @@ class ToInstall implements Redirection
 				}
 			}
 
-			return redirect(route('install-welcome'), 307, [
+			return redirect(route('install-welcome'), Response::HTTP_TEMPORARY_REDIRECT, [
 				'Cache-Control' => 'no-cache, must-revalidate',
 			]);
 		} catch (BindingResolutionException $e) {

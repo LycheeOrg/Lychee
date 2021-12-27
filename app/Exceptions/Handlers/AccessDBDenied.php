@@ -4,34 +4,57 @@ namespace App\Exceptions\Handlers;
 
 use App\Redirections\ToInstall;
 use Illuminate\Database\QueryException as QueryException;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 use Throwable;
 
+/**
+ * Class NoEncryptionKey.
+ *
+ * If access to the DB is denied, we need to run the installation.
+ */
 class AccessDBDenied
 {
 	/**
 	 * Render an exception into an HTTP response.
 	 *
-	 * @param Request   $request
-	 * @param Throwable $exception
+	 * @param HttpException $e the exception to render to the client
 	 *
-	 * @return bool
+	 * @return bool true, if this class wants to handle the exception specially
 	 */
-	public function check(Request $request, Throwable $exception)
+	public function check(HttpException $e): bool
 	{
-		// encryption key does not exist, we need to run the installation
-		return $exception instanceof QueryException && (str_contains($exception->getMessage(), 'Access denied'));
+		do {
+			if ($e instanceof QueryException && str_contains($e->getMessage(), 'Access denied')) {
+				return true;
+			}
+		} while ($e = $e->getPrevious());
+
+		return false;
 	}
 
 	/**
-	 * @return RedirectResponse
+	 * @param SymfonyResponse $defaultResponse the default response as it
+	 *                                         would be rendered by
+	 *                                         {@link \Illuminate\Foundation\Exceptions\Handler::renderHttpException()}
+	 * @param HttpException   $e               the exception to render to the
+	 *                                         client
+	 *
+	 * @return SymfonyResponse
 	 */
-	// @codeCoverageIgnoreStart
-	public function go(): RedirectResponse
+	public function go(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
-		return ToInstall::go();
-	}
+		try {
+			$redirectResponse = ToInstall::go();
+			$contentType = $defaultResponse->headers->get('Content-Type');
+			if (!empty($contentType)) {
+				$redirectResponse->headers->set('Content-Type', $contentType);
+				$redirectResponse->setContent($defaultResponse->getContent());
+			}
 
-	// @codeCoverageIgnoreEnd
+			return $redirectResponse;
+		} catch (Throwable) {
+			return $defaultResponse;
+		}
+	}
 }
