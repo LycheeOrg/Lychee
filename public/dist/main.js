@@ -401,57 +401,91 @@ function gup(b) {
  * @description This module communicates with Lychee's API
  */
 
+/**
+ * @callback SuccessCallback
+ * @param {Object} data the decoded JSON response
+ */
+
+/**
+ * @callback ErrorCallback
+ * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+ * @param {Object} params the original JSON parameters of the request
+ * @return {boolean}
+ */
+
+/**
+ * @callback ProgressCallback
+ * @param {Object} event         the progress event
+ * @param {number} event.loaded  the amount of loaded data so far
+ * @param {number} event.total   the total amount of data to be loaded
+ */
+
+/**
+ * @typedef {Object} LycheeException
+ * @property {string} message     the message of the exception
+ * @property {string} [exception] the name of the exception class; only in developer mode
+ * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
+ * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
+ * @property {Array} [trace]      the backtrace; only in developer mode
+ * @property {?LycheeException} [previous_exception] the previous exception, if any; only in developer mode
+ */
+
+/**
+ * The main API object
+ */
 var api = {
+	/**
+  * Global, default error handler
+  *
+  * @type {?ErrorCallback}
+  */
 	onError: null
 };
 
-api.isTimeout = function (errorThrown, jqXHR) {
-	if (errorThrown && (errorThrown === "Bad Request" && jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error === "Session timed out" || errorThrown === "unknown status" && jqXHR && jqXHR.status && jqXHR.status === 419 && jqXHR.responseJSON && jqXHR.responseJSON.message && jqXHR.responseJSON.message === "CSRF token mismatch.")) {
-		return true;
-	}
-
-	return false;
-};
-
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {?SuccessCallback} successCallback
+ * @param {?ProgressCallback} responseProgressCB
+ * @param {?ErrorCallback} errorCallback
+ */
 api.post = function (fn, params, successCallback) {
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
 	loadingBar.show();
 
-	params = $.extend({ function: fn }, params);
-
-	var api_url = "api/" + fn;
-
-	var success = function success(data) {
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
 		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
 		if (successCallback) successCallback(data);
 	};
 
-	var error = function error(jqXHR, textStatus, errorThrown) {
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
 		if (errorCallback) {
-			var isHandled = errorCallback(jqXHR);
+			var isHandled = errorCallback(jqXHR, params);
 			if (isHandled) return;
 		}
 		// Call global error handler for unhandled errors
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
+		api.onError(jqXHR, params);
 	};
 
 	var ajaxParams = {
 		type: "POST",
-		url: api_url,
+		url: "api/" + fn,
 		contentType: "application/json",
 		data: JSON.stringify(params),
 		dataType: "json",
-		success: success,
-		error: error
+		success: successHandler,
+		error: errorHandler
 	};
 
 	if (responseProgressCB !== null) {
@@ -463,23 +497,30 @@ api.post = function (fn, params, successCallback) {
 	$.ajax(ajaxParams);
 };
 
+/**
+ *
+ * @param {string} url
+ * @param {SuccessCallback} callback
+ */
 api.get = function (url, callback) {
 	loadingBar.show();
 
-	var success = function success(data) {
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
 		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
 
 		callback(data);
 	};
 
-	var error = function error(jqXHR, textStatus, errorThrown) {
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", {}, errorThrown);
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		api.onError(jqXHR, {});
 	};
 
 	$.ajax({
@@ -487,41 +528,44 @@ api.get = function (url, callback) {
 		url: url,
 		data: {},
 		dataType: "text",
-		success: success,
-		error: error
+		success: successHandler,
+		error: errorHandler
 	});
 };
 
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {SuccessCallback} callback
+ */
 api.post_raw = function (fn, params, callback) {
 	loadingBar.show();
 
-	params = $.extend({ function: fn }, params);
-
-	var api_url = "api/" + fn;
-
-	var success = function success(data) {
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
 		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
 		callback(data);
 	};
 
-	var error = function error(jqXHR, textStatus, errorThrown) {
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		api.onError(jqXHR, params);
 	};
 
 	$.ajax({
 		type: "POST",
-		url: api_url,
+		url: "api/" + fn,
 		data: params,
 		dataType: "text",
-		success: success,
-		error: error
+		success: successHandler,
+		error: errorHandler
 	});
 };
 
@@ -1414,7 +1458,7 @@ album.shareUsers = function (albumID, e) {
 	if (!basicModal.visible()) {
 		var _msg2 = "<form id=\"sharing_people_form\">\n\t\t\t<p>" + lychee.locale["WAIT_FETCH_DATA"] + "</p>\n\t\t</form>";
 
-		api.post("Sharing::List", {}, function (data) {
+		api.post("Sharing::list", {}, function (data) {
 			var sharingForm = $("#sharing_people_form");
 			sharingForm.empty();
 			if (data !== undefined) {
@@ -1479,7 +1523,7 @@ album.shareUsers = function (albumID, e) {
 
 	if (sharingToDelete.length > 0) {
 		var params = { ShareIDs: sharingToDelete.join(",") };
-		api.post("Sharing::Delete", params, function (data) {
+		api.post("Sharing::delete", params, function (data) {
 			if (data !== true) {
 				loadingBar.show("error", data.description);
 				lychee.error(null, params, data);
@@ -1491,7 +1535,7 @@ album.shareUsers = function (albumID, e) {
 			albumIDs: albumID,
 			UserIDs: sharingToAdd.join(",")
 		};
-		api.post("Sharing::Add", params, function (data) {
+		api.post("Sharing::add", params, function (data) {
 			if (data !== true) {
 				loadingBar.show("error", data.description);
 				lychee.error(null, params, data);
@@ -4100,6 +4144,11 @@ loadingBar.dom = function (selector) {
 	return loadingBar._dom.find(selector);
 };
 
+/**
+ * @param {?string} status the status, either `null`, `"error"` or `"success"`
+ * @param {?string} errorText the error text to show
+ * @return {boolean}
+ */
 loadingBar.show = function (status, errorText) {
 	if (status === "error") {
 		// Set status
@@ -4177,6 +4226,9 @@ loadingBar.show = function (status, errorText) {
 	}
 };
 
+/**
+ * @param {boolean} force
+ */
 loadingBar.hide = function (force) {
 	if (loadingBar.status !== "error" && loadingBar.status !== "success" && loadingBar.status != null || force) {
 		// Remove status
@@ -4520,12 +4572,14 @@ lychee.login = function (data) {
 		password: password
 	};
 
-	api.post("Session::login", params, function (_data) {
-		if (typeof _data === "undefined") {
-			window.location.reload();
-		} else {
-			// Show error and reactive button
+	api.post("Session::login", params, function () {
+		window.location.reload();
+	}, null, function (jqXHR) {
+		if (jqXHR.status === 401) {
 			basicModal.error("password");
+			return true;
+		} else {
+			return false;
 		}
 	});
 };
@@ -4931,24 +4985,39 @@ lychee.html = function (literalSections) {
 	return result;
 };
 
-lychee.error = function (errorThrown) {
-	var params = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
-	var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : "";
+/**
+ * @param {XMLHttpRequest} jqXHR
+ * @param {Object} params the original JSON parameters of the request
+ * @return {boolean}
+ */
+lychee.error = function (jqXHR, params) {
+	var msg = jqXHR.statusText + " - ";
+	/**
+  * @type {?LycheeException}
+  */
+	var responseObj = null;
 
-	loadingBar.show("error", errorThrown);
-
-	if (errorThrown === "Session timed out.") {
-		setTimeout(function () {
-			lychee.goto();
-			window.location.reload();
-		}, 3000);
-	} else {
-		console.error({
-			description: errorThrown,
-			params: params,
-			response: data
-		});
+	switch (jqXHR.responseType) {
+		case "text":
+			msg += jqXHR.responseText;
+			break;
+		case "json":
+			responseObj = JSON.parse(jqXHR.responseText);
+			msg += responseObj.message;
+			break;
+		default:
+			msg += "Unknown error";
+			break;
 	}
+
+	loadingBar.show("error", msg);
+
+	console.error({
+		description: msg,
+		params: params,
+		response: responseObj ? responseObj : jqXHR.responseText
+	});
+	return true;
 };
 
 lychee.fullscreenEnter = function () {
@@ -6289,7 +6358,7 @@ notifications.update = function (params) {
 		}
 	}
 
-	api.post("User::UpdateEmail", params, function (data) {
+	api.post("User::setEmail", params, function (data) {
 		if (data) {
 			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
@@ -6300,7 +6369,7 @@ notifications.update = function (params) {
 };
 
 notifications.load = function () {
-	api.post("User::GetEmail", {}, function (data) {
+	api.post("User::getEmail", {}, function (data) {
 		notifications.json = data;
 		view.notifications.init();
 	});
@@ -7592,22 +7661,17 @@ settings.createLogin = function () {
 			password: password
 		};
 
-		api.post("Settings::setLogin", params, function (_data) {
-			if (_data !== true) {
-				basicModal.show({
-					body: "<p>" + lychee.locale["ERROR_LOGIN"] + "</p>",
-					buttons: {
-						action: {
-							title: lychee.locale["RETRY"],
-							fn: settings.createLogin
-						}
+		api.post("Settings::setLogin", params, null, null, function (jqXHR) {
+			basicModal.show({
+				body: "<p>" + lychee.locale["ERROR_LOGIN"] + "</p>",
+				buttons: {
+					action: {
+						title: lychee.locale["RETRY"],
+						fn: settings.createLogin
 					}
-				});
-			}
-			// else
-			// {
-			// 	window.location.reload()
-			// }
+				}
+			});
+			return true;
 		});
 	};
 
@@ -7679,15 +7743,10 @@ settings.changeLogin = function (params) {
 		$("input[name=confirm]").removeClass("error");
 	}
 
-	api.post("Settings::setLogin", params, function (data) {
-		if (data !== true) {
-			loadingBar.show("error", data.description);
-			lychee.error(null, datas, data);
-		} else {
-			$("input[name]").removeClass("error");
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LOGIN"]);
-			view.settings.content.clearLogin();
-		}
+	api.post("Settings::setLogin", params, function () {
+		$("input[name]").removeClass("error");
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LOGIN"]);
+		view.settings.content.clearLogin();
 	});
 };
 
@@ -8035,7 +8094,7 @@ sharing.add = function () {
 		return false;
 	}
 
-	api.post("Sharing::Add", params, function (data) {
+	api.post("Sharing::add", params, function (data) {
 		if (data !== true) {
 			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
@@ -8060,7 +8119,7 @@ sharing.delete = function () {
 		loadingBar.show("error", "Select a sharing to remove!");
 		return false;
 	}
-	api.post("Sharing::Delete", params, function (data) {
+	api.post("Sharing::delete", params, function (data) {
 		if (data !== true) {
 			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
@@ -8072,7 +8131,7 @@ sharing.delete = function () {
 };
 
 sharing.list = function () {
-	api.post("Sharing::List", {}, function (data) {
+	api.post("Sharing::list", {}, function (data) {
 		sharing.json = data;
 		view.sharing.init();
 	});
@@ -8824,8 +8883,8 @@ u2f.login = function () {
 	}
 
 	new Larapass({
-		login: "/api/webauthn::login",
-		loginOptions: "/api/webauthn::login/gen"
+		login: "/api/WebAuthn::login",
+		loginOptions: "/api/WebAuthn::login/gen"
 	}).login({
 		user_id: 0 // for now it is only available to Admin user via a secret key shortcut.
 	}).then(function (data) {
@@ -8842,8 +8901,8 @@ u2f.register = function () {
 	}
 
 	var larapass = new Larapass({
-		register: "/api/webauthn::register",
-		registerOptions: "/api/webauthn::register/gen"
+		register: "/api/WebAuthn::register",
+		registerOptions: "/api/WebAuthn::register/gen"
 	});
 	if (Larapass.supportsWebAuthn()) {
 		larapass.register().then(function (response) {
@@ -8858,7 +8917,7 @@ u2f.register = function () {
 };
 
 u2f.delete = function (params) {
-	api.post("webauthn::delete", params, function (data) {
+	api.post("WebAuthn::delete", params, function (data) {
 		console.log(data);
 		if (!data) {
 			loadingBar.show("error", data.description);
@@ -8871,7 +8930,7 @@ u2f.delete = function (params) {
 };
 
 u2f.list = function () {
-	api.post("webauthn::list", {}, function (data) {
+	api.post("WebAuthn::list", {}, function (data) {
 		u2f.json = data;
 		view.u2f.init();
 	});
@@ -9546,7 +9605,7 @@ users.update = function (params) {
 		params.is_locked = false;
 	}
 
-	api.post("User::Save", params, function (data) {
+	api.post("User::save", params, function (data) {
 		if (data) {
 			loadingBar.show("error", data.description);
 			lychee.error(null, params, data);
@@ -9578,21 +9637,21 @@ users.create = function (params) {
 		params.is_locked = false;
 	}
 
-	api.post("User::Create", params, function () {
+	api.post("User::create", params, function () {
 		loadingBar.show("success", "User created!");
 		users.list(); // reload user list
 	});
 };
 
 users.delete = function (params) {
-	api.post("User::Delete", params, function () {
+	api.post("User::delete", params, function () {
 		loadingBar.show("success", "User deleted!");
 		users.list(); // reload user list
 	});
 };
 
 users.list = function () {
-	api.post("User::List", {}, function (data) {
+	api.post("User::list", {}, function (data) {
 		users.json = data;
 		view.users.init();
 	});
@@ -10992,14 +11051,14 @@ view.diagnostics = {
 	},
 
 	call_check_update: function call_check_update() {
-		api.post("Update::Check", [], function (data) {
+		api.post("Update::check", [], function (data) {
 			loadingBar.show("success", data);
 			$("#Check_Update_Lychee").remove();
 		});
 	},
 
 	call_apply_update: function call_apply_update() {
-		api.post("Update::Apply", [], function (data) {
+		api.post("Update::apply", [], function (data) {
 			var html = view.preify(data, "");
 			$("#Update_Lychee").remove();
 			$(html).prependTo(".logs_diagnostics_view");
@@ -11040,7 +11099,7 @@ view.update = {
 			view.update.clearContent();
 
 			// code duplicate
-			api.post("Update::Apply", [], function (data) {
+			api.post("Update::apply", [], function (data) {
 				var html = view.preify(data, "logs_diagnostics_view");
 				lychee.content.html(html);
 			});

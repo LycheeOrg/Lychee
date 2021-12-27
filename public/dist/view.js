@@ -56,57 +56,91 @@ function gup(b) {
  * @description This module communicates with Lychee's API
  */
 
+/**
+ * @callback SuccessCallback
+ * @param {Object} data the decoded JSON response
+ */
+
+/**
+ * @callback ErrorCallback
+ * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+ * @param {Object} params the original JSON parameters of the request
+ * @return {boolean}
+ */
+
+/**
+ * @callback ProgressCallback
+ * @param {Object} event         the progress event
+ * @param {number} event.loaded  the amount of loaded data so far
+ * @param {number} event.total   the total amount of data to be loaded
+ */
+
+/**
+ * @typedef {Object} LycheeException
+ * @property {string} message     the message of the exception
+ * @property {string} [exception] the name of the exception class; only in developer mode
+ * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
+ * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
+ * @property {Array} [trace]      the backtrace; only in developer mode
+ * @property {?LycheeException} [previous_exception] the previous exception, if any; only in developer mode
+ */
+
+/**
+ * The main API object
+ */
 var api = {
+	/**
+  * Global, default error handler
+  *
+  * @type {?ErrorCallback}
+  */
 	onError: null
 };
 
-api.isTimeout = function (errorThrown, jqXHR) {
-	if (errorThrown && (errorThrown === "Bad Request" && jqXHR && jqXHR.responseJSON && jqXHR.responseJSON.error && jqXHR.responseJSON.error === "Session timed out" || errorThrown === "unknown status" && jqXHR && jqXHR.status && jqXHR.status === 419 && jqXHR.responseJSON && jqXHR.responseJSON.message && jqXHR.responseJSON.message === "CSRF token mismatch.")) {
-		return true;
-	}
-
-	return false;
-};
-
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {?SuccessCallback} successCallback
+ * @param {?ProgressCallback} responseProgressCB
+ * @param {?ErrorCallback} errorCallback
+ */
 api.post = function (fn, params, successCallback) {
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
 	loadingBar.show();
 
-	params = $.extend({ function: fn }, params);
-
-	var api_url = "api/" + fn;
-
-	var success = function success(data) {
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
 		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
 		if (successCallback) successCallback(data);
 	};
 
-	var error = function error(jqXHR, textStatus, errorThrown) {
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
 		if (errorCallback) {
-			var isHandled = errorCallback(jqXHR);
+			var isHandled = errorCallback(jqXHR, params);
 			if (isHandled) return;
 		}
 		// Call global error handler for unhandled errors
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
+		api.onError(jqXHR, params);
 	};
 
 	var ajaxParams = {
 		type: "POST",
-		url: api_url,
+		url: "api/" + fn,
 		contentType: "application/json",
 		data: JSON.stringify(params),
 		dataType: "json",
-		success: success,
-		error: error
+		success: successHandler,
+		error: errorHandler
 	};
 
 	if (responseProgressCB !== null) {
@@ -118,23 +152,30 @@ api.post = function (fn, params, successCallback) {
 	$.ajax(ajaxParams);
 };
 
+/**
+ *
+ * @param {string} url
+ * @param {SuccessCallback} callback
+ */
 api.get = function (url, callback) {
 	loadingBar.show();
 
-	var success = function success(data) {
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
 		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
 
 		callback(data);
 	};
 
-	var error = function error(jqXHR, textStatus, errorThrown) {
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", {}, errorThrown);
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		api.onError(jqXHR, {});
 	};
 
 	$.ajax({
@@ -142,41 +183,44 @@ api.get = function (url, callback) {
 		url: url,
 		data: {},
 		dataType: "text",
-		success: success,
-		error: error
+		success: successHandler,
+		error: errorHandler
 	});
 };
 
+/**
+ *
+ * @param {string} fn
+ * @param {Object} params
+ * @param {SuccessCallback} callback
+ */
 api.post_raw = function (fn, params, callback) {
 	loadingBar.show();
 
-	params = $.extend({ function: fn }, params);
-
-	var api_url = "api/" + fn;
-
-	var success = function success(data) {
+	/**
+  * The success handler
+  * @param {Object} data the decoded JSON object of the response
+  */
+	var successHandler = function successHandler(data) {
 		setTimeout(loadingBar.hide, 100);
-
-		// Catch errors
-		if (typeof data === "string" && data.substring(0, 7) === "Error: ") {
-			api.onError(data.substring(7, data.length), params, data);
-			return false;
-		}
-
 		callback(data);
 	};
 
-	var error = function error(jqXHR, textStatus, errorThrown) {
-		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
+	/**
+  * The error handler
+  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+  */
+	var errorHandler = function errorHandler(jqXHR) {
+		api.onError(jqXHR, params);
 	};
 
 	$.ajax({
 		type: "POST",
-		url: api_url,
+		url: "api/" + fn,
 		data: params,
 		dataType: "text",
-		success: success,
-		error: error
+		success: successHandler,
+		error: errorHandler
 	});
 };
 
@@ -422,14 +466,39 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 	});
 };
 
-var error = function error(errorThrown, params, data) {
-	console.error({
-		description: errorThrown,
-		params: params,
-		response: data
-	});
+/**
+ * @param {XMLHttpRequest} jqXHR
+ * @param {Object} params the original JSON parameters of the request
+ * @return {boolean}
+ */
+var error = function error(jqXHR, params) {
+	var msg = jqXHR.statusText + " - ";
+	/**
+  * @type {?LycheeException}
+  */
+	var responseObj = null;
 
-	loadingBar.show("error", errorThrown);
+	switch (jqXHR.responseType) {
+		case "text":
+			msg += jqXHR.responseText;
+			break;
+		case "json":
+			responseObj = JSON.parse(jqXHR.responseText);
+			msg += responseObj.message;
+			break;
+		default:
+			msg += "Unknown error";
+			break;
+	}
+
+	loadingBar.show("error", msg);
+
+	console.error({
+		description: msg,
+		params: params,
+		response: responseObj ? responseObj : jqXHR.responseText
+	});
+	return true;
 };
 
 /**
@@ -2165,12 +2234,12 @@ mapview.open = function () {
 
 		if (_albumID !== "" && _albumID !== null) {
 			// _albumID has been specified
-			var _params = {
+			var params = {
 				albumID: _albumID,
 				includeSubAlbums: _includeSubAlbums
 			};
 
-			api.post("Album::getPositionData", _params, function (data) {
+			api.post("Album::getPositionData", params, function (data) {
 				addPhotosToMap(data);
 				mapview.title(_albumID, data.title);
 			});
