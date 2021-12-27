@@ -122,11 +122,10 @@ class InstallTest extends TestCase
 		$response->assertViewIs('install.migrate');
 
 		/**
-		 * We now should be redirected.
+		 * Re-Installation should be forbidden now.
 		 */
 		$response = $this->get('install/');
-		$response->assertStatus(307);
-		$response->assertRedirect('/');
+		$response->assertForbidden();
 
 		/**
 		 * We now should NOT be redirected.

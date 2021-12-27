@@ -2,7 +2,7 @@
 
 namespace App\Redirections;
 
-use App\Exceptions\InstallationException;
+use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\RedirectResponse;
@@ -13,7 +13,7 @@ class ToInstall implements Redirection
 {
 	/**
 	 * @throws RouteNotFoundException
-	 * @throws InstallationException
+	 * @throws InstallationFailedException
 	 * @throws FrameworkException
 	 */
 	public static function go(): RedirectResponse
@@ -26,10 +26,10 @@ class ToInstall implements Redirection
 					try {
 						unlink($filename);
 					} catch (\Throwable $e) {
-						throw new InstallationException('Could not remove ' . $filename, $e);
+						throw new InstallationFailedException('Could not remove ' . $filename, $e);
 					}
 				} else {
-					throw new InstallationException('A filesystem object . ' . $filename . ' exists, but is not an ordinary file.');
+					throw new InstallationFailedException('A filesystem object . ' . $filename . ' exists, but is not an ordinary file.');
 				}
 			}
 

@@ -3,13 +3,12 @@
 namespace App\Http\Middleware;
 
 use App\Contracts\LycheeException;
+use App\Exceptions\InstallationAlreadyCompletedException;
+use App\Exceptions\InstallationRequiredException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Http\Middleware\Checks\IsInstalled;
-use App\Redirections\ToHome;
-use App\Redirections\ToInstall;
 use Closure;
 use Illuminate\Http\Request;
-use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
  * Class InstallationStatus.
@@ -48,7 +47,6 @@ class InstallationStatus
 	 *
 	 * @return mixed
 	 *
-	 * @throws RouteNotFoundException
 	 * @throws LycheeException
 	 */
 	public function handle(Request $request, Closure $next, string $requiredStatus): mixed
@@ -57,11 +55,11 @@ class InstallationStatus
 			if ($this->isInstalled->assert()) {
 				return $next($request);
 			} else {
-				return ToInstall::go();
+				throw new InstallationRequiredException();
 			}
 		} elseif ($requiredStatus === self::INCOMPLETE) {
 			if ($this->isInstalled->assert()) {
-				return ToHome::go();
+				throw new InstallationAlreadyCompletedException();
 			} else {
 				return $next($request);
 			}

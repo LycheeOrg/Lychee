@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Install;
 
 use App\Actions\Install\ApplyMigration;
-use App\Exceptions\InstallationException;
+use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
@@ -33,7 +33,7 @@ class MigrationController extends Controller
 			$this->applyMigration->keyGenerate($output);
 			$output[] = '';
 			$this->installed($output);
-		} catch (InstallationException) {
+		} catch (InstallationFailedException) {
 			$hasErrors = true;
 		}
 

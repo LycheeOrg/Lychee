@@ -2,6 +2,7 @@
 
 namespace App\Exceptions\Handlers;
 
+use App\Contracts\HttpExceptionHandler;
 use App\Redirections\ToInstall;
 use Illuminate\Database\QueryException as QueryException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
@@ -9,18 +10,14 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpExcepti
 use Throwable;
 
 /**
- * Class NoEncryptionKey.
+ * Class AccessDBDenied.
  *
  * If access to the DB is denied, we need to run the installation.
  */
-class AccessDBDenied
+class AccessDBDenied implements HttpExceptionHandler
 {
 	/**
-	 * Render an exception into an HTTP response.
-	 *
-	 * @param HttpException $e the exception to render to the client
-	 *
-	 * @return bool true, if this class wants to handle the exception specially
+	 * {@inheritDoc}
 	 */
 	public function check(HttpException $e): bool
 	{
@@ -34,15 +31,9 @@ class AccessDBDenied
 	}
 
 	/**
-	 * @param SymfonyResponse $defaultResponse the default response as it
-	 *                                         would be rendered by
-	 *                                         {@link \Illuminate\Foundation\Exceptions\Handler::renderHttpException()}
-	 * @param HttpException   $e               the exception to render to the
-	 *                                         client
-	 *
-	 * @return SymfonyResponse
+	 * {@inheritDoc}
 	 */
-	public function go(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
+	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
 		try {
 			$redirectResponse = ToInstall::go();

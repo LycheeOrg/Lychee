@@ -3,18 +3,18 @@
 namespace App\Exceptions\Handlers;
 
 use App\Contracts\HttpExceptionHandler;
+use App\Exceptions\InstallationRequiredException;
 use App\Redirections\ToInstall;
-use Illuminate\Encryption\MissingAppKeyException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
-use Throwable;
 
 /**
- * Class NoEncryptionKey.
+ * Class InstallationRequired.
  *
- * If no encryption key exists, we need to run the installation.
+ * If the exception {@link InstallationRequiredException} is thrown, we need
+ * to run the installation.
  */
-class NoEncryptionKey implements HttpExceptionHandler
+class InstallationRequired implements HttpExceptionHandler
 {
 	/**
 	 * {@inheritDoc}
@@ -22,7 +22,7 @@ class NoEncryptionKey implements HttpExceptionHandler
 	public function check(HttpException $e): bool
 	{
 		do {
-			if ($e instanceof MissingAppKeyException) {
+			if ($e instanceof InstallationRequiredException) {
 				return true;
 			}
 		} while ($e = $e->getPrevious());
@@ -36,7 +36,6 @@ class NoEncryptionKey implements HttpExceptionHandler
 	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
 		try {
-			touch(base_path('.NO_SECURE_KEY'));
 			$redirectResponse = ToInstall::go();
 			$contentType = $defaultResponse->headers->get('Content-Type');
 			if (!empty($contentType)) {
@@ -45,7 +44,7 @@ class NoEncryptionKey implements HttpExceptionHandler
 			}
 
 			return $redirectResponse;
-		} catch (Throwable) {
+		} catch (\Throwable) {
 			return $defaultResponse;
 		}
 	}

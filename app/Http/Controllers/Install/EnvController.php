@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Install;
 
-use App\Exceptions\InstallationException;
+use App\Exceptions\InstallationFailedException;
 use App\Exceptions\Internal\FrameworkException;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
@@ -17,7 +17,7 @@ class EnvController extends Controller
 	 * @return View
 	 *
 	 * @throws FrameworkException
-	 * @throws InstallationException
+	 * @throws InstallationFailedException
 	 */
 	public function view(Request $request): View
 	{
@@ -42,7 +42,7 @@ class EnvController extends Controller
 			]);
 		} catch (\ErrorException $e) {
 			// possibly thrown by low-level methods like `file_put_contents`
-			throw new InstallationException('I/O error for file `.env`', $e);
+			throw new InstallationFailedException('I/O error for file `.env`', $e);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Laravel\'s container component', $e);
 		}

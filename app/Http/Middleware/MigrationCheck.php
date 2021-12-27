@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Contracts\LycheeException;
+use App\Exceptions\MigrationRequiredException;
 use App\Http\Middleware\Checks\IsMigrated;
 use Closure;
 use Illuminate\Http\Request;
@@ -22,11 +24,13 @@ class MigrationCheck
 	 * @param Closure $next
 	 *
 	 * @return mixed
+	 *
+	 * @throws LycheeException
 	 */
-	public function handle(Request $request, Closure $next)
+	public function handle(Request $request, Closure $next): mixed
 	{
 		if (!$this->isMigrated->assert()) {
-			return response()->view('error.update', ['code' => '503', 'message' => 'Database version is behind, please apply migration.']);
+			throw new MigrationRequiredException();
 		}
 
 		return $next($request);

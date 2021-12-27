@@ -2,13 +2,15 @@
 
 namespace App\Exceptions;
 
+use App\Contracts\HttpExceptionHandler;
 use App\Exceptions\Handlers\AccessDBDenied;
+use App\Exceptions\Handlers\InstallationRequired;
+use App\Exceptions\Handlers\MigrationRequired;
 use App\Exceptions\Handlers\NoEncryptionKey;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Arr;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
-use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -22,19 +24,25 @@ class Handler extends ExceptionHandler
 	 * @param HttpExceptionInterface $e
 	 *
 	 * @return SymfonyResponse
+	 *
+	 * @noinspection PhpDocMissingThrowsInspection
+	 * @noinspection PhpUnhandledExceptionInspection
 	 */
 	protected function renderHttpException(HttpExceptionInterface $e): SymfonyResponse
 	{
 		$baseResponse = parent::renderHttpException($e);
 
+		/** @var HttpExceptionHandler[] $checks */
 		$checks = [
 			new NoEncryptionKey(),
 			new AccessDBDenied(),
+			new InstallationRequired(),
+			new MigrationRequired(),
 		];
 
 		foreach ($checks as $check) {
 			if ($check->check($e)) {
-				return $check->go($baseResponse, $e);
+				return $check->renderHttpException($baseResponse, $e);
 			}
 		}
 
@@ -54,7 +62,7 @@ class Handler extends ExceptionHandler
 	 *
 	 * @return array
 	 */
-	protected function convertExceptionToArray(Throwable $e): array
+	protected function convertExceptionToArray(\Throwable $e): array
 	{
 		try {
 			return config('app.debug') ? [
@@ -69,7 +77,7 @@ class Handler extends ExceptionHandler
 			] : [
 				'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
 			];
-		} catch (Throwable) {
+		} catch (\Throwable) {
 			return [];
 		}
 	}
