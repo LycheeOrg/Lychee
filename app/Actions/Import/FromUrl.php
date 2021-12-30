@@ -12,6 +12,7 @@ use App\Exceptions\MassImportException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Facades\Helpers;
+use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
@@ -42,7 +43,10 @@ class FromUrl
 	{
 		$result = new Collection();
 		$exceptions = [];
-		$create = new Create(new ImportMode(true));
+		$create = new Create(new ImportMode(
+			true,
+			Configs::get_value('skip_duplicates', '0') === '1'
+		));
 
 		foreach ($urls as $url) {
 			// Reset the execution timeout for every iteration.

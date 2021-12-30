@@ -33,6 +33,7 @@ use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\SetPhotosTitleRequest;
 use App\ModelFunctions\SymLinkFunctions;
+use App\Models\Configs;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
@@ -102,7 +103,8 @@ class PhotoController extends Controller
 		// If the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(new ImportMode(
-			is_uploaded_file($sourceFileInfo->getTmpFullPath())
+			is_uploaded_file($sourceFileInfo->getTmpFullPath()),
+			Configs::get_value('skip_duplicates', '0') === '1'
 		));
 
 		return $create->add($sourceFileInfo, $request->albumID());
