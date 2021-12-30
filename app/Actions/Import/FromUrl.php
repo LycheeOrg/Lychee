@@ -8,6 +8,7 @@ use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Facades\Helpers;
+use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Storage;
 
@@ -24,7 +25,10 @@ class FromUrl
 	public function do(array $urls, ?string $albumId): bool
 	{
 		$error = false;
-		$create = new Create(new ImportMode(true));
+		$create = new Create(new ImportMode(
+			true,
+			Configs::get_value('skip_duplicates', '0') === '1'
+		));
 
 		foreach ($urls as &$url) {
 			// Reset the execution timeout for every iteration.

@@ -23,6 +23,7 @@ use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDsRequest;
 use App\ModelFunctions\SymLinkFunctions;
+use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Rules\ModelIDRule;
@@ -97,7 +98,8 @@ class PhotoController extends Controller
 		// If the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(new ImportMode(
-			is_uploaded_file($sourceFileInfo->getTmpFullPath())
+			is_uploaded_file($sourceFileInfo->getTmpFullPath()),
+			Configs::get_value('skip_duplicates', '0') === '1'
 		));
 
 		return $create->add($sourceFileInfo, $albumID);
