@@ -65,6 +65,7 @@ function gup(b) {
  * @callback ErrorCallback
  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
  * @param {Object} params the original JSON parameters of the request
+ * @param {?LycheeException} lycheeException the Lychee exception
  * @return {boolean}
  */
 
@@ -105,7 +106,8 @@ var api = {
  * @param {?ProgressCallback} responseProgressCB
  * @param {?ErrorCallback} errorCallback
  */
-api.post = function (fn, params, successCallback) {
+api.post = function (fn, params) {
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
@@ -125,12 +127,17 @@ api.post = function (fn, params, successCallback) {
   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
   */
 	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
+   */
+		var lycheeException = jqXHR.responseJSON;
+
 		if (errorCallback) {
-			var isHandled = errorCallback(jqXHR, params);
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
 			if (isHandled) return;
 		}
 		// Call global error handler for unhandled errors
-		api.onError(jqXHR, params);
+		api.onError(jqXHR, params, lycheeException);
 	};
 
 	var ajaxParams = {
@@ -469,34 +476,16 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 /**
  * @param {XMLHttpRequest} jqXHR
  * @param {Object} params the original JSON parameters of the request
+ * @param {?LycheeException} lycheeException the Lychee Exception
  * @return {boolean}
  */
-var error = function error(jqXHR, params) {
-	var msg = jqXHR.statusText + " - ";
-	/**
-  * @type {?LycheeException}
-  */
-	var responseObj = null;
-
-	switch (jqXHR.responseType) {
-		case "text":
-			msg += jqXHR.responseText;
-			break;
-		case "json":
-			responseObj = JSON.parse(jqXHR.responseText);
-			msg += responseObj.message;
-			break;
-		default:
-			msg += "Unknown error";
-			break;
-	}
-
+var error = function error(jqXHR, params, lycheeException) {
+	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
 	loadingBar.show("error", msg);
-
-	console.error({
+	console.error("The server returned an error response", {
 		description: msg,
 		params: params,
-		response: responseObj ? responseObj : jqXHR.responseText
+		response: lycheeException
 	});
 	return true;
 };
@@ -1417,65 +1406,64 @@ header.setEditable = function (editable) {
 
 var visible = {};
 
+/** @return {boolean} */
 visible.albums = function () {
-	if (header.dom(".header__toolbar--public").hasClass("header__toolbar--visible")) return true;
-	if (header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--public").hasClass("header__toolbar--visible") || !!header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible");
 };
 
+/** @return {boolean} */
 visible.album = function () {
-	if (header.dom(".header__toolbar--album").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--album").hasClass("header__toolbar--visible");
 };
 
+/** @return {boolean} */
 visible.photo = function () {
-	if ($("#imageview.fadeIn").length > 0) return true;
-	return false;
+	return $("#imageview.fadeIn").length > 0;
 };
 
+/** @return {boolean} */
 visible.mapview = function () {
-	if ($("#mapview.fadeIn").length > 0) return true;
-	return false;
+	return $("#mapview.fadeIn").length > 0;
 };
 
+/** @return {boolean} */
 visible.config = function () {
-	if (header.dom(".header__toolbar--config").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--config").hasClass("header__toolbar--visible");
 };
 
+/** @return {boolean} */
 visible.search = function () {
-	if (search.hash != null) return true;
-	return false;
+	return search.hash != null;
 };
 
+/** @return {boolean} */
 visible.sidebar = function () {
-	if (sidebar.dom().hasClass("active") === true) return true;
-	return false;
+	return !!sidebar.dom().hasClass("active");
 };
 
+/** @return {boolean} */
 visible.sidebarbutton = function () {
-	if (visible.photo()) return true;
-	if (visible.album() && $("#button_info_album:visible").length > 0) return true;
-	return false;
+	return visible.photo() || visible.album() && $("#button_info_album:visible").length > 0;
 };
 
+/** @return {boolean} */
 visible.header = function () {
-	if (header.dom().hasClass("header--hidden") === true) return false;
-	return true;
+	return !header.dom().hasClass("header--hidden");
 };
 
+/** @return {boolean} */
 visible.contextMenu = function () {
 	return basicContext.visible();
 };
 
+/** @return {boolean} */
 visible.multiselect = function () {
-	if ($("#multiselect").length > 0) return true;
-	return false;
+	return $("#multiselect").length > 0;
 };
 
+/** @return {boolean} */
 visible.leftMenu = function () {
-	if (leftMenu.dom().hasClass("leftMenu__visible")) return true;
-	return false;
+	return !!leftMenu.dom().hasClass("leftMenu__visible");
 };
 
 /**

@@ -305,7 +305,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject8 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"], ["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"]),
     _templateObject9 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>"], ["\n\t<div>\n\t\t<p>"]),
     _templateObject10 = _taggedTemplateLiteral(["\n\t\t\t<form>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='grants_full_photo'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='requires_link'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='is_downloadable'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='has_password'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t\t</div>\n\t\t\t\t<div class='hr'><hr></div>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t</form>\n\t\t"], ["\n\t\t\t<form>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='grants_full_photo'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='requires_link'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='is_downloadable'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='has_password'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t\t</div>\n\t\t\t\t<div class='hr'><hr></div>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t</form>\n\t\t"]),
-    _templateObject11 = _taggedTemplateLiteral(["<div class='choice'>\n\t\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t\t\t</label>\n\t\t\t\t\t\t\t<p></p>\n\t\t\t\t\t\t</div>"], ["<div class='choice'>\n\t\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t\t\t</label>\n\t\t\t\t\t\t\t<p></p>\n\t\t\t\t\t\t</div>"]),
+    _templateObject11 = _taggedTemplateLiteral(["<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>"], ["<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>"]),
     _templateObject12 = _taggedTemplateLiteral(["?albumIDs=", ""], ["?albumIDs=", ""]),
     _templateObject13 = _taggedTemplateLiteral(["<p>", " '$", "' ", " '$", "'?</p>"], ["<p>", " '$", "' ", " '$", "'?</p>"]),
     _templateObject14 = _taggedTemplateLiteral(["<p>", " '$", "'?</p>"], ["<p>", " '$", "'?</p>"]),
@@ -410,6 +410,7 @@ function gup(b) {
  * @callback ErrorCallback
  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
  * @param {Object} params the original JSON parameters of the request
+ * @param {?LycheeException} lycheeException the Lychee exception
  * @return {boolean}
  */
 
@@ -450,7 +451,8 @@ var api = {
  * @param {?ProgressCallback} responseProgressCB
  * @param {?ErrorCallback} errorCallback
  */
-api.post = function (fn, params, successCallback) {
+api.post = function (fn, params) {
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
@@ -470,12 +472,17 @@ api.post = function (fn, params, successCallback) {
   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
   */
 	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
+   */
+		var lycheeException = jqXHR.responseJSON;
+
 		if (errorCallback) {
-			var isHandled = errorCallback(jqXHR, params);
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
 			if (isHandled) return;
 		}
 		// Call global error handler for unhandled errors
-		api.onError(jqXHR, params);
+		api.onError(jqXHR, params, lycheeException);
 	};
 
 	var ajaxParams = {
@@ -732,7 +739,7 @@ album.isSmartID = function (id) {
 };
 
 album.isModelID = function (id) {
-	return typeof id === "string" && id.length === 24;
+	return typeof id === "string" && /^[-_0-9a-zA-Z]{24}$/.test(id);
 };
 
 album.getParentID = function () {
@@ -742,7 +749,11 @@ album.getParentID = function () {
 	return album.json.parent_id;
 };
 
+/**
+ * @return {?string} the album ID
+ */
 album.getID = function () {
+	/** @type {?string} */
 	var id = null;
 
 	// this is a Lambda
@@ -750,7 +761,7 @@ album.getID = function () {
 		return album.isSmartID(_id) || album.isModelID(_id);
 	};
 
-	if (_photo.json) id = _photo.json.album;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
+	if (_photo.json) id = _photo.json.album_id;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
 
 	// Search
 	if (isID(id) === false) id = $(".album:hover, .album.active").attr("data-id");
@@ -933,7 +944,7 @@ album.add = function () {
 		// let title = data.title;
 
 		var isModelID = function isModelID(albumID) {
-			return typeof albumID === "string" && albumID.length === 24;
+			return typeof albumID === "string" && /^[-_0-9a-zA-Z]{24}$/.test(albumID);
 		};
 
 		if (!data.title.trim()) {
@@ -953,19 +964,17 @@ album.add = function () {
 		} else if (visible.album()) {
 			params.parent_id = album.json.id;
 		} else if (visible.photo()) {
-			params.parent_id = _photo.json.album;
+			params.parent_id = _photo.json.album_id;
 		}
 
 		api.post("Album::add", params, function (_data) {
-			if (_data && isModelID(_data.id)) {
+			if (isModelID(_data.id)) {
 				if (IDs != null && callback != null) {
 					callback(IDs, _data, false); // we do not confirm
 				} else {
 					albums.refresh();
 					lychee.goto(_data.id);
 				}
-			} else {
-				lychee.error(null, params, _data);
 			}
 		});
 	};
@@ -1005,13 +1014,11 @@ album.addByTags = function () {
 
 		api.post("Album::addByTags", params, function (_data) {
 			var isModelID = function isModelID(albumID) {
-				return typeof albumID === "string" && albumID.length === 24;
+				return typeof albumID === "string" && /^[-_0-9a-zA-Z]{24}$/.test(albumID);
 			};
-			if (_data && isModelID(_data.id)) {
+			if (isModelID(_data.id)) {
 				albums.refresh();
 				lychee.goto(_data.id);
-			} else {
-				lychee.error(null, params, _data);
 			}
 		});
 	};
@@ -1052,12 +1059,8 @@ album.setShowTags = function (albumID) {
 			show_tags: show_tags
 		};
 
-		api.post("Album::setShowTags", params, function (_data) {
-			if (_data) {
-				lychee.error(null, params, _data);
-			} else {
-				album.reload();
-			}
+		api.post("Album::setShowTags", params, function () {
+			return album.reload();
 		});
 	};
 
@@ -1141,11 +1144,7 @@ album.setTitle = function (albumIDs) {
 			title: newTitle
 		};
 
-		api.post("Album::setTitle", params, function (_data) {
-			if (_data) {
-				lychee.error(null, params, _data);
-			}
-		});
+		api.post("Album::setTitle", params);
 	};
 
 	var input = lychee.html(_templateObject4, lychee.locale["ALBUM_TITLE"], oldTitle);
@@ -1185,11 +1184,7 @@ album.setDescription = function (albumID) {
 			description: description
 		};
 
-		api.post("Album::setDescription", params, function (_data) {
-			if (_data) {
-				lychee.error(null, params, _data);
-			}
-		});
+		api.post("Album::setDescription", params);
 	};
 
 	basicModal.show({
@@ -1217,14 +1212,10 @@ album.toggleCover = function (photoID) {
 		photoID: album.json.cover_id
 	};
 
-	api.post("Album::setCover", params, function (data) {
-		if (data) {
-			lychee.error(null, params, data);
-		} else {
-			view.album.content.cover(photoID);
-			if (!album.getParentID()) {
-				albums.refresh();
-			}
+	api.post("Album::setCover", params, function () {
+		view.album.content.cover(photoID);
+		if (!album.getParentID()) {
+			albums.refresh();
 		}
 	});
 };
@@ -1245,14 +1236,10 @@ album.setLicense = function (albumID) {
 			license: license
 		};
 
-		api.post("Album::setLicense", params, function (_data) {
-			if (_data) {
-				lychee.error(null, params, _data);
-			} else {
-				if (visible.album()) {
-					album.json.license = params.license;
-					view.album.license();
-				}
+		api.post("Album::setLicense", params, function () {
+			if (visible.album()) {
+				album.json.license = params.license;
+				view.album.license();
 			}
 		});
 	};
@@ -1294,7 +1281,7 @@ album.setSorting = function (albumID) {
 			sortingOrder: sortingOrder
 		};
 
-		api.post("Album::setSorting", params, function (_data) {
+		api.post("Album::setSorting", params, function () {
 			if (visible.album()) {
 				album.reload();
 			}
@@ -1451,7 +1438,7 @@ album.setPublic = function (albumID, e) {
 		params.password = password;
 	}
 
-	api.post("Album::setPublic", params, null);
+	api.post("Album::setPublic", params);
 };
 
 album.shareUsers = function (albumID, e) {
@@ -1461,25 +1448,23 @@ album.shareUsers = function (albumID, e) {
 		api.post("Sharing::list", {}, function (data) {
 			var sharingForm = $("#sharing_people_form");
 			sharingForm.empty();
-			if (data !== undefined) {
-				if (data.users !== undefined) {
-					sharingForm.append("<p>" + lychee.locale["SHARING_ALBUM_USERS_LONG_MESSAGE"] + "</p>");
-					// Fill with the list of users
-					data.users.forEach(function (user) {
-						sharingForm.append(lychee.html(_templateObject11, user.id, build.iconic("check"), user.username));
-					});
-					var sharingOfAlbum = data.shared !== undefined ? data.shared.filter(function (val) {
-						return val.album_id === albumID;
-					}) : [];
-					sharingOfAlbum.forEach(function (sharing) {
-						// Check all the shares who already exists, and store their sharing id on the element
-						var elem = $(".basicModal .choice input[name=\"" + sharing.user_id + "\"]");
-						elem.prop("checked", true);
-						elem.data("sharingId", sharing.id);
-					});
-				} else {
-					sharingForm.append("<p>" + lychee.locale["SHARING_ALBUM_USERS_NO_USERS"] + "</p>");
-				}
+			if (data.users !== undefined) {
+				sharingForm.append("<p>" + lychee.locale["SHARING_ALBUM_USERS_LONG_MESSAGE"] + "</p>");
+				// Fill with the list of users
+				data.users.forEach(function (user) {
+					sharingForm.append(lychee.html(_templateObject11, user.id, build.iconic("check"), user.username));
+				});
+				var sharingOfAlbum = data.shared !== undefined ? data.shared.filter(function (val) {
+					return val.album_id === albumID;
+				}) : [];
+				sharingOfAlbum.forEach(function (sharing) {
+					// Check all the shares who already exists, and store their sharing id on the element
+					var elem = $(".basicModal .choice input[name=\"" + sharing.user_id + "\"]");
+					elem.prop("checked", true);
+					elem.data("sharingId", sharing.id);
+				});
+			} else {
+				sharingForm.append("<p>" + lychee.locale["SHARING_ALBUM_USERS_NO_USERS"] + "</p>");
 			}
 		});
 
@@ -1523,25 +1508,15 @@ album.shareUsers = function (albumID, e) {
 
 	if (sharingToDelete.length > 0) {
 		var params = { ShareIDs: sharingToDelete.join(",") };
-		api.post("Sharing::delete", params, function (data) {
-			if (data !== true) {
-				loadingBar.show("error", data.description);
-				lychee.error(null, params, data);
-			}
-		});
+		api.post("Sharing::delete", params);
 	}
 	if (sharingToAdd.length > 0) {
 		var params = {
 			albumIDs: albumID,
 			UserIDs: sharingToAdd.join(",")
 		};
-		api.post("Sharing::add", params, function (data) {
-			if (data !== true) {
-				loadingBar.show("error", data.description);
-				lychee.error(null, params, data);
-			} else {
-				loadingBar.show("success", "Sharing updated!");
-			}
+		api.post("Sharing::add", params, function () {
+			loadingBar.show("success", "Sharing updated!");
 		});
 	}
 
@@ -1557,12 +1532,8 @@ album.setNSFW = function (albumID, e) {
 		albumID: albumID
 	};
 
-	api.post("Album::setNSFW", params, function (data) {
-		if (data) {
-			lychee.error(null, params, data);
-		} else {
-			albums.refresh();
-		}
+	api.post("Album::setNSFW", params, function () {
+		return albums.refresh();
 	});
 };
 
@@ -1652,7 +1623,7 @@ album.delete = function (albumIDs) {
 				});
 			} else if (visible.album()) {
 				albums.refresh();
-				if (albumIDs.length === 1 && album.getID() == albumIDs[0]) {
+				if (albumIDs.length === 1 && album.getID() === albumIDs[0]) {
 					lychee.goto(album.getParentID());
 				} else {
 					albumIDs.forEach(function (id) {
@@ -1661,8 +1632,6 @@ album.delete = function (albumIDs) {
 					});
 				}
 			}
-
-			if (typeof data !== "undefined") lychee.error(null, params, data);
 		});
 	};
 
@@ -1726,12 +1695,8 @@ album.merge = function (albumIDs, albumID) {
 			albumIDs: albumIDs.join()
 		};
 
-		api.post("Album::merge", params, function (data) {
-			if (data) {
-				lychee.error(null, params, data);
-			} else {
-				album.reload();
-			}
+		api.post("Album::merge", params, function () {
+			return album.reload();
 		});
 	};
 
@@ -1766,12 +1731,8 @@ album.setAlbum = function (albumIDs, albumID) {
 			albumIDs: albumIDs.join()
 		};
 
-		api.post("Album::move", params, function (data) {
-			if (data) {
-				lychee.error(null, params, data);
-			} else {
-				album.reload();
-			}
+		api.post("Album::move", params, function () {
+			return album.reload();
 		});
 	};
 
@@ -3068,7 +3029,7 @@ contextMenu.move = function (IDs, e, callback) {
 					exclude.push(album.getParentID().toString());
 				}
 			} else if (visible.photo()) {
-				exclude.push(_photo.json.album.toString());
+				exclude.push(_photo.json.album_id);
 			}
 			items = items.concat(contextMenu.buildList(albums, exclude.concat(IDs), function (a) {
 				return callback(IDs, a.id);
@@ -4573,7 +4534,7 @@ lychee.login = function (data) {
 	};
 
 	api.post("Session::login", params, function () {
-		window.location.reload();
+		return window.location.reload();
 	}, null, function (jqXHR) {
 		if (jqXHR.status === 401) {
 			basicModal.error("password");
@@ -4616,7 +4577,7 @@ lychee.loginDialog = function () {
 
 lychee.logout = function () {
 	api.post("Session::logout", {}, function () {
-		window.location.reload();
+		return window.location.reload();
 	});
 };
 
@@ -4988,34 +4949,16 @@ lychee.html = function (literalSections) {
 /**
  * @param {XMLHttpRequest} jqXHR
  * @param {Object} params the original JSON parameters of the request
+ * @param {?LycheeException} lycheeException the Lychee Exception
  * @return {boolean}
  */
-lychee.error = function (jqXHR, params) {
-	var msg = jqXHR.statusText + " - ";
-	/**
-  * @type {?LycheeException}
-  */
-	var responseObj = null;
-
-	switch (jqXHR.responseType) {
-		case "text":
-			msg += jqXHR.responseText;
-			break;
-		case "json":
-			responseObj = JSON.parse(jqXHR.responseText);
-			msg += responseObj.message;
-			break;
-		default:
-			msg += "Unknown error";
-			break;
-	}
-
+lychee.error = function (jqXHR, params, lycheeException) {
+	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
 	loadingBar.show("error", msg);
-
-	console.error({
+	console.error("The server returned an error response", {
 		description: msg,
 		params: params,
-		response: responseObj ? responseObj : jqXHR.responseText
+		response: lycheeException
 	});
 	return true;
 };
@@ -5912,12 +5855,12 @@ mapview.open = function () {
 
 		if (_albumID !== "" && _albumID !== null) {
 			// _albumID has been specified
-			var _params = {
+			var params = {
 				albumID: _albumID,
 				includeSubAlbums: _includeSubAlbums
 			};
 
-			api.post("Album::getPositionData", _params, function (data) {
+			api.post("Album::getPositionData", params, function (data) {
 				addPhotosToMap(data);
 				mapview.title(_albumID, data.title);
 			});
@@ -6358,13 +6301,8 @@ notifications.update = function (params) {
 		}
 	}
 
-	api.post("User::setEmail", params, function (data) {
-		if (data) {
-			loadingBar.show("error", data.description);
-			lychee.error(null, params, data);
-		} else {
-			loadingBar.show("success", "Email updated!");
-		}
+	api.post("User::setEmail", params, function () {
+		loadingBar.show("success", "Email updated!");
 	});
 };
 
@@ -6468,8 +6406,8 @@ _photo.load = function (photoID, albumID, autoplay) {
 
 	api.post("Photo::get", params, function (data) {
 		_photo.json = data;
-		_photo.json.original_album = _photo.json.album;
-		_photo.json.album = albumID;
+		_photo.json.original_album_id = _photo.json.album_id;
+		_photo.json.album_id = albumID;
 
 		if (!visible.photo()) view.photo.show();
 		view.photo.init(autoplay);
@@ -6719,7 +6657,7 @@ _photo.delete = function (photoIDs) {
 			photoIDs: photoIDs.join()
 		};
 
-		api.post("Photo::delete", params, null);
+		api.post("Photo::delete", params);
 	};
 
 	if (photoIDs.length === 1) {
@@ -6787,11 +6725,7 @@ _photo.setTitle = function (photoIDs) {
 			title: newTitle
 		};
 
-		api.post("Photo::setTitle", params, function (_data) {
-			if (_data !== true) {
-				lychee.error(null, params, _data);
-			}
-		});
+		api.post("Photo::setTitle", params);
 	};
 
 	var input = lychee.html(_templateObject54, oldTitle);
@@ -6822,12 +6756,8 @@ _photo.copyTo = function (photoIDs, albumID) {
 		albumID: albumID
 	};
 
-	api.post("Photo::duplicate", params, function (data) {
-		if (data instanceof Object) {
-			album.reload();
-		} else {
-			lychee.error(null, params, data);
-		}
+	api.post("Photo::duplicate", params, function () {
+		return album.reload();
 	});
 };
 
@@ -6877,17 +6807,13 @@ _photo.setAlbum = function (photoIDs, albumID) {
 		albumID: albumID
 	};
 
-	api.post("Photo::setAlbum", params, function (data) {
-		if (data !== true) {
-			lychee.error(null, params, data);
-		} else {
-			// We only really need to do anything here if the destination
-			// is a (possibly nested) subalbum of the current album; but
-			// since we have no way of figuring it out (albums.json is
-			// null), we need to reload.
-			if (visible.album()) {
-				album.reload();
-			}
+	api.post("Photo::setAlbum", params, function () {
+		// We only really need to do anything here if the destination
+		// is a (possibly nested) subalbum of the current album; but
+		// since we have no way of figuring it out (albums.json is
+		// null), we need to reload.
+		if (visible.album()) {
+			album.reload();
 		}
 	});
 };
@@ -6911,9 +6837,7 @@ _photo.setStar = function (photoIDs) {
 		photoIDs: photoIDs.join()
 	};
 
-	api.post("Photo::setStar", params, function (data) {
-		if (data !== true) lychee.error(null, params, data);
-	});
+	api.post("Photo::setStar", params);
 };
 
 _photo.setPublic = function (photoID, e) {
@@ -6976,9 +6900,7 @@ _photo.setPublic = function (photoID, e) {
 
 				// Photo::setPublic simply flips the current state.
 				// Ugly API but effective...
-				api.post("Photo::setPublic", { photoID: photoID }, function (data) {
-					if (data !== true) lychee.error(null, params, data);
-				});
+				api.post("Photo::setPublic", { photoID: photoID });
 			}
 
 			basicModal.close();
@@ -7044,11 +6966,7 @@ _photo.setDescription = function (photoID) {
 			description: description
 		};
 
-		api.post("Photo::setDescription", params, function (_data) {
-			if (_data !== true) {
-				lychee.error(null, params, _data);
-			}
-		});
+		api.post("Photo::setDescription", params);
 	};
 
 	basicModal.show({
@@ -7135,15 +7053,12 @@ _photo.setTags = function (photoIDs, tags) {
 		tags: tags
 	};
 
-	api.post("Photo::setTags", params, function (data) {
-		if (data !== true) {
-			lychee.error(null, params, data);
-		} else if (albums.json && albums.json.smart_albums) {
+	api.post("Photo::setTags", params, function () {
+		if (albums.json && albums.json.smart_albums) {
 			$.each(Object.entries(albums.json.smart_albums), function () {
 				if (this.length === 2 && this[1]["is_tag_album"] === true) {
 					// If we have any tag albums, force a refresh.
 					albums.refresh();
-					return false;
 				}
 			});
 		}
@@ -7203,14 +7118,10 @@ _photo.setLicense = function (photoID) {
 			license: license
 		};
 
-		api.post("Photo::setLicense", params, function (_data) {
-			if (_data) {
-				lychee.error(null, params, _data);
-			} else {
-				// update the photo JSON and reload the license in the sidebar
-				_photo.json.license = params.license;
-				view.photo.license();
-			}
+		api.post("Photo::setLicense", params, function () {
+			// update the photo JSON and reload the license in the sidebar
+			_photo.json.license = params.license;
+			view.photo.license();
 		});
 	};
 
@@ -7389,27 +7300,22 @@ photoeditor.rotate = function (photoID, direction) {
 	};
 
 	api.post("PhotoEditor::rotate", params, function (data) {
-		if (data === false) {
-			lychee.error(null, params, data);
-		} else {
-			_photo.json = data;
-			_photo.json.original_album = _photo.json.album;
-			if (album.json) {
-				_photo.json.album = album.json.id;
-			}
-
-			var image = $("img#image");
-			if (_photo.json.size_variants.medium2x !== null) {
-				image.prop("srcset", _photo.json.size_variants.medium.url + " " + _photo.json.size_variants.medium.width + "w, " + _photo.json.size_variants.medium2x.url + " " + _photo.json.size_variants.medium2x.width + "w");
-			} else {
-				image.prop("srcset", "");
-			}
-			image.prop("src", _photo.json.size_variants.medium !== null ? _photo.json.size_variants.medium.url : _photo.json.size_variants.original.url);
-			view.photo.onresize();
-			view.photo.sidebar();
-
-			album.updatePhoto(data);
+		_photo.json = data;
+		_photo.json.original_album_id = _photo.json.album_id;
+		if (album.json) {
+			_photo.json.album_id = album.json.id;
 		}
+
+		var image = $("img#image");
+		if (_photo.json.size_variants.medium2x !== null) {
+			image.prop("srcset", _photo.json.size_variants.medium.url + " " + _photo.json.size_variants.medium.width + "w, " + _photo.json.size_variants.medium2x.url + " " + _photo.json.size_variants.medium2x.width + "w");
+		} else {
+			image.prop("srcset", "");
+		}
+		image.prop("src", _photo.json.size_variants.medium !== null ? _photo.json.size_variants.medium.url : _photo.json.size_variants.original.url);
+		view.photo.onresize();
+		view.photo.sidebar();
+		album.updatePhoto(data);
 	});
 };
 
@@ -7428,7 +7334,7 @@ search.find = function (term) {
 
 	$(window).data("timeout", setTimeout(function () {
 		if (header.dom(".header__search").val().length !== 0) {
-			api.post("search", { term: term }, function (data) {
+			api.post("Search::run", { term: term }, function (data) {
 				var html = "";
 				var albumsData = "";
 				var photosData = "";
@@ -7552,56 +7458,26 @@ settings.createConfig = function () {
 			dbTablePrefix: dbTablePrefix
 		};
 
-		api.post("Config::create", params, function (_data) {
-			if (_data !== true) {
+		api.post("Config::create", params, function () {
+			return window.location.reload();
+		}, null, function (jqXHR, params) {
+			var _data = lychee.locale["ERROR_UNKNOWN"];
+			if (jqXHR.responseType === "json") {
+				/**
+     * @type {LycheeException}
+     */
+				var lycheeException = JSON.parse(jqXHR.responseText);
+				_data = lycheeException.message;
+			}
+
+			// TODO: Where, when and how does the server throw these error messages?
+			// Have these error message ever been used? The backend doesn't
+			// define these message and had not even done so before the re-factoring.
+			// Are these conditions legacy and probably never taken?
+			if (_data === "Warning: Connection failed!") {
 				// Connection failed
-				if (_data === "Warning: Connection failed!") {
-					basicModal.show({
-						body: "<p>" + lychee.locale["ERROR_DB_1"] + "</p>",
-						buttons: {
-							action: {
-								title: lychee.locale["RETRY"],
-								fn: settings.createConfig
-							}
-						}
-					});
-
-					return false;
-				}
-
-				// Creation failed
-				if (_data === "Warning: Creation failed!") {
-					basicModal.show({
-						body: "<p>" + lychee.locale["ERROR_DB_2"] + "</p>",
-						buttons: {
-							action: {
-								title: lychee.locale["RETRY"],
-								fn: settings.createConfig
-							}
-						}
-					});
-
-					return false;
-				}
-
-				// Could not create file
-				if (_data === "Warning: Could not create file!") {
-					basicModal.show({
-						body: "<p>" + lychee.locale["ERROR_CONFIG_FILE"] + "</p>",
-						buttons: {
-							action: {
-								title: lychee.locale["RETRY"],
-								fn: settings.createConfig
-							}
-						}
-					});
-
-					return false;
-				}
-
-				// Something went wrong
 				basicModal.show({
-					body: "<p>" + lychee.locale["ERROR_UNKNOWN"] + "</p>",
+					body: "<p>" + lychee.locale["ERROR_DB_1"] + "</p>",
 					buttons: {
 						action: {
 							title: lychee.locale["RETRY"],
@@ -7609,14 +7485,42 @@ settings.createConfig = function () {
 						}
 					}
 				});
-
-				return false;
+			} else if (_data === "Warning: Creation failed!") {
+				// Creation failed
+				basicModal.show({
+					body: "<p>" + lychee.locale["ERROR_DB_2"] + "</p>",
+					buttons: {
+						action: {
+							title: lychee.locale["RETRY"],
+							fn: settings.createConfig
+						}
+					}
+				});
+			} else if (_data === "Warning: Could not create file!") {
+				// Could not create file
+				basicModal.show({
+					body: "<p>" + lychee.locale["ERROR_CONFIG_FILE"] + "</p>",
+					buttons: {
+						action: {
+							title: lychee.locale["RETRY"],
+							fn: settings.createConfig
+						}
+					}
+				});
 			} else {
-				// Configuration successful
-				window.location.reload();
-
-				return false;
+				// Something else went wrong
+				basicModal.show({
+					body: "<p>" + _data + "</p>",
+					buttons: {
+						action: {
+							title: lychee.locale["RETRY"],
+							fn: settings.createConfig
+						}
+					}
+				});
 			}
+
+			return true;
 		});
 	};
 
@@ -7751,51 +7655,41 @@ settings.changeLogin = function (params) {
 };
 
 settings.changeSorting = function (params) {
-	api.post("Settings::setSorting", params, function (data) {
-		if (data === true) {
-			lychee.sortingAlbums = "ORDER BY " + params["typeAlbums"] + " " + params["orderAlbums"];
-			lychee.sortingPhotos = "ORDER BY " + params["typePhotos"] + " " + params["orderPhotos"];
-			albums.refresh();
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_SORT"]);
-		} else lychee.error(null, params, data);
+	api.post("Settings::setSorting", params, function () {
+		lychee.sortingAlbums = "ORDER BY " + params["typeAlbums"] + " " + params["orderAlbums"];
+		lychee.sortingPhotos = "ORDER BY " + params["typePhotos"] + " " + params["orderPhotos"];
+		albums.refresh();
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_SORT"]);
 	});
 };
 
 settings.changeDropboxKey = function (params) {
 	// if params.key == "" key is cleared
-	api.post("Settings::setDropboxKey", params, function (data) {
-		if (data === true) {
-			lychee.dropboxKey = params.key;
-			// if (callback) lychee.loadDropbox(callback)
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_DROPBOX"]);
-		} else lychee.error(null, params, data);
+	api.post("Settings::setDropboxKey", params, function () {
+		lychee.dropboxKey = params.key;
+		// if (callback) lychee.loadDropbox(callback)
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_DROPBOX"]);
 	});
 };
 
 settings.changeLang = function (params) {
-	api.post("Settings::setLang", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LANG"]);
-			lychee.init();
-		} else lychee.error(null, params, data);
+	api.post("Settings::setLang", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LANG"]);
+		lychee.init();
 	});
 };
 
 settings.setDefaultLicense = function (params) {
-	api.post("Settings::setDefaultLicense", params, function (data) {
-		if (data === true) {
-			lychee.default_license = params.license;
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LICENSE"]);
-		} else lychee.error(null, params, data);
+	api.post("Settings::setDefaultLicense", params, function () {
+		lychee.default_license = params.license;
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LICENSE"]);
 	});
 };
 
 settings.setLayout = function (params) {
-	api.post("Settings::setLayout", params, function (data) {
-		if (data === true) {
-			lychee.layout = params.layout;
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LAYOUT"]);
-		} else lychee.error(null, params, data);
+	api.post("Settings::setLayout", params, function () {
+		lychee.layout = params.layout;
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_LAYOUT"]);
 	});
 };
 
@@ -7806,11 +7700,9 @@ settings.changePublicSearch = function () {
 	} else {
 		params.public_search = "0";
 	}
-	api.post("Settings::setPublicSearch", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_PUBLIC_SEARCH"]);
-			lychee.public_search = params.public_search === "1";
-		} else lychee.error(null, params, data);
+	api.post("Settings::setPublicSearch", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_PUBLIC_SEARCH"]);
+		lychee.public_search = params.public_search === "1";
 	});
 };
 
@@ -7832,12 +7724,10 @@ settings.setOverlayType = function () {
 		console.log("Error - default used");
 	}
 
-	api.post("Settings::setOverlayType", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_IMAGE_OVERLAY"]);
-			lychee.image_overlay_type = params.image_overlay_type;
-			lychee.image_overlay_type_default = params.image_overlay_type;
-		} else lychee.error(null, params, data);
+	api.post("Settings::setOverlayType", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_IMAGE_OVERLAY"]);
+		lychee.image_overlay_type = params.image_overlay_type;
+		lychee.image_overlay_type_default = params.image_overlay_type;
 	});
 };
 
@@ -7848,11 +7738,9 @@ settings.changeMapDisplay = function () {
 	} else {
 		params.map_display = "0";
 	}
-	api.post("Settings::setMapDisplay", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
-			lychee.map_display = params.map_display === "1";
-		} else lychee.error(null, params, data);
+	api.post("Settings::setMapDisplay", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+		lychee.map_display = params.map_display === "1";
 	});
 	// Map functionality is disabled
 	// -> map for public albums also needs to be disabled
@@ -7874,11 +7762,9 @@ settings.changeMapDisplayPublic = function () {
 	} else {
 		params.map_display_public = "0";
 	}
-	api.post("Settings::setMapDisplayPublic", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC"]);
-			lychee.map_display_public = params.map_display_public === "1";
-		} else lychee.error(null, params, data);
+	api.post("Settings::setMapDisplayPublic", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY_PUBLIC"]);
+		lychee.map_display_public = params.map_display_public === "1";
 	});
 };
 
@@ -7887,11 +7773,9 @@ settings.setMapProvider = function () {
 	var params = {};
 	params.map_provider = $("#MapProvider").val();
 
-	api.post("Settings::setMapProvider", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_PROVIDER"]);
-			lychee.map_provider = params.map_provider;
-		} else lychee.error(null, params, data);
+	api.post("Settings::setMapProvider", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_PROVIDER"]);
+		lychee.map_provider = params.map_provider;
 	});
 };
 
@@ -7902,11 +7786,9 @@ settings.changeMapIncludeSubalbums = function () {
 	} else {
 		params.map_include_subalbums = "0";
 	}
-	api.post("Settings::setMapIncludeSubalbums", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
-			lychee.map_include_subalbums = params.map_include_subalbums === "1";
-		} else lychee.error(null, params, data);
+	api.post("Settings::setMapIncludeSubalbums", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+		lychee.map_include_subalbums = params.map_include_subalbums === "1";
 	});
 };
 
@@ -7917,11 +7799,9 @@ settings.changeLocationDecoding = function () {
 	} else {
 		params.location_decoding = "0";
 	}
-	api.post("Settings::setLocationDecoding", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
-			lychee.location_decoding = params.location_decoding === "1";
-		} else lychee.error(null, params, data);
+	api.post("Settings::setLocationDecoding", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+		lychee.location_decoding = params.location_decoding === "1";
 	});
 };
 
@@ -7932,14 +7812,10 @@ settings.changeNSFWVisible = function () {
 	} else {
 		params.nsfw_visible = "0";
 	}
-	api.post("Settings::setNSFWVisible", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NSFW_VISIBLE"]);
-			lychee.nsfw_visible = params.nsfw_visible === "1";
-			lychee.nsfw_visible_saved = lychee.nsfw_visible;
-		} else {
-			lychee.error(null, params, data);
-		}
+	api.post("Settings::setNSFWVisible", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NSFW_VISIBLE"]);
+		lychee.nsfw_visible = params.nsfw_visible === "1";
+		lychee.nsfw_visible_saved = lychee.nsfw_visible;
 	});
 };
 
@@ -7960,11 +7836,9 @@ settings.changeLocationShow = function () {
 			$("#LocationShowPublic").click();
 		}
 	}
-	api.post("Settings::setLocationShow", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
-			lychee.location_show = params.location_show === "1";
-		} else lychee.error(null, params, data);
+	api.post("Settings::setLocationShow", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+		lychee.location_show = params.location_show === "1";
 	});
 };
 
@@ -7980,11 +7854,9 @@ settings.changeLocationShowPublic = function () {
 	} else {
 		params.location_show_public = "0";
 	}
-	api.post("Settings::setLocationShowPublic", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
-			lychee.location_show_public = params.location_show_public === "1";
-		} else lychee.error(null, params, data);
+	api.post("Settings::setLocationShowPublic", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_MAP_DISPLAY"]);
+		lychee.location_show_public = params.location_show_public === "1";
 	});
 };
 
@@ -7995,13 +7867,9 @@ settings.changeNewPhotosNotification = function () {
 	} else {
 		params.new_photos_notification = "0";
 	}
-	api.post("Settings::setNewPhotosNotification", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION"]);
-			lychee.new_photos_notification = params.new_photos_notification === "1";
-		} else {
-			lychee.error(null, params, data);
-		}
+	api.post("Settings::setNewPhotosNotification", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_NEW_PHOTOS_NOTIFICATION"]);
+		lychee.new_photos_notification = params.new_photos_notification === "1";
 	});
 };
 
@@ -8009,24 +7877,20 @@ settings.changeCSS = function () {
 	var params = {};
 	params.css = $("#css").val();
 
-	api.post("Settings::setCSS", params, function (data) {
-		if (data === true) {
-			lychee.css = params.css;
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_CSS"]);
-		} else lychee.error(null, params, data);
+	api.post("Settings::setCSS", params, function () {
+		lychee.css = params.css;
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_CSS"]);
 	});
 };
 
 settings.save = function (params) {
 	var exitview = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-	api.post("Settings::saveAll", params, function (data) {
-		if (data === true) {
-			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_UPDATE"]);
-			view.full_settings.init();
-			// re-read settings
-			lychee.init(exitview);
-		} else lychee.error("Check the Logs", params, data);
+	api.post("Settings::saveAll", params, function () {
+		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_UPDATE"]);
+		view.full_settings.init();
+		// re-read settings
+		lychee.init(exitview);
 	});
 };
 
@@ -8094,14 +7958,9 @@ sharing.add = function () {
 		return false;
 	}
 
-	api.post("Sharing::add", params, function (data) {
-		if (data !== true) {
-			loadingBar.show("error", data.description);
-			lychee.error(null, params, data);
-		} else {
-			loadingBar.show("success", "Sharing updated!");
-			sharing.list(); // reload user list
-		}
+	api.post("Sharing::add", params, function () {
+		loadingBar.show("success", "Sharing updated!");
+		sharing.list(); // reload user list
 	});
 };
 
@@ -8119,14 +7978,9 @@ sharing.delete = function () {
 		loadingBar.show("error", "Select a sharing to remove!");
 		return false;
 	}
-	api.post("Sharing::delete", params, function (data) {
-		if (data !== true) {
-			loadingBar.show("error", data.description);
-			lychee.error(null, params, data);
-		} else {
-			loadingBar.show("success", "Sharing removed!");
-			sharing.list(); // reload user list
-		}
+	api.post("Sharing::delete", params, function () {
+		loadingBar.show("success", "Sharing removed!");
+		sharing.list(); // reload user list
 	});
 };
 
@@ -8917,15 +8771,9 @@ u2f.register = function () {
 };
 
 u2f.delete = function (params) {
-	api.post("WebAuthn::delete", params, function (data) {
-		console.log(data);
-		if (!data) {
-			loadingBar.show("error", data.description);
-			lychee.error(null, params, data);
-		} else {
-			loadingBar.show("success", lychee.locale["U2F_CREDENTIALS_DELETED"]);
-			u2f.list(); // reload credential list
-		}
+	api.post("WebAuthn::delete", params, function () {
+		loadingBar.show("success", lychee.locale["U2F_CREDENTIALS_DELETED"]);
+		u2f.list(); // reload credential list
 	});
 };
 
@@ -9005,179 +8853,237 @@ upload.notify = function (title, text) {
 };
 
 upload.start = {
+	/**
+  * @param {FileList} files
+  */
 	local: function local(files) {
-		var albumID = album.getID();
-		var error = false;
-		var warning = false;
-		var processing_count = 0;
-		var next_upload = 0;
-		var currently_uploading = false;
-		var cancelUpload = false;
+		if (files.length <= 0) return;
 
-		var process = function process(file_num) {
-			var formData = new FormData();
-			var xhr = new XMLHttpRequest();
-			var pre_progress = 0;
-			var progress = 0;
+		var albumID = visible.albums() ? null : album.getID();
+		var hasErrorOccurred = false;
+		var hasWarningOccurred = false;
+		/**
+   * The number of requests which are "on the fly", i.e. for which a
+   * response has not yet completely been received.
+   *
+   * Note, that Lychee supports a restricted kind of "parallelism"
+   * which is limited by the configuration option
+   * `lychee.upload_processing_limit`:
+   * While always only a single file is uploaded at once, upload of the
+   * next file already starts after transmission of the previous file
+   * has been finished, the response to the previous file might still be
+   * outstanding as the uploaded file is processed at the server-side.
+   *
+   * @type {number}
+   */
+		var outstandingResponsesCount = 0;
+		/**
+   * The latest (aka highest) index of a file which is being or has
+   * been uploaded to the server.
+   *
+   * @type {number}
+   */
+		var latestFileIdx = 0;
+		/**
+   * Indicator of a file is currently being uploaded.
+   *
+   * This is used as a semaphore to serialize the upload transmissions
+   * between several instances of the method {@link process}.
+   *
+   * @type {boolean}
+   */
+		var isUploadRunning = false;
+		var shallCancelUpload = false;
 
-			if (file_num === 0) {
-				$(cancelSelector).show();
+		/**
+   * This callback is invoked when the last file has been processed.
+   *
+   * It closes the modal dialog or shows the close button and
+   * reloads the album.
+   */
+		var finish = function finish() {
+			window.onbeforeunload = null;
+
+			$("#upload_files").val("");
+
+			if (!hasErrorOccurred && !hasWarningOccurred) {
+				// Success
+				basicModal.close();
+				upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
+			} else if (!hasErrorOccurred && hasWarningOccurred) {
+				// Warning
+				showCloseButton();
+				upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
+			} else {
+				// Error
+				showCloseButton();
+				upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 			}
 
-			var finish = function finish() {
-				window.onbeforeunload = null;
+			albums.refresh();
 
-				$("#upload_files").val("");
+			if (albumID === null) lychee.goto();else album.load(albumID);
+		};
 
-				if (error === false && warning === false) {
-					// Success
-					basicModal.close();
-					upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
-				} else if (error === false && warning === true) {
-					// Warning
-					showCloseButton();
-					upload.notify(lychee.locale["UPLOAD_COMPLETE"]);
-				} else {
-					// Error
-					showCloseButton();
-					upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
+		/**
+   * Processes the upload and response for a single file.
+   *
+   * Note that up to `lychee.upload_processing_limit` "instances" of
+   * this method can be "alive" simultaneously.
+   * The parameter `fileIdx` is constrained to the range between
+   * `latestFileIdx - lychee.upload_processing_limit` and `latestFileIdx`.
+   *
+   * @param {number} fileIdx the index of the file being processed
+   */
+		var process = function process(fileIdx) {
+			/**
+    * The upload progress of the file with index `fileIdx` so far.
+    *
+    * @type {number}
+    */
+			var uploadProgress = 0;
+
+			/**
+    * A function to be called when the upload has transmitted more data.
+    *
+    * This method updates the upload percentage counter in the dialog.
+    *
+    * @param {ProgressEvent} e
+    * @this XMLHttpRequest
+    */
+			var onUploadProgress = function onUploadProgress(e) {
+				if (e.lengthComputable !== true) return;
+
+				// Calculate progress
+				var progress = e.loaded / e.total * 100 | 0;
+
+				// Set progress when progress has changed
+				if (progress > uploadProgress) {
+					uploadProgress = progress;
+					$(nRowStatusSelector(fileIdx + 1)).html(uploadProgress + "%");
 				}
-
-				albums.refresh();
-
-				if (album.getID() === null) lychee.goto();else album.load(albumID);
 			};
 
-			formData.append("function", "Photo::add");
-			formData.append("albumID", albumID);
-			formData.append(0, files[file_num]);
+			/**
+    * A function to be called when the upload has completed.
+    *
+    * This method
+    *
+    *  - unsets the indicator for a running upload,
+    *  - scrolls the dialog such that the file with index `fileIdx`
+    *    becomes visible, and
+    *  - changes the status text to "Upload processing".
+    *
+    * @this XMLHttpRequest
+    */
+			var onUploadComplete = function onUploadComplete() {
+				$(nRowStatusSelector(fileIdx + 1)).html(lychee.locale["UPLOAD_PROCESSING"]);
+				isUploadRunning = false;
+				var scrollPos = 0;
+				if (fileIdx + 1 > 4) scrollPos = (fileIdx + 1 - 4) * 40;
+				$(".basicModal .rows").scrollTop(scrollPos);
+			};
 
-			var api_url = "api/" + "Photo::add";
+			/**
+    * A function to be called when a response has been received.
+    *
+    * This method updates the status of the affected file.
+    *
+    * @this XMLHttpRequest
+    */
+			var onLoaded = function onLoaded() {
+				/** @type {?LycheeException} */
+				var lycheeException = this.status >= 400 ? this.response : null;
+				var errorText = void 0;
+				var statusText = void 0;
+				var statusClass = void 0;
 
-			xhr.open("POST", api_url);
-
-			xhr.onload = function () {
-				var data = null;
-				var errorText = "";
-
-				var isModelID = function isModelID(albumID) {
-					return typeof albumID === "string" && albumID.length === 24;
-				};
-
-				data = xhr.responseText;
-
-				if (typeof data === "string" && data.search("phpdebugbar") !== -1) {
-					// get rid of phpdebugbar thingy
-					var debug_bar_n = data.search("<link rel='stylesheet' type='text/css'");
-					if (debug_bar_n > 0) {
-						data = data.slice(0, debug_bar_n);
-					}
+				switch (this.status) {
+					case 200:
+					case 201:
+					case 204:
+						statusText = lychee.locale["UPLOAD_FINISHED"];
+						statusClass = "success";
+						break;
+					case 409:
+						statusText = lychee.locale["UPLOAD_SKIPPED"];
+						errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_ERROR_UNKNOWN"];
+						hasWarningOccurred = true;
+						statusClass = "warning";
+						break;
+					case 413:
+						statusText = lychee.locale["UPLOAD_FAILED"];
+						errorText = lychee.locale["UPLOAD_ERROR_POSTSIZE"];
+						hasErrorOccurred = true;
+						statusClass = "error";
+						break;
+					default:
+						statusText = lychee.locale["UPLOAD_FAILED"];
+						errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_ERROR_UNKNOWN"];
+						hasErrorOccurred = true;
+						statusClass = "error";
+						break;
 				}
 
-				try {
-					data = JSON.parse(data);
-				} catch (e) {
-					data = "";
+				$(nRowStatusSelector(fileIdx + 1)).html(statusText).addClass(statusClass);
+
+				if (statusClass === "error") {
+					api.onError(this, { albumID: albumID }, lycheeException);
 				}
 
-				// Set status
-				if ((xhr.status === 200 || xhr.status === 201) && isModelID(data.id)) {
-					// Success
-					$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_FINISHED"]).addClass("success");
-				} else {
-					if (xhr.status === 413 || data.substr(0, 6) === "Error:") {
-						if (xhr.status === 413) {
-							errorText = lychee.locale["UPLOAD_ERROR_POSTSIZE"];
-						} else {
-							errorText = data.substr(6);
-							if (errorText === " validation failed") {
-								errorText = lychee.locale["UPLOAD_ERROR_FILESIZE"];
-							} else {
-								errorText += " " + lychee.locale["UPLOAD_ERROR_CONSOLE"];
-							}
-						}
-						error = true;
+				$(".basicModal .rows .row:nth-child(" + (fileIdx + 1) + ") p.notice").html(errorText).show();
+			};
 
-						// Error Status
-						$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
-
-						// Throw error
-						lychee.error(lychee.locale["UPLOAD_FAILED_ERROR"], xhr, data);
-					} else if (data.substr(0, 8) === "Warning:") {
-						errorText = data.substr(8);
-						warning = true;
-
-						// Warning Status
-						$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_SKIPPED"]).addClass("warning");
-
-						// Throw error
-						lychee.error(lychee.locale["UPLOAD_FAILED_WARNING"], xhr, data);
-					} else {
-						errorText = lychee.locale["UPLOAD_UNKNOWN"];
-						error = true;
-
-						// Error Status
-						$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
-
-						// Throw error
-						lychee.error(lychee.locale["UPLOAD_ERROR_UNKNOWN"], xhr, data);
-					}
-
-					$(".basicModal .rows .row:nth-child(" + (file_num + 1) + ") p.notice").html(errorText).show();
+			/**
+    * A function to be called when any response has been received
+    * (after specific success and error callbacks have been executed)
+    *
+    * This method starts a new upload, if
+    *
+    *  - there are more files to be uploaded,
+    *  - no other upload is currently running, and
+    *  - the number of outstanding responses does not exceed the
+    *    processing limit of Lychee.
+    *
+    * This method calls {@link finish}, if
+    *
+    *  - the process shall be cancelled or no more files are left for processing,
+    *  - no upload is running anymore, and
+    *  - no response is outstanding
+    *
+    * @this XMLHttpRequest
+    */
+			var onComplete = function onComplete() {
+				latestFileIdx++;
+				outstandingResponsesCount--;
+				if (!isUploadRunning && !shallCancelUpload && (outstandingResponsesCount < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && latestFileIdx < files.length) {
+					process(latestFileIdx);
 				}
 
-				processing_count--;
-
-				// Upload next file
-				if (!currently_uploading && !cancelUpload && (processing_count < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && next_upload < files.length) {
-					process(next_upload);
-				}
-
-				// Finish upload when all files are finished
-				if (!currently_uploading && processing_count === 0) {
+				if ((shallCancelUpload || latestFileIdx >= files.length) && !isUploadRunning && outstandingResponsesCount === 0) {
 					finish();
 				}
 			};
 
-			xhr.upload.onprogress = function (e) {
-				if (e.lengthComputable !== true) return false;
+			var formData = new FormData();
+			var xhr = new XMLHttpRequest();
 
-				// Calculate progress
-				progress = e.loaded / e.total * 100 | 0;
+			formData.append("albumID", albumID);
+			formData.append("file", files[fileIdx]);
 
-				// Set progress when progress has changed
-				if (progress > pre_progress) {
-					$(nRowStatusSelector(file_num + 1)).html(progress + "%");
-					pre_progress = progress;
-				}
-
-				if (progress >= 100) {
-					// Scroll to the uploading file
-					var scrollPos = 0;
-					if (file_num + 1 > 4) scrollPos = (file_num + 1 - 4) * 40;
-					$(".basicModal .rows").scrollTop(scrollPos);
-
-					// Set status to processing
-					$(nRowStatusSelector(file_num + 1)).html(lychee.locale["UPLOAD_PROCESSING"]);
-					processing_count++;
-					currently_uploading = false;
-
-					// Upload next file
-					if (!cancelUpload && (processing_count < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && next_upload < files.length) {
-						process(next_upload);
-					}
-				}
-			};
-
-			currently_uploading = true;
-			next_upload++;
-
+			xhr.upload.onprogress = onUploadProgress;
+			xhr.upload.onload = onUploadComplete;
+			xhr.onload = onLoaded;
+			xhr.onloadend = onComplete;
+			xhr.responseType = "json";
+			xhr.open("POST", "api/Photo::add");
 			xhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
+			xhr.setRequestHeader("Accept", "application/json");
+
+			outstandingResponsesCount++;
+			isUploadRunning = true;
 			xhr.send(formData);
 		};
-
-		if (files.length <= 0) return false;
-		if (albumID === false || visible.albums() === true) albumID = null;
 
 		window.onbeforeunload = function () {
 			return lychee.locale["UPLOAD_IN_PROGRESS"];
@@ -9185,10 +9091,11 @@ upload.start = {
 
 		upload.show(lychee.locale["UPLOAD_UPLOADING"], files, function () {
 			// Upload first file
-			process(next_upload);
+			$(cancelSelector).show();
+			process(0);
 		}, function () {
-			cancelUpload = true;
-			error = true;
+			shallCancelUpload = true;
+			hasErrorOccurred = true;
 		});
 	},
 
@@ -9219,28 +9126,22 @@ upload.start = {
 						albumID: albumID
 					};
 
-					api.post("Import::url", params, function (_data) {
+					api.post("Import::url", params, function () {
 						// Same code as in import.dropbox()
-
-						if (_data !== true) {
-							$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
-
-							$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
-
-							// Show close button
-							$(".basicModal #basicModal__action.hidden").show();
-
-							// Log error
-							lychee.error(null, params, _data);
-						} else {
-							basicModal.close();
-						}
-
+						basicModal.close();
 						upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
-
 						albums.refresh();
-
 						if (album.getID() === null) lychee.goto();else album.load(albumID);
+					}, null, function () {
+						// Same code as in import.dropbox()
+						$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
+						$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
+						// Show close button
+						$(".basicModal #basicModal__action.hidden").show();
+						upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
+						albums.refresh();
+						if (album.getID() === null) lychee.goto();else album.load(albumID);
+						return false;
 					});
 				});
 			} else basicModal.error("link");
@@ -9451,8 +9352,8 @@ upload.start = {
 				}); // api.post
 			}, function () {
 				if (!cancelUpload) {
-					api.post("Import::serverCancel", {}, function (resp) {
-						if (resp === "true") cancelUpload = true;
+					api.post("Import::serverCancel", {}, function () {
+						cancelUpload = true;
 					});
 				}
 			}); // upload.show
@@ -9523,28 +9424,22 @@ upload.start = {
 					albumID: albumID
 				};
 
-				api.post("Import::url", params, function (data) {
+				api.post("Import::url", params, function () {
 					// Same code as in import.url()
-
-					if (data !== true) {
-						$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
-
-						$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
-
-						// Show close button
-						$(".basicModal #basicModal__action.hidden").show();
-
-						// Log error
-						lychee.error(null, params, data);
-					} else {
-						basicModal.close();
-					}
-
+					basicModal.close();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
-
 					albums.refresh();
-
 					if (album.getID() === null) lychee.goto();else album.load(albumID);
+				}, null, function () {
+					// Same code as in import.url()
+					$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
+					$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
+					// Show close button
+					$(".basicModal #basicModal__action.hidden").show();
+					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
+					albums.refresh();
+					if (album.getID() === null) lychee.goto();else album.load(albumID);
+					return false;
 				});
 			});
 		};
@@ -9605,14 +9500,9 @@ users.update = function (params) {
 		params.is_locked = false;
 	}
 
-	api.post("User::save", params, function (data) {
-		if (data) {
-			loadingBar.show("error", data.description);
-			lychee.error(null, params, data);
-		} else {
-			loadingBar.show("success", "User updated!");
-			users.list(); // reload user list
-		}
+	api.post("User::save", params, function () {
+		loadingBar.show("success", "User updated!");
+		users.list(); // reload user list
 	});
 };
 
@@ -11185,65 +11075,64 @@ view.u2f = {
 
 var visible = {};
 
+/** @return {boolean} */
 visible.albums = function () {
-	if (header.dom(".header__toolbar--public").hasClass("header__toolbar--visible")) return true;
-	if (header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--public").hasClass("header__toolbar--visible") || !!header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible");
 };
 
+/** @return {boolean} */
 visible.album = function () {
-	if (header.dom(".header__toolbar--album").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--album").hasClass("header__toolbar--visible");
 };
 
+/** @return {boolean} */
 visible.photo = function () {
-	if ($("#imageview.fadeIn").length > 0) return true;
-	return false;
+	return $("#imageview.fadeIn").length > 0;
 };
 
+/** @return {boolean} */
 visible.mapview = function () {
-	if ($("#mapview.fadeIn").length > 0) return true;
-	return false;
+	return $("#mapview.fadeIn").length > 0;
 };
 
+/** @return {boolean} */
 visible.config = function () {
-	if (header.dom(".header__toolbar--config").hasClass("header__toolbar--visible")) return true;
-	return false;
+	return !!header.dom(".header__toolbar--config").hasClass("header__toolbar--visible");
 };
 
+/** @return {boolean} */
 visible.search = function () {
-	if (search.hash != null) return true;
-	return false;
+	return search.hash != null;
 };
 
+/** @return {boolean} */
 visible.sidebar = function () {
-	if (_sidebar.dom().hasClass("active") === true) return true;
-	return false;
+	return !!_sidebar.dom().hasClass("active");
 };
 
+/** @return {boolean} */
 visible.sidebarbutton = function () {
-	if (visible.photo()) return true;
-	if (visible.album() && $("#button_info_album:visible").length > 0) return true;
-	return false;
+	return visible.photo() || visible.album() && $("#button_info_album:visible").length > 0;
 };
 
+/** @return {boolean} */
 visible.header = function () {
-	if (header.dom().hasClass("header--hidden") === true) return false;
-	return true;
+	return !header.dom().hasClass("header--hidden");
 };
 
+/** @return {boolean} */
 visible.contextMenu = function () {
 	return basicContext.visible();
 };
 
+/** @return {boolean} */
 visible.multiselect = function () {
-	if ($("#multiselect").length > 0) return true;
-	return false;
+	return $("#multiselect").length > 0;
 };
 
+/** @return {boolean} */
 visible.leftMenu = function () {
-	if (leftMenu.dom().hasClass("leftMenu__visible")) return true;
-	return false;
+	return !!leftMenu.dom().hasClass("leftMenu__visible");
 };
 
 (function (window, factory) {

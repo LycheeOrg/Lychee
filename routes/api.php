@@ -68,7 +68,9 @@ Route::post('/Photo::setStar', [PhotoController::class, 'setStar']);
 Route::post('/Photo::setPublic', [PhotoController::class, 'setPublic']);
 Route::post('/Photo::setAlbum', [PhotoController::class, 'setAlbum']);
 Route::post('/Photo::setTags', [PhotoController::class, 'setTags']);
-Route::post('/Photo::add', [PhotoController::class, 'add']);
+Route::post('/Photo::add', [PhotoController::class, 'add'])
+	->withoutMiddleware(['content_type:json'])
+	->middleware(['content_type:multipart']);
 Route::post('/Photo::delete', [PhotoController::class, 'delete']);
 Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']);
 Route::post('/Photo::setLicense', [PhotoController::class, 'setLicense']);

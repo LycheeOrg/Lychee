@@ -8,6 +8,6 @@ class UnexpectedContentType extends LycheeBaseException
 {
 	public function __construct(string $contentType, \Throwable $previous = null)
 	{
-		parent::__construct(Response::HTTP_NOT_ACCEPTABLE, 'Content type unacceptable. Content type "' . $contentType . '"required', $previous);
+		parent::__construct(Response::HTTP_NOT_ACCEPTABLE, 'Content type unacceptable. Content type "' . $contentType . '" required', $previous);
 	}
 }

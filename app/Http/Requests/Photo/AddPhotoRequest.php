@@ -12,6 +12,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
 {
 	use HasAlbumIDTrait;
 
+	public const FILE_ATTRIBUTE = 'file';
 	protected UploadedFile $file;
 
 	/**
@@ -29,7 +30,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
 	{
 		return [
 			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule()],
-			'0' => 'required|file',
+			self::FILE_ATTRIBUTE => 'required|file',
 		];
 	}
 
@@ -42,7 +43,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
 		if (empty($this->albumID)) {
 			$this->albumID = null;
 		}
-		$this->file = $files[0];
+		$this->file = $files[self::FILE_ATTRIBUTE];
 	}
 
 	public function uploadedFile(): UploadedFile

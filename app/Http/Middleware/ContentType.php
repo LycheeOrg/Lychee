@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 class ContentType
 {
 	public const JSON = 'json';
+	public const MULTIPART = 'multipart';
 
 	/**
 	 * Handles the incoming request.
@@ -23,7 +24,8 @@ class ContentType
 	 * @param \Closure $next        the next operation to be applied to the
 	 *                              request
 	 * @param string   $contentType the content type of the request's body;
-	 *                              currently, only {@link self::JSON}
+	 *                              either {@link ContentType::JSON} or
+	 *                              {@link ContentType::MULTIPART}
 	 *
 	 * @return mixed
 	 *
@@ -34,6 +36,10 @@ class ContentType
 	{
 		if ($contentType === self::JSON) {
 			if (!$request->isJson()) {
+				throw new UnexpectedContentType(self::JSON);
+			}
+		} elseif ($contentType === self::MULTIPART) {
+			if ($request->getContentType() !== 'form') {
 				throw new UnexpectedContentType(self::JSON);
 			}
 		} else {

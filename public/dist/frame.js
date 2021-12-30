@@ -913,6 +913,7 @@ function gup(b) {
  * @callback ErrorCallback
  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
  * @param {Object} params the original JSON parameters of the request
+ * @param {?LycheeException} lycheeException the Lychee exception
  * @return {boolean}
  */
 
@@ -953,7 +954,8 @@ var api = {
  * @param {?ProgressCallback} responseProgressCB
  * @param {?ErrorCallback} errorCallback
  */
-api.post = function (fn, params, successCallback) {
+api.post = function (fn, params) {
+	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
 	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
@@ -973,12 +975,17 @@ api.post = function (fn, params, successCallback) {
   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
   */
 	var errorHandler = function errorHandler(jqXHR) {
+		/**
+   * @type {?LycheeException}
+   */
+		var lycheeException = jqXHR.responseJSON;
+
 		if (errorCallback) {
-			var isHandled = errorCallback(jqXHR, params);
+			var isHandled = errorCallback(jqXHR, params, lycheeException);
 			if (isHandled) return;
 		}
 		// Call global error handler for unhandled errors
-		api.onError(jqXHR, params);
+		api.onError(jqXHR, params, lycheeException);
 	};
 
 	var ajaxParams = {
@@ -1234,34 +1241,16 @@ frame.resize = function () {
  *
  * @param {XMLHttpRequest} jqXHR
  * @param {Object} params the original JSON parameters of the request
+ * @param {?LycheeException} lycheeException the Lychee Exception
  * @return {boolean}
  */
-frame.error = function (jqXHR, params) {
-	var msg = jqXHR.statusText + " - ";
-	/**
-  * @type {?LycheeException}
-  */
-	var responseObj = null;
-
-	switch (jqXHR.responseType) {
-		case "text":
-			msg += jqXHR.responseText;
-			break;
-		case "json":
-			responseObj = JSON.parse(jqXHR.responseText);
-			msg += responseObj.message;
-			break;
-		default:
-			msg += "Unknown error";
-			break;
-	}
-
+frame.error = function (jqXHR, params, lycheeException) {
+	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
 	loadingBar.show("error", msg);
-
-	console.error({
+	console.error("The server returned an error response", {
 		description: msg,
 		params: params,
-		response: responseObj ? responseObj : jqXHR.responseText
+		response: lycheeException
 	});
 	alert(msg);
 	return true;
