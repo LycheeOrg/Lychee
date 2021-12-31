@@ -37,10 +37,10 @@ Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::clas
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumid}/{photoid}', [RedirectController::class, 'photo'])->middleware(['installed', 'migrated']);
-Route::get('/r/{albumid}', [RedirectController::class, 'album'])->middleware(['installed', 'migrated']);
+Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['installed', 'migrated']);
+Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['installed', 'migrated']);
 
-Route::get('/view', [ViewController::class, 'view']);
+Route::get('/view', [ViewController::class, 'view'])->name('view');
 Route::get('/demo', [DemoController::class, 'js']);
 Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installed', 'migrated']);
 

@@ -1142,6 +1142,15 @@ class RefactorModels extends Migration
 			->where('key', '=', 'sorting_Albums_col')
 			->where('value', '=', 'public')
 			->update(['value' => 'is_public']);
+		DB::table('configs')
+			->insert([
+				'key' => 'legacy_id_redirection',
+				'value' => '0',
+				'cat' => 'config',
+				'confidentiality' => 0,
+				'type_range' => '0|1',
+				'description' => 'Enables/disables the redirection support for legacy IDs',
+			]);
 	}
 
 	/**
@@ -1177,6 +1186,9 @@ class RefactorModels extends Migration
 			->where('key', '=', 'sorting_Albums_col')
 			->where('value', '=', 'is_public')
 			->update(['value' => 'public']);
+		DB::table('configs')
+			->where('key', '=', 'legacy_id_redirection')
+			->delete();
 	}
 
 	/**

@@ -354,7 +354,10 @@ class SettingsController extends Controller
 	 */
 	public function getAll()
 	{
-		return Configs::orderBy('cat', 'ASC')->get();
+		return Configs::query()
+			->orderBy('cat')
+			->orderBy('id')
+			->get();
 	}
 
 	/**

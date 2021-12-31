@@ -4,12 +4,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Legacy\Legacy;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class ViewController extends Controller
 {
@@ -18,22 +21,32 @@ class ViewController extends Controller
 	 *
 	 * @param Request $request
 	 *
-	 * @return View|void
+	 * @return View|RedirectResponse
 	 */
-	public function view(Request $request)
+	public function view(Request $request): View|RedirectResponse
 	{
 		$request->validate([
 			'p' => 'required',
 		]);
 
+		$photoID = $request->get('p');
+		if (!Legacy::isRandomModelID($photoID)) {
+			$photoID = Legacy::translateLegacyPhotoID($photoID, $request);
+			if ($photoID === null) {
+				abort(SymfonyResponse::HTTP_NOT_FOUND);
+			} else {
+				return redirect()->route('view', ['p' => $photoID]);
+			}
+		}
+
 		/** @var Photo $photo */
 		$photo = Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
-			->find($request->get('p'));
+			->find($photoID);
 
 		if ($photo == null) {
 			Logs::error(__METHOD__, __LINE__, 'Could not find photo in database');
 
-			return abort(404);
+			return abort(SymfonyResponse::HTTP_NOT_FOUND);
 		}
 
 		// TODO: Instead of re-coding the logic here whether an photo is visible or not, the query for a photo above, should be filtered with `PhotoAuthorisationProvider`
@@ -43,7 +56,7 @@ class ViewController extends Controller
 
 		// return 403 if not allowed
 		if (!$public) {
-			return abort(403);
+			return abort(SymfonyResponse::HTTP_FORBIDDEN);
 		}
 
 		$sizeVariant = $photo->size_variants->getMedium() ?: $photo->size_variants->getOriginal();
