@@ -860,17 +860,17 @@ class RefactorModels extends Migration
 					]);
 				}
 			}
+		}
 
-			// Restore explicit covers of albums
-			$coveredAlbums = DB::table('albums_tmp')
-				->whereNotNull('cover_id')
-				->where('smart', '=', false)
-				->lazyById();
-			foreach ($coveredAlbums as $coveredAlbum) {
-				DB::table('albums')
-					->where('id', '=', $this->albumIDCache[strval($coveredAlbum->id)])
-					->update(['cover_id' => $this->photoIDCache[strval($coveredAlbum->cover_id)]]);
-			}
+		// Restore explicit covers of albums
+		$coveredAlbums = DB::table('albums_tmp')
+			->whereNotNull('cover_id')
+			->where('smart', '=', false)
+			->lazyById();
+		foreach ($coveredAlbums as $coveredAlbum) {
+			DB::table('albums')
+				->where('id', '=', $this->albumIDCache[strval($coveredAlbum->id)])
+				->update(['cover_id' => $this->photoIDCache[strval($coveredAlbum->cover_id)]]);
 		}
 	}
 

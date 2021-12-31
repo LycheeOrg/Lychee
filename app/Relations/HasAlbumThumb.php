@@ -190,10 +190,12 @@ class HasAlbumThumb extends Relation
 			}
 			$builder->select(['covered_albums.id AS album_id'])
 				->addSelect(['photo_id' => $bestPhotoIDSelect])
-				->where(function (BaseBuilder $q) {
-					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
-				})
 				->whereIn('covered_albums.id', $albumKeys);
+			if (!AccessControl::is_admin()) {
+				$builder->where(function (BaseBuilder $q) {
+					$this->albumAuthorisationProvider->appendAccessibilityConditions($q);
+				});
+			}
 		};
 
 		$this->query

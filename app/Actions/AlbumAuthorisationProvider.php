@@ -486,10 +486,10 @@ class AlbumAuthorisationProvider
 			return false;
 		}
 
-		// Remove smart albums (they get a pass).
+		// Remove root and smart albums (they get a pass).
 		// Since we count the result we need to ensure that there are no
 		// duplicates.
-		$albumIDs = array_diff(array_unique($albumIDs), array_keys(AlbumFactory::BUILTIN_SMARTS));
+		$albumIDs = array_diff(array_unique($albumIDs), array_keys(AlbumFactory::BUILTIN_SMARTS), [null]);
 		if (count($albumIDs) > 0) {
 			return BaseAlbumImpl::query()
 					->whereIn('base_albums.id', $albumIDs)

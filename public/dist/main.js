@@ -2265,7 +2265,7 @@ build.photo = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject24, disabled ? "disabled" : "", data.album, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject24, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
 
 	if (data.taken_at !== null) html += lychee.html(_templateObject25, build.iconic("camera-slr"), lychee.locale.printDateTime(data.taken_at));else html += lychee.html(_templateObject26, lychee.locale.printDateTime(data.created_at));
 
@@ -5820,7 +5820,7 @@ mapview.open = function () {
 					url2x: element.size_variants.small2x !== null ? element.size_variants.small2x.url : null,
 					name: element.title,
 					taken_at: element.taken_at,
-					albumID: element.album,
+					albumID: element.album_id,
 					photoID: element.id
 				});
 
@@ -9995,11 +9995,11 @@ view.album = {
 						// query is being modified.
 						return false;
 					}
-					var ratio = album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1;
+					var ratio = album.json.photos[i].size_variants.original.height > 0 ? album.json.photos[i].size_variants.original.width / album.json.photos[i].size_variants.original.height : 1;
 					if (album.json.photos[i].type && album.json.photos[i].type.indexOf("video") > -1) {
 						// Video.  If there's no small and medium, we have
 						// to fall back to the square thumb.
-						if (album.json.photos[i].small === "" && album.json.photos[i].medium === "") {
+						if (album.json.photos[i].size_variants.small === null && album.json.photos[i].size_variants.medium === null) {
 							ratio = 1;
 						}
 					}
@@ -10255,8 +10255,9 @@ view.photo = {
 		var $nextArrow = lychee.imageview.find("a#next");
 		var $previousArrow = lychee.imageview.find("a#previous");
 		var photoID = _photo.getID();
-		var hasNext = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).next_photo_id !== null;
-		var hasPrevious = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).previous_photo_id !== null;
+		var photoInAlbum = album.json && album.json.photos ? album.getByID(photoID) : null;
+		var hasNext = photoInAlbum.hasOwnProperty("next_photo_id") && photoInAlbum.next_photo_id !== null;
+		var hasPrevious = photoInAlbum.hasOwnProperty("previous_photo_id") && photoInAlbum.previous_photo_id !== null;
 
 		var img = $("img#image");
 		if (img.length > 0) {
@@ -10280,7 +10281,7 @@ view.photo = {
 		if (hasNext === false || lychee.viewMode === true) {
 			$nextArrow.hide();
 		} else {
-			var nextPhotoID = album.getByID(photoID).next_photo_id;
+			var nextPhotoID = photoInAlbum.next_photo_id;
 			var nextPhoto = album.getByID(nextPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
@@ -10296,7 +10297,7 @@ view.photo = {
 		if (hasPrevious === false || lychee.viewMode === true) {
 			$previousArrow.hide();
 		} else {
-			var previousPhotoID = album.getByID(photoID).previous_photo_id;
+			var previousPhotoID = photoInAlbum.previous_photo_id;
 			var previousPhoto = album.getByID(previousPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
