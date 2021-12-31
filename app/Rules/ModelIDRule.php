@@ -27,6 +27,6 @@ class ModelIDRule implements Rule
 	 */
 	public function message(): string
 	{
-		return ':attribute must either be null or a string with 85 characters';
+		return ':attribute must either be null or a string with ' . HasRandomID::ID_LENGTH . ' characters';
 	}
 }
