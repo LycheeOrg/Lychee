@@ -14,7 +14,7 @@ interface HasRandomID
 	 * The length must be divisible by 4 as otherwise the Base64 encoding
 	 * uses the character `=` for padding which must not be used within a URL.
 	 * We use Base64 encoding (instead of an encoding with hex digits),
-	 * because Bae64 encoding is more space efficient and also more time
+	 * because Base64 encoding is more space efficient and also more time
 	 * efficient when used as a primary ID in a database.
 	 *
 	 * @var int

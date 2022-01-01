@@ -143,6 +143,11 @@ class SizeVariants extends DTO
 		return $this->original;
 	}
 
+	public function getMedium(): ?SizeVariant
+	{
+		return $this->medium;
+	}
+
 	public function getThumb2x(): ?SizeVariant
 	{
 		return $this->thumb2x;

@@ -371,6 +371,7 @@ class SettingsController extends Controller
 	{
 		return Configs::query()
 			->orderBy('cat')
+			->orderBy('id')
 			->get();
 	}
 

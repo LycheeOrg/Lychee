@@ -6,6 +6,8 @@ use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Models\Album;
+use App\Models\Configs;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -24,8 +26,17 @@ class AlbumSearch
 	 */
 	public function query(array $terms): Collection
 	{
-		return $this->createTagAlbumQuery($terms)->get()
-			->concat($this->createAlbumQuery($terms)->get());
+		$sortingCol = Configs::get_value('sorting_Albums_col');
+		$sortingOrder = Configs::get_value('sorting_Albums_order');
+
+		$tagAlbums = (new SortingDecorator($this->createTagAlbumQuery($terms)))
+			->orderBy($sortingCol, $sortingOrder)
+			->get();
+		$albums = (new SortingDecorator($this->createAlbumQuery($terms)))
+			->orderBy($sortingCol, $sortingOrder)
+			->get();
+
+		return $tagAlbums->concat($albums);
 	}
 
 	/**

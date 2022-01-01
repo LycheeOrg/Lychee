@@ -4,7 +4,9 @@ namespace App\Actions\Search;
 
 use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
+use App\Models\Configs;
 use App\Models\Extensions\FixedQueryBuilder;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -38,6 +40,11 @@ class PhotoSearch
 			);
 		}
 
-		return $query->get();
+		$sortingCol = Configs::get_value('sorting_Photos_col');
+		$sortingOrder = Configs::get_value('sorting_Photos_order');
+
+		return (new SortingDecorator($query))
+			->orderBy($sortingCol, $sortingOrder)
+			->get();
 	}
 }

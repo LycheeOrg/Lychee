@@ -19,7 +19,7 @@ class MovePhotos extends Migration
 		// only do if photos is empty and
 		// if there is a table to import from
 		if (
-			count(MovePhotos_Photo::all()) == 0 &&
+			MovePhotos_Photo::count() == 0 &&
 			Schema::hasTable(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')
 		) {
 			$results = DB::table(env('DB_OLD_LYCHEE_PREFIX', '') . 'lychee_photos')->select('*')->orderBy('id', 'asc')->orderBy('album', 'asc')->get();

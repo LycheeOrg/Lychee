@@ -23,7 +23,7 @@ class RandomIDRule implements Rule
 			(
 				$value === null &&
 				$this->isNullable
-			) || strlen($value) === HasRandomID::ID_LENGTH;
+			) || preg_match('/^[-_a-zA-Z0-9]{' . HasRandomID::ID_LENGTH . '}$/', $value) === 1;
 	}
 
 	/**
@@ -33,6 +33,6 @@ class RandomIDRule implements Rule
 	{
 		return ':attribute must be' .
 			($this->isNullable ? ' either null or' : '') .
-			' a string with ' . HasRandomID::ID_LENGTH . ' characters';
+			' a string in Base64-encoding with ' . HasRandomID::ID_LENGTH . ' characters';
 	}
 }
