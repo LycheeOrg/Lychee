@@ -624,7 +624,7 @@ build.photo = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject8, disabled ? "disabled" : "", data.album, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject8, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
 
 	if (data.taken_at !== null) html += lychee.html(_templateObject9, build.iconic("camera-slr"), lychee.locale.printDateTime(data.taken_at));else html += lychee.html(_templateObject10, lychee.locale.printDateTime(data.created_at));
 
@@ -2130,7 +2130,7 @@ mapview.open = function () {
 					url2x: element.size_variants.small2x !== null ? element.size_variants.small2x.url : null,
 					name: element.title,
 					taken_at: element.taken_at,
-					albumID: element.album,
+					albumID: element.album_id,
 					photoID: element.id
 				});
 

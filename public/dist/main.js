@@ -706,7 +706,7 @@ album.getID = function () {
 		return album.isSmartID(_id) || album.isModelID(_id);
 	};
 
-	if (_photo.json) id = _photo.json.album;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
+	if (_photo.json) id = _photo.json.album_id;else if (album.json) id = album.json.id;else if (mapview.albumID) id = mapview.albumID;
 
 	// Search
 	if (isID(id) === false) id = $(".album:hover, .album.active").attr("data-id");
@@ -909,7 +909,7 @@ album.add = function () {
 		} else if (visible.album()) {
 			params.parent_id = album.json.id;
 		} else if (visible.photo()) {
-			params.parent_id = _photo.json.album;
+			params.parent_id = _photo.json.album_id;
 		}
 
 		api.post("Album::add", params, function (_data) {
@@ -2260,7 +2260,7 @@ build.photo = function (data) {
 		}
 	}
 
-	html += lychee.html(_templateObject24, disabled ? "disabled" : "", data.album, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
+	html += lychee.html(_templateObject24, disabled ? "disabled" : "", data.album_id, data.id, tabindex.get_next_tab_index(), thumbnail, data.title, data.title);
 
 	if (data.taken_at !== null) html += lychee.html(_templateObject25, build.iconic("camera-slr"), lychee.locale.printDateTime(data.taken_at));else html += lychee.html(_templateObject26, lychee.locale.printDateTime(data.created_at));
 
@@ -4588,12 +4588,94 @@ lychee.gotoMap = function () {
 	lychee.goto("map/" + albumID, autoplay);
 };
 
+/**
+ * Triggers a reload, if the given IDs are in legacy format.
+ *
+ * If any of the IDs is in legacy format, the method first translates the IDs
+ * into the modern format via an AJAX call to the backend and then triggers
+ * an asynchronous reloading of the page with the resolved, modern IDs.
+ * The function returns `true` in this case.
+ *
+ * If the IDs are already in modern format (and thus neither a translation
+ * nor a reloading is required), the function returns `false`.
+ * In this case this function is basically a no-op.
+ *
+ * @param {?string} albumID  the album ID
+ * @param {?string} photoID  the photo ID
+ * @param {boolean} autoplay indicates whether playback should start
+ *                           automatically, if the indicated photo is a video
+ *
+ * @return {boolean} `true`, if any of the IDs has been in legacy format
+ *                   and an asynchronous reloading has been scheduled
+ */
+lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
+	/** @param {?string} id the inspected ID */
+	var isLegacyID = function isLegacyID(id) {
+		// The legacy IDs were pure numeric values. We exclude values which
+		// have 24 digits, because these could also be modern IDs.
+		// A modern IDs is a 24 character long, base64 encoded value and thus
+		// could also match 24 digits by accident.
+		return id && id.length !== 24 && parseInt(id).toString() === id;
+	};
+
+	if (!isLegacyID(albumID) && !isLegacyID(photoID)) {
+		// this function is a no-op if neither ID is in legacy format
+		return false;
+	}
+
+	/**
+  * Callback to be called asynchronously which executes the actual reloading.
+  *
+  * @param {?string} newAlbumID
+  * @param {?string} newPhotoID
+  *
+  * @return void
+  */
+	var reloadWithNewIDs = function reloadWithNewIDs(newAlbumID, newPhotoID) {
+		var newUrl = "";
+		if (newAlbumID) {
+			newUrl += newAlbumID;
+			newUrl += newPhotoID ? "/" + newPhotoID : "";
+		}
+		lychee.goto(newUrl, autoplay);
+	};
+
+	// We have to deal with three cases:
+	//  1. only the album ID needs to be translated
+	//  2. the album and photo ID need to be translated (this requires two cascaded AJAX calls)
+	//  3. only the photo ID needs to be translated
+	if (isLegacyID(albumID)) {
+		api.post("Legacy::translateLegacyAlbumID", { albumID: albumID }, function (data1) {
+			var newAlbumID = data1.albumID;
+			if (isLegacyID(photoID)) {
+				api.post("Legacy::translateLegacyPhotoID", { photoID: photoID }, function (data2) {
+					var newPhotoID = data2.photoID;
+					reloadWithNewIDs(newAlbumID, newPhotoID);
+				});
+			} else {
+				reloadWithNewIDs(newAlbumID, photoID);
+			}
+		});
+	} else {
+		api.post("Legacy::translateLegacyPhotoID", { photoID: photoID }, function (data3) {
+			var newPhotoID = data3.photoID;
+			reloadWithNewIDs(albumID, newPhotoID);
+		});
+	}
+
+	return true;
+};
+
 lychee.load = function () {
 	var autoplay = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 	var hash = document.location.hash.replace("#", "").split("/");
 	var albumID = hash[0];
 	var photoID = hash[1];
+
+	if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
+		return;
+	}
 
 	contextMenu.close();
 	multiselect.close();
@@ -5808,7 +5890,7 @@ mapview.open = function () {
 					url2x: element.size_variants.small2x !== null ? element.size_variants.small2x.url : null,
 					name: element.title,
 					taken_at: element.taken_at,
-					albumID: element.album,
+					albumID: element.album_id,
 					photoID: element.id
 				});
 
@@ -6399,8 +6481,8 @@ _photo.load = function (photoID, albumID, autoplay) {
 
 	api.post("Photo::get", params, function (data) {
 		_photo.json = data;
-		_photo.json.original_album = _photo.json.album;
-		_photo.json.album = albumID;
+		_photo.json.original_album_id = _photo.json.album_id;
+		_photo.json.album_id = albumID;
 
 		if (!visible.photo()) view.photo.show();
 		view.photo.init(autoplay);
@@ -7324,9 +7406,9 @@ photoeditor.rotate = function (photoID, direction) {
 			lychee.error(null, params, data);
 		} else {
 			_photo.json = data;
-			_photo.json.original_album = _photo.json.album;
+			_photo.json.original_album_id = _photo.json.album_id;
 			if (album.json) {
-				_photo.json.album = album.json.id;
+				_photo.json.album_id = album.json.id;
 			}
 
 			var image = $("img#image");
@@ -10046,11 +10128,11 @@ view.album = {
 						// query is being modified.
 						return false;
 					}
-					var ratio = album.json.photos[i].height > 0 ? album.json.photos[i].width / album.json.photos[i].height : 1;
+					var ratio = album.json.photos[i].size_variants.original.height > 0 ? album.json.photos[i].size_variants.original.width / album.json.photos[i].size_variants.original.height : 1;
 					if (album.json.photos[i].type && album.json.photos[i].type.indexOf("video") > -1) {
 						// Video.  If there's no small and medium, we have
 						// to fall back to the square thumb.
-						if (album.json.photos[i].small === "" && album.json.photos[i].medium === "") {
+						if (album.json.photos[i].size_variants.small === null && album.json.photos[i].size_variants.medium === null) {
 							ratio = 1;
 						}
 					}
@@ -10306,8 +10388,9 @@ view.photo = {
 		var $nextArrow = lychee.imageview.find("a#next");
 		var $previousArrow = lychee.imageview.find("a#previous");
 		var photoID = _photo.getID();
-		var hasNext = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).next_photo_id !== null;
-		var hasPrevious = album.json && album.json.photos && album.getByID(photoID) && album.getByID(photoID).previous_photo_id !== null;
+		var photoInAlbum = album.json && album.json.photos ? album.getByID(photoID) : null;
+		var hasNext = photoInAlbum.hasOwnProperty("next_photo_id") && photoInAlbum.next_photo_id !== null;
+		var hasPrevious = photoInAlbum.hasOwnProperty("previous_photo_id") && photoInAlbum.previous_photo_id !== null;
 
 		var img = $("img#image");
 		if (img.length > 0) {
@@ -10331,7 +10414,7 @@ view.photo = {
 		if (hasNext === false || lychee.viewMode === true) {
 			$nextArrow.hide();
 		} else {
-			var nextPhotoID = album.getByID(photoID).next_photo_id;
+			var nextPhotoID = photoInAlbum.next_photo_id;
 			var nextPhoto = album.getByID(nextPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
@@ -10347,7 +10430,7 @@ view.photo = {
 		if (hasPrevious === false || lychee.viewMode === true) {
 			$previousArrow.hide();
 		} else {
-			var previousPhotoID = album.getByID(photoID).previous_photo_id;
+			var previousPhotoID = photoInAlbum.previous_photo_id;
 			var previousPhoto = album.getByID(previousPhotoID);
 
 			// Check if thumbUrl exists (for videos w/o ffmpeg, we add a play-icon)
