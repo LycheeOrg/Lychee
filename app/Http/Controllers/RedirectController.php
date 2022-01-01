@@ -36,7 +36,7 @@ class RedirectController extends Controller
 	 */
 	public function album(Request $request, string $albumID, Unlock $unlock): SymfonyResponse
 	{
-		if (!Legacy::isRandomModelID($albumID)) {
+		if (Legacy::isLegacyModelID($albumID)) {
 			$albumID = Legacy::translateLegacyAlbumID($albumID, $request);
 			if ($albumID === null) {
 				abort(SymfonyResponse::HTTP_NOT_FOUND);
@@ -57,14 +57,14 @@ class RedirectController extends Controller
 	 */
 	public function photo(Request $request, string $albumID, string $photoID, Unlock $unlock): SymfonyResponse
 	{
-		if (!Legacy::isRandomModelID($albumID)) {
+		if (Legacy::isLegacyModelID($albumID)) {
 			$albumID = Legacy::translateLegacyAlbumID($albumID, $request);
 			if ($albumID === null) {
 				abort(SymfonyResponse::HTTP_NOT_FOUND);
 			}
 		}
 
-		if (!Legacy::isRandomModelID($photoID)) {
+		if (Legacy::isLegacyModelID($photoID)) {
 			$photoID = Legacy::translateLegacyPhotoID($photoID, $request);
 			if ($photoID === null) {
 				abort(SymfonyResponse::HTTP_NOT_FOUND);

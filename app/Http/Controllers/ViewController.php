@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
 use App\Legacy\Legacy;
@@ -30,7 +28,7 @@ class ViewController extends Controller
 		]);
 
 		$photoID = $request->get('p');
-		if (!Legacy::isRandomModelID($photoID)) {
+		if (Legacy::isLegacyModelID($photoID)) {
 			$photoID = Legacy::translateLegacyPhotoID($photoID, $request);
 			if ($photoID === null) {
 				abort(SymfonyResponse::HTTP_NOT_FOUND);

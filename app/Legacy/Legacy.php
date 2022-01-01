@@ -72,20 +72,12 @@ class Legacy
 
 	public static function isLegacyModelID(string $id): bool
 	{
-		return filter_var($id, FILTER_VALIDATE_INT) !== false;
-	}
-
-	public static function isRandomModelID(string $id): bool
-	{
-		return preg_match('/^[-_a-zA-Z0-9]{24}$/', $id) === 1;
+		return preg_match('/^[-_a-zA-Z0-9]{24}$/', $id) !== 1 &&
+			filter_var($id, FILTER_VALIDATE_INT) !== false;
 	}
 
 	private static function translateLegacyID(string $id, string $tableName, Request $request): ?string
 	{
-		if (!self::isLegacyModelID($id)) {
-			return null;
-		}
-
 		$newID = DB::table($tableName)
 				->where('legacy_id', '=', intval($id))
 				->value('id');
