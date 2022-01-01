@@ -30,7 +30,20 @@ class Handler extends ExceptionHandler
 	 */
 	protected function renderHttpException(HttpExceptionInterface $e): SymfonyResponse
 	{
-		$baseResponse = parent::renderHttpException($e);
+		// If we are in debug mode, we use the internal method of the parent
+		// method to render a useful response with backtrace, etc., depending
+		// on the available extensions (i.e. Whoops, Symfonfy renderer, etc.)
+		// If we are in non-debug mode, we render our own template that
+		// matches Lychee's style and only contains rudimentary information.
+		$defaultResponse = config('app.debug') ?
+			$this->convertExceptionToResponse($e) :
+			response()->view('error.error', [
+				'code' => $e->getStatusCode(),
+				'type' => class_basename($e),
+				'message' => $e->getMessage(),
+			], $e->getStatusCode(), $e->getHeaders());
+
+		// We check, if any of our special handlers wants to do something.
 
 		/** @var HttpExceptionHandler[] $checks */
 		$checks = [
@@ -42,11 +55,11 @@ class Handler extends ExceptionHandler
 
 		foreach ($checks as $check) {
 			if ($check->check($e)) {
-				return $check->renderHttpException($baseResponse, $e);
+				return $check->renderHttpException($defaultResponse, $e);
 			}
 		}
 
-		return $baseResponse;
+		return $defaultResponse;
 	}
 
 	/**
