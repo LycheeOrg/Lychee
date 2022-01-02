@@ -53,8 +53,8 @@ class InstallTest extends TestCase
 			'tag_albums',
 			'albums',
 			'base_albums',
-			'users',
 			'web_authn_credentials',
+			'users',
 		];
 
 		if (Schema::connection(null)->getConnection()->getDriverName() !== 'sqlite') {

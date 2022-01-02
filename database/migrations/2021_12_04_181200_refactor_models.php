@@ -189,11 +189,16 @@ class RefactorModels extends Migration
 		$this->createSizeVariantTableUp();
 		$this->createSymLinkTableUp();
 		$this->createRemainingForeignConstraints();
+		$this->createWebAuthnTableUp();
+		$this->createPageTableUp();
+		$this->createPageContentTableUp();
+		$this->createLogTableUp();
 
 		// Step 2
 		// Happy copying :(
 		DB::beginTransaction();
 		$this->upgradeCopy();
+		$this->copyStructurallyUnchangedTables();
 		$this->upgradeConfig();
 		DB::commit();
 
@@ -217,11 +222,16 @@ class RefactorModels extends Migration
 		$this->createUserAlbumTableDown();
 		$this->createPhotoTableDown();
 		$this->createSymLinkTableDown();
+		$this->createWebAuthnTableDown();
+		$this->createPageTableDown();
+		$this->createPageContentTableDown();
+		$this->createLogTableDown();
 
 		// Step 2
 		// Happy copying :(
 		DB::beginTransaction();
 		$this->downgradeCopy();
+		$this->copyStructurallyUnchangedTables();
 		$this->downgradeConfig();
 		DB::commit();
 
@@ -244,6 +254,7 @@ class RefactorModels extends Migration
 	private function renameTables(): void
 	{
 		Schema::table('albums', function (Blueprint $table) {
+			$this->dropForeignIfExists($table, 'albums_owner_id_foreign');
 			// We must remove any foreign link from `albums` to `photos` to
 			// break up circular dependencies.
 			$this->dropForeignIfExists($table, 'albums_cover_id_foreign');
@@ -266,11 +277,21 @@ class RefactorModels extends Migration
 			$this->dropIndexIfExists($table, 'photos_is_starred_index');
 		});
 		Schema::rename('photos', 'photos_tmp');
+		Schema::table('web_authn_credentials', function (Blueprint $table) {
+			$this->dropForeignIfExists($table, 'web_authn_credentials_user_id_foreign');
+		});
+		Schema::rename('web_authn_credentials', 'web_authn_credentials_tmp');
 		Schema::table('users', function (Blueprint $table) {
 			$this->dropUniqueIfExists($table, 'users_username_unique');
 			$this->dropUniqueIfExists($table, 'users_email_unique');
 		});
 		Schema::rename('users', 'users_tmp');
+		Schema::table('page_contents', function (Blueprint $table) {
+			$this->dropForeignIfExists($table, 'page_contents_page_id_foreign');
+		});
+		Schema::rename('page_contents', 'page_contents_tmp');
+		Schema::rename('pages', 'pages_tmp');
+		Schema::rename('logs', 'logs_tmp');
 	}
 
 	/**
@@ -288,7 +309,11 @@ class RefactorModels extends Migration
 		DB::table('albums_tmp')->update(['cover_id' => null]);
 		Schema::drop('photos_tmp');
 		Schema::drop('albums_tmp');
+		Schema::drop('web_authn_credentials_tmp');
 		Schema::drop('users_tmp');
+		Schema::drop('page_contents_tmp');
+		Schema::drop('pages_tmp');
+		Schema::drop('logs_tmp');
 	}
 
 	/**
@@ -309,7 +334,11 @@ class RefactorModels extends Migration
 		Schema::drop('albums_tmp');
 		Schema::drop('tag_albums');
 		Schema::drop('base_albums');
+		Schema::drop('web_authn_credentials_tmp');
 		Schema::drop('users_tmp');
+		Schema::drop('page_contents_tmp');
+		Schema::drop('pages_tmp');
+		Schema::drop('logs_tmp');
 	}
 
 	/**
@@ -334,8 +363,8 @@ class RefactorModels extends Migration
 	{
 		Schema::create('users', function (Blueprint $table) {
 			$table->increments('id');
-			$table->dateTime('created_at')->nullable(false);
-			$table->dateTime('updated_at')->nullable(false);
+			$table->dateTime('created_at', 6)->nullable(false);
+			$table->dateTime('updated_at', 6)->nullable(false);
 			$table->string('username', 100)->nullable(false)->unique();
 			$table->string('password', 100)->nullable(true);
 			$table->string('email', 100)->nullable()->unique();
@@ -377,8 +406,8 @@ class RefactorModels extends Migration
 			// Column definitions
 			$table->char('id', self::RANDOM_ID_LENGTH)->nullable(false);
 			$table->unsignedBigInteger('legacy_id')->nullable(false);
-			$table->dateTime('created_at')->nullable(false);
-			$table->dateTime('updated_at')->nullable(false);
+			$table->dateTime('created_at', 6)->nullable(false);
+			$table->dateTime('updated_at', 6)->nullable(false);
 			$table->string('title', 100)->nullable(false);
 			$table->text('description')->nullable();
 			$table->unsignedInteger('owner_id')->nullable(false)->default(0);
@@ -541,8 +570,8 @@ class RefactorModels extends Migration
 			// Column definitions
 			$table->char('id', self::RANDOM_ID_LENGTH)->nullable(false);
 			$table->unsignedBigInteger('legacy_id')->nullable(false);
-			$table->dateTime('created_at')->nullable(false);
-			$table->dateTime('updated_at')->nullable(false);
+			$table->dateTime('created_at', 6)->nullable(false);
+			$table->dateTime('updated_at', 6)->nullable(false);
 			$table->unsignedInteger('owner_id')->unsigned()->nullable(false)->default(0);
 			$table->char('album_id', self::RANDOM_ID_LENGTH)->nullable()->default(null);
 			$table->string('title', 100)->nullable(false);
@@ -563,7 +592,7 @@ class RefactorModels extends Migration
 			$table->decimal('altitude', 10, 4)->nullable()->default(null);
 			$table->decimal('img_direction', 10, 4)->nullable()->default(null);
 			$table->string('location')->nullable()->default(null);
-			$table->dateTime('taken_at')->nullable(true)->default(null)->comment('relative to UTC');
+			$table->dateTime('taken_at', 6)->nullable(true)->default(null)->comment('relative to UTC');
 			$table->string('taken_at_orig_tz', 31)->nullable(true)->default(null)->comment('the timezone at which the photo has originally been taken');
 			$table->string('type', 30)->nullable(false);
 			$table->unsignedBigInteger('filesize')->nullable(false)->default(0);
@@ -670,8 +699,8 @@ class RefactorModels extends Migration
 		Schema::create('sym_links', function (Blueprint $table) {
 			// Column definitions
 			$table->bigIncrements('id')->nullable(false);
-			$table->dateTime('created_at')->nullable(false);
-			$table->dateTime('updated_at')->nullable(false);
+			$table->dateTime('created_at', 6)->nullable(false);
+			$table->dateTime('updated_at', 6)->nullable(false);
 			$table->unsignedBigInteger('size_variant_id')->nullable(false);
 			$table->string('short_path')->nullable(false);
 			// Indices and constraint definitions
@@ -702,6 +731,117 @@ class RefactorModels extends Migration
 			// Indices and constraint definitions
 			$table->foreign('photo_id')->references('id')->on('photos');
 		});
+	}
+
+	private function createLogTable(int $precision): void
+	{
+		Schema::create('logs', function (Blueprint $table) use ($precision) {
+			$table->bigIncrements('id');
+			$table->dateTime('created_at', $precision)->nullable(false);
+			$table->dateTime('updated_at', $precision)->nullable(false);
+			$table->string('type', 11);
+			$table->string('function', 100);
+			$table->integer('line');
+			$table->text('text');
+		});
+	}
+
+	private function createLogTableUp(): void
+	{
+		$this->createLogTable(6);
+	}
+
+	private function createLogTableDown(): void
+	{
+		$this->createLogTable(0);
+	}
+
+	private function createPageTable(int $precision): void
+	{
+		Schema::create('pages', function (Blueprint $table) use ($precision) {
+			$table->increments('id');
+			$table->dateTime('created_at', $precision)->nullable(false);
+			$table->dateTime('updated_at', $precision)->nullable(false);
+			$table->string('title', 150)->default('');
+			$table->string('menu_title', 100)->default('');
+			$table->boolean('in_menu')->default(false);
+			$table->boolean('enabled')->default(false);
+			$table->string('link', 150)->default('');
+			$table->integer('order')->default(0);
+		});
+	}
+
+	private function createPageTableUp(): void
+	{
+		$this->createPageTable(6);
+	}
+
+	private function createPageTableDown(): void
+	{
+		$this->createPageTable(0);
+	}
+
+	private function createPageContentTable(int $precision): void
+	{
+		Schema::create('page_contents', function (Blueprint $table) use ($precision) {
+			$table->increments('id');
+			$table->dateTime('created_at', $precision)->nullable(false);
+			$table->dateTime('updated_at', $precision)->nullable(false);
+			$table->unsignedInteger('page_id');
+			$table->text('content');
+			$table->string('class', 150);
+			$table->enum('type', ['div', 'img']);
+			$table->integer('order')->default(0);
+			// Indices
+			$table->foreign('page_id')
+				->references('id')->on('pages')
+				->onDelete('cascade');
+		});
+	}
+
+	private function createPageContentTableUp(): void
+	{
+		$this->createPageContentTable(6);
+	}
+
+	private function createPageContentTableDown(): void
+	{
+		$this->createPageContentTable(0);
+	}
+
+	private function createWebAuthnTable(int $precision): void
+	{
+		Schema::create('web_authn_credentials', function (Blueprint $table) use ($precision) {
+			$table->string('id', 255);
+			$table->dateTime('created_at', $precision)->nullable(false);
+			$table->dateTime('updated_at', $precision)->nullable(false);
+			$table->dateTime('disabled_at', $precision)->nullable(true);
+			$table->unsignedInteger('user_id')->nullable(false);
+			$table->string('name')->nullable();
+			$table->string('type', 16);
+			$table->json('transports');
+			$table->json('attestation_type');
+			$table->json('trust_path');
+			$table->uuid('aaguid');
+			$table->binary('public_key');
+			$table->unsignedInteger('counter')->default(0);
+			$table->uuid('user_handle')->nullable();
+			// Indices
+			$table->primary(['id', 'user_id']);
+			$table->foreign('user_id')
+				->references('id')->on('users')
+				->cascadeOnDelete();
+		});
+	}
+
+	private function createWebAuthnTableUp(): void
+	{
+		$this->createWebAuthnTable(6);
+	}
+
+	private function createWebAuthnTableDown(): void
+	{
+		$this->createWebAuthnTable(0);
 	}
 
 	/**
@@ -1106,6 +1246,77 @@ class RefactorModels extends Migration
 			DB::table('albums')
 				->where('id', '=', $this->albumIDCache[$coveredAlbum->id])
 				->update(['cover_id' => $this->photoIDCache[$coveredAlbum->cover_id]]);
+		}
+	}
+
+	/**
+	 * Copies those table which have not changed structurally, but whose
+	 * date/time precision has changed.
+	 *
+	 * @return void
+	 */
+	private function copyStructurallyUnchangedTables(): void
+	{
+		$credentials = DB::table('web_authn_credentials_tmp')->get();
+		foreach ($credentials as $credential) {
+			DB::table('web_authn_credentials')->insert([
+				'id' => $credential->id,
+				'created_at' => $credential->created_at,
+				'updated_at' => $credential->updated_at,
+				'disabled_at' => $credential->disabled_at,
+				'user_id' => $credential->user_id,
+				'name' => $credential->name,
+				'type' => $credential->type,
+				'transports' => $credential->transports,
+				'attestation_type' => $credential->attestation_type,
+				'trust_path' => $credential->trust_path,
+				'aaguid' => $credential->aaguid,
+				'public_key' => $credential->public_key,
+				'counter' => $credential->counter,
+				'user_handle' => $credential->user_handle,
+			]);
+		}
+
+		$pages = DB::table('pages_tmp')->get();
+		foreach ($pages as $page) {
+			DB::table('pages')->insert([
+				'id' => $page->id,
+				'created_at' => $page->created_at,
+				'updated_at' => $page->updated_at,
+				'title' => $page->title,
+				'menu_title' => $page->menu_title,
+				'in_menu' => $page->in_menu,
+				'enabled' => $page->enabled,
+				'link' => $page->link,
+				'order' => $page->order,
+			]);
+		}
+
+		$pageContents = DB::table('page_contents_tmp')->get();
+		foreach ($pageContents as $pageContent) {
+			DB::table('page_contents')->insert([
+				'id' => $pageContent->id,
+				'created_at' => $pageContent->created_at,
+				'updated_at' => $pageContent->updated_at,
+				'page_id' => $pageContent->page_id,
+				'content' => $pageContent->content,
+				'class' => $pageContent->class,
+				'type' => $pageContent->type,
+				'order' => $pageContent->order,
+			]);
+		}
+
+		$logs = DB::table('logs_tmp')->get();
+		foreach ($logs as $log) {
+			DB::table('logs')->insert([
+				'id' => $log->id,
+				'created_at' => $log->created_at,
+				'updated_at' => $log->updated_at,
+				'type' => $log->type,
+				'function' => $log->function,
+				'line' => $log->line,
+				'text' => $log->text,
+			]);
 		}
 	}
 
