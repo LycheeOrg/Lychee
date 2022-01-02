@@ -15,10 +15,15 @@ use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Exec
 {
 	use Constants;
+
+	public const REPORT_TYPE_PROGRESS = 'progress';
+	public const REPORT_TYPE_WARNING = 'warning';
+	public const REPORT_TYPE_ERROR = 'error';
 
 	public ImportMode $importMode;
 	public bool $memCheck = true;
@@ -26,6 +31,7 @@ class Exec
 	public int $memLimit = 0;
 	public bool $memWarningGiven = false;
 	private array $raw_formats;
+	private $firstReportGiven = false;
 
 	public function __construct()
 	{
@@ -33,47 +39,86 @@ class Exec
 	}
 
 	/**
-	 * Output status update to stdout (from where StreamedResponse picks it up).
-	 * Every line of output is terminated with a newline so that the front end
-	 * can be sure that it's complete.
-	 * The status can be one of:
-	 * - Status: <directory name>: <percentage of completion>
-	 *   (A status is always sent for 0 and 100 percent at least).
-	 * - Problem: <file or directory name>: <problem description>
-	 *   (We avoid starting a line with 'Error' as that has a special meaning
-	 *   in the front end, preventing the completion callback from being
-	 *   invoked).
-	 * - Warning: Approaching memory limit.
+	 * Output status update to stdout.
+	 *
+	 * The output is either send to a web-client via {@link StreamedResponse}
+	 * or to the CLI.
+	 *
+	 * For web-clients this method reports the JSON objects like
+	 *
+	 *    { "type": type, "key": key, "message": message }
+	 *
+	 * The outer caller precedes and terminates the whole output by `[` and
+	 * `]`, resp., in order to indicate the start and beginning of a JSON
+	 * array.
+	 * This method also inserts the commas between objects.
+	 *
+	 * For CLI output we print lines like `key: message`, if key is not `null`,
+	 * or simply `message` if the key equals `null`.
+	 * The lines are terminated by a newline character.
+	 *
+	 * Only the following three cases are supported:
+	 *
+	 *  1. `$type === Exec::REPORT_TYPE_PROGRESS`: In this case, `$key`
+	 *     indicates a directory name and `$message` is an integer between
+	 *     0 and 100 (without a percentage sign) which indicates the progress
+	 *     for the indicated directory
+	 *  2. `$type === Exec::REPORT_TYPE_ERROR`: In this case, `$key`
+	 *     indicates a directory or file name and `$message` is contains
+	 *     the error message
+	 *  3. `$type === Exec::REPORT_TYPE_WARNING`: In this case, `$key`
+	 *     equals `null` and the message contains a global warning message.
+	 *
+	 * @param string      $type    either {@link Exec::REPORT_TYPE_PROGRESS},
+	 *                             {@link Exec::REPORT_TYPE_WARNING}, or
+	 *                             {@link Exec::REPORT_TYPE_ERROR}
+	 * @param string|null $key     the name of the directory of file which is
+	 *                             associated to the report; note a web-client
+	 *                             uses the key, to group subsequent messages
+	 *                             for the same directory/file together or to
+	 *                             only display the latest message
+	 * @param string|int  $message the message
+	 *
+	 * @return void
 	 */
-	private function status_update(string $status)
+	private function report(string $type, ?string $key, string|int $message): void
 	{
 		if (!$this->statusCLIFormatting) {
-			// We append a newline to the status string, JSON-encode the
-			// result, and strip the  surrounding '"' characters since this
-			// isn't a complete JSON string yet.
-			echo substr(json_encode($status . "\n"), 1, -1);
-			if (ob_get_level() > 0) {
-				ob_flush();
+			try {
+				if ($this->firstReportGiven) {
+					echo ',';
+				}
+				echo json_encode([
+					'type' => $type,
+					'key' => $key,
+					'message' => $message,
+				], JSON_THROW_ON_ERROR);
+				$this->firstReportGiven = true;
+				if (ob_get_level() > 0) {
+					ob_flush();
+				}
+				flush();
+			} catch (\JsonException) {
+				// do nothing
 			}
-			flush();
 		} else {
-			echo substr($status, strpos($status, ' ') + 1) . PHP_EOL;
+			echo $key . ($key ? ': ' : '') . $message . ($type === self::REPORT_TYPE_PROGRESS ? '%' : '') . PHP_EOL;
 		}
 	}
 
-	private function status_progress(string $path, string $msg)
+	private function reportProgress(string $path, int $percentage)
 	{
-		$this->status_update('Status: ' . $path . ': ' . $msg);
+		$this->report(self::REPORT_TYPE_PROGRESS, $path, $percentage);
 	}
 
-	private function status_warning(string $msg)
+	private function reportWarning(string $msg)
 	{
-		$this->status_update('Warning: ' . $msg);
+		$this->report(self::REPORT_TYPE_WARNING, null, $msg);
 	}
 
-	private function status_error(string $path, string $msg)
+	private function reportError(string $path, string $msg)
 	{
-		$this->status_update('Problem: ' . $path . ': ' . $msg);
+		$this->report(self::REPORT_TYPE_ERROR, $path, $msg);
 	}
 
 	private function parsePath(string &$path, string $origPath): bool
@@ -87,7 +132,7 @@ class Exec
 			$path = substr($path, 0, -1);
 		}
 		if (is_dir($path) === false) {
-			$this->status_error($origPath, 'Given path is not a directory');
+			$this->reportError($origPath, 'Given path is not a directory');
 			Logs::error(__METHOD__, __LINE__, 'Given path is not a directory (' . $origPath . ')');
 
 			return false;
@@ -100,7 +145,7 @@ class Exec
 			realpath($path) === Storage::path('small') ||
 			realpath($path) === Storage::path('thumb')
 		) {
-			$this->status_error($origPath, 'Given path is reserved');
+			$this->reportError($origPath, 'Given path is reserved');
 			Logs::error(__METHOD__, __LINE__, 'The given path is a reserved path of Lychee (' . $origPath . ')');
 
 			return false;
@@ -146,7 +191,7 @@ class Exec
 	{
 		if ($this->memCheck && !$this->memWarningGiven && memory_get_usage() > $this->memLimit) {
 			// @codeCoverageIgnoreStart
-			$this->status_warning('Approaching memory limit');
+			$this->reportWarning('Approaching memory limit');
 			$this->memWarningGiven = true;
 			// @codeCoverageIgnoreEnd
 		}
@@ -185,16 +230,13 @@ class Exec
 		$dirs = [];
 		$lastStatus = microtime(true);
 
-		// Add '%' at end for CLI output
-		$percent_symbol = ($this->statusCLIFormatting) ? '%' : '';
-
-		$this->status_progress($origPath, '0' . $percent_symbol);
+		$this->reportProgress($origPath, 0);
 		foreach ($files as $file) {
 			// re-read session in case cancelling import was requested
 			session()->start();
 			if (Session::has('cancel')) {
 				Session::forget('cancel');
-				$this->status_error($origPath, 'Import cancelled');
+				$this->reportError($origPath, 'Import cancelled');
 				Logs::warning(__METHOD__, __LINE__, 'Import cancelled');
 
 				return;
@@ -205,11 +247,18 @@ class Exec
 			// Report if we might be running out of memory.
 			$this->memWarningCheck();
 
-			// Generate the status at most once a second, except for 0% and
-			// 100%, which are always generated.
+			// Generate the status at most each third of a second,
+			// except for 0% and 100%, which are always generated.
+			// Generating more frequently would create unnecessary many status
+			// reports; generating less frequently might lead to Firefox
+			// complaining.
+			// Firefox considers any response with a delay of >=500ms as
+			// "unresponsive".
+			// Taking additional delays on the network layer into account,
+			// 1/3 second should be fine.
 			$time = microtime(true);
-			if ($time - $lastStatus >= 1) {
-				$this->status_progress($origPath, intval($filesCount / $filesTotal * 100) . $percent_symbol);
+			if ($time - $lastStatus >= 0.3) {
+				$this->reportProgress($origPath, intval($filesCount / $filesTotal * 100));
 				$lastStatus = $time;
 			}
 
@@ -229,7 +278,7 @@ class Exec
 			// It is possible to move a file because of directory permissions but
 			// the file may still be unreadable by the user
 			if (!is_readable($file)) {
-				$this->status_error($file, 'Could not read file');
+				$this->reportError($file, 'Could not read file');
 				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
 				continue;
 			}
@@ -254,17 +303,17 @@ class Exec
 					$photoCreate = new PhotoCreate($this->importMode);
 					$photoCreate->add(SourceFileInfo::createForLocalFile($file), $albumID);
 				} else {
-					$this->status_error($file, 'Unsupported file type');
+					$this->reportError($file, 'Unsupported file type');
 					Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
 				}
 			} catch (PhotoSkippedException $e) {
-				$this->status_error($file, $e->getMessage());
+				$this->reportError($file, $e->getMessage());
 			} catch (\Throwable $e) {
-				$this->status_error($file, 'Could not import file');
+				$this->reportError($file, 'Could not import file');
 				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
 			}
 		}
-		$this->status_progress($origPath, '100' . $percent_symbol);
+		$this->reportProgress($origPath, 100);
 
 		// Album creation
 		foreach ($dirs as $dir) {
@@ -284,7 +333,7 @@ class Exec
 				if ($album === false) {
 					// @codeCoverageIgnoreStart
 
-					$this->status_error(basename($dir), ': Could not create album');
+					$this->reportError(basename($dir), ': Could not create album');
 					Logs::error(__METHOD__, __LINE__, 'Could not create album in Lychee (' . basename($dir) . ')');
 					continue;
 				}

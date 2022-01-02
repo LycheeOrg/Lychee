@@ -27,15 +27,16 @@ class FromServer
 		$this->exec->memLimit = $this->determineMemLimit();
 
 		$response = new StreamedResponse();
-		$response->setCallback(function () use ($path, $albumID) {
-			// Surround the response in '"' characters to make it a valid
-			// JSON string.
-			echo '"';
-			$this->exec->do($path, $albumID);
-			echo '"';
-		});
+		$response->headers->set('Content-Type', 'application/json');
+		$response->headers->set('Cache-Control', 'no-store');
 		// nginx-specific voodoo, as per https://symfony.com/doc/current/components/http_foundation.html#streaming-a-response
 		$response->headers->set('X-Accel-Buffering', 'no');
+		$response->setCallback(function () use ($path, $albumID) {
+			// Surround the response by `[]` to make it a valid JSON array.
+			echo '[';
+			$this->exec->do($path, $albumID);
+			echo ']';
+		});
 
 		return $response;
 	}

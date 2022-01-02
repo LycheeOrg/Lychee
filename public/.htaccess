@@ -21,6 +21,7 @@
 </IfModule>
 
 Options -Indexes
+SetEnv no-gzip
 
 <IfModule php_module>
 	php_value max_execution_time 200

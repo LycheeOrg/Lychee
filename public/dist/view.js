@@ -829,6 +829,16 @@ build.no_content = function (typ) {
 	return html;
 };
 
+/**
+ * @typedef FileEntry
+ * @property {string} name
+ */
+
+/**
+ * @param {string} title the title of the dialog
+ * @param {FileEntry[]} files a list of file entries to be shown in the dialog
+ * @return {string} the HTML fragment for the dialog
+ */
 build.uploadModal = function (title, files) {
 	var html = "";
 
