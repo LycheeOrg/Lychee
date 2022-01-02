@@ -19,6 +19,7 @@ use App\Models\Album;
 use App\Models\Photo;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 
 class Create
 {
@@ -210,6 +211,8 @@ class Create
 				$this->strategyParameters->is_public = true;
 			} elseif ($album instanceof StarredAlbum) {
 				$this->strategyParameters->is_starred = true;
+			} elseif ($album instanceof UnsortedAlbum) {
+				$this->strategyParameters->album = null;
 			} else {
 				throw new JsonError('This album does not support uploading');
 			}

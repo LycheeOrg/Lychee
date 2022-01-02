@@ -9076,7 +9076,7 @@ upload.start = {
 			};
 
 			formData.append("function", "Photo::add");
-			formData.append("albumID", albumID);
+			formData.append("albumID", albumID ? albumID : "");
 			formData.append(0, files[file_num]);
 
 			var api_url = "api/" + "Photo::add";
