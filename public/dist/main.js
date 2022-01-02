@@ -4673,10 +4673,6 @@ lychee.load = function () {
 	var albumID = hash[0];
 	var photoID = hash[1];
 
-	if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
-		return;
-	}
-
 	contextMenu.close();
 	multiselect.close();
 	tabindex.reset();
@@ -4723,6 +4719,10 @@ lychee.load = function () {
 
 			lychee.footer_show();
 		} else {
+			if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
+				return;
+			}
+
 			$(".no_content").remove();
 			// Show photo
 
@@ -4768,6 +4768,10 @@ lychee.load = function () {
 		} else if (albumID === "search") {
 			// search string is empty -> do nothing
 		} else {
+			if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
+				return;
+			}
+
 			$(".no_content").remove();
 			// Trash data
 			_photo.json = null;
@@ -10389,8 +10393,8 @@ view.photo = {
 		var $previousArrow = lychee.imageview.find("a#previous");
 		var photoID = _photo.getID();
 		var photoInAlbum = album.json && album.json.photos ? album.getByID(photoID) : null;
-		var hasNext = photoInAlbum.hasOwnProperty("next_photo_id") && photoInAlbum.next_photo_id !== null;
-		var hasPrevious = photoInAlbum.hasOwnProperty("previous_photo_id") && photoInAlbum.previous_photo_id !== null;
+		var hasNext = photoInAlbum !== null && photoInAlbum.hasOwnProperty("next_photo_id") && photoInAlbum.next_photo_id !== null;
+		var hasPrevious = photoInAlbum !== null && photoInAlbum.hasOwnProperty("previous_photo_id") && photoInAlbum.previous_photo_id !== null;
 
 		var img = $("img#image");
 		if (img.length > 0) {
