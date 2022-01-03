@@ -393,11 +393,13 @@ class PhotosUnitTest
 	 */
 	public function duplicate(
 		string $id,
+		?string $targetAlbumID,
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->json('POST', '/api/Photo::duplicate', [
 			'photoIDs' => $id,
+			'albumID' => $targetAlbumID,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
