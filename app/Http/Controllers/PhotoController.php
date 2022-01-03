@@ -241,7 +241,7 @@ class PhotoController extends Controller
 	 */
 	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
 	{
-		$request->validate(['albumID' => 'string|nullable']);
+		$request->validate(['albumID' => ['present', new ModelIDRule()]]);
 		$duplicates = $duplicate->do(explode(',', $request['photoIDs']), $request['albumID']);
 
 		return ($duplicates->count() === 1) ? $duplicates->first() : $duplicates;

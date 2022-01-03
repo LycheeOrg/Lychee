@@ -10,17 +10,9 @@ class Duplicate
 	/**
 	 * Duplicates a set of photos.
 	 *
-	 * If the ID of the destination album is not given, each photo is
-	 * duplicated within its current album.
-	 * This implies that photos may be duplicated within different
-	 * albums, if the original photos reside in different albums.
-	 * If the ID of a destination album is given, then all duplicates are
-	 * created in the destination album (this resembles a "copy-to" semantic).
-	 * However, you cannot copy photos to the root album (whose ID equals
-	 * `null`), because `null` means to duplicate photos in-place.
-	 *
 	 * @param string[]    $photoIds the IDs of the source photos
-	 * @param string|null $albumID  the optional ID of the destination album
+	 * @param string|null $albumID  the ID of the destination album;
+	 *                              `null` means root album
 	 *
 	 * @return Collection<Photo> the duplicates
 	 */
@@ -34,7 +26,7 @@ class Duplicate
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$duplicate = $photo->replicate();
-			$duplicate->album_id = $albumID ?: $photo->album_id;
+			$duplicate->album_id = $albumID;
 			$duplicate->save();
 			$duplicates->add($duplicate);
 		}

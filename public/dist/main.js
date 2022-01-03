@@ -2787,7 +2787,7 @@ contextMenu.photo = function (photoID, e) {
 		title: build.iconic("layers") + lychee.locale["COPY_TO"],
 		fn: function fn() {
 			basicContext.close();
-			contextMenu.move([photoID], e, _photo.copyTo, "UNSORTED");
+			contextMenu.move([photoID], e, _photo.copyTo);
 		}
 	},
 	// Notice for 'Move':
@@ -2797,7 +2797,7 @@ contextMenu.photo = function (photoID, e) {
 		title: build.iconic("folder") + lychee.locale["MOVE"],
 		fn: function fn() {
 			basicContext.close();
-			contextMenu.move([photoID], e, _photo.setAlbum, "UNSORTED");
+			contextMenu.move([photoID], e, _photo.setAlbum);
 		}
 	}, { title: build.iconic("trash") + lychee.locale["DELETE"], fn: function fn() {
 			return _photo.delete([photoID]);
@@ -2864,13 +2864,13 @@ contextMenu.photoMulti = function (photoIDs, e) {
 		title: build.iconic("layers") + lychee.locale["COPY_ALL_TO"],
 		fn: function fn() {
 			basicContext.close();
-			contextMenu.move(photoIDs, e, _photo.copyTo, "UNSORTED");
+			contextMenu.move(photoIDs, e, _photo.copyTo);
 		}
 	}, {
 		title: build.iconic("folder") + lychee.locale["MOVE_ALL"],
 		fn: function fn() {
 			basicContext.close();
-			contextMenu.move(photoIDs, e, _photo.setAlbum, "UNSORTED");
+			contextMenu.move(photoIDs, e, _photo.setAlbum);
 		}
 	}, { title: build.iconic("trash") + lychee.locale["DELETE_ALL"], fn: function fn() {
 			return _photo.delete(photoIDs);
@@ -3043,10 +3043,10 @@ contextMenu.move = function (IDs, e, callback) {
 		}
 
 		// Show Unsorted when unsorted is not the current album
-		if (display_root && album.getID() !== null && !visible.albums()) {
+		if (display_root && album.getID() !== "unsorted" && !visible.albums()) {
 			items.unshift({});
 			items.unshift({ title: lychee.locale[kind], fn: function fn() {
-					return callback(IDs, 0);
+					return callback(IDs, null);
 				} });
 		}
 
@@ -4567,10 +4567,10 @@ lychee.logout = function () {
 };
 
 lychee.goto = function () {
-	var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-	url = "#" + url;
+	url = "#" + (url !== null ? url : "");
 
 	history.pushState(null, null, url);
 	lychee.load(autoplay);
@@ -6836,9 +6836,15 @@ _photo.setTitle = function (photoIDs) {
 	});
 };
 
+/**
+ *
+ * @param {string[]} photoIDs IDs of photos to be copied
+ * @param {?string} albumID ID of destination album; `null` means root album
+ * @return {void}
+ */
 _photo.copyTo = function (photoIDs, albumID) {
-	if (!photoIDs) return false;
-	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
+	if (!photoIDs) return;
+	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
 
 	var params = {
 		photoIDs: photoIDs.join(),
