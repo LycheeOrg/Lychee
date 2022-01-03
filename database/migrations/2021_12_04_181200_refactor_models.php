@@ -91,7 +91,7 @@ class RefactorModels extends Migration
 	/**
 	 * 2013-11-01 in seconds since epoch.
 	 */
-	public const BIRTH_OF_LARAVEL = 1383264000;
+	public const BIRTH_OF_LYCHEE = 1383264000;
 	public const MAX_SIGNED_32BIT_INT = 2147483647;
 
 	public const RANDOM_ID_LENGTH = 24;
@@ -1812,22 +1812,57 @@ class RefactorModels extends Migration
 	 */
 	private function convertLegacyIdToTime(int $id): Carbon
 	{
-		$is32BitPlatform = PHP_INT_MAX === self::MAX_SIGNED_32BIT_INT;
+		// Typically, the legacy ID should have either
+		//
+		//  - 10 digits for 32bit platforms, or
+		//  - 14 digits (for 64bit platforms).
+		//
+		// On 32bit platforms, the ID indicates the creation date in
+		// seconds since epoch.
+		// On 64bit platforms, the ID indicates the creation date in
+		// 1/10 of microseconds since epoch.
+		// This means we have four decimal digits of additional precision.
+		//
+		// Unfortunately, due to a bug in Lychee at some time, trailing zeros
+		// were stripped off.
+		// This means, the 2-digit number 16 might actually indicate
+		// the timestamp 1600000000 (Sep 13th, 2020) on a 32bit platform.
+		// Likewise, the 12-digit number 162033368845 might actually indicate
+		// the timestamp 16203336884500 (May 6h, 2021) on a 64bit platform.
+		//
+		// However, in any case we know that the integer part (measured in
+		// seconds since epoch) must have 10 digits.
+		// Any other value would not be reasonable, as 999,999,999 is a date
+		// in 2001 long before the birth of Lychee.
+		// Also, `self::BIRTH_OF_LYCHEE` is approx. one half of
+		// `self::MAX_SIGNED_32BIT_INT` (Jan 19th, 2038) which is far in the
+		// future.
+		// So, we can multiply/divide the id by ten for numbers which are too
+		// small/large and be safe that there is at most only a single
+		// value in the reasonable interval.
+		// For 32bit platforms we must take care of overflows for the
+		// multiplication, i.e. we must check for <MAX_SIGNED_32BIT_INT/10
+		// **before** the multiplication.
 
-		if (
-			self::BIRTH_OF_LARAVEL <= $id &&
-			// this also catches the case of 64bit platforms which only
-			// uses 32bit integers
-			($is32BitPlatform || $id <= self::MAX_SIGNED_32BIT_INT)
-		) {
-			return Carbon::createFromTimestampUTC($id);
-		} elseif (
-			!$is32BitPlatform && self::BIRTH_OF_LARAVEL * 10000 <= $id
-		) {
-			return Carbon::createFromTimestampUTC(floatval($id) / 10000.0);
-		} else {
+		// This is Oct 21st, 1976, so it is also smaller than `self::BIRTH_OF_LYCHEE`
+		if ($id < self::MAX_SIGNED_32BIT_INT / 10 - 1) {
+			$id = $id * 10;
+		}
+
+		// This will never be true for 32bit platforms, but might be true
+		// for 64bit platforms with high-precision timestamps
+		if ($id > self::MAX_SIGNED_32BIT_INT) {
+			$id = (float) $id;
+			while ($id >= self::MAX_SIGNED_32BIT_INT) {
+				$id = $id / 10.0;
+			}
+		}
+
+		if ($id <= self::BIRTH_OF_LYCHEE) {
 			throw new \OutOfBoundsException('ID-based creation time is out of reasonable bounds');
 		}
+
+		return Carbon::createFromTimestampUTC($id);
 	}
 
 	/**
