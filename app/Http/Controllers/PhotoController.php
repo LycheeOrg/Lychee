@@ -186,7 +186,7 @@ class PhotoController extends Controller
 	 */
 	public function setAlbum(PhotoIDsRequest $request, SetAlbum $setAlbum): string
 	{
-		$request->validate(['albumID' => ['required', new ModelIDRule()]]);
+		$request->validate(['albumID' => ['present', new ModelIDRule()]]);
 
 		return $setAlbum->execute(explode(',', $request['photoIDs']), $request['albumID']) ? 'true' : 'false';
 	}
@@ -241,7 +241,7 @@ class PhotoController extends Controller
 	 */
 	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
 	{
-		$request->validate(['albumID' => 'string']);
+		$request->validate(['albumID' => 'string|nullable']);
 		$duplicates = $duplicate->do(explode(',', $request['photoIDs']), $request['albumID']);
 
 		return ($duplicates->count() === 1) ? $duplicates->first() : $duplicates;
