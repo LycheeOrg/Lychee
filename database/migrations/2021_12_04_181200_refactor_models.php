@@ -1005,7 +1005,10 @@ class RefactorModels extends Migration
 	private function createRemainingForeignConstraints(): void
 	{
 		Schema::table('albums', function (Blueprint $table) {
-			$table->foreign('cover_id')->references('id')->on('photos');
+			$table->foreign('cover_id')
+				->references('id')->on('photos')
+				->onUpdate('CASCADE')
+				->onDelete('SET NULL');
 		});
 	}
 
