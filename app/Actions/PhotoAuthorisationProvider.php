@@ -229,7 +229,9 @@ class PhotoAuthorisationProvider
 		$userID = AccessControl::id();
 		// Since we count the result we need to ensure that there are no
 		// duplicates.
-		$photoIDs = array_unique($photoIDs);
+		// Also remove the `null` photo. It gets a pass.
+		// This case may happen, if a user sets `null` as a cover.
+		$photoIDs = array_diff(array_unique($photoIDs), [null]);
 		if (count($photoIDs) > 0) {
 			return Photo::query()
 				->whereIn('photos.id', $photoIDs)
