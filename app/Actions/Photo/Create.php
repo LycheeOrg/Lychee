@@ -17,9 +17,9 @@ use App\Factories\AlbumFactory;
 use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
+use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
-use App\SmartAlbums\UnsortedAlbum;
 
 class Create
 {
@@ -207,12 +207,13 @@ class Create
 			if ($album instanceof Album) {
 				// we save it so we don't have to query it again later
 				$this->strategyParameters->album = $album;
-			} elseif ($album instanceof PublicAlbum) {
-				$this->strategyParameters->is_public = true;
-			} elseif ($album instanceof StarredAlbum) {
-				$this->strategyParameters->is_starred = true;
-			} elseif ($album instanceof UnsortedAlbum) {
+			} elseif ($album instanceof BaseSmartAlbum) {
 				$this->strategyParameters->album = null;
+				if ($album instanceof PublicAlbum) {
+					$this->strategyParameters->is_public = true;
+				} elseif ($album instanceof StarredAlbum) {
+					$this->strategyParameters->is_starred = true;
+				}
 			} else {
 				throw new JsonError('This album does not support uploading');
 			}
