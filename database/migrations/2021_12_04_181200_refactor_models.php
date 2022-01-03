@@ -286,10 +286,7 @@ class RefactorModels extends Migration
 			$this->dropUniqueIfExists($table, 'users_email_unique');
 		});
 		Schema::rename('users', 'users_tmp');
-		Schema::table('page_contents', function (Blueprint $table) {
-			$this->dropForeignIfExists($table, 'page_contents_page_id_foreign');
-		});
-		Schema::rename('page_contents', 'page_contents_tmp');
+		$this->renamePageContentTable();
 		Schema::rename('pages', 'pages_tmp');
 		Schema::rename('logs', 'logs_tmp');
 	}
@@ -781,9 +778,9 @@ class RefactorModels extends Migration
 		$this->createPageTable(0);
 	}
 
-	private function createPageContentTable(int $precision): void
+	private function createPageContentTable(string $tableName, int $precision): void
 	{
-		Schema::create('page_contents', function (Blueprint $table) use ($precision) {
+		Schema::create($tableName, function (Blueprint $table) use ($precision) {
 			$table->increments('id');
 			$table->dateTime('created_at', $precision)->nullable(false);
 			$table->dateTime('updated_at', $precision)->nullable(false);
@@ -801,12 +798,69 @@ class RefactorModels extends Migration
 
 	private function createPageContentTableUp(): void
 	{
-		$this->createPageContentTable(6);
+		$this->createPageContentTable('page_contents', 6);
 	}
 
 	private function createPageContentTableDown(): void
 	{
-		$this->createPageContentTable(0);
+		$this->createPageContentTable('page_contents', 0);
+	}
+
+	/**
+	 * Renames table `page_content` to `page_content_tmp` using a work-around.
+	 *
+	 * Ideally, we would simply use
+	 * `Schema::rename('page_content', 'page_content_tmp')`
+	 * in {@link RefactorModels::renameTables()} as for any other table.
+	 * Unfortunately, a bug in Laravel/Eloquent does not allow this, so we
+	 * need to create a table `page_contents_tmp` copy everything into that
+	 * table, and drop `page_contents`.
+	 * (And yes, we do it the other way around just some minutes later.)
+	 * Yikes!
+	 *
+	 * The cause of the problem is that the table uses the non-SQL type
+	 * `enum` (see `CreatePageContentsTable::up` in
+	 * `2019_02_21_114408_create_page_contents_table.php`).
+	 * Under the hood, Laravel/Eloquent registers this proprietary extension
+	 * with the DBAL (database abstraction layer) and a callback ensures
+	 * that this type gets properly translated into an actual SQL type
+	 * whenever the DBAL encounters this type depending on the SQL backend:
+	 *
+	 *  - MySQL: `ENUM`
+	 *  - PostgreSQL: `VARCHAR` with a `CHECK`-constraint
+	 *  - SQLite: `VARCHAR`
+	 *
+	 * However, Laravel/Eloquent only registers this type extension for
+	 * table creation.
+	 * (That is actually a known bug which Laravel/Eloquent refuses to fix.)
+	 * As a result, the DBAL will bail out with an exception whenever it tries
+	 * to modify the table schema in the slightest way (rename the table,
+	 * drop/add/rename a column, change a column) even if the modification
+	 * does not alter the enum-column itself, because it will topple over an
+	 * unknown type.
+	 * Essentially, the table schema becomes immutable.
+	 * The only possible action left which does not trigger an exception is to
+	 * drop the table.
+	 *
+	 * @return void
+	 */
+	private function renamePageContentTable(): void
+	{
+		$this->createPageContentTable('page_contents_tmp', 0);
+		$pageContents = DB::table('page_contents')->get();
+		foreach ($pageContents as $pageContent) {
+			DB::table('page_contents_tmp')->insert([
+				'id' => $pageContent->id,
+				'created_at' => $pageContent->created_at,
+				'updated_at' => $pageContent->updated_at,
+				'page_id' => $pageContent->page_id,
+				'content' => $pageContent->content,
+				'class' => $pageContent->class,
+				'type' => $pageContent->type,
+				'order' => $pageContent->order,
+			]);
+		}
+		Schema::drop('page_contents');
 	}
 
 	private function createWebAuthnTable(int $precision): void
