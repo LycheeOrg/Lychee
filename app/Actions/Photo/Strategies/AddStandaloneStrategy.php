@@ -15,7 +15,21 @@ class AddStandaloneStrategy extends AddBaseStrategy
 {
 	public function __construct(AddStrategyParameters $parameters)
 	{
-		parent::__construct($parameters, new Photo());
+		$newPhoto = new Photo();
+		// We already set the timestamps (`created_at`, `updated_at`) on
+		// initialization time, not save time.
+		// This keeps the creation timestamps ordered as the images are
+		// uploaded/imported.
+		// This should be the most consistent/expected behaviour.
+		// Otherwise, the creation time would reflect the point of time when
+		// Lychee has finished processing the image (rotated, cropped,
+		// generated thumbnails).
+		// This might lead to "race conditions", i.e. some images might
+		// outpace each other.
+		// This would not lead to data loss or worse, but images might
+		// appear in a different order than users expect.
+		$newPhoto->updateTimestamps();
+		parent::__construct($parameters, $newPhoto);
 	}
 
 	public function do(): Photo

@@ -25,7 +25,6 @@ class AddDuplicateStrategy extends AddBaseStrategy
 
 		if ($this->parameters->importMode->shallSkipDuplicates()) {
 			Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
-			// TODO: Think again of this. A "usual" case should not result in an exception.
 			throw new PhotoSkippedException('This photo has been skipped because it\'s already in your library.');
 		} else {
 			// Duplicate the existing photo, this will also duplicate all
