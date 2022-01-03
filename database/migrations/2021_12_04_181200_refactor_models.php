@@ -74,6 +74,9 @@ class RefactorModels extends Migration
 	private array $progressBars;
 	private ConsoleSectionOutput $msgSection;
 
+	private const SQL_TIMEZONE_NAME = 'UTC';
+	private const SQL_DATETIME_FORMAT = 'Y-m-d H:i:s';
+
 	public const THUMBNAIL_DIM = 200;
 	public const THUMBNAIL2X_DIM = 400;
 
@@ -939,13 +942,15 @@ class RefactorModels extends Migration
 	 */
 	private function renamePageContentTable(): void
 	{
+		$nowString = Carbon::now(self::SQL_TIMEZONE_NAME)->format(self::SQL_DATETIME_FORMAT);
+
 		$this->createPageContentTable('page_contents_tmp', 0);
 		$pageContents = DB::table('page_contents')->get();
 		foreach ($pageContents as $pageContent) {
 			DB::table('page_contents_tmp')->insert([
 				'id' => $pageContent->id,
-				'created_at' => $pageContent->created_at,
-				'updated_at' => $pageContent->updated_at,
+				'created_at' => $pageContent->created_at ?? $nowString,
+				'updated_at' => $pageContent->updated_at ?? $nowString,
 				'page_id' => $pageContent->page_id,
 				'content' => $pageContent->content,
 				'class' => $pageContent->class,
