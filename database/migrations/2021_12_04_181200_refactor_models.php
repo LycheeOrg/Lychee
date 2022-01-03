@@ -1,5 +1,7 @@
 <?php
 
+use Carbon\Carbon;
+use Carbon\Exceptions\InvalidFormatException;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +13,9 @@ use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
 use League\Flysystem\FileNotFoundException;
+use Symfony\Component\Console\Helper\ProgressBar;
+use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 
 /**
  * Migration for new architecture of albums.
@@ -64,6 +69,11 @@ class RefactorModels extends Migration
 {
 	private string $driverName;
 	private AbstractSchemaManager $schemaManager;
+	private ConsoleOutput $output;
+	/** @var ProgressBar[] */
+	private array $progressBars;
+	private ConsoleSectionOutput $msgSection;
+
 	public const THUMBNAIL_DIM = 200;
 	public const THUMBNAIL2X_DIM = 400;
 
@@ -74,6 +84,12 @@ class RefactorModels extends Migration
 	public const VARIANT_SMALL = 4;
 	public const VARIANT_THUMB2X = 5;
 	public const VARIANT_THUMB = 6;
+
+	/**
+	 * 2013-11-01 in seconds since epoch.
+	 */
+	public const BIRTH_OF_LARAVEL = 1383264000;
+	public const MAX_SIGNED_32BIT_INT = 2147483647;
 
 	public const RANDOM_ID_LENGTH = 24;
 
@@ -167,6 +183,71 @@ class RefactorModels extends Migration
 		$connection = Schema::connection(null)->getConnection();
 		$this->driverName = $connection->getDriverName();
 		$this->schemaManager = $connection->getDoctrineSchemaManager();
+		$this->output = new ConsoleOutput();
+		$this->progressBars = [];
+		$this->msgSection = $this->output->section();
+	}
+
+	/**
+	 * Outputs an error message.
+	 *
+	 * @param string $msg the message
+	 *
+	 * @return void
+	 */
+	private function printError(string $msg): void
+	{
+		$this->msgSection->writeln('<error>Error:</error> ' . $msg);
+	}
+
+	/**
+	 * Outputs a warning.
+	 *
+	 * @param string $msg the message
+	 *
+	 * @return void
+	 */
+	private function printWarning(string $msg): void
+	{
+		$this->msgSection->writeln('<comment>Warning:</comment> ' . $msg);
+	}
+
+	/**
+	 * Outputs an informational message.
+	 *
+	 * @param string $msg the message
+	 *
+	 * @return void
+	 */
+	private function printInfo(string $msg): void
+	{
+		$this->msgSection->writeln('<info>Info:</info> ' . $msg);
+	}
+
+	/**
+	 * Gets the progress bar for the given table.
+	 *
+	 * The method always returns the same instance of the progress bar for
+	 * the same table.
+	 * The method creates a new progress bar, when it is called for a new
+	 * table name the first time.
+	 *
+	 * @param string $tableName
+	 *
+	 * @return ProgressBar
+	 */
+	private function getProgressBar(string $tableName): ProgressBar
+	{
+		if (!key_exists($tableName, $this->progressBars)) {
+			// Also start a new message section **above** the new progress bar
+			// This way the progress bar remains on the bottom in case too
+			// many warning/errors are spit out.
+			$this->msgSection = $this->output->section();
+			$this->progressBars[$tableName] = new ProgressBar($this->output->section());
+			$this->progressBars[$tableName]->setFormat('Table \'' . $tableName . '\' %current%/%max% [%bar%] %percent:3s%%');
+		}
+
+		return $this->progressBars[$tableName];
 	}
 
 	/**
@@ -179,7 +260,9 @@ class RefactorModels extends Migration
 		// Step 1
 		// Create tables in correct order so that foreign keys can
 		// be created immediately.
+		$this->printInfo('Renaming existing tables');
 		$this->renameTables();
+		$this->printInfo('Creating new tables');
 		$this->createUsersTableUp();
 		$this->createBaseAlbumTable();
 		$this->createAlbumTableUp();
@@ -197,12 +280,16 @@ class RefactorModels extends Migration
 		// Step 2
 		// Happy copying :(
 		DB::beginTransaction();
+		$this->printInfo('Start copying ...');
 		$this->upgradeCopy();
 		$this->copyStructurallyUnchangedTables();
+		$this->printInfo('Finished copying');
+		$this->printInfo('Upgrading configuration');
 		$this->upgradeConfig();
 		DB::commit();
 
 		// Step 3
+		$this->printInfo('Dropping old tables');
 		$this->dropTemporaryTablesUp();
 	}
 
@@ -216,7 +303,9 @@ class RefactorModels extends Migration
 		// Step 1
 		// Create tables in correct order so that foreign keys can
 		// be created immediately.
+		$this->printInfo('Renaming existing tables');
 		$this->renameTables();
+		$this->printInfo('Creating new tables');
 		$this->createUsersTableDown();
 		$this->createAlbumTableDown();
 		$this->createUserAlbumTableDown();
@@ -230,12 +319,16 @@ class RefactorModels extends Migration
 		// Step 2
 		// Happy copying :(
 		DB::beginTransaction();
+		$this->printInfo('Start copying ...');
 		$this->downgradeCopy();
 		$this->copyStructurallyUnchangedTables();
+		$this->printInfo('Finished copying');
+		$this->printInfo('Downgrading configuration');
 		$this->downgradeConfig();
 		DB::commit();
 
 		// Step 3
+		$this->printInfo('Dropping old tables');
 		$this->dropTemporaryTablesDown();
 	}
 
@@ -916,8 +1009,11 @@ class RefactorModels extends Migration
 	 */
 	private function upgradeCopy(): void
 	{
+		$pgBar = $this->getProgressBar('users');
 		$users = DB::table('users_tmp')->get();
+		$pgBar->setMaxSteps($users->count());
 		foreach ($users as $user) {
+			$pgBar->advance();
 			DB::table('users')->insert([
 				'id' => $user->id,
 				'created_at' => $user->created_at,
@@ -934,7 +1030,9 @@ class RefactorModels extends Migration
 		// Ordering by `_lft` is important, because we must copy parent
 		// albums first.
 		// Otherwise, foreign key constraint to `parent_id` may fail.
+		$pgBar = $this->getProgressBar('albums');
 		$albums = DB::table('albums_tmp')->orderBy('_lft')->lazyById();
+		$pgBar->setMaxSteps($albums->count());
 		$mapSorting = function (?string $sortingCol): ?string {
 			if (empty($sortingCol)) {
 				return null;
@@ -949,13 +1047,14 @@ class RefactorModels extends Migration
 			}
 		};
 		foreach ($albums as $album) {
+			$pgBar->advance();
 			$newAlbumID = $this->generateKey();
 			$this->albumIDCache[strval($album->id)] = $newAlbumID;
 
 			DB::table('base_albums')->insert([
 				'id' => $newAlbumID,
 				'legacy_id' => $album->id,
-				'created_at' => $album->created_at,
+				'created_at' => $this->calculateBestCreatedAt($album->id, $album->created_at),
 				'updated_at' => $album->updated_at,
 				'title' => $album->title,
 				'description' => $album->description,
@@ -995,8 +1094,11 @@ class RefactorModels extends Migration
 
 		RefactorAlbumModel_AlbumModel::query()->fixTree();
 
+		$pgBar = $this->getProgressBar('user_base_album');
 		$userAlbumRelations = DB::table('user_album')->lazyById();
+		$pgBar->setMaxSteps($userAlbumRelations->count());
 		foreach ($userAlbumRelations as $userAlbumRelation) {
+			$pgBar->advance();
 			DB::table('user_base_album')->insert([
 				'id' => $userAlbumRelation->id,
 				'user_id' => $userAlbumRelation->user_id,
@@ -1004,15 +1106,18 @@ class RefactorModels extends Migration
 			]);
 		}
 
+		$pgBar = $this->getProgressBar('photos');
 		$photos = DB::table('photos_tmp')->lazyById();
+		$pgBar->setMaxSteps($photos->count());
 		foreach ($photos as $photo) {
+			$pgBar->advance();
 			$newPhotoID = $this->generateKey();
 			$this->photoIDCache[strval($photo->id)] = $newPhotoID;
 
 			DB::table('photos')->insert([
 				'id' => $newPhotoID,
 				'legacy_id' => $photo->id,
-				'created_at' => $photo->created_at,
+				'created_at' => $this->calculateBestCreatedAt($photo->id, $photo->created_at),
 				'updated_at' => $photo->updated_at,
 				'owner_id' => $photo->owner_id,
 				'album_id' => $photo->album_id ? $this->albumIDCache[strval($photo->album_id)] : null,
@@ -1057,11 +1162,14 @@ class RefactorModels extends Migration
 		}
 
 		// Restore explicit covers of albums
+		$pgBar = $this->getProgressBar('albums (covered)');
 		$coveredAlbums = DB::table('albums_tmp')
 			->whereNotNull('cover_id')
 			->where('smart', '=', false)
 			->lazyById();
+		$pgBar->setMaxSteps($coveredAlbums->count());
 		foreach ($coveredAlbums as $coveredAlbum) {
+			$pgBar->advance();
 			DB::table('albums')
 				->where('id', '=', $this->albumIDCache[strval($coveredAlbum->id)])
 				->update(['cover_id' => $this->photoIDCache[strval($coveredAlbum->cover_id)]]);
@@ -1073,8 +1181,11 @@ class RefactorModels extends Migration
 	 */
 	private function downgradeCopy(): void
 	{
+		$pgBar = $this->getProgressBar('users');
 		$users = DB::table('users_tmp')->get();
+		$pgBar->setMaxSteps($users->count());
 		foreach ($users as $user) {
+			$pgBar->advance();
 			DB::table('users')->insert([
 				'id' => $user->id,
 				'created_at' => $user->created_at,
@@ -1088,7 +1199,9 @@ class RefactorModels extends Migration
 			]);
 		}
 
+		$pgBar = $this->getProgressBar('base_albums');
 		$baseAlbums = DB::table('base_albums')->lazyById();
+		$pgBar->setMaxSteps($baseAlbums->count());
 		$mapSorting = function (?string $sortingCol): ?string {
 			if (empty($sortingCol)) {
 				return null;
@@ -1103,6 +1216,7 @@ class RefactorModels extends Migration
 			}
 		};
 		foreach ($baseAlbums as $oldBaseAlbum) {
+			$pgBar->advance();
 			$legacyAlbumID = intval($oldBaseAlbum->legacy_id);
 			$this->albumIDCache[$oldBaseAlbum->id] = $legacyAlbumID;
 
@@ -1131,8 +1245,11 @@ class RefactorModels extends Migration
 		// Also, don't copy `cover_id` yet, because the photos have not been
 		// copied yet.
 		// Explicit `cover_id` needs to be set belated.
+		$pgBar = $this->getProgressBar('albums');
 		$albums = DB::table('albums_tmp')->orderBy('_lft')->lazyById();
+		$pgBar->setMaxSteps($albums->count());
 		foreach ($albums as $album) {
+			$pgBar->advance();
 			DB::table('albums')
 				->where('id', '=', $this->albumIDCache[$album->id])
 				->update([
@@ -1145,8 +1262,11 @@ class RefactorModels extends Migration
 				]);
 		}
 
+		$pgBar = $this->getProgressBar('tag_albums');
 		$tagAlbums = DB::table('tag_albums')->lazyById();
+		$pgBar->setMaxSteps($tagAlbums->count());
 		foreach ($tagAlbums as $tagAlbum) {
+			$pgBar->advance();
 			DB::table('albums')
 				->where('id', '=', $this->albumIDCache[$tagAlbum->id])
 				->update([
@@ -1157,8 +1277,11 @@ class RefactorModels extends Migration
 
 		RefactorAlbumModel_AlbumModel::query()->fixTree();
 
+		$pgBar = $this->getProgressBar('user_album');
 		$userBaseAlbumRelations = DB::table('user_base_album')->lazyById();
+		$pgBar->setMaxSteps($userBaseAlbumRelations->count());
 		foreach ($userBaseAlbumRelations as $userBaseAlbumRelation) {
+			$pgBar->advance();
 			DB::table('user_album')->insert([
 				'id' => $userBaseAlbumRelation->id,
 				'user_id' => $userBaseAlbumRelation->user_id,
@@ -1166,8 +1289,11 @@ class RefactorModels extends Migration
 			]);
 		}
 
+		$pgBar = $this->getProgressBar('photos');
 		$photos = DB::table('photos_tmp')->lazyById();
+		$pgBar->setMaxSteps($photos->count());
 		foreach ($photos as $photo) {
+			$pgBar->advance();
 			$legacyPhotoID = intval($photo->legacy_id);
 			$this->photoIDCache[$photo->id] = $legacyPhotoID;
 			$photoAttributes = [
@@ -1293,10 +1419,13 @@ class RefactorModels extends Migration
 		}
 
 		// Restore explicit covers of albums
+		$pgBar = $this->getProgressBar('albums (covered)');
 		$coveredAlbums = DB::table('albums_tmp')
 			->whereNotNull('cover_id')
 			->lazyById();
+		$pgBar->setMaxSteps($coveredAlbums->count());
 		foreach ($coveredAlbums as $coveredAlbum) {
+			$pgBar->advance();
 			DB::table('albums')
 				->where('id', '=', $this->albumIDCache[$coveredAlbum->id])
 				->update(['cover_id' => $this->photoIDCache[$coveredAlbum->cover_id]]);
@@ -1311,8 +1440,11 @@ class RefactorModels extends Migration
 	 */
 	private function copyStructurallyUnchangedTables(): void
 	{
+		$pgBar = $this->getProgressBar('web_authn_credentials');
 		$credentials = DB::table('web_authn_credentials_tmp')->get();
+		$pgBar->setMaxSteps($credentials->count());
 		foreach ($credentials as $credential) {
+			$pgBar->advance();
 			DB::table('web_authn_credentials')->insert([
 				'id' => $credential->id,
 				'created_at' => $credential->created_at,
@@ -1331,8 +1463,11 @@ class RefactorModels extends Migration
 			]);
 		}
 
+		$pgBar = $this->getProgressBar('pages');
 		$pages = DB::table('pages_tmp')->get();
+		$pgBar->setMaxSteps($pages->count());
 		foreach ($pages as $page) {
+			$pgBar->advance();
 			DB::table('pages')->insert([
 				'id' => $page->id,
 				'created_at' => $page->created_at,
@@ -1346,8 +1481,11 @@ class RefactorModels extends Migration
 			]);
 		}
 
+		$pgBar = $this->getProgressBar('page_contents');
 		$pageContents = DB::table('page_contents_tmp')->get();
+		$pgBar->setMaxSteps($pageContents->count());
 		foreach ($pageContents as $pageContent) {
+			$pgBar->advance();
 			DB::table('page_contents')->insert([
 				'id' => $pageContent->id,
 				'created_at' => $pageContent->created_at,
@@ -1360,8 +1498,11 @@ class RefactorModels extends Migration
 			]);
 		}
 
+		$pgBar = $this->getProgressBar('logs');
 		$logs = DB::table('logs_tmp')->get();
+		$pgBar->setMaxSteps($logs->count());
 		foreach ($logs as $log) {
+			$pgBar->advance();
 			DB::table('logs')->insert([
 				'id' => $log->id,
 				'created_at' => $log->created_at,
@@ -1647,6 +1788,95 @@ class RefactorModels extends Migration
 		// The other characters (a-z, A-Z, 0-9) are legal within an URL.
 		// As the number of bytes is divisible by 3, no trailing `=` occurs.
 		return strtr(base64_encode(random_bytes(3 * self::RANDOM_ID_LENGTH / 4)), '+/', '-_');
+	}
+
+	/**
+	 * Converts a legacy ID to a Carbon instance.
+	 *
+	 * The method handles 32bit and 64bit integers with second and
+	 * 1/10 millisecond resolution.
+	 *
+	 * @param int $id
+	 *
+	 * @return Carbon
+	 *
+	 * @throws OutOfBoundsException thrown, if `$id` is out of reasonable bounds
+	 */
+	private function convertLegacyIdToTime(int $id): Carbon
+	{
+		$is32BitPlatform = PHP_INT_MAX === self::MAX_SIGNED_32BIT_INT;
+
+		if (
+			self::BIRTH_OF_LARAVEL <= $id &&
+			// this also catches the case of 64bit platforms which only
+			// uses 32bit integers
+			($is32BitPlatform || $id <= self::MAX_SIGNED_32BIT_INT)
+		) {
+			return Carbon::createFromTimestampUTC($id);
+		} elseif (
+			!$is32BitPlatform && self::BIRTH_OF_LARAVEL * 10000 <= $id
+		) {
+			return Carbon::createFromTimestampUTC(floatval($id) / 10000.0);
+		} else {
+			throw new \OutOfBoundsException('ID-based creation time is out of reasonable bounds');
+		}
+	}
+
+	/**
+	 * Calculates the best creation time of a DB record.
+	 *
+	 * The method takes the (legacy) ID and the alleged creation date
+	 * (as an SQL string) and returns an SQL string of the "best" creation
+	 * time.
+	 * The best creation time is either the converted, legacy ID as it
+	 * provides a higher accuracy, or the original creation time, if the
+	 * time based on the ID and the original creation time differ by more
+	 * than 30 seconds.
+	 * The latter is a safety measure in case someone has internally tweaked
+	 * the IDs or the creation date, or if something is completely wrong
+	 * with the timezone settings.
+	 *
+	 * @param int    $legacyID     the legacy ID of the record
+	 * @param string $sqlCreatedAt the original creation time of the record (as an SQL string)
+	 *
+	 * @return string the improved creation time of the record (as an SQL string)
+	 */
+	private function calculateBestCreatedAt(int $legacyID, string $sqlCreatedAt): string
+	{
+		$result = $sqlCreatedAt;
+
+		try {
+			try {
+				$originalCreatedAt = Carbon::createFromFormat(
+					'Y-m-d H:i:s.u', $sqlCreatedAt, 'UTC'
+				);
+			} catch (InvalidFormatException $e) {
+				$originalCreatedAt = Carbon::createFromFormat(
+					'Y-m-d H:i:s', $sqlCreatedAt, 'UTC'
+				);
+			}
+
+			$idBasesCreatedAt = $this->convertLegacyIdToTime($legacyID);
+			$diff = $originalCreatedAt->diff($idBasesCreatedAt, true);
+
+			if ($diff->y === 0 || $diff->m === 0 || $diff->d === 0 || $diff->h === 0 || $diff->i === 0 || $diff->s < 30) {
+				$result = $idBasesCreatedAt->format('Y-m-d H:i:s.u');
+			} else {
+				throw new \RangeException('ID-based creation time and original creation time differ more than 30s');
+			}
+		} catch (\RangeException $e) {
+			$this->printWarning(
+				'Model ID ' . $legacyID . ' - ' .
+				class_basename($e) . ' - ' . $e->getMessage()
+			);
+		} catch (\Throwable $e) {
+			$this->printError(
+				'Model ID ' . $legacyID . ' - ' .
+				class_basename($e) . ' - ' . $e->getMessage()
+			);
+		}
+
+		return $result;
 	}
 }
 
