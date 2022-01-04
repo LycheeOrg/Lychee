@@ -20,8 +20,8 @@ class Tree
 	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
-		$this->sortingCol = Configs::get_value('sorting_Albums_col');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
+		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
+		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
 	}
 
 	public function get(): array

@@ -5,6 +5,7 @@ namespace App\Models\Extensions;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\HasRandomID;
 use App\Models\BaseAlbumImpl;
+use App\Models\Configs;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -92,5 +93,24 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	public function toArray(): array
 	{
 		return array_merge(parent::toArray(), $this->base_class->toArray());
+	}
+
+	public function getEffectiveSortingCol(): string
+	{
+		$sortingCol = $this->sorting_col;
+
+		return empty($sortingCol) ?
+			Configs::get_value('sorting_Albums_col', 'created_at') :
+			$sortingCol;
+	}
+
+	public function getEffectiveSortingOrder(): string
+	{
+		$sortingCol = $this->sorting_col;
+		$sortingOrder = $this->sorting_order;
+
+		return empty($sortingCol) || empty($sortingOrder) ?
+			Configs::get_value('sorting_Albums_order', 'ASC') :
+			$sortingOrder;
 	}
 }

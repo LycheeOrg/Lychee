@@ -96,7 +96,10 @@ abstract class HasManyPhotos extends Relation
 		$album = $this->parent;
 
 		return (new SortingDecorator($this->query))
-			->orderBy('photos.' . $album->sorting_col, $album->sorting_order)
+			->orderBy(
+				'photos.' . $album->getEffectiveSortingCol(),
+				$album->getEffectiveSortingOrder()
+			)
 			->get();
 	}
 }

@@ -76,9 +76,9 @@ class HasManyPhotosByTag extends HasManyPhotos
 		$album = $albums[0];
 
 		$photos = $photos->sortBy(
-			$album->sorting_col,
+			$album->getEffectiveSortingCol(),
 			SORT_NATURAL | SORT_FLAG_CASE,
-			$album->sorting_order === 'DESC'
+			$album->getEffectiveSortingOrder() === 'DESC'
 		)->values();
 		$album->setRelation($relation, $photos);
 
