@@ -698,6 +698,9 @@ album.getParentID = function () {
 	return album.json.parent_id;
 };
 
+/**
+ * @return {?string}
+ */
 album.getID = function () {
 	var id = null;
 
@@ -9084,10 +9087,13 @@ upload.start = {
 
 				albums.refresh();
 
-				if (album.getID() === null) lychee.goto();else album.load(albumID);
+				if (albumID === null) lychee.goto();else album.load(albumID);
 			};
 
 			formData.append("function", "Photo::add");
+			// For form data, a `null` value is indicated by the empty
+			// string `""`. Form data falsely converts the value `null` to the
+			// literal string `"null"`.
 			formData.append("albumID", albumID ? albumID : "");
 			formData.append(0, files[file_num]);
 
@@ -9099,8 +9105,8 @@ upload.start = {
 				var data = null;
 				var errorText = "";
 
-				var isModelID = function isModelID(albumID) {
-					return typeof albumID === "string" && albumID.length === 24;
+				var isModelID = function isModelID(photoID) {
+					return typeof photoID === "string" && photoID.length === 24;
 				};
 
 				data = xhr.responseText;
@@ -9216,7 +9222,6 @@ upload.start = {
 		};
 
 		if (files.length <= 0) return false;
-		if (albumID === false || visible.albums() === true) albumID = null;
 
 		window.onbeforeunload = function () {
 			return lychee.locale["UPLOAD_IN_PROGRESS"];
@@ -9237,8 +9242,6 @@ upload.start = {
 		var albumID = album.getID();
 
 		_url = typeof _url === "string" ? _url : "";
-
-		if (albumID === false) albumID = null;
 
 		var action = function action(data) {
 			var files = [];
@@ -9279,7 +9282,7 @@ upload.start = {
 
 						albums.refresh();
 
-						if (album.getID() === null) lychee.goto();else album.load(albumID);
+						if (albumID === null) lychee.goto();else album.load(albumID);
 					});
 				});
 			} else basicModal.error("link");
@@ -9302,7 +9305,6 @@ upload.start = {
 
 	server: function server() {
 		var albumID = album.getID();
-		if (albumID === false) albumID = null;
 
 		var action = function action(data) {
 			if (!data.path.trim()) {
@@ -9434,7 +9436,7 @@ upload.start = {
 
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"], encounteredProblems ? lychee.locale["UPLOAD_COMPLETE_FAILED"] : null);
 
-					if (album.getID() === null) lychee.goto();else album.load(albumID);
+					if (albumID === null) lychee.goto();else album.load(albumID);
 
 					if (encounteredProblems) showCloseButton();else basicModal.close();
 				}, function (event) {
@@ -9478,7 +9480,7 @@ upload.start = {
 						albums.refresh();
 						upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 
-						if (album.getID() === null) lychee.goto();else album.load(albumID);
+						if (albumID === null) lychee.goto();else album.load(albumID);
 
 						showCloseButton();
 
@@ -9538,7 +9540,6 @@ upload.start = {
 
 	dropbox: function dropbox() {
 		var albumID = album.getID();
-		if (albumID === false) albumID = 0;
 
 		var success = function success(files) {
 			var links = "";
@@ -9583,7 +9584,7 @@ upload.start = {
 
 					albums.refresh();
 
-					if (album.getID() === null) lychee.goto();else album.load(albumID);
+					if (albumID === null) lychee.goto();else album.load(albumID);
 				});
 			});
 		};
