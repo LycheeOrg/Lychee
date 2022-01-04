@@ -39,11 +39,6 @@ class UploadCheck
 			return response('', 401);
 		}
 
-		// Our upload requests are not JSON-encoded so we may need to do some fixing-up...
-		if ($request->has('albumID') && $request['albumID'] === 'null') {
-			$request['albumID'] = null;
-		}
-
 		// is admin
 		if (AccessControl::is_admin()) {
 			return $next($request);
