@@ -4320,8 +4320,14 @@ lychee.aboutDialog = function () {
 	if (lychee.checkForUpdates === "1") lychee.getUpdate();
 };
 
+/**
+ * @param {boolean} isFirstInitialization must be set to `false` if called
+ *                                        for re-initialization to prevent
+ *                                        multiple registrations of global
+ *                                        event handlers
+ */
 lychee.init = function () {
-	var exitview = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+	var isFirstInitialization = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 	lychee.adjustContentHeight();
 
@@ -4498,8 +4504,11 @@ lychee.init = function () {
 			// should not happen.
 		}
 
-		if (exitview) {
-			$(window).bind("popstate", lychee.load);
+		if (isFirstInitialization) {
+			$(window).on("popstate", function () {
+				var autoplay = history.state && history.state.hasOwnProperty("autoplay") ? history.state.autoplay : true;
+				lychee.load(autoplay);
+			});
 			lychee.load();
 		}
 	});
@@ -4574,8 +4583,7 @@ lychee.goto = function () {
 	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
 	url = "#" + (url !== null ? url : "");
-
-	history.pushState(null, null, url);
+	history.pushState({ autoplay: autoplay }, null, url);
 	lychee.load(autoplay);
 };
 
@@ -8048,14 +8056,12 @@ settings.changeCSS = function () {
 };
 
 settings.save = function (params) {
-	var exitview = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
 	api.post("Settings::saveAll", params, function (data) {
 		if (data === true) {
 			loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_UPDATE"]);
 			view.full_settings.init();
 			// re-read settings
-			lychee.init(exitview);
+			lychee.init(false);
 		} else lychee.error("Check the Logs", params, data);
 	});
 };
@@ -8074,7 +8080,7 @@ settings.save_enter = function (e) {
 		cancel.title = lychee.locale["CANCEL"];
 
 		action.fn = function () {
-			settings.save(settings.getValues("#fullSettings"), false);
+			settings.save(settings.getValues("#fullSettings"));
 			basicModal.close();
 		};
 
