@@ -12,25 +12,29 @@ use Illuminate\Http\Request;
  */
 class LegacyController extends Controller
 {
-	public function translateLegacyAlbumID(Request $request): array
+	public function translateLegacyModelIDs(Request $request): array
 	{
-		$legacyAlbumID = ($request->validate(['albumID' => 'required|integer']))['albumID'];
+		$request->validate([
+			'albumID' => 'sometimes|required_without:photoID|integer',
+			'photoID' => 'sometimes|required_without:albumID|integer',
+		]);
+		/** @var int $legacyAlbumID */
+		$legacyAlbumID = $request->get('albumID', 0);
+		/** @var int $legacyPhotoID */
+		$legacyPhotoID = $request->get('photoID', 0);
 
-		return [
-			'albumID' => Legacy::isLegacyModelID($legacyAlbumID) ?
+		$return = [];
+		if ($legacyAlbumID !== 0) {
+			$return['albumID'] = Legacy::isLegacyModelID($legacyAlbumID) ?
 				Legacy::translateLegacyAlbumID($legacyAlbumID, $request) :
-				null,
-		];
-	}
-
-	public function translateLegacyPhotoID(Request $request): array
-	{
-		$legacyPhotoID = ($request->validate(['photoID' => 'required|integer']))['photoID'];
-
-		return [
-			'photoID' => Legacy::isLegacyModelID($legacyPhotoID) ?
+				null;
+		}
+		if ($legacyPhotoID !== 0) {
+			$return['photoID'] = Legacy::isLegacyModelID($legacyPhotoID) ?
 				Legacy::translateLegacyPhotoID($legacyPhotoID, $request) :
-				null,
-		];
+				null;
+		}
+
+		return $return;
 	}
 }

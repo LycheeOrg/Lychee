@@ -4644,27 +4644,15 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 	};
 
 	// We have to deal with three cases:
-	//  1. only the album ID needs to be translated
-	//  2. the album and photo ID need to be translated (this requires two cascaded AJAX calls)
+	//  1. the album and photo ID need to be translated
+	//  2. only the album ID needs to be translated
 	//  3. only the photo ID needs to be translated
-	if (isLegacyID(albumID)) {
-		api.post("Legacy::translateLegacyAlbumID", { albumID: albumID }, function (data1) {
-			var newAlbumID = data1.albumID;
-			if (isLegacyID(photoID)) {
-				api.post("Legacy::translateLegacyPhotoID", { photoID: photoID }, function (data2) {
-					var newPhotoID = data2.photoID;
-					reloadWithNewIDs(newAlbumID, newPhotoID);
-				});
-			} else {
-				reloadWithNewIDs(newAlbumID, photoID);
-			}
-		});
-	} else {
-		api.post("Legacy::translateLegacyPhotoID", { photoID: photoID }, function (data3) {
-			var newPhotoID = data3.photoID;
-			reloadWithNewIDs(albumID, newPhotoID);
-		});
-	}
+	var params = {};
+	if (isLegacyID(albumID)) params.albumID = albumID;
+	if (isLegacyID(photoID)) params.photoID = photoID;
+	api.post("Legacy::translateLegacyModelIDs", params, function (data) {
+		reloadWithNewIDs(data.hasOwnProperty("albumID") ? data.albumID : albumID, data.hasOwnProperty("photoID") ? data.photoID : photoID);
+	});
 
 	return true;
 };

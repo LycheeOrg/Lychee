@@ -81,8 +81,7 @@ Route::get('/api/Album::getArchive', [AlbumController::class, 'getArchive'])->mi
 
 Route::post('/api/Frame::getSettings', [FrameController::class, 'getSettings']);
 
-Route::post('/api/Legacy::translateLegacyAlbumID', [LegacyController::class, 'translateLegacyAlbumID']);
-Route::post('/api/Legacy::translateLegacyPhotoID', [LegacyController::class, 'translateLegacyPhotoID']);
+Route::post('/api/Legacy::translateLegacyModelIDs', [LegacyController::class, 'translateLegacyModelIDs']);
 
 Route::post('/api/Photo::get', [PhotoController::class, 'get'])->middleware('read');
 Route::post('/api/Photo::getRandom', [PhotoController::class, 'getRandom']);
