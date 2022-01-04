@@ -26,7 +26,7 @@ class ImportUrlRequest extends FormRequest
 	{
 		return [
 			'url' => 'string|required',
-			'albumID' => ['required', new AlbumIDRule()],
+			'albumID' => ['present', new AlbumIDRule()],
 		];
 	}
 }
