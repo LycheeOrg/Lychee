@@ -4,6 +4,7 @@ namespace App\Relations;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Models\Album;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\Photo;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -88,9 +89,11 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		if (!$this->albumAuthorisationProvider->isAccessible($album)) {
 			$album->setRelation($relation, $this->related->newCollection());
 		} else {
+			/** @var string $col */
+			$col = $album->getEffectiveSortingCol();
 			$photos = $photos->sortBy(
-				$album->getEffectiveSortingCol(),
-				SORT_NATURAL | SORT_FLAG_CASE,
+				$col,
+				in_array($col, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
 				$album->getEffectiveSortingOrder() === 'DESC'
 			)->values();
 			$album->setRelation($relation, $photos);

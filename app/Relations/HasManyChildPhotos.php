@@ -81,10 +81,12 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
+				/** @var string $col */
+				$col = $model->getEffectiveSortingCol();
 				$childrenOfModel = $childrenOfModel
 					->sortBy(
-						$model->getEffectiveSortingCol(),
-						SORT_NATURAL | SORT_FLAG_CASE,
+						$col,
+						in_array($col, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
 						$model->getEffectiveSortingOrder() === 'DESC'
 					)
 					->values();
