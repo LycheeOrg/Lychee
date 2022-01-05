@@ -167,6 +167,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $hidden = [
 		HasRandomID::LEGACY_ID_NAME,
+		'owner_id',
 		'owner',
 		'password',
 	];
