@@ -86,8 +86,8 @@ class AlbumFactory
 	 */
 	public function findWhereIDsIn(array $albumIDs): Collection
 	{
-		$smartAlbumIDs = array_intersect($albumIDs, self::BUILTIN_SMARTS);
-		$modelAlbumIDs = array_diff($albumIDs, self::BUILTIN_SMARTS);
+		$smartAlbumIDs = array_intersect($albumIDs, array_keys(self::BUILTIN_SMARTS));
+		$modelAlbumIDs = array_diff($albumIDs, array_keys(self::BUILTIN_SMARTS));
 
 		$smartAlbums = [];
 		foreach ($smartAlbumIDs as $smartID) {
