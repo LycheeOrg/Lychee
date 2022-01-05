@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo;
 
+use App\Models\Album;
 use App\Models\Photo;
 use Illuminate\Support\Collection;
 
@@ -18,6 +19,10 @@ class Duplicate
 	 */
 	public function do(array $photoIds, ?string $albumID): Collection
 	{
+		$album = null;
+		if ($albumID) {
+			$album = Album::query()->findOrFail($albumID);
+		}
 		$duplicates = new Collection();
 		$photos = Photo::query()
 			->with(['size_variants'])
@@ -27,6 +32,9 @@ class Duplicate
 		foreach ($photos as $photo) {
 			$duplicate = $photo->replicate();
 			$duplicate->album_id = $albumID;
+			if ($album) {
+				$duplicate->owner_id = $album->owner_id;
+			}
 			$duplicate->save();
 			$duplicates->add($duplicate);
 		}
