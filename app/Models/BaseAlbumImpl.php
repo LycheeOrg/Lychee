@@ -267,6 +267,16 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		$result = parent::toArray();
 		if (AccessControl::is_logged_in()) {
 			$result['owner_name'] = $this->owner->name();
+			if (empty($this->attributes['sorting_col']) || empty($this->attributes['sorting_order'])) {
+				$result['sorting_col'] = '';
+				$result['sorting_order'] = '';
+			} else {
+				$result['sorting_col'] = $this->attributes['sorting_col'];
+				$result['sorting_order'] = $this->attributes['sorting_order'];
+			}
+		} else {
+			$result['sorting_col'] = '';
+			$result['sorting_order'] = '';
 		}
 
 		return $result;
