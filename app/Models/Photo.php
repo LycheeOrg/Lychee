@@ -107,6 +107,7 @@ class Photo extends Model implements HasRandomID
 		HasRandomID::LEGACY_ID_NAME,
 		'album',  // do not serialize relation in order to avoid infinite loops
 		'owner',  // do not serialize relation
+		'owner_id',
 		'live_photo_short_path', // serialize live_photo_url instead
 	];
 
