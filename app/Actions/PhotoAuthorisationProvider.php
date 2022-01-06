@@ -187,9 +187,23 @@ class PhotoAuthorisationProvider
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
 
 		try {
+			// there must be no blocked album between the origin and the photo
 			$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
 				$this->albumAuthorisationProvider->appendBlockedAlbumsCondition($q, $originLeft, $originRight);
 			});
+
+			// Special care needs to be taken for unsorted photo, i.e. photos on
+			// the root level:
+			// The condition for "no blocked albums along the path" fails for the
+			// root album due to two reasons:
+			//   a) the path of albums between to the root album is empty; hence,
+			//      there are never any blocked albums in between
+			//   b) while all users (even unauthenticated users) may access the
+			//      root album, they must only see their own photos or public
+			//      photos (this is different to any other album: if users are
+			//      allowed to access an album, they may also see its content)
+			$query->whereNotNull('photos.album_id');
+
 			if ($maySearchPublic) {
 				$query->orWhere('photos.is_public', '=', true);
 			}
@@ -227,7 +241,7 @@ class PhotoAuthorisationProvider
 			return true;
 		}
 		if (!AccessControl::can_upload()) {
-			// Note: This tests basically prevents that an owners of photos
+			// Note: This tests basically prevents that owners of photos
 			// may rotate their own photos, if they have lost the right to
 			// upload photos afterwards.
 			// If we want owners of photos to still be able to rotate their
@@ -239,12 +253,14 @@ class PhotoAuthorisationProvider
 		$userID = AccessControl::id();
 		// Since we count the result we need to ensure that there are no
 		// duplicates.
-		$photoIDs = array_unique($photoIDs);
+		// Also remove the `null` photo. It gets a pass.
+		// This case may happen, if a user sets `null` as a cover.
+		$photoIDs = array_diff(array_unique($photoIDs), [null]);
 		if (count($photoIDs) > 0) {
 			return Photo::query()
-					->whereIn('photos.id', $photoIDs)
-					->where('photos.owner_id', '=', $userID)
-					->count() === count($photoIDs);
+				->whereIn('photos.id', $photoIDs)
+				->where('photos.owner_id', '=', $userID)
+				->count() === count($photoIDs);
 		}
 
 		return true;

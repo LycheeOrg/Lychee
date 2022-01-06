@@ -41,7 +41,7 @@ use InvalidArgumentException;
 trait UTCBasedTimes
 {
 	private static string $DB_TIMEZONE_NAME = 'UTC';
-	private static string $DB_DATETIME_FORMAT = 'Y-m-d H:i:s';
+	private static string $DB_DATETIME_FORMAT = 'Y-m-d H:i:s.u';
 	private static string $STANDARD_DATE_PATTERN = '/^(\d{4})-(\d{1,2})-(\d{1,2})$/';
 
 	/**
@@ -221,7 +221,7 @@ trait UTCBasedTimes
 	 * Prepares a date for array/JSON serialization.
 	 *
 	 * In contrast to the original implementation, this one serializes the
-	 * timezone "as is".
+	 * timezone "as is" and includes fractions of seconds.
 	 *
 	 * @param \DateTimeInterface $date
 	 *
@@ -229,6 +229,6 @@ trait UTCBasedTimes
 	 */
 	protected function serializeDate(\DateTimeInterface $date): string
 	{
-		return $date->format(\DateTimeInterface::ATOM);
+		return $date->format('Y-m-d\TH:i:s.uP');
 	}
 }

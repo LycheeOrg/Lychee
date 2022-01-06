@@ -18,7 +18,7 @@ d.init=function(){var a=d(u),b;for(b in a)"_"!==b.charAt(0)&&(d[b]=function(b){r
 
 (function(a){var c={},d=a.prototype.stopCallback;a.prototype.stopCallback=function(e,b,a,f){return this.paused?!0:c[a]||c[f]?!1:d.call(this,e,b,a)};a.prototype.bindGlobal=function(a,b,d){this.bind(a,b,d);if(a instanceof Array)for(b=0;b<a.length;b++)c[a[b]]=!0;else c[a]=!0};a.init()})(Mousetrap);
 
-!function(t){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var n;n="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,n.basicModal=t()}}(function(){return function(){function t(n,e,l){function o(c,s){if(!e[c]){if(!n[c]){var i="function"==typeof require&&require;if(!s&&i)return i(c,!0);if(a)return a(c,!0);var u=new Error("Cannot find module '"+c+"'");throw u.code="MODULE_NOT_FOUND",u}var r=e[c]={exports:{}};n[c][0].call(r.exports,function(t){return o(n[c][1][t]||t)},r,r.exports,t,n,e,l)}return e[c].exports}for(var a="function"==typeof require&&require,c=0;c<l.length;c++)o(l[c]);return o}return t}()({1:[function(t,n,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var l=null,o=(e.THEME={small:"basicModal__small",xclose:"basicModal__xclose"},e.dom=function(){var t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";return!0===(arguments.length>1&&void 0!==arguments[1]&&arguments[1])?document.querySelectorAll(".basicModal "+t):document.querySelector(".basicModal "+t)}),a=function(t,n){return null!=t&&(t.constructor===Object?Array.prototype.forEach.call(Object.keys(t),function(e){return n(t[e],e,t)}):Array.prototype.forEach.call(t,function(e,l){return n(e,l,t)}))},c=function(t){return null==t||0===Object.keys(t).length?(console.error("Missing or empty modal configuration object"),!1):(null==t.body&&(t.body=""),null==t.class&&(t.class=""),!1!==t.closable&&(t.closable=!0),null==t.buttons?(console.error("basicModal requires at least one button"),!1):null!=t.buttons.action&&(null==t.buttons.action.class&&(t.buttons.action.class=""),null==t.buttons.action.title&&(t.buttons.action.title="OK"),null==t.buttons.action.fn)?(console.error("Missing fn for action-button"),!1):null==t.buttons.cancel||(null==t.buttons.cancel.class&&(t.buttons.cancel.class=""),null==t.buttons.cancel.title&&(t.buttons.cancel.title="Cancel"),null!=t.buttons.cancel.fn)||(console.error("Missing fn for cancel-button"),!1))},s=function(t){var n="";if(n+="\n\t        <div class='basicModalContainer basicModalContainer--fadeIn' data-closable='"+t.closable+"'>\n\t            <div class='basicModal basicModal--fadeIn "+t.class+"' role=\"dialog\">\n\t                <div class='basicModal__content'>\n\t                    "+t.body+"\n\t                </div>\n\t                <div class='basicModal__buttons'>\n\t        ",null!=t.buttons.cancel){var e="";null!=t.buttons.cancel.attributes&&t.buttons.cancel.attributes.forEach(function(t,n){e+=t[0]+"='"+t[1]+"' "}),-1===t.buttons.cancel.class.indexOf("basicModal__xclose")?n+="<a id='basicModal__cancel' class='basicModal__button "+t.buttons.cancel.class+"' "+e+" >"+t.buttons.cancel.title+"</a>":n+="<div id='basicModal__cancel' class='basicModal__button "+t.buttons.cancel.class+"' aria-label='close' "+e+' ><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M405 136.798l-29.798-29.798-119.202 119.202-119.202-119.202-29.798 29.798 119.202 119.202-119.202 119.202 29.798 29.798 119.202-119.202 119.202 119.202 29.798-29.798-119.202-119.202z"/></svg></div>'}if(null!=t.buttons.action){var l="";null!=t.buttons.action.attributes&&t.buttons.action.attributes.forEach(function(t,n){l+=t[0]+"='"+t[1]+"' "}),n+="<a id='basicModal__action' class='basicModal__button "+t.buttons.action.class+"' "+l+">"+t.buttons.action.title+"</a>"}return n+="\n\t                </div>\n\t            </div>\n\t        </div>\n\t        "},i=e.getValues=function(){var t={},n=o("input[name]",!0),e=o("select[name]",!0);return a(n,function(n){var e=n.getAttribute("name"),l=n.value;t[e]=l}),a(e,function(n){var e=n.getAttribute("name"),l=n.options[n.selectedIndex].value;t[e]=l}),0===Object.keys(t).length?null:t},u=function(t){return null!=t.buttons.cancel&&(o("#basicModal__cancel").onclick=function(){if(!0===this.classList.contains("basicModal__button--active"))return!1;this.classList.add("basicModal__button--active"),t.buttons.cancel.fn()}),null!=t.buttons.action&&(o("#basicModal__action").onclick=function(){if(!0===this.classList.contains("basicModal__button--active"))return!1;this.classList.add("basicModal__button--active"),t.buttons.action.fn(i())}),a(o("input",!0),function(t){t.oninput=t.onblur=function(){this.classList.remove("error")}}),a(o("select",!0),function(t){t.onchange=t.onblur=function(){this.classList.remove("error")}}),!0},r=(e.show=function t(n){if(!1===c(n))return!1;if(null!=o())return d(!0),setTimeout(function(){return t(n)},301),!1;l=document.activeElement;var e=s(n);document.body.insertAdjacentHTML("beforeend",e),u(n);var a=o("input");null!=a&&a.select();var i=o("select");null==a&&null!=i&&i.focus();var r=o("#basicModal__action");null==a&&null==i&&null!=r&&r.focus();var b=o("#basicModal__cancel");return null==a&&null==i&&null==r&&null!=b&&b.focus(),null!=n.callback&&n.callback(n),!0},e.error=function(t){b();var n=o("input[name='"+t+"']")||o("select[name='"+t+"']");if(null==n)return!1;n.classList.add("error"),"function"==typeof n.select?n.select():n.focus(),o().classList.remove("basicModal--fadeIn","basicModal--shake"),setTimeout(function(){return o().classList.add("basicModal--shake")},1)},e.visible=function(){return null!=o()}),b=(e.action=function(){var t=o("#basicModal__action");return null!=t&&(t.click(),!0)},e.cancel=function(){var t=o("#basicModal__cancel");return null!=t&&(t.click(),!0)},e.reset=function(){var t=o(".basicModal__button",!0);a(t,function(t){return t.classList.remove("basicModal__button--active")});var n=o("input",!0);a(n,function(t){return t.classList.remove("error")});var e=o("select",!0);return a(e,function(t){return t.classList.remove("error")}),!0}),d=e.close=function(){var t=arguments.length>0&&void 0!==arguments[0]&&arguments[0];if(!1===r())return!1;var n=o().parentElement;return("false"!==n.getAttribute("data-closable")||!1!==t)&&(n.classList.remove("basicModalContainer--fadeIn"),n.classList.add("basicModalContainer--fadeOut"),setTimeout(function(){return null!=n&&(null!=n.parentElement&&void n.parentElement.removeChild(n))},300),null!=l&&(l.focus(),l=null),!0)}},{}]},{},[1])(1)});
+!function(n){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=n();else if("function"==typeof define&&define.amd)define([],n);else{var t;t="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,t.basicModal=n()}}(function(){return function n(t,e,o){function l(c,s){if(!e[c]){if(!t[c]){var i="function"==typeof require&&require;if(!s&&i)return i(c,!0);if(a)return a(c,!0);var r=new Error("Cannot find module '"+c+"'");throw r.code="MODULE_NOT_FOUND",r}var u=e[c]={exports:{}};t[c][0].call(u.exports,function(n){var e=t[c][1][n];return l(e||n)},u,u.exports,n,t,e,o)}return e[c].exports}for(var a="function"==typeof require&&require,c=0;c<o.length;c++)l(o[c]);return l}({1:[function(n,t,e){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var o=null,l=(e.THEME={small:"basicModal__small",xclose:"basicModal__xclose"},function(){var n=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"";return!0===(arguments.length>1&&void 0!==arguments[1]&&arguments[1])?document.querySelectorAll(".basicModal "+n):document.querySelector(".basicModal "+n)}),a=function(n,t){return null!=n&&(n.constructor===Object?Array.prototype.forEach.call(Object.keys(n),function(e){return t(n[e],e,n)}):Array.prototype.forEach.call(n,function(e,o){return t(e,o,n)}))},c=function(n){return null==n||0===Object.keys(n).length?(console.error("Missing or empty modal configuration object"),!1):(null==n.body&&(n.body=""),null==n.class&&(n.class=""),!1!==n.closable&&(n.closable=!0),null==n.buttons?(console.error("basicModal requires at least one button"),!1):null!=n.buttons.action&&(null==n.buttons.action.class&&(n.buttons.action.class=""),null==n.buttons.action.title&&(n.buttons.action.title="OK"),null==n.buttons.action.fn)?(console.error("Missing fn for action-button"),!1):null==n.buttons.cancel||(null==n.buttons.cancel.class&&(n.buttons.cancel.class=""),null==n.buttons.cancel.title&&(n.buttons.cancel.title="Cancel"),null!=n.buttons.cancel.fn)||(console.error("Missing fn for cancel-button"),!1))},s=function(n){var t="";return t+="\n\t        <div class='basicModalContainer basicModalContainer--fadeIn' data-closable='"+n.closable+"'>\n\t            <div class='basicModal basicModal--fadeIn "+n.class+"' role=\"dialog\">\n\t                <div class='basicModal__content'>\n\t                    "+n.body+"\n\t                </div>\n\t                <div class='basicModal__buttons'>\n\t        ",null!=n.buttons.cancel&&(-1===n.buttons.cancel.class.indexOf("basicModal__xclose")?t+="<a id='basicModal__cancel' class='basicModal__button "+n.buttons.cancel.class+"'>"+n.buttons.cancel.title+"</a>":t+="<div id='basicModal__cancel' class='basicModal__button "+n.buttons.cancel.class+'\' aria-label=\'close\'><svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"><path d="M405 136.798l-29.798-29.798-119.202 119.202-119.202-119.202-29.798 29.798 119.202 119.202-119.202 119.202 29.798 29.798 119.202-119.202 119.202 119.202 29.798-29.798-119.202-119.202z"/></svg></div>'),null!=n.buttons.action&&(t+="<a id='basicModal__action' class='basicModal__button "+n.buttons.action.class+"'>"+n.buttons.action.title+"</a>"),t+="\n\t                </div>\n\t            </div>\n\t        </div>\n\t        "},i=e.getValues=function(){var n={},t=l("input[name]",!0),e=l("select[name]",!0);return a(t,function(t){var e=t.getAttribute("name"),o=t.value;n[e]=o}),a(e,function(t){var e=t.getAttribute("name"),o=t.options[t.selectedIndex].value;n[e]=o}),0===Object.keys(n).length?null:n},r=function(n){return null!=n.buttons.cancel&&(l("#basicModal__cancel").onclick=function(){if(!0===this.classList.contains("basicModal__button--active"))return!1;this.classList.add("basicModal__button--active"),n.buttons.cancel.fn()}),null!=n.buttons.action&&(l("#basicModal__action").onclick=function(){if(!0===this.classList.contains("basicModal__button--active"))return!1;this.classList.add("basicModal__button--active"),n.buttons.action.fn(i())}),a(l("input",!0),function(n){n.oninput=n.onblur=function(){this.classList.remove("error")}}),a(l("select",!0),function(n){n.onchange=n.onblur=function(){this.classList.remove("error")}}),!0},u=(e.show=function n(t){if(!1===c(t))return!1;if(null!=l())return b(!0),setTimeout(function(){return n(t)},301),!1;o=document.activeElement;var e=s(t);document.body.insertAdjacentHTML("beforeend",e),r(t);var a=l("input");null!=a&&a.select();var i=l("select");return null==a&&null!=i&&i.focus(),null!=t.callback&&t.callback(t),!0},e.error=function(n){d();var t=l("input[name='"+n+"']")||l("select[name='"+n+"']");if(null==t)return!1;t.classList.add("error"),"function"==typeof t.select?t.select():t.focus(),l().classList.remove("basicModal--fadeIn","basicModal--shake"),setTimeout(function(){return l().classList.add("basicModal--shake")},1)},e.visible=function(){return null!=l()}),d=(e.action=function(){var n=l("#basicModal__action");return null!=n&&(n.click(),!0)},e.cancel=function(){var n=l("#basicModal__cancel");return null!=n&&(n.click(),!0)},e.reset=function(){var n=l(".basicModal__button",!0);a(n,function(n){return n.classList.remove("basicModal__button--active")});var t=l("input",!0);a(t,function(n){return n.classList.remove("error")});var e=l("select",!0);return a(e,function(n){return n.classList.remove("error")}),!0}),b=e.close=function(){var n=arguments.length>0&&void 0!==arguments[0]&&arguments[0];if(!1===u())return!1;var t=l().parentElement;return("false"!==t.getAttribute("data-closable")||!1!==n)&&(t.classList.remove("basicModalContainer--fadeIn"),t.classList.add("basicModalContainer--fadeOut"),setTimeout(function(){return null!=t&&(null!=t.parentElement&&void t.parentElement.removeChild(t))},300),null!=o&&(o.focus(),o=null),!0)}},{}]},{},[1])(1)});
 !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t():"function"==typeof define&&define.amd?define([],t):"object"==typeof exports?exports.scrollLock=t():e.scrollLock=t()}(this,function(){return function(l){var r={};function o(e){if(r[e])return r[e].exports;var t=r[e]={i:e,l:!1,exports:{}};return l[e].call(t.exports,t,t.exports,o),t.l=!0,t.exports}return o.m=l,o.c=r,o.d=function(e,t,l){o.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:l})},o.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},o.t=function(t,e){if(1&e&&(t=o(t)),8&e)return t;if(4&e&&"object"==typeof t&&t&&t.__esModule)return t;var l=Object.create(null);if(o.r(l),Object.defineProperty(l,"default",{enumerable:!0,value:t}),2&e&&"string"!=typeof t)for(var r in t)o.d(l,r,function(e){return t[e]}.bind(null,r));return l},o.n=function(e){var t=e&&e.__esModule?function(){return e.default}:function(){return e};return o.d(t,"a",t),t},o.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},o.p="",o(o.s=0)}([function(e,t,l){"use strict";l.r(t);var r=function(e){return Array.isArray(e)?e:[e]},a=function(e){return e instanceof Node},o=function(e,t){if(e&&t){e=e instanceof NodeList?e:[e];for(var l=0;l<e.length&&!0!==t(e[l],l,e.length);l++);}},n=function(e){return console.error("[scroll-lock] ".concat(e))},b=function(e){if(Array.isArray(e))return e.join(", ")},c=function(e){var t=[];return o(e,function(e){return t.push(e)}),t},h=function(e,t){var l=!(2<arguments.length&&void 0!==arguments[2])||arguments[2],r=3<arguments.length&&void 0!==arguments[3]?arguments[3]:document;if(l&&-1!==c(r.querySelectorAll(t)).indexOf(e))return e;for(;(e=e.parentElement)&&-1===c(r.querySelectorAll(t)).indexOf(e););return e},v=function(e,t){var l=2<arguments.length&&void 0!==arguments[2]?arguments[2]:document;return-1!==c(l.querySelectorAll(t)).indexOf(e)},i=function(e){if(e)return"hidden"===getComputedStyle(e).overflow},m=function(e){if(e)return!!i(e)||e.scrollTop<=0},S=function(e){if(e){if(i(e))return!0;var t=e.scrollTop;return e.scrollHeight<=t+e.offsetHeight}},y=function(e){if(e)return!!i(e)||e.scrollLeft<=0},k=function(e){if(e){if(i(e))return!0;var t=e.scrollLeft;return e.scrollWidth<=t+e.offsetWidth}};l.d(t,"disablePageScroll",function(){return d}),l.d(t,"enablePageScroll",function(){return s}),l.d(t,"getScrollState",function(){return f}),l.d(t,"clearQueueScrollLocks",function(){return p}),l.d(t,"getTargetScrollBarWidth",function(){return g}),l.d(t,"getCurrentTargetScrollBarWidth",function(){return A}),l.d(t,"getPageScrollBarWidth",function(){return G}),l.d(t,"getCurrentPageScrollBarWidth",function(){return T}),l.d(t,"addScrollableTarget",function(){return L}),l.d(t,"removeScrollableTarget",function(){return W}),l.d(t,"addScrollableSelector",function(){return x}),l.d(t,"removeScrollableSelector",function(){return F}),l.d(t,"addLockableTarget",function(){return Y}),l.d(t,"addLockableSelector",function(){return E}),l.d(t,"setFillGapMethod",function(){return O}),l.d(t,"addFillGapTarget",function(){return P}),l.d(t,"removeFillGapTarget",function(){return j}),l.d(t,"addFillGapSelector",function(){return q}),l.d(t,"removeFillGapSelector",function(){return M}),l.d(t,"refillGaps",function(){return N});var u=["padding","margin","width","max-width","none"],w={scroll:!0,queue:0,scrollableSelectors:["[data-scroll-lock-scrollable]"],lockableSelectors:["body","[data-scroll-lock-lockable]"],fillGapSelectors:["body","[data-scroll-lock-fill-gap]","[data-scroll-lock-lockable]"],fillGapMethod:u[0],startTouchY:0,startTouchX:0},d=function(e){w.queue<=0&&(w.scroll=!1,B(),X()),L(e),w.queue++},s=function(e){0<w.queue&&w.queue--,w.queue<=0&&(w.scroll=!0,C(),Q()),W(e)},f=function(){return w.scroll},p=function(){w.queue=0},g=function(e){var t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(a(e)){var l=e.style.overflowY;t?f()||(e.style.overflowY=e.getAttribute("data-scroll-lock-saved-overflow-y-property")):e.style.overflowY="scroll";var r=A(e);return e.style.overflowY=l,r}return 0},A=function(e){if(a(e)){if(e===document.body){var t=document.documentElement.clientWidth;return window.innerWidth-t}var l=e.style.borderLeftWidth,r=e.style.borderRightWidth;e.style.borderLeftWidth="0px",e.style.borderRightWidth="0px";var o=e.offsetWidth-e.clientWidth;return e.style.borderLeftWidth=l,e.style.borderRightWidth=r,o}return 0},G=function(){var e=0<arguments.length&&void 0!==arguments[0]&&arguments[0];return g(document.body,e)},T=function(){return A(document.body)},L=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?e.setAttribute("data-scroll-lock-scrollable",""):n('"'.concat(e,'" is not a Element.'))})})},W=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?e.removeAttribute("data-scroll-lock-scrollable"):n('"'.concat(e,'" is not a Element.'))})})},x=function(e){e&&r(e).map(function(e){w.scrollableSelectors.push(e)})},F=function(e){e&&r(e).map(function(t){w.scrollableSelectors=w.scrollableSelectors.filter(function(e){return e!==t})})},Y=function(e){e&&(r(e).map(function(e){o(e,function(e){a(e)?e.setAttribute("data-scroll-lock-lockable",""):n('"'.concat(e,'" is not a Element.'))})}),f()||B())},E=function(e){e&&(r(e).map(function(e){w.lockableSelectors.push(e)}),f()||B(),q(e))},O=function(e){if(e)if(-1!==u.indexOf(e))w.fillGapMethod=e,N();else{var t=u.join(", ");n('"'.concat(e,'" method is not available!\nAvailable fill gap methods: ').concat(t,"."))}},P=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?(e.setAttribute("data-scroll-lock-fill-gap",""),w.scroll||H(e)):n('"'.concat(e,'" is not a Element.'))})})},j=function(e){e&&r(e).map(function(e){o(e,function(e){a(e)?(e.removeAttribute("data-scroll-lock-fill-gap"),w.scroll||I(e)):n('"'.concat(e,'" is not a Element.'))})})},q=function(e){e&&r(e).map(function(e){-1===w.fillGapSelectors.indexOf(e)&&(w.fillGapSelectors.push(e),w.scroll||D(e))})},M=function(e){e&&r(e).map(function(t){w.fillGapSelectors=w.fillGapSelectors.filter(function(e){return e!==t}),w.scroll||z(t)})},N=function(){w.scroll||X()},B=function(){var e=b(w.lockableSelectors);K(e)},C=function(){var e=b(w.lockableSelectors);R(e)},K=function(e){var t=document.querySelectorAll(e);o(t,function(e){U(e)})},R=function(e){var t=document.querySelectorAll(e);o(t,function(e){_(e)})},U=function(e){if(a(e)&&"true"!==e.getAttribute("data-scroll-lock-locked")){var t=window.getComputedStyle(e);e.setAttribute("data-scroll-lock-saved-overflow-y-property",t.overflowY),e.setAttribute("data-scroll-lock-saved-inline-overflow-property",e.style.overflow),e.setAttribute("data-scroll-lock-saved-inline-overflow-y-property",e.style.overflowY),e.style.overflow="hidden",e.setAttribute("data-scroll-lock-locked","true")}},_=function(e){a(e)&&"true"===e.getAttribute("data-scroll-lock-locked")&&(e.style.overflow=e.getAttribute("data-scroll-lock-saved-inline-overflow-property"),e.style.overflowY=e.getAttribute("data-scroll-lock-saved-inline-overflow-y-property"),e.removeAttribute("data-scroll-lock-saved-overflow-property"),e.removeAttribute("data-scroll-lock-saved-inline-overflow-property"),e.removeAttribute("data-scroll-lock-saved-inline-overflow-y-property"),e.removeAttribute("data-scroll-lock-locked"))},X=function(){w.fillGapSelectors.map(function(e){D(e)})},Q=function(){w.fillGapSelectors.map(function(e){z(e)})},D=function(e){var t=document.querySelectorAll(e),l=-1!==w.lockableSelectors.indexOf(e);o(t,function(e){H(e,l)})},H=function(e){var t=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(a(e)){var l;if(""===e.getAttribute("data-scroll-lock-lockable")||t)l=g(e,!0);else{var r=h(e,b(w.lockableSelectors));l=g(r,!0)}"true"===e.getAttribute("data-scroll-lock-filled-gap")&&I(e);var o=window.getComputedStyle(e);if(e.setAttribute("data-scroll-lock-filled-gap","true"),e.setAttribute("data-scroll-lock-current-fill-gap-method",w.fillGapMethod),"margin"===w.fillGapMethod){var n=parseFloat(o.marginRight);e.style.marginRight="".concat(n+l,"px")}else if("width"===w.fillGapMethod)e.style.width="calc(100% - ".concat(l,"px)");else if("max-width"===w.fillGapMethod)e.style.maxWidth="calc(100% - ".concat(l,"px)");else if("padding"===w.fillGapMethod){var c=parseFloat(o.paddingRight);e.style.paddingRight="".concat(c+l,"px")}}},z=function(e){var t=document.querySelectorAll(e);o(t,function(e){I(e)})},I=function(e){if(a(e)&&"true"===e.getAttribute("data-scroll-lock-filled-gap")){var t=e.getAttribute("data-scroll-lock-current-fill-gap-method");e.removeAttribute("data-scroll-lock-filled-gap"),e.removeAttribute("data-scroll-lock-current-fill-gap-method"),"margin"===t?e.style.marginRight="":"width"===t?e.style.width="":"max-width"===t?e.style.maxWidth="":"padding"===t&&(e.style.paddingRight="")}};"undefined"!=typeof window&&window.addEventListener("resize",function(e){N()}),"undefined"!=typeof document&&(document.addEventListener("touchstart",function(e){w.scroll||(w.startTouchY=e.touches[0].clientY,w.startTouchX=e.touches[0].clientX)}),document.addEventListener("touchmove",function(n){if(!w.scroll){var e=w.startTouchY,t=w.startTouchX,l=n.touches[0].clientY,r=n.touches[0].clientX;if(n.touches.length<2){var c=b(w.scrollableSelectors),a=e<l,i=l<e,u=t<r,d=r<t,s=e+3<l,f=l<e-3,p=t+3<r,g=r<t-3;!function e(t){var l=1<arguments.length&&void 0!==arguments[1]&&arguments[1];if(t){var r=h(t,c,!1);if(v(t,'input[type="range"]'))return!1;if(l||v(t,'textarea, [contenteditable="true"]')&&h(t,c)||v(t,c)){var o=!1;y(t)&&k(t)?(a&&m(t)||i&&S(t))&&(o=!0):m(t)&&S(t)?(u&&y(t)||d&&k(t))&&(o=!0):(s&&m(t)||f&&S(t)||p&&y(t)||g&&k(t))&&(o=!0),o&&(r?e(r,!0):n.cancelable&&n.preventDefault())}else e(r)}else n.cancelable&&n.preventDefault()}(n.target)}}},{passive:!1}),document.addEventListener("touchend",function(e){w.scroll||(w.startTouchY=0,w.startTouchX=0)}));var J={hide:function(e){n('"hide" is deprecated! Use "disablePageScroll" instead. \n https://github.com/FL3NKEY/scroll-lock#disablepagescrollscrollabletarget'),d(e)},show:function(e){n('"show" is deprecated! Use "enablePageScroll" instead. \n https://github.com/FL3NKEY/scroll-lock#enablepagescrollscrollabletarget'),s(e)},toggle:function(e){n('"toggle" is deprecated! Do not use it.'),f()?d():s(e)},getState:function(){return n('"getState" is deprecated! Use "getScrollState" instead. \n https://github.com/FL3NKEY/scroll-lock#getscrollstate'),f()},getWidth:function(){return n('"getWidth" is deprecated! Use "getPageScrollBarWidth" instead. \n https://github.com/FL3NKEY/scroll-lock#getpagescrollbarwidth'),G()},getCurrentWidth:function(){return n('"getCurrentWidth" is deprecated! Use "getCurrentPageScrollBarWidth" instead. \n https://github.com/FL3NKEY/scroll-lock#getcurrentpagescrollbarwidth'),T()},setScrollableTargets:function(e){n('"setScrollableTargets" is deprecated! Use "addScrollableTarget" instead. \n https://github.com/FL3NKEY/scroll-lock#addscrollabletargetscrollabletarget'),L(e)},setFillGapSelectors:function(e){n('"setFillGapSelectors" is deprecated! Use "addFillGapSelector" instead. \n https://github.com/FL3NKEY/scroll-lock#addfillgapselectorfillgapselector'),q(e)},setFillGapTargets:function(e){n('"setFillGapTargets" is deprecated! Use "addFillGapTarget" instead. \n https://github.com/FL3NKEY/scroll-lock#addfillgaptargetfillgaptarget'),P(e)},clearQueue:function(){n('"clearQueue" is deprecated! Use "clearQueueScrollLocks" instead. \n https://github.com/FL3NKEY/scroll-lock#clearqueuescrolllocks'),p()}},V=function(o){for(var e=1;e<arguments.length;e++){var n=null!=arguments[e]?arguments[e]:{},t=Object.keys(n);"function"==typeof Object.getOwnPropertySymbols&&(t=t.concat(Object.getOwnPropertySymbols(n).filter(function(e){return Object.getOwnPropertyDescriptor(n,e).enumerable}))),t.forEach(function(e){var t,l,r;t=o,r=n[l=e],l in t?Object.defineProperty(t,l,{value:r,enumerable:!0,configurable:!0,writable:!0}):t[l]=r})}return o}({disablePageScroll:d,enablePageScroll:s,getScrollState:f,clearQueueScrollLocks:p,getTargetScrollBarWidth:g,getCurrentTargetScrollBarWidth:A,getPageScrollBarWidth:G,getCurrentPageScrollBarWidth:T,addScrollableSelector:x,removeScrollableSelector:F,addScrollableTarget:L,removeScrollableTarget:W,addLockableSelector:E,addLockableTarget:Y,addFillGapSelector:q,removeFillGapSelector:M,addFillGapTarget:P,removeFillGapTarget:j,setFillGapMethod:O,refillGaps:N,_state:w},J);t.default=V}]).default});
 /*
  * @license
@@ -1167,10 +1167,10 @@ album.setTitle = function (albumIDs) {
 };
 
 album.setDescription = function (albumID) {
-	var oldDescription = album.json.description;
+	var oldDescription = album.json.description ? album.json.description : "";
 
 	var action = function action(data) {
-		var description = data.description;
+		var description = data.description ? data.description : null;
 
 		basicModal.close();
 
@@ -1265,7 +1265,7 @@ album.setLicense = function (albumID) {
 album.setSorting = function (albumID) {
 	var callback = function callback() {
 		$("select#sortingCol").val(album.json.sorting_col);
-		$("select#sortingOrder").val(album.json.sorting_order);
+		$("select#sortingOrder").val(album.json.sorting_order === null ? "ASC" : album.json.sorting_order);
 		return false;
 	};
 
@@ -1653,7 +1653,7 @@ album.delete = function (albumIDs) {
 			} else albumTitle = album.getSubByID(albumIDs[0]).title;
 		}
 		if (!albumTitle) {
-			var _a3 = albums.getByID(albumIDs);
+			var _a3 = albums.getByID(albumIDs[0]);
 			if (_a3) albumTitle = _a3.title;
 		}
 
@@ -2802,7 +2802,7 @@ contextMenu.photo = function (photoID, e) {
 		title: build.iconic("layers") + lychee.locale["COPY_TO"],
 		fn: function fn() {
 			basicContext.close();
-			contextMenu.move([photoID], e, _photo.copyTo, "UNSORTED");
+			contextMenu.move([photoID], e, _photo.copyTo);
 		}
 	},
 	// Notice for 'Move':
@@ -2812,7 +2812,7 @@ contextMenu.photo = function (photoID, e) {
 		title: build.iconic("folder") + lychee.locale["MOVE"],
 		fn: function fn() {
 			basicContext.close();
-			contextMenu.move([photoID], e, _photo.setAlbum, "UNSORTED");
+			contextMenu.move([photoID], e, _photo.setAlbum);
 		}
 	}, { title: build.iconic("trash") + lychee.locale["DELETE"], fn: function fn() {
 			return _photo.delete([photoID]);
@@ -2879,13 +2879,13 @@ contextMenu.photoMulti = function (photoIDs, e) {
 		title: build.iconic("layers") + lychee.locale["COPY_ALL_TO"],
 		fn: function fn() {
 			basicContext.close();
-			contextMenu.move(photoIDs, e, _photo.copyTo, "UNSORTED");
+			contextMenu.move(photoIDs, e, _photo.copyTo);
 		}
 	}, {
 		title: build.iconic("folder") + lychee.locale["MOVE_ALL"],
 		fn: function fn() {
 			basicContext.close();
-			contextMenu.move(photoIDs, e, _photo.setAlbum, "UNSORTED");
+			contextMenu.move(photoIDs, e, _photo.setAlbum);
 		}
 	}, { title: build.iconic("trash") + lychee.locale["DELETE_ALL"], fn: function fn() {
 			return _photo.delete(photoIDs);
@@ -3058,10 +3058,10 @@ contextMenu.move = function (IDs, e, callback) {
 		}
 
 		// Show Unsorted when unsorted is not the current album
-		if (display_root && album.getID() !== null && !visible.albums()) {
+		if (display_root && album.getID() !== "unsorted" && !visible.albums()) {
 			items.unshift({});
 			items.unshift({ title: lychee.locale[kind], fn: function fn() {
-					return callback(IDs, 0);
+					return callback(IDs, null);
 				} });
 		}
 
@@ -3145,6 +3145,9 @@ contextMenu.close = function () {
 
 contextMenu.config = function (e) {
 	var items = [{ title: build.iconic("cog") + lychee.locale["SETTINGS"], fn: settings.open }];
+	if (lychee.new_photos_notification) {
+		items.push({ title: build.iconic("bell") + lychee.locale["NOTIFICATIONS"], fn: notifications.load });
+	}
 	if (lychee.admin) {
 		items.push({ title: build.iconic("person") + lychee.locale["USERS"], fn: users.list });
 	}
@@ -4006,6 +4009,8 @@ leftMenu.dom = function (selector) {
 	return leftMenu._dom.find(selector);
 };
 
+// Note: on mobile we use a context menu instead; please make sure that
+// contextMenu.config is kept in sync with any changes here!
 leftMenu.build = function () {
 	var html = lychee.html(_templateObject44, lychee.locale["CLOSE"], lychee.locale["SETTINGS"]);
 	if (lychee.new_photos_notification) {
@@ -4340,8 +4345,14 @@ lychee.aboutDialog = function () {
 	if (lychee.checkForUpdates === "1") lychee.getUpdate();
 };
 
+/**
+ * @param {boolean} isFirstInitialization must be set to `false` if called
+ *                                        for re-initialization to prevent
+ *                                        multiple registrations of global
+ *                                        event handlers
+ */
 lychee.init = function () {
-	var exitview = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+	var isFirstInitialization = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
 	lychee.adjustContentHeight();
 
@@ -4518,8 +4529,11 @@ lychee.init = function () {
 			// should not happen.
 		}
 
-		if (exitview) {
-			$(window).bind("popstate", lychee.load);
+		if (isFirstInitialization) {
+			$(window).on("popstate", function () {
+				var autoplay = history.state && history.state.hasOwnProperty("autoplay") ? history.state.autoplay : true;
+				lychee.load(autoplay);
+			});
 			lychee.load();
 		}
 	});
@@ -4592,12 +4606,11 @@ lychee.logout = function () {
 };
 
 lychee.goto = function () {
-	var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	var url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 	var autoplay = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-	url = "#" + url;
-
-	history.pushState(null, null, url);
+	url = "#" + (url !== null ? url : "");
+	history.pushState({ autoplay: autoplay }, null, url);
 	lychee.load(autoplay);
 };
 
@@ -4666,27 +4679,15 @@ lychee.reloadIfLegacyIDs = function (albumID, photoID, autoplay) {
 	};
 
 	// We have to deal with three cases:
-	//  1. only the album ID needs to be translated
-	//  2. the album and photo ID need to be translated (this requires two cascaded AJAX calls)
+	//  1. the album and photo ID need to be translated
+	//  2. only the album ID needs to be translated
 	//  3. only the photo ID needs to be translated
-	if (isLegacyID(albumID)) {
-		api.post("Legacy::translateLegacyAlbumID", { albumID: albumID }, function (data1) {
-			var newAlbumID = data1.albumID;
-			if (isLegacyID(photoID)) {
-				api.post("Legacy::translateLegacyPhotoID", { photoID: photoID }, function (data2) {
-					var newPhotoID = data2.photoID;
-					reloadWithNewIDs(newAlbumID, newPhotoID);
-				});
-			} else {
-				reloadWithNewIDs(newAlbumID, photoID);
-			}
-		});
-	} else {
-		api.post("Legacy::translateLegacyPhotoID", { photoID: photoID }, function (data3) {
-			var newPhotoID = data3.photoID;
-			reloadWithNewIDs(albumID, newPhotoID);
-		});
-	}
+	var params = {};
+	if (isLegacyID(albumID)) params.albumID = albumID;
+	if (isLegacyID(photoID)) params.photoID = photoID;
+	api.post("Legacy::translateLegacyModelIDs", params, function (data) {
+		reloadWithNewIDs(data.hasOwnProperty("albumID") ? data.albumID : albumID, data.hasOwnProperty("photoID") ? data.photoID : photoID);
+	});
 
 	return true;
 };
@@ -4697,10 +4698,6 @@ lychee.load = function () {
 	var hash = document.location.hash.replace("#", "").split("/");
 	var albumID = hash[0];
 	var photoID = hash[1];
-
-	if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
-		return;
-	}
 
 	contextMenu.close();
 	multiselect.close();
@@ -4748,6 +4745,10 @@ lychee.load = function () {
 
 			lychee.footer_show();
 		} else {
+			if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
+				return;
+			}
+
 			$(".no_content").remove();
 			// Show photo
 
@@ -4793,6 +4794,10 @@ lychee.load = function () {
 		} else if (albumID === "search") {
 			// search string is empty -> do nothing
 		} else {
+			if (lychee.reloadIfLegacyIDs(albumID, photoID, autoplay)) {
+				return;
+			}
+
 			$(".no_content").remove();
 			// Trash data
 			_photo.json = null;
@@ -5702,15 +5707,21 @@ lychee.locale = {
 		// want to call `toLocalString` which is fine and don't do any time
 		// arithmetics.
 		// Then we add the original timezone to the string manually.
-		var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
-		console.assert(splitDateTime.length === 4, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
+		var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{1,6})?)([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
+		// The capturing groups are:
+		//  - 0: the whole string
+		//  - 1: the whole date/time segment incl. fractional seconds
+		//  - 2: the fractional seconds (if present)
+		//  - 3: the timezone separator, i.e. "Z", "-" or "+" (if present)
+		//  - 4: the absolute timezone offset without the sign (if present)
+		console.assert(splitDateTime.length === 5, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
 		var locale = "default"; // use the user's browser settings
 		var format = { dateStyle: "medium", timeStyle: "medium" };
 		var result = new Date(splitDateTime[1]).toLocaleString(locale, format);
-		if (splitDateTime[2] === "Z" || splitDateTime[3] === "00:00") {
+		if (splitDateTime[3] === "Z" || splitDateTime[4] === "00:00") {
 			result += " UTC";
 		} else {
-			result += " UTC" + splitDateTime[2] + splitDateTime[3];
+			result += " UTC" + splitDateTime[3] + splitDateTime[4];
 		}
 		return result;
 	},
@@ -6789,7 +6800,7 @@ _photo.setTitle = function (photoIDs) {
 
 	if (photoIDs.length === 1) {
 		// Get old title if only one photo is selected
-		if (_photo.json) oldTitle = _photo.json.title;else if (album.json) oldTitle = album.getByID(photoIDs).title;
+		if (_photo.json) oldTitle = _photo.json.title;else if (album.json) oldTitle = album.getByID(photoIDs[0]).title;
 	}
 
 	var action = function action(data) {
@@ -6839,9 +6850,15 @@ _photo.setTitle = function (photoIDs) {
 	});
 };
 
+/**
+ *
+ * @param {string[]} photoIDs IDs of photos to be copied
+ * @param {?string} albumID ID of destination album; `null` means root album
+ * @return {void}
+ */
 _photo.copyTo = function (photoIDs, albumID) {
-	if (!photoIDs) return false;
-	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
+	if (!photoIDs) return;
+	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
 
 	var params = {
 		photoIDs: photoIDs.join(),
@@ -7041,12 +7058,12 @@ _photo.setPublic = function (photoID, e) {
 };
 
 _photo.setDescription = function (photoID) {
-	var oldDescription = _photo.json.description;
+	var oldDescription = _photo.json.description ? _photo.json.description : "";
 
 	var action = function action(data) {
 		basicModal.close();
 
-		var description = data.description === "" ? null : data.description;
+		var description = data.description ? data.description : null;
 
 		if (visible.photo()) {
 			_photo.json.description = description;
@@ -7084,7 +7101,7 @@ _photo.editTags = function (photoIDs) {
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
 	// Get tags
-	if (visible.photo()) oldTags = _photo.json.tags;else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.album() && photoIDs.length > 1) {
+	if (visible.photo()) oldTags = _photo.json.tags;else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs[0]).tags;else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs[0]).tags;else if (visible.album() && photoIDs.length > 1) {
 		var same = true;
 		photoIDs.forEach(function (id) {
 			same = album.getByID(id).tags === album.getByID(photoIDs[0]).tags && same === true;
@@ -7976,13 +7993,11 @@ settings.changeCSS = function () {
 };
 
 settings.save = function (params) {
-	var exitview = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-
 	api.post("Settings::saveAll", params, function () {
 		loadingBar.show("success", lychee.locale["SETTINGS_SUCCESS_UPDATE"]);
 		view.full_settings.init();
 		// re-read settings
-		lychee.init(exitview);
+		lychee.init(false);
 	});
 };
 
@@ -8000,7 +8015,7 @@ settings.save_enter = function (e) {
 		cancel.title = lychee.locale["CANCEL"];
 
 		action.fn = function () {
-			settings.save(settings.getValues("#fullSettings"), false);
+			settings.save(settings.getValues("#fullSettings"));
 			basicModal.close();
 		};
 
@@ -8195,13 +8210,13 @@ _sidebar.setSelectable = function () {
 };
 
 _sidebar.changeAttr = function (attr) {
-	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "-";
+	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 	var dangerouslySetInnerHTML = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 	if (attr == null || attr === "") return false;
 
 	// Set a default for the value
-	if (value == null || value === "") value = "-";
+	if (value === null) value = "";
 
 	// Escape value
 	if (dangerouslySetInnerHTML === false) value = lychee.escapeHTML(value);
@@ -8271,7 +8286,7 @@ _sidebar.createStructure.photo = function (data) {
 	structure.basics = {
 		title: lychee.locale["PHOTO_BASICS"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	structure.image = {
@@ -8404,16 +8419,18 @@ _sidebar.createStructure.album = function (album) {
 			break;
 	}
 
-	if (data.sorting_col === "") {
-		sorting = lychee.locale["DEFAULT"];
-	} else {
-		sorting = data.sorting_col + " " + data.sorting_order;
+	if (!lychee.publicMode) {
+		if (data.sorting_col === null) {
+			sorting = lychee.locale["DEFAULT"];
+		} else {
+			sorting = data.sorting_col + " " + data.sorting_order;
+		}
 	}
 
 	structure.basics = {
 		title: lychee.locale["ALBUM_BASICS"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["ALBUM_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["ALBUM_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["ALBUM_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	if (album.isTagAlbum()) {
@@ -8443,7 +8460,7 @@ _sidebar.createStructure.album = function (album) {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_VIDEOS"], kind: "videos", value: videoCount });
 	}
 
-	if (data.photos) {
+	if (data.photos && sorting !== "") {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_ORDERING"], kind: "sorting", value: sorting, editable: editable });
 	}
 
@@ -9204,8 +9221,6 @@ upload.start = {
 
 		_url = typeof _url === "string" ? _url : "";
 
-		if (albumID === false) albumID = null;
-
 		var action = function action(data) {
 			var files = [];
 
@@ -9238,7 +9253,7 @@ upload.start = {
 						$(".basicModal #basicModal__action.hidden").show();
 						upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
 						albums.refresh();
-						if (album.getID() === null) lychee.goto();else album.load(albumID);
+						if (albumID === null) lychee.goto();else album.load(albumID);
 						return false;
 					});
 				});
@@ -9386,7 +9401,7 @@ upload.start = {
 
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"], encounteredProblems ? lychee.locale["UPLOAD_COMPLETE_FAILED"] : null);
 
-					if (album.getID() === null) lychee.goto();else album.load(albumID);
+					if (albumID === null) lychee.goto();else album.load(albumID);
 
 					if (encounteredProblems) showCloseButton();else basicModal.close();
 				}, function (event) {
@@ -9423,7 +9438,7 @@ upload.start = {
 								albums.refresh();
 								upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 
-								if (album.getID() === null) lychee.goto();else album.load(albumID);
+								if (albumID === null) lychee.goto();else album.load(albumID);
 
 								showCloseButton();
 
@@ -9485,7 +9500,6 @@ upload.start = {
 
 	dropbox: function dropbox() {
 		var albumID = album.getID();
-		if (albumID === false) albumID = 0;
 
 		var success = function success(files) {
 			var links = "";
@@ -9523,7 +9537,7 @@ upload.start = {
 					$(".basicModal #basicModal__action.hidden").show();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
 					albums.refresh();
-					if (album.getID() === null) lychee.goto();else album.load(albumID);
+					if (albumID === null) lychee.goto();else album.load(albumID);
 					return false;
 				});
 			});
@@ -10341,8 +10355,8 @@ view.photo = {
 		var $previousArrow = lychee.imageview.find("a#previous");
 		var photoID = _photo.getID();
 		var photoInAlbum = album.json && album.json.photos ? album.getByID(photoID) : null;
-		var hasNext = photoInAlbum.hasOwnProperty("next_photo_id") && photoInAlbum.next_photo_id !== null;
-		var hasPrevious = photoInAlbum.hasOwnProperty("previous_photo_id") && photoInAlbum.previous_photo_id !== null;
+		var hasNext = photoInAlbum !== null && photoInAlbum.hasOwnProperty("next_photo_id") && photoInAlbum.next_photo_id !== null;
+		var hasPrevious = photoInAlbum !== null && photoInAlbum.hasOwnProperty("previous_photo_id") && photoInAlbum.previous_photo_id !== null;
 
 		var img = $("img#image");
 		if (img.length > 0) {
@@ -10743,7 +10757,9 @@ view.notifications = {
 	init: function init() {
 		multiselect.clearSelection();
 
+		view.photo.hide();
 		view.notifications.title();
+		header.setMode("config");
 		view.notifications.content.init();
 	},
 

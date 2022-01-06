@@ -101,6 +101,7 @@ class PhotosTest extends TestCase
 			2019, 6, 1, 1, 28, 25, '+02:00'
 		);
 		$response->assertJson([
+			'album_id' => null,
 			'aperture' => 'f/2.8',
 			'description' => 'A night photography',
 			'focal' => '16 mm',
@@ -115,7 +116,7 @@ class PhotosTest extends TestCase
 			'filesize' => 21104156,
 			'is_starred' => true,
 			'tags' => 'night',
-			'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
+			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',
@@ -157,10 +158,11 @@ class PhotosTest extends TestCase
 
 		/**
 		 * Test duplication, the duplicate should be completely identical
-		 * except for the ID.
+		 * except for the IDs.
 		 */
-		$response = $photos_tests->duplicate($id);
+		$response = $photos_tests->duplicate($id, $albumID);
 		$response->assertJson([
+			'album_id' => $albumID,
 			'aperture' => 'f/2.8',
 			'description' => 'A night photography',
 			'focal' => '16 mm',
@@ -174,7 +176,7 @@ class PhotosTest extends TestCase
 			'filesize' => 21104156,
 			'is_starred' => true,
 			'tags' => '',
-			'taken_at' => $taken_at->format(\DateTimeInterface::ATOM),
+			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
 			'type' => 'image/jpeg',

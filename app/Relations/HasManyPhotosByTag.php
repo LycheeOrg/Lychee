@@ -4,6 +4,7 @@ namespace App\Relations;
 
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\NotImplementedException;
+use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -86,11 +87,13 @@ class HasManyPhotosByTag extends HasManyPhotos
 		}
 		/** @var TagAlbum $album */
 		$album = $albums[0];
+		/** @var string $col */
+		$col = $album->getEffectiveSortingCol();
 
 		$photos = $photos->sortBy(
-			$album->sorting_col,
-			SORT_NATURAL | SORT_FLAG_CASE,
-			$album->sorting_order === 'DESC'
+			$col,
+			in_array($col, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+			$album->getEffectiveSortingOrder() === 'DESC'
 		)->values();
 		$album->setRelation($relation, $photos);
 

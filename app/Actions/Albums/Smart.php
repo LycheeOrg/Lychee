@@ -6,6 +6,7 @@ use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\Factories\AlbumFactory;
 use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -21,8 +22,8 @@ class Smart
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 		$this->albumFactory = $albumFactory;
-		$this->sortingCol = Configs::get_value('sorting_Albums_col');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
+		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
+		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
 	}
 
 	/**

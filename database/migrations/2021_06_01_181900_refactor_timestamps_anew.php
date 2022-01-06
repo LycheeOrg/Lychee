@@ -461,10 +461,11 @@ class RefactorTimestampsAnew extends Migration
 			return null;
 		}
 		$result = Carbon::createFromFormat(
-			self::SQL_DATETIME_FORMAT,
+			self::SQL_DATETIME_FORMAT . '+',
 			$sqlDatetime,
 			$oldTz
 		);
+
 		$result->setTimezone($newTz);
 
 		return $result->format(self::SQL_DATETIME_FORMAT);

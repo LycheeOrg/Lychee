@@ -1588,13 +1588,13 @@ sidebar.setSelectable = function () {
 };
 
 sidebar.changeAttr = function (attr) {
-	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "-";
+	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 	var dangerouslySetInnerHTML = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 	if (attr == null || attr === "") return false;
 
 	// Set a default for the value
-	if (value == null || value === "") value = "-";
+	if (value === null) value = "";
 
 	// Escape value
 	if (dangerouslySetInnerHTML === false) value = lychee.escapeHTML(value);
@@ -1664,7 +1664,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.basics = {
 		title: lychee.locale["PHOTO_BASICS"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	structure.image = {
@@ -1797,16 +1797,18 @@ sidebar.createStructure.album = function (album) {
 			break;
 	}
 
-	if (data.sorting_col === "") {
-		sorting = lychee.locale["DEFAULT"];
-	} else {
-		sorting = data.sorting_col + " " + data.sorting_order;
+	if (!lychee.publicMode) {
+		if (data.sorting_col === null) {
+			sorting = lychee.locale["DEFAULT"];
+		} else {
+			sorting = data.sorting_col + " " + data.sorting_order;
+		}
 	}
 
 	structure.basics = {
 		title: lychee.locale["ALBUM_BASICS"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["ALBUM_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["ALBUM_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["ALBUM_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	if (album.isTagAlbum()) {
@@ -1836,7 +1838,7 @@ sidebar.createStructure.album = function (album) {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_VIDEOS"], kind: "videos", value: videoCount });
 	}
 
-	if (data.photos) {
+	if (data.photos && sorting !== "") {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_ORDERING"], kind: "sorting", value: sorting, editable: editable });
 	}
 
@@ -2802,15 +2804,21 @@ lychee.locale = {
 		// want to call `toLocalString` which is fine and don't do any time
 		// arithmetics.
 		// Then we add the original timezone to the string manually.
-		var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
-		console.assert(splitDateTime.length === 4, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
+		var splitDateTime = /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{1,6})?)([-Z+])(\d{2}:\d{2})?$/.exec(jsonDateTime);
+		// The capturing groups are:
+		//  - 0: the whole string
+		//  - 1: the whole date/time segment incl. fractional seconds
+		//  - 2: the fractional seconds (if present)
+		//  - 3: the timezone separator, i.e. "Z", "-" or "+" (if present)
+		//  - 4: the absolute timezone offset without the sign (if present)
+		console.assert(splitDateTime.length === 5, "'jsonDateTime' is not formatted acc. to ISO 8601; passed string was: " + jsonDateTime);
 		var locale = "default"; // use the user's browser settings
 		var format = { dateStyle: "medium", timeStyle: "medium" };
 		var result = new Date(splitDateTime[1]).toLocaleString(locale, format);
-		if (splitDateTime[2] === "Z" || splitDateTime[3] === "00:00") {
+		if (splitDateTime[3] === "Z" || splitDateTime[4] === "00:00") {
 			result += " UTC";
 		} else {
-			result += " UTC" + splitDateTime[2] + splitDateTime[3];
+			result += " UTC" + splitDateTime[3] + splitDateTime[4];
 		}
 		return result;
 	},

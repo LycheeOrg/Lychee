@@ -25,8 +25,8 @@ class HasManyChildAlbums extends HasManyBidirectionally
 		// The parent constructor calls `addConstraints` and thus our own
 		// attributes must be initialized by then
 		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
-		$this->sortingCol = Configs::get_value('sorting_Albums_col');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
+		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
+		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
 		parent::__construct(
 			$owningAlbum->newQuery(),
 			$owningAlbum,
@@ -85,8 +85,8 @@ class HasManyChildAlbums extends HasManyBidirectionally
 	{
 		$dictionary = $this->buildDictionary($results);
 
-		$sortingCol = Configs::get_value('sorting_Albums_col');
-		$sortingOrder = Configs::get_value('sorting_Albums_order');
+		$sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
+		$sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
 
 		// Once we have the dictionary we can simply spin through the parent models to
 		// link them up with their children using the keyed dictionary to make the

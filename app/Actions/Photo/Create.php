@@ -22,6 +22,7 @@ use App\Factories\AlbumFactory;
 use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
+use App\SmartAlbums\BaseSmartAlbum;
 use App\SmartAlbums\PublicAlbum;
 use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -220,10 +221,13 @@ class Create
 			if ($album instanceof Album) {
 				// we save it, so we don't have to query it again later
 				$this->strategyParameters->album = $album;
-			} elseif ($album instanceof PublicAlbum) {
-				$this->strategyParameters->is_public = true;
-			} elseif ($album instanceof StarredAlbum) {
-				$this->strategyParameters->is_starred = true;
+			} elseif ($album instanceof BaseSmartAlbum) {
+				$this->strategyParameters->album = null;
+				if ($album instanceof PublicAlbum) {
+					$this->strategyParameters->is_public = true;
+				} elseif ($album instanceof StarredAlbum) {
+					$this->strategyParameters->is_starred = true;
+				}
 			} else {
 				throw new InvalidPropertyException('The given parent album does not support uploading');
 			}

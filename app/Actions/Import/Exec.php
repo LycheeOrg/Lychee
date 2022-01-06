@@ -321,8 +321,10 @@ class Exec
 			$album = null;
 			if ($this->importMode->shallSkipDuplicates()) {
 				$album = Album::query()
-					->where('parent_id', '=', $albumID == 0 ? null : $albumID)
-					->where('title', '=', basename($dir))
+					->select(['albums.*'])
+					->join('base_albums', 'base_albums.id', '=', 'albums.id')
+					->where('albums.parent_id', '=', $albumID)
+					->where('base_albums.title', '=', basename($dir))
 					->get()
 					->first();
 			}

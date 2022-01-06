@@ -62,8 +62,14 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
+		/** @var Album $album */
+		$album = $this->parent;
+
 		return (new SortingDecorator($this->query))
-			->orderBy('photos.' . $this->parent->sorting_col, $this->parent->sorting_order)
+			->orderBy(
+				'photos.' . $album->getEffectiveSortingCol(),
+				$album->getEffectiveSortingOrder()
+			)
 			->get();
 	}
 
@@ -92,8 +98,14 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
+				/** @var string $col */
+				$col = $model->getEffectiveSortingCol();
 				$childrenOfModel = $childrenOfModel
-					->sortBy($model->sorting_col, SORT_NATURAL | SORT_FLAG_CASE, $model->sorting_order === 'DESC')
+					->sortBy(
+						$col,
+						in_array($col, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+						$model->getEffectiveSortingOrder() === 'DESC'
+					)
 					->values();
 				$model->setRelation($relation, $childrenOfModel);
 				// This is the newly added code which sets this method apart

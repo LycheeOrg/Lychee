@@ -21,8 +21,8 @@ class Tree
 	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
-		$this->sortingCol = Configs::get_value('sorting_Albums_col');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order');
+		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
+		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
 	}
 
 	/**
@@ -50,16 +50,26 @@ class Tree
 		 */
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query());
-		/** @var NsCollection $albums */
-		$albums = (new SortingDecorator($query))
-			->orderBy($this->sortingCol, $this->sortingOrder)
-			->get();
 
 		if (AccessControl::is_logged_in()) {
+			// For authenticated users we group albums by ownership.
+			/** @var NsCollection $albums */
+			$albums = (new SortingDecorator($query))
+				->orderBy('owner_id')
+				->orderBy($this->sortingCol, $this->sortingOrder)
+				->get();
+
 			$id = AccessControl::id();
 			/** @var NsCollection $sharedAlbums */
 			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id == $id);
 			$return['shared_albums'] = $this->toArray($sharedAlbums->toTree());
+		} else {
+			// For anonymous users we don't want to implicitly expose
+			// ownership via sorting.
+			/** @var NsCollection $albums */
+			$albums = (new SortingDecorator($query))
+				->orderBy($this->sortingCol, $this->sortingOrder)
+				->get();
 		}
 
 		$return['albums'] = $this->toArray($albums->toTree());

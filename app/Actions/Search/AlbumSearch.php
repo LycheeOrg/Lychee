@@ -26,8 +26,8 @@ class AlbumSearch
 	 */
 	public function query(array $terms): Collection
 	{
-		$sortingCol = Configs::get_value('sorting_Albums_col');
-		$sortingOrder = Configs::get_value('sorting_Albums_order');
+		$sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
+		$sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
 
 		$tagAlbums = (new SortingDecorator($this->createTagAlbumQuery($terms)))
 			->orderBy($sortingCol, $sortingOrder)

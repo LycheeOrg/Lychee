@@ -173,6 +173,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $hidden = [
 		HasRandomID::LEGACY_ID_NAME,
+		'owner_id',
 		'owner',
 		'password',
 	];
@@ -215,24 +216,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 			'base_album_id',
 			'user_id'
 		);
-	}
-
-	protected function getSortingColAttribute(?string $value): ?string
-	{
-		if (empty($value) || empty($this->attributes['sorting_order'])) {
-			return Configs::get_value('sorting_Photos_col');
-		} else {
-			return $value;
-		}
-	}
-
-	protected function getSortingOrderAttribute(?string $value): ?string
-	{
-		if (empty($value) || empty($this->attributes['sorting_col'])) {
-			return Configs::get_value('sorting_Photos_order');
-		} else {
-			return $value;
-		}
 	}
 
 	protected function getGrantsFullPhotoAttribute(bool $value): bool
