@@ -282,8 +282,11 @@ class Exec
 			// Folder
 			$album = null;
 			if ($this->skip_duplicates) {
-				$album = Album::where('parent_id', '=', $albumID == 0 ? null : $albumID)
-					->where('title', '=', basename($dir))
+				$album = Album::query()
+					->select(['albums.*'])
+					->join('base_albums', 'base_albums.id', '=', 'albums.id')
+					->where('albums.parent_id', '=', $albumID)
+					->where('base_albums.title', '=', basename($dir))
 					->get()
 					->first();
 			}
