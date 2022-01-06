@@ -171,18 +171,6 @@ class Album extends BaseAlbum implements Node
 				return false;
 			}
 
-			// Delete all recursive child albums
-			// Note, although `parent::delete` also deletes all descendants,
-			// we must explicitly delete all descendants first.
-			// The implementation of the parent class is buggy.
-			// It first tries to delete the parent album and then deletes all
-			// child albums.
-			// However, this always fail due to foreign key constraints between
-			// an albums `parent_id` and the `id` of the parent.
-			// Child albums must be deleted in correct order from the leaf to the
-			// root.
-			$this->deleteDescendants();
-
 			// Finally, delete the album itself
 			// Note, we need this strange condition, because `delete` may also
 			// return `null` on success, so we must explicitly test for
