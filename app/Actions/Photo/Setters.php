@@ -16,6 +16,6 @@ class Setters
 
 	public function do(array $photoIDs, ?string $value): bool
 	{
-		return Photo::query()->whereIn('id', $photoIDs)->update([$this->property => $value]);
+		return Photo::query()->whereIn('id', $photoIDs)->update([$this->property => $value]) > 0;
 	}
 }
