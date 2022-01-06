@@ -25,6 +25,9 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property Photo|null        $cover
  * @property int               $_lft
  * @property int               $_rgt
+ *
+ * @method static       AlbumBuilder query()
+ * @method AlbumBuilder newModelQuery()
  */
 class Album extends BaseAlbum implements Node
 {
@@ -148,44 +151,54 @@ class Album extends BaseAlbum implements Node
 
 	public function delete(): bool
 	{
-		$this->refreshNode();
+		try {
+			$this->refreshNode();
 
-		$success = true;
+			$success = true;
 
-		// Delete all recursive child photos first
-		$photos = $this->all_photos()->lazy();
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			// This also takes care of proper deletion of physical files from disk
+			// Delete all recursive child photos first
+			$photos = $this->all_photos()->lazy();
+			/** @var Photo $photo */
+			foreach ($photos as $photo) {
+				// This also takes care of proper deletion of physical files from disk
+				// Note, we need this strange condition, because `delete` may also
+				// return `null` on success, so we must explicitly test for
+				// _not `false`_.
+				$success &= ($photo->delete() !== false);
+			}
+
+			if (!$success) {
+				return false;
+			}
+
+			// Delete all recursive child albums
+			// Note, although `parent::delete` also deletes all descendants,
+			// we must explicitly delete all descendants first.
+			// The implementation of the parent class is buggy.
+			// It first tries to delete the parent album and then deletes all
+			// child albums.
+			// However, this always fail due to foreign key constraints between
+			// an albums `parent_id` and the `id` of the parent.
+			// Child albums must be deleted in correct order from the leaf to the
+			// root.
+			$this->deleteDescendants();
+
+			// Finally, delete the album itself
 			// Note, we need this strange condition, because `delete` may also
 			// return `null` on success, so we must explicitly test for
 			// _not `false`_.
-			$success &= ($photo->delete() !== false);
+			$success &= (parent::delete() !== false);
+
+			return $success;
+		} catch (\Exception $e) {
+			try {
+				// if anything goes wrong, don't leave the tree in an inconsistent state
+				$this->newModelQuery()->fixTree();
+			} catch (\Throwable) {
+				// Sic! We cannot do anything about the inner exception
+			}
+			throw $e;
 		}
-
-		if (!$success) {
-			return false;
-		}
-
-		// Delete all recursive child albums
-		// Note, although `parent::delete` also deletes all descendants,
-		// we must explicitly delete all descendants first.
-		// The implementation of the parent class is buggy.
-		// It first tries to delete the parent album and then deletes all
-		// child albums.
-		// However, this always fail due to foreign key constraints between
-		// an albums `parent_id` and the `id` of the parent.
-		// Child albums must be deleted in correct order from the leaf to the
-		// root.
-		$this->deleteDescendants();
-
-		// Finally, delete the album itself
-		// Note, we need this strange condition, because `delete` may also
-		// return `null` on success, so we must explicitly test for
-		// _not `false`_.
-		$success &= (parent::delete() !== false);
-
-		return $success;
 	}
 
 	/**
