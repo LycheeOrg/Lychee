@@ -212,24 +212,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		);
 	}
 
-	protected function getSortingColAttribute(?string $value): ?string
-	{
-		if (empty($value) || empty($this->attributes['sorting_order'])) {
-			return Configs::get_value('sorting_Photos_col');
-		} else {
-			return $value;
-		}
-	}
-
-	protected function getSortingOrderAttribute(?string $value): ?string
-	{
-		if (empty($value) || empty($this->attributes['sorting_col'])) {
-			return Configs::get_value('sorting_Photos_order');
-		} else {
-			return $value;
-		}
-	}
-
 	protected function getGrantsFullPhotoAttribute(bool $value): bool
 	{
 		if ($this->is_public) {
@@ -268,10 +250,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		if (AccessControl::is_logged_in()) {
 			$result['owner_name'] = $this->owner->name();
 		}
-		// We want the "raw" values from the DB without the tweaks from
-		// getSortingColAttribute() and getSortingOrderAttribute().
-		$result['sorting_col'] = $this->attributes['sorting_col'];
-		$result['sorting_order'] = $this->attributes['sorting_order'];
 
 		return $result;
 	}
