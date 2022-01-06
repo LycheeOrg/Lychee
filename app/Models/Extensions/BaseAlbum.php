@@ -95,22 +95,32 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 		return array_merge(parent::toArray(), $this->base_class->toArray());
 	}
 
+	/**
+	 * Returns the attribute acc. to which **photos** inside the album shall be sorted.
+	 *
+	 * @return string the attribute acc. to which **photos** inside the album shall be sorted
+	 */
 	public function getEffectiveSortingCol(): string
 	{
 		$sortingCol = $this->sorting_col;
 
 		return empty($sortingCol) ?
-			Configs::get_value('sorting_Albums_col', 'created_at') :
+			Configs::get_value('sorting_Photos_col', 'created_at') :
 			$sortingCol;
 	}
 
+	/**
+	 * Returns the direction acc. to which **photos** inside the album shall be sorted.
+	 *
+	 * @return string the direction acc. to which **photos** inside the album shall be sorted
+	 */
 	public function getEffectiveSortingOrder(): string
 	{
 		$sortingCol = $this->sorting_col;
 		$sortingOrder = $this->sorting_order;
 
 		return empty($sortingCol) || empty($sortingOrder) ?
-			Configs::get_value('sorting_Albums_order', 'ASC') :
+			Configs::get_value('sorting_Photos_order', 'ASC') :
 			$sortingOrder;
 	}
 }
