@@ -3,6 +3,7 @@
 namespace App\Actions\Album;
 
 use App\Models\Album;
+use App\Models\BaseAlbumImpl;
 use App\Models\Logs;
 use App\Models\Photo;
 use Kalnoy\Nestedset\QueryBuilder as NSQueryBuilder;
@@ -56,7 +57,15 @@ class Merge extends Action
 		}
 
 		// Reset ownership
-		$targetAlbum->descendants()->update(['owner_id' => $targetAlbum->owner_id]);
-		$targetAlbum->all_photos()->update(['owner_id' => $targetAlbum->owner_id]);
+		$targetAlbum->refreshNode();
+		$descendantIDs = $targetAlbum->descendants()->pluck('id');
+		// Note, the property `owner_id` is defined on the base class of
+		// all model albums.
+		// For optimization, we do not load the album models but perform
+		// the update directly on the database.
+		// Hence, we must use `BaseAlbumImpl`.
+		BaseAlbumImpl::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
+		$descendantIDs[] = $targetAlbum->getKey();
+		Photo::query()->whereIn('album_id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
 	}
 }

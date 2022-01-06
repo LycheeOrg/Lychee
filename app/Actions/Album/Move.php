@@ -36,6 +36,7 @@ class Move extends Action
 		// Tree should be updated by itself here.
 
 		if ($targetAlbum) {
+			$targetAlbum->refreshNode();
 			// Update ownership to owner of target album
 			$descendantIDs = $targetAlbum->descendants()->pluck('id');
 			// Note, the property `owner_id` is defined on the base class of
@@ -44,8 +45,7 @@ class Move extends Action
 			// the update directly on the database.
 			// Hence, we must use `BaseAlbumImpl`.
 			BaseAlbumImpl::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
-			$descendantIDs[] = $targetAlbum->getKey();
-			Photo::query()->whereIn('id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
+			Photo::query()->whereIn('album_id', $descendantIDs)->update(['owner_id' => $targetAlbum->owner_id]);
 		}
 	}
 }
