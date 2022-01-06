@@ -252,8 +252,8 @@ class Exec
 					// be called for each file.
 					$photoCreate = new PhotoCreate(new ImportMode(
 						$this->delete_imported,
-						$this->import_via_symlink,
 						$this->skip_duplicates,
+						$this->import_via_symlink,
 						$this->resync_metadata
 					));
 					if (
