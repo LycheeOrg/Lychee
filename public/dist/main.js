@@ -1127,10 +1127,10 @@ album.setTitle = function (albumIDs) {
 };
 
 album.setDescription = function (albumID) {
-	var oldDescription = album.json.description;
+	var oldDescription = album.json.description ? album.json.description : "";
 
 	var action = function action(data) {
-		var description = data.description;
+		var description = data.description ? data.description : null;
 
 		basicModal.close();
 
@@ -1237,7 +1237,7 @@ album.setLicense = function (albumID) {
 album.setSorting = function (albumID) {
 	var callback = function callback() {
 		$("select#sortingCol").val(album.json.sorting_col);
-		$("select#sortingOrder").val(album.json.sorting_order);
+		$("select#sortingOrder").val(album.json.sorting_order === null ? "ASC" : album.json.sorting_order);
 		return false;
 	};
 
@@ -1643,7 +1643,7 @@ album.delete = function (albumIDs) {
 			} else albumTitle = album.getSubByID(albumIDs[0]).title;
 		}
 		if (!albumTitle) {
-			var _a3 = albums.getByID(albumIDs);
+			var _a3 = albums.getByID(albumIDs[0]);
 			if (_a3) albumTitle = _a3.title;
 		}
 
@@ -3133,6 +3133,9 @@ contextMenu.close = function () {
 
 contextMenu.config = function (e) {
 	var items = [{ title: build.iconic("cog") + lychee.locale["SETTINGS"], fn: settings.open }];
+	if (lychee.new_photos_notification) {
+		items.push({ title: build.iconic("bell") + lychee.locale["NOTIFICATIONS"], fn: notifications.load });
+	}
 	if (lychee.admin) {
 		items.push({ title: build.iconic("person") + lychee.locale["USERS"], fn: users.list });
 	}
@@ -3994,6 +3997,8 @@ leftMenu.dom = function (selector) {
 	return leftMenu._dom.find(selector);
 };
 
+// Note: on mobile we use a context menu instead; please make sure that
+// contextMenu.config is kept in sync with any changes here!
 leftMenu.build = function () {
 	var html = lychee.html(_templateObject44, lychee.locale["CLOSE"], lychee.locale["SETTINGS"]);
 	if (lychee.new_photos_notification) {
@@ -6781,7 +6786,7 @@ _photo.setTitle = function (photoIDs) {
 
 	if (photoIDs.length === 1) {
 		// Get old title if only one photo is selected
-		if (_photo.json) oldTitle = _photo.json.title;else if (album.json) oldTitle = album.getByID(photoIDs).title;
+		if (_photo.json) oldTitle = _photo.json.title;else if (album.json) oldTitle = album.getByID(photoIDs[0]).title;
 	}
 
 	var action = function action(data) {
@@ -7055,12 +7060,12 @@ _photo.setPublic = function (photoID, e) {
 };
 
 _photo.setDescription = function (photoID) {
-	var oldDescription = _photo.json.description;
+	var oldDescription = _photo.json.description ? _photo.json.description : "";
 
 	var action = function action(data) {
 		basicModal.close();
 
-		var description = data.description === "" ? null : data.description;
+		var description = data.description ? data.description : null;
 
 		if (visible.photo()) {
 			_photo.json.description = description;
@@ -7102,7 +7107,7 @@ _photo.editTags = function (photoIDs) {
 	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
 	// Get tags
-	if (visible.photo()) oldTags = _photo.json.tags;else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs).tags;else if (visible.album() && photoIDs.length > 1) {
+	if (visible.photo()) oldTags = _photo.json.tags;else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs[0]).tags;else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs[0]).tags;else if (visible.album() && photoIDs.length > 1) {
 		var same = true;
 		photoIDs.forEach(function (id) {
 			same = album.getByID(id).tags === album.getByID(photoIDs[0]).tags && same === true;
@@ -8285,13 +8290,13 @@ _sidebar.setSelectable = function () {
 };
 
 _sidebar.changeAttr = function (attr) {
-	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "-";
+	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 	var dangerouslySetInnerHTML = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 	if (attr == null || attr === "") return false;
 
 	// Set a default for the value
-	if (value == null || value === "") value = "-";
+	if (value === null) value = "";
 
 	// Escape value
 	if (dangerouslySetInnerHTML === false) value = lychee.escapeHTML(value);
@@ -8361,7 +8366,7 @@ _sidebar.createStructure.photo = function (data) {
 	structure.basics = {
 		title: lychee.locale["PHOTO_BASICS"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	structure.image = {
@@ -8494,16 +8499,18 @@ _sidebar.createStructure.album = function (album) {
 			break;
 	}
 
-	if (data.sorting_col === "") {
-		sorting = lychee.locale["DEFAULT"];
-	} else {
-		sorting = data.sorting_col + " " + data.sorting_order;
+	if (!lychee.publicMode) {
+		if (data.sorting_col === null) {
+			sorting = lychee.locale["DEFAULT"];
+		} else {
+			sorting = data.sorting_col + " " + data.sorting_order;
+		}
 	}
 
 	structure.basics = {
 		title: lychee.locale["ALBUM_BASICS"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["ALBUM_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["ALBUM_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["ALBUM_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	if (album.isTagAlbum()) {
@@ -8533,7 +8540,7 @@ _sidebar.createStructure.album = function (album) {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_VIDEOS"], kind: "videos", value: videoCount });
 	}
 
-	if (data.photos) {
+	if (data.photos && sorting !== "") {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_ORDERING"], kind: "sorting", value: sorting, editable: editable });
 	}
 
@@ -10802,7 +10809,9 @@ view.notifications = {
 	init: function init() {
 		multiselect.clearSelection();
 
+		view.photo.hide();
 		view.notifications.title();
+		header.setMode("config");
 		view.notifications.content.init();
 	},
 

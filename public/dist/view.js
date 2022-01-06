@@ -1521,13 +1521,13 @@ sidebar.setSelectable = function () {
 };
 
 sidebar.changeAttr = function (attr) {
-	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "-";
+	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 	var dangerouslySetInnerHTML = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
 	if (attr == null || attr === "") return false;
 
 	// Set a default for the value
-	if (value == null || value === "") value = "-";
+	if (value === null) value = "";
 
 	// Escape value
 	if (dangerouslySetInnerHTML === false) value = lychee.escapeHTML(value);
@@ -1597,7 +1597,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.basics = {
 		title: lychee.locale["PHOTO_BASICS"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["PHOTO_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["PHOTO_UPLOADED"], kind: "uploaded", value: lychee.locale.printDateTime(data.created_at) }, { title: lychee.locale["PHOTO_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	structure.image = {
@@ -1730,16 +1730,18 @@ sidebar.createStructure.album = function (album) {
 			break;
 	}
 
-	if (data.sorting_col === "") {
-		sorting = lychee.locale["DEFAULT"];
-	} else {
-		sorting = data.sorting_col + " " + data.sorting_order;
+	if (!lychee.publicMode) {
+		if (data.sorting_col === null) {
+			sorting = lychee.locale["DEFAULT"];
+		} else {
+			sorting = data.sorting_col + " " + data.sorting_order;
+		}
 	}
 
 	structure.basics = {
 		title: lychee.locale["ALBUM_BASICS"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["ALBUM_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["ALBUM_DESCRIPTION"], kind: "description", value: data.description, editable: editable }]
+		rows: [{ title: lychee.locale["ALBUM_TITLE"], kind: "title", value: data.title, editable: editable }, { title: lychee.locale["ALBUM_DESCRIPTION"], kind: "description", value: data.description ? data.description : "", editable: editable }]
 	};
 
 	if (album.isTagAlbum()) {
@@ -1769,7 +1771,7 @@ sidebar.createStructure.album = function (album) {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_VIDEOS"], kind: "videos", value: videoCount });
 	}
 
-	if (data.photos) {
+	if (data.photos && sorting !== "") {
 		structure.album.rows.push({ title: lychee.locale["ALBUM_ORDERING"], kind: "sorting", value: sorting, editable: editable });
 	}
 
