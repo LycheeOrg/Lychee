@@ -9284,24 +9284,19 @@ upload.start = {
 				return;
 			}
 
-			var delete_imported = !!$(choiceDeleteSelector).prop("checked");
-			var import_via_symlink = !!$(choiceSymlinkSelector).prop("checked");
-			var skip_duplicates = !!$(choiceDuplicateSelector).prop("checked");
-			var resync_metadata = !!$(choiceResyncSelector).prop("checked");
-			var cancelUpload = false;
+			var isUploadCancelled = false;
 
-			upload.show(lychee.locale["UPLOAD_IMPORT_SERVER"], [{ name: data.path }], function () {
+			var cancelUpload = function cancelUpload() {
+				if (!isUploadCancelled) {
+					api.post("Import::serverCancel", {}, function () {
+						isUploadCancelled = true;
+					});
+				}
+			};
+
+			var runUpload = function runUpload() {
 				$(cancelSelector).show();
 				$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_IMPORTING"]);
-
-				var params = {
-					albumID: albumID,
-					path: data.path,
-					delete_imported: delete_imported,
-					import_via_symlink: import_via_symlink,
-					skip_duplicates: skip_duplicates,
-					resync_metadata: resync_metadata
-				};
 
 				// Variables holding state across the invocations of
 				// processIncremental().
@@ -9327,7 +9322,12 @@ upload.start = {
      * @param {Report[]} reports
      */
 				var processIncremental = function processIncremental(reports) {
-					reports.slice(lastReadIdx + 1).forEach(function (report) {
+					console.group("processIncremental called");
+					console.debug("lastReadIdx: ", lastReadIdx);
+					console.debug("reports.length: ", reports.length);
+					console.debug("reports: ", reports);
+					reports.slice(lastReadIdx).forEach(function (report) {
+						console.debug("current report: ", report);
 						if (report.type === "progress") {
 							if (report.message !== 100) {
 								if (currentDir !== report.key) {
@@ -9390,12 +9390,17 @@ upload.start = {
 						}
 						$(".basicModal .rows").scrollTop(topSkip);
 					}); // forEach (resp)
+					console.groupEnd();
 					lastReadIdx = reports.length;
 				}; // processIncremental
 
-				api.post("Import::server", params, function (_data) {
-					// _data is already JSON-parsed.
-					processIncremental(_data);
+				/**
+     * @param {Report[]} reports
+     */
+				var successHandler = function successHandler(reports) {
+					console.debug("successHandler called");
+					// reports is already JSON-parsed.
+					processIncremental(reports);
 
 					albums.refresh();
 
@@ -9404,7 +9409,13 @@ upload.start = {
 					if (albumID === null) lychee.goto();else album.load(albumID);
 
 					if (encounteredProblems) showCloseButton();else basicModal.close();
-				}, function (event) {
+				};
+
+				/**
+     * @this {XMLHttpRequest}
+     */
+				var progressHandler = function progressHandler() {
+					console.group("progressHandler called");
 					/** @type {string} */
 					var response = this.response;
 					/** @type {Report[]} */
@@ -9413,25 +9424,27 @@ upload.start = {
 					// We must ensure that the last object in the
 					// array is complete and terminate the array.
 					while (response.length > 2 && reports.length === 0) {
+						// Search the last '}', assume that this terminates
+						// the last JSON object, cut the string and terminate
+						// the array with `]`.
+						var fixedResponse = response.substring(0, response.lastIndexOf("}") + 1) + "]";
 						try {
-							// Search the last '}', assume that this
-							// terminates the last JSON object, cut
-							// the string and terminate the array with
-							// `]`.
-							// If the assumption is wrong and the last
-							// found '}'  does not terminate the last
-							// object (i.e. the last '}' has occurred
-							// inside the string for a file name),
-							// then `JSON.parse` will fail and tell us
-							// where the problem occurred.
-							reports = JSON.parse(response.substring(0, response.lastIndexOf("}") + 1) + "]");
+							// If the assumption is wrong and the last found
+							// '}'  does not terminate the last object, then
+							// `JSON.parse` will fail and tell us where the
+							// problem occurred.
+							reports = JSON.parse(fixedResponse);
 						} catch (e) {
+							console.debug("response: ", response);
 							if (e instanceof SyntaxError) {
+								console.error("Syntax error: ", e);
 								var errorPos = e.columnNumber;
 								var lastBrace = response.lastIndexOf("}");
 								var cutResponse = errorPos < lastBrace ? errorPos : lastBrace;
 								response = response.substring(0, cutResponse);
+								console.debug("truncated response: ", response);
 							} else {
+								console.error("Unknown error: ", e);
 								// Something else went wrong
 								$(lastRowSelector + " .status").html(lychee.locale["UPLOAD_FAILED"]).addClass("error");
 
@@ -9446,17 +9459,25 @@ upload.start = {
 							}
 						}
 					}
+					console.groupEnd();
 					// The rest of the work is the same as for the full
 					// response.
 					processIncremental(reports);
-				}); // api.post
-			}, function () {
-				if (!cancelUpload) {
-					api.post("Import::serverCancel", {}, function () {
-						cancelUpload = true;
-					});
-				}
-			}); // upload.show
+				};
+
+				var params = {
+					albumID: albumID,
+					path: data.path,
+					delete_imported: !!$(choiceDeleteSelector).prop("checked"),
+					import_via_symlink: !!$(choiceSymlinkSelector).prop("checked"),
+					skip_duplicates: !!$(choiceDuplicateSelector).prop("checked"),
+					resync_metadata: !!$(choiceResyncSelector).prop("checked")
+				};
+
+				api.post("Import::server", params, successHandler, progressHandler);
+			};
+
+			upload.show(lychee.locale["UPLOAD_IMPORT_SERVER"], [{ name: data.path }], runUpload, cancelUpload);
 		}; // action
 
 		var msg = lychee.html(_templateObject77, lychee.locale["UPLOAD_IMPORT_SERVER_INSTR"], lychee.locale["UPLOAD_ABSOLUTE_PATH"], lychee.location);
