@@ -60,9 +60,20 @@ class Tree
 				->get();
 
 			$id = AccessControl::id();
+			// ATTENTION:
+			// For this to work correctly, it is crucial that all child albums
+			// below each top-level album have the same owner!
+			// Otherwise, this partitioning tears apart albums of the same
+			// (sub)-tree and then `toTree` will return garbage as it does
+			// not find connected paths within `$albums` or `$sharedAlbums`,
+			// resp.
 			/** @var NsCollection $sharedAlbums */
 			list($albums, $sharedAlbums) = $albums->partition(fn ($album) => $album->owner_id == $id);
-			$return['shared_albums'] = $this->toArray($sharedAlbums->toTree());
+			// We must explicitly pass `null` as the ID of the root album
+			// as there are several top-level albums below root.
+			// Otherwise, `toTree` uses the ID of the album with the lowest
+			// `_lft` value as the (wrong) root album.
+			$return['shared_albums'] = $this->toArray($sharedAlbums->toTree(null));
 		} else {
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
@@ -72,7 +83,11 @@ class Tree
 				->get();
 		}
 
-		$return['albums'] = $this->toArray($albums->toTree());
+		// We must explicitly pass `null` as the ID of the root album
+		// as there are several top-level albums below root.
+		// Otherwise, `toTree` uses the ID of the album with the lowest
+		// `_lft` value as the (wrong) root album.
+		$return['albums'] = $this->toArray($albums->toTree(null));
 
 		return $return;
 	}

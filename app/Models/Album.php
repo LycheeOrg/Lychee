@@ -176,23 +176,11 @@ class Album extends BaseAlbum implements Node
 	/**
 	 * Recursively deletes the album incl. potential sub-albums and photos.
 	 *
-	 * Note, this method only deletes albums and photos which are owned by
-	 * the current user.
-	 * If the album is not empty (after all sub-albums and photos which have
-	 * been owned by the user have been deleted), the album is not deleted.
-	 *
-	 * Note, the parameter `$skipTreeFixing` should not be used by an external
-	 * caller (but left equal to its default `false`).
-	 * This flag is only internally used by this method for better performance
-	 * and skips rebuilding the tree after each recursion step.
-	 *
-	 * @param bool $skipTreeFixing
-	 *
 	 * @return bool always returns true
 	 *
 	 * @throws ModelDBException
 	 */
-	public function delete(bool $skipTreeFixing = false): bool
+	public function delete(): bool
 	{
 		try {
 			$this->refreshNode();
@@ -221,6 +209,50 @@ class Album extends BaseAlbum implements Node
 			}
 			throw $e;
 		}
+	}
+
+	/**
+	 * Sets the ownership of all child albums and child photos to the owner
+	 * of this album.
+	 *
+	 * ANSI SQL does not allow a `JOIN`-clause in the table reference
+	 * of `UPDATE` statements.
+	 * MySQL and PostgreSQL have their proprietary but different
+	 * extension for that, SQLite does not support it at all.
+	 * Hence, we must use a (slightly) less efficient, but
+	 * SQL-compatible `WHERE EXIST` condition instead of a `JOIN`.
+	 * This also means that we cannot use the succinct statements
+	 *
+	 *     $this->descendants()->update(['owner_id' => $this->owner_id])
+	 *     $this->all_photos()->update(['owner_id' => $this->owner_id])
+	 *
+	 * because these method return queries which use `JOINS`.
+	 * So, we need to build the queries from scratch.
+	 *
+	 * @return void
+	 */
+	public function fixOwnershipOfChildren(): void
+	{
+		$this->refreshNode();
+		$lft = $this->_lft;
+		$rgt = $this->_rgt;
+
+		BaseAlbumImpl::query()
+			->whereExists(function (BaseBuilder $q) use ($lft, $rgt) {
+				$q
+					->from('albums')
+					->whereColumn('base_albums.id', '=', 'albums.id')
+					->whereBetween('albums._lft', [$lft + 1, $rgt - 1]);
+			})
+			->update(['owner_id' => $this->owner_id]);
+		Photo::query()
+			->whereExists(function (BaseBuilder $q) use ($lft, $rgt) {
+				$q
+					->from('albums')
+					->whereColumn('photos.album_id', '=', 'albums.id')
+					->whereBetween('albums._lft', [$lft, $rgt]);
+			})
+			->update(['owner_id' => $this->owner_id]);
 	}
 
 	/**

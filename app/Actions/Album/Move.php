@@ -5,8 +5,6 @@ namespace App\Actions\Album;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\ModelDBException;
 use App\Models\Album;
-use App\Models\BaseAlbumImpl;
-use App\Models\Photo;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Move extends Action
@@ -24,7 +22,6 @@ class Move extends Action
 	public function do(?string $targetAlbumID, array $albumIDs): void
 	{
 		if (empty($targetAlbumID)) {
-			$targetAlbumID = null;
 			$targetAlbum = null;
 		} else {
 			/** @var Album $targetAlbum */
@@ -33,30 +30,25 @@ class Move extends Action
 
 		$albums = Album::query()->whereIn('id', $albumIDs)->get();
 
-		// Merge source albums to target
-		// We have to do it via Model::save() in order to not break the tree
-		/** @var Album $album */
-		foreach ($albums as $album) {
-			$album->parent_id = $targetAlbumID;
-			$album->save();
-		}
-		// Tree should be updated by itself here.
-
+		// Move source albums into target
 		if ($targetAlbum) {
-			// Update ownership to owner of target album
-			$descendantIDs = $targetAlbum->descendants()->pluck('id');
-			// Note, the property `owner_id` is defined on the base class of
-			// all model albums.
-			// For optimization, we do not load the album models but perform
-			// the update directly on the database.
-			// Hence, we must use `BaseAlbumImpl`.
-			BaseAlbumImpl::query()
-				->whereIn('id', $descendantIDs)
-				->update(['owner_id' => $targetAlbum->owner_id]);
-			$descendantIDs[] = $targetAlbum->getKey();
-			Photo::query()
-				->whereIn('id', $descendantIDs)
-				->update(['owner_id' => $targetAlbum->owner_id]);
+			/** @var Album $album */
+			foreach ($albums as $album) {
+				// Don't set attribute `parent_id` manually, but use specialized
+				// methods of the nested set `NodeTrait` to keep the enumeration
+				// of the tree consistent
+				// `appendNode` also internally calls `save` on the model
+				$targetAlbum->appendNode($album);
+			}
+			$targetAlbum->fixOwnershipOfChildren();
+		} else {
+			/** @var Album $album */
+			foreach ($albums as $album) {
+				// Don't set attribute `parent_id` manually, but use specialized
+				// methods of the nested set `NodeTrait` to keep the enumeration
+				// of the tree consistent
+				$album->saveAsRoot();
+			}
 		}
 	}
 }

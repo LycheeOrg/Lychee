@@ -37,14 +37,15 @@ class Create extends Action
 		if ($parent_id !== null) {
 			/** @var Album $parent */
 			$parent = Album::query()->findOrFail($parent_id);
-			$album->parent_id = $parent_id;
-
 			// Admin can add sub-albums to other users' albums.  Make sure that
 			// the ownership stays with that user.
 			$album->owner_id = $parent->owner_id;
+			// Don't set attribute `parent_id` manually, but use specialized
+			// methods of the nested set `NodeTrait`.
+			$album->appendToNode($parent);
 		} else {
-			$album->parent_id = null;
 			$album->owner_id = AccessControl::id();
+			$album->makeRoot();
 		}
 	}
 }
