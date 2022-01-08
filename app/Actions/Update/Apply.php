@@ -104,11 +104,20 @@ class Apply
 	}
 
 	/**
-	 * call for migrate via the Artisan Facade.
+	 * Runs the migration via the Artisan Facade.
 	 *
-	 * @param string[] $output
+	 * **TODO:** Consolidate with {@link \App\Actions\Install\ApplyMigration::migrate()}.
+	 *
+	 * **ATTENTION:** This method serves the same purpose as
+	 * `ApplyMigration::migrate()`.
+	 * The whole code around installation/upgrade/migration should
+	 * thoroughly be revised an refactored.
+	 *
+	 * @param string[] $output list of messages
+	 *
+	 * @return void
 	 */
-	public function artisan(array &$output): void
+	public function migrate(array &$output): void
 	{
 		Artisan::call('migrate', ['--force' => true]);
 
@@ -149,7 +158,7 @@ class Apply
 			$this->check_prod_env_allow_migration($output)
 		) {
 			$this->lycheeVersion->isRelease or $this->git_pull($output);
-			$this->artisan($output);
+			$this->migrate($output);
 			$this->lycheeVersion->isRelease or $this->call_composer($output);
 		}
 		$this->filter($output);

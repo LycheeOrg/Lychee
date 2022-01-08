@@ -4,8 +4,8 @@ namespace App\Exceptions;
 
 use App\Contracts\HttpExceptionHandler;
 use App\Exceptions\Handlers\AccessDBDenied;
-use App\Exceptions\Handlers\InstallationRequired;
-use App\Exceptions\Handlers\MigrationRequired;
+use App\Exceptions\Handlers\InstallationHandler;
+use App\Exceptions\Handlers\MigrationHandler;
 use App\Exceptions\Handlers\NoEncryptionKey;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Arr;
@@ -49,8 +49,8 @@ class Handler extends ExceptionHandler
 		$checks = [
 			new NoEncryptionKey(),
 			new AccessDBDenied(),
-			new InstallationRequired(),
-			new MigrationRequired(),
+			new InstallationHandler(),
+			new MigrationHandler(),
 		];
 
 		foreach ($checks as $check) {

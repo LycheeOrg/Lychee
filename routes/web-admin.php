@@ -30,4 +30,4 @@ Route::get('/Logs', [LogController::class, 'view']);
 
 Route::get('/Diagnostics', [DiagnosticsController::class, 'view']);
 
-Route::get('/Update', [UpdateController::class, 'apply']);
+Route::get('/Update', [UpdateController::class, 'view']);

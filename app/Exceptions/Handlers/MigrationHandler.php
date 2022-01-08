@@ -3,26 +3,40 @@
 namespace App\Exceptions\Handlers;
 
 use App\Contracts\HttpExceptionHandler;
-use App\Exceptions\InstallationRequiredException;
-use App\Redirections\ToInstall;
+use App\Exceptions\MigrationAlreadyCompletedException;
+use App\Exceptions\MigrationRequiredException;
+use App\Redirections\ToHome;
+use App\Redirections\ToMigration;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 
 /**
- * Class InstallationRequired.
+ * Class MigrationHandler.
  *
- * If the exception {@link InstallationRequiredException} is thrown, we need
- * to run the installation.
+ * If the exception {@link MigrationRequiredException} or
+ * {@link MigrationAlreadyCompletedException} is thrown, this handler
+ * redirects to the migration or home page.
+ *
+ * Also see {@link InstallationHandler}.
  */
-class InstallationRequired implements HttpExceptionHandler
+class MigrationHandler implements HttpExceptionHandler
 {
+	protected bool $toMigration;
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function check(HttpException $e): bool
 	{
 		do {
-			if ($e instanceof InstallationRequiredException) {
+			if ($e instanceof MigrationRequiredException) {
+				$this->toMigration = true;
+
+				return true;
+			}
+			if ($e instanceof MigrationAlreadyCompletedException) {
+				$this->toMigration = false;
+
 				return true;
 			}
 		} while ($e = $e->getPrevious());
@@ -36,7 +50,7 @@ class InstallationRequired implements HttpExceptionHandler
 	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
 		try {
-			$redirectResponse = ToInstall::go();
+			$redirectResponse = $this->toMigration ? ToMigration::go() : ToHome::go();
 			$contentType = $defaultResponse->headers->get('Content-Type');
 			if (!empty($contentType)) {
 				$redirectResponse->headers->set('Content-Type', $contentType);

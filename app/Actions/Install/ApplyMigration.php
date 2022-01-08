@@ -28,6 +28,15 @@ class ApplyMigration
 	}
 
 	/**
+	 * Runs the migration via the Artisan Facade.
+	 *
+	 * **TODO:** Consolidate with {@link \App\Actions\Update\Apply::migrate()}.
+	 *
+	 * **ATTENTION:** This method serves the same purpose as
+	 * `ApplyMigration::migrate()`.
+	 * The whole code around installation/upgrade/migration should
+	 * thoroughly be revised an refactored.
+	 *
 	 * @param string[] $output list of messages
 	 *
 	 * @return void

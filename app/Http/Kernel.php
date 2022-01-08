@@ -94,7 +94,7 @@ class Kernel extends HttpKernel
 	protected $routeMiddleware = [
 		'admin' => \App\Http\Middleware\AdminCheck::class,
 		'installation' => \App\Http\Middleware\InstallationStatus::class,
-		'migrated' => \App\Http\Middleware\MigrationCheck::class,
+		'migration' => \App\Http\Middleware\MigrationStatus::class,
 		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,
 		'content_type' => \App\Http\Middleware\ContentType::class,
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,

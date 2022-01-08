@@ -9,6 +9,21 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\View\View;
 use Illuminate\Routing\Controller;
 
+/**
+ * Class MigrationController.
+ *
+ * Most likely, the concerns of this controller should be decomposed into two.
+ * Currently, this {@link MigrationController::view} does not only migrate the
+ * DB but also generates a new API key.
+ * The latter is only required for fresh installations, but not for DB
+ * migrations after an upgrade.
+ * This coupling of two logically, separate steps makes it impossible to use
+ * this controller for migration after an upgrade.
+ * See {@link \App\Http\Controllers\Administration\UpdateController} for more
+ * information.
+ *
+ * TODO: Revise and refactor the whole logic around installation/upgrade/migration.
+ */
 class MigrationController extends Controller
 {
 	protected ApplyMigration $applyMigration;
@@ -19,6 +34,20 @@ class MigrationController extends Controller
 	}
 
 	/**
+	 * Migrates the Lychee DB and generates a new API key.
+	 *
+	 * **TODO:** Consolidate with {@link \App\Http\Controllers\Administration\UpdateController::migrate()}.
+	 *
+	 * **ATTENTION:** This method serves a somewhat similar purpose as
+	 * `UpdateController::migrate()` except that the latter does not generate
+	 * a new API key.
+	 * Also note, that this method internally uses
+	 * {@link ApplyMigration::migrate()} while `UpdateController::migrate`
+	 * uses {@link \App\Actions\Update\Apply::migrate()}.
+	 * However, both methods are very similar, too.
+	 * The whole code around installation/upgrade/migration should
+	 * thoroughly be revised an refactored.
+	 *
 	 * @return View
 	 *
 	 * @throws FrameworkException
