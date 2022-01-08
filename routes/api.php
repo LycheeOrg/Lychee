@@ -23,21 +23,6 @@ if (config('app.env') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::post('/Session::init', [SessionController::class, 'init']);
-Route::post('/Session::login', [SessionController::class, 'login']);
-Route::post('/Session::logout', [SessionController::class, 'logout']);
-
-Route::post('/WebAuthn::register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
-Route::post('/WebAuthn::register', [Administration\WebAuthController::class, 'verifyRegistration']);
-Route::post('/WebAuthn::login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
-Route::post('/WebAuthn::login', [Administration\WebAuthController::class, 'verifyAuthentication']);
-Route::post('/WebAuthn::list', [Administration\WebAuthController::class, 'list']);
-Route::post('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete']);
-
-Route::post('/Albums::get', [AlbumsController::class, 'get']);
-Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
-Route::post('/Albums::tree', [AlbumsController::class, 'tree']);
-
 Route::post('/Album::get', [AlbumController::class, 'get']);
 Route::post('/Album::getPositionData', [AlbumController::class, 'getPositionData']);
 Route::post('/Album::unlock', [AlbumController::class, 'unlock']);
@@ -58,9 +43,17 @@ Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
 
+Route::post('/Albums::get', [AlbumsController::class, 'get']);
+Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);
+Route::post('/Albums::tree', [AlbumsController::class, 'tree']);
+
 Route::post('/Frame::getSettings', [FrameController::class, 'getSettings']);
 
-Route::post('/api/Legacy::translateLegacyModelIDs', [LegacyController::class, 'translateLegacyModelIDs']);
+Route::post('/Import::url', [ImportController::class, 'url']);
+Route::post('/Import::server', [ImportController::class, 'server'])->middleware('admin');
+Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
+
+Route::post('/Legacy::translateLegacyModelIDs', [LegacyController::class, 'translateLegacyModelIDs']);
 
 Route::post('/Photo::get', [PhotoController::class, 'get']);
 Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
@@ -83,14 +76,21 @@ Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 
 Route::post('/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
 
+Route::post('/Search::run', [SearchController::class, 'run']);
+
+Route::post('/Session::init', [SessionController::class, 'init']);
+Route::post('/Session::login', [SessionController::class, 'login']);
+Route::post('/Session::logout', [SessionController::class, 'logout']);
+
+Route::post('/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
+
 Route::post('/Sharing::list', [Administration\SharingController::class, 'list']);
 Route::post('/Sharing::add', [Administration\SharingController::class, 'add']);
 Route::post('/Sharing::delete', [Administration\SharingController::class, 'delete']);
 
-Route::post('/Settings::setLogin', [Administration\SettingsController::class, 'setLogin']);
-
-Route::post('/Import::url', [ImportController::class, 'url']);
-Route::post('/Import::server', [ImportController::class, 'server'])->middleware('admin');
-Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
-
-Route::post('/Search::run', [SearchController::class, 'run']);
+Route::post('/WebAuthn::register/gen', [Administration\WebAuthController::class, 'generateRegistration']);
+Route::post('/WebAuthn::register', [Administration\WebAuthController::class, 'verifyRegistration']);
+Route::post('/WebAuthn::login/gen', [Administration\WebAuthController::class, 'generateAuthentication']);
+Route::post('/WebAuthn::login', [Administration\WebAuthController::class, 'verifyAuthentication']);
+Route::post('/WebAuthn::list', [Administration\WebAuthController::class, 'list']);
+Route::post('/WebAuthn::delete', [Administration\WebAuthController::class, 'delete']);
