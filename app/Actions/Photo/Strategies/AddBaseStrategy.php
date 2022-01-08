@@ -130,6 +130,11 @@ abstract class AddBaseStrategy
 				Logs::error(__METHOD__, __LINE__, $msg);
 				throw new JsonError('$msg');
 			}
+			if (!chmod($targetFullPath, 0666 & ~umask(null))) {
+				$msg = 'Could not set permissions of "' . $targetFullPath . '"';
+				Logs::error(__METHOD__, __LINE__, $msg);
+				throw new JsonError('$msg');
+			}
 		} else {
 			// Check if the user wants to create symlinks instead of copying the photo
 			if ($this->parameters->importMode->shallImportViaSymlink()) {
