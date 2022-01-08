@@ -93,7 +93,4 @@ Route::post('/Import::url', [ImportController::class, 'url']);
 Route::post('/Import::server', [ImportController::class, 'server'])->middleware('admin');
 Route::post('/Import::serverCancel', [ImportController::class, 'serverCancel'])->middleware('admin');
 
-Route::post('/Diagnostics::get', [Administration\DiagnosticsController::class, 'get']);
-Route::post('/Diagnostics::getSize', [Administration\DiagnosticsController::class, 'getSize']);
-
 Route::post('/Search::run', [SearchController::class, 'run']);

@@ -26,6 +26,8 @@ if (env('APP_ENV') === 'dev') {
 
 Route::get('/phpinfo', [IndexController::class, 'phpinfo']);
 
-Route::get('/Logs', [LogController::class, 'display']);
+Route::get('/Logs', [LogController::class, 'view']);
+
+Route::get('/Diagnostics', [DiagnosticsController::class, 'view']);
 
 Route::get('/Update', [UpdateController::class, 'apply']);

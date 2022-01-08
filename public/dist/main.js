@@ -402,12 +402,12 @@ function gup(b) {
  */
 
 /**
- * @callback SuccessCallback
+ * @callback APISuccessCB
  * @param {Object} data the decoded JSON response
  */
 
 /**
- * @callback ErrorCallback
+ * @callback APIErrorCB
  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
  * @param {Object} params the original JSON parameters of the request
  * @param {?LycheeException} lycheeException the Lychee exception
@@ -415,10 +415,8 @@ function gup(b) {
  */
 
 /**
- * @callback ProgressCallback
- * @param {Object} event         the progress event
- * @param {number} event.loaded  the amount of loaded data so far
- * @param {number} event.total   the total amount of data to be loaded
+ * @callback APIProgressCB
+ * @param {ProgressEvent} event the progress event
  */
 
 /**
@@ -438,7 +436,7 @@ var api = {
 	/**
   * Global, default error handler
   *
-  * @type {?ErrorCallback}
+  * @type {?APIErrorCB}
   */
 	onError: null
 };
@@ -447,9 +445,9 @@ var api = {
  *
  * @param {string} fn
  * @param {Object} params
- * @param {?SuccessCallback} successCallback
- * @param {?ProgressCallback} responseProgressCB
- * @param {?ErrorCallback} errorCallback
+ * @param {?APISuccessCB} successCallback
+ * @param {?APIProgressCB} responseProgressCB
+ * @param {?APIErrorCB} errorCallback
  */
 api.post = function (fn, params) {
 	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -507,7 +505,7 @@ api.post = function (fn, params) {
 /**
  *
  * @param {string} url
- * @param {SuccessCallback} callback
+ * @param {APISuccessCB} callback
  */
 api.get = function (url, callback) {
 	loadingBar.show();
@@ -534,42 +532,6 @@ api.get = function (url, callback) {
 		type: "GET",
 		url: url,
 		data: {},
-		dataType: "text",
-		success: successHandler,
-		error: errorHandler
-	});
-};
-
-/**
- *
- * @param {string} fn
- * @param {Object} params
- * @param {SuccessCallback} callback
- */
-api.post_raw = function (fn, params, callback) {
-	loadingBar.show();
-
-	/**
-  * The success handler
-  * @param {Object} data the decoded JSON object of the response
-  */
-	var successHandler = function successHandler(data) {
-		setTimeout(loadingBar.hide, 100);
-		callback(data);
-	};
-
-	/**
-  * The error handler
-  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-  */
-	var errorHandler = function errorHandler(jqXHR) {
-		api.onError(jqXHR, params);
-	};
-
-	$.ajax({
-		type: "POST",
-		url: "api/" + fn,
-		data: params,
 		dataType: "text",
 		success: successHandler,
 		error: errorHandler
@@ -2413,14 +2375,9 @@ build.no_content = function (typ) {
 };
 
 /**
- * @typedef FileEntry
- * @property {string} name
- */
-
-/**
- * @param {string} title the title of the dialog
- * @param {FileEntry[]} files a list of file entries to be shown in the dialog
- * @return {string} the HTML fragment for the dialog
+ * @param {string}                                           title the title of the dialog
+ * @param {(FileList|File[]|DropboxFile[]|{name: string}[])} files a list of file entries to be shown in the dialog
+ * @return {string}                                                the HTML fragment for the dialog
  */
 build.uploadModal = function (title, files) {
 	var html = "";
@@ -4974,12 +4931,17 @@ lychee.retinize = function () {
 };
 
 /**
- * @callback DropboxCallback
+ * @callback DropboxLoadedCB
  * @return void
  */
 
 /**
- * @param {DropboxCallback} callback
+ * Ensures that the Dropbox Chooser JS component is loaded and calls the
+ * provided callback after loading.
+ *
+ * See {@link Dropbox}
+ *
+ * @param {DropboxLoadedCB} callback
  */
 lychee.loadDropbox = function (callback) {
 	if (lychee.dropbox === false && lychee.dropboxKey != null && lychee.dropboxKey !== "") {
@@ -5004,6 +4966,10 @@ lychee.loadDropbox = function (callback) {
 	} else if (lychee.dropbox === true && lychee.dropboxKey != null && lychee.dropboxKey !== "") {
 		callback();
 	} else {
+		// TODO: Is this branch ever called?
+		// In particular, this branch behaves differently from the other two
+		// in the sense that it neither loads the Dropbox component nor
+		// calls the callback.
 		settings.setDropboxKey();
 	}
 };
@@ -8938,9 +8904,9 @@ var showCloseButton = function showCloseButton() {
 
 /**
  * @param {string} title
- * @param {FileEntry[]} files
- * @param run_callback
- * @param cancel_callback
+ * @param {(FileList|File[]|DropboxFile[]|{name: string}[])} files
+ * @param {ModalDialogReadyCB} run_callback
+ * @param {?ModalDialogButtonCB} cancel_callback
  */
 upload.show = function (title, files, run_callback) {
 	var cancel_callback = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
@@ -8987,7 +8953,7 @@ upload.notify = function (title, text) {
 
 upload.start = {
 	/**
-  * @param {FileList} files
+  * @param {(FileList|File[])} files
   */
 	local: function local(files) {
 		if (files.length <= 0) return;
@@ -9285,7 +9251,7 @@ upload.start = {
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject76) + lychee.locale["UPLOAD_IMPORT_INSTR"] + (" <input class='text' name='link' type='text' placeholder='http://' value='" + preselectedUrl + "'></p>"),
+			body: lychee.html(_templateObject76) + lychee.locale["UPLOAD_IMPORT_INSTR"] + (" <input class='text' name='link' type='text' placeholder='https://' value='" + preselectedUrl + "'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale["UPLOAD_IMPORT"],
@@ -9557,7 +9523,7 @@ upload.start = {
 		var albumID = album.getID();
 
 		/**
-   * @param {Array} files
+   * @param {DropboxFile[]} files
    */
 		var action = function action(files) {
 			var runImport = function runImport() {
@@ -10995,7 +10961,7 @@ view.logs = {
 		lychee.content.html(html);
 
 		$("#Clean_Noise").on("click", function () {
-			api.post_raw("Logs::clearNoise", {}, function () {
+			api.post("Logs::clearNoise", {}, function () {
 				view.logs.init();
 			});
 		});
@@ -11004,8 +10970,23 @@ view.logs = {
 	content: {
 		init: function init() {
 			view.logs.clearContent();
-			api.post_raw("Logs", {}, function (data) {
-				$(".logs_diagnostics_view").html(data);
+			api.post("Logs::list", {},
+			/** @param {{id: number, created_at: string, updated_at: string, type: string, function: string, line: number, text: string}[]} logEntries */
+			function (logEntries) {
+				var html = "<pre>";
+				/** @param {Date} datetime */
+				var formatDateTime = function formatDateTime(datetime) {
+					return "" + datetime.getUTCFullYear() + "-" + String(datetime.getUTCMonth()).padStart(2, "0") + "-" + String(datetime.getUTCDay()).padStart(2, "0") + " " + String(datetime.getUTCHours()).padStart(2, "0") + ":" + String(datetime.getUTCMinutes()).padStart(2, "0") + ":" + String(datetime.getUTCSeconds()).padStart(2, "0") + " UTC";
+				};
+				logEntries.forEach(function (logEntry) {
+					html += formatDateTime(new Date(logEntry.created_at)) + " -- ";
+					html += logEntry.type.padEnd(7) + " -- ";
+					html += logEntry.function + " -- ";
+					html += logEntry.line + " -- ";
+					html += logEntry.text + "\n";
+				});
+				html += "</pre>";
+				$(".logs_diagnostics_view").html(html);
 			});
 		}
 	}
@@ -11062,7 +11043,7 @@ view.diagnostics = {
 		},
 
 		v_2: function v_2() {
-			api.post("Diagnostics", {}, function (data) {
+			api.post("Diagnostics::get", {}, function (data) {
 				view.diagnostics.clearContent(data.update);
 				var html = "";
 

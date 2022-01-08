@@ -36,7 +36,7 @@ class LogController extends Controller
 	 * @throws BindingResolutionException
 	 * @throws QueryBuilderException
 	 */
-	public function display(): View
+	public function view(): View
 	{
 		return view('logs.list', ['logs' => $this->list()]);
 	}

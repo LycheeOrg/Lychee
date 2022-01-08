@@ -13,7 +13,10 @@ if (env('APP_ENV') === 'dev') {
 	URL::forceScheme('https');
 }
 
-Route::post('/Logs', [LogController::class, 'display']);
+Route::post('/Diagnostics::get', [DiagnosticsController::class, 'get']);
+Route::post('/Diagnostics::getSize', [DiagnosticsController::class, 'getSize']);
+
+Route::post('/Logs::list', [LogController::class, 'list']);
 Route::post('/Logs::clear', [LogController::class, 'clear']);
 Route::post('/Logs::clearNoise', [LogController::class, 'clearNoise']);
 

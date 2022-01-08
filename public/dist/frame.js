@@ -905,12 +905,12 @@ function gup(b) {
  */
 
 /**
- * @callback SuccessCallback
+ * @callback APISuccessCB
  * @param {Object} data the decoded JSON response
  */
 
 /**
- * @callback ErrorCallback
+ * @callback APIErrorCB
  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
  * @param {Object} params the original JSON parameters of the request
  * @param {?LycheeException} lycheeException the Lychee exception
@@ -918,10 +918,8 @@ function gup(b) {
  */
 
 /**
- * @callback ProgressCallback
- * @param {Object} event         the progress event
- * @param {number} event.loaded  the amount of loaded data so far
- * @param {number} event.total   the total amount of data to be loaded
+ * @callback APIProgressCB
+ * @param {ProgressEvent} event the progress event
  */
 
 /**
@@ -941,7 +939,7 @@ var api = {
 	/**
   * Global, default error handler
   *
-  * @type {?ErrorCallback}
+  * @type {?APIErrorCB}
   */
 	onError: null
 };
@@ -950,9 +948,9 @@ var api = {
  *
  * @param {string} fn
  * @param {Object} params
- * @param {?SuccessCallback} successCallback
- * @param {?ProgressCallback} responseProgressCB
- * @param {?ErrorCallback} errorCallback
+ * @param {?APISuccessCB} successCallback
+ * @param {?APIProgressCB} responseProgressCB
+ * @param {?APIErrorCB} errorCallback
  */
 api.post = function (fn, params) {
 	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -1010,7 +1008,7 @@ api.post = function (fn, params) {
 /**
  *
  * @param {string} url
- * @param {SuccessCallback} callback
+ * @param {APISuccessCB} callback
  */
 api.get = function (url, callback) {
 	loadingBar.show();
@@ -1037,42 +1035,6 @@ api.get = function (url, callback) {
 		type: "GET",
 		url: url,
 		data: {},
-		dataType: "text",
-		success: successHandler,
-		error: errorHandler
-	});
-};
-
-/**
- *
- * @param {string} fn
- * @param {Object} params
- * @param {SuccessCallback} callback
- */
-api.post_raw = function (fn, params, callback) {
-	loadingBar.show();
-
-	/**
-  * The success handler
-  * @param {Object} data the decoded JSON object of the response
-  */
-	var successHandler = function successHandler(data) {
-		setTimeout(loadingBar.hide, 100);
-		callback(data);
-	};
-
-	/**
-  * The error handler
-  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-  */
-	var errorHandler = function errorHandler(jqXHR) {
-		api.onError(jqXHR, params);
-	};
-
-	$.ajax({
-		type: "POST",
-		url: "api/" + fn,
-		data: params,
 		dataType: "text",
 		success: successHandler,
 		error: errorHandler

@@ -45,7 +45,5 @@ Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middlewar
 
 Route::post('/php/index.php', [SessionController::class, 'init']); // entry point if options are not initialized
 
-Route::get('/Diagnostics', [Administration\DiagnosticsController::class, 'show']);
-
 // This route NEEDS to be the last one as it will catch anything else.
 Route::get('/{page}', [PageController::class, 'page']);

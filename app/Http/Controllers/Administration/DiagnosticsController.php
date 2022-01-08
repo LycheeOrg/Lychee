@@ -19,11 +19,10 @@ use Illuminate\Routing\Controller;
 class DiagnosticsController extends Controller
 {
 	public const ERROR_MSG = 'You must be logged in to see this.';
-	private bool $isAuthorized;
 
-	public function __construct()
+	private function isAuthorized(): bool
 	{
-		$this->isAuthorized = AccessControl::is_admin() || AccessControl::noLogin();
+		return AccessControl::is_admin() || AccessControl::noLogin();
 	}
 
 	/**
@@ -41,7 +40,9 @@ class DiagnosticsController extends Controller
 	 */
 	public function get(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): DiagnosticInfo
 	{
-		return new DiagnosticInfo($checkErrors->get(), $this->isAuthorized ? $collectInfo->get() : [self::ERROR_MSG], $this->isAuthorized ? $config->get() : [self::ERROR_MSG], $checkUpdate->getCode());
+		$authorized = $this->isAuthorized();
+
+		return new DiagnosticInfo($checkErrors->get(), $authorized ? $collectInfo->get() : [self::ERROR_MSG], $authorized ? $config->get() : [self::ERROR_MSG], $checkUpdate->getCode());
 	}
 
 	/**
@@ -51,7 +52,7 @@ class DiagnosticsController extends Controller
 	 *
 	 * @throws LycheeException
 	 */
-	public function show(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): View
+	public function view(Errors $checkErrors, Info $collectInfo, Configuration $config, CheckUpdate $checkUpdate): View
 	{
 		try {
 			return view('diagnostics', $this->get($checkErrors, $collectInfo, $config, $checkUpdate));
@@ -68,6 +69,6 @@ class DiagnosticsController extends Controller
 	 */
 	public function getSize(Space $space): array
 	{
-		return $this->isAuthorized ? $space->get() : [self::ERROR_MSG];
+		return $this->isAuthorized() ? $space->get() : [self::ERROR_MSG];
 	}
 }
