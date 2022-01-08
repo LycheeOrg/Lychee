@@ -172,6 +172,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// Save file path; Checksum calculation not needed since
 			// we do not perform matching for Google Motion Photos (as for iOS Live Photos)
 			$this->photo->live_photo_short_path = $shortPathVideo;
+			$this->photo->save();
 		} catch (\Throwable $e) {
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			throw new \RuntimeException('unable to extract video from Google Motion Picture', 0, $e);
