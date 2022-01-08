@@ -340,11 +340,11 @@ class AlbumsUnitTest
 	 */
 	public function download(string $id): void
 	{
-		$response = $this->testCase->json(
-			'GET',
-			'/api/Album::getArchive',
-			['albumIDs' => $id],
-			['Accept' => '*/*']);
+		$response = $this->testCase->getWithParameters(
+			'/api/Album::getArchive', [
+				'albumIDs' => [$id],
+			]
+		);
 		$response->assertOk();
 	}
 

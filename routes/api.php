@@ -55,7 +55,7 @@ Route::post('/Album::move', [AlbumController::class, 'move']);
 Route::post('/Album::setLicense', [AlbumController::class, 'setLicense']);
 Route::post('/Album::setSorting', [AlbumController::class, 'setSorting']);
 Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
-	->withoutMiddleware(['accept_content_type:json'])
+	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
 
 Route::post('/Frame::getSettings', [FrameController::class, 'getSettings']);
@@ -77,9 +77,9 @@ Route::post('/Photo::delete', [PhotoController::class, 'delete']);
 Route::post('/Photo::duplicate', [PhotoController::class, 'duplicate']);
 Route::post('/Photo::setLicense', [PhotoController::class, 'setLicense']);
 Route::get('/Photo::getArchive', [PhotoController::class, 'getArchive'])
-	->withoutMiddleware(['accept_content_type:json'])
+	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
-Route::get('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
+Route::post('/Photo::clearSymLink', [PhotoController::class, 'clearSymLink']);
 
 Route::post('/PhotoEditor::rotate', [PhotoEditorController::class, 'rotate']);
 

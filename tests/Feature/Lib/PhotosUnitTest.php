@@ -419,11 +419,12 @@ class PhotosUnitTest
 		string $id,
 		string $kind = Archive::FULL
 	): void {
-		$response = $this->testCase->json(
-			'GET',
-			'/api/Photo::getArchive',
-			['photoIDs' => $id, 'kind' => $kind],
-			['Accept' => '*/*']);
+		$response = $this->testCase->getWithParameters(
+			'/api/Photo::getArchive', [
+				'photoIDs' => [$id],
+				'kind' => $kind,
+			]
+		);
 		$response->assertOk();
 	}
 
