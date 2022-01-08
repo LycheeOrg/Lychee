@@ -114,9 +114,11 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			if ($newDim !== [false, false]) {
 				$original->width = $newDim['width'];
 				$original->height = $newDim['height'];
+				$original->save();
 				// If the image has actually been rotated, the size may
 				// have changed.
 				$this->photo->filesize = (int) filesize($fullPath);
+				$this->photo->save();
 			}
 		}
 
