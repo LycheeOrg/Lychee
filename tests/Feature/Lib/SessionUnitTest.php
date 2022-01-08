@@ -30,7 +30,7 @@ class SessionUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Session::login', [
+		$response = $this->testCase->postJson('/api/Session::login', [
 			'username' => $username,
 			'password' => $password,
 		]);
@@ -52,7 +52,7 @@ class SessionUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Session::init', []);
+		$response = $this->testCase->postJson('/api/Session::init');
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
@@ -68,7 +68,7 @@ class SessionUnitTest
 	 */
 	public function logout(): TestResponse
 	{
-		$response = $this->testCase->json('POST', '/api/Session::logout');
+		$response = $this->testCase->postJson('/api/Session::logout');
 		$response->assertSuccessful();
 
 		return $response;
@@ -90,7 +90,7 @@ class SessionUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Settings::setLogin', [
+		$response = $this->testCase->postJson('/api/Settings::setLogin', [
 			'username' => $login,
 			'password' => $password,
 		]);
@@ -122,7 +122,7 @@ class SessionUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Settings::setLogin', [
+		$response = $this->testCase->postJson('/api/Settings::setLogin', [
 			'username' => $login,
 			'password' => $password,
 			'oldUsername' => $oldUsername,

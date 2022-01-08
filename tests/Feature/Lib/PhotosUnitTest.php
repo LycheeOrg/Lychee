@@ -86,7 +86,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 200,
 		?string $assertSee = null
 	): TestResponse {
-		$response = $this->testCase->json('POST', '/api/Photo::get', [
+		$response = $this->testCase->postJson('/api/Photo::get', [
 			'photoID' => $photo_id,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -104,7 +104,7 @@ class PhotosUnitTest
 	 */
 	public function see_in_unsorted(string $photoID): void
 	{
-		$response = $this->testCase->json('POST', '/api/Album::get', [
+		$response = $this->testCase->postJson('/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
 		$response->assertOk();
@@ -118,7 +118,7 @@ class PhotosUnitTest
 	 */
 	public function dont_see_in_unsorted(string $id): void
 	{
-		$response = $this->testCase->json('POST', '/api/Album::get', [
+		$response = $this->testCase->postJson('/api/Album::get', [
 			'albumID' => 'unsorted',
 		]);
 		$response->assertOk();
@@ -132,7 +132,7 @@ class PhotosUnitTest
 	 */
 	public function see_in_recent(string $id): void
 	{
-		$response = $this->testCase->json('POST', '/api/Album::get', [
+		$response = $this->testCase->postJson('/api/Album::get', [
 			'albumID' => 'recent',
 		]);
 		$response->assertOk();
@@ -146,7 +146,7 @@ class PhotosUnitTest
 	 */
 	public function dont_see_in_recent(string $id): void
 	{
-		$response = $this->testCase->json('POST', '/api/Album::get', [
+		$response = $this->testCase->postJson('/api/Album::get', [
 			'albumID' => 'recent',
 		]);
 		$response->assertOk();
@@ -160,7 +160,7 @@ class PhotosUnitTest
 	 */
 	public function see_in_shared(string $id): void
 	{
-		$response = $this->testCase->json('POST', '/api/Album::get', [
+		$response = $this->testCase->postJson('/api/Album::get', [
 			'albumID' => 'public',
 		]);
 		$response->assertOk();
@@ -174,7 +174,7 @@ class PhotosUnitTest
 	 */
 	public function dont_see_in_shared(string $id): void
 	{
-		$response = $this->testCase->json('POST', '/api/Album::get', [
+		$response = $this->testCase->postJson('/api/Album::get', [
 			'albumID' => 'public',
 		]);
 		$response->assertOk();
@@ -188,7 +188,7 @@ class PhotosUnitTest
 	 */
 	public function see_in_favorite(string $id): void
 	{
-		$response = $this->testCase->json('POST', '/api/Album::get', [
+		$response = $this->testCase->postJson('/api/Album::get', [
 			'albumID' => 'starred',
 		]);
 		$response->assertOk();
@@ -202,7 +202,7 @@ class PhotosUnitTest
 	 */
 	public function dont_see_in_favorite(string $id): void
 	{
-		$response = $this->testCase->json('POST', '/api/Album::get', [
+		$response = $this->testCase->postJson('/api/Album::get', [
 			'albumID' => 'starred',
 		]);
 		$response->assertOk();
@@ -226,7 +226,7 @@ class PhotosUnitTest
 		/**
 		 * Try to set the title.
 		 */
-		$response = $this->testCase->json('POST', '/api/Photo::setTitle', [
+		$response = $this->testCase->postJson('/api/Photo::setTitle', [
 			'title' => $title,
 			'photoIDs' => $id,
 		]);
@@ -274,7 +274,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json('POST', '/api/Photo::setStar', [
+		$response = $this->testCase->postJson('/api/Photo::setStar', [
 			'photoIDs' => $id,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -297,7 +297,7 @@ class PhotosUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->json('POST', '/api/Photo::setTags', [
+		$response = $this->testCase->postJson('/api/Photo::setTags', [
 			'photoIDs' => $id,
 			'tags' => $tags,
 		]);

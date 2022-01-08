@@ -21,10 +21,10 @@ class IndexTest extends TestCase
 		$response = $this->get('/');
 		$response->assertOk();
 
-		$response = $this->post('/php/index.php', []);
+		$response = $this->postJson('/php/index.php');
 		$response->assertOk();
 
-		$response = $this->postJson('/api/Albums::get', []);
+		$response = $this->postJson('/api/Albums::get');
 		$response->assertOk();
 	}
 
