@@ -29,6 +29,6 @@ class SetUserSettingsRequest extends AbstractUserRequest implements HasUserID
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		parent::processValidatedValues($values, $files);
-		$this->userID = intval($values[self::ID_ATTRIBUTE]);
+		$this->userID = $values[self::ID_ATTRIBUTE];
 	}
 }

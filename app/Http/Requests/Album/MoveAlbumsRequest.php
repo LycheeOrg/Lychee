@@ -7,7 +7,6 @@ use App\Http\Requests\Contracts\HasAlbumID;
 use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasAlbumIDTrait;
-use App\Rules\RandomIDListRule;
 use App\Rules\RandomIDRule;
 
 class MoveAlbumsRequest extends BaseApiRequest implements HasAlbumID, HasAlbumIDs
@@ -30,7 +29,8 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbumID, HasAlbumID
 	{
 		return [
 			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -40,6 +40,6 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbumID, HasAlbumID
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
-		$this->albumIDs = explode(',', $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE]);
+		$this->albumIDs = $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE];
 	}
 }

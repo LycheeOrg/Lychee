@@ -7,10 +7,12 @@ use Illuminate\Contracts\Validation\Rule;
 class IntegerIDRule implements Rule
 {
 	protected bool $isNullable;
+	protected bool $isRelaxed;
 
-	public function __construct(bool $isNullable)
+	public function __construct(bool $isNullable, bool $isRelaxed = false)
 	{
 		$this->isNullable = $isNullable;
+		$this->isRelaxed = $isRelaxed;
 	}
 
 	/**
@@ -23,7 +25,11 @@ class IntegerIDRule implements Rule
 				$value === null &&
 				$this->isNullable
 			) || (
+				$this->isRelaxed &&
 				filter_var($value, FILTER_VALIDATE_INT) !== false &&
+				intval($value) > 0
+			) || (
+				is_int($value) &&
 				intval($value) > 0
 			);
 	}

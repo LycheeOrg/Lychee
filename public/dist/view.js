@@ -162,7 +162,7 @@ api.post = function (fn, params) {
  * @param {string} url
  * @param {APISuccessCB} callback
  */
-api.get = function (url, callback) {
+api.getCSS = function (url, callback) {
 	loadingBar.show();
 
 	/**
@@ -180,7 +180,7 @@ api.get = function (url, callback) {
   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
   */
 	var errorHandler = function errorHandler(jqXHR) {
-		api.onError(jqXHR, {});
+		api.onError(jqXHR, {}, null);
 	};
 
 	$.ajax({

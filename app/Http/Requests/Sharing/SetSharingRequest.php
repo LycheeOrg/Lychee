@@ -8,8 +8,8 @@ use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Contracts\HasUserIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasUserIDsTrait;
-use App\Rules\IntegerIDListRule;
-use App\Rules\RandomIDListRule;
+use App\Rules\IntegerIDRule;
+use App\Rules\RandomIDRule;
 
 class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserIDs
 {
@@ -30,8 +30,10 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserID
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
-			HasUserIDs::USER_IDS_ATTRIBUTE => ['required', new IntegerIDListRule()],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
+			HasUserIDs::USER_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasUserIDs::USER_IDS_ATTRIBUTE . '*' => ['required', new IntegerIDRule(false)],
 		];
 	}
 
@@ -40,8 +42,7 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumIDs = explode(',', $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE]);
-		$this->userIDs = explode(',', $values[HasUserIDs::USER_IDS_ATTRIBUTE]);
-		array_walk($this->userIDs, function (&$id) { $id = intval($id); });
+		$this->albumIDs = $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE];
+		$this->userIDs = $values[HasUserIDs::USER_IDS_ATTRIBUTE];
 	}
 }

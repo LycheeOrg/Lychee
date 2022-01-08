@@ -33,7 +33,8 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbumID
 	{
 		return [
 			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule()],
-			self::URL_ATTRIBUTE => ['required', 'string'],
+			self::URL_ATTRIBUTE => 'required|array|min:1',
+			self::URL_ATTRIBUTE . '*' => 'required|string',
 		];
 	}
 
@@ -46,10 +47,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbumID
 		if (empty($this->albumID)) {
 			$this->albumID = null;
 		}
-		$this->urls = explode(
-			',',
-			str_replace(' ', '%20', $values[self::URL_ATTRIBUTE])
-		);
+		$this->urls = str_replace(' ', '%20', $values[self::URL_ATTRIBUTE]);
 	}
 
 	/**

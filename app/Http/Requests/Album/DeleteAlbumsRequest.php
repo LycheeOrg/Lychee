@@ -5,7 +5,7 @@ namespace App\Http\Requests\Album;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
-use App\Rules\AlbumIDListRule;
+use App\Rules\AlbumIDRule;
 
 class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 {
@@ -25,7 +25,8 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new AlbumIDListRule()],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '*' => ['required', new AlbumIDRule()],
 		];
 	}
 
@@ -34,6 +35,6 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumIDs = explode(',', $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE]);
+		$this->albumIDs = $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE];
 	}
 }

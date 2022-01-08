@@ -7,7 +7,6 @@ use App\Http\Requests\Contracts\HasAlbumID;
 use App\Http\Requests\Contracts\HasPhotoIDs;
 use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasPhotoIDsTrait;
-use App\Rules\RandomIDListRule;
 use App\Rules\RandomIDRule;
 
 class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasAlbumID
@@ -30,8 +29,9 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasA
 	public function rules(): array
 	{
 		return [
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['sometimes', new RandomIDRule(false)],
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
 	}
 
@@ -40,7 +40,7 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasA
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoIDs = explode(',', $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE]);
+		$this->photoIDs = $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE];
 		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE] ?? null;
 	}
 }

@@ -507,7 +507,7 @@ api.post = function (fn, params) {
  * @param {string} url
  * @param {APISuccessCB} callback
  */
-api.get = function (url, callback) {
+api.getCSS = function (url, callback) {
 	loadingBar.show();
 
 	/**
@@ -525,7 +525,7 @@ api.get = function (url, callback) {
   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
   */
 	var errorHandler = function errorHandler(jqXHR) {
-		api.onError(jqXHR, {});
+		api.onError(jqXHR, {}, null);
 	};
 
 	$.ajax({
@@ -736,9 +736,11 @@ album.isTagAlbum = function () {
 	return album.json && album.json.is_tag_album && album.json.is_tag_album === true;
 };
 
+/**
+ * @param {?string} photoID
+ * @returns {?Object} the photo model
+ */
 album.getByID = function (photoID) {
-	// Function returns the JSON of a photo
-
 	if (photoID == null || !album.json || !album.json.photos) {
 		lychee.error("Error: Album json not found !");
 		return null;
@@ -756,12 +758,14 @@ album.getByID = function (photoID) {
 	return null;
 };
 
+/**
+ * @param {?string} albumID
+ * @returns {?Object} the album model
+ */
 album.getSubByID = function (albumID) {
-	// Function returns the JSON of a subalbum
-
 	if (albumID == null || !album.json || !album.json.albums) {
 		lychee.error("Error: Album json not found!");
-		return undefined;
+		return null;
 	}
 
 	var i = 0;
@@ -773,7 +777,7 @@ album.getSubByID = function (albumID) {
 	}
 
 	lychee.error("Error: album " + albumID + " not found!");
-	return undefined;
+	return null;
 };
 
 // noinspection DuplicatedCode
@@ -1041,14 +1045,14 @@ album.setShowTags = function (albumID) {
 	});
 };
 
+/**
+ *
+ * @param {string[]} albumIDs
+ * @returns {boolean}
+ */
 album.setTitle = function (albumIDs) {
 	var oldTitle = "";
 	var msg = "";
-
-	if (!albumIDs) return false;
-	if (!(albumIDs instanceof Array)) {
-		albumIDs = [albumIDs];
-	}
 
 	if (albumIDs.length === 1) {
 		// Get old title if only one album is selected
@@ -1101,12 +1105,10 @@ album.setTitle = function (albumIDs) {
 			});
 		}
 
-		var params = {
-			albumIDs: albumIDs.join(),
+		api.post("Album::setTitle", {
+			albumIDs: albumIDs,
 			title: newTitle
-		};
-
-		api.post("Album::setTitle", params);
+		});
 	};
 
 	var input = lychee.html(_templateObject4, lychee.locale["ALBUM_TITLE"], oldTitle);
@@ -1403,6 +1405,11 @@ album.setPublic = function (albumID, e) {
 	api.post("Album::setPublic", params);
 };
 
+/**
+ * @param {string} albumID
+ * @param e
+ * @returns {boolean}
+ */
 album.shareUsers = function (albumID, e) {
 	if (!basicModal.visible()) {
 		var _msg2 = "<form id=\"sharing_people_form\">\n\t\t\t<p>" + lychee.locale["WAIT_FETCH_DATA"] + "</p>\n\t\t</form>";
@@ -1435,7 +1442,7 @@ album.shareUsers = function (albumID, e) {
 			buttons: {
 				action: {
 					title: lychee.locale["ALBUM_SHARING_CONFIRM"],
-					fn: function fn(data) {
+					fn: function fn() {
 						album.shareUsers(albumID, e);
 					}
 				},
@@ -1450,34 +1457,36 @@ album.shareUsers = function (albumID, e) {
 
 	basicModal.close();
 
+	/** @type {number[]} */
 	var sharingToAdd = [];
+	/** @type {number[]} */
 	var sharingToDelete = [];
 	$(".basicModal .choice input").each(function (_, input) {
 		var $input = $(input);
 		if ($input.is(":checked")) {
 			if ($input.data("sharingId") === undefined) {
 				// Input is checked but has no sharing id => new share to create
-				sharingToAdd.push(input.name);
+				sharingToAdd.push(Number.parseInt(input.name));
 			}
 		} else {
 			var sharingId = $input.data("sharingId");
 			if (sharingId !== undefined) {
 				// Input is not checked but has a sharing id => existing share to remove
-				sharingToDelete.push(sharingId);
+				sharingToDelete.push(Number.parseInt(sharingId));
 			}
 		}
 	});
 
 	if (sharingToDelete.length > 0) {
-		var params = { ShareIDs: sharingToDelete.join(",") };
-		api.post("Sharing::delete", params);
+		api.post("Sharing::delete", {
+			shareIDs: sharingToDelete
+		});
 	}
 	if (sharingToAdd.length > 0) {
-		var params = {
-			albumIDs: albumID,
-			UserIDs: sharingToAdd.join(",")
-		};
-		api.post("Sharing::add", params, function () {
+		api.post("Sharing::add", {
+			albumIDs: [albumID],
+			userIDs: sharingToAdd
+		}, function () {
 			loadingBar.show("success", "Sharing updated!");
 		});
 	}
@@ -1523,19 +1532,24 @@ album.getArchive = function (albumIDs) {
 	location.href = "api/Album::getArchive" + lychee.html(_templateObject12, albumIDs.join());
 };
 
+/**
+ * @param {string[]} albumIDs
+ * @param {?string} albumID
+ * @param {string} op1
+ * @param {string} op2
+ * @param {string} ops
+ * @returns {string} the HTML content of the dialog
+ */
 album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
 	var title = "";
 	var sTitle = "";
 	var msg = "";
 
-	if (!albumIDs) return false;
-	if (!(albumIDs instanceof Array)) albumIDs = [albumIDs];
-
 	// Get title of first album
 	if (albumID === null) {
 		title = lychee.locale["ROOT"];
 	} else {
-		album1 = albums.getByID(albumID);
+		var album1 = albums.getByID(albumID);
 		if (album1) {
 			title = album1.title;
 		}
@@ -1546,7 +1560,7 @@ album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
 
 	if (albumIDs.length === 1) {
 		// Get title of second album
-		album2 = albums.getByID(albumIDs[0]);
+		var album2 = albums.getByID(albumIDs[0]);
 		if (album2) {
 			sTitle = album2.title;
 		}
@@ -1562,22 +1576,21 @@ album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
 	return msg;
 };
 
+/**
+ * @param {string[]} albumIDs
+ * @returns {void}
+ */
 album.delete = function (albumIDs) {
 	var action = {};
 	var cancel = {};
 	var msg = "";
 
-	if (!albumIDs) return false;
-	if (!(albumIDs instanceof Array)) albumIDs = [albumIDs];
-
 	action.fn = function () {
 		basicModal.close();
 
-		var params = {
-			albumIDs: albumIDs.join()
-		};
-
-		api.post("Album::delete", params, function (data) {
+		api.post("Album::delete", {
+			albumIDs: albumIDs
+		}, function (data) {
 			if (visible.albums()) {
 				albumIDs.forEach(function (id) {
 					view.albums.content.delete(id);
@@ -1597,7 +1610,7 @@ album.delete = function (albumIDs) {
 		});
 	};
 
-	if (albumIDs.toString() === "unsorted") {
+	if (albumIDs.length === 1 && albumIDs[0] === "unsorted") {
 		action.title = lychee.locale["CLEAR_UNSORTED"];
 		cancel.title = lychee.locale["KEEP_UNSORTED"];
 
@@ -1646,18 +1659,21 @@ album.delete = function (albumIDs) {
 	});
 };
 
+/**
+ * @param {string[]} albumIDs
+ * @param {string} albumID
+ * @param {boolean} confirm
+ */
 album.merge = function (albumIDs, albumID) {
 	var confirm = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
 	var action = function action() {
 		basicModal.close();
 
-		var params = {
+		api.post("Album::merge", {
 			albumID: albumID,
-			albumIDs: albumIDs.join()
-		};
-
-		api.post("Album::merge", params, function () {
+			albumIDs: albumIDs
+		}, function () {
 			return album.reload();
 		});
 	};
@@ -1682,18 +1698,21 @@ album.merge = function (albumIDs, albumID) {
 	}
 };
 
+/**
+ * @param {string[]} albumIDs
+ * @param {string} albumID
+ * @param {boolean} confirm
+ */
 album.setAlbum = function (albumIDs, albumID) {
 	var confirm = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
 
 	var action = function action() {
 		basicModal.close();
 
-		var params = {
+		api.post("Album::move", {
 			albumID: albumID,
-			albumIDs: albumIDs.join()
-		};
-
-		api.post("Album::move", params, function () {
+			albumIDs: albumIDs
+		}, function () {
 			return album.reload();
 		});
 	};
@@ -1959,14 +1978,18 @@ albums.isShared = function (albumID) {
 	return found;
 };
 
+/**
+ * @param {?string} albumID
+ * @returns {?Object}
+ */
 albums.getByID = function (albumID) {
 	// Function returns the JSON of an album
 
-	if (albumID == null) return undefined;
-	if (!albums.json) return undefined;
-	if (!albums.json.albums) return undefined;
+	if (albumID == null) return null;
+	if (!albums.json) return null;
+	if (!albums.json.albums) return null;
 
-	var json = undefined;
+	var json = null;
 
 	var func = function func() {
 		if (this.id === albumID) {
@@ -1980,9 +2003,9 @@ albums.getByID = function (albumID) {
 
 	$.each(albums.json.albums, func);
 
-	if (json === undefined && albums.json.shared_albums !== null) $.each(albums.json.shared_albums, func);
+	if (json === null && albums.json.shared_albums !== null) $.each(albums.json.shared_albums, func);
 
-	if (json === undefined && albums.json.smart_albums !== null) $.each(albums.json.smart_albums, func);
+	if (json === null && albums.json.smart_albums !== null) $.each(albums.json.smart_albums, func);
 
 	return json;
 };
@@ -3718,7 +3741,7 @@ $(document).ready(function () {
 	}).bind(["r"], function () {
 		if (album.isUploadable()) {
 			if (visible.album()) {
-				album.setTitle(album.getID());
+				album.setTitle([album.getID()]);
 				return false;
 			} else if (visible.photo()) {
 				_photo.setTitle([_photo.getID()]);
@@ -6463,6 +6486,9 @@ var _photo = {
 	LivePhotosObject: null
 };
 
+/**
+ * @returns {?string}
+ */
 _photo.getID = function () {
 	var id = null;
 
@@ -6681,14 +6707,15 @@ _photo.next = function (animate) {
 	}
 };
 
+/**
+ * @param {string[]} photoIDs
+ * @returns {boolean}
+ */
 _photo.delete = function (photoIDs) {
 	var action = {};
 	var cancel = {};
 	var msg = "";
 	var photoTitle = "";
-
-	if (!photoIDs) return false;
-	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
 
 	if (photoIDs.length === 1) {
 		// Get title if only one photo is selected
@@ -6740,11 +6767,7 @@ _photo.delete = function (photoIDs) {
 			lychee.goto(album.getID());
 		}
 
-		var params = {
-			photoIDs: photoIDs.join()
-		};
-
-		api.post("Photo::delete", params);
+		api.post("Photo::delete", { photoIDs: photoIDs });
 	};
 
 	if (photoIDs.length === 1) {
@@ -6775,12 +6798,14 @@ _photo.delete = function (photoIDs) {
 	});
 };
 
+/**
+ *
+ * @param {string[]} photoIDs
+ * @returns {void}
+ */
 _photo.setTitle = function (photoIDs) {
 	var oldTitle = "";
 	var msg = "";
-
-	if (!photoIDs) return false;
-	if (photoIDs instanceof Array === false) photoIDs = [photoIDs];
 
 	if (photoIDs.length === 1) {
 		// Get old title if only one photo is selected
@@ -6807,12 +6832,10 @@ _photo.setTitle = function (photoIDs) {
 			view.album.content.title(id);
 		});
 
-		var params = {
-			photoIDs: photoIDs.join(),
+		api.post("Photo::setTitle", {
+			photoIDs: photoIDs,
 			title: newTitle
-		};
-
-		api.post("Photo::setTitle", params);
+		});
 	};
 
 	var input = lychee.html(_templateObject54, oldTitle);
@@ -6841,25 +6864,21 @@ _photo.setTitle = function (photoIDs) {
  * @return {void}
  */
 _photo.copyTo = function (photoIDs, albumID) {
-	if (!photoIDs) return;
-	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
-
-	var params = {
-		photoIDs: photoIDs.join(),
+	api.post("Photo::duplicate", {
+		photoIDs: photoIDs,
 		albumID: albumID
-	};
-
-	api.post("Photo::duplicate", params, function () {
+	}, function () {
 		return album.reload();
 	});
 };
 
+/**
+ * @param {string[]} photoIDs
+ * @param {string} albumID
+ */
 _photo.setAlbum = function (photoIDs, albumID) {
 	var nextPhotoID = null;
 	var previousPhotoID = null;
-
-	if (!photoIDs) return false;
-	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
 
 	photoIDs.forEach(function (id, index) {
 		// Change reference for the next and previous photo
@@ -6895,12 +6914,10 @@ _photo.setAlbum = function (photoIDs, albumID) {
 		}
 	}
 
-	var params = {
-		photoIDs: photoIDs.join(),
+	api.post("Photo::setAlbum", {
+		photoIDs: photoIDs,
 		albumID: albumID
-	};
-
-	api.post("Photo::setAlbum", params, function () {
+	}, function () {
 		// We only really need to do anything here if the destination
 		// is a (possibly nested) subalbum of the current album; but
 		// since we have no way of figuring it out (albums.json is
@@ -6911,9 +6928,11 @@ _photo.setAlbum = function (photoIDs, albumID) {
 	});
 };
 
+/**
+ * @param {string[]} photoIDs
+ * @returns {void}
+ */
 _photo.setStar = function (photoIDs) {
-	if (!photoIDs) return false;
-
 	if (visible.photo()) {
 		_photo.json.is_starred = !_photo.json.is_starred;
 		view.photo.star();
@@ -6926,11 +6945,7 @@ _photo.setStar = function (photoIDs) {
 
 	albums.refresh();
 
-	var params = {
-		photoIDs: photoIDs.join()
-	};
-
-	api.post("Photo::setStar", params);
+	api.post("Photo::setStar", { photoIDs: photoIDs });
 };
 
 _photo.setPublic = function (photoID, e) {
@@ -7124,10 +7139,12 @@ _photo.editTags = function (photoIDs) {
 	});
 };
 
+/**
+ * @param {string[]} photoIDs
+ * @param {string} tags
+ * @returns {boolean}
+ */
 _photo.setTags = function (photoIDs, tags) {
-	if (!photoIDs) return false;
-	if (!(photoIDs instanceof Array)) photoIDs = [photoIDs];
-
 	// Parse tags
 	tags = tags.replace(/( , )|( ,)|(, )|(,+ *)|(,$|^,)/g, ",");
 	tags = tags.replace(/,$|^,|( )*$/g, "");
@@ -7137,16 +7154,14 @@ _photo.setTags = function (photoIDs, tags) {
 		view.photo.tags();
 	}
 
-	photoIDs.forEach(function (id, index, array) {
+	photoIDs.forEach(function (id) {
 		album.getByID(id).tags = tags;
 	});
 
-	var params = {
-		photoIDs: photoIDs.join(),
+	api.post("Photo::setTags", {
+		photoIDs: photoIDs,
 		tags: tags
-	};
-
-	api.post("Photo::setTags", params, function () {
+	}, function () {
 		if (albums.json && albums.json.smart_albums) {
 			$.each(Object.entries(albums.json.smart_albums), function () {
 				if (this.length === 2 && this[1]["is_tag_album"] === true) {
@@ -9549,19 +9564,12 @@ upload.start = {
 
 				$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_IMPORTING"]);
 
-				var links = "";
-				files.forEach(function (file) {
-					return links += file.link + ",";
-				});
-				// Remove last comma
-				links = links.substr(0, links.length - 1);
-
-				var params = {
-					url: links,
+				api.post("Import::url", {
+					url: files.map(function (file) {
+						return file.link;
+					}),
 					albumID: albumID
-				};
-
-				api.post("Import::url", params, successHandler, null, errorHandler);
+				}, successHandler, null, errorHandler);
 			};
 
 			files.forEach(function (file) {
@@ -10716,7 +10724,7 @@ view.settings = {
 
 			var css_addr = $($("link")[1]).attr("href");
 
-			api.get(css_addr, function (data) {
+			api.getCSS(css_addr, function (data) {
 				$("#css").html(data);
 			});
 

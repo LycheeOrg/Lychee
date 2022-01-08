@@ -7,7 +7,7 @@ use App\Http\Requests\Contracts\HasPhotoIDs;
 use App\Http\Requests\Contracts\HasTags;
 use App\Http\Requests\Traits\HasPhotoIDsTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
-use App\Rules\RandomIDListRule;
+use App\Rules\RandomIDRule;
 use App\Rules\TagsRule;
 
 class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotoIDs, HasTags
@@ -29,7 +29,8 @@ class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotoIDs, HasTag
 	public function rules(): array
 	{
 		return [
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
 			HasTags::TAGS_ATTRIBUTE => ['present', new TagsRule(true)],
 		];
 	}
@@ -39,7 +40,7 @@ class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotoIDs, HasTag
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoIDs = explode(',', $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE]);
+		$this->photoIDs = $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE];
 		$this->tags = $values[HasTags::TAGS_ATTRIBUTE];
 	}
 }

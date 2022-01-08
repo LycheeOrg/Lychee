@@ -31,7 +31,7 @@ class GetPhotoViewRequest extends BaseApiRequest implements HasPhotoID
 				'required',
 				new OrRule([
 					new RandomIDRule(false),
-					new IntegerIDRule(false),
+					new IntegerIDRule(false, true),
 				]),
 			],
 		];

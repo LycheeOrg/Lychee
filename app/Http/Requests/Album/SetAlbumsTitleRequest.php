@@ -7,7 +7,7 @@ use App\Http\Requests\Contracts\HasAlbumIDs;
 use App\Http\Requests\Contracts\HasTitle;
 use App\Http\Requests\Traits\HasAlbumIDsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
-use App\Rules\RandomIDListRule;
+use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
 
 class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbumIDs
@@ -29,7 +29,8 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
 			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 		];
 	}
@@ -39,7 +40,7 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumIDs = explode(',', $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE]);
+		$this->albumIDs = $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE];
 		$this->title = $values[HasTitle::TITLE_ATTRIBUTE];
 	}
 }

@@ -4,7 +4,7 @@ namespace App\Http\Requests\Sharing;
 
 use App\Facades\AccessControl;
 use App\Http\Requests\BaseApiRequest;
-use App\Rules\IntegerIDListRule;
+use App\Rules\IntegerIDRule;
 
 class DeleteSharingRequest extends BaseApiRequest
 {
@@ -29,7 +29,8 @@ class DeleteSharingRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			self::SHARE_IDS_ATTRIBUTE => ['required', new IntegerIDListRule()],
+			self::SHARE_IDS_ATTRIBUTE => 'required|array|min:1',
+			self::SHARE_IDS_ATTRIBUTE . '*' => ['required', new IntegerIDRule(false)],
 		];
 	}
 
@@ -38,8 +39,7 @@ class DeleteSharingRequest extends BaseApiRequest
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->shareIDs = explode(',', $values[self::SHARE_IDS_ATTRIBUTE]);
-		array_walk($this->shareIDs, function (&$id) { $id = intval($id); });
+		$this->shareIDs = $values[self::SHARE_IDS_ATTRIBUTE];
 	}
 
 	/**
