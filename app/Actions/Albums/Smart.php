@@ -27,9 +27,9 @@ class Smart
 	}
 
 	/**
-	 * Returns the array of smart albums visible to the current user.
+	 * Returns the dictionary of smart albums visible to the current user.
 	 *
-	 * The array includes the built-in smart albums and the user-defined
+	 * The dictionary includes the built-in smart albums and the user-defined
 	 * smart albums (i.e. tag albums).
 	 * Note, the array may include password-protected albums that are visible
 	 * but not accessible.
