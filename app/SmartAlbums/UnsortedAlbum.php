@@ -52,9 +52,10 @@ class UnsortedAlbum extends BaseSmartAlbum
 	{
 		$success = true;
 		if (!AccessControl::is_admin()) {
-			$this->photos()->where('owner_id', '=', AccessControl::id());
+			$photos = $this->photos()->where('owner_id', '=', AccessControl::id())->get();
+		} else {
+			$photos = $this->photos()->get();
 		}
-		$photos = $this->photos()->get();
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			// This also takes care of proper deletion of physical files from disk
