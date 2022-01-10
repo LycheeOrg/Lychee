@@ -77,6 +77,7 @@ class RotateStrategy extends AddBaseStrategy
 		$oldOriginalFullPath = $oldOriginalSizeVariant->full_path;
 		$oldOriginalWidth = $oldOriginalSizeVariant->width;
 		$oldOriginalHeight = $oldOriginalSizeVariant->height;
+		$oldChecksum = $this->photo->checksum;
 		$oldExtension = Helpers::getExtension($oldOriginalFullPath);
 		$tmpFullPath = Helpers::createTemporaryFile($oldExtension);
 
@@ -89,14 +90,11 @@ class RotateStrategy extends AddBaseStrategy
 			throw new \RuntimeException($msg);
 		}
 
-		// The file size may have changed after the rotation.
-		// We do NOT update the checksum of the photo, but keep the original
-		// checksum.
-		// For the reasons see this discussion among developers:
-		// https://gitter.im/LycheeOrg/Developers?at=61da11702a210c38c1bb7cbc
+		// The file size and checksum may have changed after the rotation.
 		/* @var Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
 		$this->photo->filesize = $metadataExtractor->filesize($tmpFullPath);
+		$this->photo->checksum = $metadataExtractor->checksum($tmpFullPath);
 		$this->photo->save();
 
 		// Delete all size variants from current photo, this will also take
@@ -150,13 +148,12 @@ class RotateStrategy extends AddBaseStrategy
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
-			->where('id', '<>', $this->photo->id)
-			->where('checksum', '=', $this->photo->checksum)
+			->where('checksum', '=', $oldChecksum)
 			->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
-			// Only update filesize, don't update checksum, see above
 			$duplicate->filesize = $this->photo->filesize;
+			$duplicate->checksum = $this->photo->checksum;
 			// Note: It is not correct to simply update the existing size
 			// variants of the duplicates.
 			// Due to rotation the number and type of size variants may have

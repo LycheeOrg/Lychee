@@ -57,6 +57,7 @@ trait Checks
 		/** @var Photo|null $photo */
 		$photo = Photo::query()
 			->where('checksum', '=', $checksum)
+			->orWhere('original_checksum', '=', $checksum)
 			->orWhere('live_photo_checksum', '=', $checksum)
 			->first();
 

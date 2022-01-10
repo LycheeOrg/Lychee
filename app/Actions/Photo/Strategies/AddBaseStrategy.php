@@ -56,6 +56,9 @@ abstract class AddBaseStrategy
 		if (empty($this->photo->checksum) && !empty($this->parameters->info['checksum'])) {
 			$this->photo->checksum = $this->parameters->info['checksum'];
 		}
+		if (empty($this->photo->original_checksum) && !empty($this->parameters->info['checksum'])) {
+			$this->photo->original_checksum = $this->parameters->info['checksum'];
+		}
 		if (empty($this->photo->iso) && !empty($this->parameters->info['iso'])) {
 			$this->photo->iso = $this->parameters->info['iso'];
 		}

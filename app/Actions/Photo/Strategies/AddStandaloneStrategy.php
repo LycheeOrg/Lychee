@@ -5,6 +5,7 @@ namespace App\Actions\Photo\Strategies;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Image\ImageHandlerInterface;
+use App\Metadata\Extractor;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -115,9 +116,12 @@ class AddStandaloneStrategy extends AddBaseStrategy
 				$original->width = $newDim['width'];
 				$original->height = $newDim['height'];
 				$original->save();
-				// If the image has actually been rotated, the size may
-				// have changed.
-				$this->photo->filesize = (int) filesize($fullPath);
+				// If the image has actually been rotated, the size
+				// and the checksum may have changed.
+				/* @var  Extractor $metadataExtractor */
+				$metadataExtractor = resolve(Extractor::class);
+				$this->photo->filesize = $metadataExtractor->filesize($fullPath);
+				$this->photo->checksum = $metadataExtractor->checksum($fullPath);
 				$this->photo->save();
 			}
 		}

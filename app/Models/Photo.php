@@ -53,6 +53,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null  $live_photo_url
  * @property string|null  $album_id
  * @property string       $checksum
+ * @property string       $original_checksum
  * @property string       $license
  * @property Carbon       $created_at
  * @property Carbon       $updated_at
@@ -395,6 +396,7 @@ class Photo extends Model implements HasRandomID
 		return self::query()
 			->where(function ($q) use ($checksum) {
 				$q->where('checksum', '=', $checksum)
+					->orWhere('original_checksum', '=', $checksum)
 					->orWhere('live_photo_checksum', '=', $checksum);
 			})
 			->where('id', '<>', $this->id)

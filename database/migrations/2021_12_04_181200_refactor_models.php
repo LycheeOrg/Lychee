@@ -364,6 +364,7 @@ class RefactorModels extends Migration
 			$this->dropIndexIfExists($table, 'photos_created_at_index');
 			$this->dropIndexIfExists($table, 'photos_updated_at_index');
 			$this->dropIndexIfExists($table, 'photos_taken_at_index');
+			$this->dropIndexIfExists($table, 'photos_original_checksum_index');
 			$this->dropIndexIfExists($table, 'photos_checksum_index');
 			$this->dropIndexIfExists($table, 'photos_live_photo_content_id_index');
 			$this->dropIndexIfExists($table, 'photos_livephotocontentid_index');
@@ -690,6 +691,7 @@ class RefactorModels extends Migration
 			$table->string('type', 30)->nullable(false);
 			$table->unsignedBigInteger('filesize')->nullable(false)->default(0);
 			$table->string('checksum', 40)->nullable(false);
+			$table->string('original_checksum', 40)->nullable(false);
 			$table->string('live_photo_short_path')->nullable()->default(null);
 			$table->string('live_photo_content_id')->nullable()->default(null);
 			$table->string('live_photo_checksum', 40)->nullable()->default(null);
@@ -702,6 +704,7 @@ class RefactorModels extends Migration
 			$table->index('updated_at');
 			$table->index('taken_at');
 			$table->index('checksum');
+			$table->index('original_checksum');
 			$table->index('live_photo_content_id');
 			$table->index('live_photo_checksum');
 			$table->index('is_public');
@@ -1152,6 +1155,7 @@ class RefactorModels extends Migration
 				'type' => $photo->type,
 				'filesize' => $photo->filesize,
 				'checksum' => $photo->checksum,
+				'original_checksum' => $photo->checksum,
 				'live_photo_short_path' => $photo->livePhotoUrl,
 				'live_photo_content_id' => $photo->livePhotoContentID,
 				'live_photo_checksum' => $photo->livePhotoChecksum,
@@ -1333,7 +1337,7 @@ class RefactorModels extends Migration
 				'taken_at_orig_tz' => $photo->taken_at_orig_tz,
 				'type' => $photo->type,
 				'filesize' => $photo->filesize,
-				'checksum' => $photo->checksum,
+				'checksum' => $photo->original_checksum,
 				'livePhotoUrl' => $photo->live_photo_short_path,
 				'livePhotoContentID' => $photo->live_photo_content_id,
 				'livePhotoChecksum' => $photo->live_photo_checksum,
