@@ -174,17 +174,17 @@ class PhotoAuthorisationProvider
 		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 		$maySearchPublic = Configs::get_value('public_photos_hidden', '1') !== '1';
 
-		// there must be no blocked album between the origin and the photo
+		// there must be no unreachable album between the origin and the photo
 		$query->whereNotExists(function (BaseBuilder $q) use ($originLeft, $originRight) {
-			$this->albumAuthorisationProvider->appendBlockedAlbumsCondition($q, $originLeft, $originRight);
+			$this->albumAuthorisationProvider->appendUnreachableAlbumsCondition($q, $originLeft, $originRight);
 		});
 
 		// Special care needs to be taken for unsorted photo, i.e. photos on
 		// the root level:
-		// The condition for "no blocked albums along the path" fails for the
-		// root album due to two reasons:
+		// The condition for "no unreachable albums along the path" fails for
+		// the root album due to two reasons:
 		//   a) the path of albums between to the root album is empty; hence,
-		//      there are never any blocked albums in between
+		//      there are never any unreachable albums in between
 		//   b) while all users (even unauthenticated users) may access the
 		//      root album, they must only see their own photos or public
 		//      photos (this is different to any other album: if users are
