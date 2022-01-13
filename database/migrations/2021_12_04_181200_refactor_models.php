@@ -1565,7 +1565,7 @@ class RefactorModels extends Migration
 		DB::table('configs')
 			->insert([
 				'key' => 'legacy_id_redirection',
-				'value' => '0',
+				'value' => '1',
 				'cat' => 'config',
 				'confidentiality' => 0,
 				'type_range' => '0|1',
