@@ -1,10 +1,8 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use Tests\Feature\Lib\AlbumsUnitTest;
 use Tests\Feature\Lib\SessionUnitTest;
 use Tests\TestCase;
@@ -19,33 +17,33 @@ class AlbumTest extends TestCase
 	public function testAddNotLogged()
 	{
 		$albums_tests = new AlbumsUnitTest($this);
-		$albums_tests->add('0', 'test_album', 'false');
+		$albums_tests->add(null, 'test_album', 401);
 
-		$albums_tests->get('recent', '', 'true');
-		$albums_tests->get('starred', '', 'true');
-		$albums_tests->get('public', '', 'true');
-		$albums_tests->get('unsorted', '', 'true');
+		$albums_tests->get('recent', 403);
+		$albums_tests->get('starred', 403);
+		$albums_tests->get('public', 403);
+		$albums_tests->get('unsorted', 403);
 	}
 
 	public function testAddReadLogged()
 	{
 		$albums_tests = new AlbumsUnitTest($this);
-		$session_tests = new SessionUnitTest();
+		$session_tests = new SessionUnitTest($this);
 
 		AccessControl::log_as_id(0);
 
-		$albums_tests->get('recent', '', 'true');
-		$albums_tests->get('starred', '', 'true');
-		$albums_tests->get('public', '', 'true');
-		$albums_tests->get('unsorted', '', 'true');
+		$albums_tests->get('recent');
+		$albums_tests->get('starred');
+		$albums_tests->get('public');
+		$albums_tests->get('unsorted');
 
-		$albumID = $albums_tests->add('0', 'test_album', 'true');
-		$albumID2 = $albums_tests->add('0', 'test_album2', 'true');
-		$albumID3 = $albums_tests->add('0', 'test_album3', 'true');
-		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test', 'true');
+		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
+		$albumID2 = $albums_tests->add(null, 'test_album2')->offsetGet('id');
+		$albumID3 = $albums_tests->add(null, 'test_album3')->offsetGet('id');
+		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test')->offsetGet('id');
 
-		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag', 'true');
-		$response = $albums_tests->get($albumTagID1, '', 'true');
+		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag');
+		$response = $albums_tests->get($albumTagID1);
 		$response->assertSee('test, coolnewtag, secondnewtag');
 
 		$albums_tests->see_in_albums($albumID);
@@ -56,31 +54,31 @@ class AlbumTest extends TestCase
 		$albums_tests->move($albumTagID1, $albumID3);
 		$albums_tests->move($albumID3, $albumID2);
 		$albums_tests->move($albumID2, $albumID);
-		$albums_tests->move($albumID3, '0');
+		$albums_tests->move($albumID3, null);
 
 		/*
-		 * try to get a non existing album
+		 * try to get a non-existing album
 		 */
-		$albums_tests->get('999', '', 'false');
+		$albums_tests->get('abcdefghijklmnopqrstuvwx', 404);
 
-		$response = $albums_tests->get($albumID, '', 'true');
+		$response = $albums_tests->get($albumID);
 		$response->assertJson([
 			'id' => $albumID,
-			'description' => '',
+			'description' => null,
 			'title' => 'test_album',
 			'albums' => [['id' => $albumID2]],
 		]);
 
 		$albums_tests->set_title($albumID, 'NEW_TEST');
 		$albums_tests->set_description($albumID, 'new description');
-		$albums_tests->set_license($albumID, 'WTFPL', '"Error: License not recognised!');
+		$albums_tests->set_license($albumID, 'WTFPL', 422);
 		$albums_tests->set_license($albumID, 'reserved');
 		$albums_tests->set_sorting($albumID, 'title', 'ASC');
 
 		/**
 		 * Let's see if the info changed.
 		 */
-		$response = $albums_tests->get($albumID, '', 'true');
+		$response = $albums_tests->get($albumID);
 		$response->assertJson([
 			'id' => $albumID,
 			'description' => 'new description',
@@ -97,8 +95,8 @@ class AlbumTest extends TestCase
 		/*
 		 * Let's try to get the info of the album we just created.
 		 */
-		$albums_tests->get_public($albumID, '', 'false');
-		$albums_tests->get($albumID, '', '"Warning: Album private!"');
+		$albums_tests->unlock($albumID, '', 422);
+		$albums_tests->get($albumID, 403);
 
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
@@ -115,19 +113,19 @@ class AlbumTest extends TestCase
 		 */
 		$albums_tests->dont_see_in_albums($albumID);
 
-		$session_tests->logout($this);
+		$session_tests->logout();
 	}
 
 	public function testTrueNegative()
 	{
 		$albums_tests = new AlbumsUnitTest($this);
-		$session_tests = new SessionUnitTest();
+		$session_tests = new SessionUnitTest($this);
 
 		AccessControl::log_as_id(0);
 
-		$albums_tests->set_description('-1', 'new description', 'false');
-		$albums_tests->set_public('-1', 1, 1, 1, 0, 1, 1, 'false');
+		$albums_tests->set_description('-1', 'new description', 422);
+		$albums_tests->set_public('-1', true, true, false, false, true, true, 422);
 
-		$session_tests->logout($this);
+		$session_tests->logout();
 	}
 }

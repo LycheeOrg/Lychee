@@ -90,7 +90,7 @@ jobs:
           extensions: ${{ env.extensions }}
           coverage: xdebug
           tools: pecl, composer
-      
+
       - name: Set Up imagick & Exiftools
         run: |
           sudo apt-get update
@@ -148,7 +148,7 @@ jobs:
         if: ${{ matrix.mode == 'dev' }}
         run: php artisan migrate:rollback
 
-      # end of DEV 
+      # end of DEV
       # begin of DIST
       - name: Install Composer dependencies (dist)
         if: ${{ matrix.mode == 'dist' }}

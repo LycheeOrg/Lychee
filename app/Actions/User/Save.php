@@ -15,8 +15,8 @@ class Save
 
 		// check for duplicate name here !
 		$user->username = $data['username'];
-		$user->upload = ($data['upload'] == '1');
-		$user->lock = ($data['lock'] == '1');
+		$user->may_upload = $data['may_upload'];
+		$user->is_locked = $data['is_locked'];
 		if (isset($data['password'])) {
 			$user->password = bcrypt($data['password']);
 		}

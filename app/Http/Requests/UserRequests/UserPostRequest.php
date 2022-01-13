@@ -26,8 +26,8 @@ class UserPostRequest extends FormRequest
 		return [
 			'id' => 'required|numeric|min:1',
 			'username' => 'required|string|max:100',
-			'upload' => 'required',
-			'lock' => 'required',
+			'may_upload' => 'present|boolean',
+			'is_locked' => 'present|boolean',
 		];
 	}
 }

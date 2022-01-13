@@ -4,6 +4,8 @@ namespace App\Legacy;
 
 use App\Models\Configs;
 use App\Models\Logs;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
@@ -66,5 +68,43 @@ class Legacy
 		}
 
 		return false;
+	}
+
+	public static function isLegacyModelID(string $id): bool
+	{
+		return preg_match('/^[-_a-zA-Z0-9]{24}$/', $id) !== 1 &&
+			filter_var($id, FILTER_VALIDATE_INT) !== false;
+	}
+
+	private static function translateLegacyID(string $id, string $tableName, Request $request): ?string
+	{
+		$newID = DB::table($tableName)
+				->where('legacy_id', '=', intval($id))
+				->value('id');
+
+		if ($newID) {
+			$referer = $request->header('Referer', '(unknown)');
+			$msg = 'Request for ' . $tableName .
+				' with legacy ID ' . $id .
+				' instead of new ID ' . $newID .
+				' from ' . $referer;
+			if (Configs::get_value('legacy_id_redirection', '0') !== '1') {
+				$msg .= ' (translation disabled by configuration)';
+				$newID = null;
+			}
+			Logs::warning(__METHOD__, __LINE__, $msg);
+		}
+
+		return $newID;
+	}
+
+	public static function translateLegacyAlbumID(string $albumID, Request $request): ?string
+	{
+		return self::translateLegacyID($albumID, 'base_albums', $request);
+	}
+
+	public static function translateLegacyPhotoID(string $photoID, Request $request): ?string
+	{
+		return self::translateLegacyID($photoID, 'photos', $request);
 	}
 }

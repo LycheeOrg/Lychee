@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\ModelFunctions;
 
 use App\Exceptions\NotLoggedInException;
@@ -48,7 +46,7 @@ class SessionFunctions
 
 	public function can_upload(): bool
 	{
-		return $this->is_logged_in() && ($this->id() == 0 || $this->user()->upload);
+		return $this->is_logged_in() && ($this->id() == 0 || $this->user()->may_upload);
 	}
 
 	/**
@@ -186,57 +184,6 @@ class SessionFunctions
 		// Admin User does not exist yet, so we use the Legacy.
 
 		return Legacy::log_as_admin($username, $password, $ip);
-	}
-
-	/**
-	 * Given an albumID, check if it exists in the visible_albums session variable.
-	 *
-	 * @param $albumID
-	 *
-	 * @return bool
-	 */
-	public function has_visible_album($albumID): bool
-	{
-		if (!Session::has('visible_albums')) {
-			return false;
-		}
-
-		$visible_albums = Session::get('visible_albums');
-		$visible_albums = explode('|', $visible_albums);
-
-		return in_array($albumID, $visible_albums);
-	}
-
-	/**
-	 * Add new album to the visible_albums session variable.
-	 *
-	 * @param $albumIDs
-	 */
-	public function add_visible_albums($albumIDs): void
-	{
-		$visible_albums = [];
-		if (Session::has('visible_albums')) {
-			$visible_albums = Session::get('visible_albums');
-			$visible_albums = explode('|', $visible_albums);
-		}
-
-		foreach ($albumIDs as $albumID) {
-			if (!in_array($albumID, $visible_albums)) {
-				$visible_albums[] = $albumID;
-			}
-		}
-
-		$visible_albums = implode('|', $visible_albums);
-		Session::put('visible_albums', $visible_albums);
-	}
-
-	public function get_visible_albums(): array
-	{
-		if (Session::has('visible_albums')) {
-			return explode('|', Session::get('visible_albums'));
-		}
-
-		return [];
 	}
 
 	/**

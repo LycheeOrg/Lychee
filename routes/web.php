@@ -37,10 +37,10 @@ Route::match(['get', 'post'], '/migrate', [Administration\UpdateController::clas
  *
  * Other ideas, redirection by album name, photo title...
  */
-Route::get('/r/{albumid}/{photoid}', [RedirectController::class, 'photo'])->middleware(['installed', 'migrated']);
-Route::get('/r/{albumid}', [RedirectController::class, 'album'])->middleware(['installed', 'migrated']);
+Route::get('/r/{albumID}/{photoID}', [RedirectController::class, 'photo'])->middleware(['installed', 'migrated']);
+Route::get('/r/{albumID}', [RedirectController::class, 'album'])->middleware(['installed', 'migrated']);
 
-Route::get('/view', [ViewController::class, 'view']);
+Route::get('/view', [ViewController::class, 'view'])->name('view');
 Route::get('/demo', [DemoController::class, 'js']);
 Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installed', 'migrated']);
 
@@ -63,9 +63,9 @@ Route::post('/api/Albums::tree', [AlbumsController::class, 'tree']);
 
 Route::post('/api/Album::get', [AlbumController::class, 'get'])->middleware('read');
 Route::post('/api/Album::getPositionData', [AlbumController::class, 'getPositionData'])->middleware('read');
-Route::post('/api/Album::getPublic', [AlbumController::class, 'getPublic']);
+Route::post('/api/Album::unlock', [AlbumController::class, 'unlock']);
 Route::post('/api/Album::add', [AlbumController::class, 'add'])->middleware('upload');
-Route::post('/api/Album::addByTags', [AlbumController::class, 'addByTags'])->middleware('upload');
+Route::post('/api/Album::addByTags', [AlbumController::class, 'addTagAlbum'])->middleware('upload');
 Route::post('/api/Album::setTitle', [AlbumController::class, 'setTitle'])->middleware('upload');
 Route::post('/api/Album::setNSFW', [AlbumController::class, 'setNSFW'])->middleware('upload');
 Route::post('/api/Album::setDescription', [AlbumController::class, 'setDescription'])->middleware('upload');
@@ -80,6 +80,8 @@ Route::post('/api/Album::setSorting', [AlbumController::class, 'setSorting'])->m
 Route::get('/api/Album::getArchive', [AlbumController::class, 'getArchive'])->middleware('read');
 
 Route::post('/api/Frame::getSettings', [FrameController::class, 'getSettings']);
+
+Route::post('/api/Legacy::translateLegacyModelIDs', [LegacyController::class, 'translateLegacyModelIDs']);
 
 Route::post('/api/Photo::get', [PhotoController::class, 'get'])->middleware('read');
 Route::post('/api/Photo::getRandom', [PhotoController::class, 'getRandom']);

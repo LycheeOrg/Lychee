@@ -23,7 +23,7 @@ class Extractor
 			'height' => 0,
 			'title' => '',
 			'description' => '',
-			'orientation' => '',
+			'orientation' => 1,
 			'iso' => '',
 			'aperture' => '',
 			'make' => '',
@@ -43,6 +43,7 @@ class Extractor
 			'livePhotoContentID' => null,
 			'livePhotoStillImageTime' => null,
 			'MicroVideoOffset' => null,
+			'checksum' => null,
 		];
 	}
 
@@ -56,28 +57,61 @@ class Extractor
 	public function filesize(string $path): int
 	{
 		return (int) filesize($path);
-		/*$size = $filesize_raw / 1024;
-		if ($size >= 1024) {
-			$metadata['filesize'] = round($size / 1024, 1) . ' MB';
-		} else {
-			$metadata['filesize'] = round($size, 1) . ' KB';
-		}*/
 	}
 
 	/**
-	 * Extracts metadata from an image file.
+	 * Returns the SHA-1 checksum of a file.
 	 *
-	 * @param string $filename
-	 * @param  string file kind
+	 * @param string $path The relative file path
+	 *
+	 * @return string the checksum
+	 */
+	public function checksum(string $path): string
+	{
+		$checksum = sha1_file($path);
+		if ($checksum === false) {
+			$msg = 'Could not compute checksum for: ' . $path;
+			Logs::error(__METHOD__, __LINE__, $msg);
+			throw new \RuntimeException($msg);
+		}
+
+		return $checksum;
+	}
+
+	/**
+	 * Extracts metadata from a file.
+	 *
+	 * **Warning:**
+	 *
+	 * The parameter `$kind` is enum-like parameter and accepts the values
+	 * `photo`, `video` or `raw` (see
+	 * {@link \App\Actions\Photo\Extensions\Checks::file_kind}).
+	 * In other words `kind` is a coarsening of the mime type of a file, but
+	 * not identical to the mime type.
+	 * See {@link \App\Actions\Photo\Create::add()} which sets `$kind` to the
+	 * result of {@link \App\Actions\Photo\Extensions\Checks::file_kind()}.
+	 * However, there are at least three other occurrences where this method
+	 * is called and the full mime type is passed as the second parameter:
+	 * see {@link \App\Console\Commands\ExifLens::handle()},
+	 * {@link \App\Console\Commands\Takedate::handle()} and
+	 * {@link \App\Console\Commands\VideoData::handle()}.
+	 *
+	 * IMHO, there is an amazing number of places which somehow deal with
+	 * "mime type-ish" sort of values with subtle differences.
+	 *
+	 * TODO: Thoroughly refactor this.
+	 *
+	 * @param string $fullPath the full path to the file
+	 * @param string $kind     the kind of file either 'image', 'video' or 'raw'
 	 *
 	 * @return array
 	 */
-	public function extract(string $filename, string $kind): array
+	public function extract(string $fullPath, string $kind): array
 	{
 		$reader = null;
 
 		// Get kind of file (photo, video, raw)
-		$extension = Helpers::getExtension($filename, false);
+		$extension = Helpers::getExtension($fullPath, false);
 
 		// check raw files
 		$is_raw = false;
@@ -116,7 +150,7 @@ class Extractor
 
 		try {
 			// this can throw an exception in the case of Exiftool adapter!
-			$exif = $reader->read($filename);
+			$exif = $reader->read($fullPath);
 		} catch (\Exception $e) {
 			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			$exif = false;
@@ -126,19 +160,19 @@ class Extractor
 			Logs::notice(__METHOD__, __LINE__, 'Falling back to native adapter.');
 			// Use Php native tools
 			$reader = Reader::factory(Reader::TYPE_NATIVE);
-			$exif = $reader->read($filename);
+			$exif = $reader->read($fullPath);
 		}
 
 		// Attempt to get sidecar metadata if it exists, make sure to check 'real' path in case of symlinks
 		$sidecarData = [];
 
 		// readlink fails if it's not a link -> we need to separate it
-		$realFile = $filename;
-		if (is_link($filename)) {
+		$realFile = $fullPath;
+		if (is_link($fullPath)) {
 			try {
 				// if readlink($filename) == False then $realFile = $filename.
 				// if readlink($filename) != False then $realFile = readlink($filename)
-				$realFile = readlink($filename) ?: $filename;
+				$realFile = readlink($fullPath) ?: $fullPath;
 			} catch (\Exception $e) {
 				Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			}
@@ -168,7 +202,7 @@ class Extractor
 		$metadata['height'] = ($exif->getHeight() !== false) ? $exif->getHeight() : 0;
 		$metadata['title'] = ($exif->getTitle() !== false) ? $exif->getTitle() : '';
 		$metadata['description'] = ($exif->getDescription() !== false) ? $exif->getDescription() : '';
-		$metadata['orientation'] = ($exif->getOrientation() !== false) ? $exif->getOrientation() : '';
+		$metadata['orientation'] = ($exif->getOrientation() !== false) ? $exif->getOrientation() : 1;
 		$metadata['iso'] = ($exif->getIso() !== false) ? $exif->getIso() : '';
 		$metadata['make'] = ($exif->getMake() !== false) ? $exif->getMake() : '';
 		$metadata['model'] = ($exif->getCamera() !== false) ? $exif->getCamera() : '';
@@ -180,8 +214,9 @@ class Extractor
 		$metadata['altitude'] = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;
 		$metadata['imgDirection'] = ($exif->getImgDirection() !== false) ? $exif->getImgDirection() : null;
 		$metadata['filesize'] = ($exif->getFileSize() !== false) ? $exif->getFileSize() : 0;
-		$metadata['livePhotoContentID'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
+		$metadata['live_photo_content_id'] = ($exif->getContentIdentifier() !== false) ? $exif->getContentIdentifier() : null;
 		$metadata['MicroVideoOffset'] = ($exif->getMicroVideoOffset() !== false) ? $exif->getMicroVideoOffset() : null;
+		$metadata['checksum'] = $this->checksum($fullPath);
 
 		$taken_at = $exif->getCreationDate();
 		if ($taken_at !== false) {

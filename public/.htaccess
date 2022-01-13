@@ -27,6 +27,8 @@ Options -Indexes
 	php_value post_max_size 500M
 	php_value upload_max_filesize 500M
 	php_value max_file_uploads 100
+	# A proper user agent is required by some web servers, when photos are imported via URL
+	php_value user_agent "Lychee/4 (https://lycheeorg.github.io/)"
 </IfModule>
 
 # ---

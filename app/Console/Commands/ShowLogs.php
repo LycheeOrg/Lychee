@@ -90,15 +90,11 @@ class ShowLogs extends Command
 
 	private function color_type($type)
 	{
-		switch ($type) {
-			case 'error  ':
-				return $this->col->red($type);
-			case 'warning':
-				return $this->col->yellow($type);
-			case 'notice ':
-				return $this->col->cyan($type);
-			default:
-				return $type;
-		}
+		return match ($type) {
+			'error  ' => $this->col->red($type),
+			'warning' => $this->col->yellow($type),
+			'notice ' => $this->col->cyan($type),
+			default => $type,
+		};
 	}
 }

@@ -2,30 +2,47 @@
 
 namespace App\Actions\Album;
 
-use App\Models\Album;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 /**
- * This class is used to set a property of a SINGLE album.
- * As a result, the do function takes as input an albumID.
+ * This class updates a property of a **single** album.
+ * Hence, {@link Setter::do()} takes a single `albumID` as input.
  *
- * do will crash if albumID is not correct, throwing an exception Model not found.
+ * The method {@link Setter::do()} **will crash** throwing an
+ * {@link \Illuminate\Database\Eloquent\ModelNotFoundException}
+ * exception, if `albumID` does not point to an existing album.
+ *
  * This is intended behaviour.
  */
 class Setter extends Action
 {
-	public $property;
+	private Builder $query;
+	private string $property;
 
-	public function do(string $albumID, ?string $value): bool
+	/**
+	 * Setter constructor.
+	 *
+	 * @param string $property the name of the property
+	 */
+	protected function __construct(Builder $query, string $property)
 	{
-		$album = $this->albumFactory->make($albumID);
-
-		return $this->execute($album, $value);
+		parent::__construct();
+		$this->query = $query;
+		$this->property = $property;
 	}
 
-	public function execute(Album $album, $value): bool
+	/**
+	 * @param string $albumID the ID of the album
+	 * @param mixed  $value   the value to be set
+	 */
+	public function do(string $albumID, mixed $value): void
 	{
-		$album->{$this->property} = $value;
-
-		return $album->save();
+		if ($this->query
+				->where('id', '=', $albumID)
+				->update([$this->property => $value]) !== 1
+		) {
+			throw new ModelNotFoundException();
+		}
 	}
 }

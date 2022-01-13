@@ -171,11 +171,10 @@ class GdHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function autoRotate(string $path, array $info, bool $pretend = false): array
+	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
 	{
 		$image = imagecreatefromjpeg($path);
 
-		$orientation = isset($info['orientation']) && $info['orientation'] !== '' ? $info['orientation'] : 1;
 		$rotate = $orientation !== 1;
 
 		$dimensions = $this->autoRotateInternal($image, $orientation);
@@ -296,7 +295,6 @@ class GdHandler implements ImageHandlerInterface
 				Logs::error(__METHOD__, __LINE__, 'Type of photo "' . $mime . '" is not supported');
 
 				return false;
-				break;
 		}
 
 		if ($image === false) {
@@ -325,23 +323,13 @@ class GdHandler implements ImageHandlerInterface
 	 */
 	private function writeImage(string $destination, $image, int $mime, int $quality = null): bool
 	{
-		$ret = false;
-
-		switch ($mime) {
-			case IMAGETYPE_JPEG:
-			case IMAGETYPE_JPEG2000:
-				$ret = imagejpeg($image, $destination, $quality ?? $this->compressionQuality);
-				break;
-			case IMAGETYPE_PNG:
-				$ret = imagepng($image, $destination);
-				break;
-			case IMAGETYPE_GIF:
-				$ret = imagegif($image, $destination);
-				break;
-			case IMAGETYPE_WEBP:
-				$ret = imagewebp($image, $destination);
-				break;
-		}
+		$ret = match ($mime) {
+			IMAGETYPE_JPEG, IMAGETYPE_JPEG2000 => imagejpeg($image, $destination, $quality ?? $this->compressionQuality),
+			IMAGETYPE_PNG => imagepng($image, $destination),
+			IMAGETYPE_GIF => imagegif($image, $destination),
+			IMAGETYPE_WEBP => imagewebp($image, $destination),
+			default => false,
+		};
 
 		return $ret;
 	}

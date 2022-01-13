@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\Mail\PhotosAdded;
 use App\Models\Configs;
 use Illuminate\Http\UploadedFile;
@@ -22,11 +22,11 @@ class NotificationTest extends TestCase
 		// save initial value
 		$init_config_value = Configs::get_value('new_photos_notification');
 
-		$response = TestCase::json('POST', '/api/Settings::setNewPhotosNotification', [
+		$response = $this->json('POST', '/api/Settings::setNewPhotosNotification', [
 			'new_photos_notification' => '1',
 		]);
 		$response->assertStatus(200);
-		$this->assertEquals(Configs::get_value('new_photos_notification'), '1');
+		$this->assertEquals('1', Configs::get_value('new_photos_notification'));
 
 		// set to initial
 		Configs::set('new_photos_notification', $init_config_value);
@@ -34,35 +34,33 @@ class NotificationTest extends TestCase
 
 	public function testSetupUserEmail()
 	{
-		$users_test = new UsersUnitTest();
-		$sessions_test = new SessionUnitTest();
-
-		// save initial value
-		$init_config_value = Configs::get_value('new_photos_notification');
-		Configs::set('new_photos_notification', '1');
+		$users_test = new UsersUnitTest($this);
+		$sessions_test = new SessionUnitTest($this);
 
 		// add email to admin
 		AccessControl::log_as_id(0);
-		$users_test->update_email($this, 'test@test.com', 'true');
+		$users_test->update_email('test@test.com');
 
 		// add new user
-		$users_test->add($this, 'uploader', 'uploader', '1', '0', 'true');
+		$users_test->add('uploader', 'uploader', '1', '0');
 
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 	}
 
+	/**
+	 * TODO: Figure out if this test even tests anything related to notification; it appears to me as if this test simply uploads a file, but does not even assert that a notification has been sent.
+	 */
 	public function testUploadAndNotify()
 	{
-		$users_test = new UsersUnitTest();
-		$sessions_test = new SessionUnitTest();
+		$sessions_test = new SessionUnitTest($this);
 		$albums_tests = new AlbumsUnitTest($this);
 		$photos_tests = new PhotosUnitTest($this);
 
 		// login as new user
-		$sessions_test->login($this, 'uploader', 'uploader');
+		$sessions_test->login('uploader', 'uploader');
 
 		// add new album
-		$albumID = $albums_tests->add('0', 'test_album', 'true');
+		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
 
 		// upload photo to the album
 		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
@@ -80,11 +78,15 @@ class NotificationTest extends TestCase
 		$albums_tests->delete($albumID);
 
 		// logout
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 	}
 
 	public function testMailNotifications()
 	{
+		// save initial value
+		$init_config_value = Configs::get_value('new_photos_notification');
+		Configs::set('new_photos_notification', '1');
+
 		$photos = [
 			'album123' => [
 				'name' => 'Test Photo',
@@ -97,33 +99,35 @@ class NotificationTest extends TestCase
 			],
 		];
 
-		Mail::fake('test@test.com')->send(new PhotosAdded($photos));
+		Mail::fake()->send(new PhotosAdded($photos));
 
 		Mail::assertSent(PhotosAdded::class);
+
+		Configs::set('new_photos_notification', $init_config_value);
 	}
 
 	public function testClearNotifications()
 	{
-		$users_test = new UsersUnitTest();
-		$sessions_test = new SessionUnitTest();
+		$users_test = new UsersUnitTest($this);
+		$sessions_test = new SessionUnitTest($this);
 
 		// remove user, email & notifications
 		AccessControl::log_as_id(0);
 
-		$users_test->update_email($this, '', 'true');
+		$users_test->update_email('');
 
-		$response = $users_test->list($this, 'true');
+		$response = $users_test->list();
 		$t = json_decode($response->getContent());
 		$user_id = end($t)->id;
 		$response->assertJsonFragment([
 			'id' => $user_id,
 			'username' => 'uploader',
-			'upload' => 1,
-			'lock' => 0,
+			'may_upload' => true,
+			'is_locked' => false,
 		]);
 
-		$users_test->delete($this, $user_id, 'true');
+		$users_test->delete($user_id);
 
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 	}
 }

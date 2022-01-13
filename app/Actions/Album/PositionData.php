@@ -2,29 +2,32 @@
 
 namespace App\Actions\Album;
 
-use App\Actions\Album\Extensions\LocationData;
-use App\Actions\Albums\Extensions\PublicIds;
+use App\Models\Album;
 
 class PositionData extends Action
 {
-	use LocationData;
-
-	public function get(string $albumID, array $data)
+	public function get(string $albumID, array $data): array
 	{
-		$album = $this->albumFactory->make($albumID);
+		// Avoid loading all photos and sub-albums of an album, because we are
+		// only interested in a particular subset of photos.
+		$album = $this->albumFactory->findOrFail($albumID, false);
 
-		if ($album->smart) {
-			$album->setAlbumIDs(resolve(PublicIds::class)->getPublicAlbumsId());
-			$photos_sql = $album->get_photos();
-		} elseif ($data['includeSubAlbums']) {
-			$photos_sql = $album->get_all_photos();
+		if ($album instanceof Album && $data['includeSubAlbums']) {
+			$photoRelation = $album->all_photos();
 		} else {
-			$photos_sql = $album->get_photos();
+			$photoRelation = $album->photos();
 		}
 
-		$return['photos'] = $this->photosLocationData($photos_sql);
-		$return['id'] = strval($album->id);
+		$result = [];
+		$result['id'] = $album->id;
+		$result['title'] = $album->title;
+		$result['photos'] = $photoRelation
+			->with(['album', 'size_variants', 'size_variants.sym_links'])
+			->whereNotNull('latitude')
+			->whereNotNull('longitude')
+			->get()
+			->toArray();
 
-		return $return;
+		return $result;
 	}
 }

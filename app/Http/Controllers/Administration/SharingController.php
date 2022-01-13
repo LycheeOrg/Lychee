@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers\Administration;
 
 use App\Actions\Sharing\ListShare;
@@ -34,13 +32,16 @@ class SharingController extends Controller
 	{
 		$request->validate([
 			'UserIDs' => 'string|required',
-			'albumIDs' => 'string|required',
+			'albumIDs' => 'required',
 		]);
 
-		$users = User::whereIn('id', explode(',', $request['UserIDs']))->get();
+		$albumIDs = explode(',', $request['albumIDs']);
 
+		$users = User::query()->whereIn('id', explode(',', $request['UserIDs']))->get();
+
+		/** @var User $user */
 		foreach ($users as $user) {
-			$user->shared()->sync(explode(',', $request['albumIDs']), false);
+			$user->shared()->sync($albumIDs, false);
 		}
 
 		return 'true';

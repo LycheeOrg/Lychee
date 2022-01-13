@@ -1,14 +1,12 @@
 <?php
 
-/** @noinspection PhpUndefinedClassInspection */
-
 namespace App\Http\Controllers;
 
 use App\Actions\Photo\Archive;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
-use App\Actions\Photo\Prepare;
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Random;
 use App\Actions\Photo\SetAlbum;
 use App\Actions\Photo\SetDescription;
@@ -17,8 +15,9 @@ use App\Actions\Photo\SetPublic;
 use App\Actions\Photo\SetStar;
 use App\Actions\Photo\SetTags;
 use App\Actions\Photo\SetTitle;
+use App\Actions\Photo\Strategies\ImportMode;
+use App\Exceptions\FolderIsNotWritable;
 use App\Exceptions\JsonError;
-use App\Exceptions\JsonWarning;
 use App\Facades\Helpers;
 use App\Http\Requests\AlbumRequests\AlbumIDRequest;
 use App\Http\Requests\PhotoRequests\PhotoIDRequest;
@@ -27,18 +26,17 @@ use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
-use App\Response;
-use Illuminate\Http\Request;
+use App\Rules\ModelIDRule;
+use Illuminate\Http\Response as IlluminateResponse;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class PhotoController extends Controller
 {
-	/**
-	 * @var SymLinkFunctions
-	 */
-	private $symLinkFunctions;
+	private SymLinkFunctions $symLinkFunctions;
 
 	/**
 	 * @param SymLinkFunctions $symLinkFunctions
@@ -54,23 +52,26 @@ class PhotoController extends Controller
 	 *
 	 * @param PhotoIDRequest $request
 	 *
-	 * @return ?array
+	 * @return Photo
 	 */
-	public function get(PhotoIDRequest $request, Prepare $prepare)
+	public function get(PhotoIDRequest $request): Photo
 	{
-		/** @var ?Photo $photo */
-		$photo = Photo::with('album')->findOrFail($request['photoID']);
-
-		return $prepare->do($photo);
+		return Photo::query()
+			->with(['size_variants', 'size_variants.sym_links'])
+			->findOrFail($request['photoID']);
 	}
 
 	/**
 	 * Return a random public photo (starred)
 	 * This is used in the Frame Controller.
 	 *
-	 * @return array
+	 * @param Random $random
+	 *
+	 * @return Photo
+	 *
+	 * @throws JsonError
 	 */
-	public function getRandom(Random $random)
+	public function getRandom(Random $random): Photo
 	{
 		return $random->do();
 	}
@@ -78,49 +79,41 @@ class PhotoController extends Controller
 	/**
 	 * Add a function given an AlbumID.
 	 *
-	 * @param Request $request
+	 * @param AlbumIDRequest $request
 	 *
-	 * @return false|string
+	 * @return Photo
+	 *
+	 * @throws FolderIsNotWritable
+	 * @throws JsonError
 	 */
-	public function add(AlbumIDRequest $request, Create $create)
+	public function add(AlbumIDRequest $request): Photo
 	{
-		try {
-			$request->validate(['0' => 'required']);
-		} catch (ValidationException $e) {
-			return Response::error('validation failed');
-		}
-
-		if (!$request->hasfile('0')) {
-			return Response::error('missing files');
-		}
-
+		$request->validate(['0' => 'required|file']);
 		// Only process the first photo in the array
+		/** @var UploadedFile $file */
 		$file = $request->file('0');
+		$sourceFileInfo = SourceFileInfo::createForUploadedFile($file);
+		$albumID = $request['albumID'];
 
-		$nameFile = [];
-		$nameFile['name'] = $file->getClientOriginalName();
-		$nameFile['type'] = $file->getMimeType();
-		$nameFile['tmp_name'] = $file->getPathName();
+		// If the file has been uploaded, the (temporary) source file shall be
+		// deleted
+		$create = new Create(new ImportMode(
+			is_uploaded_file($sourceFileInfo->getTmpFullPath()),
+			Configs::get_value('skip_duplicates', '0') === '1'
+		));
 
-		try {
-			$res = $create->add($nameFile, $request['albumID'], false, (Configs::get_value('skip_duplicates', '0') === '1'));
-		} catch (JsonWarning $e) {
-			$res = $e->render();
-		} catch (JsonError $e) {
-			$res = $e->render();
-		}
-
-		return $res;
+		return $create->add($sourceFileInfo, $albumID);
 	}
 
 	/**
 	 * Change the title of a photo.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDsRequest $request
+	 * @param SetTitle        $setTitle
 	 *
 	 * @return string
 	 */
-	public function setTitle(PhotoIDsRequest $request, SetTitle $setTitle)
+	public function setTitle(PhotoIDsRequest $request, SetTitle $setTitle): string
 	{
 		$request->validate(['title' => 'required|string|max:100']);
 
@@ -130,23 +123,25 @@ class PhotoController extends Controller
 	/**
 	 * Set if a photo is a favorite.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDsRequest $request
+	 * @param SetStar         $setStar
 	 *
 	 * @return string
 	 */
-	public function setStar(PhotoIDsRequest $request, SetStar $setStar)
+	public function setStar(PhotoIDsRequest $request, SetStar $setStar): string
 	{
-		return $setStar->do(explode(',', $request['photoIDs']), $request['title']) ? 'true' : 'false';
+		return $setStar->do(explode(',', $request['photoIDs'])) ? 'true' : 'false';
 	}
 
 	/**
 	 * Set the description of a photo.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDRequest $request
+	 * @param SetDescription $setDescription
 	 *
 	 * @return string
 	 */
-	public function setDescription(PhotoIDRequest $request, SetDescription $setDescription)
+	public function setDescription(PhotoIDRequest $request, SetDescription $setDescription): string
 	{
 		$request->validate(['description' => 'string|nullable']);
 
@@ -158,11 +153,12 @@ class PhotoController extends Controller
 	 * We do not advise the use of this and would rather see people use albums visibility
 	 * This would highly simplify the code if we remove this. Do we really want to keep it ?
 	 *
-	 * @param Request $request
+	 * @param PhotoIDRequest $request
+	 * @param SetPublic      $setPublic
 	 *
 	 * @return string
 	 */
-	public function setPublic(PhotoIDRequest $request, SetPublic $setPublic)
+	public function setPublic(PhotoIDRequest $request, SetPublic $setPublic): string
 	{
 		return $setPublic->do($request['photoID']) ? 'true' : 'false';
 	}
@@ -170,11 +166,12 @@ class PhotoController extends Controller
 	/**
 	 * Set the tags of a photo.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDsRequest $request
+	 * @param SetTags         $setTags
 	 *
 	 * @return string
 	 */
-	public function setTags(PhotoIDsRequest $request, SetTags $setTags)
+	public function setTags(PhotoIDsRequest $request, SetTags $setTags): string
 	{
 		$request->validate(['tags' => 'string|nullable']);
 
@@ -184,74 +181,81 @@ class PhotoController extends Controller
 	/**
 	 * Define the album of a photo.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDsRequest $request
+	 * @param SetAlbum        $setAlbum
 	 *
 	 * @return string
 	 */
-	public function setAlbum(PhotoIDsRequest $request, SetAlbum $setAlbum)
+	public function setAlbum(PhotoIDsRequest $request, SetAlbum $setAlbum): string
 	{
-		$request->validate(['albumID' => 'required|string']);
+		$request->validate(['albumID' => ['present', new ModelIDRule()]]);
 
 		return $setAlbum->execute(explode(',', $request['photoIDs']), $request['albumID']) ? 'true' : 'false';
 	}
 
 	/**
-	 * Define the license of the photo.
+	 * Sets the license of the photo.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDRequest $request
+	 * @param SetLicense     $setLicense
 	 *
-	 * @return false|string
+	 * @return IlluminateResponse
 	 */
-	public function setLicense(PhotoIDRequest $request, SetLicense $setLicense)
+	public function setLicense(PhotoIDRequest $request, SetLicense $setLicense): IlluminateResponse
 	{
-		$request->validate(['license' => 'required|string']);
-
 		$licenses = Helpers::get_all_licenses();
+		$request->validate([
+			'license' => [
+				'string',
+				'required',
+				Rule::in($licenses),
+			],
+		]);
 
-		if (!in_array($request['license'], $licenses, true)) {
-			Logs::error(__METHOD__, __LINE__, 'License not recognised: ' . $request['license']);
+		$setLicense->do($request['photoID'], $request['license']);
 
-			return Response::error('License not recognised!');
-		}
-
-		return $setLicense->do($request['photoID'], $request['license']) ? 'true' : 'false';
+		return response()->noContent();
 	}
 
 	/**
-	 * Delete a photo.
+	 * Delete one or more photos.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDsRequest $request
+	 * @param Delete          $delete
 	 *
-	 * @return string
+	 * @return IlluminateResponse
 	 */
-	public function delete(PhotoIDsRequest $request, Delete $delete)
+	public function delete(PhotoIDsRequest $request, Delete $delete): IlluminateResponse
 	{
-		return $delete->do(explode(',', $request['photoIDs'])) ? 'true' : 'false';
+		$delete->do(explode(',', $request['photoIDs']));
+
+		return response()->noContent();
 	}
 
 	/**
-	 * Duplicate a photo.
+	 * Duplicates a set of photos.
 	 * Only the SQL entry is duplicated for space reason.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDsRequest $request
+	 * @param Duplicate       $duplicate
 	 *
-	 * @return string
+	 * @return Photo|Collection the duplicated photo or collection of duplicated photos
 	 */
 	public function duplicate(PhotoIDsRequest $request, Duplicate $duplicate)
 	{
-		$request->validate(['albumID' => 'string']);
+		$request->validate(['albumID' => ['present', new ModelIDRule()]]);
+		$duplicates = $duplicate->do(explode(',', $request['photoIDs']), $request['albumID']);
 
-		$duplicate->do(explode(',', $request['photoIDs']), $request['albumID'] ?? null);
-
-		return 'true';
+		return ($duplicates->count() === 1) ? $duplicates->first() : $duplicates;
 	}
 
 	/**
 	 * Return the archive of pictures or just a picture if only one.
 	 *
-	 * @param Request $request
+	 * @param PhotoIDsRequest $request
+	 * @param Archive         $archive
 	 *
-	 * @return StreamedResponse|Response|string|void
+	 * @return SymfonyResponse|string
 	 */
 	public function getArchive(PhotoIDsRequest $request, Archive $archive)
 	{
@@ -284,7 +288,7 @@ class PhotoController extends Controller
 	 *
 	 * @throws \Exception
 	 */
-	public function clearSymLink()
+	public function clearSymLink(): string
 	{
 		return $this->symLinkFunctions->clearSymLink();
 	}

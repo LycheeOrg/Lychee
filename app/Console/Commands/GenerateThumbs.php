@@ -2,23 +2,22 @@
 
 namespace App\Console\Commands;
 
-use App\Actions\Photo\Extensions\ImageEditing;
-use App\Models\Configs;
+use App\Contracts\SizeVariantFactory;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 
 class GenerateThumbs extends Command
 {
-	use ImageEditing;
-
 	/**
 	 * @var array
 	 */
-	public const THUMB_TYPES = [
-		'small',
-		'small2x',
-		'medium',
-		'medium2x',
+	public const SIZE_VARIANTS = [
+		'small' => SizeVariant::SMALL,
+		'small2x' => SizeVariant::SMALL2X,
+		'medium' => SizeVariant::MEDIUM,
+		'medium2x' => SizeVariant::MEDIUM2X,
 	];
 
 	/**
@@ -38,48 +37,40 @@ class GenerateThumbs extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
 	 */
-	public function handle()
+	public function handle(): int
 	{
-		$type = $this->argument('type');
-
-		if (!in_array($type, self::THUMB_TYPES)) {
-			$this->error(sprintf('Type %s is not one of %s', $type, implode(', ', self::THUMB_TYPES)));
+		$sizeVariantName = $this->argument('type');
+		if (!array_key_exists($sizeVariantName, self::SIZE_VARIANTS)) {
+			$this->error(sprintf('Type %s is not one of %s', $sizeVariantName, implode(', ', array_flip(self::SIZE_VARIANTS))));
 
 			return 1;
 		}
+		$sizeVariantType = self::SIZE_VARIANTS[$sizeVariantName];
 
 		set_time_limit($this->argument('timeout'));
 
-		$multiplier = 1;
-		$basicType = $type;
-		if (($split = strpos($basicType, '2')) !== false) {
-			$basicType = substr($basicType, 0, $split);
-			$multiplier = 2;
-		}
-
-		$maxWidth = intval(Configs::get_value($basicType . '_max_width')) * $multiplier;
-		$maxHeight = intval(Configs::get_value($basicType . '_max_height')) * $multiplier;
-
 		$this->line(
 			sprintf(
-				'Will attempt to generate up to %s %s (%dx%d) images with a timeout of %d seconds...',
+				'Will attempt to generate up to %s %s images with a timeout of %d seconds...',
 				$this->argument('amount'),
-				$type,
-				$maxWidth,
-				$maxHeight,
+				$sizeVariantName,
 				$this->argument('timeout')
 			)
 		);
 
-		$photos = Photo::where($type, '=', '')
+		$photos = Photo::query()
 			->where('type', 'like', 'image/%')
+			->with('size_variants')
+			->whereDoesntHave('size_variants', function (Builder $query) use ($sizeVariantType) {
+				$query->where('type', '=', $sizeVariantType);
+			})
 			->take($this->argument('amount'))
 			->get();
 
 		if (count($photos) == 0) {
-			$this->line('No picture requires ' . $type . '.');
+			$this->line('No picture requires ' . $sizeVariantName . '.');
 
 			return 0;
 		}
@@ -87,22 +78,23 @@ class GenerateThumbs extends Command
 		$bar = $this->output->createProgressBar(count($photos));
 		$bar->start();
 
+		// Initialize factory for size variants
+		$sizeVariantFactory = resolve(SizeVariantFactory::class);
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			if ($this->resizePhoto(
-				$photo,
-				$type,
-				$maxWidth,
-				$maxHeight
-			)) {
-				$photo->save();
-				$this->line('   ' . $type . ' (' . $photo->{$type} . ') for ' . $photo->title . ' created.');
+			$sizeVariantFactory->init($photo);
+			$sizeVariant = $sizeVariantFactory->createSizeVariantCond($sizeVariantType);
+			if ($sizeVariant) {
+				$this->line('   ' . $sizeVariantName . ' (' . $sizeVariant->width . 'x' . $sizeVariant->height . ') for ' . $photo->title . ' created.');
 			} else {
-				$this->line('   Could not create ' . $type . ' for ' . $photo->title . ' (' . $photo->width . 'x' . $photo->height . ').');
+				$this->line('   Did not create ' . $sizeVariantName . ' for ' . $photo->title . '.');
 			}
 			$bar->advance();
 		}
 
 		$bar->finish();
 		$this->line('  ');
+
+		return 0;
 	}
 }

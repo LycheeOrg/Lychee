@@ -2,27 +2,19 @@
 
 namespace App\Actions\Album;
 
-use App\Models\Logs;
-
 class SetPublic extends Action
 {
 	public function do(string $albumID, array $values): bool
 	{
-		if ($this->albumFactory->is_smart($albumID)) {
-			Logs::error(__METHOD__, __LINE__, 'Not applicable to smart albums.');
-
-			return false;
-		}
-
-		$album = $this->albumFactory->make($albumID);
+		$album = $this->albumFactory->findModelOrFail($albumID);
 
 		// Convert values
-		$album->full_photo = ($values['full_photo'] === '1' ? 1 : 0);
-		$album->public = ($values['public'] === '1' ? 1 : 0);
-		$album->viewable = ($values['visible'] === '1' ? 1 : 0);
-		$album->nsfw = ($values['nsfw'] === '1' ? 1 : 0);
-		$album->downloadable = ($values['downloadable'] === '1' ? 1 : 0);
-		$album->share_button_visible = ($values['share_button_visible'] === '1' ? 1 : 0);
+		$album->grants_full_photo = $values['grants_full_photo'];
+		$album->is_public = $values['is_public'];
+		$album->requires_link = $values['requires_link'];
+		$album->is_nsfw = $values['is_nsfw'];
+		$album->is_downloadable = $values['is_downloadable'];
+		$album->is_share_button_visible = $values['is_share_button_visible'];
 
 		// Set password if provided
 		if (array_key_exists('password', $values)) {
@@ -43,8 +35,8 @@ class SetPublic extends Action
 		}
 
 		// Reset permissions for photos
-		if ($album->public == 1) {
-			$album->photos()->update(['public' => '0']);
+		if ($album->is_public) {
+			$album->photos()->update(['photos.is_public' => false]);
 		}
 
 		return true;

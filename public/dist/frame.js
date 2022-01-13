@@ -916,8 +916,9 @@ api.isTimeout = function (errorThrown, jqXHR) {
 	return false;
 };
 
-api.post = function (fn, params, callback) {
+api.post = function (fn, params, successCallback) {
 	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
 	loadingBar.show();
 
@@ -934,17 +935,23 @@ api.post = function (fn, params, callback) {
 			return false;
 		}
 
-		callback(data);
+		if (successCallback) successCallback(data);
 	};
 
 	var error = function error(jqXHR, textStatus, errorThrown) {
+		if (errorCallback) {
+			var isHandled = errorCallback(jqXHR);
+			if (isHandled) return;
+		}
+		// Call global error handler for unhandled errors
 		api.onError(api.isTimeout(errorThrown, jqXHR) ? "Session timed out." : "Server error or API not found.", params, errorThrown);
 	};
 
 	var ajaxParams = {
 		type: "POST",
 		url: api_url,
-		data: params,
+		contentType: "application/json",
+		data: JSON.stringify(params),
 		dataType: "json",
 		success: success,
 		error: error
@@ -1125,26 +1132,26 @@ frame.next = function () {
 
 frame.refreshPicture = function () {
 	api.post("Photo::getRandom", {}, function (data) {
-		if (!data.url && (data.sizeVariants === null || data.sizeVariants.medium === null)) {
+		if (data.size_variants === null || data.size_variants.original === null && data.size_variants.medium === null) {
 			console.log("URL not found");
 		}
-		if (data.sizeVariants.thumb === null) console.log("Thumb not found");
+		if (data.size_variants.thumb === null) console.log("Thumb not found");
 
-		$("#background").attr("src", data.sizeVariants.thumb.url);
+		$("#background").attr("src", data.size_variants.thumb.url);
 
 		var srcset = "";
 		var src = "";
 		this.frame.photo = null;
-		if (data.sizeVariants.medium !== null) {
-			src = data.sizeVariants.medium.url;
+		if (data.size_variants.medium !== null) {
+			src = data.size_variants.medium.url;
 
-			if (data.sizeVariants.medium2x !== null) {
-				srcset = data.sizeVariants.medium.url + " " + data.sizeVariants.medium.width + "w, " + data.sizeVariants.medium2x.url + " " + data.sizeVariants.medium2x.width + "w";
+			if (data.size_variants.medium2x !== null) {
+				srcset = data.size_variants.medium.url + " " + data.size_variants.medium.width + "w, " + data.size_variants.medium2x.url + " " + data.size_variants.medium2x.width + "w";
 				// We use it in the resize callback.
 				this.frame.photo = data;
 			}
 		} else {
-			src = data.url;
+			src = data.size_variants.original.url;
 		}
 
 		$("#picture").attr("srcset", srcset);
@@ -1166,7 +1173,7 @@ frame.set = function (data) {
 
 frame.resize = function () {
 	if (this.photo) {
-		var ratio = this.photo.height > 0 ? this.photo.width / this.photo.height : 1;
+		var ratio = this.photo.size_variants.original.height > 0 ? this.photo.size_variants.original.width / this.photo.size_variants.original.height : 1;
 		var winWidth = $(window).width();
 		var winHeight = $(window).height();
 

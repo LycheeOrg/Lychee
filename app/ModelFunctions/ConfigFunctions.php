@@ -2,9 +2,9 @@
 
 namespace App\ModelFunctions;
 
+use App\Facades\Lang;
 use App\Models\Configs;
 use Illuminate\Database\QueryException;
-use Lang;
 
 class ConfigFunctions
 {

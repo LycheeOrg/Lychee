@@ -3,16 +3,18 @@
 namespace App\Actions\Import;
 
 use App\Actions\Import\Extensions\Checks;
-use App\Actions\Import\Extensions\ImportPhoto;
+use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Constants;
+use App\Actions\Photo\Extensions\SourceFileInfo;
+use App\Actions\Photo\Strategies\ImportMode;
 use App\Facades\Helpers;
+use App\Models\Configs;
 use App\Models\Logs;
 use Illuminate\Support\Facades\Storage;
 
 class FromUrl
 {
 	use Constants;
-	use ImportPhoto;
 	use Checks;
 
 	public function __construct()
@@ -20,9 +22,13 @@ class FromUrl
 		$this->checkPermissions();
 	}
 
-	public function do(array $urls, $albumId): bool
+	public function do(array $urls, ?string $albumId): bool
 	{
 		$error = false;
+		$create = new Create(new ImportMode(
+			true,
+			Configs::get_value('skip_duplicates', '0') === '1'
+		));
 
 		foreach ($urls as &$url) {
 			// Reset the execution timeout for every iteration.
@@ -55,7 +61,7 @@ class FromUrl
 			}
 
 			// Import photo
-			if (!$this->photo($tmp_name, true, false, $albumId)) {
+			if ($create->add(SourceFileInfo::createForLocalFile($tmp_name), $albumId) == null) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
 			}

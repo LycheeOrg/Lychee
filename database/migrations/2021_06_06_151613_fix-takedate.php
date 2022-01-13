@@ -1,8 +1,7 @@
 <?php
 
-use App\Models\Album;
-use App\Models\Configs;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 class FixTakedate extends Migration
 {
@@ -16,8 +15,8 @@ class FixTakedate extends Migration
 	 */
 	public function up()
 	{
-		Configs::where('value', '=', self::TAKESTAMP)->update(['value' => self::TAKEN_AT]);
-		Album::where('sorting_col', '=', self::TAKESTAMP)->update(['sorting_col' => self::TAKEN_AT]);
+		DB::table('configs')->where('value', '=', self::TAKESTAMP)->update(['value' => self::TAKEN_AT]);
+		DB::table('albums')->where('sorting_col', '=', self::TAKESTAMP)->update(['sorting_col' => self::TAKEN_AT]);
 	}
 
 	/**
@@ -27,7 +26,7 @@ class FixTakedate extends Migration
 	 */
 	public function down()
 	{
-		Configs::where('value', '=', self::TAKEN_AT)->update(['value' => self::TAKESTAMP]);
-		Album::where('sorting_col', '=', self::TAKEN_AT)->update(['sorting_col' => self::TAKESTAMP]);
+		DB::table('configs')->where('value', '=', self::TAKEN_AT)->update(['value' => self::TAKESTAMP]);
+		DB::table('albums')->where('sorting_col', '=', self::TAKEN_AT)->update(['sorting_col' => self::TAKESTAMP]);
 	}
 }

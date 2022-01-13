@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use AccessControl;
+use App\Facades\AccessControl;
 use App\ModelFunctions\SessionFunctions;
 use App\Models\Configs;
 use Tests\Feature\Lib\AlbumsUnitTest;
@@ -18,7 +18,7 @@ class UsersTest extends TestCase
 		 * because there is no dependency injection in test cases.
 		 */
 		$sessionFunctions = new SessionFunctions();
-		$sessions_test = new SessionUnitTest();
+		$sessions_test = new SessionUnitTest($this);
 
 		$clear = false;
 		$configs = Configs::get();
@@ -29,11 +29,11 @@ class UsersTest extends TestCase
 		if ($configs['password'] == '' && $configs['username'] == '') {
 			$clear = true;
 
-			$sessions_test->set_new($this, 'lychee', 'password', 'true');
-			$sessions_test->logout($this);
+			$sessions_test->set_new('lychee', 'password');
+			$sessions_test->logout();
 
-			$sessions_test->login($this, 'lychee', 'password', 'true');
-			$sessions_test->logout($this);
+			$sessions_test->login('lychee', 'password');
+			$sessions_test->logout();
 		} else {
 			$this->markTestSkipped('Username and Password are set. We do not bother testing further.');
 		}
@@ -43,9 +43,9 @@ class UsersTest extends TestCase
 		 */
 		$this->assertFalse($sessionFunctions->noLogin());
 
-		$sessions_test->login($this, 'foo', 'bar', 'false');
-		$sessions_test->login($this, 'lychee', 'bar', 'false');
-		$sessions_test->login($this, 'foo', 'password', 'false');
+		$sessions_test->login('foo', 'bar', 401);
+		$sessions_test->login('lychee', 'bar', 401);
+		$sessions_test->login('foo', 'password', 401);
 
 		/*
 		 * If we did set login and password we clear them
@@ -58,12 +58,12 @@ class UsersTest extends TestCase
 
 	public function testUsers()
 	{
-		$sessions_test = new SessionUnitTest();
-		$users_test = new UsersUnitTest();
+		$sessions_test = new SessionUnitTest($this);
+		$users_test = new UsersUnitTest($this);
 		$album_tests = new AlbumsUnitTest($this);
 
 		/*
-		 * Scenario is as follow
+		 * Scenario is as follows:
 		 *
 		 * 1. log as admin
 		 * 2. create a user 'test_abcd'
@@ -113,10 +113,10 @@ class UsersTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		// 2
-		$users_test->add($this, 'test_abcd', 'test_abcd', '1', '1', 'true');
+		$users_test->add('test_abcd', 'test_abcd', true, true);
 
 		// 3
-		$response = $users_test->list($this, 'true');
+		$response = $users_test->list();
 
 		// 4
 		$t = json_decode($response->getContent());
@@ -124,101 +124,108 @@ class UsersTest extends TestCase
 		$response->assertJsonFragment([
 			'id' => $id,
 			'username' => 'test_abcd',
-			'upload' => 1,
-			'lock' => 1,
+			'may_upload' => true,
+			'is_locked' => true,
 		]);
 
 		// 5
-		$users_test->add($this, 'test_abcd', 'test_abcd', '1', '1', 'Error: username must be unique');
+		// TODO: Fix this on the server.side. The expected status code should be '409' (Conflict), not 200 (OK).
+		$users_test->add('test_abcd', 'test_abcd', true, true, 200, 'Error: username must be unique');
 
 		// 6
-		$users_test->save($this, $id, 'test_abcde', 'testing', '0', '1', 'true');
+		$users_test->save($id, 'test_abcde', 'testing', false, true);
 
 		// 7
-		$users_test->add($this, 'test_abcd2', 'test_abcd', '1', '1', 'true');
-		$response = $users_test->list($this, 'true');
+		$users_test->add('test_abcd2', 'test_abcd', true, true);
+		$response = $users_test->list();
 		$t = json_decode($response->getContent());
 		$id2 = end($t)->id;
 
 		// 8
-		$users_test->save($this, $id2, 'test_abcde', 'testing', '0', '1', 'Error: username must be unique');
+		// TODO: Fix this on the server.side. The expected status code should be '409' (Conflict), not 200 (OK).
+		$users_test->save($id2, 'test_abcde', 'testing', false, true, 200, 'Error: username must be unique');
 
 		// 9
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 
 		// 10
-		$sessions_test->login($this, 'test_abcde', 'testing');
+		$sessions_test->login('test_abcde', 'testing');
 
 		// 11
-		$users_test->list($this, 'false');
+		$users_test->list(403);
 
 		// 12
-		$sessions_test->set_new($this, 'test_abcde', 'testing2', '"Error: Locked account!"');
+		// TODO: Fix this on the server.side. The expected status code should be '405' (Method Not Allowed), not 200 (OK).
+		$sessions_test->set_new('test_abcde', 'testing2', 200, '"Error: Locked account!"');
 
 		// 13
-		$sessions_test->set_old($this, 'test_abcde', 'testing2', 'test_abcde', 'testing2', '"Error: Locked account!"');
+		// TODO: Fix this on the server.side. The expected status code should be '405' (Method Not Allowed), not 200 (OK).
+		$sessions_test->set_old('test_abcde', 'testing2', 'test_abcde', 'testing2', 200, '"Error: Locked account!"');
 
 		// 14
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 
 		// 15
 		AccessControl::log_as_id(0);
 
 		// 16
-		$users_test->save($this, $id, 'test_abcde', 'testing', '0', '0', 'true');
+		$users_test->save($id, 'test_abcde', 'testing', false, false);
 
 		// 17
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 
 		// 18
-		$sessions_test->login($this, 'test_abcde', 'testing');
-		$sessions_test->init($this, 'true');
+		$sessions_test->login('test_abcde', 'testing');
+		$sessions_test->init();
 
 		// 19
-		$album_tests->get('public', '', 'true');
+		$album_tests->get('public', 403);
 
 		// 20
-		$album_tests->get('starred', '', 'true');
+		$album_tests->get('starred', 403);
 
 		// 21
-		$album_tests->get('unsorted', '', 'true');
+		$album_tests->get('unsorted', 403);
 
 		// 22
-		$sessions_test->set_new($this, 'test_abcde', 'testing2', '"Error: Old username or password entered incorrectly!"');
+		// TODO: Fix this on the server.side. The expected status code should be '401' (Not Authorized), not 200 (OK).
+		$sessions_test->set_new('test_abcde', 'testing2', 200, '"Error: Old username or password entered incorrectly!"');
 
 		// 23
-		$sessions_test->set_old($this, 'test_abcde', 'testing2', 'test_abcde', 'testing2', '"Error: Old username or password entered incorrectly!"');
+		// TODO: Fix this on the server.side. The expected status code should be '401' (Not Authorized), not 200 (OK).
+		$sessions_test->set_old('test_abcde', 'testing2', 'test_abcde', 'testing2', 200, '"Error: Old username or password entered incorrectly!"');
 
 		// 24
-		$sessions_test->set_old($this, 'test_abcd2', 'testing2', 'test_abcde', 'testing2', '"Error: Username already exists."');
+		// TODO: Fix this on the server.side. The expected status code should be '409' (Conflict), not 200 (OK).
+		$sessions_test->set_old('test_abcd2', 'testing2', 'test_abcde', 'testing2', 200, '"Error: Username already exists."');
 
 		// 25
-		$sessions_test->set_old($this, 'test_abcdef', 'testing2', 'test_abcde', 'testing', 'true');
+		$sessions_test->set_old('test_abcdef', 'testing2', 'test_abcde', 'testing');
 
 		// 26
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 
 		// 27
-		$sessions_test->login($this, 'test_abcdef', 'testing2');
+		$sessions_test->login('test_abcdef', 'testing2');
 
 		// 28
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 
 		// 29
 		AccessControl::log_as_id(0);
 
 		// 30
-		$users_test->delete($this, $id, 'true');
-		$users_test->delete($this, $id2, 'true');
+		$users_test->delete($id);
+		$users_test->delete($id2);
 
 		// those should fail because we do not touch user of ID 0
-		$users_test->delete($this, '0', 'false', 422);
+		$users_test->delete('0', 422);
 		// those should fail because there are no user with id -1
-		$users_test->delete($this, '-1', 'false', 422);
-		$users_test->save($this, '-1', 'toto', 'test', '0', '1', 'false', 422);
+		$users_test->delete('-1', 422);
+		$users_test->save('-1', 'toto', 'test', false, true, 422);
 
 		// 31
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 
 		// 32
 		AccessControl::log_as_id(0);
@@ -228,19 +235,19 @@ class UsersTest extends TestCase
 		Configs::set('new_photos_notification', '1');
 
 		// 33
-		$users_test->get_email($this, '');
+		$users_test->get_email();
 
 		// 34
-		$users_test->update_email($this, 'test@example.com', 'true');
+		$users_test->update_email('test@example.com');
 
 		// 35
-		$users_test->get_email($this, 'test@example.com');
+		$users_test->get_email();
 
 		// 36
-		$users_test->update_email($this, '', 'true');
+		$users_test->update_email(null);
 
 		// 37
-		$sessions_test->logout($this);
+		$sessions_test->logout();
 		Configs::set('new_photos_notification', $store_new_photos_notification);
 	}
 }

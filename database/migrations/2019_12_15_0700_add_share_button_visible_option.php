@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Album;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -21,8 +20,7 @@ class AddShareButtonVisibleOption extends Migration
 			$table->boolean('share_button_visible')->after('downloadable')->default(false);
 		});
 
-		Album::query()
-			->withoutGlobalScopes()
+		DB::table('albums')
 			->where('public', '=', 1)
 			->update([
 				'share_button_visible' => true,
@@ -44,10 +42,7 @@ class AddShareButtonVisibleOption extends Migration
 	 */
 	public function down()
 	{
-		Schema::table('albums', function (Blueprint $table) {
-			$table->dropColumn('share_button_visible');
-		});
-
+		Schema::dropColumns('albums', ['share_button_visible']);
 		DB::table('configs')->where('key', 'share_button_visible')->delete();
 	}
 }

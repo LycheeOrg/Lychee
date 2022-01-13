@@ -178,7 +178,7 @@ class ImagickHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function autoRotate(string $path, array $info, bool $pretend = false): array
+	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
 	{
 		try {
 			$image = new \Imagick();

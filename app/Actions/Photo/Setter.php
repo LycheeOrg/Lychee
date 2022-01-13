@@ -13,11 +13,12 @@ use App\Models\Photo;
  */
 class Setter
 {
-	public $property;
+	public string $property;
 
 	public function do(string $photoID, string $value): bool
 	{
-		$photo = Photo::findOrFail($photoID);
+		/** @var Photo $photo */
+		$photo = Photo::query()->findOrFail($photoID);
 
 		return $this->execute($photo, $value);
 	}

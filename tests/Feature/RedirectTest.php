@@ -11,16 +11,16 @@ class RedirectTest extends TestCase
 	 *
 	 * @return void
 	 */
-	public function testRedirection()
+	public function testRedirection(): void
 	{
-		$response = $this->get('r/12345');
+		$response = $this->get('r/aaaaaaaaaaaaaaaaaaaaaaaa');
 
 		$response->assertStatus(302);
-		$response->assertRedirect('gallery#12345');
+		$response->assertRedirect('gallery#aaaaaaaaaaaaaaaaaaaaaaaa');
 
-		$response = $this->get('r/12345/67890');
+		$response = $this->get('r/aaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbb');
 
 		$response->assertStatus(302);
-		$response->assertRedirect('gallery#12345/67890');
+		$response->assertRedirect('gallery#aaaaaaaaaaaaaaaaaaaaaaaa/bbbbbbbbbbbbbbbbbbbbbbbb');
 	}
 }
