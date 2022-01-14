@@ -55,8 +55,3 @@ class CorruptedDbCheck implements DiagnosticCheckInterface
 		}
 	}
 }
-
-// $table->bigInteger('album_id')->unsigned()->nullable()->default(null)->index();
-// $table->foreign('album_id')->references('id')->on('albums')->onDelete('cascade');
-// $table->integer('user_id')->unsigned()->index();
-// $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
