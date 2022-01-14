@@ -40,14 +40,14 @@ class CorruptedDbCheck implements DiagnosticCheckInterface
 						$q->select('id')->from('albums');
 					})->get();
 				$id_albums->map(fn ($e) => $e . ' is missing in the albums table, remove it from the user_albums table.')->each(function ($item, $key) use (&$errors) {
-					$errors[] = $e;
+					$errors[] = $item;
 				});
 
 				$id_users = DB::table('user_album')->select('user_id')->whereNotIn('user_id', function ($q) {
 					$q->select('id')->from('users');
 				})->get();
 				$id_users->map(fn ($e) => $e . ' is missing in the users table, remove it from the user_albums table.')->each(function ($item, $key) use (&$errors) {
-					$errors[] = $e;
+					$errors[] = $item;
 				});
 			} catch (\Exception $e) {
 				$errors[] = $e->getMessage();
