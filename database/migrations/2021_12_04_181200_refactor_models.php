@@ -6,6 +6,7 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -255,9 +256,13 @@ class RefactorModels extends Migration
 
 	/**
 	 * @throws InvalidArgumentException
+	 * @throws RuntimeException
 	 */
 	public function up()
 	{
+		$this->printInfo('Checking consistency of DB');
+		$this->ensureDBConsistency();
+
 		Schema::drop('sym_links');
 
 		// Step 1
@@ -1926,6 +1931,62 @@ class RefactorModels extends Migration
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Ensures the consistency of the DB on the upgrade path.
+	 *
+	 * The method either returns or bails out with an exception, if the DB
+	 * is inconsistent.
+	 *
+	 * @return void
+	 *
+	 * @throws RuntimeException         thrown, if DB is inconsistent
+	 * @throws InvalidArgumentException
+	 */
+	private function ensureDBConsistency(): void
+	{
+		$checkRelation = function (
+			string $modelName,
+			string $table,
+			string $column,
+			string $foreignModelName,
+			string $foreignTable,
+			string $foreignColumn = 'id'
+		): bool {
+			$missing = DB::table($table)
+				->whereNotIn($column, function (Builder $q) use ($foreignTable, $foreignColumn) {
+					$q->from($foreignTable)->select($foreignColumn);
+				})
+				->select('id', $column)
+				->get();
+
+			foreach ($missing as $m) {
+				$this->printError(
+					'Found ' . $modelName .
+					' with ID ' . $m->id .
+					' which refers to non-existing ' . $foreignModelName .
+					' with ID ' . $m->{$column}
+				);
+			}
+
+			return $missing->isEmpty();
+		};
+
+		$isConsistent = $checkRelation('album', 'albums', 'owner_id', 'user', 'users');
+		$isConsistent &= $checkRelation('album', 'albums', 'parent_id', 'parent album', 'albums');
+		$isConsistent &= $checkRelation('album', 'albums', 'cover_id', 'cover photo', 'photos');
+		$isConsistent &= $checkRelation('share', 'user_album', 'user_id', 'user', 'users');
+		$isConsistent &= $checkRelation('share', 'user_album', 'album_id', 'album', 'albums');
+		$isConsistent &= $checkRelation('photo', 'photos', 'owner_id', 'user', 'users');
+		$isConsistent &= $checkRelation('photo', 'photos', 'album_id', 'album', 'albums');
+		$isConsistent &= $checkRelation('page content', 'page_contents', 'page_id', 'page', 'pages');
+		$isConsistent &= $checkRelation('web authentication credential', 'web_authn_credentials', 'user_id', 'user', 'users');
+
+		if (!$isConsistent) {
+			$this->printError('Your database is inconsistent and not fit for migration. Please fix your DB manually first.');
+			throw new \RuntimeException('Inconsistent DB');
+		}
 	}
 }
 
