@@ -372,6 +372,15 @@ class RefactorModels extends Migration
 			$this->dropIndexIfExists($table, 'photos_livephotochecksum_index');
 			$this->dropIndexIfExists($table, 'photos_is_public_index');
 			$this->dropIndexIfExists($table, 'photos_is_starred_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_taken_at_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_created_at_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_public_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_type_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_created_at_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_taken_at_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_is_public_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_type_index');
 		});
 		Schema::rename('photos', 'photos_tmp');
 		Schema::table('web_authn_credentials', function (Blueprint $table) {
