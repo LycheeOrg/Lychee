@@ -718,6 +718,14 @@ class RefactorModels extends Migration
 			$table->index(['album_id', 'created_at']);
 			$table->index(['album_id', 'is_starred']);
 			$table->index(['album_id', 'is_public']);
+			$table->index(['album_id', 'type']);
+			// These indices are needed to efficiently retrieve the covers of
+			// albums acc. to different sorting criteria
+			// Note, that covers are always sorted acc. to `is_starred` first.
+			$table->index(['album_id', 'is_starred', 'created_at']);
+			$table->index(['album_id', 'is_starred', 'taken_at']);
+			$table->index(['album_id', 'is_starred', 'is_public']);
+			$table->index(['album_id', 'is_starred', 'type']);
 		});
 	}
 
