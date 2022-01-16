@@ -6,6 +6,7 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Schema\AbstractSchemaManager;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -255,9 +256,13 @@ class RefactorModels extends Migration
 
 	/**
 	 * @throws InvalidArgumentException
+	 * @throws RuntimeException
 	 */
 	public function up()
 	{
+		$this->printInfo('Checking consistency of DB');
+		$this->ensureDBConsistency();
+
 		Schema::drop('sym_links');
 
 		// Step 1
@@ -1943,6 +1948,114 @@ class RefactorModels extends Migration
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Ensures the consistency of the DB on the upgrade path.
+	 *
+	 * The method checks the DB for consistency.
+	 * In case of errors, the method either
+	 *
+	 *  1. automatically corrects the problem if the fix is easy and prints
+	 *     a warning, or
+	 *  2. bails out with an exception and prints an error message, if the
+	 *     problem needs manual attention.
+	 *
+	 * The method either returns or bails out with an exception.
+	 *
+	 * @return void
+	 *
+	 * @throws RuntimeException         thrown, if DB is inconsistent
+	 * @throws InvalidArgumentException
+	 */
+	private function ensureDBConsistency(): void
+	{
+		$checkRelation = function (
+			string $modelName,
+			string $table,
+			string $column,
+			string $foreignModelName,
+			string $foreignTable,
+			string $fixMethod = '',
+		): bool {
+			$missing = DB::table($table)
+				->whereNotIn($column, function (Builder $q) use ($foreignTable) {
+					$q->from($foreignTable)->select('id');
+				})
+				->select('id', $column)
+				->get();
+
+			foreach ($missing as $m) {
+				$msg = 'Found ' . $modelName .
+					' with ID ' . $m->id .
+					' which refers to non-existing ' . $foreignModelName .
+					' with ID ' . $m->{$column};
+				if (empty($fixMethod)) {
+					$this->printError($msg);
+				} else {
+					$this->printWarning($msg);
+				}
+			}
+
+			if ($missing->isEmpty()) {
+				return true;
+			}
+
+			$fixQuery = DB::table($table)->whereIn('id', $missing->pluck('id'));
+
+			switch ($fixMethod) {
+				case 'nullify':
+					$this->printInfo('Nullifying the affected relations from ' . $modelName . 's to ' . $foreignModelName . 's');
+					$fixQuery->update([$column => null]);
+
+					return true;
+				case 'zeroize':
+					$this->printInfo('Zeroizing the affected relations from ' . $modelName . 's to ' . $foreignModelName . 's');
+					$fixQuery->update([$column => 0]);
+
+					return true;
+				case 'delete':
+					$this->printInfo('Deleting the affected ' . $modelName . 's');
+					$fixQuery->delete();
+
+					return true;
+				default:
+					$this->printInfo('Error is not automatically fixable');
+
+					return false;
+			}
+		};
+
+		// If the owner of an album is missing, assign it to the admin user
+		$isConsistent = $checkRelation('album', 'albums', 'owner_id', 'user', 'users', 'zeroize');
+		// Move orphaned albums to the top-level
+		$isConsistent &= $checkRelation('album', 'albums', 'parent_id', 'parent album', 'albums', 'nullify');
+		// If the cover of an album is missing, unset the cover
+		$isConsistent &= $checkRelation('album', 'albums', 'cover_id', 'cover photo', 'photos', 'nullify');
+		// Delete orphaned shares
+		$isConsistent &= $checkRelation('share', 'user_album', 'user_id', 'user', 'users', 'delete');
+		$isConsistent &= $checkRelation('share', 'user_album', 'album_id', 'album', 'albums', 'delete');
+		// If the owner of a photo is missing, assign it to the admin user
+		$isConsistent &= $checkRelation('photo', 'photos', 'owner_id', 'user', 'users', 'zeroize');
+		// If the album of a photo is missing, assign it to root (unsorted) album
+		$isConsistent &= $checkRelation('photo', 'photos', 'album_id', 'album', 'albums', 'nullify');
+		// Delete orphaned WebAuthn credentials
+		$isConsistent &= $checkRelation('web authentication credential', 'web_authn_credentials', 'user_id', 'user', 'users', 'delete');
+		// There is no obvious fix for orphaned page content
+		$isConsistent &= $checkRelation('page content', 'page_contents', 'page_id', 'page', 'pages');
+
+		// As we might have moved orphaned albums to the top,
+		// we need to fix the tree.
+		// Even if we did not move any album, fixing the tree before
+		// the migration does not harm as users might have fiddled with their
+		// DB without taking care of
+		// `_lft` and `_rgt`
+		RefactorAlbumModel_AlbumModel::query()->fixTree();
+
+		if (!$isConsistent) {
+			$this->printError('Your database is inconsistent and not fit for migration. Please fix your DB manually first.');
+			throw new \RuntimeException('Inconsistent DB');
+		}
 	}
 }
 
