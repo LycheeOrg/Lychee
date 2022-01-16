@@ -372,6 +372,15 @@ class RefactorModels extends Migration
 			$this->dropIndexIfExists($table, 'photos_livephotochecksum_index');
 			$this->dropIndexIfExists($table, 'photos_is_public_index');
 			$this->dropIndexIfExists($table, 'photos_is_starred_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_taken_at_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_created_at_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_public_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_type_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_created_at_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_taken_at_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_is_public_index');
+			$this->dropIndexIfExists($table, 'photos_album_id_is_starred_type_index');
 		});
 		Schema::rename('photos', 'photos_tmp');
 		Schema::table('web_authn_credentials', function (Blueprint $table) {
@@ -718,6 +727,14 @@ class RefactorModels extends Migration
 			$table->index(['album_id', 'created_at']);
 			$table->index(['album_id', 'is_starred']);
 			$table->index(['album_id', 'is_public']);
+			$table->index(['album_id', 'type']);
+			// These indices are needed to efficiently retrieve the covers of
+			// albums acc. to different sorting criteria
+			// Note, that covers are always sorted acc. to `is_starred` first.
+			$table->index(['album_id', 'is_starred', 'created_at']);
+			$table->index(['album_id', 'is_starred', 'taken_at']);
+			$table->index(['album_id', 'is_starred', 'is_public']);
+			$table->index(['album_id', 'is_starred', 'type']);
 		});
 	}
 
