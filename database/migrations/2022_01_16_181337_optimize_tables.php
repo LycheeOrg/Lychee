@@ -28,10 +28,24 @@ class OptimizeTables extends Migration
 		$tables = $connection->getDoctrineSchemaManager()->listTableNames();
 
 		$driverName = $connection->getDriverName();
-		$sql = 'ANALYZE ';
-		if ($driverName == 'mysql') {
-			$this->msgSection->writeln('<info>Info:</info> MySql/MariaDB detected.');
-			$sql = 'ANALYZE TABLE ';
+
+		switch ($driverName) {
+			case 'mysql':
+				$this->msgSection->writeln('<info>Info:</info> MySql/MariaDB detected.');
+				$sql = 'ANALYZE TABLE ';
+				break;
+			case 'posgresql':
+				$this->msgSection->writeln('<info>Info:</info> PostgreSQL detected.');
+				$sql = 'ANALYZE ';
+				break;
+			case 'sqlite':
+				$this->msgSection->writeln('<info>Info:</info> SQLite detected.');
+				$sql = 'ANALYZE ';
+				break;
+			default:
+				$this->msgSection->writeln('<comment>Warning:</comment> Unknown DBMS; doing nothing.');
+
+				return;
 		}
 
 		foreach ($tables as $table) {
