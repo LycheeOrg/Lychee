@@ -388,6 +388,58 @@ class PhotosTest extends TestCase
 		AccessControl::logout();
 	}
 
+	public function testWeirdExifDates()
+	{
+		$THE_TESTS = [
+			'zero exif dates' => [
+				'img_name' => 'date_zero_cat.jpg',
+				'mime_type' => 'image/jpeg',
+				'expected_json' => [
+					'taken_at' => null,
+				],
+			],
+			'minimum exif dates' => [
+				'img_name' => 'date_min_cat.jpg',
+				'mime_type' => 'image/jpeg',
+				'expected_json' => [
+					'taken_at' => Carbon::create(
+						0,
+						1,
+						1,
+						0,
+						0,
+						0,
+						'UTC'
+					)->format('Y-m-d\TH:i:s.uP'),
+				],
+			],
+		];
+
+		$photos_tests = new PhotosUnitTest($this);
+
+		AccessControl::log_as_id(0);
+
+		foreach ($THE_TESTS as $tname => $tconf) {
+			$src = "tests/assets/${tconf['img_name']}";
+			$dst = "public/uploads/import/${tconf['img_name']}";
+
+			copy($src, $dst);
+
+			$file = new UploadedFile(
+				$dst,
+				$tconf['img_name'],
+				$tconf['mime_type'],
+				null,
+				true
+			);
+
+			$id = $photos_tests->upload($file);
+
+			$response = $photos_tests->get($id);
+			$response->assertJson($tconf['expected_json']);
+		}
+	}
+
 	private function asObject($response)
 	{
 		$content = $response->getContent();

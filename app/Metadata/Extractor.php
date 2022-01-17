@@ -10,6 +10,15 @@ use PHPExif\Reader\Reader;
 
 class Extractor
 {
+	/*
+	 * https://github.com/LycheeOrg/Lychee/issues/1200
+	 *
+	 * Minimum possible recordable date value.
+	 *
+	 * Equates to 0000:01:01 00:00:00
+	 */
+	private const MINIMUM_VALID_DATE_UTC = -62167219200;
+
 	/**
 	 * return bare array for info.
 	 *
@@ -219,7 +228,7 @@ class Extractor
 		$metadata['checksum'] = $this->checksum($fullPath);
 
 		$taken_at = $exif->getCreationDate();
-		if ($taken_at !== false) {
+		if ($taken_at !== false && $this->date_is_valid($taken_at)) {
 			// There are three different timezone which needs to considered:
 			//
 			//  a) The original timezone of the location where the photo has
@@ -476,5 +485,23 @@ class Extractor
 		}
 
 		return $metadata;
+	}
+
+	/**
+	 * https://github.com/LycheeOrg/Lychee/issues/1200.
+	 *
+	 * Converts
+	 *
+	 * @param bool|\DateTime $d
+	 *
+	 * @return bool
+	 */
+	protected function date_is_valid(bool|\DateTime $d): bool
+	{
+		if (false === $d) {
+			return false;
+		}
+
+		return self::MINIMUM_VALID_DATE_UTC <= intval($d->format('U'));
 	}
 }
