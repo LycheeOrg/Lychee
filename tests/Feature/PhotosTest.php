@@ -406,7 +406,7 @@ class PhotosTest extends TestCase
 						0,
 						1,
 						1,
-						0,
+						12,
 						0,
 						0,
 						'UTC'

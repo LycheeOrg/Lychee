@@ -15,9 +15,9 @@ class Extractor
 	 *
 	 * Minimum possible recordable date value.
 	 *
-	 * Equates to 0000:01:01 00:00:00
+	 * Equates to 0000:01:01 12:00:00
 	 */
-	private const MINIMUM_VALID_DATE_UTC = -62167219200;
+	private const MINIMUM_VALID_DATE_UTC = -62167176000;
 
 	/**
 	 * return bare array for info.
