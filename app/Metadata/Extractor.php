@@ -490,7 +490,7 @@ class Extractor
 	/**
 	 * https://github.com/LycheeOrg/Lychee/issues/1200.
 	 *
-	 * Converts
+	 * Ensures the provided DateTime value is functional
 	 *
 	 * @param bool|\DateTime $d
 	 *
