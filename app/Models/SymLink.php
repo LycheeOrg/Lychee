@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Casts\MustNotSetCast;
-use App\Facades\Helpers;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\UTCBasedTimes;
 use Illuminate\Database\Eloquent\Builder;
@@ -112,8 +111,9 @@ class SymLink extends Model
 	 */
 	protected function performInsert(Builder $query): bool
 	{
-		$origFullPath = $this->size_variant->full_path;
-		$extension = Helpers::getExtension($origFullPath);
+		$file = $this->size_variant->getFile();
+		$origFullPath = $file->getAbsolutePath();
+		$extension = $file->getExtension();
 		$symShortPath = hash('sha256', random_bytes(32) . '|' . $origFullPath) . $extension;
 		$symFullPath = Storage::disk(SymLink::DISK_NAME)->path($symShortPath);
 		if (is_link($symFullPath)) {
