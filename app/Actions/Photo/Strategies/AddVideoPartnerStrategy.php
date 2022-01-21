@@ -2,6 +2,7 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Facades\Helpers;
 use App\Models\Photo;
 
 class AddVideoPartnerStrategy extends AddBaseStrategy
@@ -13,12 +14,12 @@ class AddVideoPartnerStrategy extends AddBaseStrategy
 
 	public function do(): Photo
 	{
-		$original = $this->photo->size_variants->getOriginal();
-		$ext = $this->parameters->sourceFileInfo->getOriginalFileExtension();
-		$dstShortPath = substr($original->short_path, 0, -strlen($ext)) . $ext;
-		$dstFullPath = substr($original->full_path, 0, -strlen($ext)) . $ext;
-		$this->putSourceIntoFinalDestination($dstFullPath);
-		$this->photo->live_photo_short_path = $dstShortPath;
+		$photoPath = $this->photo->size_variants->getOriginal()->short_path;
+		$photoExt = Helpers::getExtension($photoPath);
+		$videoExt = $this->parameters->sourceFileInfo->getOriginalExtension();
+		$videoPath = substr($photoPath, 0, -strlen($photoExt)) . $videoExt;
+		$this->putSourceIntoFinalDestination($videoPath);
+		$this->photo->live_photo_short_path = $videoPath;
 		$this->photo->save();
 
 		return $this->photo;

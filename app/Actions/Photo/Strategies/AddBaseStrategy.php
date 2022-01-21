@@ -4,11 +4,17 @@ namespace App\Actions\Photo\Strategies;
 
 use App\Exceptions\JsonError;
 use App\Facades\AccessControl;
+use App\Image\FlysystemFile;
+use App\Image\NativeLocalFile;
 use App\Models\Logs;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Adapter\Local;
 
 abstract class AddBaseStrategy
 {
+	public const IMAGE_DISK_NAME = 'images';
+
 	protected AddStrategyParameters $parameters;
 	protected Photo $photo;
 
@@ -117,45 +123,51 @@ abstract class AddBaseStrategy
 	/**
 	 * Moves/copies/symlinks source file to final destination.
 	 *
-	 * @param string $targetFullPath the path of the final destination
+	 * @param string $targetPath the path of the final destination relative to
+	 *                           the disk {@link AddBaseStrategy::IMAGE_DISK_NAME}
 	 *
 	 * @throws JsonError
 	 */
-	protected function putSourceIntoFinalDestination(string $targetFullPath): void
+	protected function putSourceIntoFinalDestination(string $targetPath): void
 	{
-		$tmpFullPath = $this->parameters->sourceFileInfo->getTmpFullPath();
-		if ($this->parameters->importMode->shallDeleteImported()) {
-			// Note: We cannot use the storage facade here, because the
-			// temporary name of the original file may be outside of the
-			// disk of the storage
-			if (!rename($tmpFullPath, $targetFullPath)) {
-				$msg = 'Could not move photo from "' . $tmpFullPath . '" to "' . $targetFullPath . '"';
-				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new JsonError('$msg');
-			}
-			if (!chmod($targetFullPath, 0666 & ~umask(null))) {
-				$msg = 'Could not set permissions of "' . $targetFullPath . '"';
-				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new JsonError('$msg');
-			}
-		} else {
-			// Check if the user wants to create symlinks instead of copying the photo
+		try {
+			$sourceFile = $this->parameters->sourceFileInfo->getFile();
+			$targetFile = new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $targetPath);
+			$isTargetLocal = $targetFile->getStorageAdapter() instanceof Local;
 			if ($this->parameters->importMode->shallImportViaSymlink()) {
-				if (!symlink($tmpFullPath, $targetFullPath)) {
-					$msg = 'Could not create symbolic link at "' . $targetFullPath . '" for photo at "' . $tmpFullPath . '"';
-					Logs::error(__METHOD__, __LINE__, $msg);
-					throw new JsonError($msg);
+				if (!$isTargetLocal) {
+					throw new \RuntimeException('Symlinking is only supported on local filesystems');
 				}
-			} elseif (!copy($tmpFullPath, $targetFullPath)) {
-				$msg = 'Could not copy photo from "' . $tmpFullPath . '" to "' . $targetFullPath . '"';
-				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new JsonError($msg);
+				if (!($sourceFile instanceof NativeLocalFile)) {
+					throw new \RuntimeException('Symlinking is only supported to local files');
+				}
+				$targetAbsolutePath = $targetFile->getAbsolutePath();
+				$sourceAbsolutePath = $sourceFile->getAbsolutePath();
+				if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
+					throw new \RuntimeException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
+				}
+			} else {
+				$targetFile->write($sourceFile->read());
+				$sourceFile->close();
+				if ($this->parameters->importMode->shallDeleteImported()) {
+					$sourceFile->delete();
+				}
+				// Set original date
+				if ($isTargetLocal && $this->photo->taken_at !== null) {
+					// I wonder if Flysystem is really the right choice for use
+					// given the fact, that it lacks many of the features we need
+					// such that we need to fall back to low-level PHP methods
+					// all the time (for symlinks, setting timestamps, etc.)
+					// Also, the head maintainer seem very reluctant of
+					// integrating new features:
+					//  - For setting timestamps: https://github.com/thephpleague/flysystem/issues/920
+					//  - For symlinks: https://github.com/thephpleague/flysystem/issues/599
+					touch($targetFile->getAbsolutePath(), $this->photo->taken_at->getTimestamp());
+				}
 			}
-		}
-
-		// Set original date
-		if ($this->photo->taken_at !== null) {
-			@touch($targetFullPath, $this->photo->taken_at->getTimestamp());
+		} catch (\Exception $e) {
+			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			throw new JsonError($e->getMessage());
 		}
 	}
 }

@@ -231,8 +231,10 @@ class Exec
 			}
 
 			$filesCount++;
+
 			// It is possible to move a file because of directory permissions but
 			// the file may still be unreadable by the user
+			// TODO: This check will be unnecessary, after we have proper exception handling, because we try to read streams
 			if (!is_readable($file)) {
 				$this->status_error($file, 'Could not read file');
 				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
@@ -240,6 +242,9 @@ class Exec
 			}
 			$extension = Helpers::getExtension($file, true);
 			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
+			// TODO: Consolidate all mimetype/extension handling in one place; here we have another test whether the source file is supported which is inconsistent with tests elsewhere
+			// TODO: Probably the best place is \App\Image\MediaFile.
+			// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
 			if (@exif_imagetype($file) !== false || in_array(strtolower($extension), $this->validExtensions, true) || $is_raw) {
 				// Photo or Video
 				try {
@@ -257,7 +262,7 @@ class Exec
 						$this->resync_metadata
 					));
 					if (
-						$photoCreate->add(SourceFileInfo::createForLocalFile($file), $albumID) == null
+						$photoCreate->add(SourceFileInfo::createByLocalFile($file), $albumID) == null
 					) {
 						$this->status_error($file, 'Could not import file');
 						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');

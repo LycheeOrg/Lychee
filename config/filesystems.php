@@ -41,6 +41,9 @@ return [
 	*/
 
 	'disks' => [
+		/*
+		 * TODO: Is this disk referenced anywhere? Probably, this can be deleted.
+		 */
 		'local' => [
 			'driver' => 'local',
 			'root' => storage_path('app'),
@@ -67,13 +70,20 @@ return [
 			'visibility' => 'public',
 		],
 
+		/*
+		 * TODO: Is this disk referenced anywhere? Probably, this can be deleted.
+		 */
 		'public' => [
 			'driver' => 'local',
+			// TODO: If we keep this at all, then the `root` should probably be `public_path('')`.
 			'root' => storage_path('app/public'),
 			'url' => env('APP_URL') . '/storage',
 			'visibility' => 'public',
 		],
 
+		/*
+		 * TODO: Is this disk referenced anywhere? Probably, this can be deleted.
+		 */
 		's3' => [
 			'driver' => 's3',
 			'key' => env('AWS_ACCESS_KEY_ID'),

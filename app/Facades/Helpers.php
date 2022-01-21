@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Facade;
  * @method static string getExtension(string $filename, bool $isURI = false)
  * @method static bool hasPermissions(string $path)
  * @method static bool hasFullPermissions(string $path)
- * @method static string createTemporaryFile(string $extension)
  * @method static int gcd(int $a, int $b)
  * @method static string str_of_bool(bool $b)
  * @method static int data_index()

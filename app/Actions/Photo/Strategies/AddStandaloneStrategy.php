@@ -2,14 +2,16 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Image\ImageHandlerInterface;
+use App\Image\MediaFile;
+use App\Image\TemporaryLocalFile;
 use App\Metadata\Extractor;
 use App\ModelFunctions\MOVFormat;
 use App\Models\Logs;
 use App\Models\Photo;
-use App\Models\SizeVariant;
 use FFMpeg\FFMpeg;
 
 class AddStandaloneStrategy extends AddBaseStrategy
@@ -42,11 +44,13 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$this->setParentAndOwnership();
 		$this->photo->save();
 
+		$this->normalizeOrientation();
+
 		// Initialize factory for size variants
 		/** @var SizeVariantNamingStrategy $namingStrategy */
 		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
 		$namingStrategy->setFallbackExtension(
-			$this->parameters->sourceFileInfo->getOriginalFileExtension()
+			$this->parameters->sourceFileInfo->getOriginalExtension()
 		);
 		/** @var SizeVariantFactory $sizeVariantFactory */
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
@@ -57,13 +61,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->parameters->info['width'],
 			$this->parameters->info['height']
 		);
-		$this->putSourceIntoFinalDestination($original->full_path);
-		// The orientation can only be normalized after the source file has
-		// been put into its final destination, because we need an actual file
-		// which can be rotated if we import the source file from another
-		// directory on the server (i.e. file copy) or if we import the source
-		// from a link (i.e. file download),
-		$this->normalizeOrientation($original);
+		$this->putSourceIntoFinalDestination($original->short_path);
 
 		// Create remaining size variants
 		try {
@@ -89,46 +87,82 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	/**
 	 * Correct orientation of original size variant based on EXIF data.
 	 *
-	 * The method does not actual modify the underlying file if it is only a
-	 * symlink.
-	 * This method also updated the attributes {@link SizeVariant::$width},
-	 * {@link SizeVariant::$height} and {@link Photo::$filesize} to the new
-	 * values after rotation.
+	 * **ATTENTION:** As a side effect of the method, the
+	 * {@link MediaFile}-instance stored in {@link AddStandaloneStrategy::$parameters}
+	 * might change.
 	 *
-	 * @param SizeVariant $original the original size variant
+	 * There are 5 possibilities for the source file:
+	 *
+	 *  1. the source file has been uploaded by a client
+	 *  2. the source file has been downloaded from a remote server
+	 *  3. the source file is a local file on the server and
+	 *      a) shall be deleted
+	 *      b) shall be copied
+	 *      c) shall be symlinked
+	 *
+	 * Cases 1 trough 3a can be treated identically:
+	 * In all three cases we have a local (possibly temporary) file which
+	 * will be removed anyway and thus can be modified in place.
+	 *
+	 * In case 3b, we make a local, temporary copy first and then proceed as
+	 * in the first 3 cases.
+	 * This is also the case which changes the {@link MediaFile}-instance.
+	 *
+	 * In case 3c, the method does not actually modify the file.
+	 *
+	 * This method also updates the attributes {@link Photo::$filesize}
+	 * and {@link Photo::$checksum} to the new values after rotation.
 	 */
-	protected function normalizeOrientation(SizeVariant $original): void
+	protected function normalizeOrientation(): void
 	{
 		$orientation = $this->parameters->info['orientation'];
-		$fullPath = $original->full_path;
-		if ($this->photo->type === 'image/jpeg' && $orientation != 1) {
-			// If we are importing via symlink, we don't actually overwrite
-			// the source but we still need to fix the dimensions.
-			/** @var ImageHandlerInterface $imageHandler */
-			$imageHandler = resolve(ImageHandlerInterface::class);
-			$newDim = $imageHandler->autoRotate(
-				$fullPath,
-				$orientation,
-				$this->parameters->importMode->shallImportViaSymlink()
-			);
-
-			if ($newDim !== [false, false]) {
-				$original->width = $newDim['width'];
-				$original->height = $newDim['height'];
-				$original->save();
-				// If the image has actually been rotated, the size
-				// and the checksum may have changed.
-				/* @var  Extractor $metadataExtractor */
-				$metadataExtractor = resolve(Extractor::class);
-				$this->photo->filesize = $metadataExtractor->filesize($fullPath);
-				$this->photo->checksum = $metadataExtractor->checksum($fullPath);
-				$this->photo->save();
-			}
+		if ($this->photo->type !== 'image/jpeg' || $orientation == 1) {
+			// Nothing to do for non-JPEGs or correctly oriented photos.
+			return;
 		}
 
-		// Set original date
-		if ($this->parameters->info['taken_at'] !== null) {
-			@touch($fullPath, $this->parameters->info['taken_at']->getTimestamp());
+		if (
+			!$this->parameters->importMode->shallDeleteImported() &&
+			!$this->parameters->importMode->shallImportViaSymlink()
+		) {
+			// This is case 3b, the original shall neither be deleted
+			// nor symlinked.
+			// So lets make a deep-copy first which can be rotated safely.
+			$info = $this->parameters->sourceFileInfo;
+			$file = $info->getFile();
+			$tmpFile = new TemporaryLocalFile();
+			$tmpFile->write($file->read());
+			$file->close();
+			// Reset source file info to the new temporary and ensure that
+			// it will be deleted later
+			$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
+				$info->getOriginalName(),
+				$info->getOriginalExtension(),
+				$tmpFile
+			);
+			$this->parameters->importMode->setDeleteImported(true);
+		}
+
+		/** @var ImageHandlerInterface $imageHandler */
+		$imageHandler = resolve(ImageHandlerInterface::class);
+
+		$absolutePath = $this->parameters->sourceFileInfo->getFile()->getAbsolutePath();
+		// If we are importing via symlink, we don't actually overwrite
+		// the source but we still need to fix the dimensions.
+		$newDim = $imageHandler->autoRotate(
+			$absolutePath,
+			$orientation,
+			$this->parameters->importMode->shallImportViaSymlink()
+		);
+
+		if ($newDim !== [false, false]) {
+			// If the image has actually been rotated, the size
+			// and the checksum may have changed.
+			/* @var  Extractor $metadataExtractor */
+			$metadataExtractor = resolve(Extractor::class);
+			$this->photo->filesize = $metadataExtractor->filesize($absolutePath);
+			$this->photo->checksum = $metadataExtractor->checksum($absolutePath);
+			$this->photo->save();
 		}
 	}
 
@@ -161,6 +195,8 @@ class AddStandaloneStrategy extends AddBaseStrategy
 
 			/**
 			 * ! check if we can use path instead of this ugly thing.
+			 * TODO: Au contraire! If we ever want to be able to use non-local storage, we must stop using paths, but use file streams.
+			 * TODO: Nonetheless, this ugliness should be properly encapsulated in an designated class.
 			 */
 			$ffmpeg = FFMpeg::create();
 			$video = $ffmpeg->open(stream_get_meta_data($fp_video)['uri']);
