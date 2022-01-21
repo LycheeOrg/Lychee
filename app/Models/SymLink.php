@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Storage;
  * @property int $size_variant_id
  * @property SizeVariant size_variant
  * @property string $short_path
- * @property string $full_path
  * @property string $url
  * @property Carbon $created_at
  * @property Carbon $updated_at
@@ -84,21 +83,6 @@ class SymLink extends Model
 	}
 
 	/**
-	 * Accessor for the "virtual" attribute {@link SymLink::$full_path}.
-	 *
-	 * Returns the full path of the symbolic link as it needs to be input into
-	 * some low-level PHP functions like `unlink`.
-	 * This is a convenient method and wraps {@link SymLink::$short_path}
-	 * into {@link \Illuminate\Support\Facades\Storage::path()}.
-	 *
-	 * @return string the full path of the symbolic link
-	 */
-	protected function getFullPathAttribute(): string
-	{
-		return Storage::disk(self::DISK_NAME)->path($this->short_path);
-	}
-
-	/**
 	 * Performs the `INSERT` operation of the model and creates an actual
 	 * symbolic link on disk.
 	 *
@@ -137,7 +121,7 @@ class SymLink extends Model
 	 */
 	public function delete(): bool
 	{
-		$fullPath = $this->full_path;
+		$fullPath = Storage::disk(self::DISK_NAME)->path($this->short_path);
 		// Laravel and Flysystem does not support symbolic links.
 		// So we must use low-level methods here.
 		if ((is_link($fullPath) && !unlink($fullPath)) || (file_exists($fullPath)) && !is_link($fullPath)) {
