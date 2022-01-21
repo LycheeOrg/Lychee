@@ -2,11 +2,31 @@
 
 namespace App\Image;
 
+use Illuminate\Http\UploadedFile;
+
 /**
  * Interface MediaFile.
  *
  * This interface abstracts from the differences of files which are provided
  * through a Flysystem adapter and files outside Flysystem.
+ *
+ * In particular, this abstraction provides a unified copy-mechanism
+ * between different Flysystem disks, local (native) files and uploaded files
+ * via
+ *
+ *     $targetFile->write($sourceFile->read())
+ *
+ * using streams.
+ * This stream-based approach is the same which is also used by
+ * {@link UploadedFile::storeAs()} under the hood and avoids certain problems
+ * which are may be caused by PHP method like `rename`, `move` or `copy`.
+ * Firstly, these methods need a file path and thus do not work, if a file
+ * resides on a Flysystem disk for which PHP has no native handler (e.g.
+ * AWS S3 storage).
+ * Secondly, `rename` struggles with filesystem permissions and ownership, if
+ * the file is moved within the same path namespace but across mount points.
+ * Copying via streams avoids issues like
+ * [LycheeOrg/Lychee#1198](https://github.com/LycheeOrg/Lychee/issues/1198).
  */
 abstract class MediaFile
 {
@@ -28,7 +48,7 @@ abstract class MediaFile
 	 * Note, you must not write into a file which has been opened for
 	 * reading via {@link MediaFile::read()} and not yet been closed again.
 	 *
-	 * @param resource $stream
+	 * @param resource $stream the input stream which provides the input to write
 	 *
 	 * @return void
 	 */
