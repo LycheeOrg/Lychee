@@ -149,9 +149,6 @@ abstract class AddBaseStrategy
 			} else {
 				$targetFile->write($sourceFile->read());
 				$sourceFile->close();
-				if ($this->parameters->importMode->shallDeleteImported()) {
-					$sourceFile->delete();
-				}
 				// Set original date
 				if ($isTargetLocal && $this->photo->taken_at !== null) {
 					// I wonder if Flysystem is really the right choice for use
@@ -163,6 +160,14 @@ abstract class AddBaseStrategy
 					//  - For setting timestamps: https://github.com/thephpleague/flysystem/issues/920
 					//  - For symlinks: https://github.com/thephpleague/flysystem/issues/599
 					touch($targetFile->getAbsolutePath(), $this->photo->taken_at->getTimestamp());
+				}
+				if ($this->parameters->importMode->shallDeleteImported()) {
+					// This may throw an exception, if the original has been
+					// readable, but is not writable
+					// In this case, the media file will have been copied, but
+					// cannot be "moved".
+					// TODO: Throw a application-specific exception such that the outer caller can gracefully fallback to "copy"-semantics and return a warning instead of failing entirely.
+					$sourceFile->delete();
 				}
 			}
 		} catch (\Exception $e) {

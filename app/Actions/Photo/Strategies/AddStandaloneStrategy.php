@@ -61,7 +61,18 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->parameters->info['width'],
 			$this->parameters->info['height']
 		);
-		$this->putSourceIntoFinalDestination($original->short_path);
+		try {
+			$this->putSourceIntoFinalDestination($original->short_path);
+		} catch (\Exception $e) {
+			// If source file could not be put into final destination, remove
+			// freshly created photo from DB to avoid having "zombie" entries.
+			try {
+				$this->photo->delete();
+			} catch (\Throwable) {
+				// Sic! If anything goes wrong here, we still throw the original exception
+			}
+			throw $e;
+		}
 
 		// Create remaining size variants
 		try {
