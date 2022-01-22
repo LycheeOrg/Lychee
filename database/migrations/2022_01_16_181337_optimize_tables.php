@@ -34,7 +34,7 @@ class OptimizeTables extends Migration
 				$this->msgSection->writeln('<info>Info:</info> MySql/MariaDB detected.');
 				$sql = 'ANALYZE TABLE ';
 				break;
-			case 'posgresql':
+			case 'pgsql':
 				$this->msgSection->writeln('<info>Info:</info> PostgreSQL detected.');
 				$sql = 'ANALYZE ';
 				break;
