@@ -7,7 +7,6 @@ use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Facades\Helpers;
 use App\Image\TemporaryLocalFile;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -34,10 +33,13 @@ class FromUrl
 			// Reset the execution timeout for every iteration.
 			set_time_limit(ini_get('max_execution_time'));
 
+			$path = parse_url($url, PHP_URL_PATH);
+			$basename = pathinfo($path, PATHINFO_FILENAME);
+			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
+
 			// Validate photo type and extension even when $this->photo (=> $photo->add) will do the same.
 			// This prevents us from downloading invalid photos.
 			// Verify extension
-			$extension = Helpers::getExtension($url, true);
 			if (!$this->isValidExtension($extension)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo format not supported (' . $url . ')');
@@ -66,7 +68,7 @@ class FromUrl
 			}
 
 			// Import photo
-			if ($create->add(SourceFileInfo::createByTempFile($extension, $tmpFile), $albumId) == null) {
+			if ($create->add(SourceFileInfo::createByTempFile($basename, $extension, $tmpFile), $albumId) == null) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmpFile->getAbsolutePath() . ')');
 			}

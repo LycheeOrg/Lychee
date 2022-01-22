@@ -250,7 +250,7 @@ class Exec
 				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
 				continue;
 			}
-			$extension = Helpers::getExtension($file, true);
+			$extension = Helpers::getExtension($file, false);
 			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
 			// TODO: Consolidate all mimetype/extension handling in one place; here we have another test whether the source file is supported which is inconsistent with tests elsewhere
 			// TODO: Probably the best place is \App\Image\MediaFile.
@@ -283,7 +283,7 @@ class Exec
 					$this->status_error($file, 'Skipped duplicate (resynced metadata)');
 				} catch (Exception $e) {
 					$this->status_error($file, 'Could not import file');
-					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');
+					Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . '): ' . $e->getMessage());
 				}
 			} else {
 				$this->status_error($file, 'Unsupported file type');
