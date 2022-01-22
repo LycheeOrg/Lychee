@@ -1,7 +1,7 @@
 <div id="container" style="padding-bottom: 62px;">
 	<!-- Loading -->
 	<div id="loading"></div>
-	
+
 		<livewire:header :mode="$mode" :album="$album" />
 
 		@if($mode == 'albums')
@@ -20,7 +20,6 @@
 		@endif
 	{{-- @livewire('left-menu') --}}
 	{{-- @livewire('albums') --}}
-	
+
 	{{-- @include('includes.footer') --}}
 </div>
-	

@@ -13,22 +13,14 @@ class Album extends Component
 	public const SQUARE = 'square';
 
 	public string $layout = Album::MASONRY;
-	public int $albumId;
+	public int|string $albumId;
 	public AbstractAlbum $album;
-	/**
-	 * @var array (for now)
-	 */
 	public array $info;
-	/**
-	 * @var array (for now)
-	 */
-	public array $photos = [];
 
 	public function mount(AbstractAlbum $album)
 	{
 		$this->album = $album;
-		// $this->info = [];
-		// $this->info['albums'] = [];
+		$this->albumId = $album->id;
 	}
 
 	public function render()

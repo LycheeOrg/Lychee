@@ -11,7 +11,7 @@
 		@foreach ($smartalbums as $data)
 			@include('livewire.parts.album')
 		@endforeach
-		@if(count($albums) > 0)
+		@if($albums->count() > 0)
 		<div class='divider'><h1>{{ Lang::get('ALBUMS') }}</h1></div>
 		@endif
 	@endisset
