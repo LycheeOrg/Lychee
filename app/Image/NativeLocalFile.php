@@ -107,4 +107,9 @@ class NativeLocalFile extends MediaFile
 	{
 		return pathinfo($this->absolutePath, PATHINFO_FILENAME);
 	}
+
+	public function getMimeType(): string
+	{
+		return mime_content_type($this->absolutePath);
+	}
 }

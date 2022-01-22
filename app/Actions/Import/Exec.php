@@ -10,6 +10,7 @@ use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\PhotoResyncedException;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
+use App\Image\NativeLocalFile;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -184,7 +185,16 @@ class Exec
 		// Update ignore list
 		$ignore_list = $this->setUpIgnoreList($path, $ignore_list);
 
+		// TODO: Consider to use a modern OO-approach using [`DirectoryIterator`](https://www.php.net/manual/en/class.directoryiterator.php) and [`SplFileInfo`](https://www.php.net/manual/en/class.splfileinfo.php)
+		/** @var string[] $files */
 		$files = glob($path . '/*');
+		if ($files === false) {
+			$this->status_error($origPath, 'Could not list directory entries');
+			Logs::error(__METHOD__, __LINE__, 'Could not list directory entries (' . $path . ')');
+
+			return;
+		}
+
 		$filesTotal = count($files);
 		$filesCount = 0;
 		$dirs = [];
@@ -262,7 +272,7 @@ class Exec
 						$this->resync_metadata
 					));
 					if (
-						$photoCreate->add(SourceFileInfo::createByLocalFile($file), $albumID) == null
+						$photoCreate->add(SourceFileInfo::createByLocalFile(new NativeLocalFile($file)), $albumID) == null
 					) {
 						$this->status_error($file, 'Could not import file');
 						Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $file . ')');

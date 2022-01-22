@@ -18,9 +18,4 @@ class TemporaryLocalFile extends NativeLocalFile
 		}
 		parent::__construct($tempFilePath);
 	}
-
-	public function getMimeType(): string
-	{
-		return mime_content_type($this->absolutePath);
-	}
 }
