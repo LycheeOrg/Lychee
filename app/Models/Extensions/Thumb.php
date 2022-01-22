@@ -12,10 +12,10 @@ use JsonSerializable;
 
 class Thumb implements Arrayable, JsonSerializable
 {
-	protected string $id;
-	protected string $type;
-	protected ?string $thumbUrl;
-	protected ?string $thumb2xUrl;
+	public string $id;
+	public string $type;
+	public ?string $thumbUrl;
+	public ?string $thumb2xUrl;
 
 	protected function __construct(string $id, string $type, ?string $thumbUrl, ?string $thumb2xUrl = null)
 	{

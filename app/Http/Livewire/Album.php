@@ -2,8 +2,7 @@
 
 namespace App\Http\Livewire;
 
-use App\Factories\AlbumFactory;
-use App\Models\Album as AlbumModel;
+use App\Contracts\AbstractAlbum;
 use App\Models\Configs;
 use Livewire\Component;
 
@@ -15,7 +14,7 @@ class Album extends Component
 
 	public string $layout = Album::MASONRY;
 	public int $albumId;
-	public AlbumModel $album;
+	public AbstractAlbum $album;
 	/**
 	 * @var array (for now)
 	 */
@@ -23,17 +22,13 @@ class Album extends Component
 	/**
 	 * @var array (for now)
 	 */
-	public array $photos;
+	public array $photos = [];
 
-	private AlbumFactory $albumFactory;
-
-	public function mount(AlbumModel $album, AlbumFactory $albumFactory)
+	public function mount(AbstractAlbum $album)
 	{
 		$this->album = $album;
-		$this->info = [];
-		$this->info['albums'] = [];
-
-		$this->albumFactory = $albumFactory;
+		// $this->info = [];
+		// $this->info['albums'] = [];
 	}
 
 	public function render()

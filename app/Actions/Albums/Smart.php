@@ -9,6 +9,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Support\Collection as BaseCollection;
 
 class Smart
 {
@@ -33,18 +34,19 @@ class Smart
 	 * Note, the array may include password-protected albums that are visible
 	 * but not accessible.
 	 *
-	 * @return BaseAlbum[] the array of smart albums
+	 * @return BaseCollection<BaseAlbum> the collection of smart albums
 	 */
-	public function get(): array
+	public function get(): BaseCollection
 	{
-		$return = [];
+		$return = new BaseCollection();
+
 		// Do not eagerly load the relation `photos` for each smart album.
 		// On the albums overview, we only need a thumbnail for each album.
 		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums(false);
 		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
 			if ($this->albumAuthorisationProvider->isAuthorizedForSmartAlbum($smartAlbum)) {
-				$return[$smartAlbum->id] = $smartAlbum;
+				$return->add($smartAlbum);
 			}
 		}
 
@@ -56,7 +58,7 @@ class Smart
 
 		/** @var TagAlbum $tagAlbum */
 		foreach ($tagAlbums as $tagAlbum) {
-			$return[$tagAlbum->id] = $tagAlbum;
+			$return->add($tagAlbum);
 		}
 
 		return $return;

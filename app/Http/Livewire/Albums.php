@@ -4,6 +4,7 @@ namespace App\Http\Livewire;
 
 use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Livewire\Component;
 
 class Albums extends Component
@@ -34,10 +35,14 @@ class Albums extends Component
 		// $toplevel contains Collection<Album> accessible at the root: albums shared_albums.
 		$toplevel = $this->top->get();
 
-		$this->albums = $this->prepareAlbum->do($toplevel['albums']);
-		$this->shared_albums = $this->prepareAlbum->do($toplevel['shared_albums']);
-
+		$this->albums = $toplevel['albums'];
+		// ->map(fn ($e) => $e->toArray());
+		$this->shared_albums = $toplevel['shared_albums'];
+		// ->map(fn ($e) => $e->toArray());
 		$this->smartalbums = $this->smart->get();
+		// ->map(fn ($e) => $e->toArray());
+		Debugbar::warning($this);
+		// dd($this);
 	}
 
 	/**

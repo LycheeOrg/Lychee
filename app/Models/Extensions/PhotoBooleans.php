@@ -31,4 +31,9 @@ trait PhotoBooleans
 
 		return $this->type == 'raw';
 	}
+
+	public function isLivePhoto(): bool
+	{
+		return empty($this->live_photo_short_path);
+	}
 }

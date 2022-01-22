@@ -20,7 +20,7 @@ class AlbumsController extends Controller
 
 		// Initialize return var
 		$return = [
-			'smart_albums' => null,
+			'smart_albums' => [],
 			'albums' => null,
 			'shared_albums' => null,
 		];
@@ -30,7 +30,8 @@ class AlbumsController extends Controller
 
 		$return['albums'] = $toplevel['albums'];
 		$return['shared_albums'] = $toplevel['shared_albums'];
-		$return['smart_albums'] = $smart->get();
+		// TODO: We may want to refactor this in the front end so this "cast" is no longer necessary.
+		$smart->get()->each(function ($e) use (&$return) { $return['smart_albums'][$e->id] = $e; });
 
 		return $return;
 	}

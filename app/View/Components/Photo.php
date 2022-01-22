@@ -3,116 +3,122 @@
 namespace App\View\Components;
 
 use App\Models\Configs;
+use App\Models\Photo as ModelsPhoto;
 use App\Models\SizeVariant;
 use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 use Illuminate\View\Component;
 
 class Photo extends Component
 {
-	public $class = '';
+	public string $class = '';
 
-	public $album_id = '';
-	public $photo_id = '';
+	public string $album_id = '';
+	public string $photo_id = '';
 
-	public $show_live = false;
-	public $show_play = false;
-	public $show_placeholder = false;
+	public bool $show_live = false;
+	public bool $show_play = false;
+	public bool $show_placeholder = false;
 
-	public $title = '';
-	public $takedate = '';
-	public $sysdate = '';
+	public string $title = '';
+	public string $takedate = '';
+	public string $created_at = '';
+	public bool $is_starred = false;
+	public bool $is_public = false;
 
-	public $src = '';
-	public $srcset = '';
-	public $srcset2x = '';
+	public string $src = '';
+	public string $srcset = '';
+	public string $srcset2x = '';
 
-	public $layout = false;
-	public int $_w = SizeVariant::THUMBNAIL_DIM;
-	public int $_h = SizeVariant::THUMBNAIL_DIM;
+	public bool $layout = false;
+	public int $_w = 200;
+	public int $_h = 200;
 
 	/**
 	 * Create a new component instance.
 	 *
 	 * @return void
 	 */
-	public function __construct(array $data)
+	public function __construct(ModelsPhoto $data)
 	{
-		$this->album_id = $data['album'];
-		$this->photo_id = $data['id'];
-		$this->title = $data['title'];
-		$this->takedate = $data['taken_at'];
-		$this->created_at = $data['created_at'];
-		$this->is_starred = $data['is_starred'];
-		$this->is_public = $data['is_public'];
-
-		$isVideo = Str::contains($data['type'], 'video');
-		$isRaw = Str::contains($data['type'], 'raw');
-		$isLivePhoto = filled($data['live_Photo_filename']);
+		$this->album_id = $data->album;
+		$this->photo_id = $data->id;
+		$this->title = $data->title;
+		$this->takedate = $data->taken_at;
+		$this->created_at = $data->created_at;
+		$this->is_starred = $data->is_starred;
+		$this->is_public = $data->is_public;
 
 		$this->class = '';
-		$this->class .= $isVideo ? ' video' : '';
-		$this->class .= $isLivePhoto ? ' livephoto' : '';
+		$this->class .= $data->isVideo() ? ' video' : '';
+		$this->class .= $data->isLivePhoto() ? ' livephoto' : '';
 
 		$this->layout = Configs::get_value('layout', '0') == '0';
 
+		// dd($data->size_variants->thumb);
 		// TODO: Don't hardcode paths
-		if ($data['sizeVariants']['thumb']['url'] == 'uploads/thumb/') {
-			$this->show_live = $isLivePhoto;
-			$this->show_play = $isVideo;
-			$this->show_placeholder = $isRaw;
+		if ($data->size_variants->getSizeVariant(SizeVariant::THUMB)->url == 'uploads/thumb/') {
+			$this->show_live = $data->isLivePhoto();
+			$this->show_play = $data->isVideo();
+			$this->show_placeholder = $data->isRawy();
 		}
 
 		$dim = '';
 		$dim2x = '';
 		$thumb2x = '';
 
-		// TODO: The class Photo for the database model does not anymore contain the attributes `small`, `small_dim`, etc.
+		$thumb = $data->size_variants->getSizeVariant(SizeVariant::THUMB);
+		$thumb2x = $data->size_variants->getSizeVariant(SizeVariant::THUMB2X);
+		$small = $data->size_variants->getSizeVariant(SizeVariant::SMALL);
+		$small2x = $data->size_variants->getSizeVariant(SizeVariant::SMALL2X);
+		$medium = $data->size_variants->getSizeVariant(SizeVariant::MEDIUM);
+		$medium2x = $data->size_variants->getSizeVariant(SizeVariant::MEDIUM2X);
+		$original = $data->size_variants->getSizeVariant(SizeVariant::ORIGINAL);
+
 		// Probably this code needs some fix/refactoring, too. However, where is this method invoked and
 		// what is the structure of the passed `data` array? (Could find any invocation.)
 		if ($this->layout) {
-			$thumb = $data['sizeVariants']['thumb']['url'];
-			$thumb2x = $data['sizeVariants']['thumb2x']['url'];
-		} elseif ($data['sizeVariants']['small'] !== null) {
-			$thumb = $data['sizeVariants']['small']['url'];
-			$thumb2x = $data['sizeVariants']['small2x']['url'] ?? '';
-			$this->_w = $data['sizeVariants']['small']['width'];
-			$this->_h = $data['sizeVariants']['small']['height'];
-			$dim = $data['sizeVariants']['small']['width'];
-			$dim2x = $data['sizeVariants']['small2x']['width'] ?? 0;
-		} elseif ($data['sizeVariants']['medium'] !== null) {
-			$thumb = $data['sizeVariants']['medium']['url'];
-			$thumb2x = $data['sizeVariants']['medium2x']['url'] ?? '';
-			$this->_w = $data['sizeVariants']['medium']['width'];
-			$this->_h = $data['sizeVariants']['medium']['height'];
-			$dim = $data['sizeVariants']['medium']['width'];
-			$dim2x = $data['sizeVariants']['medium2x']['width'] ?? 0;
-		} elseif (!$isVideo) {
+			$thumbUrl = $thumb->url;
+			$thumb2xUrl = $thumb2x->url;
+		} elseif ($small !== null) {
+			$thumbUrl = $small->url;
+			$thumb2xUrl = $small2x->url ?? '';
+			$this->_w = $small->width;
+			$this->_h = $small->height;
+			$dim = $small->width;
+			$dim2x = $small2x->width ?? 0;
+		} elseif ($medium !== null) {
+			$thumbUrl = $medium->url;
+			$thumb2xUrl = $medium2x->url ?? '';
+			$this->_w = $medium->width;
+			$this->_h = $medium->height;
+			$dim = $medium->width;
+			$dim2x = $medium2x->width ?? 0;
+		} elseif (!$data->isVideo()) {
 			// Fallback for images with no small or medium.
-			$thumb = $data['url'];
-			$this->_w = $data['width'];
-			$this->_h = $data['height'];
+			$thumbUrl = $original->url;
+			$this->_w = $original->width;
+			$this->_h = $original->height;
 		} else {
 			// Fallback for videos with no small (the case of no thumb is handled else where).
 			$this->class = 'video';
-			$thumb = $data['sizeVariants']['thumb']['url'];
-			$thumb2x = $data['sizeVariants']['thumb2x']['url'];
-			$dim = (string) PhotoModel::THUMBNAIL_DIM;
-			$dim2x = (string) PhotoModel::THUMBNAIL2X_DIM;
+			$thumbUrl = $thumb->url;
+			$thumb2xUrl = $thumb2x->url;
+			$dim = (string) 200;
+			$dim2x = (string) 200;
 		}
 
 		$this->src = "src='" . URL::asset('img/placeholder.png') . "'";
-		$this->srcset = "data-src='" . URL::asset($thumb) . "'";
+		$this->srcset = "data-src='" . URL::asset($thumbUrl) . "'";
 		$thumb2x_src = '';
 
 		if ($this->layout) {
-			$thumb2x_src = URL::asset($thumb2x) . ' 2x';
+			$thumb2x_src = URL::asset($thumb2xUrl) . ' 2x';
 		} else {
-			$thumb2x_src = URL::asset($thumb) . ' ' . $dim . 'w, ';
-			$thumb2x_src .= URL::asset($thumb2x) . ' ' . $dim2x . 'w';
+			$thumb2x_src = URL::asset($thumbUrl) . ' ' . $dim . 'w, ';
+			$thumb2x_src .= URL::asset($thumb2xUrl) . ' ' . $dim2x . 'w';
 		}
 
-		$this->srcset2x = $thumb2x != '' ? "data-srcset='" . $thumb2x_src . "'" : '';
+		$this->srcset2x = $thumb2xUrl != '' ? "data-srcset='" . $thumb2x_src . "'" : '';
 	}
 
 	/**

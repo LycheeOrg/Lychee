@@ -16,13 +16,13 @@
 		@endif
 	@endisset
 
-	@if(count($albums) > 0)
+	@if($albums->count() > 0)
 		@foreach ($albums as $data)
 			@include('livewire.parts.album')
 		@endforeach
 	@endif
 
-	@if(count($shared_albums) > 0)
+	@if($shared_albums->count() > 0)
 		<div class='divider'><h1>{{ Lang::get('SHARED_ALBUMS') }}</h1></div>
 		@foreach ($shared_albums as $data)
 			@include('livewire.parts.album')
