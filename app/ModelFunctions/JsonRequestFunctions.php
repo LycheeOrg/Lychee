@@ -23,7 +23,7 @@ class JsonRequestFunctions
 	public function __construct(string $url, int $ttl = 1)
 	{
 		$this->url = $url;
-		$this->json = json_decode(Cache::get($url));
+		$this->json = json_decode(Cache::get($url) ?? '');
 		$this->ttl = $ttl;
 	}
 

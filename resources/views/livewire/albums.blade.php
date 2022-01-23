@@ -6,7 +6,7 @@
 @else
 <div class="content contentZoomIn">
 	<!-- test comment-->
-	@isset($smartalbums)
+	@if($smartalbums->count() > 0)
 		<div class='divider'><h1>{{ Lang::get('SMART_ALBUMS') }}</h1></div>
 		@foreach ($smartalbums as $data)
 			@include('livewire.parts.album')
@@ -14,7 +14,7 @@
 		@if($albums->count() > 0)
 		<div class='divider'><h1>{{ Lang::get('ALBUMS') }}</h1></div>
 		@endif
-	@endisset
+	@endif
 
 	@if($albums->count() > 0)
 		@foreach ($albums as $data)

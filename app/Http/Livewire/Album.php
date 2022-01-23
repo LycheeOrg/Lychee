@@ -13,15 +13,7 @@ class Album extends Component
 	public const SQUARE = 'square';
 
 	public string $layout = Album::MASONRY;
-	public int|string $albumId;
 	public AbstractAlbum $album;
-	public array $info;
-
-	public function mount(AbstractAlbum $album)
-	{
-		$this->album = $album;
-		$this->albumId = $album->id;
-	}
 
 	public function render()
 	{
@@ -38,8 +30,6 @@ class Album extends Component
 			default:
 				$this->layout = Album::FLKR;
 		}
-
-		$this->info = $this->album->toArray();
 
 		return view('livewire.album');
 	}

@@ -2,7 +2,6 @@
 
 namespace App\Http\Livewire;
 
-use App\Actions\Photo\Prepare;
 use App\Models\Photo as PhotoModel;
 use Livewire\Component;
 
@@ -25,21 +24,14 @@ class Photo extends Component
 
 	public $visibleControls = false;
 
-	/**
-	 * @var Prepare
-	 */
-	private $prepare;
-
-	public function mount(PhotoModel $photo, Prepare $prepare)
+	public function mount()
 	{
-		$this->album = $photo->album;
-		$this->photo = $photo;
-		$this->prepare = $prepare;
+		$this->album = $this->photo->album;
 	}
 
 	public function render()
 	{
-		$this->data = $this->prepare->do($this->photo);
+		$this->data = $this->photo->toArray();
 
 		return view('livewire.photo');
 	}

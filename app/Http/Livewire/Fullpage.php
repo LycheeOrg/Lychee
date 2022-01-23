@@ -11,10 +11,14 @@ use Livewire\Component;
 
 class Fullpage extends Component
 {
+	public const ALBUMS = 'albums';
+	public const PHOTO = 'photo';
+	public const ALBUM = 'album';
+
 	/**
 	 * @var
 	 */
-	public $mode;
+	public string $mode;
 	public ?Photo $photo = null;
 	public ?AbstractAlbum $album = null;
 
@@ -24,13 +28,13 @@ class Fullpage extends Component
 	{
 		$albumFactory = resolve(AlbumFactory::class);
 		if ($albumId == null) {
-			$this->mode = 'albums';
+			$this->mode = self::ALBUMS;
 		} else {
-			$this->mode = 'album';
+			$this->mode = self::ALBUM;
 			$this->album = $albumFactory->findOrFail($albumId);
 
 			if ($photoId != null) {
-				$this->mode = 'photo';
+				$this->mode = self::PHOTO;
 				$this->photo = Photo::with('album')->findOrFail($photoId);
 			}
 		}

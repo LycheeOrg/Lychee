@@ -1,6 +1,3 @@
-{{-- @php
-dd($data)
-@endphp --}}
 <div wire:click="$emit('openAlbum', '{{ $data->id }}')" class='album {{ isset($data->is_nsfw) && $data->is_nsfw && App\Models\Configs::get_value('nsfw_blur', '1') == '1' ? 'blurred' : '' }}'
 	{{-- {{ $disabled ? 'disabled' : '' }} --}}
 	data-id='{{ $data->id }}'
@@ -50,9 +47,6 @@ dd($data)
 	@endif
 </div>
 @endif
-@php
-	DebugBar::warning($data);
-@endphp
 @if ((isset($data->has_albums) && !$data->has_albums) || (isset($data->albums) && $data->albums->count() > 0) || (isset($data->_lft) && $data->_lft + 1 < $data->_rgt))
 <div class='subalbum_badge'>
 	<x-icon class='badge--folder' icon='layers' />

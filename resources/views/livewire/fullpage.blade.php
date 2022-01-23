@@ -1,23 +1,16 @@
 <div id="container" style="padding-bottom: 62px;">
 	<!-- Loading -->
 	<div id="loading"></div>
-
-		<livewire:header :mode="$mode" :album="$album" />
-
-		@if($mode == 'albums')
+	<livewire:header :mode="$mode" :album="$album" />
+	@if($mode === App\Http\Livewire\Fullpage::ALBUMS)
 		<livewire:albums />
-
-		@elseif($mode == 'album')
+	@elseif($mode === App\Http\Livewire\Fullpage::ALBUM)
 		<livewire:album :album="$album" />
-		{{-- <livewire:sidebar :album="$album" /> --}}
-
-		@elseif($mode == 'photo')
+	@elseif($mode === App\Http\Livewire\Fullpage::PHOTO)
 		<livewire:photo :album="$album" :photo="$photo" />
-
-		@elseif($mode == 'map')
+	@elseif($mode === 'map')
 		Later...
-
-		@endif
+	@endif
 	{{-- @livewire('left-menu') --}}
 	{{-- @livewire('albums') --}}
 

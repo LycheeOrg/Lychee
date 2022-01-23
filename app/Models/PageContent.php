@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
+use GrahamCampbell\Markdown\Facades\Markdown;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
-use Markdown;
 
 /**
  * App\PageContent.
