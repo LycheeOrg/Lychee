@@ -28,6 +28,15 @@ class SearchController extends Controller
 		$return = [];
 		$return['albums'] = $albumSearch->query($request->terms());
 		$return['photos'] = $photoSearch->query($request->terms());
+		// The checksum is used by the web front-end as an efficient way to
+		// avoid rebuilding the GUI, if two subsequent searches return the
+		// same result.
+		// The front-end performs a live search, while the user is typing
+		// a term.
+		// If the GUI was rebuilt every time after the user had typed the
+		// next character of a search term although the search result might
+		// stay the same, the GUI would flicker.
+		$return['checksum'] = md5(json_encode($return));
 
 		return $return;
 	}

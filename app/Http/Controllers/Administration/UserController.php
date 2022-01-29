@@ -11,13 +11,12 @@ use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
 use App\Http\Requests\User\AddUserRequest;
+use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
-use App\Rules\IntegerIDRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request as IlluminateRequest;
 use Illuminate\Routing\Controller;
 
 class UserController extends Controller
@@ -54,23 +53,21 @@ class UserController extends Controller
 
 	/**
 	 * Deletes a user.
-	 * FIXME: What happen to the albums owned ?
 	 *
-	 * @param IlluminateRequest $request
+	 * The albums and photos owned by the user are re-assigned to the
+	 * admin user.
+	 *
+	 * @param DeleteUserRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws ModelDBException
 	 * @throws ModelNotFoundException
 	 */
-	public function delete(IlluminateRequest $request): void
+	public function delete(DeleteUserRequest $request): void
 	{
-		$validated = $request->validate([
-			'id' => ['required', new IntegerIDRule(false)],
-		]);
-
 		/** @var User $user */
-		$user = User::query()->findOrFail($validated['id']);
+		$user = User::query()->findOrFail($request->userID());
 		$user->delete();
 	}
 
