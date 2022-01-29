@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Models\Configs;
-use Config;
+use Illuminate\Support\Facades\Config;
 use Livewire\Component;
 
 class Header extends Component
@@ -21,7 +21,7 @@ class Header extends Component
 	public function mount(?string $mode = 'albums', $album = null)
 	{
 		$this->title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-		if ($album != null) {
+		if ($album != null && !is_array($album)) {
 			$this->title = $album->title;
 		}
 		$this->mode = $mode ?? 'albums';

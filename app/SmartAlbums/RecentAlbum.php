@@ -3,11 +3,14 @@
 namespace App\SmartAlbums;
 
 use App\Models\Configs;
+use App\SmartAlbums\Utils\Wireable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 
 class RecentAlbum extends BaseSmartAlbum
 {
+	use Wireable;
+
 	private static ?self $instance = null;
 	public const ID = 'recent';
 	public const TITLE = 'Recent';

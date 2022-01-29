@@ -20,7 +20,7 @@ class Photo extends Component
 	public bool $show_placeholder = false;
 
 	public string $title = '';
-	public string $takedate = '';
+	public string $taken_at = '';
 	public string $created_at = '';
 	public bool $is_starred = false;
 	public bool $is_public = false;
@@ -43,7 +43,7 @@ class Photo extends Component
 		$this->album_id = $data->album;
 		$this->photo_id = $data->id;
 		$this->title = $data->title;
-		$this->takedate = $data->taken_at;
+		$this->taken_at = $data->taken_at ?? '';
 		$this->created_at = $data->created_at;
 		$this->is_starred = $data->is_starred;
 		$this->is_public = $data->is_public;

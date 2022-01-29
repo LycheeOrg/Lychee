@@ -6,6 +6,7 @@ use App\Models\Extensions\Thumb;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Collection;
+use Livewire\Wireable;
 
 /**
  * Interface BaseAlbum.
@@ -28,6 +29,6 @@ use Illuminate\Database\Eloquent\Collection;
  * @property bool       $is_downloadable
  * @property bool       $is_share_button_visible
  */
-interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable
+interface AbstractAlbum extends \JsonSerializable, Arrayable, Jsonable, Wireable
 {
 }

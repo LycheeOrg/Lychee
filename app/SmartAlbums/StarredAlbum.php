@@ -3,10 +3,13 @@
 namespace App\SmartAlbums;
 
 use App\Models\Configs;
+use App\SmartAlbums\Utils\Wireable;
 use Illuminate\Database\Eloquent\Builder;
 
 class StarredAlbum extends BaseSmartAlbum
 {
+	use Wireable;
+
 	private static ?self $instance = null;
 	public const ID = 'starred';
 	public const TITLE = 'Starred';

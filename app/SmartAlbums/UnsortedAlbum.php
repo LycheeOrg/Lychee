@@ -4,10 +4,13 @@ namespace App\SmartAlbums;
 
 use App\Facades\AccessControl;
 use App\Models\Photo;
+use App\SmartAlbums\Utils\Wireable;
 use Illuminate\Database\Eloquent\Builder;
 
 class UnsortedAlbum extends BaseSmartAlbum
 {
+	use Wireable;
+
 	private static ?self $instance = null;
 	public const ID = 'unsorted';
 	public const TITLE = 'Unsorted';

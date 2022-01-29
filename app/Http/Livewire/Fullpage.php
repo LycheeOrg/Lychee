@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use App\Contracts\AbstractAlbum;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use Livewire\Component;
@@ -20,7 +21,8 @@ class Fullpage extends Component
 	 */
 	public string $mode;
 	public ?Photo $photo = null;
-	public ?AbstractAlbum $album = null;
+	public ?BaseAlbum $album = null;
+	public ?BaseSmartAlbum $smartAlbum = null;
 
 	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
 
@@ -32,6 +34,16 @@ class Fullpage extends Component
 		} else {
 			$this->mode = self::ALBUM;
 			$this->album = $albumFactory->findOrFail($albumId);
+			$album = $albumFactory->findOrFail($albumId);
+			if ($album instanceof BaseSmartAlbum) {
+				$this->smartAlbum = $album;
+				$this->album = null; //! safety
+			} elseif ($album instanceof BaseAlbum) {
+				$this->album = $album;
+				$this->smartAlbum = null; //! safety
+			} else {
+				throw new \Exception('unrecognized class for ' . get_class($album));
+			}
 
 			if ($photoId != null) {
 				$this->mode = self::PHOTO;
@@ -47,7 +59,7 @@ class Fullpage extends Component
 
 	public function openPhoto($photoId)
 	{
-		return redirect('/livewire/' . $this->album->id . '/' . $photoId);
+		return redirect('/livewire/' . $this->getAlbumId() . '/' . $photoId);
 	}
 
 	// Ideal we would like to avoid the redirect as they are slow.
@@ -55,17 +67,16 @@ class Fullpage extends Component
 	{
 		if ($this->photo != null) {
 			// $this->photo = null;
-			return redirect('/livewire/' . $this->album->id);
+			return redirect('/livewire/' . $this->getAlbumId());
 		}
 		if ($this->album != null) {
-			if ($this->album instanceof BaseSmartAlbum) {
-				// $this->album = null;
-				return redirect('/livewire/');
-			}
 			if ($this->album instanceof Album && $this->album->parent_id != null) {
 				return redirect('/livewire/' . $this->album->parent_id);
 			}
 
+			return redirect('/livewire/');
+		}
+		if ($this->smartAlbum != null) {
 			return redirect('/livewire/');
 		}
 	}
@@ -73,5 +84,15 @@ class Fullpage extends Component
 	public function render()
 	{
 		return view('livewire.fullpage');
+	}
+
+	public function getAlbumId(): string
+	{
+		return $this->album?->id ?? $this->smartAlbum?->id;
+	}
+
+	public function getAlbum(): AbstractAlbum
+	{
+		return $this->album ?? $this->smartAlbum;
 	}
 }

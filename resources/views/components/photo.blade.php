@@ -29,8 +29,8 @@
 	<div class='overlay'>
 		<h1 title='{{ $title }}'>{{ $title }}</h1>
 
-	@if ($takedate !== "")
-		<a><span title='Camera Date'><x-iconic icon='camera-slr' /></span>{{ $takedate }}</a>
+	@if($taken_at !== "")
+		<a><span title='Camera Date'><x-iconic icon='camera-slr' /></span>{{ $taken_at }}</a>
 	@else
 		<a>{{ $created_at }}</a>
 	@endif

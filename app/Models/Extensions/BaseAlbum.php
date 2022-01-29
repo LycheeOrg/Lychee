@@ -4,6 +4,7 @@ namespace App\Models\Extensions;
 
 use App\Contracts\AbstractAlbum;
 use App\Contracts\HasRandomID;
+use App\Factories\AlbumFactory;
 use App\Models\BaseAlbumImpl;
 use App\Models\Configs;
 use App\Models\User;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Carbon;
+use Livewire\Wireable;
 
 /**
  * Interface BaseAlbum.
@@ -39,7 +41,7 @@ use Illuminate\Support\Carbon;
  * @property string|null   $sorting_order
  * @property BaseAlbumImpl $base_class
  */
-abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
+abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID, Wireable
 {
 	use HasBidirectionalRelationships;
 	use ForwardsToParentImplementation;
@@ -122,5 +124,23 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 		return empty($sortingCol) || empty($sortingOrder) ?
 			Configs::get_value('sorting_Photos_order', 'ASC') :
 			$sortingOrder;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function toLivewire(): string
+	{
+		return $this->id;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public static function fromLivewire($value)
+	{
+		$factory = resolve(AlbumFactory::class);
+
+		return $factory->findOrFail($value);
 	}
 }
