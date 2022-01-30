@@ -21,7 +21,7 @@ class Fullpage extends Component
 	 */
 	public string $mode;
 	public ?Photo $photo = null;
-	public ?BaseAlbum $album = null;
+	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
 	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
@@ -33,13 +33,12 @@ class Fullpage extends Component
 			$this->mode = self::ALBUMS;
 		} else {
 			$this->mode = self::ALBUM;
-			$this->album = $albumFactory->findOrFail($albumId);
 			$album = $albumFactory->findOrFail($albumId);
 			if ($album instanceof BaseSmartAlbum) {
 				$this->smartAlbum = $album;
-				$this->album = null; //! safety
+				$this->baseAlbum = null; //! safety
 			} elseif ($album instanceof BaseAlbum) {
-				$this->album = $album;
+				$this->baseAlbum = $album;
 				$this->smartAlbum = null; //! safety
 			} else {
 				throw new \Exception('unrecognized class for ' . get_class($album));
@@ -59,7 +58,7 @@ class Fullpage extends Component
 
 	public function openPhoto($photoId)
 	{
-		return redirect('/livewire/' . $this->getAlbumId() . '/' . $photoId);
+		return redirect('/livewire/' . $this->getAlbumProperty()->id . '/' . $photoId);
 	}
 
 	// Ideal we would like to avoid the redirect as they are slow.
@@ -67,11 +66,11 @@ class Fullpage extends Component
 	{
 		if ($this->photo != null) {
 			// $this->photo = null;
-			return redirect('/livewire/' . $this->getAlbumId());
+			return redirect('/livewire/' . $this->getAlbumProperty()->id ?? '');
 		}
-		if ($this->album != null) {
-			if ($this->album instanceof Album && $this->album->parent_id != null) {
-				return redirect('/livewire/' . $this->album->parent_id);
+		if ($this->baseAlbum != null) {
+			if ($this->baseAlbum instanceof Album && $this->baseAlbum->parent_id != null) {
+				return redirect('/livewire/' . $this->baseAlbum->parent_id);
 			}
 
 			return redirect('/livewire/');
@@ -86,13 +85,8 @@ class Fullpage extends Component
 		return view('livewire.fullpage');
 	}
 
-	public function getAlbumId(): string
+	public function getAlbumProperty(): ?AbstractAlbum
 	{
-		return $this->album?->id ?? $this->smartAlbum?->id;
-	}
-
-	public function getAlbum(): AbstractAlbum
-	{
-		return $this->album ?? $this->smartAlbum;
+		return $this->baseAlbum ?? $this->smartAlbum;
 	}
 }
