@@ -134,7 +134,7 @@ class Create
 
 		// Use title of file if IPTC title missing
 		if ($this->strategyParameters->info['title'] === '') {
-			$this->strategyParameters->info['title'] = $sourceFileInfo->getOriginalName();
+			$this->strategyParameters->info['title'] = substr($sourceFileInfo->getOriginalName(), 0, 98);
 		}
 	}
 
