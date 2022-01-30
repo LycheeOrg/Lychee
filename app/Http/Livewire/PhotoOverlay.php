@@ -4,12 +4,13 @@ namespace App\Http\Livewire;
 
 use App\Facades\Lang;
 use App\Models\Configs;
-use Illuminate\Support\Str;
+use App\Models\Photo as PhotoModel;
 use Livewire\Component;
 
 class PhotoOverlay extends Component
 {
 	private $types = ['desc', 'date', 'exif', 'none'];
+
 	public $title = '';
 	public $type = 'none';
 	public $overlay = '';
@@ -20,11 +21,11 @@ class PhotoOverlay extends Component
 	public $exif1 = '';
 	public $exif2 = '';
 
-	private $photo_data;
+	private PhotoModel $photo_data;
 
-	public function mount(array $data)
+	public function mount(PhotoModel $photo)
 	{
-		$this->photo_data = $data;
+		$this->photo_data = $photo;
 		$overlay_type = Configs::get_value('image_overlay_type', 'none');
 
 		$this->idx = array_search($overlay_type, $this->types, true);
@@ -42,7 +43,7 @@ class PhotoOverlay extends Component
 			if ($type === 'date' || $type === 'none') {
 				return $type;
 			}
-			if ($type === 'desc' && $this->photo_data['description'] !== '') {
+			if ($type === 'desc' && $this->photo_data->description !== '') {
 				return $type;
 			}
 			if ($type === 'exif' && $this->genExifHash() !== '') {
@@ -53,46 +54,46 @@ class PhotoOverlay extends Component
 
 	private function genExifHash()
 	{
-		$exifHash = $this->photo_data['make'];
-		$exifHash .= $this->photo_data['model'];
-		$exifHash .= $this->photo_data['shutter'];
-		if (Str::contains($this->photo_data['type'], 'video')) {
-			$exifHash .= $this->photo_data['aperture'];
-			$exifHash .= $this->photo_data['focal'];
+		$exifHash = $this->photo_data->make;
+		$exifHash .= $this->photo_data->model;
+		$exifHash .= $this->photo_data->shutter;
+		if ($this->photo_data->isVideo()) {
+			$exifHash .= $this->photo_data->aperture;
+			$exifHash .= $this->photo_data->focal;
 		}
-		$exifHash .= $this->photo_data['iso'];
+		$exifHash .= $this->photo_data->iso;
 
 		return $exifHash;
 	}
 
 	public function render()
 	{
-		$this->title = $this->photo_data['title'];
+		$this->title = $this->photo_data->title;
 
 		$this->type = $this->checkOverlayType();
-		$this->description = $this->photo_data['description'];
-		if ($this->photo_data['taken_at'] !== '') {
+		$this->description = $this->photo_data->description;
+		if ($this->photo_data->taken_at !== '') {
 			$this->camera_date = true;
-			$this->date = $this->photo_data['taken_at'];
+			$this->date = $this->photo_data->taken_at;
 		} else {
 			$this->camera_date = false;
-			$this->date = $this->data['sysdate'];
+			$this->date = $this->photo_data->created_at;
 		}
 
 		$exif1 = '';
 		$exif2 = '';
 		if ($this->genExifHash() !== '') {
-			if ($this->photo_data['shutter'] !== '') {
-				$exif1 = str_replace('s', 'sec', $this->photo_data['shutter']);
+			if ($this->photo_data->shutter !== '') {
+				$exif1 = str_replace('s', 'sec', $this->photo_data->shutter);
 			}
-			if ($this->photo_data['aperture'] !== '') {
-				$this->c($exif1, ' at ', str_replace('f/', '&fnof; / ', $this->photo_data['aperture']));
+			if ($this->photo_data->aperture !== '') {
+				$this->c($exif1, ' at ', str_replace('f/', '&fnof; / ', $this->photo_data->aperture));
 			}
-			if ($this->photo_data['iso'] !== '') {
-				$this->c($exif1, ', ', Lang::get('PHOTO_ISO') . ' ' . $this->photo_data['iso']);
+			if ($this->photo_data->iso !== '') {
+				$this->c($exif1, ', ', Lang::get('PHOTO_ISO') . ' ' . $this->photo_data->iso);
 			}
-			if ($this->photo_data['focal'] !== '') {
-				$exif2 = $this->photo_data['focal'] . ($this->photo_data['lens'] !== '' ? ' (' . $this->photo_data['lens'] . ')' : '');
+			if ($this->photo_data->focal !== '') {
+				$exif2 = $this->photo_data->focal . ($this->photo_data->lens !== '' ? ' (' . $this->photo_data->lens . ')' : '');
 			}
 		}
 		$this->exif1 = trim($exif1);

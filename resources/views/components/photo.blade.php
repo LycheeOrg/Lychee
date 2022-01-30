@@ -7,13 +7,10 @@
 	>
 	@if ($show_live)
 		@include('components.photo.thumb-live')
-
 	@elseif ($show_play)
 		@include('components.photo.thumb-play')
-
 	@elseif ($show_placeholder)
 		@include('components.photo.thumb-placeholder')
-
 	@else
 		<span class="thumbimg {{ $class }}">
 			<img class='lazyload'
@@ -25,18 +22,15 @@
 			draggable='false' >
 		</span>
 	@endif
-
 	<div class='overlay'>
 		<h1 title='{{ $title }}'>{{ $title }}</h1>
-
-	@if($taken_at !== "")
-		<a><span title='Camera Date'><x-iconic icon='camera-slr' /></span>{{ $taken_at }}</a>
-	@else
-		<a>{{ $created_at }}</a>
-	@endif
+		@if($taken_at !== "")
+			<a><span title='Camera Date'><x-iconic icon='camera-slr' /></span>{{ $taken_at }}</a>
+		@else
+			<a>{{ $created_at }}</a>
+		@endif
 	</div>
-
-	{{-- @if (AccessControl::is_logged_in())
+	@if (AccessControl::is_logged_in())
 		<div class='badges'>
 			@if($is_starred)
 			<x-icon class='badge--star icn-star' icon='star' />
@@ -45,5 +39,5 @@
 			<x-icon class='badge--visible badge--hidden icn-share' icon='eye' />
 			@endif
 		</div>
-	@endif --}}
+	@endif
 </div>

@@ -873,7 +873,9 @@ input {
   height: 8px;
 }
 .photo .badges {
-  position: relative;
+  position: absolute;
+  left: 0px;
+  top: 0px;
   margin: -1px 0 0 6px;
 }
 .photo .badge {
@@ -1128,79 +1130,79 @@ input {
   -moz-column-gap: 16px;
        column-gap: 16px;
 }
-@media (max-width: calc((240px + 16px)* 14)) {
+@media (max-width: 3584px) {
   .masonry {
     -moz-columns: 14;
          columns: 14;
   }
 }
-@media (max-width: calc((240px + 16px)* 13)) {
+@media (max-width: 3328px) {
   .masonry {
     -moz-columns: 13;
          columns: 13;
   }
 }
-@media (max-width: calc((240px + 16px)* 12)) {
+@media (max-width: 3072px) {
   .masonry {
     -moz-columns: 12;
          columns: 12;
   }
 }
-@media (max-width: calc((240px + 16px)* 11)) {
+@media (max-width: 2816px) {
   .masonry {
     -moz-columns: 11;
          columns: 11;
   }
 }
-@media (max-width: calc((240px + 16px)* 10)) {
+@media (max-width: 2560px) {
   .masonry {
     -moz-columns: 10;
          columns: 10;
   }
 }
-@media (max-width: calc((240px + 16px)* 9)) {
+@media (max-width: 2304px) {
   .masonry {
     -moz-columns: 9;
          columns: 9;
   }
 }
-@media (max-width: calc((240px + 16px)* 8)) {
+@media (max-width: 2048px) {
   .masonry {
     -moz-columns: 8;
          columns: 8;
   }
 }
-@media (max-width: calc((240px + 16px)* 7)) {
+@media (max-width: 1792px) {
   .masonry {
     -moz-columns: 7;
          columns: 7;
   }
 }
-@media (max-width: calc((240px + 16px)* 6)) {
+@media (max-width: 1536px) {
   .masonry {
     -moz-columns: 6;
          columns: 6;
   }
 }
-@media (max-width: calc((240px + 16px)* 5)) {
+@media (max-width: 1280px) {
   .masonry {
     -moz-columns: 5;
          columns: 5;
   }
 }
-@media (max-width: calc((240px + 16px)* 4)) {
+@media (max-width: 1024px) {
   .masonry {
     -moz-columns: 4;
          columns: 4;
   }
 }
-@media (max-width: calc((240px + 16px)* 3)) {
+@media (max-width: 768px) {
   .masonry {
     -moz-columns: 3;
          columns: 3;
   }
 }
-@media (max-width: calc((240px + 16px)* 2)) {
+@media (max-width: 512px) {
   .masonry {
     -moz-columns: 2;
          columns: 2;
@@ -3294,23 +3296,23 @@ input {
 }
 
 #twitter:before {
-  content: "";
+  content: "\ea96";
 }
 
 #instagram:before {
-  content: "";
+  content: "\ea92";
 }
 
 #youtube:before {
-  content: "";
+  content: "\ea9d";
 }
 
 #flickr:before {
-  content: "";
+  content: "\eaa4";
 }
 
 #facebook:before {
-  content: "";
+  content: "\ea91";
 }
 
 @media (hover: hover) {

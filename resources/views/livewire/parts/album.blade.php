@@ -42,7 +42,7 @@
 	@if (isset($data->tag_album) && $data->tag_album == "1")
 		<x-icon class='badge--tag' icon='tag' />
 	@endif
-	@if (isset($data->cover_id) && isset($data->thumb['id']) && $data->cover_id == $data->thumb['id'])
+	@if (isset($data->cover_id) && isset($data->thumb->id) && $data->cover_id == $data->thumb->id)
 		<x-icon class='badge--cover icn-cover' icon='folder-cover' />
 	@endif
 </div>

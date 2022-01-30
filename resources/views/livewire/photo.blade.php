@@ -1,16 +1,16 @@
 <div id="imageview" class="fadeIn full" style="display: block;">
-@if (Str::contains($data['type'], 'video'))
-	<video
+@if ($photo->isVideo()) {{-- This is a video file: put html5 player --}}
+<video
 		width="auto"
 		height="auto"
 		id='image'
 		controls
 		class='{{ $visibleControls === true ? "" : "full" }}'
 		autobuffer
-		{{autoplay ? "autoplay" : ""}}
+		{{ $autoplay ? "autoplay" : ""}}
 		data-tabindex='{{ Helpers::data_index() }}'
-		><source src='{{ URL::asset($data['url']) }}'>Your browser does not support the video tag.</video>
-@elseif(Str::contains($data['type'], 'raw'))
+		><source src='{{ URL::asset($data->original->url) }}'>Your browser does not support the video tag.</video>
+@elseif($photo->isRaw()) {{-- This is a raw file: put a place holder --}}
 	<img
 		id='image'
 		class='{{ $visibleControls === true ? "" : "full" }}'
@@ -19,61 +19,52 @@
 		alt='big'
 		data-tabindex='{{ Helpers::data_index() }}'
 		/>
-@else
-	@if ($data['livePhotoUrl'] === "" || $data['livePhotoUrl'] === null)
-		@if ($data['sizeVariants']['medium'] !== null)
-			<img
-				id='image'
-				class='{{ $visibleControls === true ? "" : "full" }}'
-				src='{{ URL::asset($data['sizeVariants']['medium']['url']) }}'
-				@if ($data['sizeVariants']['medium2x'] !== null)
-					srcset='{{ URL::asset($data['sizeVariants']['medium']['url']) }} {{ $data['sizeVariants']['medium']['width'] }}w,
-					{{ URL::asset($data['sizeVariants']['medium2x']['url']) }} {{ $data['sizeVariants']['medium2x']['width'] }}w'
-				@endif
-				data-tabindex='{{ Helpers::data_index() }}'
-				/>
-		@else
-			<img
-				id='image'
-				class='{{ $visibleControls === true ? "" : "full" }}'
-				src='{{ URL::asset($data['url']) }}'
-				draggable='false'
-				alt='big'
-				data-tabindex='{{ Helpers::data_index() }}'
-				/>
-		@endif
+@elseif (!$photo->isLivePhoto()) {{-- This is a normal image: medium or original --}}
+	@if ($photo->size_variants->medium !== null)
+		<img
+			id='image'
+			class='{{ $visibleControls === true ? "" : "full" }}'
+			src='{{ URL::asset($photo->size_variants->medium->url) }}'
+			@if ($photo->size_variants->medium2x !== null)
+				srcset='{{ URL::asset($photo->size_variants->medium->url) }} {{ $photo->size_variants->medium->width }}w,
+				{{ URL::asset($photo->size_variants->medium2x->url) }} {{ $photo->size_variants->medium2x->width }}w'
+			@endif
+			data-tabindex='{{ Helpers::data_index() }}'
+			/>
 	@else
-		@if ($data['medium'] !== "")
-		@php
-			$medium_dims = explode('x',$data['medium_dim']);
-			$medium_width = $medium_dims[0];
-			$medium_height = $medium_dims[1];
-		@endphp
-		<div
-			id='livephoto'
-			data-live-photo
-			data-proactively-loads-video='true'
-			data-photo-src='{{ URL::asset($data['sizeVariants']['medium']['url']) }}'
-			data-video-src='{{ URL::asset($data['livePhotoUrl']) }}'
-			style='width: {{ $medium_width }}px; height: {{ $medium_height }}px'
+		<img
+			id='image'
+			class='{{ $visibleControls === true ? "" : "full" }}'
+			src='{{ URL::asset($photo->size_variants->original->url) }}'
+			draggable='false'
+			alt='big'
 			data-tabindex='{{ Helpers::data_index() }}'
-			>
-		</div>
-		@else
-		<div
-			id='livephoto'
-			data-live-photo
-			data-proactively-loads-video='true'
-			data-photo-src='{{ URL::asset($data['url']) }}'
-			data-video-src='{{ URL::asset($data['livePhotoUrl']) }}'
-			style='width: {{ $data['width'] }}px; height: {{ $data['height'] }}px'
-			data-tabindex='{{ Helpers::data_index() }}'
-			>
-		</div>
-		@endif
+			/>
 	@endif
+@elseif ($photo->size_variants->medium !== null) {{-- This is a livephoto : medium --}}
+	<div
+		id='livephoto'
+		data-live-photo
+		data-proactively-loads-video='true'
+		data-photo-src='{{ URL::asset($photo->size_variants->medium->url) }}'
+		data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
+		style='width: {{ $photo->size_variants->medium->width }}px; height: {{ $photo->size_variants->medium->height }}px'
+		data-tabindex='{{ Helpers::data_index() }}'
+		>
+	</div>
+@else  {{-- This is a livephoto : full --}}
+	<div
+		id='livephoto'
+		data-live-photo
+		data-proactively-loads-video='true'
+		data-photo-src='{{ URL::asset($photo->size_variants->original->url) }}'
+		data-video-src='{{ URL::asset($photo->livePhotoUrl) }}'
+		style='width: {{ $photo->size_variants->original->width }}px; height: {{ $photo->size_variants->original->height }}px'
+		data-tabindex='{{ Helpers::data_index() }}'
+		>
+	</div>
 @endif
-<livewire:photo-overlay :data="$data" />
+<livewire:photo-overlay :photo="$photo" />
 {{-- <div class='arrow_wrapper arrow_wrapper--previous'><a id='previous'>${build.iconic("caret-left")}</a></div> --}}
 {{-- <div class='arrow_wrapper arrow_wrapper--next'><a id='next'>${build.iconic("caret-right")}</a></div> --}}
 </div>

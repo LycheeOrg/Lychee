@@ -3,11 +3,10 @@
 namespace App\Http\Livewire;
 
 use AccessControl;
+use App\Facades\Lang;
 use App\Models\Album;
 use App\Models\Photo;
 use App\Models\TagAlbum;
-use DebugBar;
-use Lang;
 use Livewire\Component;
 
 class Sidebar extends Component
@@ -26,7 +25,6 @@ class Sidebar extends Component
 	public function mount(Album $album = null, Photo $photo = null)
 	{
 		$this->album = $album;
-		DebugBar::notice($album);
 		$this->photo = $photo;
 	}
 

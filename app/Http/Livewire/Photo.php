@@ -7,32 +7,23 @@ use Livewire\Component;
 
 class Photo extends Component
 {
-	/**
-	 * @var PhotoModel
-	 */
-	public $photo;
+	public PhotoModel $photo;
 
 	/**
 	 * @var Album
 	 */
-	public $album;
-
-	/**
-	 * @var array (for now)
-	 */
-	public $data;
+	// public Abst $album;
 
 	public $visibleControls = false;
 
 	public function mount()
 	{
-		$this->album = $this->photo->album;
+		// $this->album = $this->photo->album;
 	}
 
 	public function render()
 	{
-		$this->data = $this->photo->toArray();
-
+		// dd($this->photo);
 		return view('livewire.photo');
 	}
 }

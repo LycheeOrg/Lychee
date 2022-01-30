@@ -19,9 +19,9 @@ class Photo extends Component
 	public bool $show_play = false;
 	public bool $show_placeholder = false;
 
-	public string $title = '';
-	public string $taken_at = '';
-	public string $created_at = '';
+	public string $title;
+	public ?string $taken_at;
+	public string $created_at;
 	public bool $is_starred = false;
 	public bool $is_public = false;
 
@@ -40,7 +40,7 @@ class Photo extends Component
 	 */
 	public function __construct(ModelsPhoto $data)
 	{
-		$this->album_id = $data->album;
+		$this->album_id = $data->album->id;
 		$this->photo_id = $data->id;
 		$this->title = $data->title;
 		$this->taken_at = $data->taken_at ?? '';
@@ -54,16 +54,15 @@ class Photo extends Component
 
 		$this->layout = Configs::get_value('layout', '0') == '0';
 
-		// dd($data->size_variants->thumb);
 		// TODO: Don't hardcode paths
-		if ($data->size_variants->getSizeVariant(SizeVariant::THUMB)->url == 'uploads/thumb/') {
+		if ($data->size_variants->getSizeVariant(SizeVariant::THUMB) == null) {
 			$this->show_live = $data->isLivePhoto();
 			$this->show_play = $data->isVideo();
 			$this->show_placeholder = $data->isRawy();
 		}
 
-		$dim = '';
-		$dim2x = '';
+		$dim = 0;
+		$dim2x = 0;
 		$thumb2x = '';
 
 		$thumb = $data->size_variants->getSizeVariant(SizeVariant::THUMB);
@@ -80,45 +79,43 @@ class Photo extends Component
 			$thumbUrl = $thumb->url;
 			$thumb2xUrl = $thumb2x->url;
 		} elseif ($small !== null) {
-			$thumbUrl = $small->url;
-			$thumb2xUrl = $small2x->url ?? '';
 			$this->_w = $small->width;
 			$this->_h = $small->height;
+			$thumbUrl = $small->url;
+			$thumb2xUrl = $small2x->url ?? '';
 			$dim = $small->width;
 			$dim2x = $small2x->width ?? 0;
 		} elseif ($medium !== null) {
-			$thumbUrl = $medium->url;
-			$thumb2xUrl = $medium2x->url ?? '';
 			$this->_w = $medium->width;
 			$this->_h = $medium->height;
+			$thumbUrl = $medium->url;
+			$thumb2xUrl = $medium2x->url ?? '';
 			$dim = $medium->width;
 			$dim2x = $medium2x->width ?? 0;
 		} elseif (!$data->isVideo()) {
-			// Fallback for images with no small or medium.
-			$thumbUrl = $original->url;
 			$this->_w = $original->width;
 			$this->_h = $original->height;
+			// Fallback for images with no small or medium.
+			$thumbUrl = $original->url;
 		} else {
 			// Fallback for videos with no small (the case of no thumb is handled else where).
 			$this->class = 'video';
 			$thumbUrl = $thumb->url;
 			$thumb2xUrl = $thumb2x->url;
-			$dim = (string) 200;
-			$dim2x = (string) 200;
+			$dim = 200;
+			$dim2x = 200;
 		}
 
-		$this->src = "src='" . URL::asset('img/placeholder.png') . "'";
-		$this->srcset = "data-src='" . URL::asset($thumbUrl) . "'";
-		$thumb2x_src = '';
+		$this->src = sprintf("src='%s'", URL::asset('img/placeholder.png'));
+		$this->srcset = sprintf("data-src='%s'", URL::asset($thumbUrl));
 
 		if ($this->layout) {
-			$thumb2x_src = URL::asset($thumb2xUrl) . ' 2x';
+			$thumb2x_src = sprintf("data-srcset='%s 2x'", URL::asset($thumb2xUrl));
 		} else {
-			$thumb2x_src = URL::asset($thumbUrl) . ' ' . $dim . 'w, ';
-			$thumb2x_src .= URL::asset($thumb2xUrl) . ' ' . $dim2x . 'w';
+			$thumb2x_src = sprintf("data-srcset='%s %dw, %s %dw'", URL::asset($thumbUrl), $dim, URL::asset($thumb2xUrl), $dim2x);
 		}
 
-		$this->srcset2x = $thumb2xUrl != '' ? "data-srcset='" . $thumb2x_src . "'" : '';
+		$this->srcset2x = $thumb2xUrl != '' ? $thumb2x_src : '';
 	}
 
 	/**
