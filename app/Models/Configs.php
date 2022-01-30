@@ -33,6 +33,14 @@ class Configs extends Model
 	use ThrowsConsistentExceptions;
 	use UseFixedQueryBuilder;
 
+	protected const INT = 'int';
+	protected const STRING = 'string';
+	protected const STRING_REQ = 'string_required';
+	protected const BOOL = '0|1';
+	protected const TERNARY = '0|1|2';
+	protected const DISABLED = '';
+	protected const LICENSE = 'license';
+
 	public const FRIENDLY_MODEL_NAME = 'config';
 
 	/**
@@ -63,36 +71,29 @@ class Configs extends Model
 	 */
 	public function sanity($value): string
 	{
-		if (!defined('INT')) {
-			define('INT', 'int');
-			define('STRING', 'string');
-			define('STRING_REQ', 'string_required');
-			define('BOOL', '0|1');
-			define('TERNARY', '0|1|2');
-			define('DISABLED', '');
-			define('LICENSE', 'license');
-		}
-
 		$message = '';
-		$val_range = [BOOL => explode('|', BOOL), TERNARY => explode('|', TERNARY)];
+		$val_range = [
+			self::BOOL => explode('|', self::BOOL),
+			self::TERNARY => explode('|', self::TERNARY),
+		];
 
 		switch ($this->type_range) {
-			case STRING:
-			case DISABLED:
+			case self::STRING:
+			case self::DISABLED:
 				break;
-			case STRING_REQ:
+			case self::STRING_REQ:
 				if ($value == '') {
 					$message = 'Error: ' . $this->key . ' empty or not set in database';
 				}
 				break;
-			case INT:
+			case self::INT:
 				// we make sure that we only have digits in the chosen value.
 				if (!ctype_digit(strval($value))) {
 					$message = 'Error: Wrong property for ' . $this->key . ' in database, expected positive integer.';
 				}
 				break;
-			case BOOL:
-			case TERNARY:
+			case self::BOOL:
+			case self::TERNARY:
 				if (!in_array($value, $val_range[$this->type_range])) { // BOOL or TERNARY
 					$message = 'Error: Wrong property for ' . $this->key
 						. ' in database, expected ' . implode(
@@ -101,7 +102,7 @@ class Configs extends Model
 						) . ', got ' . ($value ?: 'NULL');
 				}
 				break;
-			case LICENSE:
+			case self::LICENSE:
 				if (!in_array($value, Helpers::get_all_licenses())) {
 					$message = 'Error: Wrong property for ' . $this->key
 						. ' in database, expected a valid license, got ' . ($value ?: 'NULL');
