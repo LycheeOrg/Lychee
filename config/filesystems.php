@@ -75,6 +75,7 @@ return [
 
 		// Lychee uses this disk to create ephemeral, symbolic links to photos,
 		// if the feature is enabled.
+		// For this feature to work, the "images" disk must use the "local" driver.
 		// ATTENTION: This disk MUST ALWAYS use the "local" driver, because
 		// Flysystem does not support symbolic links.
 		'symbolic' => [
