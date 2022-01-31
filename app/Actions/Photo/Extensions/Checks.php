@@ -82,7 +82,7 @@ trait Checks
 	 */
 	public function file_kind(SourceFileInfo $sourceFileInfo): string
 	{
-		$extension = $sourceFileInfo->getOriginalFileExtension();
+		$extension = $sourceFileInfo->getOriginalExtension();
 		// check raw files
 		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
 		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
@@ -105,12 +105,12 @@ trait Checks
 			throw new JsonError('EXIF library not loaded on the server!');
 		}
 
-		$type = @exif_imagetype($sourceFileInfo->getTmpFullPath());
+		$type = @exif_imagetype($sourceFileInfo->getFile()->getAbsolutePath());
 		if (in_array($type, $this->validTypes, true)) {
 			return 'photo';
 		}
 
-		Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $sourceFileInfo->getOriginalFilename());
+		Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $sourceFileInfo->getOriginalExtension());
 		throw new JsonError('Photo type not supported!');
 	}
 }

@@ -92,13 +92,13 @@ class PhotoController extends Controller
 		// Only process the first photo in the array
 		/** @var UploadedFile $file */
 		$file = $request->file('0');
-		$sourceFileInfo = SourceFileInfo::createForUploadedFile($file);
+		$sourceFileInfo = SourceFileInfo::createByUploadedFile($file);
 		$albumID = $request['albumID'];
 
-		// If the file has been uploaded, the (temporary) source file shall be
+		// As the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(new ImportMode(
-			is_uploaded_file($sourceFileInfo->getTmpFullPath()),
+			true,
 			Configs::get_value('skip_duplicates', '0') === '1'
 		));
 

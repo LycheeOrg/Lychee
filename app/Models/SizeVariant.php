@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Casts\MustNotSetCast;
 use App\Facades\AccessControl;
+use App\Image\FlysystemFile;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
 use App\Models\Extensions\UTCBasedTimes;
@@ -178,6 +179,11 @@ class SizeVariant extends Model
 	public function getFullPathAttribute(): string
 	{
 		return Storage::path($this->short_path);
+	}
+
+	public function getFile(): FlysystemFile
+	{
+		return new FlysystemFile(Storage::disk(), $this->short_path);
 	}
 
 	/**
