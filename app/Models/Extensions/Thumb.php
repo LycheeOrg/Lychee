@@ -14,10 +14,10 @@ class Thumb implements Arrayable, JsonSerializable
 {
 	protected string $id;
 	protected string $type;
-	protected ?string $thumbUrl;
+	protected string $thumbUrl;
 	protected ?string $thumb2xUrl;
 
-	protected function __construct(string $id, string $type, ?string $thumbUrl, ?string $thumb2xUrl = null)
+	protected function __construct(string $id, string $type, string $thumbUrl, ?string $thumb2xUrl = null)
 	{
 		$this->id = $id;
 		$this->type = $type;
@@ -76,12 +76,15 @@ class Thumb implements Arrayable, JsonSerializable
 			return null;
 		}
 		$thumb = $photo->size_variants->getThumb();
+		if (!$thumb) {
+			return null;
+		}
 		$thumb2x = $photo->size_variants->getThumb2x();
 
 		return new self(
 			$photo->id,
 			$photo->type,
-			$thumb?->url,
+			$thumb->url,
 			$thumb2x?->url
 		);
 	}
