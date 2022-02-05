@@ -171,6 +171,87 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
+	 * Restricts an album query to _reachable_ albums.
+	 *
+	 * An album is called _reachable_, if it is _visible_ and _accessible_
+	 * simultaneously.
+	 * An album is reachable, if the user is able to see the album
+	 * within its parent album and has the privilege to enter it.
+	 *
+	 * The result of this filter is strictly identical to the concatenation
+	 * of {@link AlbumAuthorisationProvider::applyVisibilityFilter()} and
+	 * {@link AlbumAuthorisationProvider::applyAccessibilityFilter()}, i.e.
+	 *
+	 *     $aap = resolve(AlbumAuthorisationProvider::class);
+	 *     $aap->applyVisibilityFilter(
+	 *         $aap->applyAccessibilityFilter(
+	 *             $model::query()
+	 *         )
+	 *     )->get()
+	 *
+	 * returns the exact same result set.
+	 * The only advantage of this combined filter is that the `WHERE` clause
+	 * is already in disjunctive normal form (DNF) which results in a
+	 * slightly better SQL performance.
+	 *
+	 * The combination of both sets of conditions yields that an album is
+	 * _reachable_, if any of the following conditions hold
+	 * (OR-clause)
+	 *
+	 *  - the user is the admin, or
+	 *  - the user is the owner, or
+	 *  - the album does not require a direct link and is shared with the user, or
+	 *  - the album does not require a direct link, is public and has no password set, or
+	 *  - the album does not require a direct link, is public and has been unlocked
+	 *
+	 * @param Builder $query
+	 *
+	 * @return Builder
+	 *
+	 * @throws \InvalidArgumentException
+	 */
+	public function applyReachabilityFilter(Builder $query): Builder
+	{
+		$this->prepareModelQueryOrFail($query);
+
+		if (AccessControl::is_admin()) {
+			return $query;
+		}
+
+		$unlockedAlbumIDs = $this->getUnlockedAlbumIDs();
+		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		// We must wrap everything into an outer query to avoid any undesired
+		// effects in case that the original query already contains an
+		// "OR"-clause.
+		// The sub-query only uses properties (i.e. columns) which are
+		// defined on the common base model for all albums.
+		$reachabilitySubQuery = function (Builder $query2) use ($userID, $unlockedAlbumIDs) {
+			$query2
+				->where(fn (Builder $q) => $q
+					->where('base_albums.requires_link', '=', false)
+					->where('base_albums.is_public', '=', true)
+					->whereNull('base_albums.password')
+				)
+				->orWhere(fn (Builder $q) => $q
+					->where('base_albums.requires_link', '=', false)
+					->where('base_albums.is_public', '=', true)
+					->whereIn('base_albums.id', $unlockedAlbumIDs)
+				);
+			if ($userID !== null) {
+				$query2
+					->orWhere('base_albums.owner_id', '=', $userID)
+					->orWhere(fn (Builder $q) => $q
+						->where('base_albums.requires_link', '=', false)
+						->where('user_base_album.user_id', '=', $userID)
+					);
+			}
+		};
+
+		return $query->where($reachabilitySubQuery);
+	}
+
+	/**
 	 * Checks whether the album is accessible by the current user.
 	 *
 	 * For real albums (i.e. albums that are stored in the DB), see
@@ -235,61 +316,45 @@ class AlbumAuthorisationProvider
 	 *
 	 * Intuitively, an album is browsable if users can find a path to the
 	 * album by "clicking around".
-	 * The definition of "browsability" is recursive by nature.
-	 * In order for an album to be browsable, all parent albums up to the
-	 * origin must be browsable, too.
-	 * Please note, that the origin is not necessarily identical to the root
-	 * album.
-	 *
-	 * **Attention**:
-	 * For efficiency reasons this method does not check if `$origin` itself
-	 * is accessible.
-	 * The method simply assumes that the user has already legitimately
-	 * accessed the origin album, if the caller provides an album model.
-	 *
-	 * A "mathematical" definition follows:
-	 *
-	 * An album is called _not blocked_, if the user can reach the album
-	 * from its direct parent.
-	 * In order to be not blocked, the album must be _visible_ and
-	 * _accessible_ at the same time, i.e. the user must be able to see the
-	 * album and must have the privilege to enter it.
-	 * See {@link AlbumAuthorisationProvider::applyVisibilityFilter()} and
-	 * {@link AlbumAuthorisationProvider::applyAccessibilityFilter()} for
-	 * the respective definitions.
-	 * The combination of both sets of conditions yields that an album is
-	 * _not blocked_, if any of the following conditions hold
-	 * (OR-clause)
-	 *
-	 *  - the user is the admin, or
-	 *  - the user is the owner, or
-	 *  - the album does not require a direct link and is shared with the user, or
-	 *  - the album does not require a direct link, is public and has no password set, or
-	 *  - the album does not require a direct link, is public and has been unlocked
-	 *
 	 * An album is called _browsable_, if
 	 *
 	 *   1. there is a path from the origin to the album, and
-	 *   2. no _blocked_ albums on the path from the origin to the album exist.
+	 *   2. all albums on the path are _reachable_
+	 *
+	 * See {@link AlbumAuthorisationProvider::applyReachabilityFilter()}
+	 * for the definition of reachability.
+	 * Note, while _reachability_ (as well as _visibility_ and _accessibility_)
+	 * are a _local_ properties, _browsability_ is a _global_ property.
+	 *
+	 * **Attention**:
+	 * For efficiency reasons this method does not check if `$origin` itself
+	 * is reachable.
+	 * The method simply assumes that the user has already legitimately
+	 * accessed the origin album, if the caller provides an album model.
+	 *
+	 * Due to constraints in the SQL syntax, the query actually checks that
+	 *
+	 *   1. there is a path from the origin to the album, and
+	 *   2. no album on that path is unreachable
 	 *
 	 * Note that the worst case efficiency of this query is O(n²), if n is
 	 * the number of query results.
 	 * The query does not "know" that albums are organized in a tree structure
 	 * and thus re-examines the entire path for each album in the result and
 	 * does not take a short-cut for sub-paths which have already been examined
-	 * earlier.
+	 * previously.
 	 * In other words for a flat tree (all result nodes are direct children
 	 * of the origin), the runtime is O(n), but for a high tree (the nodes are
 	 * basically a sequence), the runtime is O(n²).
 	 *
-	 * @param AlbumBuilder $query  the album query which shall be restricted
-	 * @param Album|null   $origin the optional top album which is used as a search base
+	 * @param Builder    $query  the album query which shall be restricted
+	 * @param Album|null $origin the optional top album which is used as a search base
 	 *
-	 * @return AlbumBuilder the restricted album query
+	 * @return Builder the restricted album query
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function applyBrowsabilityFilter(AlbumBuilder $query, ?Album $origin = null): AlbumBuilder
+	public function applyBrowsabilityFilter(Builder $query, ?Album $origin = null): Builder
 	{
 		$table = $query->getQuery()->from;
 		if (!($query->getModel() instanceof Album) || $table !== 'albums') {
@@ -311,7 +376,7 @@ class AlbumAuthorisationProvider
 			return $query;
 		} else {
 			return $query->whereNotExists(function (BaseBuilder $q) use ($origin) {
-				$this->appendBlockedAlbumsCondition(
+				$this->appendUnreachableAlbumsCondition(
 					$q,
 					$origin?->_lft,
 					$origin?->_rgt,
@@ -321,7 +386,7 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * Adds the conditions of an accessible album to the query.
+	 * Adds the conditions of an unreachable album to the query.
 	 *
 	 * **Attention:** This method is only meant for internal use by
 	 * this class or {@link PhotoAuthorisationProvider}.
@@ -353,7 +418,7 @@ class AlbumAuthorisationProvider
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function appendBlockedAlbumsCondition(BaseBuilder $builder, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
+	public function appendUnreachableAlbumsCondition(BaseBuilder $builder, int|string|null $originLeft, int|string|null $originRight): BaseBuilder
 	{
 		if (gettype($originLeft) !== gettype($originRight)) {
 			throw new LycheeInvalidArgumentException('$originLeft and $originRight must simultaneously either be integers, strings or null');
@@ -384,10 +449,10 @@ class AlbumAuthorisationProvider
 			// ... to the target ...
 			$builder
 				// (We must include the target into the list of inner nodes,
-				// because we must also check if the target is blocked.)
+				// because we must also check whether the target is unreachable.)
 				->whereColumn('inner._lft', '<=', 'albums._lft')
 				->whereColumn('inner._rgt', '>=', 'albums._rgt');
-			// ... which are blocked.
+			// ... which are unreachable.
 			$builder
 				->where(fn (BaseBuilder $q) => $q
 					->where('inner_base_albums.requires_link', '=', true)

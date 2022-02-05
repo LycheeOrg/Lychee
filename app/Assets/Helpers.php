@@ -3,8 +3,6 @@
 namespace App\Assets;
 
 use App\Exceptions\Internal\ZeroModuloException;
-use App\Exceptions\MediaFileOperationException;
-use App\Models\Logs;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\File;
 use WhichBrowser\Parser as BrowserParser;
@@ -147,31 +145,6 @@ class Helpers
 		}
 
 		return false;
-	}
-
-	/**
-	 * Creates a temporary file in the local system's temporary directory with
-	 * a random name and the designated extension.
-	 *
-	 * The caller is responsible to move/delete the temporary file after it is
-	 * not needed anymore.
-	 *
-	 * @param string $extension the desired file extension, must include a starting dot
-	 *
-	 * @return string the path to the newly created file
-	 *
-	 * @throws MediaFileOperationException
-	 */
-	public function createTemporaryFile(string $extension): string
-	{
-		if (!($result = tempnam(sys_get_temp_dir(), 'lychee')) ||
-			!rename($result, $result . $extension)) {
-			$msg = 'Could not create a temporary file.';
-			Logs::notice(__METHOD__, __LINE__, $msg);
-			throw new MediaFileOperationException($msg);
-		}
-
-		return $result . $extension;
 	}
 
 	/**

@@ -60,6 +60,7 @@ use Illuminate\Support\Facades\Storage;
  * @property string|null  $live_photo_url
  * @property string|null  $album_id
  * @property string       $checksum
+ * @property string       $original_checksum
  * @property string       $license
  * @property Carbon       $created_at
  * @property Carbon       $updated_at

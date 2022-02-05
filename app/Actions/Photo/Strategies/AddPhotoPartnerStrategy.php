@@ -38,11 +38,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		// and moves it to the correct destination of a live partner for the
 		// photo.
 		$parameters = new AddStrategyParameters(new ImportMode(true));
-		$parameters->sourceFileInfo = new SourceFileInfo(
-			$this->existingVideo->title,
-			$this->existingVideo->type,
-			$this->existingVideo->size_variants->getOriginal()->full_path
-		);
+		$parameters->sourceFileInfo = SourceFileInfo::createByPhoto($this->existingVideo);
 		$videoStrategy = new AddVideoPartnerStrategy($parameters, $this->photo);
 		$videoStrategy->do();
 

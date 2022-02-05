@@ -1,7 +1,5 @@
 <?php
 
-/** @noinspection PhpMultipleClassDeclarationsInspection */
-
 namespace App\Models\Extensions;
 
 use App\Contracts\HasRandomID;

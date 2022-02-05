@@ -31,7 +31,7 @@ class Albums extends Component
 		$this->top = $top;
 		$this->smart = $smart;
 
-		// $toplevel contains Collection[Album] accessible at the root: albums shared_albums.
+		// $toplevel contains Collection<Album> accessible at the root: albums shared_albums.
 		$toplevel = $this->top->get();
 
 		$this->albums = $toplevel['albums'];

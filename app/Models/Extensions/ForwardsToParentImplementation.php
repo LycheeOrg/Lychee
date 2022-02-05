@@ -103,6 +103,7 @@ trait ForwardsToParentImplementation
 	 */
 	protected function performUpdate(Builder $query): bool
 	{
+		/** @var Model $base_class */
 		$base_class = $this->base_class;
 		// touch() also indirectly saves the base_class hence any other
 		// attributes which require an update are also saved

@@ -41,11 +41,12 @@ trait Checks
 	 */
 	public function get_duplicate(string $checksum): ?Photo
 	{
-		$query = Photo::query()
-			->where('checksum', '=', $checksum)
-			->orWhere('live_photo_checksum', '=', $checksum);
 		/** @var Photo|null $photo */
-		$photo = $query->first();
+		$photo = Photo::query()
+			->where('checksum', '=', $checksum)
+			->orWhere('original_checksum', '=', $checksum)
+			->orWhere('live_photo_checksum', '=', $checksum)
+			->first();
 
 		return $photo;
 	}
@@ -69,7 +70,7 @@ trait Checks
 	 */
 	public function file_kind(SourceFileInfo $sourceFileInfo): string
 	{
-		$extension = $sourceFileInfo->getOriginalFileExtension();
+		$extension = $sourceFileInfo->getOriginalExtension();
 		// check raw files
 		$raw_formats = strtolower(Configs::get_value('raw_formats', ''));
 		if (in_array(strtolower($extension), explode('|', $raw_formats), true)) {
@@ -92,7 +93,7 @@ trait Checks
 			throw new ExternalComponentMissingException('EXIF library not loaded on the server!');
 		}
 
-		$type = exif_imagetype($sourceFileInfo->getTmpFullPath());
+		$type = exif_imagetype($sourceFileInfo->getFile()->getAbsolutePath());
 		if (in_array($type, $this->validTypes, true)) {
 			return 'photo';
 		}

@@ -6,7 +6,9 @@ use App\Contracts\ExternalLycheeException;
 use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class Takedate extends Command
@@ -52,22 +54,18 @@ class Takedate extends Command
 			if ($argument == 0) {
 				$argument = PHP_INT_MAX;
 			}
+			$photoQuery = Photo::with(['size_variants' => function (HasMany $r) {
+				$r->where('type', '=', SizeVariant::ORIGINAL);
+			}]);
 			if ($force) {
-				$photos = Photo::query()
-					->offset($from)
-					->limit($argument)
-					->get();
+				$photos = $photoQuery->offset($from)->limit($argument)->get();
 			} else {
-				$photos = Photo::query()
-					->whereNull('taken_at')
-					->offset($from)
-					->limit($argument)
-					->get();
+				$photos = $photoQuery->whereNull('taken_at')->offset($from)->limit($argument)->get();
 			}
 			if (count($photos) == 0) {
 				$this->line('No pictures require takedate updates.');
 
-				return false;
+				return -1;
 			}
 
 			$i = $from - 1;

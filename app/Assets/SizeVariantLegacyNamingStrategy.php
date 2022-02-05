@@ -6,7 +6,6 @@ use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\MissingValueException;
-use App\Facades\Helpers;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 
@@ -40,13 +39,8 @@ class SizeVariantLegacyNamingStrategy extends SizeVariantNamingStrategy
 	{
 		parent::setPhoto($photo);
 		$this->originalExtension = '';
-		if ($this->photo) {
-			$sv = $this->photo->size_variants->getOriginal();
-			if ($sv) {
-				if (!empty($sv->short_path)) {
-					$this->originalExtension = Helpers::getExtension($sv->short_path, false);
-				}
-			}
+		if ($this->photo && $sv = $this->photo->size_variants->getOriginal()) {
+			$this->originalExtension = $sv->getFile()->getExtension();
 		}
 	}
 

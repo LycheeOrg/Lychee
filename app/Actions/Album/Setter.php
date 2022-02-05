@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
  * This class updates a property of a **single** album.
  * Hence, {@link Setter::do()} takes a single `albumID` as input.
  *
- * The method {@link Setter::do()} **will throw** a
+ * The method {@link Setter::do()} **throws** a
  * {@link ModelNotFoundException}  exception, if `albumID` does not point to
  * an existing album.
  *

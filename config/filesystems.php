@@ -41,11 +41,7 @@ return [
 	*/
 
 	'disks' => [
-		'local' => [
-			'driver' => 'local',
-			'root' => storage_path('app'),
-		],
-
+		// Lychee uses the disk "images" to store the media files
 		'images' => [
 			'driver' => 'local',
 			'root' => env('LYCHEE_UPLOADS', public_path('uploads/')),
@@ -53,28 +49,11 @@ return [
 			'visibility' => 'public',
 		],
 
-		'dist' => [
-			'driver' => 'local',
-			'root' => env('LYCHEE_DIST', public_path('dist/')),
-			'url' => env('LYCHEE_DIST_URL', 'dist/'),
-			'visibility' => 'public',
-		],
-
-		'symbolic' => [
-			'driver' => 'local',
-			'root' => public_path('sym'),
-			'url' => 'sym',
-			'visibility' => 'public',
-		],
-
-		'public' => [
-			'driver' => 'local',
-			'root' => storage_path('app/public'),
-			'url' => env('APP_URL') . '/storage',
-			'visibility' => 'public',
-		],
-
-		's3' => [
+		// This is an example how the "images" disk can be hosted on an AWS S3
+		// ATTENTION: This is NOT supported yet!!!
+		// This is only a placeholder/reminder for the future
+		/*
+		'images' => [
 			'driver' => 's3',
 			'key' => env('AWS_ACCESS_KEY_ID'),
 			'secret' => env('AWS_SECRET_ACCESS_KEY'),
@@ -82,6 +61,28 @@ return [
 			'bucket' => env('AWS_BUCKET'),
 			'url' => env('AWS_URL'),
 			'endpoint' => env('AWS_ENDPOINT'),
+		],*/
+
+		// Lychee uses this disk to store the customized CSS file provided by the user
+		// ATTENTION: This disk MUST ALWAYS point to the local `./public/dist` directory.
+		// TODO: Maybe we should drop this Flysystem disk, because neither the driver nor the root must be changed and hence the whole point of using the Flysystem abstraction is gone.
+		'dist' => [
+			'driver' => 'local',
+			'root' => env('LYCHEE_DIST', public_path('dist/')),
+			'url' => env('LYCHEE_DIST_URL', 'dist/'),
+			'visibility' => 'public',
+		],
+
+		// Lychee uses this disk to create ephemeral, symbolic links to photos,
+		// if the feature is enabled.
+		// For this feature to work, the "images" disk must use the "local" driver.
+		// ATTENTION: This disk MUST ALWAYS use the "local" driver, because
+		// Flysystem does not support symbolic links.
+		'symbolic' => [
+			'driver' => 'local',
+			'root' => public_path('sym'),
+			'url' => 'sym',
+			'visibility' => 'public',
 		],
 	],
 

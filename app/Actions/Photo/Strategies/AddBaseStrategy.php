@@ -2,14 +2,20 @@
 
 namespace App\Actions\Photo\Strategies;
 
+use App\Exceptions\ConfigurationException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Facades\AccessControl;
-use App\Models\Logs;
+use App\Image\FlysystemFile;
+use App\Image\NativeLocalFile;
 use App\Models\Photo;
+use Illuminate\Support\Facades\Storage;
+use League\Flysystem\Adapter\Local;
 
 abstract class AddBaseStrategy
 {
+	public const IMAGE_DISK_NAME = 'images';
+
 	protected AddStrategyParameters $parameters;
 	protected Photo $photo;
 
@@ -62,6 +68,9 @@ abstract class AddBaseStrategy
 		}
 		if (empty($this->photo->checksum) && !empty($this->parameters->info['checksum'])) {
 			$this->photo->checksum = $this->parameters->info['checksum'];
+		}
+		if (empty($this->photo->original_checksum) && !empty($this->parameters->info['checksum'])) {
+			$this->photo->original_checksum = $this->parameters->info['checksum'];
 		}
 		if (empty($this->photo->iso) && !empty($this->parameters->info['iso'])) {
 			$this->photo->iso = $this->parameters->info['iso'];
@@ -121,40 +130,56 @@ abstract class AddBaseStrategy
 	/**
 	 * Moves/copies/symlinks source file to final destination.
 	 *
-	 * @param string $targetFullPath the path of the final destination
+	 * @param string $targetPath the path of the final destination relative to
+	 *                           the disk {@link AddBaseStrategy::IMAGE_DISK_NAME}
 	 *
 	 * @throws MediaFileOperationException
+	 * @throws ConfigurationException
 	 */
-	protected function putSourceIntoFinalDestination(string $targetFullPath): void
+	protected function putSourceIntoFinalDestination(string $targetPath): void
 	{
-		$tmpFullPath = $this->parameters->sourceFileInfo->getTmpFullPath();
-		if ($this->parameters->importMode->shallDeleteImported()) {
-			// Note: We cannot use the storage facade here, because the
-			// temporary name of the original file may be outside of the
-			// disk of the storage
-			if (!rename($tmpFullPath, $targetFullPath)) {
-				$msg = 'Could not move photo from "' . $tmpFullPath . '" to "' . $targetFullPath . '"';
-				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new MediaFileOperationException($msg);
+		$sourceFile = $this->parameters->sourceFileInfo->getFile();
+		$targetFile = new FlysystemFile(Storage::disk(self::IMAGE_DISK_NAME), $targetPath);
+		$isTargetLocal = $targetFile->getStorageAdapter() instanceof Local;
+		if ($this->parameters->importMode->shallImportViaSymlink()) {
+			if (!$isTargetLocal) {
+				throw new ConfigurationException('Symlinking is only supported on local filesystems');
+			}
+			if (!($sourceFile instanceof NativeLocalFile)) {
+				throw new ConfigurationException('Symlinking is only supported to local files');
+			}
+			$targetAbsolutePath = $targetFile->getAbsolutePath();
+			$sourceAbsolutePath = $sourceFile->getAbsolutePath();
+			if (!symlink($sourceAbsolutePath, $targetAbsolutePath)) {
+				throw new MediaFileOperationException('Could not create symbolic link at "' . $targetAbsolutePath . '" for photo at "' . $sourceAbsolutePath . '"');
 			}
 		} else {
-			// Check if the user wants to create symlinks instead of copying the photo
-			if ($this->parameters->importMode->shallImportViaSymlink()) {
-				if (!symlink($tmpFullPath, $targetFullPath)) {
-					$msg = 'Could not create symbolic link at "' . $targetFullPath . '" for photo at "' . $tmpFullPath . '"';
-					Logs::error(__METHOD__, __LINE__, $msg);
-					throw new MediaFileOperationException($msg);
+			try {
+				$targetFile->write($sourceFile->read());
+				$sourceFile->close();
+				// Set original date
+				if ($isTargetLocal && $this->photo->taken_at !== null) {
+					// I wonder if Flysystem is really the right choice for use
+					// given the fact, that it lacks many of the features we need
+					// such that we need to fall back to low-level PHP methods
+					// all the time (for symlinks, setting timestamps, etc.)
+					// Also, the head maintainer seem very reluctant of
+					// integrating new features:
+					//  - For setting timestamps: https://github.com/thephpleague/flysystem/issues/920
+					//  - For symlinks: https://github.com/thephpleague/flysystem/issues/599
+					touch($targetFile->getAbsolutePath(), $this->photo->taken_at->getTimestamp());
 				}
-			} elseif (!copy($tmpFullPath, $targetFullPath)) {
-				$msg = 'Could not copy photo from "' . $tmpFullPath . '" to "' . $targetFullPath . '"';
-				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new MediaFileOperationException($msg);
+				if ($this->parameters->importMode->shallDeleteImported()) {
+					// This may throw an exception, if the original has been
+					// readable, but is not writable
+					// In this case, the media file will have been copied, but
+					// cannot be "moved".
+					// TODO: Throw a application-specific exception such that the outer caller can gracefully fallback to "copy"-semantics and return a warning instead of failing entirely.
+					$sourceFile->delete();
+				}
+			} catch (\RuntimeException $e) {
+				throw new MediaFileOperationException('Could not move/copy photo', $e);
 			}
-		}
-
-		// Set original date
-		if ($this->photo->taken_at !== null) {
-			touch($targetFullPath, $this->photo->taken_at->getTimestamp());
 		}
 	}
 }

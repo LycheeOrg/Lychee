@@ -8,9 +8,11 @@ use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\UnexpectedException;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Symfony\Component\Console\Exception\ExceptionInterface as SymfonyConsoleException;
 
 class ExifLens extends Command
@@ -63,7 +65,9 @@ class ExifLens extends Command
 			set_time_limit($timeout);
 
 			// we use lens because this is the one which is most likely to be empty.
-			$photos = Photo::query()
+			$photos = Photo::with(['size_variants' => function (HasMany $r) {
+				$r->where('type', '=', SizeVariant::ORIGINAL);
+			}])
 				->where('lens', '=', '')
 				->whereNotIn('type', $this->getValidVideoTypes())
 				->offset($from)
@@ -78,7 +82,8 @@ class ExifLens extends Command
 			$i = $from;
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
-				$fullPath = $photo->full_path;
+				// TODO: If we ever want to be able to support AWS S3, don't use absolute paths and make metadata extracctor use streams
+				$fullPath = $photo->size_variants->getOriginal()->getFile()->getAbsolutePath();
 				if (file_exists($fullPath)) {
 					$info = $this->metadataExtractor->extract($fullPath, $photo->type);
 					$updated = false;

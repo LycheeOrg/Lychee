@@ -75,7 +75,7 @@ class Create
 		$this->strategyParameters->kind = $this->file_kind($sourceFileInfo);
 		$this->strategyParameters->sourceFileInfo = $sourceFileInfo;
 
-		// Fill in metadata extracted from source file
+		// Fill in meta data extracted from source file
 		$this->loadFileMetadata($sourceFileInfo);
 
 		// Look up potential duplicates/partners in order to select the
@@ -88,8 +88,7 @@ class Create
 		);
 
 		/*
-		 * From here on, we need to use a strategy depending on the situation
-		 * of the file:
+		 * From here we need to use a strategy depending if we have
 		 *
 		 *  - a duplicate
 		 *  - a "stand-alone" media file (i.e. a photo or video without a partner)
@@ -137,7 +136,7 @@ class Create
 		/* @var  Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
 
-		$this->strategyParameters->info = $metadataExtractor->extract($sourceFileInfo->getTmpFullPath(), $this->strategyParameters->kind);
+		$this->strategyParameters->info = $metadataExtractor->extract($sourceFileInfo->getFile()->getAbsolutePath(), $this->strategyParameters->kind);
 		if ($this->strategyParameters->kind == 'raw') {
 			$this->strategyParameters->info['type'] = 'raw';
 		}
@@ -147,11 +146,7 @@ class Create
 
 		// Use title of file if IPTC title missing
 		if ($this->strategyParameters->info['title'] === '') {
-			if ($this->strategyParameters->kind == 'raw') {
-				$this->strategyParameters->info['title'] = substr(basename($sourceFileInfo->getOriginalFilename()), 0, 98);
-			} else {
-				$this->strategyParameters->info['title'] = substr(basename($sourceFileInfo->getOriginalFilename(), $sourceFileInfo->getOriginalFileExtension()), 0, 98);
-			}
+			$this->strategyParameters->info['title'] = substr($sourceFileInfo->getOriginalName(), 0, 98);
 		}
 	}
 

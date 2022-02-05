@@ -97,13 +97,13 @@ class PhotoController extends Controller
 	 */
 	public function add(AddPhotoRequest $request): Photo
 	{
-		$sourceFileInfo = SourceFileInfo::createForUploadedFile(
+		$sourceFileInfo = SourceFileInfo::createByUploadedFile(
 			$request->uploadedFile()
 		);
 		// If the file has been uploaded, the (temporary) source file shall be
 		// deleted
 		$create = new Create(new ImportMode(
-			is_uploaded_file($sourceFileInfo->getTmpFullPath()),
+			true,
 			Configs::get_value('skip_duplicates', '0') === '1'
 		));
 

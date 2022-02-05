@@ -39,17 +39,18 @@ class Tree
 		 * because we only want albums which are browsable.
 		 * But
 		 * {@link AlbumAuthorisationProvider::applyBrowsabilityFilter()}
-		 * is rather slow for large sets of albums.
-		 * Luckily, {@link AlbumAuthorisationProvider::applyVisibilityFilter()}
+		 * is rather slow for large sets of albums (O(n²) runtime).
+		 * Luckily,
+		 * {@link AlbumAuthorisationProvider::applyReachabilityFilter()}
 		 * is sufficient here, although it does only consider an album's
-		 * visibility locally.
-		 * We rely on `->toTree` below to remove albums which are not
-		 * reachable.
+		 * reachability _locally_.
+		 * We rely on `->toTree` below to remove orphaned sub-tress and hence
+		 * only return a tree of browsable albums.
 		 *
 		 * @var NsQueryBuilder $query
 		 */
 		$query = $this->albumAuthorisationProvider
-			->applyVisibilityFilter(Album::query());
+			->applyReachabilityFilter(Album::query());
 
 		if (AccessControl::is_logged_in()) {
 			// For authenticated users we group albums by ownership.

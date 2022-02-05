@@ -10,6 +10,7 @@ use App\Actions\Photo\Strategies\ImportMode;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
+use App\Image\NativeLocalFile;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
@@ -224,7 +225,16 @@ class Exec
 		// Update ignore list
 		$ignore_list = $this->setUpIgnoreList($path, $ignore_list);
 
+		// TODO: Consider to use a modern OO-approach using [`DirectoryIterator`](https://www.php.net/manual/en/class.directoryiterator.php) and [`SplFileInfo`](https://www.php.net/manual/en/class.splfileinfo.php)
+		/** @var string[] $files */
 		$files = glob($path . '/*');
+		if ($files === false) {
+			$this->reportError($origPath, 'Could not list directory entries');
+			Logs::error(__METHOD__, __LINE__, 'Could not list directory entries (' . $path . ')');
+
+			return;
+		}
+
 		$filesTotal = count($files);
 		$filesCount = 0;
 		$dirs = [];
@@ -275,16 +285,21 @@ class Exec
 			}
 
 			$filesCount++;
+
 			// It is possible to move a file because of directory permissions but
 			// the file may still be unreadable by the user
+			// TODO: This check will be unnecessary, after we have proper exception handling, because we try to read streams
 			if (!is_readable($file)) {
 				$this->reportError($file, 'Could not read file');
 				Logs::error(__METHOD__, __LINE__, 'Could not read file or directory (' . $file . ')');
 				continue;
 			}
-			$extension = Helpers::getExtension($file, true);
+			$extension = Helpers::getExtension($file, false);
 			$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
 			try {
+				// TODO: Consolidate all mimetype/extension handling in one place; here we have another test whether the source file is supported which is inconsistent with tests elsewhere
+				// TODO: Probably the best place is \App\Image\MediaFile.
+				// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
 				// Note: `exif_imagetype` may also throw an exception
 				// (instead of returning `false`), if the file is too small
 				// to read enough bytes to determine the file type.
@@ -301,7 +316,7 @@ class Exec
 					// `ImportMode` and then `PhotoCreate::add` should
 					// be called for each file.
 					$photoCreate = new PhotoCreate($this->importMode);
-					$photoCreate->add(SourceFileInfo::createForLocalFile($file), $albumID);
+					$photoCreate->add(SourceFileInfo::createByLocalFile(new NativeLocalFile($file)), $albumID);
 				} else {
 					$this->reportError($file, 'Unsupported file type');
 					Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');

@@ -135,6 +135,7 @@ class SizeVariants extends DTO
 			SizeVariant::SMALL => $this->small,
 			SizeVariant::THUMB2X => $this->thumb2x,
 			SizeVariant::THUMB => $this->thumb,
+			default => throw new \UnexpectedValueException('size variant ' . $sizeVariantType . 'invalid'),
 		};
 	}
 

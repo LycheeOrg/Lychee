@@ -11,7 +11,6 @@ use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ModelDBException;
-use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -208,9 +207,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	protected function createTmpPathForReference(): void
 	{
-		$this->referenceFullPath = Helpers::createTemporaryFile(
-			$this->namingStrategy->getDefaultExtension()
-		);
+		$tmpFile = new TemporaryLocalFile();
+		$this->referenceFullPath = $tmpFile->getAbsolutePath();
 		$this->needsCleanup = true;
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw/video file to ' . $this->referenceFullPath);
 	}
@@ -417,6 +415,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			SizeVariant::SMALL2X => Configs::get_value('small_2x', 0) == 1,
 			SizeVariant::THUMB2X => Configs::get_value('thumb_2x', 0) == 1,
 			SizeVariant::SMALL, SizeVariant::MEDIUM, SizeVariant::THUMB => true,
+			default => throw new InvalidSizeVariantException('unknown size variant: ' . $sizeVariant),
 		};
 	}
 

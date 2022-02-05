@@ -42,6 +42,16 @@ var _templateObject = _taggedTemplateLiteral(["<svg class='iconic ", "'><use xli
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
+/**
+ * Returns the value of a query-string parameter.
+ *
+ * TODO: Why it is called "gup"?
+ *
+ * TODO @ildiria: This method strikes me as completely unnecessary and overly complicated. Moreover it is only used in a single place. Why don't we simply use (https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get#example) in the place where we need it?
+ *
+ * @param {string} b
+ * @returns {string}
+ */
 function gup(b) {
 	b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 
@@ -59,6 +69,7 @@ function gup(b) {
 /**
  * @callback APISuccessCB
  * @param {Object} data the decoded JSON response
+ * @returns {void}
  */
 
 /**
@@ -66,22 +77,13 @@ function gup(b) {
  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
  * @param {Object} params the original JSON parameters of the request
  * @param {?LycheeException} lycheeException the Lychee exception
- * @return {boolean}
+ * @returns {boolean}
  */
 
 /**
  * @callback APIProgressCB
  * @param {ProgressEvent} event the progress event
- */
-
-/**
- * @typedef {Object} LycheeException
- * @property {string} message     the message of the exception
- * @property {string} [exception] the name of the exception class; only in developer mode
- * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
- * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
- * @property {Array} [trace]      the backtrace; only in developer mode
- * @property {?LycheeException} [previous_exception] the previous exception, if any; only in developer mode
+ * @returns {void}
  */
 
 /**
@@ -103,6 +105,7 @@ var api = {
  * @param {?APISuccessCB} successCallback
  * @param {?APIProgressCB} responseProgressCB
  * @param {?APIErrorCB} errorCallback
+ * @returns {void}
  */
 api.post = function (fn, params) {
 	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -161,6 +164,7 @@ api.post = function (fn, params) {
  *
  * @param {string} url
  * @param {APISuccessCB} callback
+ * @returns {void}
  */
 api.getCSS = function (url, callback) {
 	loadingBar.show();
@@ -195,23 +199,51 @@ api.getCSS = function (url, callback) {
 
 var csrf = {};
 
+/**
+ * @param {jQuery.Event} event
+ * @param {XMLHttpRequest} jqxhr
+ * @param {Object} settings
+ * @returns {void}
+ */
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
+	// TODO: Instead of sending the header everytime except to the update path on GIT, it should *only* be sent to the API backend; maybe make `setRequestHeader` simply be part of `api.post`
 	if (settings.url !== lychee.updatePath) {
 		jqxhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
 	}
 };
 
+/**
+ * @param {string} s
+ * @returns {string}
+ */
 csrf.escape = function (s) {
 	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
 };
 
+/**
+ * @param {string} name
+ * @returns {?string}
+ */
 csrf.getCookie = function (name) {
+	// TODO @ildyria: The `match` below strikes me as overly complicated and completely unnecessary: a) We exactly know what cookie we are looking for ('X-XSRF-TOKEN'); why do we pass it through the `escape` function? b) The first capturing group doesn't make any sense to me: it captures the beginning of the string (^) or a preceding semi-colon (;) followed by an arbitrary number of spaces. So far so good. But the `?:` doesn't make any sense to me.
 	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
 	var match = document.cookie.match(RegExp("(?:^|;\\s*)" + csrf.escape(name) + "=([^;^%]*)"));
 	return match ? match[1] : null;
+	// TODO: Consider of the following code isn't much easier to understand.
+	// (See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_2_get_a_sample_cookie_named_test2)
+	//
+	//    cookieValue = document.cookie
+	//      .split(';')
+	//      .find(row => /^\s*X-XSRF-TOKEN\s*=/.test(row))
+	//      .split('=')[1]
+	//      .trim();
 };
 
+/**
+ * @returns {void}
+ */
 csrf.bind = function () {
+	// TODO: Instead of sending the CSRF cookie for any AJAX request, we probably should simply make this part of our `api.post` method and *only* send the token to the back-end
 	$(document).on("ajaxSend", csrf.addLaravelCSRF);
 };
 
@@ -221,12 +253,25 @@ csrf.bind = function () {
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
+// TODO: Find out and explain: Here we declare a global (empty) object `lychee`; we also declare one in `./main/lychee.js`. Why don't they interfere with each other? How do we end up with **one** `lychee` object which contains the properties and methods of both objects?!
 var lychee = {};
 
 lychee.content = $(".content");
 lychee.imageview = $("#imageview");
 lychee.mapview = $("#mapview");
 
+/**
+ * DON'T USE THIS METHOD.
+ *
+ * TODO: Find all invocations of this method and nuke them.
+ *
+ * This method does not cover all potentially dangerous characters and this
+ * method should not be required on the first place.
+ * jQuery and even native JS has better methods for this in the year 2022!
+ *
+ * @param {string} [html=""]
+ * @returns {string}
+ */
 lychee.escapeHTML = function () {
 	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
@@ -239,6 +284,20 @@ lychee.escapeHTML = function () {
 	return html;
 };
 
+/**
+ * Creates a HTML string with some fancy variable substitution.
+ *
+ * Actually, this method should not be required in the year 2022.
+ * jQuery and even native JS should probably provide a suitable alternative.
+ * But this method is used so ubiquitous that it might be difficult to get
+ * rid of it.
+ *
+ * TODO: Try it nonetheless.
+ *
+ * @param literalSections
+ * @param substs
+ * @returns {string}
+ */
 lychee.html = function (literalSections) {
 	// Use raw literal sections: we don’t want
 	// backslashes (\n etc.) to be interpreted
@@ -273,6 +332,9 @@ lychee.html = function (literalSections) {
 	return result;
 };
 
+/**
+ * @returns {string} - either `"touchend"` or `"click"`
+ */
 lychee.getEventName = function () {
 	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && "ontouchend" in document.documentElement;
 	return touchendSupport === true ? "touchend" : "click";
@@ -280,10 +342,17 @@ lychee.getEventName = function () {
 
 // Sub-implementation of photo -------------------------------------------------------------- //
 
+// TODO: Find out and explain: Here we declare a global object `photo`; we also declare one in `./main/photo.js`. Why don't they interfere with each other? How do we end up with **one** `lychee` object which contains the properties and methods of both objects?!
 var photo = {
+	/** @type {?Photo} */
 	json: null
 };
 
+/**
+ * @param {string} photoID
+ * @param {string} service - one out of `"twitter"`, `"facebook"`, `"mail"` or `"dropbox"`
+ * @returns {void}
+ */
 photo.share = function (photoID, service) {
 	var url = location.toString();
 
@@ -300,36 +369,42 @@ photo.share = function (photoID, service) {
 	}
 };
 
+/**
+ * @returns {string}
+ */
 photo.getDirectLink = function () {
 	return $("#imageview img").attr("src").replace(/"/g, "").replace(/url\(|\)$/gi, "");
 };
 
+/**
+ * @returns {void}
+ */
 photo.show = function () {
 	$("#imageview").removeClass("full");
 	header.dom().removeClass("header--hidden");
-
-	return true;
 };
 
+/**
+ * @returns {void}
+ */
 photo.hide = function () {
 	if (visible.photo() && !visible.sidebar() && !visible.contextMenu()) {
 		$("#imageview").addClass("full");
 		header.dom().addClass("header--hidden");
-
-		return true;
 	}
-
-	return false;
 };
 
+/**
+ * @returns {void}
+ */
 photo.onresize = function () {
 	// Copy of view.photo.onresize
 	if (photo.json.size_variants.medium === null || photo.json.size_variants.medium2x === null) return;
 
 	var imgWidth = photo.json.size_variants.medium.width;
 	var imgHeight = photo.json.size_variants.medium.height;
-	var containerWidth = parseFloat($("#imageview").width(), 10);
-	var containerHeight = parseFloat($("#imageview").height(), 10);
+	var containerWidth = parseFloat($("#imageview").width());
+	var containerHeight = parseFloat($("#imageview").height());
 
 	var width = imgWidth < containerWidth ? imgWidth : containerWidth;
 	var height = width * imgHeight / imgWidth;
@@ -344,6 +419,11 @@ photo.onresize = function () {
 
 var contextMenu = {};
 
+/**
+ * @param {string} photoID
+ * @param {jQuery.Event} e
+ * @returns {void}
+ */
 contextMenu.sharePhoto = function (photoID, e) {
 	var iconClass = "ionicons";
 
@@ -367,6 +447,9 @@ var loadingBar = {
 	hide: function hide() {}
 };
 
+/**
+ * @type {jQuery}
+ */
 var imageview = $("#imageview");
 
 $(document).ready(function () {
@@ -376,11 +459,12 @@ $(document).ready(function () {
 	// Image View
 	$(window).on("resize", photo.onresize);
 
+	// TODO @ildyria: Why don't we simply use (https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get#example)? Why do we need an home-brewed method which on top strikes me as overly complicated?
 	// Save ID of photo
 	var photoID = gup("p");
 
 	// Set API error handler
-	api.onError = error;
+	api.onError = handleAPIError;
 
 	// Share
 	header.dom("#button_share").on("click", function (e) {
@@ -396,22 +480,30 @@ $(document).ready(function () {
 	loadPhotoInfo(photoID);
 });
 
+/**
+ * TODO: Why is this a global function?
+ * TODO: Why do we repeat code here which is a merge of code mostly in `photo.js` and some other files?
+ * @param {string} photoID
+ */
 var loadPhotoInfo = function loadPhotoInfo(photoID) {
 	var params = {
-		photoID: photoID,
-		password: ""
+		photoID: photoID
 	};
 
-	api.post("Photo::get", params, function (data) {
+	api.post("Photo::get", params,
+	/** @param {Photo} data */
+	function (data) {
 		photo.json = data;
 
 		// Set title
+		// TODO: Don't modify the original JSON object, replacing an empty title with a human-friendly placeholder should happen on the GUI layer.
+		// TODO: If at all, why don't we use `lychee.locale`?
 		if (!data.title) data.title = "Untitled";
 		document.title = "Lychee - " + data.title;
 		header.dom(".header__title").html(lychee.escapeHTML(data.title));
 
 		// Render HTML
-		imageview.html(build.imageview(data, true).html);
+		imageview.html(build.imageview(data, true, false).html);
 		imageview.find(".arrow_wrapper").remove();
 		imageview.addClass("fadeIn").show();
 		photo.onresize();
@@ -439,9 +531,9 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
  * @param {XMLHttpRequest} jqXHR
  * @param {Object} params the original JSON parameters of the request
  * @param {?LycheeException} lycheeException the Lychee Exception
- * @return {boolean}
+ * @returns {boolean}
  */
-var error = function error(jqXHR, params, lycheeException) {
+var handleAPIError = function handleAPIError(jqXHR, params, lycheeException) {
 	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
 	loadingBar.show("error", msg);
 	console.error("The server returned an error response", {
@@ -452,53 +544,63 @@ var error = function error(jqXHR, params, lycheeException) {
 	return true;
 };
 
+//noinspection HtmlUnknownTarget
+
 /**
  * @description This module is used to generate HTML-Code.
  */
 
 var build = {};
 
+/**
+ * @param {string} icon
+ * @param {string} [classes=""]
+ *
+ * @returns {string}
+ */
 build.iconic = function (icon) {
 	var classes = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 
-	var html = "";
-
-	html += lychee.html(_templateObject, classes, icon);
-
-	return html;
+	return lychee.html(_templateObject, classes, icon);
 };
 
+/**
+ * @param {string} title
+ * @returns {string}
+ */
 build.divider = function (title) {
-	var html = "";
-
-	html += lychee.html(_templateObject2, title);
-
-	return html;
+	return lychee.html(_templateObject2, title);
 };
 
+/**
+ * @param {string} id
+ * @returns {string}
+ */
 build.editIcon = function (id) {
-	var html = "";
-
-	html += lychee.html(_templateObject3, id, build.iconic("pencil"));
-
-	return html;
+	return lychee.html(_templateObject3, id, build.iconic("pencil"));
 };
 
+/**
+ * @param {number} top
+ * @param {number} left
+ * @returns {string}
+ */
 build.multiselect = function (top, left) {
 	return lychee.html(_templateObject4, top, left);
 };
 
-// two additional images that are barely visible seems a bit overkill - use same image 3 times
-// if this simplification comes to pass data.types, data.thumbs and data.thumbs2x no longer need to be arrays
+/**
+ * Returns HTML for the thumb of an album.
+ *
+ * @param {(Album|TagAlbum)} data
+ *
+ * @returns {string}
+ */
 build.getAlbumThumb = function (data) {
-	var isVideo = void 0;
-	var isRaw = void 0;
-	var thumb = void 0;
-
-	isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
-	isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
-	thumb = data.thumb.thumb;
-	var thumb2x = "";
+	var isVideo = data.thumb.type && data.thumb.type.indexOf("video") > -1;
+	var isRaw = data.thumb.type && data.thumb.type.indexOf("raw") > -1;
+	var thumb = data.thumb.thumb;
+	var thumb2x = data.thumb.thumb2x;
 
 	if (thumb === "uploads/thumb/" && isVideo) {
 		return "<span class=\"thumbimg\"><img src='img/play-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
@@ -507,11 +609,15 @@ build.getAlbumThumb = function (data) {
 		return "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 	}
 
-	thumb2x = data.thumb.thumb2x;
-
 	return "<span class=\"thumbimg" + (isVideo ? " video" : "") + "\"><img class='lazyload' src='img/placeholder.png' data-src='" + thumb + "' " + (thumb2x !== null ? "data-srcset='" + thumb2x + " 2x'" : "") + " alt='Photo thumbnail' data-overlay='false' draggable='false'></span>";
 };
 
+/**
+ * @param {(Album|TagAlbum|SmartAlbum)} data
+ * @param {boolean}                     disabled
+ *
+ * @returns {string} HTML for the album
+ */
 build.album = function (data) {
 	var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
@@ -542,6 +648,7 @@ build.album = function (data) {
 		case "oldstyle":
 		default:
 			if (lychee.sortingAlbums !== "" && data.min_taken_at && data.max_taken_at) {
+				// TODO: Let the backend return `sortingAlbums` as a proper object with separate properties for column and direction (not as a string)
 				var sortingAlbums = lychee.sortingAlbums.replace("ORDER BY ", "").split(" ");
 				if (sortingAlbums[0] === "max_taken_at" || sortingAlbums[0] === "min_taken_at") {
 					if (formattedMinTs !== "" && formattedMaxTs !== "") {
@@ -559,10 +666,10 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject6, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_recent ? "badge--visible badge--list" : "", build.iconic("clock"), data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.is_unsorted ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject6, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.RECENT ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
-	if (data.albums && data.albums.length > 0 || data.hasOwnProperty("has_albums") && data.has_albums === true) {
+	if (data.albums && data.albums.length > 0 || data.has_albums) {
 		html += lychee.html(_templateObject7, build.iconic("layers"));
 	}
 
@@ -571,6 +678,12 @@ build.album = function (data) {
 	return html;
 };
 
+/**
+ * @param {Photo}   data
+ * @param {boolean} disabled
+ *
+ * @returns {string} HTML for the photo
+ */
 build.photo = function (data) {
 	var disabled = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
@@ -583,6 +696,10 @@ build.photo = function (data) {
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
 	var isLivePhoto = data.live_photo_url !== "" && data.live_photo_url !== null;
 
+	// My IDE complains that `thumb` is always non-null and therefore the
+	// first branch of the condition is never taken.
+	// I am willing to agree.
+	// TODO: Revise this code, whether the first branch is really needed.
 	if (data.size_variants.thumb === null) {
 		if (isLivePhoto) {
 			thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
@@ -592,7 +709,7 @@ build.photo = function (data) {
 		} else if (isRaw) {
 			thumbnail = "<span class=\"thumbimg\"><img src='img/placeholder.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
 		}
-	} else if (lychee.layout === "0") {
+	} else if (lychee.layout === 0) {
 		if (data.size_variants.thumb2x !== null) {
 			thumb2x = data.size_variants.thumb2x.url;
 		}
@@ -659,6 +776,13 @@ build.photo = function (data) {
 	return html;
 };
 
+/**
+ * @param {Photo} data
+ * @param {string} overlay_type
+ * @param {boolean} [next=false]
+ *
+ * @returns {string}
+ */
 build.check_overlay_type = function (data, overlay_type) {
 	var next = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
@@ -676,6 +800,10 @@ build.check_overlay_type = function (data, overlay_type) {
 	}
 };
 
+/**
+ * @param {Photo} data
+ * @returns {string}
+ */
 build.overlay_image = function (data) {
 	var overlay = "";
 	switch (build.check_overlay_type(data, lychee.image_overlay_type)) {
@@ -711,14 +839,20 @@ build.overlay_image = function (data) {
 	return lychee.html(_templateObject12, data.title) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
 };
 
-build.imageview = function (data, visibleControls, autoplay) {
+/**
+ * @param {Photo} data
+ * @param {boolean} areControlsVisible
+ * @param {boolean} autoplay
+ * @returns {{thumb: string, html: string}}
+ */
+build.imageview = function (data, areControlsVisible, autoplay) {
 	var html = "";
 	var thumb = "";
 
 	if (data.type.indexOf("video") > -1) {
-		html += lychee.html(_templateObject13, visibleControls === true ? "" : "full", autoplay ? "autoplay" : "", tabindex.get_next_tab_index(), data.size_variants.original.url);
+		html += lychee.html(_templateObject13, areControlsVisible ? "" : "full", autoplay ? "autoplay" : "", tabindex.get_next_tab_index(), data.size_variants.original.url);
 	} else if (data.type.indexOf("raw") > -1 && data.size_variants.medium === null) {
-		html += lychee.html(_templateObject14, visibleControls === true ? "" : "full", tabindex.get_next_tab_index());
+		html += lychee.html(_templateObject14, areControlsVisible ? "" : "full", tabindex.get_next_tab_index());
 	} else {
 		var img = "";
 
@@ -727,7 +861,7 @@ build.imageview = function (data, visibleControls, autoplay) {
 
 			// See if we have the thumbnail loaded...
 			$(".photo").each(function () {
-				if ($(this).attr("data-id") && $(this).attr("data-id") == data.id) {
+				if ($(this).attr("data-id") && $(this).attr("data-id") === data.id) {
 					var thumbimg = $(this).find("img");
 					if (thumbimg.length > 0) {
 						thumb = thumbimg[0].currentSrc ? thumbimg[0].currentSrc : thumbimg[0].src;
@@ -742,9 +876,9 @@ build.imageview = function (data, visibleControls, autoplay) {
 				if (data.size_variants.medium2x !== null) {
 					medium = "srcset='" + data.size_variants.medium.url + " " + data.size_variants.medium.width + "w, " + data.size_variants.medium2x.url + " " + data.size_variants.medium2x.width + "w'";
 				}
-				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.size_variants.medium.url + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
+				img = "<img id='image' class='" + (areControlsVisible ? "" : "full") + "' src='" + data.size_variants.medium.url + "' " + medium + ("  draggable='false' alt='medium' data-tabindex='" + tabindex.get_next_tab_index() + "'>");
 			} else {
-				img = "<img id='image' class='" + (visibleControls === true ? "" : "full") + "' src='" + data.size_variants.original.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
+				img = "<img id='image' class='" + (areControlsVisible ? "" : "full") + "' src='" + data.size_variants.original.url + "' draggable='false' alt='big' data-tabindex='" + tabindex.get_next_tab_index() + "'>";
 			}
 		} else {
 			if (data.size_variants.medium !== null) {
@@ -766,12 +900,16 @@ build.imageview = function (data, visibleControls, autoplay) {
 	return { html: html, thumb: thumb };
 };
 
-build.no_content = function (typ) {
+/**
+ * @param {string} type - either `"magnifying-glass"`, `"eye"`, `"cog"` or `"question-marks"`
+ * @returns {string}
+ */
+build.no_content = function (type) {
 	var html = "";
 
-	html += lychee.html(_templateObject16, build.iconic(typ));
+	html += lychee.html(_templateObject16, build.iconic(type));
 
-	switch (typ) {
+	switch (type) {
 		case "magnifying-glass":
 			html += lychee.html(_templateObject17, lychee.locale["VIEW_NO_RESULT"]);
 			break;
@@ -794,7 +932,7 @@ build.no_content = function (typ) {
 /**
  * @param {string}                                           title the title of the dialog
  * @param {(FileList|File[]|DropboxFile[]|{name: string}[])} files a list of file entries to be shown in the dialog
- * @return {string}                                                the HTML fragment for the dialog
+ * @returns {string}                                                the HTML fragment for the dialog
  */
 build.uploadModal = function (title, files) {
 	var html = "";
@@ -818,6 +956,12 @@ build.uploadModal = function (title, files) {
 	return html;
 };
 
+/**
+ * Builds the HTML snippet for a row in the upload dialog.
+ *
+ * @param {string} name
+ * @returns {string}
+ */
 build.uploadNewFile = function (name) {
 	if (name.length > 40) {
 		name = name.substr(0, 17) + "..." + name.substr(name.length - 20, 20);
@@ -826,23 +970,22 @@ build.uploadNewFile = function (name) {
 	return lychee.html(_templateObject20, name);
 };
 
+/**
+ * @param {?string} tags
+ * @returns {string}
+ */
 build.tags = function (tags) {
 	var html = "";
-	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
+	var editable = album.isUploadable();
 
-	// Search is enabled if logged in (not publicMode) or public seach is enabled
-	var searchable = lychee.publicMode === false || lychee.public_search === true;
+	// Search is enabled if logged in (not publicMode) or public search is enabled
+	var searchable = !lychee.publicMode || lychee.public_search;
 
 	// build class_string for tag
-	var a_class = "tag";
-	if (searchable) {
-		a_class = a_class + " search";
-	}
+	var a_class = searchable ? "tag search" : "tag";
 
-	if (typeof tags === "string" && tags !== "") {
-		tags = tags.split(",");
-
-		tags.forEach(function (tag, index) {
+	if (tags !== null && tags !== "") {
+		tags.split(",").forEach(function (tag, index) {
 			if (editable) {
 				html += lychee.html(_templateObject21, a_class, tag, index, build.iconic("x"));
 			} else {
@@ -856,12 +999,18 @@ build.tags = function (tags) {
 	return html;
 };
 
+/**
+ * @param {User} user
+ * @returns {string}
+ */
 build.user = function (user) {
-	var html = lychee.html(_templateObject24, user.id, user.id, user.username, user.id, user.id);
-
-	return html;
+	return lychee.html(_templateObject24, user.id, user.id, user.username, user.id, user.id);
 };
 
+/**
+ * @param {WebAuthnCredential} credential
+ * @returns {string}
+ */
 build.u2f = function (credential) {
 	return lychee.html(_templateObject25, credential.id, credential.id, credential.id.slice(0, 30), credential.id);
 };
@@ -870,15 +1019,26 @@ build.u2f = function (credential) {
  * @description This module takes care of the header.
  */
 
+/**
+ * @namespace
+ * @property {jQuery} _dom
+ */
 var header = {
 	_dom: $(".header")
 };
 
+/**
+ * @param {?string} [selector=null]
+ * @returns {jQuery}
+ */
 header.dom = function (selector) {
 	if (selector == null || selector === "") return header._dom;
 	return header._dom.find(selector);
 };
 
+/**
+ * @returns {void}
+ */
 header.bind = function () {
 	// Event Name
 	var eventName = lychee.getEventName();
@@ -891,19 +1051,19 @@ header.bind = function () {
 		if (visible.photo()) contextMenu.photoTitle(album.getID(), photo.getID(), e);else contextMenu.albumTitle(album.getID(), e);
 	});
 
-	header.dom("#button_visibility").on(eventName, function (e) {
-		photo.setPublic(photo.getID(), e);
+	header.dom("#button_visibility").on(eventName, function () {
+		photo.setPublic(photo.getID());
 	});
 	header.dom("#button_share").on(eventName, function (e) {
 		contextMenu.sharePhoto(photo.getID(), e);
 	});
 
-	header.dom("#button_visibility_album").on(eventName, function (e) {
-		album.setPublic(album.getID(), e);
+	header.dom("#button_visibility_album").on(eventName, function () {
+		album.setPublic(album.getID());
 	});
 
-	header.dom("#button_sharing_album_users").on(eventName, function (e) {
-		album.shareUsers(album.getID(), e);
+	header.dom("#button_sharing_album_users").on(eventName, function () {
+		album.shareUsers(album.getID());
 	});
 
 	header.dom("#button_share_album").on(eventName, function (e) {
@@ -949,7 +1109,7 @@ header.bind = function () {
 	header.dom("#button_move_album").on(eventName, function (e) {
 		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParentID() != null);
 	});
-	header.dom("#button_nsfw_album").on(eventName, function (e) {
+	header.dom("#button_nsfw_album").on(eventName, function () {
 		album.setNSFW(album.getID());
 	});
 	header.dom("#button_move").on(eventName, function (e) {
@@ -995,7 +1155,7 @@ header.bind = function () {
 	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
 			lychee.goto("search/" + encodeURIComponent($(this).val()));
-		} else if (search.hash !== null) {
+		} else if (search.checksum !== null) {
 			search.reset();
 		}
 	});
@@ -1004,10 +1164,11 @@ header.bind = function () {
 	});
 
 	header.bind_back();
-
-	return true;
 };
 
+/**
+ * @returns {void}
+ */
 header.bind_back = function () {
 	// Event Name
 	var eventName = lychee.getEventName();
@@ -1021,6 +1182,9 @@ header.bind_back = function () {
 	});
 };
 
+/**
+ * @returns {void}
+ */
 header.show = function () {
 	lychee.imageview.removeClass("full");
 	header.dom().removeClass("header--hidden");
@@ -1028,16 +1192,19 @@ header.show = function () {
 	tabindex.restoreSettings(header.dom());
 
 	photo.updateSizeLivePhotoDuringAnimation();
-
-	return true;
 };
 
+/**
+ * @returns {void}
+ */
 header.hideIfLivePhotoNotPlaying = function () {
 	// Hides the header, if current live photo is not playing
-	if (photo.isLivePhotoPlaying() == true) return false;
-	return header.hide();
+	if (!photo.isLivePhotoPlaying()) header.hide();
 };
 
+/**
+ * @returns {void}
+ */
 header.hide = function () {
 	if (visible.photo() && !visible.sidebar() && !visible.contextMenu() && basicModal.visible() === false) {
 		tabindex.saveSettings(header.dom());
@@ -1047,13 +1214,13 @@ header.hide = function () {
 		header.dom().addClass("header--hidden");
 
 		photo.updateSizeLivePhotoDuringAnimation();
-
-		return true;
 	}
-
-	return false;
 };
 
+/**
+ * @param {string} [title="Untitled"]
+ * @returns {void}
+ */
 header.setTitle = function () {
 	var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "Untitled";
 
@@ -1061,10 +1228,14 @@ header.setTitle = function () {
 	var html = lychee.html(_templateObject26, title, build.iconic("caret-bottom"));
 
 	$title.html(html);
-
-	return true;
 };
 
+/**
+ *
+ * @param {string} mode either one out of `"public"`, `"albums"`, `"album"`,
+ *                      `"photo"`, `"map"` or `"config"`
+ * @returns {void}
+ */
 header.setMode = function (mode) {
 	if (mode === "albums" && lychee.publicMode === true) mode = "public";
 
@@ -1101,7 +1272,7 @@ header.setMode = function (mode) {
 			if (lychee.active_focus_on_page_load) {
 				$("#button_signin").focus();
 			}
-			return true;
+			return;
 
 		case "albums":
 			header.dom().removeClass("header--view");
@@ -1131,7 +1302,7 @@ header.setMode = function (mode) {
 				_e7.remove();
 			}
 
-			return true;
+			return;
 
 		case "album":
 			var albumID = album.getID();
@@ -1176,7 +1347,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e13);
 			}
 
-			if (albumID === "starred" || albumID === "public" || albumID === "recent") {
+			if (albumID === SmartAlbumID.STARRED || albumID === SmartAlbumID.PUBLIC || albumID === SmartAlbumID.RECENT) {
 				$("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
 				if (album.isUploadable()) {
 					$(".button_add, .header__divider", ".header__toolbar--album").show();
@@ -1186,7 +1357,7 @@ header.setMode = function (mode) {
 					tabindex.makeUnfocusable($(".button_add, .header__divider", ".header__toolbar--album"));
 				}
 				tabindex.makeUnfocusable($("#button_nsfw_album, #button_info_album, #button_trash_album, #button_visibility_album, #button_sharing_album_users, #button_move_album"));
-			} else if (albumID === "unsorted") {
+			} else if (albumID === SmartAlbumID.UNSORTED) {
 				$("#button_nsfw_album, #button_info_album, #button_visibility_album, #button_sharing_album_users, #button_move_album").hide();
 				$("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album").show();
 				tabindex.makeFocusable($("#button_trash_album, .button_add, .header__divider", ".header__toolbar--album"));
@@ -1256,7 +1427,7 @@ header.setMode = function (mode) {
 				_e20.remove();
 			}
 
-			return true;
+			return;
 
 		case "photo":
 			header.dom().addClass("header--view");
@@ -1337,7 +1508,7 @@ header.setMode = function (mode) {
 				_e34 = $("#button_rotate_ccwise", ".header__toolbar--photo");
 				_e34.remove();
 			}
-			return true;
+			return;
 		case "map":
 			header.dom().removeClass("header--view");
 			header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--config").removeClass("header__toolbar--visible");
@@ -1345,26 +1516,27 @@ header.setMode = function (mode) {
 
 			tabindex.makeFocusable(header.dom(".header__toolbar--map"));
 			tabindex.makeUnfocusable(header.dom(".header__toolbar--public, .header__toolbar--album, .header__toolbar--albums, .header__toolbar--photo, .header__toolbar--config"));
-			return true;
+			return;
 		case "config":
 			header.dom().addClass("header--view");
 			header.dom(".header__toolbar--public, .header__toolbar--albums, .header__toolbar--album, .header__toolbar--photo, .header__toolbar--map").removeClass("header__toolbar--visible");
 			header.dom(".header__toolbar--config").addClass("header__toolbar--visible");
-			return true;
+			return;
 	}
-
-	return false;
 };
 
-// Note that the pull-down menu is now enabled not only for editable
-// items but for all of public/albums/album/photo views, so 'editable' is a
-// bit of a misnomer at this point...
+/**
+ * Note that the pull-down menu is now enabled not only for editable
+ * items but for all of public/albums/album/photo views, so 'editable' is a
+ * bit of a misnomer at this point...
+ *
+ * @param {boolean} editable
+ * @returns {void}
+ */
 header.setEditable = function (editable) {
 	var $title = header.dom(".header__title");
 
 	if (editable) $title.addClass("header__title--editable");else $title.removeClass("header__title--editable");
-
-	return true;
 };
 
 /**
@@ -1373,62 +1545,62 @@ header.setEditable = function (editable) {
 
 var visible = {};
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.albums = function () {
 	return !!header.dom(".header__toolbar--public").hasClass("header__toolbar--visible") || !!header.dom(".header__toolbar--albums").hasClass("header__toolbar--visible");
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.album = function () {
 	return !!header.dom(".header__toolbar--album").hasClass("header__toolbar--visible");
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.photo = function () {
 	return $("#imageview.fadeIn").length > 0;
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.mapview = function () {
 	return $("#mapview.fadeIn").length > 0;
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.config = function () {
 	return !!header.dom(".header__toolbar--config").hasClass("header__toolbar--visible");
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.search = function () {
-	return search.hash != null;
+	return search.checksum !== null;
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.sidebar = function () {
 	return !!sidebar.dom().hasClass("active");
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.sidebarbutton = function () {
 	return visible.photo() || visible.album() && $("#button_info_album:visible").length > 0;
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.header = function () {
 	return !header.dom().hasClass("header--hidden");
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.contextMenu = function () {
 	return basicContext.visible();
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.multiselect = function () {
 	return $("#multiselect").length > 0;
 };
 
-/** @return {boolean} */
+/** @returns {boolean} */
 visible.leftMenu = function () {
 	return !!leftMenu.dom().hasClass("leftMenu__visible");
 };
@@ -1437,7 +1609,11 @@ visible.leftMenu = function () {
  * @description This module takes care of the sidebar.
  */
 
+/**
+ * @namespace
+ */
 var sidebar = {
+	/** @type {jQuery} */
 	_dom: $(".sidebar"),
 	types: {
 		DEFAULT: 0,
@@ -1446,19 +1622,24 @@ var sidebar = {
 	createStructure: {}
 };
 
+/**
+ * @param {?string} [selector=null]
+ * @returns {jQuery}
+ */
 sidebar.dom = function (selector) {
 	if (selector == null || selector === "") return sidebar._dom;
-
 	return sidebar._dom.find(selector);
 };
 
+/**
+ * This function should be called after building and appending
+ * the sidebars content to the DOM.
+ * This function can be called multiple times, therefore
+ * event handlers should be removed before binding a new one.
+ *
+ * @returns {void}
+ */
 sidebar.bind = function () {
-	// This function should be called after building and appending
-	// the sidebars content to the DOM.
-	// This function can be called multiple times, therefore
-	// event handlers should be removed before binding a new one.
-
-	// Event Name
 	var eventName = lychee.getEventName();
 
 	sidebar.dom("#edit_title").off(eventName).on(eventName, function () {
@@ -1496,27 +1677,38 @@ sidebar.bind = function () {
 	sidebar.dom(".attr_location").off(eventName).on(eventName, function () {
 		sidebar.triggerSearch($(this).text());
 	});
-
-	return true;
 };
 
+/**
+ * @param {string} search_string
+ * @returns {void}
+ */
 sidebar.triggerSearch = function (search_string) {
-	// If public search is diabled -> do nothing
-	if (lychee.publicMode === true && !lychee.public_search) {
+	// If public search is disabled -> do nothing
+	if (lychee.publicMode && !lychee.public_search) {
 		// Do not display an error -> just do nothing to not confuse the user
 		return;
 	}
 
-	search.hash = null;
+	search.checksum = null;
 	// We're either logged in or public search is allowed
 	lychee.goto("search/" + encodeURIComponent(search_string));
 };
 
+/**
+ * @returns {boolean}
+ */
 sidebar.keepSidebarVisible = function () {
 	var v = sessionStorage.getItem("keepSidebarVisible");
 	return v !== null ? v === "true" : false;
 };
 
+/**
+ * @param {boolean} is_user_initiated - indicates if the user requested to
+ *                                      toggle and hence the new state shall
+ *                                      be saved in session storage
+ * @returns {void}
+ */
 sidebar.toggle = function (is_user_initiated) {
 	if (visible.sidebar() || visible.sidebarbutton()) {
 		header.dom(".button--info").toggleClass("active");
@@ -1526,57 +1718,93 @@ sidebar.toggle = function (is_user_initiated) {
 		sidebar.dom().toggleClass("active");
 		photo.updateSizeLivePhotoDuringAnimation();
 
-		if (is_user_initiated) sessionStorage.setItem("keepSidebarVisible", visible.sidebar());
-
-		return true;
+		if (is_user_initiated) sessionStorage.setItem("keepSidebarVisible", visible.sidebar() ? "true" : "false");
 	}
-
-	return false;
 };
 
+/**
+ * Attributes/Values inside the sidebar are selectable by default.
+ * Selection needs to be deactivated to prevent an unwanted selection
+ * while using multiselect.
+ *
+ * @param {boolean} [selectable=true]
+ * @returns {void}
+ */
 sidebar.setSelectable = function () {
 	var selectable = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
 
-	// Attributes/Values inside the sidebar are selectable by default.
-	// Selection needs to be deactivated to prevent an unwanted selection
-	// while using multiselect.
-
-	if (selectable === true) sidebar.dom().removeClass("notSelectable");else sidebar.dom().addClass("notSelectable");
+	if (selectable) sidebar.dom().removeClass("notSelectable");else sidebar.dom().addClass("notSelectable");
 };
 
+/**
+ * @param {string} attr - selector of attribute without the `attr_` prefix
+ * @param {?string} value - a `null` value is replaced by the empty string
+ * @param {boolean} [dangerouslySetInnerHTML=false]
+ *
+ * @returns {void}
+ */
 sidebar.changeAttr = function (attr) {
 	var value = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "";
 	var dangerouslySetInnerHTML = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-	if (attr == null || attr === "") return false;
+	if (!attr) return;
+	if (!value) value = "";
 
-	// Set a default for the value
-	if (value === null) value = "";
-
+	// TODO: Don't use our home-brewed `escapeHTML` method; use `jQuery#text` instead
 	// Escape value
-	if (dangerouslySetInnerHTML === false) value = lychee.escapeHTML(value);
+	if (!dangerouslySetInnerHTML) value = lychee.escapeHTML(value);
 
-	// Set new value
 	sidebar.dom(".attr_" + attr).html(value);
-
-	return true;
 };
 
+/**
+ * @param {string} attr - selector of attribute without the `attr_` prefix
+ * @returns {void}
+ */
 sidebar.hideAttr = function (attr) {
 	sidebar.dom(".attr_" + attr).closest("tr").hide();
 };
 
+/**
+ * Converts integer seconds into "hours:minutes:seconds".
+ *
+ * TODO: Consider to make this method part of `lychee.locale`.
+ *
+ * @param {(number|string)} d
+ * @returns {string}
+ */
 sidebar.secondsToHMS = function (d) {
 	d = Number(d);
 	var h = Math.floor(d / 3600);
 	var m = Math.floor(d % 3600 / 60);
 	var s = Math.floor(d % 60);
 
-	return (h > 0 ? h.toString() + "h" : "") + (m > 0 ? m.toString() + "m" : "") + (s > 0 || h == 0 && m == 0 ? s.toString() + "s" : "");
+	return (h > 0 ? h.toString() + "h" : "") + (m > 0 ? m.toString() + "m" : "") + (s > 0 || h === 0 && m === 0 ? s.toString() + "s" : "");
 };
 
+/**
+ * @typedef Section
+ *
+ * @property {string}       title
+ * @property {string}       type
+ * @property {SectionRow[]} rows
+ */
+
+/**
+ * @typedef SectionRow
+ *
+ * @property {string}            title
+ * @property {string}            kind
+ * @property {(string|string[])} value
+ * @property {boolean}           [editable]
+ */
+
+/**
+ * @param {?Photo} data
+ * @returns {Section[]}
+ */
 sidebar.createStructure.photo = function (data) {
-	if (data == null || data === "") return false;
+	if (!data) return [];
 
 	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
 	var exifHash = data.taken_at + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
@@ -1643,17 +1871,19 @@ sidebar.createStructure.photo = function (data) {
 		// We overload the database, storing duration (in full seconds) in
 		// "aperture" and frame rate (floating point with three digits after
 		// the decimal point) in "focal".
-		if (data.aperture != "") {
+		if (data.aperture) {
 			structure.image.rows.push({ title: lychee.locale["PHOTO_DURATION"], kind: "duration", value: sidebar.secondsToHMS(data.aperture) });
 		}
-		if (data.focal != "") {
+		if (data.focal) {
 			structure.image.rows.push({ title: lychee.locale["PHOTO_FPS"], kind: "fps", value: data.focal + " fps" });
 		}
 	}
 
 	// Always create tags section - behaviour for editing
-	//tags handled when contructing the html code for tags
+	// tags handled when constructing the html code for tags
 
+	// TODO: IDE warns, that `value` is not property and `rows` is missing; the tags should actually be stored in a row for consistency
+	// TODO: Consider to NOT call `build.tags` here, but simply pass the plain JSON. `build.tags` should be called in `sidebar.render` below
 	structure.tags = {
 		title: lychee.locale["PHOTO_TAGS"],
 		type: sidebar.types.TAGS,
@@ -1684,7 +1914,7 @@ sidebar.createStructure.photo = function (data) {
 		rows: [{ title: lychee.locale["PHOTO_LICENSE"], kind: "license", value: license, editable: editable }]
 	};
 
-	if (locationHash !== "" && locationHash !== 0) {
+	if (locationHash) {
 		structure.location = {
 			title: lychee.locale["PHOTO_LOCATION"],
 			type: sidebar.types.DEFAULT,
@@ -1701,8 +1931,16 @@ sidebar.createStructure.photo = function (data) {
 			{
 				title: lychee.locale["PHOTO_ALTITUDE"],
 				kind: "altitude",
-				value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + "m" : ""
-			}, { title: lychee.locale["PHOTO_LOCATION"], kind: "location", value: data.location ? data.location : "" }]
+				value: data.altitude ? (Math.round(data.altitude * 10) / 10).toString() + "m" : ""
+			}, {
+				title: lychee.locale["PHOTO_LOCATION"],
+				kind: "location",
+				// Explode location string into an array to keep street, city etc. separate
+				// TODO: We should consider to keep the components apart on the server-side and send an structured object to the front-end.
+				value: data.location ? data.location.split(",").map(function (item) {
+					return item.trim();
+				}) : ""
+			}]
 		};
 		if (data.img_direction) {
 			// No point in display sub-degree precision.
@@ -1726,10 +1964,12 @@ sidebar.createStructure.photo = function (data) {
 	return structure_ret;
 };
 
-sidebar.createStructure.album = function (album) {
-	var data = album.json;
-
-	if (data == null || data === "") return false;
+/**
+ * @param {(Album|TagAlbum)} data
+ * @returns {Section[]}
+ */
+sidebar.createStructure.album = function (data) {
+	if (!data) return [];
 
 	var editable = album.isUploadable();
 	var structure = {};
@@ -1805,7 +2045,7 @@ sidebar.createStructure.album = function (album) {
 		rows: [{ title: lychee.locale["ALBUM_PUBLIC"], kind: "public", value: isPublic }, { title: lychee.locale["ALBUM_HIDDEN"], kind: "hidden", value: requiresLink }, { title: lychee.locale["ALBUM_DOWNLOADABLE"], kind: "downloadable", value: isDownloadable }, { title: lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], kind: "share_button_visible", value: isShareButtonVisible }, { title: lychee.locale["ALBUM_PASSWORD"], kind: "password", value: hasPassword }]
 	};
 
-	if (data.owner_name != null) {
+	if (data.owner_name) {
 		structure.share.rows.push({ title: lychee.locale["ALBUM_OWNER"], kind: "owner", value: data.owner_name });
 	}
 
@@ -1824,13 +2064,15 @@ sidebar.createStructure.album = function (album) {
 	return structure_ret;
 };
 
+/**
+ * @param {Section[]} structure
+ * @returns {boolean} - true if the passed structure contains a "location" section
+ */
 sidebar.has_location = function (structure) {
-	if (structure == null || structure === "" || structure === false) return false;
-
 	var _has_location = false;
 
 	structure.forEach(function (section) {
-		if (section.title == lychee.locale["PHOTO_LOCATION"]) {
+		if (section.title === lychee.locale["PHOTO_LOCATION"]) {
 			_has_location = true;
 		}
 	});
@@ -1838,42 +2080,33 @@ sidebar.has_location = function (structure) {
 	return _has_location;
 };
 
+/**
+ * @param {Section[]} structure
+ * @returns {string} - HTML
+ */
 sidebar.render = function (structure) {
-	if (structure == null || structure === "" || structure === false) return false;
-
-	var html = "";
-
+	/**
+  * @param {Section} section
+  * @returns {string}
+  */
 	var renderDefault = function renderDefault(section) {
-		var _html = "";
+		var _html = "\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>" + section.title + "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t ";
 
-		_html += "\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>" + section.title + "</h1>\n\t\t\t\t </div>\n\t\t\t\t <table>\n\t\t\t\t ";
-
-		if (section.title == lychee.locale["PHOTO_LOCATION"]) {
-			var _has_latitude = false;
-			var _has_longitude = false;
-
-			section.rows.forEach(function (row, index, object) {
-				if (row.kind == "latitude" && row.value !== "") {
-					_has_latitude = true;
-				}
-
-				if (row.kind == "longitude" && row.value !== "") {
-					_has_longitude = true;
-				}
-
-				// Do not show location is not enabled
-				if (row.kind == "location" && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
-					object.splice(index, 1);
-				} else {
-					// Explode location string into an array to keep street, city etc separate
-					if (!(row.value === "" || row.value == null)) {
-						section.rows[index].value = row.value.split(",").map(function (item) {
-							return item.trim();
-						});
-					}
-				}
+		if (section.title === lychee.locale["PHOTO_LOCATION"]) {
+			var _has_latitude = section.rows.findIndex(function (row) {
+				return row.kind === "latitude" && row.value;
+			}) !== -1;
+			var _has_longitude = section.rows.findIndex(function (row) {
+				return row.kind === "longitude" && row.value;
+			}) !== -1;
+			var idxLocation = section.rows.findIndex(function (row) {
+				return row.kind === "location";
 			});
-
+			// Do not show location is not enabled
+			if (idxLocation !== -1 && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
+				section.rows.splice(idxLocation, 1);
+			}
+			// Show map if we have coordinates
 			if (_has_latitude && _has_longitude && lychee.map_display) {
 				_html += "\n\t\t\t\t\t\t <div id=\"leaflet_map_single_photo\"></div>\n\t\t\t\t\t\t ";
 			}
@@ -1882,21 +2115,22 @@ sidebar.render = function (structure) {
 		section.rows.forEach(function (row) {
 			var value = row.value;
 
-			// show only Exif rows which have a value or if its editable
+			// show only rows which have a value or are editable
 			if (!(value === "" || value == null) || row.editable === true) {
 				// Wrap span-element around value for easier selecting on change
 				if (Array.isArray(row.value)) {
-					value = "";
-					row.value.forEach(function (v) {
-						if (v === "" || v == null) {
-							return;
-						}
+					value = row.value.reduce(
+					/**
+      * @param {string} prev
+      * @param {string} cur
+      */
+					function (prev, cur) {
 						// Add separator if needed
-						if (value !== "") {
-							value += lychee.html(_templateObject27, row.kind);
+						if (prev !== "") {
+							prev += lychee.html(_templateObject27, row.kind);
 						}
-						value += lychee.html(_templateObject28, row.kind, v);
-					});
+						return prev + lychee.html(_templateObject28, row.kind, cur);
+					}, "");
 				} else {
 					value = lychee.html(_templateObject29, row.kind, value);
 				}
@@ -1913,10 +2147,15 @@ sidebar.render = function (structure) {
 		return _html;
 	};
 
+	/**
+  * @param {Section} section
+  * @returns {string}
+  */
 	var renderTags = function renderTags(section) {
 		var _html = "";
 		var editable = "";
 
+		// TODO: IDE warns me that the `Section` has no properties `editable` nor `value`; cause of the problem is that the section `tags` is built differently, see above
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon("edit_tags");
 
@@ -1925,6 +2164,8 @@ sidebar.render = function (structure) {
 		return _html;
 	};
 
+	var html = "";
+
 	structure.forEach(function (section) {
 		if (section.type === sidebar.types.DEFAULT) html += renderDefault(section);else if (section.type === sidebar.types.TAGS) html += renderTags(section);
 	});
@@ -1932,22 +2173,29 @@ sidebar.render = function (structure) {
 	return html;
 };
 
+/**
+ * Converts a decimal degree into integer degree, minutes and seconds.
+ *
+ * TODO: Consider to make this method part of `lychee.locale`.
+ *
+ * @param {number}  decimal
+ * @param {boolean} type    - indicates if the passed decimal indicates a
+ *                            latitude (`true`) or a longitude (`false`)
+ * @returns {string}
+ */
 function DecimalToDegreeMinutesSeconds(decimal, type) {
+	var d = Math.abs(decimal);
 	var degrees = 0;
 	var minutes = 0;
 	var seconds = 0;
 	var direction = void 0;
 
-	//decimal must be integer or float no larger than 180;
-	//type must be Boolean
-	if (Math.abs(decimal) > 180 || typeof type !== "boolean") {
-		return false;
+	// absolute value of decimal must be smaller than 180;
+	if (d > 180) {
+		return "";
 	}
 
-	//inputs OK, proceed
-	//type is latitude when true, longitude when false
-
-	//set direction; north assumed
+	// set direction; north assumed
 	if (type && decimal < 0) {
 		direction = "S";
 	} else if (!type && decimal < 0) {
@@ -1957,9 +2205,6 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
 	} else {
 		direction = "N";
 	}
-
-	//get absolute value of decimal
-	var d = Math.abs(decimal);
 
 	//get degrees
 	degrees = Math.floor(d);
@@ -1980,23 +2225,44 @@ function DecimalToDegreeMinutesSeconds(decimal, type) {
  * @description This module takes care of the map view of a full album and its sub-albums.
  */
 
+/**
+ * @typedef MapProvider
+ * @property {string} layer - URL pattern for map tile
+ * @property {string} attribution - HTML with attribution
+ */
+
 var map_provider_layer_attribution = {
+	/**
+  * @type {MapProvider}
+  */
 	Wikimedia: {
 		layer: "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png",
 		attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'
 	},
+	/**
+  * @type {MapProvider}
+  */
 	"OpenStreetMap.org": {
 		layer: "https://{s}.tile.osm.org/{z}/{x}/{y}.png",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
+	/**
+  * @type {MapProvider}
+  */
 	"OpenStreetMap.de": {
 		layer: "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png ",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
+	/**
+  * @type {MapProvider}
+  */
 	"OpenStreetMap.fr": {
 		layer: "https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png ",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 	},
+	/**
+  * @type {MapProvider}
+  */
 	RRZE: {
 		layer: "https://{s}.osm.rrze.fau.de/osmhd/{z}/{x}/{y}.png",
 		attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -2004,24 +2270,53 @@ var map_provider_layer_attribution = {
 };
 
 var mapview = {
+	/** @type {?L.Map} */
 	map: null,
 	photoLayer: null,
+	/** @type {?number} */
 	min_lat: null,
+	/** @type {?number} */
 	min_lng: null,
+	/** @type {?number} */
 	max_lat: null,
+	/** @type {?number} */
 	max_lng: null,
+	/** @type {?string} */
 	albumID: null,
+	/** @type {?string} */
 	map_provider: null
 };
 
+/**
+ * @typedef MapPhotoEntry
+ *
+ * @property {number} [lat] - latitude
+ * @property {number} [lng] - longitude
+ * @property {string} [thumbnail] - URL to the thumbnail
+ * @property {string} [thumbnail2x] - URL to the high-res thumbnail
+ * @property {string} url - URL to the small size-variant; quite a misnomer
+ * @property {string} url2x - URL to the small, high-res size-variant; quite a misnomer
+ * @property {string} name - the title of the photo
+ * @property {string} taken_at - the takedate of the photo, formatted as a locale string
+ * @property {string} albumID - the album ID
+ * @property {string} photoID - the photo ID
+ */
+
+/**
+ * @returns {boolean}
+ */
 mapview.isInitialized = function () {
-	if (mapview.map === null || mapview.photoLayer === null) {
-		return false;
-	}
-	return true;
+	return !(mapview.map === null || mapview.photoLayer === null);
 };
 
+/**
+ * @param {?string} _albumID
+ * @param {string} _albumTitle
+ *
+ * @returns {void}
+ */
 mapview.title = function (_albumID, _albumTitle) {
+	// TODO: Where are these single-letter IDs for builtin-smart albums defined?
 	switch (_albumID) {
 		case "f":
 			lychee.setTitle(lychee.locale["STARRED"], false);
@@ -2044,7 +2339,12 @@ mapview.title = function (_albumID, _albumTitle) {
 	}
 };
 
-// Open the map view
+/**
+ * Opens the map view
+ *
+ * @param {?string} [albumID=null]
+ * @returns {void}
+ */
 mapview.open = function () {
 	var albumID = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
@@ -2061,8 +2361,8 @@ mapview.open = function () {
 	mapview.albumID = albumID;
 
 	// initialize container only once
-	if (mapview.isInitialized() == false) {
-		// Leaflet seaches for icon in same directoy as js file -> paths needs
+	if (!mapview.isInitialized()) {
+		// Leaflet searches for icon in same directory as js file -> paths needs
 		// to be overwritten
 		delete L.Icon.Default.prototype._getIconUrl;
 		L.Icon.Default.mergeOptions({
@@ -2105,6 +2405,7 @@ mapview.open = function () {
 
 	// Define how the photos on the map should look like
 	mapview.photoLayer = L.photo.cluster().on("click", function (e) {
+		/** @type {MapPhotoEntry} */
 		var photo = {
 			photoID: e.layer.photo.photoID,
 			albumID: e.layer.photo.albumID,
@@ -2138,14 +2439,22 @@ mapview.open = function () {
 		}
 	};
 
-	// Adds photos to the map
+	/**
+  * Adds photos to the map.
+  *
+  * @param {(Album|TagAlbum|PositionData)} album
+  */
 	var addPhotosToMap = function addPhotosToMap(album) {
 		// check if empty
 		if (!album.photos) return;
 
+		/** @type {MapPhotoEntry[]} */
 		var photos = [];
 
-		album.photos.forEach(function (element, index) {
+		album.photos.forEach(
+		/** @param {Photo} element */function (element) {
+			// TODO: My IDE complains that `parseFloat` is unnecessary, because `element.latitude`/`element.longitude` is already a float
+			// TODO: My IDE complains that `element.size_variants.thumb !== null` is always false
 			if (element.latitude || element.longitude) {
 				photos.push({
 					lat: parseFloat(element.latitude),
@@ -2162,15 +2471,19 @@ mapview.open = function () {
 
 				// Update min/max lat/lng
 				if (mapview.min_lat === null || mapview.min_lat > element.latitude) {
+					// TODO: My IDE complains about unnecessary `parseFloat`
 					mapview.min_lat = parseFloat(element.latitude);
 				}
 				if (mapview.min_lng === null || mapview.min_lng > element.longitude) {
+					// TODO: My IDE complains about unnecessary `parseFloat`
 					mapview.min_lng = parseFloat(element.longitude);
 				}
 				if (mapview.max_lat === null || mapview.max_lat < element.latitude) {
+					// TODO: My IDE complains about unnecessary `parseFloat`
 					mapview.max_lat = parseFloat(element.latitude);
 				}
 				if (mapview.max_lng === null || mapview.max_lng < element.longitude) {
+					// TODO: My IDE complains about unnecessary `parseFloat`
 					mapview.max_lng = parseFloat(element.longitude);
 				}
 			}
@@ -2183,11 +2496,25 @@ mapview.open = function () {
 		updateZoom();
 	};
 
-	// Call backend, retrieve information of photos and display them
-	// This function is called recursively to retrieve data for sub-albums
-	// Possible enhancement could be to only have a single ajax call
+	/**
+  * Calls backend, retrieves information about photos and display them.
+  *
+  * This function is called recursively to retrieve data for sub-albums.
+  * Possible enhancement could be to only have a single ajax call.
+  *
+  * @param {?string} _albumID
+  * @param {boolean} [_includeSubAlbums=true]
+  */
 	var getAlbumData = function getAlbumData(_albumID) {
 		var _includeSubAlbums = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+		/**
+   * @param {PositionData} data
+   */
+		var successHandler = function successHandler(data) {
+			addPhotosToMap(data);
+			mapview.title(_albumID, data.title);
+		};
 
 		if (_albumID !== "" && _albumID !== null) {
 			// _albumID has been specified
@@ -2196,16 +2523,10 @@ mapview.open = function () {
 				includeSubAlbums: _includeSubAlbums
 			};
 
-			api.post("Album::getPositionData", params, function (data) {
-				addPhotosToMap(data);
-				mapview.title(_albumID, data.title);
-			});
+			api.post("Album::getPositionData", params, successHandler);
 		} else {
 			// AlbumID is empty -> fetch all photos of all albums
-			api.post("Albums::getPositionData", {}, function (data) {
-				addPhotosToMap(data);
-				mapview.title(_albumID, data.title);
-			});
+			api.post("Albums::getPositionData", {}, successHandler);
 		}
 	};
 
@@ -2222,6 +2543,9 @@ mapview.open = function () {
 	updateZoom();
 };
 
+/**
+ * @returns {void}
+ */
 mapview.close = function () {
 	// If map functionality is disabled -> do nothing
 	if (!lychee.map_display) return;
@@ -2230,10 +2554,14 @@ mapview.close = function () {
 	$("#mapview").hide();
 	header.setMode("album");
 
-	// Make album focussable
+	// Make album focusable
 	tabindex.makeFocusable(lychee.content);
 };
 
+/**
+ * @param {jQuery} elem
+ * @returns {void}
+ */
 mapview.goto = function (elem) {
 	// If map functionality is disabled -> do nothing
 	if (!lychee.map_display) return;
@@ -2241,14 +2569,22 @@ mapview.goto = function (elem) {
 	var photoID = elem.attr("data-id");
 	var albumID = elem.attr("data-album-id");
 
-	if (albumID == "null") albumID = 0;
+	if (albumID === "null") albumID = null;
 
 	if (album.json == null || albumID !== album.json.id) {
 		album.refresh();
 	}
 
+	// TODO: This line looks suspicious, if `albumID === null` this doesn't make much sense
 	lychee.goto(albumID + "/" + photoID);
 };
+
+/**
+ * @typedef {Object.<string, string>} Locale
+ * @property {function} printFilesizeLocalized
+ * @property {function} printDateTime
+ * @property {function} printMonthYear
+ */
 
 lychee.locale = {
 	USERNAME: "username",
@@ -2639,7 +2975,7 @@ lychee.locale = {
 	LOCATION_SHOW_PUBLIC: "Show location name for public mode",
 
 	NSFW_VISIBLE_TEXT_1: "Make Sensitive albums visible by default.",
-	NSFW_VISIBLE_TEXT_2: "If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <hkb>H</hkb></b>.",
+	NSFW_VISIBLE_TEXT_2: "If the album is public, it is still accessible, just hidden from the view and <b>can be revealed by pressing <kbd>H</kbd></b>.",
 	SETTINGS_SUCCESS_NSFW_VISIBLE: "Default sensitive album visibility updated with success.",
 
 	VIEW_NO_RESULT: "No results",
@@ -2698,7 +3034,7 @@ lychee.locale = {
 	/**
   * Formats a number representing a filesize in bytes as a localized string
   * @param {!number} filesize
-  * @return {string} A formatted and localized string
+  * @returns {string} A formatted and localized string
   */
 	printFilesizeLocalized: function printFilesizeLocalized(filesize) {
 		console.assert(Number.isInteger(filesize), "printFilesizeLocalized: expected integer, got %s", typeof filesize === "undefined" ? "undefined" : _typeof(filesize));
@@ -2737,7 +3073,7 @@ lychee.locale = {
   * and 14:24:13 for French/German).
   *
   * @param {?string} jsonDateTime
-  * @return {string} A formatted and localized time
+  * @returns {string} A formatted and localized time
   */
 	printDateTime: function printDateTime(jsonDateTime) {
 		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
@@ -2787,7 +3123,7 @@ lychee.locale = {
   * "Aug 2020" in English or "Août 2020" in French).
   *
   * @param {?string} jsonDateTime
-  * @return {string} A formatted and localized month and year
+  * @returns {string} A formatted and localized month and year
   */
 	printMonthYear: function printMonthYear(jsonDateTime) {
 		if (typeof jsonDateTime !== "string" || jsonDateTime === "") return "";
@@ -2806,17 +3142,29 @@ var tabindex = {
 	next_tab_index: 100
 };
 
+/**
+ * @param {jQuery} elem
+ * @returns {void}
+ */
 tabindex.saveSettings = function (elem) {
 	if (!lychee.enable_tabindex) return;
 
 	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
-	var tmp = $(elem).find("[tabindex]");
+	// TODO @Hallenser: What did you intended by the TODO above? It seems as if the jQuery selector is already as short as possible?
+	var tmp = elem.find("[tabindex]");
 
-	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
-	tmp.each(function (i, e) {
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focusable)
+	tmp.each(
+	/**
+  * @param {number} i - the index
+  * @param {Element} e - the HTML element
+  * @this {Element} - identical to `e`
+  */
+	function (i, e) {
 		// TODO: shorter notation
-		a = $(e).attr("tabindex");
+		// TODO @Hallenser: What do you intended by the TODO `short notation`? Moreover: Why do we use `this` and `e`? They refer to the identical instance of a HTML element.
+		var a = $(e).attr("tabindex");
 		$(this).data("tabindex-saved", a);
 	});
 };
@@ -2824,29 +3172,47 @@ tabindex.saveSettings = function (elem) {
 tabindex.restoreSettings = function (elem) {
 	if (!lychee.enable_tabindex) return;
 
-	// Todo: Make shorter noation
+	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
+	// TODO @Hallenser: What did you intended by the TODO above? It seems as if the jQuery selector is already as short as possible?
 	var tmp = $(elem).find("[tabindex]");
 
 	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
-	tmp.each(function (i, e) {
+	tmp.each(
+	/**
+  * @param {number} i - the index
+  * @param {Element} e - the HTML element
+  * @this {Element} - identical to `e`
+  */
+	function (i, e) {
 		// TODO: shorter notation
-		a = $(e).data("tabindex-saved");
+		// TODO @Hallenser: What do you intended by the TODO `short notation`? Moreover: Why do we use `this` and `e`? They refer to the identical instance of a HTML element.
+		var a = $(e).data("tabindex-saved");
 		$(e).attr("tabindex", a);
 	});
 };
 
+/**
+ * @param {jQuery} elem
+ * @param {boolean} [saveFocusElement=false]
+ * @returns {void}
+ */
 tabindex.makeUnfocusable = function (elem) {
 	var saveFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	if (!lychee.enable_tabindex) return;
 
-	// Todo: Make shorter noation
+	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
-	var tmp = $(elem).find("[tabindex]");
+	var tmp = elem.find("[tabindex]");
 
 	// iterate over all elements and set tabindex to -1 (i.e. make is not focussable)
-	tmp.each(function (i, e) {
+	tmp.each(
+	/**
+  * @param {number} i - the index
+  * @param {Element} e - the HTML element
+  */
+	function (i, e) {
 		$(e).attr("tabindex", "-1");
 		// Save which element had focus before we make it unfocusable
 		if (saveFocusElement && $(e).is(":focus")) {
@@ -2857,20 +3223,30 @@ tabindex.makeUnfocusable = function (elem) {
 	});
 
 	// Disable input fields
-	$(elem).find("input").attr("disabled", "disabled");
+	elem.find("input").attr("disabled", "disabled");
 };
 
+/**
+ * @param {jQuery} elem
+ * @param {boolean} [restoreFocusElement=false]
+ * @returns {void}
+ */
 tabindex.makeFocusable = function (elem) {
 	var restoreFocusElement = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
 	if (!lychee.enable_tabindex) return;
 
-	// Todo: Make shorter noation
+	// Todo: Make shorter notation
 	// Get all elements which have a tabindex
-	var tmp = $(elem).find("[data-tabindex]");
+	var tmp = elem.find("[data-tabindex]");
 
-	// iterate over all elements and set tabindex to stored value (i.e. make is not focussable)
-	tmp.each(function (i, e) {
+	// iterate over all elements and set tabindex to stored value (i.e. make is not focusable)
+	tmp.each(
+	/**
+  * @param {number} i
+  * @param {Element} e
+  */
+	function (i, e) {
 		$(e).attr("tabindex", $(e).data("tabindex"));
 		// restore focus elemente if wanted
 		if (restoreFocusElement) {
@@ -2882,15 +3258,21 @@ tabindex.makeFocusable = function (elem) {
 	});
 
 	// Enable input fields
-	$(elem).find("input").removeAttr("disabled");
+	elem.find("input").removeAttr("disabled");
 };
 
+/**
+ * @returns {number}
+ */
 tabindex.get_next_tab_index = function () {
 	tabindex.next_tab_index = tabindex.next_tab_index + 1;
 
 	return tabindex.next_tab_index - 1;
 };
 
+/**
+ * @returns {void}
+ */
 tabindex.reset = function () {
 	tabindex.next_tab_index = tabindex.offset_for_header;
 };

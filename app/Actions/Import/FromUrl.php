@@ -11,7 +11,7 @@ use App\Exceptions\InsufficientFilesystemPermissions;
 use App\Exceptions\MassImportException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Facades\Helpers;
+use App\Image\TemporaryLocalFile;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -52,10 +52,13 @@ class FromUrl
 			// Reset the execution timeout for every iteration.
 			set_time_limit(ini_get('max_execution_time'));
 
+			$path = parse_url($url, PHP_URL_PATH);
+			$basename = pathinfo($path, PATHINFO_FILENAME);
+			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
+
 			// Validate photo type and extension even when $this->photo (=> $photo->add) will do the same.
 			// This prevents us from downloading invalid photos.
 			// Verify extension
-			$extension = Helpers::getExtension($url, true);
 			if (!$this->isValidExtension($extension)) {
 				$msg = 'Photo format not supported (' . $url . ')';
 				$exceptions[] = new MediaFileUnsupportedException($msg);
@@ -63,8 +66,22 @@ class FromUrl
 				continue;
 			}
 
+			// Download file, before exif checks the mimetype, otherwise we download it twice
+			$tmpFile = new TemporaryLocalFile();
+			try {
+				$downloadStream = fopen($url, 'r');
+				$tmpFile->write($downloadStream);
+				fclose($downloadStream);
+			} catch (\Exception $e) {
+				$msg = 'Could not download ' . $url . ' to ' . $tmpFile->getAbsolutePath();
+				$exceptions[] = new MediaFileOperationException($msg, $e);
+				Logs::error(__METHOD__, __LINE__, $msg);
+				continue;
+			}
+
 			// Verify image
-			$type = exif_imagetype($url);
+			// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
+			$type = exif_imagetype($tmpFile->getAbsolutePath());
 			if (!$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
 				$msg = 'Photo format not supported (' . $url . ')';
 				$exceptions[] = new MediaFileUnsupportedException($msg);
@@ -88,11 +105,11 @@ class FromUrl
 			// Import photo
 			try {
 				$result->add(
-					$create->add(SourceFileInfo::createForLocalFile($tmp_name), $albumId)
+					$create->add(SourceFileInfo::createByTempFile($basename, $extension, $tmpFile), $albumId)
 				);
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;
-				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
+				Logs::error(__METHOD__, __LINE__, 'Could not import file ' . $tmpFile->getAbsolutePath());
 			}
 		}
 

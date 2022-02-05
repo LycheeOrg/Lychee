@@ -10,8 +10,8 @@ use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidRotationDirectionException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
-use App\Facades\Helpers;
 use App\Image\ImageHandlerInterface;
+use App\Image\TemporaryLocalFile;
 use App\Metadata\Extractor;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -94,18 +94,18 @@ class RotateStrategy extends AddBaseStrategy
 	{
 		// Generate a temporary name for the rotated file.
 		$oldOriginalSizeVariant = $this->photo->size_variants->getOriginal();
-		$oldOriginalFullPath = $oldOriginalSizeVariant->full_path;
 		$oldOriginalWidth = $oldOriginalSizeVariant->width;
 		$oldOriginalHeight = $oldOriginalSizeVariant->height;
 		$oldChecksum = $this->photo->checksum;
-		$oldExtension = Helpers::getExtension($oldOriginalFullPath);
-		$tmpFullPath = Helpers::createTemporaryFile($oldExtension);
+		$origFile = $oldOriginalSizeVariant->getFile();
+		$tmpFile = new TemporaryLocalFile();
 
 		// Rotate the image and save result as the temporary file
 		/** @var ImageHandlerInterface $imageHandler */
 		$imageHandler = resolve(ImageHandlerInterface::class);
-		if ($imageHandler->rotate($oldOriginalFullPath, ($this->direction == 1) ? 90 : -90, $tmpFullPath) === false) {
-			$msg = 'Failed to rotate ' . $oldOriginalFullPath;
+		// TODO: If we ever wish to support something else than local files, ImageHandler must work on resource streams, not absolute file names (see ImageHandlerInterface)
+		if ($imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath()) === false) {
+			$msg = 'Failed to rotate ' . $origFile->getRelativePath();
 			Logs::error(__METHOD__, __LINE__, $msg);
 			throw new MediaFileOperationException($msg);
 		}
@@ -113,8 +113,9 @@ class RotateStrategy extends AddBaseStrategy
 		// The file size and checksum may have changed after the rotation.
 		/* @var Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
-		$this->photo->filesize = $metadataExtractor->filesize($tmpFullPath);
-		$this->photo->checksum = $metadataExtractor->checksum($tmpFullPath);
+		// TODO: See above, we must stop using absolute paths
+		$this->photo->filesize = $metadataExtractor->filesize($tmpFile->getAbsolutePath());
+		$this->photo->checksum = $metadataExtractor->checksum($tmpFile->getAbsolutePath());
 		$this->photo->save();
 
 		// Delete all size variants from current photo, this will also take
@@ -125,14 +126,13 @@ class RotateStrategy extends AddBaseStrategy
 		$this->photo->size_variants->deleteAll();
 
 		// Initialize factory for size variants
-		$this->parameters->sourceFileInfo = new SourceFileInfo(
-			pathinfo($oldOriginalFullPath, PATHINFO_BASENAME),
-			$this->photo->type,
-			$tmpFullPath
+		$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
+			$this->photo->title, $origFile->getExtension(), $tmpFile
 		);
+
 		/** @var SizeVariantNamingStrategy $namingStrategy */
 		$namingStrategy = resolve(SizeVariantNamingStrategy::class);
-		$namingStrategy->setFallbackExtension($this->parameters->sourceFileInfo->getOriginalFileExtension());
+		$namingStrategy->setFallbackExtension($this->parameters->sourceFileInfo->getOriginalExtension());
 		/** @var SizeVariantFactory $sizeVariantFactory */
 		$sizeVariantFactory = resolve(SizeVariantFactory::class);
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
@@ -143,7 +143,7 @@ class RotateStrategy extends AddBaseStrategy
 		// Using a different filename allows avoiding caching effects.
 		// Sic! Swap width and height here, because the image has been rotated
 		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth);
-		$this->putSourceIntoFinalDestination($newOriginalSizeVariant->full_path);
+		$this->putSourceIntoFinalDestination($newOriginalSizeVariant->short_path);
 
 		// Create remaining size variants
 		$newSizeVariants = null;
@@ -168,7 +168,7 @@ class RotateStrategy extends AddBaseStrategy
 
 		// Deal with duplicates.  We simply update all of them to match.
 		$duplicates = Photo::query()
-				->where('checksum', $oldChecksum)
+				->where('checksum', '=', $oldChecksum)
 				->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {

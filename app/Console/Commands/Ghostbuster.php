@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands\Utilities\Colorize;
-use App\Contracts\ExternalLycheeException;
 use App\Exceptions\UnexpectedException;
 use App\Models\Photo;
 use App\Models\SizeVariant;
@@ -52,9 +51,7 @@ class Ghostbuster extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return int
-	 *
-	 * @throws ExternalLycheeException
+	 * @return mixed
 	 */
 	public function handle(): int
 	{

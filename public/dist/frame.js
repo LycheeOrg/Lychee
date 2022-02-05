@@ -890,6 +890,16 @@
 
 "use strict";
 
+/**
+ * Returns the value of a query-string parameter.
+ *
+ * TODO: Why it is called "gup"?
+ *
+ * TODO @ildiria: This method strikes me as completely unnecessary and overly complicated. Moreover it is only used in a single place. Why don't we simply use (https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get#example) in the place where we need it?
+ *
+ * @param {string} b
+ * @returns {string}
+ */
 function gup(b) {
 	b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 
@@ -907,6 +917,7 @@ function gup(b) {
 /**
  * @callback APISuccessCB
  * @param {Object} data the decoded JSON response
+ * @returns {void}
  */
 
 /**
@@ -914,22 +925,13 @@ function gup(b) {
  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
  * @param {Object} params the original JSON parameters of the request
  * @param {?LycheeException} lycheeException the Lychee exception
- * @return {boolean}
+ * @returns {boolean}
  */
 
 /**
  * @callback APIProgressCB
  * @param {ProgressEvent} event the progress event
- */
-
-/**
- * @typedef {Object} LycheeException
- * @property {string} message     the message of the exception
- * @property {string} [exception] the name of the exception class; only in developer mode
- * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
- * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
- * @property {Array} [trace]      the backtrace; only in developer mode
- * @property {?LycheeException} [previous_exception] the previous exception, if any; only in developer mode
+ * @returns {void}
  */
 
 /**
@@ -951,6 +953,7 @@ var api = {
  * @param {?APISuccessCB} successCallback
  * @param {?APIProgressCB} responseProgressCB
  * @param {?APIErrorCB} errorCallback
+ * @returns {void}
  */
 api.post = function (fn, params) {
 	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
@@ -1009,6 +1012,7 @@ api.post = function (fn, params) {
  *
  * @param {string} url
  * @param {APISuccessCB} callback
+ * @returns {void}
  */
 api.getCSS = function (url, callback) {
 	loadingBar.show();
@@ -1043,34 +1047,75 @@ api.getCSS = function (url, callback) {
 
 var csrf = {};
 
+/**
+ * @param {jQuery.Event} event
+ * @param {XMLHttpRequest} jqxhr
+ * @param {Object} settings
+ * @returns {void}
+ */
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
+	// TODO: Instead of sending the header everytime except to the update path on GIT, it should *only* be sent to the API backend; maybe make `setRequestHeader` simply be part of `api.post`
 	if (settings.url !== lychee.updatePath) {
 		jqxhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
 	}
 };
 
+/**
+ * @param {string} s
+ * @returns {string}
+ */
 csrf.escape = function (s) {
 	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
 };
 
+/**
+ * @param {string} name
+ * @returns {?string}
+ */
 csrf.getCookie = function (name) {
+	// TODO @ildyria: The `match` below strikes me as overly complicated and completely unnecessary: a) We exactly know what cookie we are looking for ('X-XSRF-TOKEN'); why do we pass it through the `escape` function? b) The first capturing group doesn't make any sense to me: it captures the beginning of the string (^) or a preceding semi-colon (;) followed by an arbitrary number of spaces. So far so good. But the `?:` doesn't make any sense to me.
 	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
 	var match = document.cookie.match(RegExp("(?:^|;\\s*)" + csrf.escape(name) + "=([^;^%]*)"));
 	return match ? match[1] : null;
+	// TODO: Consider of the following code isn't much easier to understand.
+	// (See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_2_get_a_sample_cookie_named_test2)
+	//
+	//    cookieValue = document.cookie
+	//      .split(';')
+	//      .find(row => /^\s*X-XSRF-TOKEN\s*=/.test(row))
+	//      .split('=')[1]
+	//      .trim();
 };
 
+/**
+ * @returns {void}
+ */
 csrf.bind = function () {
+	// TODO: Instead of sending the CSRF cookie for any AJAX request, we probably should simply make this part of our `api.post` method and *only* send the token to the back-end
 	$(document).on("ajaxSend", csrf.addLaravelCSRF);
 };
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
+// TODO: Find out and explain: Here we declare a global (empty) object `lychee`; we also declare one in `./main/lychee.js`. Why don't they interfere with each other? How do we end up with **one** `lychee` object which contains the properties and methods of both objects?!
 var lychee = {
 	api_V2: true
 };
 
 lychee.content = $(".content");
 
+/**
+ * DON'T USE THIS METHOD.
+ *
+ * TODO: Find all invocations of this method and nuke them.
+ *
+ * This method does not cover all potentially dangerous characters and this
+ * method should not be required on the first place.
+ * jQuery and even native JS has better methods for this in the year 2022!
+ *
+ * @param {string} [html=""]
+ * @returns {string}
+ */
 lychee.escapeHTML = function () {
 	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
@@ -1083,6 +1128,20 @@ lychee.escapeHTML = function () {
 	return html;
 };
 
+/**
+ * Creates a HTML string with some fancy variable substitution.
+ *
+ * Actually, this method should not be required in the year 2022.
+ * jQuery and even native JS should probably provide a suitable alternative.
+ * But this method is used so ubiquitous that it might be difficult to get
+ * rid of it.
+ *
+ * TODO: Try it nonetheless.
+ *
+ * @param literalSections
+ * @param substs
+ * @returns {string}
+ */
 lychee.html = function (literalSections) {
 	// Use raw literal sections: we don’t want
 	// backslashes (\n etc.) to be interpreted
@@ -1117,6 +1176,9 @@ lychee.html = function (literalSections) {
 	return result;
 };
 
+/**
+ * @returns {string} - either `"touchend"` or `"click"`
+ */
 lychee.getEventName = function () {
 	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && "ontouchend" in document.documentElement;
 	return touchendSupport === true ? "touchend" : "click";
@@ -1125,9 +1187,15 @@ lychee.getEventName = function () {
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
 var frame = {
-	refresh: 30000
+	/** @type {number} */
+	refresh: 30000,
+	/** @type {?Photo} */
+	photo: null
 };
 
+/**
+ * @returns {void}
+ */
 frame.start_blur = function () {
 	var img = document.getElementById("background");
 	var canvas = document.getElementById("background_canvas");
@@ -1136,6 +1204,9 @@ frame.start_blur = function () {
 	canvas.style.height = "100%";
 };
 
+/**
+ * @returns {void}
+ */
 frame.next = function () {
 	$("body").removeClass("loaded");
 	setTimeout(function () {
@@ -1143,18 +1214,25 @@ frame.next = function () {
 	}, 1000);
 };
 
+/**
+ * @returns {void}
+ */
 frame.refreshPicture = function () {
-	api.post("Photo::getRandom", {}, function (data) {
+	api.post("Photo::getRandom", {},
+	/** @param {Photo} data */
+	function (data) {
+		// TODO: My IDE complains that this condition is always false, because each Photo has at least a thumbnail
 		if (data.size_variants === null || data.size_variants.original === null && data.size_variants.medium === null) {
 			console.log("URL not found");
 		}
+		// TODO My IDE complains that this condition is always false. Is this legacy?
 		if (data.size_variants.thumb === null) console.log("Thumb not found");
 
 		$("#background").attr("src", data.size_variants.thumb.url);
 
 		var srcset = "";
 		var src = "";
-		this.frame.photo = null;
+		frame.photo = null;
 		if (data.size_variants.medium !== null) {
 			src = data.size_variants.medium.url;
 
@@ -1177,13 +1255,18 @@ frame.refreshPicture = function () {
 	});
 };
 
+/**
+ * @param {FrameSettings} data
+ * @returns {void}
+ */
 frame.set = function (data) {
-	//	console.log(data.refresh);
-	frame.refresh = data.refresh ? parseInt(data.refresh, 10) + 1000 : 31000; // 30 sec + 1 sec of blackout
-	//	console.log(frame.refresh);
+	frame.refresh = data.refresh + 1000; // + 1 sec of blackout
 	frame.refreshPicture();
 };
 
+/**
+ * @returns {void}
+ */
 frame.resize = function () {
 	if (this.photo) {
 		var ratio = this.photo.size_variants.original.height > 0 ? this.photo.size_variants.original.width / this.photo.size_variants.original.height : 1;
@@ -1204,9 +1287,9 @@ frame.resize = function () {
  * @param {XMLHttpRequest} jqXHR
  * @param {Object} params the original JSON parameters of the request
  * @param {?LycheeException} lycheeException the Lychee Exception
- * @return {boolean}
+ * @returns {boolean}
  */
-frame.error = function (jqXHR, params, lycheeException) {
+frame.handleAPIError = function (jqXHR, params, lycheeException) {
 	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
 	loadingBar.show("error", msg);
 	console.error("The server returned an error response", {
@@ -1222,10 +1305,9 @@ frame.error = function (jqXHR, params, lycheeException) {
 
 var loadingBar = {
 	/**
-  *
   * @param {?string} status the status, either `null`, `"error"` or `"success"`
   * @param {?string} errorText the error text to show
-  * @return {boolean}
+  * @returns {boolean}
   */
 	show: function show(status, errorText) {
 		return false;
@@ -1238,6 +1320,7 @@ var loadingBar = {
 	hide: function hide(force) {}
 };
 
+// TODO: It seems that this object is used nowhere?! Delete it?
 var imageview = $("#imageview");
 
 $(function () {
@@ -1245,7 +1328,7 @@ $(function () {
 	csrf.bind();
 
 	// Set API error handler
-	api.onError = frame.error;
+	api.onError = frame.handleAPIError;
 
 	$(window).on("resize", function () {
 		frame.resize();
@@ -1259,7 +1342,9 @@ $(function () {
 		$("body").addClass("loaded");
 	});
 
-	api.post("Frame::getSettings", {}, function (data) {
+	api.post("Frame::getSettings", {},
+	/** @param {FrameSettings} data */
+	function (data) {
 		frame.set(data);
 	});
 });

@@ -3,7 +3,6 @@
 namespace App\View\Components;
 
 use App\Models\Configs;
-use App\Models\SizeVariant;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -29,8 +28,6 @@ class Photo extends Component
 	public $srcset2x = '';
 
 	public $layout = false;
-	public int $_w = SizeVariant::THUMBNAIL_DIM;
-	public int $_h = SizeVariant::THUMBNAIL_DIM;
 
 	/**
 	 * Create a new component instance.
