@@ -3,13 +3,13 @@
 namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
-use App\Contracts\BaseAlbum;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Album;
 use App\Models\Configs;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\TagAlbum;
@@ -216,6 +216,7 @@ class Archive extends Action
 	{
 		return
 			$album->is_downloadable ||
+			AccessControl::is_admin() ||
 			($album instanceof BaseSmartAlbum && AccessControl::is_logged_in()) ||
 			($album instanceof BaseAlbum && AccessControl::is_current_user($album->owner_id));
 	}
