@@ -901,13 +901,13 @@
  * @returns {string}
  */
 function gup(b) {
-	b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
 
-	var a = "[\\?&]" + b + "=([^&#]*)";
-	var d = new RegExp(a);
-	var c = d.exec(window.location.href);
+  var a = "[\\?&]" + b + "=([^&#]*)";
+  var d = new RegExp(a);
+  var c = d.exec(window.location.href);
 
-	if (c === null) return "";else return c[1];
+  if (c === null) return "";else return c[1];
 }
 
 /**
@@ -938,12 +938,12 @@ function gup(b) {
  * The main API object
  */
 var api = {
-	/**
-  * Global, default error handler
-  *
-  * @type {?APIErrorCB}
-  */
-	onError: null
+  /**
+   * Global, default error handler
+   *
+   * @type {?APIErrorCB}
+   */
+  onError: null
 };
 
 /**
@@ -956,56 +956,56 @@ var api = {
  * @returns {void}
  */
 api.post = function (fn, params) {
-	var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
-	var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
-	var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
+  var successCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+  var responseProgressCB = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : null;
+  var errorCallback = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : null;
 
-	loadingBar.show();
+  loadingBar.show();
 
-	/**
-  * The success handler
-  * @param {Object} data the decoded JSON object of the response
-  */
-	var successHandler = function successHandler(data) {
-		setTimeout(loadingBar.hide, 100);
-		if (successCallback) successCallback(data);
-	};
-
-	/**
-  * The error handler
-  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-  */
-	var errorHandler = function errorHandler(jqXHR) {
-		/**
-   * @type {?LycheeException}
+  /**
+   * The success handler
+   * @param {Object} data the decoded JSON object of the response
    */
-		var lycheeException = jqXHR.responseJSON;
+  var successHandler = function successHandler(data) {
+    setTimeout(loadingBar.hide, 100);
+    if (successCallback) successCallback(data);
+  };
 
-		if (errorCallback) {
-			var isHandled = errorCallback(jqXHR, params, lycheeException);
-			if (isHandled) return;
-		}
-		// Call global error handler for unhandled errors
-		api.onError(jqXHR, params, lycheeException);
-	};
+  /**
+   * The error handler
+   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+   */
+  var errorHandler = function errorHandler(jqXHR) {
+    /**
+     * @type {?LycheeException}
+     */
+    var lycheeException = jqXHR.responseJSON;
 
-	var ajaxParams = {
-		type: "POST",
-		url: "api/" + fn,
-		contentType: "application/json",
-		data: JSON.stringify(params),
-		dataType: "json",
-		success: successHandler,
-		error: errorHandler
-	};
+    if (errorCallback) {
+      var isHandled = errorCallback(jqXHR, params, lycheeException);
+      if (isHandled) return;
+    }
+    // Call global error handler for unhandled errors
+    api.onError(jqXHR, params, lycheeException);
+  };
 
-	if (responseProgressCB !== null) {
-		ajaxParams.xhrFields = {
-			onprogress: responseProgressCB
-		};
-	}
+  var ajaxParams = {
+    type: "POST",
+    url: "api/" + fn,
+    contentType: "application/json",
+    data: JSON.stringify(params),
+    dataType: "json",
+    success: successHandler,
+    error: errorHandler
+  };
 
-	$.ajax(ajaxParams);
+  if (responseProgressCB !== null) {
+    ajaxParams.xhrFields = {
+      onprogress: responseProgressCB
+    };
+  }
+
+  $.ajax(ajaxParams);
 };
 
 /**
@@ -1015,34 +1015,34 @@ api.post = function (fn, params) {
  * @returns {void}
  */
 api.getCSS = function (url, callback) {
-	loadingBar.show();
+  loadingBar.show();
 
-	/**
-  * The success handler
-  * @param {Object} data the decoded JSON object of the response
-  */
-	var successHandler = function successHandler(data) {
-		setTimeout(loadingBar.hide, 100);
+  /**
+   * The success handler
+   * @param {Object} data the decoded JSON object of the response
+   */
+  var successHandler = function successHandler(data) {
+    setTimeout(loadingBar.hide, 100);
 
-		callback(data);
-	};
+    callback(data);
+  };
 
-	/**
-  * The error handler
-  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-  */
-	var errorHandler = function errorHandler(jqXHR) {
-		api.onError(jqXHR, {}, null);
-	};
+  /**
+   * The error handler
+   * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
+   */
+  var errorHandler = function errorHandler(jqXHR) {
+    api.onError(jqXHR, {}, null);
+  };
 
-	$.ajax({
-		type: "GET",
-		url: url,
-		data: {},
-		dataType: "text",
-		success: successHandler,
-		error: errorHandler
-	});
+  $.ajax({
+    type: "GET",
+    url: url,
+    data: {},
+    dataType: "text",
+    success: successHandler,
+    error: errorHandler
+  });
 };
 
 var csrf = {};
@@ -1054,10 +1054,10 @@ var csrf = {};
  * @returns {void}
  */
 csrf.addLaravelCSRF = function (event, jqxhr, settings) {
-	// TODO: Instead of sending the header everytime except to the update path on GIT, it should *only* be sent to the API backend; maybe make `setRequestHeader` simply be part of `api.post`
-	if (settings.url !== lychee.updatePath) {
-		jqxhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
-	}
+  // TODO: Instead of sending the header everytime except to the update path on GIT, it should *only* be sent to the API backend; maybe make `setRequestHeader` simply be part of `api.post`
+  if (settings.url !== lychee.updatePath) {
+    jqxhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
+  }
 };
 
 /**
@@ -1065,7 +1065,7 @@ csrf.addLaravelCSRF = function (event, jqxhr, settings) {
  * @returns {string}
  */
 csrf.escape = function (s) {
-	return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
+  return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
 };
 
 /**
@@ -1073,33 +1073,33 @@ csrf.escape = function (s) {
  * @returns {?string}
  */
 csrf.getCookie = function (name) {
-	// TODO @ildyria: The `match` below strikes me as overly complicated and completely unnecessary: a) We exactly know what cookie we are looking for ('X-XSRF-TOKEN'); why do we pass it through the `escape` function? b) The first capturing group doesn't make any sense to me: it captures the beginning of the string (^) or a preceding semi-colon (;) followed by an arbitrary number of spaces. So far so good. But the `?:` doesn't make any sense to me.
-	// we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
-	var match = document.cookie.match(RegExp("(?:^|;\\s*)" + csrf.escape(name) + "=([^;^%]*)"));
-	return match ? match[1] : null;
-	// TODO: Consider of the following code isn't much easier to understand.
-	// (See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_2_get_a_sample_cookie_named_test2)
-	//
-	//    cookieValue = document.cookie
-	//      .split(';')
-	//      .find(row => /^\s*X-XSRF-TOKEN\s*=/.test(row))
-	//      .split('=')[1]
-	//      .trim();
+  // TODO @ildyria: The `match` below strikes me as overly complicated and completely unnecessary: a) We exactly know what cookie we are looking for ('X-XSRF-TOKEN'); why do we pass it through the `escape` function? b) The first capturing group doesn't make any sense to me: it captures the beginning of the string (^) or a preceding semi-colon (;) followed by an arbitrary number of spaces. So far so good. But the `?:` doesn't make any sense to me.
+  // we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
+  var match = document.cookie.match(RegExp("(?:^|;\\s*)" + csrf.escape(name) + "=([^;^%]*)"));
+  return match ? match[1] : null;
+  // TODO: Consider of the following code isn't much easier to understand.
+  // (See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_2_get_a_sample_cookie_named_test2)
+  //
+  //    cookieValue = document.cookie
+  //      .split(';')
+  //      .find(row => /^\s*X-XSRF-TOKEN\s*=/.test(row))
+  //      .split('=')[1]
+  //      .trim();
 };
 
 /**
  * @returns {void}
  */
 csrf.bind = function () {
-	// TODO: Instead of sending the CSRF cookie for any AJAX request, we probably should simply make this part of our `api.post` method and *only* send the token to the back-end
-	$(document).on("ajaxSend", csrf.addLaravelCSRF);
+  // TODO: Instead of sending the CSRF cookie for any AJAX request, we probably should simply make this part of our `api.post` method and *only* send the token to the back-end
+  $(document).on("ajaxSend", csrf.addLaravelCSRF);
 };
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
 // TODO: Find out and explain: Here we declare a global (empty) object `lychee`; we also declare one in `./main/lychee.js`. Why don't they interfere with each other? How do we end up with **one** `lychee` object which contains the properties and methods of both objects?!
 var lychee = {
-	api_V2: true
+  api_V2: true
 };
 
 lychee.content = $(".content");
@@ -1117,15 +1117,15 @@ lychee.content = $(".content");
  * @returns {string}
  */
 lychee.escapeHTML = function () {
-	var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+  var html = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
 
-	// Ensure that html is a string
-	html += "";
+  // Ensure that html is a string
+  html += "";
 
-	// Escape all critical characters
-	html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/`/g, "&#96;");
+  // Escape all critical characters
+  html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;").replace(/`/g, "&#96;");
 
-	return html;
+  return html;
 };
 
 /**
@@ -1143,116 +1143,116 @@ lychee.escapeHTML = function () {
  * @returns {string}
  */
 lychee.html = function (literalSections) {
-	// Use raw literal sections: we don’t want
-	// backslashes (\n etc.) to be interpreted
-	var raw = literalSections.raw;
-	var result = "";
+  // Use raw literal sections: we don’t want
+  // backslashes (\n etc.) to be interpreted
+  var raw = literalSections.raw;
+  var result = "";
 
-	for (var _len = arguments.length, substs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-		substs[_key - 1] = arguments[_key];
-	}
+  for (var _len = arguments.length, substs = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    substs[_key - 1] = arguments[_key];
+  }
 
-	substs.forEach(function (subst, i) {
-		// Retrieve the literal section preceding
-		// the current substitution
-		var lit = raw[i];
+  substs.forEach(function (subst, i) {
+    // Retrieve the literal section preceding
+    // the current substitution
+    var lit = raw[i];
 
-		// If the substitution is preceded by a dollar sign,
-		// we escape special characters in it
-		if (lit.slice(-1) === "$") {
-			subst = lychee.escapeHTML(subst);
-			lit = lit.slice(0, -1);
-		}
+    // If the substitution is preceded by a dollar sign,
+    // we escape special characters in it
+    if (lit.slice(-1) === "$") {
+      subst = lychee.escapeHTML(subst);
+      lit = lit.slice(0, -1);
+    }
 
-		result += lit;
-		result += subst;
-	});
+    result += lit;
+    result += subst;
+  });
 
-	// Take care of last literal section
-	// (Never fails, because an empty template string
-	// produces one literal section, an empty string)
-	result += raw[raw.length - 1];
+  // Take care of last literal section
+  // (Never fails, because an empty template string
+  // produces one literal section, an empty string)
+  result += raw[raw.length - 1];
 
-	return result;
+  return result;
 };
 
 /**
  * @returns {string} - either `"touchend"` or `"click"`
  */
 lychee.getEventName = function () {
-	var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && "ontouchend" in document.documentElement;
-	return touchendSupport === true ? "touchend" : "click";
+  var touchendSupport = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || navigator.vendor || window.opera) && "ontouchend" in document.documentElement;
+  return touchendSupport === true ? "touchend" : "click";
 };
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
 var frame = {
-	/** @type {number} */
-	refresh: 30000,
-	/** @type {?Photo} */
-	photo: null
+  /** @type {number} */
+  refresh: 30000,
+  /** @type {?Photo} */
+  photo: null
 };
 
 /**
  * @returns {void}
  */
 frame.start_blur = function () {
-	var img = document.getElementById("background");
-	var canvas = document.getElementById("background_canvas");
-	StackBlur.image(img, canvas, 20);
-	canvas.style.width = "100%";
-	canvas.style.height = "100%";
+  var img = document.getElementById("background");
+  var canvas = document.getElementById("background_canvas");
+  StackBlur.image(img, canvas, 20);
+  canvas.style.width = "100%";
+  canvas.style.height = "100%";
 };
 
 /**
  * @returns {void}
  */
 frame.next = function () {
-	$("body").removeClass("loaded");
-	setTimeout(function () {
-		frame.refreshPicture();
-	}, 1000);
+  $("body").removeClass("loaded");
+  setTimeout(function () {
+    frame.refreshPicture();
+  }, 1000);
 };
 
 /**
  * @returns {void}
  */
 frame.refreshPicture = function () {
-	api.post("Photo::getRandom", {},
-	/** @param {Photo} data */
-	function (data) {
-		// TODO: My IDE complains that this condition is always false, because each Photo has at least a thumbnail
-		if (data.size_variants === null || data.size_variants.original === null && data.size_variants.medium === null) {
-			console.log("URL not found");
-		}
-		// TODO My IDE complains that this condition is always false. Is this legacy?
-		if (data.size_variants.thumb === null) console.log("Thumb not found");
+  api.post("Photo::getRandom", {},
+  /** @param {Photo} data */
+  function (data) {
+    // TODO: My IDE complains that this condition is always false, because each Photo has at least a thumbnail
+    if (data.size_variants === null || data.size_variants.original === null && data.size_variants.medium === null) {
+      console.log("URL not found");
+    }
+    // TODO My IDE complains that this condition is always false. Is this legacy?
+    if (data.size_variants.thumb === null) console.log("Thumb not found");
 
-		$("#background").attr("src", data.size_variants.thumb.url);
+    $("#background").attr("src", data.size_variants.thumb.url);
 
-		var srcset = "";
-		var src = "";
-		frame.photo = null;
-		if (data.size_variants.medium !== null) {
-			src = data.size_variants.medium.url;
+    var srcset = "";
+    var src = "";
+    frame.photo = null;
+    if (data.size_variants.medium !== null) {
+      src = data.size_variants.medium.url;
 
-			if (data.size_variants.medium2x !== null) {
-				srcset = data.size_variants.medium.url + " " + data.size_variants.medium.width + "w, " + data.size_variants.medium2x.url + " " + data.size_variants.medium2x.width + "w";
-				// We use it in the resize callback.
-				this.frame.photo = data;
-			}
-		} else {
-			src = data.size_variants.original.url;
-		}
+      if (data.size_variants.medium2x !== null) {
+        srcset = data.size_variants.medium.url + " " + data.size_variants.medium.width + "w, " + data.size_variants.medium2x.url + " " + data.size_variants.medium2x.width + "w";
+        // We use it in the resize callback.
+        this.frame.photo = data;
+      }
+    } else {
+      src = data.size_variants.original.url;
+    }
 
-		$("#picture").attr("srcset", srcset);
-		frame.resize();
-		$("#picture").attr("src", src).css("display", "inline");
+    $("#picture").attr("srcset", srcset);
+    frame.resize();
+    $("#picture").attr("src", src).css("display", "inline");
 
-		setTimeout(function () {
-			frame.next();
-		}, frame.refresh);
-	});
+    setTimeout(function () {
+      frame.next();
+    }, frame.refresh);
+  });
 };
 
 /**
@@ -1260,26 +1260,26 @@ frame.refreshPicture = function () {
  * @returns {void}
  */
 frame.set = function (data) {
-	frame.refresh = data.refresh + 1000; // + 1 sec of blackout
-	frame.refreshPicture();
+  frame.refresh = data.refresh + 1000; // + 1 sec of blackout
+  frame.refreshPicture();
 };
 
 /**
  * @returns {void}
  */
 frame.resize = function () {
-	if (this.photo) {
-		var ratio = this.photo.size_variants.original.height > 0 ? this.photo.size_variants.original.width / this.photo.size_variants.original.height : 1;
-		var winWidth = $(window).width();
-		var winHeight = $(window).height();
+  if (this.photo) {
+    var ratio = this.photo.size_variants.original.height > 0 ? this.photo.size_variants.original.width / this.photo.size_variants.original.height : 1;
+    var winWidth = $(window).width();
+    var winHeight = $(window).height();
 
-		// Our math assumes that the image occupies the whole frame.  That's
-		// not quite the case (the default css sets it to 95%) but it's close
-		// enough.
-		var width = winWidth / ratio > winHeight ? winHeight * ratio : winWidth;
+    // Our math assumes that the image occupies the whole frame.  That's
+    // not quite the case (the default css sets it to 95%) but it's close
+    // enough.
+    var width = winWidth / ratio > winHeight ? winHeight * ratio : winWidth;
 
-		$("#picture").attr("sizes", width + "px");
-	}
+    $("#picture").attr("sizes", width + "px");
+  }
 };
 
 /**
@@ -1290,61 +1290,414 @@ frame.resize = function () {
  * @returns {boolean}
  */
 frame.handleAPIError = function (jqXHR, params, lycheeException) {
-	var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
-	loadingBar.show("error", msg);
-	console.error("The server returned an error response", {
-		description: msg,
-		params: params,
-		response: lycheeException
-	});
-	alert(msg);
-	return true;
+  var msg = jqXHR.statusText + (lycheeException ? " - " + lycheeException.message : "");
+  loadingBar.show("error", msg);
+  console.error("The server returned an error response", {
+    description: msg,
+    params: params,
+    response: lycheeException
+  });
+  alert(msg);
+  return true;
 };
 
 // Main -------------------------------------------------------------- //
 
 var loadingBar = {
-	/**
-  * @param {?string} status the status, either `null`, `"error"` or `"success"`
-  * @param {?string} errorText the error text to show
-  * @returns {boolean}
-  */
-	show: function show(status, errorText) {
-		return false;
-	},
+  /**
+   * @param {?string} status the status, either `null`, `"error"` or `"success"`
+   * @param {?string} errorText the error text to show
+   * @returns {boolean}
+   */
+  show: function show(status, errorText) {
+    return false;
+  },
 
 
-	/**
-  * @param {?boolean} force
-  */
-	hide: function hide(force) {}
+  /**
+   * @param {?boolean} force
+   */
+  hide: function hide(force) {}
 };
 
 // TODO: It seems that this object is used nowhere?! Delete it?
 var imageview = $("#imageview");
 
 $(function () {
-	// set CSRF protection (Laravel)
-	csrf.bind();
+  // set CSRF protection (Laravel)
+  csrf.bind();
 
-	// Set API error handler
-	api.onError = frame.handleAPIError;
+  // Set API error handler
+  api.onError = frame.handleAPIError;
 
-	$(window).on("resize", function () {
-		frame.resize();
-	});
+  $(window).on("resize", function () {
+    frame.resize();
+  });
 
-	$("#background").on("load", function () {
-		frame.start_blur();
-	});
+  $("#background").on("load", function () {
+    frame.start_blur();
+  });
 
-	$("#picture").on("load", function () {
-		$("body").addClass("loaded");
-	});
+  $("#picture").on("load", function () {
+    $("body").addClass("loaded");
+  });
 
-	api.post("Frame::getSettings", {},
-	/** @param {FrameSettings} data */
-	function (data) {
-		frame.set(data);
-	});
+  api.post("Frame::getSettings", {},
+  /** @param {FrameSettings} data */
+  function (data) {
+    frame.set(data);
+  });
 });
+
+/**
+ * @typedef {Object} LycheeException
+ * @property {string} message     the message of the exception
+ * @property {string} [exception] the name of the exception class; only in developer mode
+ * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
+ * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
+ * @property {Array} [trace]      the backtrace; only in developer mode
+ * @property {?LycheeException} [previous_exception] the previous exception, if any; only in developer mode
+ */
+
+/**
+ * @typedef Photo
+ *
+ * @property {string}       id
+ * @property {string}       title
+ * @property {?string}      description
+ * @property {?string}      tags
+ * @property {number}       is_public
+ * @property {?string}      type
+ * @property {number}       filesize
+ * @property {?string}      iso
+ * @property {?string}      aperture
+ * @property {?string}      make
+ * @property {?string}      model
+ * @property {?string}      lens
+ * @property {?string}      shutter
+ * @property {?string}      focal
+ * @property {?number}      latitude
+ * @property {?number}      longitude
+ * @property {?number}      altitude
+ * @property {?number}      img_direction
+ * @property {?string}      location
+ * @property {?string}      taken_at
+ * @property {?string}      taken_at_orig_tz
+ * @property {boolean}      is_starred
+ * @property {?string}      live_photo_url
+ * @property {?string}      album_id
+ * @property {string}       checksum
+ * @property {string}       license
+ * @property {string}       created_at
+ * @property {string}       updated_at
+ * @property {?string}      live_photo_content_id
+ * @property {?string}      live_photo_checksum
+ * @property {SizeVariants} size_variants
+ * @property {boolean}      is_downloadable
+ * @property {boolean}      is_share_button_visible
+ * @property {?string}      [next_photo_id]
+ * @property {?string}      [previous_photo_id]
+ */
+
+/**
+ * @typedef SizeVariants
+ *
+ * @property {SizeVariant}  original
+ * @property {?SizeVariant} medium2x
+ * @property {?SizeVariant} medium
+ * @property {?SizeVariant} small2x
+ * @property {?SizeVariant} small
+ * @property {?SizeVariant} thumb2x
+ * @property {?SizeVariant} thumb
+ */
+
+/**
+ * @typedef SizeVariant
+ *
+ * @property {number} type
+ * @property {string} url
+ * @property {number} width
+ * @property {number} height
+ */
+
+/**
+ * @typedef Album
+ *
+ * @property {string}  id
+ * @property {string}  parent_id
+ * @property {string}  created_at
+ * @property {string}  updated_at
+ * @property {string}  title
+ * @property {?string} description
+ * @property {string}  license
+ * @property {Photo[]} photos
+ * @property {Album[]} [albums]
+ * @property {?string} cover_id
+ * @property {?Thumb}  thumb
+ * @property {string}  [owner_name] optional, only shown in authenticated mode
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
+ * @property {boolean} is_nsfw
+ * @property {boolean} grants_full_photo
+ * @property {boolean} requires_link
+ * @property {boolean} has_password
+ * @property {boolean} has_albums
+ * @property {?string} min_taken_at
+ * @property {?string} max_taken_at
+ * @property {?string} sorting_col
+ * @property {?string} sorting_order
+ */
+
+/**
+ * @typedef TagAlbum
+ *
+ * @property {string}  id
+ * @property {string}  created_at
+ * @property {string}  updated_at
+ * @property {string}  title
+ * @property {?string} description
+ * @property {string}  show_tags
+ * @property {Photo[]} photos
+ * @property {?Thumb}  thumb
+ * @property {string}  [owner_name] optional, only shown in authenticated mode
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
+ * @property {boolean} is_nsfw
+ * @property {boolean} grants_full_photo
+ * @property {boolean} requires_link
+ * @property {boolean} has_password
+ * @property {?string} min_taken_at
+ * @property {?string} max_taken_at
+ * @property {?string} sorting_col
+ * @property {?string} sorting_order
+ * @property {boolean} is_tag_album always true
+ */
+
+/**
+ * @typedef SmartAlbum
+ *
+ * @property {string}  id
+ * @property {string}  title
+ * @property {Photo[]} photos
+ * @property {?Thumb}  thumb
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
+ */
+
+/**
+ * @typedef Thumb
+ *
+ * @property {string}  id
+ * @property {string}  type
+ * @property {string}  thumb
+ * @property {?string} thumb2x
+ */
+
+/**
+ * @typedef SharingInfo
+ *
+ * DTO returned by `Sharing::list`
+ *
+ * @property {{id: number, album_id: string, user_id: number, username: string, title: string}[]} shared
+ * @property {{id: string, title: string}[]}                                                      albums
+ * @property {{id: number, username: string}[]}                                                   users
+ */
+
+/**
+ * @typedef SearchResult
+ *
+ * DTP returned by `Search::run`
+ *
+ * @property {(Album|TagAlbum)[]} albums
+ * @property {Photo[]}            photos
+ * @property {string}             checksum - checksum of the search result to
+ *                                           efficiently determine if the
+ *                                           result has changed since the last
+ *                                           time
+ */
+
+/**
+ * @typedef Albums
+ *
+ * TODO: Split smart albums and tag albums into separate collections
+ *
+ * @property {SmartAlbums} smart_albums - despite the name also includes tag albums
+ * @property {Album[]}     albums
+ * @property {Album[]}     shared_albums
+ */
+
+/**
+ * @typedef SmartAlbums
+ *
+ * TODO: Split smart albums and tag albums into separate collections
+ *
+ * @type {Object.<string, TagAlbum>}
+ *
+ * @property {SmartAlbum} unsorted
+ * @property {SmartAlbum} starred
+ * @property {SmartAlbum} public
+ * @property {SmartAlbum} recent
+ */
+
+/**
+ * The IDs of the built-in, smart albums.
+ *
+ * @type {Readonly<{RECENT: string, STARRED: string, PUBLIC: string, UNSORTED: string}>}
+ */
+var SmartAlbumID = Object.freeze({
+  UNSORTED: "unsorted",
+  STARRED: "starred",
+  PUBLIC: "public",
+  RECENT: "recent"
+});
+
+/**
+ * @typedef User
+ *
+ * @property {number}  id
+ * @property {string}  username
+ * @property {?string} email
+ * @property {boolean} may_upload
+ * @property {boolean} is_locked
+ */
+
+/**
+ * @typedef WebAuthnCredential
+ *
+ * @property {string} id
+ */
+
+/**
+ * @typedef PositionData
+ *
+ * @property {?string} id - album ID
+ * @property {?string} title - album title
+ * @property {Photo[]} photos
+ */
+
+/**
+ * @typedef EMailData
+ *
+ * @property {?string} email
+ */
+
+/**
+ * @typedef ConfigSetting
+ *
+ * @property {number} id
+ * @property {string} key
+ * @property {?string} value - TODO: this should have the correct type depending on `type_range`
+ * @property {string} cat
+ * @property {string} type_range
+ * @property {number} confidentiality - `0`: public setting, `2`: informational, `3`: admin only
+ * @property {string} description
+ */
+
+/**
+ * @typedef LogEntry
+ *
+ * @property {number} id
+ * @property {string} created_at
+ * @property {string} updated_at
+ * @property {string} type
+ * @property {string} function
+ * @property {number} line
+ * @property {string} text
+ */
+
+/**
+ * @typedef DiagnosticInfo
+ *
+ * @property {string[]} errors
+ * @property {string[]} infos
+ * @property {string[]} configs
+ * @property {number} update - `0`: not on master branch; `1`: up-to-date; `2`: not up-to-date; `3`: requires migration
+ */
+
+/**
+ * @typedef FrameSettings
+ *
+ * @property {number} refresh
+ */
+
+/**
+ * @typedef InitializationData
+ *
+ * @property {number} status - `0`: no config, `1`: unauthenticated, `2`: authenticated
+ * @property {boolean} admin
+ * @property {boolean} may_upload
+ * @property {boolean} is_locked
+ * @property {number} update_json - version number of latest available update
+ * @property {boolean} update_available
+ * @property {Object.<string, string>} locale
+ * @property {string} [username] - only if user is not the admin; TODO: Change that
+ * @property {ConfigurationData} config
+ * @property {DeviceConfiguration} config_device
+ */
+
+/**
+ * @typedef ConfigurationData
+ *
+ * @property {string}   album_subtitle_type
+ * @property {string}   check_for_updates       - actually a boolean
+ * @property {string}   [default_license]
+ * @property {string}   [delete_imported]       - actually a boolean
+ * @property {string}   downloadable            - actually a boolean
+ * @property {string}   [dropbox_key]
+ * @property {string}   editor_enabled          - actually a boolean
+ * @property {string}   full_photo              - actually a boolean
+ * @property {string}   image_overlay_type
+ * @property {string}   landing_page_enable     - actually a boolean
+ * @property {string}   lang
+ * @property {string[]} lang_available
+ * @property {string}   layout                  - actually a number: `0`, `1` or `2`
+ * @property {string}   [location]
+ * @property {string}   location_decoding       - actually a boolean
+ * @property {string}   location_show           - actually a boolean
+ * @property {string}   location_show_public    - actually a boolean
+ * @property {string}   map_display             - actually a boolean
+ * @property {string}   map_display_direction   - actually a boolean
+ * @property {string}   map_display_public      - actually a boolean
+ * @property {string}   map_include_subalbums   - actually a boolean
+ * @property {string}   map_provider
+ * @property {string}   new_photos_notification - actually a boolean
+ * @property {string}   nsfw_blur               - actually a boolean
+ * @property {string}   nsfw_visible            - actually a boolean
+ * @property {string}   nsfw_warning            - actually a boolean
+ * @property {string}   nsfw_warning_admin      - actually a boolean
+ * @property {string}   public_photos_hidden    - actually a boolean
+ * @property {string}   public_search           - actually a boolean
+ * @property {string}   share_button_visible    - actually a boolean
+ * @property {string}   [skip_duplicates]       - actually a boolean
+ * @property {string}   sorting_Albums
+ * @property {string}   sorting_Photos
+ * @property {string}   swipe_tolerance_x       - actually a number
+ * @property {string}   swipe_tolerance_y       - actually a number
+ * @property {string}   upload_processing_limit - actually a number
+ * @property {string}   version                 - actually a number
+ */
+
+/**
+ * @typedef DeviceConfiguration
+ *
+ * @property {string}  device_type
+ * @property {boolean} header_auto_hide
+ * @property {boolean} active_focus_on_page_load
+ * @property {boolean} enable_button_visibility
+ * @property {boolean} enable_button_share
+ * @property {boolean} enable_button_archive
+ * @property {boolean} enable_button_move
+ * @property {boolean} enable_button_trash
+ * @property {boolean} enable_button_fullscreen
+ * @property {boolean} enable_button_download
+ * @property {boolean} enable_button_add
+ * @property {boolean} enable_button_more
+ * @property {boolean} enable_button_rotate
+ * @property {boolean} enable_close_tab_on_esc
+ * @property {boolean} enable_contextmenu_header
+ * @property {boolean} hide_content_during_imgview
+ * @property {boolean} enable_tabindex
+ */

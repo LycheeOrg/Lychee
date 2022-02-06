@@ -358,30 +358,29 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject61 = _taggedTemplateLiteral(["\n\t\t\t\t<a class='basicModal__button' id='", "' title='", "'>\n\t\t\t\t\t", "", "\n\t\t\t\t</a>\n\t\t\t"], ["\n\t\t\t\t<a class='basicModal__button' id='", "' title='", "'>\n\t\t\t\t\t", "", "\n\t\t\t\t</a>\n\t\t\t"]),
     _templateObject62 = _taggedTemplateLiteral(["\n\t\t\t<div class='downloads'>\n\t\t"], ["\n\t\t\t<div class='downloads'>\n\t\t"]),
     _templateObject63 = _taggedTemplateLiteral(["\n\t\t\t</div>\n\t\t"], ["\n\t\t\t</div>\n\t\t"]),
-    _templateObject64 = _taggedTemplateLiteral(["?photoIDs=", "&kind=", ""], ["?photoIDs=", "&kind=", ""]),
-    _templateObject65 = _taggedTemplateLiteral(["\n\t\t\t<p>\n\t\t\t\t", "\n\t\t\t\t<br />\n\t\t\t\t<input class='text' readonly value='", "'>\n\t\t\t\t<a class='basicModal__button' title='", "'>\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</p>\n\t\t"], ["\n\t\t\t<p>\n\t\t\t\t", "\n\t\t\t\t<br />\n\t\t\t\t<input class='text' readonly value='", "'>\n\t\t\t\t<a class='basicModal__button' title='", "'>\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</p>\n\t\t"]),
-    _templateObject66 = _taggedTemplateLiteral(["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"], ["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"]),
-    _templateObject67 = _taggedTemplateLiteral(["\n\t\t</div>\n\t\t</div>\n\t"], ["\n\t\t</div>\n\t\t</div>\n\t"]),
-    _templateObject68 = _taggedTemplateLiteral(["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"], ["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"]),
-    _templateObject69 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
-    _templateObject70 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
-    _templateObject71 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
-    _templateObject72 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "], ["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "]),
-    _templateObject73 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
-    _templateObject74 = _taggedTemplateLiteral(["<h1>", "</h1>"], ["<h1>", "</h1>"]),
-    _templateObject75 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
-    _templateObject76 = _taggedTemplateLiteral(["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"], ["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"]),
-    _templateObject77 = _taggedTemplateLiteral(["\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
-    _templateObject78 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
-    _templateObject79 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
-    _templateObject80 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"]),
-    _templateObject81 = _taggedTemplateLiteral(["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_type\" name=\"typeAlbums\">\n\t\t\t\t\t\t\t\t<option value='created_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='title'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='description'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='max_taken_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='min_taken_at'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_order\" name=\"orderAlbums\">\n\t\t\t\t\t\t\t\t<option value='ASC'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_type\" name=\"typePhotos\">\n\t\t\t\t\t\t\t\t<option value='created_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='taken_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='title'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='description'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_starred'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='type'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t  \t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t  \t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_order\" name=\"orderPhotos\">\n\t\t\t\t\t\t\t\t<option value='ASC'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_type\" name=\"typeAlbums\">\n\t\t\t\t\t\t\t\t<option value='created_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='title'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='description'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='max_taken_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='min_taken_at'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_order\" name=\"orderAlbums\">\n\t\t\t\t\t\t\t\t<option value='ASC'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_type\" name=\"typePhotos\">\n\t\t\t\t\t\t\t\t<option value='created_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='taken_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='title'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='description'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_starred'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='type'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t  \t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t  \t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_order\" name=\"orderPhotos\">\n\t\t\t\t\t\t\t\t<option value='ASC'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"]),
-    _templateObject82 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
-    _templateObject83 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"], ["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"]),
-    _templateObject84 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t\t\t\t</div>"]),
-    _templateObject85 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t\t\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t\t\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t</div>"]),
-    _templateObject86 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t\t\t\t\t</div>"]),
-    _templateObject87 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"clear_logs_update\">\n\t\t\t\t<a id=\"Clean_Noise\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t\t<pre class=\"logs_diagnostics_view\"></pre>"], ["\n\t\t\t<div class=\"clear_logs_update\">\n\t\t\t\t<a id=\"Clean_Noise\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t\t<pre class=\"logs_diagnostics_view\"></pre>"]);
+    _templateObject64 = _taggedTemplateLiteral(["\n\t\t\t<p>\n\t\t\t\t", "\n\t\t\t\t<br />\n\t\t\t\t<input class='text' readonly value='", "'>\n\t\t\t\t<a class='basicModal__button' title='", "'>\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</p>\n\t\t"], ["\n\t\t\t<p>\n\t\t\t\t", "\n\t\t\t\t<br />\n\t\t\t\t<input class='text' readonly value='", "'>\n\t\t\t\t<a class='basicModal__button' title='", "'>\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</p>\n\t\t"]),
+    _templateObject65 = _taggedTemplateLiteral(["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"], ["\n\t\t<div class='directLinks'>\n\t\t\t", "\n\t\t\t<p class='less'>\n\t\t\t\t", "\n\t\t\t</p>\n\t\t\t<div class='imageLinks'>\n\t"]),
+    _templateObject66 = _taggedTemplateLiteral(["\n\t\t</div>\n\t\t</div>\n\t"], ["\n\t\t</div>\n\t\t</div>\n\t"]),
+    _templateObject67 = _taggedTemplateLiteral(["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"], ["<p style=\"color: #d92c34; font-size: 1.3em; font-weight: bold; text-transform: capitalize; text-align: center;\">", "</p>"]),
+    _templateObject68 = _taggedTemplateLiteral(["<span class='attr_", "_separator'>, </span>"], ["<span class='attr_", "_separator'>, </span>"]),
+    _templateObject69 = _taggedTemplateLiteral(["<span class='attr_", " search'>$", "</span>"], ["<span class='attr_", " search'>$", "</span>"]),
+    _templateObject70 = _taggedTemplateLiteral(["<span class='attr_", "'>$", "</span>"], ["<span class='attr_", "'>$", "</span>"]),
+    _templateObject71 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "], ["\n\t\t\t\t\t\t <tr>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t\t <td>", "</td>\n\t\t\t\t\t\t </tr>\n\t\t\t\t\t\t "]),
+    _templateObject72 = _taggedTemplateLiteral(["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "], ["\n\t\t\t\t <div class='sidebar__divider'>\n\t\t\t\t\t <h1>", "</h1>\n\t\t\t\t </div>\n\t\t\t\t <div id='tags'>\n\t\t\t\t\t <div class='attr_", "'>", "</div>\n\t\t\t\t\t ", "\n\t\t\t\t </div>\n\t\t\t\t "]),
+    _templateObject73 = _taggedTemplateLiteral(["<h1>", "</h1>"], ["<h1>", "</h1>"]),
+    _templateObject74 = _taggedTemplateLiteral(["<p>"], ["<p>"]),
+    _templateObject75 = _taggedTemplateLiteral(["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"], ["\n\t\t\t<p class='importServer'>\n\t\t\t\t", "\n\t\t\t\t<input class='text' name='path' type='text' placeholder='", "' value='", "uploads/import/'>\n\t\t\t</p>\n\t\t"]),
+    _templateObject76 = _taggedTemplateLiteral(["\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"], ["\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='delete' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='symlinks' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='skipduplicates' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='resyncmetadata' onchange='upload.check()'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>\n\t\t\t\t\t", "\n\t\t\t\t</p>\n\t\t\t</div>\n\t\t"]),
+    _templateObject77 = _taggedTemplateLiteral(["url(\"", "\")"], ["url(\"", "\")"]),
+    _templateObject78 = _taggedTemplateLiteral(["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"], ["linear-gradient(to bottom, rgba(0, 0, 0, .4), rgba(0, 0, 0, .4)), url(\"", "\")"]),
+    _templateObject79 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"], ["\n\t\t\t<div class=\"setLogin\">\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='oldUsername' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='oldPassword' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t  <p>$", "\n\t\t\t\t  <input name='username' class='text' type='text' placeholder='$", "' value=''>\n\t\t\t\t  <input name='password' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t\t  <input name='confirm' class='text' type='password' placeholder='$", "' value=''>\n\t\t\t  </p>\n\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t<a id=\"basicModal__action_password_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t</div>\n\t\t\t</div>"]),
+    _templateObject80 = _taggedTemplateLiteral(["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_type\" name=\"typeAlbums\">\n\t\t\t\t\t\t\t\t<option value='created_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='title'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='description'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='max_taken_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='min_taken_at'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_order\" name=\"orderAlbums\">\n\t\t\t\t\t\t\t\t<option value='ASC'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_type\" name=\"typePhotos\">\n\t\t\t\t\t\t\t\t<option value='created_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='taken_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='title'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='description'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_starred'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='type'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t  \t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t  \t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_order\" name=\"orderPhotos\">\n\t\t\t\t\t\t\t\t<option value='ASC'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"], ["\n\t\t\t\t<div class=\"setSorting\">\n\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_type\" name=\"typeAlbums\">\n\t\t\t\t\t\t\t\t<option value='created_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='title'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='description'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='max_taken_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='min_taken_at'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_albums_order\" name=\"orderAlbums\">\n\t\t\t\t\t\t\t\t<option value='ASC'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<p>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_type\" name=\"typePhotos\">\n\t\t\t\t\t\t\t\t<option value='created_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='taken_at'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='title'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='description'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_public'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='is_starred'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='type'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t  \t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t  \t\t<span class=\"select\">\n\t\t\t\t\t\t\t<select id=\"settings_photos_order\" name=\"orderPhotos\">\n\t\t\t\t\t\t\t\t<option value='ASC'>$", "</option>\n\t\t\t\t\t\t\t\t<option value='DESC'>$", "</option>\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t</span>\n\t\t\t\t\t\t$", "\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<!--<a id=\"basicModal__cancel\" class=\"basicModal__button \">Cancel</a>-->\n\t\t\t\t\t\t<a id=\"basicModal__action_sorting_change\" class=\"basicModal__button \">$", "</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t"]),
+    _templateObject81 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"], ["\n\t\t\t<div class=\"setCSS\">\n\t\t\t\t<a id=\"basicModal__action_more\" class=\"basicModal__button basicModal__button_MORE\">", "</a>\n\t\t\t</div>\n\t\t\t"]),
+    _templateObject82 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"], ["\n\t\t\t\t\t\t<div id=\"fullSettings\">\n\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t<p class=\"warning\">\n\t\t\t\t\t\t", "\n\t\t\t\t\t\t</p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t"]),
+    _templateObject83 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t\t\t<div class=\"setting_category\">\n\t\t\t\t\t\t\t\t\t<p>$", "</p>\n\t\t\t\t\t\t\t\t</div>"]),
+    _templateObject84 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t\t\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t\t\t\t<p>\n\t\t\t\t\t\t\t\t\t<span class=\"text\">$", "</span>\n\t\t\t\t\t\t\t\t\t<input class=\"text\" name=\"$", "\" type=\"text\" value=\"$", "\" placeholder=\"\" />\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t</div>"]),
+    _templateObject85 = _taggedTemplateLiteral(["\n\t\t\t\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t\t\t\t\t</div>"], ["\n\t\t\t\t\t\t<a id=\"FullSettingsSave_button\"  class=\"basicModal__button basicModal__button_SAVE\">", "</a>\n\t\t\t\t\t\t</div>"]),
+    _templateObject86 = _taggedTemplateLiteral(["\n\t\t\t<div class=\"clear_logs_update\">\n\t\t\t\t<a id=\"Clean_Noise\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t\t<pre class=\"logs_diagnostics_view\"></pre>"], ["\n\t\t\t<div class=\"clear_logs_update\">\n\t\t\t\t<a id=\"Clean_Noise\" class=\"basicModal__button\">\n\t\t\t\t\t", "\n\t\t\t\t</a>\n\t\t\t</div>\n\t\t\t<pre class=\"logs_diagnostics_view\"></pre>"]);
 
 function _taggedTemplateLiteral(strings, raw) { return Object.freeze(Object.defineProperties(strings, { raw: { value: Object.freeze(raw) } })); }
 
@@ -1657,7 +1656,7 @@ album.share = function (service) {
  * @returns {void}
  */
 album.getArchive = function (albumIDs) {
-	location.href = "api/Album::getArchive?" + $.param({ albumIDs: albumIDs });
+	location.href = "api/Album::getArchive?albumIDs=" + albumIDs.join();
 };
 
 /**
@@ -2316,7 +2315,7 @@ build.album = function (data) {
 
 	if (album.isUploadable() && !disabled) {
 		var isCover = album.json && album.json.cover_id && data.thumb.id === album.json.cover_id;
-		html += lychee.html(_templateObject21, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.RECENT ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		html += lychee.html(_templateObject21, data.is_nsfw ? "badge--nsfw" : "", build.iconic("warning"), data.id === SmartAlbumID.STARRED ? "badge--star" : "", build.iconic("star"), data.id === SmartAlbumID.RECENT ? "badge--visible badge--list" : "", build.iconic("clock"), data.id === SmartAlbumID.PUBLIC || data.is_public ? "badge--visible" : "", data.requires_link ? "badge--hidden" : "badge--not--hidden", build.iconic("eye"), data.id === SmartAlbumID.UNSORTED ? "badge--visible" : "", build.iconic("list"), data.has_password ? "badge--visible" : "", build.iconic("lock-locked"), data.is_tag_album ? "badge--tag" : "", build.iconic("tag"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	if (data.albums && data.albums.length > 0 || data.has_albums) {
@@ -2346,10 +2345,6 @@ build.photo = function (data) {
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
 	var isLivePhoto = data.live_photo_url !== "" && data.live_photo_url !== null;
 
-	// My IDE complains that `thumb` is always non-null and therefore the
-	// first branch of the condition is never taken.
-	// I am willing to agree.
-	// TODO: Revise this code, whether the first branch is really needed.
 	if (data.size_variants.thumb === null) {
 		if (isLivePhoto) {
 			thumbnail = "<span class=\"thumbimg\"><img src='img/live-photo-icon.png' alt='Photo thumbnail' data-overlay='false' draggable='false' data-tabindex='" + tabindex.get_next_tab_index() + "'></span>";
@@ -2795,7 +2790,7 @@ contextMenu.album = function (albumID, e) {
 		}
 	}, {
 		title: build.iconic("folder") + lychee.locale["MOVE"],
-		visible: lychee.sub_albums,
+		visible: true,
 		fn: function fn() {
 			basicContext.close();
 			contextMenu.move([albumID], e, album.setAlbum, "ROOT");
@@ -2862,7 +2857,7 @@ contextMenu.albumMulti = function (albumIDs, e) {
 		}
 	}, {
 		title: build.iconic("folder") + lychee.locale["MOVE_ALL"],
-		visible: lychee.sub_albums,
+		visible: true,
 		fn: function fn() {
 			basicContext.close();
 			contextMenu.move(albumIDs, e, album.setAlbum, "ROOT");
@@ -3055,14 +3050,14 @@ contextMenu.photo = function (photoID, e) {
  * @returns {number}
  */
 contextMenu.countSubAlbums = function (photoIDs) {
-	if (album.albums === null || album.albums.length === 0) {
+	if (album.json.albums === null || album.json.albums.length === 0) {
 		return 0;
 	}
 
 	var count = 0;
 
 	photoIDs.forEach(function (id) {
-		if (album.albums.findIndex(function (a) {
+		if (album.json.albums.findIndex(function (a) {
 			return a.id === id;
 		}) !== -1) {
 			count++;
@@ -4873,183 +4868,39 @@ lychee.init = function () {
 
 	lychee.adjustContentHeight();
 
-	// TODO: Write a jsDoc in `./script/3rd-party/backend.js` for the `data` object (that might get tedious, because it includes all config options)
-
-	api.post("Session::init", {}, function (data) {
+	api.post("Session::init", {},
+	/** @param {InitializationData} data */
+	function (data) {
+		// TODO: The case with "status = 0" (i.e. no configuration) should result in a HTTP error response
 		if (data.status === 0) {
 			// No configuration
-
 			lychee.setMode("public");
-
 			header.dom().hide();
 			lychee.content.hide();
 			$("body").append(build.no_content("cog"));
 			settings.createConfig();
 
-			return true;
+			return;
 		}
 
-		lychee.sub_albums = data.sub_albums || false;
-		lychee.update_json = data.update_json;
-		lychee.update_available = data.update_available;
-		lychee.landing_page_enable = data.config.landing_page_enable && data.config.landing_page_enable === "1" || false;
-		lychee.new_photos_notification = false;
+		lychee.parseInitializationData(data);
 
-		// TODO: Let the backend report the version as a proper object with properties for major, minor and patch level
-		lychee.versionCode = data.config.version;
-		if (lychee.versionCode !== "") {
-			var digits = lychee.versionCode.match(/.{1,2}/g);
-			lychee.version = parseInt(digits[0]).toString() + "." + parseInt(digits[1]).toString() + "." + parseInt(digits[2]).toString();
-		}
-
-		// we copy the locale that exists only.
-		// This ensure forward and backward compatibility.
-		// e.g. if the front localization is unfished in a language
-		// or if we need to change some locale string
-		for (var key in data.locale) {
-			lychee.locale[key] = data.locale[key];
-		}
-
-		var validatedSwipeToleranceX = data.config.swipe_tolerance_x && !isNaN(parseInt(data.config.swipe_tolerance_x)) && parseInt(data.config.swipe_tolerance_x) || 150;
-		var validatedSwipeToleranceY = data.config.swipe_tolerance_y && !isNaN(parseInt(data.config.swipe_tolerance_y)) && parseInt(data.config.swipe_tolerance_y) || 250;
-
-		// Check status
-		// 0 = No configuration
-		// 1 = Logged out
-		// 2 = Logged in
 		if (data.status === 2) {
 			// Logged in
-
-			// TODO: Let the backend return `sorting_Photos` as a proper object with separate properties for column and direction (not as a string), as we split it in `view.js` anyway again
-			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || "";
-			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || "";
-			lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
-			lychee.dropboxKey = data.config.dropbox_key || data.config.dropboxKey || "";
-			lychee.location = data.config.location || "";
-			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates;
-			lychee.lang = data.config.lang || "";
-			lychee.lang_available = data.config.lang_available || {};
-			lychee.layout = data.config.layout || 1;
-			lychee.public_search = data.config.public_search && data.config.public_search === "1" || false;
-			lychee.image_overlay_type = !data.config.image_overlay_type ? "exif" : data.config.image_overlay_type;
-			lychee.image_overlay_type_default = lychee.image_overlay_type;
-			lychee.map_display = data.config.map_display && data.config.map_display === "1" || false;
-			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === "1" || false;
-			lychee.map_display_direction = data.config.map_display_direction && data.config.map_display_direction === "1" || false;
-			lychee.map_provider = !data.config.map_provider ? "Wikimedia" : data.config.map_provider;
-			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === "1" || false;
-			lychee.location_decoding = data.config.location_decoding && data.config.location_decoding === "1" || false;
-			lychee.location_decoding_caching_type = !data.config.location_decoding_caching_type ? "Harddisk" : data.config.location_decoding_caching_type;
-			lychee.location_show = data.config.location_show && data.config.location_show === "1" || false;
-			lychee.location_show_public = data.config.location_show_public && data.config.location_show_public === "1" || false;
-			lychee.swipe_tolerance_x = validatedSwipeToleranceX;
-			lychee.swipe_tolerance_y = validatedSwipeToleranceY;
-
-			lychee.default_license = data.config.default_license || "none";
-			lychee.css = data.config.css || "";
-			lychee.full_photo = data.config.full_photo == null || data.config.full_photo === "1";
-			lychee.downloadable = data.config.downloadable && data.config.downloadable === "1" || false;
-			lychee.public_photos_hidden = data.config.public_photos_hidden == null || data.config.public_photos_hidden === "1";
-			lychee.share_button_visible = data.config.share_button_visible && data.config.share_button_visible === "1" || false;
-			lychee.delete_imported = data.config.delete_imported && data.config.delete_imported === "1";
-			lychee.import_via_symlink = data.config.import_via_symlink && data.config.import_via_symlink === "1";
-			lychee.skip_duplicates = data.config.skip_duplicates && data.config.skip_duplicates === "1";
-			lychee.nsfw_visible = data.config.nsfw_visible && data.config.nsfw_visible === "1" || false;
-			lychee.nsfw_blur = data.config.nsfw_blur && data.config.nsfw_blur === "1" || false;
-			lychee.nsfw_warning = data.config.nsfw_warning_admin && data.config.nsfw_warning_admin === "1" || false;
-
-			lychee.header_auto_hide = data.config_device.header_auto_hide;
-			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
-			lychee.enable_button_visibility = data.config_device.enable_button_visibility;
-			lychee.enable_button_share = data.config_device.enable_button_share;
-			lychee.enable_button_archive = data.config_device.enable_button_archive;
-			lychee.enable_button_move = data.config_device.enable_button_move;
-			lychee.enable_button_trash = data.config_device.enable_button_trash;
-			lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen;
-			lychee.enable_button_download = data.config_device.enable_button_download;
-			lychee.enable_button_add = data.config_device.enable_button_add;
-			lychee.enable_button_more = data.config_device.enable_button_more;
-			lychee.enable_button_rotate = data.config_device.enable_button_rotate;
-			lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc;
-			lychee.enable_tabindex = data.config_device.enable_tabindex;
-			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
-			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
-			lychee.device_type = data.config_device.device_type || "desktop"; // we set default as Desktop
-
-			lychee.editor_enabled = data.config.editor_enabled && data.config.editor_enabled === "1" || false;
-
-			lychee.nsfw_visible_saved = lychee.nsfw_visible;
-
-			lychee.new_photos_notification = data.config.new_photos_notification && data.config.new_photos_notification === "1" || false;
-
-			// TODO: If configuration management is re-factored on the backend, remember to use proper types in the first place
-			lychee.upload_processing_limit = parseInt(data.config.upload_processing_limit);
-			// when null or any non stringified numeric value is sent from the server we get NaN.
-			// we fix this.
-			if (isNaN(lychee.upload_processing_limit)) lychee.upload_processing_limit = 4;
-
-			// leftMenu
 			leftMenu.build();
 			leftMenu.bind();
-
-			lychee.may_upload = data.admin || data.may_upload;
-			lychee.admin = data.admin;
-			lychee.is_locked = data.is_locked;
-			lychee.username = data.username;
 			lychee.setMode("logged_in");
 
 			// Show dialog when there is no username and password
+			// TODO: Refactor this. At least rename the flag `login` to something more understandable like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. the initial user should be created as part of the installation routine.
+			// In particular it is completely insane to build the UI as if the admin user was successfully authenticated.
+			// This might leak confidential photos to anybody if the DB is filled
+			// with photos and the admin password reset to `null`.
 			if (data.config.login === false) settings.createLogin();
-		} else if (data.status === 1) {
-			// Logged out
+		}
 
-			// TODO remove sortingPhoto once the v4 is out
-			// TODO @ildyria who wrote the TODO above: v4 has been out for a long time now, why is the TODO still here?
-			lychee.sortingPhotos = data.config.sorting_Photos || data.config.sortingPhotos || "";
-			lychee.sortingAlbums = data.config.sorting_Albums || data.config.sortingAlbums || "";
-			lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
-			lychee.checkForUpdates = data.config.check_for_updates || data.config.checkForUpdates;
-			lychee.layout = data.config.layout || "1";
-			lychee.public_search = data.config.public_search && data.config.public_search === "1" || false;
-			lychee.image_overlay_type = !data.config.image_overlay_type ? "exif" : data.config.image_overlay_type;
-			lychee.image_overlay_type_default = lychee.image_overlay_type;
-			lychee.map_display = data.config.map_display && data.config.map_display === "1" || false;
-			lychee.map_display_public = data.config.map_display_public && data.config.map_display_public === "1" || false;
-			lychee.map_display_direction = data.config.map_display_direction && data.config.map_display_direction === "1" || false;
-			lychee.map_provider = !data.config.map_provider ? "Wikimedia" : data.config.map_provider;
-			lychee.map_include_subalbums = data.config.map_include_subalbums && data.config.map_include_subalbums === "1" || false;
-			lychee.location_show = data.config.location_show && data.config.location_show === "1" || false;
-			lychee.location_show_public = data.config.location_show_public && data.config.location_show_public === "1" || false;
-			lychee.swipe_tolerance_x = validatedSwipeToleranceX;
-			lychee.swipe_tolerance_y = validatedSwipeToleranceY;
-
-			lychee.nsfw_visible = data.config.nsfw_visible && data.config.nsfw_visible === "1" || false;
-			lychee.nsfw_blur = data.config.nsfw_blur && data.config.nsfw_blur === "1" || false;
-			lychee.nsfw_warning = data.config.nsfw_warning && data.config.nsfw_warning === "1" || false;
-
-			lychee.header_auto_hide = data.config_device.header_auto_hide;
-			lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
-			lychee.enable_button_visibility = data.config_device.enable_button_visibility;
-			lychee.enable_button_share = data.config_device.enable_button_share;
-			lychee.enable_button_archive = data.config_device.enable_button_archive;
-			lychee.enable_button_move = data.config_device.enable_button_move;
-			lychee.enable_button_trash = data.config_device.enable_button_trash;
-			lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen;
-			lychee.enable_button_download = data.config_device.enable_button_download;
-			lychee.enable_button_add = data.config_device.enable_button_add;
-			lychee.enable_button_more = data.config_device.enable_button_more;
-			lychee.enable_button_rotate = data.config_device.enable_button_rotate;
-			lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc;
-			lychee.enable_tabindex = data.config_device.enable_tabindex;
-			lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
-			lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
-			lychee.device_type = data.config_device.device_type || "desktop"; // we set default as Desktop
-			lychee.nsfw_visible_saved = lychee.nsfw_visible;
-
-			// console.log(lychee.full_photo);
+		if (data.status === 1) {
 			lychee.setMode("public");
-		} else {
-			// should not happen.
 		}
 
 		if (isFirstInitialization) {
@@ -5060,6 +4911,131 @@ lychee.init = function () {
 			lychee.load();
 		}
 	});
+};
+
+/**
+ * @param {InitializationData} data
+ * @returns {void}
+ */
+lychee.parseInitializationData = function (data) {
+	lychee.update_json = data.update_json;
+	lychee.update_available = data.update_available;
+
+	// TODO: Let the backend report the version as a proper object with properties for major, minor and patch level
+	lychee.versionCode = data.config.version;
+	if (lychee.versionCode !== "") {
+		var digits = lychee.versionCode.match(/.{1,2}/g);
+		lychee.version = parseInt(digits[0]).toString() + "." + parseInt(digits[1]).toString() + "." + parseInt(digits[2]).toString();
+	}
+
+	// we copy the locale that exists only.
+	// This ensures forward and backward compatibility.
+	// e.g. if the front localization is unfinished in a language
+	// or if we need to change some locale string
+	for (var key in data.locale) {
+		lychee.locale[key] = data.locale[key];
+	}
+
+	// Check status
+	// 0 = No configuration
+	// 1 = Logged out
+	// 2 = Logged in
+	if (data.status === 2) {
+		// Logged in
+		lychee.parsePublicInitializationData(data);
+		lychee.parseProtectedInitializationData(data);
+
+		lychee.may_upload = data.admin || data.may_upload;
+		lychee.admin = data.admin;
+		lychee.is_locked = data.is_locked;
+		lychee.username = data.username;
+	} else if (data.status === 1) {
+		lychee.parsePublicInitializationData(data);
+	} else {
+		// should not happen.
+	}
+};
+
+/**
+ * Parses the configuration settings which are always available.
+ *
+ * TODO: If configuration management is re-factored on the backend, remember to use proper types in the first place
+ *
+ * @param {InitializationData} data
+ * @returns {void}
+ */
+lychee.parsePublicInitializationData = function (data) {
+	// TODO: Let the backend return `sorting_Photos` as a proper object with separate properties for column and direction (not as a string), as we split it in `view.js` anyway again
+	lychee.sortingPhotos = data.config.sorting_Photos || "";
+	lychee.sortingAlbums = data.config.sorting_Albums || "";
+	lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
+	lychee.checkForUpdates = data.config.check_for_updates;
+	lychee.layout = Number.parseInt(data.config.layout, 10) || 0;
+	lychee.landing_page_enable = data.config.landing_page_enable === "1";
+	lychee.public_search = data.config.public_search === "1";
+	lychee.image_overlay_type = data.config.image_overlay_type || "exif";
+	lychee.image_overlay_type_default = lychee.image_overlay_type;
+	lychee.map_display = data.config.map_display === "1";
+	lychee.map_display_public = data.config.map_display_public === "1";
+	lychee.map_display_direction = data.config.map_display_direction === "1";
+	lychee.map_provider = data.config.map_provider || "Wikimedia";
+	lychee.map_include_subalbums = data.config.map_include_subalbums === "1";
+	lychee.location_show = data.config.location_show === "1";
+	lychee.location_show_public = data.config.location_show_public === "1";
+	lychee.swipe_tolerance_x = Number.parseInt(data.config.swipe_tolerance_x, 10) || 150;
+	lychee.swipe_tolerance_y = Number.parseInt(data.config.swipe_tolerance_y, 10) || 250;
+
+	lychee.nsfw_visible = data.config.nsfw_visible === "1";
+	lychee.nsfw_visible_saved = lychee.nsfw_visible;
+	lychee.nsfw_blur = data.config.nsfw_blur === "1";
+	lychee.nsfw_warning = data.config.nsfw_warning === "1";
+
+	lychee.header_auto_hide = data.config_device.header_auto_hide;
+	lychee.active_focus_on_page_load = data.config_device.active_focus_on_page_load;
+	lychee.enable_button_visibility = data.config_device.enable_button_visibility;
+	lychee.enable_button_share = data.config_device.enable_button_share;
+	lychee.enable_button_archive = data.config_device.enable_button_archive;
+	lychee.enable_button_move = data.config_device.enable_button_move;
+	lychee.enable_button_trash = data.config_device.enable_button_trash;
+	lychee.enable_button_fullscreen = data.config_device.enable_button_fullscreen;
+	lychee.enable_button_download = data.config_device.enable_button_download;
+	lychee.enable_button_add = data.config_device.enable_button_add;
+	lychee.enable_button_more = data.config_device.enable_button_more;
+	lychee.enable_button_rotate = data.config_device.enable_button_rotate;
+	lychee.enable_close_tab_on_esc = data.config_device.enable_close_tab_on_esc;
+	lychee.enable_tabindex = data.config_device.enable_tabindex;
+	lychee.enable_contextmenu_header = data.config_device.enable_contextmenu_header;
+	lychee.hide_content_during_imgview = data.config_device.hide_content_during_imgview;
+	lychee.device_type = data.config_device.device_type || "desktop"; // we set default as Desktop
+};
+
+/**
+ * Parses the configuration settings which are only available, if a user is authenticated.
+ *
+ * TODO: If configuration management is re-factored on the backend, remember to use proper types in the first place
+ *
+ * @param {InitializationData} data
+ * @returns {void}
+ */
+lychee.parseProtectedInitializationData = function (data) {
+	lychee.dropboxKey = data.config.dropbox_key || "";
+	lychee.location = data.config.location || "";
+	lychee.checkForUpdates = data.config.check_for_updates === "1";
+	lychee.lang = data.config.lang || "";
+	lychee.lang_available = data.config.lang_available || [];
+	lychee.location_decoding = data.config.location_decoding === "1";
+	lychee.default_license = data.config.default_license || "none";
+	lychee.css = data.config.css || "";
+	lychee.full_photo = data.config.full_photo === "1";
+	lychee.downloadable = data.config.downloadable === "1";
+	lychee.public_photos_hidden = data.config.public_photos_hidden === "1";
+	lychee.share_button_visible = data.config.share_button_visible === "1";
+	lychee.delete_imported = data.config.delete_imported === "1";
+	lychee.import_via_symlink = data.config.import_via_symlink === "1";
+	lychee.skip_duplicates = data.config.skip_duplicates === "1";
+	lychee.editor_enabled = data.config.editor_enabled === "1";
+	lychee.new_photos_notification = data.config.new_photos_notification === "1";
+	lychee.upload_processing_limit = Number.parseInt(data.config.upload_processing_limit, 10) || 4;
 };
 
 /**
@@ -8285,7 +8261,7 @@ _photo3.getArchive = function (photoIDs) {
 			_photo3.getArchive(photoIDs, kind);
 		});
 	} else {
-		location.href = "api/Photo::getArchive" + lychee.html(_templateObject64, photoIDs.join(), kind);
+		location.href = "api/Photo::getArchive?photoIDs=" + photoIDs.join() + "&kind=" + kind;
 	}
 };
 
@@ -8319,10 +8295,10 @@ _photo3.showDirectLinks = function (photoID) {
   * @returns {string} - HTML
   */
 	var buildLine = function buildLine(label, url) {
-		return lychee.html(_templateObject65, label, url, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"));
+		return lychee.html(_templateObject64, label, url, lychee.locale["URL_COPY_TO_CLIPBOARD"], build.iconic("copy", "ionicons"));
 	};
 
-	var msg = lychee.html(_templateObject66, buildLine(lychee.locale["PHOTO_VIEW"], _photo3.getViewLink(photoID)), lychee.locale["PHOTO_DIRECT_LINKS_TO_IMAGES"]);
+	var msg = lychee.html(_templateObject65, buildLine(lychee.locale["PHOTO_VIEW"], _photo3.getViewLink(photoID)), lychee.locale["PHOTO_DIRECT_LINKS_TO_IMAGES"]);
 
 	if (_photo3.json.size_variants.original.url) {
 		msg += buildLine(lychee.locale["PHOTO_FULL"] + " (" + _photo3.json.size_variants.original.width + "x" + _photo3.json.size_variants.original.height + ")", lychee.getBaseUrl() + _photo3.json.size_variants.original.url);
@@ -8349,7 +8325,7 @@ _photo3.showDirectLinks = function (photoID) {
 		msg += buildLine(" " + lychee.locale["PHOTO_LIVE_VIDEO"] + " ", lychee.getBaseUrl() + _photo3.json.live_photo_url);
 	}
 
-	msg += lychee.html(_templateObject67);
+	msg += lychee.html(_templateObject66);
 
 	basicModal.show({
 		body: msg,
@@ -9126,7 +9102,7 @@ settings.save_enter = function (e) {
 	var cancel = {};
 
 	action.title = lychee.locale["ENTER"];
-	action.msg = lychee.html(_templateObject68, lychee.locale["SAVE_RISK"]);
+	action.msg = lychee.html(_templateObject67, lychee.locale["SAVE_RISK"]);
 
 	cancel.title = lychee.locale["CANCEL"];
 
@@ -9748,18 +9724,18 @@ _sidebar.render = function (structure) {
 					function (prev, cur) {
 						// Add separator if needed
 						if (prev !== "") {
-							prev += lychee.html(_templateObject69, row.kind);
+							prev += lychee.html(_templateObject68, row.kind);
 						}
-						return prev + lychee.html(_templateObject70, row.kind, cur);
+						return prev + lychee.html(_templateObject69, row.kind, cur);
 					}, "");
 				} else {
-					value = lychee.html(_templateObject71, row.kind, value);
+					value = lychee.html(_templateObject70, row.kind, value);
 				}
 
 				// Add edit-icon to the value when editable
 				if (row.editable === true) value += " " + build.editIcon("edit_" + row.kind);
 
-				_html += lychee.html(_templateObject72, row.title, value);
+				_html += lychee.html(_templateObject71, row.title, value);
 			}
 		});
 
@@ -9780,7 +9756,7 @@ _sidebar.render = function (structure) {
 		// Add edit-icon to the value when editable
 		if (section.editable === true) editable = build.editIcon("edit_tags");
 
-		_html += lychee.html(_templateObject73, section.title, section.title.toLowerCase(), section.value, editable);
+		_html += lychee.html(_templateObject72, section.title, section.title.toLowerCase(), section.value, editable);
 
 		return _html;
 	};
@@ -10099,7 +10075,7 @@ var u2f = {
  */
 u2f.is_available = function () {
 	if (!window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-		var msg = lychee.html(_templateObject74, lychee.locale["U2F_NOT_SECURE"]);
+		var msg = lychee.html(_templateObject73, lychee.locale["U2F_NOT_SECURE"]);
 
 		basicModal.show({
 			body: msg,
@@ -10554,7 +10530,7 @@ upload.start = {
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject75) + lychee.locale["UPLOAD_IMPORT_INSTR"] + (" <input class='text' name='link' type='text' placeholder='https://' value='" + preselectedUrl + "'></p>"),
+			body: lychee.html(_templateObject74) + lychee.locale["UPLOAD_IMPORT_INSTR"] + (" <input class='text' name='link' type='text' placeholder='https://' value='" + preselectedUrl + "'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale["UPLOAD_IMPORT"],
@@ -10783,8 +10759,8 @@ upload.start = {
 			upload.show(lychee.locale["UPLOAD_IMPORT_SERVER"], [{ name: data.path }], runUpload, cancelUpload);
 		}; // action
 
-		var msg = lychee.html(_templateObject76, lychee.locale["UPLOAD_IMPORT_SERVER_INSTR"], lychee.locale["UPLOAD_ABSOLUTE_PATH"], lychee.location);
-		msg += lychee.html(_templateObject77, build.iconic("check"), lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"], lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK"], lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES"], lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA"], lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA_EXPL"]);
+		var msg = lychee.html(_templateObject75, lychee.locale["UPLOAD_IMPORT_SERVER_INSTR"], lychee.locale["UPLOAD_ABSOLUTE_PATH"], lychee.location);
+		msg += lychee.html(_templateObject76, build.iconic("check"), lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS"], lychee.locale["UPLOAD_IMPORT_DELETE_ORIGINALS_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK"], lychee.locale["UPLOAD_IMPORT_VIA_SYMLINK_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES"], lychee.locale["UPLOAD_IMPORT_SKIP_DUPLICATES_EXPL"], build.iconic("check"), lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA"], lychee.locale["UPLOAD_IMPORT_RESYNC_METADATA_EXPL"]);
 
 		basicModal.show({
 			body: msg,
@@ -11219,7 +11195,7 @@ view.album = {
 			}
 			if (album.json.photos) {
 				// Build photos
-				albums.json.photos.forEach(function (_photos) {
+				album.json.photos.forEach(function (_photos) {
 					photosData += build.photo(_photos, !album.isUploadable());
 				});
 			}
@@ -11443,8 +11419,8 @@ view.album = {
 				}
 				/** @type {number[]} */
 				var ratio = album.json.photos.map(function (_photo) {
-					var height = this.size_variants.original.height;
-					var width = this.size_variants.original.width;
+					var height = _photo.size_variants.original.height;
+					var width = _photo.size_variants.original.width;
 					var ratio = height > 0 ? width / height : 1;
 					// If there is no small and medium size variants for videos,
 					// we have to fall back to square thumbs
@@ -11835,7 +11811,7 @@ view.photo = {
 				// Image is still loading.  Display the thumb version in the
 				// background.
 				if (ret.thumb !== "") {
-					img.css("background-image", lychee.html(_templateObject78, ret.thumb));
+					img.css("background-image", lychee.html(_templateObject77, ret.thumb));
 				}
 
 				// Don't preload next/prev until the requested image is
@@ -11858,7 +11834,7 @@ view.photo = {
 			} else if (nextPhotoInAlbum.type.indexOf("video") > -1) {
 				thumbUrl = "img/play-icon.png";
 			}
-			$nextArrow.css("background-image", lychee.html(_templateObject79, thumbUrl));
+			$nextArrow.css("background-image", lychee.html(_templateObject78, thumbUrl));
 		}
 
 		if (prevPhotoInAlbum === null || lychee.viewMode === true) {
@@ -11871,7 +11847,7 @@ view.photo = {
 			} else if (prevPhotoInAlbum.type.indexOf("video") > -1) {
 				_thumbUrl = "img/play-icon.png";
 			}
-			$previousArrow.css("background-image", lychee.html(_templateObject79, _thumbUrl));
+			$previousArrow.css("background-image", lychee.html(_templateObject78, _thumbUrl));
 		}
 	},
 
@@ -12010,7 +11986,7 @@ view.settings = {
    * @returns {void}
    */
 		setLogin: function setLogin() {
-			var msg = lychee.html(_templateObject80, lychee.locale["PASSWORD_TITLE"], lychee.locale["USERNAME_CURRENT"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"]);
+			var msg = lychee.html(_templateObject79, lychee.locale["PASSWORD_TITLE"], lychee.locale["USERNAME_CURRENT"], lychee.locale["PASSWORD_CURRENT"], lychee.locale["PASSWORD_TEXT"], lychee.locale["LOGIN_USERNAME"], lychee.locale["LOGIN_PASSWORD"], lychee.locale["LOGIN_PASSWORD_CONFIRM"], lychee.locale["PASSWORD_CHANGE"]);
 
 			$(".settings_view").append(msg);
 
@@ -12035,7 +12011,7 @@ view.settings = {
    * @returns {void}
    */
 		setSorting: function setSorting() {
-			var msg = lychee.html(_templateObject81, lychee.locale["SORT_ALBUM_BY_1"], lychee.locale["SORT_ALBUM_SELECT_1"], lychee.locale["SORT_ALBUM_SELECT_2"], lychee.locale["SORT_ALBUM_SELECT_3"], lychee.locale["SORT_ALBUM_SELECT_4"], lychee.locale["SORT_ALBUM_SELECT_5"], lychee.locale["SORT_ALBUM_SELECT_6"], lychee.locale["SORT_ALBUM_BY_2"], lychee.locale["SORT_ASCENDING"], lychee.locale["SORT_DESCENDING"], lychee.locale["SORT_ALBUM_BY_3"], lychee.locale["SORT_PHOTO_BY_1"], lychee.locale["SORT_PHOTO_SELECT_1"], lychee.locale["SORT_PHOTO_SELECT_2"], lychee.locale["SORT_PHOTO_SELECT_3"], lychee.locale["SORT_PHOTO_SELECT_4"], lychee.locale["SORT_PHOTO_SELECT_5"], lychee.locale["SORT_PHOTO_SELECT_6"], lychee.locale["SORT_PHOTO_SELECT_7"], lychee.locale["SORT_PHOTO_BY_2"], lychee.locale["SORT_ASCENDING"], lychee.locale["SORT_DESCENDING"], lychee.locale["SORT_PHOTO_BY_3"], lychee.locale["SORT_CHANGE"]);
+			var msg = lychee.html(_templateObject80, lychee.locale["SORT_ALBUM_BY_1"], lychee.locale["SORT_ALBUM_SELECT_1"], lychee.locale["SORT_ALBUM_SELECT_2"], lychee.locale["SORT_ALBUM_SELECT_3"], lychee.locale["SORT_ALBUM_SELECT_4"], lychee.locale["SORT_ALBUM_SELECT_5"], lychee.locale["SORT_ALBUM_SELECT_6"], lychee.locale["SORT_ALBUM_BY_2"], lychee.locale["SORT_ASCENDING"], lychee.locale["SORT_DESCENDING"], lychee.locale["SORT_ALBUM_BY_3"], lychee.locale["SORT_PHOTO_BY_1"], lychee.locale["SORT_PHOTO_SELECT_1"], lychee.locale["SORT_PHOTO_SELECT_2"], lychee.locale["SORT_PHOTO_SELECT_3"], lychee.locale["SORT_PHOTO_SELECT_4"], lychee.locale["SORT_PHOTO_SELECT_5"], lychee.locale["SORT_PHOTO_SELECT_6"], lychee.locale["SORT_PHOTO_SELECT_7"], lychee.locale["SORT_PHOTO_BY_2"], lychee.locale["SORT_ASCENDING"], lychee.locale["SORT_DESCENDING"], lychee.locale["SORT_PHOTO_BY_3"], lychee.locale["SORT_CHANGE"]);
 
 			$(".settings_view").append(msg);
 
@@ -12230,7 +12206,7 @@ view.settings = {
    * @returns {void}
    */
 		moreButton: function moreButton() {
-			var msg = lychee.html(_templateObject82, lychee.locale["MORE"]);
+			var msg = lychee.html(_templateObject81, lychee.locale["MORE"]);
 
 			$(".settings_view").append(msg);
 
@@ -12271,20 +12247,20 @@ view.full_settings = {
 			api.post("Settings::getAll", {},
 			/** @param {ConfigSetting[]} data */
 			function (data) {
-				var msg = lychee.html(_templateObject83, lychee.locale["SETTINGS_WARNING"]);
+				var msg = lychee.html(_templateObject82, lychee.locale["SETTINGS_WARNING"]);
 
 				var prev = "";
 				data.forEach(function (_config) {
 					if (_config.cat && prev !== _config.cat) {
-						msg += lychee.html(_templateObject84, _config.cat);
+						msg += lychee.html(_templateObject83, _config.cat);
 						prev = _config.cat;
 					}
 					// prevent 'null' string for empty values
 					var val = _config.value ? _config.value : "";
-					msg += lychee.html(_templateObject85, _config.key, _config.key, val);
+					msg += lychee.html(_templateObject84, _config.key, _config.key, val);
 				});
 
-				msg += lychee.html(_templateObject86, lychee.locale["SAVE_RISK"]);
+				msg += lychee.html(_templateObject85, lychee.locale["SAVE_RISK"]);
 
 				$(".settings_view").append(msg);
 
@@ -12467,7 +12443,7 @@ view.logs = {
 
 	/** @returns {void} */
 	clearContent: function clearContent() {
-		var html = lychee.html(_templateObject87, lychee.locale["CLEAN_LOGS"]);
+		var html = lychee.html(_templateObject86, lychee.locale["CLEAN_LOGS"]);
 		lychee.content.html(html);
 
 		$("#Clean_Noise").on("click", function () {
@@ -12798,6 +12774,359 @@ visible.multiselect = function () {
 visible.leftMenu = function () {
 	return !!leftMenu.dom().hasClass("leftMenu__visible");
 };
+
+/**
+ * @typedef {Object} LycheeException
+ * @property {string} message     the message of the exception
+ * @property {string} [exception] the name of the exception class; only in developer mode
+ * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
+ * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
+ * @property {Array} [trace]      the backtrace; only in developer mode
+ * @property {?LycheeException} [previous_exception] the previous exception, if any; only in developer mode
+ */
+
+/**
+ * @typedef Photo
+ *
+ * @property {string}       id
+ * @property {string}       title
+ * @property {?string}      description
+ * @property {?string}      tags
+ * @property {number}       is_public
+ * @property {?string}      type
+ * @property {number}       filesize
+ * @property {?string}      iso
+ * @property {?string}      aperture
+ * @property {?string}      make
+ * @property {?string}      model
+ * @property {?string}      lens
+ * @property {?string}      shutter
+ * @property {?string}      focal
+ * @property {?number}      latitude
+ * @property {?number}      longitude
+ * @property {?number}      altitude
+ * @property {?number}      img_direction
+ * @property {?string}      location
+ * @property {?string}      taken_at
+ * @property {?string}      taken_at_orig_tz
+ * @property {boolean}      is_starred
+ * @property {?string}      live_photo_url
+ * @property {?string}      album_id
+ * @property {string}       checksum
+ * @property {string}       license
+ * @property {string}       created_at
+ * @property {string}       updated_at
+ * @property {?string}      live_photo_content_id
+ * @property {?string}      live_photo_checksum
+ * @property {SizeVariants} size_variants
+ * @property {boolean}      is_downloadable
+ * @property {boolean}      is_share_button_visible
+ * @property {?string}      [next_photo_id]
+ * @property {?string}      [previous_photo_id]
+ */
+
+/**
+ * @typedef SizeVariants
+ *
+ * @property {SizeVariant}  original
+ * @property {?SizeVariant} medium2x
+ * @property {?SizeVariant} medium
+ * @property {?SizeVariant} small2x
+ * @property {?SizeVariant} small
+ * @property {?SizeVariant} thumb2x
+ * @property {?SizeVariant} thumb
+ */
+
+/**
+ * @typedef SizeVariant
+ *
+ * @property {number} type
+ * @property {string} url
+ * @property {number} width
+ * @property {number} height
+ */
+
+/**
+ * @typedef Album
+ *
+ * @property {string}  id
+ * @property {string}  parent_id
+ * @property {string}  created_at
+ * @property {string}  updated_at
+ * @property {string}  title
+ * @property {?string} description
+ * @property {string}  license
+ * @property {Photo[]} photos
+ * @property {Album[]} [albums]
+ * @property {?string} cover_id
+ * @property {?Thumb}  thumb
+ * @property {string}  [owner_name] optional, only shown in authenticated mode
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
+ * @property {boolean} is_nsfw
+ * @property {boolean} grants_full_photo
+ * @property {boolean} requires_link
+ * @property {boolean} has_password
+ * @property {boolean} has_albums
+ * @property {?string} min_taken_at
+ * @property {?string} max_taken_at
+ * @property {?string} sorting_col
+ * @property {?string} sorting_order
+ */
+
+/**
+ * @typedef TagAlbum
+ *
+ * @property {string}  id
+ * @property {string}  created_at
+ * @property {string}  updated_at
+ * @property {string}  title
+ * @property {?string} description
+ * @property {string}  show_tags
+ * @property {Photo[]} photos
+ * @property {?Thumb}  thumb
+ * @property {string}  [owner_name] optional, only shown in authenticated mode
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
+ * @property {boolean} is_nsfw
+ * @property {boolean} grants_full_photo
+ * @property {boolean} requires_link
+ * @property {boolean} has_password
+ * @property {?string} min_taken_at
+ * @property {?string} max_taken_at
+ * @property {?string} sorting_col
+ * @property {?string} sorting_order
+ * @property {boolean} is_tag_album always true
+ */
+
+/**
+ * @typedef SmartAlbum
+ *
+ * @property {string}  id
+ * @property {string}  title
+ * @property {Photo[]} photos
+ * @property {?Thumb}  thumb
+ * @property {boolean} is_public
+ * @property {boolean} is_downloadable
+ * @property {boolean} is_share_button_visible
+ */
+
+/**
+ * @typedef Thumb
+ *
+ * @property {string}  id
+ * @property {string}  type
+ * @property {string}  thumb
+ * @property {?string} thumb2x
+ */
+
+/**
+ * @typedef SharingInfo
+ *
+ * DTO returned by `Sharing::list`
+ *
+ * @property {{id: number, album_id: string, user_id: number, username: string, title: string}[]} shared
+ * @property {{id: string, title: string}[]}                                                      albums
+ * @property {{id: number, username: string}[]}                                                   users
+ */
+
+/**
+ * @typedef SearchResult
+ *
+ * DTP returned by `Search::run`
+ *
+ * @property {(Album|TagAlbum)[]} albums
+ * @property {Photo[]}            photos
+ * @property {string}             checksum - checksum of the search result to
+ *                                           efficiently determine if the
+ *                                           result has changed since the last
+ *                                           time
+ */
+
+/**
+ * @typedef Albums
+ *
+ * TODO: Split smart albums and tag albums into separate collections
+ *
+ * @property {SmartAlbums} smart_albums - despite the name also includes tag albums
+ * @property {Album[]}     albums
+ * @property {Album[]}     shared_albums
+ */
+
+/**
+ * @typedef SmartAlbums
+ *
+ * TODO: Split smart albums and tag albums into separate collections
+ *
+ * @type {Object.<string, TagAlbum>}
+ *
+ * @property {SmartAlbum} unsorted
+ * @property {SmartAlbum} starred
+ * @property {SmartAlbum} public
+ * @property {SmartAlbum} recent
+ */
+
+/**
+ * The IDs of the built-in, smart albums.
+ *
+ * @type {Readonly<{RECENT: string, STARRED: string, PUBLIC: string, UNSORTED: string}>}
+ */
+var SmartAlbumID = Object.freeze({
+	UNSORTED: "unsorted",
+	STARRED: "starred",
+	PUBLIC: "public",
+	RECENT: "recent"
+});
+
+/**
+ * @typedef User
+ *
+ * @property {number}  id
+ * @property {string}  username
+ * @property {?string} email
+ * @property {boolean} may_upload
+ * @property {boolean} is_locked
+ */
+
+/**
+ * @typedef WebAuthnCredential
+ *
+ * @property {string} id
+ */
+
+/**
+ * @typedef PositionData
+ *
+ * @property {?string} id - album ID
+ * @property {?string} title - album title
+ * @property {Photo[]} photos
+ */
+
+/**
+ * @typedef EMailData
+ *
+ * @property {?string} email
+ */
+
+/**
+ * @typedef ConfigSetting
+ *
+ * @property {number} id
+ * @property {string} key
+ * @property {?string} value - TODO: this should have the correct type depending on `type_range`
+ * @property {string} cat
+ * @property {string} type_range
+ * @property {number} confidentiality - `0`: public setting, `2`: informational, `3`: admin only
+ * @property {string} description
+ */
+
+/**
+ * @typedef LogEntry
+ *
+ * @property {number} id
+ * @property {string} created_at
+ * @property {string} updated_at
+ * @property {string} type
+ * @property {string} function
+ * @property {number} line
+ * @property {string} text
+ */
+
+/**
+ * @typedef DiagnosticInfo
+ *
+ * @property {string[]} errors
+ * @property {string[]} infos
+ * @property {string[]} configs
+ * @property {number} update - `0`: not on master branch; `1`: up-to-date; `2`: not up-to-date; `3`: requires migration
+ */
+
+/**
+ * @typedef FrameSettings
+ *
+ * @property {number} refresh
+ */
+
+/**
+ * @typedef InitializationData
+ *
+ * @property {number} status - `0`: no config, `1`: unauthenticated, `2`: authenticated
+ * @property {boolean} admin
+ * @property {boolean} may_upload
+ * @property {boolean} is_locked
+ * @property {number} update_json - version number of latest available update
+ * @property {boolean} update_available
+ * @property {Object.<string, string>} locale
+ * @property {string} [username] - only if user is not the admin; TODO: Change that
+ * @property {ConfigurationData} config
+ * @property {DeviceConfiguration} config_device
+ */
+
+/**
+ * @typedef ConfigurationData
+ *
+ * @property {string}   album_subtitle_type
+ * @property {string}   check_for_updates       - actually a boolean
+ * @property {string}   [default_license]
+ * @property {string}   [delete_imported]       - actually a boolean
+ * @property {string}   downloadable            - actually a boolean
+ * @property {string}   [dropbox_key]
+ * @property {string}   editor_enabled          - actually a boolean
+ * @property {string}   full_photo              - actually a boolean
+ * @property {string}   image_overlay_type
+ * @property {string}   landing_page_enable     - actually a boolean
+ * @property {string}   lang
+ * @property {string[]} lang_available
+ * @property {string}   layout                  - actually a number: `0`, `1` or `2`
+ * @property {string}   [location]
+ * @property {string}   location_decoding       - actually a boolean
+ * @property {string}   location_show           - actually a boolean
+ * @property {string}   location_show_public    - actually a boolean
+ * @property {string}   map_display             - actually a boolean
+ * @property {string}   map_display_direction   - actually a boolean
+ * @property {string}   map_display_public      - actually a boolean
+ * @property {string}   map_include_subalbums   - actually a boolean
+ * @property {string}   map_provider
+ * @property {string}   new_photos_notification - actually a boolean
+ * @property {string}   nsfw_blur               - actually a boolean
+ * @property {string}   nsfw_visible            - actually a boolean
+ * @property {string}   nsfw_warning            - actually a boolean
+ * @property {string}   nsfw_warning_admin      - actually a boolean
+ * @property {string}   public_photos_hidden    - actually a boolean
+ * @property {string}   public_search           - actually a boolean
+ * @property {string}   share_button_visible    - actually a boolean
+ * @property {string}   [skip_duplicates]       - actually a boolean
+ * @property {string}   sorting_Albums
+ * @property {string}   sorting_Photos
+ * @property {string}   swipe_tolerance_x       - actually a number
+ * @property {string}   swipe_tolerance_y       - actually a number
+ * @property {string}   upload_processing_limit - actually a number
+ * @property {string}   version                 - actually a number
+ */
+
+/**
+ * @typedef DeviceConfiguration
+ *
+ * @property {string}  device_type
+ * @property {boolean} header_auto_hide
+ * @property {boolean} active_focus_on_page_load
+ * @property {boolean} enable_button_visibility
+ * @property {boolean} enable_button_share
+ * @property {boolean} enable_button_archive
+ * @property {boolean} enable_button_move
+ * @property {boolean} enable_button_trash
+ * @property {boolean} enable_button_fullscreen
+ * @property {boolean} enable_button_download
+ * @property {boolean} enable_button_add
+ * @property {boolean} enable_button_more
+ * @property {boolean} enable_button_rotate
+ * @property {boolean} enable_close_tab_on_esc
+ * @property {boolean} enable_contextmenu_header
+ * @property {boolean} hide_content_during_imgview
+ * @property {boolean} enable_tabindex
+ */
 
 (function (window, factory) {
 	var basicContext = factory(window, window.document);
