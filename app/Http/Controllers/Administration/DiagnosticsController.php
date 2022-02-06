@@ -18,7 +18,7 @@ use Illuminate\Routing\Controller;
 
 class DiagnosticsController extends Controller
 {
-	public const ERROR_MSG = 'You must be logged in to see this.';
+	public const ERROR_MSG = 'You must have administrator rights to see this.';
 
 	private function isAuthorized(): bool
 	{

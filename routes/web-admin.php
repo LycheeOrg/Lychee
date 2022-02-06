@@ -28,6 +28,12 @@ Route::get('/phpinfo', [IndexController::class, 'phpinfo']);
 
 Route::get('/Logs', [LogController::class, 'view']);
 
-Route::get('/Diagnostics', [DiagnosticsController::class, 'view']);
+// Traditionally, the diagnostic page has been accessible by anybody
+// While this might be helpful for debugging purposes if the setup is so
+// broken that even logging in as an administrator fails, it poses a security
+// risk.
+// TODO: Reconsider, if we really want the diagnostic page to be world-wide accessible.
+Route::get('/Diagnostics', [DiagnosticsController::class, 'view'])
+	->withoutMiddleware('admin');
 
 Route::get('/Update', [UpdateController::class, 'view']);
