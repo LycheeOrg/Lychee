@@ -295,13 +295,13 @@ class PhotosUnitTest
 	 * Set tags.
 	 *
 	 * @param string[]    $ids
-	 * @param string      $tags
+	 * @param string[]    $tags
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_tag(
 		array $ids,
-		string $tags,
+		array $tags,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {

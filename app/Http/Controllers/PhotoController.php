@@ -187,7 +187,9 @@ class PhotoController extends Controller
 	 */
 	public function setTags(SetPhotosTagsRequest $request, SetTags $setTags): void
 	{
-		$setTags->do($request->photoIDs(), $request->tags());
+		$tags = $request->tags();
+		$str = sizeof($tags) === 0 ? null : implode(',', $request->tags());
+		$setTags->do($request->photoIDs(), $str);
 	}
 
 	/**

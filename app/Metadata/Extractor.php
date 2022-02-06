@@ -232,7 +232,7 @@ class Extractor
 		$metadata['model'] = ($exif->getCamera() !== false) ? $exif->getCamera() : '';
 		$metadata['shutter'] = ($exif->getExposure() !== false) ? $exif->getExposure() : '';
 		$metadata['lens'] = ($exif->getLens() !== false) ? $exif->getLens() : '';
-		$metadata['tags'] = ($exif->getKeywords() !== false) ? (is_array($exif->getKeywords()) ? implode(',', $exif->getKeywords()) : $exif->getKeywords()) : '';
+		$metadata['tags'] = ($exif->getKeywords() !== false) ? $exif->getKeywords() : [];
 		$metadata['latitude'] = ($exif->getLatitude() !== false) ? $exif->getLatitude() : null;
 		$metadata['longitude'] = ($exif->getLongitude() !== false) ? $exif->getLongitude() : null;
 		$metadata['altitude'] = ($exif->getAltitude() !== false) ? $exif->getAltitude() : null;

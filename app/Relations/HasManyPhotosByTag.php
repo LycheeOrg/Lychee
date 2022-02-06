@@ -54,7 +54,7 @@ class HasManyPhotosByTag extends HasManyPhotos
 		}
 		/** @var TagAlbum $album */
 		$album = $albums[0];
-		$tags = explode(',', $album->show_tags);
+		$tags = $album->show_tags;
 
 		$this->photoAuthorisationProvider
 			->applySearchabilityFilter($this->query)

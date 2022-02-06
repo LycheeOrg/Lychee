@@ -181,7 +181,9 @@ class AlbumController extends Controller
 	 */
 	public function setShowTags(SetAlbumTagsRequest $request, SetShowTags $setShowTags): void
 	{
-		$setShowTags->do($request->albumID(), $request->tags());
+		$tags = $request->tags();
+		$str = sizeof($tags) === 0 ? null : implode(',', $request->tags());
+		$setShowTags->do($request->albumID(), $str);
 	}
 
 	/**

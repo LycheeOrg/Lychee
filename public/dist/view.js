@@ -967,7 +967,7 @@ build.uploadNewFile = function (name) {
 };
 
 /**
- * @param {?string} tags
+ * @param {string[]} tags
  * @returns {string}
  */
 build.tags = function (tags) {
@@ -980,8 +980,8 @@ build.tags = function (tags) {
 	// build class_string for tag
 	var a_class = searchable ? "tag search" : "tag";
 
-	if (tags !== null && tags !== "") {
-		tags.split(",").forEach(function (tag, index) {
+	if (tags.length !== 0) {
+		tags.forEach(function (tag, index) {
 			if (editable) {
 				html += lychee.html(_templateObject21, a_class, tag, index, build.iconic("x"));
 			} else {
@@ -3289,7 +3289,7 @@ tabindex.reset = function () {
  * @property {string}       id
  * @property {string}       title
  * @property {?string}      description
- * @property {?string}      tags
+ * @property {string[]}     tags
  * @property {number}       is_public
  * @property {?string}      type
  * @property {number}       filesize
@@ -3376,27 +3376,27 @@ tabindex.reset = function () {
 /**
  * @typedef TagAlbum
  *
- * @property {string}  id
- * @property {string}  created_at
- * @property {string}  updated_at
- * @property {string}  title
- * @property {?string} description
- * @property {string}  show_tags
- * @property {Photo[]} photos
- * @property {?Thumb}  thumb
- * @property {string}  [owner_name] optional, only shown in authenticated mode
- * @property {boolean} is_public
- * @property {boolean} is_downloadable
- * @property {boolean} is_share_button_visible
- * @property {boolean} is_nsfw
- * @property {boolean} grants_full_photo
- * @property {boolean} requires_link
- * @property {boolean} has_password
- * @property {?string} min_taken_at
- * @property {?string} max_taken_at
- * @property {?string} sorting_col
- * @property {?string} sorting_order
- * @property {boolean} is_tag_album always true
+ * @property {string}   id
+ * @property {string}   created_at
+ * @property {string}   updated_at
+ * @property {string}   title
+ * @property {?string}  description
+ * @property {string[]} show_tags
+ * @property {Photo[]}  photos
+ * @property {?Thumb}   thumb
+ * @property {string}   [owner_name] optional, only shown in authenticated mode
+ * @property {boolean}  is_public
+ * @property {boolean}  is_downloadable
+ * @property {boolean}  is_share_button_visible
+ * @property {boolean}  is_nsfw
+ * @property {boolean}  grants_full_photo
+ * @property {boolean}  requires_link
+ * @property {boolean}  has_password
+ * @property {?string}  min_taken_at
+ * @property {?string}  max_taken_at
+ * @property {?string}  sorting_col
+ * @property {?string}  sorting_order
+ * @property {boolean}  is_tag_album always true
  */
 
 /**

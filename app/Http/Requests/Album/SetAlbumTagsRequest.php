@@ -8,7 +8,6 @@ use App\Http\Requests\Contracts\HasTags;
 use App\Http\Requests\Traits\HasAlbumIDTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Rules\RandomIDRule;
-use App\Rules\TagsRule;
 
 class SetAlbumTagsRequest extends BaseApiRequest implements HasAlbumID, HasTags
 {
@@ -36,7 +35,8 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasAlbumID, HasTags
 	{
 		return [
 			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
-			self::SHOW_TAGS_ATTRIBUTE => ['required', new TagsRule(false)],
+			self::SHOW_TAGS_ATTRIBUTE => 'required|array|min:1',
+			self::SHOW_TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 		];
 	}
 

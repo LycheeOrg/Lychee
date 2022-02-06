@@ -297,7 +297,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'></p>"], ["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'></p>"]),
     _templateObject2 = _taggedTemplateLiteral(["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"], ["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"]),
-    _templateObject3 = _taggedTemplateLiteral(["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='show_tags' type='text' minlength='1' placeholder='Tags' value='$", "'>\n\t\t\t\t\t\t</p>"], ["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='show_tags' type='text' minlength='1' placeholder='Tags' value='$", "'>\n\t\t\t\t\t\t</p>"]),
+    _templateObject3 = _taggedTemplateLiteral(["\n\t\t\t<p>", "\n\t\t\t\t<input\n\t\t\t\t\tclass='text'\n\t\t\t\t\tname='show_tags'\n\t\t\t\t\ttype='text'\n\t\t\t\t\tminlength='1'\n\t\t\t\t\tplaceholder='Tags'\n\t\t\t\t\tvalue='$", "'\n\t\t\t\t>\n\t\t\t</p>"], ["\n\t\t\t<p>", "\n\t\t\t\t<input\n\t\t\t\t\tclass='text'\n\t\t\t\t\tname='show_tags'\n\t\t\t\t\ttype='text'\n\t\t\t\t\tminlength='1'\n\t\t\t\t\tplaceholder='Tags'\n\t\t\t\t\tvalue='$", "'\n\t\t\t\t>\n\t\t\t</p>"]),
     _templateObject4 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='100' placeholder='$", "' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='100' placeholder='$", "' value='$", "'>"]),
     _templateObject5 = _taggedTemplateLiteral(["<p>", " ", "</p>"], ["<p>", " ", "</p>"]),
     _templateObject6 = _taggedTemplateLiteral(["<p>", " $", " ", " ", "</p>"], ["<p>", " $", " ", " ", "</p>"]),
@@ -1065,7 +1065,7 @@ album.addByTags = function () {
 
 		api.post("Album::addByTags", {
 			title: data.title,
-			tags: data.tags
+			tags: data.tags.split(",")
 		},
 		/** @param {TagAlbum} _data */
 		function (_data) {
@@ -1094,32 +1094,35 @@ album.addByTags = function () {
  * @returns {void}
  */
 album.setShowTags = function (albumID) {
-	var oldShowTags = album.json.show_tags;
-
 	/** @param {{show_tags: string}} data */
 	var action = function action(data) {
 		if (!data.show_tags.trim()) {
 			basicModal.error("show_tags");
 			return;
 		}
+		var new_show_tags = data.show_tags.split(",").map(function (tag) {
+			return tag.trim();
+		}).filter(function (tag) {
+			return tag !== "" && tag.indexOf(",") === -1;
+		}).sort();
 
 		basicModal.close();
 
 		if (visible.album()) {
-			album.json.show_tags = data.show_tags;
+			album.json.show_tags = new_show_tags;
 			view.album.show_tags();
 		}
 
 		api.post("Album::setShowTags", {
 			albumID: albumID,
-			show_tags: data.show_tags
+			show_tags: new_show_tags
 		}, function () {
 			return album.reload();
 		});
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject3, lychee.locale["ALBUM_NEW_SHOWTAGS"], oldShowTags),
+		body: lychee.html(_templateObject3, lychee.locale["ALBUM_NEW_SHOWTAGS"], album.json.show_tags.sort().join(", ")),
 		buttons: {
 			action: {
 				title: lychee.locale["ALBUM_SET_SHOWTAGS"],
@@ -2616,7 +2619,7 @@ build.uploadNewFile = function (name) {
 };
 
 /**
- * @param {?string} tags
+ * @param {string[]} tags
  * @returns {string}
  */
 build.tags = function (tags) {
@@ -2629,8 +2632,8 @@ build.tags = function (tags) {
 	// build class_string for tag
 	var a_class = searchable ? "tag search" : "tag";
 
-	if (tags !== null && tags !== "") {
-		tags.split(",").forEach(function (tag, index) {
+	if (tags.length !== 0) {
+		tags.forEach(function (tag, index) {
 			if (editable) {
 				html += lychee.html(_templateObject36, a_class, tag, index, build.iconic("x"));
 			} else {
@@ -8013,23 +8016,21 @@ _photo3.setDescription = function (photoID) {
  * @returns {void}
  */
 _photo3.editTags = function (photoIDs) {
-	var oldTags = "";
+	/** @type {string[]} */
+	var oldTags = [];
 
 	// Get tags
-	if (visible.photo()) oldTags = _photo3.json.tags;else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs[0]).tags;else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs[0]).tags;else if (visible.album() && photoIDs.length > 1) {
-		oldTags = album.getByID(photoIDs[0]).tags;
-		// TODO: This condition does not properly take into account, that photos might have the same _set_ of tags, but in a different order
+	if (visible.photo()) oldTags = _photo3.json.tags.sort();else if (visible.album() && photoIDs.length === 1) oldTags = album.getByID(photoIDs[0]).tags.sort();else if (visible.search() && photoIDs.length === 1) oldTags = album.getByID(photoIDs[0]).tags.sort();else if (visible.album() && photoIDs.length > 1) {
+		oldTags = album.getByID(photoIDs[0]).tags.sort();
 		var areIdentical = photoIDs.every(function (id) {
-			return album.getByID(id).tags === oldTags;
+			var oldTags2 = album.getByID(id).tags.sort();
+			if (oldTags.length !== oldTags2.length) return false;
+			for (var tagIdx = 0; tagIdx !== oldTags.length; tagIdx++) {
+				if (oldTags[tagIdx] !== oldTags2[tagIdx]) return false;
+			}
+			return true;
 		});
-		if (!areIdentical) oldTags = "";
-	}
-
-	// Improve tags
-	if (typeof oldTags === "string" && oldTags !== "") {
-		oldTags = oldTags.replace(/,/g, ", ");
-	} else {
-		oldTags = "";
+		if (!areIdentical) oldTags = [];
 	}
 
 	/**
@@ -8038,10 +8039,15 @@ _photo3.editTags = function (photoIDs) {
   */
 	var action = function action(data) {
 		basicModal.close();
-		_photo3.setTags(photoIDs, data.tags);
+		var newTags = data.tags.split(",").map(function (tag) {
+			return tag.trim();
+		}).filter(function (tag) {
+			return tag !== "" && tag.indexOf(",") === -1;
+		}).sort();
+		_photo3.setTags(photoIDs, newTags);
 	};
 
-	var input = lychee.html(_templateObject60, oldTags);
+	var input = lychee.html(_templateObject60, oldTags.join(", "));
 
 	var msg = photoIDs.length === 1 ? lychee.html(_templateObject5, lychee.locale["PHOTO_NEW_TAGS"], input) : lychee.html(_templateObject54, lychee.locale["PHOTO_NEW_TAGS_1"], photoIDs.length, lychee.locale["PHOTO_NEW_TAGS_2"], input);
 
@@ -8062,14 +8068,10 @@ _photo3.editTags = function (photoIDs) {
 
 /**
  * @param {string[]} photoIDs
- * @param {string} tags
+ * @param {string[]} tags
  * @returns {void}
  */
 _photo3.setTags = function (photoIDs, tags) {
-	// Parse tags
-	tags = tags.replace(/( , )|( ,)|(, )|(,+ *)|(,$|^,)/g, ",");
-	tags = tags.replace(/,$|^,|( )*$/g, "");
-
 	if (visible.photo()) {
 		_photo3.json.tags = tags;
 		view.photo.tags();
@@ -8101,12 +8103,7 @@ _photo3.setTags = function (photoIDs, tags) {
  * @param {number} index
  */
 _photo3.deleteTag = function (photoID, index) {
-	// Remove
-	var tags = _photo3.json.tags.split(",");
-	tags.splice(index, 1);
-
-	// Save
-	_photo3.json.tags = tags.toString();
+	_photo3.json.tags.splice(index, 1);
 	_photo3.setTags([photoID], _photo3.json.tags);
 };
 
@@ -11513,7 +11510,7 @@ view.album = {
   * @returns {void}
   */
 	show_tags: function show_tags() {
-		_sidebar.changeAttr("show_tags", album.json.show_tags);
+		_sidebar.changeAttr("show_tags", album.json.show_tags.join(", "));
 	},
 
 	/**
@@ -12791,7 +12788,7 @@ visible.leftMenu = function () {
  * @property {string}       id
  * @property {string}       title
  * @property {?string}      description
- * @property {?string}      tags
+ * @property {string[]}     tags
  * @property {number}       is_public
  * @property {?string}      type
  * @property {number}       filesize
@@ -12878,27 +12875,27 @@ visible.leftMenu = function () {
 /**
  * @typedef TagAlbum
  *
- * @property {string}  id
- * @property {string}  created_at
- * @property {string}  updated_at
- * @property {string}  title
- * @property {?string} description
- * @property {string}  show_tags
- * @property {Photo[]} photos
- * @property {?Thumb}  thumb
- * @property {string}  [owner_name] optional, only shown in authenticated mode
- * @property {boolean} is_public
- * @property {boolean} is_downloadable
- * @property {boolean} is_share_button_visible
- * @property {boolean} is_nsfw
- * @property {boolean} grants_full_photo
- * @property {boolean} requires_link
- * @property {boolean} has_password
- * @property {?string} min_taken_at
- * @property {?string} max_taken_at
- * @property {?string} sorting_col
- * @property {?string} sorting_order
- * @property {boolean} is_tag_album always true
+ * @property {string}   id
+ * @property {string}   created_at
+ * @property {string}   updated_at
+ * @property {string}   title
+ * @property {?string}  description
+ * @property {string[]} show_tags
+ * @property {Photo[]}  photos
+ * @property {?Thumb}   thumb
+ * @property {string}   [owner_name] optional, only shown in authenticated mode
+ * @property {boolean}  is_public
+ * @property {boolean}  is_downloadable
+ * @property {boolean}  is_share_button_visible
+ * @property {boolean}  is_nsfw
+ * @property {boolean}  grants_full_photo
+ * @property {boolean}  requires_link
+ * @property {boolean}  has_password
+ * @property {?string}  min_taken_at
+ * @property {?string}  max_taken_at
+ * @property {?string}  sorting_col
+ * @property {?string}  sorting_order
+ * @property {boolean}  is_tag_album always true
  */
 
 /**

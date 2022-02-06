@@ -53,7 +53,7 @@ class PhotosTest extends TestCase
 		$photos_tests->set_title($id, "Night in Ploumanac'h");
 		$photos_tests->set_description($id, 'A night photography');
 		$photos_tests->set_star([$id]);
-		$photos_tests->set_tag([$id], 'night');
+		$photos_tests->set_tag([$id], ['night']);
 		$photos_tests->set_public($id);
 		$photos_tests->set_license($id, 'WTFPL', 422, 'The given data was invalid');
 		$photos_tests->set_license($id, 'CC0');
@@ -115,7 +115,7 @@ class PhotosTest extends TestCase
 			'shutter' => '30 s',
 			'filesize' => 21104156,
 			'is_starred' => true,
-			'tags' => 'night',
+			'tags' => ['night'],
 			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",
@@ -145,7 +145,7 @@ class PhotosTest extends TestCase
 		/*
 		 * Erase tag
 		 */
-		$photos_tests->set_tag([$id], '');
+		$photos_tests->set_tag([$id], []);
 
 		/**
 		 * We now test interaction with albums.
@@ -175,7 +175,7 @@ class PhotosTest extends TestCase
 			'shutter' => '30 s',
 			'filesize' => 21104156,
 			'is_starred' => true,
-			'tags' => '',
+			'tags' => [],
 			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 			'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
 			'title' => "Night in Ploumanac'h",

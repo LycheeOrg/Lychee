@@ -8,7 +8,6 @@ use App\Http\Requests\Contracts\HasTags;
 use App\Http\Requests\Traits\HasPhotoIDsTrait;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Rules\RandomIDRule;
-use App\Rules\TagsRule;
 
 class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotoIDs, HasTags
 {
@@ -30,8 +29,9 @@ class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotoIDs, HasTag
 	{
 		return [
 			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
-			HasTags::TAGS_ATTRIBUTE => ['present', new TagsRule(true)],
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			HasTags::TAGS_ATTRIBUTE => 'present|array',
+			HasTags::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 		];
 	}
 

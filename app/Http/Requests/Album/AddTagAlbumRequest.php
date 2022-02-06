@@ -7,7 +7,6 @@ use App\Http\Requests\Contracts\HasTags;
 use App\Http\Requests\Contracts\HasTitle;
 use App\Http\Requests\Traits\HasTagsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
-use App\Rules\TagsRule;
 use App\Rules\TitleRule;
 
 class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
@@ -33,7 +32,8 @@ class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
 	{
 		return [
 			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
-			HasTags::TAGS_ATTRIBUTE => ['required', new TagsRule(false)],
+			HasTags::TAGS_ATTRIBUTE => 'required|array|min:1',
+			HasTags::TAGS_ATTRIBUTE . '.*' => 'required|string|min:1',
 		];
 	}
 

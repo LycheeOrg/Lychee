@@ -7,9 +7,7 @@ interface HasTags
 	public const TAGS_ATTRIBUTE = 'tags';
 
 	/**
-	 * TODO: Tags should be transmitted as a proper JSON array.
-	 *
-	 * @return string|null
+	 * @return string[]
 	 */
-	public function tags(): ?string;
+	public function tags(): array;
 }

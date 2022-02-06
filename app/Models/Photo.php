@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\ArrayCast;
 use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
@@ -35,7 +36,7 @@ use Illuminate\Support\Facades\Storage;
  * @property int          $legacy_id
  * @property string       $title
  * @property string|null  $description
- * @property string       $tags
+ * @property string[]     $tags
  * @property bool         $is_public
  * @property int          $owner_id
  * @property string|null  $type
@@ -111,6 +112,7 @@ class Photo extends Model implements HasRandomID
 		'is_starred' => 'boolean',
 		'filesize' => 'integer',
 		'is_public' => 'boolean',
+		'tags' => ArrayCast::class,
 	];
 
 	/**
@@ -134,10 +136,6 @@ class Photo extends Model implements HasRandomID
 		'live_photo_url',
 		'is_downloadable',
 		'is_share_button_visible',
-	];
-
-	protected $attributes = [
-		'tags' => '',
 	];
 
 	/**

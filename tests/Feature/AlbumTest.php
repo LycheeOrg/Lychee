@@ -40,11 +40,13 @@ class AlbumTest extends TestCase
 		$albumID = $albums_tests->add(null, 'test_album')->offsetGet('id');
 		$albumID2 = $albums_tests->add(null, 'test_album2')->offsetGet('id');
 		$albumID3 = $albums_tests->add(null, 'test_album3')->offsetGet('id');
-		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', 'test')->offsetGet('id');
+		$albumTagID1 = $albums_tests->addByTags('test_tag_album1', ['test'])->offsetGet('id');
 
-		$albums_tests->set_tags($albumTagID1, 'test, coolnewtag, secondnewtag');
+		$albums_tests->set_tags($albumTagID1, ['test', 'coolnewtag', 'secondnewtag']);
 		$response = $albums_tests->get($albumTagID1);
-		$response->assertSee('test, coolnewtag, secondnewtag');
+		$response->assertJson([
+			'show_tags' => ['test', 'coolnewtag', 'secondnewtag'],
+		]);
 
 		$albums_tests->see_in_albums($albumID);
 		$albums_tests->see_in_albums($albumID2);

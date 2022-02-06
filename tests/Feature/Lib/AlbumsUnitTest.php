@@ -46,7 +46,7 @@ class AlbumsUnitTest
 	 * Add an album.
 	 *
 	 * @param string      $title
-	 * @param string      $tags
+	 * @param string[]    $tags
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
@@ -54,7 +54,7 @@ class AlbumsUnitTest
 	 */
 	public function addByTags(
 		string $title,
-		string $tags,
+		array $tags,
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
@@ -307,13 +307,13 @@ class AlbumsUnitTest
 
 	/**
 	 * @param string      $id
-	 * @param string      $tags
+	 * @param string[]    $tags
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_tags(
 		string $id,
-		string $tags,
+		array $tags,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
