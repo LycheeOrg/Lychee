@@ -5,7 +5,6 @@ namespace App\Exceptions\Handlers;
 use App\Contracts\HttpExceptionHandler;
 use App\Exceptions\InstallationAlreadyCompletedException;
 use App\Exceptions\InstallationRequiredException;
-use App\Redirections\ToHome;
 use App\Redirections\ToInstall;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
@@ -31,10 +30,12 @@ class InstallationHandler implements HttpExceptionHandler
 		do {
 			if ($e instanceof InstallationRequiredException) {
 				$this->toInstall = true;
+
 				return true;
 			}
 			if ($e instanceof InstallationAlreadyCompletedException) {
 				$this->toInstall = false;
+
 				return true;
 			}
 		} while ($e = $e->getPrevious());
@@ -48,14 +49,18 @@ class InstallationHandler implements HttpExceptionHandler
 	public function renderHttpException(SymfonyResponse $defaultResponse, HttpException $e): SymfonyResponse
 	{
 		try {
-			$redirectResponse = $this->toInstall ? ToInstall::go() : ToHome::go();
-			$contentType = $defaultResponse->headers->get('Content-Type');
-			if (!empty($contentType)) {
-				$redirectResponse->headers->set('Content-Type', $contentType);
-				$redirectResponse->setContent($defaultResponse->getContent());
-			}
+			if ($this->toInstall) {
+				$redirectResponse = ToInstall::go();
+				$contentType = $defaultResponse->headers->get('Content-Type');
+				if (!empty($contentType)) {
+					$redirectResponse->headers->set('Content-Type', $contentType);
+					$redirectResponse->setContent($defaultResponse->getContent());
+				}
 
-			return $redirectResponse;
+				return $redirectResponse;
+			} else {
+				return $defaultResponse;
+			}
 		} catch (\Throwable) {
 			return $defaultResponse;
 		}
