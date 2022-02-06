@@ -40,10 +40,10 @@ class ContentType
 			}
 		} elseif ($contentType === self::MULTIPART) {
 			if ($request->getContentType() !== 'form') {
-				throw new UnexpectedContentType(self::JSON);
+				throw new UnexpectedContentType(self::MULTIPART);
 			}
 		} else {
-			throw new LycheeInvalidArgumentException('$contentType must be "' . self::JSON . '"');
+			throw new LycheeInvalidArgumentException('$contentType must either be "' . self::JSON . '" or "' . self::MULTIPART . '"');
 		}
 
 		return $next($request);
