@@ -30,7 +30,7 @@ class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotoIDs, HasTi
 	{
 		return [
 			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 		];
 	}

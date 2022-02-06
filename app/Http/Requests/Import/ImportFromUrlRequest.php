@@ -34,7 +34,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbumID
 		return [
 			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule()],
 			self::URL_ATTRIBUTE => 'required|array|min:1',
-			self::URL_ATTRIBUTE . '*' => 'required|string',
+			self::URL_ATTRIBUTE . '.*' => 'required|string',
 		];
 	}
 

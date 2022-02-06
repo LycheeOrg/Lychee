@@ -31,9 +31,9 @@ class SetSharingRequest extends BaseApiRequest implements HasAlbumIDs, HasUserID
 	{
 		return [
 			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			HasUserIDs::USER_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasUserIDs::USER_IDS_ATTRIBUTE . '*' => ['required', new IntegerIDRule(false)],
+			HasUserIDs::USER_IDS_ATTRIBUTE . '.*' => ['required', new IntegerIDRule(false)],
 		];
 	}
 

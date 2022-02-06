@@ -26,7 +26,7 @@ abstract class PhotosWriteRequest extends BaseApiRequest implements HasPhotoIDs
 	{
 		return [
 			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '*' => ['required', new RandomIDRule(false)],
+			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 		];
 	}
 

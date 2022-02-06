@@ -30,7 +30,7 @@ class DeleteSharingRequest extends BaseApiRequest
 	{
 		return [
 			self::SHARE_IDS_ATTRIBUTE => 'required|array|min:1',
-			self::SHARE_IDS_ATTRIBUTE . '*' => ['required', new IntegerIDRule(false)],
+			self::SHARE_IDS_ATTRIBUTE . '.*' => ['required', new IntegerIDRule(false)],
 		];
 	}
 

@@ -26,7 +26,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 	{
 		return [
 			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '*' => ['required', new AlbumIDRule()],
+			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new AlbumIDRule()],
 		];
 	}
 
