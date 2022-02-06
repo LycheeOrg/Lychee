@@ -2,6 +2,7 @@
 
 namespace App\ModelFunctions;
 
+use App\Assets\Helpers;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Facades\Lang;
 use App\Models\Configs;
@@ -100,6 +101,20 @@ class ConfigFunctions
 		}
 	}
 
+	/**
+	 * TODO: Get rid of this method.
+	 *
+	 * This method returns a hard-coded array of booleans which are flipped
+	 * if the client is a television.
+	 * However, the client knows by itself if it is a television or not.
+	 * Hence, these values should be part of the front-end code.
+	 *
+	 * See also {@link Helpers::getDeviceType()}.
+	 *
+	 * @param string $device
+	 *
+	 * @return array
+	 */
 	public function get_config_device(string $device): array
 	{
 		$true = true;

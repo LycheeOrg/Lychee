@@ -36,6 +36,8 @@ class SessionController extends Controller
 	/**
 	 * First function being called via AJAX.
 	 *
+	 * TODO: Remove `status`; `status === 0 ` should result in a HTTP error response "no config", `status === {1|2}` should be a proper boolean `isAuthenticated`.
+	 *
 	 * @return array
 	 *
 	 * @throws ModelNotFoundException
@@ -47,9 +49,6 @@ class SessionController extends Controller
 
 		// Return settings
 		$return = [];
-
-		$return['api_V2'] = true;               // we are using api_V2
-		$return['sub_albums'] = true;           // Lychee-laravel does have sub albums
 
 		// Check if login credentials exist and login if they don't
 		if (AccessControl::noLogin() === true || $logged_in === true) {
@@ -81,6 +80,7 @@ class SessionController extends Controller
 			}
 
 			// here we say whether we logged in because there is no login/password or if we actually entered a login/password
+			// TODO: Refactor this. At least, rename the flag `login` to something more understandable, like `isAdminUserConfigured`, but rather re-factor the whole logic, i.e. creating the initial user should be part of the installation routine.
 			$return['config']['login'] = $logged_in;
 			$return['config']['lang_available'] = Lang::get_lang_available();
 		} else {
