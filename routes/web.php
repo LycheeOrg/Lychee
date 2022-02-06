@@ -45,7 +45,5 @@ Route::get('/view', [ViewController::class, 'view'])->name('view');
 Route::get('/demo', [DemoController::class, 'js']);
 Route::get('/frame', [FrameController::class, 'init'])->name('frame')->middleware(['installation:complete', 'migration:complete']);
 
-Route::post('/php/index.php', [SessionController::class, 'init']); // entry point if options are not initialized
-
 // This route NEEDS to be the last one as it will catch anything else.
 Route::get('/{page}', [PageController::class, 'page']);
