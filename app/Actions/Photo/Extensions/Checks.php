@@ -98,7 +98,7 @@ trait Checks
 			return 'photo';
 		}
 
-		Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $sourceFileInfo->getOriginalFilename());
+		Logs::error(__METHOD__, __LINE__, 'Photo type not supported: ' . $sourceFileInfo->getOriginalName());
 		throw new MediaFileUnsupportedException('Photo type not supported!');
 	}
 }
