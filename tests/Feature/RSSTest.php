@@ -74,14 +74,14 @@ class RSSTest extends TestCase
 		$photos_tests->set_public($photoID);
 
 		// move picture to album
-		$photos_tests->set_album($albumID, $photoID);
+		$photos_tests->set_album($albumID, [$photoID]);
 		$albums_tests->set_public($albumID);
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
 		$response->assertOk();
 
-		$albums_tests->delete($albumID);
+		$albums_tests->delete([$albumID]);
 
 		Configs::set('Mod_Frame', $init_config_value);
 		Configs::set('full_photo', $init_full_photo);

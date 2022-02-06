@@ -91,14 +91,14 @@ class UsersUnitTest
 	/**
 	 * Delete a user.
 	 *
-	 * @param string      $id
+	 * @param int         $id
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
 	public function delete(
-		string $id,
+		int $id,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): TestResponse {
@@ -116,7 +116,7 @@ class UsersUnitTest
 	/**
 	 * Save modifications to a user.
 	 *
-	 * @param string      $id
+	 * @param int         $id
 	 * @param string      $username
 	 * @param string      $password
 	 * @param bool        $mayUpload
@@ -127,7 +127,7 @@ class UsersUnitTest
 	 * @return TestResponse
 	 */
 	public function save(
-		string $id,
+		int $id,
 		string $username,
 		string $password,
 		bool $mayUpload = true,

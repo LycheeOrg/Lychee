@@ -51,10 +51,10 @@ class AlbumTest extends TestCase
 		$albums_tests->see_in_albums($albumID3);
 		$albums_tests->see_in_albums($albumTagID1);
 
-		$albums_tests->move($albumTagID1, $albumID3);
-		$albums_tests->move($albumID3, $albumID2);
-		$albums_tests->move($albumID2, $albumID);
-		$albums_tests->move($albumID3, null);
+		$albums_tests->move([$albumTagID1], $albumID3);
+		$albums_tests->move([$albumID3], $albumID2);
+		$albums_tests->move([$albumID2], $albumID);
+		$albums_tests->move([$albumID3], null);
 
 		/*
 		 * try to get a non-existing album
@@ -106,7 +106,7 @@ class AlbumTest extends TestCase
 		/*
 		 * Let's try to delete this album.
 		 */
-		$albums_tests->delete($albumID);
+		$albums_tests->delete([$albumID]);
 
 		/*
 		 * Because we deleted the album, we should not see it anymore.

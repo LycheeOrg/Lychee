@@ -122,7 +122,7 @@ class PhotosRotateTest extends TestCase
 			],
 		]);
 
-		$photos_tests->delete($id);
+		$photos_tests->delete([$id]);
 
 		// reset
 		Configs::set('editor_enabled', $editor_enabled_value);

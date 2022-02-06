@@ -26,11 +26,13 @@ class PhotosUnitTest
 	 */
 	public function upload(UploadedFile $file, ?string $albumID = null): string
 	{
-		$response = $this->testCase->postJson(
-			'/api/Photo::add',
-			[
+		$response = $this->testCase->post(
+			'/api/Photo::add', [
 				'albumID' => $albumID,
-				'0' => $file,
+				'file' => $file,
+			], [
+				'CONTENT_TYPE' => 'multipart/form-data',
+				'Accept' => 'application/json',
 			]
 		);
 
@@ -45,15 +47,18 @@ class PhotosUnitTest
 	 */
 	public function wrong_upload(): void
 	{
-		$response = $this->testCase->postJson(
+		$response = $this->testCase->post(
 			'/api/Photo::add',
 			[
 				'albumID' => null,
+			], [
+				'CONTENT_TYPE' => 'multipart/form-data',
+				'Accept' => 'application/json',
 			]
 		);
 
 		$response->assertUnprocessable();
-		$response->assertSee('The 0 field is required');
+		$response->assertSee('The file field is required');
 	}
 
 	/**
@@ -61,15 +66,18 @@ class PhotosUnitTest
 	 */
 	public function wrong_upload2(): void
 	{
-		$response = $this->testCase->postJson(
+		$response = $this->testCase->post(
 			'/api/Photo::add',
 			[
 				'albumID' => null,
-				'0' => '1',
+				'file' => '1',
+			], [
+				'CONTENT_TYPE' => 'multipart/form-data',
+				'Accept' => 'application/json',
 			]
 		);
 		$response->assertUnprocessable();
-		$response->assertSee('The 0 must be a file');
+		$response->assertSee('The file must be a file');
 	}
 
 	/**
@@ -228,7 +236,7 @@ class PhotosUnitTest
 		 */
 		$response = $this->testCase->postJson('/api/Photo::setTitle', [
 			'title' => $title,
-			'photoIDs' => $id,
+			'photoIDs' => [$id],
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -265,17 +273,17 @@ class PhotosUnitTest
 	/**
 	 * Set Star.
 	 *
-	 * @param string      $id
+	 * @param string[]    $ids
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_star(
-		string $id,
+		array $ids,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson('/api/Photo::setStar', [
-			'photoIDs' => $id,
+			'photoIDs' => $ids,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -286,19 +294,19 @@ class PhotosUnitTest
 	/**
 	 * Set tags.
 	 *
-	 * @param string      $id
+	 * @param string[]    $ids
 	 * @param string      $tags
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_tag(
-		string $id,
+		array $ids,
 		string $tags,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson('/api/Photo::setTags', [
-			'photoIDs' => $id,
+			'photoIDs' => $ids,
 			'tags' => $tags,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -360,19 +368,19 @@ class PhotosUnitTest
 	 * Set Album.
 	 *
 	 * @param string      $album_id
-	 * @param string      $id
+	 * @param string[]    $ids
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function set_album(
 		string $album_id,
-		string $id,
+		array $ids,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Photo::setAlbum', [
-				'photoIDs' => $id,
+				'photoIDs' => $ids,
 				'albumID' => $album_id,
 			]
 		);
@@ -385,20 +393,20 @@ class PhotosUnitTest
 	/**
 	 * Duplicate a picture.
 	 *
-	 * @param string      $id
+	 * @param string[]    $ids
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 *
 	 * @return TestResponse
 	 */
 	public function duplicate(
-		string $id,
+		array $ids,
 		?string $targetAlbumID,
 		int $expectedStatusCode = 201,
 		?string $assertSee = null
 	): TestResponse {
 		$response = $this->testCase->postJson('/api/Photo::duplicate', [
-			'photoIDs' => $id,
+			'photoIDs' => $ids,
 			'albumID' => $targetAlbumID,
 		]);
 		$response->assertStatus($expectedStatusCode);
@@ -421,8 +429,10 @@ class PhotosUnitTest
 	): void {
 		$response = $this->testCase->getWithParameters(
 			'/api/Photo::getArchive', [
-				'photoIDs' => [$id],
+				'photoIDs' => $id,
 				'kind' => $kind,
+			], [
+				'Accept' => '*/*',
 			]
 		);
 		$response->assertOk();
@@ -431,17 +441,17 @@ class PhotosUnitTest
 	/**
 	 * Delete a picture.
 	 *
-	 * @param string      $id
+	 * @param string[]    $ids
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function delete(
-		string $id,
+		array $ids,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson('/api/Photo::delete', [
-			'photoIDs' => $id,
+			'photoIDs' => $ids,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {

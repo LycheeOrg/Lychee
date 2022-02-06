@@ -33,7 +33,7 @@ class LogsTest extends TestCase
 
 	public function testApiLogs()
 	{
-		$response = $this->postJson('/api/Logs');
+		$response = $this->postJson('/api/Logs::list');
 		$response->assertForbidden();
 	}
 

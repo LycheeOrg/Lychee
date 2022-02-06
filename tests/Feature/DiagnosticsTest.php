@@ -23,7 +23,7 @@ class DiagnosticsTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		$response = $this->get('/Diagnostics');
-		$response->assertOk(200); // code 200 something
+		$response->assertOk(); // code 200 something
 
 		Configs::where('key', '=', 'lossless_optimization')->update(['value' => null]);
 

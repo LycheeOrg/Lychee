@@ -31,10 +31,10 @@ class PhotosTest extends TestCase
 		 * Make a copy of the image because import deletes the file, and we want to be
 		 * able to use the test on a local machine and not just in CI.
 		 */
-		copy('tests/Feature/night.jpg', 'public/uploads/import/night.jpg');
+		copy(base_path('tests/Feature/night.jpg'), base_path('public/uploads/import/night.jpg'));
 
 		$file = new UploadedFile(
-			'public/uploads/import/night.jpg',
+			base_path('public/uploads/import/night.jpg'),
 			'night.jpg',
 			'image/jpeg',
 			null,
@@ -52,8 +52,8 @@ class PhotosTest extends TestCase
 
 		$photos_tests->set_title($id, "Night in Ploumanac'h");
 		$photos_tests->set_description($id, 'A night photography');
-		$photos_tests->set_star($id);
-		$photos_tests->set_tag($id, 'night');
+		$photos_tests->set_star([$id]);
+		$photos_tests->set_tag([$id], 'night');
 		$photos_tests->set_public($id);
 		$photos_tests->set_license($id, 'WTFPL', 422, 'The given data was invalid');
 		$photos_tests->set_license($id, 'CC0');
@@ -145,14 +145,14 @@ class PhotosTest extends TestCase
 		/*
 		 * Erase tag
 		 */
-		$photos_tests->set_tag($id, '');
+		$photos_tests->set_tag([$id], '');
 
 		/**
 		 * We now test interaction with albums.
 		 */
 		$albumID = $albums_tests->add(null, 'test_album_2')->offsetGet('id');
-		$photos_tests->set_album('-1', $id, 422);
-		$photos_tests->set_album($albumID, $id);
+		$photos_tests->set_album('-1', [$id], 422);
+		$photos_tests->set_album($albumID, [$id]);
 		$albums_tests->download($albumID);
 		$photos_tests->dont_see_in_unsorted($id);
 
@@ -160,7 +160,7 @@ class PhotosTest extends TestCase
 		 * Test duplication, the duplicate should be completely identical
 		 * except for the IDs.
 		 */
-		$response = $photos_tests->duplicate($id, $albumID);
+		$response = $photos_tests->duplicate([$id], $albumID);
 		$response->assertJson([
 			'album_id' => $albumID,
 			'aperture' => 'f/2.8',
@@ -205,7 +205,7 @@ class PhotosTest extends TestCase
 		$ids = [];
 		$ids[0] = $album->photos[0]->id;
 		$ids[1] = $album->photos[1]->id;
-		$photos_tests->delete($ids[0]);
+		$photos_tests->delete([$ids[0]]);
 		$photos_tests->get($ids[0], 404);
 
 		$photos_tests->dont_see_in_recent($ids[0]);
@@ -220,7 +220,7 @@ class PhotosTest extends TestCase
 		$response->assertOk();
 
 		// delete the picture after displaying it
-		$photos_tests->delete($ids[1]);
+		$photos_tests->delete([$ids[1]]);
 		$photos_tests->get($ids[1], 404);
 		$album = $this->asObject($albums_tests->get($albumID));
 		$this->assertCount(0, $album->photos);
@@ -240,7 +240,7 @@ class PhotosTest extends TestCase
 		// set back to initial value
 		Configs::set('gen_demo_js', $init_config_value);
 
-		$albums_tests->delete($albumID);
+		$albums_tests->delete([$albumID]);
 
 		$response = $this->postJson('/api/Photo::clearSymLink');
 		$response->assertNoContent();
@@ -269,8 +269,8 @@ class PhotosTest extends TestCase
 			* Make a copy of the image because import deletes the file, and we want to be
 			* able to use the test on a local machine and not just in CI.
 			*/
-			copy('tests/Feature/train.jpg', 'public/uploads/import/train.jpg');
-			copy('tests/Feature/train.mov', 'public/uploads/import/train.mov');
+			copy(base_path('tests/Feature/train.jpg'), base_path('public/uploads/import/train.jpg'));
+			copy(base_path('tests/Feature/train.mov'), base_path('public/uploads/import/train.mov'));
 
 			$photo_file = new UploadedFile(
 				'public/uploads/import/train.jpg',
@@ -314,7 +314,7 @@ class PhotosTest extends TestCase
 		$photos_tests->get('-1', 422);
 		$photos_tests->set_description('-1', 'test', 422);
 		$photos_tests->set_public('-1', 422);
-		$photos_tests->set_album('-1', '-1', 422);
+		$photos_tests->set_album('-1', ['-1'], 422);
 		$photos_tests->set_license('-1', 'CC0', 422);
 
 		AccessControl::logout();
@@ -376,7 +376,7 @@ class PhotosTest extends TestCase
 		$responseObj = json_decode($response->getContent());
 		$ids_after_import = (new BaseCollection($responseObj->photos))->pluck('id');
 		$this->assertEquals(Photo::query()->where($recentFilter)->count(), $ids_after_import->count());
-		$ids_to_delete = $ids_after_import->diff($ids_before_import)->implode(',');
+		$ids_to_delete = $ids_after_import->diff($ids_before_import)->all();
 		$photos_tests->delete($ids_to_delete);
 
 		$this->assertEquals($num_before_import, Photo::query()->where($recentFilter)->count());

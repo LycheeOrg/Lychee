@@ -92,7 +92,7 @@ class GeoDataTest extends TestCase
 		);
 
 		$albumID = $albums_tests->add(null, 'test_mongolia')->offsetGet('id');
-		$photos_tests->set_album($albumID, $id);
+		$photos_tests->set_album($albumID, [$id]);
 		$photos_tests->dont_see_in_unsorted($id);
 		$response = $albums_tests->get($albumID);
 		$responseObj = json_decode($response->getContent());
@@ -131,8 +131,8 @@ class GeoDataTest extends TestCase
 		$this->assertCount(1, $responseObj->photos);
 		$this->assertEquals($id, $responseObj->photos[0]->id);
 
-		$photos_tests->delete($id);
-		$albums_tests->delete($albumID);
+		$photos_tests->delete([$id]);
+		$albums_tests->delete([$albumID]);
 
 		// reset
 		Configs::set('map_display', $map_display_value);

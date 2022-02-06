@@ -75,7 +75,7 @@ class NotificationTest extends TestCase
 
 		$photos_tests->upload($file, $albumID);
 
-		$albums_tests->delete($albumID);
+		$albums_tests->delete([$albumID]);
 
 		// logout
 		$sessions_test->logout();
@@ -114,7 +114,7 @@ class NotificationTest extends TestCase
 		// remove user, email & notifications
 		AccessControl::log_as_id(0);
 
-		$users_test->update_email('');
+		$users_test->update_email(null);
 
 		$response = $users_test->list();
 		$t = json_decode($response->getContent());

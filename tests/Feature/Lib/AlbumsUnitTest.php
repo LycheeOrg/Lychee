@@ -73,13 +73,13 @@ class AlbumsUnitTest
 	/**
 	 * Move albums.
 	 *
-	 * @param string      $ids
-	 * @param string      $to
+	 * @param string[]    $ids
+	 * @param string|null $to
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function move(
-		string $ids,
+		array $ids,
 		?string $to,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
@@ -185,7 +185,7 @@ class AlbumsUnitTest
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Album::setTitle',
-			['albumIDs' => $id, 'title' => $title]
+			['albumIDs' => [$id], 'title' => $title]
 		);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
@@ -336,7 +336,9 @@ class AlbumsUnitTest
 	{
 		$response = $this->testCase->getWithParameters(
 			'/api/Album::getArchive', [
-				'albumIDs' => [$id],
+				'albumIDs' => $id,
+			], [
+				'Accept' => '*/*',
 			]
 		);
 		$response->assertOk();
@@ -345,16 +347,16 @@ class AlbumsUnitTest
 	/**
 	 * Delete.
 	 *
-	 * @param string      $id
+	 * @param string[]    $ids
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
 	public function delete(
-		string $id,
+		array $ids,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::delete', ['albumIDs' => $id]);
+		$response = $this->testCase->postJson('/api/Album::delete', ['albumIDs' => $ids]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {
 			$response->assertSee($assertSee, false);
