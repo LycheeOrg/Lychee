@@ -58,9 +58,9 @@ class Takedate extends Command
 	 *
 	 * @return void
 	 */
-	private function printError(string $msg): void
+	private function printError(Photo $photo, string $msg): void
 	{
-		$this->msgSection->writeln('<error>Error:</error> ' . $msg);
+		$this->msgSection->writeln('<error>Error:</error>   Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
 	}
 
 	/**
@@ -70,9 +70,9 @@ class Takedate extends Command
 	 *
 	 * @return void
 	 */
-	private function printWarning(string $msg): void
+	private function printWarning(Photo $photo, string $msg): void
 	{
-		$this->msgSection->writeln('<comment>Warning:</comment> ' . $msg);
+		$this->msgSection->writeln('<comment>Warning:</comment> Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
 	}
 
 	/**
@@ -82,9 +82,9 @@ class Takedate extends Command
 	 *
 	 * @return void
 	 */
-	private function printInfo(string $msg): void
+	private function printInfo(Photo $photo, string $msg): void
 	{
-		$this->msgSection->writeln('<info>Info:</info>  ' . $msg);
+		$this->msgSection->writeln('<info>Info:</info>    Photo "' . $photo->title . '" (ID=' . $photo->id . '): ' . $msg);
 	}
 
 	/**
@@ -115,7 +115,7 @@ class Takedate extends Command
 		// `limit` won't have an effect.
 		$count = $photoQuery->count();
 		if ($count === 0) {
-			$this->printInfo('No pictures require takedate updates.');
+			$this->line('No pictures require takedate updates.');
 
 			return -1;
 		}
@@ -144,7 +144,7 @@ class Takedate extends Command
 			$fullPath = $photo->size_variants->getOriginal()->getFile()->getAbsolutePath();
 
 			if (!file_exists($fullPath)) {
-				$this->printError('File ' . $fullPath . ' not found for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+				$this->printError($photo, 'Media file ' . $fullPath . ' not found');
 				continue;
 			}
 
@@ -160,13 +160,13 @@ class Takedate extends Command
 				// "2022-01-31 19:50 GMT".
 				// So, we must check for equality of timezones separately.
 				if ($photo->taken_at->equalTo($stamp) && $photo->taken_at->timezoneName === $stamp->timezoneName) {
-					$this->printInfo('Takestamp ' . $stamp->format(self::DATETIME_FORMAT) . ' up to date for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+					$this->printInfo($photo, 'Takestamp up-to-date.');
 				} else {
 					$photo->taken_at = $stamp;
-					$this->printInfo('Takestamp updated to ' . $photo->taken_at->format(self::DATETIME_FORMAT) . ' for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+					$this->printInfo($photo, 'Takestamp set to ' . $photo->taken_at->format(self::DATETIME_FORMAT) . '.');
 				}
 			} else {
-				$this->printWarning('Failed to extract takestamp data from media file for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+				$this->printWarning($photo, 'Failed to extract takestamp data from media file.');
 			}
 
 			if ($setCreationTime) {
@@ -175,15 +175,15 @@ class Takedate extends Command
 				}
 				$created_at = filemtime($fullPath);
 				if ($created_at == $photo->created_at->timestamp) {
-					$this->printInfo('Upload time up to date for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+					$this->printInfo($photo, 'Upload time up-to-date.');
 				} else {
 					$photo->created_at = Carbon::createFromTimestamp($created_at);
-					$this->printInfo('Upload time updated to ' . $photo->created_at->format(self::DATETIME_FORMAT) . ' for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+					$this->printInfo($photo, 'Upload time set to ' . $photo->created_at->format(self::DATETIME_FORMAT) . '.');
 				}
 			}
 
 			if (!$photo->save()) {
-				$this->printError('Failed to save changes for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+				$this->printError($photo, 'Failed to save changes.');
 			}
 		}
 
