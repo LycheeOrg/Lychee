@@ -101,30 +101,42 @@ class Takedate extends Command
 		$force = boolval($this->option('force'));
 		set_time_limit($timeout);
 
-		// We must stipulate a particular order, otherwise `offset` and `limit` have random effects
+		// For faster iteration we eagerly load the original size variant,
+		// but only the original size variant
 		$photoQuery = Photo::with(['size_variants' => function (HasMany $r) {
 			$r->where('type', '=', SizeVariant::ORIGINAL);
-		}])->orderBy('id');
+		}]);
 
-		if ($offset !== 0) {
-			$photoQuery->offset($offset);
-		}
-		if ($limit !== 0) {
-			$photoQuery->limit($limit);
-		}
 		if (!$force) {
 			$photoQuery->whereNull('taken_at');
 		}
 
+		// ATTENTION: We must call `count` first, otherwise `offset` and
+		// `limit` won't have an effect.
 		$count = $photoQuery->count();
 		if ($count === 0) {
-			$this->line('No pictures require takedate updates.');
+			$this->printInfo('No pictures require takedate updates.');
 
 			return -1;
 		}
 
-		$this->progressBar->setMaxSteps($count);
-		$photos = $photoQuery->lazyById();
+		// We must stipulate a particular order, otherwise `offset` and `limit` have random effects
+		$photoQuery->orderBy('id');
+
+		if ($offset !== 0) {
+			$photoQuery->offset($offset);
+		}
+
+		if ($limit !== 0) {
+			$photoQuery->limit($limit);
+		}
+
+		$this->progressBar->setMaxSteps($limit === 0 ? $count : min($count, $limit));
+
+		// Unfortunately, `->getLazy` ignores `offset` and `limit`, so we must
+		// use a regular collection which might run out of memory for large
+		// values of `limit`.
+		$photos = $photoQuery->get();
 		/* @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->progressBar->advance();
