@@ -26,10 +26,10 @@ class Takedate extends Command
 	 */
 	protected $signature = 'lychee:takedate' .
 	'{offset=0 : offset of the first photo to process}' .
-	'{limit=5 : number of photos to process (0 means process all)}' .
+	'{limit=50 : number of photos to process (0 means process all)}' .
 	'{time=600 : maximum execution time in seconds (0 means unlimited)}' .
-	'{--use-file-time : use timestamps of media files if exif data missing}' .
-	'{{--f|force} : force processing of all media files}';
+	'{--c|set-upload-time : additionally sets the upload time based on the creation time of the media file; ATTENTION: this option is rarely needed and potentially harmful}' .
+	'{--f|force : force processing of all media files}';
 
 	/**
 	 * The console command description.
@@ -64,6 +64,18 @@ class Takedate extends Command
 	}
 
 	/**
+	 * Outputs an warning.
+	 *
+	 * @param string $msg the message
+	 *
+	 * @return void
+	 */
+	private function printWarning(string $msg): void
+	{
+		$this->msgSection->writeln('<comment>Warning:</comment> ' . $msg);
+	}
+
+	/**
 	 * Outputs an informational message.
 	 *
 	 * @param string $msg the message
@@ -85,7 +97,7 @@ class Takedate extends Command
 		$limit = intval($this->argument('limit'));
 		$offset = intval($this->argument('offset'));
 		$timeout = intval($this->argument('time'));
-		$useFileTime = boolval($this->option('use-file-time'));
+		$setCreationTime = boolval($this->option('set-upload-time'));
 		$force = boolval($this->option('force'));
 		set_time_limit($timeout);
 
@@ -137,38 +149,29 @@ class Takedate extends Command
 				// So, we must check for equality of timezones separately.
 				if ($photo->taken_at->equalTo($stamp) && $photo->taken_at->timezoneName === $stamp->timezoneName) {
 					$this->printInfo('Takestamp ' . $stamp->format(self::DATETIME_FORMAT) . ' up to date for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
-					continue;
-				}
-				$photo->taken_at = $stamp;
-				if ($photo->save()) {
-					$this->printInfo('Takestamp updated to ' . $stamp->format(self::DATETIME_FORMAT) . ' for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
 				} else {
-					$this->printError('Failed to update takestamp for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+					$photo->taken_at = $stamp;
+					$this->printInfo('Takestamp updated to ' . $photo->taken_at->format(self::DATETIME_FORMAT) . ' for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
 				}
-				continue;
+			} else {
+				$this->printWarning('Failed to extract takestamp data from media file for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
 			}
 
-			// TODO: The description of this command's signature suggests something different than we do here.
-			// The description suggests that we would use the file date as a fall back for `taken_at`, if EXIF data is not available.
-			// However, we set `created_at` (aka upload time) here.
-			// The latter is actually an independent operation of the first.
-			if (!$useFileTime) {
-				$this->printError('Failed to get takestamp data for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
-				continue;
+			if ($setCreationTime) {
+				if (is_link($fullPath)) {
+					$fullPath = readlink($fullPath);
+				}
+				$created_at = filemtime($fullPath);
+				if ($created_at == $photo->created_at->timestamp) {
+					$this->printInfo('Upload time up to date for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+				} else {
+					$photo->created_at = Carbon::createFromTimestamp($created_at);
+					$this->printInfo('Upload time updated to ' . $photo->created_at->format(self::DATETIME_FORMAT) . ' for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+				}
 			}
-			if (is_link($fullPath)) {
-				$fullPath = readlink($fullPath);
-			}
-			$created_at = filemtime($fullPath);
-			if ($created_at == $photo->created_at->timestamp) {
-				$this->printInfo('Created_at up to date for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
-				continue;
-			}
-			$photo->created_at = Carbon::createFromTimestamp($created_at);
-			if ($photo->save()) {
-				$this->printInfo('Created_at updated to ' . $photo->created_at->format(self::DATETIME_FORMAT) . ' for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
-			} else {
-				$this->printError('Failed to update created_at for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
+
+			if (!$photo->save()) {
+				$this->printError('Failed to save changes for photo "' . $photo->title . '" (ID=' . $photo->id . ').');
 			}
 		}
 
