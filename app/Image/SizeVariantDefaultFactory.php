@@ -236,6 +236,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		if (!$this->isEnabledByConfiguration($sizeVariant)) {
 			return null;
 		}
+		// Don't generate medium size variants for videos, because the current web front-end has no use for it. Let's save some storage space.
 		if ($this->photo->isVideo() && ($sizeVariant === SizeVariant::MEDIUM || $sizeVariant === SizeVariant::MEDIUM2X)) {
 			return null;
 		}
