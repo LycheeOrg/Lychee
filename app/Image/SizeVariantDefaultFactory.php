@@ -4,7 +4,6 @@ namespace App\Image;
 
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
-use App\Facades\Helpers;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -178,9 +177,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	protected function createTmpPathForReference(): void
 	{
-		$this->referenceFullPath = Helpers::createTemporaryFile(
-			$this->namingStrategy->getDefaultExtension()
-		);
+		$this->referenceFullPath = (new TemporaryLocalFile())->getAbsolutePath();
 		$this->needsCleanup = true;
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw/video file to ' . $this->referenceFullPath);
 	}
@@ -237,6 +234,9 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			throw new \InvalidArgumentException('createSizeVariantCond() must not be used to create original size, use createOriginal() instead');
 		}
 		if (!$this->isEnabledByConfiguration($sizeVariant)) {
+			return null;
+		}
+		if ($this->photo->isVideo() && ($sizeVariant === SizeVariant::MEDIUM || $sizeVariant === SizeVariant::MEDIUM2X)) {
 			return null;
 		}
 		if (empty($this->referenceFullPath)) {

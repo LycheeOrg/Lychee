@@ -74,7 +74,7 @@ class SourceFileInfo
 	{
 		return new self(
 			$file->getBasename(),
-			'.' . $file->getExtension(),
+			$file->getExtension(),
 			$file->getMimeType(),
 			$file
 		);
