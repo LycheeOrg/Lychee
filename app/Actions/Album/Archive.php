@@ -4,7 +4,6 @@ namespace App\Actions\Album;
 
 use App\Contracts\AbstractAlbum;
 use App\Exceptions\Internal\FrameworkException;
-use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Facades\AccessControl;
 use App\Facades\Helpers;
 use App\Models\Album;
@@ -14,7 +13,7 @@ use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use ZipStream\Exception\FileNotFoundException;
@@ -32,17 +31,14 @@ class Archive extends Action
 	];
 
 	/**
-	 * @param array $albumIDs
+	 * @param Collection<AbstractAlbum> $albums
 	 *
 	 * @return StreamedResponse
 	 *
 	 * @throws FrameworkException
-	 * @throws InvalidSmartIdException
 	 */
-	public function do(array $albumIDs): StreamedResponse
+	public function do(Collection $albums): StreamedResponse
 	{
-		$albums = $this->albumFactory->findWhereIDsIn($albumIDs);
-
 		$responseGenerator = function () use ($albums) {
 			$options = new \ZipStream\Option\Archive();
 			$options->setEnableZip64(Configs::get_value('zip64', '1') === '1');
@@ -164,6 +160,7 @@ class Archive extends Action
 		}
 
 		$usedFileNames = [];
+		// TODO: Ensure that the size variant `original` for each photo is eagerly loaded as it is needed below. This must be solved in close coordination with `ArchiveAlbumRequest`.
 		$photos = $album->photos;
 
 		/** @var Photo $photo */
@@ -198,6 +195,7 @@ class Archive extends Action
 		// Recursively compress sub-albums
 		if ($album instanceof Album) {
 			$subDirs = [];
+			// TODO: For higher efficiency, ensure that the photos of each child album together with the original size variant are eagerly loaded.
 			$subAlbums = $album->children;
 			foreach ($subAlbums as $subAlbum) {
 				$this->compressAlbum($subAlbum, $subDirs, $fullNameOfDirectory, $zip);

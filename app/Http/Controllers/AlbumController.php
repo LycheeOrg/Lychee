@@ -306,6 +306,6 @@ class AlbumController extends Controller
 	 */
 	public function getArchive(ArchiveAlbumsRequest $request, Archive $archive): StreamedResponse
 	{
-		return $archive->do($request->albumIDs());
+		return $archive->do($request->albums());
 	}
 }

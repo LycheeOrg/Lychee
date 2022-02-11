@@ -2,22 +2,27 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\AbstractAlbum;
+use App\Exceptions\Internal\InvalidSmartIdException;
+use App\Factories\AlbumFactory;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumIDs;
-use App\Http\Requests\Traits\HasAlbumIDsTrait;
+use App\Http\Requests\Contracts\HasAlbums;
+use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Rules\RandomIDListRule;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
-class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
+class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 {
-	use HasAlbumIDsTrait;
+	use HasAlbumsTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		foreach ($this->albumIDs as $albumID) {
-			if (!$this->authorizeAlbumAccess($albumID)) {
+		/** @var AbstractAlbum $album */
+		foreach ($this->albums as $album) {
+			if (!$this->authorizeAlbumAccessByModel($album)) {
 				return false;
 			}
 		}
@@ -31,15 +36,23 @@ class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbumIDs
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
+			HasAlbums::ALBUM_IDS_ATTRIBUTE => ['required', new RandomIDListRule()],
 		];
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws InvalidSmartIdException
+	 * @throws BindingResolutionException
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumIDs = explode(',', $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE]);
+		/** @var AlbumFactory $albumFactory */
+		$albumFactory = resolve(AlbumFactory::class);
+		// TODO: `App\Actions\Album\Archive::compressAlbum` iterates over the original size variant of each photo in the album; we should eagerly load them for higher efficiency.
+		$this->albums = $albumFactory->findWhereIDsIn(
+			explode(',', $values[HasAlbums::ALBUM_IDS_ATTRIBUTE])
+		);
 	}
 }
