@@ -7,6 +7,7 @@ use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
 use App\Exceptions\UnauthorizedException;
+use App\Models\Album;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
@@ -127,6 +128,21 @@ abstract class BaseApiRequest extends FormRequest
 	protected function authorizeAlbumWrite(array $albumIDs): bool
 	{
 		return $this->albumAuthorisationProvider->areEditable($albumIDs);
+	}
+
+	/**
+	 * Determines of the user is authorized to modify or write into the
+	 * designated album.
+	 *
+	 * @param Album|null $album the album; `null` designates the root album
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 *
+	 * @throws InternalLycheeException
+	 */
+	protected function authorizeAlbumWriteByModel(?Album $album): bool
+	{
+		return $this->albumAuthorisationProvider->isEditableByModel($album);
 	}
 
 	/**

@@ -566,6 +566,35 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
+	 * Checks whether the album is editable by the current user.
+	 *
+	 * See {@link AlbumAuthorisationProvider::areEditable()} for a definition
+	 * of being editable.
+	 *
+	 * @param Album|null $album the album; `null` designates the root album
+	 *
+	 * @return bool
+	 */
+	public function isEditableByModel(?Album $album): bool
+	{
+		if (AccessControl::is_admin()) {
+			return true;
+		}
+		if (!AccessControl::is_logged_in()) {
+			return false;
+		}
+
+		$user = AccessControl::user();
+
+		if (!$user->may_upload) {
+			return false;
+		}
+
+		// The root album can be edited by any user with upload rights
+		return $album === null || $album->owner_id === $user->id;
+	}
+
+	/**
 	 * Throws an exception if the given query does not query for an album.
 	 *
 	 * @param AlbumBuilder|FixedQueryBuilder $query
