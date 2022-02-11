@@ -4,10 +4,13 @@ namespace App\Http\Requests;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Actions\PhotoAuthorisationProvider;
+use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
 use App\Exceptions\UnauthorizedException;
 use App\Models\Album;
+use App\Models\Extensions\BaseAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
@@ -113,6 +116,25 @@ abstract class BaseApiRequest extends FormRequest
 	protected function authorizeAlbumAccess(?string $albumID): bool
 	{
 		return $this->albumAuthorisationProvider->isAccessibleByID($albumID);
+	}
+
+	/**
+	 * Determines of the user is authorized to access the designated album.
+	 *
+	 * @param AbstractAlbum|null $album the album
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizeAlbumAccessByModel(?AbstractAlbum $album): bool
+	{
+		if ($album instanceof BaseAlbum) {
+			return $this->albumAuthorisationProvider->isAccessible($album);
+		} elseif ($album instanceof BaseSmartAlbum) {
+			return $this->albumAuthorisationProvider->isAuthorizedForSmartAlbum($album);
+		} else {
+			// Should never happen
+			return false;
+		}
 	}
 
 	/**

@@ -11,6 +11,7 @@ use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\AlbumBuilder;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\FixedQueryBuilder;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\TagAlbum;
@@ -291,7 +292,7 @@ class AlbumAuthorisationProvider
 		)->count() !== 0;
 	}
 
-	public function isAccessible(Album $album): bool
+	public function isAccessible(BaseAlbum $album): bool
 	{
 		if (AccessControl::is_admin()) {
 			return true;
