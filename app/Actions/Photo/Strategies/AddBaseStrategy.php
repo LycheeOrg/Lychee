@@ -157,18 +157,6 @@ abstract class AddBaseStrategy
 			try {
 				$targetFile->write($sourceFile->read());
 				$sourceFile->close();
-				// Set original date
-				if ($isTargetLocal && $this->photo->taken_at !== null) {
-					// I wonder if Flysystem is really the right choice for use
-					// given the fact, that it lacks many of the features we need
-					// such that we need to fall back to low-level PHP methods
-					// all the time (for symlinks, setting timestamps, etc.)
-					// Also, the head maintainer seem very reluctant of
-					// integrating new features:
-					//  - For setting timestamps: https://github.com/thephpleague/flysystem/issues/920
-					//  - For symlinks: https://github.com/thephpleague/flysystem/issues/599
-					touch($targetFile->getAbsolutePath(), $this->photo->taken_at->getTimestamp());
-				}
 				if ($this->parameters->importMode->shallDeleteImported()) {
 					// This may throw an exception, if the original has been
 					// readable, but is not writable

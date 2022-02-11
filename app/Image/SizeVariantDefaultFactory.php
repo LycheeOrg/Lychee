@@ -207,8 +207,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 */
 	protected function createTmpPathForReference(): void
 	{
-		$tmpFile = new TemporaryLocalFile();
-		$this->referenceFullPath = $tmpFile->getAbsolutePath();
+		$this->referenceFullPath = (new TemporaryLocalFile())->getAbsolutePath();
 		$this->needsCleanup = true;
 		Logs::notice(__METHOD__, __LINE__, 'Saving JPG of raw/video file to ' . $this->referenceFullPath);
 	}
@@ -265,6 +264,10 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			throw new InvalidSizeVariantException('createSizeVariantCond() must not be used to create original size, use createOriginal() instead');
 		}
 		if (!$this->isEnabledByConfiguration($sizeVariant)) {
+			return null;
+		}
+		// Don't generate medium size variants for videos, because the current web front-end has no use for it. Let's save some storage space.
+		if ($this->photo->isVideo() && ($sizeVariant === SizeVariant::MEDIUM || $sizeVariant === SizeVariant::MEDIUM2X)) {
 			return null;
 		}
 		if (empty($this->referenceFullPath)) {
