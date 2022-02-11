@@ -57,7 +57,7 @@ class AlbumController extends Controller
 	 */
 	public function add(AddAlbumRequest $request, Create $create): Album
 	{
-		return $create->create($request->title(), $request->parentID());
+		return $create->create($request->title(), $request->parentAlbum());
 	}
 
 	/**

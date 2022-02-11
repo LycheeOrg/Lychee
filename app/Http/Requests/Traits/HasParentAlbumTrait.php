@@ -2,15 +2,17 @@
 
 namespace App\Http\Requests\Traits;
 
-trait HasParentAlbumIDTrait
+use App\Models\Album;
+
+trait HasParentAlbumTrait
 {
-	protected ?string $parentID = null;
+	protected ?Album $parentAlbum = null;
 
 	/**
-	 * @return string|null
+	 * @return Album|null
 	 */
-	public function parentID(): ?string
+	public function parentAlbum(): ?Album
 	{
-		return $this->parentID;
+		return $this->parentAlbum;
 	}
 }

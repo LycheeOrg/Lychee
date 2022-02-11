@@ -3,24 +3,26 @@
 namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasParentAlbumID;
+use App\Http\Requests\Contracts\HasParentAlbum;
 use App\Http\Requests\Contracts\HasTitle;
-use App\Http\Requests\Traits\HasParentAlbumIDTrait;
+use App\Http\Requests\Traits\HasParentAlbumTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
+use App\Models\Album;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbumID
+class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 {
 	use HasTitleTrait;
-	use HasParentAlbumIDTrait;
+	use HasParentAlbumTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWrite([$this->parentID]);
+		return $this->authorizeAlbumWriteByModel($this->parentAlbum);
 	}
 
 	/**
@@ -29,17 +31,21 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 	public function rules(): array
 	{
 		return [
-			HasParentAlbumID::PARENT_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			HasParentAlbum::PARENT_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 		];
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws ModelNotFoundException
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->parentID = $values[HasParentAlbumID::PARENT_ID_ATTRIBUTE];
+		$this->parentAlbum = Album::query()->findOrFail(
+			$values[HasParentAlbum::PARENT_ID_ATTRIBUTE]
+		);
 		$this->title = $values[HasTitle::TITLE_ATTRIBUTE];
 	}
 }

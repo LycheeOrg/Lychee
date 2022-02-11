@@ -2,12 +2,14 @@
 
 namespace App\Http\Requests\Contracts;
 
-interface HasParentAlbumID
+use App\Models\Album;
+
+interface HasParentAlbum
 {
 	public const PARENT_ID_ATTRIBUTE = 'parent_id';
 
 	/**
-	 * @return string|null
+	 * @return Album|null
 	 */
-	public function parentID(): ?string;
+	public function parentAlbum(): ?Album;
 }
