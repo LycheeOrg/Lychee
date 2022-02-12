@@ -9,9 +9,6 @@ use App\Actions\Album\Delete;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
-use App\Actions\Album\SetDescription;
-use App\Actions\Album\SetLicense;
-use App\Actions\Album\SetNSFW;
 use App\Actions\Album\SetPublic;
 use App\Actions\Album\SetShowTags;
 use App\Actions\Album\SetSorting;
@@ -28,11 +25,11 @@ use App\Http\Requests\Album\GetAlbumPositionDataRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
+use App\Http\Requests\Album\SetAlbumAccessSettingsRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
 use App\Http\Requests\Album\SetAlbumLicenseRequest;
 use App\Http\Requests\Album\SetAlbumNSFWRequest;
-use App\Http\Requests\Album\SetAlbumSharingRequest;
 use App\Http\Requests\Album\SetAlbumSortingRequest;
 use App\Http\Requests\Album\SetAlbumsTitleRequest;
 use App\Http\Requests\Album\SetAlbumTagsRequest;
@@ -134,32 +131,42 @@ class AlbumController extends Controller
 	/**
 	 * Change the sharing properties of the album.
 	 *
-	 * @param SetAlbumSharingRequest $request
-	 * @param SetPublic              $setPublic
+	 * This method is a misnomer.
+	 * It does not only set the public state of an album, but any kind of
+	 * accessibility.
+	 *
+	 * TODO: Rename the method.
+	 *
+	 * @param SetAlbumAccessSettingsRequest $request
+	 * @param SetPublic                     $setPublic
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function setPublic(SetAlbumSharingRequest $request, SetPublic $setPublic): void
+	public function setPublic(SetAlbumAccessSettingsRequest $request, SetPublic $setPublic): void
 	{
-		$setPublic->do($request->albumID(), $request->shareSettings());
+		$setPublic->do(
+			$request->album(),
+			$request->albumAccessSettings(),
+			$request->isPasswordProvided(),
+			$request->password()
+		);
 	}
 
 	/**
 	 * Change the description of the album.
 	 *
 	 * @param SetAlbumDescriptionRequest $request
-	 * @param SetDescription             $setDescription
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
 	 */
-	public function setDescription(SetAlbumDescriptionRequest $request, SetDescription $setDescription): void
+	public function setDescription(SetAlbumDescriptionRequest $request): void
 	{
-		$setDescription->do($request->albumID(), $request->description());
+		$request->album()->description = $request->description();
+		$request->album()->save();
 	}
 
 	/**
@@ -198,15 +205,15 @@ class AlbumController extends Controller
 	 * Set the license of the Album.
 	 *
 	 * @param SetAlbumLicenseRequest $request
-	 * @param SetLicense             $setLicense
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
 	 */
-	public function setLicense(SetAlbumLicenseRequest $request, SetLicense $setLicense): void
+	public function setLicense(SetAlbumLicenseRequest $request): void
 	{
-		$setLicense->do($request->albumID(), $request->license());
+		$request->album()->license = $request->license();
+		$request->album()->save();
 	}
 
 	/**
@@ -259,16 +266,22 @@ class AlbumController extends Controller
 	/**
 	 * Set if an album contains sensitive pictures.
 	 *
+	 * This method is either a misnomer and should rather be called
+	 * `toggleNSFW` or the request `SetAlbumNSFWRequest` should contain an
+	 * explicit boolean with the new NSFW state.
+	 *
+	 * TODO: Fix the method, see above.
+	 *
 	 * @param SetAlbumNSFWRequest $request
-	 * @param SetNSFW             $setNSFW
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
 	 */
-	public function setNSFW(SetAlbumNSFWRequest $request, SetNSFW $setNSFW): void
+	public function setNSFW(SetAlbumNSFWRequest $request): void
 	{
-		$setNSFW->do($request->albumID(), true);
+		$request->album()->is_nsfw = !($request->album()->is_nsfw);
+		$request->album()->save();
 	}
 
 	/**

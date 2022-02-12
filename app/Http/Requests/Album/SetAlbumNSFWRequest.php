@@ -3,20 +3,30 @@
 namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Traits\HasAlbumIDTrait;
+use App\Http\Requests\Contracts\HasAbstractAlbum;
+use App\Http\Requests\Contracts\HasBaseAlbum;
+use App\Http\Requests\Traits\HasBaseAlbumTrait;
 use App\Rules\RandomIDRule;
 
-class SetAlbumNSFWRequest extends BaseApiRequest implements HasAlbumID
+/**
+ * Class SetAlbumNSFWRequest.
+ *
+ * This class is either a misnomer and should rather be called
+ * `ToggleAlbumNSFWRequest` or receive an explicit boolean which indicates the
+ * desired NSFW state.
+ *
+ * TODO: Fix the class, see above.
+ */
+class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
 {
-	use HasAlbumIDTrait;
+	use HasBaseAlbumTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWrite([$this->albumID]);
+		return $this->authorizeAlbumWriteByModel($this->album);
 	}
 
 	/**
@@ -25,7 +35,7 @@ class SetAlbumNSFWRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -34,6 +44,8 @@ class SetAlbumNSFWRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
+		$this->album = $this->albumFactory->findModelOrFail(
+			$values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]
+		);
 	}
 }
