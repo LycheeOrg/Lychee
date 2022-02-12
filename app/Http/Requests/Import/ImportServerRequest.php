@@ -41,7 +41,7 @@ class ImportServerRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(false)],
+			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
 			self::PATH_ATTRIBUTE => 'required|string',
 			self::DELETE_IMPORTED_ATTRIBUTE => 'sometimes|boolean',
 			self::SKIP_DUPLICATES_ATTRIBUTE => 'sometimes|boolean',

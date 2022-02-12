@@ -16,10 +16,10 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection as BaseCollection;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
@@ -158,11 +158,11 @@ abstract class BaseApiRequest extends FormRequest
 	/**
 	 * Determines of the user is authorized to access the designated album.
 	 *
-	 * @param Collection<AbstractAlbum> $albums the albums
+	 * @param BaseCollection<AbstractAlbum> $albums the albums
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizeAlbumAccessByModels(Collection $albums): bool
+	protected function authorizeAlbumAccessByModels(BaseCollection $albums): bool
 	{
 		/** @var AbstractAlbum $album */
 		foreach ($albums as $album) {
@@ -206,11 +206,11 @@ abstract class BaseApiRequest extends FormRequest
 	 * Determines of the user is authorized to modify or write into the
 	 * designated album.
 	 *
-	 * @param Collection<AbstractAlbum> $albums the albums
+	 * @param BaseCollection<AbstractAlbum> $albums the albums
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizeAlbumWriteByModels(Collection $albums): bool
+	protected function authorizeAlbumWriteByModels(BaseCollection $albums): bool
 	{
 		/** @var AbstractAlbum $album */
 		foreach ($albums as $album) {
