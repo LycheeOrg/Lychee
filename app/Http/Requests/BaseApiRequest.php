@@ -156,13 +156,11 @@ abstract class BaseApiRequest extends FormRequest
 	 * Determines of the user is authorized to modify or write into the
 	 * designated album.
 	 *
-	 * @param Album|null $album the album; `null` designates the root album
+	 * @param AbstractAlbum|null $album the album; `null` designates the root album
 	 *
 	 * @return bool true, if the authenticated user is authorized
-	 *
-	 * @throws InternalLycheeException
 	 */
-	protected function authorizeAlbumWriteByModel(?Album $album): bool
+	protected function authorizeAlbumWriteByModel(?AbstractAlbum $album): bool
 	{
 		return $this->albumAuthorisationProvider->isEditableByModel($album);
 	}

@@ -5,6 +5,7 @@ namespace App\Factories;
 use App\Contracts\AbstractAlbum;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Models\Album;
+use App\Models\BaseAlbumImpl;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -90,9 +91,14 @@ class AlbumFactory
 	 *
 	 * @throws InvalidSmartIdException should not be thrown; otherwise this
 	 *                                 indicates an internal bug
+	 * @throws ModelNotFoundException
 	 */
 	public function findWhereIDsIn(array $albumIDs): Collection
 	{
+		// Remove root.
+		// Since we count the result we need to ensure that there are no
+		// duplicates.
+		$albumIDs = array_diff(array_unique($albumIDs), [null]);
 		$smartAlbumIDs = array_intersect($albumIDs, array_keys(self::BUILTIN_SMARTS));
 		$modelAlbumIDs = array_diff($albumIDs, array_keys(self::BUILTIN_SMARTS));
 
@@ -101,11 +107,17 @@ class AlbumFactory
 			$smartAlbums[] = $this->createSmartAlbum($smartID);
 		}
 
-		return new Collection(array_merge(
+		$result = new Collection(array_merge(
 			$smartAlbums,
 			TagAlbum::query()->findMany($modelAlbumIDs)->all(),
 			Album::query()->findMany($modelAlbumIDs)->all(),
 		));
+
+		if ($result->count() !== count($albumIDs)) {
+			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $modelAlbumIDs);
+		}
+
+		return $result;
 	}
 
 	/**

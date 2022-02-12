@@ -2,6 +2,7 @@
 
 namespace App\Actions;
 
+use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
@@ -572,11 +573,11 @@ class AlbumAuthorisationProvider
 	 * See {@link AlbumAuthorisationProvider::areEditable()} for a definition
 	 * of being editable.
 	 *
-	 * @param Album|null $album the album; `null` designates the root album
+	 * @param AbstractAlbum|null $album the album; `null` designates the root album
 	 *
 	 * @return bool
 	 */
-	public function isEditableByModel(?Album $album): bool
+	public function isEditableByModel(?AbstractAlbum $album): bool
 	{
 		if (AccessControl::is_admin()) {
 			return true;
@@ -591,8 +592,11 @@ class AlbumAuthorisationProvider
 			return false;
 		}
 
-		// The root album can be edited by any user with upload rights
-		return $album === null || $album->owner_id === $user->id;
+		// The root album and smart albums get a pass
+		return
+			$album === null ||
+			$album instanceof BaseSmartAlbum ||
+			($album instanceof BaseAlbum && $album->owner_id === $user->id);
 	}
 
 	/**
