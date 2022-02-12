@@ -13,6 +13,7 @@ use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
 use App\Models\Extensions\BaseAlbum;
+use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection;
@@ -233,6 +234,19 @@ abstract class BaseApiRequest extends FormRequest
 	protected function authorizePhotoVisible(string $photoID): bool
 	{
 		return $this->photoAuthorisationProvider->isVisible($photoID);
+	}
+
+	/**
+	 * Determines of the user is authorized to see the designated photo.
+	 *
+	 * @param Photo|null $photo the photo; `null` is accepted for convenience
+	 *                          and the `null` photo is always authorized
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizePhotoVisibleByModel(?Photo $photo): bool
+	{
+		return $this->photoAuthorisationProvider->isVisibleByModel($photo);
 	}
 
 	/**

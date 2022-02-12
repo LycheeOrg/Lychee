@@ -93,6 +93,30 @@ class PhotoAuthorisationProvider
 	}
 
 	/**
+	 * Checks whether the photo is visible by the current user.
+	 *
+	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
+	 * specification of the rules when a photo is visible.
+	 *
+	 * @param Photo|null $photo the photo; `null` is accepted for convenience
+	 *                          and the `null` photo is always authorized
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	public function isVisibleByModel(?Photo $photo): bool
+	{
+		if ($photo === null || AccessControl::is_admin()) {
+			return true;
+		}
+
+		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
+
+		return $photo->is_public ||
+			$photo->owner_id === $userID ||
+			$this->albumAuthorisationProvider->isAccessible($photo->album);
+	}
+
+	/**
 	 * Restricts a photo query to _searchable_ photos.
 	 *
 	 * A photo is _searchable_ if at least one of the following conditions
