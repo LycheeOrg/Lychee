@@ -7,11 +7,15 @@ use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
+use App\Exceptions\Internal\FrameworkException;
+use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\UnauthorizedException;
-use App\Models\Album;
+use App\Factories\AlbumFactory;
 use App\Models\Extensions\BaseAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\ValidationException;
@@ -19,9 +23,13 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 abstract class BaseApiRequest extends FormRequest
 {
+	protected AlbumFactory $albumFactory;
 	protected AlbumAuthorisationProvider $albumAuthorisationProvider;
 	protected PhotoAuthorisationProvider $photoAuthorisationProvider;
 
+	/**
+	 * @throws FrameworkException
+	 */
 	public function __construct(
 		array $query = [],
 		array $request = [],
@@ -31,9 +39,14 @@ abstract class BaseApiRequest extends FormRequest
 		array $server = [],
 		$content = null
 	) {
-		$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
-		$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
-		parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
+		try {
+			$this->albumFactory = resolve(AlbumFactory::class);
+			$this->albumAuthorisationProvider = resolve(AlbumAuthorisationProvider::class);
+			$this->photoAuthorisationProvider = resolve(PhotoAuthorisationProvider::class);
+			parent::__construct($query, $request, $attributes, $cookies, $files, $server, $content);
+		} catch (BindingResolutionException $e) {
+			throw new FrameworkException('Laravel\'s provider component', $e);
+		}
 	}
 
 	/**
@@ -84,6 +97,8 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @throws ValidationException
 	 * @throws BadRequestException
+	 * @throws ModelNotFoundException
+	 * @throws InvalidSmartIdException
 	 */
 	protected function passedValidation()
 	{
@@ -138,6 +153,25 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * Determines of the user is authorized to access the designated album.
+	 *
+	 * @param Collection<AbstractAlbum> $albums the albums
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizeAlbumAccessByModels(Collection $albums): bool
+	{
+		/** @var AbstractAlbum $album */
+		foreach ($albums as $album) {
+			if (!$this->authorizeAlbumAccessByModel($album)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Determines of the user is authorized to modify or write into the
 	 * designated albums.
 	 *
@@ -163,6 +197,26 @@ abstract class BaseApiRequest extends FormRequest
 	protected function authorizeAlbumWriteByModel(?AbstractAlbum $album): bool
 	{
 		return $this->albumAuthorisationProvider->isEditableByModel($album);
+	}
+
+	/**
+	 * Determines of the user is authorized to modify or write into the
+	 * designated album.
+	 *
+	 * @param Collection<AbstractAlbum> $albums the albums
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizeAlbumWriteByModels(Collection $albums): bool
+	{
+		/** @var AbstractAlbum $album */
+		foreach ($albums as $album) {
+			if (!$this->authorizeAlbumWriteByModel($album)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -231,6 +285,9 @@ abstract class BaseApiRequest extends FormRequest
 	 * @param UploadedFile[] $files
 	 *
 	 * @return void
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws InvalidSmartIdException
 	 */
 	abstract protected function processValidatedValues(array $values, array $files): void;
 }

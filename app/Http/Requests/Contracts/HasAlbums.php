@@ -2,15 +2,17 @@
 
 namespace App\Http\Requests\Contracts;
 
-use App\Contracts\AbstractAlbum;
 use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * @template T of AbstractAlbum
+ */
 interface HasAlbums
 {
 	public const ALBUM_IDS_ATTRIBUTE = 'albumIDs';
 
 	/**
-	 * @return Collection<AbstractAlbum>
+	 * @return Collection<T>
 	 */
 	public function albums(): Collection;
 }

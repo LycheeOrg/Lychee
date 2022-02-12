@@ -4,7 +4,7 @@ namespace App\Http\Requests\Traits;
 
 use App\Models\Extensions\BaseAlbum;
 
-trait HasAlbumTrait
+trait HasBaseAlbumTrait
 {
 	protected ?BaseAlbum $album = null;
 

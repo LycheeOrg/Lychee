@@ -4,10 +4,8 @@ namespace App\Http\Requests\Contracts;
 
 use App\Models\Extensions\BaseAlbum;
 
-interface HasAlbum
+interface HasBaseAlbum extends HasAbstractAlbum
 {
-	public const ALBUM_ID_ATTRIBUTE = 'albumID';
-
 	/**
 	 * @return BaseAlbum|null
 	 */

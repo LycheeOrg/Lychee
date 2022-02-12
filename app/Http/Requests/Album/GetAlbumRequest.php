@@ -3,20 +3,20 @@
 namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Traits\HasAlbumIDTrait;
+use App\Http\Requests\Contracts\HasAbstractAlbum;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Rules\AlbumIDRule;
 
-class GetAlbumRequest extends BaseApiRequest implements HasAlbumID
+class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 {
-	use HasAlbumIDTrait;
+	use HasAbstractAlbumTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumAccess($this->albumID);
+		return $this->authorizeAlbumAccessByModel($this->album);
 	}
 
 	/**
@@ -25,7 +25,7 @@ class GetAlbumRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule()],
+			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule(false)],
 		];
 	}
 
@@ -34,9 +34,6 @@ class GetAlbumRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
-		if (empty($this->albumID)) {
-			$this->albumID = null;
-		}
+		$this->album = $this->albumFactory->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
 	}
 }

@@ -2,18 +2,20 @@
 
 namespace App\Http\Requests\Traits;
 
-use App\Contracts\AbstractAlbum;
 use Illuminate\Database\Eloquent\Collection;
 
+/**
+ * @template T of AbstractAlbum
+ */
 trait HasAlbumsTrait
 {
 	/**
-	 * @var Collection<AbstractAlbum>
+	 * @var Collection<T>
 	 */
 	protected Collection $albums;
 
 	/**
-	 * @return Collection<AbstractAlbum>
+	 * @return Collection<T>
 	 */
 	public function albums(): Collection
 	{

@@ -20,7 +20,6 @@ use App\Actions\Album\SetTitle;
 use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
-use App\Factories\AlbumFactory;
 use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\ArchiveAlbumsRequest;
@@ -79,16 +78,12 @@ class AlbumController extends Controller
 	 * Provided an albumID, returns the album.
 	 *
 	 * @param GetAlbumRequest $request
-	 * @param AlbumFactory    $albumFactory
 	 *
 	 * @return AbstractAlbum
-	 *
-	 * @throws LycheeException
-	 * @throws ModelNotFoundException
 	 */
-	public function get(GetAlbumRequest $request, AlbumFactory $albumFactory): AbstractAlbum
+	public function get(GetAlbumRequest $request): AbstractAlbum
 	{
-		return $albumFactory->findOrFail($request->albumID());
+		return $request->album();
 	}
 
 	/**

@@ -8,13 +8,20 @@ use Illuminate\Contracts\Validation\Rule;
 
 class AlbumIDRule implements Rule
 {
+	protected bool $isNullable;
+
+	public function __construct(bool $isNullable)
+	{
+		$this->isNullable = $isNullable;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function passes($attribute, $value): bool
 	{
 		return
-			$value === null ||
+			($value === null && $this->isNullable) ||
 			strlen($value) === HasRandomID::ID_LENGTH ||
 			array_key_exists($value, AlbumFactory::BUILTIN_SMARTS);
 	}

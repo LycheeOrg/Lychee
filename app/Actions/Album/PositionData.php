@@ -2,12 +2,12 @@
 
 namespace App\Actions\Album;
 
+use App\Contracts\AbstractAlbum;
 use App\Models\Album;
-use App\Models\Extensions\BaseAlbum;
 
 class PositionData extends Action
 {
-	public function get(BaseAlbum $album, bool $includeSubAlbums = false): array
+	public function get(AbstractAlbum $album, bool $includeSubAlbums = false): array
 	{
 		if ($album instanceof Album && $includeSubAlbums) {
 			$photoRelation = $album->all_photos();

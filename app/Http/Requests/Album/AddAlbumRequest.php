@@ -10,7 +10,6 @@ use App\Http\Requests\Traits\HasTitleTrait;
 use App\Models\Album;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 {
@@ -38,8 +37,6 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 
 	/**
 	 * {@inheritDoc}
-	 *
-	 * @throws ModelNotFoundException
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
