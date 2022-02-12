@@ -9,6 +9,15 @@ use App\Exceptions\ModelDBException;
 use App\Models\Extensions\BaseAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
+/**
+ * Class SetPublic.
+ *
+ * This class is a misnomer.
+ * It does not only set the public state of an album, but any kind of
+ * accessibility.
+ *
+ * TODO: Rename the class.
+ */
 class SetPublic extends Action
 {
 	/**

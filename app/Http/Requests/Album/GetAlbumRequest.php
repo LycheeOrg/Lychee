@@ -34,6 +34,6 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
+		$this->album = $this->albumFactory->findAbstractAlbumOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
 	}
 }

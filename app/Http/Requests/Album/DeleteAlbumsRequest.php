@@ -2,11 +2,15 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Contracts\AbstractAlbum;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAlbums;
 use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Rules\AlbumIDRule;
 
+/**
+ * @implements HasAlbums<AbstractAlbum>
+ */
 class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbums
 {
 	use HasAlbumsTrait;
@@ -35,7 +39,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbums
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albums = $this->albumFactory->findWhereIDsIn(
+		$this->albums = $this->albumFactory->findAbstractAlbumsOrFail(
 			$values[HasAlbums::ALBUM_IDS_ATTRIBUTE]
 		);
 	}

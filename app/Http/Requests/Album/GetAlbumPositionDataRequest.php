@@ -42,7 +42,7 @@ class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAbstractA
 		// Avoid loading all photos and sub-albums of an album, because
 		// \App\Actions\Album\PositionData::get is only interested in a
 		// particular subset of photos.
-		$this->album = $this->albumFactory->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE], false);
+		$this->album = $this->albumFactory->findAbstractAlbumOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE], false);
 		$this->includeSubAlbums = static::toBoolean($values[self::INCLUDE_SUB_ALBUMS_ATTRIBUTE]);
 	}
 

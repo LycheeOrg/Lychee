@@ -3,17 +3,21 @@
 namespace App\Http\Requests\Album;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumIDs;
+use App\Http\Requests\Contracts\HasAlbums;
 use App\Http\Requests\Contracts\HasTitle;
-use App\Http\Requests\Traits\HasAlbumIDsTrait;
+use App\Http\Requests\Traits\HasAlbumsTrait;
 use App\Http\Requests\Traits\HasTitleTrait;
+use App\Models\Extensions\BaseAlbum;
 use App\Rules\RandomIDRule;
 use App\Rules\TitleRule;
 
-class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbumIDs
+/**
+ * @implements HasAlbums<BaseAlbum>
+ */
+class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbums
 {
 	use HasTitleTrait;
-	use HasAlbumIDsTrait;
+	use HasAlbumsTrait;
 
 	/**
 	 * {@inheritDoc}
@@ -29,8 +33,8 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	public function rules(): array
 	{
 		return [
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasAlbumIDs::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			HasAlbums::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasAlbums::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 			HasTitle::TITLE_ATTRIBUTE => ['required', new TitleRule()],
 		];
 	}
@@ -40,7 +44,9 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumIDs = $values[HasAlbumIDs::ALBUM_IDS_ATTRIBUTE];
+		$this->albums = $this->albumFactory->findBaseAlbumsOrFail(
+			$values[HasAlbums::ALBUM_IDS_ATTRIBUTE]
+		);
 		$this->title = $values[HasTitle::TITLE_ATTRIBUTE];
 	}
 }

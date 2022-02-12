@@ -5,14 +5,10 @@ namespace App\Http\Controllers;
 use App\Actions\Album\Archive;
 use App\Actions\Album\Create;
 use App\Actions\Album\CreateTagAlbum;
-use App\Actions\Album\Delete;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
 use App\Actions\Album\SetPublic;
-use App\Actions\Album\SetShowTags;
-use App\Actions\Album\SetSorting;
-use App\Actions\Album\SetTitle;
 use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
@@ -35,7 +31,9 @@ use App\Http\Requests\Album\SetAlbumsTitleRequest;
 use App\Http\Requests\Album\SetAlbumTagsRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Models\Album;
+use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
+use App\SmartAlbums\UnsortedAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -105,27 +103,29 @@ class AlbumController extends Controller
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
 	public function unlock(UnlockAlbumRequest $request, Unlock $unlock): void
 	{
-		$unlock->do($request->albumID(), $request->password());
+		$unlock->do($request->album(), $request->password());
 	}
 
 	/**
 	 * Provided a title and albumIDs, change the title of the albums.
 	 *
 	 * @param SetAlbumsTitleRequest $request
-	 * @param SetTitle              $setTitle
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setTitle(SetAlbumsTitleRequest $request, SetTitle $setTitle): void
+	public function setTitle(SetAlbumsTitleRequest $request): void
 	{
-		$setTitle->do($request->albumIDs(), $request->title());
+		/** @var BaseAlbum $album */
+		foreach ($request->albums() as $album) {
+			$album->title = $request->title();
+			$album->save();
+		}
 	}
 
 	/**
@@ -173,17 +173,15 @@ class AlbumController extends Controller
 	 * Change show tags of the tag album.
 	 *
 	 * @param SetAlbumTagsRequest $request
-	 * @param SetShowTags         $setShowTags
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
 	 */
-	public function setShowTags(SetAlbumTagsRequest $request, SetShowTags $setShowTags): void
+	public function setShowTags(SetAlbumTagsRequest $request): void
 	{
-		$tags = $request->tags();
-		$str = sizeof($tags) === 0 ? null : implode(',', $request->tags());
-		$setShowTags->do($request->albumID(), $str);
+		$request->album()->show_tags = $request->tags();
+		$request->album()->save();
 	}
 
 	/**
@@ -220,15 +218,19 @@ class AlbumController extends Controller
 	 * Delete the album and all of its pictures.
 	 *
 	 * @param DeleteAlbumsRequest $request
-	 * @param Delete              $delete
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
+	public function delete(DeleteAlbumsRequest $request): void
 	{
-		$delete->do($request->albums());
+		/** @var AbstractAlbum $album */
+		foreach ($request->albums() as $album) {
+			if ($album instanceof BaseAlbum || $album instanceof UnsortedAlbum) {
+				$album->delete();
+			}
+		}
 	}
 
 	/**
@@ -288,16 +290,17 @@ class AlbumController extends Controller
 	 * Define the default sorting type.
 	 *
 	 * @param SetAlbumSortingRequest $request
-	 * @param SetSorting             $setSorting
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
-	 * @throws ModelNotFoundException
 	 */
-	public function setSorting(SetAlbumSortingRequest $request, SetSorting $setSorting): void
+	public function setSorting(SetAlbumSortingRequest $request): void
 	{
-		$setSorting->do($request->albumID(), $request->sortingColumn(), $request->sortingOrder());
+		$album = $request->album();
+		$album->sorting_col = $request->sortingColumn();
+		$album->sorting_order = $request->sortingOrder();
+		$album->save();
 	}
 
 	/**

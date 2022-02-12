@@ -40,13 +40,13 @@ class AlbumFactory
 	 * @throws InvalidSmartIdException should not be thrown; otherwise this
 	 *                                 indicates an internal bug
 	 */
-	public function findOrFail(string $albumId, bool $withRelations = true): AbstractAlbum
+	public function findAbstractAlbumOrFail(string $albumId, bool $withRelations = true): AbstractAlbum
 	{
 		if ($this->isBuiltInSmartAlbum($albumId)) {
 			return $this->createSmartAlbum($albumId, $withRelations);
 		}
 
-		return $this->findModelOrFail($albumId, $withRelations);
+		return $this->findBaseAlbumOrFail($albumId, $withRelations);
 	}
 
 	/**
@@ -63,7 +63,7 @@ class AlbumFactory
 	 * @throws ModelNotFoundException thrown, if no album with the given ID exists
 	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function findModelOrFail(string $albumId, bool $withRelations = true): BaseAlbum
+	public function findBaseAlbumOrFail(string $albumId, bool $withRelations = true): BaseAlbum
 	{
 		try {
 			if ($withRelations) {
@@ -89,32 +89,55 @@ class AlbumFactory
 	 * @return Collection<AbstractAlbum> a possibly empty list of
 	 *                                   {@link AbstractAlbum}
 	 *
-	 * @throws InvalidSmartIdException should not be thrown; otherwise this
-	 *                                 indicates an internal bug
 	 * @throws ModelNotFoundException
 	 */
-	public function findWhereIDsIn(array $albumIDs): Collection
+	public function findAbstractAlbumsOrFail(array $albumIDs): Collection
 	{
-		// Remove root.
-		// Since we count the result we need to ensure that there are no
-		// duplicates.
+		// Remove root (ID===`null`) and duplicates
 		$albumIDs = array_diff(array_unique($albumIDs), [null]);
 		$smartAlbumIDs = array_intersect($albumIDs, array_keys(self::BUILTIN_SMARTS));
 		$modelAlbumIDs = array_diff($albumIDs, array_keys(self::BUILTIN_SMARTS));
 
 		$smartAlbums = [];
 		foreach ($smartAlbumIDs as $smartID) {
-			$smartAlbums[] = $this->createSmartAlbum($smartID);
+			try {
+				$smartAlbums[] = $this->createSmartAlbum($smartID);
+			} catch (InvalidSmartIdException) {
+				// must not happen, because we limited search to
+				// `self::BUILTIN_SMARTS` above
+			}
 		}
 
-		$result = new Collection(array_merge(
+		return new Collection(array_merge(
 			$smartAlbums,
-			TagAlbum::query()->findMany($modelAlbumIDs)->all(),
-			Album::query()->findMany($modelAlbumIDs)->all(),
+			$this->findBaseAlbumsOrFail($modelAlbumIDs)->all()
+		));
+	}
+
+	/**
+	 * Returns a collection of {@link BaseAlbum} instances whose IDs are
+	 * contained in the given set of IDs.
+	 *
+	 * @param string[] $albumIDs a list of IDs
+	 *
+	 * @return Collection<BaseAlbum> a possibly empty list of {@link BaseAlbum}
+	 *
+	 * @throws ModelNotFoundException
+	 */
+	public function findBaseAlbumsOrFail(array $albumIDs): Collection
+	{
+		// Remove root.
+		// Since we count the result we need to ensure that there are no
+		// duplicates.
+		$albumIDs = array_diff(array_unique($albumIDs), [null]);
+
+		$result = new Collection(array_merge(
+			TagAlbum::query()->findMany($albumIDs)->all(),
+			Album::query()->findMany($albumIDs)->all(),
 		));
 
 		if ($result->count() !== count($albumIDs)) {
-			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $modelAlbumIDs);
+			throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $albumIDs);
 		}
 
 		return $result;

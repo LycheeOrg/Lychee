@@ -211,7 +211,7 @@ class Create
 		/** @var AlbumFactory */
 		$factory = resolve(AlbumFactory::class);
 		if (!empty($albumID)) {
-			$album = $factory->findOrFail($albumID);
+			$album = $factory->findAbstractAlbumOrFail($albumID);
 
 			if ($album instanceof Album) {
 				// we save it, so we don't have to query it again later

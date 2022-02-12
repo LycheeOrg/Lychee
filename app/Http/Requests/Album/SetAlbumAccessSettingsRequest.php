@@ -50,7 +50,7 @@ class SetAlbumAccessSettingsRequest extends BaseApiRequest implements HasBaseAlb
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->album = $this->albumFactory->findModelOrFail(
+		$this->album = $this->albumFactory->findBaseAlbumOrFail(
 			$values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]
 		);
 		$this->albumAccessSettings = new AlbumAccessSettings(
