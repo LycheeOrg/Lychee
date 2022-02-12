@@ -9,6 +9,7 @@ use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSmartIdException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
 use App\Models\Extensions\BaseAlbum;
@@ -99,6 +100,7 @@ abstract class BaseApiRequest extends FormRequest
 	 * @throws BadRequestException
 	 * @throws ModelNotFoundException
 	 * @throws InvalidSmartIdException
+	 * @throws QueryBuilderException
 	 */
 	protected function passedValidation()
 	{
@@ -288,6 +290,7 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws InvalidSmartIdException
+	 * @throws QueryBuilderException
 	 */
 	abstract protected function processValidatedValues(array $values, array $files): void;
 }

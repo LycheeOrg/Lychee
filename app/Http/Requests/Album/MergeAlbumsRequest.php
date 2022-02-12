@@ -14,7 +14,7 @@ use App\Rules\RandomIDRule;
 /**
  * @implements HasAlbums<Album>
  */
-class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
+class MergeAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 {
 	use HasAlbumTrait;
 	use HasAlbumsTrait;
@@ -34,7 +34,7 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	public function rules(): array
 	{
 		return [
-			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasAlbums::ALBUM_IDS_ATTRIBUTE => 'required|array|min:1',
 			HasAlbums::ALBUM_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 		];
@@ -45,10 +45,9 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$targetAlbumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
-		$this->album = empty($targetAlbumID) ?
-			null :
-			Album::query()->findOrFail($targetAlbumID);
-		$this->albums = Album::query()->findOrFail($values[HasAlbums::ALBUM_IDS_ATTRIBUTE]);
+		$this->album = Album::query()->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
+		$this->albums = Album::query()
+			->with(['children'])
+			->findOrFail($values[HasAlbums::ALBUM_IDS_ATTRIBUTE]);
 	}
 }

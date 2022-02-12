@@ -26,6 +26,7 @@ use App\Http\Requests\Album\ArchiveAlbumsRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
 use App\Http\Requests\Album\GetAlbumPositionDataRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
+use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
@@ -226,17 +227,17 @@ class AlbumController extends Controller
 	/**
 	 * Merge albums. The first of the list is the destination of the merge.
 	 *
-	 * @param MoveAlbumsRequest $request
-	 * @param Merge             $merge
+	 * @param MergeAlbumsRequest $request
+	 * @param Merge              $merge
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function merge(MoveAlbumsRequest $request, Merge $merge): void
+	public function merge(MergeAlbumsRequest $request, Merge $merge): void
 	{
-		$merge->do($request->albumID(), $request->albumIDs());
+		$merge->do($request->album(), $request->albums());
 	}
 
 	/**
@@ -252,7 +253,7 @@ class AlbumController extends Controller
 	 */
 	public function move(MoveAlbumsRequest $request, Move $move): void
 	{
-		$move->do($request->albumID(), $request->albumIDs());
+		$move->do($request->album(), $request->albums());
 	}
 
 	/**
