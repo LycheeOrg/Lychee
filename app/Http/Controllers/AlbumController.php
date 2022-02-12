@@ -228,7 +228,7 @@ class AlbumController extends Controller
 	 */
 	public function delete(DeleteAlbumsRequest $request, Delete $delete): void
 	{
-		$delete->do($request->albumIDs());
+		$delete->do($request->albums());
 	}
 
 	/**
