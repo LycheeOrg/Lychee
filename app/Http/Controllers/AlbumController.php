@@ -98,13 +98,10 @@ class AlbumController extends Controller
 	 * @param PositionData                $positionData
 	 *
 	 * @return array
-	 *
-	 * @throws ModelNotFoundException
-	 * @throws LycheeException
 	 */
 	public function getPositionData(GetAlbumPositionDataRequest $request, PositionData $positionData): array
 	{
-		return $positionData->get($request->albumID(), $request->includeSubAlbums());
+		return $positionData->get($request->album(), $request->includeSubAlbums());
 	}
 
 	/**

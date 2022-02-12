@@ -2,14 +2,17 @@
 
 namespace App\Http\Requests\Album;
 
+use App\Factories\AlbumFactory;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Traits\HasAlbumIDTrait;
+use App\Http\Requests\Contracts\HasAlbum;
+use App\Http\Requests\Traits\HasAlbumTrait;
 use App\Rules\AlbumIDRule;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAlbumID
+class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAlbum
 {
-	use HasAlbumIDTrait;
+	use HasAlbumTrait;
 
 	public const INCLUDE_SUB_ALBUMS_ATTRIBUTE = 'includeSubAlbums';
 
@@ -20,7 +23,7 @@ class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumAccess($this->albumID);
+		return $this->authorizeAlbumAccessByModel($this->album);
 	}
 
 	/**
@@ -29,17 +32,25 @@ class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule()],
+			HasAlbum::ALBUM_ID_ATTRIBUTE => ['required', new AlbumIDRule()],
 			self::INCLUDE_SUB_ALBUMS_ATTRIBUTE => 'required|boolean',
 		];
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @throws ModelNotFoundException
+	 * @throws BindingResolutionException
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
+		/** @var AlbumFactory $albumFactory */
+		$albumFactory = resolve(AlbumFactory::class);
+		// Avoid loading all photos and sub-albums of an album, because
+		// \App\Actions\Album\PositionData::get is only interested in a
+		// particular subset of photos.
+		$this->album = $albumFactory->findModelOrFail($values[HasAlbum::ALBUM_ID_ATTRIBUTE], false);
 		$this->includeSubAlbums = static::toBoolean($values[self::INCLUDE_SUB_ALBUMS_ATTRIBUTE]);
 	}
 

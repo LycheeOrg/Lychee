@@ -2,22 +2,13 @@
 
 namespace App\Actions\Album;
 
-use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Models\Album;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Extensions\BaseAlbum;
 
 class PositionData extends Action
 {
-	/**
-	 * @throws ModelNotFoundException
-	 * @throws InvalidSmartIdException
-	 */
-	public function get(string $albumID, bool $includeSubAlbums = false): array
+	public function get(BaseAlbum $album, bool $includeSubAlbums = false): array
 	{
-		// Avoid loading all photos and sub-albums of an album, because we are
-		// only interested in a particular subset of photos.
-		$album = $this->albumFactory->findOrFail($albumID, false);
-
 		if ($album instanceof Album && $includeSubAlbums) {
 			$photoRelation = $album->all_photos();
 		} else {
