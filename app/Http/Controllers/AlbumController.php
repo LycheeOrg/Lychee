@@ -9,7 +9,6 @@ use App\Actions\Album\Delete;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
-use App\Actions\Album\SetCover;
 use App\Actions\Album\SetDescription;
 use App\Actions\Album\SetLicense;
 use App\Actions\Album\SetNSFW;
@@ -20,6 +19,7 @@ use App\Actions\Album\SetTitle;
 use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
+use App\Exceptions\ModelDBException;
 use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\ArchiveAlbumsRequest;
@@ -183,15 +183,15 @@ class AlbumController extends Controller
 	 * Set cover image of the album.
 	 *
 	 * @param SetAlbumCoverRequest $request
-	 * @param SetCover             $setCover
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
+	 * @throws ModelDBException
 	 */
-	public function setCover(SetAlbumCoverRequest $request, SetCover $setCover): void
+	public function setCover(SetAlbumCoverRequest $request): void
 	{
-		$setCover->do($request->albumID(), $request->photoID());
+		$request->album()->cover_id = $request->photo()?->id;
+		$request->album()->save();
 	}
 
 	/**
