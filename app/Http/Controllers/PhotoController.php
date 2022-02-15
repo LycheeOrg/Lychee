@@ -269,7 +269,7 @@ class PhotoController extends Controller
 	 */
 	public function getArchive(ArchivePhotosRequest $request, Archive $archive): SymfonyResponse
 	{
-		return $archive->do($request->photoIDs(), $request->sizeVariant());
+		return $archive->do($request->photos(), $request->sizeVariant());
 	}
 
 	/**

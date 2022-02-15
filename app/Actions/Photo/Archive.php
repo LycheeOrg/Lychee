@@ -8,8 +8,6 @@ use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileMissingException;
-use App\Exceptions\UnauthorizedException;
-use App\Facades\AccessControl;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -73,30 +71,25 @@ class Archive
 	 * a single element) or a ZIP file (if the array of photo IDs contains
 	 * more than one element).
 	 *
-	 * @param int[]  $photoIDs the IDs of the photos which shall be included
-	 *                         in the response
-	 * @param string $variant  the desired variant of the photo; valid values
-	 *                         are
-	 *                         {@link Archive::LIVEPHOTOVIDEO},
-	 *                         {@link Archive::FULL},
-	 *                         {@link Archive::MEDIUM2X},
-	 *                         {@link Archive::MEDIUM},
-	 *                         {@link Archive::SMALL2X},
-	 *                         {@link Archive::SMALL},
-	 *                         {@link Archive::THUMB2X},
-	 *                         {@link Archive::THUMB}
+	 * @param Collection<Photo> $photos  the photos which shall be included
+	 *                                   in the response
+	 * @param string            $variant the desired variant of the photo;
+	 *                                   valid values are
+	 *                                   {@link Archive::LIVEPHOTOVIDEO},
+	 *                                   {@link Archive::FULL},
+	 *                                   {@link Archive::MEDIUM2X},
+	 *                                   {@link Archive::MEDIUM},
+	 *                                   {@link Archive::SMALL2X},
+	 *                                   {@link Archive::SMALL},
+	 *                                   {@link Archive::THUMB2X},
+	 *                                   {@link Archive::THUMB}
 	 *
 	 * @return Response
 	 *
 	 * @throws LycheeException
 	 */
-	public function do(array $photoIDs, string $variant): Response
+	public function do(Collection $photos, string $variant): Response
 	{
-		/** @var Collection $photos */
-		$photos = Photo::with(['album', 'size_variants'])
-			->whereIn('id', $photoIDs)
-			->get();
-
 		if ($photos->count() === 1) {
 			$response = $this->file($photos->first(), $variant);
 		} else {
@@ -281,21 +274,10 @@ class Archive
 	 * @return ArchiveFileInfo the created archive info
 	 *
 	 * @throws InvalidSizeVariantException
-	 * @throws UnauthorizedException
 	 * @throws MediaFileMissingException
 	 */
 	protected function extractFileInfo(Photo $photo, string $variant): ArchiveFileInfo
 	{
-		if (!AccessControl::is_current_user($photo->owner_id)) {
-			if ($photo->album_id !== null) {
-				if (!$photo->album->is_downloadable) {
-					throw new UnauthorizedException('User is not allowed to download the image');
-				}
-			} elseif (Configs::get_value('downloadable', '0') === '0') {
-				throw new UnauthorizedException('Permission to download is disabled by configuration');
-			}
-		}
-
 		$baseFilename = str_replace($this->badChars, '', $photo->title) ?: 'Untitled';
 
 		if ($variant === self::LIVEPHOTOVIDEO) {

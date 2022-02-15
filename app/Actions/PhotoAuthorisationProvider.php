@@ -2,9 +2,11 @@
 
 namespace App\Actions;
 
+use App\Actions\Photo\Archive;
 use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
 use App\Models\Album;
 use App\Models\Configs;
@@ -114,6 +116,40 @@ class PhotoAuthorisationProvider
 		return $photo->is_public ||
 			$photo->owner_id === $userID ||
 			$this->albumAuthorisationProvider->isAccessible($photo->album);
+	}
+
+	/**
+	 * Checks whether the photo may be downloaded by the current user.
+	 *
+	 * Previously, this code was part of {@link Archive::extractFileInfo()}.
+	 * In particular, the method threw to {@link UnauthorizedException} with
+	 * custom error messages:
+	 *
+	 *  - `'User is not allowed to download the image'`, if the user was not
+	 *    the owner, the user was allowed to see the photo (i.e. the album
+	 *    is shared with the user), but the album does not allow to dowload
+	 *    photos
+	 *  - `'Permission to download is disabled by configuration'`, if the
+	 *    user was not the owner, the photo was not part of any album (i.e.
+	 *    unsorted), the photo was public and downloading was disabled by
+	 *    configuration.
+	 *
+	 * TODO: Check if these custom error messages are still needed. If yes, consider not to return a boolean value but rename the method to `assert...` and throw exceptions with custom error messages.
+	 *
+	 * @param Photo $photo
+	 *
+	 * @return bool
+	 */
+	public function isDownloadableByModel(Photo $photo): bool
+	{
+		if (!$this->isVisibleByModel($photo)) {
+			return false;
+		}
+
+		return
+			AccessControl::is_current_user($photo->owner_id) ||
+			$photo->album?->is_downloadable ||
+			($photo->album === null && Configs::get_value('downloadable', '0') === '1');
 	}
 
 	/**

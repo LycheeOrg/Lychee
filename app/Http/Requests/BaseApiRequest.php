@@ -16,6 +16,7 @@ use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
 use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
@@ -247,6 +248,56 @@ abstract class BaseApiRequest extends FormRequest
 	protected function authorizePhotoVisibleByModel(?Photo $photo): bool
 	{
 		return $this->photoAuthorisationProvider->isVisibleByModel($photo);
+	}
+
+	/**
+	 * Determines of the user is authorized to see the designated photos.
+	 *
+	 * @param EloquentCollection<Photo> $photos the photos
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizePhotoVisibleByModels(EloquentCollection $photos): bool
+	{
+		/** @var Photo $photo */
+		foreach ($photos as $photo) {
+			if (!$this->authorizePhotoVisibleByModel($photo)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Determines of the user is authorized to download the designated photo.
+	 *
+	 * @param Photo $photo the photo
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizePhotoDownloadByModel(Photo $photo): bool
+	{
+		return $this->photoAuthorisationProvider->isDownloadableByModel($photo);
+	}
+
+	/**
+	 * Determines of the user is authorized to download the designated photos.
+	 *
+	 * @param EloquentCollection<Photo> $photos the photos
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizePhotoDownloadByModels(EloquentCollection $photos): bool
+	{
+		/** @var Photo $photo */
+		foreach ($photos as $photo) {
+			if (!$this->authorizePhotoDownloadByModel($photo)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
