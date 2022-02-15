@@ -3,14 +3,14 @@
 namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Traits\HasAlbumIDTrait;
+use App\Http\Requests\Contracts\HasAbstractAlbum;
+use App\Http\Requests\Traits\HasAbstractAlbumTrait;
 use App\Rules\AlbumIDRule;
 use Illuminate\Http\UploadedFile;
 
-class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
+class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 {
-	use HasAlbumIDTrait;
+	use HasAbstractAlbumTrait;
 
 	public const FILE_ATTRIBUTE = 'file';
 	protected UploadedFile $file;
@@ -20,7 +20,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWrite([$this->albumID]);
+		return $this->authorizeAlbumWriteByModel($this->album);
 	}
 
 	/**
@@ -29,7 +29,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
+			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
 			self::FILE_ATTRIBUTE => 'required|file',
 		];
 	}
@@ -39,7 +39,10 @@ class AddPhotoRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
+		$albumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
+		$this->album = empty($albumID) ?
+			null :
+			$this->albumFactory->findAbstractAlbumOrFail($albumID);
 		if (empty($this->albumID)) {
 			$this->albumID = null;
 		}
