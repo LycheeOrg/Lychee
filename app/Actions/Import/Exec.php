@@ -7,7 +7,6 @@ use App\Actions\Photo\Create as PhotoCreate;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Exceptions\ModelDBException;
 use App\Exceptions\PhotoSkippedException;
 use App\Facades\Helpers;
 use App\Image\NativeLocalFile;
@@ -32,7 +31,7 @@ class Exec
 	public int $memLimit = 0;
 	public bool $memWarningGiven = false;
 	private array $raw_formats;
-	private $firstReportGiven = false;
+	private bool $firstReportGiven = false;
 
 	public function __construct()
 	{
@@ -199,15 +198,13 @@ class Exec
 	}
 
 	/**
-	 * @param string      $path
-	 * @param string|null $albumID
-	 * @param string[]    $ignore_list
-	 *
-	 * @throws ModelDBException
+	 * @param string     $path
+	 * @param Album|null $parentAlbum
+	 * @param string[]   $ignore_list
 	 */
 	public function do(
 		string $path,
-		?string $albumID,
+		?Album $parentAlbum,
 		array $ignore_list = []
 	) {
 		// Parse path
@@ -316,7 +313,7 @@ class Exec
 					// `ImportMode` and then `PhotoCreate::add` should
 					// be called for each file.
 					$photoCreate = new PhotoCreate($this->importMode);
-					$photoCreate->add(SourceFileInfo::createByLocalFile(new NativeLocalFile($file)), $albumID);
+					$photoCreate->add(SourceFileInfo::createByLocalFile(new NativeLocalFile($file)), $parentAlbum);
 				} else {
 					$this->reportError($file, 'Unsupported file type');
 					Logs::error(__METHOD__, __LINE__, 'Unsupported file type (' . $file . ')');
@@ -338,14 +335,14 @@ class Exec
 				$album = Album::query()
 					->select(['albums.*'])
 					->join('base_albums', 'base_albums.id', '=', 'albums.id')
-					->where('albums.parent_id', '=', $albumID)
+					->where('albums.parent_id', '=', $parentAlbum->id)
 					->where('base_albums.title', '=', basename($dir))
 					->get()
 					->first();
 			}
 			if ($album === null) {
 				$create = resolve(AlbumCreate::class);
-				$album = $create->create(basename($dir), $albumID);
+				$album = $create->create(basename($dir), $parentAlbum);
 				// this actually should not fail.
 				if ($album === false) {
 					// @codeCoverageIgnoreStart
@@ -356,8 +353,7 @@ class Exec
 				}
 				// @codeCoverageIgnoreEnd
 			}
-			$newAlbumID = $album->id;
-			$this->do($dir . '/', $newAlbumID, $ignore_list);
+			$this->do($dir . '/', $album, $ignore_list);
 		}
 	}
 

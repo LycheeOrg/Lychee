@@ -12,13 +12,12 @@ use App\Actions\Photo\Strategies\AddStrategyParameters;
 use App\Actions\Photo\Strategies\AddVideoPartnerStrategy;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
+use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
 use App\Exceptions\ExternalComponentFailedException;
 use App\Exceptions\ExternalComponentMissingException;
-use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
-use App\Factories\AlbumFactory;
 use App\Metadata\Extractor;
 use App\Models\Album;
 use App\Models\Photo;
@@ -49,19 +48,15 @@ class Create
 	 * This method may create a new database entry or update an existing
 	 * database entry.
 	 *
-	 * @param SourceFileInfo $sourceFileInfo information about source file
-	 * @param string|null    $albumID        the targeted parent album either
-	 *                                       null, the id of a real album or
-	 *                                       (if it is a string) one of the
-	 *                                       array keys in
-	 *                                       {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
+	 * @param SourceFileInfo     $sourceFileInfo information about source file
+	 * @param AbstractAlbum|null $album          the targeted parent album
 	 *
 	 * @return Photo the newly created or updated photo
 	 *
 	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function add(SourceFileInfo $sourceFileInfo, ?string $albumID = null): Photo
+	public function add(SourceFileInfo $sourceFileInfo, ?AbstractAlbum $album = null): Photo
 	{
 		// Check permissions
 		// throws InsufficientFilesystemPermissions
@@ -69,7 +64,7 @@ class Create
 
 		// Fill in information about targeted parent album
 		// throws InvalidPropertyException
-		$this->initParentId($albumID);
+		$this->initParentAlbum($album);
 
 		// Fill in information about source file
 		$this->strategyParameters->kind = $this->file_kind($sourceFileInfo);
@@ -84,7 +79,7 @@ class Create
 		$livePartner = $this->findLivePartner(
 			$this->strategyParameters->info['live_photo_content_id'],
 			$this->strategyParameters->info['type'],
-			$this->strategyParameters->album?->id
+			$this->strategyParameters->album
 		);
 
 		/*
@@ -160,14 +155,14 @@ class Create
 	 *    (photo,video) pairs can be partners
 	 *  - which has no live partner yet
 	 *
-	 * @param ?string $contentID the content id to identify a matching partner
-	 * @param string  $mimeType  the mime type of the media which a partner is looked for, e.g. the returned {@link Photo} has an "opposed" mime type
-	 * @param ?string $albumID   the album of which the partner must be member of
+	 * @param string|null $contentID the content id to identify a matching partner
+	 * @param string      $mimeType  the mime type of the media which a partner is looked for, e.g. the returned {@link Photo} has an "opposed" mime type
+	 * @param Album|null  $album     the album of which the partner must be member of
 	 *
 	 * @return Photo|null The live partner if found
 	 */
 	protected function findLivePartner(
-		?string $contentID, string $mimeType, ?string $albumID
+		?string $contentID, string $mimeType, ?Album $album
 	): ?Photo {
 		$livePartner = null;
 		// find a potential partner which has the same content id
@@ -175,7 +170,7 @@ class Create
 			/** @var Photo|null $livePartner */
 			$livePartner = Photo::query()
 				->where('live_photo_content_id', '=', $contentID)
-				->where('album_id', '=', $albumID)
+				->where('album_id', '=', $album->id)
 				->whereNull('live_photo_short_path')->first();
 		}
 		if ($livePartner != null) {
@@ -192,40 +187,35 @@ class Create
 	}
 
 	/**
-	 * Loads the album for the designated ID and initializes
-	 * {@link AddStrategyParameters::$album}, {@link AddStrategyParameters::$public}
-	 * and {@link AddStrategyParameters::$star} of
-	 * {@link Create::$strategyParameters} accordingly.
+	 * Sets the (regular) parent album of {@link Create::$strategyParameters}
+	 * according to the provided parent album.
 	 *
-	 * @param string|null $albumID the targeted parent album either null,
-	 *                             the id of a real album or (if it is
-	 *                             string) one of the array keys in
-	 *                             {@link \App\Factories\AlbumFactory::BUILTIN_SMARTS}
+	 * If the provided parent album equals `null` or is already a (regular)
+	 * album, then the strategy is set to that album.
+	 * If the provided parent album is one of the built-in smart albums,
+	 * then the (regular) parent album of the strategy is set to `null` (aka
+	 * the root album) and the other properties of the strategy are tweaked
+	 * such that the photo will be shown by the smart album.
+	 *
+	 * @param AbstractAlbum|null $album the targeted parent album
 	 *
 	 * @throws InvalidPropertyException
-	 * @throws ModelNotFoundException
-	 * @throws InvalidSmartIdException
 	 */
-	protected function initParentId(?string $albumID = null)
+	protected function initParentAlbum(?AbstractAlbum $album = null)
 	{
-		/** @var AlbumFactory */
-		$factory = resolve(AlbumFactory::class);
-		if (!empty($albumID)) {
-			$album = $factory->findAbstractAlbumOrFail($albumID);
-
-			if ($album instanceof Album) {
-				// we save it, so we don't have to query it again later
-				$this->strategyParameters->album = $album;
-			} elseif ($album instanceof BaseSmartAlbum) {
-				$this->strategyParameters->album = null;
-				if ($album instanceof PublicAlbum) {
-					$this->strategyParameters->is_public = true;
-				} elseif ($album instanceof StarredAlbum) {
-					$this->strategyParameters->is_starred = true;
-				}
-			} else {
-				throw new InvalidPropertyException('The given parent album does not support uploading');
+		if ($album === null) {
+			$this->strategyParameters->album = null;
+		} elseif ($album instanceof Album) {
+			$this->strategyParameters->album = $album;
+		} elseif ($album instanceof BaseSmartAlbum) {
+			$this->strategyParameters->album = null;
+			if ($album instanceof PublicAlbum) {
+				$this->strategyParameters->is_public = true;
+			} elseif ($album instanceof StarredAlbum) {
+				$this->strategyParameters->is_starred = true;
 			}
+		} else {
+			throw new InvalidPropertyException('The given parent album does not support uploading');
 		}
 	}
 }

@@ -5,14 +5,16 @@ namespace App\Http\Requests\Import;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Facades\AccessControl;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Traits\HasAlbumIDTrait;
+use App\Http\Requests\Contracts\HasAbstractAlbum;
+use App\Http\Requests\Contracts\HasAlbum;
+use App\Http\Requests\Traits\HasAlbumTrait;
+use App\Models\Album;
 use App\Models\Configs;
-use App\Rules\AlbumIDRule;
+use App\Rules\RandomIDRule;
 
-class ImportServerRequest extends BaseApiRequest implements HasAlbumID
+class ImportServerRequest extends BaseApiRequest implements HasAlbum
 {
-	use HasAlbumIDTrait;
+	use HasAlbumTrait;
 
 	public const PATH_ATTRIBUTE = 'path';
 	public const DELETE_IMPORTED_ATTRIBUTE = 'delete_imported';
@@ -41,7 +43,7 @@ class ImportServerRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
+			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			self::PATH_ATTRIBUTE => 'required|string',
 			self::DELETE_IMPORTED_ATTRIBUTE => 'sometimes|boolean',
 			self::SKIP_DUPLICATES_ATTRIBUTE => 'sometimes|boolean',
@@ -55,10 +57,10 @@ class ImportServerRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
-		if (empty($this->albumID)) {
-			$this->albumID = null;
-		}
+		$albumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
+		$this->album = empty($albumID) ?
+			null :
+			Album::query()->findOrFail($albumID);
 		$this->path = $values[self::PATH_ATTRIBUTE];
 		$this->importMode = new ImportMode(
 			isset($values[self::DELETE_IMPORTED_ATTRIBUTE]) ?

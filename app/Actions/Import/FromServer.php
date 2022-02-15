@@ -3,6 +3,7 @@
 namespace App\Actions\Import;
 
 use App\Actions\Photo\Strategies\ImportMode;
+use App\Models\Album;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FromServer
@@ -15,13 +16,13 @@ class FromServer
 	}
 
 	/**
-	 * @param string      $path       the server path to import from
-	 * @param string|null $albumID    the ID of the album to import into
-	 * @param ImportMode  $importMode the import mode
+	 * @param string     $path       the server path to import from
+	 * @param Album|null $album      the album to import into
+	 * @param ImportMode $importMode the import mode
 	 *
 	 * @return StreamedResponse
 	 */
-	public function do(string $path, ?string $albumID, ImportMode $importMode): StreamedResponse
+	public function do(string $path, ?Album $album, ImportMode $importMode): StreamedResponse
 	{
 		$this->exec->importMode = $importMode;
 		$this->exec->memLimit = $this->determineMemLimit();
@@ -31,10 +32,10 @@ class FromServer
 		$response->headers->set('Cache-Control', 'no-store');
 		// nginx-specific voodoo, as per https://symfony.com/doc/current/components/http_foundation.html#streaming-a-response
 		$response->headers->set('X-Accel-Buffering', 'no');
-		$response->setCallback(function () use ($path, $albumID) {
+		$response->setCallback(function () use ($path, $album) {
 			// Surround the response by `[]` to make it a valid JSON array.
 			echo '[';
-			$this->exec->do($path, $albumID);
+			$this->exec->do($path, $album);
 			echo ']';
 		});
 

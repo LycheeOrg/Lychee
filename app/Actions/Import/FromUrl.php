@@ -12,6 +12,7 @@ use App\Exceptions\MassImportException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\TemporaryLocalFile;
+use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Logs;
 use App\Models\Photo;
@@ -32,14 +33,14 @@ class FromUrl
 	}
 
 	/**
-	 * @param string[]    $urls
-	 * @param string|null $albumId
+	 * @param string[]   $urls
+	 * @param Album|null $album
 	 *
 	 * @return Collection<Photo> the collection of imported photos
 	 *
 	 * @throws MassImportException
 	 */
-	public function do(array $urls, ?string $albumId): Collection
+	public function do(array $urls, ?Album $album): Collection
 	{
 		$result = new Collection();
 		$exceptions = [];
@@ -105,7 +106,7 @@ class FromUrl
 			// Import photo
 			try {
 				$result->add(
-					$create->add(SourceFileInfo::createByTempFile($basename, $extension, $tmpFile), $albumId)
+					$create->add(SourceFileInfo::createByTempFile($basename, $extension, $tmpFile), $album)
 				);
 			} catch (\Throwable $e) {
 				$exceptions[] = $e;

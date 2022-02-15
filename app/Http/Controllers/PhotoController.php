@@ -107,7 +107,7 @@ class PhotoController extends Controller
 			Configs::get_value('skip_duplicates', '0') === '1'
 		));
 
-		return $create->add($sourceFileInfo, $request->albumID());
+		return $create->add($sourceFileInfo, $request->album());
 	}
 
 	/**

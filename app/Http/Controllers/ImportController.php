@@ -54,7 +54,7 @@ class ImportController extends Controller
 	 */
 	public function url(ImportFromUrlRequest $request, FromUrl $fromUrl): Collection
 	{
-		return $fromUrl->do($request->urls(), $request->albumID());
+		return $fromUrl->do($request->urls(), $request->album());
 	}
 
 	/**
@@ -68,7 +68,7 @@ class ImportController extends Controller
 		Session::forget('cancel');
 
 		return $fromServer->do(
-			$request->path(), $request->albumID(), $request->importMode()
+			$request->path(), $request->album(), $request->importMode()
 		);
 	}
 

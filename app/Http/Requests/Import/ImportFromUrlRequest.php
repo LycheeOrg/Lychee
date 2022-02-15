@@ -3,13 +3,15 @@
 namespace App\Http\Requests\Import;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Traits\HasAlbumIDTrait;
-use App\Rules\AlbumIDRule;
+use App\Http\Requests\Contracts\HasAbstractAlbum;
+use App\Http\Requests\Contracts\HasAlbum;
+use App\Http\Requests\Traits\HasAlbumTrait;
+use App\Models\Album;
+use App\Rules\RandomIDRule;
 
-class ImportFromUrlRequest extends BaseApiRequest implements HasAlbumID
+class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 {
-	use HasAlbumIDTrait;
+	use HasAlbumTrait;
 
 	public const URL_ATTRIBUTE = 'url';
 
@@ -23,7 +25,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWrite([$this->albumID]);
+		return $this->authorizeAlbumWriteByModel($this->album);
 	}
 
 	/**
@@ -32,7 +34,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbumID
 	public function rules(): array
 	{
 		return [
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new AlbumIDRule(true)],
+			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 			self::URL_ATTRIBUTE => 'required|array|min:1',
 			self::URL_ATTRIBUTE . '.*' => 'required|string',
 		];
@@ -43,10 +45,10 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbumID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE];
-		if (empty($this->albumID)) {
-			$this->albumID = null;
-		}
+		$albumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
+		$this->album = empty($albumID) ?
+			null :
+			Album::query()->findOrFail($albumID);
 		$this->urls = str_replace(' ', '%20', $values[self::URL_ATTRIBUTE]);
 	}
 
