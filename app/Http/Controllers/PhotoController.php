@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Actions\Photo\Archive;
 use App\Actions\Photo\Create;
-use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Random;
@@ -17,6 +16,7 @@ use App\Actions\Photo\SetTitle;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
 use App\Contracts\LycheeException;
+use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthorizedException;
 use App\Facades\AccessControl;
@@ -235,15 +235,20 @@ class PhotoController extends Controller
 	 * Delete one or more photos.
 	 *
 	 * @param DeletePhotosRequest $request
-	 * @param Delete              $delete
 	 *
 	 * @return void
 	 *
 	 * @throws ModelDBException
+	 * @throws MediaFileOperationException
 	 */
-	public function delete(DeletePhotosRequest $request, Delete $delete): void
+	public function delete(DeletePhotosRequest $request): void
 	{
-		$delete->do($request->photoIDs());
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			// we must call delete on the model and not on the database
+			// in order to remove the files, too
+			$photo->delete();
+		}
 	}
 
 	/**
