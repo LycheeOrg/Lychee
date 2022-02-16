@@ -252,7 +252,7 @@ class PhotoController extends Controller
 	 */
 	public function duplicate(DuplicatePhotosRequest $request, Duplicate $duplicate)
 	{
-		$duplicates = $duplicate->do($request->photoIDs(), $request->albumID());
+		$duplicates = $duplicate->do($request->photos(), $request->album());
 
 		return ($duplicates->count() === 1) ? $duplicates->first() : $duplicates;
 	}

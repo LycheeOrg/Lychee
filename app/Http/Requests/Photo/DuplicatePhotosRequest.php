@@ -3,24 +3,27 @@
 namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasAlbumID;
-use App\Http\Requests\Contracts\HasPhotoIDs;
-use App\Http\Requests\Traits\HasAlbumIDTrait;
-use App\Http\Requests\Traits\HasPhotoIDsTrait;
+use App\Http\Requests\Contracts\HasAbstractAlbum;
+use App\Http\Requests\Contracts\HasAlbum;
+use App\Http\Requests\Contracts\HasPhotos;
+use App\Http\Requests\Traits\HasAlbumTrait;
+use App\Http\Requests\Traits\HasPhotosTrait;
+use App\Models\Album;
+use App\Models\Photo;
 use App\Rules\RandomIDRule;
 
-class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasAlbumID
+class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 {
-	use HasPhotoIDsTrait;
-	use HasAlbumIDTrait;
+	use HasPhotosTrait;
+	use HasAlbumTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWrite($this->photoIDs) &&
-			$this->authorizeAlbumWrite([$this->albumID]);
+		return $this->authorizePhotoWriteByModels($this->photos) &&
+			$this->authorizeAlbumWriteByModel($this->album);
 	}
 
 	/**
@@ -29,9 +32,9 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasA
 	public function rules(): array
 	{
 		return [
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
-			HasAlbumID::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
+			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
 		];
 	}
 
@@ -40,7 +43,12 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotoIDs, HasA
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoIDs = $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE];
-		$this->albumID = $values[HasAlbumID::ALBUM_ID_ATTRIBUTE] ?? null;
+		$this->photos = Photo::query()->with(['size_variants'])->findOrFail(
+			$values[HasPhotos::PHOTO_IDS_ATTRIBUTE]
+		);
+		$targetAlbumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
+		$this->album = empty($targetAlbumID) ?
+			null :
+			Album::query()->findOrFail($targetAlbumID);
 	}
 }
