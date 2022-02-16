@@ -43,7 +43,7 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlb
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photos = Photo::query()->with(['size_variants'])->findOrFail(
+		$this->photos = Photo::with(['size_variants'])->findOrFail(
 			$values[HasPhotos::PHOTO_IDS_ATTRIBUTE]
 		);
 		$targetAlbumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];

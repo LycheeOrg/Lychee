@@ -8,7 +8,6 @@ use App\Actions\Photo\Delete;
 use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Random;
-use App\Actions\Photo\SetAlbum;
 use App\Actions\Photo\SetDescription;
 use App\Actions\Photo\SetLicense;
 use App\Actions\Photo\SetPublic;
@@ -16,6 +15,7 @@ use App\Actions\Photo\SetStar;
 use App\Actions\Photo\SetTags;
 use App\Actions\Photo\SetTitle;
 use App\Actions\Photo\Strategies\ImportMode;
+use App\Actions\User\Notify;
 use App\Contracts\LycheeException;
 use App\Exceptions\ModelDBException;
 use App\Exceptions\UnauthorizedException;
@@ -59,15 +59,10 @@ class PhotoController extends Controller
 	 * @param GetPhotoRequest $request
 	 *
 	 * @return Photo
-	 *
-	 * @throws ModelNotFoundException
 	 */
 	public function get(GetPhotoRequest $request): Photo
 	{
-		/* @noinspection PhpIncompatibleReturnTypeInspection */
-		return Photo::query()
-			->with(['size_variants', 'size_variants.sym_links'])
-			->findOrFail($request->photoID());
+		return $request->photo();
 	}
 
 	/**
@@ -196,16 +191,28 @@ class PhotoController extends Controller
 	 * Moves the photos to an album.
 	 *
 	 * @param MovePhotosRequest $request
-	 * @param SetAlbum          $setAlbum
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
-	 * @throws ModelNotFoundException
 	 */
-	public function setAlbum(MovePhotosRequest $request, SetAlbum $setAlbum): void
+	public function setAlbum(MovePhotosRequest $request): void
 	{
-		$setAlbum->do($request->photoIDs(), $request->albumID());
+		$notify = new Notify();
+		$album = $request->album();
+
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			$photo->album_id = $album?->id;
+			// Avoid unnecessary DB request, when we access the album of a
+			// photo later (e.g. when a notification is sent).
+			$photo->setRelation('album', $album);
+			if ($album) {
+				$photo->owner_id = $album->owner_id;
+			}
+			$photo->save();
+			$notify->do($photo);
+		}
 	}
 
 	/**

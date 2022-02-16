@@ -3,20 +3,21 @@
 namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasPhotoID;
-use App\Http\Requests\Traits\HasPhotoIDTrait;
+use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Models\Photo;
 use App\Rules\RandomIDRule;
 
-class GetPhotoRequest extends BaseApiRequest implements HasPhotoID
+class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 {
-	use HasPhotoIDTrait;
+	use HasPhotoTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoVisible($this->photoID);
+		return $this->authorizePhotoVisibleByModel($this->photo);
 	}
 
 	/**
@@ -25,7 +26,7 @@ class GetPhotoRequest extends BaseApiRequest implements HasPhotoID
 	public function rules(): array
 	{
 		return [
-			HasPhotoID::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			HasPhoto::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -34,6 +35,7 @@ class GetPhotoRequest extends BaseApiRequest implements HasPhotoID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoID = $values[HasPhotoID::PHOTO_ID_ATTRIBUTE];
+		$this->photo = Photo::with(['size_variants', 'size_variants.sym_links'])
+			->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
 	}
 }

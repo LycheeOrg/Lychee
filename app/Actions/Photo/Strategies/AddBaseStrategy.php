@@ -120,9 +120,15 @@ abstract class AddBaseStrategy
 	{
 		if ($this->parameters->album !== null) {
 			$this->photo->album_id = $this->parameters->album->id;
+			// Avoid unnecessary DB request, when we access the album of a
+			// photo later (e.g. when a notification is sent).
+			$this->photo->setRelation('album', $this->parameters->album);
 			$this->photo->owner_id = $this->parameters->album->owner_id;
 		} else {
 			$this->photo->album_id = null;
+			// Avoid unnecessary DB request, when we access the album of a
+			// photo later (e.g. when a notification is sent).
+			$this->photo->setRelation('album', null);
 			$this->photo->owner_id = AccessControl::id();
 		}
 	}

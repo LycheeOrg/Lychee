@@ -21,22 +21,19 @@ class SetAlbum extends Setters
 	 */
 	public function do(array $photoIDs, ?string $albumID): void
 	{
-		$album = null;
-		if ($albumID) {
-			/** @var Album $album */
-			$album = Album::query()->findOrFail($albumID);
-
-			foreach ($photoIDs as $id) {
-				$photo = Photo::query()->find($id);
-				$notify = new Notify();
-				$notify->do($photo, $albumID);
-			}
-		}
-
 		parent::do($photoIDs, $albumID);
+
+		/** @var Album $album */
+		$album = empty($albumID) ? null : Album::query()->findOrFail($albumID);
 
 		if ($album) {
 			Photo::query()->whereIn('id', $photoIDs)->update(['owner_id' => $album->owner_id]);
+		}
+
+		foreach ($photoIDs as $id) {
+			$photo = Photo::query()->find($id);
+			$notify = new Notify();
+			$notify->do($photo);
 		}
 	}
 }
