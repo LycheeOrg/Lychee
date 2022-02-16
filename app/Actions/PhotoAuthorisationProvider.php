@@ -107,14 +107,10 @@ class PhotoAuthorisationProvider
 	 */
 	public function isVisibleByModel(?Photo $photo): bool
 	{
-		if ($photo === null || AccessControl::is_admin()) {
-			return true;
-		}
-
-		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
-
-		return $photo->is_public ||
-			$photo->owner_id === $userID ||
+		return
+			$photo === null ||
+			AccessControl::is_current_user($photo->owner_id) ||
+			$photo->is_public ||
 			$this->albumAuthorisationProvider->isAccessible($photo->album);
 	}
 
@@ -318,6 +314,21 @@ class PhotoAuthorisationProvider
 		}
 
 		return true;
+	}
+
+	/**
+	 * Checks whether the photo is editable by the current user.
+	 *
+	 * See {@link PhotoAuthorisationProvider::areEditable()} for a definition
+	 * when a photo is editable.
+	 *
+	 * @param Photo $photo
+	 *
+	 * @return bool
+	 */
+	public function isEditableByModel(Photo $photo): bool
+	{
+		return AccessControl::is_current_user($photo->owner_id);
 	}
 
 	/**

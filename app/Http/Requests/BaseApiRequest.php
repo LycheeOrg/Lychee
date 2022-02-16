@@ -315,6 +315,37 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
+	 * Determines of the user is authorized to modify the designated photo.
+	 *
+	 * @param Photo $photo the photo
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizePhotoWriteByModel(Photo $photo): bool
+	{
+		return $this->photoAuthorisationProvider->isEditableByModel($photo);
+	}
+
+	/**
+	 * Determines of the user is authorized to modify the designated photos.
+	 *
+	 * @param EloquentCollection<Photo> $photos the photos
+	 *
+	 * @return bool true, if the authenticated user is authorized
+	 */
+	protected function authorizePhotoWriteByModels(EloquentCollection $photos): bool
+	{
+		/** @var Photo $photo */
+		foreach ($photos as $photo) {
+			if (!$this->authorizePhotoWriteByModel($photo)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Converts the input value to a boolean.
 	 *
 	 * Opposed to trivial type-casting the conversion also correctly recognizes
