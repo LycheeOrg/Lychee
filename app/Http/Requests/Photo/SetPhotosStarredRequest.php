@@ -3,20 +3,28 @@
 namespace App\Http\Requests\Photo;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasPhotoIDs;
-use App\Http\Requests\Traits\HasPhotoIDsTrait;
+use App\Http\Requests\Contracts\HasPhotos;
+use App\Http\Requests\Traits\HasPhotosTrait;
+use App\Models\Photo;
 use App\Rules\RandomIDRule;
 
-class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotoIDs
+/**
+ * Class SetPhotosStarredRequest.
+ *
+ * Note, the class is a misnomer.
+ * Actually, the related request does not set the `is_starred` attribute, but
+ * toggles it.
+ */
+class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 {
-	use HasPhotoIDsTrait;
+	use HasPhotosTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWrite($this->photoIDs);
+		return $this->authorizePhotoWriteByModels($this->photos);
 	}
 
 	/**
@@ -25,8 +33,8 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotoIDs
 	public function rules(): array
 	{
 		return [
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
-			HasPhotoIDs::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
+			HasPhotos::PHOTO_IDS_ATTRIBUTE => 'required|array|min:1',
+			HasPhotos::PHOTO_IDS_ATTRIBUTE . '.*' => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -35,6 +43,6 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotoIDs
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoIDs = $values[HasPhotoIDs::PHOTO_IDS_ATTRIBUTE];
+		$this->photos = Photo::query()->findOrFail($values[HasPhotos::PHOTO_IDS_ATTRIBUTE]);
 	}
 }

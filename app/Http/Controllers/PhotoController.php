@@ -6,15 +6,9 @@ use App\Actions\Photo\Archive;
 use App\Actions\Photo\Create;
 use App\Actions\Photo\Duplicate;
 use App\Actions\Photo\Extensions\SourceFileInfo;
-use App\Actions\Photo\Random;
-use App\Actions\Photo\SetDescription;
-use App\Actions\Photo\SetLicense;
-use App\Actions\Photo\SetPublic;
-use App\Actions\Photo\SetStar;
-use App\Actions\Photo\SetTags;
-use App\Actions\Photo\SetTitle;
 use App\Actions\Photo\Strategies\ImportMode;
 use App\Actions\User\Notify;
+use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -35,6 +29,7 @@ use App\Http\Requests\Photo\SetPhotosTitleRequest;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\SmartAlbums\StarredAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Collection;
@@ -69,15 +64,18 @@ class PhotoController extends Controller
 	 * Returns a random public photo (starred)
 	 * This is used in the Frame Controller.
 	 *
-	 * @param Random $random
-	 *
 	 * @return Photo
 	 *
 	 * @throws ModelNotFoundException
+	 * @throws InternalLycheeException
+	 * @throws \InvalidArgumentException
+	 *
+	 * @noinspection PhpIncompatibleReturnTypeInspection
 	 */
-	public function getRandom(Random $random): Photo
+	public function getRandom(): Photo
 	{
-		return $random->do();
+		return StarredAlbum::getInstance()->photos()->inRandomOrder()
+			->firstOrFail();
 	}
 
 	/**
@@ -109,82 +107,89 @@ class PhotoController extends Controller
 	 * Change the title of a photo.
 	 *
 	 * @param SetPhotosTitleRequest $request
-	 * @param SetTitle              $setTitle
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setTitle(SetPhotosTitleRequest $request, SetTitle $setTitle): void
+	public function setTitle(SetPhotosTitleRequest $request): void
 	{
-		$setTitle->do($request->photoIDs(), $request->title());
+		$title = $request->title();
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			$photo->title = $title;
+			$photo->save();
+		}
 	}
 
 	/**
 	 * Toggles the is-starred attribute of the given photos.
 	 *
 	 * @param SetPhotosStarredRequest $request
-	 * @param SetStar                 $setStar
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setStar(SetPhotosStarredRequest $request, SetStar $setStar): void
+	public function setStar(SetPhotosStarredRequest $request): void
 	{
-		$setStar->do($request->photoIDs());
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			$photo->is_starred = !($photo->is_starred);
+			$photo->save();
+		}
 	}
 
 	/**
 	 * Set the description of a photo.
 	 *
 	 * @param SetPhotoDescriptionRequest $request
-	 * @param SetDescription             $setDescription
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function setDescription(SetPhotoDescriptionRequest $request, SetDescription $setDescription): void
+	public function setDescription(SetPhotoDescriptionRequest $request): void
 	{
-		$setDescription->do($request->photoID(), $request->description());
+		$request->photo()->description = $request->description();
+		$request->photo()->save();
 	}
 
 	/**
-	 * Toggles the is-public attribute of the given photo.
+	 * Toggles the `is_public` attribute of the given photo.
 	 *
 	 * We do not advise the use of this and would rather see people use albums visibility
 	 * This would highly simplify the code if we remove this. Do we really want to keep it ?
 	 *
 	 * @param SetPhotoPublicRequest $request
-	 * @param SetPublic             $setPublic
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
-	 * @throws ModelNotFoundException
 	 */
-	public function setPublic(SetPhotoPublicRequest $request, SetPublic $setPublic): void
+	public function setPublic(SetPhotoPublicRequest $request): void
 	{
-		$setPublic->do($request->photoID);
+		$request->photo()->is_public = !($request->photo()->is_public);
+		$request->photo()->save();
 	}
 
 	/**
 	 * Set the tags of a photo.
 	 *
 	 * @param SetPhotosTagsRequest $request
-	 * @param SetTags              $setTags
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setTags(SetPhotosTagsRequest $request, SetTags $setTags): void
+	public function setTags(SetPhotosTagsRequest $request): void
 	{
 		$tags = $request->tags();
-		$str = sizeof($tags) === 0 ? null : implode(',', $request->tags());
-		$setTags->do($request->photoIDs(), $str);
+		/** @var Photo $photo */
+		foreach ($request->photos() as $photo) {
+			$photo->tags = $tags;
+			$photo->save();
+		}
 	}
 
 	/**
@@ -219,16 +224,15 @@ class PhotoController extends Controller
 	 * Sets the license of the photo.
 	 *
 	 * @param SetPhotoLicenseRequest $request
-	 * @param SetLicense             $setLicense
 	 *
 	 * @return void
 	 *
-	 * @throws ModelNotFoundException
 	 * @throws LycheeException
 	 */
-	public function setLicense(SetPhotoLicenseRequest $request, SetLicense $setLicense): void
+	public function setLicense(SetPhotoLicenseRequest $request): void
 	{
-		$setLicense->do($request->photoID(), $request->license());
+		$request->photo()->license = $request->license();
+		$request->photo()->save();
 	}
 
 	/**

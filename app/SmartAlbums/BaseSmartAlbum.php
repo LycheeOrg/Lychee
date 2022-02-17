@@ -4,6 +4,7 @@ namespace App\SmartAlbums;
 
 use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
+use App\Contracts\InternalLycheeException;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
@@ -55,7 +56,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	}
 
 	/**
-	 * @throws InvalidQueryModelException
+	 * @throws InternalLycheeException
 	 */
 	public function photos(): Builder
 	{
