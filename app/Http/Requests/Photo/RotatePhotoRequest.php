@@ -22,7 +22,7 @@ class RotatePhotoRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWriteByModel($this->photo);
+		return $this->authorizePhotoWrite($this->photo);
 	}
 
 	/**

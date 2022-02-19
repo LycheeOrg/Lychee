@@ -46,7 +46,7 @@ class Smart
 		$smartAlbums = $this->albumFactory->getAllBuiltInSmartAlbums(false);
 		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($smartAlbums as $smartAlbum) {
-			if ($this->albumAuthorisationProvider->isAuthorizedForSmartAlbum($smartAlbum)) {
+			if ($this->albumAuthorisationProvider->isVisible($smartAlbum)) {
 				$return[$smartAlbum->id] = $smartAlbum;
 			}
 		}

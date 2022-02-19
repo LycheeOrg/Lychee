@@ -24,7 +24,7 @@ class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWriteByModels($this->photos);
+		return $this->authorizePhotosWrite($this->photos);
 	}
 
 	/**

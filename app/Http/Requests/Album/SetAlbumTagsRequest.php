@@ -27,7 +27,7 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModel($this->album);
+		return $this->authorizeAlbumWrite($this->album);
 	}
 
 	/**

@@ -27,11 +27,7 @@ class SessionFunctions
 	 */
 	public function is_logged_in(): bool
 	{
-		if (Session::get('login') === true) {
-			return true;
-		} else {
-			return false;
-		}
+		return Session::get('login') === true;
 	}
 
 	/**

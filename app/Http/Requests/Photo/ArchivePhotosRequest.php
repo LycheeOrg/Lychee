@@ -23,7 +23,7 @@ class ArchivePhotosRequest extends BaseApiRequest implements HasPhotos, HasSizeV
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoDownloadByModels($this->photos);
+		return $this->authorizePhotosDownload($this->photos);
 	}
 
 	/**

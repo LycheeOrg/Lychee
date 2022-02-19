@@ -20,7 +20,7 @@ class GetAlbumPositionDataRequest extends BaseApiRequest implements HasAbstractA
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumAccessByModel($this->album);
+		return $this->authorizeAlbumAccess($this->album);
 	}
 
 	/**

@@ -20,7 +20,7 @@ class ArchiveAlbumsRequest extends BaseApiRequest implements HasAlbums
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumAccessByModels($this->albums);
+		return $this->authorizeAlbumsAccess($this->albums);
 	}
 
 	/**

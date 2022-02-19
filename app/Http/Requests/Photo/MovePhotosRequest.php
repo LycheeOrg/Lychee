@@ -22,8 +22,8 @@ class MovePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlbum
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWriteByModels($this->photos) &&
-			$this->authorizeAlbumWriteByModel($this->album);
+		return $this->authorizePhotosWrite($this->photos) &&
+			$this->authorizeAlbumWrite($this->album);
 	}
 
 	/**

@@ -22,7 +22,7 @@ class SetAlbumLicenseRequest extends BaseApiRequest implements HasAlbum, HasLice
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModel($this->album);
+		return $this->authorizeAlbumWrite($this->album);
 	}
 
 	/**

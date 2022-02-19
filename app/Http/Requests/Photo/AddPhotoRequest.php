@@ -20,7 +20,7 @@ class AddPhotoRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModel($this->album);
+		return $this->authorizeAlbumWrite($this->album);
 	}
 
 	/**

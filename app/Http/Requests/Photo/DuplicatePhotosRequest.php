@@ -22,8 +22,8 @@ class DuplicatePhotosRequest extends BaseApiRequest implements HasPhotos, HasAlb
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWriteByModels($this->photos) &&
-			$this->authorizeAlbumWriteByModel($this->album);
+		return $this->authorizePhotosWrite($this->photos) &&
+			$this->authorizeAlbumWrite($this->album);
 	}
 
 	/**

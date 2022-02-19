@@ -5,16 +5,13 @@ namespace App\Http\Requests;
 use App\Actions\AlbumAuthorisationProvider;
 use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
-use App\Contracts\InternalLycheeException;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\UnauthorizedException;
 use App\Factories\AlbumFactory;
-use App\Models\Extensions\BaseAlbum;
 use App\Models\Photo;
-use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -126,34 +123,13 @@ abstract class BaseApiRequest extends FormRequest
 	/**
 	 * Determines of the user is authorized to access the designated album.
 	 *
-	 * @param string|null $albumID the ID of the album
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 *
-	 * @throws InternalLycheeException
-	 */
-	protected function authorizeAlbumAccess(?string $albumID): bool
-	{
-		return $this->albumAuthorisationProvider->isAccessibleByID($albumID);
-	}
-
-	/**
-	 * Determines of the user is authorized to access the designated album.
-	 *
 	 * @param AbstractAlbum|null $album the album
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizeAlbumAccessByModel(?AbstractAlbum $album): bool
+	protected function authorizeAlbumAccess(?AbstractAlbum $album): bool
 	{
-		if ($album instanceof BaseAlbum) {
-			return $this->albumAuthorisationProvider->isAccessible($album);
-		} elseif ($album instanceof BaseSmartAlbum) {
-			return $this->albumAuthorisationProvider->isAuthorizedForSmartAlbum($album);
-		} else {
-			// Should never happen
-			return false;
-		}
+		return $this->albumAuthorisationProvider->isAccessible($album);
 	}
 
 	/**
@@ -163,31 +139,16 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizeAlbumAccessByModels(BaseCollection $albums): bool
+	protected function authorizeAlbumsAccess(BaseCollection $albums): bool
 	{
 		/** @var AbstractAlbum $album */
 		foreach ($albums as $album) {
-			if (!$this->authorizeAlbumAccessByModel($album)) {
+			if (!$this->authorizeAlbumAccess($album)) {
 				return false;
 			}
 		}
 
 		return true;
-	}
-
-	/**
-	 * Determines of the user is authorized to modify or write into the
-	 * designated albums.
-	 *
-	 * @param string[] $albumIDs the IDs of the albums
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 *
-	 * @throws InternalLycheeException
-	 */
-	protected function authorizeAlbumWrite(array $albumIDs): bool
-	{
-		return $this->albumAuthorisationProvider->areEditable($albumIDs);
 	}
 
 	/**
@@ -198,9 +159,9 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizeAlbumWriteByModel(?AbstractAlbum $album): bool
+	protected function authorizeAlbumWrite(?AbstractAlbum $album): bool
 	{
-		return $this->albumAuthorisationProvider->isEditableByModel($album);
+		return $this->albumAuthorisationProvider->isEditable($album);
 	}
 
 	/**
@@ -211,30 +172,16 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizeAlbumWriteByModels(BaseCollection $albums): bool
+	protected function authorizeAlbumsWrite(BaseCollection $albums): bool
 	{
 		/** @var AbstractAlbum $album */
 		foreach ($albums as $album) {
-			if (!$this->authorizeAlbumWriteByModel($album)) {
+			if (!$this->authorizeAlbumWrite($album)) {
 				return false;
 			}
 		}
 
 		return true;
-	}
-
-	/**
-	 * Determines of the user is authorized to see the designated photo.
-	 *
-	 * @param string $photoID the ID of the photo
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 *
-	 * @throws InternalLycheeException
-	 */
-	protected function authorizePhotoVisible(string $photoID): bool
-	{
-		return $this->photoAuthorisationProvider->isVisible($photoID);
 	}
 
 	/**
@@ -245,28 +192,9 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizePhotoVisibleByModel(?Photo $photo): bool
+	protected function authorizePhotoVisible(?Photo $photo): bool
 	{
-		return $this->photoAuthorisationProvider->isVisibleByModel($photo);
-	}
-
-	/**
-	 * Determines of the user is authorized to see the designated photos.
-	 *
-	 * @param EloquentCollection<Photo> $photos the photos
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 */
-	protected function authorizePhotoVisibleByModels(EloquentCollection $photos): bool
-	{
-		/** @var Photo $photo */
-		foreach ($photos as $photo) {
-			if (!$this->authorizePhotoVisibleByModel($photo)) {
-				return false;
-			}
-		}
-
-		return true;
+		return $this->photoAuthorisationProvider->isVisible($photo);
 	}
 
 	/**
@@ -276,9 +204,9 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizePhotoDownloadByModel(Photo $photo): bool
+	protected function authorizePhotoDownload(Photo $photo): bool
 	{
-		return $this->photoAuthorisationProvider->isDownloadableByModel($photo);
+		return $this->photoAuthorisationProvider->isDownloadable($photo);
 	}
 
 	/**
@@ -288,30 +216,16 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizePhotoDownloadByModels(EloquentCollection $photos): bool
+	protected function authorizePhotosDownload(EloquentCollection $photos): bool
 	{
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			if (!$this->authorizePhotoDownloadByModel($photo)) {
+			if (!$this->authorizePhotoDownload($photo)) {
 				return false;
 			}
 		}
 
 		return true;
-	}
-
-	/**
-	 * Determines of the user is authorized to modify the designated photos.
-	 *
-	 * @param string[] $photoIDs the IDs of the photos
-	 *
-	 * @return bool true, if the authenticated user is authorized
-	 *
-	 * @throws InternalLycheeException
-	 */
-	protected function authorizePhotoWrite(array $photoIDs): bool
-	{
-		return $this->photoAuthorisationProvider->areEditable($photoIDs);
 	}
 
 	/**
@@ -321,9 +235,9 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizePhotoWriteByModel(Photo $photo): bool
+	protected function authorizePhotoWrite(Photo $photo): bool
 	{
-		return $this->photoAuthorisationProvider->isEditableByModel($photo);
+		return $this->photoAuthorisationProvider->isEditable($photo);
 	}
 
 	/**
@@ -333,11 +247,11 @@ abstract class BaseApiRequest extends FormRequest
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	protected function authorizePhotoWriteByModels(EloquentCollection $photos): bool
+	protected function authorizePhotosWrite(EloquentCollection $photos): bool
 	{
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			if (!$this->authorizePhotoWriteByModel($photo)) {
+			if (!$this->authorizePhotoWrite($photo)) {
 				return false;
 			}
 		}

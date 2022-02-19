@@ -24,8 +24,8 @@ class MoveAlbumsRequest extends BaseApiRequest implements HasAlbum, HasAlbums
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModel($this->album) &&
-			$this->authorizeAlbumWriteByModels($this->albums);
+		return $this->authorizeAlbumWrite($this->album) &&
+			$this->authorizeAlbumsWrite($this->albums);
 	}
 
 	/**

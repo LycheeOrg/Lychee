@@ -22,7 +22,7 @@ class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
 		// Sic!
 		// Tag albums can only be created below the root albums which has the
 		// ID `null`.
-		return $this->authorizeAlbumWriteByModel(null);
+		return $this->authorizeAlbumWrite(null);
 	}
 
 	/**

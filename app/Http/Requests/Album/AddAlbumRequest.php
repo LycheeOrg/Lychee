@@ -21,7 +21,7 @@ class AddAlbumRequest extends BaseApiRequest implements HasTitle, HasParentAlbum
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModel($this->parentAlbum);
+		return $this->authorizeAlbumWrite($this->parentAlbum);
 	}
 
 	/**

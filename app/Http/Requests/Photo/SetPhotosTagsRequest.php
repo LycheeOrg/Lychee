@@ -20,7 +20,7 @@ class SetPhotosTagsRequest extends BaseApiRequest implements HasPhotos, HasTags
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWriteByModels($this->photos);
+		return $this->authorizePhotosWrite($this->photos);
 	}
 
 	/**

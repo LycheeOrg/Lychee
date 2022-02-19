@@ -24,7 +24,7 @@ class VerifyRegistration
 		if ($credential) {
 			$user->addCredential($credential);
 		} else {
-			throw new UnauthorizedException();
+			throw new UnauthorizedException('Provided credentials are insufficient');
 		}
 	}
 }

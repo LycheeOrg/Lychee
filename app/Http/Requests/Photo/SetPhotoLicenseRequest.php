@@ -21,7 +21,7 @@ class SetPhotoLicenseRequest extends BaseApiRequest implements HasPhoto, HasLice
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWriteByModel($this->photo);
+		return $this->authorizePhotoWrite($this->photo);
 	}
 
 	/**

@@ -25,7 +25,7 @@ class SetAlbumAccessSettingsRequest extends BaseApiRequest implements HasBaseAlb
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModel($this->album);
+		return $this->authorizeAlbumWrite($this->album);
 	}
 
 	/**

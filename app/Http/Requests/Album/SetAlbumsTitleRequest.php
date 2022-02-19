@@ -24,7 +24,7 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWrite($this->albumIDs);
+		return $this->authorizeAlbumsWrite($this->albums);
 	}
 
 	/**

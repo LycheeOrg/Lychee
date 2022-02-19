@@ -21,7 +21,7 @@ class SetPhotosTitleRequest extends BaseApiRequest implements HasPhotos, HasTitl
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWriteByModels($this->photos);
+		return $this->authorizePhotosWrite($this->photos);
 	}
 
 	/**

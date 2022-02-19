@@ -21,7 +21,7 @@ class SetPhotoDescriptionRequest extends BaseApiRequest implements HasPhoto, Has
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoWriteByModel($this->photo);
+		return $this->authorizePhotoWrite($this->photo);
 	}
 
 	/**

@@ -34,7 +34,7 @@ class Unlock extends Action
 		if ($album->is_public) {
 			if (
 				empty($album->password) ||
-				$this->albumAuthorisationProvider->isAlbumUnlocked($album->id)
+				$this->albumAuthorisationProvider->isUnlocked($album)
 			) {
 				return;
 			}
@@ -65,7 +65,7 @@ class Unlock extends Action
 		/** @var BaseAlbumImpl $album */
 		foreach ($albums as $album) {
 			if (Hash::check($password, $album->password)) {
-				$this->albumAuthorisationProvider->unlockAlbum($album->id);
+				$this->albumAuthorisationProvider->unlock($album);
 			}
 		}
 	}

@@ -75,37 +75,12 @@ class PhotoAuthorisationProvider
 	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
 	 * specification of the rules when a photo is visible.
 	 *
-	 * @param string $photoID
-	 *
-	 * @return bool
-	 *
-	 * @throws InternalLycheeException
-	 */
-	public function isVisible(string $photoID): bool
-	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-
-		// We use `applyVisibilityFilter` to build a query, but don't hydrate
-		// a model
-		return $this->applyVisibilityFilter(
-				Photo::query()->where('photos.id', '=', $photoID)
-			)->count() !== 0;
-	}
-
-	/**
-	 * Checks whether the photo is visible by the current user.
-	 *
-	 * See {@link PhotoAuthorisationProvider::applyVisibilityFilter()} for a
-	 * specification of the rules when a photo is visible.
-	 *
 	 * @param Photo|null $photo the photo; `null` is accepted for convenience
 	 *                          and the `null` photo is always authorized
 	 *
 	 * @return bool true, if the authenticated user is authorized
 	 */
-	public function isVisibleByModel(?Photo $photo): bool
+	public function isVisible(?Photo $photo): bool
 	{
 		return
 			$photo === null ||
@@ -136,9 +111,9 @@ class PhotoAuthorisationProvider
 	 *
 	 * @return bool
 	 */
-	public function isDownloadableByModel(Photo $photo): bool
+	public function isDownloadable(Photo $photo): bool
 	{
-		if (!$this->isVisibleByModel($photo)) {
+		if (!$this->isVisible($photo)) {
 			return false;
 		}
 
@@ -274,8 +249,7 @@ class PhotoAuthorisationProvider
 	}
 
 	/**
-	 * Checks whether the photos with the given IDs are editable by the
-	 * current user.
+	 * Checks whether the photo is editable by the current user.
 	 *
 	 * A photo is called _editable_ if the current user is allowed to edit
 	 * the photo's properties.
@@ -285,48 +259,11 @@ class PhotoAuthorisationProvider
 	 *  - the user is an admin
 	 *  - the user is the owner of the photo
 	 *
-	 * @param string[] $photoIDs
-	 *
-	 * @return bool
-	 *
-	 * @throws InternalLycheeException
-	 */
-	public function areEditable(array $photoIDs): bool
-	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
-			return false;
-		}
-
-		$userID = AccessControl::id();
-		// Since we count the result we need to ensure that there are no
-		// duplicates.
-		// Also remove the `null` photo. It gets a pass.
-		// This case may happen, if a user sets `null` as a cover.
-		$photoIDs = array_diff(array_unique($photoIDs), [null]);
-		if (count($photoIDs) > 0) {
-			return Photo::query()
-				->whereIn('photos.id', $photoIDs)
-				->where('photos.owner_id', '=', $userID)
-				->count() === count($photoIDs);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Checks whether the photo is editable by the current user.
-	 *
-	 * See {@link PhotoAuthorisationProvider::areEditable()} for a definition
-	 * when a photo is editable.
-	 *
 	 * @param Photo $photo
 	 *
 	 * @return bool
 	 */
-	public function isEditableByModel(Photo $photo): bool
+	public function isEditable(Photo $photo): bool
 	{
 		return AccessControl::is_current_user($photo->owner_id);
 	}

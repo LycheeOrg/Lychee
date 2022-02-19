@@ -20,7 +20,7 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbums
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModels($this->albums);
+		return $this->authorizeAlbumsWrite($this->albums);
 	}
 
 	/**

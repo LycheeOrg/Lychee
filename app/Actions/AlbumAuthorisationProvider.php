@@ -263,53 +263,33 @@ class AlbumAuthorisationProvider
 	 *  - the root album is accessible by everybody
 	 *  - the built-in smart albums are accessible, if
 	 *     - the user is authenticated and is granted the right of uploading, or
-	 *     - the album is the album of recent photos and public by configuration, or
-	 *     - the album is the album of starred photos and public by configuration
+	 *     - the album is public
 	 *
-	 * @param string|null $albumID
+	 * @param AbstractAlbum|null $album
 	 *
 	 * @return bool
-	 *
-	 * @throws InternalLycheeException
 	 */
-	public function isAccessibleByID(?string $albumID): bool
+	public function isAccessible(?AbstractAlbum $album): bool
 	{
-		// the admin may access everything, the root album may be accessed by everybody
-		if (AccessControl::is_admin() || empty($albumID)) {
+		if ($album === null || AccessControl::is_admin()) {
 			return true;
 		}
 
-		// Deal with built-in smart albums
-		if ($this->albumFactory->isBuiltInSmartAlbum($albumID)) {
-			return $this->isAuthorizedForSmartAlbum(
-				$this->albumFactory->createSmartAlbum($albumID)
-			);
-		}
+		$userID = AccessControl::is_logged_in() ? AccessControl::id() : null;
 
-		// Use `applyAccessibilityFilter` to build a query, but don't hydrate
-		// a model
-		return $this->applyAccessibilityFilter(
-			BaseAlbumImpl::query()->where('base_albums.id', '=', $albumID)
-		)->count() !== 0;
-	}
-
-	public function isAccessible(BaseAlbum $album): bool
-	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
-			return
-				($album->is_public && $album->password === null) ||
-				($album->is_public && $this->isAlbumUnlocked($album->id));
-		} else {
-			$userID = AccessControl::id();
-
+		if ($album instanceof BaseAlbum) {
 			return
 				($album->owner_id === $userID) ||
 				($album->is_public && $album->password === null) ||
-				($album->is_public && $this->isAlbumUnlocked($album->id)) ||
+				($album->is_public && $this->isUnlocked($album)) ||
 				($album->shared_with()->where('user_id', '=', $userID)->count());
+		} elseif ($album instanceof BaseSmartAlbum) {
+			return
+				($userID && AccessControl::can_upload()) ||
+				$album->is_public;
+		} else {
+			// Should never happen
+			return false;
 		}
 	}
 
@@ -486,25 +466,25 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * Pushes an album ID onto the stack of unlocked albums.
+	 * Pushes an album onto the stack of unlocked albums.
 	 *
-	 * @param string $albumID
+	 * @param BaseAlbum|BaseAlbumImpl $album
 	 */
-	public function unlockAlbum(string $albumID): void
+	public function unlock(BaseAlbum|BaseAlbumImpl $album): void
 	{
-		Session::push(self::UNLOCKED_ALBUMS_SESSION_KEY, $albumID);
+		Session::push(self::UNLOCKED_ALBUMS_SESSION_KEY, $album->id);
 	}
 
 	/**
-	 * Check if the given album ID has previously been unlocked.
+	 * Check whether the given album has previously been unlocked.
 	 *
-	 * @param string $albumID
+	 * @param BaseAlbum|BaseAlbumImpl $album
 	 *
 	 * @return bool
 	 */
-	public function isAlbumUnlocked(string $albumID): bool
+	public function isUnlocked(BaseAlbum|BaseAlbumImpl $album): bool
 	{
-		return in_array($albumID, $this->getUnlockedAlbumIDs());
+		return in_array($album->id, $this->getUnlockedAlbumIDs());
 	}
 
 	private function getUnlockedAlbumIDs(): array
@@ -513,8 +493,7 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * Checks whether the albums with the given IDs are editable by the
-	 * current user.
+	 * Checks whether the album is editable by the current user.
 	 *
 	 * An album is called _editable_ if the current user is allowed to edit
 	 * the album's properties.
@@ -532,52 +511,11 @@ class AlbumAuthorisationProvider
 	 * In order to silently ignore/skip this condition for smart albums,
 	 * this method always returns `true` for a smart album.
 	 *
-	 * @param string[] $albumIDs
-	 *
-	 * @return bool
-	 *
-	 * @throws InternalLycheeException
-	 */
-	public function areEditable(array $albumIDs): bool
-	{
-		if (AccessControl::is_admin()) {
-			return true;
-		}
-		if (!AccessControl::is_logged_in()) {
-			return false;
-		}
-
-		$user = AccessControl::user();
-
-		if (!$user->may_upload) {
-			return false;
-		}
-
-		// Remove root and smart albums (they get a pass).
-		// Since we count the result we need to ensure that there are no
-		// duplicates.
-		$albumIDs = array_diff(array_unique($albumIDs), array_keys(AlbumFactory::BUILTIN_SMARTS), [null]);
-		if (count($albumIDs) > 0) {
-			return BaseAlbumImpl::query()
-					->whereIn('base_albums.id', $albumIDs)
-					->where('base_albums.owner_id', '=', $user->id)
-					->count() === count($albumIDs);
-		}
-
-		return true;
-	}
-
-	/**
-	 * Checks whether the album is editable by the current user.
-	 *
-	 * See {@link AlbumAuthorisationProvider::areEditable()} for a definition
-	 * of being editable.
-	 *
 	 * @param AbstractAlbum|null $album the album; `null` designates the root album
 	 *
 	 * @return bool
 	 */
-	public function isEditableByModel(?AbstractAlbum $album): bool
+	public function isEditable(?AbstractAlbum $album): bool
 	{
 		if (AccessControl::is_admin()) {
 			return true;
@@ -656,17 +594,17 @@ class AlbumAuthorisationProvider
 	}
 
 	/**
-	 * This is the common code to decide whether the given smart album is
-	 * visible/accessible by the current user.
+	 * Checks whether the album is visible by the current user.
 	 *
-	 * Note, that the logic for visibility and/or accessibility of a smart
-	 * album is identical.
+	 * Note, at the moment this check is only needed for built-in smart
+	 * albums.
+	 * Hence, the method is only provided for them.
 	 *
 	 * @param BaseSmartAlbum $smartAlbum
 	 *
-	 * @return bool true, if the smart album is visible/accessible by the user
+	 * @return bool true, if the album is visible
 	 */
-	public function isAuthorizedForSmartAlbum(BaseSmartAlbum $smartAlbum): bool
+	public function isVisible(BaseSmartAlbum $smartAlbum): bool
 	{
 		return
 			(AccessControl::is_logged_in() && AccessControl::can_upload()) ||

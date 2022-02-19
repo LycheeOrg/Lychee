@@ -25,7 +25,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModel($this->album);
+		return $this->authorizeAlbumWrite($this->album);
 	}
 
 	/**

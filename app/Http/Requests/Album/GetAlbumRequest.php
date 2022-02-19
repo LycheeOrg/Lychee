@@ -16,7 +16,7 @@ class GetAlbumRequest extends BaseApiRequest implements HasAbstractAlbum
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumAccessByModel($this->album);
+		return $this->authorizeAlbumAccess($this->album);
 	}
 
 	/**

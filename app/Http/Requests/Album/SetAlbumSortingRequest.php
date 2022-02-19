@@ -25,7 +25,7 @@ class SetAlbumSortingRequest extends BaseApiRequest implements HasBaseAlbum, Has
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizeAlbumWriteByModel($this->album);
+		return $this->authorizeAlbumWrite($this->album);
 	}
 
 	/**

@@ -17,7 +17,7 @@ class GetPhotoRequest extends BaseApiRequest implements HasPhoto
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoVisibleByModel($this->photo);
+		return $this->authorizePhotoVisible($this->photo);
 	}
 
 	/**
