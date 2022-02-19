@@ -477,7 +477,10 @@ api.post = function (fn, params) {
 
 		if (errorCallback) {
 			var isHandled = errorCallback(jqXHR, params, lycheeException);
-			if (isHandled) return;
+			if (isHandled) {
+				setTimeout(loadingBar.hide, 100);
+				return;
+			}
 		}
 		// Call global error handler for unhandled errors
 		api.onError(jqXHR, params, lycheeException);
@@ -866,18 +869,21 @@ album.deleteSubByID = function (albumID) {
 };
 
 /**
+ * @callback AlbumLoadedCB
+ * @param {boolean} accessible - `true`, if the album has successfully been
+ *                                loaded and parsed; `false`, if the album is
+ *                                private or public, but unlocked
+ * @returns {void}
+ */
+
+/**
  * @param {string} albumID
- * @param {boolean} refresh
+ * @param {?AlbumLoadedCB} [albumLoadedCB=null]
  *
  * @returns {void}
  */
 album.load = function (albumID) {
-	var refresh = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-	var params = {
-		albumID: albumID,
-		password: ""
-	};
+	var albumLoadedCB = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
 	/**
   * @param {Album} data
@@ -885,20 +891,20 @@ album.load = function (albumID) {
 	var processAlbum = function processAlbum(data) {
 		album.json = data;
 
-		if (refresh === false) {
+		if (albumLoadedCB === null) {
 			lychee.animate($(".content"), "contentZoomOut");
 		}
 		var waitTime = 300;
 
-		// Skip delay when refresh is true
+		// Skip delay when we have a callback `albumLoadedCB`
 		// Skip delay when opening a blank Lychee
-		if (refresh === true) waitTime = 0;
+		if (albumLoadedCB) waitTime = 0;
 		if (!visible.albums() && !visible.photo() && !visible.album()) waitTime = 0;
 
 		setTimeout(function () {
 			view.album.init();
 
-			if (refresh === false) {
+			if (albumLoadedCB === null) {
 				lychee.animate(lychee.content, "contentZoomIn");
 				header.setMode("album");
 			}
@@ -925,6 +931,8 @@ album.load = function (albumID) {
 	var successHandler = function successHandler(data) {
 		processAlbum(data);
 
+		lychee.content.show();
+		lychee.footer_show();
 		tabindex.makeFocusable(lychee.content);
 
 		if (lychee.active_focus_on_page_load) {
@@ -939,28 +947,43 @@ album.load = function (albumID) {
 				}
 			}
 		}
+
+		if (albumLoadedCB) albumLoadedCB(true);
 	};
 
 	/**
   * @param {XMLHttpRequest} jqXHR
+  * @param {Object} params the original JSON parameters of the request
+  * @param {?LycheeException} lycheeException the Lychee exception
   * @returns {boolean}
   */
-	var errorHandler = function errorHandler(jqXHR) {
-		if (jqXHR.status === 401 || jqXHR.status === 403) {
-			password.getDialog(albumID, function () {
-				api.post("Album::get", params,
-				/** @param {Album} _data */
-				function (_data) {
-					albums.refresh();
-					processAlbum(_data);
-				});
-			});
-			return true;
+	var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
+		if (jqXHR.status !== 401 && jqXHR.status !== 403) {
+			// Any other error then unauthenticated or unauthorized
+			// shall be handled by the global error handler.
+			return false;
 		}
-		return false;
+
+		if (lycheeException.message.includes("Password required")) {
+			// If a password is required, then try to unlock the album
+			// and in case of success, try again to load album with same
+			// parameters
+			password.getDialog(albumID, function () {
+				album.load(albumID, albumLoadedCB);
+			});
+		} else {
+			album.json = null;
+			if (albumLoadedCB) {
+				albumLoadedCB(false);
+			} else {
+				lychee.goto();
+			}
+		}
+
+		return true;
 	};
 
-	api.post("Album::get", params, successHandler, null, errorHandler);
+	api.post("Album::get", { albumID: albumID }, successHandler, null, errorHandler);
 };
 
 /**
@@ -1894,12 +1917,8 @@ album.isUploadable = function () {
 		return false;
 	}
 
-	if (album.json === null || !album.json.owner_name) {
-		return true;
-	}
-
 	// TODO: Comparison of numeric user IDs (instead of names) should be more robust
-	return album.json.owner_name === lychee.username;
+	return album.json !== null && album.json.owner_name === lychee.username;
 };
 
 /**
@@ -3128,9 +3147,11 @@ contextMenu.photoTitle = function (albumID, photoID, e) {
 			return _photo3.setTitle([photoID]);
 		} }];
 
-	var data = album.json;
+	// Note: We can also have a photo without its parent album being loaded
+	// if the photo is a public photo within a private album
+	var photos = album.json ? album.json.photos : [];
 
-	if (data.photos !== false && data.photos.length > 0) {
+	if (photos.length > 0) {
 		items.push({});
 
 		items = items.concat(contextMenu.buildList(data.photos, [photoID], function (a) {
@@ -5272,23 +5293,38 @@ lychee.load = function () {
 			// Trash data
 			_photo3.json = null;
 
-			// Show Photo
-			if (lychee.content.html() === "" || album.json == null || header.dom(".header__search").length && header.dom(".header__search").val().length !== 0) {
-				lychee.content.hide();
-				album.load(albumID, true);
+			/**
+    * @param {boolean} isParentAlbumAccessible
+    * @returns {void}
+    */
+			var loadPhoto = function loadPhoto(isParentAlbumAccessible) {
+				if (!isParentAlbumAccessible) {
+					lychee.setMode("view");
+				}
+				_photo3.load(photoID, albumID, autoplay);
+
+				// Make imageview focussable
+				tabindex.makeFocusable(lychee.imageview);
+
+				// Make thumbnails unfocusable and store which element had focus
+				tabindex.makeUnfocusable(lychee.content, true);
+
+				// hide contentview if requested
+				if (lychee.hide_content_during_imgview) lychee.content.hide();
+
+				lychee.footer_hide();
+			};
+
+			// Load Photo
+			// If we don't have an album or the wrong album load the album
+			// first and let the album loader load the photo afterwards or
+			// load the photo directly.
+			lychee.content.hide();
+			if (lychee.content.html() === "" || album.json === null || album.json.id !== albumID || header.dom(".header__search").length && header.dom(".header__search").val().length !== 0) {
+				album.load(albumID, loadPhoto);
+			} else {
+				loadPhoto(true);
 			}
-			_photo3.load(photoID, albumID, autoplay);
-
-			// Make imageview focussable
-			tabindex.makeFocusable(lychee.imageview);
-
-			// Make thumbnails unfocusable and store which element had focus
-			tabindex.makeUnfocusable(lychee.content, true);
-
-			// hide contentview if requested
-			if (lychee.hide_content_during_imgview) lychee.content.hide();
-
-			lychee.footer_hide();
 		}
 	} else if (albumID) {
 		if (albumID === "map") {
@@ -5448,7 +5484,6 @@ lychee.setMode = function (mode) {
 	if (mode === "public") {
 		lychee.publicMode = true;
 	} else if (mode === "view") {
-		// TODO: It seems as if this method is never called with `mode === "view"`. This might be dead code. Can it be removed?
 		Mousetrap.unbind(["esc", "command+up"]);
 
 		$("#button_back, a#next, a#previous").remove();
@@ -7266,11 +7301,12 @@ password.getDialog = function (albumID, callback) {
 		api.post("Album::unlock", params, function () {
 			basicModal.close();
 			callback();
-		}, null, function (jqXHR) {
-			if (jqXHR.status === 401 || jqXHR.status === 403) {
+		}, null, function (jqXHR, params, lycheeException) {
+			if ((jqXHR.status === 401 || jqXHR.status === 403) && lycheeException.message.includes("Password is invalid")) {
 				basicModal.error("password");
 				return true;
 			}
+			basicModal.close();
 			return false;
 		});
 	};
@@ -7330,17 +7366,6 @@ _photo3.getID = function () {
  * @returns {void}
  */
 _photo3.load = function (photoID, albumID, autoplay) {
-	var checkContent = function checkContent() {
-		if (album.json != null && album.json.photos) _photo3.load(photoID, albumID, autoplay);else setTimeout(checkContent, 100);
-	};
-
-	// TODO: The comment below sounds suspicious, what exactly is going on here?
-	// we need to check the album.json.photos because otherwise the script is too fast and this raise an error.
-	if (album.json == null || album.json.photos == null) {
-		checkContent();
-		return;
-	}
-
 	/**
   * @param {Photo} data
   * @returns {void}
@@ -10875,7 +10900,7 @@ var users = {
  * The object `params` must be kept in sync with the HTML form constructed
  * by {@link build.user}.
  *
- * @param {{id: string, username: string, password: string, upload: boolean, lock: boolean}} params
+ * @param {{id: number, username: string, password: string, upload: boolean, lock: boolean}} params
  * @returns {void}
  */
 users.update = function (params) {
@@ -10885,6 +10910,7 @@ users.update = function (params) {
 	}
 
 	// TODO: Re-factor the HTML form constructed by `build.user`. Then the following lines would not be required.
+	params.id = parseInt(params.id, 10);
 	params.may_upload = $("#UserData" + params.id + ' .choice input[name="upload"]:checked').length === 1;
 	params.is_locked = $("#UserData" + params.id + ' .choice input[name="lock"]:checked').length === 1;
 
@@ -10929,10 +10955,11 @@ users.create = function (params) {
  * The object `params` must be kept in sync with the HTML form constructed
  * by {@link build.user}.
  *
- * @param {{id: string}} params
+ * @param {{id: number}} params
  * @returns {boolean}
  */
 users.delete = function (params) {
+	params.id = parseInt(params.id, 10);
 	api.post("User::delete", params, function () {
 		loadingBar.show("success", "User deleted!");
 		users.list(); // reload user list

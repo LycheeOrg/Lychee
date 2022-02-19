@@ -983,7 +983,10 @@ api.post = function (fn, params) {
 
     if (errorCallback) {
       var isHandled = errorCallback(jqXHR, params, lycheeException);
-      if (isHandled) return;
+      if (isHandled) {
+        setTimeout(loadingBar.hide, 100);
+        return;
+      }
     }
     // Call global error handler for unhandled errors
     api.onError(jqXHR, params, lycheeException);
