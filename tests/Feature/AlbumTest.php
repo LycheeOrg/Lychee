@@ -23,6 +23,10 @@ class AlbumTest extends TestCase
 		$albums_tests->get('starred', 403);
 		$albums_tests->get('public', 403);
 		$albums_tests->get('unsorted', 403);
+
+		// Ensure that we get proper 404 (not found) response for a
+		// non-existing album, not a false 403 (forbidden) response
+		$albums_tests->get('abcdefghijklmnopqrstuvwx', 404);
 	}
 
 	public function testAddReadLogged()
@@ -126,7 +130,9 @@ class AlbumTest extends TestCase
 		AccessControl::log_as_id(0);
 
 		$albums_tests->set_description('-1', 'new description', 422);
+		$albums_tests->set_description('abcdefghijklmnopqrstuvwx', 'new description', 404);
 		$albums_tests->set_public('-1', true, true, false, false, true, true, 422);
+		$albums_tests->set_public('abcdefghijklmnopqrstuvwx', true, true, false, false, true, true, 404);
 
 		$session_tests->logout();
 	}

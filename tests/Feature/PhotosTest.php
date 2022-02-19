@@ -312,10 +312,17 @@ class PhotosTest extends TestCase
 		$photos_tests->wrong_upload();
 		$photos_tests->wrong_upload2();
 		$photos_tests->get('-1', 422);
+		$photos_tests->get('abcdefghijklmnopxyrstuvx', 404);
 		$photos_tests->set_description('-1', 'test', 422);
+		$photos_tests->set_description('abcdefghijklmnopxyrstuvx', 'test', 404);
 		$photos_tests->set_public('-1', 422);
+		$photos_tests->set_public('abcdefghijklmnopxyrstuvx', 404);
 		$photos_tests->set_album('-1', ['-1'], 422);
+		$photos_tests->set_album('abcdefghijklmnopxyrstuvx', ['-1'], 422);
+		$photos_tests->set_album('-1', ['abcdefghijklmnopxyrstuvx'], 422);
+		$photos_tests->set_album('abcdefghijklmnopxyrstuvx', ['abcdefghijklmnopxyrstuvx'], 404);
 		$photos_tests->set_license('-1', 'CC0', 422);
+		$photos_tests->set_license('abcdefghijklmnopxyrstuvx', 'CC0', 404);
 
 		AccessControl::logout();
 	}
