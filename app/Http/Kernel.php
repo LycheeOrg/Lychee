@@ -98,5 +98,6 @@ class Kernel extends HttpKernel
 		'local_storage' => \App\Http\Middleware\LocalStorageOnly::class,
 		'content_type' => \App\Http\Middleware\ContentType::class,
 		'accept_content_type' => \App\Http\Middleware\AcceptContentType::class,
+		'redirect-legacy-id' => \App\Http\Middleware\RedirectLegacyPhotoID::class,
 	];
 }

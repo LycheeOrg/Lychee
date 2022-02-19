@@ -3,21 +3,21 @@
 namespace App\Http\Requests\View;
 
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasPhotoID;
-use App\Rules\IntegerIDRule;
-use App\Rules\OrRule;
+use App\Http\Requests\Contracts\HasPhoto;
+use App\Http\Requests\Traits\HasPhotoTrait;
+use App\Models\Photo;
 use App\Rules\RandomIDRule;
 
-class GetPhotoViewRequest extends BaseApiRequest implements HasPhotoID
+class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 {
-	protected string $photoID;
+	use HasPhotoTrait;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function authorize(): bool
 	{
-		return $this->authorizePhotoVisible($this->photoID);
+		return $this->authorizePhotoVisibleByModel($this->photo);
 	}
 
 	/**
@@ -25,15 +25,8 @@ class GetPhotoViewRequest extends BaseApiRequest implements HasPhotoID
 	 */
 	public function rules(): array
 	{
-		// We need the OR rule, because we also must support legacy, integer IDs.
 		return [
-			'p' => [
-				'required',
-				new OrRule([
-					new RandomIDRule(false),
-					new IntegerIDRule(false, true),
-				]),
-			],
+			'p' => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -42,14 +35,8 @@ class GetPhotoViewRequest extends BaseApiRequest implements HasPhotoID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->photoID = $values[HasPhotoID::PHOTO_ID_ATTRIBUTE];
-	}
-
-	/**
-	 * @return string
-	 */
-	public function photoID(): string
-	{
-		return $this->photoID;
+		$this->photo = Photo::query()
+			->with(['album', 'size_variants', 'size_variants.sym_links'])
+			->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
 	}
 }
