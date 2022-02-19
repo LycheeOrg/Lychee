@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\Album\Unlock;
 use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
+use App\Factories\AlbumFactory;
 use App\Legacy\Legacy;
 use App\Models\Configs;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -16,25 +17,13 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 class RedirectController extends Controller
 {
-	/**
-	 * @param Request $request
-	 * @param string  $albumID
-	 * @param Unlock  $unlock
-	 *
-	 * @return void
-	 *
-	 * @throws ModelNotFoundException
-	 * @throws LycheeException
-	 */
-	private function passwordManagement(Request $request, string $albumID, Unlock $unlock): void
+	protected Unlock $unlock;
+	protected AlbumFactory $albumFactory;
+
+	public function __construct(Unlock $unlock, AlbumFactory $albumFactory)
 	{
-		if ($request->filled('password')) {
-			if (Configs::get_value('unlock_password_photos_with_url_param', '0') == '1') {
-				$unlock->propagate($request['password']);
-			} else {
-				$unlock->do($albumID, $request['password']);
-			}
-		}
+		$this->unlock = $unlock;
+		$this->albumFactory = $albumFactory;
 	}
 
 	/**
@@ -42,55 +31,51 @@ class RedirectController extends Controller
 	 *
 	 * @param Request $request
 	 * @param string  $albumID
-	 * @param Unlock  $unlock
 	 *
 	 * @return RedirectResponse
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function album(Request $request, string $albumID, Unlock $unlock): SymfonyResponse
+	public function album(Request $request, string $albumID): SymfonyResponse
 	{
-		try {
-			if (Legacy::isLegacyModelID($albumID)) {
-				$albumID = Legacy::translateLegacyAlbumID($albumID, $request);
-			}
-
-			$this->passwordManagement($request, $albumID, $unlock);
-
-			return redirect('gallery#' . $albumID);
-		} catch (BindingResolutionException $e) {
-			throw new FrameworkException('Lychee redirection component', $e);
-		}
+		return $this->photo($request, $albumID, null);
 	}
 
 	/**
 	 * Trivial redirection.
 	 *
-	 * @param Request $request
-	 * @param string  $albumID
-	 * @param string  $photoID
-	 * @param Unlock  $unlock
+	 * @param Request     $request
+	 * @param string      $albumID
+	 * @param string|null $photoID
 	 *
 	 * @return RedirectResponse
 	 *
 	 * @throws LycheeException
 	 * @throws ModelNotFoundException
 	 */
-	public function photo(Request $request, string $albumID, string $photoID, Unlock $unlock): SymfonyResponse
+	public function photo(Request $request, string $albumID, ?string $photoID): SymfonyResponse
 	{
 		try {
 			if (Legacy::isLegacyModelID($albumID)) {
 				$albumID = Legacy::translateLegacyAlbumID($albumID, $request);
 			}
 
-			if (Legacy::isLegacyModelID($photoID)) {
+			if (!empty($photoID) && Legacy::isLegacyModelID($photoID)) {
 				$photoID = Legacy::translateLegacyPhotoID($photoID, $request);
 			}
 
-			$this->passwordManagement($request, $albumID, $unlock);
+			if (
+				$request->filled('password') &&
+				Configs::get_value('unlock_password_photos_with_url_param', '0') === '1'
+			) {
+				$album = $this->albumFactory->findBaseAlbumOrFail($albumID);
+				$this->unlock->do($album, $request['password']);
+			}
 
-			return redirect('gallery#' . $albumID . '/' . $photoID);
+			return empty($photoID) ?
+				redirect('gallery#' . $albumID) :
+				redirect('gallery#' . $albumID . '/' . $photoID);
 		} catch (BindingResolutionException $e) {
 			throw new FrameworkException('Lychee redirection component', $e);
 		}

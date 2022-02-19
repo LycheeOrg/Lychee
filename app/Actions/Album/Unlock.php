@@ -51,7 +51,7 @@ class Unlock extends Action
 	/**
 	 * Provided a password, add all the albums that the password unlocks.
 	 */
-	public function propagate(string $password): void
+	private function propagate(string $password): void
 	{
 		// We add all the albums that the password unlocks so that the
 		// user is not repeatedly asked to enter the password as they
