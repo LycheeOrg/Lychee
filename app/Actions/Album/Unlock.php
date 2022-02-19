@@ -43,9 +43,10 @@ class Unlock extends Action
 
 				return;
 			}
+			throw new UnauthorizedException('Password is invalid');
 		}
 
-		throw new UnauthorizedException('Password is invalid');
+		throw new UnauthorizedException('Album is not enabled for password-based access');
 	}
 
 	/**

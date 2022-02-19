@@ -9,7 +9,9 @@ use App\Contracts\LycheeException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSmartIdException;
 use App\Exceptions\Internal\QueryBuilderException;
+use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\UnauthorizedException;
+use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Photo;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -109,15 +111,17 @@ abstract class BaseApiRequest extends FormRequest
 	/**
 	 * Handles a failed authorization attempt.
 	 *
-	 * Always throws {@link UnauthorizedException}.
+	 * Always throws either {@link UnauthorizedException} or
+	 * {@link UnauthenticatedException}.
 	 *
 	 * @return void
 	 *
-	 * @throws UnauthorizedException always thrown
+	 * @throws UnauthorizedException
+	 * @throws UnauthenticatedException
 	 */
 	protected function failedAuthorization(): void
 	{
-		throw new UnauthorizedException();
+		throw AccessControl::is_logged_in() ? new UnauthorizedException() : new UnauthenticatedException();
 	}
 
 	/**

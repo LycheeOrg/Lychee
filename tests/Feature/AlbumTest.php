@@ -17,12 +17,12 @@ class AlbumTest extends TestCase
 	public function testAddNotLogged()
 	{
 		$albums_tests = new AlbumsUnitTest($this);
-		$albums_tests->add(null, 'test_album', 403);
+		$albums_tests->add(null, 'test_album', 401);
 
-		$albums_tests->get('recent', 403);
-		$albums_tests->get('starred', 403);
-		$albums_tests->get('public', 403);
-		$albums_tests->get('unsorted', 403);
+		$albums_tests->get('recent', 401);
+		$albums_tests->get('starred', 401);
+		$albums_tests->get('public', 401);
+		$albums_tests->get('unsorted', 401);
 
 		// Ensure that we get proper 404 (not found) response for a
 		// non-existing album, not a false 403 (forbidden) response
@@ -102,7 +102,8 @@ class AlbumTest extends TestCase
 		 * Let's try to get the info of the album we just created.
 		 */
 		$albums_tests->unlock($albumID, '', 422);
-		$albums_tests->get($albumID, 403);
+		$albums_tests->unlock($albumID, 'wrong-password', 403);
+		$albums_tests->get($albumID, 401);
 
 		/*
 		 * Because we don't know login and password we are just going to assumed we are logged in.
