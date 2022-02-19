@@ -16,7 +16,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class UnauthenticatedException extends LycheeBaseException
 {
-	public function __construct(string $msg = 'User is not authenticated', \Throwable $previous = null)
+	public const DEFAULT_MESSAGE = 'User is not authenticated';
+
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
 	{
 		// Note: Due to historic reasons the name of the HTTP Status Code 401
 		// is "unauthorized", but actually means "unauthenticated".

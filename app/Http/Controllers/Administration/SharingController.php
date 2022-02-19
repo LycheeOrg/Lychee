@@ -31,7 +31,7 @@ class SharingController extends Controller
 		// Note: This test is part of the request validation for the other
 		// methods of this class.
 		if (!AccessControl::can_upload()) {
-			throw new UnauthorizedException();
+			throw new UnauthorizedException('Upload privilege required');
 		}
 
 		return $listShare->do(AccessControl::id());

@@ -11,7 +11,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class UnauthorizedException extends LycheeBaseException
 {
-	public function __construct(string $msg = 'User has insufficient privileges for this action', \Throwable $previous = null)
+	public const DEFAULT_MESSAGE = 'Insufficient privileges';
+
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_FORBIDDEN, $msg, $previous);
 	}

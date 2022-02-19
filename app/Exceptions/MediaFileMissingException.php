@@ -12,7 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class MediaFileMissingException extends LycheeBaseException
 {
-	public function __construct(string $msg = 'The media file is missing', \Throwable $previous = null)
+	public const DEFAULT_MESSAGE = 'The media file is missing';
+
+	public function __construct(string $msg = self::DEFAULT_MESSAGE, \Throwable $previous = null)
 	{
 		parent::__construct(Response::HTTP_NOT_FOUND, $msg, $previous);
 	}
