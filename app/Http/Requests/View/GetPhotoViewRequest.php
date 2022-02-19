@@ -11,6 +11,7 @@ use App\Rules\RandomIDRule;
 class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 {
 	use HasPhotoTrait;
+	public const URL_QUERY_PARAM = 'p';
 
 	/**
 	 * {@inheritDoc}
@@ -26,7 +27,7 @@ class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 	public function rules(): array
 	{
 		return [
-			'p' => ['required', new RandomIDRule(false)],
+			self::URL_QUERY_PARAM => ['required', new RandomIDRule(false)],
 		];
 	}
 
@@ -37,6 +38,6 @@ class GetPhotoViewRequest extends BaseApiRequest implements HasPhoto
 	{
 		$this->photo = Photo::query()
 			->with(['album', 'size_variants', 'size_variants.sym_links'])
-			->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
+			->findOrFail($values[self::URL_QUERY_PARAM]);
 	}
 }

@@ -35,7 +35,7 @@ class RedirectLegacyPhotoID
 	public function handle(Request $request, Closure $next): mixed
 	{
 		try {
-			$photoID = $request->query->get('p');
+			$photoID = $request->query->get(GetPhotoViewRequest::URL_QUERY_PARAM);
 
 			if (Legacy::isLegacyModelID($photoID)) {
 				$photoID = Legacy::translateLegacyPhotoID($photoID, $request);
