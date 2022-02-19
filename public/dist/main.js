@@ -946,7 +946,7 @@ album.load = function (albumID) {
   * @returns {boolean}
   */
 	var errorHandler = function errorHandler(jqXHR) {
-		if (jqXHR.status === 403) {
+		if (jqXHR.status === 401 || jqXHR.status === 403) {
 			password.getDialog(albumID, function () {
 				api.post("Album::get", params,
 				/** @param {Album} _data */
@@ -2062,9 +2062,6 @@ albums.parse = function (album) {
 /**
  * Normalizes the built-in smart albums.
  *
- * TODO: REFACTOR THIS
- * TODO @ildyria: What did you intended to express by the TODO above? What did you want to be re-factored?
- *
  * @param {SmartAlbums} data
  * @returns {void}
  */
@@ -2079,6 +2076,7 @@ albums._createSmartAlbums = function (data) {
 
 	if (data.public) {
 		data.public.title = lychee.locale["PUBLIC"];
+		// TODO: Why do we need to set these two attributes? What component relies upon them, what happens if we don't set them? Is it legacy?
 		data.public.is_public = true;
 		data.public.requires_link = true;
 	}
@@ -2915,7 +2913,6 @@ contextMenu.buildList = function (lists, exclude, action) {
 				thumb = item.thumb.thumb;
 			}
 		} else if (item.size_variants) {
-			// TODO: My IDE complains that thumb is always non-null, and I would agree
 			if (item.size_variants.thumb === null) {
 				if (item.type && item.type.indexOf("video") > -1) {
 					thumb = "img/play-icon.png";
@@ -3159,8 +3156,7 @@ contextMenu.photoMore = function (photoID, e) {
 	// b) the photo is explicitly marked as downloadable (v4-only)
 	// c) or, the album is explicitly marked as downloadable
 
-	// TODO: Check, if `hasOwnProperty` is really required. IMHO, `photo` always has this property.
-	var showDownload = !!(album.isUploadable() || (_photo3.json.hasOwnProperty("is_downloadable") ? _photo3.json.is_downloadable : album.json && album.json.is_downloadable));
+	var showDownload = album.isUploadable() || _photo3.json.is_downloadable || album.json && album.json.is_downloadable;
 	var showFull = !!(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== "");
 
 	var items = [{ title: build.iconic("fullscreen-enter") + lychee.locale["FULL_PHOTO"], visible: !!showFull, fn: function fn() {
@@ -3372,9 +3368,7 @@ contextMenu.move = function (IDs, e, callback) {
  * @returns {void}
  */
 contextMenu.sharePhoto = function (photoID, e) {
-	// v4+ only
-	// TODO: IMHO `photo.json` always jas the property `is_share_button_visible`
-	if (_photo3.json.hasOwnProperty("is_share_button_visible") && !_photo3.json.is_share_button_visible) {
+	if (!_photo3.json.is_share_button_visible) {
 		return;
 	}
 
@@ -3402,9 +3396,7 @@ contextMenu.sharePhoto = function (photoID, e) {
  * @returns {void}
  */
 contextMenu.shareAlbum = function (albumID, e) {
-	// v4+ only
-	// TODO: IMHO `album.json` always jas the property `is_share_button_visible`
-	if (album.json.hasOwnProperty("is_share_button_visible") && !album.json.is_share_button_visible) {
+	if (!album.json.is_share_button_visible) {
 		return;
 	}
 
@@ -4211,12 +4203,10 @@ $(document).ready(function () {
 		// unable to reproduce problems arising from 'mousemove' on iOS devices
 		//			e.preventDefault();
 
-		// TODO: The first part of the condition is always false. `swipe.obj` is either `null` or an jQuery-instance. Was `null` meant?
-		if (typeof swipe.obj === "undefined" || Math.abs(swipe.offsetX) <= 5 && Math.abs(swipe.offsetY) <= 5) {
+		if (typeof swipe.obj === null || Math.abs(swipe.offsetX) <= 5 && Math.abs(swipe.offsetY) <= 5) {
 			// Toggle header only if we're not moving to next/previous photo;
 			// In this case, swipe.preventNextHeaderToggle is set to true
-			// TODO: The first part of the condition is always false.
-			if (typeof swipe.preventNextHeaderToggle === "undefined" || !swipe.preventNextHeaderToggle) {
+			if (!swipe.preventNextHeaderToggle) {
 				if (visible.header()) {
 					header.hide();
 				} else {
@@ -5435,8 +5425,8 @@ lychee.setMode = function (mode) {
 	}
 
 	if (mode === "logged_in") {
-		// we are logged in, we do not need that short cut anymore. :)
-		// TODO @ildyria: Please elaborate on the comment above: What short-cut do you refer to? And if "something" isn't needed anymore, why it is still there?
+		// After login the keyboard short-cuts to login by password (l) and
+		// by key (k) are not required anymore, so we unbind them.
 		Mousetrap.unbind(["l"]).unbind(["k"]);
 
 		// The code searches by class, so remove the other instance.
@@ -7277,7 +7267,7 @@ password.getDialog = function (albumID, callback) {
 			basicModal.close();
 			callback();
 		}, null, function (jqXHR) {
-			if (jqXHR.status === 403) {
+			if (jqXHR.status === 401 || jqXHR.status === 403) {
 				basicModal.error("password");
 				return true;
 			}

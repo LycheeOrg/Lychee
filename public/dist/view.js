@@ -248,12 +248,18 @@ csrf.bind = function () {
 };
 
 /**
- * @description Used to view single photos with view.php
+ * @description Used as an alternative `main` to view single photos with `view.php`
+ *
+ * Note the build script picks a subset of the JS files to build a variant
+ * of the JS code which does not include all objects.
+ * Hence, we must partially re-implement these objects here to the extent
+ * which is required by the methods we call.
+ *
+ * TODO: Find out why we actually need this approach. Re-implementing different variants of the same objects is very error-prone.
  */
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
-// TODO: Find out and explain: Here we declare a global (empty) object `lychee`; we also declare one in `./main/lychee.js`. Why don't they interfere with each other? How do we end up with **one** `lychee` object which contains the properties and methods of both objects?!
 var lychee = {};
 
 lychee.content = $(".content");
@@ -342,10 +348,11 @@ lychee.getEventName = function () {
 
 // Sub-implementation of photo -------------------------------------------------------------- //
 
-// TODO: Find out and explain: Here we declare a global object `photo`; we also declare one in `./main/photo.js`. Why don't they interfere with each other? How do we end up with **one** `lychee` object which contains the properties and methods of both objects?!
 var photo = {
 	/** @type {?Photo} */
-	json: null
+	json: null,
+	/** @type {?LivePhotosKit.Player} */
+	livePhotosObject: null
 };
 
 /**
@@ -395,6 +402,36 @@ photo.hide = function () {
 };
 
 /**
+ * @param {number} [animationDuration=300]
+ * @param {number} [pauseBetweenUpdated=10]
+ * @returns {void}
+ */
+photo.updateSizeLivePhotoDuringAnimation = function () {
+	var animationDuration = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 300;
+	var pauseBetweenUpdated = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 10;
+
+	// For the LivePhotoKit, we need to call the updateSize manually
+	// during CSS animations
+	//
+	var interval = setInterval(function () {
+		if (photo.isLivePhotoInitialized()) {
+			photo.livePhotosObject.updateSize();
+		}
+	}, pauseBetweenUpdated);
+
+	setTimeout(function () {
+		clearInterval(interval);
+	}, animationDuration);
+};
+
+/**
+ * @returns {boolean}
+ */
+photo.isLivePhotoInitialized = function () {
+	return !!photo.livePhotosObject;
+};
+
+/**
  * @returns {void}
  */
 photo.onresize = function () {
@@ -438,6 +475,16 @@ contextMenu.sharePhoto = function (photoID, e) {
 		} }];
 
 	basicContext.show(items, e.originalEvent);
+};
+
+// Sub-implementation of photo -------------------------------------------------------------- //
+
+var album = {
+	json: null
+};
+
+album.isUploadable = function () {
+	return false;
 };
 
 // Main -------------------------------------------------------------- //
