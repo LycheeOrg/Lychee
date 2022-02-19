@@ -30,6 +30,6 @@ class SetUserSettingsRequest extends AbstractUserRequest implements HasUser
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		parent::processValidatedValues($values, $files);
-		$this->user = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
+		$this->user2 = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
 	}
 }

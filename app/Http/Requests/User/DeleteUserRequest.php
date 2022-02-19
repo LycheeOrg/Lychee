@@ -42,6 +42,6 @@ class DeleteUserRequest extends BaseApiRequest implements HasUser
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->user = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
+		$this->user2 = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
 	}
 }

@@ -45,7 +45,7 @@ class UserController extends Controller
 	public function save(SetUserSettingsRequest $request, Save $save): void
 	{
 		$save->do(
-			$request->user(),
+			$request->user2(),
 			$request->username(),
 			$request->password(),
 			$request->mayUpload(),
@@ -67,7 +67,7 @@ class UserController extends Controller
 	 */
 	public function delete(DeleteUserRequest $request): void
 	{
-		$request->user()->delete();
+		$request->user2()->delete();
 	}
 
 	/**

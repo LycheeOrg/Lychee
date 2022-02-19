@@ -170,7 +170,7 @@ class Create
 			/** @var Photo|null $livePartner */
 			$livePartner = Photo::query()
 				->where('live_photo_content_id', '=', $contentID)
-				->where('album_id', '=', $album->id)
+				->where('album_id', '=', $album?->id)
 				->whereNull('live_photo_short_path')->first();
 		}
 		if ($livePartner != null) {
