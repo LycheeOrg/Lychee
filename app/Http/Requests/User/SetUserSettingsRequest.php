@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests\User;
 
-use App\Http\Requests\Contracts\HasUserID;
-use App\Http\Requests\Traits\HasUserIDTrait;
+use App\Http\Requests\Contracts\HasUser;
+use App\Http\Requests\Traits\HasUserTrait;
+use App\Models\User;
 use App\Rules\IntegerIDRule;
 
-class SetUserSettingsRequest extends AbstractUserRequest implements HasUserID
+class SetUserSettingsRequest extends AbstractUserRequest implements HasUser
 {
-	use HasUserIDTrait;
+	use HasUserTrait;
 
 	public const ID_ATTRIBUTE = 'id';
 
@@ -29,6 +30,6 @@ class SetUserSettingsRequest extends AbstractUserRequest implements HasUserID
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		parent::processValidatedValues($values, $files);
-		$this->userID = $values[self::ID_ATTRIBUTE];
+		$this->user = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
 	}
 }

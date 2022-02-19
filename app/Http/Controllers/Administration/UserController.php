@@ -16,7 +16,6 @@ use App\Http\Requests\User\SetEmailRequest;
 use App\Http\Requests\User\SetUserSettingsRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Routing\Controller;
 
 class UserController extends Controller
@@ -42,13 +41,16 @@ class UserController extends Controller
 	 *
 	 * @throws InvalidPropertyException
 	 * @throws ModelDBException
-	 * @throws ModelNotFoundException
 	 */
 	public function save(SetUserSettingsRequest $request, Save $save): void
 	{
-		/** @var User $user */
-		$user = User::query()->findOrFail($request->userID());
-		$save->do($user, $request->username(), $request->password(), $request->mayUpload(), $request->isLocked());
+		$save->do(
+			$request->user(),
+			$request->username(),
+			$request->password(),
+			$request->mayUpload(),
+			$request->isLocked()
+		);
 	}
 
 	/**
@@ -62,13 +64,10 @@ class UserController extends Controller
 	 * @return void
 	 *
 	 * @throws ModelDBException
-	 * @throws ModelNotFoundException
 	 */
 	public function delete(DeleteUserRequest $request): void
 	{
-		/** @var User $user */
-		$user = User::query()->findOrFail($request->userID());
-		$user->delete();
+		$request->user()->delete();
 	}
 
 	/**

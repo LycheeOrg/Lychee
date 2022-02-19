@@ -4,13 +4,14 @@ namespace App\Http\Requests\User;
 
 use App\Facades\AccessControl;
 use App\Http\Requests\BaseApiRequest;
-use App\Http\Requests\Contracts\HasUserID;
-use App\Http\Requests\Traits\HasUserIDTrait;
+use App\Http\Requests\Contracts\HasUser;
+use App\Http\Requests\Traits\HasUserTrait;
+use App\Models\User;
 use App\Rules\IntegerIDRule;
 
-class DeleteUserRequest extends BaseApiRequest implements HasUserID
+class DeleteUserRequest extends BaseApiRequest implements HasUser
 {
-	use HasUserIDTrait;
+	use HasUserTrait;
 
 	public const ID_ATTRIBUTE = 'id';
 
@@ -41,6 +42,6 @@ class DeleteUserRequest extends BaseApiRequest implements HasUserID
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$this->userID = $values[self::ID_ATTRIBUTE];
+		$this->user = User::query()->findOrFail($values[self::ID_ATTRIBUTE]);
 	}
 }
