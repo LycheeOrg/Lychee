@@ -1,0 +1,20 @@
+@keyframes basicModal__fadeIn {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+@keyframes basicModal__fadeOut {
+	0% { opacity: 1; }
+	100% { opacity: 0; }
+}
+
+@keyframes basicModal__moveUpFade {
+	0% { transform: translateY(80px); }
+	100% { transform: translateY(0); }
+}
+
+@keyframes basicModal__shake {
+	0%, 100% { transform: translateX(0); }
+	20%, 60% { transform: translateX(-10px); }
+	40%, 80% { transform: translateX(10px); }
+}

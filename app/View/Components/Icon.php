@@ -27,6 +27,6 @@ class Icon extends Component
 	 */
 	public function render()
 	{
-		return view('components.icon');
+		return view('components.icons.icon');
 	}
 }

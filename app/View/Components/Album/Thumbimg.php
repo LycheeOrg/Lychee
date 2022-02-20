@@ -34,12 +34,12 @@ class Thumbimg extends Component
 	{
 		// TODO: Don't hardcode paths
 		if ($this->thumb == 'uploads/thumb/' && $this->isVideo) {
-			return view('components.album.thumb-play');
+			return view('components.atoms.album.thumb-play');
 		}
 		if ($this->thumb == 'uploads/thumb/' && Str::contains($this->type, 'raw')) {
-			return view('components.album.thumb-placeholder');
+			return view('components.atoms.album.thumb-placeholder');
 		}
 
-		return view('components.album.thumbimg');
+		return view('components.atoms.album.thumbimg');
 	}
 }

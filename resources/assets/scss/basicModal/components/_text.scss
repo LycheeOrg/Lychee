@@ -1,0 +1,13 @@
+.basicModal p {
+
+	margin: 0 0 5%;
+	width: 100%;
+	color: #444;
+	text-align: center;
+	line-height: 22px;
+
+	a { color: $basicModal__color; }
+
+	&:last-child { margin: 0; }
+
+}
