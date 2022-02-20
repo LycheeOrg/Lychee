@@ -304,7 +304,7 @@ var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name=
     _templateObject7 = _taggedTemplateLiteral(["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"], ["<p>", "<input class='text' name='description' type='text' maxlength='800' placeholder='$", "' value='$", "'></p>"]),
     _templateObject8 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"], ["\n\t<div>\n\t\t<p>", "\n\t\t<span class=\"select\" style=\"width:270px\">\n\t\t\t<select name=\"license\" id=\"license\">\n\t\t\t\t<option value=\"none\">", "</option>\n\t\t\t\t<option value=\"reserved\">", "</option>\n\t\t\t\t<option value=\"CC0\">CC0 - Public Domain</option>\n\t\t\t\t<option value=\"CC-BY-1.0\">CC Attribution 1.0</option>\n\t\t\t\t<option value=\"CC-BY-2.0\">CC Attribution 2.0</option>\n\t\t\t\t<option value=\"CC-BY-2.5\">CC Attribution 2.5</option>\n\t\t\t\t<option value=\"CC-BY-3.0\">CC Attribution 3.0</option>\n\t\t\t\t<option value=\"CC-BY-4.0\">CC Attribution 4.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-1.0\">CC Attribution-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.0\">CC Attribution-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-2.5\">CC Attribution-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-ND-3.0\">CC Attribution-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-ND-4.0\">CC Attribution-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-1.0\">CC Attribution-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.0\">CC Attribution-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-2.5\">CC Attribution-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-SA-3.0\">CC Attribution-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-SA-4.0\">CC Attribution-ShareAlike 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-1.0\">CC Attribution-NonCommercial 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.0\">CC Attribution-NonCommercial 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-2.5\">CC Attribution-NonCommercial 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-3.0\">CC Attribution-NonCommercial 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-4.0\">CC Attribution-NonCommercial 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-1.0\">CC Attribution-NonCommercial-NoDerivatives 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.0\">CC Attribution-NonCommercial-NoDerivatives 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-2.5\">CC Attribution-NonCommercial-NoDerivatives 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-3.0\">CC Attribution-NonCommercial-NoDerivatives 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-ND-4.0\">CC Attribution-NonCommercial-NoDerivatives 4.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-1.0\">CC Attribution-NonCommercial-ShareAlike 1.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.0\">CC Attribution-NonCommercial-ShareAlike 2.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-2.5\">CC Attribution-NonCommercial-ShareAlike 2.5</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-3.0\">CC Attribution-NonCommercial-ShareAlike 3.0</option>\n\t\t\t\t<option value=\"CC-BY-NC-SA-4.0\">CC Attribution-NonCommercial-ShareAlike 4.0</option>\n\t\t\t</select>\n\t\t</span>\n\t\t<br />\n\t\t<a href=\"https://creativecommons.org/choose/\" target=\"_blank\">", "</a>\n\t\t</p>\n\t</div>"]),
     _templateObject9 = _taggedTemplateLiteral(["\n\t<div>\n\t\t<p>"], ["\n\t<div>\n\t\t<p>"]),
-    _templateObject10 = _taggedTemplateLiteral(["\n\t\t\t<form>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='grants_full_photo'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='requires_link'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='is_downloadable'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='has_password'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t\t</div>\n\t\t\t\t<div class='hr'><hr></div>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t</form>\n\t\t"], ["\n\t\t\t<form>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='grants_full_photo'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='requires_link'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='is_downloadable'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t\t<div class='choice'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t<input type='checkbox' name='has_password'>\n\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t\t</div>\n\t\t\t\t<div class='hr'><hr></div>\n\t\t\t\t<div class='switch'>\n\t\t\t\t\t<label>\n\t\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t\t</label>\n\t\t\t\t\t<p>", "</p>\n\t\t\t\t</div>\n\t\t\t</form>\n\t\t"]),
+    _templateObject10 = _taggedTemplateLiteral(["\n\t\t<form>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_full_photo'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='requires_link'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_downloadable'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='has_password'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t</div>\n\t\t\t<div class='hr'><hr></div>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t</form>\n\t"], ["\n\t\t<form>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_public'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='grants_full_photo'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='requires_link'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_downloadable'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='is_share_button_visible'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t\t<div class='choice'>\n\t\t\t\t<label>\n\t\t\t\t\t<input type='checkbox' name='has_password'>\n\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t\t<input class='text' name='passwordtext' type='text' placeholder='", "' value=''>\n\t\t\t</div>\n\t\t\t<div class='hr'><hr></div>\n\t\t\t<div class='switch'>\n\t\t\t\t<label>\n\t\t\t\t\t", ":&nbsp;\n\t\t\t\t\t<input type='checkbox' name='is_nsfw'>\n\t\t\t\t\t<span class='slider round'></span>\n\t\t\t\t</label>\n\t\t\t\t<p>", "</p>\n\t\t\t</div>\n\t\t</form>\n\t"]),
     _templateObject11 = _taggedTemplateLiteral(["<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>"], ["<div class='choice'>\n\t\t\t\t\t\t<label>\n\t\t\t\t\t\t\t<input type='checkbox' name='", "'>\n\t\t\t\t\t\t\t<span class='checkbox'>", "</span>\n\t\t\t\t\t\t\t<span class='label'>", "</span>\n\t\t\t\t\t\t</label>\n\t\t\t\t\t\t<p></p>\n\t\t\t\t\t</div>"]),
     _templateObject12 = _taggedTemplateLiteral(["<p>", " '$", "' ", " '$", "'?</p>"], ["<p>", " '$", "' ", " '$", "'?</p>"]),
     _templateObject13 = _taggedTemplateLiteral(["<p>", " '$", "'?</p>"], ["<p>", " '$", "'?</p>"]),
@@ -1353,7 +1353,6 @@ album.setSorting = function (albumID) {
 	var callback = function callback() {
 		$("select#sortingCol").val(album.json.sorting_col);
 		$("select#sortingOrder").val(album.json.sorting_order === null ? "ASC" : album.json.sorting_order);
-		return false;
 	};
 
 	/** @param {{sortingCol: string, sortingOrder: string}} data */
@@ -1398,177 +1397,174 @@ album.setSorting = function (albumID) {
  *
  * TODO: Find a better name for the method.
  *
- * **ATTENTION**: This method is structurally very different from the other
- * methods in this file which use a modal dialog.
- * In particular, this methods does not use callbacks to handle the result
- * of the dialog after the dialog has been closed, but calls itself
- * recursively to open, to close and to handle the results. Why?
- *
- * TODO: Consider re-writing this method to match the structure of the other
- * methods.
- *
  * @param {string} albumID
  * @returns {void}
  */
 album.setPublic = function (albumID) {
-	if (!basicModal.visible()) {
-		var msg = lychee.html(_templateObject10, lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"], lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"]);
+	var action = function action(data) {
+		albums.refresh();
 
-		basicModal.show({
-			body: msg,
-			buttons: {
-				action: {
-					title: lychee.locale["ALBUM_SHARING_CONFIRM"],
-					// Call setPublic function without showing the modal
-					fn: function fn() {
-						return album.setPublic(albumID);
-					}
-				},
-				cancel: {
-					title: lychee.locale["CANCEL"],
-					fn: basicModal.close
-				}
+		// TODO: If the modal dialog would provide us with proper boolean values for the checkboxes as part of `data` the same way as it does for text inputs, then we would not need these slow and awkward jQeury selectors
+		album.json.is_nsfw = $('.basicModal .switch input[name="is_nsfw"]:checked').length === 1;
+		album.json.is_public = $('.basicModal .switch input[name="is_public"]:checked').length === 1;
+		album.json.grants_full_photo = $('.basicModal .choice input[name="grants_full_photo"]:checked').length === 1;
+		album.json.requires_link = $('.basicModal .choice input[name="requires_link"]:checked').length === 1;
+		album.json.is_downloadable = $('.basicModal .choice input[name="is_downloadable"]:checked').length === 1;
+		album.json.is_share_button_visible = $('.basicModal .choice input[name="is_share_button_visible"]:checked').length === 1;
+		album.json.has_password = $('.basicModal .choice input[name="has_password"]:checked').length === 1;
+		var newPassword = $('.basicModal .choice input[name="passwordtext"]').val() || null;
+
+		// Modal input has been processed, now it can be closed
+		basicModal.close();
+
+		// Set data and refresh view
+		if (visible.album()) {
+			view.album.nsfw();
+			view.album.public();
+			view.album.requiresLink();
+			view.album.downloadable();
+			view.album.shareButtonVisible();
+			view.album.password();
+		}
+
+		var params = {
+			albumID: albumID,
+			grants_full_photo: album.json.grants_full_photo,
+			is_public: album.json.is_public,
+			is_nsfw: album.json.is_nsfw,
+			requires_link: album.json.requires_link,
+			is_downloadable: album.json.is_downloadable,
+			is_share_button_visible: album.json.is_share_button_visible
+		};
+		if (album.json.has_password) {
+			if (newPassword) {
+				// We send the password only if there's been a change; that way the
+				// server will keep the current password if it wasn't changed.
+				params.password = newPassword;
 			}
+		} else {
+			params.password = null;
+		}
+
+		api.post("Album::setPublic", params);
+	};
+
+	var msg = lychee.html(_templateObject10, lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"], lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"]);
+
+	var dialogSetupCB = function dialogSetupCB() {
+		// TODO: If the modal dialog would provide this callback with proper jQuery objects for all input/select/choice elements, then we would not need these jQuery selectors
+		$('.basicModal .switch input[name="is_public"]').prop("checked", album.json.is_public);
+		$('.basicModal .switch input[name="is_nsfw"]').prop("checked", album.json.is_nsfw);
+		if (album.json.is_public) {
+			$(".basicModal .choice input").attr("disabled", false);
+			// Initialize options based on album settings.
+			$('.basicModal .choice input[name="grants_full_photo"]').prop("checked", album.json.grants_full_photo);
+			$('.basicModal .choice input[name="requires_link"]').prop("checked", album.json.requires_link);
+			$('.basicModal .choice input[name="is_downloadable"]').prop("checked", album.json.is_downloadable);
+			$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", album.json.is_share_button_visible);
+			$('.basicModal .choice input[name="has_password"]').prop("checked", album.json.has_password);
+			if (album.json.has_password) {
+				$('.basicModal .choice input[name="passwordtext"]').show();
+			}
+		} else {
+			$(".basicModal .choice input").attr("disabled", true);
+			// Initialize options based on global settings.
+			$('.basicModal .choice input[name="grants_full_photo"]').prop("checked", lychee.grants_full_photo);
+			$('.basicModal .choice input[name="requires_link"]').prop("checked", false);
+			$('.basicModal .choice input[name="is_downloadable"]').prop("checked", lychee.is_downloadable);
+			$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", lychee.is_share_button_visible);
+			$('.basicModal .choice input[name="has_password"]').prop("checked", false);
+			$('.basicModal .choice input[name="passwordtext"]').hide();
+		}
+
+		$('.basicModal .switch input[name="is_public"]').on("change", function () {
+			$(".basicModal .choice input").attr("disabled", $(this).prop("checked") !== true);
 		});
 
-		$('.basicModal .switch input[name="is_public"]').on("click", function () {
+		$('.basicModal .choice input[name="has_password"]').on("change", function () {
 			if ($(this).prop("checked") === true) {
-				$(".basicModal .choice input").attr("disabled", false);
-
-				if (album.json.is_public) {
-					// Initialize options based on album settings.
-					if (album.json.grants_full_photo) $('.basicModal .choice input[name="grants_full_photo"]').prop("checked", true);
-					if (album.json.requires_link) $('.basicModal .choice input[name="requires_link"]').prop("checked", true);
-					if (album.json.is_downloadable) $('.basicModal .choice input[name="is_downloadable"]').prop("checked", true);
-					if (album.json.is_share_button_visible) $('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", true);
-					if (album.json.has_password) {
-						$('.basicModal .choice input[name="has_password"]').prop("checked", true);
-						$('.basicModal .choice input[name="passwordtext"]').show();
-					}
-				} else {
-					// Initialize options based on global settings.
-					if (lychee.grants_full_photo) {
-						$('.basicModal .choice input[name="grants_full_photo"]').prop("checked", true);
-					}
-					if (lychee.is_downloadable) {
-						$('.basicModal .choice input[name="is_downloadable"]').prop("checked", true);
-					}
-					if (lychee.is_share_button_visible) {
-						$('.basicModal .choice input[name="is_share_button_visible"]').prop("checked", true);
-					}
-				}
+				$('.basicModal .choice input[name="passwordtext"]').show().focus();
 			} else {
-				$(".basicModal .choice input").prop("checked", false).attr("disabled", true);
 				$('.basicModal .choice input[name="passwordtext"]').hide();
 			}
 		});
-
-		if (album.json.is_nsfw) {
-			$('.basicModal .switch input[name="is_nsfw"]').prop("checked", true);
-		} else {
-			$('.basicModal .switch input[name="is_nsfw"]').prop("checked", false);
-		}
-
-		if (album.json.is_public) {
-			$('.basicModal .switch input[name="is_public"]').click();
-		} else {
-			$(".basicModal .choice input").attr("disabled", true);
-		}
-
-		$('.basicModal .choice input[name="has_password"]').on("change", function () {
-			if ($(this).prop("checked") === true) $('.basicModal .choice input[name="passwordtext"]').show().focus();else $('.basicModal .choice input[name="passwordtext"]').hide();
-		});
-	}
-
-	albums.refresh();
-
-	// Set public
-	album.json.is_nsfw = $('.basicModal .switch input[name="is_nsfw"]:checked').length === 1;
-
-	// Set public
-	album.json.is_public = $('.basicModal .switch input[name="is_public"]:checked').length === 1;
-
-	// Set full photo
-	album.json.grants_full_photo = $('.basicModal .choice input[name="grants_full_photo"]:checked').length === 1;
-
-	// Set visible
-	album.json.requires_link = $('.basicModal .choice input[name="requires_link"]:checked').length === 1;
-
-	// Set downloadable
-	album.json.is_downloadable = $('.basicModal .choice input[name="is_downloadable"]:checked').length === 1;
-
-	// Set share_button_visible
-	album.json.is_share_button_visible = $('.basicModal .choice input[name="is_share_button_visible"]:checked').length === 1;
-
-	// Set password
-	// TODO: IMHO the following line does not make much sense. The JSON has no attribute `password`, because the server does not send it. Thus `oldPassword` is always undefined.
-	var oldPassword = album.json.password;
-	album.json.has_password = $('.basicModal .choice input[name="has_password"]:checked').length === 1;
-	var newPassword = album.json.has_password ? $('.basicModal .choice input[name="passwordtext"]').val() : "";
-
-	// Modal input has been processed, now it can be closed
-	basicModal.close();
-
-	// Set data and refresh view
-	if (visible.album()) {
-		view.album.nsfw();
-		view.album.public();
-		view.album.requiresLink();
-		view.album.downloadable();
-		view.album.shareButtonVisible();
-		view.album.password();
-	}
-
-	var params = {
-		albumID: albumID,
-		grants_full_photo: album.json.grants_full_photo,
-		is_public: album.json.is_public,
-		is_nsfw: album.json.is_nsfw,
-		requires_link: album.json.requires_link,
-		is_downloadable: album.json.is_downloadable,
-		is_share_button_visible: album.json.is_share_button_visible
 	};
-	if (oldPassword !== newPassword || newPassword.length > 0) {
-		// We send the password only if there's been a change; that way the
-		// server will keep the current password if it wasn't changed.
-		params.password = newPassword;
-	}
 
-	api.post("Album::setPublic", params);
+	basicModal.show({
+		body: msg,
+		callback: dialogSetupCB,
+		buttons: {
+			action: {
+				title: lychee.locale["ALBUM_SHARING_CONFIRM"],
+				fn: action
+			},
+			cancel: {
+				title: lychee.locale["CANCEL"],
+				fn: basicModal.close
+			}
+		}
+	});
 };
 
 /**
  * Lets a user update the sharing settings of an album.
  *
- * ATTENTION**: This method is structurally very different from the other
- * methods in this file which use a modal dialog.
- * In particular, this methods does not use callbacks to handle the result
- * of the dialog after the dialog has been closed, but calls itself
- * recursively to open, to close and to handle the results. Why?
- *
- * TODO: Consider re-writing this method to match the structure of the other methods.
- *
  * @param {string} albumID
  * @returns {void}
  */
 album.shareUsers = function (albumID) {
-	if (!basicModal.visible()) {
-		var msg = "<form id=\"sharing_people_form\">\n\t\t\t<p>" + lychee.locale["WAIT_FETCH_DATA"] + "</p>\n\t\t</form>";
+	var action = function action(data) {
+		basicModal.close();
 
+		/** @type {number[]} */
+		var sharingToAdd = [];
+		/** @type {number[]} */
+		var sharingToDelete = [];
+		$(".basicModal .choice input").each(function (_, input) {
+			var $input = $(input);
+			if ($input.is(":checked")) {
+				if ($input.data("sharingId") === undefined) {
+					// Input is checked but has no sharing id => new share to create
+					sharingToAdd.push(Number.parseInt(input.name));
+				}
+			} else {
+				var sharingId = $input.data("sharingId");
+				if (sharingId !== undefined) {
+					// Input is not checked but has a sharing id => existing share to remove
+					sharingToDelete.push(Number.parseInt(sharingId));
+				}
+			}
+		});
+
+		if (sharingToDelete.length > 0) {
+			api.post("Sharing::delete", {
+				shareIDs: sharingToDelete
+			});
+		}
+		if (sharingToAdd.length > 0) {
+			api.post("Sharing::add", {
+				albumIDs: [albumID],
+				userIDs: sharingToAdd
+			});
+		}
+	};
+
+	var msg = "<form id=\"sharing_people_form\"><p>" + lychee.locale["WAIT_FETCH_DATA"] + "</p></form>";
+
+	var dialogSetupCB = function dialogSetupCB() {
 		/** @param {SharingInfo} data */
 		var successCallback = function successCallback(data) {
 			var sharingForm = $("#sharing_people_form");
 			sharingForm.empty();
-			if (data.users !== undefined) {
+			if (data.users.length !== 0) {
 				sharingForm.append("<p>" + lychee.locale["SHARING_ALBUM_USERS_LONG_MESSAGE"] + "</p>");
 				// Fill with the list of users
 				data.users.forEach(function (user) {
 					sharingForm.append(lychee.html(_templateObject11, user.id, build.iconic("check"), user.username));
 				});
-				var sharingOfAlbum = data.shared !== undefined ? data.shared.filter(function (val) {
+				data.shared.filter(function (val) {
 					return val.album_id === albumID;
-				}) : [];
-				sharingOfAlbum.forEach(function (sharing) {
+				}).forEach(function (sharing) {
 					// Check all the shares who already exists, and store their sharing id on the element
 					var elem = $(".basicModal .choice input[name=\"" + sharing.user_id + "\"]");
 					elem.prop("checked", true);
@@ -1580,61 +1576,22 @@ album.shareUsers = function (albumID) {
 		};
 
 		api.post("Sharing::list", {}, successCallback);
+	};
 
-		basicModal.show({
-			body: msg,
-			buttons: {
-				action: {
-					title: lychee.locale["ALBUM_SHARING_CONFIRM"],
-					fn: function fn() {
-						album.shareUsers(albumID);
-					}
-				},
-				cancel: {
-					title: lychee.locale["CANCEL"],
-					fn: basicModal.close
-				}
-			}
-		});
-	}
-
-	basicModal.close();
-
-	/** @type {number[]} */
-	var sharingToAdd = [];
-	/** @type {number[]} */
-	var sharingToDelete = [];
-	$(".basicModal .choice input").each(function (_, input) {
-		var $input = $(input);
-		if ($input.is(":checked")) {
-			if ($input.data("sharingId") === undefined) {
-				// Input is checked but has no sharing id => new share to create
-				sharingToAdd.push(Number.parseInt(input.name));
-			}
-		} else {
-			var sharingId = $input.data("sharingId");
-			if (sharingId !== undefined) {
-				// Input is not checked but has a sharing id => existing share to remove
-				sharingToDelete.push(Number.parseInt(sharingId));
+	basicModal.show({
+		body: msg,
+		callback: dialogSetupCB,
+		buttons: {
+			action: {
+				title: lychee.locale["ALBUM_SHARING_CONFIRM"],
+				fn: action
+			},
+			cancel: {
+				title: lychee.locale["CANCEL"],
+				fn: basicModal.close
 			}
 		}
 	});
-
-	// TODO: The success handler below are asymmetric, in particular the user only sees a success message for added shares
-
-	if (sharingToDelete.length > 0) {
-		api.post("Sharing::delete", {
-			shareIDs: sharingToDelete
-		});
-	}
-	if (sharingToAdd.length > 0) {
-		api.post("Sharing::add", {
-			albumIDs: [albumID],
-			userIDs: sharingToAdd
-		}, function () {
-			loadingBar.show("success", "Sharing updated!");
-		});
-	}
 };
 
 /**
@@ -2359,7 +2316,10 @@ build.photo = function (data) {
 	var html = "";
 	var thumbnail = "";
 	var thumb2x = "";
-	var isCover = data.id === album.json.cover_id;
+	// Note, album.json might not be loaded, if
+	//  a) the photo is a single public photo in a private album
+	//  b) the photo is part of a search result
+	var isCover = album.json && album.json.cover_id === data.id;
 
 	var isVideo = data.type && data.type.indexOf("video") > -1;
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
@@ -2433,7 +2393,14 @@ build.photo = function (data) {
 	html += "</div>";
 
 	if (album.isUploadable()) {
-		html += lychee.html(_templateObject26, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		// Note, `album.json` might be null, if the photo is displayed as
+		// part of a search result and therefore the actual parent album
+		// is not loaded. (The "parent" album is the virtual "search album"
+		// in this case).
+		// This also means that the displayed variant of the public badge of
+		// a photo depends on the availability of the parent album.
+		// This seems to be an undesired but unavoidable side effect.
+		html += lychee.html(_templateObject26, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -3637,7 +3604,7 @@ header.bind = function () {
 	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
 			lychee.goto("search/" + encodeURIComponent($(this).val()));
-		} else if (search.checksum !== null) {
+		} else if (search.json !== null) {
 			search.reset();
 		}
 	});
@@ -4210,7 +4177,7 @@ $(document).ready(function () {
 	}, "keyup");
 
 	Mousetrap.bindGlobal(["esc", "command+up"], function () {
-		if (basicModal.visible() === true) basicModal.cancel();else if (visible.config() || visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParentID());else if (visible.albums() && search.checksum !== null) search.reset();else if (visible.mapview()) mapview.close();else if (visible.albums() && lychee.enable_close_tab_on_esc) {
+		if (basicModal.visible() === true) basicModal.cancel();else if (visible.config() || visible.leftMenu()) leftMenu.close();else if (visible.contextMenu()) contextMenu.close();else if (visible.photo()) lychee.goto(album.getID());else if (visible.album() && !album.json.parent_id) lychee.goto();else if (visible.album()) lychee.goto(album.getParentID());else if (visible.albums() && search.json !== null) search.reset();else if (visible.mapview()) mapview.close();else if (visible.albums() && lychee.enable_close_tab_on_esc) {
 			window.open("", "_self").close();
 		}
 		return false;
@@ -4349,7 +4316,8 @@ $(document).ready(function () {
 	$(window)
 	// resize
 	.on("resize", function () {
-		if (visible.album() || visible.search()) view.album.content.justify();
+		if (visible.album()) view.album.content.justify(album.json ? album.json.photos : []);
+		if (visible.search()) view.album.content.justify(search.json.photos);
 		if (visible.photo()) view.photo.onresize();
 	})
 	// remember scroll positions
@@ -5374,13 +5342,9 @@ lychee.load = function () {
 		}
 	} else {
 		$(".no_content").remove();
-		// Trash albums.json when filled with search results
-		if (search.checksum !== null) {
-			albums.json = null;
-			search.checksum = null;
-		}
 
 		// Trash data
+		search.json = null;
 		album.json = null;
 		_photo3.json = null;
 
@@ -6652,12 +6616,10 @@ mapview.open = function () {
 
 		album.photos.forEach(
 		/** @param {Photo} element */function (element) {
-			// TODO: My IDE complains that `parseFloat` is unnecessary, because `element.latitude`/`element.longitude` is already a float
-			// TODO: My IDE complains that `element.size_variants.thumb !== null` is always false
 			if (element.latitude || element.longitude) {
 				photos.push({
-					lat: parseFloat(element.latitude),
-					lng: parseFloat(element.longitude),
+					lat: element.latitude,
+					lng: element.longitude,
 					thumbnail: element.size_variants.thumb !== null ? element.size_variants.thumb.url : "img/placeholder.png",
 					thumbnail2x: element.size_variants.thumb2x !== null ? element.size_variants.thumb2x.url : null,
 					url: element.size_variants.small !== null ? element.size_variants.small.url : element.url,
@@ -6670,20 +6632,16 @@ mapview.open = function () {
 
 				// Update min/max lat/lng
 				if (mapview.min_lat === null || mapview.min_lat > element.latitude) {
-					// TODO: My IDE complains about unnecessary `parseFloat`
-					mapview.min_lat = parseFloat(element.latitude);
+					mapview.min_lat = element.latitude;
 				}
 				if (mapview.min_lng === null || mapview.min_lng > element.longitude) {
-					// TODO: My IDE complains about unnecessary `parseFloat`
-					mapview.min_lng = parseFloat(element.longitude);
+					mapview.min_lng = element.longitude;
 				}
 				if (mapview.max_lat === null || mapview.max_lat < element.latitude) {
-					// TODO: My IDE complains about unnecessary `parseFloat`
-					mapview.max_lat = parseFloat(element.latitude);
+					mapview.max_lat = element.latitude;
 				}
 				if (mapview.max_lng === null || mapview.max_lng < element.longitude) {
-					// TODO: My IDE complains about unnecessary `parseFloat`
-					mapview.max_lng = parseFloat(element.longitude);
+					mapview.max_lng = element.longitude;
 				}
 			}
 		});
@@ -6768,13 +6726,18 @@ mapview.goto = function (elem) {
 	var photoID = elem.attr("data-id");
 	var albumID = elem.attr("data-album-id");
 
-	if (albumID === "null") albumID = null;
+	if (albumID === "null") albumID = "unsorted";
 
-	if (album.json == null || albumID !== album.json.id) {
+	// The condition below looks suspicious and like a violation of the
+	// principle of separation of concerns.
+	// In theory, if the currently loaded album does not match the desired
+	// album, then `lychee.goto` and `lychee.load` should take care of that.
+	// But I am afraid of deleting these lines of code and breaking something.
+	// TODO: Clean this up.
+	if (album.json && album.json.id !== albumID) {
 		album.refresh();
 	}
 
-	// TODO: This line looks suspicious, if `albumID === null` this doesn't make much sense
 	lychee.goto(albumID + "/" + photoID);
 };
 
@@ -8403,8 +8366,8 @@ photoeditor.rotate = function (photoID, direction) {
  */
 
 var search = {
-	/** @type {?string} - a checksum of the search result to efficiently determine if the result has changed since the last time */
-	checksum: null
+	/** @type {?SearchResult} */
+	json: null
 };
 
 /**
@@ -8414,77 +8377,79 @@ var search = {
 search.find = function (term) {
 	if (term.trim() === "") return;
 
+	/** @param {SearchResult} data */
+	var successHandler = function successHandler(data) {
+		// Do nothing, if search result is identical to previous result
+		if (search.json && search.json.checksum === data.checksum) {
+			return;
+		}
+
+		search.json = data;
+		var albumsData = "";
+		var photosData = "";
+
+		// Build HTML for photo
+		search.json.albums.forEach(function (album) {
+			albums.parse(album);
+			albumsData += build.album(album);
+		});
+
+		// Build HTML for photo
+		search.json.photos.forEach(function (photo) {
+			photosData += build.photo(photo);
+		});
+
+		var albums_divider = lychee.locale["ALBUMS"];
+		var photos_divider = lychee.locale["PHOTOS"];
+
+		if (albumsData !== "") albums_divider += " (" + search.json.albums.length + ")";
+		if (photosData !== "") {
+			photos_divider += " (" + search.json.photos.length + ")";
+			if (lychee.layout === 1) {
+				photosData = '<div class="justified-layout">' + photosData + "</div>";
+			} else if (lychee.layout === 2) {
+				photosData = '<div class="unjustified-layout">' + photosData + "</div>";
+			}
+		}
+
+		// 1. No albums and photos
+		// 2. Only photos
+		// 3. Only albums
+		// 4. Albums and photos
+		var html = albumsData === "" && photosData === "" ? "" : albumsData === "" ? build.divider(photos_divider) + photosData : photosData === "" ? build.divider(albums_divider) + albumsData : build.divider(albums_divider) + albumsData + build.divider(photos_divider) + photosData;
+
+		$(".no_content").remove();
+		lychee.animate($(".content"), "contentZoomOut");
+
+		setTimeout(function () {
+			if (visible.photo()) view.photo.hide();
+			if (visible.sidebar()) _sidebar.toggle(false);
+			if (visible.mapview()) mapview.close();
+
+			header.setMode("albums");
+
+			if (html === "") {
+				lychee.content.html("");
+				$("body").append(build.no_content("magnifying-glass"));
+			} else {
+				lychee.content.html(html);
+				// Here we exploit the layout method of an album although
+				// the search result is not a proper album.
+				// It would be much better to have a component like
+				// `view.photos` (note the plural form) which takes care of
+				// all photo listings independent of the surrounding "thing"
+				// (i.e. regular album, tag album, search result)
+				view.album.content.justify(search.json.photos);
+				lychee.animate(lychee.content, "contentZoomIn");
+			}
+			lychee.setTitle(lychee.locale["SEARCH_RESULTS"], false);
+
+			$(window).scrollTop(0);
+		}, 300);
+	};
+
 	/** @returns {void} */
 	var timeoutHandler = function timeoutHandler() {
-		/** @param {SearchResult} data */
-		var successHandler = function successHandler(data) {
-			var html = "";
-			var albumsData = "";
-			var photosData = "";
-
-			// TODO: My IDE complains that `albums.json.albums` must be an array of `Album` only, however `SearchResult` returns an array with a mix of `Album` and `TagAlbum`. This probably only works "accidentally", because we don't use any of the special properties of a `TagAlbum` or `Album` when we display search results. However, the problem could be easily solved, when we would split `TagAlbums` from `SmartAlbums` (also see comment on {@link Albums}).
-			albums.json.albums = data.albums;
-			// Build HTML for photo
-			albums.json.albums.forEach(function (album) {
-				albums.parse(album);
-				albumsData += build.album(album);
-			});
-
-			album.json.photos = data.photos;
-			// Build HTML for photo
-			album.json.photos.forEach(function (photo) {
-				photosData += build.photo(photo);
-			});
-
-			var albums_divider = lychee.locale["ALBUMS"];
-			var photos_divider = lychee.locale["PHOTOS"];
-
-			if (albumsData !== "") albums_divider += " (" + data.albums.length + ")";
-			if (photosData !== "") {
-				photos_divider += " (" + data.photos.length + ")";
-				if (lychee.layout === 1) {
-					photosData = '<div class="justified-layout">' + photosData + "</div>";
-				} else if (lychee.layout === 2) {
-					photosData = '<div class="unjustified-layout">' + photosData + "</div>";
-				}
-			}
-
-			// 1. No albums and photos
-			// 2. Only photos
-			// 3. Only albums
-			// 4. Albums and photos
-			if (albumsData === "" && photosData === "") html = "error";else if (albumsData === "") html = build.divider(photos_divider) + photosData;else if (photosData === "") html = build.divider(albums_divider) + albumsData;else html = build.divider(albums_divider) + albumsData + build.divider(photos_divider) + photosData;
-
-			// Only refresh view when search results are different
-			if (search.checksum !== data.checksum) {
-				$(".no_content").remove();
-
-				lychee.animate($(".content"), "contentZoomOut");
-
-				search.checksum = data.checksum;
-
-				setTimeout(function () {
-					if (visible.photo()) view.photo.hide();
-					if (visible.sidebar()) _sidebar.toggle(false);
-					if (visible.mapview()) mapview.close();
-
-					header.setMode("albums");
-
-					if (html === "error") {
-						lychee.content.html("");
-						$("body").append(build.no_content("magnifying-glass"));
-					} else {
-						lychee.content.html(html);
-						view.album.content.justify();
-						lychee.animate(lychee.content, "contentZoomIn");
-					}
-					lychee.setTitle(lychee.locale["SEARCH_RESULTS"], false);
-
-					$(window).scrollTop(0);
-				}, 300);
-			}
-		};
-
 		if (header.dom(".header__search").val().length !== 0) {
 			api.post("Search::run", { term: term }, successHandler);
 		} else {
@@ -8500,12 +8465,11 @@ search.reset = function () {
 	header.dom(".header__search").val("");
 	$(".no_content").remove();
 
-	if (search.checksum != null) {
+	if (search.json !== null) {
 		// Trash data
-		albums.json = null;
 		album.json = null;
 		_photo3.json = null;
-		search.checksum = null;
+		search.json = null;
 
 		lychee.animate($(".divider"), "fadeOut");
 		lychee.goto();
@@ -9148,27 +9112,26 @@ var sharing = {
  * @returns {void}
  */
 sharing.add = function () {
-	// TODO: Change `albumIDs` and `userIDs` to proper arrays. This would also simplify the code below.
 	var params = {
-		albumIDs: "",
-		userIDs: ""
+		/** @type {string[]} */
+		albumIDs: [],
+		/** @type {number[]} */
+		userIDs: []
 	};
 
 	$("#albums_list_to option").each(function () {
-		if (params.albumIDs !== "") params.albumIDs += ",";
-		params.albumIDs += this.value;
+		params.albumIDs.push(this.value);
 	});
 
 	$("#user_list_to option").each(function () {
-		if (params.userIDs !== "") params.userIDs += ",";
-		params.userIDs += this.value;
+		params.userIDs.push(Number.parseInt(this.value, 10));
 	});
 
-	if (params.albumIDs === "") {
+	if (params.albumIDs.length === 0) {
 		loadingBar.show("error", "Select an album to share!");
 		return;
 	}
-	if (params.userIDs === "") {
+	if (params.userIDs.length === 0) {
 		loadingBar.show("error", "Select a user to share with!");
 		return;
 	}
@@ -9183,18 +9146,18 @@ sharing.add = function () {
  * @returns {void}
  */
 sharing.delete = function () {
-	// TODO: Change `shareIDs` to a proper array. This would also simplify the code below.
 	var params = {
-		shareIDs: ""
+		/** @type {number[]} */
+		shareIDs: []
 	};
 
 	$('input[name="remove_id"]:checked').each(function () {
-		if (params.shareIDs !== "") params.shareIDs += ",";
-		params.shareIDs += this.value;
+		params.shareIDs.push(Number.parseInt(this.value, 10));
 	});
 
-	if (params.shareIDs === "") {
+	if (params.shareIDs.length === 0) {
 		loadingBar.show("error", "Select a sharing to remove!");
+		return;
 	}
 	api.post("Sharing::delete", params, function () {
 		loadingBar.show("success", "Sharing removed!");
@@ -9299,7 +9262,7 @@ _sidebar.triggerSearch = function (search_string) {
 		return;
 	}
 
-	search.checksum = null;
+	search.json = null;
 	// We're either logged in or public search is allowed
 	lychee.goto("search/" + encodeURIComponent(search_string));
 };
@@ -9323,7 +9286,7 @@ _sidebar.toggle = function (is_user_initiated) {
 		header.dom(".button--info").toggleClass("active");
 		lychee.content.toggleClass("content--sidebar");
 		lychee.imageview.toggleClass("image--sidebar");
-		if (typeof view !== "undefined") view.album.content.justify();
+		if (typeof view !== "undefined") view.album.content.justify(album.json ? album.json.photos : []);
 		_sidebar.dom().toggleClass("active");
 		_photo3.updateSizeLivePhotoDuringAnimation();
 
@@ -9850,8 +9813,7 @@ var swipe = {
  * @returns {void}
  */
 swipe.start = function (obj) {
-	// TODO: The condition is always true and the method is only called in one place
-	if (obj) swipe.obj = obj;
+	swipe.obj = obj;
 };
 
 /**
@@ -11235,7 +11197,7 @@ view.album = {
 			lychee.content.html(html);
 			album.apply_nsfw_filter();
 
-			view.album.content.justify();
+			view.album.content.justify(album.json ? album.json.photos : []);
 
 			// Restore scroll position
 			var urls = JSON.parse(localStorage.getItem("scroll"));
@@ -11349,7 +11311,7 @@ view.album = {
 
 			$('.photo[data-id="' + data.id + '"] > span.thumbimg > img').attr("data-src", src).attr("data-srcset", srcset).addClass("lazyload");
 
-			view.album.content.justify();
+			view.album.content.justify(album.json ? album.json.photos : []);
 		},
 
 		/**
@@ -11389,7 +11351,7 @@ view.album = {
 						lychee.content.find(".divider").remove();
 					}
 					if (justify) {
-						view.album.content.justify();
+						view.album.content.justify(album.json ? album.json.photos : []);
 					}
 				}
 			});
@@ -11421,10 +11383,22 @@ view.album = {
 		},
 
 		/**
+   * Layouts the photos inside an album or a search result.
+   *
+   * This method is a misnomer, because it does not necessarily
+   * create a justified layout, but the configured layout as specified
+   * by `lychee.layout` which can also be a non-justified layout.
+   *
+   * Also note that this method is bastardized by `search.find`.
+   * Hence, this method would better not be part of `view.album.content`,
+   * because it is not exclusively used for an album.
+   *
+   * @param {Photo[]} photos - the photos to be laid out
+   *
    * @returns {void}
    */
-		justify: function justify() {
-			if (!album.json || album.json.photos.length === 0) return;
+		justify: function justify(photos) {
+			if (photos.length === 0) return;
 			if (lychee.layout === 1) {
 				var containerWidth = parseFloat($(".justified-layout").width());
 				if (containerWidth === 0) {
@@ -11432,7 +11406,7 @@ view.album = {
 					containerWidth = $(window).width() - parseFloat($(".justified-layout").css("margin-left")) - parseFloat($(".justified-layout").css("margin-right")) - parseFloat($(".content").css("padding-right"));
 				}
 				/** @type {number[]} */
-				var ratio = album.json.photos.map(function (_photo) {
+				var ratio = photos.map(function (_photo) {
 					var height = _photo.size_variants.original.height;
 					var width = _photo.size_variants.original.width;
 					var ratio = height > 0 ? width / height : 1;
@@ -11455,7 +11429,7 @@ view.album = {
 				$(".justified-layout > div").each(function (i) {
 					if (!layoutGeometry.boxes[i]) {
 						// Race condition in search.find -- window content
-						// and album.json can get out of sync as search
+						// and `photos` can get out of sync as search
 						// query is being modified.
 						return false;
 					}
@@ -11482,17 +11456,17 @@ view.album = {
 				var margin = parseFloat($(".photo").css("margin-right"));
 				var origHeight = parseFloat($(".photo").css("max-height"));
 				$(".unjustified-layout > div").each(function (i) {
-					if (!album.json.photos[i]) {
+					if (!photos[i]) {
 						// Race condition in search.find -- window content
-						// and album.json can get out of sync as search
+						// and `photos` can get out of sync as search
 						// query is being modified.
 						return false;
 					}
-					var ratio = album.json.photos[i].size_variants.original.height > 0 ? album.json.photos[i].size_variants.original.width / album.json.photos[i].size_variants.original.height : 1;
-					if (album.json.photos[i].type && album.json.photos[i].type.indexOf("video") > -1) {
+					var ratio = photos[i].size_variants.original.height > 0 ? photos[i].size_variants.original.width / photos[i].size_variants.original.height : 1;
+					if (photos[i].type && photos[i].type.indexOf("video") > -1) {
 						// Video.  If there's no small and medium, we have
 						// to fall back to the square thumb.
-						if (album.json.photos[i].size_variants.small === null && album.json.photos[i].size_variants.medium === null) {
+						if (photos[i].size_variants.small === null && photos[i].size_variants.medium === null) {
 							ratio = 1;
 						}
 					}
@@ -12756,7 +12730,7 @@ visible.config = function () {
 
 /** @returns {boolean} */
 visible.search = function () {
-	return search.checksum !== null;
+	return search.json !== null;
 };
 
 /** @returns {boolean} */

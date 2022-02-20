@@ -1098,9 +1098,27 @@ csrf.bind = function () {
   $(document).on("ajaxSend", csrf.addLaravelCSRF);
 };
 
+/**
+ * @description Used as an alternative `main` to view photos with "frame mode"
+ *
+ * Note, the build script picks a subset of the JS files to build a variant
+ * of the JS code for the special "frame mode".
+ * As this variant does not include all JS files, some objects are missing.
+ * Hence, we must partially re-implement these objects to the extent which is
+ * required by the methods we call.
+ *
+ * This approach is very tedious and error-prone, because we actually
+ * duplicate code.
+ * Also, it is not documented nor obvious why these "subset implementations"
+ * are necessary.
+ * Ideally, the full code base would be used all the time independent of
+ * the users entry point.
+ *
+ * TODO: Find out why we actually need this approach. Re-implementing different variants of the same objects is very error-prone.
+ */
+
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
-// TODO: Find out and explain: Here we declare a global (empty) object `lychee`; we also declare one in `./main/lychee.js`. Why don't they interfere with each other? How do we end up with **one** `lychee` object which contains the properties and methods of both objects?!
 var lychee = {
   api_V2: true
 };
@@ -1224,14 +1242,12 @@ frame.refreshPicture = function () {
   api.post("Photo::getRandom", {},
   /** @param {Photo} data */
   function (data) {
-    // TODO: My IDE complains that this condition is always false, because each Photo has at least a thumbnail
-    if (data.size_variants === null || data.size_variants.original === null && data.size_variants.medium === null) {
-      console.log("URL not found");
+    if (data.size_variants.thumb) {
+      $("#background").attr("src", data.size_variants.thumb.url);
+    } else {
+      $("#background").removeAttr("src");
+      console.log("Thumb not found");
     }
-    // TODO My IDE complains that this condition is always false. Is this legacy?
-    if (data.size_variants.thumb === null) console.log("Thumb not found");
-
-    $("#background").attr("src", data.size_variants.thumb.url);
 
     var srcset = "";
     var src = "";

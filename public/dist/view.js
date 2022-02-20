@@ -253,10 +253,18 @@ csrf.bind = function () {
 /**
  * @description Used as an alternative `main` to view single photos with `view.php`
  *
- * Note the build script picks a subset of the JS files to build a variant
- * of the JS code which does not include all objects.
- * Hence, we must partially re-implement these objects here to the extent
- * which is required by the methods we call.
+ * Note, the build script picks a subset of the JS files to build a variant
+ * of the JS code for the special "view mode".
+ * As this variant does not include all JS files, some objects are missing.
+ * Hence, we must partially re-implement these objects to the extent which is
+ * required by the methods we call.
+ *
+ * This approach is very tedious and error-prone, because we actually
+ * duplicate code.
+ * Also, it is not documented nor obvious why these "subset implementations"
+ * are necessary.
+ * Ideally, the full code base would be used all the time independent of
+ * the users entry point.
  *
  * TODO: Find out why we actually need this approach. Re-implementing different variants of the same objects is very error-prone.
  */
@@ -740,7 +748,10 @@ build.photo = function (data) {
 	var html = "";
 	var thumbnail = "";
 	var thumb2x = "";
-	var isCover = data.id === album.json.cover_id;
+	// Note, album.json might not be loaded, if
+	//  a) the photo is a single public photo in a private album
+	//  b) the photo is part of a search result
+	var isCover = album.json && album.json.cover_id === data.id;
 
 	var isVideo = data.type && data.type.indexOf("video") > -1;
 	var isRaw = data.type && data.type.indexOf("raw") > -1;
@@ -814,7 +825,14 @@ build.photo = function (data) {
 	html += "</div>";
 
 	if (album.isUploadable()) {
-		html += lychee.html(_templateObject11, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
+		// Note, `album.json` might be null, if the photo is displayed as
+		// part of a search result and therefore the actual parent album
+		// is not loaded. (The "parent" album is the virtual "search album"
+		// in this case).
+		// This also means that the displayed variant of the public badge of
+		// a photo depends on the availability of the parent album.
+		// This seems to be an undesired but unavoidable side effect.
+		html += lychee.html(_templateObject11, data.is_starred ? "badge--star" : "", build.iconic("star"), data.is_public && album.json && !album.json.is_public ? "badge--visible badge--hidden" : "", build.iconic("eye"), isCover ? "badge--cover" : "", build.iconic("folder-cover"));
 	}
 
 	html += "</div>";
@@ -1201,7 +1219,7 @@ header.bind = function () {
 	header.dom(".header__search").on("keyup click", function () {
 		if ($(this).val().length > 0) {
 			lychee.goto("search/" + encodeURIComponent($(this).val()));
-		} else if (search.checksum !== null) {
+		} else if (search.json !== null) {
 			search.reset();
 		}
 	});
@@ -1618,7 +1636,7 @@ visible.config = function () {
 
 /** @returns {boolean} */
 visible.search = function () {
-	return search.checksum !== null;
+	return search.json !== null;
 };
 
 /** @returns {boolean} */
@@ -1736,7 +1754,7 @@ sidebar.triggerSearch = function (search_string) {
 		return;
 	}
 
-	search.checksum = null;
+	search.json = null;
 	// We're either logged in or public search is allowed
 	lychee.goto("search/" + encodeURIComponent(search_string));
 };
@@ -1760,7 +1778,7 @@ sidebar.toggle = function (is_user_initiated) {
 		header.dom(".button--info").toggleClass("active");
 		lychee.content.toggleClass("content--sidebar");
 		lychee.imageview.toggleClass("image--sidebar");
-		if (typeof view !== "undefined") view.album.content.justify();
+		if (typeof view !== "undefined") view.album.content.justify(album.json ? album.json.photos : []);
 		sidebar.dom().toggleClass("active");
 		photo.updateSizeLivePhotoDuringAnimation();
 
@@ -2499,12 +2517,10 @@ mapview.open = function () {
 
 		album.photos.forEach(
 		/** @param {Photo} element */function (element) {
-			// TODO: My IDE complains that `parseFloat` is unnecessary, because `element.latitude`/`element.longitude` is already a float
-			// TODO: My IDE complains that `element.size_variants.thumb !== null` is always false
 			if (element.latitude || element.longitude) {
 				photos.push({
-					lat: parseFloat(element.latitude),
-					lng: parseFloat(element.longitude),
+					lat: element.latitude,
+					lng: element.longitude,
 					thumbnail: element.size_variants.thumb !== null ? element.size_variants.thumb.url : "img/placeholder.png",
 					thumbnail2x: element.size_variants.thumb2x !== null ? element.size_variants.thumb2x.url : null,
 					url: element.size_variants.small !== null ? element.size_variants.small.url : element.url,
@@ -2517,20 +2533,16 @@ mapview.open = function () {
 
 				// Update min/max lat/lng
 				if (mapview.min_lat === null || mapview.min_lat > element.latitude) {
-					// TODO: My IDE complains about unnecessary `parseFloat`
-					mapview.min_lat = parseFloat(element.latitude);
+					mapview.min_lat = element.latitude;
 				}
 				if (mapview.min_lng === null || mapview.min_lng > element.longitude) {
-					// TODO: My IDE complains about unnecessary `parseFloat`
-					mapview.min_lng = parseFloat(element.longitude);
+					mapview.min_lng = element.longitude;
 				}
 				if (mapview.max_lat === null || mapview.max_lat < element.latitude) {
-					// TODO: My IDE complains about unnecessary `parseFloat`
-					mapview.max_lat = parseFloat(element.latitude);
+					mapview.max_lat = element.latitude;
 				}
 				if (mapview.max_lng === null || mapview.max_lng < element.longitude) {
-					// TODO: My IDE complains about unnecessary `parseFloat`
-					mapview.max_lng = parseFloat(element.longitude);
+					mapview.max_lng = element.longitude;
 				}
 			}
 		});
@@ -2615,13 +2627,18 @@ mapview.goto = function (elem) {
 	var photoID = elem.attr("data-id");
 	var albumID = elem.attr("data-album-id");
 
-	if (albumID === "null") albumID = null;
+	if (albumID === "null") albumID = "unsorted";
 
-	if (album.json == null || albumID !== album.json.id) {
+	// The condition below looks suspicious and like a violation of the
+	// principle of separation of concerns.
+	// In theory, if the currently loaded album does not match the desired
+	// album, then `lychee.goto` and `lychee.load` should take care of that.
+	// But I am afraid of deleting these lines of code and breaking something.
+	// TODO: Clean this up.
+	if (album.json && album.json.id !== albumID) {
 		album.refresh();
 	}
 
-	// TODO: This line looks suspicious, if `albumID === null` this doesn't make much sense
 	lychee.goto(albumID + "/" + photoID);
 };
 
