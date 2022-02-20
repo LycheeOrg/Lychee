@@ -4,28 +4,35 @@ namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
+use App\DTO\TopAlbums;
 use App\Facades\AccessControl;
+use App\Factories\AlbumFactory;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
+use App\Models\TagAlbum;
+use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Collection as BaseCollection;
 use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 
 class Top
 {
 	private AlbumAuthorisationProvider $albumAuthorisationProvider;
+	private AlbumFactory $albumFactory;
 	private string $sortingCol;
 	private string $sortingOrder;
 
-	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
+	public function __construct(AlbumFactory $albumFactory, AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
+		$this->albumFactory = $albumFactory;
 		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
 		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
 	}
 
 	/**
-	 * Returns an array of top-level albums (but not tag albums) visible
+	 * Returns the top-level albums (but not tag albums) visible
 	 * to the current user.
 	 *
 	 * If the user is authenticated, then the result differentiates between
@@ -36,15 +43,31 @@ class Top
 	 * other users.)
 	 * Actually, in this context "shared albums" means "foreign albums".
 	 *
-	 * Note, the array may include password-protected albums that are not
+	 * Note, the result may include password-protected albums that are not
 	 * accessible (but are visible).
 	 *
-	 * @return array{albums: BaseCollection, shared_albums: BaseCollection}
+	 * @return TopAlbums
 	 *
 	 * @throws InternalLycheeException
 	 */
-	public function get(): array
+	public function get(): TopAlbums
 	{
+		// Do not eagerly load the relation `photos` for each smart album.
+		// On the albums overview, we only need a thumbnail for each album.
+		/** @var Collection<BaseSmartAlbum> $smartAlbums */
+		$smartAlbums = $this->albumFactory
+			->getAllBuiltInSmartAlbums(false)
+			->filter(
+				fn ($smartAlbum) => $this->albumAuthorisationProvider->isVisible($smartAlbum)
+			);
+
+		$tagAlbumQuery = $this->albumAuthorisationProvider
+			->applyVisibilityFilter(TagAlbum::query());
+		/** @var Collection<TagAlbum> $tagAlbums */
+		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
+			->orderBy($this->sortingCol, $this->sortingOrder)
+			->get();
+
 		/** @var NsQueryBuilder $query */
 		$query = $this->albumAuthorisationProvider
 			->applyVisibilityFilter(Album::query()->whereIsRoot());
@@ -52,16 +75,18 @@ class Top
 		if (AccessControl::is_logged_in()) {
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
-			->orderBy('owner_id')
-			->orderBy($this->sortingCol, $this->sortingOrder)
-			->get();
+				->orderBy('owner_id')
+				->orderBy($this->sortingCol, $this->sortingOrder)
+				->get();
 
 			$id = AccessControl::id();
+			/**
+			 * @var BaseCollection $a
+			 * @var BaseCollection $b
+			 */
 			list($a, $b) = $albums->partition(fn ($album) => $album->owner_id == $id);
-			$return = [
-				'albums' => $a->values(),
-				'shared_albums' => $b->values(),
-			];
+
+			return new TopAlbums($smartAlbums, $tagAlbums, $a->values(), $b->values());
 		} else {
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
@@ -69,12 +94,7 @@ class Top
 				->orderBy($this->sortingCol, $this->sortingOrder)
 				->get();
 
-			$return = [
-				'albums' => $albums,
-				'shared_albums' => new BaseCollection(),
-			];
+			return new TopAlbums($smartAlbums, $tagAlbums, $albums);
 		}
-
-		return $return;
 	}
 }

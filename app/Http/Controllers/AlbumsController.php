@@ -3,33 +3,26 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Albums\PositionData;
-use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Actions\Albums\Tree;
 use App\Contracts\LycheeException;
+use App\DTO\TopAlbums;
 use App\Models\Configs;
 use Illuminate\Routing\Controller;
 
 class AlbumsController extends Controller
 {
 	/**
-	 * @return array returns an array of albums or false on failure
+	 * @return TopAlbums returns the top albums
 	 *
 	 * @throws LycheeException
 	 */
-	public function get(Top $top, Smart $smart): array
+	public function get(Top $top): TopAlbums
 	{
 		// caching to avoid further request
 		Configs::get();
 
-		// $toplevel contains Collection<Album> accessible at the root: albums shared_albums.
-		$toplevel = $top->get();
-
-		return [
-			'smart_albums' => $smart->get(),
-			'albums' => $toplevel['albums'],
-			'shared_albums' => $toplevel['shared_albums'],
-		];
+		return $top->get();
 	}
 
 	/**

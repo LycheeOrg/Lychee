@@ -3513,19 +3513,14 @@ tabindex.reset = function () {
 /**
  * @typedef Albums
  *
- * TODO: Split smart albums and tag albums into separate collections
- *
- * @property {SmartAlbums} smart_albums - despite the name also includes tag albums
+ * @property {SmartAlbums} smart_albums
+ * @property {TagAlbum[]}  tag_albums
  * @property {Album[]}     albums
  * @property {Album[]}     shared_albums
  */
 
 /**
  * @typedef SmartAlbums
- *
- * TODO: Split smart albums and tag albums into separate collections
- *
- * @type {Object.<string, TagAlbum>}
  *
  * @property {SmartAlbum} unsorted
  * @property {SmartAlbum} starred

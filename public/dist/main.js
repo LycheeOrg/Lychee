@@ -291,8 +291,6 @@ if (L.MarkerClusterGroup) {
 
 "use strict";
 
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'></p>"], ["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'></p>"]),
@@ -1958,7 +1956,7 @@ albums.load = function () {
   */
 	var successCallback = function successCallback(data) {
 		// Smart Albums
-		if (data.smart_albums.length > 0) albums._createSmartAlbums(data.smart_albums);
+		if (data.smart_albums.length > 0) albums.localizeSmartAlbums(data.smart_albums);
 
 		albums.json = data;
 
@@ -2041,7 +2039,7 @@ albums.parse = function (album) {
  * @param {SmartAlbums} data
  * @returns {void}
  */
-albums._createSmartAlbums = function (data) {
+albums.localizeSmartAlbums = function (data) {
 	if (data.unsorted) {
 		data.unsorted.title = lychee.locale["UNSORTED"];
 	}
@@ -2101,29 +2099,32 @@ albums.getByID = function (albumID) {
 	if (!albums.json) return null;
 	if (!albums.json.albums) return null;
 
-	var json = null;
+	if (albums.json.smart_albums.hasOwnProperty(albumID)) {
+		return albums.json.smart_albums[albumID];
+	}
 
-	/**
-  * @this {(Album|TagAlbum|SmartAlbum)}
-  * @returns {boolean}
-  */
-	var func = function func() {
-		if (this.id === albumID) {
-			json = this;
-			return false; // stop the loop
-		}
-		if (this.albums) {
-			$.each(this.albums, func);
-		}
-	};
+	var result = albums.json.tag_albums.find(function (tagAlbum) {
+		return tagAlbum.id === albumID;
+	});
+	if (result) {
+		return result;
+	}
 
-	$.each(albums.json.albums, func);
+	result = albums.json.albums.find(function (album) {
+		return album.id === albumID;
+	});
+	if (result) {
+		return result;
+	}
 
-	if (json === null) $.each(albums.json.shared_albums, func);
+	result = albums.json.shared_albums.find(function (album) {
+		return album.id === albumID;
+	});
+	if (result) {
+		return result;
+	}
 
-	if (json === null) $.each(albums.json.smart_albums, func);
-
-	return json;
+	return null;
 };
 
 /**
@@ -2160,7 +2161,10 @@ albums.deleteByID = function (albumID) {
 
 	if (idx !== -1) return;
 
-	delete albums.json.smart_albums[albumID];
+	idx = albums.json.tag_albums.findIndex(function (a) {
+		return a.id === albumID;
+	});
+	albums.json.tag_albums.splice(idx, 1);
 };
 
 /**
@@ -5083,7 +5087,7 @@ lychee.loginDialog = function () {
 
 	if (lychee.checkForUpdates) lychee.getUpdate();
 
-	tabindex.makeFocusable(basicModal.dom());
+	tabindex.makeFocusable($(".basicModal"));
 };
 
 /**
@@ -8063,13 +8067,9 @@ _photo3.setTags = function (photoIDs, tags) {
 		photoIDs: photoIDs,
 		tags: tags
 	}, function () {
-		if (albums.json && albums.json.smart_albums) {
-			// TODO: If smart albums and tag albums were not mixed into one, but tag albums were organized in their own collection, we would not need this ugliness
-			var hasTagAlbums = Object.entries(albums.json.smart_albums).findIndex(function (prop) {
-				return prop[1].is_tag_album === true;
-			}) !== -1;
-			// If we have any tag albums, force a refresh.
-			if (hasTagAlbums) albums.refresh();
+		// If we have any tag albums, force a refresh.
+		if (albums.json && albums.json.tag_albums.length !== 0) {
+			albums.refresh();
 		}
 	});
 };
@@ -10977,82 +10977,60 @@ view.albums = {
 		/** @returns {void} */
 		init: function init() {
 			var smartData = "";
+			var tagAlbumsData = "";
 			var albumsData = "";
 			var sharedData = "";
 
 			// Smart Albums
-			// TODO: My IDE complains that `smart_albums` is always non-null.
-			// If albums has not yet been loaded, then the *parent* object
-			// `albums.json` is null, but if `albums.json` exists, then
-			// `albums.json.smart_albums` exists too.
-			// However, `albums.json.smart_albums` might be empty if the
-			// use is un-authenticated and no public smart album exists.
-			// But being empty is something different than being `null`.
-			if (albums.json.smart_albums !== null) {
-				if (lychee.publicMode === false) {
-					smartData = build.divider(lychee.locale["SMART_ALBUMS"]);
-				}
-				if (albums.json.smart_albums.unsorted) {
-					albums.parse(albums.json.smart_albums.unsorted);
-					smartData += build.album(albums.json.smart_albums.unsorted);
-				}
-				if (albums.json.smart_albums.public) {
-					albums.parse(albums.json.smart_albums.public);
-					smartData += build.album(albums.json.smart_albums.public);
-				}
-				if (albums.json.smart_albums.starred) {
-					albums.parse(albums.json.smart_albums.starred);
-					smartData += build.album(albums.json.smart_albums.starred);
-				}
-				if (albums.json.smart_albums.recent) {
-					albums.parse(albums.json.smart_albums.recent);
-					smartData += build.album(albums.json.smart_albums.recent);
-				}
-
-				Object.entries(albums.json.smart_albums).forEach(function (_ref) {
-					var _ref2 = _slicedToArray(_ref, 2),
-					    albumData = _ref2[1];
-
-					if (albumData["is_tag_album"]) {
-						albums.parse(albumData);
-						smartData += build.album(albumData);
-					}
-				});
+			if (lychee.publicMode === false) {
+				smartData = build.divider(lychee.locale["SMART_ALBUMS"]);
 			}
+			if (albums.json.smart_albums.unsorted) {
+				albums.parse(albums.json.smart_albums.unsorted);
+				smartData += build.album(albums.json.smart_albums.unsorted);
+			}
+			if (albums.json.smart_albums.public) {
+				albums.parse(albums.json.smart_albums.public);
+				smartData += build.album(albums.json.smart_albums.public);
+			}
+			if (albums.json.smart_albums.starred) {
+				albums.parse(albums.json.smart_albums.starred);
+				smartData += build.album(albums.json.smart_albums.starred);
+			}
+			if (albums.json.smart_albums.recent) {
+				albums.parse(albums.json.smart_albums.recent);
+				smartData += build.album(albums.json.smart_albums.recent);
+			}
+
+			// Tag albums
+			tagAlbumsData += albums.json.tag_albums.reduce(function (html, tagAlbum) {
+				albums.parse(tagAlbum);
+				return html + build.album(tagAlbum);
+			}, "");
 
 			// Albums
-			if (albums.json.albums && albums.json.albums.length !== 0) {
-				$.each(albums.json.albums, function () {
-					if (!this.parent_id) {
-						albums.parse(this);
-						albumsData += build.album(this);
-					}
-				});
-
-				// Add divider
-				if (lychee.publicMode === false) albumsData = build.divider(lychee.locale["ALBUMS"]) + albumsData;
-			}
+			if (lychee.publicMode === false) albumsData = build.divider(lychee.locale["ALBUMS"]);
+			albumsData += albums.json.albums.reduce(function (html, album) {
+				albums.parse(album);
+				return html + build.album(album);
+			}, "");
 
 			var current_owner = "";
 			// Shared
-			if (albums.json.shared_albums) {
-				albums.json.shared_albums.forEach(function (alb) {
-					// Skip non-top level albums
-					if (alb.parent_id) return;
-					albums.parse(alb);
-					if (current_owner !== alb.owner_name && lychee.publicMode === false) {
-						sharedData += build.divider(alb.owner_name);
-						current_owner = alb.owner_name;
-					}
-					sharedData += build.album(alb, !lychee.admin);
-				});
-			}
+			sharedData += albums.json.shared_albums.reduce(function (html, album) {
+				albums.parse(album);
+				if (current_owner !== album.owner_name && lychee.publicMode === false) {
+					sharedData += build.divider(album.owner_name);
+					current_owner = album.owner_name;
+				}
+				return html + build.album(album, !lychee.admin);
+			}, "");
 
-			if (smartData === "" && albumsData === "" && sharedData === "") {
+			if (smartData === "" && tagAlbumsData === "" && albumsData === "" && sharedData === "") {
 				lychee.content.html("");
 				$("body").append(build.no_content("eye"));
 			} else {
-				lychee.content.html(smartData + albumsData + sharedData);
+				lychee.content.html(smartData + tagAlbumsData + albumsData + sharedData);
 			}
 
 			album.apply_nsfw_filter();
@@ -12936,19 +12914,14 @@ visible.leftMenu = function () {
 /**
  * @typedef Albums
  *
- * TODO: Split smart albums and tag albums into separate collections
- *
- * @property {SmartAlbums} smart_albums - despite the name also includes tag albums
+ * @property {SmartAlbums} smart_albums
+ * @property {TagAlbum[]}  tag_albums
  * @property {Album[]}     albums
  * @property {Album[]}     shared_albums
  */
 
 /**
  * @typedef SmartAlbums
- *
- * TODO: Split smart albums and tag albums into separate collections
- *
- * @type {Object.<string, TagAlbum>}
  *
  * @property {SmartAlbum} unsorted
  * @property {SmartAlbum} starred

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Albums\Smart;
 use App\Actions\Albums\Top;
 use App\Contracts\LycheeException;
 use App\Models\Album;
@@ -56,12 +55,11 @@ class DemoController extends Controller
 		 */
 		$albums_controller = resolve(AlbumsController::class);
 		$top = resolve(Top::class);
-		$smart = resolve(Smart::class);
 
 		$return_albums = [];
 		$return_albums['name'] = 'Albums::get';
 		$return_albums['type'] = 'string';
-		$return_albums['data'] = json_encode($albums_controller->get($top, $smart));
+		$return_albums['data'] = json_encode($albums_controller->get($top));
 
 		$functions[] = $return_albums;
 

@@ -53,4 +53,9 @@ abstract class DTO implements Arrayable, Jsonable, \JsonSerializable
 			throw new \JsonException(get_class($this) . '::toArray() failed', 0, $e);
 		}
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	abstract public function toArray(): array;
 }
