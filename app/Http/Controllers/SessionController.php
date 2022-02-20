@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\AlbumSortingCriterion;
+use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\UnauthenticatedException;
 use App\Exceptions\VersionControlException;
 use App\Facades\AccessControl;
@@ -92,6 +94,15 @@ class SessionController extends Controller
 			$return['status'] = Config::get('defines.status.LYCHEE_STATUS_LOGGEDOUT');
 		}
 
+		// Consolidate sorting attributes
+		$return['config']['sorting_albums'] = AlbumSortingCriterion::createDefault()->toArray();
+		$return['config']['sorting_photos'] = PhotoSortingCriterion::createDefault()->toArray();
+		unset($return['config']['sorting_albums_col']);
+		unset($return['config']['sorting_albums_order']);
+		unset($return['config']['sorting_photos_col']);
+		unset($return['config']['sorting_photos_order']);
+
+		// Device dependent settings
 		$deviceType = Helpers::getDeviceType();
 		// UI behaviour needs to be slightly modified if client is a TV
 		$return['config_device'] = $this->configFunctions->get_config_device($deviceType);

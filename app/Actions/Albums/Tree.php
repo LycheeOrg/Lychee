@@ -4,9 +4,10 @@ namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
+use App\DTO\AlbumSortingCriterion;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Facades\AccessControl;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use Illuminate\Database\Eloquent\Collection;
 use Kalnoy\Nestedset\Collection as NsCollection;
@@ -15,14 +16,15 @@ use Kalnoy\Nestedset\QueryBuilder as NsQueryBuilder;
 class Tree
 {
 	private AlbumAuthorisationProvider $albumAuthorisationProvider;
-	private string $sortingCol;
-	private string $sortingOrder;
+	private AlbumSortingCriterion $sorting;
 
+	/**
+	 * @throws InvalidOrderDirectionException
+	 */
 	public function __construct(AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
-		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
+		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
 	/**
@@ -57,7 +59,7 @@ class Tree
 			/** @var NsCollection $albums */
 			$albums = (new SortingDecorator($query))
 				->orderBy('owner_id')
-				->orderBy($this->sortingCol, $this->sortingOrder)
+				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
 			$id = AccessControl::id();
@@ -80,7 +82,7 @@ class Tree
 			// ownership via sorting.
 			/** @var NsCollection $albums */
 			$albums = (new SortingDecorator($query))
-				->orderBy($this->sortingCol, $this->sortingOrder)
+				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 		}
 

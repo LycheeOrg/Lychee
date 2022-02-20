@@ -297,10 +297,8 @@ class AlbumController extends Controller
 	 */
 	public function setSorting(SetAlbumSortingRequest $request): void
 	{
-		$album = $request->album();
-		$album->sorting_col = $request->sortingColumn();
-		$album->sorting_order = $request->sortingOrder();
-		$album->save();
+		$request->album()->sorting = $request->sortingCriterion();
+		$request->album()->save();
 	}
 
 	/**

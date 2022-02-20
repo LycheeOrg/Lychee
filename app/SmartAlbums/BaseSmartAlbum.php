@@ -5,6 +5,7 @@ namespace App\SmartAlbums;
 use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\InternalLycheeException;
+use App\DTO\PhotoSortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Exceptions\Internal\InvalidQueryModelException;
 use App\Exceptions\InvalidPropertyException;
@@ -77,11 +78,10 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 		// Cache query result for later use
 		// (this mimics the behaviour of relations of true Eloquent models)
 		if (!isset($this->photos)) {
-			$sortingCol = Configs::get_value('sorting_Photos_col');
-			$sortingOrder = Configs::get_value('sorting_Photos_order');
+			$sorting = PhotoSortingCriterion::createDefault();
 
 			$this->photos = (new SortingDecorator($this->photos()))
-				->orderBy('photos.' . $sortingCol, $sortingOrder)
+				->orderBy('photos.' . $sorting->column, $sorting->order)
 				->get();
 		}
 
@@ -102,8 +102,7 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 			 */
 			$this->thumb = Thumb::createFromQueryable(
 				$this->photos(),
-				Configs::get_value('sorting_Photos_col'),
-				Configs::get_value('sorting_Photos_order')
+				PhotoSortingCriterion::createDefault()
 			);
 		}
 

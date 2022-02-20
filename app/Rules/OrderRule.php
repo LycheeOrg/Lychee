@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use App\DTO\SortingCriterion;
 use Illuminate\Contracts\Validation\Rule;
 
 class OrderRule implements Rule
@@ -25,8 +26,8 @@ class OrderRule implements Rule
 	{
 		return
 			($this->isNullable && $value === null) ||
-			$value === 'ASC' ||
-			$value === 'DESC';
+			$value === SortingCriterion::ASC ||
+			$value === SortingCriterion::DESC;
 	}
 
 	/**
@@ -34,8 +35,10 @@ class OrderRule implements Rule
 	 */
 	public function message(): string
 	{
-		return ':attribute must be either' .
-			($this->isNullable ? ' null,' : '') .
-			' ASC or DESC';
+		return ':attribute must be either ' .
+			($this->isNullable ? 'null, ' : '') .
+			SortingCriterion::ASC .
+			' or ' .
+			SortingCriterion::DESC;
 	}
 }

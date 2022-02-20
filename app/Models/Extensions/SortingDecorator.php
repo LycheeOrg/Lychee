@@ -2,33 +2,17 @@
 
 namespace App\Models\Extensions;
 
+use App\DTO\AlbumSortingCriterion;
+use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class SortingDecorator
 {
-	public const COLUMN_ID = 'id';
-	public const COLUMN_TAKEN_AT = 'taken_at';
-	public const COLUMN_TITLE = 'title';
-	public const COLUMN_DESCRIPTION = 'description';
-	public const COLUMN_IS_PUBLIC = 'is_public';
-	public const COLUMN_IS_STARRED = 'is_starred';
-	public const COLUMN_TYPE = 'type';
-
-	public const COLUMNS = [
-		self::COLUMN_ID,
-		self::COLUMN_TAKEN_AT,
-		self::COLUMN_TITLE,
-		self::COLUMN_DESCRIPTION,
-		self::COLUMN_IS_PUBLIC,
-		self::COLUMN_IS_STARRED,
-		self::COLUMN_TYPE,
-	];
-
 	public const POSTPONE_COLUMNS = [
-		self::COLUMN_TITLE,
-		self::COLUMN_DESCRIPTION,
+		SortingCriterion::COLUMN_TITLE,
+		SortingCriterion::COLUMN_DESCRIPTION,
 	];
 
 	protected Builder $baseBuilder;
@@ -91,19 +75,22 @@ class SortingDecorator
 	/**
 	 * @param string $column    the column acc. to which the result shall be
 	 *                          sorted; must either be
-	 *                          {@link SortingDecorator::COLUMN_ID},
-	 *                          {@link SortingDecorator::COLUMN_TAKEN_AT},
-	 *                          {@link SortingDecorator::COLUMN_TITLE},
-	 *                          {@link SortingDecorator::COLUMN_DESCRIPTION},
-	 *                          {@link SortingDecorator::COLUMN_IS_PUBLIC},
-	 *                          {@link SortingDecorator::COLUMN_IS_STARRED}, or
-	 *                          {@link SortingDecorator::COLUMN_TYPE},
-	 * @param string $direction the order direction must be either `'asc'` or
-	 *                          `'desc'`
+	 *                          {@link SortingCriterion::COLUMN_CREATED_AT},
+	 *                          {@link SortingCriterion::COLUMN_TITLE},
+	 *                          {@link SortingCriterion::COLUMN_DESCRIPTION},
+	 *                          {@link SortingCriterion::COLUMN_IS_PUBLIC},
+	 *                          {@link PhotoSortingCriterion::COLUMN_TAKEN_AT},
+	 *                          {@link PhotoSortingCriterion::COLUMN_IS_STARRED},
+	 *                          {@link PhotoSortingCriterion::COLUMN_TYPE},
+	 *                          {@link AlbumSortingCriterion::COLUMN_MIN_TAKEN_AT}, or
+	 *                          {@link AlbumSortingCriterion::COLUMN_MAX_TAKEN_AT}.
+	 * @param string $direction the order direction must be either
+	 *                          {@link SortingCriterion::ASC} or
+	 *                          {@link SortingCriterion::DESC}
 	 *
 	 * @throws InvalidOrderDirectionException
 	 */
-	public function orderBy(string $column, string $direction = 'asc'): SortingDecorator
+	public function orderBy(string $column, string $direction = SortingCriterion::ASC): SortingDecorator
 	{
 		$direction = strtolower($direction);
 		if (!in_array($direction, ['asc', 'desc'], true)) {

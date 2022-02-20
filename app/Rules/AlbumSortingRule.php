@@ -2,21 +2,11 @@
 
 namespace App\Rules;
 
-use App\Models\Extensions\SortingDecorator;
+use App\DTO\AlbumSortingCriterion;
 use Illuminate\Contracts\Validation\Rule;
 
 class AlbumSortingRule implements Rule
 {
-	public const COLUMNS = [
-		'id',
-		'title',
-		'description',
-		'is_public',
-		'max_taken_at',
-		'min_taken_at',
-		'created_at',
-	];
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -26,7 +16,7 @@ class AlbumSortingRule implements Rule
 			$value === null ||
 			(
 				is_string($value) &&
-				array_search($value, self::COLUMNS, true) !== false
+				array_search($value, AlbumSortingCriterion::COLUMNS, true) !== false
 			);
 	}
 
@@ -36,6 +26,6 @@ class AlbumSortingRule implements Rule
 	public function message(): string
 	{
 		return ':attribute must be null or one out of ' .
-			implode(', ', SortingDecorator::COLUMNS);
+			implode(', ', AlbumSortingCriterion::COLUMNS);
 	}
 }

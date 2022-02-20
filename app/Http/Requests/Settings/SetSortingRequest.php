@@ -9,10 +9,10 @@ use App\Rules\PhotoSortingRule;
 
 class SetSortingRequest extends BaseApiRequest
 {
-	public const PHOTO_SORTING_COLUMN_ATTRIBUTE = 'sorting_photos_col';
+	public const PHOTO_SORTING_COLUMN_ATTRIBUTE = 'sorting_photos_column';
 	public const PHOTO_SORTING_ORDER_ATTRIBUTE = 'sorting_photos_order';
-	public const ALBUM_SORTING_COLUMN_ATTRIBUTE = 'sorting_album_col';
-	public const ALBUM_SORTING_ORDER_ATTRIBUTE = 'sorting_album_order';
+	public const ALBUM_SORTING_COLUMN_ATTRIBUTE = 'sorting_albums_column';
+	public const ALBUM_SORTING_ORDER_ATTRIBUTE = 'sorting_albums_order';
 
 	protected string $photoSortingColumn;
 	protected string $photoSortingOrder;
@@ -33,10 +33,10 @@ class SetSortingRequest extends BaseApiRequest
 	public function rules(): array
 	{
 		return [
-			'sorting_photos_col' => ['required', new PhotoSortingRule()],
-			'sorting_photos_order' => ['required', new OrderRule(false)],
-			'sorting_albums_col' => ['required', new AlbumSortingRule()],
-			'sorting_albums_order' => ['required', new OrderRule(false)],
+			self::PHOTO_SORTING_COLUMN_ATTRIBUTE => ['required', new PhotoSortingRule()],
+			self::PHOTO_SORTING_ORDER_ATTRIBUTE => ['required', new OrderRule(false)],
+			self::ALBUM_SORTING_COLUMN_ATTRIBUTE => ['required', new AlbumSortingRule()],
+			self::ALBUM_SORTING_ORDER_ATTRIBUTE => ['required', new OrderRule(false)],
 		];
 	}
 

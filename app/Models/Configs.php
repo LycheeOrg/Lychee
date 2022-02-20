@@ -133,16 +133,10 @@ class Configs extends Model
 		}
 
 		try {
-			$query = Configs::query()->select([
-				'key',
-				'value',
-			]);
-			$return = $query->pluck('value', 'key')->all();
-
-			$return['sorting_Photos'] = 'ORDER BY ' . $return['sorting_Photos_col'] . ' ' . $return['sorting_Photos_order'];
-			$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
-
-			self::$cache = $return;
+			self::$cache = Configs::query()
+				->select(['key', 'value'])
+				->pluck('value', 'key')
+				->all();
 		} catch (\Throwable) {
 			self::$cache = [];
 		}

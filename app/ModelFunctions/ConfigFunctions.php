@@ -60,11 +60,7 @@ class ConfigFunctions
 	 */
 	public function public(): array
 	{
-		// Execute query
-		$return = Configs::public()->pluck('value', 'key')->all();
-		$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
-
-		return $return;
+		return Configs::public()->pluck('value', 'key')->all();
 	}
 
 	/**
@@ -74,11 +70,7 @@ class ConfigFunctions
 	 */
 	public function admin(): array
 	{
-		// Execute query
 		$return = Configs::admin()->pluck('value', 'key')->all();
-		$return['sorting_Photos'] = 'ORDER BY ' . $return['sorting_Photos_col'] . ' ' . $return['sorting_Photos_order'];
-		$return['sorting_Albums'] = 'ORDER BY ' . $return['sorting_Albums_col'] . ' ' . $return['sorting_Albums_order'];
-
 		$return['lang_available'] = Lang::get_lang_available();
 
 		return $return;

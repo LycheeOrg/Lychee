@@ -4,6 +4,7 @@ namespace App\Relations;
 
 use App\Actions\PhotoAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
+use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -62,13 +63,13 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			return $this->related->newCollection();
 		}
 
-		/** @var Album $album */
-		$album = $this->parent;
+		/** @var SortingCriterion $albumSorting */
+		$albumSorting = $this->parent->getEffectiveSorting();
 
 		return (new SortingDecorator($this->query))
 			->orderBy(
-				'photos.' . $album->getEffectiveSortingCol(),
-				$album->getEffectiveSortingOrder()
+				'photos.' . $albumSorting->column,
+				$albumSorting->order
 			)
 			->get();
 	}
@@ -98,13 +99,12 @@ class HasManyChildPhotos extends HasManyBidirectionally
 			if (isset($dictionary[$key = $this->getDictionaryKey($model->getAttribute($this->localKey))])) {
 				/** @var Collection $childrenOfModel */
 				$childrenOfModel = $this->getRelationValue($dictionary, $key, 'many');
-				/** @var string $col */
-				$col = $model->getEffectiveSortingCol();
+				$sorting = $model->getEffectiveSorting();
 				$childrenOfModel = $childrenOfModel
 					->sortBy(
-						$col,
-						in_array($col, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-						$model->getEffectiveSortingOrder() === 'DESC'
+						$sorting->column,
+						in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+						$sorting->order === SortingCriterion::DESC
 					)
 					->values();
 				$model->setRelation($relation, $childrenOfModel);

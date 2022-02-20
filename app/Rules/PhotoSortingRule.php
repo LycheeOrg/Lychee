@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Models\Extensions\SortingDecorator;
+use App\DTO\PhotoSortingCriterion;
 use Illuminate\Contracts\Validation\Rule;
 
 class PhotoSortingRule implements Rule
@@ -16,7 +16,7 @@ class PhotoSortingRule implements Rule
 			$value === null ||
 			(
 				is_string($value) &&
-				array_search($value, SortingDecorator::COLUMNS, true) !== false
+				array_search($value, PhotoSortingCriterion::COLUMNS, true) !== false
 			);
 	}
 
@@ -26,6 +26,6 @@ class PhotoSortingRule implements Rule
 	public function message(): string
 	{
 		return ':attribute must be null or one out of ' .
-			implode(', ', SortingDecorator::COLUMNS);
+			implode(', ', PhotoSortingCriterion::COLUMNS);
 	}
 }

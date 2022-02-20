@@ -1402,6 +1402,13 @@ $(function () {
  */
 
 /**
+ * @typedef SortingCriterion
+ *
+ * @property {string} column
+ * @property {string} order
+ */
+
+/**
  * @typedef Album
  *
  * @property {string}  id
@@ -1426,8 +1433,7 @@ $(function () {
  * @property {boolean} has_albums
  * @property {?string} min_taken_at
  * @property {?string} max_taken_at
- * @property {?string} sorting_col
- * @property {?string} sorting_order
+ * @property {?SortingCriterion} sorting
  */
 
 /**
@@ -1451,8 +1457,7 @@ $(function () {
  * @property {boolean}  has_password
  * @property {?string}  min_taken_at
  * @property {?string}  max_taken_at
- * @property {?string}  sorting_col
- * @property {?string}  sorting_order
+ * @property {?SortingCriterion}  sorting
  * @property {boolean}  is_tag_album always true
  */
 
@@ -1648,8 +1653,8 @@ var SmartAlbumID = Object.freeze({
  * @property {string}   public_search           - actually a boolean
  * @property {string}   share_button_visible    - actually a boolean
  * @property {string}   [skip_duplicates]       - actually a boolean
- * @property {string}   sorting_Albums
- * @property {string}   sorting_Photos
+ * @property {SortingCriterion} sorting_albums
+ * @property {SortingCriterion} sorting_photos
  * @property {string}   swipe_tolerance_x       - actually a number
  * @property {string}   swipe_tolerance_y       - actually a number
  * @property {string}   upload_processing_limit - actually a number

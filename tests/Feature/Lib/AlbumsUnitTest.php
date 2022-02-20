@@ -259,8 +259,8 @@ class AlbumsUnitTest
 	): void {
 		$response = $this->testCase->postJson('/api/Album::setSorting', [
 			'albumID' => $id,
-			'sortingCol' => $sortingCol,
-			'sortingOrder' => $sortingOrder,
+			'sorting_column' => $sortingCol,
+			'sorting_order' => $sortingOrder,
 		]);
 		$response->assertStatus($expectedStatusCode);
 		if ($assertSee) {

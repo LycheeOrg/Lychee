@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\HasRandomID;
+use App\DTO\PhotoSortingCriterion;
 use App\Facades\AccessControl;
 use App\Models\Extensions\HasAttributesPatch;
 use App\Models\Extensions\HasBidirectionalRelationships;
@@ -81,25 +82,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * but this class is not a proper parent class (it just provides an
  * implementation of it) and we need this class to be instantiable.
  *
- * @property string      $id
- * @property int         $legacy_id
- * @property Carbon      $created_at
- * @property Carbon      $updated_at
- * @property string      $title
- * @property string|null $description
- * @property int         $owner_id
- * @property User        $owner
- * @property bool        $is_public
- * @property bool        $grants_full_photo
- * @property bool        $requires_link
- * @property bool        $is_downloadable
- * @property bool        $is_share_button_visible
- * @property bool        $is_nsfw
- * @property Collection  $shared_with
- * @property string|null $password
- * @property bool        $has_password
- * @property string|null $sorting_col
- * @property string|null $sorting_order
+ * @property string                     $id
+ * @property int                        $legacy_id
+ * @property Carbon                     $created_at
+ * @property Carbon                     $updated_at
+ * @property string                     $title
+ * @property string|null                $description
+ * @property int                        $owner_id
+ * @property User                       $owner
+ * @property bool                       $is_public
+ * @property bool                       $grants_full_photo
+ * @property bool                       $requires_link
+ * @property bool                       $is_downloadable
+ * @property bool                       $is_share_button_visible
+ * @property bool                       $is_nsfw
+ * @property Collection                 $shared_with
+ * @property string|null                $password
+ * @property bool                       $has_password
+ * @property PhotoSortingCriterion|null $sorting
  */
 class BaseAlbumImpl extends Model implements HasRandomID
 {
@@ -176,6 +176,8 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		'owner_id',
 		'owner',
 		'password',
+		'sorting_col',   // serialize DTO `order` instead
+		'sorting_order', // serialize DTO `order` instead
 	];
 
 	/**
@@ -185,6 +187,7 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	 */
 	protected $appends = [
 		'has_password',
+		'sorting',
 	];
 
 	/**
@@ -248,6 +251,27 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	protected function getHasPasswordAttribute(): bool
 	{
 		return !empty($this->password);
+	}
+
+	protected function getSortingAttribute(): ?PhotoSortingCriterion
+	{
+		$sortingColumn = $this->attributes['sorting_col'];
+		$sortingOrder = $this->attributes['sorting_order'];
+
+		return (empty($sortingColumn) || empty($sortingOrder)) ?
+			null :
+			new PhotoSortingCriterion($sortingColumn, $sortingOrder);
+	}
+
+	protected function setSortingAttribute(?PhotoSortingCriterion $sorting): void
+	{
+		if ($sorting) {
+			$this->attributes['sorting_col'] = $sorting->column;
+			$this->attributes['sorting_order'] = $sorting->order;
+		} else {
+			$this->attributes['sorting_col'] = null;
+			$this->attributes['sorting_order'] = null;
+		}
 	}
 
 	public function toArray(): array

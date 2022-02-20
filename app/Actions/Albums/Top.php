@@ -4,11 +4,12 @@ namespace App\Actions\Albums;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
+use App\DTO\AlbumSortingCriterion;
 use App\DTO\TopAlbums;
+use App\Exceptions\Internal\InvalidOrderDirectionException;
 use App\Facades\AccessControl;
 use App\Factories\AlbumFactory;
 use App\Models\Album;
-use App\Models\Configs;
 use App\Models\Extensions\SortingDecorator;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
@@ -20,15 +21,16 @@ class Top
 {
 	private AlbumAuthorisationProvider $albumAuthorisationProvider;
 	private AlbumFactory $albumFactory;
-	private string $sortingCol;
-	private string $sortingOrder;
+	private AlbumSortingCriterion $sorting;
 
+	/**
+	 * @throws InvalidOrderDirectionException
+	 */
 	public function __construct(AlbumFactory $albumFactory, AlbumAuthorisationProvider $albumAuthorisationProvider)
 	{
 		$this->albumAuthorisationProvider = $albumAuthorisationProvider;
 		$this->albumFactory = $albumFactory;
-		$this->sortingCol = Configs::get_value('sorting_Albums_col', 'created_at');
-		$this->sortingOrder = Configs::get_value('sorting_Albums_order', 'ASC');
+		$this->sorting = AlbumSortingCriterion::createDefault();
 	}
 
 	/**
@@ -65,7 +67,7 @@ class Top
 			->applyVisibilityFilter(TagAlbum::query());
 		/** @var Collection<TagAlbum> $tagAlbums */
 		$tagAlbums = (new SortingDecorator($tagAlbumQuery))
-			->orderBy($this->sortingCol, $this->sortingOrder)
+			->orderBy($this->sorting->column, $this->sorting->order)
 			->get();
 
 		/** @var NsQueryBuilder $query */
@@ -76,7 +78,7 @@ class Top
 			// For authenticated users we group albums by ownership.
 			$albums = (new SortingDecorator($query))
 				->orderBy('owner_id')
-				->orderBy($this->sortingCol, $this->sortingOrder)
+				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
 			$id = AccessControl::id();
@@ -91,7 +93,7 @@ class Top
 			// For anonymous users we don't want to implicitly expose
 			// ownership via sorting.
 			$albums = (new SortingDecorator($query))
-				->orderBy($this->sortingCol, $this->sortingOrder)
+				->orderBy($this->sorting->column, $this->sorting->order)
 				->get();
 
 			return new TopAlbums($smartAlbums, $tagAlbums, $albums);

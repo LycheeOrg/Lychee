@@ -4,6 +4,7 @@ namespace App\Relations;
 
 use App\Actions\AlbumAuthorisationProvider;
 use App\Contracts\InternalLycheeException;
+use App\DTO\SortingCriterion;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Models\Album;
 use App\Models\Extensions\SortingDecorator;
@@ -99,12 +100,11 @@ class HasManyPhotosRecursively extends HasManyPhotos
 		if (!$this->albumAuthorisationProvider->isAccessible($album)) {
 			$album->setRelation($relation, $this->related->newCollection());
 		} else {
-			/** @var string $col */
-			$col = $album->getEffectiveSortingCol();
+			$sorting = $album->getEffectiveSorting();
 			$photos = $photos->sortBy(
-				$col,
-				in_array($col, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
-				$album->getEffectiveSortingOrder() === 'DESC'
+				$sorting->column,
+				in_array($sorting->column, SortingDecorator::POSTPONE_COLUMNS) ? SORT_NATURAL | SORT_FLAG_CASE : SORT_REGULAR,
+				$sorting->order === SortingCriterion::DESC
 			)->values();
 			$album->setRelation($relation, $photos);
 		}
