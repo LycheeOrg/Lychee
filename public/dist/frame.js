@@ -891,26 +891,6 @@
 "use strict";
 
 /**
- * Returns the value of a query-string parameter.
- *
- * TODO: Why it is called "gup"?
- *
- * TODO @ildiria: This method strikes me as completely unnecessary and overly complicated. Moreover it is only used in a single place. Why don't we simply use (https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams/get#example) in the place where we need it?
- *
- * @param {string} b
- * @returns {string}
- */
-function gup(b) {
-  b = b.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-
-  var a = "[\\?&]" + b + "=([^&#]*)";
-  var d = new RegExp(a);
-  var c = d.exec(window.location.href);
-
-  if (c === null) return "";else return c[1];
-}
-
-/**
  * @description This module communicates with Lychee's API
  */
 
@@ -998,6 +978,9 @@ api.post = function (fn, params) {
     contentType: "application/json",
     data: JSON.stringify(params),
     dataType: "json",
+    headers: {
+      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+    },
     success: successHandler,
     error: errorHandler
   };
@@ -1043,6 +1026,9 @@ api.getCSS = function (url, callback) {
     url: url,
     data: {},
     dataType: "text",
+    headers: {
+      "X-XSRF-TOKEN": csrf.getCSRFCookieValue()
+    },
     success: successHandler,
     error: errorHandler
   });
@@ -1051,51 +1037,30 @@ api.getCSS = function (url, callback) {
 var csrf = {};
 
 /**
- * @param {jQuery.Event} event
- * @param {XMLHttpRequest} jqxhr
- * @param {Object} settings
- * @returns {void}
- */
-csrf.addLaravelCSRF = function (event, jqxhr, settings) {
-  // TODO: Instead of sending the header everytime except to the update path on GIT, it should *only* be sent to the API backend; maybe make `setRequestHeader` simply be part of `api.post`
-  if (settings.url !== lychee.updatePath) {
-    jqxhr.setRequestHeader("X-XSRF-TOKEN", csrf.getCookie("XSRF-TOKEN"));
-  }
-};
-
-/**
- * @param {string} s
- * @returns {string}
- */
-csrf.escape = function (s) {
-  return s.replace(/([.*+?\^${}()|\[\]\/\\])/g, "\\$1");
-};
-
-/**
- * @param {string} name
+ * Returns the value of the CSRF token.
+ *
+ * Inspired by https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_2_get_a_sample_cookie_named_test2
+ *
  * @returns {?string}
  */
-csrf.getCookie = function (name) {
-  // TODO @ildyria: The `match` below strikes me as overly complicated and completely unnecessary: a) We exactly know what cookie we are looking for ('X-XSRF-TOKEN'); why do we pass it through the `escape` function? b) The first capturing group doesn't make any sense to me: it captures the beginning of the string (^) or a preceding semi-colon (;) followed by an arbitrary number of spaces. So far so good. But the `?:` doesn't make any sense to me.
-  // we stop the selection at = (default json) but also at % to prevent any %3D at the end of the string
-  var match = document.cookie.match(RegExp("(?:^|;\\s*)" + csrf.escape(name) + "=([^;^%]*)"));
-  return match ? match[1] : null;
-  // TODO: Consider of the following code isn't much easier to understand.
-  // (See https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie#example_2_get_a_sample_cookie_named_test2)
-  //
-  //    cookieValue = document.cookie
-  //      .split(';')
-  //      .find(row => /^\s*X-XSRF-TOKEN\s*=/.test(row))
-  //      .split('=')[1]
-  //      .trim();
-};
-
-/**
- * @returns {void}
- */
-csrf.bind = function () {
-  // TODO: Instead of sending the CSRF cookie for any AJAX request, we probably should simply make this part of our `api.post` method and *only* send the token to the back-end
-  $(document).on("ajaxSend", csrf.addLaravelCSRF);
+csrf.getCSRFCookieValue = function () {
+  var cookie = document.cookie.split(";").find(function (row) {
+    return (/^\s*(X-)?[XC]SRF-TOKEN\s*=/.test(row)
+    );
+  });
+  // We must remove all '%3D' from the end of the string.
+  // Background:
+  // The actual binary value of the CSFR value is encoded in Bade64.
+  // If the length of original, binary value is not a multiple of 3 bytes,
+  // the encoding gets padded with `=` on the right; i.e. there might be
+  // zero, one or two `=` at the end of the encoded value.
+  // If the value is sent from the server to the client as part of a cookie,
+  // the `=` character is URL-encoded as `%3D`, because `=` is already used
+  // to separate a cookie key from its value.
+  // When we send back the value to the server as part of an AJAX request,
+  // Laravel expects an unpadded value.
+  // Hence, we must remove the `%3D`.
+  return cookie ? cookie.split("=")[1].trim().replaceAll("%3D", "") : null;
 };
 
 /**
@@ -1343,9 +1308,6 @@ var loadingBar = {
 var imageview = $("#imageview");
 
 $(function () {
-  // set CSRF protection (Laravel)
-  csrf.bind();
-
   // Set API error handler
   api.onError = frame.handleAPIError;
 
