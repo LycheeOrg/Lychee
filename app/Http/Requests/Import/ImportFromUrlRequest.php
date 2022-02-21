@@ -13,7 +13,7 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 {
 	use HasAlbumTrait;
 
-	public const URL_ATTRIBUTE = 'url';
+	public const URLS_ATTRIBUTE = 'urls';
 
 	/**
 	 * @var string[]
@@ -35,8 +35,8 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 	{
 		return [
 			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['present', new RandomIDRule(true)],
-			self::URL_ATTRIBUTE => 'required|array|min:1',
-			self::URL_ATTRIBUTE . '.*' => 'required|string',
+			self::URLS_ATTRIBUTE => 'required|array|min:1',
+			self::URLS_ATTRIBUTE . '.*' => 'required|string',
 		];
 	}
 
@@ -49,7 +49,16 @@ class ImportFromUrlRequest extends BaseApiRequest implements HasAlbum
 		$this->album = empty($albumID) ?
 			null :
 			Album::query()->findOrFail($albumID);
-		$this->urls = str_replace(' ', '%20', $values[self::URL_ATTRIBUTE]);
+		// The replacement below looks suspicious.
+		// If it was really necessary, then there would be much more special
+		// characters (e.i. for example umlauts in international domain names)
+		// which would require replacement by their corresponding %-encoding.
+		// However, I assume that the PHP method `fopen` is happily fine with
+		// any character and internally handles special characters itself.
+		// Hence, either use a proper encoding method here instead of our
+		// home-brewed, poor-man replacement or drop it entirely.
+		// TODO: Find out what is needed and proceed accordingly.
+		$this->urls = str_replace(' ', '%20', $values[self::URLS_ATTRIBUTE]);
 	}
 
 	/**

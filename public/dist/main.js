@@ -10203,7 +10203,7 @@ upload.start = {
    */
 		var latestFileIdx = 0;
 		/**
-   * Indicator of a file is currently being uploaded.
+   * Indicator whether a file is currently being uploaded.
    *
    * This is used as a semaphore to serialize the upload transmissions
    * between several instances of the method {@link process}.
@@ -10427,7 +10427,7 @@ upload.start = {
 
 		/**
    * @typedef UrlDialogResult
-   * @property {string} link
+   * @property {string} url
    */
 
 		/** @param {UrlDialogResult} data */
@@ -10443,34 +10443,72 @@ upload.start = {
 					if (album.getID() === null) lychee.goto();else album.load(albumID);
 				};
 
-				var errorHandler = function errorHandler() {
+				/**
+     * @param {XMLHttpRequest} jqXHR
+     * @param {Object} params
+     * @param {?LycheeException} lycheeException
+     * @returns {boolean}
+     */
+				var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
 					// Same code as in import.dropbox()
-					$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
-					$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
+					var errorText = void 0;
+					var statusText = void 0;
+					var statusClass = void 0;
+
+					switch (jqXHR.status) {
+						case 409:
+							statusText = lychee.locale["UPLOAD_SKIPPED"];
+							errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
+							statusClass = "warning";
+							break;
+						default:
+							statusText = lychee.locale["UPLOAD_FAILED"];
+							errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
+							statusClass = "error";
+							break;
+					}
+
+					$(".basicModal .rows .row p.notice").html(errorText).show();
+					$(".basicModal .rows .row .status").html(statusText).addClass(statusClass);
 					// Show close button
 					$(".basicModal #basicModal__action.hidden").show();
-					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
+					upload.notify(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]);
 					albums.refresh();
 					if (albumID === null) lychee.goto();else album.load(albumID);
-					return false;
+					return true;
 				};
 
-				var params = {
-					url: data.link,
+				// In theory, the backend is prepared to download a list of
+				// URLs (note that `data.url`) is wrapped into an array.
+				// However, we need a better dialog which allows input of a
+				// list of URLs.
+				// Another problem which already exists even for a single
+				// URL concerns timeouts.
+				// Below, we transmit a single HTTP request which must respond
+				// within about 500ms either with a success or error response.
+				// Otherwise, JS assumes that the AJAX request just timed out.
+				// But the server, first need to download the image from the
+				// specified URL, process it and then generate a HTTP response.
+				// Probably, it would be much better to use a streamed
+				// response here like we already have for imports from the
+				// local server.
+				// This way, the server could also report its own progress of
+				// downloading the images.
+				// TODO: Use a streamed response (see description above).
+				api.post("Import::url", {
+					urls: [data.url],
 					albumID: albumID
-				};
-
-				api.post("Import::url", params, successHandler, null, errorHandler);
+				}, successHandler, null, errorHandler);
 			};
 
-			if (data.link && data.link.trim().length > 3) {
+			if (data.url && data.url.trim().length > 3) {
 				basicModal.close();
-				upload.show(lychee.locale["UPLOAD_IMPORTING_URL"], [{ name: data.link }], runImport);
+				upload.show(lychee.locale["UPLOAD_IMPORTING_URL"], [{ name: data.url }], runImport);
 			} else basicModal.error("link");
 		};
 
 		basicModal.show({
-			body: lychee.html(_templateObject74) + lychee.locale["UPLOAD_IMPORT_INSTR"] + (" <input class='text' name='link' type='text' placeholder='https://' value='" + preselectedUrl + "'></p>"),
+			body: lychee.html(_templateObject74) + lychee.locale["UPLOAD_IMPORT_INSTR"] + (" <input class='text' name='url' type='text' placeholder='https://' value='" + preselectedUrl + "'></p>"),
 			buttons: {
 				action: {
 					title: lychee.locale["UPLOAD_IMPORT"],
@@ -10754,22 +10792,46 @@ upload.start = {
 					if (album.getID() === null) lychee.goto();else album.load(albumID);
 				};
 
-				var errorHandler = function errorHandler() {
+				/**
+     * @param {XMLHttpRequest} jqXHR
+     * @param {Object} params
+     * @param {?LycheeException} lycheeException
+     * @returns {boolean}
+     */
+				var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
 					// Same code as in import.url()
-					$(".basicModal .rows .row p.notice").html(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]).show();
-					$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_FINISHED"]).addClass("warning");
+					var errorText = void 0;
+					var statusText = void 0;
+					var statusClass = void 0;
+
+					switch (jqXHR.status) {
+						case 409:
+							statusText = lychee.locale["UPLOAD_SKIPPED"];
+							errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
+							statusClass = "warning";
+							break;
+						default:
+							statusText = lychee.locale["UPLOAD_FAILED"];
+							errorText = lycheeException ? lycheeException.message : lychee.locale["UPLOAD_IMPORT_WARN_ERR"];
+							statusClass = "error";
+							break;
+					}
+
+					$(".basicModal .rows .row p.notice").html(errorText).show();
+					$(".basicModal .rows .row .status").html(statusText).addClass(statusClass);
 					// Show close button
 					$(".basicModal #basicModal__action.hidden").show();
-					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
+					upload.notify(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]);
 					albums.refresh();
 					if (albumID === null) lychee.goto();else album.load(albumID);
-					return false;
+					return true;
 				};
 
 				$(".basicModal .rows .row .status").html(lychee.locale["UPLOAD_IMPORTING"]);
 
+				// TODO: Use a streamed response; see long comment in `import.url()` for the reasons
 				api.post("Import::url", {
-					url: files.map(function (file) {
+					urls: files.map(function (file) {
 						return file.link;
 					}),
 					albumID: albumID
@@ -12700,7 +12762,7 @@ visible.leftMenu = function () {
 /**
  * @typedef {Object} LycheeException
  * @property {string} message     the message of the exception
- * @property {string} [exception] the name of the exception class; only in developer mode
+ * @property {string} exception   the (base) name of the exception class; in developer mode the backend reports the full class name, in productive mode only the base name
  * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
  * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
  * @property {Array} [trace]      the backtrace; only in developer mode

@@ -1333,7 +1333,7 @@ $(function () {
 /**
  * @typedef {Object} LycheeException
  * @property {string} message     the message of the exception
- * @property {string} [exception] the name of the exception class; only in developer mode
+ * @property {string} exception   the (base) name of the exception class; in developer mode the backend reports the full class name, in productive mode only the base name
  * @property {string} [file]      the file name where the exception has been thrown; only in developer mode
  * @property {number} [line]      the line number where the exception has been thrown; only in developer mode
  * @property {Array} [trace]      the backtrace; only in developer mode
