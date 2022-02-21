@@ -89,6 +89,7 @@ class Handler extends ExceptionHandler
 				'previous_exception' => $e->getPrevious() ? $this->convertExceptionToArray($e->getPrevious()) : null,
 			] : [
 				'message' => $this->isHttpException($e) ? $e->getMessage() : 'Server Error',
+				'exception' => class_basename($e),
 			];
 		} catch (\Throwable) {
 			return [];

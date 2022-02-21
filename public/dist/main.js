@@ -2909,7 +2909,7 @@ contextMenu.buildList = function (lists, exclude, action) {
 };
 
 /**
- * @param {string} albumID
+ * @param {?string} albumID
  * @param {jQuery.Event} e
  *
  * @returns {void}
@@ -2918,25 +2918,25 @@ contextMenu.albumTitle = function (albumID, e) {
 	api.post("Albums::tree", {}, function (data) {
 		var items = [];
 
-		items = items.concat({ title: lychee.locale["ROOT"], disabled: albumID === false, fn: function fn() {
+		items = items.concat({ title: lychee.locale["ROOT"], disabled: albumID === null, fn: function fn() {
 				return lychee.goto();
 			} });
 
 		if (data.albums && data.albums.length > 0) {
 			items = items.concat({});
-			items = items.concat(contextMenu.buildList(data.albums, albumID !== false ? [parseInt(albumID, 10)] : [], function (a) {
+			items = items.concat(contextMenu.buildList(data.albums, albumID !== null ? [albumID] : [], function (a) {
 				return lychee.goto(a.id);
 			}));
 		}
 
 		if (data.shared_albums && data.shared_albums.length > 0) {
 			items = items.concat({});
-			items = items.concat(contextMenu.buildList(data.shared_albums, albumID !== false ? [albumID] : [], function (a) {
+			items = items.concat(contextMenu.buildList(data.shared_albums, albumID !== null ? [albumID] : [], function (a) {
 				return lychee.goto(a.id);
 			}));
 		}
 
-		if (albumID !== false && !album.isSmartID(albumID) && album.isUploadable()) {
+		if (albumID !== null && !album.isSmartID(albumID) && album.isUploadable()) {
 			if (items.length > 0) {
 				items.unshift({});
 			}
@@ -9326,7 +9326,7 @@ _sidebar.secondsToHMS = function (d) {
  * @typedef Section
  *
  * @property {string}       title
- * @property {string}       type
+ * @property {number}       type
  * @property {SectionRow[]} rows
  */
 
@@ -9552,12 +9552,10 @@ _sidebar.createStructure.album = function (data) {
 		structure.basics.rows.push({ title: lychee.locale["ALBUM_SHOW_TAGS"], kind: "showtags", value: data.show_tags, editable: editable });
 	}
 
-	var videoCount = 0;
-	$.each(data.photos, function () {
-		if (this.type && this.type.indexOf("video") > -1) {
-			videoCount++;
-		}
-	});
+	var videoCount = data.photos.reduce(function (count, photo) {
+		return count + (photo.type.indexOf("video") > -1);
+	}, 0);
+
 	structure.album = {
 		title: lychee.locale["ALBUM_ALBUM"],
 		type: _sidebar.types.DEFAULT,

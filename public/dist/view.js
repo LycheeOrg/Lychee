@@ -1809,7 +1809,7 @@ sidebar.secondsToHMS = function (d) {
  * @typedef Section
  *
  * @property {string}       title
- * @property {string}       type
+ * @property {number}       type
  * @property {SectionRow[]} rows
  */
 
@@ -2035,12 +2035,10 @@ sidebar.createStructure.album = function (data) {
 		structure.basics.rows.push({ title: lychee.locale["ALBUM_SHOW_TAGS"], kind: "showtags", value: data.show_tags, editable: editable });
 	}
 
-	var videoCount = 0;
-	$.each(data.photos, function () {
-		if (this.type && this.type.indexOf("video") > -1) {
-			videoCount++;
-		}
-	});
+	var videoCount = data.photos.reduce(function (count, photo) {
+		return count + (photo.type.indexOf("video") > -1);
+	}, 0);
+
 	structure.album = {
 		title: lychee.locale["ALBUM_ALBUM"],
 		type: sidebar.types.DEFAULT,
