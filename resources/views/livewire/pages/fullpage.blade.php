@@ -3,6 +3,7 @@
 	<!-- Loading -->
 	<div id="loading"></div>
 	<livewire:components.header :mode="$mode" :title="$this->title" />
+	<livewire:components.left-menu>
 	@if($mode === App\Http\Livewire\Pages\Fullpage::ALBUMS)
 		<livewire:modules.albums/>
 	@elseif($mode === App\Http\Livewire\Pages\Fullpage::ALBUM)
@@ -10,10 +11,8 @@
 	@elseif($mode === App\Http\Livewire\Pages\Fullpage::PHOTO)
 		<livewire:modules.photo :album="$this->album" :photo="$this->photo" />
 	@elseif($mode === 'map')
-		Later...
+		<livewire:modules.albums/>
 	@endif
-	{{-- @livewire('left-menu') --}}
-	{{-- @livewire('albums') --}}
 
 	{{-- @include('includes.footer') --}}
 	<livewire:components.modal>

@@ -4,7 +4,7 @@
 		<x-iconic icon='account-login' />
 	</a>
 	@else
-	<a class="button" id="button_settings" title="{{ Lang::get('SETTINGS') }}" data-tabindex="{{ Helpers::data_index_r() }}">
+	<a class="button" id="button_settings" title="{{ Lang::get('SETTINGS') }}" data-tabindex="{{ Helpers::data_index_r() }}" wire:click="openLeftMenu">
 		<x-iconic icon="cog" />
 	</a>
 	@endif

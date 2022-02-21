@@ -2,13 +2,17 @@
 	<div class="basicModal basicModal--fadeIn " role="dialog">
 		<div class="basicModal__content">
 			{{ $title }}
-			<form>
-	<p class="signIn">
+
+			@if($errors->has('wrongLogin'))
+			<span syle="color:red; font-weight:bold;">{{ $errors->first('wrongLogin') }}</span>
+		@endif
+		<form>
+		<p class="signIn">
 		@foreach($form as $f => $v)
 		@if ($f == "password")
-				<input class="text" name="password" autocomplete="current-password" type="password" placeholder="password" data-tabindex="{{ Helpers::data_index() }}">
+				<input class="text" name="password" autocomplete="current-password" type="password" placeholder="password" data-tabindex="{{ Helpers::data_index() }}" wire:model="form.password">
 			@elseif (is_string($f))
-				<input class="text" name="{{ $f }}" autocomplete="on" type="text" placeholder="{{ Lang::get($formName['form.'.$f]) }}" autocapitalize="off" data-tabindex="{{ Helpers::data_index() }}">
+				<input class="text" name="{{ $f }}" autocomplete="on" type="text" placeholder="{{ Lang::get($formName['form.'.$f]) }}" autocapitalize="off" data-tabindex="{{ Helpers::data_index() }}" wire:model="form.{{ $f }}">
 			@else
 				{{ $f }} not supported yet.
 			@endif
@@ -19,7 +23,7 @@
 
 		</div>
 		<div class="basicModal__buttons">
-<a id="basicModal__cancel" class="basicModal__button " wire:click="close" >Cancel</a><a id="basicModal__action" class="basicModal__button ">Sign In</a>
+<a id="basicModal__cancel" class="basicModal__button " wire:click="close" >Cancel</a><a id="basicModal__action" class="basicModal__button " wire:click="submit">Sign In</a>
 		</div>
 	</div>
 </div>

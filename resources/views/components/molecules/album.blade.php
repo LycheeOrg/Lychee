@@ -21,20 +21,20 @@
 	@if ($is_nsfw)
 		<x-icon class='badge--nsfw icn-warning' icon='warning' />
 	@endif
-	@if ($data->id == App\SmartAlbums\StarredAlbum::ID)
+	@if ($id == App\SmartAlbums\StarredAlbum::ID)
 		<x-icon class='badge--star icn-star' icon='star' />
 	@endif
-	@if ($data->id == App\SmartAlbums\PublicAlbum::ID)
+	@if ($id == App\SmartAlbums\PublicAlbum::ID)
 		<x-icon class='badge--visible badge--hidden icn-share' icon='eye' />
 	@endif
-	@if ($data->id == App\SmartAlbums\UnsortedAlbum::ID)
+	@if ($id == App\SmartAlbums\UnsortedAlbum::ID)
 		<x-icon class='badge--visible' icon='list' />
 	@endif
-	@if ($data->id == App\SmartAlbums\RecentAlbum::ID)
+	@if ($id == App\SmartAlbums\RecentAlbum::ID)
 		<x-icon class='badge--visible badge--list' icon='clock' />
 	@endif
 	@if ($is_public)
-		<x-icon class='badge--visible {{ $requires_link ? "badge--hidden" : "badge--not--hidden"}} icn-share' icon='eye' />
+		<x-icon class='badge--visible {{ $require_link ? "badge--hidden" : "badge--not--hidden"}} icn-share' icon='eye' />
 	@endif
 	@if ($has_password)
 		<x-icon class='badge--visible' icon='lock-locked' />

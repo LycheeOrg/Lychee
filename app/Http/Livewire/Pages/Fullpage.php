@@ -24,19 +24,17 @@ class Fullpage extends Component
 	public ?BaseAlbum $baseAlbum = null;
 	public ?BaseSmartAlbum $smartAlbum = null;
 
-	protected $listeners = ['openAlbum', 'openPhoto', 'back'];
-
+	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'reloadPage'];
 
 	/**
-	 * Album property to support the multiple type
+	 * Album property to support the multiple type.
 	 *
-	 * @return null|AbstractAlbum
+	 * @return AbstractAlbum|null
 	 */
 	public function getAlbumProperty(): ?AbstractAlbum
 	{
 		return $this->baseAlbum ?? $this->smartAlbum;
 	}
-
 
 	public function mount(?string $albumId = null, ?string $photoId = null)
 	{
@@ -44,7 +42,6 @@ class Fullpage extends Component
 		if ($albumId == null) {
 			$this->mode = self::ALBUMS;
 			$this->title = Configs::get_value('site_title', Config::get('defines.defaults.SITE_TITLE'));
-
 		} else {
 			$this->mode = self::ALBUM;
 			$album = $albumFactory->findOrFail($albumId);
@@ -67,16 +64,23 @@ class Fullpage extends Component
 		}
 	}
 
-
 	public function render()
 	{
 		return view('livewire.pages.fullpage');
 	}
 
-
-	/******************************************
+	/*
 	 *          Interactions
-	 ******************************************/
+	 */
+
+	public function reloadPage()
+	{
+		if ($this->photo != null) {
+			return redirect('/livewire/' . $this->getAlbumProperty()->id . '/' . $this->photo->id);
+		}
+
+		return redirect('/livewire/' . $this->getAlbumProperty()?->id ?? '');
+	}
 
 	public function openAlbum($albumId)
 	{

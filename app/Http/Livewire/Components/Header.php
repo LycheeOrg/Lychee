@@ -36,5 +36,10 @@ class Header extends Component
 	{
 		$this->openModal('forms.login');
 	}
+
+	public function openLeftMenu()
+	{
+		$this->emitTo('components.left-menu', 'open');
+	}
 }
 

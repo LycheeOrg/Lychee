@@ -27,7 +27,7 @@ class Album extends Component
 		$this->thumb = $data->thumb;
 		$this->title = $data->title;
 		$this->is_public = isset($data->is_public) && $data->is_public;
-		$this->require_link = $data->requires_link;
+		$this->require_link = isset($data->is_public) && $data->requires_link;
 		$this->has_password = isset($data->has_password) && $data->has_password;
 		$this->is_tag_album = isset($data->tag_album) && $data->tag_album == '1';
 		$this->has_cover_id = isset($data->cover_id) && isset($data->thumb->id) && $data->cover_id == $data->thumb->id;

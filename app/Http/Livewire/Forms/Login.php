@@ -20,8 +20,8 @@ class Login extends BaseForm
 	protected function rules()
 	{
 		return [
-			'username' => 'required|string',
-			'password' => 'required|string',
+			'form.username' => 'required|string',
+			'form.password' => 'required|string',
 		];
 	}
 
@@ -34,17 +34,18 @@ class Login extends BaseForm
 
 	public function submit()
 	{
+		$this->resetErrorBag();
+
 		$data = $this->validate()['form'];
 
-		// this is probably sensitive to timing attacks...
 		if (AccessControl::log_as_admin($data['username'], $data['password'], request()->ip()) === true) {
-			return response()->noContent();
+			return $this->emitTo('pages.fullpage', 'reloadPage');
 		}
-
 		if (AccessControl::log_as_user($data['username'], $data['password'], request()->ip()) === true) {
-			return response()->noContent();
+			return $this->emitTo('pages.fullpage', 'reloadPage');
 		}
 
+		$this->addError('wrongLogin', 'Wrong login or password.');
 		Logs::error(__METHOD__, __LINE__, 'User (' . $data['username'] . ') has tried to log in from ' . request()->ip());
 	}
 }
