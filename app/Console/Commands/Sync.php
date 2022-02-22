@@ -21,12 +21,12 @@ class Sync extends Command
 	protected $signature =
 		'lychee:sync ' .
 		'{dir : directory to sync} ' .
-		'{--album_id=0 : Album ID to import to} ' .
+		'{--album_id= : Album ID to import to} ' .
 		'{--owner_id=0 : Owner ID of imported photos} ' .
 		'{--resync_metadata : Re-sync metadata of existing files}  ' .
 		'{--delete_imported=%s : Delete the original files} ' .
 		'{--import_via_symlink=%s : Imports photos from via a symlink instead of copying the files} ' .
-		'{--skip_duplicates=%s : Don\'t Skip photos and albums if they already exist in the gallery}';
+		'{--skip_duplicates=%s : Don\'t skip photos and albums if they already exist in the gallery}';
 
 	/**
 	 * The console command description.
@@ -56,7 +56,7 @@ class Sync extends Command
 	{
 		$directory = $this->argument('dir');
 		$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-		$album_id = (int) $this->option('album_id'); // in case no ID provided -> import to root folder
+		$album_id = ((string) $this->option('album_id')) ?: null; // in case no ID provided -> import to root folder
 
 		// Enable CLI formatting of status
 		$exec->statusCLIFormatting = true;
