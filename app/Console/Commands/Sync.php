@@ -3,9 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Actions\Import\Exec;
+use App\Actions\Photo\Strategies\ImportMode;
 use App\Contracts\ExternalLycheeException;
 use App\Exceptions\UnexpectedException;
 use App\Facades\AccessControl;
+use App\Models\Album;
 use App\Models\Configs;
 use Exception;
 use Illuminate\Console\Command;
@@ -64,32 +66,37 @@ class Sync extends Command
 		try {
 			$directory = $this->argument('dir');
 			$owner_id = (int) $this->option('owner_id'); // in case no ID provided -> import as root user
-			$album_id = $this->option('album_id'); // in case no ID provided -> import to root folder
-			if ($album_id === 'null') {
-				$album_id = null;
-			}
+			$album_id = $this->option('album_id');
+			/** @var Album $album */
+			$album = $album_id === 'null' ? null : Album::query()->findOrFail($album_id); // in case no ID provided -> import to root folder
 
-			// Enable CLI formatting of status
-			$exec->statusCLIFormatting = true;
-			$exec->memCheck = false;
-			$exec->resync_metadata = $this->option('resync_metadata');
-			$exec->delete_imported = $this->option('delete_imported') === '1';
-			$exec->import_via_symlink = $this->option('import_via_symlink') === '1';
-			$exec->skip_duplicates = $this->option('skip_duplicates') === '1';
+			$deleteImported = $this->option('delete_imported') === '1';
+			$importViaSymlink = $this->option('import_via_symlink') === '1';
 
-			if ($exec->import_via_symlink && $exec->delete_imported) {
+			if ($importViaSymlink && $deleteImported) {
 				$this->error('The settings for import via symbolic links and deletion of imported files are conflicting');
 				$this->info('  Use --import_via_symlink={0|1} and --delete-imported={0|1} explicitly to apply a conflict-free setting');
 
 				return 1;
 			}
 
+			$exec = new Exec(
+				new ImportMode(
+					$deleteImported,
+					$this->option('import_via_symlink') === '1',
+					$importViaSymlink,
+					$this->option('resync_metadata')
+				),
+				true,
+				0
+			);
+
 			AccessControl::log_as_id($owner_id);
 
 			$this->info('Start syncing.');
 
 			try {
-				$exec->do($directory, $album_id);
+				$exec->do($directory, $album);
 			} catch (Exception $e) {
 				$this->error($e);
 			}

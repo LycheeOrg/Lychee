@@ -2,8 +2,6 @@
 
 namespace App\Exceptions;
 
-use Symfony\Component\HttpFoundation\Response;
-
 /**
  * MediaFileOperationException.
  *
@@ -19,14 +17,15 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Sometimes an operation may fail (for example cropping an image), because
  * the media type or format is unsupported.
- * However, throwing this exception in those cases is a bug in this application.
+ * However, throwing this exception in those cases would constitute a bug in
+ * this application.
  * The type and format of a media file should be validated first and the
  * application should throw an {@link MediaFileUnsupportedException} instead.
  */
-class MediaFileOperationException extends LycheeBaseException
+class MediaFileOperationException extends FileOperationException
 {
 	public function __construct(string $msg, \Throwable $previous = null)
 	{
-		parent::__construct(Response::HTTP_INTERNAL_SERVER_ERROR, $msg, $previous);
+		parent::__construct($msg, $previous);
 	}
 }

@@ -65,8 +65,6 @@ class ImportController extends Controller
 	 */
 	public function server(ImportServerRequest $request, FromServer $fromServer): StreamedResponse
 	{
-		Session::forget('cancel');
-
 		return $fromServer->do(
 			$request->path(), $request->album(), $request->importMode()
 		);

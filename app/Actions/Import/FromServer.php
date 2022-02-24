@@ -8,13 +8,6 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FromServer
 {
-	private Exec $exec;
-
-	public function __construct(Exec $exec)
-	{
-		$this->exec = $exec;
-	}
-
 	/**
 	 * @param string     $path       the server path to import from
 	 * @param Album|null $album      the album to import into
@@ -24,32 +17,21 @@ class FromServer
 	 */
 	public function do(string $path, ?Album $album, ImportMode $importMode): StreamedResponse
 	{
-		$this->exec->importMode = $importMode;
-		$this->exec->memLimit = $this->determineMemLimit();
+		$exec = new Exec($importMode, false, $this->determineMemLimit());
 
 		$response = new StreamedResponse();
 		$response->headers->set('Content-Type', 'application/json');
 		$response->headers->set('Cache-Control', 'no-store');
 		// nginx-specific voodoo, as per https://symfony.com/doc/current/components/http_foundation.html#streaming-a-response
 		$response->headers->set('X-Accel-Buffering', 'no');
-		$response->setCallback(function () use ($path, $album) {
+		$response->setCallback(function () use ($path, $album, $exec) {
 			// Surround the response by `[]` to make it a valid JSON array.
 			echo '[';
-			$this->exec->do($path, $album);
+			$exec->do($path, $album);
 			echo ']';
 		});
 
 		return $response;
-	}
-
-	public function enableCLIStatus()
-	{
-		$this->exec->statusCLIFormatting = true;
-	}
-
-	public function disableMemCheck()
-	{
-		$this->exec->memCheck = false;
 	}
 
 	/**
