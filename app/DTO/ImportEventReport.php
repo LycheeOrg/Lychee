@@ -35,34 +35,9 @@ class ImportEventReport extends ImportReport
 		return new self(class_basename($e), self::SEVERITY_ERROR, $path, $e->getMessage(), $e);
 	}
 
-	public function isWarning(): bool
-	{
-		return $this->severity === self::SEVERITY_WARNING;
-	}
-
-	public function isError(): bool
-	{
-		return $this->severity === self::SEVERITY_ERROR;
-	}
-
 	public function getException(): ?\Throwable
 	{
 		return $this->throwable;
-	}
-
-	public function getSeverity(): string
-	{
-		return $this->severity;
-	}
-
-	public function getPath(): string
-	{
-		return $this->path;
-	}
-
-	public function getMessage(): string
-	{
-		return $this->message;
 	}
 
 	/**

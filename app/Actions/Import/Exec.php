@@ -14,15 +14,14 @@ use App\Exceptions\FileOperationException;
 use App\Exceptions\ImportCancelledException;
 use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\InvalidDirectoryException;
-use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ReservedDirectoryException;
 use App\Facades\Helpers;
 use App\Image\NativeLocalFile;
 use App\Models\Album;
 use App\Models\Configs;
-use App\Models\Logs;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Database\Eloquent\JsonEncodingException;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
@@ -42,6 +41,7 @@ class Exec
 	protected bool $memWarningGiven = false;
 	private array $raw_formats;
 	private bool $firstReportGiven = false;
+	private ExceptionHandler $exceptionHandler;
 
 	/**
 	 * @param ImportMode $importMode          the import mode
@@ -57,6 +57,7 @@ class Exec
 		$this->enableCLIFormatting = $enableCLIFormatting;
 		$this->memLimit = $memLimit;
 		$this->raw_formats = explode('|', strtolower(Configs::get_value('raw_formats', '')));
+		$this->exceptionHandler = resolve(ExceptionHandler::class);
 	}
 
 	/**
@@ -72,6 +73,9 @@ class Exec
 	 * This method also inserts the commas between objects.
 	 *
 	 * For CLI output we print lines terminated by a newline character.
+	 *
+	 * If the `ImportReport` carries an exception, the exception is logged
+	 * via the standard mechanism of the exception handler.
 	 *
 	 * @param ImportReport $report the report
 	 *
@@ -97,25 +101,8 @@ class Exec
 			echo $report->toCLIString() . PHP_EOL;
 		}
 
-		if ($report instanceof ImportEventReport) {
-			// This ugliness is only needed as long as we don't report exceptions via Laravel Exception Handler
-			$e = $report->getException();
-			$trace = $e ? $e->getTrace()[0] : [];
-			$method = $e === null ? __METHOD__ : ($trace['class'] . '::' . $trace['function']);
-			$line = $e === null ? __LINE__ : $trace['line'];
-
-			// TODO: This is not entirely correct. The following exceptions
-			// should be reported as warnings:
-			// - PhotoSkippedException
-			// - ImportCancelledException
-			if ($report->isWarning()) {
-				// TODO: Replace by Laravel Exception Handler report method
-				Logs::warning($method, $line, $report->getMessage());
-			}
-			if ($report->isError()) {
-				// TODO: Replace by Laravel Exception Handler report method
-				Logs::error($method, $line, $report->getMessage());
-			}
+		if ($report instanceof ImportEventReport && $report->getException()) {
+			$this->exceptionHandler->report($report->getException());
 		}
 	}
 
@@ -293,12 +280,6 @@ class Exec
 				$filesCount++;
 
 				try {
-					// It is possible to move a file because of directory permissions but
-					// the file may still be unreadable by the user
-					// TODO: This check will be unnecessary, after we have proper exception handling, because we try to read streams
-					if (!is_readable($file)) {
-						throw new MediaFileOperationException('Could not read file (' . $file . ')');
-					}
 					$extension = Helpers::getExtension($file, false);
 					$is_raw = in_array(strtolower($extension), $this->raw_formats, true);
 					// TODO: Consolidate all mimetype/extension handling in one place; here we have another test whether the source file is supported which is inconsistent with tests elsewhere
