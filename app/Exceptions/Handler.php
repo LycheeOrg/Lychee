@@ -11,6 +11,7 @@ use App\Models\Logs;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 
@@ -130,8 +131,6 @@ class Handler extends ExceptionHandler
 	 * As we have our own home-brewed logging mechanism via {@link Logs}
 	 * which does not implement {@link \Psr\Log\LoggerInterface} and does
 	 * not register with the service container, we override the method.
-	 *
-	 * @param \Throwable $e the exception to log
 	 */
 	public function report(\Throwable $e): void
 	{
@@ -146,24 +145,22 @@ class Handler extends ExceptionHandler
 				self::EXCEPTION2SEVERITY[get_class($e)] :
 				Logs::SEVERITY_ERROR;
 
-			$backtrace = self::normalizeBacktrace($e);
-
-			// Find the first (i.e. deepest) entry that refers to our own code base.
-			// Methods inside the framework don't help us.
-			$btEntry = Arr::first($backtrace, fn (array $bt) => str_contains($bt['file'], $this->appPath));
-			$line = $btEntry['line'];
-			$method = ($btEntry['class'] ? $btEntry['class'] . '::' : '') . ($btEntry['function'] ?: '<unknown>');
+			$cause = $this->findCause($e);
 
 			if ($e->getPrevious() !== null) {
-				Logs::log($severity, $method, $line, $e->getMessage() . '; caused by');
+				Logs::log($severity, $cause['method'], $cause['line'], $e->getMessage() . '; caused by');
 			} else {
-				Logs::log($severity, $method, $line, $e->getMessage());
+				Logs::log($severity, $cause['method'], $cause['line'], $e->getMessage());
 			}
 		} while ($e = $e->getPrevious());
 	}
 
 	/**
-	 * Returns the re-organized backtrace of an exception.
+	 * Returns the cause of an exception.
+	 *
+	 * It finds the first (most inner) method of Lychee code base which
+	 * caused the exception and returns the method name, the file name and
+	 * the line number.
 	 *
 	 * The backtrace reported by PHP is oddly strange.
 	 * The attribute pair file/line on the one hand-side and class/function
@@ -178,28 +175,29 @@ class Handler extends ExceptionHandler
 	 *
 	 * @param \Throwable $e
 	 *
-	 * @return array{file: string, line: int, class: ?string, function: ?string}
+	 * @return array{file: string, line: int, method: string}
 	 */
-	private static function normalizeBacktrace(\Throwable $e): array
+	private function findCause(\Throwable $e): array
 	{
 		$backtrace = $e->getTrace();
 		$file = $e->getFile();
 		$line = $e->getLine();
-		foreach ($backtrace as &$bt) {
-			$f = $bt['file'];
-			$l = $bt['line'];
-			$bt['file'] = $file;
-			$bt['line'] = $line;
-			$file = $f;
-			$line = $l;
+		$class = null;
+		$function = null;
+		foreach ($backtrace as $bt) {
+			$class = $bt['class'] ?? null;
+			$function = $bt['function'] ?? null;
+			if (str_contains($file, $this->appPath)) {
+				break;
+			}
+			$file = $bt['file'];
+			$line = $bt['line'];
 		}
-		$backtrace[] = [
-			'file' => $file,
-			'line' => $line,
-			'class' => null,    // the top most call always happens in global
-			'function' => null, // namespace outside a function
-		];
 
-		return $backtrace;
+		return [
+			'file' => Str::replaceFirst($this->appPath, '', $file),
+			'line' => $line,
+			'method' => ($class ? $class . '::' : '') . ($function ?: '<unknown>'),
+		];
 	}
 }
