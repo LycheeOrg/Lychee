@@ -124,7 +124,6 @@ class Legacy
 					' from ' . $referer;
 				if (Configs::get_value('legacy_id_redirection', '0') !== '1') {
 					$msg .= ' (translation disabled by configuration)';
-					Logs::warning(__METHOD__, __LINE__, $msg);
 					throw new ConfigurationException($msg);
 				}
 				Logs::warning(__METHOD__, __LINE__, $msg);

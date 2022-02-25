@@ -3,8 +3,8 @@
 namespace App\Metadata;
 
 use App\Exceptions\ExternalComponentFailedException;
+use App\Exceptions\LocationDecodingFailed;
 use App\Models\Configs;
-use App\Models\Logs;
 use Geocoder\Exception\Exception as GeocoderException;
 use Geocoder\Provider\Cache\ProviderCache;
 use Geocoder\Provider\Nominatim\Nominatim;
@@ -50,7 +50,7 @@ class Geodecoder
 	/**
 	 * Decode GPS coordinates into location.
 	 *
-	 * @return string|null location
+	 * @return ?string location
 	 *
 	 * @throws ExternalComponentFailedException
 	 */
@@ -72,7 +72,9 @@ class Geodecoder
 	/**
 	 * Wrapper to decode GPS coordinates into location.
 	 *
-	 * @return string|null location
+	 * @return ?string location
+	 *
+	 * @throws LocationDecodingFailed
 	 */
 	public static function decodeLocation_core($latitude, $longitude, $cachedProvider): ?string
 	{
@@ -82,18 +84,13 @@ class Geodecoder
 
 			// If no result has been returned -> return null
 			if ($result_list->isEmpty()) {
-				Logs::warning(__METHOD__, __LINE__, 'Location (' . $latitude . ', ' . $longitude . ') could not be decoded.');
-
-				return null;
+				throw new LocationDecodingFailed('Location (' . $latitude . ', ' . $longitude . ') could not be decoded.');
 			}
 
 			return $result_list->first()->getDisplayName();
 			// @codeCoverageIgnoreStart
 		} catch (GeocoderException $e) {
-			Logs::warning(__METHOD__, __LINE__, 'Decoding of location failed!');
-			Logs::warning(__METHOD__, __LINE__, $e->getMessage());
-
-			return null;
+			throw new LocationDecodingFailed('Location (' . $latitude . ', ' . $longitude . ') could not be decoded.', $e);
 		}
 		// @codeCoverageIgnoreEnd
 	}

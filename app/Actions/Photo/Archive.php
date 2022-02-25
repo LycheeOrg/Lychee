@@ -9,7 +9,6 @@ use App\Exceptions\Internal\FrameworkException;
 use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\MediaFileMissingException;
 use App\Models\Configs;
-use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 use Illuminate\Database\Eloquent\Collection;
@@ -298,15 +297,12 @@ class Archive
 				}
 			}
 		} else {
-			$msg = 'Invalid type of size variant ' . $variant;
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new InvalidSizeVariantException($msg);
+			throw new InvalidSizeVariantException('Invalid type of size variant ' . $variant);
 		}
 
 		// Check if file actually exists
 		if (empty($shortPath) || !Storage::exists($shortPath)) {
-			Logs::error(__METHOD__, __LINE__, 'File is missing: ' . $shortPath . ' (' . $baseFilename . ')');
-			throw new MediaFileMissingException();
+			throw new MediaFileMissingException('File is missing: ' . $shortPath . ' (' . $baseFilename . ')');
 		}
 
 		return new ArchiveFileInfo($baseFilename, $baseFilenameAddon, Storage::path($shortPath));

@@ -2,66 +2,84 @@
 
 namespace App\Image;
 
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
-use App\Models\Logs;
 use ImageOptimizer;
 
 class GdHandler implements ImageHandlerInterface
 {
-	/**
-	 * @var int
-	 */
-	private $compressionQuality;
+	private int $compressionQuality;
 
 	/**
 	 * Rotates a given image resource based on the given orientation.
 	 *
-	 * @param resource $image       the image reference to rotate
+	 * @param \GdImage $image       the image reference to rotate
 	 * @param int      $orientation the orientation of the original image
 	 *
-	 * @return array a dictionary of width and height of the rotated image
+	 * @return array{width: int, height: int} a dictionary of width and height of the rotated image
+	 *
+	 * @throws MediaFileOperationException
 	 */
-	private function autoRotateInternal(&$image, int $orientation): array
+	private function autoRotateInternal(\GdImage &$image, int $orientation): array
 	{
+		$success = true;
+
 		switch ($orientation) {
 			case 1:
 				// nothing to do
 				break;
 			case 2:
-				imageflip($image, IMG_FLIP_HORIZONTAL);
+				$success = imageflip($image, IMG_FLIP_HORIZONTAL);
 				break;
 
 			case 3:
 				$image = imagerotate($image, -180, 0);
+				$success = ($image !== false);
 				break;
 
 			case 4:
-				imageflip($image, IMG_FLIP_VERTICAL);
+				$success = imageflip($image, IMG_FLIP_VERTICAL);
 				break;
 
 			case 5:
 				$image = imagerotate($image, -90, 0);
-				imageflip($image, IMG_FLIP_HORIZONTAL);
+				$success = ($image !== false);
+				$success &= imageflip($image, IMG_FLIP_HORIZONTAL);
 				break;
 
 			case 6:
 				$image = imagerotate($image, -90, 0);
+				$success = ($image !== false);
 				break;
 
 			case 7:
 				$image = imagerotate($image, 90, 0);
-				imageflip($image, IMG_FLIP_HORIZONTAL);
+				$success = ($image !== false);
+				$success &= imageflip($image, IMG_FLIP_HORIZONTAL);
 				break;
 
 			case 8:
 				$image = imagerotate($image, 90, 0);
+				$success = ($image !== false);
 				break;
 
 			default:
 				break;
 		}
 
-		return ['width' => imagesx($image), 'height' => imagesy($image)];
+		if (!$success) {
+			throw new MediaFileOperationException('Failed to rotate image');
+		}
+
+		$width = imagesx($image);
+		$height = imagesy($image);
+
+		if ($width === false || $height === false) {
+			throw new MediaFileOperationException('Failed to determine dimensions of image');
+		}
+
+		return ['width' => $width, 'height' => $height];
 	}
 
 	/**
@@ -82,11 +100,8 @@ class GdHandler implements ImageHandlerInterface
 		int $newHeight,
 		int &$resWidth,
 		int &$resHeight
-	): bool {
+	): void {
 		$res = $this->readImage($source);
-		if ($res === false) {
-			return false;
-		}
 		list($sourceImg, $mime, $width, $height) = $res;
 
 		if ($newWidth == 0) {
@@ -104,9 +119,7 @@ class GdHandler implements ImageHandlerInterface
 
 		imagecopyresampled($image, $sourceImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
 
-		if ($this->writeImage($destination, $image, $mime) === false) {
-			return false;
-		}
+		$this->writeImage($destination, $image, $mime);
 
 		imagedestroy($image);
 		imagedestroy($sourceImg);
@@ -118,8 +131,6 @@ class GdHandler implements ImageHandlerInterface
 		if (Configs::get_value('lossless_optimization', '0') == '1') {
 			ImageOptimizer::optimize($destination);
 		}
-
-		return true;
 	}
 
 	/**
@@ -130,11 +141,8 @@ class GdHandler implements ImageHandlerInterface
 		string $destination,
 		int $newWidth,
 		int $newHeight
-	): bool {
+	): void {
 		$res = $this->readImage($source);
-		if ($res === false) {
-			return false;
-		}
 		list($sourceImg, , $width, $height) = $res;
 
 		if ($width < $height) {
@@ -152,7 +160,7 @@ class GdHandler implements ImageHandlerInterface
 		$this->fastImageCopyResampled($image, $sourceImg, 0, 0, $startWidth, $startHeight, $newWidth, $newHeight, $newSize, $newSize);
 
 		if (imagejpeg($image, $destination, $this->compressionQuality) === false) {
-			return false;
+			throw new MediaFileOperationException('Failed to write image ' . $destination);
 		}
 
 		imagedestroy($image);
@@ -162,8 +170,6 @@ class GdHandler implements ImageHandlerInterface
 		if (Configs::get_value('lossless_optimization', '0') == '1') {
 			ImageOptimizer::optimize($destination);
 		}
-
-		return true;
 	}
 
 	/**
@@ -172,13 +178,18 @@ class GdHandler implements ImageHandlerInterface
 	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
 	{
 		$image = imagecreatefromjpeg($path);
+		if ($image === false) {
+			throw new MediaFileOperationException('Failed to read image ' . $path);
+		}
 
 		$rotate = $orientation !== 1;
 
 		$dimensions = $this->autoRotateInternal($image, $orientation);
 
 		if ($rotate && !$pretend) {
-			imagejpeg($image, $path, 100);
+			if (!imagejpeg($image, $path, 100)) {
+				throw new MediaFileOperationException('Failed to write image ' . $path);
+			}
 		}
 
 		imagedestroy($image);
@@ -189,24 +200,19 @@ class GdHandler implements ImageHandlerInterface
 	/**
 	 * {@inheritdoc}
 	 */
-	public function rotate(string $source, int $angle, string $destination = null): bool
+	public function rotate(string $source, int $angle, ?string $destination = null): void
 	{
 		$res = $this->readImage($source);
-		if ($res === false) {
-			return false;
-		}
 		list($image, $mime) = $res;
 
 		$image = imagerotate($image, -$angle, 0);
 		if ($image === false) {
-			return false;
+			throw new MediaFileOperationException('Failed to rotate image ' . $source);
 		}
 
-		$ret = $this->writeImage($destination ?? $source, $image, $mime, 100);
+		$this->writeImage($destination ?? $source, $image, $mime, 100);
 
 		imagedestroy($image);
-
-		return $ret;
 	}
 
 	/**
@@ -235,7 +241,7 @@ class GdHandler implements ImageHandlerInterface
 	 * @param int      $src_h
 	 * @param int      $quality
 	 *
-	 * @return bool
+	 * @return void
 	 */
 	private function fastImageCopyResampled(
 		&$dst_image,
@@ -249,9 +255,9 @@ class GdHandler implements ImageHandlerInterface
 		int $src_w,
 		int $src_h,
 		int $quality = 4
-	): bool {
+	): void {
 		if (empty($src_image) || empty($dst_image) || $quality <= 0) {
-			return false;
+			return;
 		}
 
 		if ($quality < 5 && (($dst_w * $quality) < $src_w || ($dst_h * $quality) < $src_h)) {
@@ -262,41 +268,30 @@ class GdHandler implements ImageHandlerInterface
 		} else {
 			imagecopyresampled($dst_image, $src_image, $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h);
 		}
-
-		return true;
 	}
 
 	/**
 	 * @param string $source
 	 *
-	 * @return array|false
+	 * @return array{image: \GdImage, mime: int, width: int, height: int}
+	 *
+	 * @throws MediaFileUnsupportedException
+	 * @throws MediaFileOperationException
 	 */
-	private function readImage(string $source)
+	private function readImage(string $source): array
 	{
 		list(, , $mime) = getimagesize($source);
 
-		switch ($mime) {
-			case IMAGETYPE_JPEG:
-			case IMAGETYPE_JPEG2000:
-				$image = imagecreatefromjpeg($source);
-				break;
-			case IMAGETYPE_PNG:
-				$image = imagecreatefrompng($source);
-				break;
-			case IMAGETYPE_GIF:
-				$image = imagecreatefromgif($source);
-				break;
-			case IMAGETYPE_WEBP:
-				$image = imagecreatefromwebp($source);
-				break;
-			default:
-				Logs::error(__METHOD__, __LINE__, 'Type of photo "' . $mime . '" is not supported');
-
-				return false;
-		}
+		$image = match ($mime) {
+			IMAGETYPE_JPEG, IMAGETYPE_JPEG2000 => imagecreatefromjpeg($source),
+			IMAGETYPE_PNG => imagecreatefrompng($source),
+			IMAGETYPE_GIF => imagecreatefromgif($source),
+			IMAGETYPE_WEBP => imagecreatefromwebp($source),
+			default => throw new MediaFileUnsupportedException('Type of photo "' . $mime . '" is not supported'),
+		};
 
 		if ($image === false) {
-			return false;
+			throw new MediaFileUnsupportedException('Failed to read photo ' . $source);
 		}
 
 		// the image may need to be rotated prior to any processing
@@ -317,18 +312,25 @@ class GdHandler implements ImageHandlerInterface
 	 * @param int      $mime
 	 * @param int      $quality
 	 *
-	 * @return bool
+	 * @return void
+	 *
+	 * @throws MediaFileOperationException
 	 */
-	private function writeImage(string $destination, $image, int $mime, int $quality = null): bool
+	private function writeImage(string $destination, $image, int $mime, int $quality = -1): void
 	{
-		$ret = match ($mime) {
-			IMAGETYPE_JPEG, IMAGETYPE_JPEG2000 => imagejpeg($image, $destination, $quality ?? $this->compressionQuality),
-			IMAGETYPE_PNG => imagepng($image, $destination),
-			IMAGETYPE_GIF => imagegif($image, $destination),
-			IMAGETYPE_WEBP => imagewebp($image, $destination),
-			default => false,
-		};
-
-		return $ret;
+		try {
+			$ret = match ($mime) {
+				IMAGETYPE_JPEG, IMAGETYPE_JPEG2000 => imagejpeg($image, $destination, $quality !== -1 ? $quality : $this->compressionQuality),
+				IMAGETYPE_PNG => imagepng($image, $destination),
+				IMAGETYPE_GIF => imagegif($image, $destination),
+				IMAGETYPE_WEBP => imagewebp($image, $destination),
+				default => false,
+			};
+		} catch (\Throwable $e) {
+			throw new MediaFileOperationException('Failed to write image ' . $destination, $e);
+		}
+		if (!$ret) {
+			throw new MediaFileOperationException('Failed to write image ' . $destination);
+		}
 	}
 }

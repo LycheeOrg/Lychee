@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Exceptions\RequestUnsupportedException;
-use App\Models\Logs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use League\Flysystem\Adapter\Local;
@@ -24,9 +23,7 @@ class LocalStorageOnly
 	{
 		$storageAdapter = Storage::disk()->getDriver()->getAdapter();
 		if (!($storageAdapter instanceof Local)) {
-			$msg = $request->url() . ' not implemented for non-local storage';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new RequestUnsupportedException($msg);
+			throw new RequestUnsupportedException($request->url() . ' not implemented for non-local storage');
 		}
 
 		return $next($request);

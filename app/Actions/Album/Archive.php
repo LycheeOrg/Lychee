@@ -9,10 +9,10 @@ use App\Facades\Helpers;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
-use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\TagAlbum;
 use App\SmartAlbums\BaseSmartAlbum;
+use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -29,6 +29,14 @@ class Archive extends Action
 		"\x18", "\x19", "\x1a", "\x1b", "\x1c", "\x1d", "\x1e", "\x1f",
 		'<', '>', ':', '"', '/', '\\', '|', '?', '*',
 	];
+
+	protected ExceptionHandler $exceptionHandler;
+
+	public function __construct()
+	{
+		parent::__construct();
+		$this->exceptionHandler = resolve(ExceptionHandler::class);
+	}
 
 	/**
 	 * @param Collection<AbstractAlbum> $albums
@@ -165,31 +173,30 @@ class Archive extends Action
 
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			// For photos in smart or tag albums, skip the ones that are not
-			// downloadable based on their actual parent album.  The test for
-			// album_id == null shouldn't really be needed as all such photos
-			// in smart albums should be owned by the current user...
-			if (($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
-			!AccessControl::is_current_user($photo->owner_id) &&
-			!($photo->album_id == null ? $album->is_downloadable : $photo->album->is_downloadable)) {
-				continue;
+			try {
+				// For photos in smart or tag albums, skip the ones that are not
+				// downloadable based on their actual parent album.  The test for
+				// album_id == null shouldn't really be needed as all such photos
+				// in smart albums should be owned by the current user...
+				if (($album instanceof BaseSmartAlbum || $album instanceof TagAlbum) &&
+					!AccessControl::is_current_user($photo->owner_id) &&
+					!($photo->album_id == null ? $album->is_downloadable : $photo->album->is_downloadable)) {
+					continue;
+				}
+
+				$fullPath = $photo->size_variants->getOriginal()->full_path;
+
+				// Set title for photo
+				$extension = Helpers::getExtension($fullPath, false);
+				$fileBaseName = $this->makeUnique(self::createValidTitle($photo->title), $usedFileNames);
+				$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $extension;
+
+				// Reset the execution timeout for every iteration.
+				set_time_limit(ini_get('max_execution_time'));
+				$zip->addFileFromPath($fileName, $fullPath);
+			} catch (\Throwable $e) {
+				$this->exceptionHandler->report($e);
 			}
-
-			$fullPath = $photo->size_variants->getOriginal()->full_path;
-			// Check if readable
-			if (!is_readable($fullPath)) {
-				Logs::error(__METHOD__, __LINE__, 'Original photo missing: ' . $fullPath);
-				continue;
-			}
-
-			// Set title for photo
-			$extension = Helpers::getExtension($fullPath, false);
-			$fileBaseName = $this->makeUnique(self::createValidTitle($photo->title), $usedFileNames);
-			$fileName = $fullNameOfDirectory . '/' . $fileBaseName . $extension;
-
-			// Reset the execution timeout for every iteration.
-			set_time_limit(ini_get('max_execution_time'));
-			$zip->addFileFromPath($fileName, $fullPath);
 		}
 
 		// Recursively compress sub-albums
@@ -198,7 +205,11 @@ class Archive extends Action
 			// TODO: For higher efficiency, ensure that the photos of each child album together with the original size variant are eagerly loaded.
 			$subAlbums = $album->children;
 			foreach ($subAlbums as $subAlbum) {
-				$this->compressAlbum($subAlbum, $subDirs, $fullNameOfDirectory, $zip);
+				try {
+					$this->compressAlbum($subAlbum, $subDirs, $fullNameOfDirectory, $zip);
+				} catch (\Throwable $e) {
+					$this->exceptionHandler->report($e);
+				}
 			}
 		}
 	}

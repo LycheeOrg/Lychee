@@ -29,6 +29,8 @@ class Handler extends ExceptionHandler
 	public const EXCEPTION2SEVERITY = [
 		PhotoSkippedException::class => Logs::SEVERITY_WARNING,
 		ImportCancelledException::class => Logs::SEVERITY_NOTICE,
+		ConfigurationException::class => Logs::SEVERITY_NOTICE,
+		LocationDecodingFailed::class => Logs::SEVERITY_WARNING,
 	];
 
 	protected $dontReport = [];
@@ -134,17 +136,20 @@ class Handler extends ExceptionHandler
 	 */
 	public function report(\Throwable $e): void
 	{
+		$e = $this->mapException($e);
+
+		if ($this->shouldntReport($e)) {
+			return;
+		}
+
+		// We use the severity of the first exception for all subsequent
+		// exceptions, because a causing exception should never be reported
+		// with a higher severity than the eventual exception
+		$severity = array_key_exists(get_class($e), self::EXCEPTION2SEVERITY) ?
+			self::EXCEPTION2SEVERITY[get_class($e)] :
+			Logs::SEVERITY_ERROR;
+
 		do {
-			$e = $this->mapException($e);
-
-			if ($this->shouldntReport($e)) {
-				return;
-			}
-
-			$severity = array_key_exists(get_class($e), self::EXCEPTION2SEVERITY) ?
-				self::EXCEPTION2SEVERITY[get_class($e)] :
-				Logs::SEVERITY_ERROR;
-
 			$cause = $this->findCause($e);
 
 			if ($e->getPrevious() !== null) {

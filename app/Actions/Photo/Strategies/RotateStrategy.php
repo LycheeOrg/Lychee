@@ -8,12 +8,10 @@ use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
 use App\Exceptions\Internal\InvalidRotationDirectionException;
-use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\MediaFileUnsupportedException;
 use App\Image\ImageHandlerInterface;
 use App\Image\TemporaryLocalFile;
 use App\Metadata\Extractor;
-use App\Models\Logs;
 use App\Models\Photo;
 use App\Models\SizeVariant;
 
@@ -62,24 +60,16 @@ class RotateStrategy extends AddBaseStrategy
 			$photo
 		);
 		if ($photo->isVideo()) {
-			$msg = 'Trying to rotate a video';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new MediaFileUnsupportedException($msg);
+			throw new MediaFileUnsupportedException('Rotation of a video is unsupported');
 		}
 		if ($photo->live_photo_short_path !== null) {
-			$msg = 'Trying to rotate a live photo';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new MediaFileUnsupportedException($msg);
+			throw new MediaFileUnsupportedException('Rotation of a live photo is unsupported');
 		}
 		if ($photo->isRaw()) {
-			$msg = 'Trying to rotate a raw file';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new MediaFileUnsupportedException($msg);
+			throw new MediaFileUnsupportedException('Rotation of a raw photo is unsupported');
 		}
 		// direction is valid?
 		if (($direction != 1) && ($direction != -1)) {
-			$msg = 'Direction must be 1 or -1';
-			Logs::error(__METHOD__, __LINE__, $msg);
 			throw new InvalidRotationDirectionException();
 		}
 		$this->direction = $direction;
@@ -104,11 +94,7 @@ class RotateStrategy extends AddBaseStrategy
 		/** @var ImageHandlerInterface $imageHandler */
 		$imageHandler = resolve(ImageHandlerInterface::class);
 		// TODO: If we ever wish to support something else than local files, ImageHandler must work on resource streams, not absolute file names (see ImageHandlerInterface)
-		if ($imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath()) === false) {
-			$msg = 'Failed to rotate ' . $origFile->getRelativePath();
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new MediaFileOperationException($msg);
-		}
+		$imageHandler->rotate($origFile->getAbsolutePath(), ($this->direction == 1) ? 90 : -90, $tmpFile->getAbsolutePath());
 
 		// The file size and checksum may have changed after the rotation.
 		/* @var Extractor $metadataExtractor */
@@ -160,7 +146,7 @@ class RotateStrategy extends AddBaseStrategy
 			// variants may fail: the user has uploaded an unsupported file
 			// format, GD and Imagick are both not available or disabled
 			// by configuration, etc.
-			Logs::error(__METHOD__, __LINE__, 'Failed to generate size variants, error was ' . $t->getMessage());
+			report($t);
 		}
 
 		// Clean up factory

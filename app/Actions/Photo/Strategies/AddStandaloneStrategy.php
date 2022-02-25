@@ -6,18 +6,21 @@ use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Contracts\SizeVariantFactory;
 use App\Contracts\SizeVariantNamingStrategy;
 use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ModelDBException;
 use App\Image\ImageHandlerInterface;
 use App\Image\MediaFile;
 use App\Image\TemporaryLocalFile;
 use App\Metadata\Extractor;
 use App\ModelFunctions\MOVFormat;
-use App\Models\Logs;
 use App\Models\Photo;
 use FFMpeg\FFMpeg;
 
 class AddStandaloneStrategy extends AddBaseStrategy
 {
+	protected Extractor $metadataExtractor;
+	protected ImageHandlerInterface $imageHandler;
+
 	public function __construct(AddStrategyParameters $parameters)
 	{
 		$newPhoto = new Photo();
@@ -35,6 +38,8 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		// appear in a different order than users expect.
 		$newPhoto->updateTimestamps();
 		parent::__construct($parameters, $newPhoto);
+		$this->metadataExtractor = resolve(Extractor::class);
+		$this->imageHandler = resolve(ImageHandlerInterface::class);
 	}
 
 	/**
@@ -42,6 +47,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 *
 	 * @throws ModelDBException
 	 * @throws MediaFileOperationException
+	 * @throws MediaFileUnsupportedException
 	 */
 	public function do(): Photo
 	{
@@ -98,7 +104,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// variants may fail: the user has uploaded an unsupported file
 			// format, GD and Imagick are both not available or disabled
 			// by configuration, etc.
-			Logs::error(__METHOD__, __LINE__, 'Failed to generate size variants, error was ' . $t->getMessage());
+			report($t);
 		}
 
 		$this->handleGoogleMotionPicture();
@@ -139,62 +145,53 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 * and {@link Photo::$checksum} to the new values after rotation.
 	 *
 	 * @throws MediaFileOperationException
+	 * @throws ModelDBException
+	 * @throws MediaFileUnsupportedException
 	 */
 	protected function normalizeOrientation(): void
 	{
-		try {
-			$orientation = $this->parameters->info['orientation'];
-			if ($this->photo->type !== 'image/jpeg' || $orientation == 1) {
-				// Nothing to do for non-JPEGs or correctly oriented photos.
-				return;
-			}
+		$orientation = $this->parameters->info['orientation'];
+		if ($this->photo->type !== 'image/jpeg' || $orientation == 1) {
+			// Nothing to do for non-JPEGs or correctly oriented photos.
+			return;
+		}
 
-			if (
-				!$this->parameters->importMode->shallDeleteImported() &&
-				!$this->parameters->importMode->shallImportViaSymlink()
-			) {
-				// This is case 3b, the original shall neither be deleted
-				// nor symlinked.
-				// So lets make a deep-copy first which can be rotated safely.
-				$info = $this->parameters->sourceFileInfo;
-				$file = $info->getFile();
-				$tmpFile = new TemporaryLocalFile();
-				$tmpFile->write($file->read());
-				$file->close();
-				// Reset source file info to the new temporary and ensure that
-				// it will be deleted later
-				$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
+		if (
+			!$this->parameters->importMode->shallDeleteImported() &&
+			!$this->parameters->importMode->shallImportViaSymlink()
+		) {
+			// This is case 3b, the original shall neither be deleted
+			// nor symlinked.
+			// So lets make a deep-copy first which can be rotated safely.
+			$info = $this->parameters->sourceFileInfo;
+			$file = $info->getFile();
+			$tmpFile = new TemporaryLocalFile();
+			$tmpFile->write($file->read());
+			$file->close();
+			// Reset source file info to the new temporary and ensure that
+			// it will be deleted later
+			$this->parameters->sourceFileInfo = SourceFileInfo::createByTempFile(
 					$info->getOriginalName(),
 					$info->getOriginalExtension(),
 					$tmpFile
 				);
-				$this->parameters->importMode->setDeleteImported(true);
-			}
-
-			/** @var ImageHandlerInterface $imageHandler */
-			$imageHandler = resolve(ImageHandlerInterface::class);
-
-			$absolutePath = $this->parameters->sourceFileInfo->getFile()->getAbsolutePath();
-			// If we are importing via symlink, we don't actually overwrite
-			// the source but we still need to fix the dimensions.
-			$newDim = $imageHandler->autoRotate(
-				$absolutePath,
-				$orientation,
-				$this->parameters->importMode->shallImportViaSymlink()
-			);
-
-			if ($newDim !== [false, false]) {
-				// If the image has actually been rotated, the size
-				// and the checksum may have changed.
-				/* @var  Extractor $metadataExtractor */
-				$metadataExtractor = resolve(Extractor::class);
-				$this->photo->filesize = $metadataExtractor->filesize($absolutePath);
-				$this->photo->checksum = $metadataExtractor->checksum($absolutePath);
-				$this->photo->save();
-			}
-		} catch (\Throwable $e) {
-			throw new MediaFileOperationException('Could not normalize orientation of image', $e);
+			$this->parameters->importMode->setDeleteImported(true);
 		}
+
+		$absolutePath = $this->parameters->sourceFileInfo->getFile()->getAbsolutePath();
+		// If we are importing via symlink, we don't actually overwrite
+		// the source, but we still need to fix the dimensions.
+		$this->imageHandler->autoRotate(
+			$absolutePath,
+			$orientation,
+			$this->parameters->importMode->shallImportViaSymlink()
+		);
+
+		// If the image has actually been rotated, the size
+		// and the checksum may have changed.
+		$this->photo->filesize = $this->metadataExtractor->filesize($absolutePath);
+		$this->photo->checksum = $this->metadataExtractor->checksum($absolutePath);
+		$this->photo->save();
 	}
 
 	/**
@@ -248,7 +245,6 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			$this->photo->live_photo_short_path = $shortPathVideo;
 			$this->photo->save();
 		} catch (\Throwable $e) {
-			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			throw new MediaFileOperationException('Unable to extract video from Google Motion Picture', $e);
 		}
 	}

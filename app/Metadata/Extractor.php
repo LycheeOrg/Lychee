@@ -78,9 +78,7 @@ class Extractor
 	{
 		$checksum = sha1_file($path);
 		if ($checksum === false) {
-			$msg = 'Could not compute checksum for: ' . $path;
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new MediaFileOperationException($msg);
+			throw new MediaFileOperationException('Could not compute checksum for: ' . $path);
 		}
 
 		return $checksum;
@@ -167,7 +165,7 @@ class Extractor
 		} catch (\RuntimeException $e) {
 			// thrown be $reader->read if EXIF could not be extracted,
 			// don't give up yet, only log the event
-			Logs::error(__METHOD__, __LINE__, $e->getMessage());
+			report($e);
 			$exif = false;
 		}
 
@@ -182,7 +180,6 @@ class Extractor
 			} catch (\RuntimeException $e) {
 				// thrown be $reader->read if EXIF could not be extracted,
 				// even with the native adapter, now we give up
-				Logs::error(__METHOD__, __LINE__, $e->getMessage());
 				throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter', $e);
 			}
 		}
@@ -198,7 +195,7 @@ class Extractor
 				// if readlink($filename) != False then $realFile = readlink($filename)
 				$realFile = readlink($fullPath) ?: $fullPath;
 			} catch (\Exception $e) {
-				Logs::error(__METHOD__, __LINE__, $e->getMessage());
+				report($e);
 			}
 		}
 		if (Configs::hasExiftool() && file_exists($realFile . '.xmp')) {
@@ -216,7 +213,7 @@ class Extractor
 					$exif->setData(array_merge($sidecarData, $exif->getData()));
 				}
 			} catch (\Exception $e) {
-				Logs::error(__METHOD__, __LINE__, $e->getMessage());
+				report($e);
 			}
 		}
 
@@ -499,9 +496,14 @@ class Extractor
 
 		// Decode location data, it can be longer than is acceptable for DB that's the reason for substr
 		// but only if return value is not null (= function has been disabled)
-		$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
-		if (is_null($metadata['location']) == false) {
-			$metadata['location'] = substr($metadata['location'], 0, 255);
+		try {
+			$metadata['location'] = Geodecoder::decodeLocation($metadata['latitude'], $metadata['longitude']);
+			if ($metadata['location'] !== null) {
+				$metadata['location'] = substr($metadata['location'], 0, 255);
+			}
+		} catch (ExternalComponentFailedException $e) {
+			report($e);
+			$metadata['location'] = null;
 		}
 
 		return $metadata;

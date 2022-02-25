@@ -3,7 +3,6 @@
 namespace App\ModelFunctions;
 
 use App\Exceptions\Internal\JsonRequestFailedException;
-use App\Models\Logs;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -106,9 +105,7 @@ class JsonRequestFunctions
 		$raw = file_get_contents($this->url, false, $context);
 		if (!is_string($raw) || empty($raw)) {
 			$this->clear_cache();
-			$msg = 'Could not read "' . $this->url . '"';
-			Logs::notice(__METHOD__, __LINE__, $msg);
-			throw new JsonRequestFailedException($msg);
+			throw new JsonRequestFailedException('Could not read "' . $this->url . '"');
 		}
 
 		try {

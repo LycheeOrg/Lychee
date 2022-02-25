@@ -194,17 +194,13 @@ class Configs extends Model
 			 */
 			$message = $config->sanity($value);
 			if ($message != '') {
-				Logs::error(__METHOD__, __LINE__, $message);
 				throw new InvalidConfigOption($message);
 			}
 			$config->value = $value;
 			$config->save();
 		} catch (ModelNotFoundException $e) {
-			$msg = 'key ' . $key . ' not found!';
-			Logs::warning(__METHOD__, __LINE__, $msg);
-			throw new InvalidConfigOption($msg, $e);
+			throw new InvalidConfigOption('key ' . $key . ' not found!', $e);
 		} catch (ModelDBException $e) {
-			Logs::error(__METHOD__, __LINE__, $e->getMessage());
 			throw new InvalidConfigOption('Could not save configuration', $e);
 		} finally {
 			// invalidate cache.

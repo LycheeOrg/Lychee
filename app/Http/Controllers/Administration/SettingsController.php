@@ -11,7 +11,6 @@ use App\Facades\Lang;
 use App\Http\Requests\Settings\ChangeLoginRequest;
 use App\Http\Requests\Settings\SetSortingRequest;
 use App\Models\Configs;
-use App\Models\Logs;
 use App\Rules\LicenseRule;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -352,9 +351,7 @@ class SettingsController extends Controller
 		$css = $request->get('css') ?? '';
 
 		if (!Storage::disk('dist')->put('user.css', $css)) {
-			$msg = 'Could not save css.';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new InsufficientFilesystemPermissions($msg);
+			throw new InsufficientFilesystemPermissions('Could not save CSS');
 		}
 	}
 

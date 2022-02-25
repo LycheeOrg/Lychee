@@ -98,7 +98,6 @@ class Login
 
 			if (User::query()->where('username', '=', $username)->where('id', '!=', $id)->count()) {
 				Logs::notice(__METHOD__, __LINE__, 'User (' . $user->username . ') tried to change their identity to ' . $username . ' from ' . $ip);
-
 				throw new ConflictingPropertyException('Username already exists.');
 			}
 

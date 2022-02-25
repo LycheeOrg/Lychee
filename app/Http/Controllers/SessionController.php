@@ -75,7 +75,6 @@ class SessionController extends Controller
 					$return['may_upload'] = $user->may_upload; // may user upload?
 					$return['username'] = $user->username;
 				} catch (ModelNotFoundException $e) {
-					Logs::notice(__METHOD__, __LINE__, 'UserID ' . $user_id . ' not found!');
 					$this->logout();
 					throw $e;
 				}
@@ -143,6 +142,7 @@ class SessionController extends Controller
 			return;
 		}
 
+		// TODO: We could avoid this separate log entry and let the exeption handler to all the logging, if we would add "context" (see Laravel docs) to those exceptions which need it.
 		Logs::error(__METHOD__, __LINE__, 'User (' . $request->username() . ') has tried to log in from ' . $request->ip());
 
 		throw new UnauthenticatedException('Unknown user or invalid password');

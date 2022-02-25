@@ -7,7 +7,6 @@ use App\Exceptions\InsufficientEntropyException;
 use App\Exceptions\Internal\NotImplementedException;
 use App\Exceptions\Internal\TimeBasedIdException;
 use App\Models\Configs;
-use App\Models\Logs;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\InvalidCastException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
@@ -123,9 +122,7 @@ trait HasRandomIDAndLegacyTimeBasedID
 		} while ($retry && $retryCounter > 0);
 
 		if ($retryCounter === 0) {
-			$msg = 'unable to persist model to DB after 5 unsuccessful attempts';
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new TimeBasedIdException($msg, $lastException);
+			throw new TimeBasedIdException('unable to persist model to DB after 5 unsuccessful attempts', $lastException);
 		}
 
 		// We will go ahead and set the exists property to true, so that it is set when

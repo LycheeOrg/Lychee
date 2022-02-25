@@ -31,7 +31,6 @@ class AddDuplicateStrategy extends AddBaseStrategy
 		}
 
 		if ($this->parameters->importMode->shallSkipDuplicates()) {
-			Logs::notice(__METHOD__, __LINE__, 'Skipped upload of existing photo because skipDuplicates is activated');
 			throw new PhotoSkippedException();
 		} else {
 			// Duplicate the existing photo, this will also duplicate all

@@ -4,6 +4,7 @@ namespace App\Models\Extensions;
 
 use App\DTO\DTO;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\InvalidSizeVariantException;
 use App\Exceptions\Internal\LycheeInvalidArgumentException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -124,6 +125,8 @@ class SizeVariants extends DTO
 	 *                             {@link SizeVariant::THUMB}
 	 *
 	 * @return SizeVariant|null The size variant
+	 *
+	 * @throws InvalidSizeVariantException
 	 */
 	public function getSizeVariant(int $sizeVariantType): ?SizeVariant
 	{
@@ -135,7 +138,7 @@ class SizeVariants extends DTO
 			SizeVariant::SMALL => $this->small,
 			SizeVariant::THUMB2X => $this->thumb2x,
 			SizeVariant::THUMB => $this->thumb,
-			default => throw new \UnexpectedValueException('size variant ' . $sizeVariantType . 'invalid'),
+			default => throw new InvalidSizeVariantException('size variant ' . $sizeVariantType . 'invalid'),
 		};
 	}
 

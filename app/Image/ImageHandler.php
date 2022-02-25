@@ -2,15 +2,18 @@
 
 namespace App\Image;
 
+use App\Exceptions\Internal\LycheeDomainException;
+use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Models\Configs;
 
 class ImageHandler implements ImageHandlerInterface
 {
-	/**
-	 * @var int
-	 */
-	private $compressionQuality;
-	private $engines;
+	public const NO_HANDLER_EXCEPTION_MSG = 'No suitable image handler found';
+
+	private int $compressionQuality;
+	/** @var ImageHandlerInterface[] */
+	private array $engines;
 
 	/**
 	 * @param int $compressionQuality
@@ -26,41 +29,43 @@ class ImageHandler implements ImageHandlerInterface
 	}
 
 	/**
-	 * @param string $source
-	 * @param string $destination
-	 * @param int    $newWidth
-	 * @param int    $newHeight
-	 * @param int    &$resWidth
-	 * @param int    &$resHeight
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function scale(string $source, string $destination, int $newWidth, int $newHeight, int &$resWidth, int &$resHeight): bool
+	public function scale(string $source, string $destination, int $newWidth, int $newHeight, int &$resWidth, int &$resHeight): void
 	{
-		$i = 0;
-		while ($i < count($this->engines) && !$this->engines[$i]->scale($source, $destination, $newWidth, $newHeight, $resWidth, $resHeight)) {
-			$i++;
+		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
+		foreach ($this->engines as $engine) {
+			try {
+				$engine->scale($source, $destination, $newWidth, $newHeight, $resWidth, $resHeight);
+				$lastException = null;
+				break;
+			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
+				$lastException = $e;
+			}
 		}
-
-		return $i != count($this->engines);
+		if ($lastException) {
+			throw $lastException;
+		}
 	}
 
 	/**
-	 * @param string $source
-	 * @param string $destination
-	 * @param int    $newWidth
-	 * @param int    $newHeight
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function crop(string $source, string $destination, int $newWidth, int $newHeight): bool
+	public function crop(string $source, string $destination, int $newWidth, int $newHeight): void
 	{
-		$i = 0;
-		while ($i < count($this->engines) && !$this->engines[$i]->crop($source, $destination, $newWidth, $newHeight)) {
-			$i++;
+		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
+		foreach ($this->engines as $engine) {
+			try {
+				$engine->crop($source, $destination, $newWidth, $newHeight);
+				$lastException = null;
+				break;
+			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
+				$lastException = $e;
+			}
 		}
-
-		return $i != count($this->engines);
+		if ($lastException) {
+			throw $lastException;
+		}
 	}
 
 	/**
@@ -68,33 +73,45 @@ class ImageHandler implements ImageHandlerInterface
 	 */
 	public function autoRotate(string $path, int $orientation = 1, bool $pretend = false): array
 	{
-		$i = 0;
-		$ret = [false, false];
-		while ($i < count($this->engines) && ($ret = $this->engines[$i]->autoRotate($path, $orientation, $pretend)) == [false, false]) {
-			$i++;
+		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
+		$ret = [];
+		foreach ($this->engines as $engine) {
+			try {
+				$ret = $engine->autoRotate($path, $orientation, $pretend);
+				$lastException = null;
+				break;
+			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
+				$lastException = $e;
+			}
+		}
+		if ($lastException) {
+			throw $lastException;
 		}
 
 		return $ret;
 	}
 
 	/**
-	 * @param string $source
-	 * @param int    $angle
-	 * @param string $destination
-	 *
-	 * @return bool
+	 * {@inheritDoc}
 	 */
-	public function rotate(string $source, int $angle, string $destination = null): bool
+	public function rotate(string $source, int $angle, string $destination = null): void
 	{
 		if ($angle != 90 && $angle != -90) {
-			return false;
+			throw new LycheeDomainException('Angle value out-of-bounds');
 		}
 
-		$i = 0;
-		while ($i < count($this->engines) && !$this->engines[$i]->rotate($source, $angle, $destination)) {
-			$i++;
+		$lastException = new MediaFileOperationException(self::NO_HANDLER_EXCEPTION_MSG);
+		foreach ($this->engines as $engine) {
+			try {
+				$engine->rotate($source, $angle, $destination);
+				$lastException = null;
+				break;
+			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
+				$lastException = $e;
+			}
 		}
-
-		return $i != count($this->engines);
+		if ($lastException) {
+			throw $lastException;
+		}
 	}
 }

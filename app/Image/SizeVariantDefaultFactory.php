@@ -73,9 +73,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			$this->extractReferenceFromRaw($original->full_path, $original->width, $original->height);
 		} elseif ($this->photo->isVideo()) {
 			if (empty($this->photo->aperture)) {
-				$msg = 'Media file is reported to be a video, but aperture (aka duration) has not been extracted';
-				Logs::error(__METHOD__, __LINE__, $msg);
-				throw new MediaFileOperationException($msg);
+				throw new MediaFileOperationException('Media file is reported to be a video, but aperture (aka duration) has not been extracted');
 			}
 			$position = floatval($this->photo->aperture) / 2;
 			$this->extractReferenceFromVideo($original->full_path, $position);
@@ -114,26 +112,16 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	{
 		// we need imagick to do the job
 		if (!Configs::hasImagick()) {
-			$msg = 'Saving JPG of raw file failed: Imagick not installed.';
-			Logs::notice(__METHOD__, __LINE__, $msg);
-			throw new ExternalComponentMissingException($msg);
+			throw new ExternalComponentMissingException('Saving JPG of raw file failed: Imagick not installed.');
 		}
 		$ext = pathinfo($fullPath, PATHINFO_EXTENSION);
 		// test if Imagick supports the filetype
 		// Query return file extensions as all upper case
 		if (!in_array(strtoupper($ext), \Imagick::queryformats())) {
-			$msg = 'Filetype ' . $ext . ' not supported by Imagick.';
-			Logs::notice(__METHOD__, __LINE__, $msg);
-			throw new MediaFileUnsupportedException($msg);
+			throw new MediaFileUnsupportedException('Filetype ' . $ext . ' not supported by Imagick.');
 		}
 		$this->createTmpPathForReference();
-		try {
-			$this->imageHandler->scale($fullPath, $this->referenceFullPath, $width, $height, $this->referenceWidth, $this->referenceHeight);
-		} catch (\Throwable $e) {
-			$msg = 'Failed to create JPG from raw file ' . $fullPath;
-			Logs::error(__METHOD__, __LINE__, $msg);
-			throw new MediaFileOperationException($msg, $e);
-		}
+		$this->imageHandler->scale($fullPath, $this->referenceFullPath, $width, $height, $this->referenceWidth, $this->referenceHeight);
 	}
 
 	/**
@@ -150,7 +138,6 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	protected function extractReferenceFromVideo(string $fullPath, float $framePosition): void
 	{
 		if (!Configs::hasFFmpeg()) {
-			Logs::notice(__METHOD__, __LINE__, 'FFmpeg is disabled by configuration');
 			throw new ConfigurationException('FFmpeg is disabled by configuration');
 		}
 		try {
@@ -163,7 +150,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			throw new ExternalComponentMissingException('FFmpeg not found', $e);
 		} catch (InvalidArgumentException $e) {
 			throw new MediaFileOperationException('FFmpeg could not open media file', $e);
-		} catch (MediaFileOperationException $e) {
+		} catch (MediaFileOperationException) {
 			Logs::notice(__METHOD__, __LINE__, 'Fallback: Try to extract snapshot at position 0');
 			$this->extractFrame($video, 0);
 		}
@@ -187,7 +174,6 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			$this->referenceWidth = $dim->getWidth();
 			$this->referenceHeight = $dim->getHeight();
 		} catch (\Throwable $e) {
-			Logs::error(__METHOD__, __LINE__, $errMsg);
 			throw new MediaFileOperationException($errMsg, $e);
 		}
 		if (!file_exists($this->referenceFullPath) || filesize($this->referenceFullPath) == 0) {
@@ -305,6 +291,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 * @throws ModelDBException
 	 * @throws IllegalOrderOfOperationException
 	 * @throws MediaFileOperationException
+	 * @throws MediaFileUnsupportedException
+	 * @throws InvalidSizeVariantException
 	 */
 	protected function createSizeVariantInternal(int $sizeVariant, int $maxWidth, int $maxHeight): SizeVariant
 	{
@@ -312,27 +300,27 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
 		if (!$sv) {
-			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight);
-			if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
-				$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
-			} else {
-				$resWidth = $resHeight = 0;
-				$success = $this->imageHandler->scale($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height, $resWidth, $resHeight);
-				$sv->width = $resWidth;
-				$sv->height = $resHeight;
-				$sv->save();
-			}
-			if (!$success) {
-				Logs::error(__METHOD__, __LINE__, 'Failed to resize image: ' . $this->referenceFullPath);
+			try {
+				$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight);
+				if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
+					$this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
+				} else {
+					$resWidth = $resHeight = 0;
+					$this->imageHandler->scale($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height, $resWidth, $resHeight);
+					$sv->width = $resWidth;
+					$sv->height = $resHeight;
+					$sv->save();
+				}
+			} catch (MediaFileOperationException|MediaFileUnsupportedException $e) {
 				// If scaling/cropping has failed, remove the freshly created DB entity again
 				// This will also take care of removing a potentially created file from storage
 				try {
 					$sv->delete();
-				} catch (\Throwable $ignored) {
+				} catch (\Throwable) {
 					// We are already in an (outer) error handling, we cannot
 					// do anything about this inner problem
 				}
-				throw new MediaFileOperationException('Failed to resize image: ' . $this->referenceFullPath);
+				throw $e;
 			}
 		}
 
