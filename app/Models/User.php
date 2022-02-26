@@ -40,8 +40,6 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	use ThrowsConsistentExceptions;
 	use UseFixedQueryBuilder;
 
-	public const FRIENDLY_MODEL_NAME = 'user';
-
 	/**
 	 * The attributes that are mass assignable.
 	 */
@@ -109,10 +107,5 @@ class User extends Authenticatable implements WebAuthnAuthenticatable
 	public function name(): string
 	{
 		return ($this->id == 0) ? 'Admin' : $this->username;
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

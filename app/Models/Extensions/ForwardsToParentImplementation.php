@@ -103,7 +103,7 @@ trait ForwardsToParentImplementation
 	 */
 	protected function performUpdate(Builder $query): bool
 	{
-		/** @var Model $base_class */
+		/** @var Model */
 		$base_class = $this->base_class;
 		// touch() also indirectly saves the base_class hence any other
 		// attributes which require an update are also saved
@@ -141,7 +141,7 @@ trait ForwardsToParentImplementation
 			$parentException = $e;
 		}
 		if ($parentException) {
-			throw ModelDBException::create($this->friendlyModelName(), 'delete', $parentException);
+			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
 		}
 
 		// We must explicitly check if the base_class still exists in order
@@ -160,7 +160,7 @@ trait ForwardsToParentImplementation
 				$baseException = $e;
 			}
 			if ($baseException) {
-				throw ModelDBException::create($this->friendlyModelName(), 'delete', $baseException);
+				throw ModelDBException::create($this->friendlyModelName(), 'deleting', $baseException);
 			}
 		}
 

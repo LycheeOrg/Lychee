@@ -238,7 +238,7 @@ class SizeVariants extends DTO
 
 	/**
 	 * @throws ModelDBException
-	 * @throws IllegalOrderOfOperationException
+	 * @throws IllegalOrderOfOperationException|LycheeInvalidArgumentException
 	 */
 	public function replicate(Photo $duplicatePhoto): SizeVariants
 	{

@@ -4,6 +4,7 @@ namespace App\Models\Extensions;
 
 use App\Exceptions\ModelDBException;
 use Illuminate\Database\Eloquent\JsonEncodingException;
+use Illuminate\Support\Str;
 
 /**
  * Fixed Eloquent model for all Lychee models.
@@ -19,7 +20,12 @@ use Illuminate\Database\Eloquent\JsonEncodingException;
  */
 trait ThrowsConsistentExceptions
 {
-	abstract protected function friendlyModelName(): string;
+	protected function friendlyModelName(): string
+	{
+		$name = Str::snake(class_basename($this), ' ');
+		// Remove some typical, implementation-specific pre- and suffixes from the name
+		return str_replace('/(^abstract )|( impl$)|( interface$)/', '', $name);
+	}
 
 	/**
 	 * Converts the instance into an (associative) array.
@@ -57,7 +63,7 @@ trait ThrowsConsistentExceptions
 			$parentException = $e;
 		}
 		if ($parentException) {
-			throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'create' : 'update', $parentException);
+			throw ModelDBException::create($this->friendlyModelName(), $this->wasRecentlyCreated ? 'creating' : 'updating', $parentException);
 		}
 
 		return true;
@@ -87,7 +93,7 @@ trait ThrowsConsistentExceptions
 			$parentException = $e;
 		}
 		if ($parentException) {
-			throw ModelDBException::create($this->friendlyModelName(), 'delete', $parentException);
+			throw ModelDBException::create($this->friendlyModelName(), 'deleting', $parentException);
 		}
 
 		return true;

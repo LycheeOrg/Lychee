@@ -60,8 +60,6 @@ class SizeVariant extends Model
 	}
 	use UseFixedQueryBuilder;
 
-	public const FRIENDLY_MODEL_NAME = 'size variant';
-
 	public const ORIGINAL = 0;
 	public const MEDIUM2X = 1;
 	public const MEDIUM = 2;
@@ -259,10 +257,5 @@ class SizeVariant extends Model
 		}
 
 		return $this->internalDelete();
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

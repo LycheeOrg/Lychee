@@ -25,8 +25,6 @@ class Logs extends Model
 	use ThrowsConsistentExceptions;
 	use UseFixedQueryBuilder;
 
-	public const FRIENDLY_MODEL_NAME = 'log entry';
-
 	public const SEVERITY_EMERGENCY = 0;
 	public const SEVERITY_ALERT = 1;
 	public const SEVERITY_CRITICAL = 2;
@@ -134,10 +132,5 @@ class Logs extends Model
 			$log->save();
 		} catch (\Throwable) {
 		}
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

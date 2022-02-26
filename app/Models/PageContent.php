@@ -25,8 +25,6 @@ class PageContent extends Model
 	use ThrowsConsistentExceptions;
 	use UseFixedQueryBuilder;
 
-	public const FRIENDLY_MODEL_NAME = 'page content';
-
 	/**
 	 * Return content.
 	 * It can be an image -> create a img tag, `content` is the url of the image
@@ -46,10 +44,5 @@ class PageContent extends Model
 		}
 
 		return $return;
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

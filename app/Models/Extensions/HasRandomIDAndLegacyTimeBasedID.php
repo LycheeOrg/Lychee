@@ -20,8 +20,6 @@ use Illuminate\Database\QueryException;
  */
 trait HasRandomIDAndLegacyTimeBasedID
 {
-	abstract protected function friendlyModelName(): string;
-
 	/**
 	 * Get the value indicating whether the IDs are incrementing.
 	 *

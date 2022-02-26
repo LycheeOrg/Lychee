@@ -110,8 +110,6 @@ class BaseAlbumImpl extends Model implements HasRandomID
 	use HasBidirectionalRelationships;
 	use UseFixedQueryBuilder;
 
-	public const FRIENDLY_MODEL_NAME = 'base album';
-
 	protected $table = 'base_albums';
 
 	/**
@@ -282,10 +280,5 @@ class BaseAlbumImpl extends Model implements HasRandomID
 		}
 
 		return $result;
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

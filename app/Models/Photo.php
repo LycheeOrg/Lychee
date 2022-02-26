@@ -7,6 +7,7 @@ use App\Casts\DateTimeWithTimezoneCast;
 use App\Casts\MustNotSetCast;
 use App\Contracts\HasRandomID;
 use App\Exceptions\Internal\IllegalOrderOfOperationException;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\Internal\ZeroModuloException;
 use App\Exceptions\InvalidPropertyException;
 use App\Exceptions\MediaFileOperationException;
@@ -84,8 +85,6 @@ class Photo extends Model implements HasRandomID
 	}
 	use HasBidirectionalRelationships;
 	use UseFixedQueryBuilder;
-
-	public const FRIENDLY_MODEL_NAME = 'photo';
 
 	/**
 	 * @var string The type of the primary key
@@ -410,6 +409,8 @@ class Photo extends Model implements HasRandomID
 
 	/**
 	 * @return bool true if another DB entry exists for the same photo
+	 *
+	 * @throws QueryBuilderException
 	 */
 	protected function hasDuplicate(): bool
 	{
@@ -426,6 +427,7 @@ class Photo extends Model implements HasRandomID
 
 	/**
 	 * @throws ModelDBException
+	 * @throws IllegalOrderOfOperationException
 	 */
 	public function replicate(array $except = null): Photo
 	{
@@ -472,10 +474,5 @@ class Photo extends Model implements HasRandomID
 		}
 
 		return $this->internalDelete();
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

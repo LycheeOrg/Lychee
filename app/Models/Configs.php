@@ -41,8 +41,6 @@ class Configs extends Model
 	protected const DISABLED = '';
 	protected const LICENSE = 'license';
 
-	public const FRIENDLY_MODEL_NAME = 'config';
-
 	/**
 	 * The attributes that are mass assignable.
 	 *
@@ -244,10 +242,5 @@ class Configs extends Model
 	public function scopeAdmin(FixedQueryBuilder $query): FixedQueryBuilder
 	{
 		return $query->where('confidentiality', '<=', 3);
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

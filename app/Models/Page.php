@@ -44,8 +44,6 @@ class Page extends Model
 	use ThrowsConsistentExceptions;
 	use UseFixedQueryBuilder;
 
-	public const FRIENDLY_MODEL_NAME = 'page';
-
 	/**
 	 * Return the relationship between a page and its content.
 	 *
@@ -95,10 +93,5 @@ class Page extends Model
 		return $query
 			->where('enabled', true)
 			->orderBy('order');
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

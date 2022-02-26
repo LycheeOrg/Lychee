@@ -39,8 +39,6 @@ class SymLink extends Model
 	}
 	use UseFixedQueryBuilder;
 
-	public const FRIENDLY_MODEL_NAME = 'symbolic link';
-
 	public const DISK_NAME = 'symbolic';
 
 	protected $casts = [
@@ -152,10 +150,5 @@ class SymLink extends Model
 		}
 
 		return $this->internalDelete();
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

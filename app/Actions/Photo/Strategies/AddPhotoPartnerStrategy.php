@@ -3,7 +3,9 @@
 namespace App\Actions\Photo\Strategies;
 
 use App\Actions\Photo\Extensions\SourceFileInfo;
+use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
+use App\Exceptions\MediaFileUnsupportedException;
 use App\Exceptions\ModelDBException;
 use App\Models\Photo;
 
@@ -22,6 +24,8 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 	 *
 	 * @throws ModelDBException
 	 * @throws MediaFileOperationException
+	 * @throws QueryBuilderException
+	 * @throws MediaFileUnsupportedException
 	 */
 	public function do(): Photo
 	{
@@ -45,11 +49,7 @@ class AddPhotoPartnerStrategy extends AddStandaloneStrategy
 		// Delete the existing video from whom we have stolen the video file
 		// `delete()` also takes care of erasing all other size variants
 		// from storage
-		try {
-			$this->existingVideo->delete();
-		} catch (\LogicException|\RuntimeException $e) {
-			throw ModelDBException::create('photo', 'delete', $e);
-		}
+		$this->existingVideo->delete();
 
 		return $this->photo;
 	}

@@ -39,8 +39,6 @@ class Album extends BaseAlbum implements Node
 {
 	use NodeTrait;
 
-	public const FRIENDLY_MODEL_NAME = 'album';
-
 	/**
 	 * The model's attributes.
 	 *
@@ -265,10 +263,5 @@ class Album extends BaseAlbum implements Node
 	public function newEloquentBuilder($query): AlbumBuilder
 	{
 		return new AlbumBuilder($query);
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

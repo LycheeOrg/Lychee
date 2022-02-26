@@ -7,7 +7,6 @@ use App\Exceptions\InvalidPropertyException;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\Extensions\TagAlbumBuilder;
 use App\Models\Extensions\Thumb;
-use App\Models\Extensions\UseFixedQueryBuilder;
 use App\Relations\HasManyPhotosByTag;
 use Illuminate\Database\Query\Builder as BaseBuilder;
 
@@ -21,10 +20,6 @@ use Illuminate\Database\Query\Builder as BaseBuilder;
  */
 class TagAlbum extends BaseAlbum
 {
-	use UseFixedQueryBuilder;
-
-	public const FRIENDLY_MODEL_NAME = 'tag album';
-
 	/**
 	 * The model's attributes.
 	 *
@@ -122,10 +117,5 @@ class TagAlbum extends BaseAlbum
 	public function newEloquentBuilder($query): TagAlbumBuilder
 	{
 		return new TagAlbumBuilder($query);
-	}
-
-	protected function friendlyModelName(): string
-	{
-		return self::FRIENDLY_MODEL_NAME;
 	}
 }

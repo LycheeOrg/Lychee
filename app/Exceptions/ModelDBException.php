@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -37,14 +38,15 @@ class ModelDBException extends LycheeBaseException
 	 * > Could not $operationName $modelName
 	 *
 	 * @param string          $modelName     the name of the model
-	 * @param string          $operationName the failed operation, typically
-	 *                                       "create", "update", "delete", ...
+	 * @param string          $operationName the failed operation in gerund
+	 *                                       form, typically "creating",
+	 *                                       "updating", "deleting", ...
 	 * @param \Throwable|null $previous      an optional previous exception
 	 *
 	 * @return ModelDBException
 	 */
 	public static function create(string $modelName, string $operationName, \Throwable $previous = null): ModelDBException
 	{
-		return new ModelDBException('Could not ' . $operationName . ' ' . $modelName, $previous);
+		return new ModelDBException(Str::ucfirst($operationName) . $modelName . ' failed', $previous);
 	}
 }
