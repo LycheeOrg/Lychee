@@ -987,7 +987,7 @@ build.uploadModal = function (title, files) {
  */
 build.uploadNewFile = function (name) {
 	if (name.length > 40) {
-		name = name.substr(0, 17) + "..." + name.substr(name.length - 20, 20);
+		name = name.substring(0, 17) + "..." + name.substring(name.length - 20, name.length);
 	}
 
 	return lychee.html(_templateObject20, name);
@@ -1988,7 +1988,7 @@ sidebar.createStructure.photo = function (data) {
 };
 
 /**
- * @param {(Album|TagAlbum)} data
+ * @param {(Album|TagAlbum|SmartAlbum)} data
  * @returns {Section[]}
  */
 sidebar.createStructure.album = function (data) {
@@ -2018,7 +2018,7 @@ sidebar.createStructure.album = function (data) {
 	}
 
 	if (!lychee.publicMode) {
-		if (data.sorting === null) {
+		if (!data.sorting) {
 			sorting = lychee.locale["DEFAULT"];
 		} else {
 			sorting = data.sorting.column + " " + data.sorting.order;
@@ -3057,7 +3057,6 @@ lychee.locale = {
   * @returns {string} A formatted and localized string
   */
 	printFilesizeLocalized: function printFilesizeLocalized(filesize) {
-		console.assert(Number.isInteger(filesize), "printFilesizeLocalized: expected integer, got %s", typeof filesize === "undefined" ? "undefined" : _typeof(filesize));
 		var suffix = [" B", " kB", " MB", " GB"];
 		var i = 0;
 		// Sic! We check if the number is larger than 1000 but divide by 1024 by intention
@@ -3648,6 +3647,40 @@ var SmartAlbumID = Object.freeze({
  * @property {boolean} enable_contextmenu_header
  * @property {boolean} hide_content_during_imgview
  * @property {boolean} enable_tabindex
+ */
+
+/**
+ * The JSON object for incremental reports sent by the
+ * back-end within a streamed response.
+ *
+ * @typedef ImportReport
+ *
+ * @property {string} type - indicates the type of report;
+ *                           `'progress'`: {@link ImportProgressReport},
+ *                           `'event'`: {@link ImportEventReport}
+ */
+
+/**
+ * The JSON object for cumulative progress reports sent by the
+ * back-end within a streamed response.
+ *
+ * @typedef ImportProgressReport
+ *
+ * @property {string} type - `'progress'`
+ * @property {string} path
+ * @property {number} progress
+ */
+
+/**
+ * The JSON object for events sent by the back-end within a streamed response.
+ *
+ * @typedef ImportEventReport
+ *
+ * @property {string} type - `'event'`
+ * @property {string} subtype - the subtype of event; equals the base name of the exception class which caused this event on the back-end
+ * @property {number} severity - either `'debug'`, `'info'`, `'notice'`, `'warning'`, `'error'`, `'critical'` or `'emergency'`
+ * @property {?string} path - the path to the affected file or directory
+ * @property {string} message - a message text
  */
 
 (function (window, factory) {

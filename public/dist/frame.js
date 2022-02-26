@@ -1682,3 +1682,37 @@ var SmartAlbumID = Object.freeze({
  * @property {boolean} hide_content_during_imgview
  * @property {boolean} enable_tabindex
  */
+
+/**
+ * The JSON object for incremental reports sent by the
+ * back-end within a streamed response.
+ *
+ * @typedef ImportReport
+ *
+ * @property {string} type - indicates the type of report;
+ *                           `'progress'`: {@link ImportProgressReport},
+ *                           `'event'`: {@link ImportEventReport}
+ */
+
+/**
+ * The JSON object for cumulative progress reports sent by the
+ * back-end within a streamed response.
+ *
+ * @typedef ImportProgressReport
+ *
+ * @property {string} type - `'progress'`
+ * @property {string} path
+ * @property {number} progress
+ */
+
+/**
+ * The JSON object for events sent by the back-end within a streamed response.
+ *
+ * @typedef ImportEventReport
+ *
+ * @property {string} type - `'event'`
+ * @property {string} subtype - the subtype of event; equals the base name of the exception class which caused this event on the back-end
+ * @property {number} severity - either `'debug'`, `'info'`, `'notice'`, `'warning'`, `'error'`, `'critical'` or `'emergency'`
+ * @property {?string} path - the path to the affected file or directory
+ * @property {string} message - a message text
+ */

@@ -298,7 +298,7 @@ class Exec
 						throw new MediaFileUnsupportedException('Unsupported file type');
 					}
 				} catch (\Throwable $e) {
-					$this->report(ImportEventReport::createErrorFromException($e, $file));
+					$this->report(ImportEventReport::createFromException($e, $file));
 				}
 			}
 			$this->report(ImportProgressReport::create($path, 100));
@@ -321,7 +321,7 @@ class Exec
 				$this->do($dir . '/', $album, $ignore_list);
 			}
 		} catch (\Throwable $e) {
-			$this->report(ImportEventReport::createErrorFromException($e, $path));
+			$this->report(ImportEventReport::createFromException($e, $path));
 		}
 	}
 

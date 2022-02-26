@@ -145,9 +145,7 @@ class Handler extends ExceptionHandler
 		// We use the severity of the first exception for all subsequent
 		// exceptions, because a causing exception should never be reported
 		// with a higher severity than the eventual exception
-		$severity = array_key_exists(get_class($e), self::EXCEPTION2SEVERITY) ?
-			self::EXCEPTION2SEVERITY[get_class($e)] :
-			Logs::SEVERITY_ERROR;
+		$severity = self::getLogSeverity($e);
 
 		do {
 			$cause = $this->findCause($e);
@@ -158,6 +156,13 @@ class Handler extends ExceptionHandler
 				Logs::log($severity, $cause['method'], $cause['line'], $e->getMessage());
 			}
 		} while ($e = $e->getPrevious());
+	}
+
+	public static function getLogSeverity(\Throwable $e): int
+	{
+		return array_key_exists(get_class($e), self::EXCEPTION2SEVERITY) ?
+			self::EXCEPTION2SEVERITY[get_class($e)] :
+			Logs::SEVERITY_ERROR;
 	}
 
 	/**
