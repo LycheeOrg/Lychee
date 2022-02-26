@@ -45,7 +45,7 @@ class SetAlbumsTitleRequest extends BaseApiRequest implements HasTitle, HasAlbum
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->albums = $this->albumFactory->findBaseAlbumsOrFail(
-			$values[HasAlbums::ALBUM_IDS_ATTRIBUTE]
+			$values[HasAlbums::ALBUM_IDS_ATTRIBUTE], false
 		);
 		$this->title = $values[HasTitle::TITLE_ATTRIBUTE];
 	}

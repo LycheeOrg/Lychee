@@ -184,7 +184,11 @@ class Album extends BaseAlbum implements Node
 			$this->refreshNode();
 
 			// Delete all recursive child photos first
-			$photos = $this->all_photos()->lazy();
+			// By default, photos are eagerly loaded with their album
+			// because many photo operations depend on the album of the photo.
+			// But deletion of photos does not.
+			// So we can save some queries.
+			$photos = $this->all_photos()->without(['album'])->lazy();
 			/** @var Photo $photo */
 			foreach ($photos as $photo) {
 				// This also takes care of proper deletion of physical files from disk

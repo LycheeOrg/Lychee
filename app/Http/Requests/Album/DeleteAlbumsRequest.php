@@ -39,8 +39,14 @@ class DeleteAlbumsRequest extends BaseApiRequest implements HasAlbums
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
+		// We do not eagerly load all photos, size_variants and
+		// size_variants.symlinks here, because if we delete an entire
+		// subtree this might get huge and lead to an out-of-memory
+		// exception.
+		// We use lazy-loading of chunks of photos (combined with eager
+		// loading of size variants and symlinks) in {@link Album::delete}.
 		$this->albums = $this->albumFactory->findAbstractAlbumsOrFail(
-			$values[HasAlbums::ALBUM_IDS_ATTRIBUTE]
+			$values[HasAlbums::ALBUM_IDS_ATTRIBUTE], false
 		);
 	}
 }

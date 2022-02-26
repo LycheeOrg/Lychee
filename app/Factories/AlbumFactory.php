@@ -84,14 +84,17 @@ class AlbumFactory
 	 * Returns a collection of {@link AbstractAlbum} instances whose IDs are
 	 * contained in the given set of IDs.
 	 *
-	 * @param string[] $albumIDs a list of IDs
+	 * @param string[] $albumIDs      a list of IDs
+	 * @param bool     $withRelations indicates if the relations of an
+	 *                                album (i.e. photos and sub-albums,
+	 *                                if applicable) shall be loaded, too.
 	 *
 	 * @return Collection<AbstractAlbum> a possibly empty list of
 	 *                                   {@link AbstractAlbum}
 	 *
 	 * @throws ModelNotFoundException
 	 */
-	public function findAbstractAlbumsOrFail(array $albumIDs): Collection
+	public function findAbstractAlbumsOrFail(array $albumIDs, bool $withRelations = true): Collection
 	{
 		// Remove root (ID===`null`) and duplicates
 		$albumIDs = array_diff(array_unique($albumIDs), [null]);
@@ -101,7 +104,7 @@ class AlbumFactory
 		$smartAlbums = [];
 		foreach ($smartAlbumIDs as $smartID) {
 			try {
-				$smartAlbums[] = $this->createSmartAlbum($smartID);
+				$smartAlbums[] = $this->createSmartAlbum($smartID, $withRelations);
 			} catch (InvalidSmartIdException) {
 				// must not happen, because we limited search to
 				// `self::BUILTIN_SMARTS` above
@@ -110,7 +113,7 @@ class AlbumFactory
 
 		return new Collection(array_merge(
 			$smartAlbums,
-			$this->findBaseAlbumsOrFail($modelAlbumIDs)->all()
+			$this->findBaseAlbumsOrFail($modelAlbumIDs, $withRelations)->all()
 		));
 	}
 
@@ -118,22 +121,33 @@ class AlbumFactory
 	 * Returns a collection of {@link BaseAlbum} instances whose IDs are
 	 * contained in the given set of IDs.
 	 *
-	 * @param string[] $albumIDs a list of IDs
+	 * @param string[] $albumIDs      a list of IDs
+	 * @param bool     $withRelations indicates if the relations of an
+	 *                                album (i.e. photos and sub-albums,
+	 *                                if applicable) shall be loaded, too.
 	 *
 	 * @return Collection<BaseAlbum> a possibly empty list of {@link BaseAlbum}
 	 *
 	 * @throws ModelNotFoundException
 	 */
-	public function findBaseAlbumsOrFail(array $albumIDs): Collection
+	public function findBaseAlbumsOrFail(array $albumIDs, bool $withRelations = true): Collection
 	{
 		// Remove root.
 		// Since we count the result we need to ensure that there are no
 		// duplicates.
 		$albumIDs = array_diff(array_unique($albumIDs), [null]);
 
+		$tagAlbumQuery = TagAlbum::query();
+		$albumQuery = Album::query();
+
+		if ($withRelations) {
+			$tagAlbumQuery->with(['photos']);
+			$albumQuery->with(['photos', 'children', 'photos.size_variants']);
+		}
+
 		$result = new Collection(array_merge(
-			TagAlbum::query()->findMany($albumIDs)->all(),
-			Album::query()->findMany($albumIDs)->all(),
+			$tagAlbumQuery->findMany($albumIDs)->all(),
+			$albumQuery->findMany($albumIDs)->all(),
 		));
 
 		if ($result->count() !== count($albumIDs)) {
