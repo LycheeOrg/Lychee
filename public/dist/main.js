@@ -12471,12 +12471,12 @@ view.logs = {
     */
 			var successHandler = function successHandler(logEntries) {
 				/**
-     * TODO: Consider moveing this method to `lychee.locale`
+     * TODO: Consider moving this method to `lychee.locale`
      * @param {Date} datetime
      * @returns {string}
      */
 				var formatDateTime = function formatDateTime(datetime) {
-					return "" + datetime.getUTCFullYear() + "-" + String(datetime.getUTCMonth()).padStart(2, "0") + "-" + String(datetime.getUTCDay()).padStart(2, "0") + " " + String(datetime.getUTCHours()).padStart(2, "0") + ":" + String(datetime.getUTCMinutes()).padStart(2, "0") + ":" + String(datetime.getUTCSeconds()).padStart(2, "0") + " UTC";
+					return "" + datetime.getUTCFullYear() + "-" + String(datetime.getUTCMonth() + 1).padStart(2, "0") + "-" + String(datetime.getUTCDate()).padStart(2, "0") + " " + String(datetime.getUTCHours()).padStart(2, "0") + ":" + String(datetime.getUTCMinutes()).padStart(2, "0") + ":" + String(datetime.getUTCSeconds()).padStart(2, "0") + " UTC";
 				};
 				var html = logEntries.reduce(function (acc, logEntry) {
 					return acc + formatDateTime(new Date(logEntry.created_at)) + " -- " + logEntry.type.padEnd(7) + " -- " + logEntry.function + " -- " + logEntry.line + " -- " + logEntry.text + "\n";
