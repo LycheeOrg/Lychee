@@ -65,17 +65,21 @@ class AlbumFactory
 	 */
 	public function findBaseAlbumOrFail(string $albumId, bool $withRelations = true): BaseAlbum
 	{
+		$albumQuery = Album::query();
+		$tagAlbumQuery = TagAlbum::query();
+
+		if ($withRelations) {
+			$albumQuery->with(['photos', 'children', 'photos.size_variants']);
+			$tagAlbumQuery->with(['photos']);
+		}
+
 		try {
-			if ($withRelations) {
-				return Album::query()->with(['photos', 'children', 'photos.size_variants'])->findOrFail($albumId);
-			} else {
-				return Album::query()->findOrFail($albumId);
-			}
-		} catch (ModelNotFoundException $e) {
-			if ($withRelations) {
-				return TagAlbum::query()->with(['photos'])->findOrFail($albumId);
-			} else {
-				return TagAlbum::query()->findOrFail($albumId);
+			return $albumQuery->findOrFail($albumId);
+		} catch (ModelNotFoundException) {
+			try {
+				return $tagAlbumQuery->findOrFail($albumId);
+			} catch (ModelNotFoundException) {
+				throw (new ModelNotFoundException())->setModel(BaseAlbumImpl::class, $albumId);
 			}
 		}
 	}
