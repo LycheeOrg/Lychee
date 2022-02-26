@@ -154,6 +154,7 @@ final class ChineseSimplified implements Language
 			'ALBUM_IMAGES' => '图片数',
 			'ALBUM_VIDEOS' => '视频数',
 			'ALBUM_SUBALBUMS' => '子相册数',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => '共享',
 			'ALBUM_SHR_YES' => '是',
 			'ALBUM_SHR_NO' => '否',

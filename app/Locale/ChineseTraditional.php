@@ -154,6 +154,7 @@ final class ChineseTraditional implements Language
 			'ALBUM_IMAGES' => '圖片資訊',
 			'ALBUM_VIDEOS' => '影片',
 			'ALBUM_SUBALBUMS' => '子相簿',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => '分享',
 			'ALBUM_SHR_YES' => '是',
 			'ALBUM_SHR_NO' => '否',

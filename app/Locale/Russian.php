@@ -154,6 +154,7 @@ final class Russian implements Language
 			'ALBUM_IMAGES' => 'Фотографий',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Общее',
 			'ALBUM_SHR_YES' => 'Да',
 			'ALBUM_SHR_NO' => 'Нет',

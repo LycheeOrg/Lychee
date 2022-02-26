@@ -155,6 +155,7 @@ final class Slovak implements Language
 			'ALBUM_IMAGES' => 'Obrázky',
 			'ALBUM_VIDEOS' => 'Videá',
 			'ALBUM_SUBALBUMS' => 'Subalbumy',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Zdieľanie',
 			'ALBUM_SHR_YES' => 'Áno',
 			'ALBUM_SHR_NO' => 'Nie',

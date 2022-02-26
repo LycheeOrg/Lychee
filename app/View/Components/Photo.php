@@ -15,9 +15,7 @@ class Photo extends Component
 	public string $album_id = '';
 	public string $photo_id = '';
 
-	public bool $show_live = false;
-	public bool $show_play = false;
-	public bool $show_placeholder = false;
+	public bool $is_lazyload = true;
 
 	public string $title;
 	public ?string $taken_at;
@@ -40,7 +38,7 @@ class Photo extends Component
 	 */
 	public function __construct(ModelsPhoto $data)
 	{
-		$this->album_id = $data->album->id;
+		$this->album_id = $data->album?->id ?? '';
 		$this->photo_id = $data->id;
 		$this->title = $data->title;
 		$this->taken_at = $data->taken_at ?? '';
@@ -54,11 +52,14 @@ class Photo extends Component
 
 		$this->layout = Configs::get_value('layout', '0') == '0';
 
+		$this->src = URL::asset('img/placeholder.png');
+
 		// TODO: Don't hardcode paths
 		if ($data->size_variants->getSizeVariant(SizeVariant::THUMB) == null) {
-			$this->show_live = $data->isLivePhoto();
-			$this->show_play = $data->isVideo();
-			$this->show_placeholder = $data->isRawy();
+			$this->src = $data->isVideo() ? URL::asset('img/play-icon.png') : $this->src;
+			$this->src = $data->isLivePhoto() ? URL::asset('img/live-photo-icon.png') : $this->src;
+
+			$this->is_lazyload = false;
 		}
 
 		$dim = 0;
@@ -76,8 +77,8 @@ class Photo extends Component
 		// Probably this code needs some fix/refactoring, too. However, where is this method invoked and
 		// what is the structure of the passed `data` array? (Could find any invocation.)
 		if ($this->layout) {
-			$thumbUrl = $thumb->url;
-			$thumb2xUrl = $thumb2x->url;
+			$thumbUrl = $thumb?->url;
+			$thumb2xUrl = $thumb2x?->url;
 		} elseif ($small !== null) {
 			$this->_w = $small->width;
 			$this->_h = $small->height;
@@ -100,13 +101,13 @@ class Photo extends Component
 		} else {
 			// Fallback for videos with no small (the case of no thumb is handled else where).
 			$this->class = 'video';
-			$thumbUrl = $thumb->url;
-			$thumb2xUrl = $thumb2x->url;
+			$thumbUrl = $thumb?->url;
+			$thumb2xUrl = $thumb2x?->url;
 			$dim = 200;
 			$dim2x = 200;
 		}
 
-		$this->src = sprintf("src='%s'", URL::asset('img/placeholder.png'));
+		$this->src = sprintf("src='%s'", $this->src);
 		$this->srcset = sprintf("data-src='%s'", URL::asset($thumbUrl));
 
 		if ($this->layout) {

@@ -154,6 +154,7 @@ final class Spanish implements Language
 			'ALBUM_IMAGES' => 'Imágenes',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Compartir',
 			'ALBUM_SHR_YES' => 'SI',
 			'ALBUM_SHR_NO' => 'No',

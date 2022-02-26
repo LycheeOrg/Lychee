@@ -154,6 +154,7 @@ final class Polish implements Language
 			'ALBUM_IMAGES' => 'Zdjęcia',
 			'ALBUM_VIDEOS' => 'Filmy',
 			'ALBUM_SUBALBUMS' => 'Albumy podrzędne',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Udostępnianie',
 			'ALBUM_SHR_YES' => 'TAK',
 			'ALBUM_SHR_NO' => 'Nie',

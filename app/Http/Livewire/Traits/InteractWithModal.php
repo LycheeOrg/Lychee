@@ -6,7 +6,7 @@ trait InteractWithModal
 {
 	protected function openModal(string $form, $params = [])
 	{
-		$this->emitTo('components.modal', 'showModal', $form, $params);
+		$this->emitTo('components.modal', 'openModal', $form, $params);
 	}
 
 	protected function closeModal()

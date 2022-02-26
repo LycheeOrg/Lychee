@@ -154,6 +154,7 @@ final class Greek implements Language
 			'ALBUM_IMAGES' => 'Εικόνες',
 			'ALBUM_VIDEOS' => 'Βίντεο',
 			'ALBUM_SUBALBUMS' => 'Υπο-λευκώματα',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Κοινή Χρήση',
 			'ALBUM_SHR_YES' => 'ΝΑΙ',
 			'ALBUM_SHR_NO' => 'Όχι',

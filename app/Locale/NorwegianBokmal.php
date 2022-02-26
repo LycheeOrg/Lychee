@@ -154,6 +154,7 @@ final class NorwegianBokmal implements Language
 			'ALBUM_IMAGES' => 'Bilder',
 			'ALBUM_VIDEOS' => 'Filmer',
 			'ALBUM_SUBALBUMS' => 'Underalbum',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Deling',
 			'ALBUM_SHR_YES' => 'JA',
 			'ALBUM_SHR_NO' => 'Nei',

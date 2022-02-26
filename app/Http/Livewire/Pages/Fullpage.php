@@ -2,8 +2,8 @@
 
 namespace App\Http\Livewire\Pages;
 
-use App\Contracts\AbstractAlbum;
 use App\Factories\AlbumFactory;
+use App\Http\Livewire\Traits\AlbumProperty;
 use App\Models\Album;
 use App\Models\Configs;
 use App\Models\Extensions\BaseAlbum;
@@ -14,6 +14,8 @@ use Livewire\Component;
 
 class Fullpage extends Component
 {
+	use AlbumProperty;
+
 	public const ALBUMS = 'albums';
 	public const PHOTO = 'photo';
 	public const ALBUM = 'album';
@@ -26,16 +28,6 @@ class Fullpage extends Component
 
 	protected $listeners = ['openAlbum', 'openPhoto', 'back', 'reloadPage'];
 
-	/**
-	 * Album property to support the multiple type.
-	 *
-	 * @return AbstractAlbum|null
-	 */
-	public function getAlbumProperty(): ?AbstractAlbum
-	{
-		return $this->baseAlbum ?? $this->smartAlbum;
-	}
-
 	public function mount(?string $albumId = null, ?string $photoId = null)
 	{
 		$albumFactory = resolve(AlbumFactory::class);
@@ -45,15 +37,7 @@ class Fullpage extends Component
 		} else {
 			$this->mode = self::ALBUM;
 			$album = $albumFactory->findOrFail($albumId);
-			if ($album instanceof BaseSmartAlbum) {
-				$this->smartAlbum = $album;
-				$this->baseAlbum = null; //! safety
-			} elseif ($album instanceof BaseAlbum) {
-				$this->baseAlbum = $album;
-				$this->smartAlbum = null; //! safety
-			} else {
-				throw new \Exception('unrecognized class for ' . get_class($album));
-			}
+			$this->loadAlbum($album);
 			$this->title = $album->title;
 
 			if ($photoId != null) {

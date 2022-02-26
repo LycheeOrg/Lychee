@@ -156,6 +156,7 @@ final class French implements Language
 			'ALBUM_IMAGES' => 'Images',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Sous-albums',
+			'ALBUM_OWNER' => 'Propriétaire',
 			'ALBUM_SHARING' => 'Partager',
 			'ALBUM_SHR_YES' => 'Oui',
 			'ALBUM_SHR_NO' => 'Non',

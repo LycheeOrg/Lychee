@@ -41,5 +41,10 @@ class Header extends Component
 	{
 		$this->emitTo('components.left-menu', 'open');
 	}
+
+	public function toggleSideBar()
+	{
+		$this->emitTo('components.sidebar', 'toggle');
+	}
 }
 

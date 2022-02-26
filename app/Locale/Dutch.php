@@ -154,6 +154,7 @@ final class Dutch implements Language
 			'ALBUM_IMAGES' => 'Afbeeldingen',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Deel',
 			'ALBUM_SHR_YES' => 'Ja',
 			'ALBUM_SHR_NO' => 'Nee',

@@ -154,6 +154,7 @@ final class Swedish implements Language
 			'ALBUM_IMAGES' => 'Fotografier',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Dela',
 			'ALBUM_SHR_YES' => 'Ja',
 			'ALBUM_SHR_NO' => 'Nej',

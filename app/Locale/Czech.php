@@ -155,6 +155,7 @@ final class Czech implements Language
 			'ALBUM_IMAGES' => 'Obrázky',
 			'ALBUM_VIDEOS' => 'Videa',
 			'ALBUM_SUBALBUMS' => 'Subalba',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Sdílení',
 			'ALBUM_SHR_YES' => 'Ano',
 			'ALBUM_SHR_NO' => 'Ne',

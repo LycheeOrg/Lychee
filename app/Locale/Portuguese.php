@@ -154,6 +154,7 @@ final class Portuguese implements Language
 			'ALBUM_IMAGES' => 'Imagens',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subálbums',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Partilhar',
 			'ALBUM_SHR_YES' => 'SIM',
 			'ALBUM_SHR_NO' => 'Não',

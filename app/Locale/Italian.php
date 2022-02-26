@@ -156,6 +156,7 @@ final class Italian implements Language
 			'ALBUM_IMAGES' => 'Immagini',
 			'ALBUM_VIDEOS' => 'Video',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Condividi',
 			'ALBUM_SHR_YES' => 'SI',
 			'ALBUM_SHR_NO' => 'No',

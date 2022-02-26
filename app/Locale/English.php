@@ -154,6 +154,7 @@ final class English implements Language
 			'ALBUM_IMAGES' => 'Images',
 			'ALBUM_VIDEOS' => 'Videos',
 			'ALBUM_SUBALBUMS' => 'Subalbums',
+			'ALBUM_OWNER' => 'Owner',
 			'ALBUM_SHARING' => 'Share',
 			'ALBUM_SHR_YES' => 'YES',
 			'ALBUM_SHR_NO' => 'No',

@@ -2,38 +2,35 @@
 
 namespace App\Http\Livewire\Components;
 
-use Livewire\Component;
-
-class Modal extends Component
+class Modal extends Openable
 {
-	public bool $isOpen = false;
 	public string $opacity = '0';
 	public string $type = '';
 	public array $params = [];
 	public string $modalSize = 'md:max-w-xl';
 
 	protected $listeners = [
-		'showModal' => 'open',
-		'closeModal' => 'close',
-		'deleteModal' => 'delete',
+		'openModal',
+		'closeModal',
+		'deleteModal',
 	];
 
-	public function open(string $type, array $params = [])
+	public function openModal(string $type, array $params = [])
 	{
-		$this->isOpen = true;
+		$this->open();
 		$this->type = $type;
 		$this->params = $params;
 		$this->opacity = '100';
 	}
 
-	public function delete($params, string $form = 'forms.base-delete-form')
+	public function deleteModal($params, string $form = 'forms.base-delete-form')
 	{
-		return $this->open($form, $params);
+		return $this->openModal($form, $params);
 	}
 
-	public function close()
+	public function closeModal()
 	{
-		$this->isOpen = false;
+		$this->close();
 		$this->opacity = '0';
 	}
 
