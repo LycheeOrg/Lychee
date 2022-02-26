@@ -270,21 +270,13 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			$isLargeEnough = $this->referenceWidth > $maxWidth || $this->referenceHeight > $maxHeight;
 		}
 
-		if ($isLargeEnough) {
-			return $this->createSizeVariantInternal(
+		return $isLargeEnough ?
+			$this->createSizeVariantInternal(
 				$sizeVariant,
 				$maxWidth,
 				$maxHeight
-			);
-		} else {
-			Logs::notice(
-				__METHOD__,
-				__LINE__,
-				'Did not create size variant ' . $sizeVariant . ' (' . $maxWidth . 'x' . $maxHeight . '); original image is too small: ' . $this->referenceWidth . 'x' . $this->referenceHeight . '!'
-			);
-
-			return null;
-		}
+			) :
+			null;
 	}
 
 	/**
