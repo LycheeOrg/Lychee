@@ -39,14 +39,14 @@ class TopAlbums extends DTO
 	 */
 	public function toArray(): array
 	{
-		$smartAlbums = [];
+		$smartAlbumsArray = [];
 		/** @var BaseSmartAlbum $smartAlbum */
 		foreach ($this->smartAlbums as $smartAlbum) {
-			$smartAlbums[$smartAlbum->id] = $smartAlbum->toArray();
+			$smartAlbumsArray[$smartAlbum->id] = $smartAlbum->toArray();
 		}
 
 		return [
-			'smart_albums' => $smartAlbums,
+			'smart_albums' => $smartAlbumsArray,
 			'tag_albums' => $this->tagAlbums->toArray(),
 			'albums' => $this->albums->toArray(),
 			'shared_albums' => $this->sharedAlbums->toArray(),
