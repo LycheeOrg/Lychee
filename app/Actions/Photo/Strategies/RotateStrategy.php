@@ -93,7 +93,6 @@ class RotateStrategy extends AddBaseStrategy
 		// The file size and checksum may have changed after the rotation.
 		/* @var Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
-		$this->photo->filesize = $metadataExtractor->filesize($tmpFullPath);
 		$this->photo->checksum = $metadataExtractor->checksum($tmpFullPath);
 		$this->photo->save();
 
@@ -122,7 +121,8 @@ class RotateStrategy extends AddBaseStrategy
 		// because the checksum of the photo has changed.
 		// Using a different filename allows to avoid caching effects.
 		// Sic! Swap width and height here, because the image has been rotated
-		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth);
+		$originalFilesize = $metadataExtractor->filesize($tmpFullPath);
+		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth, $originalFilesize);
 		$this->putSourceIntoFinalDestination($newOriginalSizeVariant->full_path);
 
 		// Create remaining size variants
@@ -152,7 +152,6 @@ class RotateStrategy extends AddBaseStrategy
 			->get();
 		/** @var Photo $duplicate */
 		foreach ($duplicates as $duplicate) {
-			$duplicate->filesize = $this->photo->filesize;
 			$duplicate->checksum = $this->photo->checksum;
 			// Note: It is not correct to simply update the existing size
 			// variants of the duplicates.
@@ -175,7 +174,8 @@ class RotateStrategy extends AddBaseStrategy
 						$newSizeVariant->type,
 						$newSizeVariant->short_path,
 						$newSizeVariant->width,
-						$newSizeVariant->height
+						$newSizeVariant->height,
+						$newSizeVariant->filesize
 					);
 				}
 			}

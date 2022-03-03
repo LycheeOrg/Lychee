@@ -53,9 +53,11 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
 
 		// Create size variant for original
+		$filesize = empty($this->parameters->info['filesize']) ? 0 : intval($this->parameters->info['filesize']);
 		$original = $sizeVariantFactory->createOriginal(
 			$this->parameters->info['width'],
-			$this->parameters->info['height']
+			$this->parameters->info['height'],
+			$filesize
 		);
 		$this->putSourceIntoFinalDestination($original->full_path);
 		// The orientation can only be normalized after the source file has
@@ -92,7 +94,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 * The method does not actual modify the underlying file if it is only a
 	 * symlink.
 	 * This method also updated the attributes {@link SizeVariant::$width},
-	 * {@link SizeVariant::$height} and {@link Photo::$filesize} to the new
+	 * {@link SizeVariant::$height} and {@link SizeVariant::$filesize} to the new
 	 * values after rotation.
 	 *
 	 * @param SizeVariant $original the original size variant
@@ -115,12 +117,12 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			if ($newDim !== [false, false]) {
 				$original->width = $newDim['width'];
 				$original->height = $newDim['height'];
-				$original->save();
 				// If the image has actually been rotated, the size
 				// and the checksum may have changed.
 				/* @var  Extractor $metadataExtractor */
 				$metadataExtractor = resolve(Extractor::class);
-				$this->photo->filesize = $metadataExtractor->filesize($fullPath);
+				$original->filesize = $metadataExtractor->filesize($fullPath);
+				$original->save();
 				$this->photo->checksum = $metadataExtractor->checksum($fullPath);
 				$this->photo->save();
 			}

@@ -32,7 +32,6 @@ use Illuminate\Support\Facades\Storage;
  * @property bool         $is_public
  * @property int          $owner_id
  * @property string|null  $type
- * @property int          $filesize
  * @property string|null  $iso
  * @property string|null  $aperture
  * @property string|null  $make
@@ -96,7 +95,6 @@ class Photo extends Model implements HasRandomID
 		'is_share_button_visible' => MustNotSetCast::class,
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
-		'filesize' => 'integer',
 		'is_public' => 'boolean',
 	];
 

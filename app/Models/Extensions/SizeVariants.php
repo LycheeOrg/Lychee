@@ -178,10 +178,11 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *                                size variant shall point to
 	 * @param int    $width           the width of the size variant
 	 * @param int    $height          the height of the size variant
+	 * @param int    $filesize        the filesize of the size variant
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
 	 */
-	public function create(int $sizeVariantType, string $shortPath, int $width, int $height): SizeVariant
+	public function create(int $sizeVariantType, string $shortPath, int $width, int $height, int $filesize): SizeVariant
 	{
 		if (!$this->photo->exists) {
 			throw new \LogicException('cannot create a size variant for a photo whose id is not yet persisted to DB');
@@ -193,6 +194,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 		$result->short_path = $shortPath;
 		$result->width = $width;
 		$result->height = $height;
+		$result->filesize = $filesize;
 		if (!$result->save()) {
 			throw new \RuntimeException('could not persist size variant');
 		}
@@ -251,7 +253,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant !== null) {
-			$duplicate->create($sizeVariant->type, $sizeVariant->short_path, $sizeVariant->width, $sizeVariant->height);
+			$duplicate->create($sizeVariant->type, $sizeVariant->short_path, $sizeVariant->width, $sizeVariant->height, $sizeVariant->filesize);
 		}
 	}
 }

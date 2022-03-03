@@ -76,8 +76,8 @@ class ExifLens extends Command
 			if (file_exists($fullPath)) {
 				$info = $this->metadataExtractor->extract($fullPath, $photo->type);
 				$updated = false;
-				if ($photo->filesize == '' && $info['filesize'] != '') {
-					$photo->filesize = $info['filesize'];
+				if ($photo->size_variants->getOriginal()->filesize == 0 && $info['filesize'] != '') {
+					$photo->size_variants->getOriginal()->filesize = intval($info['filesize']);
 					$updated = true;
 				}
 				if ($photo->iso == '' && $info['iso'] != '') {
@@ -109,7 +109,7 @@ class ExifLens extends Command
 					$updated = true;
 				}
 				if ($updated) {
-					if ($photo->save()) {
+					if ($photo->save() && $photo->size_variants->getOriginal()->save()) {
 						$this->line($i . ': EXIF updated for ' . $photo->title);
 					} else {
 						$this->line($i . ': Failed to update EXIF for ' . $photo->title);

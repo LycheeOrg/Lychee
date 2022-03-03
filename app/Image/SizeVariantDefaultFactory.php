@@ -276,15 +276,23 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
 		if (!$sv) {
-			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight);
+			// Filesize is not known before creating the file, set to 0 meanwhile
+			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight, 0);
 			if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 				$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
+				if ($success) {
+					$sv->filesize = filesize($sv->full_path);
+					$sv->save();
+				}
 			} else {
 				$resWidth = $resHeight = 0;
 				$success = $this->imageHandler->scale($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height, $resWidth, $resHeight);
-				$sv->width = $resWidth;
-				$sv->height = $resHeight;
-				$sv->save();
+				if ($success) {
+					$sv->filesize = filesize($sv->full_path);
+					$sv->width = $resWidth;
+					$sv->height = $resHeight;
+					$sv->save();
+				}
 			}
 			if (!$success) {
 				Logs::error(__METHOD__, __LINE__, 'Failed to resize image: ' . $this->referenceFullPath);
@@ -377,13 +385,14 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createOriginal(int $width, int $height): SizeVariant
+	public function createOriginal(int $width, int $height, int $filesize): SizeVariant
 	{
 		return $this->photo->size_variants->create(
 			SizeVariant::ORIGINAL,
 			$this->namingStrategy->generateShortPath(SizeVariant::ORIGINAL),
 			$width,
-			$height
+			$height,
+			$filesize
 		);
 	}
 }
