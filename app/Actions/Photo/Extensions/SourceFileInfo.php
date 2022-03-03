@@ -2,50 +2,102 @@
 
 namespace App\Actions\Photo\Extensions;
 
-use App\Facades\Helpers;
+use App\Image\MediaFile;
+use App\Image\NativeLocalFile;
+use App\Image\TemporaryLocalFile;
+use App\Models\Photo;
 use Illuminate\Http\UploadedFile;
-use phpDocumentor\Reflection\DocBlock\Tags\Source;
 
 /**
  * Class SourceFileInfo.
  */
 class SourceFileInfo
 {
-	protected string $originalFilename;
+	/** @var string the original name of the media file or title of the media */
+	protected string $originalName;
+	/** @var string the original extension incl. a preceding dot */
+	protected string $originalExtension;
 	protected string $originalMimeType;
-	protected string $tmpFullPath;
+	protected MediaFile $file;
 
 	/**
 	 * SourceFileInfo constructor.
 	 *
-	 * @param string $originalFilename the original filename as reported by
-	 *                                 the client (in case of an upload) or by
-	 *                                 the (remote) server (in case of an
-	 *                                 import)
-	 * @param string $originalMimeType the original mime-type as reported by
-	 *                                 the client or by the (remote) server
-	 * @param string $tmpFullPath      the temporary location of the file
-	 *                                 after upload from the client or
-	 *                                 fetching from the (remote) server
+	 * @param string    $originalName      the name of the original media file
+	 *                                     or title of the media
+	 * @param string    $originalExtension the extension of the original file
+	 *                                     incl. a preceding dot as reported
+	 *                                     by the client (in case of an
+	 *                                     upload) or by the (remote) server
+	 *                                     (in case of an import)
+	 * @param string    $originalMimeType  the original mime-type as reported
+	 *                                     by the client or by the (remote)
+	 *                                     server
+	 * @param MediaFile $file              the media file
 	 */
-	public function __construct(string $originalFilename, string $originalMimeType, string $tmpFullPath)
+	protected function __construct(string $originalName, string $originalExtension, string $originalMimeType, MediaFile $file)
 	{
-		$this->originalFilename = $originalFilename;
+		$this->originalName = $originalName;
+		$this->originalExtension = $originalExtension;
 		$this->originalMimeType = $originalMimeType;
-		$this->tmpFullPath = $tmpFullPath;
+		$this->file = $file;
 	}
 
 	/**
 	 * Creates a new instance which is suitable, if the source file is a
-	 * local file on the server.
+	 * temporary file.
 	 *
-	 * @param string $path the absolute path of the source file on the same server as Lychee is running on
+	 * @param string             $originalName      the name of the original
+	 *                                              media file or title of the
+	 *                                              media
+	 * @param string             $originalExtension the extension of the
+	 *                                              original file incl. a
+	 *                                              preceding dot
+	 * @param TemporaryLocalFile $file              the temporary file
 	 *
 	 * @return SourceFileInfo the new instance
 	 */
-	public static function createForLocalFile(string $path): SourceFileInfo
+	public static function createByTempFile(string $originalName, string $originalExtension, TemporaryLocalFile $file): SourceFileInfo
 	{
-		return new self($path, mime_content_type($path), $path);
+		return new self($originalName, $originalExtension, $file->getMimeType(), $file);
+	}
+
+	/**
+	 * Creates a new instance which is suitable, if the source file is a
+	 * local file.
+	 *
+	 * @param NativeLocalFile $file the local source file
+	 *
+	 * @return SourceFileInfo the new instance
+	 */
+	public static function createByLocalFile(NativeLocalFile $file): SourceFileInfo
+	{
+		return new self(
+			$file->getBasename(),
+			$file->getExtension(),
+			$file->getMimeType(),
+			$file
+		);
+	}
+
+	/**
+	 * Creates a new instance which is suitable, if the source file is a
+	 * native file on the server.
+	 *
+	 * @param Photo $photo the photo
+	 *
+	 * @return SourceFileInfo the new instance
+	 */
+	public static function createByPhoto(Photo $photo): SourceFileInfo
+	{
+		$file = $photo->size_variants->getOriginal()->getFile();
+
+		return new self(
+			$photo->title,
+			$file->getExtension(),
+			$photo->type,
+			$file
+		);
 	}
 
 	/**
@@ -56,24 +108,50 @@ class SourceFileInfo
 	 *
 	 * @return SourceFileInfo the new instance
 	 */
-	public static function createForUploadedFile(UploadedFile $file): SourceFileInfo
+	public static function createByUploadedFile(UploadedFile $file): SourceFileInfo
 	{
-		return new self($file->getClientOriginalName(), $file->getMimeType(), $file->getPathName());
+		$fallbackTitle = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+
+		return new self(
+			$fallbackTitle,
+			'.' . $file->getClientOriginalExtension(),
+			$file->getMimeType(),
+			NativeLocalFile::createFromUploadedFile($file)
+		);
 	}
 
 	/**
-	 * Returns the original filename of the source file.
+	 * Returns the original name of the source file or its title.
 	 *
-	 * Note that this filename differs from the final filename which Lychee
-	 * uses to store the file in the image storage.
+	 * The original name is either the basename of the originally
+	 * uploaded/downloaded file or - if the source file is already provided
+	 * by a photo in the DB - the user-defined title of the source photo.
 	 *
-	 * This attribute has previously been called `name` in an anonymous array.
+	 * The original name is used as a fallback title for the imported photo
+	 * in case the media file does not provide a title via EXIF data.
 	 *
-	 * @return string the original filename from the client side before upload
+	 * @return string the original name of the media file or the title of the media
 	 */
-	public function getOriginalFilename(): string
+	public function getOriginalName(): string
 	{
-		return $this->originalFilename;
+		return $this->originalName;
+	}
+
+	/**
+	 * Returns the original extension of the source file.
+	 *
+	 * The original file extension is provided as part of the client-side
+	 * file name during upload or by the filename when downloaded from a
+	 * remote server.
+	 * This file extension is used as a fallback to determine the type of
+	 * file, if no better information (i.e. mimetype) can be provided or
+	 * extracted from the file.
+	 *
+	 * @return string the original extension of the file
+	 */
+	public function getOriginalExtension(): string
+	{
+		return $this->originalExtension;
 	}
 
 	/**
@@ -96,26 +174,12 @@ class SourceFileInfo
 	}
 
 	/**
-	 * Returns the path at which Lychee has temporarily stored
-	 * the uploaded or fetched file.
+	 * Returns the media file.
 	 *
-	 * This attribute has previously been called `tmp_name` in an anonymous
-	 * array.
-	 *
-	 * @return string the mime type
+	 * @return MediaFile the media file
 	 */
-	public function getTmpFullPath(): string
+	public function getFile(): MediaFile
 	{
-		return $this->tmpFullPath;
-	}
-
-	/**
-	 * Returns the file extension of the original source file.
-	 *
-	 * @return string the original file extension with a preceding dot
-	 */
-	public function getOriginalFileExtension(): string
-	{
-		return Helpers::getExtension($this->originalFilename, false);
+		return $this->file;
 	}
 }

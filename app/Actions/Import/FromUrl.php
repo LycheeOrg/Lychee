@@ -7,10 +7,9 @@ use App\Actions\Photo\Create;
 use App\Actions\Photo\Extensions\Constants;
 use App\Actions\Photo\Extensions\SourceFileInfo;
 use App\Actions\Photo\Strategies\ImportMode;
-use App\Facades\Helpers;
+use App\Image\TemporaryLocalFile;
 use App\Models\Configs;
 use App\Models\Logs;
-use Illuminate\Support\Facades\Storage;
 
 class FromUrl
 {
@@ -34,36 +33,44 @@ class FromUrl
 			// Reset the execution timeout for every iteration.
 			set_time_limit(ini_get('max_execution_time'));
 
+			$path = parse_url($url, PHP_URL_PATH);
+			$basename = pathinfo($path, PATHINFO_FILENAME);
+			$extension = '.' . pathinfo($path, PATHINFO_EXTENSION);
+
 			// Validate photo type and extension even when $this->photo (=> $photo->add) will do the same.
 			// This prevents us from downloading invalid photos.
 			// Verify extension
-			$extension = Helpers::getExtension($url, true);
 			if (!$this->isValidExtension($extension)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo format not supported (' . $url . ')');
 				continue;
 			}
 
+			// Download file, before exif checks the mimetype, otherwise we download it twice
+			$tmpFile = new TemporaryLocalFile();
+			try {
+				$downloadStream = fopen($url, 'r');
+				$tmpFile->write($downloadStream);
+				fclose($downloadStream);
+			} catch (\Exception $e) {
+				$error = true;
+				Logs::error(__METHOD__, __LINE__, 'Could not download (' . $url . ') to (' . $tmpFile->getAbsolutePath() . ') due to ' . $e->getMessage());
+				continue;
+			}
+
 			// Verify image
-			$type = @exif_imagetype($url);
+			// TODO: Consider to make this test a general part of \App\Actions\Photo\Create::add. Then we don't need those tests at multiple places.
+			$type = @exif_imagetype($tmpFile->getAbsolutePath());
 			if (!$this->isValidImageType($type) && !in_array(strtolower($extension), $this->validExtensions, true)) {
 				$error = true;
 				Logs::error(__METHOD__, __LINE__, 'Photo type not supported (' . $url . ')');
 				continue;
 			}
 
-			$filename = pathinfo($url, PATHINFO_FILENAME) . $extension;
-			$tmp_name = Storage::path('import/' . $filename);
-			if (@copy($url, $tmp_name) === false) {
-				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not copy file (' . $url . ') to temp-folder (' . $tmp_name . ')');
-				continue;
-			}
-
 			// Import photo
-			if ($create->add(SourceFileInfo::createForLocalFile($tmp_name), $albumId) == null) {
+			if ($create->add(SourceFileInfo::createByTempFile($basename, $extension, $tmpFile), $albumId) == null) {
 				$error = true;
-				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmp_name . ')');
+				Logs::error(__METHOD__, __LINE__, 'Could not import file (' . $tmpFile->getAbsolutePath() . ')');
 			}
 		}
 

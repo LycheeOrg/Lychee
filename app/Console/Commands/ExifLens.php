@@ -7,7 +7,9 @@ namespace App\Console\Commands;
 use App\Actions\Photo\Extensions\Constants;
 use App\Metadata\Extractor;
 use App\Models\Photo;
+use App\Models\SizeVariant;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ExifLens extends Command
 {
@@ -57,7 +59,9 @@ class ExifLens extends Command
 		set_time_limit($timeout);
 
 		// we use lens because this is the one which is most likely to be empty.
-		$photos = Photo::query()
+		$photos = Photo::with(['size_variants' => function (HasMany $r) {
+			$r->where('type', '=', SizeVariant::ORIGINAL);
+		}])
 			->where('lens', '=', '')
 			->whereNotIn('type', $this->getValidVideoTypes())
 			->offset($from)
@@ -72,7 +76,7 @@ class ExifLens extends Command
 		$i = $from;
 		/** @var Photo $photo */
 		foreach ($photos as $photo) {
-			$fullPath = $photo->full_path;
+			$fullPath = $photo->size_variants->getOriginal()->full_path;
 			if (file_exists($fullPath)) {
 				$info = $this->metadataExtractor->extract($fullPath, $photo->type);
 				$updated = false;
