@@ -58,14 +58,13 @@ class GeoDataTest extends TestCase
 				'id' => $id,
 				'title' => 'mongolia',
 				'type' => 'image/jpeg',
-				'filesize' => 201316,
 				'iso' => '200',
 				'aperture' => 'f/13.0',
 				'make' => 'NIKON CORPORATION',
 				'model' => 'NIKON D5000',
 				'shutter' => '1/640 s',
 				'focal' => '44 mm',
-				'altitude' => '1633.0000',
+				'altitude' => '1633',
 				'license' => 'none',
 				'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),
@@ -86,6 +85,7 @@ class GeoDataTest extends TestCase
 					'original' => [
 						'width' => 1280,
 						'height' => 850,
+						'filesize' => 201316,
 					],
 				],
 			]
