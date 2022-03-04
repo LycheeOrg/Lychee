@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Add a filesize colum for size variants to make
+ * Add a filesize column for size variants to make it
  * easier to implement filesystems with a Lychee backend
  * that needs to know in advance the size of files, for example.
  *
