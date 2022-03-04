@@ -57,11 +57,10 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		$sizeVariantFactory->init($this->photo, $namingStrategy);
 
 		// Create size variant for original
-		$filesize = empty($this->parameters->info['filesize']) ? 0 : intval($this->parameters->info['filesize']);
 		$original = $sizeVariantFactory->createOriginal(
 			$this->parameters->info['width'],
 			$this->parameters->info['height'],
-			$filesize
+			$this->parameters->info['filesize']
 		);
 		try {
 			$this->putSourceIntoFinalDestination($original->short_path);

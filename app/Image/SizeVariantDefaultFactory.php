@@ -277,8 +277,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
 		if (!$sv) {
-			// Filesize is not known before creating the file, set to 0 meanwhile
-			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight, 0);
+			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight);
 			if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 				$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
 				if ($success) {

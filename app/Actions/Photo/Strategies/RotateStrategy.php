@@ -94,7 +94,6 @@ class RotateStrategy extends AddBaseStrategy
 		/* @var Extractor $metadataExtractor */
 		$metadataExtractor = resolve(Extractor::class);
 		// TODO: See above, we must stop using absolute paths
-		$originalFilesize = $metadataExtractor->filesize($tmpFile->getAbsolutePath());
 		$this->photo->checksum = $metadataExtractor->checksum($tmpFile->getAbsolutePath());
 		$this->photo->save();
 
@@ -122,6 +121,7 @@ class RotateStrategy extends AddBaseStrategy
 		// because the checksum of the photo has changed.
 		// Using a different filename allows to avoid caching effects.
 		// Sic! Swap width and height here, because the image has been rotated
+		$originalFilesize = $metadataExtractor->filesize($tmpFile->getAbsolutePath());
 		$newOriginalSizeVariant = $sizeVariantFactory->createOriginal($oldOriginalHeight, $oldOriginalWidth, $originalFilesize);
 		$this->putSourceIntoFinalDestination($newOriginalSizeVariant->short_path);
 

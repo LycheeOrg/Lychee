@@ -182,7 +182,7 @@ class SizeVariants implements Arrayable, JsonSerializable
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
 	 */
-	public function create(int $sizeVariantType, string $shortPath, int $width, int $height, int $filesize): SizeVariant
+	public function create(int $sizeVariantType, string $shortPath, int $width, int $height, int $filesize = -1): SizeVariant
 	{
 		if (!$this->photo->exists) {
 			throw new \LogicException('cannot create a size variant for a photo whose id is not yet persisted to DB');
