@@ -173,6 +173,11 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			/* @var  Extractor $metadataExtractor */
 			$metadataExtractor = resolve(Extractor::class);
 			$this->photo->checksum = $metadataExtractor->checksum($absolutePath);
+			// stat info (filesize, access mode etc) are cached by PHP to avoid costly I/O calls.
+			// If cache if not cleared, the size before rotation is used and later yields incorrect value.
+			clearstatcache(true, $absolutePath);
+			// Update filesize for later use e.g. when creating variants
+			$this->parameters->info['filesize'] = $metadataExtractor->filesize($absolutePath);
 			$this->photo->save();
 		}
 	}
