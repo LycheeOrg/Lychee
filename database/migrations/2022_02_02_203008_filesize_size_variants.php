@@ -62,9 +62,22 @@ class FilesizeSizeVariants extends Migration
 
 		DB::commit();
 
-		Schema::table(self::PHOTOS_TAB, function (Blueprint $table) {
-			$table->dropColumn(self::SIZE_COL);
-		});
+		/*
+		 * Ideally, we would be using dropColumn. However it seems that the Eloquent implementation
+		 * of dropColumn for SQLite was before SQLite supported the ALTER TABLE DROP COLUMN statement.
+		 * Thus, the technique was to drop all constraints, copy to a temporary table without
+		 * the deleted column, and remove the old column. This can be seen by inspecting
+		 * the SQL commands when trying to run the migration (env DB_LOG_SQL=true).
+		 * However, in this scenario, the command fails because of :
+		 * `FOREIGN KEY constraint failed (SQL: DROP TABLE photos)`.
+		 * This is a really strange bug, because redoing by hand all migration commands just work.
+		 * To avoid corrupting user databases, and because SQLite now support column deletion,
+		 * just run the command manually.
+		 */
+		// Schema::table(self::PHOTOS_TAB, function (Blueprint $table) {
+		// 	$table->dropColumn(self::SIZE_COL);
+		// });
+		DB::statement('ALTER TABLE ' . self::PHOTOS_TAB . ' DROP COLUMN ' . self::SIZE_COL);
 	}
 
 	/**
@@ -101,8 +114,10 @@ class FilesizeSizeVariants extends Migration
 
 		DB::commit();
 
-		Schema::table(self::VAR_TAB, function (Blueprint $table) {
-			$table->dropColumn(self::SIZE_COL);
-		});
+		// See comment if the upward migration.
+		// Schema::table(self::VAR_TAB, function (Blueprint $table) {
+		// 	$table->dropColumn(self::SIZE_COL);
+		// });
+		DB::statement('ALTER TABLE ' . self::VAR_TAB . ' DROP COLUMN ' . self::SIZE_COL);
 	}
 }
