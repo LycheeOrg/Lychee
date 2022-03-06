@@ -172,7 +172,6 @@ class AddStandaloneStrategy extends AddBaseStrategy
 			// and the checksum may have changed.
 			/* @var  Extractor $metadataExtractor */
 			$metadataExtractor = resolve(Extractor::class);
-			$this->photo->size_variants->getOriginal()->filesize = $metadataExtractor->filesize($absolutePath);
 			$this->photo->checksum = $metadataExtractor->checksum($absolutePath);
 			$this->photo->save();
 		}
