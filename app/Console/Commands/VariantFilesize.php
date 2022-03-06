@@ -41,32 +41,21 @@ class VariantFilesize extends Command
 				return false;
 			}
 
-			// Number of queries
-			$pages = ceil($count / $limit);
+			// Internally, only holds $limit entries at once
+			$variants = $variants_query->lazyById($limit);
 
-			$bar = $this->output->createProgressBar($count);
-			$bar->start();
-
-			for ($i = 0; $i < $pages; $i++) {
-				// No need to offset, because previous variants have no -1 filesize anymore
-				$variants = $variants_query->limit($limit)->get();
-
-				/* @var SizeVariant $variant */
-				foreach ($variants as $variant) {
-					$fullPath = $variant->full_path;
-					if (file_exists($fullPath)) {
-						$variant->filesize = filesize($fullPath);
-						if (!$variant->save()) {
-							$this->line('Failed to update filesize for ' . $fullPath . '.');
-						}
-					} else {
-						$this->line('File does not exist for ' . $fullPath . '.');
+			/* @var SizeVariant $variant */
+			$this->withProgressBar($variants, function ($variant) {
+				$fullPath = $variant->full_path;
+				if (file_exists($fullPath)) {
+					$variant->filesize = filesize($fullPath);
+					if (!$variant->save()) {
+						$this->line('Failed to update filesize for ' . $fullPath . '.');
 					}
-					$bar->advance();
+				} else {
+					$this->line('File does not exist for ' . $fullPath . '.');
 				}
-			}
-
-			$bar->finish();
+			});
 		}
 	}
 }
