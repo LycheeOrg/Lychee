@@ -122,8 +122,7 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 *
 	 * In case 3c, the method does not actually modify the file.
 	 *
-	 * This method also updates the attributes {@link SizeVariant::$filesize}
-	 * and {@link Photo::$checksum} to the new values after rotation.
+	 * This method also updates the attribute {@link Photo::$checksum} to the new value after rotation.
 	 */
 	protected function normalizeOrientation(): void
 	{
