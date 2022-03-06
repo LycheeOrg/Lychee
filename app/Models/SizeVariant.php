@@ -42,7 +42,7 @@ use League\Flysystem\Adapter\Local;
  * @property string              full_path
  * @property int                 width
  * @property int                 height
- * @property int          		 filesize
+ * @property int                 filesize
  * @property Collection<SymLink> sym_links
  */
 class SizeVariant extends Model
