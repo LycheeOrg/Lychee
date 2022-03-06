@@ -46,7 +46,7 @@ class VariantFilesize extends Command
 
 			/* @var SizeVariant $variant */
 			$this->withProgressBar($variants, function ($variant) {
-				$fullPath = $variant->full_path;
+				$fullPath = $variant->getFile()->getAbsolutePath();
 				if (file_exists($fullPath)) {
 					$variant->filesize = filesize($fullPath);
 					if (!$variant->save()) {
