@@ -33,13 +33,13 @@ class FilesizeSizeVariants extends Migration
 	{
 		// To avoid doing I/O on every photo, which would be prohibitive
 		// on large instances, and because JPEG compression makes approximations
-		// from original filesize too approximative, just set filesize to -1
+		// from original filesize too approximative, just set filesize to 0
 		// for every variant except the original, indicating that the size
 		// has not been calculated yes.
 		// The real calculation can be done by calling `artisan lychee:variant_filesize` from the CLI.
 		// This will replace the default value by the actual filesize but takes time.
 		Schema::table(self::VAR_TAB, function (Blueprint $table) {
-			$table->bigInteger(self::SIZE_COL)->nullable(false)->default(-1);
+			$table->unsignedBigInteger(self::SIZE_COL)->nullable(false)->default(0);
 		});
 
 		DB::beginTransaction();

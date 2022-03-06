@@ -32,7 +32,7 @@ class VariantFilesize extends Command
 
 		if ($this->confirm('This command can take a long time for large instances. Do you really want to run it now ?')) {
 			$variants_query = SizeVariant::query()
-				->where('filesize', '=', -1)->orderBy('id');
+				->where('filesize', '=', 0)->orderBy('id');
 
 			$count = $variants_query->count();
 			if ($count == 0) {

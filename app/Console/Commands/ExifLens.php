@@ -80,7 +80,7 @@ class ExifLens extends Command
 			if (file_exists($fullPath)) {
 				$info = $this->metadataExtractor->extract($fullPath, $photo->type);
 				$updated = false;
-				if ($photo->size_variants->getOriginal()->filesize == -1 && $info['filesize'] != '') {
+				if ($photo->size_variants->getOriginal()->filesize == 0 && $info['filesize'] != '') {
 					$photo->size_variants->getOriginal()->filesize = intval($info['filesize']);
 					$updated = true;
 				}
