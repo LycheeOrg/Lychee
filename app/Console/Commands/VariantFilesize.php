@@ -24,10 +24,11 @@ class VariantFilesize extends Command
 	/**
 	 * Execute the console command.
 	 *
-	 * @return mixed
+	 * @return int
 	 */
-	public function handle()
+	public function handle(): int
 	{
+		$exit_code = 0;
 		$limit = intval($this->argument('limit'));
 
 		if ($this->confirm('This command can take a long time for large instances. Do you really want to run it now ?')) {
@@ -38,24 +39,28 @@ class VariantFilesize extends Command
 			if ($count == 0) {
 				$this->line('All filesize variants already set in database.');
 
-				return false;
+				return $exit_code;
 			}
 
 			// Internally, only holds $limit entries at once
 			$variants = $variants_query->lazyById($limit);
 
 			/* @var SizeVariant $variant */
-			$this->withProgressBar($variants, function ($variant) {
+			$this->withProgressBar($variants, function ($variant) use (&$exit_code) {
 				$fullPath = $variant->getFile()->getAbsolutePath();
 				if (file_exists($fullPath)) {
 					$variant->filesize = filesize($fullPath);
 					if (!$variant->save()) {
 						$this->line('Failed to update filesize for ' . $fullPath . '.');
+						$exit_code = -1;
 					}
 				} else {
-					$this->line('File does not exist for ' . $fullPath . '.');
+					$this->line('No file found at ' . $fullPath . '.');
+					$exit_code = -1;
 				}
 			});
 		}
+
+		return $exit_code;
 	}
 }
