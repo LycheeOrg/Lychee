@@ -541,7 +541,7 @@ csrf.getCSRFCookieValue = function () {
 	});
 	// We must remove all '%3D' from the end of the string.
 	// Background:
-	// The actual binary value of the CSFR value is encoded in Bade64.
+	// The actual binary value of the CSFR value is encoded in Base64.
 	// If the length of original, binary value is not a multiple of 3 bytes,
 	// the encoding gets padded with `=` on the right; i.e. there might be
 	// zero, one or two `=` at the end of the encoded value.
@@ -773,7 +773,7 @@ album.getByID = function (photoID) {
  */
 album.getSubByID = function (albumID) {
 	if (albumID == null || !album.json || !album.json.albums) {
-		lychee.error("Error: Album json not found!");
+		loadingBar.show("error", "Error: Album json not found!");
 		return null;
 	}
 
@@ -1358,16 +1358,10 @@ album.setSorting = function (albumID) {
 /**
  * Sets the accessibility attributes of an album.
  *
- * **ATTENTION**: Despite its name this method does not only set the
- * `is_public` attribute of the album, but configures most of the attributes
- * which contribute to the accessibility of an album.
- *
- * TODO: Find a better name for the method.
- *
  * @param {string} albumID
  * @returns {void}
  */
-album.setPublic = function (albumID) {
+album.setProtectionPolicy = function (albumID) {
 	var action = function action(data) {
 		albums.refresh();
 
@@ -1413,7 +1407,7 @@ album.setPublic = function (albumID) {
 			params.password = null;
 		}
 
-		api.post("Album::setPublic", params);
+		api.post("Album::setProtectionPolicy", params);
 	};
 
 	var msg = lychee.html(_templateObject10, lychee.locale["ALBUM_PUBLIC"], lychee.locale["ALBUM_PUBLIC_EXPL"], build.iconic("check"), lychee.locale["ALBUM_FULL"], lychee.locale["ALBUM_FULL_EXPL"], build.iconic("check"), lychee.locale["ALBUM_HIDDEN"], lychee.locale["ALBUM_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["ALBUM_DOWNLOADABLE"], lychee.locale["ALBUM_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE"], lychee.locale["ALBUM_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["ALBUM_PASSWORD_PROT"], lychee.locale["ALBUM_PASSWORD_PROT_EXPL"], lychee.locale["PASSWORD"], lychee.locale["ALBUM_NSFW"], lychee.locale["ALBUM_NSFW_EXPL"]);
@@ -2672,7 +2666,7 @@ contextMenu.add = function (e) {
 						title: build.iconic("eye") + lychee.locale["VISIBILITY_ALBUM"],
 						visible: lychee.enable_button_visibility,
 						fn: function fn() {
-							return album.setPublic(albumID);
+							return album.setProtectionPolicy(albumID);
 						}
 					});
 				}
@@ -3131,7 +3125,7 @@ contextMenu.photoMore = function (photoID, e) {
 				title: build.iconic("eye") + lychee.locale["VISIBILITY_PHOTO"],
 				visible: lychee.enable_button_visibility,
 				fn: function fn() {
-					return _photo3.setPublic(_photo3.getID());
+					return _photo3.setProtectionPolicy(_photo3.getID());
 				}
 			});
 		}
@@ -3245,10 +3239,26 @@ contextMenu.getSubIDs = function (albums, albumID) {
  *
  * TODO: Actually the callbacks should enclose all additional parameters (e.g., `IDs`) they need. Refactor the callbacks.
  *
+ * The name of the root node in the context menu may be provided by the caller
+ * depending on the use-case.
+ * Keep in mind, that the root album is not visible to the user during normal
+ * browsing.
+ * Photos on the root level are stashed away into an virtual album called
+ * "Unsorted".
+ * Albums on the root level are shown as siblings, but the root node itself
+ * is invisible.
+ * So the user actually sees a forest.
+ * Hence, the root node should be named differently to meet the user's
+ * expectations.
+ * When the user moves/copies/merges photos, then the root node should be
+ * called "Unsorted".
+ * When the user moves/copies/merges albums, then the root node should be
+ * called "Root".
+ *
  * @param {string[]} IDs - IDs of source objects (either album or photo IDs)
  * @param {jQuery.Event} e - Some (?) event
  * @param {TargetAlbumSelectedCB} callback - to be called after the user has selected a target ID
- * @param {string} [kind=UNSORTED] - Name of root album; either "UNSORTED" or "ROOT"; TODO: Why do we need two different names for the same thing?
+ * @param {string} [kind=UNSORTED] - Name of root album; either "UNSORTED" or "ROOT"
  * @param {boolean} [display_root=true] - Whether the root (aka unsorted) album shall be shown
  */
 contextMenu.move = function (IDs, e, callback) {
@@ -3375,9 +3385,9 @@ contextMenu.shareAlbum = function (albumID, e) {
 				// Copy the url with prefilled password param
 				url += "?password=";
 			}
-			if (lychee.clipboardCopy(url)) {
-				loadingBar.show("success", lychee.locale["URL_COPIED_TO_CLIPBOARD"]);
-			}
+			navigator.clipboard.writeText(url).then(function () {
+				return loadingBar.show("success", lychee.locale["URL_COPIED_TO_CLIPBOARD"]);
+			});
 		}
 	}];
 
@@ -3472,14 +3482,14 @@ header.bind = function () {
 	});
 
 	header.dom("#button_visibility").on(eventName, function () {
-		_photo3.setPublic(_photo3.getID());
+		_photo3.setProtectionPolicy(_photo3.getID());
 	});
 	header.dom("#button_share").on(eventName, function (e) {
 		contextMenu.sharePhoto(_photo3.getID(), e);
 	});
 
 	header.dom("#button_visibility_album").on(eventName, function () {
-		album.setPublic(album.getID());
+		album.setProtectionPolicy(album.getID());
 	});
 
 	header.dom("#button_sharing_album_users").on(eventName, function () {
@@ -4214,12 +4224,14 @@ $(document).ready(function () {
 		return false;
 	}, false).on("drop",
 	/** @param {jQuery.Event} e */function (e) {
-		if (!album.isUploadable() || visible.contextMenu() || basicModal.visible() || visible.leftMenu() || visible.config() || !(visible.album() || visible.albums())) {
-			return false;
+		if (album.isUploadable() && !visible.contextMenu() && !basicModal.visible() && !visible.leftMenu() && !visible.config() && (visible.album() || visible.albums())) {
+			// Detect if dropped item is a file or a link
+			if (e.originalEvent.dataTransfer.files.length > 0) {
+				upload.start.local(e.originalEvent.dataTransfer.files);
+			} else if (e.originalEvent.dataTransfer.getData("Text").length > 3) {
+				upload.start.url(e.originalEvent.dataTransfer.getData("Text"));
+			}
 		}
-
-		// Detect if dropped item is a file or a link
-		if (e.originalEvent.dataTransfer.files.length > 0) upload.start.local(e.originalEvent.dataTransfer.files);else if (e.originalEvent.dataTransfer.getData("Text").length > 3) upload.start.url(e.originalEvent.dataTransfer.getData("Text"));
 
 		return false;
 	})
@@ -4241,14 +4253,14 @@ $(document).ready(function () {
 				}
 			}
 
-			if (filesToUpload.length > 0) {
-				// We perform the check so deep because we don't want to
-				// prevent the paste from working in text input fields, etc.
-				if (album.isUploadable() && !visible.contextMenu() && !basicModal.visible() && !visible.leftMenu() && !visible.config() && (visible.album() || visible.albums())) {
-					upload.start.local(filesToUpload);
-				}
+			// We perform the check so deep because we don't want to
+			// prevent the paste from working in text input fields, etc.
+			if (filesToUpload.length > 0 && album.isUploadable() && !visible.contextMenu() && !basicModal.visible() && !visible.leftMenu() && !visible.config() && (visible.album() || visible.albums())) {
+				upload.start.local(filesToUpload);
 
 				return false;
+			} else {
+				return true;
 			}
 		}
 	});
@@ -4590,21 +4602,7 @@ var lychee = {
 	full_photo: true,
 	downloadable: false,
 	public_photos_hidden: true,
-	/**
-  * Enable only v4+
-  * @type boolean
-  */
 	share_button_visible: false,
-	/**
-  * Enable api_V2
-  * @type boolean
-  */
-	api_V2: false,
-	/**
-  * Enable sub_albums features
-  * @type boolean
-  */
-	sub_albums: false,
 	/**
   * Enable admin mode (multi-user)
   * @type boolean
@@ -4823,18 +4821,6 @@ lychee.init = function () {
 	api.post("Session::init", {},
 	/** @param {InitializationData} data */
 	function (data) {
-		// TODO: The case with "status = 0" (i.e. no configuration) should result in a HTTP error response
-		if (data.status === 0) {
-			// No configuration
-			lychee.setMode("public");
-			header.dom().hide();
-			lychee.content.hide();
-			$("body").append(build.no_content("cog"));
-			settings.createConfig();
-
-			return;
-		}
-
 		lychee.parseInitializationData(data);
 
 		if (data.status === 2) {
@@ -4849,10 +4835,11 @@ lychee.init = function () {
 			// This might leak confidential photos to anybody if the DB is filled
 			// with photos and the admin password reset to `null`.
 			if (data.config.login === false) settings.createLogin();
-		}
-
-		if (data.status === 1) {
+		} else if (data.status === 1) {
 			lychee.setMode("public");
+		} else {
+			loadingBar.show("error", "Error: Unexpected status");
+			return;
 		}
 
 		if (isFirstInitialization) {
@@ -5490,7 +5477,17 @@ lychee.retinize = function () {
  * @param {DropboxLoadedCB} callback
  */
 lychee.loadDropbox = function (callback) {
-	if (lychee.dropbox === false && lychee.dropboxKey != null && lychee.dropboxKey !== "") {
+	if (!lychee.dropboxKey) {
+		loadingBar.show("error", "Error: Dropbox key not set");
+		return;
+	}
+
+	// If the dropbox component has already been loaded, immediately call
+	// the callback; otherwise load the component first and call callback
+	// on success.
+	if (lychee.dropbox) {
+		callback();
+	} else {
 		loadingBar.show();
 
 		var g = document.createElement("script");
@@ -5509,14 +5506,6 @@ lychee.loadDropbox = function (callback) {
 			callback();
 		};
 		s.parentNode.insertBefore(g, s);
-	} else if (lychee.dropbox === true && lychee.dropboxKey != null && lychee.dropboxKey !== "") {
-		callback();
-	} else {
-		// TODO: Is this branch ever called?
-		// In particular, this branch behaves differently from the other two
-		// in the sense that it neither loads the Dropbox component nor
-		// calls the callback.
-		settings.setDropboxKey();
 	}
 };
 
@@ -5739,64 +5728,6 @@ lychee.getBaseUrl = function () {
 	} else {
 		return location.href.replace(location.hash, "");
 	}
-};
-
-/**
- * Copied from https://github.com/feross/clipboard-copy/blob/9eba597c774feed48301fef689099599d612387c/index.js
- *
- * @param {string} text
- * @returns {boolean}
- */
-lychee.clipboardCopy = function (text) {
-	// Use the Async Clipboard API when available. Requires a secure browsing
-	// context (i.e. HTTPS)
-	if (navigator.clipboard) {
-		navigator.clipboard.writeText(text).catch(function (err) {
-			throw err !== undefined ? err : new DOMException("The request is not allowed", "NotAllowedError");
-		});
-		return false;
-	}
-
-	// ...Otherwise, use document.execCommand() fallback
-	// TODO: The command `document.execCommand` is deprecated (used below)
-	// The clipboard API (used above) is provided by all recent browsers
-	// see https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API
-	// Probably, the code below is dead code
-	// TODO: Simply nuke it, if this is consensus among developers.
-
-	// Put the text to copy into a <span>
-	var span = document.createElement("span");
-	span.textContent = text;
-
-	// Preserve consecutive spaces and newlines
-	span.style.whiteSpace = "pre";
-
-	// Add the <span> to the page
-	document.body.appendChild(span);
-
-	// Make a selection object representing the range of text selected by the user
-	var selection = window.getSelection();
-	var range = window.document.createRange();
-	selection.removeAllRanges();
-	range.selectNode(span);
-	selection.addRange(range);
-
-	// Copy text to the clipboard
-	var success = false;
-
-	try {
-		success = window.document.execCommand("copy");
-	} catch (err) {
-		console.log("error", err);
-	}
-
-	// Cleanup
-	selection.removeAllRanges();
-	window.document.body.removeChild(span);
-
-	return success;
-	// ? Promise.resolve()
-	// : Promise.reject(new DOMException('The request is not allowed', 'NotAllowedError'))
 };
 
 /**
@@ -6447,18 +6378,17 @@ mapview.isInitialized = function () {
  * @returns {void}
  */
 mapview.title = function (_albumID, _albumTitle) {
-	// TODO: Where are these single-letter IDs for builtin-smart albums defined?
 	switch (_albumID) {
-		case "f":
+		case SmartAlbumID.STARRED:
 			lychee.setTitle(lychee.locale["STARRED"], false);
 			break;
-		case "s":
+		case SmartAlbumID.PUBLIC:
 			lychee.setTitle(lychee.locale["PUBLIC"], false);
 			break;
-		case "r":
+		case SmartAlbumID.RECENT:
 			lychee.setTitle(lychee.locale["RECENT"], false);
 			break;
-		case "0":
+		case SmartAlbumID.UNSORTED:
 			lychee.setTitle(lychee.locale["UNSORTED"], false);
 			break;
 		case null:
@@ -7232,7 +7162,7 @@ password.getDialog = function (albumID, callback) {
 		api.post("Album::unlock", params, function () {
 			basicModal.close();
 			callback();
-		}, null, function (jqXHR, params, lycheeException) {
+		}, null, function (jqXHR, params2, lycheeException) {
 			if ((jqXHR.status === 401 || jqXHR.status === 403) && lycheeException.message.includes("Password is invalid")) {
 				basicModal.error("password");
 				return true;
@@ -7797,14 +7727,15 @@ _photo3.setStar = function (photoIDs) {
 };
 
 /**
- * Edits the visibility properties of a photo.
+ * Edits the protection policy of a photo.
  *
- * This method is a misnomer, it does not only set the properties, it also creates and handles the edit dialog
+ * This method is a misnomer, it does not only set the policy, it also creates
+ * and handles the edit dialog
  *
  * @param {string} photoID
  * @returns {void}
  */
-_photo3.setPublic = function (photoID) {
+_photo3.setProtectionPolicy = function (photoID) {
 	var msg_switch = lychee.html(_templateObject55, lychee.locale["PHOTO_PUBLIC"], lychee.locale["PHOTO_PUBLIC_EXPL"]);
 
 	var msg_choices = lychee.html(_templateObject56, build.iconic("check"), lychee.locale["PHOTO_FULL"], lychee.locale["PHOTO_FULL_EXPL"], build.iconic("check"), lychee.locale["PHOTO_HIDDEN"], lychee.locale["PHOTO_HIDDEN_EXPL"], build.iconic("check"), lychee.locale["PHOTO_DOWNLOADABLE"], lychee.locale["PHOTO_DOWNLOADABLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE"], lychee.locale["PHOTO_SHARE_BUTTON_VISIBLE_EXPL"], build.iconic("check"), lychee.locale["PHOTO_PASSWORD_PROT"], lychee.locale["PHOTO_PASSWORD_PROT_EXPL"]);
@@ -7850,7 +7781,10 @@ _photo3.setPublic = function (photoID) {
 
 		// TODO: Actually, the action handler receives an object with values of all input fields. There is no need to run use a jQuery-selector
 		var action = function action() {
-			// Note: `newIsPublic` must be of type `number`, because `photo.is_public` is a number, too
+			/**
+    * Note: `newIsPublic` must be of type `number`, because `photo.is_public` is a number, too
+    * @type {number}
+    */
 			var newIsPublic = $('.basicModal .switch input[name="is_public"]:checked').length;
 
 			if (newIsPublic !== _photo3.json.is_public) {
@@ -7864,9 +7798,10 @@ _photo3.setPublic = function (photoID) {
 
 				albums.refresh();
 
-				// Photo::setPublic simply flips the current state.
-				// Ugly API but effective...
-				api.post("Photo::setPublic", { photoID: photoID });
+				api.post("Photo::setPublic", {
+					photoID: photoID,
+					is_public: newIsPublic !== 0
+				});
 			}
 
 			basicModal.close();
@@ -8280,9 +8215,9 @@ _photo3.showDirectLinks = function (photoID) {
 	$(".basicModal input:focus").blur();
 
 	$(".directLinks .basicModal__button").on(lychee.getEventName(), function () {
-		if (lychee.clipboardCopy($(this).prev().val())) {
-			loadingBar.show("success", lychee.locale["URL_COPIED_TO_CLIPBOARD"]);
-		}
+		navigator.clipboard.writeText($(this).prev().val()).then(function () {
+			return loadingBar.show("success", lychee.locale["URL_COPIED_TO_CLIPBOARD"]);
+		});
 	});
 };
 
@@ -8451,134 +8386,6 @@ var settings = {};
  */
 settings.open = function () {
 	view.settings.init();
-};
-
-/**
- * @returns {void}
- */
-settings.createConfig = function () {
-	/**
-  * @param {XMLHttpRequest} jqXHR the jQuery XMLHttpRequest object, see {@link https://api.jquery.com/jQuery.ajax/#jqXHR}.
-  * @param {Object} params the original JSON parameters of the request
-  * @param {?LycheeException} lycheeException the Lychee exception
-  * @returns {boolean}
-  */
-	var errorHandler = function errorHandler(jqXHR, params, lycheeException) {
-		var _data = lycheeException ? lycheeException.message : lychee.locale["ERROR_UNKNOWN"];
-
-		// TODO: Where, when and how does the server throw these error messages?
-		// Have these error message ever been used? The backend doesn't
-		// define these message and had not even done so before the re-factoring.
-		// Are these conditions legacy and probably never taken?
-		if (_data === "Warning: Connection failed!") {
-			// Connection failed
-			basicModal.show({
-				body: "<p>" + lychee.locale["ERROR_DB_1"] + "</p>",
-				buttons: {
-					action: {
-						title: lychee.locale["RETRY"],
-						fn: function fn() {
-							return settings.createConfig();
-						}
-					}
-				}
-			});
-		} else if (_data === "Warning: Creation failed!") {
-			// Creation failed
-			basicModal.show({
-				body: "<p>" + lychee.locale["ERROR_DB_2"] + "</p>",
-				buttons: {
-					action: {
-						title: lychee.locale["RETRY"],
-						fn: function fn() {
-							return settings.createConfig();
-						}
-					}
-				}
-			});
-		} else if (_data === "Warning: Could not create file!") {
-			// Could not create file
-			basicModal.show({
-				body: "<p>" + lychee.locale["ERROR_CONFIG_FILE"] + "</p>",
-				buttons: {
-					action: {
-						title: lychee.locale["RETRY"],
-						fn: function fn() {
-							return settings.createConfig();
-						}
-					}
-				}
-			});
-		} else {
-			// Something else went wrong
-			basicModal.show({
-				body: "<p>" + _data + "</p>",
-				buttons: {
-					action: {
-						title: lychee.locale["RETRY"],
-						fn: function fn() {
-							return settings.createConfig();
-						}
-					}
-				}
-			});
-		}
-
-		return true;
-	};
-
-	/**
-  * @typedef ConfigDialogResult
-  *
-  * @property {string} dbHost
-  * @property {string} dbUser
-  * @property {string} dbPassword
-  * @property {string} dbName
-  * @property {string} dbTablePrefix
-  */
-
-	/**
-  * @param {ConfigDialogResult} data
-  * @returns {void}
-  */
-	var action = function action(data) {
-		var dbName = data.dbName || "lychee";
-		var dbUser = data.dbUser || "";
-		var dbPassword = data.dbPassword || "";
-		var dbHost = data.dbHost || "localhost";
-		var dbTablePrefix = data.dbTablePrefix || "";
-
-		if (dbUser.length < 1) {
-			basicModal.error("dbUser");
-			return;
-		}
-
-		basicModal.close();
-
-		var params = {
-			dbName: dbName,
-			dbUser: dbUser,
-			dbPassword: dbPassword,
-			dbHost: dbHost,
-			dbTablePrefix: dbTablePrefix
-		};
-
-		api.post("Config::create", params, function () {
-			return window.location.reload();
-		}, null, errorHandler);
-	};
-
-	var msg = "\n\t\t<p>\n\t\t\t" + lychee.locale["DB_INFO_TITLE"] + "\n\t\t\t<input name='dbHost' class='text' type='text' placeholder='" + lychee.locale["DB_INFO_HOST"] + "' value=''>\n\t\t\t<input name='dbUser' class='text' type='text' placeholder='" + lychee.locale["DB_INFO_USER"] + "' value=''>\n\t\t\t<input name='dbPassword' class='text' type='password' placeholder='" + lychee.locale["DB_INFO_PASSWORD"] + "' value=''>\n\t\t</p><p>\n\t\t\t" + lychee.locale["DB_INFO_TEXT"] + "\n\t\t\t<input name='dbName' class='text' type='text' placeholder='" + lychee.locale["DB_NAME"] + "' value=''>\n\t\t\t<input name='dbTablePrefix' class='text' type='text' placeholder='" + lychee.locale["DB_PREFIX"] + "' value=''>\n\t\t</p>";
-
-	basicModal.show({
-		body: msg,
-		buttons: {
-			action: {
-				title: lychee.locale["DB_CONNECT"],
-				fn: action
-			}
-		}
-	});
 };
 
 settings.createLogin = function () {
@@ -9551,7 +9358,7 @@ _sidebar.createStructure.album = function (data) {
 	}
 
 	var videoCount = data.photos.reduce(function (count, photo) {
-		return count + (photo.type.indexOf("video") > -1);
+		return count + (photo.type.indexOf("video") > -1) ? 1 : 0;
 	}, 0);
 
 	structure.album = {

@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Album;
 
-use App\DTO\AlbumAccessSettings;
+use App\DTO\AlbumProtectionPolicy;
 use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasBaseAlbum;
@@ -12,13 +12,13 @@ use App\Http\Requests\Traits\HasPasswordTrait;
 use App\Rules\PasswordRule;
 use App\Rules\RandomIDRule;
 
-class SetAlbumAccessSettingsRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
+class SetAlbumProtectionPolicyRequest extends BaseApiRequest implements HasBaseAlbum, HasPassword
 {
 	use HasBaseAlbumTrait;
 	use HasPasswordTrait;
 
 	protected bool $isPasswordProvided;
-	protected AlbumAccessSettings $albumAccessSettings;
+	protected AlbumProtectionPolicy $albumAccessSettings;
 
 	/**
 	 * {@inheritDoc}
@@ -36,12 +36,12 @@ class SetAlbumAccessSettingsRequest extends BaseApiRequest implements HasBaseAlb
 		return [
 			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
 			HasPassword::PASSWORD_ATTRIBUTE => ['sometimes', new PasswordRule(true)],
-			AlbumAccessSettings::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
-			AlbumAccessSettings::REQUIRES_LINK_ATTRIBUTE => 'required|boolean',
-			AlbumAccessSettings::IS_NSFW_ATTRIBUTE => 'required|boolean',
-			AlbumAccessSettings::IS_DOWNLOADABLE_ATTRIBUTE => 'required|boolean',
-			AlbumAccessSettings::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE => 'required|boolean',
-			AlbumAccessSettings::GRANTS_FULL_PHOTO_ATTRIBUTE => 'required|boolean',
+			AlbumProtectionPolicy::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
+			AlbumProtectionPolicy::REQUIRES_LINK_ATTRIBUTE => 'required|boolean',
+			AlbumProtectionPolicy::IS_NSFW_ATTRIBUTE => 'required|boolean',
+			AlbumProtectionPolicy::IS_DOWNLOADABLE_ATTRIBUTE => 'required|boolean',
+			AlbumProtectionPolicy::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE => 'required|boolean',
+			AlbumProtectionPolicy::GRANTS_FULL_PHOTO_ATTRIBUTE => 'required|boolean',
 		];
 	}
 
@@ -53,22 +53,22 @@ class SetAlbumAccessSettingsRequest extends BaseApiRequest implements HasBaseAlb
 		$this->album = $this->albumFactory->findBaseAlbumOrFail(
 			$values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]
 		);
-		$this->albumAccessSettings = new AlbumAccessSettings(
-			static::toBoolean($values[AlbumAccessSettings::IS_PUBLIC_ATTRIBUTE]),
-			static::toBoolean($values[AlbumAccessSettings::REQUIRES_LINK_ATTRIBUTE]),
-			static::toBoolean($values[AlbumAccessSettings::IS_NSFW_ATTRIBUTE]),
-			static::toBoolean($values[AlbumAccessSettings::IS_DOWNLOADABLE_ATTRIBUTE]),
-			static::toBoolean($values[AlbumAccessSettings::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE]),
-			static::toBoolean($values[AlbumAccessSettings::GRANTS_FULL_PHOTO_ATTRIBUTE]),
+		$this->albumAccessSettings = new AlbumProtectionPolicy(
+			static::toBoolean($values[AlbumProtectionPolicy::IS_PUBLIC_ATTRIBUTE]),
+			static::toBoolean($values[AlbumProtectionPolicy::REQUIRES_LINK_ATTRIBUTE]),
+			static::toBoolean($values[AlbumProtectionPolicy::IS_NSFW_ATTRIBUTE]),
+			static::toBoolean($values[AlbumProtectionPolicy::IS_DOWNLOADABLE_ATTRIBUTE]),
+			static::toBoolean($values[AlbumProtectionPolicy::IS_SHARE_BUTTON_VISIBLE_ATTRIBUTE]),
+			static::toBoolean($values[AlbumProtectionPolicy::GRANTS_FULL_PHOTO_ATTRIBUTE]),
 		);
 		$this->isPasswordProvided = array_key_exists(HasPassword::PASSWORD_ATTRIBUTE, $values);
 		$this->password = $this->isPasswordProvided ? $values[HasPassword::PASSWORD_ATTRIBUTE] : null;
 	}
 
 	/**
-	 * @return AlbumAccessSettings
+	 * @return AlbumProtectionPolicy
 	 */
-	public function albumAccessSettings(): AlbumAccessSettings
+	public function albumProtectionPolicy(): AlbumProtectionPolicy
 	{
 		return $this->albumAccessSettings;
 	}

@@ -54,7 +54,7 @@ class PhotosTest extends TestCase
 		$photos_tests->set_description($id, 'A night photography');
 		$photos_tests->set_star([$id]);
 		$photos_tests->set_tag([$id], ['night']);
-		$photos_tests->set_public($id);
+		$photos_tests->set_public($id, true);
 		$photos_tests->set_license($id, 'WTFPL', 422, 'The given data was invalid');
 		$photos_tests->set_license($id, 'CC0');
 		$photos_tests->set_license($id, 'CC-BY-1.0');
@@ -211,7 +211,7 @@ class PhotosTest extends TestCase
 		$photos_tests->dont_see_in_recent($ids[0]);
 		$photos_tests->dont_see_in_unsorted($ids[1]);
 
-		$albums_tests->set_public($albumID);
+		$albums_tests->set_protection_policy($albumID);
 
 		/**
 		 * Actually try to display the picture.
@@ -315,8 +315,8 @@ class PhotosTest extends TestCase
 		$photos_tests->get('abcdefghijklmnopxyrstuvx', 404);
 		$photos_tests->set_description('-1', 'test', 422);
 		$photos_tests->set_description('abcdefghijklmnopxyrstuvx', 'test', 404);
-		$photos_tests->set_public('-1', 422);
-		$photos_tests->set_public('abcdefghijklmnopxyrstuvx', 404);
+		$photos_tests->set_public('-1', true, 422);
+		$photos_tests->set_public('abcdefghijklmnopxyrstuvx', true, 404);
 		$photos_tests->set_album('-1', ['-1'], 422);
 		$photos_tests->set_album('abcdefghijklmnopxyrstuvx', ['-1'], 422);
 		$photos_tests->set_album('-1', ['abcdefghijklmnopxyrstuvx'], 422);

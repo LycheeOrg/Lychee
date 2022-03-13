@@ -324,12 +324,14 @@ class PhotosUnitTest
 	 */
 	public function set_public(
 		string $id,
+		bool $isPublic,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
 		$response = $this->testCase->postJson(
 			'/api/Photo::setPublic', [
 				'photoID' => $id,
+				'is_public' => $isPublic,
 			]
 		);
 		$response->assertStatus($expectedStatusCode);

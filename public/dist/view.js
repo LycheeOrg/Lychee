@@ -202,7 +202,7 @@ csrf.getCSRFCookieValue = function () {
 	});
 	// We must remove all '%3D' from the end of the string.
 	// Background:
-	// The actual binary value of the CSFR value is encoded in Bade64.
+	// The actual binary value of the CSFR value is encoded in Base64.
 	// If the length of original, binary value is not a multiple of 3 bytes,
 	// the encoding gets padded with `=` on the right; i.e. there might be
 	// zero, one or two `=` at the end of the encoded value.
@@ -1075,14 +1075,14 @@ header.bind = function () {
 	});
 
 	header.dom("#button_visibility").on(eventName, function () {
-		photo.setPublic(photo.getID());
+		photo.setProtectionPolicy(photo.getID());
 	});
 	header.dom("#button_share").on(eventName, function (e) {
 		contextMenu.sharePhoto(photo.getID(), e);
 	});
 
 	header.dom("#button_visibility_album").on(eventName, function () {
-		album.setPublic(album.getID());
+		album.setProtectionPolicy(album.getID());
 	});
 
 	header.dom("#button_sharing_album_users").on(eventName, function () {
@@ -2036,7 +2036,7 @@ sidebar.createStructure.album = function (data) {
 	}
 
 	var videoCount = data.photos.reduce(function (count, photo) {
-		return count + (photo.type.indexOf("video") > -1);
+		return count + (photo.type.indexOf("video") > -1) ? 1 : 0;
 	}, 0);
 
 	structure.album = {
@@ -2337,18 +2337,17 @@ mapview.isInitialized = function () {
  * @returns {void}
  */
 mapview.title = function (_albumID, _albumTitle) {
-	// TODO: Where are these single-letter IDs for builtin-smart albums defined?
 	switch (_albumID) {
-		case "f":
+		case SmartAlbumID.STARRED:
 			lychee.setTitle(lychee.locale["STARRED"], false);
 			break;
-		case "s":
+		case SmartAlbumID.PUBLIC:
 			lychee.setTitle(lychee.locale["PUBLIC"], false);
 			break;
-		case "r":
+		case SmartAlbumID.RECENT:
 			lychee.setTitle(lychee.locale["RECENT"], false);
 			break;
-		case "0":
+		case SmartAlbumID.UNSORTED:
 			lychee.setTitle(lychee.locale["UNSORTED"], false);
 			break;
 		case null:

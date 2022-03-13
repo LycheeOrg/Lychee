@@ -38,7 +38,19 @@ class SessionController extends Controller
 	/**
 	 * First function being called via AJAX.
 	 *
-	 * TODO: Remove `status`; `status === 0 ` should result in a HTTP error response "no config", `status === {1|2}` should be a proper boolean `isAuthenticated`.
+	 * TODO: Remove attribute `status`.
+	 * TODO: Add nullable attribute `user` with a proper user object.
+	 * TODO: Merge attributes `is_admin`, `may_upload`, `username`, and `is_locked` into user object.
+	 *
+	 * `status === 0 ` (i.e. "no config") is legacy and does not occur.
+	 *
+	 * `status === {1|2}` indicates whether a user is authenticated or not.
+	 * But we should return a nullable attribute `user` which either holds the
+	 * currently authenticated user object or `null` if no user is
+	 * authenticated.
+	 *
+	 * The user-related attributes (`is_admin`, etc.) should be part of that
+	 * user object.
 	 *
 	 * @return array
 	 *

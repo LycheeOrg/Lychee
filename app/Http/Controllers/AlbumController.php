@@ -8,7 +8,7 @@ use App\Actions\Album\CreateTagAlbum;
 use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
-use App\Actions\Album\SetPublic;
+use App\Actions\Album\SetProtectionPolicy;
 use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
@@ -21,11 +21,11 @@ use App\Http\Requests\Album\GetAlbumPositionDataRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
 use App\Http\Requests\Album\MoveAlbumsRequest;
-use App\Http\Requests\Album\SetAlbumAccessSettingsRequest;
 use App\Http\Requests\Album\SetAlbumCoverRequest;
 use App\Http\Requests\Album\SetAlbumDescriptionRequest;
 use App\Http\Requests\Album\SetAlbumLicenseRequest;
 use App\Http\Requests\Album\SetAlbumNSFWRequest;
+use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\SetAlbumSortingRequest;
 use App\Http\Requests\Album\SetAlbumsTitleRequest;
 use App\Http\Requests\Album\SetAlbumTagsRequest;
@@ -129,26 +129,20 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Change the sharing properties of the album.
+	 * Sets the protection policy of the album.
 	 *
-	 * This method is a misnomer.
-	 * It does not only set the public state of an album, but any kind of
-	 * accessibility.
-	 *
-	 * TODO: Rename the method.
-	 *
-	 * @param SetAlbumAccessSettingsRequest $request
-	 * @param SetPublic                     $setPublic
+	 * @param SetAlbumProtectionPolicyRequest $request
+	 * @param SetProtectionPolicy             $setProtectionPolicy
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setPublic(SetAlbumAccessSettingsRequest $request, SetPublic $setPublic): void
+	public function setProtectionPolicy(SetAlbumProtectionPolicyRequest $request, SetProtectionPolicy $setProtectionPolicy): void
 	{
-		$setPublic->do(
+		$setProtectionPolicy->do(
 			$request->album(),
-			$request->albumAccessSettings(),
+			$request->albumProtectionPolicy(),
 			$request->isPasswordProvided(),
 			$request->password()
 		);

@@ -18,6 +18,9 @@ use App\Rules\RandomIDRule;
 class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 {
 	use HasPhotoTrait;
+	public const IS_PUBLIC_ATTRIBUTE = 'is_public';
+
+	protected bool $isPublic = false;
 
 	/**
 	 * {@inheritDoc}
@@ -34,6 +37,7 @@ class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 	{
 		return [
 			HasPhoto::PHOTO_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			self::IS_PUBLIC_ATTRIBUTE => 'required|boolean',
 		];
 	}
 
@@ -43,5 +47,11 @@ class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 	protected function processValidatedValues(array $values, array $files): void
 	{
 		$this->photo = Photo::query()->findOrFail($values[HasPhoto::PHOTO_ID_ATTRIBUTE]);
+		$this->isPublic = static::toBoolean($values[self::IS_PUBLIC_ATTRIBUTE]);
+	}
+
+	public function isPublic(): bool
+	{
+		return $this->isPublic;
 	}
 }

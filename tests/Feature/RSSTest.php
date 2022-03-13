@@ -64,18 +64,18 @@ class RSSTest extends TestCase
 		$photoID = $photos_tests->upload($file);
 
 		// set it to public
-		$photos_tests->set_public($photoID);
+		$photos_tests->set_public($photoID, true);
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');
 		$response->assertOk();
 
 		// set picture to private
-		$photos_tests->set_public($photoID);
+		$photos_tests->set_public($photoID, false);
 
 		// move picture to album
 		$photos_tests->set_album($albumID, [$photoID]);
-		$albums_tests->set_public($albumID);
+		$albums_tests->set_protection_policy($albumID);
 
 		// try to get the RSS feed.
 		$response = $this->get('/feed');

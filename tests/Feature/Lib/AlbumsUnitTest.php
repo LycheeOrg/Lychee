@@ -279,7 +279,7 @@ class AlbumsUnitTest
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
-	public function set_public(
+	public function set_protection_policy(
 		string $id,
 		bool $full_photo = true,
 		bool $public = true,
@@ -290,7 +290,7 @@ class AlbumsUnitTest
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Album::setPublic', [
+		$response = $this->testCase->postJson('/api/Album::setProtectionPolicy', [
 			'grants_full_photo' => $full_photo,
 			'albumID' => $id,
 			'is_public' => $public,

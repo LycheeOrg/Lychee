@@ -156,10 +156,12 @@ class PhotoController extends Controller
 	}
 
 	/**
-	 * Toggles the `is_public` attribute of the given photo.
+	 * Sets the `is_public` attribute of the given photo.
 	 *
-	 * We do not advise the use of this and would rather see people use albums visibility
-	 * This would highly simplify the code if we remove this. Do we really want to keep it ?
+	 * We do not advise the use of this and would rather see people use albums
+	 * visibility.
+	 * This would highly simplify the code if we remove this.
+	 * Do we really want to keep it ?
 	 *
 	 * @param SetPhotoPublicRequest $request
 	 *
@@ -169,7 +171,7 @@ class PhotoController extends Controller
 	 */
 	public function setPublic(SetPhotoPublicRequest $request): void
 	{
-		$request->photo()->is_public = !($request->photo()->is_public);
+		$request->photo()->is_public = $request->isPublic();
 		$request->photo()->save();
 	}
 

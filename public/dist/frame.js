@@ -1050,7 +1050,7 @@ csrf.getCSRFCookieValue = function () {
   });
   // We must remove all '%3D' from the end of the string.
   // Background:
-  // The actual binary value of the CSFR value is encoded in Bade64.
+  // The actual binary value of the CSFR value is encoded in Base64.
   // If the length of original, binary value is not a multiple of 3 bytes,
   // the encoding gets padded with `=` on the right; i.e. there might be
   // zero, one or two `=` at the end of the encoded value.
@@ -1084,9 +1084,7 @@ csrf.getCSRFCookieValue = function () {
 
 // Sub-implementation of lychee -------------------------------------------------------------- //
 
-var lychee = {
-  api_V2: true
-};
+var lychee = {};
 
 lychee.content = $(".content");
 
@@ -1291,11 +1289,9 @@ var loadingBar = {
   /**
    * @param {?string} status the status, either `null`, `"error"` or `"success"`
    * @param {?string} errorText the error text to show
-   * @returns {boolean}
+   * @returns {void}
    */
-  show: function show(status, errorText) {
-    return false;
-  },
+  show: function show(status, errorText) {},
 
 
   /**
