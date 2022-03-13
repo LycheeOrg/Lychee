@@ -30,7 +30,7 @@ class Configuration extends Diagnostics
 		$settings = $this->configFunctions->min_info();
 		foreach ($settings as $key => $value) {
 			if (!is_array($value) && !is_null($value)) {
-				$configs[] = parent::line($key . ':', $value);
+				$configs[] = Diagnostics::line($key . ':', $value);
 			} elseif (is_null($value)) {
 				$configs[] = 'Error: ' . $key . ' has a NULL value!';
 			}
