@@ -64,7 +64,7 @@ class GeoDataTest extends TestCase
 				'model' => 'NIKON D5000',
 				'shutter' => '1/640 s',
 				'focal' => '44 mm',
-				'altitude' => '1633',
+				'altitude' => '1633.0000',
 				'license' => 'none',
 				'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
 				'taken_at_orig_tz' => $taken_at->getTimezone()->getName(),

@@ -280,7 +280,7 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 			// Create size variant with dummy filesize, because full path is for now required to crop/scale.
 			// However, before cropping/scaling, the real filesize is not known yet.
 			// Ideally the media file would be created independantly of variant entry, and then stored.
-			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight, -1);
+			$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight, 0);
 			if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
 				$success = $this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
 				if ($success) {
