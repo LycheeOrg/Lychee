@@ -111,7 +111,7 @@ class FilesizeSizeVariants extends Migration
 
 			$original_filesize = $original_variant->filesize;
 
-			// See comment if the upward migration : column still there
+			// See comment in the upward migration: the column is still there
 			DB::table(self::PHOTOS_TAB)
 						->where(self::ID_COL, '=', $photo->id)
 						->update([self::SIZE_COL => $original_filesize]);
