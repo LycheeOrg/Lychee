@@ -63,7 +63,7 @@ class Exec
 	/**
 	 * Output status update to stdout.
 	 *
-	 * The output is either send to a web-client via {@link StreamedResponse}
+	 * The output is either sent to a web-client via {@link StreamedResponse}
 	 * or to the CLI.
 	 *
 	 * For web-clients this method reports JSON objects.
