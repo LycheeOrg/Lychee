@@ -68,7 +68,7 @@ class Exec
 	 *
 	 * For web-clients this method reports JSON objects.
 	 * The outer caller precedes and terminates the whole output by `[` and
-	 * `]`, resp., in order to indicate the start and beginning of a JSON
+	 * `]`, resp., in order to indicate the start and end of a JSON
 	 * array.
 	 * This method also inserts the commas between objects.
 	 *
