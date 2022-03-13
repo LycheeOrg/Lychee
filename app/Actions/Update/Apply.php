@@ -77,7 +77,7 @@ class Apply
 				// needs COMPOSER_HOME environment variable set
 				putenv('COMPOSER_HOME=' . base_path('/composer-cache'));
 				chdir(base_path());
-				exec('composer install --no-dev --no-progress --no-suggest 2>&1', $output);
+				exec('composer install --no-dev --no-progress 2>&1', $output);
 				chdir(base_path('public'));
 			// @codeCoverageIgnoreEnd
 			} else {
