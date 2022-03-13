@@ -271,18 +271,18 @@ class PhotosUnitTest
 	}
 
 	/**
-	 * Set Star.
+	 * Toggles the "is-starred" property of the given photos.
 	 *
 	 * @param string[]    $ids
 	 * @param int         $expectedStatusCode
 	 * @param string|null $assertSee
 	 */
-	public function set_star(
+	public function toggle_star(
 		array $ids,
 		int $expectedStatusCode = 204,
 		?string $assertSee = null
 	): void {
-		$response = $this->testCase->postJson('/api/Photo::setStar', [
+		$response = $this->testCase->postJson('/api/Photo::toggleStar', [
 			'photoIDs' => $ids,
 		]);
 		$response->assertStatus($expectedStatusCode);

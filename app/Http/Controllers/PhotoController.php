@@ -23,9 +23,9 @@ use App\Http\Requests\Photo\MovePhotosRequest;
 use App\Http\Requests\Photo\SetPhotoDescriptionRequest;
 use App\Http\Requests\Photo\SetPhotoLicenseRequest;
 use App\Http\Requests\Photo\SetPhotoPublicRequest;
-use App\Http\Requests\Photo\SetPhotosStarredRequest;
 use App\Http\Requests\Photo\SetPhotosTagsRequest;
 use App\Http\Requests\Photo\SetPhotosTitleRequest;
+use App\Http\Requests\Photo\TogglePhotosStarredRequest;
 use App\ModelFunctions\SymLinkFunctions;
 use App\Models\Configs;
 use App\Models\Photo;
@@ -125,13 +125,13 @@ class PhotoController extends Controller
 	/**
 	 * Toggles the is-starred attribute of the given photos.
 	 *
-	 * @param SetPhotosStarredRequest $request
+	 * @param TogglePhotosStarredRequest $request
 	 *
 	 * @return void
 	 *
 	 * @throws LycheeException
 	 */
-	public function setStar(SetPhotosStarredRequest $request): void
+	public function toggleStar(TogglePhotosStarredRequest $request): void
 	{
 		/** @var Photo $photo */
 		foreach ($request->photos() as $photo) {

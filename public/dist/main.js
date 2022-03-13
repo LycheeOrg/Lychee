@@ -2953,7 +2953,7 @@ contextMenu.photo = function (photoID, e) {
 	var coverActive = photoID === album.json.cover_id;
 
 	var items = [{ title: build.iconic("star") + lychee.locale["STAR"], fn: function fn() {
-			return _photo3.setStar([photoID]);
+			return _photo3.toggleStar([photoID]);
 		} }, { title: build.iconic("tag") + lychee.locale["TAGS"], fn: function fn() {
 			return _photo3.editTags([photoID]);
 		} },
@@ -3043,7 +3043,7 @@ contextMenu.photoMulti = function (photoIDs, e) {
 	multiselect.stopResize();
 
 	var items = [{ title: build.iconic("star") + lychee.locale["STAR_ALL"], fn: function fn() {
-			return _photo3.setStar(photoIDs);
+			return _photo3.toggleStar(photoIDs);
 		} }, { title: build.iconic("tag") + lychee.locale["TAGS_ALL"], fn: function fn() {
 			return _photo3.editTags(photoIDs);
 		} }, {}, { title: build.iconic("pencil") + lychee.locale["RENAME_ALL"], fn: function fn() {
@@ -3558,7 +3558,7 @@ header.bind = function () {
 		album.getArchive([album.getID()]);
 	});
 	header.dom("#button_star").on(eventName, function () {
-		_photo3.setStar([_photo3.getID()]);
+		_photo3.toggleStar([_photo3.getID()]);
 	});
 	header.dom("#button_rotate_ccwise").on(eventName, function () {
 		photoeditor.rotate(_photo3.getID(), -1);
@@ -7702,15 +7702,12 @@ _photo3.setAlbum = function (photoIDs, albumID) {
 };
 
 /**
- * *Toggles* the star-property of the given photos.
- *
- * Note: The method is a misnomer, because it does not _set_ something, it
- * _toggles_.
+ * Toggles the star-property of the given photos.
  *
  * @param {string[]} photoIDs
  * @returns {void}
  */
-_photo3.setStar = function (photoIDs) {
+_photo3.toggleStar = function (photoIDs) {
 	if (visible.photo()) {
 		_photo3.json.is_starred = !_photo3.json.is_starred;
 		view.photo.star();
@@ -7723,7 +7720,7 @@ _photo3.setStar = function (photoIDs) {
 
 	albums.refresh();
 
-	api.post("Photo::setStar", { photoIDs: photoIDs });
+	api.post("Photo::toggleStar", { photoIDs: photoIDs });
 };
 
 /**

@@ -1151,7 +1151,7 @@ header.bind = function () {
 		album.getArchive([album.getID()]);
 	});
 	header.dom("#button_star").on(eventName, function () {
-		photo.setStar([photo.getID()]);
+		photo.toggleStar([photo.getID()]);
 	});
 	header.dom("#button_rotate_ccwise").on(eventName, function () {
 		photoeditor.rotate(photo.getID(), -1);

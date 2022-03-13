@@ -9,13 +9,9 @@ use App\Models\Photo;
 use App\Rules\RandomIDRule;
 
 /**
- * Class SetPhotosStarredRequest.
- *
- * Note, the class is a misnomer.
- * Actually, the related request does not set the `is_starred` attribute, but
- * toggles it.
+ * Class TogglePhotosStarredRequest.
  */
-class SetPhotosStarredRequest extends BaseApiRequest implements HasPhotos
+class TogglePhotosStarredRequest extends BaseApiRequest implements HasPhotos
 {
 	use HasPhotosTrait;
 
