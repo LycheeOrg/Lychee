@@ -38,9 +38,11 @@ class FilesizeSizeVariants extends Migration
 		// has not been calculated yes.
 		// The real calculation can be done by calling `artisan lychee:variant_filesize` from the CLI.
 		// This will replace the default value by the actual filesize but takes time.
-		Schema::table(self::VAR_TAB, function (Blueprint $table) {
-			$table->unsignedBigInteger(self::SIZE_COL)->nullable(false)->default(0);
-		});
+		if (!Schema::hasColumn(self::VAR_TAB, self::SIZE_COL)) {
+			Schema::table(self::VAR_TAB, function (Blueprint $table) {
+				$table->unsignedBigInteger(self::SIZE_COL)->nullable(false)->default(0);
+			});
+		}
 
 		DB::beginTransaction();
 
@@ -77,7 +79,13 @@ class FilesizeSizeVariants extends Migration
 		// Schema::table(self::PHOTOS_TAB, function (Blueprint $table) {
 		// 	$table->dropColumn(self::SIZE_COL);
 		// });
-		DB::statement('ALTER TABLE ' . self::PHOTOS_TAB . ' DROP COLUMN ' . self::SIZE_COL);
+		/*
+		 * However, we cannot use a raw statement, because DROP COLUMN was added in SQLite 3.35,
+		 * which is now widely available at the time. Thus, we change all values to 0 as a marker
+		 * and will drop the column later. See PR 1239 for the entire discussion.
+		 */
+		//DB::statement('ALTER TABLE ' . self::PHOTOS_TAB . ' DROP COLUMN ' . self::SIZE_COL);
+		DB::table(self::PHOTOS_TAB)->update([self::SIZE_COL => 0]);
 	}
 
 	/**
@@ -87,10 +95,6 @@ class FilesizeSizeVariants extends Migration
 	 */
 	public function down()
 	{
-		Schema::table(self::PHOTOS_TAB, function (Blueprint $table) {
-			$table->unsignedBigInteger(self::SIZE_COL)->nullable(false)->default(0);
-		});
-
 		DB::beginTransaction();
 
 		$photos = DB::table(self::PHOTOS_TAB)
@@ -107,6 +111,7 @@ class FilesizeSizeVariants extends Migration
 
 			$original_filesize = $original_variant->filesize;
 
+			// See comment if the upward migration : column still there
 			DB::table(self::PHOTOS_TAB)
 						->where(self::ID_COL, '=', $photo->id)
 						->update([self::SIZE_COL => $original_filesize]);
@@ -118,6 +123,7 @@ class FilesizeSizeVariants extends Migration
 		// Schema::table(self::VAR_TAB, function (Blueprint $table) {
 		// 	$table->dropColumn(self::SIZE_COL);
 		// });
-		DB::statement('ALTER TABLE ' . self::VAR_TAB . ' DROP COLUMN ' . self::SIZE_COL);
+		// DB::statement('ALTER TABLE ' . self::VAR_TAB . ' DROP COLUMN ' . self::SIZE_COL);
+		DB::table(self::VAR_TAB)->update([self::SIZE_COL => 0]);
 	}
 }
