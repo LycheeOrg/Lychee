@@ -55,10 +55,6 @@ abstract class AddBaseStrategy
 		if (empty($this->photo->type) && !empty($this->parameters->info['type'])) {
 			$this->photo->type = $this->parameters->info['type'];
 		}
-		$tmp = empty($this->parameters->info['filesize']) ? 0 : intval($this->parameters->info['filesize']);
-		if ($tmp > 0) {
-			$this->photo->filesize = $tmp;
-		}
 		if (empty($this->photo->checksum) && !empty($this->parameters->info['checksum'])) {
 			$this->photo->checksum = $this->parameters->info['checksum'];
 		}

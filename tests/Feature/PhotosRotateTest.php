@@ -41,7 +41,6 @@ class PhotosRotateTest extends TestCase
 		*/
 		$response->assertJson([
 			'id' => $id,
-			'filesize' => 21104156,
 			'size_variants' => [
 				'small' => [
 					'width' => 540,
@@ -54,6 +53,7 @@ class PhotosRotateTest extends TestCase
 				'original' => [
 					'width' => 6720,
 					'height' => 4480,
+					'filesize' => 21104156,
 				],
 			],
 		]);

@@ -50,12 +50,13 @@ abstract class SizeVariantFactory
 	 * to its correct path.
 	 * This method does not check, if a file actually exists.
 	 *
-	 * @param int $width  the width of the original size variant
-	 * @param int $height the height of the original size variant
+	 * @param int $width    the width of the original size variant
+	 * @param int $height   the height of the original size variant
+	 * @param int $filesize the filesize of the original size variant
 	 *
 	 * @return SizeVariant the freshly created and persisted size variant
 	 */
-	abstract public function createOriginal(int $width, int $height): SizeVariant;
+	abstract public function createOriginal(int $width, int $height, int $filesize): SizeVariant;
 
 	/**
 	 * Creates a size variant for the designated size variant.

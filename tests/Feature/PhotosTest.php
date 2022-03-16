@@ -113,7 +113,6 @@ class PhotosTest extends TestCase
 			'model' => 'Canon EOS R',
 			'is_public' => 1,
 			'shutter' => '30 s',
-			'filesize' => 21104156,
 			'is_starred' => true,
 			'tags' => 'night',
 			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
@@ -132,6 +131,7 @@ class PhotosTest extends TestCase
 				'original' => [
 					'width' => 6720,
 					'height' => 4480,
+					'filesize' => 21104156,
 				],
 			],
 		]);
@@ -173,7 +173,6 @@ class PhotosTest extends TestCase
 			'model' => 'Canon EOS R',
 			'is_public' => 1,
 			'shutter' => '30 s',
-			'filesize' => 21104156,
 			'is_starred' => true,
 			'tags' => '',
 			'taken_at' => $taken_at->format('Y-m-d\TH:i:s.uP'),
@@ -192,6 +191,7 @@ class PhotosTest extends TestCase
 				'original' => [
 					'width' => 6720,
 					'height' => 4480,
+					'filesize' => 21104156,
 				],
 			],
 		]);

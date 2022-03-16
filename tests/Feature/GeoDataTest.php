@@ -58,7 +58,6 @@ class GeoDataTest extends TestCase
 				'id' => $id,
 				'title' => 'mongolia',
 				'type' => 'image/jpeg',
-				'filesize' => 201316,
 				'iso' => '200',
 				'aperture' => 'f/13.0',
 				'make' => 'NIKON CORPORATION',
@@ -86,6 +85,7 @@ class GeoDataTest extends TestCase
 					'original' => [
 						'width' => 1280,
 						'height' => 850,
+						'filesize' => 201316,
 					],
 				],
 			]
