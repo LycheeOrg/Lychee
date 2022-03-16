@@ -48,6 +48,7 @@ use League\Flysystem\Adapter\Local;
  * @property string              full_path
  * @property int                 width
  * @property int                 height
+ * @property int                 filesize
  * @property Collection<SymLink> sym_links
  */
 class SizeVariant extends Model
@@ -83,6 +84,7 @@ class SizeVariant extends Model
 		'url' => MustNotSetCast::class . ':short_path',
 		'width' => 'integer',
 		'height' => 'integer',
+		'filesize' => 'integer',
 	];
 
 	/**

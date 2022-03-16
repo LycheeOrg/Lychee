@@ -79,7 +79,8 @@ class AddStandaloneStrategy extends AddBaseStrategy
 		 */
 		$original = $sizeVariantFactory->createOriginal(
 			$this->parameters->info['width'],
-			$this->parameters->info['height']
+			$this->parameters->info['height'],
+			$this->parameters->info['filesize']
 		);
 		try {
 			$this->putSourceIntoFinalDestination($original->short_path);
@@ -141,8 +142,8 @@ class AddStandaloneStrategy extends AddBaseStrategy
 	 *
 	 * In case 3c, the method does not actually modify the file.
 	 *
-	 * This method also updates the attributes {@link Photo::$filesize}
-	 * and {@link Photo::$checksum} to the new values after rotation.
+	 * This method also updates the attribute {@link Photo::$checksum} to the
+	 * new value after rotation.
 	 *
 	 * @throws MediaFileOperationException
 	 * @throws ModelDBException
@@ -189,8 +190,14 @@ class AddStandaloneStrategy extends AddBaseStrategy
 
 		// If the image has actually been rotated, the size
 		// and the checksum may have changed.
-		$this->photo->filesize = $this->metadataExtractor->filesize($absolutePath);
 		$this->photo->checksum = $this->metadataExtractor->checksum($absolutePath);
+		// stat info (filesize, access mode etc) are cached by PHP to avoid
+		// costly I/O calls.
+		// If cache is not cleared, the size before rotation is used and later
+		// yields an incorrect value.
+		clearstatcache(true, $absolutePath);
+		// Update filesize for later use e.g. when creating variants
+		$this->parameters->info['filesize'] = $this->metadataExtractor->filesize($absolutePath);
 		$this->photo->save();
 	}
 

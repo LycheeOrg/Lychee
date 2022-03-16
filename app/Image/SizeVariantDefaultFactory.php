@@ -293,12 +293,23 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 		$sv = $this->photo->size_variants->getSizeVariant($sizeVariant);
 		if (!$sv) {
 			try {
-				$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight);
+				// Create size variant with dummy filesize, because full path
+				// is for now required to crop/scale.
+				// However, before cropping/scaling, the real filesize is not
+				// known yet.
+				// Ideally, the media file would be created independently of
+				// variant entry, and then stored.
+				// TODO: Use `MediaFile` here, let the ImageHandler operate on the MediaFile (without using paths at all) and then create the size variant in the end using the final and correct file size right away.
+				$sv = $this->photo->size_variants->create($sizeVariant, $shortPath, $maxWidth, $maxHeight, 0);
+				$svAbsolutePath = $sv->getFile()->getAbsolutePath();
 				if ($sizeVariant === SizeVariant::THUMB || $sizeVariant === SizeVariant::THUMB2X) {
-					$this->imageHandler->crop($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height);
+					$this->imageHandler->crop($this->referenceFullPath, $svAbsolutePath, $sv->width, $sv->height);
+					$sv->filesize = filesize($svAbsolutePath);
+					$sv->save();
 				} else {
 					$resWidth = $resHeight = 0;
-					$this->imageHandler->scale($this->referenceFullPath, $sv->full_path, $sv->width, $sv->height, $resWidth, $resHeight);
+					$this->imageHandler->scale($this->referenceFullPath, $svAbsolutePath, $sv->width, $sv->height, $resWidth, $resHeight);
+					$sv->filesize = filesize($svAbsolutePath);
 					$sv->width = $resWidth;
 					$sv->height = $resHeight;
 					$sv->save();
@@ -405,13 +416,14 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	/**
 	 * {@inheritDoc}
 	 */
-	public function createOriginal(int $width, int $height): SizeVariant
+	public function createOriginal(int $width, int $height, int $filesize): SizeVariant
 	{
 		return $this->photo->size_variants->create(
 			SizeVariant::ORIGINAL,
 			$this->namingStrategy->generateShortPath(SizeVariant::ORIGINAL),
 			$width,
-			$height
+			$height,
+			$filesize
 		);
 	}
 }

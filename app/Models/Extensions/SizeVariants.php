@@ -179,13 +179,14 @@ class SizeVariants extends DTO
 	 *                                size variant shall point to
 	 * @param int    $width           the width of the size variant
 	 * @param int    $height          the height of the size variant
+	 * @param int    $filesize        the filesize of the size variant
 	 *
 	 * @return SizeVariant The newly created and persisted size variant
 	 *
 	 * @throws IllegalOrderOfOperationException
 	 * @throws ModelDBException
 	 */
-	public function create(int $sizeVariantType, string $shortPath, int $width, int $height): SizeVariant
+	public function create(int $sizeVariantType, string $shortPath, int $width, int $height, int $filesize): SizeVariant
 	{
 		if (!$this->photo->exists) {
 			throw new IllegalOrderOfOperationException('Cannot create a size variant for a photo whose id is not yet persisted to DB');
@@ -197,6 +198,7 @@ class SizeVariants extends DTO
 		$result->short_path = $shortPath;
 		$result->width = $width;
 		$result->height = $height;
+		$result->filesize = $filesize;
 		$result->save();
 		$this->add($result);
 
@@ -261,7 +263,7 @@ class SizeVariants extends DTO
 	private static function replicateSizeVariant(SizeVariants $duplicate, ?SizeVariant $sizeVariant): void
 	{
 		if ($sizeVariant !== null) {
-			$duplicate->create($sizeVariant->type, $sizeVariant->short_path, $sizeVariant->width, $sizeVariant->height);
+			$duplicate->create($sizeVariant->type, $sizeVariant->short_path, $sizeVariant->width, $sizeVariant->height, $sizeVariant->filesize);
 		}
 	}
 }
