@@ -31,7 +31,7 @@ class Login
 	 *  3. Changing a user's username and password for some arbitrary user
 	 *     by the administrator.
 	 *
-	 * Unfortunately, this make is rather difficult to authorize the request
+	 * Unfortunately, this makes it rather difficult to authorize the request
 	 * beforehand (see similar remark in
 	 * {@link \App\Http\Requests\Settings\ChangeLoginRequest::authorize()}).
 	 * Hence, this method is also responsible to authorize the various

@@ -18,14 +18,14 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  * Note, that messages of exceptions inherited from this class are presented
  * to the (end) user: either via the CLI or a browser.
  * Hence, the derived exceptions and messages should sufficiently hide
- * internal implementation details, but still helpful for an ordinary user.
- * Moreover, due to security considerations internal information (like paths,
+ * internal implementation details, but still be helpful for an ordinary user.
+ * Moreover, due to security considerations, internal information (like paths,
  * values of variables, control flows) should not be exposed.
  * However, those internal details might be chained into the previous
  * exception.
  *
  * The framework ensures that only the message of this exception is
- * printed if the application runs in productive mode.
+ * printed if the application runs in production mode.
  * If the application runs in debug mode, a full backtrace of the chained
  * exceptions is printed.
  *

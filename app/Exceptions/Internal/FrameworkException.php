@@ -5,7 +5,7 @@ namespace App\Exceptions\Internal;
 /**
  * FrameworkException.
  *
- * This exception is meant to wrap the generic PHP standard exception which
+ * This exception is meant to wrap the generic PHP standard exceptions which
  * are thrown by the framework.
  * Unfortunately, some methods of the framework don't throw exceptions which
  * implement a framework-specific interface, but simply use the standard

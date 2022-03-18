@@ -63,7 +63,7 @@ class Handler extends ExceptionHandler
 	{
 		// If we are in debug mode, we use the internal method of the parent
 		// method to render a useful response with backtrace, etc., depending
-		// on the available extensions (i.e. Whoops, Symfonfy renderer, etc.)
+		// on the available extensions (i.e. Whoops, Symfony renderer, etc.)
 		// If we are in non-debug mode, we render our own template that
 		// matches Lychee's style and only contains rudimentary information.
 		$defaultResponse = config('app.debug') ?

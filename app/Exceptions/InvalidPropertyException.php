@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
  * of the property.
  * Returns status code 422 (Unprocessable entity) to an HTTP client.
  * As this exception reports a 4xx status code (opposed to a 5xx code),
- * this exception should be used if the client or user is "responsible" of
+ * this exception should be used if the client or user is "responsible" for
  * the error in some sense, i.e. if the invalid value has been provided by the
  * client.
  * This also includes corner cases where the user is only involved very

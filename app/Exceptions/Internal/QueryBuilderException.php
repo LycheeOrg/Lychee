@@ -5,7 +5,7 @@ namespace App\Exceptions\Internal;
 /**
  * QueryBuilderException.
  *
- * This exception is meant to wrap the generic PHP standard exception which
+ * This exception is meant to wrap the generic PHP standard exceptions which
  * are thrown by the Laravel DB and Eloquent Query Builder.
  * Unfortunately, neither Laravel nor Eloquent wrap their exceptions
  * nicely into some "Laraval exception".

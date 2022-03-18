@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * InvalidPropertyException.
+ * ConflictingPropertyException.
  *
  * Special case of an {@link InvalidPropertyException}.
  * A model could not be processed, because one of its properties conflicts

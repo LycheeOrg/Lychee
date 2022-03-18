@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Class FileOperationException.
  *
  * Indicates any error related to files.
- * This includes error like moving/copying, files, reading files, etc.
+ * This includes error like moving/copying files, reading files, etc.
  * Returns status code 500 (Internal server error) to an HTTP client.
  *
  * If the file is a media file (i.e. image or video) consider using the
