@@ -226,6 +226,13 @@ class SettingsController extends Controller
 	/**
 	 * Set provider of OSM map tiles.
 	 *
+	 * This configuration option is not used by the backend itself, but only
+	 * by the frontend.
+	 * The configured value is transmitted to the frontend as part of the
+	 * response for `Session::init`
+	 * (cp. {@link \App\Http\Controllers\SessionController::init()}) as the
+	 * confidentiality of this configuration option is `public`.
+	 *
 	 * @param Request $request
 	 *
 	 * @return void
@@ -234,7 +241,6 @@ class SettingsController extends Controller
 	 */
 	public function setMapProvider(Request $request): void
 	{
-		// TODO: It seems as if the configuration option `map_provider` is not read anywhere; do we need it?
 		$request->validate([
 			'map_provider' => ['required', 'string', Rule::in([
 				'Wikimedia',

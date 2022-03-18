@@ -109,9 +109,8 @@ class AlbumFactory
 		foreach ($smartAlbumIDs as $smartID) {
 			try {
 				$smartAlbums[] = $this->createSmartAlbum($smartID, $withRelations);
-			} catch (InvalidSmartIdException) {
-				// must not happen, because we limited search to
-				// `self::BUILTIN_SMARTS` above
+			} catch (InvalidSmartIdException $e) {
+				assert(false, new \AssertionError('InvalidSmartIdException must not be thrown, as search has been limited to self::BUILTIN_SMARTS', $e->getCode(), $e));
 			}
 		}
 
