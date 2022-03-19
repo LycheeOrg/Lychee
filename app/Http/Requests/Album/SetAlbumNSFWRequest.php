@@ -10,16 +10,13 @@ use App\Rules\RandomIDRule;
 
 /**
  * Class SetAlbumNSFWRequest.
- *
- * This class is either a misnomer and should rather be called
- * `ToggleAlbumNSFWRequest` or receive an explicit boolean which indicates the
- * desired NSFW state.
- *
- * TODO: Fix the class, see above.
  */
 class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
 {
 	use HasBaseAlbumTrait;
+	public const IS_NSFW_ATTRIBUTE = 'is_nsfw';
+
+	protected bool $isNSFW = false;
 
 	/**
 	 * {@inheritDoc}
@@ -36,6 +33,7 @@ class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
 	{
 		return [
 			HasAbstractAlbum::ALBUM_ID_ATTRIBUTE => ['required', new RandomIDRule(false)],
+			self::IS_NSFW_ATTRIBUTE => 'required|boolean',
 		];
 	}
 
@@ -47,5 +45,11 @@ class SetAlbumNSFWRequest extends BaseApiRequest implements HasBaseAlbum
 		$this->album = $this->albumFactory->findBaseAlbumOrFail(
 			$values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]
 		);
+		$this->isNSFW = static::toBoolean($values[self::IS_NSFW_ATTRIBUTE]);
+	}
+
+	public function isNSFW(): bool
+	{
+		return $this->isNSFW;
 	}
 }

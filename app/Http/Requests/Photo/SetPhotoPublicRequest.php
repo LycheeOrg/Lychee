@@ -10,10 +10,6 @@ use App\Rules\RandomIDRule;
 
 /**
  * Class SetPhotoPublicRequest.
- *
- * Note, the class is a misnomer.
- * Actually, the related request does not set the `is_public` attribute, but
- * toggles it.
  */
 class SetPhotoPublicRequest extends BaseApiRequest implements HasPhoto
 {

@@ -1133,7 +1133,7 @@ header.bind = function () {
 		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParentID() != null);
 	});
 	header.dom("#button_nsfw_album").on(eventName, function () {
-		album.setNSFW(album.getID());
+		album.toggleNSFW(album.getID());
 	});
 	header.dom("#button_move").on(eventName, function (e) {
 		contextMenu.move([photo.getID()], e, photo.setAlbum);

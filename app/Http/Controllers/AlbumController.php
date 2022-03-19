@@ -260,13 +260,7 @@ class AlbumController extends Controller
 	}
 
 	/**
-	 * Set if an album contains sensitive pictures.
-	 *
-	 * This method is either a misnomer and should rather be called
-	 * `toggleNSFW` or the request `SetAlbumNSFWRequest` should contain an
-	 * explicit boolean with the new NSFW state.
-	 *
-	 * TODO: Fix the method, see above.
+	 * Sets whether an album contains sensitive pictures.
 	 *
 	 * @param SetAlbumNSFWRequest $request
 	 *
@@ -276,7 +270,7 @@ class AlbumController extends Controller
 	 */
 	public function setNSFW(SetAlbumNSFWRequest $request): void
 	{
-		$request->album()->is_nsfw = !($request->album()->is_nsfw);
+		$request->album()->is_nsfw = $request->isNSFW();
 		$request->album()->save();
 	}
 

@@ -1559,13 +1559,14 @@ album.shareUsers = function (albumID) {
  * @param {string} albumID
  * @returns {void}
  */
-album.setNSFW = function (albumID) {
+album.toggleNSFW = function (albumID) {
 	album.json.is_nsfw = !album.json.is_nsfw;
 
 	view.album.nsfw();
 
 	api.post("Album::setNSFW", {
-		albumID: albumID
+		albumID: albumID,
+		is_nsfw: album.json.is_nsfw
 	}, function () {
 		return albums.refresh();
 	});
@@ -2700,7 +2701,7 @@ contextMenu.add = function (e) {
 						title: build.iconic("warning") + lychee.locale["ALBUM_MARK_NSFW"],
 						visible: true,
 						fn: function fn() {
-							return album.setNSFW(albumID);
+							return album.toggleNSFW(albumID);
 						}
 					});
 				}
@@ -3540,7 +3541,7 @@ header.bind = function () {
 		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParentID() != null);
 	});
 	header.dom("#button_nsfw_album").on(eventName, function () {
-		album.setNSFW(album.getID());
+		album.toggleNSFW(album.getID());
 	});
 	header.dom("#button_move").on(eventName, function (e) {
 		contextMenu.move([_photo3.getID()], e, _photo3.setAlbum);
