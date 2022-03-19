@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  * syntactically valid JSON response which is a properly serialized collection
  * of the imported photos, {@link ImportController::server()} just streams
  * the terminal output of the command line.
- * The latter cannot properly be interpreted by web-clients client which
+ * The latter cannot properly be interpreted by web-clients which
  * expect a proper JSON response.
  * Actually, both methods should be re-factored such that their return
  * types are consistent and the best of both worlds: a streamed collection.
