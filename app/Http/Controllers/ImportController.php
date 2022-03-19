@@ -18,8 +18,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  *
  * This controller handles requests to import photos from a sequence of
  * URLs or from a local path on the server.
+ * Note, the methods follow quite different approaches which also
+ * significantly affects the format of the responses.
  *
- * Note, the return types of the methods is quite differently.
  * Both methods may take some time to finish, if the number of photos is large.
  * While {@link ImportController::server()} returns a streamed response with
  * intermediate updates, {@link ImportController::url} returns an atomic
