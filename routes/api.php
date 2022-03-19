@@ -59,7 +59,7 @@ Route::post('/Photo::get', [PhotoController::class, 'get']);
 Route::post('/Photo::getRandom', [PhotoController::class, 'getRandom']);
 Route::post('/Photo::setTitle', [PhotoController::class, 'setTitle']);
 Route::post('/Photo::setDescription', [PhotoController::class, 'setDescription']);
-Route::post('/Photo::toggleStar', [PhotoController::class, 'toggleStar']);
+Route::post('/Photo::setStar', [PhotoController::class, 'setStar']);
 Route::post('/Photo::setPublic', [PhotoController::class, 'setPublic']);
 Route::post('/Photo::setAlbum', [PhotoController::class, 'setAlbum']);
 Route::post('/Photo::setTags', [PhotoController::class, 'setTags']);

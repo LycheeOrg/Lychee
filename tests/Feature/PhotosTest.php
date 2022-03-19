@@ -52,7 +52,7 @@ class PhotosTest extends TestCase
 
 		$photos_tests->set_title($id, "Night in Ploumanac'h");
 		$photos_tests->set_description($id, 'A night photography');
-		$photos_tests->toggle_star([$id]);
+		$photos_tests->set_star([$id], true);
 		$photos_tests->set_tag([$id], ['night']);
 		$photos_tests->set_public($id, true);
 		$photos_tests->set_license($id, 'WTFPL', 422, 'The given data was invalid');

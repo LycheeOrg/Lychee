@@ -1556,16 +1556,17 @@ album.shareUsers = function (albumID) {
 };
 
 /**
- * @param {string} albumID
+ * Toggles the NSFW attribute of the currently loaded album.
+ *
  * @returns {void}
  */
-album.toggleNSFW = function (albumID) {
+album.toggleNSFW = function () {
 	album.json.is_nsfw = !album.json.is_nsfw;
 
 	view.album.nsfw();
 
 	api.post("Album::setNSFW", {
-		albumID: albumID,
+		albumID: album.json.id,
 		is_nsfw: album.json.is_nsfw
 	}, function () {
 		return albums.refresh();
@@ -2701,7 +2702,7 @@ contextMenu.add = function (e) {
 						title: build.iconic("warning") + lychee.locale["ALBUM_MARK_NSFW"],
 						visible: true,
 						fn: function fn() {
-							return album.toggleNSFW(albumID);
+							return album.toggleNSFW();
 						}
 					});
 				}
@@ -2953,9 +2954,14 @@ contextMenu.albumTitle = function (albumID, e) {
 contextMenu.photo = function (photoID, e) {
 	var coverActive = photoID === album.json.cover_id;
 
-	var items = [{ title: build.iconic("star") + lychee.locale["STAR"], fn: function fn() {
-			return _photo3.toggleStar([photoID]);
-		} }, { title: build.iconic("tag") + lychee.locale["TAGS"], fn: function fn() {
+	var isPhotoStarred = album.getByID(photoID).is_starred;
+
+	var items = [{
+		title: build.iconic("star") + (isPhotoStarred ? lychee.locale["UNSTAR"] : lychee.locale["STAR"]),
+		fn: function fn() {
+			return _photo3.setStar([photoID], !isPhotoStarred);
+		}
+	}, { title: build.iconic("tag") + lychee.locale["TAGS"], fn: function fn() {
 			return _photo3.editTags([photoID]);
 		} },
 	// for future work, use a list of all the ancestors.
@@ -3044,7 +3050,9 @@ contextMenu.photoMulti = function (photoIDs, e) {
 	multiselect.stopResize();
 
 	var items = [{ title: build.iconic("star") + lychee.locale["STAR_ALL"], fn: function fn() {
-			return _photo3.toggleStar(photoIDs);
+			return _photo3.setStar(photoIDs, true);
+		} }, { title: build.iconic("star") + lychee.locale["UNSTAR_ALL"], fn: function fn() {
+			return _photo3.setStar(photoIDs, false);
 		} }, { title: build.iconic("tag") + lychee.locale["TAGS_ALL"], fn: function fn() {
 			return _photo3.editTags(photoIDs);
 		} }, {}, { title: build.iconic("pencil") + lychee.locale["RENAME_ALL"], fn: function fn() {
@@ -3541,7 +3549,7 @@ header.bind = function () {
 		contextMenu.move([album.getID()], e, album.setAlbum, "ROOT", album.getParentID() != null);
 	});
 	header.dom("#button_nsfw_album").on(eventName, function () {
-		album.toggleNSFW(album.getID());
+		album.toggleNSFW();
 	});
 	header.dom("#button_move").on(eventName, function (e) {
 		contextMenu.move([_photo3.getID()], e, _photo3.setAlbum);
@@ -3559,7 +3567,7 @@ header.bind = function () {
 		album.getArchive([album.getID()]);
 	});
 	header.dom("#button_star").on(eventName, function () {
-		_photo3.toggleStar([_photo3.getID()]);
+		_photo3.toggleStar();
 	});
 	header.dom("#button_rotate_ccwise").on(eventName, function () {
 		photoeditor.rotate(_photo3.getID(), -1);
@@ -5849,7 +5857,9 @@ lychee.locale = {
 
 	STAR_PHOTO: "Star Photo",
 	STAR: "Star",
-	STAR_ALL: "Star All",
+	UNSTAR: "Unstar",
+	STAR_ALL: "Star Selected",
+	UNSTAR_ALL: "Unstar Selected",
 	TAGS: "Tags",
 	TAGS_ALL: "Tags All",
 	UNSTAR_PHOTO: "Unstar Photo",
@@ -7703,25 +7713,40 @@ _photo3.setAlbum = function (photoIDs, albumID) {
 };
 
 /**
- * Toggles the star-property of the given photos.
+ * Toggles the star-property of the currently visible photo.
  *
- * @param {string[]} photoIDs
  * @returns {void}
  */
-_photo3.toggleStar = function (photoIDs) {
-	if (visible.photo()) {
-		_photo3.json.is_starred = !_photo3.json.is_starred;
-		view.photo.star();
-	}
+_photo3.toggleStar = function () {
+	_photo3.json.is_starred = !_photo3.json.is_starred;
+	view.photo.star();
+	albums.refresh();
 
+	api.post("Photo::setStar", {
+		photoIDs: [_photo3.json.id],
+		is_starred: _photo3.json.is_starred
+	});
+};
+
+/**
+ * Sets the star-property of the given photos.
+ *
+ * @param {string[]} photoIDs
+ * @param {boolean} isStarred
+ * @returns {void}
+ */
+_photo3.setStar = function (photoIDs, isStarred) {
 	photoIDs.forEach(function (id) {
-		album.getByID(id).is_starred = !album.getByID(id).is_starred;
+		album.getByID(id).is_starred = isStarred;
 		view.album.content.star(id);
 	});
 
 	albums.refresh();
 
-	api.post("Photo::toggleStar", { photoIDs: photoIDs });
+	api.post("Photo::setStar", {
+		photoIDs: photoIDs,
+		is_starred: isStarred
+	});
 };
 
 /**

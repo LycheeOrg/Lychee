@@ -125,7 +125,9 @@ final class French implements Language
 
 			'STAR_PHOTO' => 'Mettre en Favoris',
 			'STAR' => 'Favori',
+			'UNSTAR' => 'Unstar',
 			'STAR_ALL' => 'Marquer la sélection comme favoris',
+			'UNSTAR_ALL' => 'Unstar Selected',
 			'TAGS' => 'Tagger',
 			'TAGS_ALL' => 'Tagger la sélection',
 			'UNSTAR_PHOTO' => 'Retirer des Favoris',
