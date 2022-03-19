@@ -84,7 +84,7 @@ class PhotoAuthorisationProvider
 	{
 		return
 			$photo === null ||
-			AccessControl::is_current_user($photo->owner_id) ||
+			AccessControl::is_current_user_or_admin($photo->owner_id) ||
 			$photo->is_public ||
 			$this->albumAuthorisationProvider->isAccessible($photo->album);
 	}
@@ -118,7 +118,7 @@ class PhotoAuthorisationProvider
 		}
 
 		return
-			AccessControl::is_current_user($photo->owner_id) ||
+			AccessControl::is_current_user_or_admin($photo->owner_id) ||
 			$photo->album?->is_downloadable ||
 			($photo->album === null && Configs::get_value('downloadable', '0') === '1');
 	}
@@ -265,7 +265,7 @@ class PhotoAuthorisationProvider
 	 */
 	public function isEditable(Photo $photo): bool
 	{
-		return AccessControl::is_current_user($photo->owner_id);
+		return AccessControl::is_current_user_or_admin($photo->owner_id);
 	}
 
 	/**

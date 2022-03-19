@@ -334,7 +334,7 @@ class Photo extends Model implements HasRandomID
 	 */
 	protected function getIsDownloadableAttribute(): bool
 	{
-		return AccessControl::is_current_user($this->owner_id) ||
+		return AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_downloadable) ||
 			($this->album_id == null && (bool) Configs::get_value('downloadable', '0'));
 	}
@@ -353,7 +353,7 @@ class Photo extends Model implements HasRandomID
 	{
 		$default = (bool) Configs::get_value('share_button_visible', '0');
 
-		return AccessControl::is_current_user($this->owner_id) ||
+		return AccessControl::is_current_user_or_admin($this->owner_id) ||
 			($this->album_id != null && $this->album->is_share_button_visible) ||
 			($this->album_id == null && $default);
 	}
@@ -391,7 +391,7 @@ class Photo extends Model implements HasRandomID
 		// The decision logic here is a merge of three formerly independent
 		// (and slightly different) approaches
 		if (
-			!AccessControl::is_current_user($this->owner_id) &&
+			!AccessControl::is_current_user_or_admin($this->owner_id) &&
 			$this->isVideo() === false &&
 			($result['size_variants']['medium2x'] !== null || $result['size_variants']['medium'] !== null) &&
 			(
