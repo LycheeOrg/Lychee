@@ -16,9 +16,9 @@ use Illuminate\Http\Request;
  * This middleware ensures that the migration has the required status.
  * If the migration has the required status, then the request passes
  * unchanged.
- * If the required status equals `:complete` but the installation is
- * incomplete, then the client is redirected to the installation pages.
- * If the required status equals `:incomplete` but the installation is
+ * If the required status equals `:complete` but the migration is
+ * incomplete, then the client is redirected to the migration page.
+ * If the required status equals `:incomplete` but the migration is
  * complete, then the client is redirected to the home page.
  * The latter mode is supposed to be used as a gatekeeper to the migration
  * pages and to prevent access if no migration is required.
