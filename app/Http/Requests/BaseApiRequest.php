@@ -58,7 +58,7 @@ abstract class BaseApiRequest extends FormRequest
 	 * We must **first** validate the input parameters of the request
 	 * for syntactical correctness, and **then** authorize the request.
 	 * Rationale: Whether a user is authorized to perform a specific action or
-	 * not typically depend on the input parameters (e.g. the ID of the model,
+	 * not typically depends on the input parameters (e.g. the ID of the model,
 	 * the property the user wants to change, the new value of the property,
 	 * etc.).
 	 * Hence, the input should be validated **before** a potential DB query is
@@ -125,7 +125,7 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to access the designated album.
+	 * Determines if the user is authorized to access the designated album.
 	 *
 	 * @param AbstractAlbum|null $album the album
 	 *
@@ -137,7 +137,7 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to access the designated album.
+	 * Determines if the user is authorized to access the designated albums.
 	 *
 	 * @param BaseCollection<AbstractAlbum> $albums the albums
 	 *
@@ -156,7 +156,7 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to modify or write into the
+	 * Determines if the user is authorized to modify or write into the
 	 * designated album.
 	 *
 	 * @param AbstractAlbum|null $album the album; `null` designates the root album
@@ -169,8 +169,8 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to modify or write into the
-	 * designated album.
+	 * Determines if the user is authorized to modify or write into the
+	 * designated albums.
 	 *
 	 * @param BaseCollection<AbstractAlbum> $albums the albums
 	 *
@@ -189,7 +189,7 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to see the designated photo.
+	 * Determines if the user is authorized to see the designated photo.
 	 *
 	 * @param Photo|null $photo the photo; `null` is accepted for convenience
 	 *                          and the `null` photo is always authorized
@@ -202,7 +202,7 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to download the designated photo.
+	 * Determines if the user is authorized to download the designated photo.
 	 *
 	 * @param Photo $photo the photo
 	 *
@@ -214,7 +214,7 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to download the designated photos.
+	 * Determines if the user is authorized to download the designated photos.
 	 *
 	 * @param EloquentCollection<Photo> $photos the photos
 	 *
@@ -233,7 +233,7 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to modify the designated photo.
+	 * Determines if the user is authorized to modify the designated photo.
 	 *
 	 * @param Photo $photo the photo
 	 *
@@ -245,7 +245,7 @@ abstract class BaseApiRequest extends FormRequest
 	}
 
 	/**
-	 * Determines of the user is authorized to modify the designated photos.
+	 * Determines if the user is authorized to modify the designated photos.
 	 *
 	 * @param EloquentCollection<Photo> $photos the photos
 	 *

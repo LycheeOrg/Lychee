@@ -20,7 +20,7 @@ class AddTagAlbumRequest extends BaseApiRequest implements HasTitle, HasTags
 	public function authorize(): bool
 	{
 		// Sic!
-		// Tag albums can only be created below the root albums which has the
+		// Tag albums can only be created below the root album which has the
 		// ID `null`.
 		return $this->authorizeAlbumWrite(null);
 	}

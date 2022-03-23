@@ -26,7 +26,7 @@ class SearchController extends Controller
 	public function run(SearchRequest $request, AlbumSearch $albumSearch, PhotoSearch $photoSearch): array
 	{
 		$return = [];
-		// For efficiency reasons, we call directly call `toArray` here,
+		// For efficiency reasons, we directly call `toArray` here,
 		// such that the conversion is not performed several times, e.g.
 		// for `json_encode` below and at least a second time when the
 		// result is sent to the client.

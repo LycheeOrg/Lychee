@@ -17,7 +17,7 @@ class SetAlbumTagsRequest extends BaseApiRequest implements HasTagAlbum, HasTags
 	use HasTagsTrait;
 
 	/**
-	 * For historic reasons the parameter of the API is called `show_tags`
+	 * For historical reasons the parameter of the API is called `show_tags`
 	 * and not only `tags`; otherwise `HasTags::TAGS_ATTRIBUTE` could be used.
 	 */
 	public const SHOW_TAGS_ATTRIBUTE = 'show_tags';
