@@ -379,8 +379,8 @@ class SizeVariantDefaultFactory extends SizeVariantFactory
 	 *
 	 * This function always returns true, for size variants which are not
 	 * configurable and are always enabled (e.g. a thumb).
-	 * Hence, it is save to call this function for all size variants.
-	 * For size variants which may be enabled/disabled trough configuration at
+	 * Hence, it is safe to call this function for all size variants.
+	 * For size variants which may be enabled/disabled through configuration at
 	 * runtime, the method only returns true, if
 	 *
 	 *  1. the size variant is enabled, and
