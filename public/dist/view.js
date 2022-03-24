@@ -1097,7 +1097,7 @@ header.setMode = function (mode) {
 				tabindex.makeUnfocusable(_e5);
 			}
 
-			if (lychee.enable_button_add) {
+			if (lychee.enable_button_add && lychee.may_upload) {
 				var _e6 = $(".button_add", ".header__toolbar--albums");
 				_e6.show();
 				tabindex.makeFocusable(_e6);
@@ -1603,7 +1603,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.image = {
 		title: lychee.locale[isVideo ? "PHOTO_VIDEO" : "PHOTO_IMAGE"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, {
+		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.size_variants.original.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, {
 			title: lychee.locale["PHOTO_RESOLUTION"],
 			kind: "resolution",
 			value: data.size_variants.original.width + " x " + data.size_variants.original.height
