@@ -1855,7 +1855,8 @@ album.updatePhoto = function (data) {
 			type: src.type,
 			url: src.url,
 			width: src.width,
-			height: src.height
+			height: src.height,
+			filesize: src.filesize
 		};
 	};
 
@@ -1864,7 +1865,6 @@ album.updatePhoto = function (data) {
 			return p.id === data.id;
 		});
 
-		_photo2.filesize = data.filesize;
 		// Deep copy size variants
 		_photo2.size_variants = {
 			thumb: deepCopySizeVariant(data.size_variants.thumb),
@@ -8116,28 +8116,28 @@ _photo3.getArchive = function (photoIDs) {
 		var msg = lychee.html(_templateObject62);
 
 		if (myPhoto.size_variants.original.url) {
-			msg += buildButton("FULL", lychee.locale["PHOTO_FULL"] + " (" + myPhoto.size_variants.original.width + "x" + myPhoto.size_variants.original.height + ", " + lychee.locale.printFilesizeLocalized(myPhoto.filesize) + ")");
+			msg += buildButton("FULL", lychee.locale["PHOTO_FULL"] + " (" + myPhoto.size_variants.original.width + "x" + myPhoto.size_variants.original.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.original.filesize) + ")");
 		}
 		if (myPhoto.live_photo_url !== null) {
 			msg += buildButton("LIVEPHOTOVIDEO", "" + lychee.locale["PHOTO_LIVE_VIDEO"]);
 		}
 		if (myPhoto.size_variants.medium2x !== null) {
-			msg += buildButton("MEDIUM2X", lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + myPhoto.size_variants.medium2x.width + "x" + myPhoto.size_variants.medium2x.height + ")");
+			msg += buildButton("MEDIUM2X", lychee.locale["PHOTO_MEDIUM_HIDPI"] + " (" + myPhoto.size_variants.medium2x.width + "x" + myPhoto.size_variants.medium2x.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.medium2x.filesize) + ")");
 		}
 		if (myPhoto.size_variants.medium !== null) {
-			msg += buildButton("MEDIUM", lychee.locale["PHOTO_MEDIUM"] + " (" + myPhoto.size_variants.medium.width + "x" + myPhoto.size_variants.medium.height + ")");
+			msg += buildButton("MEDIUM", lychee.locale["PHOTO_MEDIUM"] + " (" + myPhoto.size_variants.medium.width + "x" + myPhoto.size_variants.medium.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.medium.filesize) + ")");
 		}
 		if (myPhoto.size_variants.small2x !== null) {
-			msg += buildButton("SMALL2X", lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + myPhoto.size_variants.small2x.width + "x" + myPhoto.size_variants.small2x.height + ")");
+			msg += buildButton("SMALL2X", lychee.locale["PHOTO_SMALL_HIDPI"] + " (" + myPhoto.size_variants.small2x.width + "x" + myPhoto.size_variants.small2x.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.small2x.filesize) + ")");
 		}
 		if (myPhoto.size_variants.small !== null) {
-			msg += buildButton("SMALL", lychee.locale["PHOTO_SMALL"] + " (" + myPhoto.size_variants.small.width + "x" + myPhoto.size_variants.small.height + ")");
+			msg += buildButton("SMALL", lychee.locale["PHOTO_SMALL"] + " (" + myPhoto.size_variants.small.width + "x" + myPhoto.size_variants.small.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.small.filesize) + ")");
 		}
 		if (myPhoto.size_variants.thumb2x !== null) {
-			msg += buildButton("THUMB2X", lychee.locale["PHOTO_THUMB_HIDPI"] + " (" + myPhoto.size_variants.thumb2x.width + "x" + myPhoto.size_variants.thumb2x.height + ")");
+			msg += buildButton("THUMB2X", lychee.locale["PHOTO_THUMB_HIDPI"] + " (" + myPhoto.size_variants.thumb2x.width + "x" + myPhoto.size_variants.thumb2x.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.thumb2x.filesize) + ")");
 		}
 		if (myPhoto.size_variants.thumb !== null) {
-			msg += buildButton("THUMB", lychee.locale["PHOTO_THUMB"] + " (" + myPhoto.size_variants.thumb.width + "x" + myPhoto.size_variants.thumb.height + ")");
+			msg += buildButton("THUMB", lychee.locale["PHOTO_THUMB"] + " (" + myPhoto.size_variants.thumb.width + "x" + myPhoto.size_variants.thumb.height + ",\n\t\t\t\t" + lychee.locale.printFilesizeLocalized(myPhoto.size_variants.thumb.filesize) + ")");
 		}
 
 		msg += lychee.html(_templateObject63);
@@ -9223,7 +9223,7 @@ _sidebar.createStructure.photo = function (data) {
 	structure.image = {
 		title: lychee.locale[isVideo ? "PHOTO_VIDEO" : "PHOTO_IMAGE"],
 		type: _sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, {
+		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.size_variants.original.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, {
 			title: lychee.locale["PHOTO_RESOLUTION"],
 			kind: "resolution",
 			value: data.size_variants.original.width + " x " + data.size_variants.original.height
@@ -12635,7 +12635,6 @@ visible.leftMenu = function () {
  * @property {string[]}     tags
  * @property {number}       is_public
  * @property {?string}      type
- * @property {number}       filesize
  * @property {?string}      iso
  * @property {?string}      aperture
  * @property {?string}      make
@@ -12685,6 +12684,7 @@ visible.leftMenu = function () {
  * @property {string} url
  * @property {number} width
  * @property {number} height
+ * @property {number} filesize
  */
 
 /**

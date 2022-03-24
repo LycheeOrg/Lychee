@@ -1878,7 +1878,7 @@ sidebar.createStructure.photo = function (data) {
 	structure.image = {
 		title: lychee.locale[isVideo ? "PHOTO_VIDEO" : "PHOTO_IMAGE"],
 		type: sidebar.types.DEFAULT,
-		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, {
+		rows: [{ title: lychee.locale["PHOTO_SIZE"], kind: "size", value: lychee.locale.printFilesizeLocalized(data.size_variants.original.filesize) }, { title: lychee.locale["PHOTO_FORMAT"], kind: "type", value: data.type }, {
 			title: lychee.locale["PHOTO_RESOLUTION"],
 			kind: "resolution",
 			value: data.size_variants.original.width + " x " + data.size_variants.original.height
@@ -3316,7 +3316,6 @@ tabindex.reset = function () {
  * @property {string[]}     tags
  * @property {number}       is_public
  * @property {?string}      type
- * @property {number}       filesize
  * @property {?string}      iso
  * @property {?string}      aperture
  * @property {?string}      make
@@ -3366,6 +3365,7 @@ tabindex.reset = function () {
  * @property {string} url
  * @property {number} width
  * @property {number} height
+ * @property {number} filesize
  */
 
 /**
