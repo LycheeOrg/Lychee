@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
  * Class ContentType.
  *
  * This middleware ensures that the request has sent the correct content type
- * The only supported parameter value is `:json`.
+ * The supported parameters are `:json` and `:multipart'.
  */
 class ContentType
 {
