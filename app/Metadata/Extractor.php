@@ -163,7 +163,7 @@ class Extractor
 		} catch (\InvalidArgumentException|NoAdapterException $e) {
 			throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 		} catch (\RuntimeException $e) {
-			// thrown be $reader->read if EXIF could not be extracted,
+			// thrown by $reader->read if EXIF could not be extracted,
 			// don't give up yet, only log the event
 			report($e);
 			$exif = false;
@@ -178,7 +178,7 @@ class Extractor
 			} catch (\InvalidArgumentException|NoAdapterException $e) {
 				throw new ExternalComponentMissingException('The configured EXIF adapter is not available', $e);
 			} catch (\RuntimeException $e) {
-				// thrown be $reader->read if EXIF could not be extracted,
+				// thrown by $reader->read if EXIF could not be extracted,
 				// even with the native adapter, now we give up
 				throw new MediaFileOperationException('Could not even extract basic EXIF data with the native adapter', $e);
 			}

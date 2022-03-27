@@ -76,7 +76,7 @@ class LycheeVersion
 	/**
 	 * Return the information with respect to Lychee.
 	 *
-	 * @return LycheeChannelInfo the version of lychee or null if not git data could be found
+	 * @return LycheeChannelInfo the version of lychee or null if no git data could be found
 	 */
 	public function getLycheeChannelInfo(): LycheeChannelInfo
 	{
