@@ -61,9 +61,7 @@ class PhotosRotateTest extends TestCase
 		$editor_enabled_value = Configs::get_value('editor_enabled');
 		Configs::set('editor_enabled', '0');
 		$response = $this->postJson('/api/PhotoEditor::rotate', [
-			// somewhere in the Laravel middleware is a test which checks
-			// if `photoID` is a string; find where
-			'photoID' => (string) $id,
+			'photoID' => $id,
 			'direction' => 1,
 		]);
 		$response->assertStatus(412);
