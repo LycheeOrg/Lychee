@@ -10,7 +10,7 @@ use Illuminate\Contracts\Validation\Rule;
  *
  * Rule to check whether the given attribute represents a valid size variant
  * usable for archiving.
- * Note that there are to different ways how to express the type of size
+ * Note that there are two different ways how to express the type of size
  * variant:
  *  - as an integer (cp. {@link \App\Models\SizeVariant}),
  *  - as a string with small letters (cp. {@link \App\Models\Extensions\SizeVariants::NAMES}), and

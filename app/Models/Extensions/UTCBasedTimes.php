@@ -27,7 +27,7 @@ use InvalidArgumentException;
  * This means the database configuration for MySQL should explicitly include
  * the option `'timezone' => '+00:00'` and the configuration for PostgreSQL
  * should explicitly include the option `'timezone => 'UTC'`.
- * Otherwise, those RDBM system interpret an SQL datetime string without an
+ * Otherwise, those RDBM systems interpret an SQL datetime string without an
  * explicit timezone relative to their own default timezone.
  * The default timezone of the database connection might or might not
  * be UTC and might or might not be equal to the default timezone of the PHP

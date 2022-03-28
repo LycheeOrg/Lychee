@@ -34,7 +34,7 @@ class AlbumIDListRule implements Rule
 	 */
 	public function message(): string
 	{
-		return ':attribute must be a comma-seperated string of strings with either ' .
+		return ':attribute must be a comma-separated string of strings with either ' .
 			HasRandomID::ID_LENGTH . ' characters each one of the built-in IDs ' .
 			implode(', ', array_keys(AlbumFactory::BUILTIN_SMARTS));
 	}
