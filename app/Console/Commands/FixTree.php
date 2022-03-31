@@ -38,7 +38,7 @@ class FixTree extends Command
 		$this->line('   Oddness:         ' . $stat['oddness']);
 		$this->line('   Duplicates:      ' . $stat['duplicates']);
 		$this->line('   Wrong parents:   ' . $stat['wrong_parent']);
-		$this->line('   Missing parent : ' . $stat['missing_parent']);
+		$this->line('   Missing parents: ' . $stat['missing_parent']);
 
 		$totalErrors = $stat['oddness'] + $stat['duplicates'] + $stat['wrong_parent'] + $stat['missing_parent'];
 		if ($totalErrors === 0) {
