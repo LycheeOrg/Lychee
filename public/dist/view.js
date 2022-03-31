@@ -3462,7 +3462,7 @@ tabindex.reset = function () {
 /**
  * @typedef SearchResult
  *
- * DTP returned by `Search::run`
+ * DTO returned by `Search::run`
  *
  * @property {(Album|TagAlbum)[]} albums
  * @property {Photo[]}            photos
@@ -3574,7 +3574,7 @@ var SmartAlbumID = Object.freeze({
 /**
  * @typedef InitializationData
  *
- * @property {number} status - `0`: no config, `1`: unauthenticated, `2`: authenticated
+ * @property {number} status - `1`: unauthenticated, `2`: authenticated
  * @property {boolean} admin
  * @property {boolean} may_upload
  * @property {boolean} is_locked

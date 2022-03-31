@@ -854,7 +854,7 @@ album.load = function (albumID) {
 		album.json = data;
 
 		if (albumLoadedCB === null) {
-			lychee.animate($(".content"), "contentZoomOut");
+			lychee.animate(lychee.content, "contentZoomOut");
 		}
 		var waitTime = 300;
 
@@ -958,7 +958,7 @@ album.parse = function () {
 /**
  * Creates a new album.
  *
- * The method optionally calls the provided callback after the new albums
+ * The method optionally calls the provided callback after the new album
  * has been created and passes the ID of the newly created album plus the
  * provided `IDs`.
  *
@@ -1526,7 +1526,7 @@ album.shareUsers = function (albumID) {
 				data.shared.filter(function (val) {
 					return val.album_id === albumID;
 				}).forEach(function (sharing) {
-					// Check all the shares who already exists, and store their sharing id on the element
+					// Check all the shares that already exist, and store their sharing id on the element
 					var elem = $(".basicModal .choice input[name=\"" + sharing.user_id + "\"]");
 					elem.prop("checked", true);
 					elem.data("sharingId", sharing.id);
@@ -12781,7 +12781,7 @@ visible.leftMenu = function () {
 /**
  * @typedef SearchResult
  *
- * DTP returned by `Search::run`
+ * DTO returned by `Search::run`
  *
  * @property {(Album|TagAlbum)[]} albums
  * @property {Photo[]}            photos
@@ -12893,7 +12893,7 @@ var SmartAlbumID = Object.freeze({
 /**
  * @typedef InitializationData
  *
- * @property {number} status - `0`: no config, `1`: unauthenticated, `2`: authenticated
+ * @property {number} status - `1`: unauthenticated, `2`: authenticated
  * @property {boolean} admin
  * @property {boolean} may_upload
  * @property {boolean} is_locked
