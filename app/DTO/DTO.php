@@ -30,7 +30,19 @@ abstract class DTO implements Arrayable, Jsonable, \JsonSerializable
 	public function toJson($options = 0): string
 	{
 		try {
-			return json_encode($this->jsonSerialize(), $options | JSON_THROW_ON_ERROR);
+			// Note, we must not use the option `JSON_THROW_ON_ERROR` here,
+			// because this does not clear `json_last_error()` from any
+			// previous, stalled error message.
+			// But `\Illuminate\Http\JsonResponse::setData()` falsy assumes
+			// that this method does so.
+			// Hence, we call `json_encode` _without_ specifying
+			// `JSON_THROW_ON_ERROR` and then mimic that behaviour.
+			$json = json_encode($this->jsonSerialize(), $options);
+			if (json_last_error()) {
+				throw new \JsonException(json_last_error_msg(), json_last_error());
+			}
+
+			return $json;
 		} catch (\JsonException $e) {
 			throw new JsonEncodingException('Error encoding DTO [' . get_class($this) . ']', 0, $e);
 		}
