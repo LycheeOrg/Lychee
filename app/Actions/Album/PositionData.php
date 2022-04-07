@@ -3,6 +3,8 @@
 namespace App\Actions\Album;
 
 use App\Models\Album;
+use App\Models\SizeVariant;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PositionData extends Action
 {
@@ -22,7 +24,13 @@ class PositionData extends Action
 		$result['id'] = $album->id;
 		$result['title'] = $album->title;
 		$result['photos'] = $photoRelation
-			->with(['album', 'size_variants', 'size_variants.sym_links'])
+			->with([
+				'album',
+				'size_variants' => function (HasMany $r) {
+					$r->whereBetween('type', [SizeVariant::SMALL2X, SizeVariant::THUMB]);
+				},
+				'size_variants.sym_links',
+			])
 			->whereNotNull('latitude')
 			->whereNotNull('longitude')
 			->get()

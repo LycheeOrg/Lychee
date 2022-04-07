@@ -5,6 +5,8 @@ namespace App\Actions\Albums;
 use App\Actions\PhotoAuthorisationProvider;
 use App\Models\Configs;
 use App\Models\Photo;
+use App\Models\SizeVariant;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PositionData
 {
@@ -28,7 +30,14 @@ class PositionData
 		$result['id'] = null;
 		$result['title'] = null;
 		$result['photos'] = $this->photoAuthorisationProvider->applySearchabilityFilter(
-			Photo::with(['album', 'size_variants', 'size_variants.sym_links'])
+			Photo::query()
+				->with([
+					'album',
+					'size_variants' => function (HasMany $r) {
+						$r->whereBetween('type', [SizeVariant::SMALL2X, SizeVariant::THUMB]);
+					},
+					'size_variants.sym_links',
+				])
 				->whereNotNull('latitude')
 				->whereNotNull('longitude')
 		)->get()->toArray();
