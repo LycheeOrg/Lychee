@@ -1555,8 +1555,12 @@ sidebar.createStructure.photo = function (data) {
 	if (data == null || data === "") return false;
 
 	var editable = typeof album !== "undefined" ? album.isUploadable() : false;
-	var exifHash = data.taken_at + data.make + data.model + data.shutter + data.aperture + data.focal + data.iso;
-	var locationHash = data.longitude + data.latitude + data.altitude;
+	var hasExif = !!data.taken_at || !!data.make || !!data.model || !!data.shutter || !!data.aperture || !!data.focal || !!data.iso;
+	// Attributes for geo-position are nullable floats.
+	// The geo-position 0°00'00'', 0°00'00'' at zero altitude is very unlikely
+	// but valid (it's south of the coast of Ghana in the Atlantic)
+	// So we must not calculate the sum and compare for zero.
+	var hasLocation = data.longitude !== null || data.latitude !== null || data.altitude !== null;
 	var structure = {};
 	var isPublic = "";
 	var isVideo = data.type && data.type.indexOf("video") > -1;
@@ -1638,7 +1642,7 @@ sidebar.createStructure.photo = function (data) {
 	};
 
 	// Only create EXIF section when EXIF data available
-	if (exifHash !== "") {
+	if (hasExif !== "") {
 		structure.exif = {
 			title: lychee.locale["PHOTO_CAMERA"],
 			type: sidebar.types.DEFAULT,
@@ -1660,7 +1664,7 @@ sidebar.createStructure.photo = function (data) {
 		rows: [{ title: lychee.locale["PHOTO_LICENSE"], kind: "license", value: license, editable: editable }]
 	};
 
-	if (locationHash !== "" && locationHash !== 0) {
+	if (hasLocation) {
 		structure.location = {
 			title: lychee.locale["PHOTO_LOCATION"],
 			type: sidebar.types.DEFAULT,
@@ -1680,7 +1684,7 @@ sidebar.createStructure.photo = function (data) {
 				value: data.altitude ? (Math.round(parseFloat(data.altitude) * 10) / 10).toString() + "m" : ""
 			}, { title: lychee.locale["PHOTO_LOCATION"], kind: "location", value: data.location ? data.location : "" }]
 		};
-		if (data.img_direction) {
+		if (data.img_direction !== null) {
 			// No point in display sub-degree precision.
 			structure.location.rows.push({
 				title: lychee.locale["PHOTO_IMGDIRECTION"],
