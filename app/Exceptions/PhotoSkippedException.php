@@ -11,8 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PhotoSkippedException extends LycheeBaseException
 {
-	public function __construct(\Throwable $previous = null)
+	public const DEFAULT_MESSAGE = 'The photo has been skipped';
+
+	public function __construct(string $message = self::DEFAULT_MESSAGE, \Throwable $previous = null)
 	{
-		parent::__construct(Response::HTTP_CONFLICT, 'The photo has been skipped', $previous);
+		parent::__construct(Response::HTTP_CONFLICT, $message, $previous);
 	}
 }

@@ -27,6 +27,7 @@ class Handler extends ExceptionHandler
 	 * @var array<class-string, int>
 	 */
 	public const EXCEPTION2SEVERITY = [
+		PhotoResyncedException::class => Logs::SEVERITY_WARNING,
 		PhotoSkippedException::class => Logs::SEVERITY_WARNING,
 		ImportCancelledException::class => Logs::SEVERITY_NOTICE,
 		ConfigurationException::class => Logs::SEVERITY_NOTICE,
