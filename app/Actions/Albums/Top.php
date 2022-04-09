@@ -59,8 +59,8 @@ class Top
 		/** @var Collection<BaseSmartAlbum> $smartAlbums */
 		$smartAlbums = $this->albumFactory
 			->getAllBuiltInSmartAlbums(false)
-			->filter(
-				fn ($smartAlbum) => $this->albumAuthorisationProvider->isVisible($smartAlbum)
+			->map(
+				fn ($smartAlbum) => $this->albumAuthorisationProvider->isVisible($smartAlbum) ? $smartAlbum : null
 			);
 
 		$tagAlbumQuery = $this->albumAuthorisationProvider

@@ -176,7 +176,7 @@ class AlbumFactory
 	{
 		$smartAlbums = new Collection();
 		foreach (self::BUILTIN_SMARTS as $smartAlbumId => $smartAlbumClass) {
-			$smartAlbums->push($this->createSmartAlbum($smartAlbumId, $withRelations));
+			$smartAlbums->put($smartAlbumId, $this->createSmartAlbum($smartAlbumId, $withRelations));
 		}
 
 		return $smartAlbums;

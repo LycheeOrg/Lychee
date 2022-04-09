@@ -2,7 +2,6 @@
 
 namespace App\DTO;
 
-use App\SmartAlbums\BaseSmartAlbum;
 use Illuminate\Support\Collection;
 
 /**
@@ -39,14 +38,8 @@ class TopAlbums extends DTO
 	 */
 	public function toArray(): array
 	{
-		$smartAlbumsArray = [];
-		/** @var BaseSmartAlbum $smartAlbum */
-		foreach ($this->smartAlbums as $smartAlbum) {
-			$smartAlbumsArray[$smartAlbum->id] = $smartAlbum->toArray();
-		}
-
 		return [
-			'smart_albums' => $smartAlbumsArray,
+			'smart_albums' => $this->smartAlbums->toArray(),
 			'tag_albums' => $this->tagAlbums->toArray(),
 			'albums' => $this->albums->toArray(),
 			'shared_albums' => $this->sharedAlbums->toArray(),
