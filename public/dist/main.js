@@ -293,8 +293,8 @@ if (L.MarkerClusterGroup) {
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'></p>"], ["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'></p>"]),
-    _templateObject2 = _taggedTemplateLiteral(["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"], ["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='Untitled'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"]),
+var _templateObject = _taggedTemplateLiteral(["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='", "'></p>"], ["<p>", " <input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='", "'></p>"]),
+    _templateObject2 = _taggedTemplateLiteral(["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='", "'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"], ["<p>", "\n\t\t\t\t\t\t\t<input class='text' name='title' type='text' maxlength='100' placeholder='Title' value='", "'>\n\t\t\t\t\t\t\t<input class='text' name='tags' type='text' minlength='1' placeholder='Tags' value=''>\n\t\t\t\t\t\t</p>"]),
     _templateObject3 = _taggedTemplateLiteral(["\n\t\t\t<p>", "\n\t\t\t\t<input\n\t\t\t\t\tclass='text'\n\t\t\t\t\tname='show_tags'\n\t\t\t\t\ttype='text'\n\t\t\t\t\tminlength='1'\n\t\t\t\t\tplaceholder='Tags'\n\t\t\t\t\tvalue='$", "'\n\t\t\t\t>\n\t\t\t</p>"], ["\n\t\t\t<p>", "\n\t\t\t\t<input\n\t\t\t\t\tclass='text'\n\t\t\t\t\tname='show_tags'\n\t\t\t\t\ttype='text'\n\t\t\t\t\tminlength='1'\n\t\t\t\t\tplaceholder='Tags'\n\t\t\t\t\tvalue='$", "'\n\t\t\t\t>\n\t\t\t</p>"]),
     _templateObject4 = _taggedTemplateLiteral(["<input class='text' name='title' type='text' maxlength='100' placeholder='$", "' value='$", "'>"], ["<input class='text' name='title' type='text' maxlength='100' placeholder='$", "' value='$", "'>"]),
     _templateObject5 = _taggedTemplateLiteral(["<p>", " ", "</p>"], ["<p>", " ", "</p>"]),
@@ -949,13 +949,6 @@ album.load = function (albumID) {
 };
 
 /**
- * @returns {void}
- */
-album.parse = function () {
-	if (!album.json.title) album.json.title = lychee.locale["UNTITLED"];
-};
-
-/**
  * Creates a new album.
  *
  * The method optionally calls the provided callback after the new album
@@ -1017,7 +1010,7 @@ album.add = function () {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject, lychee.locale["TITLE_NEW_ALBUM"]),
+		body: lychee.html(_templateObject, lychee.locale["TITLE_NEW_ALBUM"], lychee.locale["UNTITLED"]),
 		buttons: {
 			action: {
 				title: lychee.locale["CREATE_ALBUM"],
@@ -1060,7 +1053,7 @@ album.addByTags = function () {
 	};
 
 	basicModal.show({
-		body: lychee.html(_templateObject2, lychee.locale["TITLE_NEW_ALBUM"]),
+		body: lychee.html(_templateObject2, lychee.locale["TITLE_NEW_ALBUM"], lychee.locale["UNTITLED"]),
 		buttons: {
 			action: {
 				title: lychee.locale["CREATE_TAG_ALBUM"],
@@ -1629,7 +1622,7 @@ album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
 	}
 
 	// Fallback for first album without a title
-	if (title === "") title = lychee.locale["UNTITLED"];
+	if (!title) title = lychee.locale["UNTITLED"];
 
 	if (albumIDs.length === 1) {
 		// Get title of second album
@@ -1639,7 +1632,7 @@ album.buildMessage = function (albumIDs, albumID, op1, op2, ops) {
 		}
 
 		// Fallback for second album without a title
-		if (sTitle === "") sTitle = lychee.locale["UNTITLED"];
+		if (!sTitle) sTitle = lychee.locale["UNTITLED"];
 
 		msg = lychee.html(_templateObject12, lychee.locale[op1], sTitle, lychee.locale[op2], title);
 	} else {
@@ -1706,7 +1699,7 @@ album.delete = function (albumIDs) {
 		}
 
 		// Fallback for album without a title
-		if (albumTitle === "") albumTitle = lychee.locale["UNTITLED"];
+		if (!albumTitle) albumTitle = lychee.locale["UNTITLED"];
 
 		msg = lychee.html(_templateObject14, lychee.locale["DELETE_ALBUM_CONFIRMATION_1"], albumTitle, lychee.locale["DELETE_ALBUM_CONFIRMATION_2"]);
 	} else {
@@ -1914,7 +1907,7 @@ var albums = {
 albums.load = function () {
 	var startTime = new Date().getTime();
 
-	lychee.animate($(".content"), "contentZoomOut");
+	lychee.animate(lychee.content, "contentZoomOut");
 
 	/**
   * @param {Albums} data
@@ -2093,16 +2086,10 @@ albums.getByID = function (albumID) {
 };
 
 /**
- * Deletes an album by ID.
+ * Deletes a top-level album by ID from the cached JSON for albums.
  *
- * This function is only ever invoked for top-level albums, so it doesn't
- * need to walk the albums tree.
- *
- * TODO: Check above statement.
- *
- * The method is called by {@link album.delete} after the album has
+ * The method is called by {@link album.delete} after a top-level album has
  * successfully been deleted at the server-side.
- * How does this match the statement above?
  *
  * @param {?string} albumID
  * @returns {void}
@@ -2122,7 +2109,7 @@ albums.deleteByID = function (albumID) {
 	idx = albums.json.shared_albums.findIndex(function (a) {
 		return a.id === albumID;
 	});
-	albums.json.albums.splice(idx, 1);
+	albums.json.shared_albums.splice(idx, 1);
 
 	if (idx !== -1) return;
 
@@ -2435,7 +2422,7 @@ build.overlay_image = function (data) {
 			return "";
 	}
 
-	return lychee.html(_templateObject27, data.title) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
+	return lychee.html(_templateObject27, data.title ? data.title : lychee.locale["UNTITLED"]) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
 };
 
 /**
@@ -2875,7 +2862,7 @@ contextMenu.buildList = function (lists, exclude, action) {
 			}
 		}
 
-		if (item.title === "") item.title = lychee.locale["UNTITLED"];
+		if (!item.title) item.title = lychee.locale["UNTITLED"];
 
 		var prefix = layer > 0 ? "&nbsp;&nbsp;".repeat(layer - 1) + "└ " : "";
 
@@ -3049,11 +3036,26 @@ contextMenu.photoMulti = function (photoIDs, e) {
 
 	multiselect.stopResize();
 
-	var items = [{ title: build.iconic("star") + lychee.locale["STAR_ALL"], fn: function fn() {
-			return _photo3.setStar(photoIDs, true);
-		} }, { title: build.iconic("star") + lychee.locale["UNSTAR_ALL"], fn: function fn() {
-			return _photo3.setStar(photoIDs, false);
-		} }, { title: build.iconic("tag") + lychee.locale["TAGS_ALL"], fn: function fn() {
+	var arePhotosStarred = false;
+	var arePhotosNotStarred = false;
+	photoIDs.forEach(function (id) {
+		if (album.getByID(id).is_starred) {
+			arePhotosStarred = true;
+		} else {
+			arePhotosNotStarred = true;
+		}
+	});
+
+	var items = [
+	// Only show the star/unstar menu item when the selected photos are
+	// consistently either all starred or all not starred.
+	{
+		title: build.iconic("star") + (arePhotosNotStarred ? lychee.locale["STAR_ALL"] : lychee.locale["UNSTAR_ALL"]),
+		visible: !(arePhotosStarred && arePhotosNotStarred),
+		fn: function fn() {
+			return _photo3.setStar(photoIDs, arePhotosNotStarred);
+		}
+	}, { title: build.iconic("tag") + lychee.locale["TAGS_ALL"], fn: function fn() {
 			return _photo3.editTags(photoIDs);
 		} }, {}, { title: build.iconic("pencil") + lychee.locale["RENAME_ALL"], fn: function fn() {
 			return _photo3.setTitle(photoIDs);
@@ -3118,10 +3120,10 @@ contextMenu.photoMore = function (photoID, e) {
 	// b) the photo is explicitly marked as downloadable (v4-only)
 	// c) or, the album is explicitly marked as downloadable
 
-	var showDownload = album.isUploadable() || _photo3.json.is_downloadable || album.json && album.json.is_downloadable;
+	var showDownload = album.isUploadable() || _photo3.json.is_downloadable;
 	var showFull = !!(_photo3.json.size_variants.original.url && _photo3.json.size_variants.original.url !== "");
 
-	var items = [{ title: build.iconic("fullscreen-enter") + lychee.locale["FULL_PHOTO"], visible: !!showFull, fn: function fn() {
+	var items = [{ title: build.iconic("fullscreen-enter") + lychee.locale["FULL_PHOTO"], visible: showFull, fn: function fn() {
 			return window.open(_photo3.getDirectLink());
 		} }, { title: build.iconic("cloud-download") + lychee.locale["DOWNLOAD"], visible: showDownload, fn: function fn() {
 			return _photo3.getArchive([photoID]);
@@ -3237,7 +3239,7 @@ contextMenu.getSubIDs = function (albums, albumID) {
  * **ATTENTION:** The name `move` of this method is very badly chosen.
  * The method does not move anything, but only shows the menu and reports
  * the selected album.
- * In particular, the method is used by any operation which needs an target
+ * In particular, the method is used by any operation which needs a target
  * album (i.e. merge, copy-to, etc.)
  *
  * TODO: Find a better name for this function.
@@ -3252,7 +3254,7 @@ contextMenu.getSubIDs = function (albums, albumID) {
  * depending on the use-case.
  * Keep in mind, that the root album is not visible to the user during normal
  * browsing.
- * Photos on the root level are stashed away into an virtual album called
+ * Photos on the root level are stashed away into a virtual album called
  * "Unsorted".
  * Albums on the root level are shown as siblings, but the root node itself
  * is invisible.
@@ -3657,12 +3659,10 @@ header.hide = function () {
 };
 
 /**
- * @param {string} [title="Untitled"]
+ * @param {string} title
  * @returns {void}
  */
-header.setTitle = function () {
-	var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "Untitled";
-
+header.setTitle = function (title) {
 	var $title = header.dom(".header__title");
 	var html = lychee.html(_templateObject42, title, build.iconic("caret-bottom"));
 
@@ -4744,7 +4744,7 @@ var lychee = {
 	enable_close_tab_on_esc: false,
 	enable_tabindex: false,
 	enable_contextmenu_header: true,
-	hide_content_during_imageview: false,
+	hide_content_during_imgview: false,
 	device_type: "desktop",
 
 	checkForUpdates: true,
@@ -4917,7 +4917,7 @@ lychee.parsePublicInitializationData = function (data) {
 	lychee.sorting_albums = data.config.sorting_albums;
 	lychee.album_subtitle_type = data.config.album_subtitle_type || "oldstyle";
 	lychee.checkForUpdates = data.config.check_for_updates;
-	lychee.layout = Number.parseInt(data.config.layout, 10) || 0;
+	lychee.layout = Number.parseInt(data.config.layout, 10) || 1;
 	lychee.landing_page_enable = data.config.landing_page_enable === "1";
 	lychee.public_search = data.config.public_search === "1";
 	lychee.image_overlay_type = data.config.image_overlay_type || "exif";
@@ -5236,7 +5236,7 @@ lychee.load = function () {
 				}
 				_photo3.load(photoID, albumID, autoplay);
 
-				// Make imageview focussable
+				// Make imageview focusable
 				tabindex.makeFocusable(lychee.imageview);
 
 				// Make thumbnails unfocusable and store which element had focus
@@ -5356,17 +5356,22 @@ lychee.getUpdate = function () {
 };
 
 /**
- * @param {string} title
- * @param {boolean} editable
+ * Sets the title of the browser window and the title shown in the header bar.
+ *
+ * The window title is prefixed by the value of the configuration setting
+ * `lychee.title`.
+ *
+ * If both, the prefix `lychee.title` and the given title, are not empty,
+ * they are seperated by an en-dash.
+ *
+ * @param {string} [title=""]
+ * @param {boolean} [editable=false]
  */
-lychee.setTitle = function (title, editable) {
-	// TODO: Fix this odd condition. It seems to have something to do with `"Lychee v4"` being hard-coded in `view.albums.title`. Optimally, this code would be `document.title = lychee.title + " - " + title`.
-	if (lychee.title === title) {
-		document.title = lychee.title + " - " + lychee.locale["ALBUMS"];
-	} else {
-		document.title = lychee.title + " - " + title;
-	}
+lychee.setTitle = function () {
+	var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
+	var editable = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
 
+	document.title = lychee.title + (lychee.title && title ? " – " : "") + title;
 	header.setEditable(editable);
 	header.setTitle(title);
 };
@@ -5439,37 +5444,10 @@ lychee.animate = function (obj, animation) {
 		for (var x = 0; x < animations[i].length; x++) {
 			if (animations[i][x] === animation) {
 				obj.removeClass(animations[i][0] + " " + animations[i][1]).addClass(animation);
+				return;
 			}
 		}
 	}
-};
-
-/**
- * DON'T USE THIS METHOD.
- *
- * TODO: Find all invocations of this method and nuke them.
- *
- * This method is really bad. It assumes that the server follows a particular
- * naming pattern for files and directories.
- *
- * @param {string} [path=""]
- * @returns {{path: string, isPhoto: boolean}}
- */
-lychee.retinize = function () {
-	var path = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "";
-
-	var extension = path.split(".").pop();
-	var isPhoto = extension !== "svg";
-
-	if (isPhoto === true) {
-		path = path.replace(/\.[^/.]+$/, "");
-		path = path + "@2x" + "." + extension;
-	}
-
-	return {
-		path: path,
-		isPhoto: isPhoto
-	};
 };
 
 /**
@@ -5845,7 +5823,7 @@ lychee.locale = {
 	NEW_TAG_ALBUM: "New Tag Album",
 
 	TITLE_NEW_ALBUM: "Enter a title for the new album:",
-	UNTITLED: "Untilted",
+	UNTITLED: "Untitled",
 	UNSORTED: "Unsorted",
 	STARRED: "Starred",
 	RECENT: "Recent",
@@ -6406,7 +6384,7 @@ mapview.title = function (_albumID, _albumTitle) {
 			lychee.setTitle(lychee.locale["ALBUMS"], false);
 			break;
 		default:
-			lychee.setTitle(_albumTitle, false);
+			lychee.setTitle(_albumTitle ? _albumTitle : lychee.locale["UNTITLED"], false);
 			break;
 	}
 };
@@ -6434,7 +6412,7 @@ mapview.open = function () {
 
 	// initialize container only once
 	if (!mapview.isInitialized()) {
-		// Leaflet searches for icon in same directory as js file -> paths needs
+		// Leaflet searches for icon in same directory as js file -> paths need
 		// to be overwritten
 		delete L.Icon.Default.prototype._getIconUrl;
 		L.Icon.Default.mergeOptions({
@@ -6563,7 +6541,7 @@ mapview.open = function () {
 	};
 
 	/**
-  * Calls backend, retrieves information about photos and display them.
+  * Calls backend, retrieves information about photos and displays them.
   *
   * This function is called recursively to retrieve data for sub-albums.
   * Possible enhancement could be to only have a single ajax call.
@@ -6636,16 +6614,6 @@ mapview.goto = function (elem) {
 	var albumID = elem.attr("data-album-id");
 
 	if (albumID === "null") albumID = "unsorted";
-
-	// The condition below looks suspicious and like a violation of the
-	// principle of separation of concerns.
-	// In theory, if the currently loaded album does not match the desired
-	// album, then `lychee.goto` and `lychee.load` should take care of that.
-	// But I am afraid of deleting these lines of code and breaking something.
-	// TODO: Clean this up.
-	if (album.json && album.json.id !== albumID) {
-		album.refresh();
-	}
 
 	lychee.goto(albumID + "/" + photoID);
 };
@@ -7152,7 +7120,7 @@ var password = {};
 
 /**
  * Shows the "album unlock"-dialog, tries to unlock the album and calls
- * the provided callback in case success.
+ * the provided callback in case of success.
  *
  * @param {string} albumID - the ID of the album which shall be unlocked
  * @param {UnlockSuccessCB} callback - called in case of success
@@ -7213,7 +7181,7 @@ var _photo3 = {
 	/** @type {?Photo} */
 	json: null,
 	cache: null,
-	/** @type {?boolean} indicates whether the browser supports prefetching of images; `null` if support hasn't determined yet */
+	/** @type {?boolean} indicates whether the browser supports prefetching of images; `null` if support hasn't been determined yet */
 	supportsPrefetch: null,
 	/** @type {?LivePhotosKit.Player} */
 	livePhotosObject: null
@@ -7248,8 +7216,6 @@ _photo3.load = function (photoID, albumID, autoplay) {
 		_photo3.json.original_album_id = _photo3.json.album_id;
 		// TODO: Why do we overwrite the true album ID of a photo, by the externally provided one? I guess we need it, because the album which the user came from might also be a smart album or a tag album. However, in this case I would prefer to leave the `album_id  untouched (don't rename it to `original_album_id`) and call this one `effective_album_id` instead.
 		_photo3.json.album_id = albumID;
-		// TODO: The JSON should be left untouched. Replacing `null` by `lychee.locale["UNTITLED"]` should happen on the GUI layer, i.e. somewhere inside the `view` component.
-		if (!_photo3.json.title) _photo3.json.title = lychee.locale["UNTITLED"];
 
 		if (!visible.photo()) view.photo.show();
 		view.photo.init(autoplay);
@@ -7338,6 +7304,7 @@ _photo3.preloadNextPrev = function (photoID) {
 	if (!photo) return;
 
 	var imgs = $("img#image");
+	// TODO: consider replacing the test for "@2x." by a simple comparison to photo.size_variants.medium2x.url.
 	var isUsing2xCurrently = imgs.length > 0 && imgs[0].currentSrc !== null && imgs[0].currentSrc.includes("@2x.");
 
 	$("head [data-prefetch]").remove();
@@ -7452,7 +7419,6 @@ _photo3.previous = function (animate) {
 	}
 
 	setTimeout(function () {
-		if (_photo3.getID() === null) return false;
 		_photo3.livePhotosObject = null;
 		lychee.goto(album.getID() + "/" + curPhoto.previous_photo_id, false);
 	}, delay);
@@ -7478,7 +7444,6 @@ _photo3.next = function (animate) {
 	}
 
 	setTimeout(function () {
-		if (_photo3.getID() === null) return false;
 		_photo3.livePhotosObject = null;
 		lychee.goto(album.getID() + "/" + curPhoto.next_photo_id, false);
 	}, delay);
@@ -7499,7 +7464,7 @@ _photo3.delete = function (photoIDs) {
 		if (visible.photo()) photoTitle = _photo3.json.title;else photoTitle = album.getByID(photoIDs[0]).title;
 
 		// Fallback for photos without a title
-		if (photoTitle === "") photoTitle = lychee.locale["UNTITLED"];
+		if (!photoTitle) photoTitle = lychee.locale["UNTITLED"];
 	}
 
 	action.fn = function () {
@@ -7604,8 +7569,7 @@ _photo3.setTitle = function (photoIDs) {
 		var newTitle = data.title ? data.title : null;
 
 		if (visible.photo()) {
-			// TODO: The JSON should be left untouched. Replacing `null` by `lychee.locale["UNTITLED"]` should happen on the GUI layer, i.e. somewhere inside the `view` component
-			_photo3.json.title = newTitle ? newTitle : lychee.locale["UNTITLED"];
+			_photo3.json.title = newTitle;
 			view.photo.title();
 		}
 
@@ -8105,7 +8069,7 @@ _photo3.getArchive = function (photoIDs) {
 		}
 
 		/**
-   * @param {string} id - the ID if the button, same semantics as "kind"
+   * @param {string} id - the ID of the button, same semantics as "kind"
    * @param {string} label - the caption on the button
    * @returns {string} - HTML
    */
@@ -8310,7 +8274,7 @@ search.find = function (term) {
 		var albumsData = "";
 		var photosData = "";
 
-		// Build HTML for photo
+		// Build HTML for album
 		search.json.albums.forEach(function (album) {
 			albums.parse(album);
 			albumsData += build.album(album);
@@ -9468,7 +9432,7 @@ _sidebar.render = function (structure) {
 			var idxLocation = section.rows.findIndex(function (row) {
 				return row.kind === "location";
 			});
-			// Do not show location is not enabled
+			// Do not show location if not enabled
 			if (idxLocation !== -1 && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
 				section.rows.splice(idxLocation, 1);
 			}
@@ -9796,7 +9760,7 @@ tabindex.makeFocusable = function (elem) {
 	// Get all elements which have a tabindex
 	var tmp = elem.find("[data-tabindex]");
 
-	// iterate over all elements and set tabindex to stored value (i.e. make is not focusable)
+	// iterate over all elements and set tabindex to stored value
 	tmp.each(
 	/**
   * @param {number} i
@@ -9804,7 +9768,7 @@ tabindex.makeFocusable = function (elem) {
   */
 	function (i, e) {
 		$(e).attr("tabindex", $(e).data("tabindex"));
-		// restore focus elemente if wanted
+		// restore focus element if wanted
 		if (restoreFocusElement) {
 			if ($(e).data("tabindex-focus") && lychee.active_focus_on_page_load) {
 				$(e).focus();
@@ -10029,7 +9993,7 @@ upload.start = {
    */
 		var latestFileIdx = 0;
 		/**
-   * Indicator whether a file is currently being uploaded.
+   * Semaphore whether a file is currently being uploaded.
    *
    * This is used as a semaphore to serialize the upload transmissions
    * between several instances of the method {@link process}.
@@ -10037,6 +10001,12 @@ upload.start = {
    * @type {boolean}
    */
 		var isUploadRunning = false;
+		/**
+   * Semaphore whether a further upload shall be cancelled on the next
+   * occasion.
+   *
+   * @type {boolean}
+   */
 		var shallCancelUpload = false;
 
 		/**
@@ -10074,8 +10044,7 @@ upload.start = {
    *
    * Note that up to `lychee.upload_processing_limit` "instances" of
    * this method can be "alive" simultaneously.
-   * The parameter `fileIdx` is constrained to the range between
-   * `latestFileIdx - lychee.upload_processing_limit` and `latestFileIdx`.
+   * The parameter `fileIdx` is limited by `latestFileIdx`.
    *
    * @param {number} fileIdx the index of the file being processed
    */
@@ -10092,6 +10061,22 @@ upload.start = {
     *
     * This method updates the upload percentage counter in the dialog.
     *
+    * If the progress equals 100%, i.e. if the upload has been
+    * completed, this method
+    *
+    *  - unsets the semaphore for a running upload,
+    *  - scrolls the dialog such that the file with index `fileIdx`
+    *    becomes visible, and
+    *  - changes the status text to "Upload processing".
+    *
+    * After the current upload has reached 100%, this method starts a
+    * new upload, if
+    *
+    *  - there are more files to be uploaded,
+    *  - no other upload is currently running, and
+    *  - the number of outstanding responses does not exceed the
+    *    processing limit of Lychee.
+    *
     * @param {ProgressEvent} e
     * @this XMLHttpRequest
     */
@@ -10104,28 +10089,25 @@ upload.start = {
 				// Set progress when progress has changed
 				if (progress > uploadProgress) {
 					uploadProgress = progress;
-					$(nRowStatusSelector(fileIdx + 1)).html(uploadProgress + "%");
-				}
-			};
+					/** @type {?jQuery} */
+					var jqStatusMsg = $(nRowStatusSelector(fileIdx + 1));
+					jqStatusMsg.html(uploadProgress + "%");
 
-			/**
-    * A function to be called when the upload has completed.
-    *
-    * This method
-    *
-    *  - unsets the indicator for a running upload,
-    *  - scrolls the dialog such that the file with index `fileIdx`
-    *    becomes visible, and
-    *  - changes the status text to "Upload processing".
-    *
-    * @this XMLHttpRequest
-    */
-			var onUploadComplete = function onUploadComplete() {
-				$(nRowStatusSelector(fileIdx + 1)).html(lychee.locale["UPLOAD_PROCESSING"]);
-				isUploadRunning = false;
-				var scrollPos = 0;
-				if (fileIdx + 1 > 4) scrollPos = (fileIdx + 1 - 4) * 40;
-				$(".basicModal .rows").scrollTop(scrollPos);
+					if (progress >= 100) {
+						jqStatusMsg.html(lychee.locale["UPLOAD_PROCESSING"]);
+						isUploadRunning = false;
+						var scrollPos = 0;
+						if (fileIdx + 1 > 4) scrollPos = (fileIdx + 1 - 4) * 40;
+						$(".basicModal .rows").scrollTop(scrollPos);
+
+						// Start a new upload, if there are still pending
+						// files
+						if (!isUploadRunning && !shallCancelUpload && (outstandingResponsesCount < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && latestFileIdx + 1 < files.length) {
+							latestFileIdx++;
+							process(latestFileIdx);
+						}
+					}
+				}
 			};
 
 			/**
@@ -10138,7 +10120,7 @@ upload.start = {
 			var onLoaded = function onLoaded() {
 				/** @type {?LycheeException} */
 				var lycheeException = this.status >= 400 ? this.response : null;
-				var errorText = void 0;
+				var errorText = "";
 				var statusText = void 0;
 				var statusClass = void 0;
 
@@ -10175,7 +10157,9 @@ upload.start = {
 					api.onError(this, { albumID: albumID }, lycheeException);
 				}
 
-				$(".basicModal .rows .row:nth-child(" + (fileIdx + 1) + ") p.notice").html(errorText).show();
+				if (errorText !== "") {
+					$(".basicModal .rows .row:nth-child(" + (fileIdx + 1) + ") p.notice").html(errorText).show();
+				}
 			};
 
 			/**
@@ -10198,13 +10182,14 @@ upload.start = {
     * @this XMLHttpRequest
     */
 			var onComplete = function onComplete() {
-				latestFileIdx++;
 				outstandingResponsesCount--;
-				if (!isUploadRunning && !shallCancelUpload && (outstandingResponsesCount < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && latestFileIdx < files.length) {
+
+				if (!isUploadRunning && !shallCancelUpload && (outstandingResponsesCount < lychee.upload_processing_limit || lychee.upload_processing_limit === 0) && latestFileIdx + 1 < files.length) {
+					latestFileIdx++;
 					process(latestFileIdx);
 				}
 
-				if ((shallCancelUpload || latestFileIdx >= files.length) && !isUploadRunning && outstandingResponsesCount === 0) {
+				if ((shallCancelUpload || latestFileIdx + 1 === files.length) && !isUploadRunning && outstandingResponsesCount === 0) {
 					finish();
 				}
 			};
@@ -10215,8 +10200,18 @@ upload.start = {
 			formData.append("albumID", albumID);
 			formData.append("file", files[fileIdx]);
 
+			// We must not use the `onload` event of the `XMLHttpRequestUpload`
+			// object.
+			// Instead, we only use the `onprogress` event and check within
+			// the event handler if the progress counter reached 100%.
+			// The reason is that `upload.onload` is not immediately called
+			// after the browser has completed the upload (as the name
+			// suggests), but only after the browser has already received the
+			// response header.
+			// For our purposes this is too late, as this way we would never
+			// show the "processing" status, during which the backend has
+			// received the upload, but has not yet started to send a response.
 			xhr.upload.onprogress = onUploadProgress;
-			xhr.upload.onload = onUploadComplete;
 			xhr.onload = onLoaded;
 			xhr.onloadend = onComplete;
 			xhr.responseType = "json";
@@ -10513,8 +10508,7 @@ upload.start = {
 									statusText = lychee.locale["UPLOAD_SKIPPED"];
 									noteText = lychee.locale["UPLOAD_IMPORT_SKIPPED_DUPLICATE"];
 									break;
-								// TODO: Check with old master branch when and where the back-end disintgiushed between "skipped only" and "skipped + resynced". At the moment we only have one exception for that.
-								case "Skipped duplicate (resynced metadata)":
+								case "PhotoResyncedException":
 									statusText = lychee.locale["UPLOAD_UPDATED"];
 									noteText = lychee.locale["UPLOAD_IMPORT_RESYNCED_DUPLICATE"];
 									break;
@@ -10843,16 +10837,7 @@ view.albums = {
 	/** @returns {void} */
 	title: function title() {
 		if (lychee.landing_page_enable) {
-			// TODO: Fix this odd condition. Also see `lychee.setTitle` for the associated TODO.
-			// I don't understand the intention of this code. IMHO, the code
-			//  should always be the same no matter if the prefix of the
-			// title equals the default `"Lychee v4"` or if it is customized
-			// by the user
-			if (lychee.title !== "Lychee v4") {
-				lychee.setTitle(lychee.title, false);
-			} else {
-				lychee.setTitle(lychee.locale["ALBUMS"], false);
-			}
+			lychee.setTitle("", false);
 		} else {
 			lychee.setTitle(lychee.locale["ALBUMS"], false);
 		}
@@ -10867,7 +10852,7 @@ view.albums = {
 			var sharedData = "";
 
 			// Smart Albums
-			if (lychee.publicMode === false) {
+			if (lychee.publicMode === false && (albums.json.smart_albums.public || albums.json.smart_albums.recent || albums.json.smart_albums.starred || albums.json.smart_albums.unsorted || albums.json.tag_albums.length > 0)) {
 				smartData = build.divider(lychee.locale["SMART_ALBUMS"]);
 			}
 			if (albums.json.smart_albums.unsorted) {
@@ -10894,7 +10879,7 @@ view.albums = {
 			}, "");
 
 			// Albums
-			if (lychee.publicMode === false) albumsData = build.divider(lychee.locale["ALBUMS"]);
+			if (lychee.publicMode === false && albums.json.albums.length > 0) albumsData = build.divider(lychee.locale["ALBUMS"]);
 			albumsData += albums.json.albums.reduce(function (html, album) {
 				albums.parse(album);
 				return html + build.album(album);
@@ -10905,7 +10890,7 @@ view.albums = {
 			sharedData += albums.json.shared_albums.reduce(function (html, album) {
 				albums.parse(album);
 				if (current_owner !== album.owner_name && lychee.publicMode === false) {
-					sharedData += build.divider(album.owner_name);
+					html += build.divider(album.owner_name);
 					current_owner = album.owner_name;
 				}
 				return html + build.album(album, !lychee.admin);
@@ -10931,12 +10916,10 @@ view.albums = {
    * @returns {void}
    */
 		title: function title(albumID) {
-			// TODO: This method is actually buggy.
-			// 1. Don't use our home-brewed `escapeHTML` method to escape special character; just use `jQuery.text` below
-			// 2. Using the escaped version for `attr("title", title)` is actually harmful, as this will lead to double escaping
-			var title = lychee.escapeHTML(albums.getByID(albumID).title);
+			var album = albums.getByID(albumID);
+			var title = album.title ? album.title : lychee.locale["UNTITLED"];
 
-			$('.album[data-id="' + albumID + '"] .overlay h1').html(title).attr("title", title);
+			$('.album[data-id="' + albumID + '"] .overlay h1').text(title).attr("title", title);
 		},
 
 		/**
@@ -10959,8 +10942,6 @@ view.album = {
 	/** @returns {void} */
 	init: function init() {
 		multiselect.clearSelection();
-
-		album.parse();
 
 		view.album.sidebar();
 		view.album.title();
@@ -11034,8 +11015,8 @@ view.album = {
 			}
 			if (album.json.photos) {
 				// Build photos
-				album.json.photos.forEach(function (_photos) {
-					photosData += build.photo(_photos, !album.isUploadable());
+				album.json.photos.forEach(function (_photo) {
+					photosData += build.photo(_photo, !album.isUploadable());
 				});
 			}
 
@@ -11073,12 +11054,10 @@ view.album = {
    * @returns {void}
    */
 		title: function title(photoID) {
-			// TODO: This method is actually buggy.
-			// 1. Don't use our home-brewed `escapeHTML` method to escape special character; just use `jQuery.text` below
-			// 2. Using the escaped version for `attr("title", title)` is actually harmful, as this will lead to double escaping
-			var title = lychee.escapeHTML(album.getByID(photoID).title);
+			var photo = album.getByID(photoID);
+			var title = photo.title ? photo.title : lychee.locale["UNTITLED"];
 
-			$('.photo[data-id="' + photoID + '"] .overlay h1').html(title).attr("title", title);
+			$('.photo[data-id="' + photoID + '"] .overlay h1').text(title).attr("title", title);
 		},
 
 		/**
@@ -11086,12 +11065,10 @@ view.album = {
    * @returns {void}
    */
 		titleSub: function titleSub(albumID) {
-			// TODO: This method is actually buggy.
-			// 1. Don't use our home-brewed `escapeHTML` method to escape special character; just use `jQuery.text` below
-			// 2. Using the escaped version for `attr("title", title)` is actually harmful, as this will lead to double escaping
-			var title = lychee.escapeHTML(album.getSubByID(albumID).title);
+			var album = album.getSubByID(albumID);
+			var title = album.title ? album.title : lychee.locale["UNTITLED"];
 
-			$('.album[data-id="' + albumID + '"] .overlay h1').html(title).attr("title", title);
+			$('.album[data-id="' + albumID + '"] .overlay h1').text(title).attr("title", title);
 		},
 
 		/**
@@ -11246,7 +11223,7 @@ view.album = {
 		},
 
 		/**
-   * Layouts the photos inside an album or a search result.
+   * Lays out the photos inside an album or a search result.
    *
    * This method is a misnomer, because it does not necessarily
    * create a justified layout, but the configured layout as specified
@@ -11549,9 +11526,8 @@ view.photo = {
   * @returns {void}
   */
 	title: function title() {
-		if (_photo3.json.init) _sidebar.changeAttr("title", _photo3.json.title);
-		// TODO: This is the right place to replace an empty photo title by `lychee.locale["UNKNOWN"]`
-		lychee.setTitle(_photo3.json.title, true);
+		if (_photo3.json.init) _sidebar.changeAttr("title", _photo3.json.title ? _photo3.json.title : "");
+		lychee.setTitle(_photo3.json.title ? _photo3.json.title : lychee.locale["UNTITLED"], true);
 	},
 
 	/**
@@ -12376,31 +12352,30 @@ view.diagnostics = {
 		/** @returns {void} */
 		init: function init() {
 			view.diagnostics.clearContent(0);
-			view.diagnostics.content.v_2();
+			api.post("Diagnostics::get", {}, view.diagnostics.content.parseResponse);
 		},
 
-		/** @returns {void} */
-		v_2: function v_2() {
-			api.post("Diagnostics::get", {},
-			/** @param {DiagnosticInfo} data */
-			function (data) {
-				view.diagnostics.clearContent(data.update);
-				var html = "";
+		/**
+   * @param {DiagnosticInfo} data
+   * @returns {void}
+   */
+		parseResponse: function parseResponse(data) {
+			view.diagnostics.clearContent(data.update);
+			var html = "";
 
-				html += view.diagnostics.content.block("error", "Diagnostics", data.errors);
-				html += view.diagnostics.content.block("sys", "System Information", data.infos);
-				html += '<a id="Get_Size_Lychee" class="basicModal__button button_left">';
-				html += '<svg class="iconic"><use xlink:href="#reload"></use></svg>';
-				html += lychee.html(_templateObject30, lychee.locale["DIAGNOSTICS_GET_SIZE"]);
-				html += "</a>";
-				html += view.diagnostics.content.block("conf", "Config Information", data.configs);
+			html += view.diagnostics.content.block("error", "Diagnostics", data.errors);
+			html += view.diagnostics.content.block("sys", "System Information", data.infos);
+			html += '<a id="Get_Size_Lychee" class="basicModal__button button_left">';
+			html += '<svg class="iconic"><use xlink:href="#reload"></use></svg>';
+			html += lychee.html(_templateObject30, lychee.locale["DIAGNOSTICS_GET_SIZE"]);
+			html += "</a>";
+			html += view.diagnostics.content.block("conf", "Config Information", data.configs);
 
-				$(".logs_diagnostics_view").html(html);
+			$(".logs_diagnostics_view").html(html);
 
-				view.diagnostics.bind();
+			view.diagnostics.bind();
 
-				$("#Get_Size_Lychee").on("click", view.diagnostics.call_get_size);
-			});
+			$("#Get_Size_Lychee").on("click", view.diagnostics.call_get_size);
 		},
 
 		/**
@@ -12803,10 +12778,10 @@ visible.leftMenu = function () {
 /**
  * @typedef SmartAlbums
  *
- * @property {SmartAlbum} unsorted
- * @property {SmartAlbum} starred
- * @property {SmartAlbum} public
- * @property {SmartAlbum} recent
+ * @property {?SmartAlbum} unsorted
+ * @property {?SmartAlbum} starred
+ * @property {?SmartAlbum} public
+ * @property {?SmartAlbum} recent
  */
 
 /**

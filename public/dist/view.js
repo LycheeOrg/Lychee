@@ -501,7 +501,7 @@ $(document).ready(function () {
 });
 
 /**
- * TODO: Why is this a global function?
+ * TODO: This method is global for no particular reason. In case we ever clean up the view mode, this should be fixed, too.
  * @param {string} photoID
  */
 var loadPhotoInfo = function loadPhotoInfo(photoID) {
@@ -515,11 +515,10 @@ var loadPhotoInfo = function loadPhotoInfo(photoID) {
 		photo.json = data;
 
 		// Set title
-		// TODO: Don't modify the original JSON object, replacing an empty title with a human-friendly placeholder should happen on the GUI layer.
-		// TODO: If at all, why don't we use `lychee.locale`?
-		if (!data.title) data.title = "Untitled";
-		document.title = "Lychee - " + data.title;
-		header.dom(".header__title").html(lychee.escapeHTML(data.title));
+		var _title = data.title ? data.title : lychee.locale["UNTITLED"];
+		// TODO: Actually the prefix should not be a hard-coded, but the value of `lychee.title`. However, I am unsure whether we load the configuration options in view mode.
+		document.title = "Lychee – " + _title;
+		header.dom(".header__title").text(_title);
 
 		// Render HTML
 		imageview.html(build.imageview(data, true, false).html);
@@ -859,7 +858,7 @@ build.overlay_image = function (data) {
 			return "";
 	}
 
-	return lychee.html(_templateObject12, data.title) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
+	return lychee.html(_templateObject12, data.title ? data.title : lychee.locale["UNTITLED"]) + (overlay !== "" ? "<p>" + overlay + "</p>" : "") + "\n\t\t</div>\n\t\t";
 };
 
 /**
@@ -1241,12 +1240,10 @@ header.hide = function () {
 };
 
 /**
- * @param {string} [title="Untitled"]
+ * @param {string} title
  * @returns {void}
  */
-header.setTitle = function () {
-	var title = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "Untitled";
-
+header.setTitle = function (title) {
 	var $title = header.dom(".header__title");
 	var html = lychee.html(_templateObject26, title, build.iconic("caret-bottom"));
 
@@ -2123,7 +2120,7 @@ sidebar.render = function (structure) {
 			var idxLocation = section.rows.findIndex(function (row) {
 				return row.kind === "location";
 			});
-			// Do not show location is not enabled
+			// Do not show location if not enabled
 			if (idxLocation !== -1 && (lychee.publicMode === true && !lychee.location_show_public || !lychee.location_show)) {
 				section.rows.splice(idxLocation, 1);
 			}
@@ -2354,7 +2351,7 @@ mapview.title = function (_albumID, _albumTitle) {
 			lychee.setTitle(lychee.locale["ALBUMS"], false);
 			break;
 		default:
-			lychee.setTitle(_albumTitle, false);
+			lychee.setTitle(_albumTitle ? _albumTitle : lychee.locale["UNTITLED"], false);
 			break;
 	}
 };
@@ -2382,7 +2379,7 @@ mapview.open = function () {
 
 	// initialize container only once
 	if (!mapview.isInitialized()) {
-		// Leaflet searches for icon in same directory as js file -> paths needs
+		// Leaflet searches for icon in same directory as js file -> paths need
 		// to be overwritten
 		delete L.Icon.Default.prototype._getIconUrl;
 		L.Icon.Default.mergeOptions({
@@ -2511,7 +2508,7 @@ mapview.open = function () {
 	};
 
 	/**
-  * Calls backend, retrieves information about photos and display them.
+  * Calls backend, retrieves information about photos and displays them.
   *
   * This function is called recursively to retrieve data for sub-albums.
   * Possible enhancement could be to only have a single ajax call.
@@ -2584,16 +2581,6 @@ mapview.goto = function (elem) {
 	var albumID = elem.attr("data-album-id");
 
 	if (albumID === "null") albumID = "unsorted";
-
-	// The condition below looks suspicious and like a violation of the
-	// principle of separation of concerns.
-	// In theory, if the currently loaded album does not match the desired
-	// album, then `lychee.goto` and `lychee.load` should take care of that.
-	// But I am afraid of deleting these lines of code and breaking something.
-	// TODO: Clean this up.
-	if (album.json && album.json.id !== albumID) {
-		album.refresh();
-	}
 
 	lychee.goto(albumID + "/" + photoID);
 };
@@ -2704,7 +2691,7 @@ lychee.locale = {
 	NEW_TAG_ALBUM: "New Tag Album",
 
 	TITLE_NEW_ALBUM: "Enter a title for the new album:",
-	UNTITLED: "Untilted",
+	UNTITLED: "Untitled",
 	UNSORTED: "Unsorted",
 	STARRED: "Starred",
 	RECENT: "Recent",
@@ -3260,7 +3247,7 @@ tabindex.makeFocusable = function (elem) {
 	// Get all elements which have a tabindex
 	var tmp = elem.find("[data-tabindex]");
 
-	// iterate over all elements and set tabindex to stored value (i.e. make is not focusable)
+	// iterate over all elements and set tabindex to stored value
 	tmp.each(
 	/**
   * @param {number} i
@@ -3268,7 +3255,7 @@ tabindex.makeFocusable = function (elem) {
   */
 	function (i, e) {
 		$(e).attr("tabindex", $(e).data("tabindex"));
-		// restore focus elemente if wanted
+		// restore focus element if wanted
 		if (restoreFocusElement) {
 			if ($(e).data("tabindex-focus") && lychee.active_focus_on_page_load) {
 				$(e).focus();
@@ -3484,10 +3471,10 @@ tabindex.reset = function () {
 /**
  * @typedef SmartAlbums
  *
- * @property {SmartAlbum} unsorted
- * @property {SmartAlbum} starred
- * @property {SmartAlbum} public
- * @property {SmartAlbum} recent
+ * @property {?SmartAlbum} unsorted
+ * @property {?SmartAlbum} starred
+ * @property {?SmartAlbum} public
+ * @property {?SmartAlbum} recent
  */
 
 /**
