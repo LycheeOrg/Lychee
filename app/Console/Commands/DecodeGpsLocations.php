@@ -53,6 +53,7 @@ class DecodeGpsLocations extends Command
 		}
 
 		$cachedProvider = Geodecoder::getGeocoderProvider();
+		/** @var Photo $photo */
 		foreach ($photos as $photo) {
 			$this->line('Processing ' . $photo->title . '...');
 

@@ -96,6 +96,10 @@ class Photo extends Model implements HasRandomID
 		'owner_id' => 'integer',
 		'is_starred' => 'boolean',
 		'is_public' => 'boolean',
+		'latitude' => 'float',
+		'longitude' => 'float',
+		'altitude' => 'float',
+		'img_direction' => 'float',
 	];
 
 	/**
