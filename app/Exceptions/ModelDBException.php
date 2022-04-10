@@ -47,6 +47,6 @@ class ModelDBException extends LycheeBaseException
 	 */
 	public static function create(string $modelName, string $operationName, \Throwable $previous = null): ModelDBException
 	{
-		return new ModelDBException(Str::ucfirst($operationName) . $modelName . ' failed', $previous);
+		return new ModelDBException(Str::ucfirst($operationName) . ' ' . $modelName . ' failed', $previous);
 	}
 }
