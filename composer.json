@@ -27,7 +27,7 @@
         "graham-campbell/markdown": "^13.1",
         "laravel/framework": "^8.0",
         "livewire/livewire": "^2.7",
-        "lychee-org/nestedset": "^5",
+        "lychee-org/nestedset": "^6",
         "lychee-org/php-exif": "dev-master",
         "maennchen/zipstream-php": "^2.1",
         "php-ffmpeg/php-ffmpeg": "^0.17.0",
