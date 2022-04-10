@@ -150,6 +150,7 @@ final class Spanish implements Language
 			'DISPLAY_FULL_MAP' => 'Mapa',
 			'DIRECT_LINK' => 'Enlace Directo',
 			'DIRECT_LINKS' => 'Enlaces Directos',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Acerca de',
 			'ALBUM_BASICS' => 'Basico',

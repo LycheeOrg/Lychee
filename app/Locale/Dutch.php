@@ -150,6 +150,7 @@ final class Dutch implements Language
 			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Directe Link',
 			'DIRECT_LINKS' => 'Directe Links',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Over',
 			'ALBUM_BASICS' => 'Basics',

@@ -150,6 +150,7 @@ final class Russian implements Language
 			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Прямая ссылка',
 			'DIRECT_LINKS' => 'Direct Links',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Об альбоме',
 			'ALBUM_BASICS' => 'Основное',

@@ -152,6 +152,7 @@ final class Italian implements Language
 			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Link Diretto',
 			'DIRECT_LINKS' => 'Direct Links',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'Informazioni',
 			'ALBUM_BASICS' => 'Base',

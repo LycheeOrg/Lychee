@@ -151,6 +151,7 @@ final class Czech implements Language
 			'DISPLAY_FULL_MAP' => 'Mapa',
 			'DIRECT_LINK' => 'Přímý odkaz',
 			'DIRECT_LINKS' => 'Přímé odkazy',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'O albu',
 			'ALBUM_BASICS' => 'Základní informace',

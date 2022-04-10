@@ -150,6 +150,7 @@ final class ChineseSimplified implements Language
 			'DISPLAY_FULL_MAP' => '地图',
 			'DIRECT_LINK' => '直链',
 			'DIRECT_LINKS' => '直链',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => '关于',
 			'ALBUM_BASICS' => '基本信息',

@@ -150,6 +150,7 @@ final class English implements Language
 			'DISPLAY_FULL_MAP' => 'Map',
 			'DIRECT_LINK' => 'Direct Link',
 			'DIRECT_LINKS' => 'Direct Links',
+			'QR_CODE' => 'QR Code',
 
 			'ALBUM_ABOUT' => 'About',
 			'ALBUM_BASICS' => 'Basics',
