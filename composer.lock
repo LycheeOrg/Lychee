@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "38adc469ce11d7180b5e84ef2395d12a",
+    "content-hash": "5a7fe03fbfecd8392d4b8b40ebd740e7",
     "packages": [
         {
             "name": "alchemy/binary-driver",
@@ -2617,27 +2617,27 @@
         },
         {
             "name": "lychee-org/nestedset",
-            "version": "v5.0.9",
+            "version": "v6.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/laravel-nestedset.git",
-                "reference": "678e24c545cbcaea60cdda762aa52e73714e4566"
+                "reference": "f48c1addde2f2630fb6de51c4e3b380a9ab07724"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/678e24c545cbcaea60cdda762aa52e73714e4566",
-                "reference": "678e24c545cbcaea60cdda762aa52e73714e4566",
+                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/f48c1addde2f2630fb6de51c4e3b380a9ab07724",
+                "reference": "f48c1addde2f2630fb6de51c4e3b380a9ab07724",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "~5.7.0|~5.8.0|^6.0|^7.0|^8.0",
-                "illuminate/events": "~5.7.0|~5.8.0|^6.0|^7.0|^8.0",
-                "illuminate/support": "~5.7.0|~5.8.0|^6.0|^7.0|^8.0",
-                "php": ">=7.1.3"
+                "illuminate/database": "^7.0|^8.0|^9.0",
+                "illuminate/events": "^7.0|^8.0|^9.0",
+                "illuminate/support": "^7.0|^8.0|^9.0",
+                "php": "^7.2.5|^8.0"
             },
             "require-dev": {
                 "php-parallel-lint/php-parallel-lint": "^1.2",
-                "phpunit/phpunit": "^9.3"
+                "phpunit/phpunit": "^9.5.20"
             },
             "type": "library",
             "extra": {
@@ -2674,9 +2674,9 @@
                 "nsm"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v5.0.9"
+                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v6.0.2"
             },
-            "time": "2022-01-06T17:19:43+00:00"
+            "time": "2022-04-10T14:49:32+00:00"
         },
         {
             "name": "lychee-org/php-exif",

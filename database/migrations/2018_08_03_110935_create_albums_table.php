@@ -4,19 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-//MariaDB [lychee]> show columns from lychee_albums;
-//+--------------+---------------------+------+-----+---------+-------+
-//| Field        | Type                | Null | Key | Default | Extra |
-//+--------------+---------------------+------+-----+---------+-------+
-//| id           | bigint(14) unsigned | NO   | PRI | NULL    |       |
-//| title        | varchar(100)        | NO   |     |         |       |
-//| description  | varchar(1000)       | YES  |     |         |       |
-//| sysstamp     | int(11)             | NO   |     | NULL    |       |
-//| public       | tinyint(1)          | NO   |     | 0       |       |
-//| visible      | tinyint(1)          | NO   |     | 1       |       |
-//| downloadable | tinyint(1)          | NO   |     | 0       |       |
-//| password     | varchar(100)        | YES  |     | NULL    |       |
-//+--------------+---------------------+------+-----+---------+-------+
+// MariaDB [lychee]> show columns from lychee_albums;
+// +--------------+---------------------+------+-----+---------+-------+
+// | Field        | Type                | Null | Key | Default | Extra |
+// +--------------+---------------------+------+-----+---------+-------+
+// | id           | bigint(14) unsigned | NO   | PRI | NULL    |       |
+// | title        | varchar(100)        | NO   |     |         |       |
+// | description  | varchar(1000)       | YES  |     |         |       |
+// | sysstamp     | int(11)             | NO   |     | NULL    |       |
+// | public       | tinyint(1)          | NO   |     | 0       |       |
+// | visible      | tinyint(1)          | NO   |     | 1       |       |
+// | downloadable | tinyint(1)          | NO   |     | 0       |       |
+// | password     | varchar(100)        | YES  |     | NULL    |       |
+// +--------------+---------------------+------+-----+---------+-------+
 
 class CreateAlbumsTable extends Migration
 {
