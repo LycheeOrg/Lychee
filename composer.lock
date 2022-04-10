@@ -2617,26 +2617,27 @@
         },
         {
             "name": "lychee-org/nestedset",
-            "version": "v6.0.0",
+            "version": "v6.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LycheeOrg/laravel-nestedset.git",
-                "reference": "f5351234588a20b14134980552b1bf6dccb3e733"
+                "reference": "f48c1addde2f2630fb6de51c4e3b380a9ab07724"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/f5351234588a20b14134980552b1bf6dccb3e733",
-                "reference": "f5351234588a20b14134980552b1bf6dccb3e733",
+                "url": "https://api.github.com/repos/LycheeOrg/laravel-nestedset/zipball/f48c1addde2f2630fb6de51c4e3b380a9ab07724",
+                "reference": "f48c1addde2f2630fb6de51c4e3b380a9ab07724",
                 "shasum": ""
             },
             "require": {
-                "illuminate/database": "^7.0|^8.0",
-                "illuminate/events": "^7.0|^8.0",
-                "illuminate/support": "^7.0|^8.0",
-                "php": ">=7.1.3"
+                "illuminate/database": "^7.0|^8.0|^9.0",
+                "illuminate/events": "^7.0|^8.0|^9.0",
+                "illuminate/support": "^7.0|^8.0|^9.0",
+                "php": "^7.2.5|^8.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "7.*"
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpunit/phpunit": "^9.5.20"
             },
             "type": "library",
             "extra": {
@@ -2664,7 +2665,7 @@
                     "email": "lazychaser@gmail.com"
                 }
             ],
-            "description": "Nested Set Model for Laravel 5.7 and up",
+            "description": "Nested Set Model for Laravel 5.7 and up (fork with patches for Lychee)",
             "keywords": [
                 "database",
                 "hierarchy",
@@ -2673,9 +2674,9 @@
                 "nsm"
             ],
             "support": {
-                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v6.0.0"
+                "source": "https://github.com/LycheeOrg/laravel-nestedset/tree/v6.0.2"
             },
-            "time": "2021-05-28T07:08:55+00:00"
+            "time": "2022-04-10T14:49:32+00:00"
         },
         {
             "name": "lychee-org/php-exif",
@@ -11656,5 +11657,5 @@
     "platform-dev": {
         "ext-imagick": "*"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }
