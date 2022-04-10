@@ -32,15 +32,15 @@
 
 @if(AccessControl::is_logged_in())
 <x-atoms.section head='{{ Lang::get("ALBUM_SHARING") }}' >
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
+	<x-atoms.line-bool valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
 	head='{{ Lang::get("ALBUM_PUBLIC") }}' :value='$is_public' />
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
+	<x-atoms.line-bool valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
 	head='{{ Lang::get("ALBUM_HIDDEN") }}' :value='$requires_link' />
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
+	<x-atoms.line-bool valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
 	head='{{ Lang::get("ALBUM_DOWNLOADABLE") }}' :value='$is_downloadable' />
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
+	<x-atoms.line-bool valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
 	head='{{ Lang::get("ALBUM_SHARE_BUTTON_VISIBLE") }}' :value='$is_share_button_visible' />
-	<x-atoms.line valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
+	<x-atoms.line-bool valueFalse='{{ Lang::get("ALBUM_SHR_NO") }}' valueTrue='{{ Lang::get("ALBUM_SHR_YES") }}'
 	head='{{ Lang::get("ALBUM_PASSWORD") }}' :value='$has_password' />
 	<x-atoms.line head='{{ Lang::get("ALBUM_OWNER") }}' :value='$owner_name' />
 </x-atoms.section>

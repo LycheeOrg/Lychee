@@ -11,6 +11,7 @@
 		<livewire:components.sidebar :album="$this->album"/>
 	@elseif($mode === App\Http\Livewire\Pages\Fullpage::PHOTO)
 		<livewire:modules.photo :album="$this->album" :photo="$this->photo" />
+		<livewire:components.sidebar :album="$this->album" :photo="$this->photo" />
 	@elseif($mode === 'map')
 		<livewire:modules.albums/>
 	@endif

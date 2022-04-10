@@ -33,7 +33,17 @@ class Album extends Component
 
 	public function mount(AbstractAlbum $album)
 	{
-		$this->album = $album;
+		$this->load($album);
+	}
+
+	public function render()
+	{
+		return view('livewire.sidebar.album');
+	}
+
+	private function load(AbstractAlbum $album)
+	{
+		// $this->album = $album;
 		$this->title = $album->title;
 		$this->description = $album->description ?? '';
 		if ($album instanceof TagAlbum) {
@@ -61,10 +71,5 @@ class Album extends Component
 		$this->owner_name = $album->owner->name();
 
 		$this->license = $album->license;
-	}
-
-	public function render()
-	{
-		return view('livewire.sidebar.album');
 	}
 }
