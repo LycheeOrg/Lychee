@@ -3,7 +3,7 @@
 namespace App\Exceptions\Handlers;
 
 use App\Redirections\ToInstall;
-use Illuminate\Database\QueryException as QueryException;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Throwable;

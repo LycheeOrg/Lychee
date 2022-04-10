@@ -26,7 +26,7 @@ use League\Flysystem\Adapter\Local;
 // have crashed, because the Laravel framework would try to load the adapter
 // below, but the adapter does not exist and is not part of our Composer
 // dependencies
-//use League\Flysystem\AwsS3v3\AwsS3Adapter;
+// use League\Flysystem\AwsS3v3\AwsS3Adapter;
 
 /**
  * Class SizeVariant.

@@ -61,7 +61,7 @@ class GitHubFunctions
 		// @codeCoverageIgnoreStart
 		$head_file = base_path('.git/HEAD');
 		$branch_ = file_get_contents($head_file);
-		//separate out by the "/" in the string
+		// separate out by the "/" in the string
 		$branch_ = explode('/', $branch_, 3);
 
 		return trim($branch_[2]);

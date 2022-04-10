@@ -18,7 +18,7 @@ trait ConfigsHas
 		try {
 			Logs::notice(__METHOD__, __LINE__, 'hasImagick : false');
 		} catch (Exception $e) {
-			//do nothing
+			// do nothing
 		}
 
 		return false;
