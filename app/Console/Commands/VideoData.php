@@ -105,10 +105,10 @@ class VideoData extends Command
 						$photo->aperture = $info['aperture'];
 					}
 					if ($photo->latitude == null && $info['latitude'] !== null) {
-						$photo->latitude = $info['latitude'];
+						$photo->latitude = floatval($info['latitude']);
 					}
 					if ($photo->longitude == null && $info['longitude'] !== null) {
-						$photo->longitude = $info['longitude'];
+						$photo->longitude = floatval($info['longitude']);
 					}
 					if ($photo->isDirty()) {
 						$this->line('Updated metadata');

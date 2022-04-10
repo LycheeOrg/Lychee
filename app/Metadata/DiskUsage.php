@@ -86,7 +86,7 @@ class DiskUsage
 	 */
 	public function get_total_space()
 	{
-		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dts = disk_total_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dts);
@@ -99,7 +99,7 @@ class DiskUsage
 	 */
 	public function get_free_space()
 	{
-		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dfs = disk_free_space(base_path(''));
 
 		return $this->getSymbolByQuantity($dfs);
@@ -112,7 +112,7 @@ class DiskUsage
 	 */
 	public function get_free_percent()
 	{
-		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$dts = disk_total_space(base_path(''));
 		$dfs = disk_free_space(base_path(''));
 
@@ -138,7 +138,7 @@ class DiskUsage
 	 */
 	public function get_lychee_upload_space()
 	{
-		//TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
+		// TODO : FIX TO USE STORAGE FACADE => uploads may not be in public/uploads
 		$ds = $this->getTotalSize(base_path('public/uploads/'));
 
 		return $this->getSymbolByQuantity($ds);

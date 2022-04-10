@@ -50,17 +50,20 @@ class Geodecoder
 	/**
 	 * Decode GPS coordinates into location.
 	 *
+	 * @param ?float $latitude
+	 * @param ?float $longitude
+	 *
 	 * @return ?string location
 	 *
 	 * @throws ExternalComponentFailedException
 	 */
-	public static function decodeLocation($latitude, $longitude): ?string
+	public static function decodeLocation(?float $latitude, ?float $longitude): ?string
 	{
 		// User does not want to decode location data
 		if (Configs::get_value('location_decoding') == false) {
 			return null;
 		}
-		if ($latitude == null || $longitude == null) {
+		if ($latitude === null || $longitude === null) {
 			return null;
 		}
 
@@ -72,11 +75,15 @@ class Geodecoder
 	/**
 	 * Wrapper to decode GPS coordinates into location.
 	 *
+	 * @param float         $latitude
+	 * @param float         $longitude
+	 * @param ProviderCache $cachedProvider
+	 *
 	 * @return ?string location
 	 *
 	 * @throws LocationDecodingFailed
 	 */
-	public static function decodeLocation_core($latitude, $longitude, $cachedProvider): ?string
+	public static function decodeLocation_core(float $latitude, float $longitude, ProviderCache $cachedProvider): ?string
 	{
 		$geocoder = new StatefulGeocoder($cachedProvider, Configs::get_value('lang'));
 		try {

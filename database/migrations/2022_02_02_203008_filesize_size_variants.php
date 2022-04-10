@@ -84,7 +84,7 @@ class FilesizeSizeVariants extends Migration
 		 * which is now widely available at the time. Thus, we change all values to 0 as a marker
 		 * and will drop the column later. See PR 1239 for the entire discussion.
 		 */
-		//DB::statement('ALTER TABLE ' . self::PHOTOS_TAB . ' DROP COLUMN ' . self::SIZE_COL);
+		// DB::statement('ALTER TABLE ' . self::PHOTOS_TAB . ' DROP COLUMN ' . self::SIZE_COL);
 		DB::table(self::PHOTOS_TAB)->update([self::SIZE_COL => 0]);
 	}
 

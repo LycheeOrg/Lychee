@@ -110,6 +110,10 @@ class Photo extends Model implements HasRandomID
 		'is_starred' => 'boolean',
 		'is_public' => 'boolean',
 		'tags' => ArrayCast::class,
+		'latitude' => 'float',
+		'longitude' => 'float',
+		'altitude' => 'float',
+		'img_direction' => 'float',
 	];
 
 	/**

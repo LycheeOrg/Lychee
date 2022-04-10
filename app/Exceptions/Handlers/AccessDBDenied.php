@@ -4,7 +4,7 @@ namespace App\Exceptions\Handlers;
 
 use App\Contracts\HttpExceptionHandler;
 use App\Redirections\ToInstall;
-use Illuminate\Database\QueryException as QueryException;
+use Illuminate\Database\QueryException;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface as HttpException;
 use Throwable;
