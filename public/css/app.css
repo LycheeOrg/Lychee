@@ -1472,7 +1472,7 @@ input {
 }
 .header__clear {
   position: absolute;
-  top: -2px;
+  top: 4px;
   right: 8px;
   padding: 0;
   color: rgba(255, 255, 255, 0.5);
