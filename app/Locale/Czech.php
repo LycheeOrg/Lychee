@@ -475,6 +475,29 @@ final class Czech implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Otočit doprava',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Otočit doleva',
+
+			'ERROR_ALBUM_NOT_FOUND' => 'Error: Album json not found!',
+			'ERROR_ALBUMS_OR_PHOTOS' => 'Please select either albums or photos!',
+			'ERROR_NOT_FOUND' => 'Could not find what you want.',
+			'ERROR_INVALID_EMAIL' => 'Not a valid email address.',
+			'ERROR_EMPTY_USERNAME' => 'New username cannot be empty.',
+			'ERROR_EMPTY_PASSWORD' => 'New password cannot be empty.',
+			'ERROR_PASSWORD_NOT_MATCH' => 'New password does not match.',
+			'ERROR_LOGS' => 'Check the Logs',
+			'ERROR_GENERIC' => 'Something went wrong!',
+			'ERROR_SELECT_ALBUM' => 'Select an album to share!',
+			'ERROR_SELECT_USER' => 'Select an user to share with!',
+			'ERROR_SELECT_SHARING' => 'Select a sharing to remove!',
+			'ERROR_PHOTO_NOT_FOUND' => 'Error: photo %photoID not found!',
+			'ERROR_ALBUM_NOT_FOUND' => 'Error: album %albumID not found!',
+			'ERROR_TIMEOUT' => 'Session timed out.',
+			'ERROR_SERVER_GENERIC' => 'Server error or API not found.',
+			'SUCCESS_SHARING_UPDATE' => 'Sharing updated!',
+			'SUCCESS_SHARING_REMOVED' => 'Sharing removed!',
+			'SUCCESS_EMAIL' => 'Email updated!',
+			'SUCCESS_USER_UPDATED' => 'User updated!',
+			'SUCCESS_USER_CREATED' => 'User created!',
+			'SUCCESS_USER_DELETED' => 'User deleted!',
 		];
 
 		return $locale;
