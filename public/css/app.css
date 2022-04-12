@@ -1486,9 +1486,6 @@ input {
 .header__clear_nomap {
   right: 60px;
 }
-.header__clear_public {
-  right: 17px;
-}
 .header__hostedwith {
   flex-shrink: 0;
   padding: 5px 10px;
