@@ -12,6 +12,7 @@ use FFMpeg\Coordinate\TimeCode;
 use FFMpeg\FFMpeg;
 use FFMpeg\Media\Video;
 use Illuminate\Support\Collection;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class SizeVariantDefaultFactory extends SizeVariantFactory
 {
