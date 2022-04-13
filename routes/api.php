@@ -42,6 +42,10 @@ Route::post('/Album::setSorting', [AlbumController::class, 'setSorting']);
 Route::get('/Album::getArchive', [AlbumController::class, 'getArchive'])
 	->withoutMiddleware(['content_type:json', 'accept_content_type:json'])
 	->middleware(['local_storage', 'accept_content_type:any']);
+Route::post('/Album::setTrack', [AlbumController::class, 'setTrack'])
+	->withoutMiddleware(['content_type:json'])
+	->middleware(['content_type:multipart']);
+Route::post('/Album::deleteTrack', [AlbumController::class, 'deleteTrack']);
 
 Route::post('/Albums::get', [AlbumsController::class, 'get']);
 Route::post('/Albums::getPositionData', [AlbumsController::class, 'getPositionData']);

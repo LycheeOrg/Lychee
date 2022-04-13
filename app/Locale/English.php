@@ -122,6 +122,8 @@ final class English implements Language
 			'IMPORT_SERVER' => 'Import from Server',
 			'NEW_ALBUM' => 'New Album',
 			'NEW_TAG_ALBUM' => 'New Tag Album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Enter a title for the new album:',
 			'UNTITLED' => 'Untilted',

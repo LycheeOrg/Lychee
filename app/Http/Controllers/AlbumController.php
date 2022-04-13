@@ -10,6 +10,7 @@ use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
 use App\Actions\Album\SetProtectionPolicy;
+use App\Actions\Album\Tracks;
 use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
@@ -37,6 +38,7 @@ use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -209,6 +211,37 @@ class AlbumController extends Controller
 	{
 		$request->album()->license = $request->license();
 		$request->album()->save();
+	}
+
+	/**
+	 * Upload a track for the Album.
+	 *
+	 * @param AlbumModelIDRequest $request
+	 * @param Tracks              $tracks
+	 *
+	 * @return IlluminateResponse
+	 */
+	public function setTrack(AlbumModelIDRequest $request, Tracks $tracks): IlluminateResponse
+	{
+		$request->validate(['0' => 'required|file']);
+		$tracks->set($request['albumID'], $request->file('0'));
+
+		return response()->noContent();
+	}
+
+	/**
+	 * Upload a track for the Album.
+	 *
+	 * @param AlbumModelIDRequest $request
+	 * @param Tracks              $tracks
+	 *
+	 * @return IlluminateResponse
+	 */
+	public function deleteTrack(AlbumModelIDRequest $request, Tracks $tracks): IlluminateResponse
+	{
+		$tracks->delete($request['albumID']);
+
+		return response()->noContent();
 	}
 
 	/**

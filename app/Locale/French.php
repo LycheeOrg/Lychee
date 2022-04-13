@@ -125,6 +125,8 @@ final class French implements Language
 			'IMPORT_SERVER' => 'Importer depuis le serveur',
 			'NEW_ALBUM' => 'Nouvel album',
 			'NEW_TAG_ALBUM' => 'Nouvel album d’étiquette',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Entrez le titre du nouvel album :',
 			'UNTITLED' => 'Sans titre',

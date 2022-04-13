@@ -122,6 +122,8 @@ final class Portuguese implements Language
 			'IMPORT_SERVER' => 'Importar de um Servidor',
 			'NEW_ALBUM' => 'Novo Álbum',
 			'NEW_TAG_ALBUM' => 'Nova Etiqueta de Álbum',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Insira um título para o novo álbum:',
 			'UNTITLED' => 'Sem Título',

@@ -124,6 +124,8 @@ final class Italian implements Language
 			'IMPORT_SERVER' => 'Importa da Server',
 			'NEW_ALBUM' => 'Nuovo Album',
 			'NEW_TAG_ALBUM' => 'New Tag Album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Inserire un titolo per il nuovo album:',
 			'UNTITLED' => 'Senza Titolo',

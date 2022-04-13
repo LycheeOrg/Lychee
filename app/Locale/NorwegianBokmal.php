@@ -122,6 +122,8 @@ final class NorwegianBokmal implements Language
 			'IMPORT_SERVER' => 'Importer fra Serveren',
 			'NEW_ALBUM' => 'Nytt Album',
 			'NEW_TAG_ALBUM' => 'New Tag Album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Legg inn en tittel for det nye albumet:',
 			'UNTITLED' => 'Uten Tittel',

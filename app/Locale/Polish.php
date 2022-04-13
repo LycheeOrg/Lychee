@@ -122,6 +122,8 @@ final class Polish implements Language
 			'IMPORT_SERVER' => 'Importuj z serwera',
 			'NEW_ALBUM' => 'Dodaj album',
 			'NEW_TAG_ALBUM' => 'Dodaj album z tagami',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Wpisz tytuł dla nowego albumu:',
 			'UNTITLED' => 'Bez nazwy',

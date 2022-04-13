@@ -122,6 +122,8 @@ final class ChineseSimplified implements Language
 			'IMPORT_SERVER' => '从服务器导入',
 			'NEW_ALBUM' => '新建相册',
 			'NEW_TAG_ALBUM' => '新建标签相册',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => '输入新相册的标题：',
 			'UNTITLED' => '未命名',

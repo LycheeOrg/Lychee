@@ -124,6 +124,8 @@ final class German implements Language
 			'IMPORT_SERVER' => 'Von Server importieren',
 			'NEW_ALBUM' => 'Neues Album',
 			'NEW_TAG_ALBUM' => 'Neues Tag-Album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Geben Sie einen Titel für das neue Album ein:',
 			'UNTITLED' => 'Unbenannt',

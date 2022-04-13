@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Actions\Album\Delete;
+use App\Actions\Album\Tracks;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -29,6 +30,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string            $license
  * @property string|null       $cover_id
  * @property Photo|null        $cover
+ * @property string|null       $track_id
  * @property int               $_lft
  * @property int               $_rgt
  *

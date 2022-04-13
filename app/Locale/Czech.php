@@ -123,6 +123,8 @@ final class Czech implements Language
 			'IMPORT_SERVER' => 'Importovat ze serveru',
 			'NEW_ALBUM' => 'Nové album',
 			'NEW_TAG_ALBUM' => 'Nové tag album',
+			'UPLOAD_TRACK' => 'Upload track',
+			'DELETE_TRACK' => 'Delete track',
 
 			'TITLE_NEW_ALBUM' => 'Zadejte název nového alba:',
 			'UNTITLED' => 'Bezejmanné',
