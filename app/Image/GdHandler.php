@@ -6,7 +6,7 @@ namespace App\Image;
 
 use App\Models\Configs;
 use App\Models\Logs;
-use ImageOptimizer;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class GdHandler implements ImageHandlerInterface
 {
