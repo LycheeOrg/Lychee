@@ -500,6 +500,8 @@ final class German implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Im Uhrzeigersinn drehen',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Gegen den Uhrzeigersinn drehen',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

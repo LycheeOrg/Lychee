@@ -493,6 +493,8 @@ final class Portuguese implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Rodar no sentido dos ponteiros do relógio',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Rodar contra o sentido dos ponteiros do relógio',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

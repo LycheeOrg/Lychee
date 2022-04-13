@@ -498,6 +498,8 @@ final class Czech implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Otočit doprava',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Otočit doleva',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

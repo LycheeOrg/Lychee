@@ -492,6 +492,8 @@ final class Polish implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Obróć w prawo',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Obróć w lewo',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

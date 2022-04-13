@@ -492,6 +492,8 @@ final class NorwegianBokmal implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => 'Roter med klokken',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Roter mot klokken',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

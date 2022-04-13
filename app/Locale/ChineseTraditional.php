@@ -491,6 +491,8 @@ final class ChineseTraditional implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => '順時針旋轉',
 			'PHOTO_EDIT_ROTATECCWISE' => '逆時針旋轉',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;

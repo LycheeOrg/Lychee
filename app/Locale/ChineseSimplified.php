@@ -492,6 +492,8 @@ final class ChineseSimplified implements Language
 
 			'PHOTO_EDIT_ROTATECWISE' => '顺时针旋转',
 			'PHOTO_EDIT_ROTATECCWISE' => '逆时针旋转',
+
+			'ERROR_GPX' => 'Error loading GPX file: ',
 		];
 
 		return $locale;
