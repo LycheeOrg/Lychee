@@ -25,7 +25,7 @@ class AddTrackIdToAlbumTable extends Migration
 	 */
 	public function down()
 	{
-		Schema::table('users', function (Blueprint $table) {
+		Schema::table('albums', function (Blueprint $table) {
 			$table->dropColumn('track_id');
 		});
 	}
