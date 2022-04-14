@@ -20,7 +20,7 @@ class Tracks extends Action
 			Storage::delete($album->track_short_path);
 		}
 
-		$new_track_id = uniqid();
+		$new_track_id = sha1($value);
 		Storage::putFileAs('tracks/', $value, "$new_track_id.xml");
 		$short_track_path = "tracks/$new_track_id.xml";
 
