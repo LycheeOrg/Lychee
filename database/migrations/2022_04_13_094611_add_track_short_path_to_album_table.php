@@ -14,7 +14,7 @@ class AddTrackIdToAlbumTable extends Migration
 	public function up()
 	{
 		Schema::table('albums', function (Blueprint $table) {
-			$table->char('track_id', 20)->after('cover_id')->nullable();
+			$table->char('track_short_path', 20)->after('cover_id')->nullable();
 		});
 	}
 
@@ -26,7 +26,7 @@ class AddTrackIdToAlbumTable extends Migration
 	public function down()
 	{
 		Schema::table('albums', function (Blueprint $table) {
-			$table->dropColumn('track_id');
+			$table->dropColumn('track_short_path');
 		});
 	}
 }

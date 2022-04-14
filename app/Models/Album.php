@@ -30,7 +30,7 @@ use Kalnoy\Nestedset\NodeTrait;
  * @property string            $license
  * @property string|null       $cover_id
  * @property Photo|null        $cover
- * @property string|null       $track_id
+ * @property string|null       $track_short_path
  * @property int               $_lft
  * @property int               $_rgt
  *
