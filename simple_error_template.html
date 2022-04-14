@@ -7,12 +7,17 @@
 
     <title>$title</title>
 
-    <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
-
     <!-- Styles -->
     <style>
+		/* nunito-regular - vietnamese_latin-ext_latin_cyrillic-ext_cyrillic */
+		@font-face {
+			font-family: 'Nunito';
+			font-style: normal;
+			font-weight: 400;
+			src: local(''),
+			url('/fonts/nunito-v23.woff2') format('woff2');
+		}
+
         html,
         body {
             background-color: #1d1d1d;
@@ -58,7 +63,7 @@
             color: #bbbbbb;
         }
 
-        /* Inserting this collapsed row between two flex items will make 
+        /* Inserting this collapsed row between two flex items will make
              * the flex item that comes after it break to a new row */
         .break {
             flex-basis: 100%;
