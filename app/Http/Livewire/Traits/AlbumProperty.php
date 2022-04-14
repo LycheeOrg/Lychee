@@ -32,10 +32,10 @@ trait AlbumProperty
 	{
 		if ($album instanceof BaseSmartAlbum) {
 			$this->smartAlbum = $album;
-			$this->baseAlbum = null; //! safety
+			$this->baseAlbum = null; // ! safety
 		} elseif ($album instanceof BaseAlbum) {
 			$this->baseAlbum = $album;
-			$this->smartAlbum = null; //! safety
+			$this->smartAlbum = null; // ! safety
 		} else {
 			throw new \Exception('unrecognized class for ' . get_class($album));
 		}
