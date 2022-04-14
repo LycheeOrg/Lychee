@@ -50,8 +50,6 @@ abstract class BaseAlbum extends Model implements AbstractAlbum, HasRandomID
 	 */
 	protected $keyType = HasRandomID::ID_TYPE;
 
-	protected ?string $trackShortPath = null;
-
 	/**
 	 * Indicates if the model's primary key is auto-incrementing.
 	 *

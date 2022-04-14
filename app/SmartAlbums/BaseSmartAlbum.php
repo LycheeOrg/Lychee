@@ -43,7 +43,6 @@ abstract class BaseSmartAlbum implements AbstractAlbum
 	protected ?Thumb $thumb;
 	protected Collection $photos;
 	protected \Closure $smartPhotoCondition;
-	protected ?string $trackShortPath = null;
 
 	protected function __construct(string $id, string $title, bool $isPublic, \Closure $smartCondition)
 	{
