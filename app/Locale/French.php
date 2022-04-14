@@ -492,7 +492,7 @@ final class French implements Language
 			'PHOTO_EDIT_ROTATECWISE' => 'Pivoter dans le sens des aiguilles d’une montre.',
 			'PHOTO_EDIT_ROTATECCWISE' => 'Pivoter dans le sens contraire des aiguilles d’une montre.',
 
-			'ERROR_GPX' => 'Error loading GPX file: ',
+			'ERROR_GPX' => 'Erreur lors du chargement du fichier GPX : ',
 		];
 
 		return $locale;
