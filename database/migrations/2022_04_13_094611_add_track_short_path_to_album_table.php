@@ -14,7 +14,7 @@ class AddTrackIdToAlbumTable extends Migration
 	public function up()
 	{
 		Schema::table('albums', function (Blueprint $table) {
-			$table->char('track_short_path', 20)->after('cover_id')->nullable();
+			$table->string('track_short_path')->after('cover_id')->nullable()->default(null);
 		});
 	}
 
