@@ -26,7 +26,7 @@ final class French implements Language
 			'DEFAULT' => 'Valeur par defaut',
 			'ALBUM_SET_ORDER' => 'Changer l\'ordre',
 			'ALBUM_ORDERING' => 'Trier par',
-			'ALBUM_OWNER' => 'Owner',
+			'ALBUM_OWNER' => 'Propriétaire',
 
 			'USERS' => 'Utilisateurs',
 			'ALLOW_UPLOAD' => 'Allow uploads',
@@ -125,8 +125,8 @@ final class French implements Language
 			'IMPORT_SERVER' => 'Importer depuis le serveur',
 			'NEW_ALBUM' => 'Nouvel album',
 			'NEW_TAG_ALBUM' => 'Nouvel album d’étiquette',
-			'UPLOAD_TRACK' => 'Upload track',
-			'DELETE_TRACK' => 'Delete track',
+			'UPLOAD_TRACK' => 'Ajouter une trace',
+			'DELETE_TRACK' => 'Supprimer la trace',
 
 			'TITLE_NEW_ALBUM' => 'Entrez le titre du nouvel album :',
 			'UNTITLED' => 'Sans titre',
