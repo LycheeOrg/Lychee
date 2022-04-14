@@ -10,7 +10,6 @@ use App\Actions\Album\Merge;
 use App\Actions\Album\Move;
 use App\Actions\Album\PositionData;
 use App\Actions\Album\SetProtectionPolicy;
-use App\Actions\Album\Tracks;
 use App\Actions\Album\Unlock;
 use App\Contracts\AbstractAlbum;
 use App\Contracts\LycheeException;
@@ -21,6 +20,7 @@ use App\Http\Requests\Album\AddAlbumRequest;
 use App\Http\Requests\Album\AddTagAlbumRequest;
 use App\Http\Requests\Album\ArchiveAlbumsRequest;
 use App\Http\Requests\Album\DeleteAlbumsRequest;
+use App\Http\Requests\Album\DeleteTrackRequest;
 use App\Http\Requests\Album\GetAlbumPositionDataRequest;
 use App\Http\Requests\Album\GetAlbumRequest;
 use App\Http\Requests\Album\MergeAlbumsRequest;
@@ -33,12 +33,12 @@ use App\Http\Requests\Album\SetAlbumProtectionPolicyRequest;
 use App\Http\Requests\Album\SetAlbumSortingRequest;
 use App\Http\Requests\Album\SetAlbumsTitleRequest;
 use App\Http\Requests\Album\SetAlbumTagsRequest;
+use App\Http\Requests\Album\SetAlbumTrackRequest;
 use App\Http\Requests\Album\UnlockAlbumRequest;
 use App\Models\Album;
 use App\Models\Extensions\BaseAlbum;
 use App\Models\TagAlbum;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Response as IlluminateResponse;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\App;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -216,32 +216,25 @@ class AlbumController extends Controller
 	/**
 	 * Upload a track for the Album.
 	 *
-	 * @param AlbumModelIDRequest $request
-	 * @param Tracks              $tracks
+	 * @param SetAlbumTrackRequest $request
 	 *
-	 * @return IlluminateResponse
+	 * @return void
 	 */
-	public function setTrack(AlbumModelIDRequest $request, Tracks $tracks): IlluminateResponse
+	public function setTrack(SetAlbumTrackRequest $request): void
 	{
-		$request->validate(['0' => 'required|file']);
-		$tracks->set($request['albumID'], $request->file('0'));
-
-		return response()->noContent();
+		$request->album()->setTrack($request->file);
 	}
 
 	/**
 	 * Upload a track for the Album.
 	 *
-	 * @param AlbumModelIDRequest $request
-	 * @param Tracks              $tracks
+	 * @param DeleteTrackRequest $request
 	 *
-	 * @return IlluminateResponse
+	 * @return void
 	 */
-	public function deleteTrack(AlbumModelIDRequest $request, Tracks $tracks): IlluminateResponse
+	public function deleteTrack(DeleteTrackRequest $request): void
 	{
-		$tracks->delete($request['albumID']);
-
-		return response()->noContent();
+		$request->album()->deleteTrack();
 	}
 
 	/**

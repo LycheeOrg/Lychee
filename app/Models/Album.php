@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Actions\Album\Delete;
-use App\Actions\Album\Tracks;
 use App\Exceptions\Internal\QueryBuilderException;
 use App\Exceptions\MediaFileOperationException;
 use App\Exceptions\ModelDBException;
@@ -16,6 +15,8 @@ use App\Relations\HasManyPhotosRecursively;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as BaseBuilder;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Kalnoy\Nestedset\DescendantsRelation;
 use Kalnoy\Nestedset\Node;
 use Kalnoy\Nestedset\NodeTrait;
@@ -260,5 +261,39 @@ class Album extends BaseAlbum implements Node
 	public function newEloquentBuilder($query): AlbumBuilder
 	{
 		return new AlbumBuilder($query);
+	}
+
+	/**
+	 * Set the GPX track for the album.
+	 *
+	 * @param UploadedFile $file the GPX track file to be set
+	 *
+	 * @return void
+	 */
+	public function setTrack(UploadedFile $file): void
+	{
+		if ($this->track_short_path != null) {
+			Storage::delete($this->track_short_path);
+		}
+
+		$new_track_id = sha1($file);
+		Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
+		$this->track_short_path = "tracks/$new_track_id.xml";
+		$this->save();
+	}
+
+	/**
+	 * Delete the track of the album.
+	 *
+	 * @return void
+	 */
+	public function deleteTrack(): void
+	{
+		if ($this->track_short_path == null) {
+			return;
+		}
+		Storage::delete($this->track_short_path);
+		$this->track_short_path = null;
+		$this->save();
 	}
 }
