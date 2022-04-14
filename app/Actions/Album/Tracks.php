@@ -15,7 +15,7 @@ class Tracks extends Action
 	 */
 	public function set(string $albumID, UploadedFile $value): void
 	{
-		$album = $this->albumFactory->findAlbumOrFail($albumID, false);
+		$album = Album::query()->findOrFail($albumID);
 		if ($album->track_short_path != null) {
 			Storage::delete($album->track_short_path);
 		}
@@ -39,7 +39,7 @@ class Tracks extends Action
 	 */
 	public function delete(string $albumID): void
 	{
-		$album = $this->albumFactory->findAlbumOrFail($albumID, false);
+		$album = Album::query()->findOrFail($albumID);
 		if ($album->track_short_path == null) {
 			return;
 		}

@@ -6,6 +6,7 @@ use App\Http\Requests\BaseApiRequest;
 use App\Http\Requests\Contracts\HasAbstractAlbum;
 use App\Http\Requests\Contracts\HasAlbum;
 use App\Http\Requests\Traits\HasAlbumTrait;
+use App\Models\Album;
 use App\Rules\AlbumIDRule;
 use Illuminate\Http\UploadedFile;
 
@@ -40,8 +41,7 @@ class SetAlbumTrackRequest extends BaseApiRequest implements HasAlbum
 	 */
 	protected function processValidatedValues(array $values, array $files): void
 	{
-		$albumID = $values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE];
-		$this->album = $this->albumFactory->findAlbumOrFail($albumID);
+		$this->album = Album::query()->findOrFail($values[HasAbstractAlbum::ALBUM_ID_ATTRIBUTE]);
 		$this->file = $files[self::FILE_ATTRIBUTE];
 	}
 
