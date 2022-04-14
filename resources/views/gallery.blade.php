@@ -206,7 +206,7 @@
 </div>
 
 <!-- Upload track -->
-<div id="upload_track">
+<div id="upload">
 	<input id="upload_track_file" type="file" name="fileElem" accept="application/x-gpx+xml">
 </div>
 
