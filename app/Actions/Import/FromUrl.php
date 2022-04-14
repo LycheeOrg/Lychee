@@ -47,7 +47,7 @@ class FromUrl
 			}
 
 			// Download file, before exif checks the mimetype, otherwise we download it twice
-			$tmpFile = new TemporaryLocalFile();
+			$tmpFile = new TemporaryLocalFile($extension);
 			try {
 				$downloadStream = fopen($url, 'r');
 				$tmpFile->write($downloadStream);
