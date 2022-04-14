@@ -269,6 +269,8 @@ class Album extends BaseAlbum implements Node
 	 * @param UploadedFile $file the GPX track file to be set
 	 *
 	 * @return void
+	 *
+	 * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
 	 */
 	public function setTrack(UploadedFile $file): void
 	{
@@ -276,7 +278,7 @@ class Album extends BaseAlbum implements Node
 			Storage::delete($this->track_short_path);
 		}
 
-		$new_track_id = sha1($file);
+		$new_track_id = hash('sha256', $file->get());
 		Storage::putFileAs('tracks/', $file, "$new_track_id.xml");
 		$this->track_short_path = "tracks/$new_track_id.xml";
 		$this->save();
