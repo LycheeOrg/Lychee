@@ -195,7 +195,7 @@
 <!-- Sidebar -->
 <div class="sidebar">
     <div class="sidebar__header">
-        <h1>About</h1>
+        <h1>{{ $locale['PHOTO_ABOUT'] }}</h1>
     </div>
     <div class="sidebar__wrapper"></div>
 </div>

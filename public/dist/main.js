@@ -9971,7 +9971,7 @@ upload.start = {
 	local: function local(files) {
 		if (files.length <= 0) return;
 
-		var albumID = visible.albums() ? null : album.getID();
+		var albumID = album.getID();
 		var hasErrorOccurred = false;
 		var hasWarningOccurred = false;
 		/**
@@ -10035,12 +10035,13 @@ upload.start = {
 			} else {
 				// Error
 				showCloseButton();
+				if (shallCancelUpload) {
+					$(".basicModal .rows .row:nth-child(n+" + (latestFileIdx + 2).toString() + ") .status").html(lychee.locale["UPLOAD_CANCELLED"]).addClass("warning");
+				}
 				upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 			}
 
-			albums.refresh();
-
-			if (albumID === null) lychee.goto();else album.load(albumID);
+			album.reload();
 		};
 
 		/**
@@ -10201,7 +10202,10 @@ upload.start = {
 			var formData = new FormData();
 			var xhr = new XMLHttpRequest();
 
-			formData.append("albumID", albumID);
+			// For form data, a `null` value is indicated by the empty
+			// string `""`. Form data falsely converts the value `null` to the
+			// literal string `"null"`.
+			formData.append("albumID", albumID ? albumID : "");
 			formData.append("file", files[fileIdx]);
 
 			// We must not use the `onload` event of the `XMLHttpRequestUpload`
@@ -10264,8 +10268,7 @@ upload.start = {
 					// Same code as in import.dropbox()
 					basicModal.close();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
-					albums.refresh();
-					if (album.getID() === null) lychee.goto();else album.load(albumID);
+					album.reload();
 				};
 
 				/**
@@ -10298,8 +10301,7 @@ upload.start = {
 					// Show close button
 					$(".basicModal #basicModal__action.hidden").show();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]);
-					albums.refresh();
-					if (albumID === null) lychee.goto();else album.load(albumID);
+					album.reload();
 					return true;
 				};
 
@@ -10543,11 +10545,9 @@ upload.start = {
 					// reports is already JSON-parsed.
 					processIncremental(reports);
 
-					albums.refresh();
-
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"], encounteredProblems ? lychee.locale["UPLOAD_COMPLETE_FAILED"] : null);
 
-					if (albumID === null) lychee.goto();else album.load(albumID);
+					album.reload();
 
 					if (encounteredProblems) showCloseButton();else basicModal.close();
 				};
@@ -10582,10 +10582,9 @@ upload.start = {
 								response = response.substring(0, cutResponse);
 							} else {
 								// Something else went wrong
-								albums.refresh();
 								upload.notify(lychee.locale["UPLOAD_COMPLETE"], lychee.locale["UPLOAD_COMPLETE_FAILED"]);
 
-								if (albumID === null) lychee.goto();else album.load(albumID);
+								album.reload();
 
 								showCloseButton();
 
@@ -10643,8 +10642,7 @@ upload.start = {
 					// Same code as in import.url()
 					basicModal.close();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_COMPLETE"]);
-					albums.refresh();
-					if (album.getID() === null) lychee.goto();else album.load(albumID);
+					album.reload();
 				};
 
 				/**
@@ -10677,8 +10675,7 @@ upload.start = {
 					// Show close button
 					$(".basicModal #basicModal__action.hidden").show();
 					upload.notify(lychee.locale["UPLOAD_IMPORT_WARN_ERR"]);
-					albums.refresh();
-					if (albumID === null) lychee.goto();else album.load(albumID);
+					album.reload();
 					return true;
 				};
 
@@ -12121,7 +12118,7 @@ view.notifications = {
 		init: function init() {
 			view.notifications.clearContent();
 
-			var html = "\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t<p>" + lychee.locale["USER_EMAIL_INSTRUCTION"] + "</p>\n\t\t\t\t</div><div class=\"setLogin\">\n\t\t\t\t\t<p id=\"UserUpdate\">\n\t\t\t\t\t\tEnter your email address:\n\t\t\t\t\t\t<input\n\t\t\t\t\t\t\tname=\"email\" class=\"text\" type=\"text\"\n\t\t\t\t\t\t\tplaceholder=\"email@example.com\"\n\t\t\t\t\t\t\tvalue=\"" + (notifications.json ? notifications.json.email : "") + "\"\n\t\t\t\t\t\t>\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<a id=\"UserUpdate_button\" class=\"basicModal__button\">Save</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>";
+			var html = "\n\t\t\t\t<div class=\"setting_line\">\n\t\t\t\t\t<p>" + lychee.locale["USER_EMAIL_INSTRUCTION"] + "</p>\n\t\t\t\t</div><div class=\"setLogin\">\n\t\t\t\t\t<p id=\"UserUpdate\">\n\t\t\t\t\t\tEnter your email address:\n\t\t\t\t\t\t<input\n\t\t\t\t\t\t\tname=\"email\" class=\"text\" type=\"text\"\n\t\t\t\t\t\t\tplaceholder=\"email@example.com\"\n\t\t\t\t\t\t\tvalue=\"" + (notifications.json && notifications.json.email ? notifications.json.email : "") + "\"\n\t\t\t\t\t\t>\n\t\t\t\t\t</p>\n\t\t\t\t\t<div class=\"basicModal__buttons\">\n\t\t\t\t\t\t<a id=\"UserUpdate_button\" class=\"basicModal__button\">Save</a>\n\t\t\t\t\t</div>\n\t\t\t\t</div>";
 
 			$(".settings_view").append(html);
 			settings.bind("#UserUpdate_button", "#UserUpdate", notifications.update);
